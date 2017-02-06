@@ -38,30 +38,28 @@ d. select or unselect basic MSC data handling.
 
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
-Uncomment the lines in the qt-pro file (section "unix") for the device(s)
-you want to include in the configuration.
+Comment the lines out by prefixing the line with a #
+in the qt-pro file (section "unix") for the device(s)
+you want to exclude in the configuration.
 
-#CONFIG          += dabstick
-#CONFIG          += sdrplay-exp
-#CONFIG          += rtl_tcp
-#CONFIG          += airspy
+CONFIG          += dabstick
+CONFIG          += sdrplay-exp
+CONFIG          += rtl_tcp
+CONFIG          += airspy
 
 Input from prerecorded files is always part of the configuration.
 
 Having the spectrum and the constellation shown, uncomment
-#CONFIG          += spectrum  
+CONFIG          += spectrum  
 
 For selecting the output to be sent to a RCP port, uncomment
-#CONFIG         += tcp-streamer         # use for remote listening
+CONFIG         += tcp-streamer         # use for remote listening
 
 For showing some information on the selected program uncomment
-#DEFINES         += TECHNICAL_DATA
-
-For basic MOT handling (still far from being complete) uncomment
-#DEFINES         += MOT_BASICS__         # use at your own risk
+DEFINES         += TECHNICAL_DATA
 
 For basic MSC data handling, i.e. pad handling etc, uncomment
-#DEFINES         += MSC_DATA__           # use at your own risk
+DEFINES         += MSC_DATA__           # use at your own risk
 
 The sourcetree contains a directory "sound-client", that contains
 sources to generate a simple "listener" for remote listening.
@@ -87,12 +85,15 @@ rtl_tcp, the sdrplay and the airspy.
 For other options, see the CMakeLists.txt file.
 
 Note that CMake expects Qt5 to be installed.
+
 =============================================================================
 Scanning
+--------
 
 The qt-dab software provides a "scanning" facility, pushing the "scan"
 button will cause the software to scan the subsequent channels in the
 selected band until a channel is encountered where a DAB signal is detected.
+
 ===========================================================================
 RPI
 ---
@@ -108,6 +109,7 @@ installed the alsa-utils, and that you are - as non-root user - able
 to see devices with aplay -L
 
 In arch, it was essential to add the username to the group "audio".
+
 ============================================================================
 Qt
 ---
@@ -118,6 +120,7 @@ diagram - the qwt library.
 The CMakeLists.txt assumes Qt5, if you want to use Qt4, and you want
 to have the spectrum in the configuration, be aware of the binding 
 of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well)
+
 ==========================================================================
 
 Ubuntu Linux
