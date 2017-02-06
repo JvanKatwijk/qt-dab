@@ -32,10 +32,12 @@ Configuring using the qt-dab.pro files
 --------------------------------------
 
 Options in the configuration are
+
 a. select or unselect devices,
+
 b. select the output: soundcard or tcp connection
-c. select or unselect basic MOT data handling,
-d. select or unselect basic MSC data handling.
+
+c. select or unselect basic MSC data handling.
 
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
@@ -140,46 +142,73 @@ For generating an executable under Ubuntu, you can put the following
 commands into a script. 
 
 1. Fetch the required components
-   #!/bin/bash
+   
    sudo apt-get update
    sudo apt-get install qt4-qmake build-essential g++
    sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev  libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
    cd
 2.a.  Assuming you want to use a dabstick as device,
    fetch a version of the library for the dabstick
-   # http://www.sm5bsz.com/linuxdsp/hware/rtlsdr/rtlsdr.htm
+ 
    wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
+   
    tar xvfj rtl-sdr-linrad4.tbz 
+   
    cd rtl-sdr-linrad4
+   
    sudo autoconf
+   
    sudo autoreconf -i
+   
    ./configure --enable-driver-detach
+   
    make
+   
    sudo make install
+   
    sudo ldconfig
+   
    cd
+   
 2.b. Assuming you want to use an Airspy as device,
    fetch a version of the library for the airspy
+   
    sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
+   
    wget https://github.com/airspy/host/archive/master.zip
+   
    unzip master.zip
+   
    cd host-master
+   
    mkdir build
+   
    cd build
+   
    cmake ../ -DINSTALL_UDEV_RULES=ON
+   
    make
+   
    sudo make install
+   
    sudo ldconfig
-##Clean CMake temporary files/dirs:
+   
+Clean CMake temporary files/dirs:
+
    cd host-master/build
    rm -rf *
+   
 
 3. Get a copy of the dab-rpi sources and use qmake
+
    git clone https://github.com/JvanKatwijk/qt-dab.git
+   
    cd qt-dab
 >>>Edit the qt-dab.pro file for configuring the supported devices
->>> and other options
+and other options
+
    qmake qt-dab.pro
+   
    make
 
 ============================================================================
