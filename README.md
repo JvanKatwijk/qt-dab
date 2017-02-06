@@ -11,7 +11,8 @@ reorganize.
 
 I decided to merge the dab-rpi and sdr-j-dab version and rename
 the result - to distinguish from the Qt-free version -  Qt-DAB.
-the Qt-free version, the "command line only" version,  is named "dab-cmdline"
+
+The Qt-free version, the "command line only" version,  is named "dab-cmdline"
 and has its own repository.
 
 The software - both the QT-DAB and the dab-cmdline version - supports decoding of terrestrial DAB and DAB+ reception with as input the  samplestream from either an AIRSPY, a SDRplay, a dabstick (rtl_sdr), a rtl_tcp server.
@@ -43,26 +44,34 @@ in the qt-pro file (section "unix") for the device(s)
 you want to exclude in the configuration.
 
 CONFIG          += dabstick
+
 CONFIG          += sdrplay-exp
+
 CONFIG          += rtl_tcp
+
 CONFIG          += airspy
 
 Input from prerecorded files is always part of the configuration.
 
 Having the spectrum and the constellation shown, uncomment
+
 CONFIG          += spectrum  
 
 For selecting the output to be sent to a RCP port, uncomment
+
 CONFIG         += tcp-streamer         # use for remote listening
 
 For showing some information on the selected program uncomment
+
 DEFINES         += TECHNICAL_DATA
 
 For basic MSC data handling, i.e. pad handling etc, uncomment
+
 DEFINES         += MSC_DATA__           # use at your own risk
 
 The sourcetree contains a directory "sound-client", that contains
 sources to generate a simple "listener" for remote listening.
+
 ========================================================================
 Configuring using CMake
 -----------------------
@@ -75,6 +84,7 @@ file, but by passing on definitions to the command line.
 An example
 
 	cmake .. -DDABSTICK=ON -DRTLTCP=ON -DSPECTRUM=ON
+	
 will generate a makefile with both support for the dabstick and
 for the remote dabstick (using the rtl_tcp connection) and for
 the spectrum in the configuration.
