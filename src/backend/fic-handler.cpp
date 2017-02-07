@@ -168,7 +168,7 @@ int16_t	viterbiBlock [3072 + 24];
 
 	for (i = 0; i < 21; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
-	      if (PI_16 [k % 32] == 1)  
+	      if (PI_16 [k % 32] != 0)  
 	         viterbiBlock [local] = ficblock [input_counter ++];
 	      local ++;
 	   }
@@ -181,7 +181,7 @@ int16_t	viterbiBlock [3072 + 24];
   */
 	for (i = 0; i < 3; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
-	      if (PI_15 [k % 32] == 1)  
+	      if (PI_15 [k % 32] != 0)  
 	         viterbiBlock [local] = ficblock [input_counter ++];
 	      local ++;
 	   }
@@ -192,7 +192,7 @@ int16_t	viterbiBlock [3072 + 24];
   *	This block constitues the 6 * 4 bits of the register itself.
   */
 	for (k = 0; k < 24; k ++) {
-	   if (PI_X [k] == 1) 
+	   if (PI_X [k] != 0) 
 	      viterbiBlock [local] = ficblock [input_counter ++];
 	   local ++;
 	}

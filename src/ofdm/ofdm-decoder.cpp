@@ -293,7 +293,7 @@ toBitsLabel:
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
-handlerLabel:
+handlerLabel:;
 	my_mscHandler -> process_mscBlock (ibits, blkno);
 }
 

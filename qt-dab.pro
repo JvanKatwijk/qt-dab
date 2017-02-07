@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-0.998
+TARGET		= qt-dab-0.998-s
 QT		+= widgets network xml
 CONFIG		+= console
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -181,7 +181,6 @@ CONFIG		+= airspy
 CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
-DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= TRY_EPG
 }
@@ -204,16 +203,16 @@ LIBS		+= -lws2_32
 LIBS		+= -lfaad
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
-FORMS 		+= ./radio.ui 
-FORMS		+= ./technical_data.ui
+FORMS 		+= ./forms/dabradio.ui 
+FORMS		+= ./forms/technical_data.ui
 CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-exp
 #CONFIG		+= tcp-streamer		# use for remote listening
+CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
-DEFINES		+= MOT_BASICS__		# use at your own risk
 DEFINES		+= MSC_DATA__		# use at your own risk
 }
 

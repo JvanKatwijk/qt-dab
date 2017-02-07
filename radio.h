@@ -34,9 +34,10 @@
 #include	<QUdpSocket>
 #include	<QComboBox>
 #include	<QLabel>
+#include	<QTimer>
 #include	<sndfile.h>
 #include	"ui_dabradio.h"
-#include	<QTimer>
+#include	"fic-handler.h"
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
 
@@ -45,7 +46,6 @@ class	virtualInput;
 class	audioBase;
 
 class	mscHandler;
-class	ficHandler;
 
 class	common_fft;
 
@@ -100,7 +100,7 @@ private:
 	int32_t		tunedFrequency;
 
 	ofdmProcessor	*my_ofdmProcessor;
-	ficHandler	*my_ficHandler;
+	ficHandler	my_ficHandler;
 	mscHandler	*my_mscHandler;
 	audioBase	*soundOut;
 	RingBuffer<int16_t>	*audioBuffer;

@@ -34,7 +34,6 @@
 #include	<QDir>
 #include	"dab-constants.h"
 #include	"radio.h"
-#include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"audiosink.h"
 #include	"fft.h"
@@ -74,7 +73,9 @@
   */
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                uint8_t		freqsyncMethod,
-	                                QWidget		*parent): QMainWindow (parent) {
+	                                QWidget		*parent):
+	                                        QMainWindow (parent),
+	                                        my_ficHandler (this) {
 int16_t	latency;
 int16_t k;
 
@@ -86,7 +87,7 @@ int16_t k;
 	connect (showProgramData, SIGNAL (clicked (void)),
 	         this, SLOT (toggle_show_data (void)));
 #else
-	showProgramData	-> hide ();
+	showProgramData	-> hide ();	// do not show the button
 #endif
 	dabSettings		= Si;
 //
@@ -111,7 +112,7 @@ int16_t k;
 //	latency is used to allow different settings for different
 //	situations wrt the output buffering
 	latency			=
-	           dabSettings -> value ("latency", 1). toInt ();
+	           dabSettings -> value ("latency", 3). toInt ();
 
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -169,15 +170,12 @@ int16_t k;
   *	The actual work is done elsewhere: in ofdmProcessor
   *	and ofdmDecoder for the ofdm related part, ficHandler
   *	for the FIC's and mscHandler for the MSC.
-  *	The ficHandler shares information with the mscHandler
-  *	but the handlers do not change each others modes.
   */
 	this	-> freqsyncMethod	= freqsyncMethod;
 	my_mscHandler		= new mscHandler	(this,
 	                                                 &dabModeParameters,
 	                                                 audioBuffer,
 	                                                 show_crcErrors);
-	my_ficHandler		= new ficHandler	(this);
 //
 /**
   *	The default for the ofdmProcessor depends on
@@ -188,7 +186,7 @@ int16_t k;
 	                                        inputDevice,
 	                                        &dabModeParameters,
 	                                        my_mscHandler,
-	                                        my_ficHandler,
+	                                        &my_ficHandler,
 	                                        threshold,
 	                                        freqsyncMethod
 #ifdef	HAVE_SPECTRUM
@@ -730,7 +728,7 @@ void	RadioInterface::clearEnsemble	(void) {
 //
 //	it obviously means: stop processing
 	my_mscHandler		-> stopProcessing ();
-	my_ficHandler		-> clearEnsemble ();
+	my_ficHandler. clearEnsemble ();
 	my_ofdmProcessor	-> coarseCorrectorOn ();
 	my_ofdmProcessor	-> reset ();
 
@@ -923,7 +921,7 @@ void	RadioInterface::clear_showElements (void) {
 	Services = QStringList ();
 	ensemble. setStringList (Services);
 	ensembleDisplay		-> setModel (&ensemble);
-	my_ficHandler		-> clearEnsemble ();
+	my_ficHandler. clearEnsemble ();
 
 	ensembleLabel		= QString ();
 	ensembleName		-> setText (ensembleLabel);
@@ -1017,8 +1015,8 @@ void	RadioInterface::TerminateProcess (void) {
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
+	fprintf (stderr, "going to delete components now\n");
 	delete		my_ofdmProcessor;
-	delete		my_ficHandler;
 	delete		my_mscHandler;
 	delete		soundOut;
 	soundOut	= NULL;		// signals may be pending, so careful
@@ -1031,7 +1029,6 @@ void	RadioInterface::TerminateProcess (void) {
 	pictureLabel = NULL;		// signals may be pending, so careful
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
-	fprintf (stderr, "input device deleted\n");
 	close ();
 	fprintf (stderr, "closed\n");
 }
@@ -1102,7 +1099,7 @@ void	RadioInterface::updateTimeDisplay (void) {
 void	RadioInterface::autoCorrector_on (void) {
 //	first the real stuff
 	clear_showElements	();
-	my_ficHandler		-> clearEnsemble ();
+	my_ficHandler. clearEnsemble ();
 	my_ofdmProcessor	-> coarseCorrectorOn ();
 	my_ofdmProcessor	-> reset ();
 	my_mscHandler		-> stopProcessing ();
@@ -1139,7 +1136,7 @@ uint8_t	Mode	= s. toInt ();
 //	settings of the parameters.
 	delete	my_mscHandler;
 	setModeParameters (Mode);
-	my_ficHandler		-> setBitsperBlock	(2 * dabModeParameters. K);
+	my_ficHandler. setBitsperBlock	(2 * dabModeParameters. K);
 	my_mscHandler		= new mscHandler	(this,
 	                                                 &dabModeParameters,
 	                                                 audioBuffer,
@@ -1149,7 +1146,7 @@ uint8_t	Mode	= s. toInt ();
 	                                               inputDevice,
 	                                               &dabModeParameters,
 	                                               my_mscHandler,
-	                                               my_ficHandler,
+	                                               &my_ficHandler,
 	                                               threshold,
 	                                               freqsyncMethod
 #ifdef	HAVE_SPECTRUM
@@ -1346,7 +1343,7 @@ QString	file;
 	                                               inputDevice,
 	                                               &dabModeParameters,
 	                                               my_mscHandler,
-	                                               my_ficHandler,
+	                                               &my_ficHandler,
 	                                               threshold,
 	                                               freqsyncMethod
 #ifdef	HAVE_SPECTRUM
@@ -1367,10 +1364,10 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
 #endif
-	switch (my_ficHandler -> kindofService (a)) {
+	switch (my_ficHandler. kindofService (a)) {
 	   case AUDIO_SERVICE:
 	      { audiodata d;
-	        my_ficHandler	-> dataforAudioService (a, &d);
+	        my_ficHandler. dataforAudioService (a, &d);
 	        if ((d. bitRate == 0) || (d. protLevel == 0)) {
  	           QMessageBox::warning (this, tr ("sdr"),
  	                               tr ("still insufficient data for this program\n"));
@@ -1420,7 +1417,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 
 	   case PACKET_SERVICE:
 	      {  packetdata d;
-	         my_ficHandler	-> dataforDataService (a, &d);
+	         my_ficHandler. dataforDataService (a, &d);
 	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            QMessageBox::warning (this, tr ("sdr"),
  	                               tr ("still insufficient data for this service\n"));
