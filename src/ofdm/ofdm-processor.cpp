@@ -149,7 +149,7 @@ int32_t	i;
 	ofdmProcessor::~ofdmProcessor	(void) {
 	running		= false;	// this will cause an
 	                                // exception to be raised
-	                        	// through the getNextSampleReady
+	                        	// through the getSample(s) functions.
 	msleep (100);
 	if (isRunning ())
 	   terminate ();

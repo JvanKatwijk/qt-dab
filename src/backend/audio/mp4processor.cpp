@@ -34,28 +34,6 @@
 #include	"charsets.h"
 #include	"pad-handler.h"
 
-bool	dabPlus_crc (uint8_t *msg, int16_t len) {
-int i, j;
-uint16_t	accumulator	= 0xFFFF;
-uint16_t	crc;
-uint16_t	genpoly		= 0x1021;
-
-	for (i = 0; i < len; i ++) {
-	   int16_t data = msg [i] << 8;
-	   for (j = 8; j > 0; j--) {
-	      if ((data ^ accumulator) & 0x8000)
-	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;
-	      else
-	         accumulator = (accumulator << 1) & 0xFFFF;
-	      data = (data << 1) & 0xFFFF;
-	   }
-	}
-//
-//	ok, now check with the crc that is contained
-//	in the au
-	crc	= ~((msg [len] << 8) | msg [len + 1]) & 0xFFFF;
-	return (crc ^ accumulator) == 0;
-}
 //
 /**
   *	\class mp4Processor is the main handler for the aac frames
@@ -270,8 +248,8 @@ int32_t		tmp;
 	   }
 
 //	but first the crc check
-	   if (dabPlus_crc (&outVector [au_start [i]],
-	                    aac_frame_length)) {
+	   if (check_crc_bytes (&outVector [au_start [i]],
+	                        aac_frame_length)) {
 	      bool err;
 	      handle_aacFrame (&outVector [au_start [i]],
 	                                   aac_frame_length,

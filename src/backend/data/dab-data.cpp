@@ -46,7 +46,7 @@
 	                       	 int16_t packetAddress,
 	                         int16_t fragmentSize,
 	                         int16_t bitRate,
-	                       	 bool	uepFlag,
+	                       	 bool	shortForm,
 	                         int16_t protLevel,
 	                         uint8_t DGflag,
 	                       	 int16_t FEC_scheme,
@@ -57,7 +57,7 @@ int32_t i, j;
 	this	-> packetAddress	= packetAddress;
 	this	-> fragmentSize	= fragmentSize;
 	this	-> bitRate	= bitRate;
-	this	-> uepFlag	= uepFlag;
+	this	-> shortForm	= shortForm;
 	this	-> protLevel	= protLevel;
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
@@ -78,7 +78,7 @@ int32_t i, j;
 //
 //	The handling of the depuncturing and deconvolution is
 //	shared with that of the audio
-	if (uepFlag)
+	if (shortForm)
 	   protectionHandler	= new uep_protection (bitRate,
 	                                              protLevel);
 	else

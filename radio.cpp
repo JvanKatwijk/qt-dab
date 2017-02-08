@@ -34,6 +34,11 @@
 #include	<QDir>
 #include	"dab-constants.h"
 #include	"radio.h"
+#include	<fstream>
+#include	<iostream>
+#include	<numeric>
+#include	<unistd.h>
+#include	<vector>
 #include	"msc-handler.h"
 #include	"audiosink.h"
 #include	"fft.h"
@@ -65,6 +70,23 @@
 #ifdef	HAVE_SPECTRUM
 #include	"spectrum-handler.h"
 #endif
+
+std::vector<size_t> get_cpu_times() {
+    std::ifstream proc_stat("/proc/stat");
+    proc_stat.ignore(5, ' '); // Skip the 'cpu' prefix.
+    std::vector<size_t> times;
+    for (size_t time; proc_stat >> time; times.push_back(time));
+    return times;
+}
+ 
+bool get_cpu_times(size_t &idle_time, size_t &total_time) {
+    const std::vector<size_t> cpu_times = get_cpu_times();
+    if (cpu_times.size() < 4)
+        return false;
+    idle_time = cpu_times[3];
+    total_time = std::accumulate(cpu_times.begin(), cpu_times.end(), 0);
+    return true;
+}
 /**
   *	We use the creation function merely to set up the
   *	user interface and make the connections between the
@@ -1084,6 +1106,9 @@ bool	localRunning	= running;
 	}
 }
 
+static size_t previous_idle_time	= 0;
+static size_t previous_total_time	= 0;
+
 void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
@@ -1094,6 +1119,21 @@ void	RadioInterface::updateTimeDisplay (void) {
 	text. append (QString::number (numberMinutes));
 	text. append (" min");
 	timeDisplay	-> setText (text);
+#ifndef	__MINGW32__
+#ifdef	TECHNICAL_DATA
+	
+	if ((numberofSeconds % 2) == 0) {
+	   size_t idle_time, total_time;
+	   get_cpu_times (idle_time, total_time);
+	   const float idle_time_delta = idle_time - previous_idle_time;
+           const float total_time_delta = total_time - previous_total_time;
+           const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
+	   techData. cpuMonitor -> display (utilization);
+           previous_idle_time = idle_time;
+           previous_total_time = total_time;
+	}
+#endif
+#endif
 }
 
 void	RadioInterface::autoCorrector_on (void) {
@@ -1380,26 +1420,24 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	        techData. startAddressDisplay -> display (d. startAddr);
 	        techData. lengthDisplay	-> display (d. length);
 	        techData. subChIdDisplay -> display (d. subchId);
-	        techData. protectionlevelDisplay -> display (d. protLevel & 07);
 	        uint16_t h = d. protLevel;
-	        QChar prot;
-	        if (h & 0100) {
-	           prot = 'A';
-	           h -= 0100;
+	        QString protL;
+	        if (!d. shortForm) {
+	           protL = "EEP ";
+	           if ((h & (1 << 2)) == 0) 
+	              protL. append ("A ");
+	           else
+	              protL. append ("B ");
+	           h = (h & 03) + 1;
+	           protL. append (QString::number (h));
 	        }
-	        else 
-	        if (h & 0200) {
-	           prot = 'B';
-	           h -= 0200;
+	        else  {
+	           h = h & 03;
+	           protL = "UEP ";
+	           protL. append (QString::number (h));
 	        }
-	        else 
-	           prot = ' ';
-	        QString protL = d. uepFlag ? "UEP" : "EEP";
-	        protL. append (" ");
-	        protL. append (QString::number (h));
-	        protL. append (" ");
-	        protL. append (prot);
 	        techData. uepField -> setText (protL);
+	        techData. protectionlevelDisplay -> display (h);
 	        techData. ASCTy -> setText (d. ASCTy == 077 ? "HeAAC" : "MP2");
 	        if (d. ASCTy == 077) {
 	           techData. rsError_display -> show ();

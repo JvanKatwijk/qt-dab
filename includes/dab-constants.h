@@ -155,7 +155,7 @@ typedef	struct P DabParams;
 typedef struct {
 	int16_t subchId;
 	int16_t	startAddr;
-	bool	uepFlag;
+	bool	shortForm;
 	int16_t	protLevel;
 	int16_t DSCTy;
 	int16_t	length;
@@ -168,7 +168,7 @@ typedef struct {
 typedef	struct {
 	int16_t	subchId;
 	int16_t	startAddr;
-	bool	uepFlag;
+	bool	shortForm;
 	int16_t	protLevel;
 	int16_t	length;
 	int16_t	bitRate;

@@ -47,14 +47,14 @@
 	                         uint8_t dabModus,
 	                         int16_t fragmentSize,
 	                         int16_t bitRate,
-	                         bool	uepFlag,
+	                         bool	shortForm,
 	                         int16_t protLevel,
 	                         RingBuffer<int16_t> *buffer) {
 int32_t i, j;
 	this	-> dabModus		= dabModus;
 	this	-> fragmentSize		= fragmentSize;
 	this	-> bitRate		= bitRate;
-	this	-> uepFlag		= uepFlag;
+	this	-> shortForm		= shortForm;
 	this	-> protLevel		= protLevel;
 	this	-> myRadioInterface	= mr;
 	this	-> audioBuffer		= buffer;
@@ -66,7 +66,7 @@ int32_t i, j;
 	   memset (interleaveData [i], 0, fragmentSize * sizeof (int16_t));
 	}
 
-	if (uepFlag)
+	if (shortForm)
 	   protectionHandler	= new uep_protection (bitRate,
 	                                              protLevel);
 	else

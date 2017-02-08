@@ -35,16 +35,16 @@
 	this	-> bitRate = bitRate;
 	outSize		= 24 * bitRate;
 	viterbiBlock	= new int16_t [outSize * 4 + 24];
-	if (protLevel & 0100) {	// set A profiles
-	   switch (protLevel & 07) {
-	      case 1:
+	if ((protLevel & (1 << 2)) == 0) {	// set A profiles
+	   switch (protLevel & 03) {
+	      case 0:			// actually level 1
 	         L1	= 6 * bitRate / 8 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (24 - 1);
 	         PI2	= get_PCodes (23 - 1);
 	         break;
 
-	      case 2:
+	      case 1:			// actually level 2
 	         if (bitRate == 8) {
 	            L1	= 5;
 	            L2	= 1;
@@ -58,14 +58,14 @@
 	         }
 	         break;
 
-	      case 3:
+	      case 2:			// actually level 3
 	         L1	= 6 * bitRate / 8 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (8 - 1);
 	         PI2	= get_PCodes (7 - 1);
 	         break;
 
-	      case 4:
+	      case 3:			// actually level 4
 	         L1	= 4 * bitRate / 8 - 3;
 	         L2	= 2 * bitRate / 8 + 3;
 	         PI1	= get_PCodes (3 - 1);
@@ -74,30 +74,30 @@
 	   }
 	}
 	else
-	if (protLevel & 0200) {		// B series
-	   switch ((protLevel & 07)) {
-	      case 4:
+	if ((protLevel & (1 << 2)) != 0) {		// B series
+	   switch ((protLevel & 03)) {
+	      case 3:					// actually level 4
 	         L1	= 24 * bitRate / 32 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (2 - 1);
 	         PI2	= get_PCodes (1 - 1);
 	         break;
 
-	      case 3:
+	      case 2:					// actually level 3
 	         L1	= 24 * bitRate / 32 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (4 - 1);
 	         PI2	= get_PCodes (3 - 1);
 	         break;
 
-	      case 2:
+	      case 1:					// actually level 2
 	         L1	= 24 * bitRate / 32 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (6 - 1);
 	         PI2	= get_PCodes (5 - 1);
 	         break;
 
-	      case 1:
+	      case 0:					// actually level 1
 	         L1	= 24 * bitRate / 32 - 3;
 	         L2	= 3;
 	         PI1	= get_PCodes (10 - 1);
