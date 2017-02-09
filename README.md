@@ -31,13 +31,13 @@ samples through a TCP connection.
 Configuring using the qt-dab.pro files
 --------------------------------------
 
-Options in the configuration are
+Options in the configuration are:
 
-a. select or unselect devices,
+a) select or unselect devices
 
-b. select the output: soundcard or tcp connection
+b) select the output: soundcard or tcp connection
 
-c. select or unselect basic MSC data handling.
+c) select or unselect basic MSC data handling
 
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
@@ -45,31 +45,28 @@ Comment the lines out by prefixing the line with a #
 in the qt-pro file (section "unix") for the device(s)
 you want to exclude in the configuration.
 
-CONFIG          += dabstick
-
-CONFIG          += sdrplay-exp
-
-CONFIG          += rtl_tcp
-
-CONFIG          += airspy
+	CONFIG          += dabstick
+	CONFIG          += sdrplay-exp
+	CONFIG          += rtl_tcp
+	CONFIG          += airspy
 
 Input from prerecorded files is always part of the configuration.
 
 Having the spectrum and the constellation shown, uncomment
 
-CONFIG          += spectrum  
+	CONFIG          += spectrum  
 
 For selecting the output to be sent to a RCP port, uncomment
 
-CONFIG         += tcp-streamer         # use for remote listening
+	CONFIG         += tcp-streamer         # use for remote listening
 
 For showing some information on the selected program uncomment
 
-DEFINES         += TECHNICAL_DATA
+	DEFINES         += TECHNICAL_DATA
 
 For basic MSC data handling, i.e. pad handling etc, uncomment
 
-DEFINES         += MSC_DATA__           # use at your own risk
+	DEFINES         += MSC_DATA__           # use at your own risk
 
 The sourcetree contains a directory "sound-client", that contains
 sources to generate a simple "listener" for remote listening.
@@ -80,7 +77,7 @@ Configuring using CMake
 
 The CMakeLists.txt file has as defaults all devices and the spectrum switched
 off.
-You can select a device (or more devices) without altering the CMakeLists.txr
+You can select a device (or more devices) without altering the CMakeLists.txt
 file, but by passing on definitions to the command line.
 
 An example
@@ -102,7 +99,7 @@ Note that CMake expects Qt5 to be installed.
 Scanning
 --------
 
-The qt-dab software provides a "scanning" facility, pushing the "scan"
+The Qt-DAB software provides a "scanning" facility, pushing the "scan"
 button will cause the software to scan the subsequent channels in the
 selected band until a channel is encountered where a DAB signal is detected.
 
@@ -110,7 +107,7 @@ selected band until a channel is encountered where a DAB signal is detected.
 RPI
 ---
 
-The  qt-dab software runs pretty well on my RPI-2. The average
+The Qt-DAB software runs pretty well on my RPI-2. The average
 load on the 4 cores is somewhat over 60 percent.
 However, note that the arch system, the one I am running,
 provides the gcc 6.XX compilers rather than the GCC 4.9 on Jessie. 
@@ -143,73 +140,58 @@ commands into a script.
 
 1. Fetch the required components
    
-   sudo apt-get update
-   sudo apt-get install qt4-qmake build-essential g++
-   sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev  libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
-   cd
-2.a.  Assuming you want to use a dabstick as device,
-   fetch a version of the library for the dabstick
+		sudo apt-get update
+		sudo apt-get install qt4-qmake build-essential g++
+		sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev 
+		sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev 
+		sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+		cd
+
+2. Fetch the required libraries 
+
+	a) Assuming you want to use a dabstick as device, fetch a version of the library for the dabstick
  
-   wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
+		wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
+		tar xvfj rtl-sdr-linrad4.tbz 
+		cd rtl-sdr-linrad4
+   		sudo autoconf
+		sudo autoreconf -i
+		./configure --enable-driver-detach
+		make
+		sudo make install
+		sudo ldconfig
+		cd
    
-   tar xvfj rtl-sdr-linrad4.tbz 
+	b) Assuming you want to use an Airspy as device, fetch a version of the library for the Airspy
    
-   cd rtl-sdr-linrad4
+		sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
+		wget https://github.com/airspy/host/archive/master.zip
+		unzip master.zip
+		cd host-master
+		mkdir build
+		cd build
+		cmake ../ -DINSTALL_UDEV_RULES=ON
+		make
+		sudo make install
+		sudo ldconfig
    
-   sudo autoconf
-   
-   sudo autoreconf -i
-   
-   ./configure --enable-driver-detach
-   
-   make
-   
-   sudo make install
-   
-   sudo ldconfig
-   
-   cd
-   
-2.b. Assuming you want to use an Airspy as device,
-   fetch a version of the library for the airspy
-   
-   sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
-   
-   wget https://github.com/airspy/host/archive/master.zip
-   
-   unzip master.zip
-   
-   cd host-master
-   
-   mkdir build
-   
-   cd build
-   
-   cmake ../ -DINSTALL_UDEV_RULES=ON
-   
-   make
-   
-   sudo make install
-   
-   sudo ldconfig
-   
-Clean CMake temporary files/dirs:
+3. Clean CMake temporary files/dirs:
 
-   cd host-master/build
-   rm -rf *
+		cd host-master/build
+		rm -rf *
    
 
-3. Get a copy of the dab-rpi sources and use qmake
+4. Get a copy of the dab-rpi sources and use qmake
 
-   git clone https://github.com/JvanKatwijk/qt-dab.git
-   
-   cd qt-dab
->>>Edit the qt-dab.pro file for configuring the supported devices
-and other options
+		git clone https://github.com/JvanKatwijk/qt-dab.git
+		cd qt-dab
 
-   qmake qt-dab.pro
-   
-   make
+5. Edit the qt-dab.pro file for configuring the supported devices and other options
+
+6. Build and make
+
+		qmake qt-dab.pro
+		make
 
 ============================================================================
 
@@ -218,8 +200,8 @@ and other options
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Programming
 
-	The qt-dab software is made available under the GPL-2.0.
-	SDR-J is distributed in the hope that it will be useful,
+	The Qt-DAB software is made available under the GPL-2.0.
+	Qt-DAB is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
