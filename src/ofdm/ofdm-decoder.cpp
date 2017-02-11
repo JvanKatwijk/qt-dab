@@ -53,6 +53,8 @@ int16_t	i;
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
+	connect (this, SIGNAL (showQuality (float)),
+	         myRadioInterface, SLOT (showQuality (float)));
 #endif
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
@@ -209,11 +211,45 @@ void	ofdmDecoder::processBlock_0 (void) {
   *	\brief decodeFICblock
   *	do the transforms and hand over the result to the fichandler
   */
+static inline
+float	q_offset (DSPCOMPLEX v) {
+	if ((real (v) >= 0) && (imag (v) >= 0))
+	   return (arg (v * conj (DSPCOMPLEX (1, 1))));
+	if ((real (v) >= 0) && (imag (v) < 0))
+	   return (arg (v * conj (DSPCOMPLEX (1, -1))));
+	if ((real (v) < 0) && (imag (v) < 0))
+	   return (arg (v * conj (DSPCOMPLEX (-1, -1))));
+	if ((real (v) < 0) && (imag (v) >= 0))
+	   return (arg (v * conj (DSPCOMPLEX (-1, 1))));
+}
+
+float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
+float	temp [T_u];
+int16_t i;
+float	sum	= 0;
+float	var	= 0;
+	memset (temp, 0, T_u * sizeof (float));
+	for (i = 0; i < carriers / 2; i ++) {
+	   temp [i] = q_offset (v [i]) / (2 * M_PI) * 360;
+	   sum += temp [i];
+	}
+	for (i = T_u - 1; i >= T_u - carriers / 2; i --) {
+	   temp [i] = q_offset (v [i]) / (2 * M_PI) * 360; 
+	   sum += temp [i];
+	}
+	sum /= carriers;
+	for (i = 0; i < T_u; i ++)
+	   var += (temp [i] - sum) * (temp [i] - sum);
+	return (var / carriers);
+}
 
 static
 int	cnt	= 0;
 void	ofdmDecoder::decodeFICblock (int32_t blkno) {
 int16_t	i;
+#ifdef	HAVE_SPECTRUM
+DSPCOMPLEX conjVector [T_u];
+#endif
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
 fftlabel:
 /**
@@ -242,6 +278,9 @@ toBitsLabel:
   */
 	   DSPCOMPLEX	r1 = fft_buffer [index] * conj (phaseReference [index]);
 	   phaseReference [index] = fft_buffer [index];
+#ifdef	HAVE_SPECTRUM
+	   conjVector [index] = r1;
+#endif;
 	   DSPFLOAT ab1	= jan_abs (r1);
 ///	split the real and the imaginary part and scale it
 
@@ -257,11 +296,12 @@ handlerLabel:
 //	fftbuffer contains low and high at the ends
 	if (blkno == 2) {
 	   if (++cnt > 7) {
-	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [0],
+	      iqBuffer	-> putDataIntoBuffer (&conjVector [0],
 	                                      carriers / 2);
-	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [T_u - 1 - carriers / 2],
+	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u - 1 - carriers / 2],
 	                                      carriers / 2);
 	      showIQ	(carriers);
+	      showQuality (computeQuality (conjVector));
 	      cnt = 0;
 	   }
 	}

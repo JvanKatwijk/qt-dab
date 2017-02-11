@@ -58,6 +58,7 @@ private:
 	DabParams	*params;
 #ifdef	HAVE_SPECTRUM
 	RingBuffer<DSPCOMPLEX> *iqBuffer;
+	float		computeQuality	(DSPCOMPLEX *);
 #endif
 	ficHandler	*my_ficHandler;
 	mscHandler	*my_mscHandler;
@@ -89,6 +90,7 @@ private:
 signals:
 	void		show_snr	(int);
 	void		showIQ		(int);
+	void		showQuality	(float);
 };
 
 #endif

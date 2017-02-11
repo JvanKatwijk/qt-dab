@@ -27,6 +27,10 @@ Again, as the QT-DAB version has to run on a headless RPI 2,
 an option is included to configure the sound output to deliver its
 samples through a TCP connection.
 
+The constellation diagram now shows - if configured - the phase difference
+of the carriers in the ofdm symbol with the corresponding carriers of the
+previous symbols. The constellation of high quality signals shows 4 dots,
+one in each corner of the black square.
 =============================================================================
 Configuring using the qt-dab.pro files
 --------------------------------------
@@ -214,7 +218,7 @@ and other options
 ============================================================================
 
 
-	Copyright (C)  2016, 2017
+	Copyright (C)  2013, 2014, 2015, 2016, 2017
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Programming
 

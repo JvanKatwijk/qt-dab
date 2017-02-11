@@ -71,6 +71,19 @@
     <enum>Qt::Horizontal</enum>
    </property>
   </widget>
+  <widget class="QLCDNumber" name="quality_display">
+   <property name="geometry">
+    <rect>
+     <x>753</x>
+     <y>190</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="segmentStyle">
+    <enum>QLCDNumber::Flat</enum>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
