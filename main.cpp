@@ -1,13 +1,13 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2015, 2016
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the Qt-DAB (formerly sdr-j-dab and DAB-rpi)
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
  *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    All copyrights of the original authors are acknowledged.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *	Main program
