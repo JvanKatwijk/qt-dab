@@ -1270,7 +1270,7 @@ QString	file;
 	   inputDevice	= new airspyHandler (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
+	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Airspy not found\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
@@ -1287,7 +1287,7 @@ QString	file;
 	   inputDevice = new extioHandler (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("sdr"), tr ("extio: no luck\n") );
+	      QMessageBox::warning( this, tr ("Warning"), tr ("extio: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
@@ -1302,7 +1302,7 @@ QString	file;
 	   inputDevice = new rtl_tcp_client (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("sdr"), tr ("rtl_tcp: no luck\n") );
+	      QMessageBox::warning( this, tr ("Warning"), tr ("rtl_tcp: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
@@ -1331,7 +1331,7 @@ QString	file;
 	   inputDevice	= new dabStick (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
+	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("DAB-Stick not found\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
