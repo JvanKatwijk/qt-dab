@@ -1,26 +1,26 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the  SDR-J (JSDR).
- *    Many of the ideas as implemented in SDR-J are derived from
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License. 
  *    All copyrights of the original authors are acknowledged.
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	<QSettings>
@@ -395,35 +395,35 @@ int16_t	c	= s -> count ();
 
 static 
 const char *table12 [] = {
-"none",
-"news",
-"current affairs",
-"information",
-"sport",
-"education",
-"drama",
-"arts",
-"science",
-"talk",
-"pop music",
-"rock music",
-"easy listening",
-"light classical",
-"classical music",
-"other music",
-"wheather",
-"finance",
-"children\'s",
-"factual",
-"religion",
-"phone in",
-"travel",
-"leisure",
-"jazz and blues",
-"country music",
-"national music",
-"oldies music",
-"folk music",
+"None",
+"News",
+"Current affairs",
+"Information",
+"Sport",
+"Education",
+"Drama",
+"Arts",
+"Science",
+"Talk",
+"Pop music",
+"Rock music",
+"Easy listening",
+"Light classical",
+"Classical music",
+"Other music",
+"Wheather",
+"Finance",
+"Children\'s",
+"Factual",
+"Religion",
+"Phone in",
+"Travel",
+"Leisure",
+"Jazz and Blues",
+"Country music",
+"National music",
+"Oldies music",
+"Folk music",
 "entry 29 not used",
 "entry 30 not used",
 "entry 31 not used"
@@ -431,7 +431,7 @@ const char *table12 [] = {
 
 const char *RadioInterface::get_programm_type_string (int16_t type) {
 	if (type > 0x40) {
-	   fprintf (stderr, "GUI: programmtype wrong (%d)\n", type);
+	   fprintf (stderr, "GUI: program type wrong (%d)\n", type);
 	   return (table12 [0]);
 	}
 	if (type < 0)
@@ -604,7 +604,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-	QString v = "QT-DAB(+)  " ;
+	QString v = "Qt-DAB " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer
@@ -614,7 +614,7 @@ void	RadioInterface::init_your_gui (void) {
 	crcErrors_2	-> hide ();
 	if (show_crcErrors) {
 	   QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("open file .."),
+	                                        tr ("Save file ..."),
 	                                        QDir::homePath (),
 	                                        tr ("Text (*.txt)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -993,7 +993,7 @@ bool	r = 0;
 	r = inputDevice		-> restartReader ();
 	qDebug ("Starting %d\n", r);
 	if (!r) {
-	   QMessageBox::warning (this, tr ("sdr"),
+	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Opening  input stream failed\n"));
 	   return;
 	}
@@ -1270,8 +1270,8 @@ QString	file;
 	   inputDevice	= new airspyHandler (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
-	                               tr ("airspy: no luck\n"));
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("Airspy not found\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1287,7 +1287,7 @@ QString	file;
 	   inputDevice = new extioHandler (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("sdr"), tr ("extio: no luck\n") );
+	      QMessageBox::warning( this, tr ("Warning"), tr ("extio: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
@@ -1302,7 +1302,7 @@ QString	file;
 	   inputDevice = new rtl_tcp_client (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("sdr"), tr ("rtl_tcp: no luck\n") );
+	      QMessageBox::warning( this, tr ("Warning"), tr ("rtl_tcp: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
@@ -1316,7 +1316,7 @@ QString	file;
 	   inputDevice	= new sdrplay (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
+	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("SDRplay: no library\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
@@ -1331,8 +1331,8 @@ QString	file;
 	   inputDevice	= new dabStick (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
-	                               tr ("Dabstick: no luck\n"));
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("DAB Stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1345,7 +1345,7 @@ QString	file;
 //	We always have fileinput!!
 	if (s == "file input (.raw)") {
 	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
+	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.raw)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -1359,7 +1359,7 @@ QString	file;
 	else
 	if (s == "file input (.sdr)") {
 	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
+	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.sdr)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -1438,7 +1438,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	        }
 	        techData. uepField -> setText (protL);
 	        techData. protectionlevelDisplay -> display (h);
-	        techData. ASCTy -> setText (d. ASCTy == 077 ? "HeAAC" : "MP2");
+	        techData. ASCTy -> setText (d. ASCTy == 077 ? "DAB+" : "DAB");
 	        if (d. ASCTy == 077) {
 	           techData. rsError_display -> show ();
 	           techData. aacError_display -> show ();
@@ -1545,12 +1545,12 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	}
 
 	QString file = QFileDialog::getSaveFileName (this,
-	                                     tr ("open file ..."),
+	                                     tr ("Save file ..."),
 	                                     QDir::homePath (),
 	                                     tr ("raw data (*.sdr)"));
 	file	= QDir::toNativeSeparators (file);
-	if (!file. endsWith (".sdr", Qt::CaseInsensitive))
-	   file. append (".sdr");
+	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
+	   file.append (".sdr");
 	sf_info	-> samplerate	= INPUT_RATE;
 	sf_info	-> channels	= 2;
 	sf_info	-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -1578,12 +1578,12 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	}
 
 	QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("open file .."),
+	                                        tr ("Save file ..."),
 	                                        QDir::homePath (),
-	                                        tr ("Sound (*.wav)"));
+	                                        tr ("PCM wave file (*.wav)"));
 	file		= QDir::toNativeSeparators (file);
-	if (!file. endsWith (".wav", Qt::CaseInsensitive))
-	   file. append (".wav");
+	if (!file.endsWith (".wav", Qt::CaseInsensitive))
+	   file.append (".wav");
 	sf_info		-> samplerate	= 48000;
 	sf_info		-> channels	= 2;
 	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
