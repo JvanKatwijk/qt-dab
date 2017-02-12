@@ -52,7 +52,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation digram, obtained from the first data block in a dab frame. Ideally there are 4 points, one in each corner. The quality of the signal is inverse to the clouds that are visible,&lt;/p&gt;&lt;p&gt;i.e. lots of clouds =&amp;gt; poor signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation digram, obtained from the first data block in a dab frame. What is shown isare the constellations of the carriers in the decoded &amp;quot;ofdm symbol&amp;quot;. In DAB the bits are encoded as (1, 1), (1, -1), (-1, -1) and (1,1), so ideally there are 4 points, one in each corner. The quality of the signal is inverse to the clouds that are visible. The number indicated below this &amp;quot;cloud picture&amp;quot; shows the standard deviation of the dots on the cloud(s).&lt;/p&gt;&lt;p&gt;i.e. lots of clouds =&amp;gt; poor signal.&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
   </widget>
   <widget class="QSlider" name="scopeSlider">
@@ -79,6 +79,15 @@
      <width>81</width>
      <height>23</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality indicator (experimental). The number shows the standard deviation of the phase of the decoded signal.&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="digitCount">
+    <number>7</number>
    </property>
    <property name="segmentStyle">
     <enum>QLCDNumber::Flat</enum>

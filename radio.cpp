@@ -609,7 +609,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-	QString v = "QT-DAB(+)  " ;
+	QString v = "Qt-DAB(+)  " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer

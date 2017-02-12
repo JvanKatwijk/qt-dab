@@ -59,6 +59,7 @@ int32_t i, j;
 	this	-> bitRate	= bitRate;
 	this	-> shortForm	= shortForm;
 	this	-> protLevel	= protLevel;
+	fprintf (stderr, "data: protlevel = %d\n", protLevel);
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
 	this	-> show_crcErrors	= show_crcErrors;

@@ -211,36 +211,35 @@ void	ofdmDecoder::processBlock_0 (void) {
   *	\brief decodeFICblock
   *	do the transforms and hand over the result to the fichandler
   */
-static inline
-float	q_offset (DSPCOMPLEX v) {
-	if ((real (v) >= 0) && (imag (v) >= 0))
-	   return (arg (v * conj (DSPCOMPLEX (1, 1))));
-	if ((real (v) >= 0) && (imag (v) < 0))
-	   return (arg (v * conj (DSPCOMPLEX (1, -1))));
-	if ((real (v) < 0) && (imag (v) < 0))
-	   return (arg (v * conj (DSPCOMPLEX (-1, -1))));
-	if ((real (v) < 0) && (imag (v) >= 0))
-	   return (arg (v * conj (DSPCOMPLEX (-1, 1))));
-}
-
+//
+//	Just interested. In the ideal case the constellation of the
+//	decoded symbols is precisely in the four points 
+//	k * (1. 0), k * (1, -1), k * (-1, -1), k * (-1, 1)
+//	We show the offset in degrees
 float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
-float	temp [T_u];
 int16_t i;
-float	sum	= 0;
-float	var	= 0;
-	memset (temp, 0, T_u * sizeof (float));
+DSPCOMPLEX	avgPoint	= DSPCOMPLEX (0, 0);
+float	var			= 0;
+float	diff	= 0;
+	for (i = 0; i < carriers / 2; i ++) 
+	   avgPoint += DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	
+
+	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  
+	   avgPoint += DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+//
+//	the range of arg is -M_PI .. M_PI
 	for (i = 0; i < carriers / 2; i ++) {
-	   temp [i] = q_offset (v [i]) / (2 * M_PI) * 360;
-	   sum += temp [i];
+	   DSPCOMPLEX t	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   diff	+= arg (t * conj (avgPoint)) * arg (t * conj (avgPoint));
 	}
-	for (i = T_u - 1; i >= T_u - carriers / 2; i --) {
-	   temp [i] = q_offset (v [i]) / (2 * M_PI) * 360; 
-	   sum += temp [i];
+
+	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  {
+	   DSPCOMPLEX t	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   diff	+= arg (t * conj (avgPoint)) * arg (t * conj (avgPoint));
 	}
-	sum /= carriers;
-	for (i = 0; i < T_u; i ++)
-	   var += (temp [i] - sum) * (temp [i] - sum);
-	return (var / carriers);
+	
+	return sqrt (diff / carriers);
 }
 
 static
@@ -293,7 +292,8 @@ handlerLabel:
 #ifdef	HAVE_SPECTRUM
 //	From time to time we show the constellation of symbol 2.
 //	Note that we do it in two steps since the
-//	fftbuffer contains low and high at the ends
+//	fftbuffer contained low and high at the ends
+//	and we maintain that format
 	if (blkno == 2) {
 	   if (++cnt > 7) {
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [0],

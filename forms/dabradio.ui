@@ -451,6 +451,9 @@
       <height>36</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current BAND. Scanning will continue until DAB data is detected in the channel currently  selected.&amp;gt;&lt;/p&gt;&lt;p&gt;&amp;gt;&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>scan</string>
     </property>

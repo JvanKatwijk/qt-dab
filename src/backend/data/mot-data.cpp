@@ -325,7 +325,10 @@ int16_t i;
 
 	if (p -> name == QString (""))
 	   return;
-      fprintf (stderr, "going to write file %s\n", (p ->  name). toLatin1 (). data ());
+
+	fprintf (stderr,
+	         "going to write file %s\n",
+	                    (p ->  name). toLatin1 (). data ());
         checkDir (p -> name);
 //
         FILE *x = fopen (((p -> name). toLatin1 (). data ()), "w+b");
@@ -341,6 +344,7 @@ int16_t i;
 void	motHandler::handle_epgTopElement (motElement *p) {
 QByteArray body	= p -> body;
 std::vector<uint8_t> epgData (body. begin(), body. end());
+	fprintf (stderr, "handling an epg=tje\n");
 #ifdef	TRY_EPG
 	epgHandler. decode (epgData);
 #endif
