@@ -1,19 +1,47 @@
 ==================================================================
 Qt-DAB
 ==================================================================
+Qt-DAB is a Software for Windows, Linux and Raspberry Pi for Digital Audio Broadcasting (DAB and DAB+).
 
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 
 * [Introduction](#introduction)
-* [Configuring using the qt-dab.pro file](#configuring-using-the-qt-dabpro-file)
-* [Configuring using CMake](#configuring-using-cmake)
-* [Scanning](#scanning)
-* [Raspberry PI](#raspberry-pi)
-* [Qt](#qt)
-* [Ubuntu Linux](#ubuntu-linux)
-* [Windows](#windows)
+* [Features](#features)
+* Installation
+ * [Windows](#windows)
+ * [Ubuntu Linux](#ubuntu-linux)
+  - [Configuring using the qt-dab.pro file](#configuring-using-the-qt-dabpro-file)
+  - [Configuring using CMake](#configuring-using-cmake)
+  - [Qt](#qt)
+ * [Raspberry PI](#raspberry-pi)
+
+
+
+------------------------------------------------------------------
+Features
+------------------------------------------------------------------
+
+* DAB (mp2) and DAB+ (HE-AAC v1, v2 and LC-AAC) decoding
+* Slideshow
+* Dynamic Label (DLS) 
+* Both European bands supported: 
+ * VHF Band III
+ * L-Band 
+* Spectrum view (incl. constellation diagram)
+* Scanning function (scan the subsequent channels in the selected band until a channel is encountered where a DAB signal is detected)
+* Detailled information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, protection level, CPU usage, language, 4 quality bars)
+* Dumping of the complete DAB channel (produces large raw files!) and playing them again later
+* Saving audio as wave file
+* Supports various inputs from Airspy, SDR DAB sticks, SDRplay and prerecorded dump (*.raw and *.sdr) 
+ 
+Not implemented:
+
+* DMB (Audio and Video)
+* Other bands than used for terrestrical broadcasting 
+* HackRF
+
 
 ------------------------------------------------------------------
 Introduction
@@ -50,11 +78,82 @@ Again, as the Qt-DAB version has to run on a headless RPI 2,
 an option is included to configure the sound output to deliver its
 samples through a TCP connection.
 
-The constellation diagram now shows - if configured - the phase difference
-of the carriers in the ofdm symbol with the corresponding carriers of the
-previous symbols. The constellation of high quality signals shows 4 dots,
-one in each corner of the black square.
-=============================================================================
+=======
+------------------------------------------------------------------
+Windows
+------------------------------------------------------------------
+
+There is an executable to be found under https://github.com/JvanKatwijk/qt-dab/releases
+
+If you want to compile it yourself, please install Qt through their online installer, see https://www.qt.io/ 
+
+------------------------------------------------------------------
+Ubuntu Linux
+------------------------------------------------------------------
+
+For generating an executable under Ubuntu, you can put the following
+commands into a script. 
+
+1. Fetch the required components
+   
+		sudo apt-get update
+		sudo apt-get install qt4-qmake build-essential g++
+		sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev 
+		sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev 
+		sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+		cd
+
+2. Fetch the required libraries 
+
+	a) Assuming you want to use a dabstick as device, fetch a version of the library for the dabstick
+ 
+		wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
+		tar xvfj rtl-sdr-linrad4.tbz 
+		cd rtl-sdr-linrad4
+   		sudo autoconf
+		sudo autoreconf -i
+		./configure --enable-driver-detach
+		make
+		sudo make install
+		sudo ldconfig
+		cd
+   
+	b) Assuming you want to use an Airspy as device, fetch a version of the 
+	  library for the Airspy
+   
+		sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
+		wget https://github.com/airspy/host/archive/master.zip
+		unzip master.zip
+		cd host-master
+		mkdir build
+		cd build
+		cmake ../ -DINSTALL_UDEV_RULES=ON
+		make
+		sudo make install
+		sudo ldconfig
+   
+	 Clean CMake temporary files/dirs:
+
+		cd host-master/build
+		rm -rf *
+   
+
+3. Get a copy of the Qt-DAB sources
+
+		git clone https://github.com/JvanKatwijk/qt-dab.git
+		cd qt-dab
+
+4. Edit the qt-dab.pro file for configuring the supported devices and other 
+   options. Comment the respective lines out if you don't own an Airspy or an SDRplay.
+
+5. Build and make
+
+		qmake qt-dab.pro
+		make
+		
+  You could also use QtCreator, load the qt-dab.pro file and build the executable.
+
+
 ------------------------------------------------------------------
 Configuring using the qt-dab.pro file
 ------------------------------------------------------------------
@@ -125,15 +224,6 @@ For other options, see the CMakeLists.txt file.
 
 Note that CMake expects Qt5 to be installed.
 
-
-------------------------------------------------------------------
-Scanning
-------------------------------------------------------------------
-
-The Qt-DAB software provides a "scanning" facility, pushing the "scan"
-button will cause the software to scan the subsequent channels in the
-selected band until a channel is encountered where a DAB signal is detected.
-
 ------------------------------------------------------------------
 Raspberry PI
 ------------------------------------------------------------------
@@ -163,78 +253,8 @@ to have the spectrum in the configuration, be aware of the binding
 of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well)
 
 
-------------------------------------------------------------------
-Ubuntu Linux
-------------------------------------------------------------------
-
-For generating an executable under Ubuntu, you can put the following
-commands into a script. 
-
-1. Fetch the required components
-   
-		sudo apt-get update
-		sudo apt-get install qt4-qmake build-essential g++
-		sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev 
-		sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev 
-		sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
-		cd
-
-2. Fetch the required libraries 
-
-	a) Assuming you want to use a dabstick as device, fetch a version of the library for the dabstick
- 
-		wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
-		tar xvfj rtl-sdr-linrad4.tbz 
-		cd rtl-sdr-linrad4
-   		sudo autoconf
-		sudo autoreconf -i
-		./configure --enable-driver-detach
-		make
-		sudo make install
-		sudo ldconfig
-		cd
-   
-	b) Assuming you want to use an Airspy as device, fetch a version of the 
-	  library for the Airspy
-   
-		sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
-		wget https://github.com/airspy/host/archive/master.zip
-		unzip master.zip
-		cd host-master
-		mkdir build
-		cd build
-		cmake ../ -DINSTALL_UDEV_RULES=ON
-		make
-		sudo make install
-		sudo ldconfig
-   
-	 Clean CMake temporary files/dirs:
-
-		cd host-master/build
-		rm -rf *
-   
-
-3. Get a copy of the Qt-DAB sources
-
-		git clone https://github.com/JvanKatwijk/qt-dab.git
-		cd qt-dab
-
-4. Edit the qt-dab.pro file for configuring the supported devices and other 
-   options. Comment the respective lines out if you don't own an Airspy or an SDRplay.
-
-5. Build and make
-
-		qmake qt-dab.pro
-		make
-		
-  You could also use QtCreator, load the qt-dab.pro file and build the executable.
 
 
-------------------------------------------------------------------
-Windows
-------------------------------------------------------------------
-
-There is an executable to be found under https://github.com/JvanKatwijk/qt-dab/releases
 
 ============================================================================
 
