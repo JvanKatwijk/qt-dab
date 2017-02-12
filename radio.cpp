@@ -604,7 +604,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-	QString v = "QT-DAB(+)  " ;
+	QString v = "Qt-DAB " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer
@@ -614,7 +614,7 @@ void	RadioInterface::init_your_gui (void) {
 	crcErrors_2	-> hide ();
 	if (show_crcErrors) {
 	   QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file .."),
+	                                        tr ("Save file ..."),
 	                                        QDir::homePath (),
 	                                        tr ("Text (*.txt)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -993,7 +993,7 @@ bool	r = 0;
 	r = inputDevice		-> restartReader ();
 	qDebug ("Starting %d\n", r);
 	if (!r) {
-	   QMessageBox::warning (this, tr ("sdr"),
+	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Opening  input stream failed\n"));
 	   return;
 	}
@@ -1316,7 +1316,7 @@ QString	file;
 	   inputDevice	= new sdrplay (dabSettings, &success);
 	   if (!success) {
 	      delete inputDevice;
-	      QMessageBox::warning (this, tr ("sdr"),
+	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("SDRplay: no library\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
@@ -1332,7 +1332,7 @@ QString	file;
 	   if (!success) {
 	      delete inputDevice;
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("DAB-Stick not found\n"));
+	                               tr ("DAB Stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1345,7 +1345,7 @@ QString	file;
 //	We always have fileinput!!
 	if (s == "file input (.raw)") {
 	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
+	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.raw)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -1359,7 +1359,7 @@ QString	file;
 	else
 	if (s == "file input (.sdr)") {
 	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("open file ..."),
+	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.sdr)"));
 	   file		= QDir::toNativeSeparators (file);
@@ -1549,8 +1549,8 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	                                     QDir::homePath (),
 	                                     tr ("raw data (*.sdr)"));
 	file	= QDir::toNativeSeparators (file);
-	if (!file. endsWith (".sdr", Qt::CaseInsensitive))
-	   file. append (".sdr");
+	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
+	   file.append (".sdr");
 	sf_info	-> samplerate	= INPUT_RATE;
 	sf_info	-> channels	= 2;
 	sf_info	-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -1580,10 +1580,10 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	QString file = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
 	                                        QDir::homePath (),
-	                                        tr ("Sound (*.wav)"));
+	                                        tr ("PCM wave file (*.wav)"));
 	file		= QDir::toNativeSeparators (file);
-	if (!file. endsWith (".wav", Qt::CaseInsensitive))
-	   file. append (".wav");
+	if (!file.endsWith (".wav", Qt::CaseInsensitive))
+	   file.append (".wav");
 	sf_info		-> samplerate	= 48000;
 	sf_info		-> channels	= 2;
 	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
