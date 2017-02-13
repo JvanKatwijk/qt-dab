@@ -436,7 +436,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information on the selected program.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information on the selected program&amp;gt;&lt;/p&gt;&lt;p&gt;Push gain for having  the widget disappear.&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>PD</string>

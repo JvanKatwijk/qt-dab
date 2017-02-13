@@ -36,13 +36,14 @@
 
 static QDomElement element (QDomDocument &doc, const tag_length_value &tlv);
 
-void	CEPGDecoder::decode (const vector<_BYTE>& vecData) {
+void	CEPGDecoder::decode (const vector<_BYTE>& vecData, const QString &name) {
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
 	tag_length_value tlv (&vecData [0]);
 	if (tlv. is_epg ()) {
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString ();
+	   fprintf (stderr, "filename = %s\n", name. toLatin1 (). data ());
 	   fprintf (stderr, "%s\n", test. toLatin1 (). data ());
 	}
 }

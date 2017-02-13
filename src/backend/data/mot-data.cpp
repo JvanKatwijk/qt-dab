@@ -344,9 +344,8 @@ int16_t i;
 void	motHandler::handle_epgTopElement (motElement *p) {
 QByteArray body	= p -> body;
 std::vector<uint8_t> epgData (body. begin(), body. end());
-	fprintf (stderr, "handling an epg=tje\n");
 #ifdef	TRY_EPG
-	epgHandler. decode (epgData);
+	epgHandler. decode (epgData, p -> name);
 #endif
 }
 

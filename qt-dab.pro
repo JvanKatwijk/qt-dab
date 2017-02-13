@@ -222,6 +222,8 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #       If you want to see the spectrum, take "CONFIG += spectrum"
 spectrum {
         DEFINES         += HAVE_SPECTRUM
+#adapt to the correct path for your system
+	INCLUDEPATH += /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt
 	INCLUDEPATH	+= /usr/include/qt5/qwt
 	INCLUDEPATH	+= ./includes/scopes-qwt6
 	HEADERS		+= ./includes/scopes-qwt6/spectrogramdata.h \
@@ -234,6 +236,8 @@ spectrum {
         HEADERS         += ./optional-scope/spectrum-handler.h
 	HEADERS		+= ./includes/scopes-qwt6
         SOURCES         += ./optional-scope/spectrum-handler.cpp
+#correct for the correct path to the qwt6 library on your system
+#	LIBS		+= -lqwt
 	LIBS		+= -lqwt-qt5
 }
 

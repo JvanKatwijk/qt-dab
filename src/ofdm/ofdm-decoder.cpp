@@ -202,46 +202,51 @@ void	ofdmDecoder::processBlock_0 (void) {
   */
 	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 }
-/**
-  *	for the other blocks of data, the first step is to go from
-  *	time to frequency domain, to get the carriers.
-  *	we distinguish between FIC blocks and other blocks,
-  *	only to spare a test. Tthe mapping code is the same
-  *
-  *	\brief decodeFICblock
-  *	do the transforms and hand over the result to the fichandler
-  */
 //
 //	Just interested. In the ideal case the constellation of the
 //	decoded symbols is precisely in the four points 
 //	k * (1. 0), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	We show the offset in degrees
+//	To ease comptation, we map all incoming values onto quadrant 1
+#ifdef	HAVE_SPECTRUM
 float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
 int16_t i;
 DSPCOMPLEX	avgPoint	= DSPCOMPLEX (0, 0);
 float	var			= 0;
 float	diff	= 0;
-	for (i = 0; i < carriers / 2; i ++) 
-	   avgPoint += DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	
+DSPCOMPLEX x [T_u];
 
-	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  
-	   avgPoint += DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	for (i = 0; i < carriers / 2; i ++) {
+	   x [i] = DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   avgPoint += x [i];
+	}
+
+	for (i = T_u - 1; i >= T_u - carriers / 2; i --) {
+	   x [i] = DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   avgPoint += x [i];
+	}
 //
 //	the range of arg is -M_PI .. M_PI
 	for (i = 0; i < carriers / 2; i ++) {
-	   DSPCOMPLEX t	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	   diff	+= arg (t * conj (avgPoint)) * arg (t * conj (avgPoint));
+	   float t = arg (x [i] * conj (avgPoint));
+	   diff	+= t * t;
 	}
 
 	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  {
-	   DSPCOMPLEX t	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	   diff	+= arg (t * conj (avgPoint)) * arg (t * conj (avgPoint));
+	   float t = arg (x [i] * conj (avgPoint));
+	   diff	+= t * t;
 	}
 	
 	return sqrt (diff / carriers);
 }
 
+#endif
+/**
+  *	for the other blocks of data, the first step is to go from
+  *	time to frequency domain, to get the carriers.
+  *	we distinguish between FIC blocks and other blocks,
+  *	only to spare a test. The mapping code is the same
+  */
 static
 int	cnt	= 0;
 void	ofdmDecoder::decodeFICblock (int32_t blkno) {
