@@ -19,6 +19,8 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
+![Qt-DAB with SDR file loaded](/screenshot_qt-dab.png?raw=true)
+
 Qt-DAB is the result of merging the dab-rpi and the sdr-j-dab programs of the
 author. It became more and more complex to maintain different versions: 
 modifications made in one version, did not always end up in the other versions so the
