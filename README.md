@@ -34,7 +34,7 @@ Features
 * Detailled information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, protection level, CPU usage, language, 4 quality bars)
 * Dumping of the complete DAB channel (produces large raw files!) and playing them again later
 * Saving audio as wave file
-* Supports various inputs from Airspy, SDR DAB sticks, SDRplay and prerecorded dump (*.raw and *.sdr) 
+* Supports various inputs from Airspy, Airspy mini, SDR DAB sticks (RTL2838U or similar), SDRplay and prerecorded dump (*.raw and *.sdr) 
  
 Not implemented:
 
@@ -144,14 +144,20 @@ commands into a script.
 		cd qt-dab
 
 4. Edit the qt-dab.pro file for configuring the supported devices and other 
-   options. Comment the respective lines out if you don't own an Airspy or an SDRplay.
+   options. Comment the respective lines out if you don't own an Airspy (mini) or an SDRplay.
 
-5. Build and make
+5. If DAB spectrum should be displayed, check the installation path to qwt. If you were downloading it from  http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in qt-dab.pro file: 
+
+		INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
+
+6. Build and make
 
 		qmake qt-dab.pro
 		make
 		
   You could also use QtCreator, load the qt-dab.pro file and build the executable.
+  
+  Remark: The excutable file can be found in the sub-directory linux-bin. A make install command is not implemented.
 
 
 ------------------------------------------------------------------
