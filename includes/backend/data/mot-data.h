@@ -120,7 +120,7 @@ private:
 	int16_t		ordernumber;
 	MOT_directory	*theDirectory;
 #ifdef	TRY_EPG
-	        CEPGDecoder     epgHandler;
+	CEPGDecoder     epgHandler;
 #endif
 
 	motElement	*getHandle	(uint16_t transportId);

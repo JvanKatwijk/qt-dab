@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-0.998-s
+TARGET		= qt-dab-0.998
 QT		+= widgets network xml
 CONFIG		+= console
 QMAKE_CFLAGS	+=  -flto -ffast-math

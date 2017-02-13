@@ -307,7 +307,7 @@ int16_t	option, protLevel, subChanSize;
 	      protLevel = getBits (d, bitOffset + 20, 2);
 //
 //	we encode the A level protection by adding 0100 to the level
-	      ficList [SubChId]. protLevel = protLevel + 0100;
+	      ficList [SubChId]. protLevel = protLevel;
 	      subChanSize = getBits (d, bitOffset + 22, 10);
 	      ficList [SubChId]. Length	= subChanSize;
 	      if (protLevel == 0)
@@ -322,7 +322,6 @@ int16_t	option, protLevel, subChanSize;
 	   else			// option should be 001
 	   if (option == 001) {		// B Level protection
 	      protLevel = getBits_2 (d, bitOffset + 20);
-//
 	      ficList [SubChId]. protLevel = protLevel + (1 << 2);
 	      subChanSize = getBits (d, bitOffset + 22, 10);
 	      ficList [SubChId]. Length = subChanSize;

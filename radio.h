@@ -79,7 +79,7 @@ public:
 private:
 #ifdef	TECHNICAL_DATA
 	Ui_technical_data	techData;
-	QFrame		dataDisplay;
+	QFrame		*dataDisplay;
 	bool		show_data;
 private slots:
 	void		toggle_show_data	(void);
@@ -169,6 +169,7 @@ public slots:
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
 	void		showIQ			(int);
+	void		showQuality		(float);
 #endif
 private slots:
 //

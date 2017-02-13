@@ -229,3 +229,7 @@ int	scopeWidth	= scopeSlider -> value ();
 	myIQDisplay -> DisplayIQ (Values, scopeWidth / avg);
 }
 
+void	spectrumhandler:: showQuality (float q) {
+	quality_display -> display (q);
+}
+

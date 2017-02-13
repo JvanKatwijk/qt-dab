@@ -104,12 +104,17 @@ int16_t k;
 // 	the setup for the generated part of the ui
 	setupUi (this);
 #ifdef	TECHNICAL_DATA
-	techData. setupUi (&dataDisplay);
+	dataDisplay	= new QFrame (NULL);
+	techData. setupUi (dataDisplay);
 	show_data		= false;
 	connect (showProgramData, SIGNAL (clicked (void)),
 	         this, SLOT (toggle_show_data (void)));
 #else
 	showProgramData	-> hide ();	// do not show the button
+#endif
+#ifdef	__MINGW32__
+	techData. cpuLabel	-> hide ();
+	techData. cpuMonitor	-> hide ();
 #endif
 	dabSettings		= Si;
 //
@@ -604,7 +609,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-	QString v = "Qt-DAB " ;
+	QString v = "Qt-DAB(+)  " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer
@@ -1033,7 +1038,8 @@ void	RadioInterface::TerminateProcess (void) {
 	my_ofdmProcessor	-> stop ();	// definitely concurrent
 	soundOut		-> stop ();
 #ifdef	TECHNICAL_DATA
-	dataDisplay. hide ();
+	dataDisplay	->  hide ();
+	delete dataDisplay;
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
@@ -1400,7 +1406,7 @@ void	RadioInterface::selectService (QModelIndex s) {
 QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	setStereo (false);
 #ifdef	TECHNICAL_DATA
-	dataDisplay. hide ();
+	dataDisplay	-> hide ();
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
 #endif
@@ -1446,7 +1452,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	        techData. language -> setText (get_programm_language_string (d. language));
 	        techData. programType -> setText (get_programm_type_string (d. programType));
 	         if (show_data)
-	            dataDisplay. show ();
+	            dataDisplay -> show ();
 #endif
 	        my_mscHandler	-> set_audioChannel (&d);
 	        showLabel (QString (" "));
@@ -1527,6 +1533,11 @@ void	RadioInterface::showIQ	(int amount) {
 void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (spectrumHandler != NULL)
 	   spectrumHandler	-> showSpectrum (amount, tunedFrequency);
+}
+
+void	RadioInterface::showQuality	(float q) {
+	if (spectrumHandler != NULL)
+	   spectrumHandler	-> showQuality (q);
 }
 #endif
 
@@ -1612,9 +1623,9 @@ void	RadioInterface:: set_streamSelector (int k) {
 void	RadioInterface::toggle_show_data (void) {
 	show_data	= !show_data;
 	if (show_data)
-	   dataDisplay. show ();
+	   dataDisplay -> show ();
 	else
-	   dataDisplay. hide ();
+	   dataDisplay -> hide ();
 }
 #endif
 	   

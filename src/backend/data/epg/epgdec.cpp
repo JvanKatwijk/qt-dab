@@ -43,7 +43,7 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData) {
 	if (tlv. is_epg ()) {
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString ();
-//	   fprintf (stderr, "%s\n", test. toLatin1 (). data ());
+	   fprintf (stderr, "%s\n", test. toLatin1 (). data ());
 	}
 }
 

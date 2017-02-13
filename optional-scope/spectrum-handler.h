@@ -61,6 +61,7 @@ public:
 			~spectrumhandler	(void);
 	void		showSpectrum		(int32_t, int32_t);
 	void		showIQ			(int32_t);
+	void		showQuality		(float);
 	void		setBitDepth		(int16_t);
 	void		show			(void);
 	void		hide			(void);
