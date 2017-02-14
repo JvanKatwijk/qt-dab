@@ -58,7 +58,9 @@ private:
 	DabParams	*params;
 #ifdef	HAVE_SPECTRUM
 	RingBuffer<DSPCOMPLEX> *iqBuffer;
+#ifdef	__QUALITY
 	float		computeQuality	(DSPCOMPLEX *);
+#endif
 #endif
 	ficHandler	*my_ficHandler;
 	mscHandler	*my_mscHandler;

@@ -94,6 +94,9 @@ int16_t	i;
 	setBitDepth	(12);
 
 	myIQDisplay	= new IQDisplay (iqDisplay, 256);
+#ifndef	__QUALITY
+	quality_display	-> hide ();
+#endif
 }
 
 	spectrumhandler::~spectrumhandler	(void) {

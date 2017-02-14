@@ -116,6 +116,7 @@ int16_t k;
 	techData. cpuLabel	-> hide ();
 	techData. cpuMonitor	-> hide ();
 #endif
+
 	dabSettings		= Si;
 //
 //	Before printing anything, we set
@@ -634,8 +635,8 @@ void	RadioInterface::init_your_gui (void) {
 	   }
 	}
 }
-//////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 //	
 //	The public slots are called from other places within the dab software
 //	so please provide some implementation, perhaps an empty one
@@ -1127,7 +1128,6 @@ void	RadioInterface::updateTimeDisplay (void) {
 	timeDisplay	-> setText (text);
 #ifndef	__MINGW32__
 #ifdef	TECHNICAL_DATA
-	
 	if ((numberofSeconds % 2) == 0) {
 	   size_t idle_time, total_time;
 	   get_cpu_times (idle_time, total_time);
@@ -1535,10 +1535,12 @@ void	RadioInterface::showSpectrum	(int32_t amount) {
 	   spectrumHandler	-> showSpectrum (amount, tunedFrequency);
 }
 
+#ifdef	__QUALITY
 void	RadioInterface::showQuality	(float q) {
 	if (spectrumHandler != NULL)
 	   spectrumHandler	-> showQuality (q);
 }
+#endif
 #endif
 
 

@@ -169,7 +169,9 @@ public slots:
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
 	void		showIQ			(int);
+#ifdef	__QUALITY
 	void		showQuality		(float);
+#endif
 #endif
 private slots:
 //

@@ -53,8 +53,10 @@ int16_t	i;
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
+#ifdef	__QUALITY
 	connect (this, SIGNAL (showQuality (float)),
 	         myRadioInterface, SLOT (showQuality (float)));
+#endif
 #endif
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
@@ -209,6 +211,7 @@ void	ofdmDecoder::processBlock_0 (void) {
 //	We show the offset in degrees
 //	To ease comptation, we map all incoming values onto quadrant 1
 #ifdef	HAVE_SPECTRUM
+#ifdef	__QUALITY
 float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
 int16_t i;
 DSPCOMPLEX	avgPoint	= DSPCOMPLEX (0, 0);
@@ -240,6 +243,7 @@ DSPCOMPLEX x [T_u];
 	return sqrt (diff / carriers);
 }
 
+#endif
 #endif
 /**
   *	for the other blocks of data, the first step is to go from
@@ -306,7 +310,9 @@ handlerLabel:
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u - 1 - carriers / 2],
 	                                      carriers / 2);
 	      showIQ	(carriers);
+#ifdef	__QUALITY
 	      showQuality (computeQuality (conjVector));
+#endif
 	      cnt = 0;
 	   }
 	}
