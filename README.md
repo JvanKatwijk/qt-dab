@@ -17,24 +17,27 @@ Table of Contents
   - [Qt](#qt)
  * [Raspberry PI](#raspberry-pi)
 
-![Qt-DAB with SDR file loaded](/screenshot_qt-dab.png?raw=true)
-
 ------------------------------------------------------------------
 Features
 ------------------------------------------------------------------
 
-* DAB (mp2) and DAB+ (HE-AAC v1, v2 and LC-AAC) decoding
-* Slideshow
+* DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
+* MOT SlideShow (SLS)
 * Dynamic Label (DLS) 
 * Both European bands supported: 
  * VHF Band III
  * L-Band 
 * Spectrum view (incl. constellation diagram)
-* Scanning function (scan the subsequent channels in the selected band until a channel is encountered where a DAB signal is detected)
-* Detailled information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, protection level, CPU usage, language, 4 quality bars)
-* Dumping of the complete DAB channel (produces large raw files!) and playing them again later
-* Saving audio as wave file
-* Supports various inputs from Airspy, Airspy mini, SDR DAB sticks (RTL2838U or similar), SDRplay and prerecorded dump (*.raw and *.sdr) 
+* Scanning function (scan the subsequent channels in the selected band 
+  until a channel is encountered where a DAB signal is detected)
+* Detailled information for selected service (SNR, bitrate, frequency, 
+  ensemble name, ensemble ID, subchannel ID, protection level, CPU usage, 
+  language, 4 quality bars)
+* Dumping of the complete DAB channel (produces large raw files!) and 
+  playing them again later
+* Saving audio as uncompressed wave file
+* Supports various inputs from Airspy, Airspy mini, SDR DAB sticks 
+  (RTL2838U or similar), SDRplay and prerecorded dump (*.raw and *.sdr) 
  
 Not implemented:
 
@@ -80,14 +83,24 @@ Again, as the Qt-DAB version has to run on a headless RPI 2,
 an option is included to configure the sound output to deliver its
 samples through a TCP connection.
 
-=======
+For further information please visit http://www.sdr-j.tk
+
+A manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf 
+(is valid for qt-dab as well)
+
+
 ------------------------------------------------------------------
 Windows
 ------------------------------------------------------------------
 
-There is an executable to be found under https://github.com/JvanKatwijk/qt-dab/releases
+There are two executable (exe files) to be found under 
+https://github.com/JvanKatwijk/qt-dab/releases . 
+One is with a spectrum viewer and constellation diagram, the other
+without. Please copy them into the same directory you've unzipped 
+http://www.sdr-j.tk/windows-bin.zip as it uses the same libraries.
 
-If you want to compile it yourself, please install Qt through their online installer, see https://www.qt.io/ 
+If you want to compile it yourself, please install Qt through their 
+online installer, see https://www.qt.io/ 
 
 ------------------------------------------------------------------
 Ubuntu Linux
@@ -107,7 +120,8 @@ commands into a script.
 
 2. Fetch the required libraries 
 
-	a) Assuming you want to use a dabstick as device, fetch a version of the library for the dabstick
+	a) Assuming you want to use a dabstick as device, fetch a version 
+	  of the library for the dabstick
  
 		wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
 		tar xvfj rtl-sdr-linrad4.tbz 
@@ -134,7 +148,7 @@ commands into a script.
 		sudo make install
 		sudo ldconfig
    
-	 Clean CMake temporary files/dirs:
+	  Clean CMake temporary files/dirs:
 
 		cd host-master/build
 		rm -rf *
@@ -148,7 +162,10 @@ commands into a script.
 4. Edit the qt-dab.pro file for configuring the supported devices and other 
    options. Comment the respective lines out if you don't own an Airspy (mini) or an SDRplay.
 
-5. If DAB spectrum should be displayed, check the installation path to qwt. If you were downloading it from  http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in qt-dab.pro file: 
+5. If DAB spectrum and the constellation diagram should be displayed, check the installation 
+   path to qwt. If you were downloading it from  http://qwt.sourceforge.net/qwtinstall.html 
+   please mention the correct path in qt-dab.pro file (for other installation change it 
+   accordingly): 
 
 		INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
 
@@ -159,7 +176,8 @@ commands into a script.
 		
   You could also use QtCreator, load the qt-dab.pro file and build the executable.
   
-  Remark: The excutable file can be found in the sub-directory linux-bin. A make install command is not implemented.
+  Remark: The excutable file can be found in the sub-directory linux-bin. 
+  A make install command is not implemented.
 
 
 ------------------------------------------------------------------
