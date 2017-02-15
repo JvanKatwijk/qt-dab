@@ -2,7 +2,6 @@ cmake_minimum_required( VERSION 2.8.11 )
 set (objectName qt-dab-0.998)
 add_definitions ( -Wall)
 #	modify if you want
-set (CMAKE_INSTALL_PREFIX ../)
 
 if(MINGW)
     add_definitions ( -municode)
@@ -24,6 +23,7 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 #       R E A D T H I S
 #####################################################################
 #	if you want support for any of these devices, uncomment the line
+
 if(DEFINED AIRSPY)
    set(AIRSPY true)
 endif ()
@@ -47,8 +47,6 @@ if (DEFINED SPECTRUM)
 endif ()
 
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
-
-add_definitions (-DMOT_BASICS__) 	# use at your own risk
 add_definitions (-DMSC_DATA__)		# use at your own risk
 #
 #	If you want a tcp stream of the audio rather than
@@ -64,7 +62,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	find_package (Qt5Network REQUIRED)
 	find_package (Qt5Declarative REQUIRED)
 	include_directories (
-	      ${Qt5Network_INCLUDE_DIRS}
+	  ${Qt5Network_INCLUDE_DIRS}
 	)
 
         find_package(FFTW3f)
@@ -512,7 +510,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	                       ${CMAKE_DL_LIBS}
 	)
 
-	INSTALL (TARGETS ${objectName} DESTINATION ./linux-bin)
+	INSTALL (TARGETS ${objectName} DESTINATION  ${CMAKE_INSTALL_PREFIX})
+#	INSTALL (TARGETS ${objectName} DESTINATION ./linux-bin)
 
 ########################################################################
 # Create uninstall target

@@ -246,6 +246,11 @@ the spectrum in the configuration.
 Devices that can be selected this way are, next to the dabstick and
 rtl_tcp, the sdrplay and the airspy.
 
+The default location for installation depends on your system, mostly
+/usr/local/bin or something like that. Set your own location by adding
+
+	-DCMAKE_INSTALL_PREFIX=your installation prefix
+
 For other options, see the CMakeLists.txt file.
 
 Note that CMake expects Qt5 to be installed.

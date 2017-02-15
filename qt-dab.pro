@@ -211,7 +211,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-exp
 #CONFIG		+= tcp-streamer		# use for remote listening
-CONFIG		+= spectrum
+#CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
 }
@@ -224,7 +224,6 @@ spectrum {
         DEFINES         += HAVE_SPECTRUM
 #adapt to the correct path for your system
 	INCLUDEPATH += /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt
-	INCLUDEPATH	+= /usr/include/qt5/qwt
 	INCLUDEPATH	+= ./includes/scopes-qwt6
 	HEADERS		+= ./includes/scopes-qwt6/spectrogramdata.h \
 	                   ./includes/scopes-qwt6/iqdisplay.h 
