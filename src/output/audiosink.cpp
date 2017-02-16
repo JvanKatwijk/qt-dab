@@ -106,7 +106,7 @@ int16_t	outputDevice;
 	outputParameters. sampleFormat		= paFloat32;
 	outputParameters. suggestedLatency	= 
 	                          Pa_GetDeviceInfo (outputDevice) ->
-	                                      defaultLowOutputLatency;
+	                                      defaultHighOutputLatency;
 //	bufSize	= (int)((float)outputParameters. suggestedLatency * latency);
 	bufSize	= latency * 20 * 256;
 
@@ -180,6 +180,8 @@ PaStreamParameters *outputParameters =
 /*
  * 	... and the callback
  */
+static	int	theMissed	= 0;
+
 int	audioSink::paCallback_o (
 		const void*			inputBuffer,
                 void*				outputBuffer,
@@ -196,13 +198,20 @@ uint32_t	i;
 	(void)inputBuffer;
 	(void)timeInfo;
 	if (ud -> paCallbackReturn == paContinue) {
-	   outB = (reinterpret_cast <audioSink *> (userData)) -> _O_Buffer;
+	   outB = (reinterpret_cast < audioSink *> (userData)) -> _O_Buffer;
 	   actualSize = outB -> getDataFromBuffer (outp, 2 * framesPerBuffer);
+	   theMissed += 2 * framesPerBuffer - actualSize;
 	   for (i = actualSize; i < 2 * framesPerBuffer; i ++)
 	      outp [i] = 0;
 	}
 
 	return ud -> paCallbackReturn;
+}
+
+int32_t	audioSink::missed	(void) {
+int32_t	h	= theMissed;
+	theMissed = 0;
+	return h / 2;
 }
 
 void	audioSink::audioOutput	(float *b, int32_t amount) {

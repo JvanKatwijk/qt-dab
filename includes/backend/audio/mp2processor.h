@@ -35,6 +35,7 @@
 #include	<QObject>
 #include	<stdio.h>
 #include	"ringbuffer.h"
+#include	"pad-handler.h"
 
 #define KJMP2_MAX_FRAME_SIZE    1440  // the maximum size of a frame
 #define KJMP2_SAMPLES_PER_FRAME 1152  // the number of samples per frame
@@ -59,6 +60,7 @@ public:
 	void		setFile		(FILE *);
 
 private:
+	padHandler	my_padHandler;
 	int32_t		mp2sampleRate	(uint8_t *);
 	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
 	RadioInterface	*myRadioInterface;

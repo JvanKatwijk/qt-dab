@@ -73,6 +73,7 @@ Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
 	                                 uint8_t	freqsyncMethod,
+	                                 bool		tracing,
 	                                 QWidget *parent = NULL);
 		~RadioInterface		();
 
@@ -86,9 +87,10 @@ private slots:
 private:
 #endif
 	QSettings	*dabSettings;
+	uint8_t		freqsyncMethod;
+	bool		tracing;
 	bool		autoStart;
 	int16_t		threshold;
-	uint8_t		freqsyncMethod;
 	void		setupChannels		(QComboBox *s, uint8_t band);
 	void		setModeParameters	(uint8_t);
 	void		clear_showElements	(void);

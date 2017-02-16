@@ -95,29 +95,31 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
   */
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                uint8_t		freqsyncMethod,
+	                                bool		tracing,
 	                                QWidget		*parent):
 	                                        QMainWindow (parent),
 	                                        my_ficHandler (this) {
 int16_t	latency;
 int16_t k;
 
+	dabSettings		= Si;
+	this	-> tracing	= tracing;
 // 	the setup for the generated part of the ui
 	setupUi (this);
 #ifdef	TECHNICAL_DATA
 	dataDisplay	= new QFrame (NULL);
 	techData. setupUi (dataDisplay);
 	show_data		= false;
+#ifdef	__MINGW32__
+	techData. cpuLabel	-> hide ();
+	techData. cpuMonitor	-> hide ();
+#endif
 	connect (showProgramData, SIGNAL (clicked (void)),
 	         this, SLOT (toggle_show_data (void)));
 #else
 	showProgramData	-> hide ();	// do not show the button
 #endif
-#ifdef	__MINGW32__
-	techData. cpuLabel	-> hide ();
-	techData. cpuMonitor	-> hide ();
-#endif
 
-	dabSettings		= Si;
 //
 //	Before printing anything, we set
 	setlocale (LC_ALL, "");
@@ -1137,6 +1139,9 @@ void	RadioInterface::updateTimeDisplay (void) {
 	   techData. cpuMonitor -> display (utilization);
            previous_idle_time = idle_time;
            previous_total_time = total_time;
+	   if (tracing)
+	      fprintf (stderr, "missed samples for audio %d\n",
+	                          ((audioSink *)soundOut) -> missed ());
 	}
 #endif
 #endif

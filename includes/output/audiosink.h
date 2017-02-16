@@ -46,6 +46,7 @@ public:
 	void		restart			(void);
 	bool		selectDevice		(int16_t);
 	bool		selectDefaultDevice	(void);
+	int32_t		missed			(void);
 private:
 	int16_t		numberofDevices		(void);
 	QString		outputChannelwithRate	(int16_t, int32_t);

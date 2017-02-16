@@ -220,7 +220,8 @@ struct quantizer_spec quantizer_table [17] = {
 
 	mp2Processor::mp2Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<int16_t> *buffer) {
+	                            RingBuffer<int16_t> *buffer)
+	                                            :my_padHandler (mr) {
 int16_t	i, j;
 int16_t *nPtr = &N [0][0];
 
@@ -322,13 +323,13 @@ register int val;
 	adj = q -> nlevels;
 	if (q -> grouping) { // decode grouped samples
 	   val = get_bits (q -> cw_bits);
-	   sample[0] = val % adj;
+	   sample [0] = val % adj;
 	   val /= adj;
-	   sample[1] = val % adj;
-	   sample[2] = val / adj;
+	   sample [1] = val % adj;
+	   sample [2] = val / adj;
 	} else { // decode direct samples
 	   for (idx = 0;  idx < 3;  ++idx)
-	      sample[idx] = get_bits(q->cw_bits);
+	      sample[idx] = get_bits (q->cw_bits);
 	}
 
 	// postmultiply samples
@@ -400,17 +401,21 @@ int32_t table_idx;
 	if (bit_rate_index_minus1 > 13)
 	   return 0;  // invalid bit rate or 'free format'
 
+	if (((frame [0] >> 5) & 07) == 4)
+	   fprintf (stderr, "we might have a label\n");
+//	   my_padhandler. processPAD (theAudioUnit);
+
 	sampling_frequency = get_bits(2);
 	if (sampling_frequency == 3)
 	   return 0;
 
-	if ((frame[1] & 0x08) == 0) {  // MPEG-2
+	if ((frame [1] & 0x08) == 0) {  // MPEG-2
 	   sampling_frequency += 4;
 	   bit_rate_index_minus1 += 14;
 	}
 
-	padding_bit = get_bits(1);
-	get_bits(1);  // discard private_bit
+	padding_bit = get_bits (1);
+	get_bits (1);  // discard private_bit
 	mode = get_bits(2);
 
 // parse the mode_extension, set up the stereo bound
@@ -425,7 +430,7 @@ int32_t table_idx;
 // discard the last 4 bits of the header and the CRC value, if present
 	get_bits(4);
 	if ((frame[1] & 1) == 0)
-	   get_bits(16);
+	   get_bits (16);
 
 // compute the frame size
 	frame_size = (144000 * bitrates[bit_rate_index_minus1]
@@ -454,11 +459,11 @@ int32_t table_idx;
 	// read the allocation information
 	for (sb = 0; sb < bound; ++sb)
 	   for (ch = 0; ch < 2; ++ch)
-	      allocation[ch][sb] = read_allocation(sb, table_idx);
+	      allocation [ch][sb] = read_allocation (sb, table_idx);
 
 	for (sb = bound;  sb < sblimit;  ++sb)
 	   allocation[0][sb] =
-	   allocation[1][sb] = read_allocation(sb, table_idx);
+	          allocation[1][sb] = read_allocation(sb, table_idx);
 
 	// read scale factor selector information
 	nch = (mode == MONO) ? 1 : 2;
@@ -507,8 +512,8 @@ int32_t table_idx;
 	      for (sb = 0;  sb < bound;  ++sb)
 	         for (ch = 0;  ch < 2;  ++ch)
 	            read_samples (allocation[ch][sb],
-	                             scalefactor[ch][sb][part],
-	                             &sample[ch][sb][0]);
+	                          scalefactor[ch][sb][part],
+	                          &sample[ch][sb][0]);
 	      for (sb = bound;  sb < sblimit;  ++sb) {
 	         read_samples (allocation[0][sb],
 	                             scalefactor[0][sb][part],
@@ -561,7 +566,7 @@ int32_t table_idx;
 	                  sum = -32768;
 	               if (sum > 32767)
 	                  sum = 32767;
-	               pcm[(idx << 6) | (j << 1) | ch] = (uint16_t) sum;
+	               pcm [(idx << 6) | (j << 1) | ch] = (uint16_t) sum;
 	            }
 	         } // end of synthesis channel loop
 	      } // end of synthesis sub-block loop
