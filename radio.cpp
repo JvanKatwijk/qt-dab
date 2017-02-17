@@ -93,6 +93,9 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
   *	gui elements and the handling agents. All real action
   *	is initiated by gui buttons
   */
+static	bool	thereisSound	= false;
+static	int	frameErrors	= 0;
+
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                uint8_t		freqsyncMethod,
 	                                bool		tracing,
@@ -142,7 +145,7 @@ int16_t k;
 //	latency is used to allow different settings for different
 //	situations wrt the output buffering
 	latency			=
-	           dabSettings -> value ("latency", 3). toInt ();
+	           dabSettings -> value ("latency", 1). toInt ();
 
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -792,6 +795,8 @@ QString s;
   *	percentage of frames that could be handled
   */
 void	RadioInterface::show_frameErrors (int s) {
+	if (tracing && thereisSound)
+	   frameErrors	+= s;
 #ifdef	TECHNICAL_DATA
 	techData. frameError_display	-> setValue (100 - 4 * s);
 #endif
@@ -997,7 +1002,7 @@ void	RadioInterface::setStart	(void) {
 bool	r = 0;
 	if (running)		// only listen when not running yet
 	   return;
-//
+
 	r = inputDevice		-> restartReader ();
 	qDebug ("Starting %d\n", r);
 	if (!r) {
@@ -1009,9 +1014,6 @@ bool	r = 0;
 //	Of course, starting the machine will generate a new instance
 //	of the ensemble, so the listing - if any - should be cleared
 	clearEnsemble ();		// the display
-//
-///	this does not hurt
-	soundOut	-> restart ();
 	running = true;
 }
 
@@ -1107,7 +1109,6 @@ bool	localRunning	= running;
 	inputDevice		-> setVFOFrequency (tunedFrequency);
 
 	if (localRunning) {
-	   soundOut -> restart ();
 	   inputDevice	 -> restartReader ();
 	   my_ofdmProcessor	-> reset ();
 	   my_mscHandler	-> stopProcessing ();
@@ -1139,9 +1140,11 @@ void	RadioInterface::updateTimeDisplay (void) {
 	   techData. cpuMonitor -> display (utilization);
            previous_idle_time = idle_time;
            previous_total_time = total_time;
-	   if (tracing)
-	      fprintf (stderr, "missed samples for audio %d\n",
-	                          ((audioSink *)soundOut) -> missed ());
+	   if (tracing && thereisSound) {
+	      fprintf (stderr, " frameErrors = %d, missed samples for audio %d\n",
+	                          frameErrors,((audioSink *)soundOut) -> missed ());
+	      frameErrors	= 0;
+	   }
 	}
 #endif
 #endif
@@ -1410,6 +1413,8 @@ QString	file;
 void	RadioInterface::selectService (QModelIndex s) {
 QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	setStereo (false);
+	soundOut	-> stop ();
+	thereisSound	= false;
 #ifdef	TECHNICAL_DATA
 	dataDisplay	-> hide ();
 	techData. rsError_display	-> hide ();
@@ -1460,6 +1465,8 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	            dataDisplay -> show ();
 #endif
 	        my_mscHandler	-> set_audioChannel (&d);
+	        soundOut	-> restart ();
+	        thereisSound	= true;
 	        showLabel (QString (" "));
 	        break;
 	      }
