@@ -6,7 +6,7 @@
 
 TEMPLATE	= app
 TARGET		= qt-dab-0.998
-QT		+= widgets network xml
+QT		+= widgets network 
 CONFIG		+= console
 QMAKE_CFLAGS	+=  -flto -ffast-math
 QMAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -21,7 +21,6 @@ DEPENDPATH += . \
 	      ./src/backend \
 	      ./src/backend/audio \
 	      ./src/backend/data \
-	      ./src/backend/data/epg \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/various \
@@ -32,7 +31,6 @@ DEPENDPATH += . \
 	      ./includes/backend \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
-	      ./includes/backend/data/epg \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various 
@@ -45,7 +43,6 @@ INCLUDEPATH += . \
 	      ./includes/backend \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
-	      ./includes/backend/data/epg \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various \
@@ -82,7 +79,6 @@ HEADERS += ./radio.h \
 	   ./includes/backend/data/ip-datahandler.h \
 	   ./includes/backend/data/mot-databuilder.h \
 	   ./includes/backend/data/mot-data.h \
-	   ./includes/backend/data/epg/epgdec.h \
 	   ./includes/backend/data/journaline-datahandler.h \
 	   ./includes/backend/data/journaline/dabdatagroupdecoder.h \
 	   ./includes/backend/data/journaline/crc_8_16.h \
@@ -139,7 +135,6 @@ SOURCES += ./main.cpp \
 	   ./src/backend/data/ip-datahandler.cpp \
 	   ./src/backend/data/mot-databuilder.cpp \
 	   ./src/backend/data/mot-data.cpp \
-	   ./src/backend/data/epg/epgdec.cpp \
 	   ./src/backend/data/journaline-datahandler.cpp \
 	   ./src/backend/data/journaline/crc_8_16.c \
 	   ./src/backend/data/journaline/log.c \
@@ -182,7 +177,7 @@ CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
-DEFINES		+= TRY_EPG
+#CONFIG		+= try-epg
 }
 #
 # an attempt to have it run under W32
@@ -305,5 +300,15 @@ rtl_tcp {
 	HEADERS		+= ./src/input/rtl_tcp/rtl_tcp_client.h
 	SOURCES		+= ./src/input/rtl_tcp/rtl_tcp_client.cpp
 	FORMS		+= ./src/input/rtl_tcp/rtl_tcp-widget.ui
+}
+
+try-epg	{
+	DEFINES		+= TRY_EPG
+	Qt		+= xml
+	DEPENDPATH	+= ./src/backend/data/epg \
+	                   ./includes/backend/data/epg 
+	INCLUDEPATH	+= ./includes/backend/data/epg 
+	HEADERS		+= ./includes/backend/data/epg/epgdec.h 
+	SOURCES		+= ./src/backend/data/epg/epgdec.cpp 
 }
 
