@@ -107,7 +107,7 @@ int16_t	outputDevice;
 	                          Pa_GetDeviceInfo (outputDevice) ->
 	                                      defaultHighOutputLatency;
 //	bufSize	= (int)((float)outputParameters. suggestedLatency * latency);
-	bufSize	= latency * 20 * 256;
+	bufSize	= latency * 5 * 256;
 
 	outputParameters. hostApiSpecificStreamInfo = NULL;
 //
