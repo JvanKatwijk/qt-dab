@@ -27,17 +27,23 @@
 #include	"spectrum-handler.h"
 #include	<QSettings>
 #include	"iqdisplay.h"
+#include	<QColor>
 
 	spectrumhandler::spectrumhandler	(RadioInterface	*mr,
 	                                         QSettings	*dabSettings,
 	                                         RingBuffer<DSPCOMPLEX> *sbuffer,
 	                                         RingBuffer<DSPCOMPLEX>* ibuffer) {
 int16_t	i;
+QString	colorString	= "black";
+QColor	displayColor;
 
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= dabSettings;
 	this	-> scopeBuffer		= sbuffer;
 	this	-> iqBuffer		= ibuffer;
+
+	colorString			= dabSettings -> value ("displaycolor", "black"). toString ();
+	displayColor			= QColor (colorString);
 
 	displaySize			= dabSettings -> value ("displaySize", 1024).toInt ();
 	if ((displaySize & (displaySize - 1)) != 0)
@@ -55,7 +61,7 @@ int16_t	i;
                                     FFTW_FORWARD, FFTW_ESTIMATE);
 	
 	plotgrid		= dabScope;
-	plotgrid	-> setCanvasBackground (Qt::black);
+	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid	-> setMajPen (QPen(Qt::white, 0, Qt::DotLine));

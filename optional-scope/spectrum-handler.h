@@ -57,7 +57,7 @@ public:
 			spectrumhandler		(RadioInterface *,
 	                                         QSettings	*,
 	                                         RingBuffer<DSPCOMPLEX> *,
-	                                         RingBuffer<DSPCOMPLEX> *);;
+	                                         RingBuffer<DSPCOMPLEX> *);
 			~spectrumhandler	(void);
 	void		showSpectrum		(int32_t, int32_t);
 	void		showIQ			(int32_t);
