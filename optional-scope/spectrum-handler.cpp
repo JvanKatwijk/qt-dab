@@ -36,6 +36,8 @@
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
+QColor	gridColor;
+QColor	curveColor;
 
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= dabSettings;
@@ -44,6 +46,10 @@ QColor	displayColor;
 
 	colorString			= dabSettings -> value ("displaycolor", "black"). toString ();
 	displayColor			= QColor (colorString);
+	colorString			= dabSettings -> value ("gridcolor", "white"). toString ();
+	gridColor			= QColor (colorString);
+	colorString			= dabSettings -> value ("gridcolor", "white"). toString ();
+	curveColor			= QColor (colorString);
 
 	displaySize			= dabSettings -> value ("displaySize", 1024).toInt ();
 	if ((displaySize & (displaySize - 1)) != 0)
@@ -64,16 +70,16 @@ QColor	displayColor;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMajPen (QPen(Qt::white, 0, Qt::DotLine));
+	grid	-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid	-> setMajorPen (QPen(Qt::white, 0, Qt::DotLine));
+	grid	-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
 	grid	-> enableXMin (true);
 	grid	-> enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMinPen (QPen(Qt::white, 0, Qt::DotLine));
+	grid	-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid	-> setMinorPen (QPen(Qt::white, 0, Qt::DotLine));
+	grid	-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
 	grid	-> attach (plotgrid);
 
