@@ -531,8 +531,8 @@ void	RadioInterface::init_your_gui (void) {
 #ifdef	HAVE_AIRSPY
 	deviceSelector	-> addItem ("airspy");
 #endif
-#ifdef HAVE_EXTIO
-	deviceSelector	-> addItem("extio");
+#ifdef  HAVE_EXTIO
+    deviceSelector	-> addItem ("extio");
 #endif
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
@@ -615,7 +615,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-	QString v = "Qt-DAB(+)  " ;
+    QString v = "Qt-DAB " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer
@@ -706,7 +706,7 @@ void	RadioInterface::set_Scanning	(void) {
 	   signalTimer. start (10000);
 	}
 	else
-	   scanButton -> setText ("scan");
+       scanButton -> setText ("Scan band");
 }
 //
 //	Increment channel is called during scanning.
@@ -1171,14 +1171,14 @@ uint8_t	Mode	= s. toInt ();
 	   my_ofdmProcessor -> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-	   dumpButton	-> setText ("dump");
+       dumpButton	-> setText ("Dump to raw file");
 	}
 
 	if (audioDumping) {
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping	= false;
-	   audioDumpButton -> setText ("audioDump");
+       audioDumpButton -> setText ("Save audio");
 	}
 
 	running	= false;
@@ -1259,14 +1259,14 @@ QString	file;
 	   my_ofdmProcessor -> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-	   dumpButton	-> setText ("dump");
+       dumpButton	-> setText ("Dump to raw file");
 	}
 
 	if (audioDumping) {
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping	= false;
-	   audioDumpButton -> setText ("audioDump");
+       audioDumpButton -> setText ("Save audio");
 	}
 ///	indicate that we are not running anymore
 	running		= false;
@@ -1285,7 +1285,7 @@ QString	file;
 	   if (!success) {
 	      delete inputDevice;
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("Airspy not found\n"));
+                                   tr ("Airspy or Airspy mini not found\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1346,7 +1346,7 @@ QString	file;
 	   if (!success) {
 	      delete inputDevice;
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("DAB Stick not found! Please use one with RTL2832U or similar chipset!\n"));
+                                   tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1425,7 +1425,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	      { audiodata d;
 	        my_ficHandler. dataforAudioService (a, &d);
 	        if ((d. bitRate == 0) || (d. protLevel == 0)) {
- 	           QMessageBox::warning (this, tr ("sdr"),
+               QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("still insufficient data for this program\n"));
  	           return;
  	        }
@@ -1565,7 +1565,7 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   my_ofdmProcessor	-> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-	   dumpButton	-> setText ("dump");
+       dumpButton	-> setText ("Dump to raw file");
 	   return;
 	}
 
@@ -1598,7 +1598,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping = false;
-	   audioDumpButton	-> setText ("audioDump");
+       audioDumpButton	-> setText ("Save audio");
 	   return;
 	}
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>491</width>
-    <height>304</height>
+    <width>499</width>
+    <height>377</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,7 +28,7 @@
     </property>
     <item>
      <property name="text">
-      <string>select device</string>
+      <string>Select audio device</string>
      </property>
     </item>
    </widget>
@@ -37,21 +37,21 @@
      <rect>
       <x>8</x>
       <y>180</y>
-      <width>111</width>
+      <width>131</width>
       <height>29</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is Band III (174–230 MHz), the old Band III terrestrial TV band. Alternatively the L Band (1452 bis 1492 MHz, but only used in few countries) may be selected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
-      <string>BAND III</string>
+      <string>VHF Band III</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>L BAND</string>
+      <string>L Band</string>
      </property>
     </item>
    </widget>
@@ -60,7 +60,7 @@
      <rect>
       <x>8</x>
       <y>120</y>
-      <width>111</width>
+      <width>91</width>
       <height>31</height>
      </rect>
     </property>
@@ -68,55 +68,60 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for saving the audio output into a file. First push will show a menu for file selection. &lt;/p&gt;&lt;p&gt;Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>audio</string>
+     <string>Save audio</string>
     </property>
    </widget>
    <widget class="QPushButton" name="dumpButton">
     <property name="geometry">
      <rect>
-      <x>118</x>
+      <x>98</x>
       <y>120</y>
-      <width>101</width>
+      <width>121</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for saving the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>dump</string>
+     <string>Dump to raw file</string>
     </property>
    </widget>
    <widget class="QComboBox" name="modeSelector">
     <property name="geometry">
      <rect>
-      <x>118</x>
+      <x>138</x>
       <y>180</y>
-      <width>101</width>
+      <width>81</width>
       <height>29</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB mode. By default mode 1 is selected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB mode. &lt;/p&gt;&lt;p&gt;Mode 1 is selected as default, which is used by almost all DAB ensembles worldwide.&lt;br/&gt;Please note that other modes are not tested.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
-      <string>1</string>
+      <string>Mode 1</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>2</string>
+      <string>Mode 2</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>3</string>
+      <string>Mode 3</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>4</string>
+      <string>Mode 4</string>
      </property>
     </item>
    </widget>
@@ -125,16 +130,16 @@
      <rect>
       <x>8</x>
       <y>210</y>
-      <width>131</width>
+      <width>151</width>
       <height>29</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. After selecting a device, please push the start button to activate the program.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. After selecting a device, please push the START button to activate the program.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
-      <string>no device</string>
+      <string>Select device</string>
      </property>
     </item>
     <item>
@@ -151,14 +156,14 @@
    <widget class="QComboBox" name="channelSelector">
     <property name="geometry">
      <rect>
-      <x>138</x>
+      <x>160</x>
       <y>210</y>
-      <width>83</width>
+      <width>61</width>
       <height>29</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the channel. The table presented - obviously - depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
    </widget>
    <widget class="QLabel" name="timeDisplay">
@@ -223,24 +228,42 @@
      <rect>
       <x>20</x>
       <y>260</y>
-      <width>371</width>
-      <height>21</height>
+      <width>401</width>
+      <height>91</height>
      </rect>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic label (DLS)&lt;/p&gt;&lt;p&gt;The selected program may carry some textual information, that information is displayed here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
+    <property name="frameShape">
+     <enum>QFrame::NoFrame</enum>
+    </property>
+    <property name="frameShadow">
+     <enum>QFrame::Plain</enum>
+    </property>
     <property name="text">
      <string>TextLabel</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+    <property name="openExternalLinks">
+     <bool>true</bool>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
    <widget class="QLCDNumber" name="crcErrors_1">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>430</x>
       <y>240</y>
       <width>64</width>
-      <height>23</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="segmentStyle">
@@ -250,7 +273,7 @@
    <widget class="QLCDNumber" name="crcErrors_2">
     <property name="geometry">
      <rect>
-      <x>420</x>
+      <x>430</x>
       <y>260</y>
       <width>64</width>
       <height>21</height>
@@ -263,11 +286,18 @@
    <widget class="QPushButton" name="startButton">
     <property name="geometry">
      <rect>
-      <x>388</x>
+      <x>400</x>
       <y>80</y>
       <width>96</width>
       <height>61</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
+     </font>
     </property>
     <property name="text">
      <string>START</string>
@@ -276,7 +306,7 @@
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>400</x>
       <y>140</y>
       <width>96</width>
       <height>51</height>
@@ -289,14 +319,14 @@
    <widget class="QPushButton" name="resetButton">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>400</x>
       <y>190</y>
       <width>96</width>
       <height>51</height>
      </rect>
     </property>
     <property name="text">
-     <string>reset</string>
+     <string>RESET</string>
     </property>
    </widget>
    <widget class="QListView" name="ensembleDisplay">
@@ -304,7 +334,7 @@
      <rect>
       <x>220</x>
       <y>80</y>
-      <width>171</width>
+      <width>181</width>
       <height>171</height>
      </rect>
     </property>
@@ -319,7 +349,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright (C) 2016, 2017 Jan van Katwijk (J.vanKatwijk@gmail.com),  Lazy Chair Programming&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB is free software; you can redistribute it and/or modify  it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright (C) 2016, 2017 Jan van Katwijk (J.vanKatwijk@gmail.com), Lazy Chair Programming&lt;/p&gt;&lt;p&gt;Qt-DAB is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string/>
@@ -334,6 +364,48 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>190</red>
+          <green>190</green>
+          <blue>190</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator for time synchronization&lt;/p&gt;&lt;p&gt;Green means that the software recognizes that there are DAB frames, not necessarily that the software is able to decode the DAB stream.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
@@ -341,7 +413,10 @@
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
-     <string/>
+     <string>sync</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QLCDNumber" name="snrDisplay">
@@ -354,7 +429,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A signal Noise indicator&lt;/p&gt;&lt;p&gt;In general: higher is better. But do not take the value as a serious measure of the SNR, it strongly dependson the device and the amount of filtering applied in the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A Signal to Noise (SNR) indicator&lt;/p&gt;&lt;p&gt;In general: higher is better. But do not take the value as a serious measure of the SNR, it strongly depends on the device and the amount of filtering applied in the device!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -376,7 +451,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble ID&lt;/p&gt;&lt;p&gt;The hecadecimal number indicated the ensemble being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble ID&lt;/p&gt;&lt;p&gt;The hecadecimal number indicates the ensemble being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -406,56 +481,137 @@
     <property name="text">
      <string/>
     </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+    </property>
    </widget>
    <widget class="QLabel" name="stereoLabel">
     <property name="geometry">
      <rect>
-      <x>370</x>
+      <x>360</x>
       <y>10</y>
       <width>41</width>
-      <height>20</height>
+      <height>21</height>
      </rect>
     </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Text">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Text">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>190</red>
+          <green>190</green>
+          <blue>190</blue>
+         </color>
+        </brush>
+       </colorrole>
+       <colorrole role="Text">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>190</red>
+          <green>190</green>
+          <blue>190</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>10</pointsize>
+     </font>
+    </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo label, green means that the program currently giving sound is in stereo.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo label&lt;/p&gt;&lt;p&gt;Green means that the program is in stereo.&lt;br/&gt;Red means no audio or mono transmission.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="text">
-     <string/>
+     <string>stereo</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
    <widget class="QPushButton" name="showProgramData">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>20</y>
-      <width>61</width>
-      <height>21</height>
+      <x>410</x>
+      <y>10</y>
+      <width>81</width>
+      <height>34</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>11</pointsize>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information on the selected program&amp;gt;&lt;/p&gt;&lt;p&gt;Push gain for having  the widget disappear.&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>PD</string>
+     <string>Technical
+details</string>
     </property>
    </widget>
    <widget class="QPushButton" name="scanButton">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>40</y>
-      <width>61</width>
-      <height>36</height>
+      <x>410</x>
+      <y>45</y>
+      <width>81</width>
+      <height>34</height>
      </rect>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current BAND. Scanning will continue until DAB data is detected in the channel currently  selected.&amp;gt;&lt;/p&gt;&lt;p&gt;&amp;gt;&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>scan</string>
+     <string>Scan band</string>
     </property>
    </widget>
   </widget>
