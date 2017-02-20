@@ -1,7 +1,7 @@
 ==================================================================
 Qt-DAB
 ==================================================================
-Qt-DAB is a Software for Windows, Linux and Raspberry Pi for Digital Audio Broadcasting (DAB and DAB+).
+Qt-DAB is a Software for Windows, Linux and Raspberry Pi for Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two programs created by the author that did DAB decoding.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -52,41 +52,27 @@ Introduction
 
 ![Qt-DAB with SDR file loaded](/screenshot_qt-dab.png?raw=true)
 
-Qt-DAB is the result of merging the dab-rpi and the sdr-j-dab programs of the
-author. It became more and more complex to maintain different versions: 
-modifications made in one version, did not always end up in the other versions so the
-versions started to diverge.
+Qt-DAB is the result of merging the dab-rpi and the sdr-j-dab programs of the author. It became more and more complex to maintain different versions: modifications made in one version, did not always end up in the other versions so the versions started to diverge.
 
-Since furthermore a separate "command line only" version was (is being) developed 
-(a version not using Qt at all), while much of the sources is also used in the 
-development of a version handling ETI files, there was a real need to
-reorganize.
+Since furthermore a separate "command line only" version is developed (a version not using Qt at all), while much of the sources is also used in the development of a version handling ETI files, there was a real need to reorganize.
 
 I decided to merge the dab-rpi and sdr-j-dab version and rename
 the result - to distinguish from the Qt-free version -  Qt-DAB.
 
-The Qt-free version, the "command line only" version,  is named "dab-cmdline"
-and has its own repository.
+The Qt-free version, the "command line only" version,  is named "dab-cmdline", is built around a library that does the DAB decoding, and has its own repository.
 
-The software - both the Qt-DAB and the dab-cmdline version - supports decoding 
-of terrestrial DAB and DAB+ reception with as input the  samplestream from either 
-an AIRSPY, a SDRplay, a dabstick (rtl_sdr), a rtl_tcp server.
+The software - both the Qt-DAB and the dab-cmdline version - supports decoding of terrestrial DAB and DAB+ reception with as input the  samplestream from either an AIRSPY, a SDRplay, a dabstick (rtl_sdr), a rtl_tcp server.
 
-The Qt-DAB version also supports input from a (prerecorded) file (*.sdr, which
-obviously provides the opportunity of dumping the input into a file). 
+The Qt-DAB version also supports input from a (prerecorded) file (*.sdr, which obviously provides the opportunity of dumping the input into a file). 
 
-Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi,
-the spectrum display, showing the spectrum and the constellation over the WiFi,
-can be left out of the configuration. 
+Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi,the spectrum display, showing the spectrum and the constellation over the WiFi, can be left out of the configuration. 
 
-Again, as the Qt-DAB version has to run on a headless RPI 2,
-an option is included to configure the sound output to deliver its
+Again, as the Qt-DAB version has to run on a headless RPI 2, an option is included to configure the sound output to deliver its
 samples through a TCP connection.
 
 For further information please visit http://www.sdr-j.tk
 
-A manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf 
-(is valid for qt-dab as well)
+An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf (is valid for qt-dab as well)
 
 
 ------------------------------------------------------------------
