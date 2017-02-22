@@ -30,7 +30,7 @@ Features
 * Spectrum view (incl. constellation diagram)
 * Scanning function (scan the subsequent channels in the selected band 
   until a channel is encountered where a DAB signal is detected)
-* Detailled information for selected service (SNR, bitrate, frequency, 
+* Detailed information for selected service (SNR, bitrate, frequency, 
   ensemble name, ensemble ID, subchannel ID, protection level, CPU usage, 
   language, 4 quality bars)
 * Dumping of the complete DAB channel (produces large raw files!) and 
@@ -258,6 +258,12 @@ to see devices with aplay -L
 
 In arch, it was essential to add the username to the group "audio".
 
+
+	Note that on the current distribution of raspbian jessie
+	(i.e. jan 2017) the best way to generate the executable
+	for  qt-dab is to use qt4. The qwt library - needed if
+	you want the spectrum viewer and the constellation diagram -
+	is - available is for qt4.
 ------------------------------------------------------------------
 Qt
 ------------------------------------------------------------------

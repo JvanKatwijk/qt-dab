@@ -176,7 +176,7 @@ CONFIG		+= airspy
 CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
-DEFINES		+= MSC_DATA__		# use at your own risk
+#DEFINES		+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg
 }
 #

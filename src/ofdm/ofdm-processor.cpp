@@ -151,9 +151,10 @@ int32_t	i;
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	msleep (100);
-	if (isRunning ())
-	   terminate ();
-	wait ();
+	if (isRunning ()) {
+//	   terminate ();
+	   wait ();
+	}
 	delete		ofdmBuffer;
 	delete		oscillatorTable;
 	delete		fft_handler;
@@ -501,9 +502,11 @@ ReadyForNewFrame:
 }
 
 void	ofdmProcessor:: reset	(void) {
-	if (isRunning ())
-	   terminate ();
-	wait ();
+	running	= false;
+	if (isRunning ()) {
+//	   terminate ();
+	   wait ();
+	}
 	start ();
 }
 
