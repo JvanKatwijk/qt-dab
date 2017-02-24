@@ -52,23 +52,22 @@ Introduction
 
 ![Qt-DAB with SDR file loaded](/screenshot_qt-dab.png?raw=true)
 
-Qt-DAB is the result of merging the dab-rpi and the sdr-j-dab programs of the author. It became more and more complex to maintain different versions: modifications made in one version, did not always end up in the other versions so the versions started to diverge.
+Qt-DAB is the result of merging the DAB-rpi and the sdr-j-DAB programs of the author. It became more and more complex to maintain different versions: modifications made in one version, did not always end up in the other versions so the versions started to diverge.
 
-Since furthermore a separate "command line only" version is developed (a version not using Qt at all), while much of the sources is also used in the development of a version handling ETI files, there was a real need to reorganize.
+Since furthermore a separate "command line only" version is developed (a version not using Qt at all), while a large part of the sources is also used in the development of a version handling ETI files, there was a real need to reorganize.
 
-I decided to merge the dab-rpi and sdr-j-dab version and rename
+It was therefore decided to merge the DAB-rpi and sdr-j-DAB version and rename
 the result - to distinguish from the Qt-free version -  Qt-DAB.
 
 The Qt-free version, the "command line only" version,  is named "dab-cmdline", is built around a library that does the DAB decoding, and has its own repository.
 
-The software - both the Qt-DAB and the dab-cmdline version - supports decoding of terrestrial DAB and DAB+ reception with as input the  samplestream from either an AIRSPY, a SDRplay, a dabstick (rtl_sdr), a rtl_tcp server.
+The software - both the Qt-DAB and the dab-cmdline version - supports decoding of terrestrial DAB and DAB+ reception with as input the  samplestream from either an AIRSPY, a SDRplay or a dabstick (rtl_sdr)s
 
-The Qt-DAB version also supports input from a (prerecorded) file (*.sdr, which obviously provides the opportunity of dumping the input into a file). 
+The Qt-DAB version also supports input from an rtl-tcp server and (prerecorded) file (*.sdr, which obviously provides the opportunity of dumping the input into a file). 
 
-Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi,the spectrum display, showing the spectrum and the constellation over the WiFi, can be left out of the configuration. 
+Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. 
 
-Again, as the Qt-DAB version has to run on a headless RPI 2, an option is included to configure the sound output to deliver its
-samples through a TCP connection.
+Furthermore, as the Qt-DAB version has to run on a headless RPI 2, a configuration option is included to have the sound output delivered its samples through a TCP connection.
 
 For further information please visit http://www.sdr-j.tk
 
@@ -259,11 +258,8 @@ to see devices with aplay -L
 In arch, it was essential to add the username to the group "audio".
 
 
-	Note that on the current distribution of raspbian jessie
-	(i.e. jan 2017) the best way to generate the executable
-	for  qt-dab is to use qt4. The qwt library - needed if
-	you want the spectrum viewer and the constellation diagram -
-	is - available is for qt4.
+	Note that on the current distribution of Raspbian Jessie (i.e. jan 2017) the best way to generate the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram -  in the distribution is compiled with Qt4. 
+
 ------------------------------------------------------------------
 Qt
 ------------------------------------------------------------------
@@ -273,10 +269,7 @@ diagram - the qwt library.
 
 The CMakeLists.txt assumes Qt5, if you want to use Qt4, and you want
 to have the spectrum in the configuration, be aware of the binding 
-of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well)
-
-
-
+of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (jan 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
 
 
 ============================================================================
@@ -287,9 +280,8 @@ of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well)
 	Lazy Chair Programming
 
 	The Qt-DAB software is made available under the GPL-2.0.
-	Qt-DAB is distributed in the hope that it will be useful,
+	The SDR-J software, of which the Qt-DAB software is a part, is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-
 
