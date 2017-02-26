@@ -77,6 +77,7 @@ Some settings are preserved between program invocations, they are store in a fil
 The background colors of the spectrum can be changed by setting them in this .qt-dab.ini file, e.g.
 
  displaycolor=blue
+ 
  gridcolor=red
 
 
