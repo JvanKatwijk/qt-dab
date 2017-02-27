@@ -73,8 +73,8 @@ For further information please visit http://www.sdr-j.tk
 
 An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf (is valid for qt-dab as well)
 
-Some settings are preserved between program invocations, they are store in a file ".qt-da.ini", maintained in the home directory.
-The background colors of the spectrum can be changed by setting them in this .qt-dab.ini file, e.g.
+Some settings are preserved between program invocations, they are store in a file ".qt-dab.ini", maintained in the home
+directory. The background colors of the spectrum can be changed by setting them in this .qt-dab.ini file, e.g.
 
  displaycolor=blue
  
