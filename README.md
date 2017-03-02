@@ -73,6 +73,13 @@ For further information please visit http://www.sdr-j.tk
 
 An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf (is valid for qt-dab as well)
 
+Some settings are preserved between program invocations, they are store in a file ".qt-dab.ini", maintained in the home
+directory. The background colors of the spectrum can be changed by setting them in this .qt-dab.ini file, e.g.
+
+ displaycolor=blue
+ 
+ gridcolor=red
+
 
 ------------------------------------------------------------------
 Windows
@@ -257,7 +264,9 @@ to see devices with aplay -L
 In arch, it was essential to add the username to the group "audio".
 
 
-	Note that on the current distribution of Raspbian Jessie (i.e. jan 2017) the best way to generate the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram -  in the distribution is compiled with Qt4. 
+	Note that on the current distribution of Raspbian Jessie (i.e. jan 2017) the best way to generate
+	the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer 
+	and the constellation diagram -  in the distribution is compiled with Qt4. 
 
 ------------------------------------------------------------------
 Qt
