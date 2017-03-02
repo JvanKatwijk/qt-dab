@@ -22,7 +22,6 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 ######################################################################
 #       R E A D T H I S
 #####################################################################
-#	if you want support for any of these devices, uncomment the line
 
 if(DEFINED AIRSPY)
    set(AIRSPY true)

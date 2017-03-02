@@ -206,7 +206,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-exp
 #CONFIG		+= tcp-streamer		# use for remote listening
-#CONFIG		+= spectrum
+CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
 }

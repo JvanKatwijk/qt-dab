@@ -203,13 +203,12 @@ For showing some information on the selected program uncomment
 
 	DEFINES         += TECHNICAL_DATA
 
-For basic MSC data handling, i.e. pad handling etc, uncomment
+For basic MSC data handling, i.e. MOT handling etc, uncomment
 
 	DEFINES         += MSC_DATA__           # use at your own risk
 
 The sourcetree contains a directory "sound-client", that contains
 sources to generate a simple "listener" for remote listening.
-
 
 ------------------------------------------------------------------
 Configuring using CMake
