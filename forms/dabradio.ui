@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>499</width>
-    <height>377</height>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -226,10 +226,10 @@
    <widget class="QLabel" name="dynamicLabel">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>260</y>
+      <x>10</x>
+      <y>250</y>
       <width>401</width>
-      <height>91</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="toolTip">

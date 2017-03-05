@@ -81,7 +81,9 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_AgcControl)(uint32_t, int, int, uint32_t,
 typedef mir_sdr_ErrT (*pfn_mir_sdr_DCoffsetIQimbalanceControl) (uint32_t, uint32_t);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetPpm)(double);   
 typedef mir_sdr_ErrT (*pfn_mir_sdr_DebugEnable)(uint32_t);   
-
+typedef mir_sdr_ErrT (*pfn_mir_sdr_GetDevices) (mir_sdr_DeviceT *, uint32_t *, uint32_t);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_GetCurrentGain) (mir_sdr_GainValuesT *);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_GetHwVersion) (unsigned char *);
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -124,6 +126,10 @@ private:
 	                        my_mir_sdr_DCoffsetIQimbalanceControl;
 	pfn_mir_sdr_SetPpm	my_mir_sdr_SetPpm;
 	pfn_mir_sdr_DebugEnable	my_mir_sdr_DebugEnable;
+	pfn_mir_sdr_GetDevices  my_mir_sdr_GetDevices;
+	pfn_mir_sdr_GetCurrentGain my_mir_sdr_GetCurrentGain;
+	pfn_mir_sdr_GetHwVersion my_mir_sdr_GetHwVersion;
+
 	bool		loadFunctions	(void);
 	QSettings	*sdrplaySettings;
 	QFrame		*myFrame;
