@@ -169,8 +169,7 @@ LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
 LIBS		+= -lfaad
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-exp
-#CONFIG		+= sdrplay
+CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= spectrum
@@ -204,8 +203,8 @@ CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-exp
-CONFIG		+= tcp-streamer		# use for remote listening
+CONFIG		+= sdrplay
+#CONFIG		+= tcp-streamer		# use for remote listening
 #CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
@@ -254,22 +253,9 @@ dabstick {
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
 	INCLUDEPATH	+= ./src/input/sdrplay
-	HEADERS		+= ./src/input/sdrplay/sdrplay.h \
-	                   ./src/input/sdrplay/sdrplay-loader.h \
-	                   ./src/input/sdrplay/sdrplay-worker.h 
-	SOURCES		+= ./src/input/sdrplay/sdrplay.cpp \
-	                   ./src/input/sdrplay/sdrplay-loader.cpp \
-	                   ./src/input/sdrplay/sdrplay-worker.cpp 
+	HEADERS		+= ./src/input/sdrplay/sdrplay.h 
+	SOURCES		+= ./src/input/sdrplay/sdrplay.cpp 
 	FORMS		+= ./src/input/sdrplay/sdrplay-widget.ui
-}
-#
-#
-sdrplay-exp {
-	DEFINES		+= HAVE_SDRPLAY
-	INCLUDEPATH	+= ./src/input/sdrplay-exp
-	HEADERS		+= ./src/input/sdrplay-exp/sdrplay.h 
-	SOURCES		+= ./src/input/sdrplay-exp/sdrplay.cpp 
-	FORMS		+= ./src/input/sdrplay-exp/sdrplay-widget.ui
 }
 #
 #
