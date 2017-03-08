@@ -192,7 +192,7 @@ in the qt-dab.pro file (section "unix") for the device(s)
 you want to exclude in the configuration.
 
 	CONFIG          += dabstick
-	CONFIG          += sdrplay-exp
+	CONFIG          += sdrplay
 	CONFIG          += rtl_tcp
 	CONFIG          += airspy
 
@@ -245,6 +245,12 @@ The default location for installation depends on your system, mostly
 For other options, see the CMakeLists.txt file.
 
 Note that CMake expects Qt5 to be installed.
+
+-----------------------------------------------------------------
+Note on the SDRplay
+-----------------------------------------------------------------
+The current set of sources has some support for the RSP-II. It is
+assumed that at least library version 2.09 is installed.
 
 ------------------------------------------------------------------
 Raspberry PI

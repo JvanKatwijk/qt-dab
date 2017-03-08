@@ -970,6 +970,7 @@ void	RadioInterface::clear_showElements (void) {
 	techData. aacError_display	-> setValue (0);
 	techData. ficError_display	-> setValue (0);
 	techData. ensemble 		-> setText (QString (""));
+	techData. programName		-> setText (QString (""));
 	techData. frequency		-> display (0);
 	techData. bitrateDisplay	-> display (0);
 	techData. startAddressDisplay	-> display (0);
@@ -1431,6 +1432,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
  	        }
 #ifdef	TECHNICAL_DATA
 	        techData. ensemble	-> setText (ensembleLabel);
+	        techData. programName	-> setText (a);
 	        techData. frequency	-> display (inputDevice -> getVFOFrequency () / 1000000.0);
 	        techData. bitrateDisplay -> display (d. bitRate);
 	        techData. startAddressDisplay -> display (d. startAddr);

@@ -279,26 +279,29 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
            include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/sdrplay-exp/sdrplay-widget.ui 
+	        ./src/input/sdrplay/sdrplay-widget.ui 
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./src/input/sdrplay-exp/sdrplay.h
+	        ./src/input/sdrplay/sdrplay.h
+	        ./src/input/sdrplay/sdrplayselect.h
 	   )
 
 	   include_directories (
-	     ./src/input/sdrplay-exp
+	     ./src/input/sdrplay
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/sdrplay-exp/sdrplay.h
+	        ./src/input/sdrplay/sdrplay.h
+	        ./src/input/sdrplay/sdrplayselect.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./src/input/sdrplay-exp/sdrplay.cpp
+	        ./src/input/sdrplay/sdrplay.cpp
+	        ./src/input/sdrplay/sdrplayselect.cpp
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY)

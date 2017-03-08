@@ -4,23 +4,22 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
+ *    This file is part of Qt-DAB
+ *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License. 
  *    All copyrights of the original authors are recognized.
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
+ *    the Free Software Foundation version 2 of the License.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -29,14 +28,16 @@
 #include	<QHBoxLayout>
 #include	<QLabel>
 #include	"sdrplay.h"
+#include	"sdrplayselect.h"
 
 #define	DEFAULT_GRED	40
 
 	sdrplay::sdrplay  (QSettings *s, bool *success) {
 int	err;
 float	ver;
-mir_sdr_DeviceT devDesc;
+mir_sdr_DeviceT devDesc [4];
 mir_sdr_GainValuesT gainDesc;
+sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
 	this	-> myFrame		= new QFrame (NULL);
@@ -54,6 +55,7 @@ mir_sdr_GainValuesT gainDesc;
 HKEY APIkey;
 wchar_t APIkeyValue [256];
 ULONG APIkeyValue_length = 255;
+
 	if (RegOpenKey (HKEY_LOCAL_MACHINE,
 	                TEXT("Software\\MiricsSDR\\API"),
 	                &APIkey) != ERROR_SUCCESS) {
@@ -103,6 +105,11 @@ ULONG APIkeyValue_length = 255;
 	}
 
 	err		= my_mir_sdr_ApiVersion (&ver);
+	if (ver < 2.05) {
+	   fprintf (stderr, "sorry, library too old\n");
+	   *success = false;
+	   return;
+	}
 	api_version	-> display (ver);
 	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(2 * 1024 * 1024);
 	vfoFrequency	= Khz (220000);
@@ -127,15 +134,30 @@ ULONG APIkeyValue_length = 255;
 	         this, SLOT (agcControl_toggled (int)));
 	connect (ppmControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmControl (int)));
-	uint32_t a;
-	my_mir_sdr_GetDevices (&devDesc, &a, uint32_t (2));
-	if (a == 0) {
+
+	my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
+	if (numofDevs == 0) {
 	   fprintf (stderr, "Sorry, no device found\n");
+	   *success = false;
 	   return;
 	}
-	serialNumber -> setText (devDesc. SerNo);
-        fprintf (stderr, "hwVer = %d\n", devDesc. hwVer);
-	hwVersion = devDesc. hwVer;
+	if (numofDevs > 1) {
+           sdrplaySelector       = new sdrplaySelect ();
+           for (deviceIndex = 0; deviceIndex < numofDevs; deviceIndex ++) {
+              sdrplaySelector ->
+                   addtoList (devDesc [deviceIndex]. DevNm);
+           }
+           deviceIndex = sdrplaySelector -> QDialog::exec ();
+           delete sdrplaySelector;
+        }
+	else
+	   deviceIndex = 0;
+
+	serialNumber -> setText (devDesc [deviceIndex]. SerNo);
+	hwVersion = devDesc [deviceIndex]. hwVer;
+        fprintf (stderr, "hwVer = %d\n", hwVersion);
+	my_mir_sdr_SetDeviceIdx (deviceIndex);
+
 	if (hwVersion >= 2) {
 	   antennaSelector -> show ();
 	   connect (antennaSelector, SIGNAL (activated (const QString &)),
@@ -152,11 +174,13 @@ ULONG APIkeyValue_length = 255;
 }
 
 	sdrplay::~sdrplay	(void) {
+	stopReader ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	sdrplaySettings	-> setValue ("externalGain", gainSlider -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value ());
 	sdrplaySettings	-> endGroup ();
-	stopReader ();
+	if (numofDevs > 0)
+	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	if (_I_Buffer != NULL)
 	   delete _I_Buffer;
 	delete	myFrame;
@@ -486,6 +510,20 @@ bool	sdrplay::loadFunctions	(void) {
 	   return false;
 	}
 
+	my_mir_sdr_SetDeviceIdx	= (pfn_mir_sdr_SetDeviceIdx)
+	                GETPROCADDRESS (Handle, "mir_sdr_SetDeviceIdx");
+	if (my_mir_sdr_SetDeviceIdx == NULL) {
+	   fprintf (stderr, "Could not find mir_sdr_SetDeviceIdx");
+	   return false;
+	}
+
+	my_mir_sdr_ReleaseDeviceIdx	= (pfn_mir_sdr_ReleaseDeviceIdx)
+	                GETPROCADDRESS (Handle, "mir_sdr_ReleaseDeviceIdx");
+	if (my_mir_sdr_ReleaseDeviceIdx == NULL) {
+	   fprintf (stderr, "Could not find mir_sdr_ReleaseDeviceIdx");
+	   return false;
+	}
+
 	return true;
 }
 
@@ -506,7 +544,7 @@ void	sdrplay::set_ppmControl (int ppm) {
 void	sdrplay::set_antennaControl (const QString &s) {
 mir_sdr_ErrT err;
 
-	if (hwVersion < 2)	// shold not happen
+	if (hwVersion < 2)	// should not happen
 	   return;
 
 	if (s == "Antenna A")

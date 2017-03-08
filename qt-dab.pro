@@ -252,9 +252,11 @@ dabstick {
 #
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
-	INCLUDEPATH	+= ./src/input/sdrplay
-	HEADERS		+= ./src/input/sdrplay/sdrplay.h 
-	SOURCES		+= ./src/input/sdrplay/sdrplay.cpp 
+	INCLUDEPATH	+= ./src/input/sdrplay 
+	HEADERS		+= ./src/input/sdrplay/sdrplay.h \
+	                   ./src/input/sdrplay/sdrplayselect.h
+	SOURCES		+= ./src/input/sdrplay/sdrplay.cpp \
+	                   ./src/input/sdrplay/sdrplayselect.cpp
 	FORMS		+= ./src/input/sdrplay/sdrplay-widget.ui
 }
 #

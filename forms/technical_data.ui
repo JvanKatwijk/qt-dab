@@ -48,9 +48,9 @@
   <widget class="QLabel" name="language">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>20</x>
      <y>350</y>
-     <width>181</width>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
@@ -122,9 +122,9 @@
   <widget class="QLabel" name="programType">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>20</x>
      <y>370</y>
-     <width>181</width>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
@@ -196,9 +196,9 @@
   <widget class="QLabel" name="uepField">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>20</x>
      <y>310</y>
-     <width>181</width>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
@@ -212,9 +212,9 @@
   <widget class="QLabel" name="ASCTy">
    <property name="geometry">
     <rect>
-     <x>60</x>
+     <x>20</x>
      <y>330</y>
-     <width>181</width>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
@@ -263,7 +263,7 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>140</x>
      <y>50</y>
      <width>63</width>
      <height>31</height>
@@ -341,7 +341,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>100</y>
+     <y>118</y>
      <width>81</width>
      <height>20</height>
     </rect>
@@ -354,7 +354,7 @@
    <property name="geometry">
     <rect>
      <x>150</x>
-     <y>92</y>
+     <y>110</y>
      <width>71</width>
      <height>31</height>
     </rect>
@@ -364,6 +364,24 @@
    </property>
    <property name="segmentStyle">
     <enum>QLCDNumber::Flat</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="programName">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>80</y>
+     <width>211</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>15</pointsize>
+    </font>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>
