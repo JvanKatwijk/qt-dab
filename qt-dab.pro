@@ -175,8 +175,9 @@ CONFIG		+= airspy
 CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
-#DEFINES		+= MSC_DATA__		# use at your own risk
+DEFINES		+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg
+#DEFINES	+= __QUALITY		# just a counter
 }
 #
 # an attempt to have it run under W32
@@ -205,7 +206,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer		# use for remote listening
-#CONFIG		+= spectrum
+CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
 }

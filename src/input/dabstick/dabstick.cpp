@@ -184,13 +184,16 @@ int	k;
 	if (k != -1) {
 	   combo_gain	-> setCurrentIndex (k);
 	   theGain	= temp. toInt ();
-	   rtlsdr_set_tuner_gain (device, theGain);
 	}
-	else
-	   rtlsdr_set_tuner_gain (device, gains [gainsCount / 2]);
-	
+	rtlsdr_set_tuner_gain (device, theGain);
+
 	temp	= dabstickSettings -> value ("autogain", "autogain off"). toString ();
-	rtlsdr_set_tuner_gain_mode (device, temp == "autogain off" ? 0 : 1);
+	k	= combo_autogain -> findText (temp);
+	if (k != -1) 
+	   combo_gain	-> setCurrentIndex (k);
+	
+	rtlsdr_set_tuner_gain_mode (device,
+	                   combo_autogain -> currentText () == "autogain on");
 	
 	f_correction -> setValue (dabstickSettings -> value ("f_correction", 0). toInt ());
 	KhzOffset	-> setValue (dabstickSettings -> value ("KhzOffset", 0). toInt ());
@@ -198,7 +201,7 @@ int	k;
 	set_fCorrection	(f_correction -> value ());
 	set_KhzOffset	(KhzOffset -> value ());
 	connect (combo_gain, SIGNAL (activated (const QString &)),
-	         this, SLOT (setGain (const QString &)));
+	         this, SLOT (set_ExternalGain (const QString &)));
 	connect (combo_autogain, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_autogain (const QString &)));
 	connect (f_correction, SIGNAL (valueChanged (int)),
@@ -304,7 +307,7 @@ void	dabStick::stopReader		(void) {
 }
 //
 //	when selecting  the gain from a table, use the table value
-void	dabStick::setGain	(const QString &gain) {
+void	dabStick::set_ExternalGain	(const QString &gain) {
 	theGain		= gain. toInt ();
 	rtlsdr_set_tuner_gain (device, gain. toInt ());
 }
