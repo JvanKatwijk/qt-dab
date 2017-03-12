@@ -133,12 +133,12 @@
     </property>
     <item>
      <property name="text">
-      <string>autogain off</string>
+      <string>autogain_off</string>
      </property>
     </item>
     <item>
      <property name="text">
-      <string>autogain on</string>
+      <string>autogain_on</string>
      </property>
     </item>
    </widget>

@@ -187,13 +187,13 @@ int	k;
 	}
 	rtlsdr_set_tuner_gain (device, theGain);
 
-	temp	= dabstickSettings -> value ("autogain", "autogain on"). toString ();
+	temp	= dabstickSettings -> value ("autogain", "autogain_on"). toString ();
 	k	= combo_autogain -> findText (temp);
 	if (k != -1) 
-	   combo_gain	-> setCurrentIndex (k);
+	   combo_autogain	-> setCurrentIndex (k);
 	
 	rtlsdr_set_tuner_gain_mode (device,
-	                   combo_autogain -> currentText () == "autogain on");
+	                   combo_autogain -> currentText () == "autogain_on");
 	
 	f_correction -> setValue (dabstickSettings -> value ("f_correction", 0). toInt ());
 	KhzOffset	-> setValue (dabstickSettings -> value ("KhzOffset", 0). toInt ());
@@ -285,9 +285,8 @@ int32_t	r;
 	this -> rtlsdr_set_center_freq (device, lastFrequency + vfoOffset);
 	workerHandle	= new dll_driver (this);
 	rtlsdr_set_tuner_gain_mode (device,
-                combo_autogain -> currentText () == "autogain on" ? 1 : 0);
+                combo_autogain -> currentText () == "autogain_on" ? 1 : 0);
 	rtlsdr_set_tuner_gain (device, theGain);
-	fprintf (stderr, "the gain is set to %d\n", theGain);
 	return true;
 }
 
@@ -313,7 +312,7 @@ void	dabStick::set_ExternalGain	(const QString &gain) {
 }
 //
 void	dabStick::set_autogain		(const QString &autogain) {
-	rtlsdr_set_tuner_gain_mode (device, autogain == "autogain off" ? 0 : 1);
+	rtlsdr_set_tuner_gain_mode (device, autogain == "autogain_off" ? 0 : 1);
 }
 
 //
