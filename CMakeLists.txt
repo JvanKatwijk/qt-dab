@@ -55,11 +55,16 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 
 	find_package (PkgConfig)
+	find_package(LSBId)
 
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
-	find_package (Qt5Declarative REQUIRED)
+	if(LSB_ID_SHORT STREQUAL "Debian")
+		find_package(Qt5Quick REQUIRED)
+	else()
+		find_package (Qt5Declarative REQUIRED)
+	endif()
 	include_directories (
 	  ${Qt5Network_INCLUDE_DIRS}
 	)
@@ -150,22 +155,22 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./incluces/backend/reed-solomon.h
 	     ./includes/backend/audio/dab-audio.h
 	     ./includes/backend/audio/faad-decoder.h
-	     ./includes/backend/audio/mp4processor.h 
-	     ./includes/backend/audio/mp2processor.h 
-	     ./includes/backend/data/ip-datahandler.h 
-	     ./includes/backend/data/journaline-datahandler.h 
+	     ./includes/backend/audio/mp4processor.h
+	     ./includes/backend/audio/mp2processor.h
+	     ./includes/backend/data/ip-datahandler.h
+	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/journaline/dabdatagroupdecoder.h
-	     ./includes/backend/data/journaline/crc_8_16.h 
-	     ./includes/backend/data/journaline/log.h 
-	     ./includes/backend/data/journaline/newssvcdec_impl.h 
-	     ./includes/backend/data/journaline/Splitter.h 
-	     ./includes/backend/data/journaline/dabdgdec_impl.h 
-	     ./includes/backend/data/journaline/newsobject.h 
-	     ./includes/backend/data/journaline/NML.h 
-	     ./includes/backend/data/mot-databuilder.h 
-	     ./includes/backend/data/virtual-datahandler.h 
-	     ./includes/backend/data/pad-handler.h 
-	     ./includes/backend/data/mot-data.h 
+	     ./includes/backend/data/journaline/crc_8_16.h
+	     ./includes/backend/data/journaline/log.h
+	     ./includes/backend/data/journaline/newssvcdec_impl.h
+	     ./includes/backend/data/journaline/Splitter.h
+	     ./includes/backend/data/journaline/dabdgdec_impl.h
+	     ./includes/backend/data/journaline/newsobject.h
+	     ./includes/backend/data/journaline/NML.h
+	     ./includes/backend/data/mot-databuilder.h
+	     ./includes/backend/data/virtual-datahandler.h
+	     ./includes/backend/data/pad-handler.h
+	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/dab-data.h
 	     ./includes/backend/data/data-processor.h
 	     ./src/input/virtual-input.h
@@ -200,25 +205,25 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/backend/dab-processor.cpp
 	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
-	     ./src/backend/dab-virtual.cpp 
+	     ./src/backend/dab-virtual.cpp
 	     ./src/backend/galois.cpp
 	     ./src/backend/reed-solomon.cpp
 	     ./src/backend/audio/dab-audio.cpp
-	     ./src/backend/audio/mp4processor.cpp 
-	     ./src/backend/audio/mp2processor.cpp 
-	     ./src/backend/data/ip-datahandler.cpp 
-	     ./src/backend/data/journaline-datahandler.cpp 
-	     ./src/backend/data/journaline/crc_8_16.c 
-	     ./src/backend/data/journaline/log.c 
-	     ./src/backend/data/journaline/newssvcdec_impl.cpp 
-	     ./src/backend/data/journaline/Splitter.cpp 
-	     ./src/backend/data/journaline/dabdgdec_impl.c 
-	     ./src/backend/data/journaline/newsobject.cpp 
-	     ./src/backend/data/journaline/NML.cpp 
-	     ./src/backend/data/mot-databuilder.cpp 
-	     ./src/backend/data/virtual-datahandler.cpp 
-	     ./src/backend/data/pad-handler.cpp 
-	     ./src/backend/data/mot-data.cpp 
+	     ./src/backend/audio/mp4processor.cpp
+	     ./src/backend/audio/mp2processor.cpp
+	     ./src/backend/data/ip-datahandler.cpp
+	     ./src/backend/data/journaline-datahandler.cpp
+	     ./src/backend/data/journaline/crc_8_16.c
+	     ./src/backend/data/journaline/log.c
+	     ./src/backend/data/journaline/newssvcdec_impl.cpp
+	     ./src/backend/data/journaline/Splitter.cpp
+	     ./src/backend/data/journaline/dabdgdec_impl.c
+	     ./src/backend/data/journaline/newsobject.cpp
+	     ./src/backend/data/journaline/NML.cpp
+	     ./src/backend/data/mot-databuilder.cpp
+	     ./src/backend/data/virtual-datahandler.cpp
+	     ./src/backend/data/pad-handler.cpp
+	     ./src/backend/data/mot-data.cpp
 	     ./src/backend/data/dab-data.cpp
 	     ./src/backend/data/data-processor.cpp
 	     ./src/input/virtual-input.cpp
@@ -265,7 +270,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	set (${objectName}_SRCS
 	        ${${objectName}_SRCS} ./radio.cpp)
-	
+
 
 ##########################################################################
 #	The devices
@@ -279,7 +284,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
            include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/sdrplay/sdrplay-widget.ui 
+	        ./src/input/sdrplay/sdrplay-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
@@ -306,7 +311,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	 add_definitions (-DHAVE_SDRPLAY)
 	endif (SDRPLAY)
- 
+
 	if (AIRSPY)
            find_package(LibAIRSPY)
            if (NOT LIBAIRSPY_FOUND)
@@ -316,7 +321,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/airspy/airspy-widget.ui 
+	        ./src/input/airspy/airspy-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
@@ -366,7 +371,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/dabstick/dabstick.h 
+	        ./src/input/dabstick/dabstick.h
 	        ./src/input/dabstick/dongleselect.h
 	   )
 
@@ -401,7 +406,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   find_package (Qt5Network REQUIRED)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/rtl_tcp/rtl_tcp-widget.ui 
+	        ./src/input/rtl_tcp/rtl_tcp-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
@@ -437,7 +442,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
            list(APPEND extraLibs ${QWT_LIBRARIES})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./optional-scope/scopewidget.ui 
+	        ./optional-scope/scopewidget.ui
 	   )
 
 	   set (${objectName}_MOCS
@@ -479,7 +484,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	endif (TRY_EPG)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
-	             ./src/input/filereader-widget.ui) 
+	             ./src/input/filereader-widget.ui)
 
 	include_directories (
 	          ${SDRPLAY_INCLUDES}
@@ -526,4 +531,3 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
-
