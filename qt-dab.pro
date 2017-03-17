@@ -274,6 +274,19 @@ airspy {
 	FORMS		+= ./src/input/airspy/airspy-widget.ui
 }
 
+#	extio dependencies, windows only
+#
+extio {
+	DEFINES		+= HAVE_EXTIO
+	INCLUDEPATH	+= ./src/input/extio-handler
+	HEADERS		+= ./src/input/extio-handler/extio-handler.h \
+	                   ./src/input/extio-handler/common-readers.h \
+	                   ./src/input/extio-handler/virtual-reader.h
+	SOURCES		+= ./src/input/extio-handler/extio-handler.cpp \
+	                   ./src/input/extio-handler/common-readers.cpp \
+	                   ./src/input/extio-handler/virtual-reader.cpp
+}
+
 tcp-streamer	{
 	DEFINES		+= TCP_STREAMER
 	QT		+= network
@@ -289,6 +302,13 @@ rtl_tcp {
 	HEADERS		+= ./src/input/rtl_tcp/rtl_tcp_client.h
 	SOURCES		+= ./src/input/rtl_tcp/rtl_tcp_client.cpp
 	FORMS		+= ./src/input/rtl_tcp/rtl_tcp-widget.ui
+}
+
+tcp-streamer    {
+        DEFINES         += TCP_STREAMER
+        QT              += network
+        HEADERS         += ./includes/output/tcp-streamer.h
+        SOURCES         += ./src/output/tcp-streamer.cpp
 }
 
 try-epg	{

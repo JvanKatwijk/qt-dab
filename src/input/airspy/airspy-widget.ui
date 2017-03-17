@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>423</width>
+    <width>349</width>
     <height>302</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>401</width>
+     <width>331</width>
      <height>191</height>
     </rect>
    </property>
@@ -171,9 +171,9 @@
     <widget class="QSlider" name="linearitySlider">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>0</x>
        <y>20</y>
-       <width>301</width>
+       <width>261</width>
        <height>20</height>
       </rect>
      </property>
@@ -190,7 +190,7 @@
     <widget class="QLCDNumber" name="linearityDisplay">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>270</x>
        <y>20</y>
        <width>64</width>
        <height>23</height>

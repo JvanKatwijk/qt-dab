@@ -187,7 +187,8 @@ int	k;
 	}
 	rtlsdr_set_tuner_gain (device, theGain);
 
-	temp	= dabstickSettings -> value ("autogain", "autogain_on"). toString ();
+	temp	= dabstickSettings -> value ("autogain",
+	                                      "autogain_on"). toString ();
 	k	= combo_autogain -> findText (temp);
 	if (k != -1) 
 	   combo_autogain	-> setCurrentIndex (k);

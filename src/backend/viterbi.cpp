@@ -29,7 +29,6 @@
 #include	"viterbi.h"
 #include	<cstring>
 #ifdef	__MINGW32__
-#include <stdlib.h>
 #include <intrin.h>
 #include <malloc.h>
 #include <windows.h>
@@ -86,7 +85,7 @@ static uint8_t Partab [] =
 //	odd-parity lookup table by the following function
 //	It is now precomputed
 static
-void	partab_init(void){
+void	partab_init (void){
 int16_t i,cnt,ti;
 
 	for (i = 0; i < 256; i++){
