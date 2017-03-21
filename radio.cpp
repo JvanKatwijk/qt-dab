@@ -1040,43 +1040,30 @@ void	RadioInterface::TerminateProcess (void) {
 
 	if (crcErrors_File != NULL)
 	   fclose (crcErrors_File);
-	fprintf (stderr, "x1\n");
 	inputDevice		-> stopReader ();	// might be concurrent
-	fprintf (stderr, "x2\n");
 	my_mscHandler		-> stopHandler ();	// might be concurrent
-	fprintf (stderr, "x3\n");
 	my_ofdmProcessor	-> stop ();	// definitely concurrent
-	fprintf (stderr, "x4\n");
 	soundOut		-> stop ();
-	fprintf (stderr, "x5\n");
 #ifdef	TECHNICAL_DATA
 	dataDisplay	->  hide ();
 	delete dataDisplay;
-	fprintf (stderr, "x6\n");
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
-	fprintf (stderr, "x7\n");
 	fprintf (stderr, "going to delete components now\n");
 	delete		my_ofdmProcessor;
-	fprintf (stderr, "x8\n");
 	delete		my_mscHandler;
-	fprintf (stderr, "x9\n");
 	delete		soundOut;
-	fprintf (stderr, "x10\n");
 	soundOut	= NULL;		// signals may be pending, so careful
-	fprintf (stderr, "x11\n");
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> hide ();
 	delete	spectrumHandler;
-	fprintf (stderr, "x12\n");
 #endif
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;		// signals may be pending, so careful
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
-	fprintf (stderr, "x13\n");
 	close ();
 	fprintf (stderr, "closed\n");
 }
