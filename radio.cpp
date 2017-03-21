@@ -261,6 +261,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> setValue ("device", deviceSelector -> currentText ());
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText ());
+	s	-> sync ();
 }
 //
 ///	the values for the different Modes:
@@ -1039,30 +1040,43 @@ void	RadioInterface::TerminateProcess (void) {
 
 	if (crcErrors_File != NULL)
 	   fclose (crcErrors_File);
+	fprintf (stderr, "x1\n");
 	inputDevice		-> stopReader ();	// might be concurrent
+	fprintf (stderr, "x2\n");
 	my_mscHandler		-> stopHandler ();	// might be concurrent
+	fprintf (stderr, "x3\n");
 	my_ofdmProcessor	-> stop ();	// definitely concurrent
+	fprintf (stderr, "x4\n");
 	soundOut		-> stop ();
+	fprintf (stderr, "x5\n");
 #ifdef	TECHNICAL_DATA
 	dataDisplay	->  hide ();
 	delete dataDisplay;
+	fprintf (stderr, "x6\n");
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
+	fprintf (stderr, "x7\n");
 	fprintf (stderr, "going to delete components now\n");
 	delete		my_ofdmProcessor;
+	fprintf (stderr, "x8\n");
 	delete		my_mscHandler;
+	fprintf (stderr, "x9\n");
 	delete		soundOut;
+	fprintf (stderr, "x10\n");
 	soundOut	= NULL;		// signals may be pending, so careful
+	fprintf (stderr, "x11\n");
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> hide ();
 	delete	spectrumHandler;
+	fprintf (stderr, "x12\n");
 #endif
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;		// signals may be pending, so careful
 	fprintf (stderr, "Termination started\n");
 	delete		inputDevice;
+	fprintf (stderr, "x13\n");
 	close ();
 	fprintf (stderr, "closed\n");
 }
@@ -1477,6 +1491,8 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	      {  packetdata d;
 	         my_ficHandler. dataforDataService (a, &d);
 	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
+	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
+	                               d. DSCTy, d. bitRate);
 	            QMessageBox::warning (this, tr ("sdr"),
  	                               tr ("still insufficient data for this service\n"));
 
@@ -1528,8 +1544,8 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 void	RadioInterface::resetSelector (void) {
 	disconnect (deviceSelector, SIGNAL (activated (const QString &)),
 	            this, SLOT (setDevice (const QString &)));
-int	k	= deviceSelector -> findText (QString ("no device"));
-	if (k != -1) { 		// should not happen
+int	k	= deviceSelector -> findText (QString ("Select device"));
+	if (k != -1) { 		// should always happen
 	   deviceSelector -> setCurrentIndex (k);
 	}
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
@@ -1644,4 +1660,4 @@ void	RadioInterface::toggle_show_data (void) {
 	   dataDisplay -> hide ();
 }
 #endif
-	   
+

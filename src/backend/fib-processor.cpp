@@ -306,7 +306,6 @@ int16_t	option, protLevel, subChanSize;
 	   if (option == 0) { 		// A Level protection
 	      protLevel = getBits (d, bitOffset + 20, 2);
 //
-//	we encode the A level protection by adding 0100 to the level
 	      ficList [SubChId]. protLevel = protLevel;
 	      subChanSize = getBits (d, bitOffset + 22, 10);
 	      ficList [SubChId]. Length	= subChanSize;

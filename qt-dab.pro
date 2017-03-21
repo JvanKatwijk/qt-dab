@@ -304,13 +304,6 @@ rtl_tcp {
 	FORMS		+= ./src/input/rtl_tcp/rtl_tcp-widget.ui
 }
 
-tcp-streamer    {
-        DEFINES         += TCP_STREAMER
-        QT              += network
-        HEADERS         += ./includes/output/tcp-streamer.h
-        SOURCES         += ./src/output/tcp-streamer.cpp
-}
-
 try-epg	{
 	DEFINES		+= TRY_EPG
 	Qt		+= xml

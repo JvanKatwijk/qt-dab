@@ -652,3 +652,4 @@ void	ofdmProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
+

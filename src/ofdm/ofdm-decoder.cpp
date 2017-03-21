@@ -295,6 +295,7 @@ toBitsLabel:
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
+
 handlerLabel:
 	my_ficHandler -> process_ficBlock (ibits, blkno);
 
@@ -375,4 +376,5 @@ int16_t	high	= low + carriers;
 
 	return get_db (signal / (carriers / 2)) - get_db (noise);
 }
+
 
