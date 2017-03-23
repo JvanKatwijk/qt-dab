@@ -42,6 +42,7 @@
 #include	"msc-handler.h"
 #include	"audiosink.h"
 #include	"fft.h"
+#include	"dab-params.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #ifdef	TCP_STREAMER
@@ -198,7 +199,7 @@ int16_t k;
 	setupChannels	(channelSelector, dabBand);
 
 	uint8_t dabMode	= dabSettings	-> value ("dabMode", 1). toInt ();
-	setModeParameters (dabMode);
+	dabModeParameters	= new dabParams (dabMode);
 /**
   *	The actual work is done elsewhere: in ofdmProcessor
   *	and ofdmDecoder for the ofdm related part, ficHandler
@@ -206,7 +207,7 @@ int16_t k;
   */
 	this	-> freqsyncMethod	= freqsyncMethod;
 	my_mscHandler		= new mscHandler	(this,
-	                                                 &dabModeParameters,
+	                                                 dabModeParameters,
 	                                                 audioBuffer,
 	                                                 show_crcErrors);
 //
@@ -217,7 +218,7 @@ int16_t k;
   */
 	my_ofdmProcessor = new ofdmProcessor   (this,
 	                                        inputDevice,
-	                                        &dabModeParameters,
+	                                        dabModeParameters,
 	                                        my_mscHandler,
 	                                        &my_ficHandler,
 	                                        threshold,
@@ -264,53 +265,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> sync ();
 }
 //
-///	the values for the different Modes:
-void	RadioInterface::setModeParameters (uint8_t Mode) {
-	if (Mode == 2) {
-	   dabModeParameters. dabMode	= 2;
-	   dabModeParameters. L		= 76;		// blocks per frame
-	   dabModeParameters. K		= 384;		// carriers
-	   dabModeParameters. T_null	= 664;		// null length
-	   dabModeParameters. T_F	= 49152;	// samples per frame
-	   dabModeParameters. T_s	= 638;		// block length
-	   dabModeParameters. T_u	= 512;		// useful part
-	   dabModeParameters. guardLength	= 126;
-	   dabModeParameters. carrierDiff	= 4000;
-	} else
-	if (Mode == 4) {
-	   dabModeParameters. dabMode		= 4;
-	   dabModeParameters. L			= 76;
-	   dabModeParameters. K			= 768;
-	   dabModeParameters. T_F		= 98304;
-	   dabModeParameters. T_null		= 1328;
-	   dabModeParameters. T_s		= 1276;
-	   dabModeParameters. T_u		= 1024;
-	   dabModeParameters. guardLength	= 252;
-	   dabModeParameters. carrierDiff	= 2000;
-	} else 
-	if (Mode == 3) {
-	   dabModeParameters. dabMode		= 3;
-	   dabModeParameters. L			= 153;
-	   dabModeParameters. K			= 192;
-	   dabModeParameters. T_F		= 49152;
-	   dabModeParameters. T_null		= 345;
-	   dabModeParameters. T_s		= 319;
-	   dabModeParameters. T_u		= 256;
-	   dabModeParameters. guardLength	= 63;
-	   dabModeParameters. carrierDiff	= 2000;
-	} else {	// default = Mode I
-	   dabModeParameters. dabMode		= 1;
-	   dabModeParameters. L			= 76;
-	   dabModeParameters. K			= 1536;
-	   dabModeParameters. T_F		= 196608;
-	   dabModeParameters. T_null		= 2656;
-	   dabModeParameters. T_s		= 2552;
-	   dabModeParameters. T_u		= 2048;
-	   dabModeParameters. guardLength	= 504;
-	   dabModeParameters. carrierDiff	= 1000;
-	}
-}
-
 struct dabFrequencies {
 	const char	*key;
 	int	fKHz;
@@ -616,7 +570,7 @@ void	RadioInterface::init_your_gui (void) {
 	   autoStart	= false;
 	
 //	display the version
-    QString v = "Qt-DAB " ;
+	QString v = "Qt-DAB " ;
 	v. append (CURRENT_VERSION);
 	versionName	-> setText (v);
 //	and start the timer
@@ -641,7 +595,7 @@ void	RadioInterface::init_your_gui (void) {
 	   }
 	}
 }
-///////////////////////////////////////////////////////////////////////////////
+
 ///////////////////////////////////////////////////////////////////////////////
 //	
 //	The public slots are called from other places within the dab software
@@ -878,7 +832,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 	QPixmap p;
 	p. loadFromData (data, type);
 	
-	if (saveSlide) {
+	if (saveSlide && (pictureName != QString (""))) {
 	   FILE *x = fopen ((pictureName. toLatin1 (). data ()), "w+b");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
@@ -1058,6 +1012,8 @@ void	RadioInterface::TerminateProcess (void) {
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> hide ();
 	delete	spectrumHandler;
+	delete	spectrumBuffer;
+	delete	iqBuffer;
 #endif
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
@@ -1191,16 +1147,17 @@ uint8_t	Mode	= s. toInt ();
 //	we have to create a new ofdmprocessor with the correct
 //	settings of the parameters.
 	delete	my_mscHandler;
-	setModeParameters (Mode);
-	my_ficHandler. setBitsperBlock	(2 * dabModeParameters. K);
+	delete dabModeParameters;
+	dabModeParameters	= new dabParams (Mode);
+	my_ficHandler. setBitsperBlock	(2 * dabModeParameters -> get_carriers ());
 	my_mscHandler		= new mscHandler	(this,
-	                                                 &dabModeParameters,
+	                                                 dabModeParameters,
 	                                                 audioBuffer,
 	                                                 show_crcErrors);
 	delete my_ofdmProcessor;
 	my_ofdmProcessor	= new ofdmProcessor   (this,
 	                                               inputDevice,
-	                                               &dabModeParameters,
+	                                               dabModeParameters,
 	                                               my_mscHandler,
 	                                               &my_ficHandler,
 	                                               threshold,
@@ -1397,7 +1354,7 @@ QString	file;
 ///	Note: the fichandler and mscHandler remain unchanged
 	my_ofdmProcessor	= new ofdmProcessor   (this,
 	                                               inputDevice,
-	                                               &dabModeParameters,
+	                                               dabModeParameters,
 	                                               my_mscHandler,
 	                                               &my_ficHandler,
 	                                               threshold,

@@ -1,25 +1,26 @@
 #
 /*
- *    Copyright (C) 2016
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"phasereference.h" 
+#include	"dab-params.h"
 #include	"string.h"
 /**
   *	\class phaseReference
@@ -28,13 +29,13 @@
   *	the first non-null block of a frame
   *	The class inherits from the phaseTable.
   */
-	phaseReference::phaseReference (DabParams	*p,
+	phaseReference::phaseReference (dabParams	*p,
 	                                int16_t		threshold):
-	                                     phaseTable (p -> dabMode) {
+	                                     phaseTable (p -> get_dabMode ()) {
 int32_t	i;
 DSPFLOAT	Phi_k;
 
-	this	-> Tu		= p -> T_u;
+	this	-> Tu		= p -> get_T_u ();
 	this	-> threshold	= threshold;
 
 	Max			= 0.0;
@@ -47,7 +48,7 @@ DSPFLOAT	Phi_k;
 
 	memset (refTable, 0, sizeof (DSPCOMPLEX) * Tu);
 
-	for (i = 1; i <= p -> K / 2; i ++) {
+	for (i = 1; i <= p -> get_carriers () / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   refTable [i] = DSPCOMPLEX (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);

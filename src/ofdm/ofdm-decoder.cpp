@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 2015
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -30,6 +30,8 @@
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"freq-interleaver.h"
+#include	"dab-params.h"
+
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is - when implemented in a separate thread -
@@ -38,13 +40,13 @@
   *	carriers and map them on (soft) bits
   */
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
-	                                 DabParams	*p,
+	                                 dabParams	*p,
 #ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<DSPCOMPLEX> *iqBuffer,
 #endif
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
-	                                 bufferSpace (p -> L),
+	                                 bufferSpace (p -> get_L ()),
 	                                 myMapper (p) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
@@ -60,9 +62,10 @@ int16_t	i;
 #endif
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
-	this	-> T_s			= params	-> T_s;
-	this	-> T_u			= params	-> T_u;
-	this	-> carriers		= params	-> K;
+	this	-> T_s			= params	-> get_T_s ();
+	this	-> T_u			= params	-> get_T_u ();
+	this	-> nrBlocks		= params	-> get_L ();
+	this	-> carriers		= params	-> get_carriers ();
 	ibits				= new int16_t [2 * this -> carriers];
 
 	this	-> T_g			= T_s - T_u;
@@ -83,8 +86,8 @@ int16_t	i;
   *	We just create a large buffer where index i refers to block i.
   *
   */
-	command			= new DSPCOMPLEX * [params -> L];
-	for (i = 0; i < params -> L; i ++)
+	command			= new DSPCOMPLEX * [nrBlocks];
+	for (i = 0; i < nrBlocks; i ++)
 	   command [i] = new DSPCOMPLEX [T_u];
 	amount		= 0;
 	start ();
@@ -99,7 +102,7 @@ int16_t	i;
 	   usleep (100);
 	delete		fft_handler;
 	delete[]	phaseReference;
-	for (i = 0; i < params -> L; i ++)
+	for (i = 0; i < nrBlocks; i ++)
 	   delete[] command [i];
 	delete[] command;
 }
@@ -138,7 +141,7 @@ int16_t	currentBlock	= 0;
 	         decodeMscblock (currentBlock);
 	      bufferSpace. release (1);
 	      helper. lock ();
-	      currentBlock = (currentBlock + 1) % (params -> L);
+	      currentBlock = (currentBlock + 1) % (nrBlocks);
 	      amount -= 1;
 	      helper. unlock ();
 	   }

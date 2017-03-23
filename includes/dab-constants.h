@@ -137,19 +137,6 @@ float	im	= imag (z);
 #define		BAND_III	0100
 #define		L_BAND		0101
 
-struct P {
-	uint8_t	dabMode;
-	int16_t	L;
-	int16_t	K;
-	int16_t	T_null;
-	int32_t	T_F;
-	int16_t	T_s;
-	int16_t	T_u;
-	int16_t	guardLength;
-	int16_t	carrierDiff;
-};
-
-typedef	struct P DabParams;
 //
 //	for service handling we define
 typedef struct {

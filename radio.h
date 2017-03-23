@@ -46,10 +46,9 @@
 class	QSettings;
 class	virtualInput;
 class	audioBase;
-
 class	mscHandler;
-
 class	common_fft;
+class	dabParams;
 
 #ifdef	TCP_STREAMER
 class	tcpStreamer;
@@ -94,7 +93,7 @@ private:
 	void		setupChannels		(QComboBox *s, uint8_t band);
 	void		setModeParameters	(uint8_t);
 	void		clear_showElements	(void);
-	DabParams	dabModeParameters;
+	dabParams	*dabModeParameters;
 	uint8_t		isSynced;
 	uint8_t		dabBand;
 	bool		running;

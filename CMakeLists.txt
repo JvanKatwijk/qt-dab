@@ -183,6 +183,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/various/fft.h
 	     ./includes/various/ringbuffer.h
 	     ./includes/various/Xtan2.h
+	     ./includes/various/dab-params.h
 	)
 
 	set (${objectName}_SRCS
@@ -235,6 +236,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/output/fir-filters.cpp
 	     ./src/various/fft.cpp
 	     ./src/various/Xtan2.cpp
+	     ./src/various/dab-params.cpp
 	)
 
 	set (${objectName}_MOCS

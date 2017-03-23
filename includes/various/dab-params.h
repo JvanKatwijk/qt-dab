@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the Qt-DAB program
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -18,36 +19,36 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
 
-#include	"fft.h"
-#include	<stdio.h>
+#ifndef	_DAB_PARAMS__
+#define	__DAB_PARAMS__
 #include	<stdint.h>
-#include	"phasetable.h"
-#include	"dab-constants.h"
 
-class	dabParams;
-
-class phaseReference : public phaseTable {
+class	dabParams {
 public:
-		phaseReference (dabParams *, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
+			dabParams (uint8_t);
+			~dabParams (void);
+	int16_t		get_dabMode (void);
+	int16_t		get_L (void);
+	int16_t		get_carriers (void);
+	int16_t		get_T_null (void);
+	int16_t		get_T_s (void);
+	int16_t		get_T_u (void);
+	int16_t		get_T_g (void);
+	int32_t		get_T_F (void);
+	int32_t		get_carrierDiff (void);
 private:
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+	uint8_t	dabMode;
+	int16_t	L;
+	int16_t	K;
+	int16_t	T_null;
+	int32_t	T_F;
+	int16_t	T_s;
+	int16_t	T_u;
+	int16_t	T_g;
+	int16_t	carrierDiff;
 };
+
 #endif
 

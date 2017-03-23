@@ -1,22 +1,22 @@
 #
 /*
- *    Copyright (C) 2015, 2016
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"ofdm-processor.h"
@@ -24,6 +24,7 @@
 #include	"msc-handler.h"
 #include	"radio.h"
 #include	"fft.h"
+#include	"dab-params.h"
 //
 #define	SEARCH_RANGE		(2 * 36)
 #define	CORRELATION_LENGTH	24
@@ -50,7 +51,7 @@ int16_t	res	= 1;
 
 	ofdmProcessor::ofdmProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
-	                                 DabParams	*params,
+	                                 dabParams	*params,
 	                                 mscHandler 	*msc,
 	                                 ficHandler 	*fic,
 	                                 int16_t	threshold,
@@ -76,10 +77,13 @@ int32_t	i;
 	this	-> my_ficHandler	= fic;
 	this	-> freqsyncMethod	= freqsyncMethod;
 
-	this	-> T_null		= params	-> T_null;
-	this	-> T_s			= params	-> T_s;
-	this	-> T_u			= params	-> T_u;
-	this	-> T_F			= params	-> T_F;
+	this	-> T_null		= params	-> get_T_null ();
+	this	-> T_s			= params	-> get_T_s ();
+	this	-> T_u			= params	-> get_T_u ();
+	this	-> T_F			= params	-> get_T_F ();
+	this	-> nrBlocks		= params	-> get_L ();
+	this	-> carriers		= params	-> get_carriers ();
+	this	-> carrierDiff		= params	-> get_carrierDiff ();
 	fft_handler			= new common_fft (T_u);
 	fft_buffer			= fft_handler -> getVector ();
 	dumping				= false;
@@ -403,8 +407,8 @@ SyncOnPhase:
   *	used for synchronization for block 0
   */
 	   memmove (ofdmBuffer, &ofdmBuffer [startIndex],
-	                  (params -> T_u - startIndex) * sizeof (DSPCOMPLEX));
-	   ofdmBufferIndex	= params -> T_u - startIndex;
+	                  (T_u - startIndex) * sizeof (DSPCOMPLEX));
+	   ofdmBufferIndex	= T_u - startIndex;
 
 Block_0:
 /**
@@ -426,7 +430,7 @@ Block_0:
 	   if (f2Correction) {
 	      int correction		= processBlock_0 (ofdmBuffer);
 	      if (correction != 100) {
-	         coarseCorrector	+= correction * params -> carrierDiff;
+	         coarseCorrector	+= correction * carrierDiff;
 	         if (abs (coarseCorrector) > Khz (35))
 	            coarseCorrector = 0;
 	      }
@@ -453,7 +457,7 @@ Data_blocks:
 
 ///	and similar for the (params -> L - 4) MSC blocks
 	   for (ofdmSymbolCount = 4;
-	        ofdmSymbolCount <  (uint16_t)params -> L;
+	        ofdmSymbolCount <  (uint16_t)nrBlocks;
 	        ofdmSymbolCount ++) {
 	      getSamples (ofdmBuffer, T_s, coarseCorrector + fineCorrector);
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
@@ -465,8 +469,7 @@ Data_blocks:
 NewOffset:
 ///	we integrate the newly found frequency error with the
 ///	existing frequency error.
-	   fineCorrector += 0.1 * arg (FreqCorr) / M_PI *
-	                        (params -> carrierDiff / 2);
+	   fineCorrector += 0.1 * arg (FreqCorr) / M_PI * (carrierDiff / 2);
 //
 /**
   *	OK,  here we are at the end of the frame
@@ -483,14 +486,14 @@ NewOffset:
 	   counter	= 0;
 //
 
-	   if (fineCorrector > params -> carrierDiff / 2) {
-	      coarseCorrector += params -> carrierDiff;
-	      fineCorrector -= params -> carrierDiff;
+	   if (fineCorrector > carrierDiff / 2) {
+	      coarseCorrector += carrierDiff;
+	      fineCorrector -= carrierDiff;
 	   }
 	   else
-	   if (fineCorrector < -params -> carrierDiff / 2) {
-	      coarseCorrector -= params -> carrierDiff;
-	      fineCorrector += params -> carrierDiff;
+	   if (fineCorrector < -carrierDiff / 2) {
+	      coarseCorrector -= carrierDiff;
+	      fineCorrector += carrierDiff;
 	   }
 ReadyForNewFrame:
 ///	and off we go, up to the next frame
@@ -631,20 +634,20 @@ DSPFLOAT	oldMax	= 0;
 //	The range in which the carrier should be is
 //	T_u / 2 - K / 2 .. T_u / 2 + K / 2
 //	We first determine an initial sum over params -> K carriers
-	for (i = 40; i < params -> K + 40; i ++)
+	for (i = 40; i < carriers + 40; i ++)
 	   sum += abs (v [(T_u / 2 + i) % T_u]);
 //
 //	Now a moving sum, look for a maximum within a reasonable
 //	range (around (T_u - K) / 2, the start of the useful frequencies)
-	for (i = 40; i < T_u - (params -> K - 40); i ++) {
+	for (i = 40; i < T_u - (carriers - 40); i ++) {
 	   sum -= abs (v [(T_u / 2 + i) % T_u]);
-	   sum += abs (v [(T_u / 2 + i + params -> K) % T_u]);
+	   sum += abs (v [(T_u / 2 + i + carriers) % T_u]);
 	   if (sum > oldMax) {
 	      sum = oldMax;
 	      maxIndex = i;
 	   }
 	}
-	return maxIndex - (T_u - params -> K) / 2;
+	return maxIndex - (T_u - carriers) / 2;
 }
 
 	

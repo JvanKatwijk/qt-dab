@@ -98,6 +98,7 @@ HEADERS += ./radio.h \
            ./includes/various/fft.h \
 	   ./includes/various/ringbuffer.h \
 	   ./includes/various/Xtan2.h \
+	   ./includes/various/dab-params.h \
 	   ./src/input/virtual-input.h \
 	   ./src/input/rawfiles/rawfiles.h \
            ./src/input/wavfiles/wavfiles.h
@@ -149,6 +150,7 @@ SOURCES += ./main.cpp \
 	   ./src/output/fir-filters.cpp \
            ./src/various/fft.cpp \
 	   ./src/various/Xtan2.cpp \
+	   ./src/various/dab-params.cpp \
 	   ./src/input/virtual-input.cpp \
 	   ./src/input/rawfiles/rawfiles.cpp \
            ./src/input/wavfiles/wavfiles.cpp

@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
@@ -26,6 +26,7 @@
 #include	"dab-virtual.h"
 #include	"dab-audio.h"
 #include	"dab-data.h"
+#include	"dab-params.h"
 //
 //	Interface program for processing the MSC.
 //	Merely a dispatcher for the selected service
@@ -37,7 +38,7 @@
 //	Note CIF counts from 0 .. 3
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
-	                                 DabParams	*p,
+	                                 dabParams	*p,
 	                                 RingBuffer<int16_t> *buffer,
 	                                 bool	show_crcErrors) {
 	myRadioInterface	= mr;
@@ -50,17 +51,24 @@
 	newChannel		= false;
 	work_to_be_done		= false;
 	dabModus		= 0;
-	BitsperBlock		= 2 * p -> K;
-	if (p -> dabMode == 4)	// 2 CIFS per 76 blocks
-	   numberofblocksperCIF	= 36;
-	else
-	if (p -> dabMode == 1)	// 4 CIFS per 76 blocks
-	   numberofblocksperCIF	= 18;
-	else
-	if (p -> dabMode == 2)	// 1 CIF per 76 blocks
-	   numberofblocksperCIF	= 72;
-	else			// shouldnot/cannot happen
-	   numberofblocksperCIF	= 18;
+	BitsperBlock		= 2 * p -> get_carriers ();
+	switch (p -> get_dabMode ()) {
+	   case 4:	// 2 CIFS per 76 blocks
+	      numberofblocksperCIF	= 36;
+	      break;
+
+	   case 1:	// 4 CIFS per 76 blocks
+	      numberofblocksperCIF	= 18;
+	      break;
+
+	   case 2:	// 1 CIF per 76 blocks
+	      numberofblocksperCIF	= 72;
+	      break;
+
+	   default:
+	      numberofblocksperCIF	= 18;
+	      break;
+	}
 
 	audioService		= true;		// default
 }
