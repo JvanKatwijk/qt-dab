@@ -725,7 +725,7 @@ uint8_t		region_Id_Lower;
 	   if (region_flag) {
 	      region_Id_Lower = getBits_6 (d, offset + 34);
 	      offset += 40;
-//           fprintf(stderr,"for region %u",region_Id_Lower);
+	      fprintf(stderr,"for region %u",region_Id_Lower);
 	   }
 	   else
 	      offset += 32;
