@@ -36,14 +36,14 @@ Features
   	- Airspy including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), 
    	- SDRplay and 
-   	- prerecorded dump (*.raw and *.sdr) 
+   	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
-Not implemented:
+Not (yet) implemented:
 
   * DMB (Audio and Video)
   * TPEG
   * EPG
-  * Journaline
+  * Journaline (an untested journaline implemntation is part of the sources)
   
   * Other bands than used for terrestrical broadcasting in Europe (like DAB over cable)
   * HackRF
@@ -248,8 +248,6 @@ Raspberry PI
 ------------------------------------------------------------------
 
 The Qt-DAB software runs pretty well on the author's RPI-2. The average load on the 4 cores is somewhat over 60 percent.
-
-However, note that the arch system, the one the author is running, provides the gcc 6.XX compilers rather than the GCC 4.9 on Jessie. On Jessie the load is higher, up to 75 or 80 percent.
 
 One remark: getting "sound" is not always easy. Be certain that you have installed the alsa-utils, and that you are - as non-root user - able to see devices with aplay -L
 
