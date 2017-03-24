@@ -37,7 +37,7 @@ Features
   playing them again later
 * Saving audio as uncompressed wave file
 * Supports various inputs from Airspy, Airspy mini, SDR DAB sticks 
-  (RTL2838U or similar), SDRplay and prerecorded dump (*.raw and *.sdr) 
+  (RTL2838U or similar), SDRplay and prerecorded dump (*.raw *.iq and *.sdr) 
  
 Not implemented:
 
