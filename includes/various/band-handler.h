@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -18,36 +18,22 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
 
-#include	"fft.h"
-#include	<stdio.h>
+#ifndef	__BANDHANDLER__
+#define	__BANDHANDLER__
 #include	<stdint.h>
-#include	"phasetable.h"
-#include	"dab-constants.h"
-#include	"dab-params.h"
-
-class phaseReference : public phaseTable {
+#include	<QComboBox>
+#include	<QString>
+//
+//	a simple convenience class
+//
+class bandHandler {
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
-private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+	bandHandler	(void);
+	~bandHandler	(void);
+void	setupChannels	(QComboBox *s, uint8_t band);
+int32_t Frequency	(uint8_t band, QString Channel);
 };
 #endif
 

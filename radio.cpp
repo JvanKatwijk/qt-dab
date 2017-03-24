@@ -42,7 +42,6 @@
 #include	"msc-handler.h"
 #include	"audiosink.h"
 #include	"fft.h"
-#include	"dab-params.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #ifdef	TCP_STREAMER
@@ -110,6 +109,7 @@ int16_t k;
 	this	-> tracing	= tracing;
 // 	the setup for the generated part of the ui
 	setupUi (this);
+
 #ifdef	TECHNICAL_DATA
 	dataDisplay	= new QFrame (NULL);
 	techData. setupUi (dataDisplay);
@@ -190,16 +190,19 @@ int16_t k;
         spectrumHandler -> show ();
 #endif
 
-/**
-  *	By default we select Band III and Mode 1 or whatever the use
-  *	has specified
-  */
-	QString t	= dabSettings	-> value ("dabBand", "BAND III"). toString ();
-	dabBand		= t == "BAND III" ? BAND_III : L_BAND;
-	setupChannels	(channelSelector, dabBand);
+	QString t	= dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
+	k	= bandSelector -> findText (t);
+	if (k != -1) 
+	   bandSelector -> setCurrentIndex (k);
+	dabBand		= bandSelector -> currentText () == "VHF Band III" ?
+	                                     BAND_III : L_BAND;
 
-	uint8_t dabMode	= dabSettings	-> value ("dabMode", 1). toInt ();
-	dabModeParameters	= new dabParams (dabMode);
+	theBand. setupChannels	(channelSelector, dabBand);
+
+	t	= dabSettings	-> value ("dabMode", 1). toString ();
+	k	= modeSelector -> findText (t);
+	if (k != -1) 
+	   modeSelector -> setCurrentIndex (k);
 /**
   *	The actual work is done elsewhere: in ofdmProcessor
   *	and ofdmDecoder for the ofdm related part, ficHandler
@@ -207,10 +210,9 @@ int16_t k;
   */
 	this	-> freqsyncMethod	= freqsyncMethod;
 	my_mscHandler		= new mscHandler	(this,
-	                                                 dabModeParameters,
+	                                                 convert (modeSelector -> currentText ()),
 	                                                 audioBuffer,
 	                                                 show_crcErrors);
-//
 /**
   *	The default for the ofdmProcessor depends on
   *	the input device, so changing the selection for an input device
@@ -218,7 +220,7 @@ int16_t k;
   */
 	my_ofdmProcessor = new ofdmProcessor   (this,
 	                                        inputDevice,
-	                                        dabModeParameters,
+	                                        convert (modeSelector -> currentText ()),
 	                                        my_mscHandler,
 	                                        &my_ficHandler,
 	                                        threshold,
@@ -229,6 +231,7 @@ int16_t k;
 #endif
 	                                       );
 	init_your_gui ();		// gui specific stuff
+
 #ifdef	TECHNICAL_DATA
 	QPalette p	= techData. ficError_display -> palette ();
 	p. setColor (QPalette::Highlight, Qt::red);
@@ -264,101 +267,9 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                               streamoutSelector -> currentText ());
 	s	-> sync ();
 }
-//
-struct dabFrequencies {
-	const char	*key;
-	int	fKHz;
-};
 
-struct dabFrequencies bandIII_frequencies [] = {
-{"5A",	174928},
-{"5B",	176640},
-{"5C",	178352},
-{"5D",	180064},
-{"6A",	181936},
-{"6B",	183648},
-{"6C",	185360},
-{"6D",	187072},
-{"7A",	188928},
-{"7B",	190640},
-{"7C",	192352},
-{"7D",	194064},
-{"8A",	195936},
-{"8B",	197648},
-{"8C",	199360},
-{"8D",	201072},
-{"9A",	202928},
-{"9B",	204640},
-{"9C",	206352},
-{"9D",	208064},
-{"10A",	209936},
-{"10B", 211648},
-{"10C", 213360},
-{"10D", 215072},
-{"11A", 216928},
-{"11B",	218640},
-{"11C",	220352},
-{"11D",	222064},
-{"12A",	223936},
-{"12B",	225648},
-{"12C",	227360},
-{"12D",	229072},
-{"13A",	230748},
-{"13B",	232496},
-{"13C",	234208},
-{"13D",	235776},
-{"13E",	237488},
-{"13F",	239200},
-{NULL, 0}
-};
 
-struct dabFrequencies Lband_frequencies [] = {
-{"LA", 1452960},
-{"LB", 1454672},
-{"LC", 1456384},
-{"LD", 1458096},
-{"LE", 1459808},
-{"LF", 1461520},
-{"LG", 1463232},
-{"LH", 1464944},
-{"LI", 1466656},
-{"LJ", 1468368},
-{"LK", 1470080},
-{"LL", 1471792},
-{"LM", 1473504},
-{"LN", 1475216},
-{"LO", 1476928},
-{"LP", 1478640},
-{NULL, 0}
-};
-
-/**
-  *	\brief setupChannels
-  *	sets the entries in the GUI
-  */
-//
-//	Note that the ComboBox is GUI specific, but we assume
-//	a comboBox is available to act later on as selector
-//	for the channels
-//
-void	RadioInterface::setupChannels (QComboBox *s, uint8_t band) {
-struct dabFrequencies *t;
-int16_t	i;
-int16_t	c	= s -> count ();
-
-//	clear the fields in the conboBox
-	for (i = 0; i < c; i ++) 
-	   s	-> removeItem (c - (i + 1));
-
-	if (band == BAND_III)
-	   t = bandIII_frequencies;
-	else
-	   t = Lband_frequencies;
-
-	for (i = 0; t [i]. key != NULL; i ++) 
-	   s -> insertItem (i, t [i]. key, QVariant (i));
-}
-
+///////////////////////////////////////////////////////////////////////
 static 
 const char *table12 [] = {
 "None",
@@ -549,7 +460,6 @@ void	RadioInterface::init_your_gui (void) {
 /**
   *	we now handle the settings as saved by previous incarnations.
   */
-//	setDevice 		(deviceSelector 	-> currentText ());
 	QString h		=
 	           dabSettings -> value ("device", "no device"). toString ();
 	if (h == "no device")	// no autostart here
@@ -672,33 +582,20 @@ void	RadioInterface::set_Scanning	(void) {
 //	generate a signal
 void	RadioInterface::Increment_Channel (void) {
 int16_t	i;
-struct dabFrequencies *finger;
+int32_t	tunedFrequency;
 int	cc	= channelSelector -> currentIndex ();
 
 	cc	+= 1;
 	if (cc >= channelSelector -> count ())
 	   cc = 0;
+//
+//	To avoid reaction of the system on setting a different value
 	disconnect (channelSelector, SIGNAL (activated (const QString &)),
 	              this, SLOT (set_channelSelect (const QString &)));
 	channelSelector -> setCurrentIndex (cc);
-//
-//	Now setting the frequency
-	tunedFrequency		= 0;
-	if (dabBand == BAND_III)
-	   finger = bandIII_frequencies;
-	else
-	   finger = Lband_frequencies;
-
-	for (i = 0; finger [i]. key != NULL; i ++) {
-	   if (finger [i]. key == channelSelector -> currentText ()) {
-	      tunedFrequency	= KHz (finger [i]. fKHz);
-	      inputDevice	-> setVFOFrequency (tunedFrequency);
-	      break;
-	   }
-	}
-
-	if (tunedFrequency == 0)
-	   return;
+	tunedFrequency	=
+	         theBand. Frequency (dabBand, channelSelector -> currentText ());
+	inputDevice	-> setVFOFrequency (tunedFrequency);
 
 	connect    (channelSelector, SIGNAL (activated (const QString &)),
 	              this, SLOT (set_channelSelect (const QString &)));
@@ -956,7 +853,7 @@ void	RadioInterface::clear_showElements (void) {
   */
 void	RadioInterface::setStart	(void) {
 bool	r = 0;
-	if (running)		// only listen when not running yet
+	if (running)		// only react when not running yet
 	   return;
 
 	r = inputDevice		-> restartReader ();
@@ -1033,7 +930,7 @@ void	RadioInterface::TerminateProcess (void) {
 
 void	RadioInterface::set_channelSelect (QString s) {
 int16_t	i;
-struct dabFrequencies *finger;
+int32_t	tunedFrequency;
 bool	localRunning	= running;
 
 	setStereo (false);
@@ -1048,23 +945,8 @@ bool	localRunning	= running;
 
 	clear_showElements ();
 
-	tunedFrequency		= 0;
-	if (dabBand == BAND_III)
-	   finger = bandIII_frequencies;
-	else
-	   finger = Lband_frequencies;
-
-	for (i = 0; finger [i]. key != NULL; i ++) {
-	   if (finger [i]. key == s) {
-	      tunedFrequency	= KHz (finger [i]. fKHz);
-	      break;
-	   }
-	}
-
-	if (tunedFrequency == 0)
-	   return;
-
-	inputDevice		-> setVFOFrequency (tunedFrequency);
+	tunedFrequency	= theBand. Frequency (dabBand, s);
+	inputDevice	-> setVFOFrequency (tunedFrequency);
 
 	if (localRunning) {
 	   inputDevice	 -> restartReader ();
@@ -1122,21 +1004,20 @@ void	RadioInterface::autoCorrector_on (void) {
 //	by the "ini" file, it is pretty unlikely that one changes
 //	the mode during operation.
 //	In a next version it will go out
-void	RadioInterface::set_modeSelect (const QString &s) {
-uint8_t	Mode	= s. toInt ();
+void	RadioInterface::set_modeSelect (const QString &Mode) {
 
 	if (sourceDumping) {
 	   my_ofdmProcessor -> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-       dumpButton	-> setText ("Dump to raw file");
+	   dumpButton	-> setText ("Dump to raw file");
 	}
 
 	if (audioDumping) {
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping	= false;
-       audioDumpButton -> setText ("Save audio");
+	   audioDumpButton -> setText ("Save audio");
 	}
 
 	running	= false;
@@ -1147,36 +1028,31 @@ uint8_t	Mode	= s. toInt ();
 //	we have to create a new ofdmprocessor with the correct
 //	settings of the parameters.
 	delete	my_mscHandler;
-	delete dabModeParameters;
-	dabModeParameters	= new dabParams (Mode);
-	my_ficHandler. setBitsperBlock	(2 * dabModeParameters -> get_carriers ());
-	my_mscHandler		= new mscHandler	(this,
-	                                                 dabModeParameters,
-	                                                 audioBuffer,
-	                                                 show_crcErrors);
+	my_ficHandler. setBitsforMode	(convert (Mode));
+	my_mscHandler		= new mscHandler    (this,
+	                                             convert (Mode),
+	                                             audioBuffer,
+	                                             show_crcErrors);
 	delete my_ofdmProcessor;
-	my_ofdmProcessor	= new ofdmProcessor   (this,
-	                                               inputDevice,
-	                                               dabModeParameters,
-	                                               my_mscHandler,
-	                                               &my_ficHandler,
-	                                               threshold,
-	                                               freqsyncMethod
+	my_ofdmProcessor	= new ofdmProcessor  (this,
+	                                              inputDevice,
+	                                              convert (Mode),
+	                                              my_mscHandler,
+	                                              &my_ficHandler,
+	                                              threshold,
+	                                              freqsyncMethod
 #ifdef	HAVE_SPECTRUM
 	                                              ,spectrumBuffer,
-	                                               iqBuffer
+	                                              iqBuffer
 #endif
-	                                              );
+	                                             );
 //	and wait for someone push the setStart
 }
 //
 //	One can imagine that the band of operation is just selected
 //	by the "ini" file, it is pretty unlikely that one changes
-//	the band during operation
+//	the band during operation, however, .....
 void	RadioInterface::set_bandSelect (QString s) {
-
-	fprintf (stderr, "selecting band %s\n", 
-	                          s. toLatin1 (). data ());
 	if (running) {
 	   running	= false;
 	   inputDevice	-> stopReader ();
@@ -1186,11 +1062,11 @@ void	RadioInterface::set_bandSelect (QString s) {
 	   clearEnsemble ();
 	}
 
-    if (s == "BAND III")
+	if (s == "BAND III")
 	   dabBand	= BAND_III;
 	else
 	   dabBand	= L_BAND;
-	setupChannels (channelSelector, dabBand);
+	theBand. setupChannels (channelSelector, dabBand);
 }
 /**
   *	\brief setDevice
@@ -1218,14 +1094,14 @@ QString	file;
 	   my_ofdmProcessor -> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-       dumpButton	-> setText ("Dump to raw file");
+	   dumpButton	-> setText ("Dump to raw file");
 	}
 
 	if (audioDumping) {
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping	= false;
-       audioDumpButton -> setText ("Save audio");
+	   audioDumpButton -> setText ("Save audio");
 	}
 ///	indicate that we are not running anymore
 	running		= false;
@@ -1237,94 +1113,112 @@ QString	file;
 	delete	my_ofdmProcessor;
 	delete	inputDevice;
 	dynamicLabel	-> setText ("");
-///	OK, everything quiet, now looking what to do
+
+///	OK, everything quiet, now let us see what to do
 #ifdef	HAVE_AIRSPY
 	if (s == "airspy") {
-	   inputDevice	= new airspyHandler (dabSettings, &success);
-	   if (!success) {
-	      delete inputDevice;
+	   try {
+	      inputDevice	= new airspyHandler (dabSettings);
+	      set_channelSelect	(channelSelector -> currentText ());
+	   }
+	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
                                    tr ("Airspy or Airspy mini not found\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
-	   else 
-	      set_channelSelect	(channelSelector -> currentText ());
 	}
-	else
 #endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a
 //	wrap around the dll
 	if (s == "extio") {
-	   inputDevice = new extioHandler (dabSettings, &success);
-	   if (!success) {
-	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("Warning"), tr ("extio: no luck\n") );
+	   try {
+	      inputDevice = new extioHandler (dabSettings);
+	      set_channelSelect (channelSelector -> currentText() );
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("extio: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
-	   else 
-	      set_channelSelect (channelSelector -> currentText() );
 	}
 	else
 #endif
 #ifdef HAVE_RTL_TCP
 //	RTL_TCP might be working. 
 	if (s == "rtl_tcp") {
-	   inputDevice = new rtl_tcp_client (dabSettings, &success);
-	   if (!success) {
-	      delete inputDevice;
-	      QMessageBox::warning( this, tr ("Warning"), tr ("rtl_tcp: no luck\n") );
+	   try {
+	      inputDevice = new rtl_tcp_client (dabSettings);
+	      set_channelSelect (channelSelector -> currentText() );
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("rtl_tcp: no luck\n") );
 	      inputDevice = new virtualInput();
 	      resetSelector ();
 	   }
-	   else 
-	      set_channelSelect (channelSelector -> currentText() );
 	}
 	else
 #endif
 #ifdef	HAVE_SDRPLAY
 	if (s == "sdrplay") {
-	   inputDevice	= new sdrplay (dabSettings, &success);
-	   if (!success) {
-	      delete inputDevice;
+	   try {
+	      inputDevice	= new sdrplay (dabSettings);
+	      set_channelSelect	(channelSelector -> currentText ());
+	   }
+	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library\n"));
+	                               tr ("SDRplay: no library or device\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
-	   else 
-	      set_channelSelect	(channelSelector -> currentText ());
 	}
 	else
 #endif
 #ifdef	HAVE_DABSTICK
 	if (s == "dabstick") {
-	   inputDevice	= new dabStick (dabSettings, &success);
-	   if (!success) {
-	      delete inputDevice;
+	   try {
+	      inputDevice	= new dabStick (dabSettings);
+	      set_channelSelect	(channelSelector -> currentText ());
+	   }
+	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
                                    tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
-	   else 
-	      set_channelSelect	(channelSelector -> currentText ());
 	}
 	else
 #endif
 //
 //	We always have fileinput!!
+	if (s == "file input (.iq)") {
+	   file		= QFileDialog::getOpenFileName (this,
+	                                                tr ("Open file ..."),
+	                                                QDir::homePath (),
+	                                                tr ("iq data (*.iq)"));
+	   file		= QDir::toNativeSeparators (file);
+	   try {
+	      inputDevice	= new rawFiles (file);
+	   }
+	   catch (int e) {
+	      inputDevice = new virtualInput ();
+	      resetSelector ();
+	   }
+	}
+	else
 	if (s == "file input (.raw)") {
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.raw)"));
 	   file		= QDir::toNativeSeparators (file);
-	   inputDevice	= new rawFiles (file, &success);
-	   if (!success) {
-	      delete inputDevice;
+	   try {
+	      inputDevice	= new rawFiles (file);
+	   }
+	   catch (int e) {
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1336,9 +1230,10 @@ QString	file;
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.sdr)"));
 	   file		= QDir::toNativeSeparators (file);
-	   inputDevice	= new wavFiles (file, &success);
-	   if (!success) {
-	      delete inputDevice;
+	   try {
+	      inputDevice	= new wavFiles (file);
+	   }
+	   catch (int e) {
 	      inputDevice = new virtualInput ();
 	      resetSelector ();
 	   }
@@ -1347,14 +1242,15 @@ QString	file;
 //	and as default option, we have a "no device"
 	   inputDevice	= new virtualInput ();
 	}
+
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> setBitDepth (inputDevice -> bitDepth ());
 #endif
-///	we have a new device, so we can re-create the ofdmProcessor
-///	Note: the fichandler and mscHandler remain unchanged
+//	we have a new device, so we can re-create the ofdmProcessor
+//	Note: the fichandler and mscHandler remain unchanged
 	my_ofdmProcessor	= new ofdmProcessor   (this,
 	                                               inputDevice,
-	                                               dabModeParameters,
+	                                               convert (modeSelector -> currentText ()),
 	                                               my_mscHandler,
 	                                               &my_ficHandler,
 	                                               threshold,
@@ -1371,6 +1267,7 @@ QString	file;
 //	hand over the relevant data in two steps
 void	RadioInterface::selectService (QModelIndex s) {
 QString a = ensemble. data (s, Qt::DisplayRole). toString ();
+
 	setStereo (false);
 	soundOut	-> stop ();
 	thereisSound	= false;
@@ -1506,7 +1403,8 @@ void	RadioInterface::showIQ	(int amount) {
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (spectrumHandler != NULL)
-	   spectrumHandler	-> showSpectrum (amount, tunedFrequency);
+	   spectrumHandler	-> showSpectrum (amount,
+	                                         inputDevice -> getVFOFrequency ());
 }
 
 #ifdef	__QUALITY
@@ -1518,7 +1416,6 @@ void	RadioInterface::showQuality	(float q) {
 #endif
 
 
-//	Dumping is GUI dependent and may be ignored
 ///	switch for dumping on/off
 void	RadioInterface::set_dumping (void) {
 SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
@@ -1527,12 +1424,13 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   my_ofdmProcessor	-> stopDumping ();
 	   sf_close (dumpfilePointer);
 	   sourceDumping = false;
-       dumpButton	-> setText ("Dump to raw file");
+	   dumpButton	-> setText ("Dump to raw file");
 	   return;
 	}
 
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
+//	Dumping is GUI dependent and may be ignored
 	                                     QDir::homePath (),
 	                                     tr ("raw data (*.sdr)"));
 	file	= QDir::toNativeSeparators (file);
@@ -1560,7 +1458,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   soundOut	-> stopDumping ();
 	   sf_close (audiofilePointer);
 	   audioDumping = false;
-       audioDumpButton	-> setText ("Save audio");
+	   audioDumpButton	-> setText ("Save audio");
 	   return;
 	}
 
@@ -1604,4 +1502,16 @@ void	RadioInterface::toggle_show_data (void) {
 	   dataDisplay -> hide ();
 }
 #endif
+
+uint8_t	RadioInterface::convert (QString s) {
+	if (s == "Mode 1")
+	   return 1;
+	if (s == "Mode 2")
+	   return 2;
+	if (s == "Mode 3")
+	   return 3;
+	if (s == "Mode 4")
+	   return 4;
+	return 1;
+}
 

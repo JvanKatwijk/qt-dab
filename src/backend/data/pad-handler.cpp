@@ -129,6 +129,7 @@ int16_t	base	= count - 2 - 1;	// for the F-pad
 	      data [j] = b [base - j];
 	   data [length] = 0;
 
+	   fprintf (stderr, "pad with appType %d\n", appType);
 	   switch (appType) {
 //	with these apptypes we need further study
 	      default:

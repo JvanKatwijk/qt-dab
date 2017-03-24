@@ -32,17 +32,17 @@
 #include	"ringbuffer.h"
 #include	"phasetable.h"
 #include	"freq-interleaver.h"
+#include	"dab-params.h"
 
 class	RadioInterface;
 class	ficHandler;
 class	mscHandler;
-class	dabParams;
 
 class	ofdmDecoder: public QThread {
 Q_OBJECT
 public:
 		ofdmDecoder		(RadioInterface *,
-	                                 dabParams *,
+	                                 uint8_t,
 #ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<DSPCOMPLEX> *,
 #endif
@@ -56,7 +56,7 @@ public:
 	void	stop			(void);
 private:
 	RadioInterface	*myRadioInterface;
-	dabParams	*params;
+	dabParams	params;
 #ifdef	HAVE_SPECTRUM
 	RingBuffer<DSPCOMPLEX> *iqBuffer;
 #ifdef	__QUALITY

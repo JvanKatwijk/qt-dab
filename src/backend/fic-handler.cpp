@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
@@ -54,6 +54,7 @@ uint8_t PI_X [24] = {
 int16_t	i, j;
 	bitBuffer_out	= new uint8_t [768];
 	ofdm_input 	= new int16_t [2304];
+	params		= new dabParams (1);
 	index		= 0;
 	BitsperBlock	= 2 * 1536;
 	ficno		= 0;
@@ -77,8 +78,9 @@ int16_t	i, j;
 }
 
 		ficHandler::~ficHandler (void) {
-	        delete	bitBuffer_out;
-	        delete	ofdm_input;
+	delete	bitBuffer_out;
+	delete	ofdm_input;
+	delete params;
 }
 
 	
@@ -94,11 +96,8 @@ int16_t	i, j;
   *	Note that Mode III is NOT supported
   */
 
-void	ficHandler::setBitsperBlock	(int16_t b) {
-	if ((b == 2 * 384) ||
-	    (b == 2 * 768) ||
-	    (b == 2 * 1536))
-	BitsperBlock	= b;
+void	ficHandler::setBitsforMode	(uint8_t mode) {
+	BitsperBlock = 2 * params -> get_carriers ();
 	index		= 0;
 	ficno		= 0;
 }

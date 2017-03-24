@@ -18,36 +18,43 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
+#ifndef	__WAV_FILES__
+#define	__WAV_FILES__
 
-#include	"fft.h"
-#include	<stdio.h>
-#include	<stdint.h>
-#include	"phasetable.h"
+#include	<QThread>
+#include	<QString>
+#include	<QFrame>
+#include	<sndfile.h>
 #include	"dab-constants.h"
-#include	"dab-params.h"
+#include	"virtual-input.h"
+#include	"ringbuffer.h"
 
-class phaseReference : public phaseTable {
+#include	"ui_filereader-widget.h"
+
+class	wavFiles: public virtualInput,
+	          public Ui_filereaderWidget, QThread {
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
+			wavFiles	(QString);
+	       		~wavFiles	(void);
+	int32_t		getSamples	(DSPCOMPLEX *, int32_t);
+	uint8_t		myIdentity	(void);
+	int32_t		Samples		(void);
+	bool		restartReader	(void);
+	void		stopReader	(void);
 private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+	QString		fileName;
+	QFrame		*myFrame;
+virtual	void		run		(void);
+	int32_t		readBuffer	(DSPCOMPLEX *, int32_t);
+	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
+	int32_t		bufferSize;
+	SNDFILE		*filePointer;
+	bool		readerOK;
+	bool		readerPausing;
+	bool		ExitCondition;
+	int64_t		currPos;
 };
+
 #endif
 

@@ -26,8 +26,8 @@
  *	Main program
  */
 
-#ifndef __RADIO
-#define __RADIO
+#ifndef __RADIO__
+#define __RADIO__
 
 #include	"dab-constants.h"
 #include	<QMainWindow>
@@ -42,13 +42,13 @@
 #include	"fic-handler.h"
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
+#include	"band-handler.h"
 
 class	QSettings;
 class	virtualInput;
 class	audioBase;
 class	mscHandler;
 class	common_fft;
-class	dabParams;
 
 #ifdef	TCP_STREAMER
 class	tcpStreamer;
@@ -73,7 +73,7 @@ public:
 		RadioInterface		(QSettings	*,
 	                                 uint8_t	freqsyncMethod,
 	                                 bool		tracing,
-	                                 QWidget *parent = NULL);
+	                                 QWidget	*parent = NULL);
 		~RadioInterface		();
 
 private:
@@ -90,17 +90,14 @@ private:
 	bool		tracing;
 	bool		autoStart;
 	int16_t		threshold;
-	void		setupChannels		(QComboBox *s, uint8_t band);
-	void		setModeParameters	(uint8_t);
 	void		clear_showElements	(void);
-	dabParams	*dabModeParameters;
 	uint8_t		isSynced;
 	uint8_t		dabBand;
+	bandHandler	theBand;
 	bool		running;
 	bool		scanning;
 
 	virtualInput	*inputDevice;
-	int32_t		tunedFrequency;
 
 	ofdmProcessor	*my_ofdmProcessor;
 	ficHandler	my_ficHandler;
@@ -141,7 +138,7 @@ const	char		*get_programm_language_string (int16_t);
 	RingBuffer<DSPCOMPLEX>	*iqBuffer;
 #endif
 
-
+	uint8_t		convert			(QString);
 public slots:
 	void		set_Scanning		(void);
 	void		set_fineCorrectorDisplay	(int);

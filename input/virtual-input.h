@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
@@ -19,35 +19,35 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+ *	We have to create a simple virtual class here, since we
+ *	want the interface with different devices (including  filehandling)
+ *	to be transparent
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
+#ifndef	__VIRTUAL_INPUT__
+#define	__VIRTUAL_INPUT__
 
-#include	"fft.h"
-#include	<stdio.h>
 #include	<stdint.h>
-#include	"phasetable.h"
 #include	"dab-constants.h"
-#include	"dab-params.h"
+#include	<QObject>
 
-class phaseReference : public phaseTable {
+class	virtualInput: public QObject {
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
-private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+			virtualInput 	(void);
+virtual			~virtualInput 	(void);
+virtual		void	setVFOFrequency	(int32_t);
+virtual		int32_t	getVFOFrequency	(void);
+virtual		int32_t	defaultFrequency	(void);
+virtual		bool	restartReader	(void);
+virtual		void	stopReader	(void);
+virtual		int32_t	getSamples	(DSPCOMPLEX *, int32_t);
+virtual		int32_t	Samples		(void);
+virtual		void	resetBuffer	(void);
+virtual		int16_t	bitDepth	(void) { return 10;}
+//
+protected:
+		int32_t	lastFrequency;
+	        int32_t	vfoOffset;
+	        int	theGain;
 };
 #endif
 

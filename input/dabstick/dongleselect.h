@@ -21,33 +21,31 @@
  *
  */
 #
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
-
-#include	"fft.h"
-#include	<stdio.h>
+#ifndef	__DONGLE_SELECT__
+#define	__DONGLE_SELECT__
+#
+#include	<QDialog>
+#include	<QLabel>
+#include	<QListView>
+#include	<QStringListModel>
+#include	<QStringList>
 #include	<stdint.h>
-#include	"phasetable.h"
-#include	"dab-constants.h"
-#include	"dab-params.h"
 
-class phaseReference : public phaseTable {
+class	dongleSelect: public QDialog {
+Q_OBJECT
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
+			dongleSelect	(void);
+			~dongleSelect	(void);
+	void		addtoDongleList	(const char *);
 private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+	QLabel		*toptext;
+	QListView	*selectorDisplay;
+	QStringListModel	dongleList;
+	QStringList	Dongles;
+	int16_t		selectedItem;
+private slots:
+	void		selectDongle	(QModelIndex);
 };
+
 #endif
 

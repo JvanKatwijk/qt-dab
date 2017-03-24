@@ -40,17 +40,17 @@
   *	carriers and map them on (soft) bits
   */
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
-	                                 dabParams	*p,
+	                                 uint8_t	dabMode,
 #ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<DSPCOMPLEX> *iqBuffer,
 #endif
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
-	                                 bufferSpace (p -> get_L ()),
-	                                 myMapper (p) {
+	                                 params (dabMode),
+	                                 bufferSpace (params. get_L ()),
+	                                 myMapper (&params) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
-	this	-> params		= p;
 #ifdef	HAVE_SPECTRUM
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
@@ -62,10 +62,10 @@ int16_t	i;
 #endif
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
-	this	-> T_s			= params	-> get_T_s ();
-	this	-> T_u			= params	-> get_T_u ();
-	this	-> nrBlocks		= params	-> get_L ();
-	this	-> carriers		= params	-> get_carriers ();
+	this	-> T_s			= params. get_T_s ();
+	this	-> T_u			= params. get_T_u ();
+	this	-> nrBlocks		= params. get_L ();
+	this	-> carriers		= params. get_carriers ();
 	ibits				= new int16_t [2 * this -> carriers];
 
 	this	-> T_g			= T_s - T_u;

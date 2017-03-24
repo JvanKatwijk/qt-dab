@@ -149,6 +149,11 @@
     </item>
     <item>
      <property name="text">
+      <string>file input (.iq)</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>file input (.sdr)</string>
      </property>
     </item>

@@ -51,7 +51,7 @@ Q_OBJECT
 public:
 		ofdmProcessor  	(RadioInterface *,
 	                         virtualInput *,
-	                         dabParams	*,
+	                         uint8_t,
 	                         mscHandler *,
 	                         ficHandler *,
 	                         int16_t,
@@ -72,7 +72,7 @@ public:
 	void		set_scanMode		(bool);
 private:
 	virtualInput	*theRig;
-	dabParams	*params;
+	dabParams	params;
 	RadioInterface	*myRadioInterface;
 	ficHandler	*my_ficHandler;
 

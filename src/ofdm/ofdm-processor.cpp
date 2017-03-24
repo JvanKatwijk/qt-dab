@@ -23,8 +23,8 @@
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
-#include	"fft.h"
 #include	"dab-params.h"
+#include	"fft.h"
 //
 #define	SEARCH_RANGE		(2 * 36)
 #define	CORRELATION_LENGTH	24
@@ -51,7 +51,7 @@ int16_t	res	= 1;
 
 	ofdmProcessor::ofdmProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
-	                                 dabParams	*params,
+	                                 uint8_t	dabMode,
 	                                 mscHandler 	*msc,
 	                                 ficHandler 	*fic,
 	                                 int16_t	threshold,
@@ -61,34 +61,36 @@ int16_t	res	= 1;
 	                                 RingBuffer<DSPCOMPLEX>	*iqBuffer
 #endif
 	                                 ):
-	                                   phaseSynchronizer (params, 
-                                                             threshold),
+	                                   params (dabMode),
+	                                   phaseSynchronizer (dabMode, 
+                                                              threshold),
 	                                   my_ofdmDecoder (mr,
-	                                                   params,
+	                                                   dabMode,
 #ifdef	HAVE_SPECTRUM
 	                                                   iqBuffer,
 #endif
 	                                                   fic,
 	                                                   msc) {
 int32_t	i;
+
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
-	this	-> params		= params;
 	this	-> my_ficHandler	= fic;
 	this	-> freqsyncMethod	= freqsyncMethod;
 
-	this	-> T_null		= params	-> get_T_null ();
-	this	-> T_s			= params	-> get_T_s ();
-	this	-> T_u			= params	-> get_T_u ();
-	this	-> T_F			= params	-> get_T_F ();
-	this	-> nrBlocks		= params	-> get_L ();
-	this	-> carriers		= params	-> get_carriers ();
-	this	-> carrierDiff		= params	-> get_carrierDiff ();
+	this	-> T_null		= params. get_T_null ();
+	this	-> T_s			= params. get_T_s ();
+	this	-> T_u			= params. get_T_u ();
+	this	-> T_F			= params. get_T_F ();
+	this	-> nrBlocks		= params. get_L ();
+	this	-> carriers		= params. get_carriers ();
+	this	-> carrierDiff		= params. get_carrierDiff ();
 	fft_handler			= new common_fft (T_u);
 	fft_buffer			= fft_handler -> getVector ();
 	dumping				= false;
 	dumpIndex			= 0;
 	dumpScale			= valueFor (theRig -> bitDepth ());
+
 #ifdef  HAVE_SPECTRUM
         bufferSize      = 32768;
         this    -> spectrumBuffer       = spectrumBuffer;
@@ -98,7 +100,7 @@ int32_t	i;
         localCounter    = 0;
 #endif
 //
-	ofdmBuffer			= new DSPCOMPLEX [76 * T_s];
+	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
@@ -179,6 +181,7 @@ DSPCOMPLEX ofdmProcessor::getSample (int32_t phase) {
 DSPCOMPLEX temp;
 	if (!running)
 	   throw 21;
+
 ///	bufferContent is an indicator for the value of ... -> Samples ()
 	if (bufferContent == 0) {
 	   bufferContent = theRig -> Samples ();
@@ -195,7 +198,7 @@ DSPCOMPLEX temp;
 	theRig -> getSamples (&temp, 1);
 	bufferContent --;
 	if (dumping) {
-           dumpBuffer [2 * dumpIndex] = real (temp) * dumpScale;
+           dumpBuffer [2 * dumpIndex    ] = real (temp) * dumpScale;
            dumpBuffer [2 * dumpIndex + 1] = imag (temp) * dumpScale;
            if ( ++dumpIndex >= DUMPSIZE / 2) {
               sf_writef_short (dumpFile, dumpBuffer, dumpIndex);
@@ -246,7 +249,7 @@ int32_t		i;
 	bufferContent -= n;
 	if (dumping) {
            for (i = 0; i < n; i ++) {
-              dumpBuffer [2 * dumpIndex] = real (v [i]) * dumpScale;
+              dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
               dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
               if (++dumpIndex >= DUMPSIZE / 2) {
                  sf_writef_short (dumpFile, dumpBuffer, dumpIndex);
@@ -312,15 +315,15 @@ float		envBuffer	[syncBufferSize];
 
 	try {
 
-Initing:
-///	first, we need samples to get a reasonable sLevel
 	   sLevel	= 0;
-	   for (i = 0; i < T_F / 2; i ++) {
+	   for (i = 0; i < T_F / 5; i ++) {
 	      jan_abs (getSample (0));
 	   }
+Initing:
 notSynced:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
+///	first, we need samples to get a reasonable sLevel
 
 //	read in T_s samples for a next attempt;
 	   syncBufferIndex = 0;
@@ -396,8 +399,8 @@ SyncOnPhase:
   */
 	getSamples (ofdmBuffer, T_u, coarseCorrector + fineCorrector);
 //
-///	and then, call upon the phase synchronizer to verify/compute
-///	the real "first" sample
+//	and then, call upon the phase synchronizer to verify/compute
+//	the real "first" sample
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
 	   if (startIndex < 0) { // no sync, try again
 	      goto notSynced;
@@ -502,6 +505,7 @@ ReadyForNewFrame:
 	catch (int e) {
 	   ;
 	}
+	fprintf (stderr, "ofdm processor terminates\n");
 }
 
 void	ofdmProcessor:: reset	(void) {

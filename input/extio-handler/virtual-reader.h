@@ -18,36 +18,46 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
+//
+//	For the different formats for input, we have
+//	different readers, with one "mother" reader.
+//	Note that the cardreader is quite different here
+#ifndef	__VIRTUAL_READER__
+#define	__VIRTUAL_READER__
 
-#include	"fft.h"
-#include	<stdio.h>
 #include	<stdint.h>
-#include	"phasetable.h"
+#include	<stdio.h>
+#include	"ringbuffer.h"
 #include	"dab-constants.h"
-#include	"dab-params.h"
-
-class phaseReference : public phaseTable {
+//
+//	The virtualReader is the mother of the readers.
+//	The cardReader is slighty different, however
+//	made fitting the framework
+class	virtualReader {
+protected:
+RingBuffer<DSPCOMPLEX>	*theBuffer;
+int32_t	blockSize;
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
+		virtualReader	(RingBuffer<DSPCOMPLEX> *p, int32_t rate);
+virtual		~virtualReader	(void);
+virtual void	restartReader	(int32_t s);
+virtual void	stopReader	(void);
+virtual void	processData	(float IQoffs, void *data, int cnt);
+virtual	int16_t	bitDepth	(void);
+protected:
+	int32_t	base;
+	void	convertandStore		(DSPCOMPLEX *, int32_t);
 private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
-
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+	void	setMapper	(int32_t, int32_t);
+	float	*mapTable;
+	int16_t	conv;
+	int16_t	inSize;
+	int16_t	outSize;
+	DSPCOMPLEX	*inTable;
+	DSPCOMPLEX	*outTable;
+	
 };
+
 #endif
 

@@ -18,36 +18,49 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
-#
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
+#ifndef	__RAW_FILES__
+#define	__RAW_FILES__
 
-#include	"fft.h"
-#include	<stdio.h>
-#include	<stdint.h>
-#include	"phasetable.h"
+#include	<QThread>
+#include	<QString>
+#include	<QFrame>
 #include	"dab-constants.h"
-#include	"dab-params.h"
+#include	"virtual-input.h"
+#include	"ringbuffer.h"
 
-class phaseReference : public phaseTable {
+#include	"ui_filereader-widget.h"
+
+class	QLabel;
+class	QSettings;
+class	fileHulp;
+/*
+ */
+class	rawFiles: public virtualInput,
+	          public Ui_filereaderWidget, QThread {
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
-	DSPCOMPLEX	*refTable;
-private:
-	dabParams	params;
-	int32_t		Tu;
-	int16_t		threshold;
 
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
-	int32_t		fft_counter;
-	DSPFLOAT	Max;
+			rawFiles	(QString);
+	       		~rawFiles	(void);
+	int32_t		getSamples	(DSPCOMPLEX *, int32_t);
+	uint8_t		myIdentity	(void);
+	int32_t		Samples		(void);
+	bool		restartReader	(void);
+	void		stopReader	(void);
+private:
+	QString		fileName;
+virtual	void		run		(void);
+	QFrame		*myFrame;
+	int32_t		readBuffer	(uint8_t *, int32_t);
+	RingBuffer<uint8_t>	*_I_Buffer;
+	int32_t		bufferSize;
+	FILE		*filePointer;
+	bool		readerOK;
+	bool		readerPausing;
+	bool		ExitCondition;
+	bool		ThreadFinished;
+	int64_t		currPos;
 };
+
 #endif
 

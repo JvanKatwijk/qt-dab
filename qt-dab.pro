@@ -24,9 +24,9 @@ DEPENDPATH += . \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/various \
-	      ./src/input \
-	      ./src/input/rawfiles \
-	      ./src/input/wavfiles \
+	      ./input \
+	      ./input/rawfiles \
+	      ./input/wavfiles \
 	      ./includes/ofdm \
 	      ./includes/backend \
 	      ./includes/backend/audio \
@@ -46,9 +46,9 @@ INCLUDEPATH += . \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various \
-	      ./src/input \
-	      ./src/input/rawfiles \
-	      ./src/input/wavfiles 
+	      ./input \
+	      ./input/rawfiles \
+	      ./input/wavfiles 
 
 # Input
 HEADERS += ./radio.h \
@@ -99,11 +99,12 @@ HEADERS += ./radio.h \
 	   ./includes/various/ringbuffer.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
-	   ./src/input/virtual-input.h \
-	   ./src/input/rawfiles/rawfiles.h \
-           ./src/input/wavfiles/wavfiles.h
+	   ./includes/various/band-handler.h \
+	   ./input/virtual-input.h \
+	   ./input/rawfiles/rawfiles.h \
+           ./input/wavfiles/wavfiles.h
 
-FORMS +=	./src/input/filereader-widget.ui 
+FORMS +=	./input/filereader-widget.ui 
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -151,9 +152,10 @@ SOURCES += ./main.cpp \
            ./src/various/fft.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
-	   ./src/input/virtual-input.cpp \
-	   ./src/input/rawfiles/rawfiles.cpp \
-           ./src/input/wavfiles/wavfiles.cpp
+	   ./src/various/band-handler.cpp \
+	   ./input/virtual-input.cpp \
+	   ./input/rawfiles/rawfiles.cpp \
+           ./input/wavfiles/wavfiles.cpp
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -232,7 +234,7 @@ spectrum {
         HEADERS         += ./optional-scope/spectrum-handler.h
 	HEADERS		+= ./includes/scopes-qwt6
         SOURCES         += ./optional-scope/spectrum-handler.cpp
-#correct for the correct path to the qwt6 library on your system
+#correct this for the correct path to the qwt6 library on your system
 #	LIBS		+= -lqwt
 	LIBS		+= -lqwt-qt5
 }
@@ -242,25 +244,24 @@ spectrum {
 #	dabstick
 dabstick {
 	DEFINES		+= HAVE_DABSTICK
-	INCLUDEPATH	+= /home/jan/rtl-sdr/include
-	INCLUDEPATH	+= ./src/input/dabstick
-	HEADERS		+= ./src/input/dabstick/dabstick.h \
-	                   ./src/input/dabstick/dongleselect.h
-	SOURCES		+= ./src/input/dabstick/dabstick.cpp \
-	                   ./src/input/dabstick/dongleselect.cpp
-	FORMS		+= ./src/input/dabstick/dabstick-widget.ui
+	INCLUDEPATH	+= ./input/dabstick
+	HEADERS		+= ./input/dabstick/dabstick.h \
+	                   ./input/dabstick/dongleselect.h
+	SOURCES		+= ./input/dabstick/dabstick.cpp \
+	                   ./input/dabstick/dongleselect.cpp
+	FORMS		+= ./input/dabstick/dabstick-widget.ui
 }
 #
 #	the SDRplay
 #
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
-	INCLUDEPATH	+= ./src/input/sdrplay 
-	HEADERS		+= ./src/input/sdrplay/sdrplay.h \
-	                   ./src/input/sdrplay/sdrplayselect.h
-	SOURCES		+= ./src/input/sdrplay/sdrplay.cpp \
-	                   ./src/input/sdrplay/sdrplayselect.cpp
-	FORMS		+= ./src/input/sdrplay/sdrplay-widget.ui
+	INCLUDEPATH	+= ./input/sdrplay 
+	HEADERS		+= ./input/sdrplay/sdrplay.h \
+	                   ./input/sdrplay/sdrplayselect.h
+	SOURCES		+= ./input/sdrplay/sdrplay.cpp \
+	                   ./input/sdrplay/sdrplayselect.cpp
+	FORMS		+= ./input/sdrplay/sdrplay-widget.ui
 }
 #
 #
@@ -268,42 +269,35 @@ sdrplay {
 #
 airspy {
 	DEFINES		+= HAVE_AIRSPY
-	INCLUDEPATH	+= ./src/input/airspy \
-	                    /usr/local/include/libairspy
-	HEADERS		+= ./src/input/airspy/airspy-handler.h \
+	INCLUDEPATH	+= ./input/airspy \
+	                    /local/include/libairspy
+	HEADERS		+= ./input/airspy/airspy-handler.h \
 	                    /usr/local/include/libairspy/airspy.h
-	SOURCES		+= ./src/input/airspy/airspy-handler.cpp 
-	FORMS		+= ./src/input/airspy/airspy-widget.ui
+	SOURCES		+= ./input/airspy/airspy-handler.cpp 
+	FORMS		+= ./input/airspy/airspy-widget.ui
 }
 
 #	extio dependencies, windows only
 #
 extio {
 	DEFINES		+= HAVE_EXTIO
-	INCLUDEPATH	+= ./src/input/extio-handler
-	HEADERS		+= ./src/input/extio-handler/extio-handler.h \
-	                   ./src/input/extio-handler/common-readers.h \
-	                   ./src/input/extio-handler/virtual-reader.h
-	SOURCES		+= ./src/input/extio-handler/extio-handler.cpp \
-	                   ./src/input/extio-handler/common-readers.cpp \
-	                   ./src/input/extio-handler/virtual-reader.cpp
-}
-
-tcp-streamer	{
-	DEFINES		+= TCP_STREAMER
-	QT		+= network
-	HEADERS		+= ./includes/output/tcp-streamer.h
-	SOURCES		+= ./src/output/tcp-streamer.cpp
+	INCLUDEPATH	+= ./input/extio-handler
+	HEADERS		+= ./input/extio-handler/extio-handler.h \
+	                   ./input/extio-handler/common-readers.h \
+	                   ./input/extio-handler/virtual-reader.h
+	SOURCES		+= ./input/extio-handler/extio-handler.cpp \
+	                   ./input/extio-handler/common-readers.cpp \
+	                   ./input/extio-handler/virtual-reader.cpp
 }
 
 #
 rtl_tcp {
 	DEFINES		+= HAVE_RTL_TCP
 	QT		+= network
-	INCLUDEPATH	+= ./src/input/rtl_tcp
-	HEADERS		+= ./src/input/rtl_tcp/rtl_tcp_client.h
-	SOURCES		+= ./src/input/rtl_tcp/rtl_tcp_client.cpp
-	FORMS		+= ./src/input/rtl_tcp/rtl_tcp-widget.ui
+	INCLUDEPATH	+= ./input/rtl_tcp
+	HEADERS		+= ./input/rtl_tcp/rtl_tcp_client.h
+	SOURCES		+= ./input/rtl_tcp/rtl_tcp_client.cpp
+	FORMS		+= ./input/rtl_tcp/rtl_tcp-widget.ui
 }
 
 try-epg	{
@@ -314,5 +308,12 @@ try-epg	{
 	INCLUDEPATH	+= ./includes/backend/data/epg 
 	HEADERS		+= ./includes/backend/data/epg/epgdec.h 
 	SOURCES		+= ./src/backend/data/epg/epgdec.cpp 
+}
+
+tcp-streamer	{
+	DEFINES		+= TCP_STREAMER
+	QT		+= network
+	HEADERS		+= ./includes/output/tcp-streamer.h
+	SOURCES		+= ./src/output/tcp-streamer.cpp
 }
 

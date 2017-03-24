@@ -130,9 +130,9 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	           ./includes/various
 	           ./includes/output
 	           ./includes/scopes-qwt6
-	           ./src/input
-	           ./src/input/rawfiles
-	           ./src/input/wavfiles
+	           ./input
+	           ./input/rawfiles
+	           ./input/wavfiles
 	           /usr/include/
 	)
 
@@ -173,9 +173,9 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/dab-data.h
 	     ./includes/backend/data/data-processor.h
-	     ./src/input/virtual-input.h
-	     ./src/input/rawfiles/rawfiles.h
-	     ./src/input/wavfiles/wavfiles.h
+	     ./input/virtual-input.h
+	     ./input/rawfiles/rawfiles.h
+	     ./input/wavfiles/wavfiles.h
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
@@ -184,6 +184,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/various/ringbuffer.h
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
+	     ./includes/various/band-handler.h
 	)
 
 	set (${objectName}_SRCS
@@ -227,9 +228,9 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/backend/data/mot-data.cpp
 	     ./src/backend/data/dab-data.cpp
 	     ./src/backend/data/data-processor.cpp
-	     ./src/input/virtual-input.cpp
-	     ./src/input/rawfiles/rawfiles.cpp
-	     ./src/input/wavfiles/wavfiles.cpp
+	     ./input/virtual-input.cpp
+	     ./input/rawfiles/rawfiles.cpp
+	     ./input/wavfiles/wavfiles.cpp
 	     ./src/output/audio-base.cpp
 	     ./src/output/audiosink.cpp
 	     ./src/output/newconverter.cpp
@@ -237,6 +238,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/various/fft.cpp
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
+	     ./src/various/band-handler.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -257,8 +259,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/dab-data.h
 	     ./includes/backend/data/data-processor.h
-	     ./src/input/rawfiles/rawfiles.h
-	     ./src/input/wavfiles/wavfiles.h
+	     ./input/rawfiles/rawfiles.h
+	     ./input/wavfiles/wavfiles.h
 	)
 
 	set (${objectName}_UIS
@@ -286,29 +288,29 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
            include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/sdrplay/sdrplay-widget.ui
+	        ./input/sdrplay/sdrplay-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./src/input/sdrplay/sdrplay.h
-	        ./src/input/sdrplay/sdrplayselect.h
+	        ./input/sdrplay/sdrplay.h
+	        ./input/sdrplay/sdrplayselect.h
 	   )
 
 	   include_directories (
-	     ./src/input/sdrplay
+	     ./input/sdrplay
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/sdrplay/sdrplay.h
-	        ./src/input/sdrplay/sdrplayselect.h
+	        ./input/sdrplay/sdrplay.h
+	        ./input/sdrplay/sdrplayselect.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./src/input/sdrplay/sdrplay.cpp
-	        ./src/input/sdrplay/sdrplayselect.cpp
+	        ./input/sdrplay/sdrplay.cpp
+	        ./input/sdrplay/sdrplayselect.cpp
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY)
@@ -323,26 +325,26 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/airspy/airspy-widget.ui
+	        ./input/airspy/airspy-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./src/input/airspy/airspy-handler.h
+	        ./input/airspy/airspy-handler.h
 	   )
 
 	   include_directories (
-	     ./src/input/airspy
+	     ./input/airspy
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/airspy/airspy-handler.h
+	        ./input/airspy/airspy-handler.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./src/input/airspy/airspy-handler.cpp
+	        ./input/airspy/airspy-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
@@ -358,29 +360,29 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/dabstick/dabstick-widget.ui
+	        ./input/dabstick/dabstick-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./src/input/dabstick/dongleselect.h
-	        ./src/input/dabstick/dabstick.h
+	        ./input/dabstick/dongleselect.h
+	        ./input/dabstick/dabstick.h
 	   )
 
 	   include_directories (
-	        ./src/input/dabstick/
+	        ./input/dabstick/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/dabstick/dabstick.h
-	        ./src/input/dabstick/dongleselect.h
+	        ./input/dabstick/dabstick.h
+	        ./input/dabstick/dongleselect.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./src/input/dabstick/dabstick.cpp
-	        ./src/input/dabstick/dongleselect.cpp
+	        ./input/dabstick/dabstick.cpp
+	        ./input/dabstick/dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_DABSTICK)
@@ -408,27 +410,27 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   find_package (Qt5Network REQUIRED)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./src/input/rtl_tcp/rtl_tcp-widget.ui
+	        ./input/rtl_tcp/rtl_tcp-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./src/input/rtl_tcp/rtl_tcp_client.h
+	        ./input/rtl_tcp/rtl_tcp_client.h
 	   )
 
 	   include_directories (
-	      ./src/input/rtl_tcp
+	      ./input/rtl_tcp
 	      ${Qt5Network_INCLUDE_DIRS}
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./src/input/rtl_tcp/rtl_tcp_client.h
+	        ./input/rtl_tcp/rtl_tcp_client.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./src/input/rtl_tcp/rtl_tcp_client.cpp
+	        ./input/rtl_tcp/rtl_tcp_client.cpp
 	   )
 
 	   set (RTLTCP_lib Qt5::Network)
@@ -486,7 +488,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	endif (TRY_EPG)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
-	             ./src/input/filereader-widget.ui)
+	             ./input/filereader-widget.ui)
 
 	include_directories (
 	          ${SDRPLAY_INCLUDES}

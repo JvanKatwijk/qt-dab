@@ -30,6 +30,7 @@
 //
 //	Interface program for processing the MSC.
 //	Merely a dispatcher for the selected service
+//	and selecting the datapart from the CIF for further treatment
 //
 //	The ofdm processor assumes the existence of an msc-handler, whether
 //	a service is selected or not. 
@@ -38,11 +39,12 @@
 //	Note CIF counts from 0 .. 3
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
-	                                 dabParams	*p,
+	                                 uint8_t	mode,
 	                                 RingBuffer<int16_t> *buffer,
-	                                 bool	show_crcErrors) {
+	                                 bool	show_crcErrors) :
+	                                       params (mode) {
 	myRadioInterface	= mr;
-	this	-> buffer	= buffer;
+	audioBuffer		= buffer;
 	this	-> show_crcErrors	= show_crcErrors;
 	cifVector		= new int16_t [55296];
 	cifCount		= 0;	// msc blocks in CIF
@@ -51,8 +53,8 @@
 	newChannel		= false;
 	work_to_be_done		= false;
 	dabModus		= 0;
-	BitsperBlock		= 2 * p -> get_carriers ();
-	switch (p -> get_dabMode ()) {
+	BitsperBlock		= 2 * params. get_carriers ();
+	switch (mode) {
 	   case 4:	// 2 CIFS per 76 blocks
 	      numberofblocksperCIF	= 36;
 	      break;
@@ -148,7 +150,7 @@ int16_t	*myBegin;
 	                                 new_bitRate,
 	                                 new_shortForm,
 	                                 new_protLevel,
-	                                 buffer);
+	                                 audioBuffer);
 
 	   else	 {	// dealing with data
 	      dabHandler = new dabData (myRadioInterface,
