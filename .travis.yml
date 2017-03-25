@@ -19,7 +19,7 @@ script:
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/ # Does not seem to support "make install"?!
   - ls -lh .
-  - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/
+  - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab
   
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
