@@ -8,7 +8,7 @@ before_install:
     - sudo apt-get update -qq
     
 install: 
-    - sudo apt-get -y install qt58base libsndfile1-dev librtlsdr-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+    - sudo apt-get -y install qt58base qt58declarative libsndfile1-dev librtlsdr-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
     - source /opt/qt58/bin/qt58-env.sh
 
 script:
@@ -18,6 +18,8 @@ script:
   - cmake . -DDABSTICK=ON -DRTLTCP=ON -DSPECTRUM=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
+  
+after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
   - chmod a+x linuxdeployqt*.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
