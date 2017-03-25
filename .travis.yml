@@ -8,9 +8,20 @@ before_install:
     - sudo apt-get update -qq
     
 install: 
-    - sudo apt-get -y install qt53quick1 qt53base qt53declarative libsndfile1-dev librtlsdr-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+    - sudo apt-get -y install qt53quick1 qt53base qt53declarative libsndfile1-dev librtlsdr-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev
     - source /opt/qt53/bin/qt53-env.sh
-
+    - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
+    - svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
+    - cd qwt
+    - qmake
+    - make -j2
+    - QWT_VERSION=`sed -rn 's/^#define QWT_VERSION_STR.*"([0-9]+.[0-9]+.[0-9]+)"/\1/p' src/qwt_global.h`
+    - QWT_PATH=/usr/local/qwt-$QWT_VERSION-svn
+    - sudo make install
+    - export LD_LIBRARY_PATH="$QWT_PATH/lib:$LD_LIBRARY_PATH"
+    - export LIBRARY_PATH="$QWT_PATH/lib"
+    - export CPLUS_INCLUDE_PATH="$QWT_PATH/include"
+    
 script:
   - sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
