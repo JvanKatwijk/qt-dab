@@ -12,11 +12,11 @@ install:
     - source /opt/qt53/bin/qt53-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
-    - export QWT_INSTALL_PREFIX=/opt/qt53/
     - cd qwt
-    - qmake PREFIX=/opt/qt53/
+    - qmake
     - make -j4
     - sudo make install
+    - find /usr/local/qwt-6.1.4-svn/
     - cd ..
     
 script:
