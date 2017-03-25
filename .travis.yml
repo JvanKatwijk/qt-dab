@@ -12,7 +12,7 @@ install:
     - source /opt/qt58/bin/qt58-env.sh
 
 script:
-  - sed -i -e 's|CONFIG.*rtl_tcp||g' qt-dab.pro
+  - sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
   - qmake PREFIX=/usr
