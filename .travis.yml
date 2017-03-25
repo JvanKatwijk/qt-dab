@@ -20,12 +20,13 @@ script:
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/ # Does not seem to support "make install"?!
   - ls -lh .
   - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab
+  - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
   - chmod a+x linuxdeployqt*.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
-  - ./linuxdeployqt*.AppImage ./appdir/usr/bin/* -bundle-non-qt-libs
-  - ./linuxdeployqt*.AppImage ./appdir/usr/bin/* -appimage
+  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
+  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -appimage
   - find ./appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
   - curl --upload-file ./Qt_DAB*.AppImage https://transfer.sh/Qt_DAB-git.$(git rev-parse --short HEAD)-x86_64.AppImage
