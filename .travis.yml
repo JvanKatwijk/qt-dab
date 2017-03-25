@@ -13,15 +13,10 @@ install:
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
     - cd qwt
-    - qmake
-    - make -j2
-    - QWT_VERSION=`sed -rn 's/^#define QWT_VERSION_STR.*"([0-9]+.[0-9]+.[0-9]+)"/\1/p' src/qwt_global.h`
-    - QWT_PATH=/usr/local/qwt-$QWT_VERSION-svn
+    - qmake PREFIX=/usr
+    - make -j4
     - sudo make install
     - cd ..
-    - export LD_LIBRARY_PATH="$QWT_PATH/lib:$LD_LIBRARY_PATH"
-    - export LIBRARY_PATH="$QWT_PATH/lib"
-    - export CPLUS_INCLUDE_PATH="$QWT_PATH/include"
     
 script:
   - sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
