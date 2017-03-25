@@ -17,6 +17,7 @@ install:
     - make -j4
     - sudo make install
     - find /usr/local/qwt-6.1.4-svn/
+    - sudo mv /usr/local/qwt-6.1.4-svn/lib/* /usr/lib/
     - cd ..
     
 script:
