@@ -42,7 +42,7 @@ after_success:
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
   - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
-  - chmod a+x appimage/* ; rm appimage/AppRun ; cp appimage/* appdir/
+  - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
   - find ./appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
   - curl --upload-file ./Qt_DAB*.AppImage https://transfer.sh/Qt_DAB-git.$(git rev-parse --short HEAD)-x86_64.AppImage
