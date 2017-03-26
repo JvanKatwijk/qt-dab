@@ -1,0 +1,4 @@
+#!/bin/bash
+HERE="$(dirname "$(readlink -f "${0}")")"
+pkexec "${HERE}/udev-rules-helper"
+exec "${HERE}/usr/bin/qt-dab" "$@"
