@@ -11,25 +11,24 @@ install:
     - sudo apt-get -y install qt53svg qt53quick1 qt53base qt53tools qt53declarative libsndfile1-dev librtlsdr-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev
     - source /opt/qt53/bin/qt53-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
-    - svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
-    - cd qwt
-    - qmake
-    - make -j4
-    - sudo make install
-    - find /usr/local/qwt-6.1.4-svn/
-    - sudo mv /usr/local/qwt-6.1.4-svn/lib/* /usr/lib/
-    - cd ..
+    - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
+    - # cd qwt
+    - # qmake
+    - # make -j4
+    - # sudo make install
+    - # find /usr/local/qwt-6.1.4-svn/
+    - # cd ..
     
 script:
-  - sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
-  - sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
-  - sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
-  - cmake . -DDABSTICK=ON -DRTLTCP=ON -DSPECTRUM=OFF -DCMAKE_INSTALL_PREFIX=/usr
+  - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
+  - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
+  - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
+  - cmake . -DDABSTICK=ON -DRTLTCP=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
-  - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/ # Does not seem to support "make install"?!
+  - sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
-  - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab
-  - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
+  - # mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab
+  - # mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
   
 after_success:
