@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>259</width>
-    <height>547</height>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -382,6 +382,32 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="motAvailable">
+   <property name="geometry">
+    <rect>
+     <x>192</x>
+     <y>530</y>
+     <width>41</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_7">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>530</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>MOT decoding</string>
    </property>
   </widget>
  </widget>

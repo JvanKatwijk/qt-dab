@@ -4,23 +4,21 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * 	superframer for the SDR-J DAB+ receiver
- * 	This processor handles the whole DAB+ specific part
  ************************************************************************
  *	may 15 2015. A real improvement on the code
  *	is the addition from Stefan Poeschel to create a
@@ -287,8 +285,14 @@ uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
 	memcpy (theAudioUnit, v, frame_length);
 	memset (&theAudioUnit [frame_length], 0, 10);
 
-	if (((theAudioUnit [0] >> 5) & 07) == 4)
-	   my_padhandler. processPAD (theAudioUnit);
+	if (((theAudioUnit [0] >> 5) & 07) == 4) {
+	   int16_t count = theAudioUnit [1];
+	   uint8_t buffer [count];
+	   memcpy (buffer, &theAudioUnit [2], count);
+	   uint8_t L0	= buffer [count - 1];
+	   uint8_t L1	= buffer [count - 2];
+	   my_padhandler. processPAD (buffer, count - 3, L1, L0);
+	}
 
 	int tmp = aacDecoder. MP42PCM (dacRate,
 	                               sbrFlag,

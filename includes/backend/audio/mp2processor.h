@@ -60,10 +60,11 @@ public:
 	void		setFile		(FILE *);
 
 private:
-	padHandler	my_padHandler;
+	RadioInterface	*myRadioInterface;
+	int16_t		bitRate;
+	padHandler	my_padhandler;
 	int32_t		mp2sampleRate	(uint8_t *);
 	int32_t		mp2decodeFrame	(uint8_t *, int16_t *);
-	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*buffer;
 	int32_t		baudRate;
 	void		setSamplerate		(int32_t);

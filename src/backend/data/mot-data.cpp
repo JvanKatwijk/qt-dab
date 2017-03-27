@@ -58,7 +58,6 @@ void	motHandler::process_mscGroup (uint8_t	*data,
 	                              uint16_t	transportId) {
 uint16_t segmentSize	= ((data [0] & 0x1F) << 8) | data [1];
 
-	fprintf (stderr, "processing msc group, type %d\n", groupType);
 	if ((segmentNumber == 0) && (groupType == 3))  // header
 	   processHeader (transportId, &data [2], segmentSize, lastSegment);
 	else
@@ -91,10 +90,11 @@ uint8_t contentType	= ((segment [5] >> 1) & 0x3F);
 uint16_t contentsubType = ((segment [5] & 0x01) << 8) | segment [6];
 int16_t	pointer	= 7;
 QString	name 	= QString ("");
-//
+
 //	If we had a header with that transportId, do not do anything
-	if (getHandle (transportId) != NULL)
+	if (getHandle (transportId) != NULL) {
 	   return;
+	}
 
 	while (pointer < headerSize) {
 	   uint8_t PLI = (segment [pointer] & 0300) >> 6;
@@ -145,18 +145,19 @@ void	motHandler::processSegment	(int16_t	transportId,
 int16_t	i;
 
 	motElement *handle = getHandle (transportId);
-	if (handle == NULL)	// cannot happen
+	if (handle == NULL) 	// cannot happen
+	  return;
+
+	if (handle -> marked [segmentNumber])  {// copy that we already have
 	   return;
-	if (handle -> marked [segmentNumber]) // copy that we already have
-	   return;
+	}
 
 //	Note that the last segment may have a different size
 	if (!lastFlag && (handle -> segmentSize == -1))
 	   handle -> segmentSize = segmentSize;
-
-	if (handle -> segmentSize == -1)
-	   return;
-
+//
+//	If we only have a "last" segment, we do not need to register
+//	the segment size
 //	sanity check
 	if (segmentNumber * handle -> segmentSize + segmentSize >
 	                                                handle -> bodySize)
@@ -231,9 +232,11 @@ int16_t	i;
 
 	if (p -> numofSegments == -1)
 	   return false;
-	for (i = 0; i < p ->  numofSegments; i ++)
+	for (i = 0; i < p ->  numofSegments; i ++) {
+//	   fprintf (stderr, "segment [%d] = %d\n", i, p -> marked [i]);
 	   if (!(p -> marked [i]))
 	      return false;
+	}
 
 	return true;
 }
@@ -450,6 +453,7 @@ int16_t		lowIndex;
 	table [lowIndex]. segmentSize	= -1;
 	table [lowIndex]. numofSegments	= -1;
 	table [lowIndex]. name		= name;
+	fprintf (stderr, "created a handle for %d\n", transportId);
 }
 //
 //	handling an entry in a directory is

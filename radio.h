@@ -163,6 +163,7 @@ public slots:
 	void		setStereo		(bool);
 	void		set_streamSelector	(int);
 	void		No_Signal_Found		(void);
+	void		show_motHandling	(bool);
 
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);

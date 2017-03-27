@@ -241,6 +241,8 @@ int16_t k;
 	techData. aacError_display	-> setPalette (p);
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
+	techData. motAvailable		-> 
+	               setStyleSheet ("QLabel {background-color : red}");
 #endif
 	if (autoStart)
 	   setStart ();
@@ -678,6 +680,19 @@ void	RadioInterface::show_ficSuccess (bool b) {
 #endif
 }
 
+void	RadioInterface::show_motHandling (bool b) {
+#ifdef	TECHNICAL_DATA
+	if (b) {
+	   techData. motAvailable -> 
+	               setStyleSheet ("QLabel {background-color : green}");
+	}
+	else {
+	   techData. motAvailable ->
+	               setStyleSheet ("QLabel {background-color : red}");
+	}
+#endif
+}
+	
 ///	called from the ofdmDecoder, which computed this for each frame
 void	RadioInterface::show_snr (int s) {
 	snrDisplay	-> display (s);
@@ -833,6 +848,8 @@ void	RadioInterface::clear_showElements (void) {
 	techData. ASCTy			-> setText (QString (""));
 	techData. language		-> setText (QString (""));
 	techData. programType		-> setText (QString (""));
+	techData. motAvailable		-> 
+	               setStyleSheet ("QLabel {background-color : red}");
 #endif
 	snrDisplay		-> display (0);
 	if (pictureLabel != NULL)
@@ -1275,6 +1292,8 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	dataDisplay	-> hide ();
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
+	techData. motAvailable		-> 
+	               setStyleSheet ("QLabel {background-color : red}");
 #endif
 	switch (my_ficHandler. kindofService (a)) {
 	   case AUDIO_SERVICE:
