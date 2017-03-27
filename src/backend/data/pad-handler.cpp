@@ -167,7 +167,6 @@ QByteArray data;		// for the local addition
 	   for (j = 0; j < length; j ++)  
 	      data [j] = b [base - j];
 
-//	Dispatch the appType
 	   switch (appType) {
 	      default:
 	         return;	// sorry, we do not handle this
