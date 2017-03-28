@@ -182,7 +182,15 @@ int16_t i;
 QByteArray result;
 	for (i = 0; i < p -> numofSegments; i ++)
 	   result. append (p -> segments [i]);
-	
+
+	if (p -> contentType == 7) {
+	   std::vector<uint8_t> epgData (result. begin (), result. end ());
+#ifdef  TRY_EPG
+	   epgHandler. decode (epgData, p -> name);
+#endif
+	   return;
+	}
+
 	if (p -> contentType != 2) {
            if (p -> name != QString ("")) {
 	      fprintf (stderr, "going to write file %s\n",
@@ -367,20 +375,10 @@ uint16_t theEnd		= currentBase + 2 + headerSize;
 	         currentBase += 1;
 	         break;
 	      case 01:
-//	         if (paramId == 10)
-//	            fprintf (stderr, "priority = %d\n",
-//	                              data [pointer + 1]);
-	      
 	         currentBase += 2;
 	         break;
 
 	      case 02:
-//	         if (paramId == 5) 
-//	            fprintf (stderr, "triggertime = %d\n",
-//	                             data [currentBase + 1] << 24 |
-//	                             data [currentBase + 2] << 16 |
-//	                             data [currentBase + 3] <<  8 |
-//	                             data [currentBase + 4]);
 	         currentBase += 5;
 	         break;
 
@@ -453,7 +451,6 @@ int16_t		lowIndex;
 	table [lowIndex]. segmentSize	= -1;
 	table [lowIndex]. numofSegments	= -1;
 	table [lowIndex]. name		= name;
-	fprintf (stderr, "created a handle for %d\n", transportId);
 }
 //
 //	handling an entry in a directory is

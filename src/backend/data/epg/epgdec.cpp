@@ -43,8 +43,14 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData, const QString &name) {
 	if (tlv. is_epg ()) {
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString ();
-	   fprintf (stderr, "filename = %s\n", name. toLatin1 (). data ());
-	   fprintf (stderr, "%s\n", test. toLatin1 (). data ());
+	   FILE *epgFile = fopen (name. toLatin1 (). data (), "w");
+	   if (epgFile != NULL) {
+	      fprintf (stderr, "filename = %s\n", name. toLatin1 (). data ());
+	      fprintf (epgFile, test. toLatin1 (). data ());
+	      fclose (epgFile);
+	   }
+	   else
+	      fprintf (stderr, "cannot open %s\n", name. toLatin1 (). data ());
 	}
 }
 

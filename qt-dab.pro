@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-0.998
+TARGET		= qt-dab-0.999
 QT		+= widgets network 
 CONFIG		+= console
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -180,8 +180,8 @@ CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
-#CONFIG		+= try-epg
-#DEFINES	+= __QUALITY		# just a counter
+CONFIG		+= try-epg
+DEFINES	+= __QUALITY		# just a counter
 }
 #
 # an attempt to have it run under W32
@@ -302,7 +302,7 @@ rtl_tcp {
 
 try-epg	{
 	DEFINES		+= TRY_EPG
-	Qt		+= xml
+	QT		+= xml
 	DEPENDPATH	+= ./src/backend/data/epg \
 	                   ./includes/backend/data/epg 
 	INCLUDEPATH	+= ./includes/backend/data/epg 

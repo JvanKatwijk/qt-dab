@@ -42,8 +42,8 @@ Not (yet) implemented:
 
   * DMB (Audio and Video)
   * TPEG
-  * EPG
-  * Journaline (an untested journaline implemntation is part of the sources)
+  * EPG: when configured, the EPG decoding will generate so called EHB files.
+  * Journaline (an untested journaline implementation is part of the sources)
   
   * Other bands than used for terrestrical broadcasting in Europe (like DAB over cable)
   * HackRF

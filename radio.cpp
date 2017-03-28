@@ -1350,6 +1350,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	   case PACKET_SERVICE:
 	      {  packetdata d;
 	         my_ficHandler. dataforDataService (a, &d);
+	         fprintf (stderr, "Data service on subchannel %d\n");
 	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
 	                               d. DSCTy, d. bitRate);
@@ -1358,6 +1359,12 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 
 	            return;
 	         }
+	         fprintf (stderr, "DSCTy = %d, bitRate = %d, startAddress = %d, length = %d, protection\n",
+	                    d. DSCTy,
+	                    d. bitRate,
+	                    d. startAddr,
+	                    d. length,
+	                    d. protLevel);
 	         my_mscHandler	-> set_dataChannel (&d);
 	         switch (d. DSCTy) {
 	            default:

@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * 	fib and fig processor
@@ -374,7 +374,6 @@ int16_t		numberofComponents;
 	}
 	else {
 	   cId	= getBits_4 (d, lOffset);	(void)cId;
-	   SId	= getBits (d, lOffset + 4, 12);
 	   SId	= getBits (d, lOffset, 16);
 	   lOffset	+= 16;
 	}
@@ -419,19 +418,20 @@ int16_t	Length	= getBits_5 (d, 3);
 //
 //      DSCTy   DataService Component Type
 int16_t fib_processor::HandleFIG0Extension3 (uint8_t *d, int16_t used) {
-int16_t SCId            = getBits (d, used * 8, 12);
+int16_t SCId            = getBits   (d, used * 8, 12);
 int16_t CAOrgflag       = getBits_1 (d, used * 8 + 15);
 int16_t DGflag          = getBits_1 (d, used * 8 + 16);
 int16_t DSCTy           = getBits_6 (d, used * 8 + 18);
 int16_t SubChId         = getBits_6 (d, used * 8 + 24);
-int16_t packetAddress   = getBits (d, used * 8 + 30, 10);
-uint16_t        CAOrg   = getBits (d, used * 8 + 40, 16);
+int16_t packetAddress   = getBits   (d, used * 8 + 30, 10);
+uint16_t  CAOrg		= getBits   (d, used * 8 + 40, 16);
 
 serviceComponent *packetComp = find_packetComponent (SCId);
-
         used += 56 / 8;
         if (packetComp == NULL)		// no serviceComponent yet
            return used;
+serviceId *service = packetComp -> service;
+
         packetComp      -> subchannelId = SubChId;
         packetComp      -> DSCTy        = DSCTy;
 	packetComp	-> DGflag	= DGflag;
@@ -1010,6 +1010,7 @@ void    fib_processor::bind_packetService (int8_t TMid,
 serviceId *s    = findServiceId (SId);
 int16_t i;
 int16_t	firstFree	= -1;
+QString name;
 
        for (i = 0; i < 64; i ++) {
 	   if (!components [i]. inUse) {
@@ -1069,7 +1070,7 @@ int32_t	selectedService;
 	   if (listofServices [i]. serviceLabel. label != s)
 	      continue;
 
-	   fprintf (stderr, "we found for %s serviceId %x\n", s. toLatin1 (). data (), 
+	   fprintf (stderr, "we found for %s serviceId %X\n", s. toLatin1 (). data (), 
 	                      listofServices [i]. serviceId);
 	   selectedService = listofServices [i]. serviceId;
 	   for (j = 0; j < 64; j ++) {
@@ -1084,7 +1085,7 @@ int32_t	selectedService;
 
 	      if (components [j]. TMid == 00) 
 	         return AUDIO_SERVICE;
-	      fprintf (stderr, "TMid == %d\n", components [j]. TMid);
+//	      fprintf (stderr, "TMid == %d\n", components [j]. TMid);
 	   }
 	}
 	return UNKNOWN_SERVICE;
@@ -1117,7 +1118,7 @@ int32_t	selectedService;
 	         return;
 	      }
 
-	     subchId	= components [j]. subchannelId;
+	      subchId	= components [j]. subchannelId;
 	      d	-> subchId	= subchId;
 	      d	-> startAddr	= ficList [subchId]. StartAddr;
 	      d	-> shortForm	= ficList [subchId]. shortForm;

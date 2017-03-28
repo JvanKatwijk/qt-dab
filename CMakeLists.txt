@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-0.998)
+set (objectName qt-dab-0.999)
 add_definitions ( -Wall)
 #	modify if you want
 

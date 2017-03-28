@@ -28,6 +28,9 @@
 #include	<QImage>
 #include	<QLabel>
 #include	<QByteArray>
+#ifdef	TRY_EPG
+#include	"epgdec.h"
+#endif
 
 class	RadioInterface;
 
@@ -114,7 +117,9 @@ private:
 	motElement	*old_slide;
 	int16_t		ordernumber;
 	MOT_directory	*theDirectory;
-	
+#ifdef	TRY_EPG
+	CEPGDecoder	epgHandler;
+#endif
 	motElement	*getHandle	(uint16_t transportId);
 	void		newEntry	(uint16_t	transportId,
 	                                 int16_t	size,
@@ -128,8 +133,9 @@ private:
 	                                 int16_t	contentsubType,
 	                                 QString	name);
 	bool		isComplete	(motElement *);
-	void	handleComplete	(motElement *);
-	void	checkDir	(QString &);
+	void	handleComplete		(motElement *);
+	void    handle_epgTopElement	(motElement *p);
+	void	checkDir		(QString &);
 signals:
 	void	the_picture	(QByteArray, int, QString);
 };
