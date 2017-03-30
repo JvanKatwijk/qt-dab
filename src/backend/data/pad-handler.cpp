@@ -79,6 +79,7 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 //
 //	Since the data is stored in reversed order, we pass
 //	on the vector address and the offset of the last element
+//	in that vector
 void	padHandler::handle_shortPAD (uint8_t *b, int16_t last) {
 uint8_t CI	= b [last];
 uint8_t data [4];
@@ -97,10 +98,11 @@ static
 int16_t	lengthTable [] = {4, 6, 8, 12, 16, 24, 32, 48};
 
 //
-//	dataGroupLength is set whenever we have an appType "1"
+//	dataGroupLength is set when having processed an appType 1
 static int dataGroupLength	= 0;
 //
-//	msc_dataGroupLength is used while assembling an msc_data group
+//	msc_dataGroupLength is used while assembling an msc_data group,
+//	in the end it should be equal or somewhat larger than dataGroupLength
 static int	msc_dataGroupLength;
 
 //
@@ -111,7 +113,7 @@ QByteArray msc_dataGroupBuffer;
 
 //	Since the data is reversed, we pass on the vector address
 //	and the offset of the last element in the vector,
-//	i.e. we start (downwards) at b [last];
+//	i.e. we start (downwards)  beginning at b [last];
 void	padHandler::handle_variablePAD (uint8_t *b,
 	                                int16_t last, uint8_t CI_flag) {
 int16_t	CI_Index = 0;
@@ -333,8 +335,8 @@ int16_t	size	= mscdataGroup. length ();
 //	      fprintf (stderr, "crc failed\n");
 	      return;
 	   }
-//	   else
-//	      fprintf (stderr, "crc success\n");
+	   else
+	      fprintf (stderr, "crc success\n");
 	}
 
 	if ((groupType != 3) && (groupType != 4))

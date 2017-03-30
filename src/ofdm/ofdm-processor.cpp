@@ -224,7 +224,7 @@ DSPCOMPLEX temp;
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 	   sampleCnt = 0;
 #ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+           spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
            emit showSpectrum (bufferSize);
            localCounter = 0;
 #endif

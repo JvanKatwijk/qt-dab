@@ -214,7 +214,7 @@ uint32_t samplerate_count;
 	airspySettings -> setValue ("mixer", mixerGain);
 	airspySettings -> setValue ("lna", lnaGain);
 	airspySettings	-> endGroup ();
-	if (device) {
+	if (device != NULL) {
 	   int result = my_airspy_stop_rx (device);
 	   if (result != AIRSPY_SUCCESS) {
 	      printf ("my_airspy_stop_rx () failed: %s (%d)\n",
@@ -227,8 +227,9 @@ uint32_t samplerate_count;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
+
+	delete myFrame;
 	if (Handle == NULL) {
-	   delete myFrame;
 	   return;	// nothing achieved earlier
 	}
 	my_airspy_exit ();

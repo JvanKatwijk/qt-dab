@@ -1145,6 +1145,7 @@ QString	file;
 	      resetSelector ();
 	   }
 	}
+	else
 #endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a
