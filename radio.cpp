@@ -1454,11 +1454,13 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
+//	Dumping is GUI dependent and may be ignored
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
-//	Dumping is GUI dependent and may be ignored
 	                                     QDir::homePath (),
 	                                     tr ("raw data (*.sdr)"));
+	if (file == QString (""))	// apparently cancelled
+	   return;
 	file	= QDir::toNativeSeparators (file);
 	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
 	   file.append (".sdr");
@@ -1492,6 +1494,8 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	                                        tr ("Save file ..."),
 	                                        QDir::homePath (),
 	                                        tr ("PCM wave file (*.wav)"));
+	if (file == QString (""))
+	   return;
 	file		= QDir::toNativeSeparators (file);
 	if (!file.endsWith (".wav", Qt::CaseInsensitive))
 	   file.append (".wav");

@@ -206,10 +206,9 @@ DSPCOMPLEX temp;
            }
         }
 #ifdef  HAVE_SPECTRUM
-        if (localCounter < bufferSize)
-           localBuffer [localCounter ++]        = temp;
+	if (localCounter < bufferSize)
+	   localBuffer [localCounter ++]        = temp;
 #endif
-
 //
 //	OK, we have a sample!!
 //	first: adjust frequency. We need Hz accuracy
@@ -224,6 +223,11 @@ DSPCOMPLEX temp;
 	   show_fineCorrector	(fineCorrector);
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 	   sampleCnt = 0;
+#ifdef  HAVE_SPECTRUM
+           spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+           emit showSpectrum (bufferSize);
+           localCounter = 0;
+#endif
 	}
 	return temp;
 }
@@ -267,7 +271,6 @@ int32_t		i;
            if (localCounter < bufferSize)
               localBuffer [localCounter ++]     = v [i];
 #endif
-
 	   v [i]	*= oscillatorTable [localPhase];
 	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
 	}
@@ -481,6 +484,7 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
+	   processNULL (ofdmBuffer);
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead
@@ -545,6 +549,9 @@ void	ofdmProcessor::coarseCorrectorOff (void) {
 }
 
 #define	RANGE	36
+void	ofdmProcessor::processNULL (DSPCOMPLEX *v) {
+}
+
 int16_t	ofdmProcessor::processBlock_0 (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
 

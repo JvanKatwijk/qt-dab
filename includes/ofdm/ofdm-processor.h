@@ -120,6 +120,7 @@ virtual	void		run		(void);
 	int32_t		bufferContent;
 	bool		isReset;
 	int16_t		processBlock_0	(DSPCOMPLEX *);
+	void		processNULL	(DSPCOMPLEX *);
 	int16_t		getMiddle	(DSPCOMPLEX *);
 	common_fft	*fft_handler;
 	DSPCOMPLEX	*fft_buffer;
