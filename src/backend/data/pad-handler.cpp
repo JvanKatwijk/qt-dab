@@ -335,8 +335,8 @@ int16_t	size	= mscdataGroup. length ();
 //	      fprintf (stderr, "crc failed\n");
 	      return;
 	   }
-	   else
-	      fprintf (stderr, "crc success\n");
+//	   else
+//	      fprintf (stderr, "crc success\n");
 	}
 
 	if ((groupType != 3) && (groupType != 4))

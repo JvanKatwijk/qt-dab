@@ -34,7 +34,6 @@
 }
 
 	virtualInput::~virtualInput (void) {
-	fprintf (stderr, "This is probably not what you meant\n");
 }
 
 void	virtualInput::setVFOFrequency (int32_t f) {

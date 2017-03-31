@@ -57,7 +57,9 @@ void	motHandler::process_mscGroup (uint8_t	*data,
 	                              int16_t	segmentNumber,
 	                              uint16_t	transportId) {
 uint16_t segmentSize	= ((data [0] & 0x1F) << 8) | data [1];
-
+#ifndef	MOT_DATA
+	return;
+#endif
 	if ((segmentNumber == 0) && (groupType == 3))  // header
 	   processHeader (transportId, &data [2], segmentSize, lastSegment);
 	else

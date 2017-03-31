@@ -733,17 +733,16 @@ void	RadioInterface::showMOT		(QByteArray data,
 	const char *type;
 	if (!running)
 	   return;
-	if (pictureLabel != NULL)
-	   delete pictureLabel;
-	pictureLabel	= new QLabel (NULL);
+	if (pictureLabel == NULL)
+	   pictureLabel	= new QLabel (NULL);
 
 	type = subtype == 0 ? "GIF" :
 	       subtype == 1 ? "JPG" :
 //	       subtype == 1 ? "JPEG" :
 	       subtype == 2 ? "BMP" : "PNG";
+
 	QPixmap p;
 	p. loadFromData (data, type);
-	
 	if (saveSlide && (pictureName != QString (""))) {
 	   FILE *x = fopen ((pictureName. toLatin1 (). data ()), "w+b");
 	   if (x == NULL)
@@ -1392,7 +1391,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	         }
 	        break;
 	      }
-	   default: fprintf (stderr, "wat maak je me nou?\n");
+	   default: fprintf (stderr, "this should not happen really?\n");
 	      return;
 	}
 	if (pictureLabel != NULL)
