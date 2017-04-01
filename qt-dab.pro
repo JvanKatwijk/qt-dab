@@ -180,9 +180,9 @@ CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
-DEFINES		+= MSC_DATA__		# use at your own risk
-CONFIG		+= try-epg
-DEFINES	+= __QUALITY		# just a counter
+#DEFINES	+= MSC_DATA__		# use at your own risk
+#CONFIG		+= try-epg		# do not use
+#DEFINES	+= __QUALITY		# just a counter in spectrum display
 }
 #
 # an attempt to have it run under W32
@@ -213,7 +213,10 @@ CONFIG		+= sdrplay
 #CONFIG		+= tcp-streamer		# use for remote listening
 CONFIG		+= spectrum
 DEFINES		+= TECHNICAL_DATA
-DEFINES		+= MSC_DATA__		# use at your own risk
+DEFINES		+= MOT_DATA
+#DEFINES	+= MSC_DATA__		# use at your own risk
+#CONFIG		+= try-epg		# do not use
+#DEFINES	+= __QUALITY		# just a counter in spectrum display
 }
 
 #######################################

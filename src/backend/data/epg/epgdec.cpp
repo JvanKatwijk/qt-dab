@@ -30,6 +30,7 @@
 #include <string>
 #include <string.h>
 #include <map>
+#include	<stdio.h>
 #include <iostream>
 #include <sstream>
 #include "epgdec.h"

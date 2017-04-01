@@ -139,6 +139,8 @@ const	char		*get_programm_language_string (int16_t);
 #endif
 
 	uint8_t		convert			(QString);
+	void		hideButtons		(void);
+	void		showButtons		(void);
 public slots:
 	void		set_Scanning		(void);
 	void		set_fineCorrectorDisplay	(int);

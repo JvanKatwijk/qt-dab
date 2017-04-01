@@ -733,7 +733,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 	const char *type;
 	if (!running)
 	   return;
-	if (pictureLabel == NULL)
+	if (pictureLabel == NULL) 
 	   pictureLabel	= new QLabel (NULL);
 
 	type = subtype == 0 ? "GIF" :
@@ -753,7 +753,8 @@ void	RadioInterface::showMOT		(QByteArray data,
 	      fclose (x);
 	   }
 	}
-	
+
+//	pictureLabel -> setFrameRect (QRect (0, 0, p. height (), p. width ()));
 	pictureLabel ->  setPixmap (p);
 	pictureLabel ->  show ();
 }
@@ -1135,6 +1136,7 @@ QString	file;
 	if (s == "airspy") {
 	   try {
 	      inputDevice	= new airspyHandler (dabSettings);
+	      showButtons ();
 	      set_channelSelect	(channelSelector -> currentText ());
 	   }
 	   catch (int e) {
@@ -1152,6 +1154,7 @@ QString	file;
 	if (s == "extio") {
 	   try {
 	      inputDevice = new extioHandler (dabSettings);
+	      showButtons ();
 	      set_channelSelect (channelSelector -> currentText() );
 	   }
 	   catch (int e) {
@@ -1168,6 +1171,7 @@ QString	file;
 	if (s == "rtl_tcp") {
 	   try {
 	      inputDevice = new rtl_tcp_client (dabSettings);
+	      showButtons ();
 	      set_channelSelect (channelSelector -> currentText() );
 	   }
 	   catch (int e) {
@@ -1183,6 +1187,7 @@ QString	file;
 	if (s == "sdrplay") {
 	   try {
 	      inputDevice	= new sdrplay (dabSettings);
+	      showButtons ();
 	      set_channelSelect	(channelSelector -> currentText ());
 	   }
 	   catch (int e) {
@@ -1198,6 +1203,7 @@ QString	file;
 	if (s == "dabstick") {
 	   try {
 	      inputDevice	= new dabStick (dabSettings);
+	      showButtons ();
 	      set_channelSelect	(channelSelector -> currentText ());
 	   }
 	   catch (int e) {
@@ -1219,6 +1225,7 @@ QString	file;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
+	      hideButtons ();
 	   }
 	   catch (int e) {
 	      inputDevice = new virtualInput ();
@@ -1234,6 +1241,7 @@ QString	file;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
+	      hideButtons ();
 	   }
 	   catch (int e) {
 	      inputDevice = new virtualInput ();
@@ -1249,6 +1257,7 @@ QString	file;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new wavFiles (file);
+	      hideButtons ();
 	   }
 	   catch (int e) {
 	      inputDevice = new virtualInput ();
@@ -1350,7 +1359,6 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	   case PACKET_SERVICE:
 	      {  packetdata d;
 	         my_ficHandler. dataforDataService (a, &d);
-	         fprintf (stderr, "Data service on subchannel %d\n");
 	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
 	                               d. DSCTy, d. bitRate);
@@ -1359,12 +1367,6 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 
 	            return;
 	         }
-	         fprintf (stderr, "DSCTy = %d, bitRate = %d, startAddress = %d, length = %d, protection\n",
-	                    d. DSCTy,
-	                    d. bitRate,
-	                    d. startAddr,
-	                    d. length,
-	                    d. protLevel);
 	         my_mscHandler	-> set_dataChannel (&d);
 	         switch (d. DSCTy) {
 	            default:
@@ -1543,5 +1545,26 @@ uint8_t	RadioInterface::convert (QString s) {
 	if (s == "Mode 4")
 	   return 4;
 	return 1;
+}
+
+void	RadioInterface::showButtons	(void) {
+	scanButton	-> show ();
+	bandSelector	-> show ();
+	modeSelector	-> show ();
+	channelSelector	-> show	();
+#ifdef	TECHNICAL_DATA
+	techData. frequency	-> show ();
+#endif
+
+}
+
+void	RadioInterface::hideButtons	(void) {
+	scanButton	-> hide ();
+	bandSelector	-> hide ();
+	modeSelector	-> hide ();
+	channelSelector	-> hide ();
+#ifdef	TECHNICAL_DATA
+	techData. frequency	-> hide ();
+#endif
 }
 
