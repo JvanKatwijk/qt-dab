@@ -48,7 +48,7 @@
 #include	"tcp-streamer.h"
 #endif
 #ifdef	HAVE_DABSTICK
-#include	"rtlsdr-handler.h
+#include	"rtlsdr-handler.h"
 #endif
 #ifdef	HAVE_SDRPLAY
 #include	"sdrplay-handler.h"
@@ -589,7 +589,6 @@ void	RadioInterface::set_Scanning	(void) {
 //	temporarily, since otherwise changing the channel would
 //	generate a signal
 void	RadioInterface::Increment_Channel (void) {
-int16_t	i;
 int32_t	tunedFrequency;
 int	cc	= channelSelector -> currentIndex ();
 
@@ -952,7 +951,6 @@ void	RadioInterface::TerminateProcess (void) {
   */
 
 void	RadioInterface::set_channelSelect (QString s) {
-int16_t	i;
 int32_t	tunedFrequency;
 bool	localRunning	= running;
 
@@ -1104,7 +1102,6 @@ void	RadioInterface::set_bandSelect (QString s) {
 //	single device to go with, then if suffices to extract some
 //	code specific to that device
 void	RadioInterface::setDevice (QString s) {
-bool	success;
 QString	file;
 //
 ///	first stop dumping
