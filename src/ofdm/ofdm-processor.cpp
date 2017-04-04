@@ -64,6 +64,9 @@ int16_t	res	= 1;
 	                                   params (dabMode),
 	                                   phaseSynchronizer (dabMode, 
                                                               threshold),
+#ifdef	TII_ATTEMPT
+	                                   my_TII_Detector (dabMode, 3),
+#endif
 	                                   my_ofdmDecoder (mr,
 	                                                   dabMode,
 #ifdef	HAVE_SPECTRUM
@@ -305,6 +308,10 @@ int32_t		syncBufferIndex	= 0;
 int32_t		syncBufferSize	= 32768;
 int32_t		syncBufferMask	= syncBufferSize - 1;
 float		envBuffer	[syncBufferSize];
+#ifdef	TII_ATTEMPT
+bool		tiiFound	= false;
+int16_t		tiiCount	= 0;
+#endif
 
 	coarseCorrector = 0;
         fineCorrector   = 0;
@@ -484,7 +491,14 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
-	   processNULL (ofdmBuffer);
+#ifdef	TII_ATTEMPT
+	   if (!tiiFound && (tiiCount < 100)) {
+	      if (my_TII_Detector. processNULL (ofdmBuffer))
+	         tiiFound = true;
+	      else
+	         tiiCount ++;
+	   }
+#endif
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead
@@ -549,9 +563,6 @@ void	ofdmProcessor::coarseCorrectorOff (void) {
 }
 
 #define	RANGE	36
-void	ofdmProcessor::processNULL (DSPCOMPLEX *v) {
-}
-
 int16_t	ofdmProcessor::processBlock_0 (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
 

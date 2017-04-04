@@ -313,6 +313,10 @@ handlerLabel:
 	                                      carriers / 2);
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u - 1 - carriers / 2],
 	                                      carriers / 2);
+//	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [0],
+//	                                      carriers / 2);
+//	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [T_u - 1 - carriers / 2],
+//	                                      carriers / 2);
 	      showIQ	(carriers);
 #ifdef	__QUALITY
 	      showQuality (computeQuality (conjVector));

@@ -180,9 +180,10 @@ CONFIG		+= spectrum
 #CONFIG		+= tcp-streamer		# use for remote listening
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
-#DEFINES	+= MSC_DATA__		# use at your own risk
-#CONFIG		+= try-epg		# do not use
-#DEFINES	+= __QUALITY		# just a counter in spectrum display
+DEFINES		+= MSC_DATA__		# use at your own risk
+CONFIG		+= try-epg		# do not use
+DEFINES		+= __QUALITY		# just a counter in spectrum display
+CONFIG		+= try_tii		# sorry, just private stuff
 }
 #
 # an attempt to have it run under W32
@@ -321,3 +322,11 @@ tcp-streamer	{
 	SOURCES		+= ./src/output/tcp-streamer.cpp
 }
 
+try_tii		{
+#private stuff, not part of the public distribution
+	DEFINES		+= TII_ATTEMPT
+	INCLUDEPATH	+= ../janSpul
+	DEPENDPATH	+= ../janSpul
+	HEADERS		+= ../janSpul/tii_detector.h
+	SOURCES		+= ../janSpul/tii_detector.cpp
+}

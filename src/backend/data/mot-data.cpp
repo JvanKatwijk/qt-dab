@@ -133,7 +133,6 @@ QString	name 	= QString ("");
 	         pointer += length;
 	   } 
 	}
-
 	newEntry (transportId, bodySize, contentType, contentsubType, name);
 }
 //

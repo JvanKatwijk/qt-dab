@@ -332,16 +332,16 @@ int16_t	size	= mscdataGroup. length ();
 	if ((data [0] & 0x40) != 0) {
 	   bool res	= check_crc_bytes (data, msc_length - 2);
 	   if (!res) {
-//	      fprintf (stderr, "crc failed\n");
+//	      fprintf (stderr, "crc failed ");
 	      return;
 	   }
 //	   else
-//	      fprintf (stderr, "crc success\n");
+//	      fprintf (stderr, "crc success ");
 	}
 
 	if ((groupType != 3) && (groupType != 4))
 	   return;		// do not know yet
-//
+
 //	extensionflag
 	bool	extensionFlag	= (data [0] & 0x80) != 0;
 //	if the segmentflag is on, then a lastflag and segmentnumber are
@@ -353,7 +353,7 @@ int16_t	size	= mscdataGroup. length ();
 	   segmentNumber	= ((data [index] & 0x7F) << 8) | data [index + 1];
 	   index += 2;
 	}
-//
+
 //	if the user access flag is on there is a user accessfield
 	if ((data [0] & 0x10) != 0) {
 	   int16_t lengthIndicator = data [index] & 0x0F;

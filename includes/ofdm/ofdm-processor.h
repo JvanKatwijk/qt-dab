@@ -34,6 +34,9 @@
 #include	"ofdm-decoder.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
+#ifdef	TII_ATTEMPT
+#include	"tii_detector.h"
+#endif
 //
 //	Note:
 //	It was found that enlarging the buffersize to e.g. 8192
@@ -75,7 +78,9 @@ private:
 	dabParams	params;
 	RadioInterface	*myRadioInterface;
 	ficHandler	*my_ficHandler;
-
+#ifdef	TII_ATTEMPT
+	TII_Detector	my_TII_Detector;
+#endif
 	int16_t		attempts;
 	bool		scanMode;
 	bool		running;

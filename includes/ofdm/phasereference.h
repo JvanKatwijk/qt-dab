@@ -33,13 +33,14 @@
 
 class phaseReference : public phaseTable {
 public:
-		phaseReference (uint8_t, int16_t);
-		~phaseReference	(void);
-	int32_t	findIndex	(DSPCOMPLEX *);
+		phaseReference 			(uint8_t, int16_t);
+		~phaseReference			(void);
+	int32_t	findIndex			(DSPCOMPLEX *);
 	DSPCOMPLEX	*refTable;
 private:
 	dabParams	params;
-	int32_t		Tu;
+	int32_t		T_u;
+	int16_t		carriers;
 	int16_t		threshold;
 
 	common_fft	*fft_processor;

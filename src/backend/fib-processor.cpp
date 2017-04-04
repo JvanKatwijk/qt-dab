@@ -765,8 +765,8 @@ int16_t	noSubfields;
 	if (MS == 0) {		// fixed size
 	   int16_t latitudeCoarse = getBits (d, used * 8 + 8, 16);
 	   int16_t longitudeCoarse = getBits (d, used * 8 + 24, 16);
-//	   fprintf (stderr, "Id = %d, (%d %d)\n", mainId,
-//	                              latitudeCoarse, longitudeCoarse);
+	   fprintf (stderr, "Id = %d, (%d %d)\n", mainId,
+	                              latitudeCoarse, longitudeCoarse);
 	   (void)latitudeCoarse;
 	   (void)longitudeCoarse;
 	   return used + 48 / 6;
@@ -774,7 +774,7 @@ int16_t	noSubfields;
 	//	MS == 1
 
 	noSubfields = getBits_3 (d, used * 8 + 13);
-//	fprintf (stderr, "Id = %d, subfields = %d\n", mainId, noSubfields);
+	fprintf (stderr, "Id = %d, subfields = %d\n", mainId, noSubfields);
 	used += (16 + noSubfields * 48) / 8;
 
 	return used;
