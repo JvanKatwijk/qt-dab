@@ -48,10 +48,13 @@
 #include	"tcp-streamer.h"
 #endif
 #ifdef	HAVE_DABSTICK
-#include	"dabstick.h"
+#include	"rtlsdr-handler.h
 #endif
 #ifdef	HAVE_SDRPLAY
-#include	"sdrplay.h"
+#include	"sdrplay-handler.h"
+#endif
+#ifdef	HAVE_ELAD_S1
+#include	"elad-handler.h"
 #endif
 #ifdef	__MINGW32__
 #ifdef	HAVE_EXTIO
@@ -398,6 +401,9 @@ void	RadioInterface::init_your_gui (void) {
 #endif
 #ifdef	HAVE_AIRSPY
 	deviceSelector	-> addItem ("airspy");
+#endif
+#ifdef	HAVE_ELAD_S1
+	deviceSelector	-> addItem ("elad-s1");
 #endif
 #ifdef  HAVE_EXTIO
     deviceSelector	-> addItem ("extio");
@@ -1186,7 +1192,7 @@ QString	file;
 #ifdef	HAVE_SDRPLAY
 	if (s == "sdrplay") {
 	   try {
-	      inputDevice	= new sdrplay (dabSettings);
+	      inputDevice	= new sdrplayHandler (dabSettings);
 	      showButtons ();
 	      set_channelSelect	(channelSelector -> currentText ());
 	   }
@@ -1199,10 +1205,26 @@ QString	file;
 	}
 	else
 #endif
+#ifdef	HAVE_ELAD_S1
+	if (s == "elad-s1") {
+	   try {
+	      inputDevice	= new eladHandler (dabSettings);
+	      showButtons ();
+	      set_channelSelect	(channelSelector -> currentText ());
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("elad-s1: no library or device\n"));
+	      inputDevice = new virtualInput ();
+	      resetSelector ();
+	   }
+	}
+	else
+#endif
 #ifdef	HAVE_DABSTICK
 	if (s == "dabstick") {
 	   try {
-	      inputDevice	= new dabStick (dabSettings);
+	      inputDevice	= new rtlsdrHandler (dabSettings);
 	      showButtons ();
 	      set_channelSelect	(channelSelector -> currentText ());
 	   }

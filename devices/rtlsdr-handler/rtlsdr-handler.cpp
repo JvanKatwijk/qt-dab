@@ -27,7 +27,8 @@
  */
 
 #include	<QThread>
-#include	"dabstick.h"
+#include	"rtlsdr-handler.h"
+#include        "rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 
 #ifdef	__MINGW32__
@@ -45,7 +46,7 @@
 //	ctx is the calling task
 static
 void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
-dabStick	*theStick	= (dabStick *)ctx;
+rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 
 	if ((theStick == NULL) || (len != READLEN_DEFAULT))
 	   return;
@@ -58,10 +59,10 @@ dabStick	*theStick	= (dabStick *)ctx;
 //	from the lib.
 class	dll_driver : public QThread {
 private:
-	dabStick	*theStick;
+	rtlsdrHandler	*theStick;
 public:
 
-	dll_driver (dabStick *d) {
+	dll_driver (rtlsdrHandler *d) {
 	theStick	= d;
 	start ();
 	}
@@ -80,7 +81,7 @@ virtual void	run (void) {
 };
 //
 //	Our wrapper is a simple classs
-	dabStick::dabStick (QSettings *s) {
+	rtlsdrHandler::rtlsdrHandler (QSettings *s) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -88,7 +89,7 @@ int16_t	i;
 QString	temp;
 int	k;
 
-	dabstickSettings	= s;
+	rtlsdrSettings		= s;
 	this	-> myFrame	= new QFrame (NULL);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show ();
@@ -141,19 +142,18 @@ int	k;
 
 	deviceIndex = 0;	// default
 	if (deviceCount > 1) {
-	   dongleSelector	= new dongleSelect ();
+	   rtl_dongleSelect dongleSelector;
 	   for (deviceIndex = 0; deviceIndex < deviceCount; deviceIndex ++) {
-	      dongleSelector ->
+	      dongleSelector.
 	           addtoDongleList (rtlsdr_get_device_name (deviceIndex));
 	   }
-	   deviceIndex = dongleSelector -> QDialog::exec ();
-	   delete dongleSelector;
+	   deviceIndex = dongleSelector. QDialog::exec ();
 	}
 //
 //	OK, now open the hardware
 	r			= this -> rtlsdr_open (&device, deviceIndex);
 	if (r < 0) {
-	   fprintf (stderr, "Opening dabstick failed\n");
+	   fprintf (stderr, "Opening rtlsdr device failed\n");
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
 #else
@@ -195,8 +195,8 @@ int	k;
 	_I_Buffer		= new RingBuffer<uint8_t>(1024 * 1024);
 
 	theGain		= gains [gainsCount / 2];	// default
-	dabstickSettings	-> beginGroup ("dabstickSettings");
-	temp = dabstickSettings -> value ("externalGain", "10"). toString ();
+	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	temp = rtlsdrSettings -> value ("externalGain", "10"). toString ();
 	k	= combo_gain -> findText (temp);
 	if (k != -1) {
 	   combo_gain	-> setCurrentIndex (k);
@@ -204,7 +204,7 @@ int	k;
 	}
 	rtlsdr_set_tuner_gain (device, theGain);
 
-	temp	= dabstickSettings -> value ("autogain",
+	temp	= rtlsdrSettings -> value ("autogain",
 	                                      "autogain_on"). toString ();
 	k	= combo_autogain -> findText (temp);
 	if (k != -1) 
@@ -213,9 +213,9 @@ int	k;
 	rtlsdr_set_tuner_gain_mode (device,
 	                   combo_autogain -> currentText () == "autogain_on");
 	
-	f_correction -> setValue (dabstickSettings -> value ("f_correction", 0). toInt ());
-	KhzOffset	-> setValue (dabstickSettings -> value ("KhzOffset", 0). toInt ());
-	dabstickSettings	-> endGroup ();
+	f_correction	-> setValue (rtlsdrSettings -> value ("f_correction", 0). toInt ());
+	KhzOffset	-> setValue (rtlsdrSettings -> value ("KhzOffset", 0). toInt ());
+	rtlsdrSettings	-> endGroup ();
 	set_fCorrection	(f_correction -> value ());
 	set_KhzOffset	(KhzOffset -> value ());
 	connect (combo_gain, SIGNAL (activated (const QString &)),
@@ -228,7 +228,7 @@ int	k;
 	         this, SLOT (set_KhzOffset (int)));
 }
 
-	dabStick::~dabStick	(void) {
+	rtlsdrHandler::~rtlsdrHandler	(void) {
 	if (Handle == NULL) {	// nothing achieved earlier on
 	   delete myFrame;
 	   return;
@@ -242,15 +242,15 @@ int	k;
 	   return;
 	}
 
-	dabstickSettings	-> beginGroup ("dabstickSettings");
-	dabstickSettings	-> setValue ("externalGain", theGain);
-	dabstickSettings	-> setValue ("autogain",
+	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	rtlsdrSettings	-> setValue ("externalGain", theGain);
+	rtlsdrSettings	-> setValue ("autogain",
 	                                      combo_autogain -> currentText ());
-	dabstickSettings	-> setValue ("f_correction",
+	rtlsdrSettings	-> setValue ("f_correction",
 	                                      f_correction -> value ());
-	dabstickSettings	-> setValue ("KhzOffset",
+	rtlsdrSettings	-> setValue ("KhzOffset",
 	                                      KhzOffset	-> value ());
-	dabstickSettings	-> endGroup ();
+	rtlsdrSettings	-> endGroup ();
 	if (workerHandle != NULL) { // we are running
 	   this -> rtlsdr_cancel_async (device);
 	   if (workerHandle != NULL) {
@@ -273,17 +273,17 @@ int	k;
 	delete	myFrame;
 }
 
-void	dabStick::setVFOFrequency	(int32_t f) {
+void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
 	lastFrequency	= f;
 	(void)(this -> rtlsdr_set_center_freq (device, f + vfoOffset));
 }
 
-void	dabStick::getVFOFrequency	(int32_t *f) {
-	*f = (int32_t)(this -> rtlsdr_get_center_freq (device)) - vfoOffset;
+int32_t	rtlsdrHandler::getVFOFrequency	(void) {
+	return (int32_t)(this -> rtlsdr_get_center_freq (device)) - vfoOffset;
 }
 //
 //
-bool	dabStick::restartReader	(void) {
+bool	rtlsdrHandler::restartReader	(void) {
 int32_t	r;
 
 	if (workerHandle != NULL)
@@ -302,7 +302,7 @@ int32_t	r;
 	return true;
 }
 
-void	dabStick::stopReader		(void) {
+void	rtlsdrHandler::stopReader	(void) {
 	if (workerHandle == NULL)
 	   return;
 
@@ -318,22 +318,21 @@ void	dabStick::stopReader		(void) {
 }
 //
 //	when selecting  the gain from a table, use the table value
-void	dabStick::set_ExternalGain	(const QString &gain) {
+void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
 	theGain		= gain. toInt ();
 	rtlsdr_set_tuner_gain (device, gain. toInt ());
 }
 //
-void	dabStick::set_autogain		(const QString &autogain) {
+void	rtlsdrHandler::set_autogain	(const QString &autogain) {
 	rtlsdr_set_tuner_gain_mode (device, autogain == "autogain_off" ? 0 : 1);
 }
-
 //
 //	correction is in Hz
-void	dabStick::set_fCorrection	(int32_t ppm) {
+void	rtlsdrHandler::set_fCorrection	(int32_t ppm) {
 	this -> rtlsdr_set_freq_correction (device, ppm);
 }
 
-void	dabStick::set_KhzOffset	(int32_t o) {
+void	rtlsdrHandler::set_KhzOffset	(int32_t o) {
 	vfoOffset	= Khz (o);
 	(void)(this -> rtlsdr_set_center_freq (device, lastFrequency + vfoOffset));
 }
@@ -342,7 +341,7 @@ void	dabStick::set_KhzOffset	(int32_t o) {
 //	The brave old getSamples. For the dab stick, we get
 //	size samples: still in I/Q pairs, but we have to convert the data from
 //	uint8_t to DSPCOMPLEX *
-int32_t	dabStick::getSamples (DSPCOMPLEX *V, int32_t size) { 
+int32_t	rtlsdrHandler::getSamples (DSPCOMPLEX *V, int32_t size) { 
 int32_t	amount, i;
 uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 //
@@ -353,12 +352,12 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 	return amount / 2;
 }
 
-int32_t	dabStick::Samples	(void) {
+int32_t	rtlsdrHandler::Samples	(void) {
 	return _I_Buffer	-> GetRingBufferReadAvailable () / 2;
 }
 //
 
-bool	dabStick::load_rtlFunctions (void) {
+bool	rtlsdrHandler::load_rtlFunctions (void) {
 //
 //	link the required procedures
 	rtlsdr_open	= (pfnrtlsdr_open)
@@ -483,15 +482,15 @@ bool	dabStick::load_rtlFunctions (void) {
 	return true;
 }
 
-void	dabStick::resetBuffer (void) {
+void	rtlsdrHandler::resetBuffer (void) {
 	_I_Buffer -> FlushRingBuffer ();
 }
 
-int16_t	dabStick::maxGain	(void) {
+int16_t	rtlsdrHandler::maxGain	(void) {
 	return gainsCount;
 }
 
-int16_t	dabStick::bitDepth	(void) {
+int16_t	rtlsdrHandler::bitDepth	(void) {
 	return 8;
 }
 

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair programming
  *
@@ -20,8 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SDRPLAY__
-#define	__SDRPLAY__
+#ifndef __SDRPLAY_HANDLER__
+#define	__SDRPLAY_HANDLER__
 
 #include	<QObject>
 #include	<QFrame>
@@ -31,7 +31,6 @@
 #include	"virtual-input.h"
 #include	"ui_sdrplay-widget.h"
 #include	"mirsdrapi-rsp.h"
-#include	"sdrplay.h"	// our header
 
 typedef void (*mir_sdr_StreamCallback_t)(int16_t	*xi,
 	                                 int16_t	*xq,
@@ -85,12 +84,12 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 
 
 ///////////////////////////////////////////////////////////////////////////
-class	sdrplay: public virtualInput, public Ui_sdrplayWidget {
+class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
-		sdrplay		(QSettings *);
-		~sdrplay	(void);
-	void	setVFOFrequency	(int32_t);
+		sdrplayHandler		(QSettings *);
+		~sdrplayHandler		(void);
+	void	setVFOFrequency		(int32_t);
 	int32_t	getVFOFrequency		(void);
 	int32_t	defaultFrequency	(void);
 

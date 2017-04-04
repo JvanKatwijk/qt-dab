@@ -24,9 +24,9 @@ DEPENDPATH += . \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/various \
-	      ./input \
-	      ./input/rawfiles \
-	      ./input/wavfiles \
+	      ./devices \
+	      ./devices/rawfiles \
+	      ./devices/wavfiles \
 	      ./includes/ofdm \
 	      ./includes/backend \
 	      ./includes/backend/audio \
@@ -46,9 +46,9 @@ INCLUDEPATH += . \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various \
-	      ./input \
-	      ./input/rawfiles \
-	      ./input/wavfiles 
+	      ./devices \
+	      ./devices/rawfiles \
+	      ./devices/wavfiles 
 
 # Input
 HEADERS += ./radio.h \
@@ -100,11 +100,11 @@ HEADERS += ./radio.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
 	   ./includes/various/band-handler.h \
-	   ./input/virtual-input.h \
-	   ./input/rawfiles/rawfiles.h \
-           ./input/wavfiles/wavfiles.h
+	   ./devices/virtual-input.h \
+	   ./devices/rawfiles/rawfiles.h \
+           ./devices/wavfiles/wavfiles.h
 
-FORMS +=	./input/filereader-widget.ui 
+FORMS +=	./devices/filereader-widget.ui 
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -153,9 +153,9 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
 	   ./src/various/band-handler.cpp \
-	   ./input/virtual-input.cpp \
-	   ./input/rawfiles/rawfiles.cpp \
-           ./input/wavfiles/wavfiles.cpp
+	   ./devices/virtual-input.cpp \
+	   ./devices/rawfiles/rawfiles.cpp \
+           ./devices/wavfiles/wavfiles.cpp
 #
 #	for unix systems this is about it. Adapt when needed for naming
 #	and locating libraries. If you do not need a device as
@@ -172,18 +172,36 @@ LIBS		+= -lz
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
 LIBS		+= -lfaad
+#
+# comment or uncomment for the devices you want to have support for
+# (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
+CONFIG		+= elad_s1
+
+#if you want to see a spectrum and a constellation plot, uncomment
 CONFIG		+= spectrum
+
+#if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
+
+#you might - or might not - want to see some data on the selected program
 DEFINES		+= TECHNICAL_DATA
+
+#you might - or might not - see MOT data if it is in the datastream
 DEFINES		+= MOT_DATA
+
+#you do not want this
 DEFINES		+= MSC_DATA__		# use at your own risk
-CONFIG		+= try-epg		# do not use
-DEFINES		+= __QUALITY		# just a counter in spectrum display
-CONFIG		+= try_tii		# sorry, just private stuff
+
+#and certainly, you do not want this
+#CONFIG		+= try-epg		# do not use
+#DEFINES	+= __QUALITY		# just a counter in spectrum display
+
+#if you uncomment this one, you will get lots of compiler errors, it is just private
+#CONFIG		+= try_tii		# sorry, just private stuff
 }
 #
 # an attempt to have it run under W32
@@ -248,25 +266,27 @@ spectrum {
 #
 #	dabstick
 dabstick {
-	DEFINES		+= HAVE_DABSTICK
-	INCLUDEPATH	+= ./input/dabstick
-	HEADERS		+= ./input/dabstick/dabstick.h \
-	                   ./input/dabstick/dongleselect.h
-	SOURCES		+= ./input/dabstick/dabstick.cpp \
-	                   ./input/dabstick/dongleselect.cpp
-	FORMS		+= ./input/dabstick/dabstick-widget.ui
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ./devices/rtlsdr-handler
+	INCLUDEPATH	+= ./devices/rtlsdr-handler
+	HEADERS		+= ./devices/rtlsdr-handler/rtlsdr-handler.h \
+	                   ./devices/rtlsdr-handler/rtl-dongleselect.h
+	SOURCES		+= ./devices/rtlsdr-handler/rtlsdr-handler.cpp \
+	                   ./devices/rtlsdr-handler/rtl-dongleselect.cpp
+	FORMS		+= ./devices/rtlsdr-handler/rtlsdr-widget.ui
 }
 #
 #	the SDRplay
 #
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
-	INCLUDEPATH	+= ./input/sdrplay 
-	HEADERS		+= ./input/sdrplay/sdrplay.h \
-	                   ./input/sdrplay/sdrplayselect.h
-	SOURCES		+= ./input/sdrplay/sdrplay.cpp \
-	                   ./input/sdrplay/sdrplayselect.cpp
-	FORMS		+= ./input/sdrplay/sdrplay-widget.ui
+	DEPENDPATH	+= ./devices/sdrplay-handler 
+	INCLUDEPATH	+= ./devices/sdrplay-handler 
+	HEADERS		+= ./devices/sdrplay-handler/sdrplay-handler.h \
+	                   ./devices/sdrplay-handler/sdrplayselect.h
+	SOURCES		+= ./devices/sdrplay-handler/sdrplay-handler.cpp \
+	                   ./devices/sdrplay-handler/sdrplayselect.cpp
+	FORMS		+= ./devices/sdrplay-handler/sdrplay-widget.ui
 }
 #
 #
@@ -274,35 +294,49 @@ sdrplay {
 #
 airspy {
 	DEFINES		+= HAVE_AIRSPY
-	INCLUDEPATH	+= ./input/airspy \
+	DEPENDPATH	+= ./devices/airspy 
+	INCLUDEPATH	+= ./devices/airspy-handler \
 	                    /local/include/libairspy
-	HEADERS		+= ./input/airspy/airspy-handler.h \
+	HEADERS		+= ./devices/airspy-handler/airspy-handler.h \
 	                    /usr/local/include/libairspy/airspy.h
-	SOURCES		+= ./input/airspy/airspy-handler.cpp 
-	FORMS		+= ./input/airspy/airspy-widget.ui
+	SOURCES		+= ./devices/airspy-handler/airspy-handler.cpp 
+	FORMS		+= ./devices/airspy-handler/airspy-widget.ui
 }
 
 #	extio dependencies, windows only
 #
 extio {
 	DEFINES		+= HAVE_EXTIO
-	INCLUDEPATH	+= ./input/extio-handler
-	HEADERS		+= ./input/extio-handler/extio-handler.h \
-	                   ./input/extio-handler/common-readers.h \
-	                   ./input/extio-handler/virtual-reader.h
-	SOURCES		+= ./input/extio-handler/extio-handler.cpp \
-	                   ./input/extio-handler/common-readers.cpp \
-	                   ./input/extio-handler/virtual-reader.cpp
+	INCLUDEPATH	+= ./devices/extio-handler
+	HEADERS		+= ./devices/extio-handler/extio-handler.h \
+	                   ./devices/extio-handler/common-readers.h \
+	                   ./devices/extio-handler/virtual-reader.h
+	SOURCES		+= ./devices/extio-handler/extio-handler.cpp \
+	                   ./devices/extio-handler/common-readers.cpp \
+	                   ./devices/extio-handler/virtual-reader.cpp
 }
 
 #
 rtl_tcp {
 	DEFINES		+= HAVE_RTL_TCP
 	QT		+= network
-	INCLUDEPATH	+= ./input/rtl_tcp
-	HEADERS		+= ./input/rtl_tcp/rtl_tcp_client.h
-	SOURCES		+= ./input/rtl_tcp/rtl_tcp_client.cpp
-	FORMS		+= ./input/rtl_tcp/rtl_tcp-widget.ui
+	INCLUDEPATH	+= ./devices/rtl_tcp
+	HEADERS		+= ./devices/rtl_tcp/rtl_tcp_client.h
+	SOURCES		+= ./devices/rtl_tcp/rtl_tcp_client.cpp
+	FORMS		+= ./devices/rtl_tcp/rtl_tcp-widget.ui
+}
+
+elad_s1	{
+	DEFINES		+= HAVE_ELAD_S1
+	DEPENDPATH	+= ./devices/elad-s1-handler
+	INCLUDEPATH	+= ./devices/elad-s1-handler
+	HEADERS		+= ./devices/elad-s1-handler/elad-handler.h \
+	                   ./devices/elad-s1-handler/elad-worker.h \
+	                   ./devices/elad-s1-handler/elad-loader.h 
+	SOURCES		+= ./devices/elad-s1-handler/elad-handler.cpp \
+	                   ./devices/elad-s1-handler/elad-worker.cpp \
+	                   ./devices/elad-s1-handler/elad-loader.cpp 
+	FORMS		+= ./devices/elad-s1-handler/widget.ui
 }
 
 try-epg	{

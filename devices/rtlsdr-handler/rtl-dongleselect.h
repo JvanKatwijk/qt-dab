@@ -31,12 +31,12 @@
 #include	<QStringList>
 #include	<stdint.h>
 
-class	dongleSelect: public QDialog {
+class	rtl_dongleSelect: public QDialog {
 Q_OBJECT
 public:
-			dongleSelect	(void);
-			~dongleSelect	(void);
-	void		addtoDongleList	(const char *);
+			rtl_dongleSelect	(void);
+			~rtl_dongleSelect	(void);
+	void		addtoDongleList		(const char *);
 private:
 	QLabel		*toptext;
 	QListView	*selectorDisplay;

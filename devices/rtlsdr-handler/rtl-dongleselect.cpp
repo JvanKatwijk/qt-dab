@@ -19,14 +19,14 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"dongleselect.h"
+#include	"rtl-dongleselect.h"
 #include	<stdio.h>
 #include	<QVBoxLayout>
 //
 //	Whenever there are two or more RT2832 based sticks connected
 //	to the computer, the user is asked to make a choice.
 
-	dongleSelect::dongleSelect (void) {
+	rtl_dongleSelect::rtl_dongleSelect (void) {
 	toptext		= new QLabel (this);
 	toptext		-> setText ("Select a dongle");
 	selectorDisplay	= new QListView (this);
@@ -45,10 +45,10 @@
 	selectedItem	= -1;
 }
 
-	dongleSelect::~dongleSelect (void) {
+	rtl_dongleSelect::~rtl_dongleSelect (void) {
 }
 
-void	dongleSelect::addtoDongleList (const char *v) {
+void	rtl_dongleSelect::addtoDongleList (const char *v) {
 QString s (v);
 
 	Dongles << s;
@@ -58,7 +58,7 @@ QString s (v);
 	adjustSize ();
 }
 
-void	dongleSelect::selectDongle (QModelIndex s) {
+void	rtl_dongleSelect::selectDongle (QModelIndex s) {
 	QDialog::done (s. row ());
 }
 

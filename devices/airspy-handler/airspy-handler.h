@@ -14,8 +14,8 @@
  *	jan van Katwijk
  *	Lazy Chair Computing
  */
-#ifndef __AIRSPY_RADIO__
-#define	__AIRSPY_RADIO__
+#ifndef __AIRSPY_HANDLER__
+#define	__AIRSPY_HANDLER__
 
 #include	<QObject>
 #include	<QSettings>
