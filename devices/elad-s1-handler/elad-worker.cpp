@@ -34,20 +34,47 @@
 	                        eladLoader	*f,
 	                        RingBuffer<DSPCOMPLEX> *theBuffer,
 	                        bool	*OK) {
-
+int	i;
+	fprintf (stderr, "creating a worker\n");
 	RingBuffer<uint8_t>	*_I_Buffer = new RingBuffer<uint8_t> (2 * 16384);
+	fprintf (stderr, "local buffer allocated\n");
 	this	-> theRate	= 3072000;
 	this	-> defaultFreq	= defaultFreq;
 	this	-> functions	= f;
 	this	-> theBuffer	= theBuffer;
 	*OK			= false;	// just the default
 
+	conversionNumber	= theRate == 192000 ? 1:
+	                          theRate <= 3072000 ? 2 : 3;
+//
+//	we convert to complexes directly
+	iqSize			= conversionNumber == 3 ? 4 : 8;
+	convBufferSize          = theRate / 1000;
+	convIndex		= 0;
+	convBuffer 		= new DSPCOMPLEX [convBufferSize + 1];
+
+	fprintf (stderr, "iqSize = %d, conversion = %d\n",	
+	                       iqSize, conversionNumber);
+//      The sizes of the mapTable and the convTable are
+//      predefined and follow from the input and output rate
+//      (theRate / 1000) vs (2048000 / 1000)
+        for (i = 0; i < 2048; i ++) {
+           float inVal  = float (theRate / 1000);
+           mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
+           mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
+        }
+	fprintf (stderr, "mapTables initialized\n");
+//
+	fprintf (stderr, "testing functions\n");
 	if (!functions	-> OK ())
 	   return;
 	lastFrequency		= defaultFreq;	// the parameter!!!!
 	runnable		= true;
+	fprintf (stderr, "functions are OK\n");
 	functions	-> StartFIFO (functions -> getHandle ());
+	fprintf (stderr, "fifo started, starting the thread\n");
 	start ();
+	fprintf (stderr, "we started the thread, returning now\n");
 	*OK			= true;
 }
 
@@ -64,6 +91,7 @@ void	eladWorker::stop	(void) {
 	while (isRunning ())
 	   msleep (1);
 	delete _I_Buffer;
+	delete [] convBuffer;
 }
 
 DSPCOMPLEX	makeSample_31bits (uint8_t *);
@@ -164,38 +192,24 @@ uint8_t buffer [BUFFER_SIZE];
 //	3072 samples
 void	eladWorker:: run (void) {
 int32_t	amount;
-int	rc;
-int16_t	conversionNumber	= theRate == 192000 ? 1:
-	                          theRate <= 3072000 ? 2 : 3;
-int16_t	iqSize			= conversionNumber == 3 ? 4 : 8;
-int32_t	convBufferSize          = theRate / 1000;
-int16_t	mapTable_int [2048];
-float	mapTable_float [2048];
-int16_t	convIndex               = 0;
-DSPCOMPLEX	convBuffer [convBufferSize + 1];
-int16_t	i;
+int	rc, i;
 bool	first	= true;
-//      The sizes of the mapTable and the convTable are
-//      predefined and follow from the input and output rate
-//      (theRate / 1000) vs (2048000 / 1000)
-        for (i = 0; i < 2048; i ++) {
-           float inVal  = float (theRate / 1000);
-           mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
-           mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
-        }
-//
+
 //	when (re)starting, clean up first
 	_I_Buffer	-> FlushRingBuffer ();
 
+	fprintf (stderr, "outputbuffer clean\n");
 	fprintf (stderr, "worker thread started\n");
 
 	while (runnable) {
+	   fprintf (stderr, "going for transfer\n");
 	   rc = libusb_bulk_transfer (functions -> getHandle (),
 	                              (6 | LIBUSB_ENDPOINT_IN),
 	                              (uint8_t *)buffer,
 	                              BUFFER_SIZE * sizeof (uint8_t),
 	                              &amount,
 	                              2000);
+	   fprintf (stderr, "bulk transfer gave %d\n", amount);
 	   if (rc) {
               fprintf (stderr,
 	               "Error in libusb_bulk_transfer: [%d] %s\n",
@@ -221,6 +235,7 @@ bool	first	= true;
 	                       makeSample_30bits (&myBuffer [iqSize * i]);
 	         if (convIndex > convBufferSize) {
 	            DSPCOMPLEX temp [2048];
+	            fprintf (stderr, "start converting\n");
 	            int16_t j;
 	            for (j = 0; j < 2048; j ++) {
 	               int16_t  inpBase       = mapTable_int [j];
@@ -233,6 +248,7 @@ bool	first	= true;
 	               fprintf (stderr, "first time 2048 samples are converted\n");
 	               first = false;
 	            }
+
                     theBuffer -> putDataIntoBuffer (temp, 2048);
 //      shift the sample at the end to the beginning, it is needed
 //      as the starting sample for the next time
@@ -246,10 +262,18 @@ bool	first	= true;
 }
 
 void	eladWorker::setVFOFrequency	(int32_t f) {
+int	result;
 	if (!runnable)
 	   return;
 	lastFrequency	= f;
-	functions	-> SetHWLO (functions -> getHandle (), &lastFrequency);
+	result = functions -> SetHWLO (functions -> getHandle (),
+	                                                 &lastFrequency);
+	if (result == 1)
+	   fprintf (stderr, "setting frequency to %d succeeded\n",
+	                                              lastFrequency);
+	else
+	   fprintf (stderr, "setting frequency to %d failed\n",
+	                                               lastFrequency);
 }
 
 int32_t	eladWorker::getVFOFrequency	(void) {

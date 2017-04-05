@@ -53,8 +53,14 @@ private:
 	long int		lastFrequency;
 	bool			runnable;
 	int32_t			theRate;
-signals:
-	void			samplesAvailable	(int);
+	int			mapTable_int	[2048];
+	float			mapTable_float	[2048];
+	int			conversionNumber;
+//      we convert to complexes directly
+        int			iqSize;
+        int			convBufferSize;
+        int			convIndex;
+        DSPCOMPLEX		*convBuffer;
 };
 #endif
 

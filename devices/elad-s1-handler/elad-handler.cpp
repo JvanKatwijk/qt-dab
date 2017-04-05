@@ -147,6 +147,7 @@ bool	success;
 	                                  theLoader,
 	                                  _I_Buffer,
 	                                  &success);
+	fprintf (stderr, "worker started, success = %d\n", success);
 	return success;
 }
 
@@ -208,10 +209,4 @@ void	eladHandler::setFilter	(void) {
 	                                     &localFilter);
 	filterText	-> setText (localFilter == 1 ? "30 Mhz" : "no filter");
 }
-
-#if QT_VERSION < 0x050000
-QT_BEGIN_NAMESPACE
-Q_EXPORT_PLUGIN2(device-elad_s1, elad_s1)
-QT_END_NAMESPACE
-#endif
 
