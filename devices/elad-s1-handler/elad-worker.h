@@ -33,12 +33,10 @@
 #include	"ringbuffer.h"
 #include	"elad-loader.h"
 
-#define		IQ_SIZE		8
 class	eladWorker: public QThread {
 Q_OBJECT
 public:
-			eladWorker	(int32_t,	// the rate,
-	                                 int32_t,	// initial freq
+			eladWorker	(int32_t,	// initial freq
 	                                 eladLoader *,
 	                                 RingBuffer<DSPCOMPLEX> *,
 	                                 bool *);

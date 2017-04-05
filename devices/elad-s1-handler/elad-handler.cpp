@@ -32,6 +32,7 @@
 #include	"elad-loader.h"	// function loader
 #include	<stdio.h>
 
+#define	RATE	3072000
 //	Currently, we do not have lots of settings,
 //	it just might change suddenly, but not today
 		eladHandler::eladHandler (QSettings *s) {
@@ -40,6 +41,7 @@ int16_t	success;
 	this	-> eladSettings	= s;
 	this	-> myFrame	= new QFrame (NULL);
 	setupUi (myFrame);
+	myFrame	-> show ();
 	_I_Buffer		= NULL;
 	theLoader		= NULL;
 	theWorker		= NULL;
@@ -54,7 +56,7 @@ int16_t	success;
 	   throw (21);
 	}
 	libusb_exit (NULL);
-	theLoader	= new eladLoader (3072000, &success);
+	theLoader	= new eladLoader (RATE, &success);
 	if (success != 0) {
 	   if (success == -1)
 	   QMessageBox::warning (myFrame, tr ("sdr"),
@@ -83,7 +85,9 @@ int16_t	success;
 //	It turns out that the elad provides for 32 bit samples
 //	packed as bytes
 	statusLabel	-> setText ("Loaded");
-	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(16 * IQ_SIZE * 32768);
+//
+//	buffersize app 0.5 seconds of data
+	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(32 * 32768);
 	vfoFrequency	= Khz (220000);
 //
 //	since localFilter and gainReduced are also used as
@@ -139,8 +143,7 @@ bool	success;
 	   return true;
 
 	_I_Buffer	-> FlushRingBuffer ();
-	theWorker	= new eladWorker (theRate,
-	                                  vfoFrequency,
+	theWorker	= new eladWorker (vfoFrequency,
 	                                  theLoader,
 	                                  _I_Buffer,
 	                                  &success);

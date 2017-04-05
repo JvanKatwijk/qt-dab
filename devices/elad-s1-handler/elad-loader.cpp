@@ -4,23 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of Qt-DAB
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -50,7 +47,7 @@ int	rc;
 	   return;
 	}
 //	load the init function
-	Init	= (FDMS1_HW_INIT) dlsym(hwHandle, (const char *)"fdms1_hw_init");
+	Init	= (FDMS1_HW_INIT) dlsym (hwHandle, (const char *)"fdms1_hw_init");
 	if (Init == NULL) {
 	   fprintf (stderr, "Could not load fdms1_hw_init\n");
 	   dlclose (hwHandle);

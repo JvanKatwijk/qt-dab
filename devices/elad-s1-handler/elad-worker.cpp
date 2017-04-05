@@ -27,16 +27,16 @@
 
 //	The elad-worker is a simple wrapper around the elad
 //	interface. It is a pretty simple thread performing the
-//	basic functions.
+//	basic functions, it reads the bytes, converts them to
+//	samples and converts the rate to 2048000
 //	
-	eladWorker::eladWorker (int32_t		theRate,
-	                        int32_t		defaultFreq,
+	eladWorker::eladWorker (int32_t		defaultFreq,
 	                        eladLoader	*f,
 	                        RingBuffer<DSPCOMPLEX> *theBuffer,
 	                        bool	*OK) {
 
 	RingBuffer<uint8_t>	*_I_Buffer = new RingBuffer<uint8_t> (2 * 16384);
-	this	-> theRate	= theRate;
+	this	-> theRate	= 3072000;
 	this	-> defaultFreq	= defaultFreq;
 	this	-> functions	= f;
 	this	-> theBuffer	= theBuffer;
@@ -159,16 +159,16 @@ uint8_t buffer [BUFFER_SIZE];
 //
 //	To make life easy, we do all handling in this task,
 //	its "output", i.e. the shared buffer contains the
-//	samples, type float, representing a samplerate 2048000
-//	Once a half millisecond we add 2048 samples.
+//	samples, type complex, representing a samplerate 2048000
+//	Every millisecond we add 2048 samples by converting
+//	3072 samples
 void	eladWorker:: run (void) {
 int32_t	amount;
 int	rc;
 int16_t	conversionNumber	= theRate == 192000 ? 1:
 	                          theRate <= 3072000 ? 2 : 3;
 int16_t	iqSize			= conversionNumber == 3 ? 4 : 8;
-int32_t	selectedRate		= 3072000;
-int32_t	convBufferSize          = selectedRate / 1000;
+int32_t	convBufferSize          = theRate / 1000;
 int16_t	mapTable_int [2048];
 float	mapTable_float [2048];
 int16_t	convIndex               = 0;
@@ -177,9 +177,9 @@ int16_t	i;
 bool	first	= true;
 //      The sizes of the mapTable and the convTable are
 //      predefined and follow from the input and output rate
-//      (selectedRate / 1000) vs (2048000 / 1000)
+//      (theRate / 1000) vs (2048000 / 1000)
         for (i = 0; i < 2048; i ++) {
-           float inVal  = float (selectedRate / 1000);
+           float inVal  = float (theRate / 1000);
            mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
            mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
         }
@@ -193,7 +193,7 @@ bool	first	= true;
 	   rc = libusb_bulk_transfer (functions -> getHandle (),
 	                              (6 | LIBUSB_ENDPOINT_IN),
 	                              (uint8_t *)buffer,
-	                              BUFFER_SIZE * sizeof (int8_t),
+	                              BUFFER_SIZE * sizeof (uint8_t),
 	                              &amount,
 	                              2000);
 	   if (rc) {
@@ -204,32 +204,41 @@ bool	first	= true;
 	      if (rc != 7)
 	         break;
 	   }
-
+//
+//	Since we do not know whether the amount read is a multiple
+//	of iqSize, we use an intermediate buffer
+	   if (first)
+	      fprintf (stderr, "x0");
 	   _I_Buffer	-> putDataIntoBuffer (buffer, amount);
 	   while (_I_Buffer -> GetRingBufferReadAvailable () >= iqSize * 1024) {
 	      uint8_t myBuffer [iqSize * 1024];
 	      _I_Buffer -> getDataFromBuffer (myBuffer, iqSize * 1024);
-	      for (i = 0; i < 1024; i ++)
+//
+//	Having read 1024 * iqSize bytes, we can make them into complex samples
+//	and start converting the rate
+	      for (i = 0; i < 1024; i ++) {
 	         convBuffer [convIndex ++] =
 	                       makeSample_30bits (&myBuffer [iqSize * i]);
-	      if (convIndex > convBufferSize) {
-	         DSPCOMPLEX temp [2048];
-	         int16_t j;
-	         for (j = 0; j < 2048; j ++) {
-	            int16_t  inpBase       = mapTable_int [j];
-                    float    inpRatio      = mapTable_float [j];
-                    temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
-                                cmul (convBuffer [inpBase], 1 - inpRatio);
-                 }
-	         if (first) {
-	            fprintf (stderr, "first time 2048 samples are converted\n");
-	            first = false;
-	         }
-                 theBuffer -> putDataIntoBuffer (temp, 2048);
+	         if (convIndex > convBufferSize) {
+	            DSPCOMPLEX temp [2048];
+	            int16_t j;
+	            for (j = 0; j < 2048; j ++) {
+	               int16_t  inpBase       = mapTable_int [j];
+                       float    inpRatio      = mapTable_float [j];
+
+                       temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
+                                   cmul (convBuffer [inpBase], 1 - inpRatio);
+                    }
+	            if (first) {
+	               fprintf (stderr, "first time 2048 samples are converted\n");
+	               first = false;
+	            }
+                    theBuffer -> putDataIntoBuffer (temp, 2048);
 //      shift the sample at the end to the beginning, it is needed
 //      as the starting sample for the next time
-	         convBuffer [0] = convBuffer [convBufferSize];
-	         convIndex = 1;
+	            convBuffer [0] = convBuffer [convBufferSize];
+	            convIndex = 1;
+	         }
 	      }
 	   }
 	}

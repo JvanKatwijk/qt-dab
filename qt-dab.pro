@@ -198,7 +198,7 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
-#DEFINES	+= __QUALITY		# just a counter in spectrum display
+DEFINES	+= __QUALITY		# just a counter in spectrum display
 
 #if you uncomment this one, you will get lots of compiler errors, it is just private
 #CONFIG		+= try_tii		# sorry, just private stuff
@@ -224,18 +224,23 @@ LIBS		+= -lusb-1.0
 LIBS		+= -lz
 FORMS 		+= ./forms/dabradio.ui 
 FORMS		+= ./forms/technical_data.ui
+
 CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
+
 #CONFIG		+= tcp-streamer		# use for remote listening
+
 CONFIG		+= spectrum
+
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
-#DEFINES	+= MSC_DATA__		# use at your own risk
+DEFINES	+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
-#DEFINES	+= __QUALITY		# just a counter in spectrum display
+DEFINES	+= __QUALITY		# just a counter in spectrum display
+CONFIG		+= try_tii
 }
 
 #######################################

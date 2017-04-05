@@ -38,6 +38,7 @@ class	eladLoader;
 typedef	DSPCOMPLEX(*makeSampleP)(uint8_t *);
 
 class	eladHandler: public virtualInput, public Ui_Form {
+Q_OBJECT
 public:
 		eladHandler		(QSettings *);
 		~eladHandler		(void);
@@ -63,7 +64,6 @@ private:
 	eladLoader	*theLoader;
 	eladWorker	*theWorker;
 	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
-	int32_t		theRate;
 	QFrame		*myFrame;
 	int32_t		vfoFrequency;
 	int32_t		vfoOffset;
