@@ -28,8 +28,8 @@
 #include	<QDir>
 
 #include	"elad-handler.h"	// our header
-#include	"elad-worker.h"	// the thread, reading in the data
-#include	"elad-loader.h"	// function loader
+#include	"elad-worker.h"		// the thread, reading in the data
+#include	"elad-loader.h"		// function loader
 #include	<stdio.h>
 
 #define	RATE	3072000

@@ -47,7 +47,7 @@
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #endif
-#ifdef	HAVE_DABSTICK
+#ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
 #ifdef	HAVE_SDRPLAY
@@ -396,7 +396,7 @@ void	RadioInterface::init_your_gui (void) {
 #ifdef	HAVE_SDRPLAY
 	deviceSelector	-> addItem ("sdrplay");
 #endif
-#ifdef	HAVE_DABSTICK
+#ifdef	HAVE_RTLSDR
 	deviceSelector	-> addItem ("dabstick");
 #endif
 #ifdef	HAVE_AIRSPY
@@ -1218,7 +1218,7 @@ QString	file;
 	}
 	else
 #endif
-#ifdef	HAVE_DABSTICK
+#ifdef	HAVE_RTLSDR
 	if (s == "dabstick") {
 	   try {
 	      inputDevice	= new rtlsdrHandler (dabSettings);
