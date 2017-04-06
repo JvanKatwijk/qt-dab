@@ -269,10 +269,10 @@ int	realFreq;
 	                                                 &lastFrequency);
 	if (result == 1)
 	   fprintf (stderr, "setting frequency to %d succeeded\n",
-	                                              lastFrequency);
+	                                              realFreq);
 	else
 	   fprintf (stderr, "setting frequency to %d failed\n",
-	                                               lastFrequency);
+	                                               realFreq);
 }
 
 int32_t	eladWorker::getVFOFrequency	(void) {
