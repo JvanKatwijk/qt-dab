@@ -202,7 +202,6 @@ int	k;
 	   combo_gain	-> setCurrentIndex (k);
 	   theGain	= temp. toInt ();
 	}
-	rtlsdr_set_tuner_gain (device, theGain);
 
 	temp	= rtlsdrSettings -> value ("autogain",
 	                                      "autogain_on"). toString ();
@@ -212,6 +211,7 @@ int	k;
 	
 	rtlsdr_set_tuner_gain_mode (device,
 	                   combo_autogain -> currentText () == "autogain_on");
+	rtlsdr_set_tuner_gain (device, theGain);
 	
 	f_correction	-> setValue (rtlsdrSettings -> value ("f_correction", 0). toInt ());
 	KhzOffset	-> setValue (rtlsdrSettings -> value ("KhzOffset", 0). toInt ());

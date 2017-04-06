@@ -43,6 +43,7 @@ int	i;
 	this	-> functions	= f;
 	this	-> theBuffer	= theBuffer;
 	*OK			= false;	// just the default
+	iqSwitch		= false;
 
 	conversionNumber	= theRate == 192000 ? 1:
 	                          theRate <= 3072000 ? 2 : 3;
@@ -95,7 +96,7 @@ void	eladWorker::stop	(void) {
 }
 
 DSPCOMPLEX	makeSample_31bits (uint8_t *);
-DSPCOMPLEX	makeSample_30bits (uint8_t *);
+DSPCOMPLEX	makeSample_30bits (uint8_t *, bool);
 DSPCOMPLEX	makeSample_15bits (uint8_t *);
 
 typedef union {
@@ -147,9 +148,10 @@ int16_t	i = 0;
 }
 
 
-DSPCOMPLEX	makeSample_30bits (uint8_t *buf) {
+DSPCOMPLEX	makeSample_30bits (uint8_t *buf, bool switch) {
 int ii = 0; int qq = 0;
 int16_t	i = 0;
+
 	uint8_t q0 = buf [i++];
 	uint8_t q1 = buf [i++];
 	uint8_t q2 = buf [i++];
@@ -162,10 +164,12 @@ int16_t	i = 0;
 
 	ii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
 	qq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
-	return DSPCOMPLEX ((float)ii / SCALE_FACTOR_29,
-	                   (float)qq / SCALE_FACTOR_29);
-	return DSPCOMPLEX ((float)ii / SCALE_FACTOR_29,
-	                   (float)qq / SCALE_FACTOR_29);
+	if (switch) 
+	   return DSPCOMPLEX ((float)qq / SCALE_FACTOR_29,
+	                      (float)ii / SCALE_FACTOR_29);
+	else
+	   return DSPCOMPLEX ((float)ii / SCALE_FACTOR_29,
+	                      (float)qq / SCALE_FACTOR_29);
 }
 //
 DSPCOMPLEX	makeSample_15bits (uint8_t *buf) {
@@ -193,7 +197,6 @@ uint8_t buffer [BUFFER_SIZE];
 void	eladWorker:: run (void) {
 int32_t	amount;
 int	rc, i;
-bool	first	= true;
 
 //	when (re)starting, clean up first
 	_I_Buffer	-> FlushRingBuffer ();
@@ -227,7 +230,8 @@ bool	first	= true;
 //	and start converting the rate
 	      for (i = 0; i < 1024; i ++) {
 	         convBuffer [convIndex ++] =
-	                       makeSample_30bits (&myBuffer [iqSize * i]);
+	                       makeSample_30bits (&myBuffer [iqSize * i],
+	                                          iqSwitch);
 	         if (convIndex > convBufferSize) {
 	            DSPCOMPLEX temp [2048];
 	            fprintf (stderr, "start converting\n");
@@ -239,11 +243,6 @@ bool	first	= true;
                        temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
                                    cmul (convBuffer [inpBase], 1 - inpRatio);
                     }
-
-	            if (first) {
-	               fprintf (stderr, "first time 2048 samples are converted\n");
-	               first = false;
-	            }
 
                     theBuffer -> putDataIntoBuffer (temp, 2048);
 //      shift the sample at the end to the beginning, it is needed
@@ -259,8 +258,12 @@ bool	first	= true;
 
 void	eladWorker::setVFOFrequency	(int32_t f) {
 int	result;
+int	realFreq;
 	if (!runnable)
 	   return;
+
+	realFreq	= f % Khz (3072);
+	iqSwitch	= (f / Khz (3072)) & 01) == 01;
 	lastFrequency	= f;
 	result = functions -> SetHWLO (functions -> getHandle (),
 	                                                 &lastFrequency);
