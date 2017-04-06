@@ -135,8 +135,8 @@ volatile	uint32_t	readIndex;
 		char		*buffer;
 public:
 	RingBuffer (uint32_t elementCount) {
-	if (((elementCount - 1) & elementCount) != 0)
-	    elementCount = 2 * 16384;	/* default	*/
+	if (((elementCount - 1) & elementCount) != 0)	
+	    elementCount = 64 * 16384;	/* default	*/
 
 	bufferSize	= elementCount;
 	buffer		= new char [2 * bufferSize * sizeof (elementtype)];

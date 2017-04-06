@@ -36,7 +36,7 @@
 	                        bool	*OK) {
 int	i;
 	fprintf (stderr, "creating a worker\n");
-	RingBuffer<uint8_t>	*_I_Buffer = new RingBuffer<uint8_t> (2 * 16384);
+	_I_Buffer		= new RingBuffer<uint8_t> (16 * 32768);
 	fprintf (stderr, "local buffer allocated\n");
 	this	-> theRate	= 3072000;
 	this	-> defaultFreq	= defaultFreq;
@@ -198,18 +198,15 @@ bool	first	= true;
 //	when (re)starting, clean up first
 	_I_Buffer	-> FlushRingBuffer ();
 
-	fprintf (stderr, "outputbuffer clean\n");
 	fprintf (stderr, "worker thread started\n");
 
 	while (runnable) {
-	   fprintf (stderr, "going for transfer\n");
 	   rc = libusb_bulk_transfer (functions -> getHandle (),
 	                              (6 | LIBUSB_ENDPOINT_IN),
 	                              (uint8_t *)buffer,
 	                              BUFFER_SIZE * sizeof (uint8_t),
 	                              &amount,
 	                              2000);
-	   fprintf (stderr, "bulk transfer gave %d\n", amount);
 	   if (rc) {
               fprintf (stderr,
 	               "Error in libusb_bulk_transfer: [%d] %s\n",
@@ -221,8 +218,6 @@ bool	first	= true;
 //
 //	Since we do not know whether the amount read is a multiple
 //	of iqSize, we use an intermediate buffer
-	   if (first)
-	      fprintf (stderr, "x0");
 	   _I_Buffer	-> putDataIntoBuffer (buffer, amount);
 	   while (_I_Buffer -> GetRingBufferReadAvailable () >= iqSize * 1024) {
 	      uint8_t myBuffer [iqSize * 1024];
@@ -244,6 +239,7 @@ bool	first	= true;
                        temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
                                    cmul (convBuffer [inpBase], 1 - inpRatio);
                     }
+
 	            if (first) {
 	               fprintf (stderr, "first time 2048 samples are converted\n");
 	               first = false;
