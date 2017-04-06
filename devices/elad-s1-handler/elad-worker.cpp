@@ -21,8 +21,9 @@
  */
 
 #include	"dab-constants.h"	// some general definitions
-#include	"elad-loader.h"		// the API definition
 #include	"elad-worker.h"		// our header
+#include	"elad-handler.h"
+#include	"elad-loader.h"		// the API definition
 #include	"ringbuffer.h"		// the buffer
 
 //	The elad-worker is a simple wrapper around the elad
@@ -32,6 +33,7 @@
 //	
 	eladWorker::eladWorker (int32_t		defaultFreq,
 	                        eladLoader	*f,
+	                        eladHandler	*h,
 	                        RingBuffer<DSPCOMPLEX> *theBuffer,
 	                        bool	*OK) {
 int	i;
@@ -73,9 +75,11 @@ int	i;
 	runnable		= true;
 	fprintf (stderr, "functions are OK\n");
 	functions	-> StartFIFO (functions -> getHandle ());
-	fprintf (stderr, "fifo started, starting the thread\n");
+	connect (this, SIGNAL (show_eladFrequeny (int)),
+	         h, SLOT (show_eladFrequency (int)));
+	connect (this, SIGNAL (show_iqSwitch (bool)),
+	         h, SLOT (show_iqSwitch (bool)));
 	start ();
-	fprintf (stderr, "we started the thread, returning now\n");
 	*OK			= true;
 }
 
@@ -148,7 +152,7 @@ int16_t	i = 0;
 }
 
 
-DSPCOMPLEX	makeSample_30bits (uint8_t *buf, bool switch) {
+DSPCOMPLEX	makeSample_30bits (uint8_t *buf, bool flag) {
 int ii = 0; int qq = 0;
 int16_t	i = 0;
 
@@ -164,7 +168,7 @@ int16_t	i = 0;
 
 	ii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
 	qq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
-	if (switch) 
+	if (flag) 
 	   return DSPCOMPLEX ((float)qq / SCALE_FACTOR_29,
 	                      (float)ii / SCALE_FACTOR_29);
 	else
@@ -263,7 +267,7 @@ int	realFreq;
 	   return;
 
 	realFreq	= f % Khz (3072);
-	iqSwitch	= (f / Khz (3072)) & 01) == 01;
+	iqSwitch	= ((f / Khz (3072)) & 01) == 01;
 	lastFrequency	= f;
 	result = functions -> SetHWLO (functions -> getHandle (),
 	                                                 &lastFrequency);
@@ -273,6 +277,8 @@ int	realFreq;
 	else
 	   fprintf (stderr, "setting frequency to %d failed\n",
 	                                               realFreq);
+	show_eladFrequency (realFreq);
+	show_iqSwitch (iqSwitch);
 }
 
 int32_t	eladWorker::getVFOFrequency	(void) {

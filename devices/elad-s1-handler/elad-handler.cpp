@@ -145,6 +145,7 @@ bool	success;
 	_I_Buffer	-> FlushRingBuffer ();
 	theWorker	= new eladWorker (vfoFrequency,
 	                                  theLoader,
+	                                  this,
 	                                  _I_Buffer,
 	                                  &success);
 	fprintf (stderr, "worker started, success = %d\n", success);
@@ -202,5 +203,16 @@ void	eladHandler::setFilter	(void) {
 	theLoader -> set_en_ext_io_LP30 (theLoader -> getHandle (),
 	                                     &localFilter);
 	filterText	-> setText (localFilter == 1 ? "30 Mhz" : "no filter");
+}
+
+void	eladHandler::show_eladFrequency	(int f) {
+	eladFrequency	-> display (f);
+}
+
+void	eladHandler::show_iqSwitch	(bool b) {
+	if (b)
+	   elad_iqSwitch -> setText ("reversed IQ");
+	else
+	   elad_iqSwitch -> setText ("normal IQ");
 }
 

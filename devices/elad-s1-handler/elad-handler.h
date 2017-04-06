@@ -58,6 +58,9 @@ private	slots:
 	void	setGainReduction	(void);
 	void	setOffset		(int);
 	void	setFilter		(void);
+public slots:
+	void	show_eladFrequency	(int);
+	void	show_iqSwitch		(bool);
 private:
 	QSettings	*eladSettings;
 	bool		deviceOK;

@@ -30,14 +30,18 @@
 #include	<unistd.h>
 #include	<stdint.h>
 #include	<QThread>
+#include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"elad-loader.h"
+
+class	eladLoader;
+class	eladHandler;
 
 class	eladWorker: public QThread {
 Q_OBJECT
 public:
 			eladWorker	(int32_t,	// initial freq
 	                                 eladLoader *,
+	                                 eladHandler *,
 	                                 RingBuffer<DSPCOMPLEX> *,
 	                                 bool *);
 			~eladWorker	(void);
@@ -61,6 +65,10 @@ private:
         int			convBufferSize;
         int			convIndex;
         DSPCOMPLEX		*convBuffer;
+	bool			iqSwitch;
+signals:
+	void			show_eladFrequency	(int);
+	void			show_iqSwitch	(bool);
 };
 #endif
 
