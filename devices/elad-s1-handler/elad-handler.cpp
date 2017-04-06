@@ -162,16 +162,10 @@ void	eladHandler::stopReader	(void) {
 	theWorker = NULL;
 }
 
-static int local_count	= 0;
 //	we are - in this context - certain that whenever getSamples
 //	is called, there are sufficient samples available.
 int32_t	eladHandler::getSamples (DSPCOMPLEX *V, int32_t size) { 
-int amount = _I_Buffer	-> getDataFromBuffer (V, size);
-	local_count += amount;
-	if (local_count > 2048000) {
-	   fprintf (stderr, "%d samples delivered\n", local_count);
-	   local_count = 0;
-	}
+	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 
 int32_t	eladHandler::Samples	(void) {
