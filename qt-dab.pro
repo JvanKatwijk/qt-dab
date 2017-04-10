@@ -203,7 +203,7 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES	+= __QUALITY		# just a counter in spectrum display
 
 #if you uncomment this one, you will get lots of compiler errors, it is just private
-#CONFIG		+= try_tii		# sorry, just private stuff
+CONFIG		+= try_tii		# sorry, just private stuff
 }
 #
 # an attempt to have it run under W32

@@ -362,29 +362,29 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./devices/dabstick/dabstick-widget.ui
+	        ./devices/rtlsdr-handler/rtlsdr-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./devices/dabstick/dongleselect.h
-	        ./devices/dabstick/dabstick.h
+	        ./devices/rtlsdr-handler/rtl-dongleselect.h
+	        ./devices/rtlsdr-handler/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ./devices/dabstick/
+	        ./devices/rtlsdr-handler/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/dabstick/dabstick.h
-	        ./devices/dabstick/dongleselect.h
+	        ./devices/rtlsdr-handler/rtlsdr-handler.h
+	        ./devices/rtlsdr-handler/rtl-dongleselect.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/dabstick/dabstick.cpp
-	        ./devices/dabstick/dongleselect.cpp
+	        ./devices/rtlsdr-handler/rtlsdr-handler.cpp
+	        ./devices/rtlsdr-handler/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_DABSTICK)
