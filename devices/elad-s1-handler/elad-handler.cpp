@@ -55,6 +55,7 @@ int16_t	success;
 	   fprintf (stderr, "libusb problem\n");	// should not happen
 	   throw (21);
 	}
+
 	libusb_exit (NULL);
 	theLoader	= new eladLoader (RATE, &success);
 	if (success != 0) {

@@ -290,29 +290,29 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
            include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./devices/sdrplay/sdrplay-widget.ui
+	        ./devices/sdrplay-handler/sdrplay-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./devices/sdrplay/sdrplay.h
-	        ./devices/sdrplay/sdrplayselect.h
+	        ./devices/sdrplay-handler/sdrplay.h
+	        ./devices/sdrplay-handler/sdrplayselect.h
 	   )
 
 	   include_directories (
-	     ./devices/sdrplay
+	     ./devices/sdrplay-handler
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay/sdrplay.h
-	        ./devices/sdrplay/sdrplayselect.h
+	        ./devices/sdrplay-handler/sdrplay.h
+	        ./devices/sdrplay-handler/sdrplayselect.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/sdrplay/sdrplay.cpp
-	        ./devices/sdrplay/sdrplayselect.cpp
+	        ./devices/sdrplay-handler/sdrplay.cpp
+	        ./devices/sdrplay-handler/sdrplayselect.cpp
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY)
@@ -327,26 +327,26 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./devices/airspy/airspy-widget.ui
+	        ./devices/airspy-handler/airspy-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./devices/airspy/airspy-handler.h
+	        ./devices/airspy-handler/airspy-handler.h
 	   )
 
 	   include_directories (
-	     ./devices/airspy
+	     ./devices/airspy-handler
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/airspy/airspy-handler.h
+	        ./devices/airspy-handler/airspy-handler.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/airspy/airspy-handler.cpp
+	        ./devices/airspy-handler/airspy-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
