@@ -110,6 +110,7 @@ int16_t k;
 
 	dabSettings		= Si;
 	this	-> tracing	= tracing;
+	this	-> tii_switch	= false;
 // 	the setup for the generated part of the ui
 	setupUi (this);
 
@@ -247,6 +248,14 @@ int16_t k;
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 #endif
+
+#ifdef	TII_ATTEMPT
+	tii_switch		= false;
+	connect (tii_button, SIGNAL (toggled (bool)),
+	         this, SLOT (set_tiiDetect (bool)));
+#else
+	tii_button	-> hide ();
+#endif;
 	if (autoStart)
 	   setStart ();
 }
@@ -1586,4 +1595,17 @@ void	RadioInterface::hideButtons	(void) {
 	techData. frequency	-> hide ();
 #endif
 }
+
+void	RadioInterface::setSyncLost	(void) {
+//	fprintf (stderr, "synchronization lost\n");
+//	my_ofdmProcessor	-> reset ();
+}
+
+void	RadioInterface::set_tiiDetect           (bool b) {
+	(void)b;
+	tii_switch	= tii_button -> isChecked ();
+	if (my_ofdmProcessor != NULL)
+	   my_ofdmProcessor -> set_tiiSwitch (tii_switch);
+}
+
 

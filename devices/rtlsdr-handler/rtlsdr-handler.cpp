@@ -325,6 +325,7 @@ void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
 //
 void	rtlsdrHandler::set_autogain	(const QString &autogain) {
 	rtlsdr_set_tuner_gain_mode (device, autogain == "autogain_off" ? 0 : 1);
+	rtlsdr_set_tuner_gain (device, theGain);
 }
 //
 //	correction is in Hz

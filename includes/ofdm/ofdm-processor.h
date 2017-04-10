@@ -73,12 +73,16 @@ public:
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		(void);
 	void		set_scanMode		(bool);
+	void		set_tiiSwitch		(bool);
 private:
 	virtualInput	*theRig;
 	dabParams	params;
 	RadioInterface	*myRadioInterface;
 	ficHandler	*my_ficHandler;
+	bool		tiiSwitch;
 #ifdef	TII_ATTEMPT
+	bool		tiiFound;
+        int16_t		tiiCount;
 	TII_Detector	my_TII_Detector;
 #endif
 	int16_t		attempts;
@@ -142,6 +146,7 @@ signals:
 	void		show_coarseCorrector	(int);
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
+	void		setSyncLost		(void);
 };
 #endif
 

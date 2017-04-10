@@ -5,9 +5,6 @@
  *    Lazy Chair Programming
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are acknowledged.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -85,6 +82,7 @@ private slots:
 	void		toggle_show_data	(void);
 private:
 #endif
+	bool		tii_switch;
 	QSettings	*dabSettings;
 	uint8_t		freqsyncMethod;
 	bool		tracing;
@@ -166,6 +164,7 @@ public slots:
 	void		set_streamSelector	(int);
 	void		No_Signal_Found		(void);
 	void		show_motHandling	(bool);
+	void		setSyncLost		(void);
 
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
@@ -191,6 +190,7 @@ private slots:
 	void	selectService		(QModelIndex);
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
+	void	set_tiiDetect		(bool);
 };
 #endif
 

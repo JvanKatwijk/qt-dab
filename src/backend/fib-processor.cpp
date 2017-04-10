@@ -25,6 +25,7 @@
 #include	<cstring>
 #include	"radio.h"
 #include	"charsets.h"
+#include	<vector>
 //
 //
 // Tabelle ETSI EN 300 401 Page 50
@@ -109,6 +110,8 @@
 	connect (this, SIGNAL (changeinConfiguration (void)),
 	         myRadioInterface,
 	         SLOT (changeinConfiguration (void)));
+
+	coordinates. cleanUp ();
 }
 	
 	fib_processor::~fib_processor (void) {
@@ -758,6 +761,7 @@ int16_t	fib_processor::HandleFIG0Extension22 (uint8_t *d, int16_t used) {
 uint8_t MS;
 int16_t	mainId;
 int16_t	noSubfields;
+int	i;
 
 	mainId	= getBits_7 (d, used * 8 + 1);
 	(void)mainId;
@@ -765,18 +769,25 @@ int16_t	noSubfields;
 	if (MS == 0) {		// fixed size
 	   int16_t latitudeCoarse = getBits (d, used * 8 + 8, 16);
 	   int16_t longitudeCoarse = getBits (d, used * 8 + 24, 16);
-	   fprintf (stderr, "Id = %d, (%d %d)\n", mainId,
-	                              latitudeCoarse, longitudeCoarse);
-	   (void)latitudeCoarse;
-	   (void)longitudeCoarse;
+
+	   coordinates. add_main (mainId,
+	                          latitudeCoarse * 90.0 / 32768.0,
+	                          longitudeCoarse * 180.0 / 32768.0);
 	   return used + 48 / 6;
 	}
+
 	//	MS == 1
-
 	noSubfields = getBits_3 (d, used * 8 + 13);
-	fprintf (stderr, "Id = %d, subfields = %d\n", mainId, noSubfields);
+	for (i = 0; i < noSubfields; i ++) {
+	   int16_t subId = getBits_5 (d, used * 8 + 16 + i * 48);
+	   int16_t latOff = getBits  (d, used * 8 + 16 + i * 48 + 16, 16);
+	   int16_t lonOff = getBits  (d, used * 8 + 16 + i * 48 + 32, 16);
+	   tii_element s (subId, latOff * 90 / (16 * 32768.0),
+	                         lonOff * 180 / (16 * 32768.0));
+	   coordinates. add_element (&s);
+	}
+	   
 	used += (16 + noSubfields * 48) / 8;
-
 	return used;
 }
 
@@ -1042,6 +1053,7 @@ int16_t	i;
 void	fib_processor::clearEnsemble (void) {
 int16_t i;
 	setupforNewFrame ();
+	coordinates. cleanUp ();
 	memset (components, 0, sizeof (components));
 	memset (ficList, 0, sizeof (ficList));
 	for (i = 0; i < 64; i ++) {
@@ -1181,5 +1193,12 @@ int32_t	selectedService;
 
 bool    fib_processor::syncReached (void) {
         return isSynced;
+}
+
+DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
+	                                        int16_t subId,
+	                                        bool *success) {
+	coordinates. print_coordinates ();
+	return coordinates. get_coordinates (mainId, subId, success);
 }
 

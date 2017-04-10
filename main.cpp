@@ -65,7 +65,7 @@ QSettings	*dabSettings;		// ini file
 //
 	int	opt;
 
-	while ((opt = getopt (argc, argv, "i:S:T")) != -1) {
+	while ((opt = getopt (argc, argv, "i:S:TP")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -78,7 +78,7 @@ QSettings	*dabSettings;		// ini file
 	      case 'T':
 	         tracing	= true;
 	         break;
-	      
+
 	      default:
 	         break;
 	   }

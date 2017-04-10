@@ -65,7 +65,7 @@ int16_t	res	= 1;
 	                                   phaseSynchronizer (dabMode, 
                                                               threshold),
 #ifdef	TII_ATTEMPT
-	                                   my_TII_Detector (dabMode, 3),
+	                                   my_TII_Detector (dabMode, 4),
 #endif
 	                                   my_ofdmDecoder (mr,
 	                                                   dabMode,
@@ -103,6 +103,11 @@ int32_t	i;
         localCounter    = 0;
 #endif
 //
+#ifdef	TII_ATTEMPT
+	tiiFound			= false;
+	tiiCount			= 0;
+#endif
+	tiiSwitch			= false;
 	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
@@ -142,6 +147,8 @@ int32_t	i;
 	         myRadioInterface, SLOT (setSynced (char)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
+	connect (this, SIGNAL (setSyncLost (void)),
+	         myRadioInterface, SLOT (setSyncLost (void)));
 
 	bufferContent	= 0;
 //
@@ -227,8 +234,10 @@ DSPCOMPLEX temp;
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 	   sampleCnt = 0;
 #ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
-           emit showSpectrum (bufferSize);
+	   if (!tiiSwitch) {
+              spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
+              emit showSpectrum (bufferSize);
+	   }
            localCounter = 0;
 #endif
 	}
@@ -283,8 +292,10 @@ int32_t		i;
 	   show_fineCorrector	(fineCorrector);
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 #ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
-           emit showSpectrum (bufferSize);
+	   if (!tiiSwitch) {
+              spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+              emit showSpectrum (bufferSize);
+	   }
            localCounter = 0;
 #endif
 	   sampleCnt = 0;
@@ -308,10 +319,6 @@ int32_t		syncBufferIndex	= 0;
 int32_t		syncBufferSize	= 32768;
 int32_t		syncBufferMask	= syncBufferSize - 1;
 float		envBuffer	[syncBufferSize];
-#ifdef	TII_ATTEMPT
-bool		tiiFound	= false;
-int16_t		tiiCount	= 0;
-#endif
 
 	coarseCorrector = 0;
         fineCorrector   = 0;
@@ -413,6 +420,9 @@ SyncOnPhase:
 //	the real "first" sample
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
 	   if (startIndex < 0) { // no sync, try again
+	      if (f2Correction) {
+	         setSyncLost ();
+	      }
 	      goto notSynced;
 	   }
 /**
@@ -492,11 +502,32 @@ NewOffset:
 	   currentStrength	= 0;
 	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
 #ifdef	TII_ATTEMPT
-	   if (!tiiFound && (tiiCount < 100)) {
-	      if (my_TII_Detector. processNULL (ofdmBuffer))
-	         tiiFound = true;
-	      else
-	         tiiCount ++;
+	   if (tiiSwitch) {
+#ifdef	HAVE_SPECTRUM
+              spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
+              emit showSpectrum (T_u);
+#endif
+	      if (tiiCount < 150) {
+	         int16_t mainId, subId;
+	         if (!tiiFound &&
+	             my_TII_Detector. processNULL (ofdmBuffer,
+	                                           &mainId, &subId)) {
+	            bool cFound = false;
+	            DSPCOMPLEX coord;
+	            tiiFound = true;
+	            coord = my_ficHandler -> get_coordinates (mainId,
+	                                                      subId,
+	                                                      &cFound);
+	            if (cFound) 
+	               fprintf (stderr, "transmitter coordinates received %f %f\n",
+	                              real (coord), imag (coord));
+	
+	            else
+	               fprintf (stderr, "no coordinate table found (yet)\n");
+	          }
+	         else
+	           tiiCount ++;
+	      }
 	   }
 #endif
 /**
@@ -676,5 +707,13 @@ DSPFLOAT	oldMax	= 0;
 void	ofdmProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
+}
+
+void	ofdmProcessor::set_tiiSwitch	(bool b) {
+	tiiSwitch	= b;
+#ifdef	TII_ATTEMPT
+	tiiFound	= false;
+	tiiCount	= 0;
+#endif
 }
 

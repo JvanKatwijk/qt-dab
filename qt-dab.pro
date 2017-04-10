@@ -100,6 +100,7 @@ HEADERS += ./radio.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
 	   ./includes/various/band-handler.h \
+	   ./includes/various/tii_table.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
@@ -153,6 +154,7 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
 	   ./src/various/band-handler.cpp \
+	   ./src/various/tii_table.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
            ./devices/wavfiles/wavfiles.cpp

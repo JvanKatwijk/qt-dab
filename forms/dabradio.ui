@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>499</width>
-    <height>326</height>
+    <height>325</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -622,7 +622,7 @@ details</string>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>462</x>
+      <x>410</x>
       <y>280</y>
       <width>31</width>
       <height>20</height>
@@ -633,6 +633,19 @@ details</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QRadioButton" name="tii_button">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>280</y>
+      <width>41</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>tii</string>
     </property>
    </widget>
   </widget>

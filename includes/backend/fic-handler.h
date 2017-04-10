@@ -52,6 +52,8 @@ public:
 	uint8_t	kindofService		(QString &);
 	void	dataforDataService	(QString &, packetdata *);
 	void	dataforAudioService	(QString &, audiodata *);
+
+	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
 private:
 	void		process_ficInput	(int16_t *, int16_t);
 	int8_t		*PI_15;

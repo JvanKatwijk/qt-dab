@@ -267,4 +267,12 @@ bool	result;
 	return result;
 }
 
+DSPCOMPLEX	ficHandler::get_coordinates (int16_t mainId,
+	                                     int16_t subId, bool *success) {
+DSPCOMPLEX result;
 
+	fibProtector. lock ();
+        result = fibProcessor. get_coordinates (mainId, subId, success);
+        fibProtector. unlock ();
+	return result;
+}
