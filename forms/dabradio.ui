@@ -635,17 +635,17 @@ details</string>
      <string/>
     </property>
    </widget>
-   <widget class="QRadioButton" name="tii_button">
+   <widget class="QPushButton" name="tii_button">
     <property name="geometry">
      <rect>
-      <x>450</x>
+      <x>461</x>
       <y>280</y>
-      <width>41</width>
-      <height>24</height>
+      <width>31</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
-     <string>tii</string>
+     <string/>
     </property>
    </widget>
   </widget>

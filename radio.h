@@ -190,7 +190,7 @@ private slots:
 	void	selectService		(QModelIndex);
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
-	void	set_tiiDetect		(bool);
+	void	set_tiiDetect		(void);
 };
 #endif
 

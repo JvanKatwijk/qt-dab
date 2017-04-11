@@ -387,7 +387,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	        ./devices/rtlsdr-handler/rtl-dongleselect.cpp
 	   )
 
-	   add_definitions (-DHAVE_DABSTICK)
+	   add_definitions (-DHAVE_RTLSDR)
 	endif()
 #
 	if (TCP_STREAMER)

@@ -251,8 +251,8 @@ int16_t k;
 
 #ifdef	TII_ATTEMPT
 	tii_switch		= false;
-	connect (tii_button, SIGNAL (toggled (bool)),
-	         this, SLOT (set_tiiDetect (bool)));
+	connect (tii_button, SIGNAL (clicked (void)),
+	         this, SLOT (set_tiiDetect (void)));
 #else
 	tii_button	-> hide ();
 #endif;
@@ -964,6 +964,7 @@ int32_t	tunedFrequency;
 bool	localRunning	= running;
 
 	setStereo (false);
+	tii_switch	= false;
 	if (scanning)
 	   set_Scanning ();	// switch it off
 
@@ -1027,6 +1028,7 @@ void	RadioInterface::autoCorrector_on (void) {
 	my_ofdmProcessor	-> coarseCorrectorOn ();
 	my_ofdmProcessor	-> reset ();
 	my_mscHandler		-> stopProcessing ();
+	
 }
 
 //
@@ -1142,6 +1144,7 @@ QString	file;
 	delete	my_ofdmProcessor;
 	delete	inputDevice;
 	dynamicLabel	-> setText ("");
+	tii_switch	= false;
 
 ///	OK, everything quiet, now let us see what to do
 #ifdef	HAVE_AIRSPY
@@ -1601,9 +1604,8 @@ void	RadioInterface::setSyncLost	(void) {
 //	my_ofdmProcessor	-> reset ();
 }
 
-void	RadioInterface::set_tiiDetect           (bool b) {
-	(void)b;
-	tii_switch	= tii_button -> isChecked ();
+void	RadioInterface::set_tiiDetect           (void) {
+	tii_switch	= !tii_switch;
 	if (my_ofdmProcessor != NULL)
 	   my_ofdmProcessor -> set_tiiSwitch (tii_switch);
 }
