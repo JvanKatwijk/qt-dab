@@ -181,7 +181,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
-CONFIG		+= elad_s1
+#CONFIG		+= elad_s1
 
 #if you want to see a spectrum and a constellation plot, uncomment
 CONFIG		+= spectrum
@@ -196,11 +196,11 @@ DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
 
 #you do not want this
-DEFINES		+= MSC_DATA__		# use at your own risk
+#DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
-DEFINES	+= __QUALITY		# just a counter in spectrum display
+#DEFINES	+= __QUALITY		# just a counter in spectrum display
 
 #if you uncomment this one, you will get lots of compiler errors, it is just private
 #CONFIG		+= try_tii		# sorry, just private stuff
@@ -239,10 +239,10 @@ CONFIG		+= spectrum
 
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
-DEFINES		+= MSC_DATA__		# use at your own risk
+#DEFINES	+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
-DEFINES		+= __QUALITY		# just a counter in spectrum display
-CONFIG		+= try_tii	# private
+#DEFINES	+= __QUALITY		# just a counter in spectrum display
+#CONFIG		+= try_tii
 }
 
 #######################################

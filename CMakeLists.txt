@@ -20,7 +20,7 @@ set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 ######################################################################
-#       R E A D T H I S
+#
 #####################################################################
 
 if(DEFINED AIRSPY)
@@ -295,7 +295,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./devices/sdrplay-handler/sdrplay.h
+	        ./devices/sdrplay-handler/sdrplay-handler.h
 	        ./devices/sdrplay-handler/sdrplayselect.h
 	   )
 
@@ -305,13 +305,13 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay-handler/sdrplay.h
+	        ./devices/sdrplay-handler/sdrplay-handler.h
 	        ./devices/sdrplay-handler/sdrplayselect.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/sdrplay-handler/sdrplay.cpp
+	        ./devices/sdrplay-handler/sdrplay-handler.cpp
 	        ./devices/sdrplay-handler/sdrplayselect.cpp
 	   )
 
