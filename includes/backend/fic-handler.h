@@ -54,6 +54,7 @@ public:
 	void	dataforAudioService	(QString &, audiodata *);
 
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
+	int16_t	mainId			(void);
 private:
 	void		process_ficInput	(int16_t *, int16_t);
 	int8_t		*PI_15;

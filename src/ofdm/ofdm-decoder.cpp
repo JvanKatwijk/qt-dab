@@ -231,19 +231,26 @@ DSPCOMPLEX x [T_u];
 	   x [i] = DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
 	   avgPoint += x [i];
 	}
-//
+
+	avgPoint = cdiv (avgPoint, carriers);
 //	the range of arg is -M_PI .. M_PI
 	for (i = 0; i < carriers / 2; i ++) {
-	   float t = arg (x [i] * conj (avgPoint));
-	   diff	+= t * t;
+	   float x_diff	= (real (x [i]) - real (avgPoint)) *
+	                         (real (x [i]) - real (avgPoint));
+	   float y_diff	= (imag (x [i]) - imag (avgPoint)) *
+	                         (imag (x [i]) - imag (avgPoint));
+	   diff	+= sqrt (x_diff + y_diff);
 	}
 
 	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  {
-	   float t = arg (x [i] * conj (avgPoint));
-	   diff	+= t * t;
+	   float x_diff	=  (real (x [i]) - real (avgPoint)) *
+	                         (real (x [i]) - real (avgPoint));
+	   float y_diff	= (imag (x [i]) - imag (avgPoint)) *
+	                         (imag (x [i]) - imag (avgPoint));
+	   diff	+= sqrt (x_diff + y_diff);
 	}
 	
-	return sqrt (diff / carriers);
+	return sqrt (diff) / carriers;
 }
 
 #endif

@@ -74,12 +74,15 @@ public:
 	void		stopDumping		(void);
 	void		set_scanMode		(bool);
 	void		set_tiiSwitch		(bool);
+	void		set_tiiCoordinates	(void);
 private:
 	virtualInput	*theRig;
 	dabParams	params;
 	RadioInterface	*myRadioInterface;
 	ficHandler	*my_ficHandler;
 	bool		tiiSwitch;
+	bool		tiiCoordinates;
+	int16_t		tiiBuffers;
 #ifdef	TII_ATTEMPT
 	bool		tiiFound;
         int16_t		tiiCount;

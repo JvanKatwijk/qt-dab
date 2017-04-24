@@ -55,7 +55,7 @@ QColor	curveColor;
 
 	displayBuffer		= new double [displaySize];
 	memset (displayBuffer, 0, displaySize * sizeof (double));
-	this	-> spectrumSize	= displaySize;
+	this	-> spectrumSize	= 8 * displaySize;
 	spectrum		= (DSPCOMPLEX *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
                                     reinterpret_cast <fftwf_complex *>(spectrum),

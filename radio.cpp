@@ -615,6 +615,7 @@ int	cc	= channelSelector -> currentIndex ();
 
 	connect    (channelSelector, SIGNAL (activated (const QString &)),
 	              this, SLOT (set_channelSelect (const QString &)));
+	tii_switch	= false;
 }
 
 /**
@@ -634,6 +635,7 @@ void	RadioInterface::clearEnsemble	(void) {
 	my_ofdmProcessor	-> reset ();
 
 	clear_showElements	();
+	tii_switch		= false;
 }
 
 //
@@ -994,6 +996,9 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
+	if (numberofSeconds % 30 == 0)
+	   if (my_ofdmProcessor != NULL)
+	      my_ofdmProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
 	text. append (" hr, ");
@@ -1317,6 +1322,7 @@ QString	file;
 	                                               iqBuffer
 #endif
 	                                              );
+	tii_switch	= false;
 }
 
 //
@@ -1339,9 +1345,9 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	   case AUDIO_SERVICE:
 	      { audiodata d;
 	        my_ficHandler. dataforAudioService (a, &d);
-	        if ((d. bitRate == 0) || (d. protLevel == 0)) {
+	        if (d. bitRate == 0) {
                QMessageBox::warning (this, tr ("Warning"),
- 	                               tr ("still insufficient data for this program\n"));
+ 	                               tr ("unknown bitrate for this program\n"));
  	           return;
  	        }
 #ifdef	TECHNICAL_DATA
@@ -1424,9 +1430,13 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	         }
 	        break;
 	      }
-	   default: fprintf (stderr, "this should not happen really?\n");
+
+	   default:
+               QMessageBox::warning (this, tr ("Warning"),
+ 	                               tr ("unknown service\n"));
 	      return;
 	}
+
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;

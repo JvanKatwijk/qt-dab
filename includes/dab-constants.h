@@ -175,7 +175,7 @@ uint16_t	res	= 0;
 
 	for (i = 0; i < size; i ++) {
 	   res <<= 1;
-	   res |= d [offset + i];
+	   res |= (d [offset + i]) & 01;
 	}
 	return res;
 }

@@ -764,7 +764,6 @@ int16_t	noSubfields;
 int	i;
 
 	mainId	= getBits_7 (d, used * 8 + 1);
-	(void)mainId;
 	MS	= getBits_1 (d, used * 8);
 	if (MS == 0) {		// fixed size
 	   int16_t latitudeCoarse = getBits (d, used * 8 + 8, 16);
@@ -779,7 +778,7 @@ int	i;
 	//	MS == 1
 	noSubfields = getBits_3 (d, used * 8 + 13);
 	for (i = 0; i < noSubfields; i ++) {
-	   int16_t subId = getBits_5 (d, used * 8 + 16 + i * 48);
+	   int16_t subId = getBits (d, used * 8 + 16 + i * 48, 5);
 	   int16_t latOff = getBits  (d, used * 8 + 16 + i * 48 + 16, 16);
 	   int16_t lonOff = getBits  (d, used * 8 + 16 + i * 48 + 32, 16);
 	   tii_element s (subId, latOff * 90 / (16 * 32768.0),
@@ -1200,5 +1199,9 @@ DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
 	                                        bool *success) {
 	coordinates. print_coordinates ();
 	return coordinates. get_coordinates (mainId, subId, success);
+}
+
+int16_t		fib_processor::mainId	(void) {
+	return coordinates. get_mainId ();
 }
 

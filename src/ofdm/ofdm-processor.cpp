@@ -64,8 +64,8 @@ int16_t	res	= 1;
 	                                   params (dabMode),
 	                                   phaseSynchronizer (dabMode, 
                                                               threshold),
-#ifdef	TII_ATTEMPT
-	                                   my_TII_Detector (dabMode, 4),
+#ifdef TII_ATTEMPT
+	                                   my_TII_Detector (dabMode, 3),
 #endif
 	                                   my_ofdmDecoder (mr,
 	                                                   dabMode,
@@ -108,6 +108,8 @@ int32_t	i;
 	tiiCount			= 0;
 #endif
 	tiiSwitch			= false;
+	tiiCoordinates			= false;
+	tiiBuffers			= 0;
 	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
@@ -504,17 +506,18 @@ NewOffset:
 #ifdef	TII_ATTEMPT
 	   if (tiiSwitch) {
 #ifdef	HAVE_SPECTRUM
-              spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
-              emit showSpectrum (T_u);
+              spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
+              emit showSpectrum (T_null);
 #endif
 	      if (tiiCount < 150) {
 	         int16_t mainId, subId;
 	         if (!tiiFound &&
-	             my_TII_Detector. processNULL (ofdmBuffer,
-	                                           &mainId, &subId)) {
+	            my_TII_Detector. processNULL (ofdmBuffer,
+	                                          &mainId, &subId)) {
 	            bool cFound = false;
 	            DSPCOMPLEX coord;
 	            tiiFound = true;
+	            fprintf (stderr, "p = %d, c = %d\n", mainId, subId);
 	            coord = my_ficHandler -> get_coordinates (mainId,
 	                                                      subId,
 	                                                      &cFound);
@@ -524,12 +527,37 @@ NewOffset:
 	
 	            else
 	               fprintf (stderr, "no coordinate table found (yet)\n");
+	            fprintf (stderr, "mainId = %d\n",
+	                                        my_ficHandler -> mainId ());
 	          }
 	         else
 	           tiiCount ++;
 	      }
 	   }
+
+#ifdef TII_COORDINATES
+	   if (tiiCoordinates) {
+	      int16_t mainId	= my_ficHandler -> mainId ();
+	      if (mainId > 0) {
+                 int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
+	                                                   mainId, tiiBuffers ++); 
+	         if (subId >= 0) {
+	            bool found;
+	            DSPCOMPLEX coord = my_ficHandler -> get_coordinates (mainId,
+	                                                      subId, &found);
+//	            show_coordinates (real (coord), imag (coord));
+	            fprintf (stderr, "Estimated coordinates of transmitter %f %f\n",
+	                      real (coord), imag (coord));
+	            tiiCoordinates = false;
+	         }
+	      }
+	      else
+	      if (++tiiBuffers > 15)
+	         tiiCoordinates = false;
+	   }
 #endif
+#endif
+	           
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead
@@ -563,6 +591,7 @@ void	ofdmProcessor:: reset	(void) {
 //	   terminate ();
 	   wait ();
 	}
+	set_tiiSwitch (false);
 	start ();
 }
 
@@ -711,9 +740,15 @@ void	ofdmProcessor::set_scanMode	(bool b) {
 
 void	ofdmProcessor::set_tiiSwitch	(bool b) {
 	tiiSwitch	= b;
+	tiiBuffers	= 0;
 #ifdef	TII_ATTEMPT
 	tiiFound	= false;
 	tiiCount	= 0;
 #endif
+}
+
+void	ofdmProcessor::set_tiiCoordinates	(void) {
+	tiiCoordinates	= true;
+	tiiBuffers	= 0;
 }
 

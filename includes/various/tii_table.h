@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -43,6 +42,7 @@ public:
 	void	add_main		(int16_t, float, float);
 	DSPCOMPLEX	get_coordinates (int16_t, int16_t, bool *);
 	void	print_coordinates	(void);
+	int16_t	get_mainId		(void);
 	int16_t	mainId;
 	float	latitude;
 	float	longitude;

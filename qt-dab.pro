@@ -196,7 +196,7 @@ DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
 
 #you do not want this
-#DEFINES		+= MSC_DATA__		# use at your own risk
+DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
@@ -366,6 +366,7 @@ tcp-streamer	{
 try_tii		{
 #private stuff, not part of the public distribution
 	DEFINES		+= TII_ATTEMPT
+	DEFINES		+= TII_COORDINATES
 	INCLUDEPATH	+= ../janSpul
 	DEPENDPATH	+= ../janSpul
 	HEADERS		+= ../janSpul/tii_detector.h

@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 2.8.11 )
 set (objectName qt-dab-0.999)
-add_definitions ( -Wall)
+add_definitions ( -Wall -flto)
+set (CMAKE_INSTALL_PREFIX /usr/local/bin)
+
 #	modify if you want
 
 if(MINGW)

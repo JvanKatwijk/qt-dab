@@ -102,6 +102,7 @@ public:
 	void	dataforAudioService	(QString &, audiodata *);
 	void	dataforDataService	(QString &, packetdata *);
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
+	int16_t	mainId			(void);
 private:
 	RadioInterface	*myRadioInterface;
 	serviceId	*findServiceId (int32_t);

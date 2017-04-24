@@ -57,7 +57,12 @@ int16_t i;
 	   if (offsets [i]. subId == t -> subId)
 	      return;
 
+	fprintf (stderr, "adding %d (%f %f)\n",
+	                        t -> subId,
+	                        t -> latitudeOffset,
+	                        t -> longitudeOffset);
 	offsets. push_back (*t);
+	
 }
 
 DSPCOMPLEX tii_table::get_coordinates (int16_t mainId,
@@ -84,9 +89,11 @@ float x, y;
 
 void	tii_table::print_coordinates	(void) {
 int16_t	i;
+
 	if (mainId < 0)
 	   return;
 
+	fprintf (stderr, "mainId = %d\n", mainId);
 	fprintf (stderr, "Transmitter coordinates (%f %f)\n",
 	                              latitude, longitude);
 	for (i = 0; i < offsets. size (); i ++) {
@@ -96,6 +103,7 @@ int16_t	i;
 	}
 }
 
-	   
+int16_t	tii_table::get_mainId	(void) {
+	return mainId;
+}
 
-	   

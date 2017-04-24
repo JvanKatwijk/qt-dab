@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include	"fic-handler.h"
@@ -276,3 +275,13 @@ DSPCOMPLEX result;
         fibProtector. unlock ();
 	return result;
 }
+
+int16_t		ficHandler::mainId (void) {
+int16_t	res;
+
+	fibProtector. lock ();
+	res	= fibProcessor. mainId ();
+	fibProtector. unlock ();
+	return res;
+}
+
