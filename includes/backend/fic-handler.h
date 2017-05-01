@@ -24,13 +24,12 @@
 /*
  * 	FIC data
  */
-#ifndef	__FIC_HANDLER
-#define	__FIC_HANDLER
+#ifndef	__FIC_HANDLER__
+#define	__FIC_HANDLER__
 
 #include	<stdio.h>
 #include	<stdint.h>
-#include	"viterbi.h"
-#include	"viterbi-2.h"
+#include	"viterbi-768.h"
 #include	<QObject>
 #include	"fib-processor.h"
 #include	<QMutex>
@@ -39,7 +38,7 @@ class	RadioInterface;
 class	mscHandler;
 class	dabParams;
 
-class ficHandler: public QObject, public viterbi {
+class ficHandler: public QObject, public viterbi_768 {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *);

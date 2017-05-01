@@ -261,7 +261,7 @@ int16_t k;
 }
 
 	RadioInterface::~RadioInterface () {
-	fprintf (stderr, "deleting radioInterface\n");
+	fprintf (stderr, "radioInterface is deleted\n");
 }
 //
 /**
@@ -926,21 +926,22 @@ void	RadioInterface::TerminateProcess (void) {
 	   fclose (crcErrors_File);
 	inputDevice		-> stopReader ();	// might be concurrent
 	my_mscHandler		-> stopHandler ();	// might be concurrent
-	my_ofdmProcessor	-> stop ();	// definitely concurrent
+	my_ofdmProcessor	-> stop ();		// definitely concurrent
 	soundOut		-> stop ();
 #ifdef	TECHNICAL_DATA
 	dataDisplay	->  hide ();
-	delete dataDisplay;
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
-	fprintf (stderr, "going to delete components now\n");
-	delete		my_ofdmProcessor;
-	delete		my_mscHandler;
-	delete		soundOut;
-	soundOut	= NULL;		// signals may be pending, so careful
+	delete	soundOut;
+	delete		inputDevice;
+#ifdef	TECHNICAL_DATA
+	delete	dataDisplay;
+#endif
+//	everything should be halted by now
+	delete	my_mscHandler;	
+	delete	my_ofdmProcessor;
 #ifdef	HAVE_SPECTRUM
-	spectrumHandler	-> hide ();
 	delete	spectrumHandler;
 	delete	spectrumBuffer;
 	delete	iqBuffer;
@@ -948,10 +949,8 @@ void	RadioInterface::TerminateProcess (void) {
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;		// signals may be pending, so careful
-	fprintf (stderr, "Termination started\n");
-	delete		inputDevice;
 	close ();
-	fprintf (stderr, "closed\n");
+	fprintf (stderr, ".. end the radio silences\n");
 }
 
 //
@@ -996,7 +995,7 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if (numberofSeconds % 30 == 0)
+	if (numberofSeconds % 10 == 0)
 	   if (my_ofdmProcessor != NULL)
 	      my_ofdmProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
@@ -1353,7 +1352,7 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 #ifdef	TECHNICAL_DATA
 	        techData. ensemble	-> setText (ensembleLabel);
 	        techData. programName	-> setText (a);
-	        techData. frequency	-> display (inputDevice -> getVFOFrequency () / 1000000.0);
+	        techData. frequency	-> display ((uint32_t)(inputDevice -> getVFOFrequency ()) / 1000000.0);
 	        techData. bitrateDisplay -> display (d. bitRate);
 	        techData. startAddressDisplay -> display (d. startAddr);
 	        techData. lengthDisplay	-> display (d. length);

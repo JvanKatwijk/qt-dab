@@ -4,22 +4,22 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * 	The deconvolution for both uep
+ * 	The deconvolution for uep
  */
 #include	"dab-constants.h"
 #include	"uep-protection.h"
@@ -134,7 +134,8 @@ int16_t	i;
   *	depuncturing scheme.
   */
 	uep_protection::uep_protection (int16_t bitRate,
-	                                int16_t protLevel):viterbi (24 * bitRate) {
+	                                int16_t protLevel):
+	                                        viterbi_768 (24 * bitRate) {
 int16_t	index;
 
 	this	-> bitRate		= bitRate;
@@ -222,6 +223,6 @@ int32_t	viterbiCounter	= 0;
 //
 ///	The actual deconvolution is done by the viterbi decoder
 
-	viterbi::deconvolve (viterbiBlock, outBuffer);
+	viterbi_768::deconvolve (viterbiBlock, outBuffer);
 	return true;
 }

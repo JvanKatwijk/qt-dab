@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -74,6 +73,9 @@ float x, y;
 	if (this -> mainId != mainId)
 	   return DSPCOMPLEX (0, 0);
 
+	fprintf (stderr, "central point (%f %f)\n", 
+	                               latitude, longitude);
+//	print_coordinates ();
 	for (i = 0; i < offsets. size (); i ++) {
 	   if (offsets [i]. subId != subId)
 	      continue;

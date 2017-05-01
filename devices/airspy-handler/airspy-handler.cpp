@@ -70,12 +70,12 @@ uint32_t samplerate_count;
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
 #else
 	const char *libraryString = "libairspy.so";
-	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
-	if (Handle == NULL) {
-	   fprintf (stderr, "libusb cannot be loaded\n");
-	   delete myFrame;
-	   throw (19);
-	}
+//	Handle_usb	= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
+//	if (Handle_usb == NULL) {
+//	   fprintf (stderr, "libusb cannot be loaded\n");
+//	   delete myFrame;
+//	   throw (19);
+//	}
 	   
 	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
 #endif
@@ -97,6 +97,7 @@ uint32_t samplerate_count;
 	   FreeLibrary (Handle);
 #else
 	   dlclose (Handle);
+	
 #endif
 	   delete myFrame;
 	}
@@ -237,6 +238,7 @@ uint32_t samplerate_count;
 	FreeLibrary (Handle);
 #else
 	dlclose (Handle);
+//	dlclose (Handle_usb);
 #endif
 err:
 	if (theBuffer != NULL)

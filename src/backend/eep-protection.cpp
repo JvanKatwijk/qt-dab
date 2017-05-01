@@ -31,7 +31,8 @@
   *	define the puncturing table
   */
 	eep_protection::eep_protection (int16_t bitRate,
-	                                int16_t protLevel):viterbi (24 * bitRate) {
+	                                int16_t protLevel):
+	                                    viterbi_768 (24 * bitRate) {
 	this	-> bitRate = bitRate;
 	outSize		= 24 * bitRate;
 	viterbiBlock	= new int16_t [outSize * 4 + 24];
@@ -147,7 +148,7 @@ int32_t	viterbiCounter	= 0;
 	   viterbiCounter ++;
 	}
 
-	viterbi::deconvolve (viterbiBlock, outBuffer);
+	viterbi_768::deconvolve (viterbiBlock, outBuffer);
 	return true;
 }
 

@@ -8,17 +8,19 @@ TEMPLATE	= app
 TARGET		= qt-dab-0.999
 QT		+= widgets network 
 CONFIG		+= console
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -pg
+QMAKE_CXXFLAGS	+=  -pg
+QMAKE_LFLAGS	+=  -pg
+
 DEPENDPATH += . \
 	      ./src \
 	      ./includes \
 	      ./src/ofdm \
 	      ./src/backend \
+	      ./src/backend/viterbi_768 \
 	      ./src/backend/audio \
 	      ./src/backend/data \
 	      ./src/backend/data/journaline \
@@ -41,6 +43,7 @@ INCLUDEPATH += . \
 	      ./includes \
 	      ./includes/ofdm \
 	      ./includes/backend \
+	      ./includes/backend/viterbi_768 \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
 	      ./includes/backend/data/journaline \
@@ -58,7 +61,8 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
 	   ./includes/ofdm/freq-interleaver.h \
-	   ./includes/backend/viterbi.h \
+#	   ./includes/backend/viterbi.h \
+	   ./includes/backend/viterbi_768/viterbi-768.h \
 	   ./includes/backend/fic-handler.h \
 	   ./includes/backend/msc-handler.h \
 	   ./includes/backend/fib-processor.h  \
@@ -114,7 +118,9 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
-	   ./src/backend/viterbi.cpp \
+#	   ./src/backend/viterbi.cpp \
+	   ./src/backend/viterbi_768/viterbi-768.cpp \
+	   ./src/backend/viterbi_768/spiral-no-sse.c \
 	   ./src/backend/fic-handler.cpp \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/protection.cpp \
@@ -199,8 +205,8 @@ DEFINES		+= MOT_DATA
 DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and certainly, you do not want this
-#CONFIG		+= try-epg		# do not use
-#DEFINES	+= __QUALITY		# just a counter in spectrum display
+CONFIG		+= try-epg		# do not use
+DEFINES		+= __QUALITY		# just a counter in spectrum display
 
 #if you uncomment this one, you will get lots of compiler errors, it is just private
 #CONFIG		+= try_tii		# sorry, just private stuff
@@ -239,7 +245,7 @@ CONFIG		+= spectrum
 
 DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
-#DEFINES	+= MSC_DATA__		# use at your own risk
+DEFINES	+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
 #DEFINES	+= __QUALITY		# just a counter in spectrum display
 #CONFIG		+= try_tii
@@ -365,7 +371,7 @@ tcp-streamer	{
 
 try_tii		{
 #private stuff, not part of the public distribution
-	DEFINES		+= TII_ATTEMPT
+#	DEFINES		+= TII_ATTEMPT
 	DEFINES		+= TII_COORDINATES
 	INCLUDEPATH	+= ../janSpul
 	DEPENDPATH	+= ../janSpul

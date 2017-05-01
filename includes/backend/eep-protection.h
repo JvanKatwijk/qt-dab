@@ -21,16 +21,16 @@
  *
  */
 #
-#ifndef	EEP_PROTECTION
-#define	EEP_PROTECTION
+#ifndef	__EEP_PROTECTION__
+#define	__EEP_PROTECTION__
 
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"protection.h"
-#include	"viterbi.h"
+#include	"viterbi-768.h"
 
 
-	class eep_protection: public protection, public viterbi {
+	class eep_protection: public protection, public viterbi_768 {
 public:
 		eep_protection		(int16_t, int16_t);
 		~eep_protection		(void);

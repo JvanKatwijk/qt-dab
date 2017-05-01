@@ -34,7 +34,7 @@
 #include	"ofdm-decoder.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-#ifdef	TII_ATTEMPT
+#if defined (TII_ATTEMPT) || defined(TII_COORDINATES)
 #include	"tii_detector.h"
 #endif
 //
@@ -86,6 +86,8 @@ private:
 #ifdef	TII_ATTEMPT
 	bool		tiiFound;
         int16_t		tiiCount;
+#endif
+#if defined (TII_ATTEMPT) || defined (TII_COORDINATES)
 	TII_Detector	my_TII_Detector;
 #endif
 	int16_t		attempts;

@@ -129,6 +129,7 @@ private:
 	pfn_airspy_board_partid_serialno_read
 		                   my_airspy_board_partid_serialno_read;
 //
+	HINSTANCE	Handle_usb;
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
 	QFrame		*myFrame;

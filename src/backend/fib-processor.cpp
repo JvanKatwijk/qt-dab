@@ -1197,7 +1197,7 @@ bool    fib_processor::syncReached (void) {
 DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
 	                                        int16_t subId,
 	                                        bool *success) {
-	coordinates. print_coordinates ();
+//	coordinates. print_coordinates ();
 	return coordinates. get_coordinates (mainId, subId, success);
 }
 

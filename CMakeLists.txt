@@ -1,7 +1,10 @@
 cmake_minimum_required( VERSION 2.8.11 )
 set (objectName qt-dab-0.999)
 add_definitions ( -Wall -flto)
-set (CMAKE_INSTALL_PREFIX /usr/local/bin)
+if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+    set (CMAKE_INSTALL_PREFIX "/usr/local/bin" CACHE PATH "default install path" FORCE )
+endif()
+#set (CMAKE_INSTALL_PREFIX /usr/local/bin)
 
 #	modify if you want
 
@@ -126,6 +129,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	           ./includes
 	           ./includes/ofdm
 	           ./includes/backend
+	           ./includes/backend/viterbi_768
 	           ./includes/backend/audio
 	           ./includes/backend/data
 	           ./includes/backend/data/journaline
@@ -144,7 +148,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
-	     ./includes/backend/viterbi.h
+	     ./includes/backend/viterbi_768/viterbi-768.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
 	     ./includes/backend/eep-protection.h
@@ -198,7 +202,8 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
-	     ./src/backend/viterbi.cpp
+	     ./src/backend/viterbi_768/viterbi-768.cpp
+	     ./src/backend/viterbi_768/spiral-no-sse.c
 	     ./src/backend/fic-handler.cpp
 	     ./src/backend/msc-handler.cpp
 	     ./src/backend/protection.cpp

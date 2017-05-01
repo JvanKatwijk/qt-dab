@@ -48,7 +48,7 @@ uint8_t PI_X [24] = {
   *	The data is sent through to the fic processor
   */
 		ficHandler::ficHandler (RadioInterface *mr):
-	                                             viterbi (768),
+	                                             viterbi_768 (768, true),
 	                                             fibProcessor (mr) {
 int16_t	i, j;
 	bitBuffer_out	= new uint8_t [768];

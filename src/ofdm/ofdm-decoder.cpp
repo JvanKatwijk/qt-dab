@@ -46,9 +46,9 @@
 #endif
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
-	                                 params (dabMode),
-	                                 bufferSpace (params. get_L ()),
-	                                 myMapper (&params) {
+	                                    params (dabMode),
+	                                    bufferSpace (params. get_L ()),
+	                                    myMapper (&params) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
 #ifdef	HAVE_SPECTRUM
@@ -90,16 +90,15 @@ int16_t	i;
 	for (i = 0; i < nrBlocks; i ++)
 	   command [i] = new DSPCOMPLEX [T_u];
 	amount		= 0;
-	start ();
 }
 
 	ofdmDecoder::~ofdmDecoder	(void) {
 int16_t	i;
 	running	= false;
-	commandHandler. wakeAll ();
-	usleep (1000);
-	while (!isFinished () && isRunning ())
-	   usleep (100);
+	while (isRunning ()) {
+	   commandHandler. wakeAll ();
+	   usleep (1000);
+	}
 	delete		fft_handler;
 	delete[]	phaseReference;
 	for (i = 0; i < nrBlocks; i ++)
@@ -109,11 +108,11 @@ int16_t	i;
 
 void	ofdmDecoder::stop		(void) {
 	running = false;
-	commandHandler. wakeAll ();
-	while (isRunning ())
-	   usleep (100);
+	while (isRunning ()) {
+	   commandHandler. wakeAll ();
+	   usleep (1000);
+	}
 }
-
 //
 //
 /**
@@ -250,7 +249,7 @@ DSPCOMPLEX x [T_u];
 	   diff	+= sqrt (x_diff + y_diff);
 	}
 	
-	return sqrt (diff) / carriers;
+	return sqrt (diff) / (carriers * abs (avgPoint));
 }
 
 #endif

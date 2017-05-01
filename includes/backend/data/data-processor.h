@@ -20,8 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__DATA_PROCESSOR
-#define	__DATA_PROCESSOR
+#ifndef	__DATA_PROCESSOR__
+#define	__DATA_PROCESSOR__
 
 #include	"dab-processor.h"
 #include	<stdio.h>

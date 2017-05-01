@@ -7,6 +7,7 @@
 #include	"dab-constants.h"
 
 //	For our particular viterbi decoder, we have
+class	viterbi {
 #define	RATE		4
 #define NUMSTATES	64
 #define BITS_PER_BYTE	8
@@ -37,7 +38,6 @@ struct v {
 	decision_t *decisions;   /* decisions */
 };
 
-class	viterbi {
 public:
 		viterbi		(int16_t);
 		~viterbi	(void);
@@ -50,6 +50,7 @@ private:
 	void	init_viterbi	(struct v *, int16_t);
 	void	update_viterbi_blk_GENERIC	(struct v *, int16_t *,
 	                                         int16_t);
+
 	void	chainback_viterbi (struct v *, uint8_t *, int16_t, uint16_t);
 	void	BFLY		(int32_t, int, int16_t *,
 	                         struct v *, decision_t *);

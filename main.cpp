@@ -105,11 +105,11 @@ QSettings	*dabSettings;		// ini file
 /*
  *	done:
  */
+	fprintf (stderr, "we zzitten weer in main\n");
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-	MyRadioInterface	-> ~RadioInterface ();
-	dabSettings		-> ~QSettings ();
-	exit (1);
+	delete MyRadioInterface;
+	delete dabSettings;
 }
 
