@@ -45,7 +45,6 @@ DSPFLOAT	Phi_k;
 	fft_buffer		= fft_processor		-> getVector ();
 	res_processor		= new common_ifft 	(T_u);
 	res_buffer		= res_processor		-> getVector ();
-	fft_counter		= 0;
 
 	memset (refTable, 0, sizeof (DSPCOMPLEX) * T_u);
 
@@ -58,8 +57,8 @@ DSPFLOAT	Phi_k;
 }
 
 	phaseReference::~phaseReference (void) {
-	delete	refTable;
-	delete	fft_processor;
+	delete []	refTable;
+	delete		fft_processor;
 }
 
 /**
@@ -78,10 +77,9 @@ float	sum		= 0;
 
 	Max	= 1.0;
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
-
 	fft_processor -> do_FFT ();
 //
-//	back into the frequency domain, now correlate
+//	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
 	   res_buffer [i] = fft_buffer [i] * conj (refTable [i]);
 //	and, again, back into the time domain

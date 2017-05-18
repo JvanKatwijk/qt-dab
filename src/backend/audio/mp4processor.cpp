@@ -242,7 +242,7 @@ int32_t		tmp;
 //	just a sanity check
 	   if ((aac_frame_length >=  960) || (aac_frame_length < 0)) {
 	      fprintf (stderr, "aac_frame_length = %d\n", aac_frame_length);
-	      return false;
+//	      return false;
 	   }
 
 //	but first the crc check

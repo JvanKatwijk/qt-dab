@@ -68,12 +68,15 @@ class RadioInterface: public QMainWindow,
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 uint8_t	freqsyncMethod,
+	                                 int16_t	tii_delay,
 	                                 bool		tracing,
 	                                 QWidget	*parent = NULL);
 		~RadioInterface		();
 
 private:
+	QSettings	*dabSettings;
+	int16_t		tii_delay;
+	bool		tracing;
 #ifdef	TECHNICAL_DATA
 	Ui_technical_data	techData;
 	QFrame		*dataDisplay;
@@ -82,10 +85,6 @@ private slots:
 	void		toggle_show_data	(void);
 private:
 #endif
-	bool		tii_switch;
-	QSettings	*dabSettings;
-	uint8_t		freqsyncMethod;
-	bool		tracing;
 	bool		autoStart;
 	int16_t		threshold;
 	void		clear_showElements	(void);
@@ -165,6 +164,7 @@ public slots:
 	void		No_Signal_Found		(void);
 	void		show_motHandling	(bool);
 	void		setSyncLost		(void);
+	void		showCoordinates		(float, float);
 
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
@@ -190,7 +190,6 @@ private slots:
 	void	selectService		(QModelIndex);
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
-	void	set_tiiDetect		(void);
 };
 #endif
 

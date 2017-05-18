@@ -28,35 +28,12 @@
 #include	"mm_malloc.h"
 #include	"viterbi-768.h"
 #include	<cstring>
-
-//
-//	I really had problems with the _aligned_malloc function in MINGW,
-//	so in the end I copied an implementation, found on the internet
-//	https://sites.google.com/site/ruslancray/lab/bookshelf/interview/ci/low-level/write-an-aligned-malloc-free-function
-//
-#ifndef	__MINGW32__
-//	in stdlib.h we should find
-extern	int32_t	posix_memalign (void **memptr, size_t alignment, size_t size)throw ();
-#else
-static
-void	*local_aligned_malloc (size_t required_bytes, size_t alignment) {
-void	*p1;		// original block
-void	**p2;		// aligned block
-int	offset		= alignment - 1 + sizeof (void *);
-	if ((p1 = (void *)malloc (required_bytes + offset)) == NULL) 
-	   return NULL;
-
-	p2	= (void **)(((size_t)(p1) + offset) & ~(alignment - 1));
-	p2 [-1] = p1;
-	return p2;
-}
-
-static
-void	local_aligned_free (void *p) {
-	free (((void **)p) [-1]);
-}
-
+#ifdef  __MINGW32__
+#include <intrin.h>
+#include <malloc.h>
+#include <windows.h>
 #endif
+
 //
 //	It took a while to discover that the polynomes we used
 //	in our own "straightforward" implementation was bitreversed!!
@@ -85,27 +62,42 @@ void	local_aligned_free (void *p) {
 #define SUBSHIFT 0
 #endif
 
-/* Create 256-entry odd-parity lookup table
- * Needed only on non-ia32 machines
- */
-void viterbi_768::partab_init(void){
-int i,cnt,ti;
 
-/* Initialize parity lookup table */
+static uint8_t Partab [] = 
+{ 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  1, 0, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1,
+  0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 0};
+
+//
+//	One could create the table above, i.e. a 256 entry
+//	odd-parity lookup table by the following function
+//	It is now precomputed
+void	viterbi_768::partab_init (void){
+int16_t i,cnt,ti;
+
 	for (i = 0; i < 256; i++){
 	   cnt = 0;
 	   ti = i;
-	   while (ti) {
+	   while (ti != 0) {
 	      if (ti & 1) cnt++;
 	      ti >>= 1;
 	   }
-	   Partab[i] = cnt & 1;
+	   Partab [i] = cnt & 1;
 	}
 }
-
-//int	viterbi::parityb (uint8_t x){
-//	return Partab[x];
-//}
 
 int 	viterbi_768::parity (int x){
 	/* Fold down to one byte */
@@ -119,7 +111,7 @@ static inline
 void	renormalize (COMPUTETYPE* X, COMPUTETYPE threshold){
 int32_t	i;
 
-	if (X[0] > threshold){
+	if (X [0] > threshold){
 	   COMPUTETYPE min = X [0];
 	   for (i = 0; i < NUMSTATES; i++)
 	      if (min > X[i])
@@ -129,37 +121,50 @@ int32_t	i;
       }
 }
 //
-//	wordlength is here 768
+//
+//	The main use of the viterbi decoder is in handling the FIC blocks
+//	There are (in mode 1) 3 ofdm blocks, giving 4 FIC blocks
+//	There all have a predefined length. In that case we use the
+//	"fast" (i.e. spiral) code, otherwise we use the generic code
 	viterbi_768::viterbi_768 (int16_t wordlength, bool spiral) {
 int polys [RATE] = POLYS;
-
-	frameBits	= wordlength;
-	this	-> spiral	= spiral;
 int16_t	i, state;
 #ifdef	__MINGW32__
 uint32_t	size;
 #endif
-	partab_init	();
 
+	frameBits		= wordlength;
+	this	-> spiral	= spiral;
+//	partab_init	();
+
+// B I G N O T E	The spiral code uses (wordLength + (K - 1) * sizeof ...
+// However, the application then crashes, so something is not OK
+// By doubling the size, the problem disappears. It is not solved though
+// and not further investigation.
 #ifdef __MINGW32__
-	size = ((wordlength + (K - 1)) / 8 + 1 + 16) & ~0xF;
-	data	= (uint8_t *)local_aligned_malloc (size, 16);
+	size = 2 * ((wordlength + (K - 1)) / 8 + 1 + 16) & ~0xF;
+	data	= (uint8_t *)_aligned_malloc (size, 16);
+	size = 2 * (RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE) + 16) & ~0xF;
+	symbols	= (COMPUTETYPE *)_aligned_malloc (size, 16);
+	size	= 2 * (wordlength + (K - 1)) * sizeof (decision_t);	
+	size	= (size + 16) & ~0xF;
+	vp. decisions = (decision_t  *)_aligned_malloc (size, 16);
 #else
 	if (posix_memalign ((void**)&data, 16,
 	                        (wordlength + (K - 1))/ 8 + 1)){
 	   printf("Allocation of data array failed\n");
 	}
-#endif
-
-#ifdef	__MINGW32__
-	size = (RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE) + 16) & ~0xF;
-	symbols	= (COMPUTETYPE *)local_aligned_malloc (size, 16);
-#else
 	if (posix_memalign ((void**)&symbols, 16,
 	                     RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE))){
 	   printf("Allocation of symbols array failed\n");
 	}
+	if (posix_memalign ((void**)&(vp. decisions),
+	                    16,
+	                    2 * (wordlength + (K - 1)) * sizeof (decision_t))){
+	   printf ("Allocation of vp decisions failed\n");
+	}
 #endif
+
 	for (state = 0; state < NUMSTATES / 2; state++) {
 	   for (i = 0; i < RATE; i++)
 	      Branchtab [i * NUMSTATES / 2 + state] =
@@ -167,30 +172,15 @@ uint32_t	size;
 	                        parity((2 * state) & abs (polys[i])) ? 255 : 0;
 	}
 //
-// B I G N O T E	The spiral code uses (wordLength + (K - 1) * sizeof ...
-// However, the application then crashes, so something is not OK
-// By doubling the size, the problem disappears. It is not solved though
-// and not further investigation.
-#ifdef	__MINGW32__
-	size	= 2 * (wordlength + (K - 1)) * sizeof (decision_t);	
-	size	= (size + 16) & ~0xF;
-	vp. decisions = (decision_t  *)local_aligned_malloc (size, 16);
-#else
-	if (posix_memalign ((void**)&(vp. decisions),
-	                    16,
-	                    2 * (wordlength + (K - 1)) * sizeof (decision_t))){
-	   printf ("Allocation of vp decisions failed\n");
-	}
-#endif
 	init_viterbi (&vp, 0);
 }
 
 
 	viterbi_768::~viterbi_768	(void) {
 #ifdef	__MINGW32__
-	local_aligned_free (vp. decisions);
-	local_aligned_free (data);
-	local_aligned_free (symbols);
+	_aligned_free (vp. decisions);
+	_aligned_free (data);
+	_aligned_free (symbols);
 #else
 	free (vp. decisions);
 	free (data);
@@ -198,11 +188,17 @@ uint32_t	size;
 #endif
 }
 
-static
+static int maskTable [] = {128, 64, 32, 16, 8, 4, 2, 1};
+static  inline
 uint8_t getbit (uint8_t v, int32_t o) {
-uint8_t	mask	= 1 << (7 - o);
-	return  (v & mask) ? 1 : 0;
+        return  (v & maskTable [o]) ? 1 : 0;
 }
+
+//static
+//uint8_t getbit (uint8_t v, int32_t o) {
+//uint8_t	mask	= 1 << (7 - o);
+//	return  (v & mask) ? 1 : 0;
+//}
 	
 // depends: POLYS, RATE, COMPUTETYPE
 // 	encode was only used for testing purposes
@@ -232,7 +228,6 @@ uint32_t	i;
 
 	init_viterbi (&vp, 0);
 	for (i = 0; i < (uint16_t)(frameBits + (K - 1)) * RATE; i ++) {
-//	   int16_t temp = (- input [i] + 255) / 2 ;
 	   int16_t temp = input [i] + 127;
 	   if (temp < 0) temp = 0;
 	   if (temp > 255) temp = 255;
@@ -242,6 +237,7 @@ uint32_t	i;
 	   update_viterbi_blk_GENERIC (&vp, symbols, frameBits + (K - 1));
 	else
 	   update_viterbi_blk_SPIRAL (&vp, symbols, frameBits + (K - 1));
+
 	chainback_viterbi (&vp, data, frameBits, 0);
 
 	for (i = 0; i < (uint16_t)frameBits; i ++)

@@ -103,7 +103,7 @@ int16_t	i;
 	delete[]	phaseReference;
 	for (i = 0; i < nrBlocks; i ++)
 	   delete[] command [i];
-	delete[] command;
+	delete[]	command;
 }
 
 void	ofdmDecoder::stop		(void) {
@@ -189,6 +189,7 @@ void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
 void	ofdmDecoder::processBlock_0 (void) {
 
 	memcpy (fft_buffer, command [0], T_u * sizeof (DSPCOMPLEX));
+
 	fft_handler	-> do_FFT ();
 /**
   *	The SNR is determined by looking at a segment of bins
@@ -217,39 +218,35 @@ void	ofdmDecoder::processBlock_0 (void) {
 float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
 int16_t i;
 DSPCOMPLEX	avgPoint	= DSPCOMPLEX (0, 0);
-float	var			= 0;
-float	diff	= 0;
-DSPCOMPLEX x [T_u];
+DSPCOMPLEX	x [T_u];
+float	avg	= 0;
+float	S	= 0;
 
 	for (i = 0; i < carriers / 2; i ++) {
-	   x [i] = DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	   avgPoint += x [i];
+	   x [i]	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   avgPoint	+= x [i];
 	}
 
 	for (i = T_u - 1; i >= T_u - carriers / 2; i --) {
-	   x [i] = DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	   avgPoint += x [i];
+	   x [i]	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	   avgPoint	+= x [i];
 	}
 
-	avgPoint = cdiv (avgPoint, carriers);
-//	the range of arg is -M_PI .. M_PI
+	avg	= arg (avgPoint * conj (DSPCOMPLEX (1, 1)));
+
 	for (i = 0; i < carriers / 2; i ++) {
-	   float x_diff	= (real (x [i]) - real (avgPoint)) *
-	                         (real (x [i]) - real (avgPoint));
-	   float y_diff	= (imag (x [i]) - imag (avgPoint)) *
-	                         (imag (x [i]) - imag (avgPoint));
-	   diff	+= sqrt (x_diff + y_diff);
+	   float f = arg (x [i] * conj (DSPCOMPLEX (1, 1))) - avg;
+	   S += f * f;
 	}
 
 	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  {
-	   float x_diff	=  (real (x [i]) - real (avgPoint)) *
-	                         (real (x [i]) - real (avgPoint));
-	   float y_diff	= (imag (x [i]) - imag (avgPoint)) *
-	                         (imag (x [i]) - imag (avgPoint));
-	   diff	+= sqrt (x_diff + y_diff);
+	   float f = arg (x [i] * conj (DSPCOMPLEX (1, 1))) - avg;
+	   S += f * f;
 	}
+
+	S /= (carriers - 1);
 	
-	return sqrt (diff) / (carriers * abs (avgPoint));
+	return sqrt (S);
 }
 
 #endif

@@ -1,6 +1,8 @@
 cmake_minimum_required( VERSION 2.8.11 )
 set (objectName qt-dab-0.999)
-add_definitions ( -Wall -flto)
+set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "/usr/local/bin" CACHE PATH "default install path" FORCE )
 endif()
@@ -52,7 +54,8 @@ endif ()
 
 add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
-#add_definitions (-DMSC_DATA__)		# use at your own risk
+add_definitions (-DMSC_DATA__)		# use at your own risk
+add_definitions (-DTII_COORDINATES)	# experimental
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -164,6 +167,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./includes/backend/audio/mp4processor.h
 	     ./includes/backend/audio/mp2processor.h
 	     ./includes/backend/data/ip-datahandler.h
+	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/journaline/dabdatagroupdecoder.h
 	     ./includes/backend/data/journaline/crc_8_16.h
@@ -175,6 +179,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./includes/backend/data/journaline/NML.h
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/virtual-datahandler.h
+	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/dab-data.h
@@ -192,6 +197,8 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
 	     ./includes/various/tii_table.h
+	     ./includes/various/tii_detector.h
+	     ./includes/various/tii_verify.h
 	)
 
 	set (${objectName}_SRCS
@@ -222,6 +229,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
 	     ./src/backend/data/ip-datahandler.cpp
+	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/journaline-datahandler.cpp
 	     ./src/backend/data/journaline/crc_8_16.c
 	     ./src/backend/data/journaline/log.c
@@ -232,6 +240,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./src/backend/data/journaline/NML.cpp
 	     ./src/backend/data/mot-databuilder.cpp
 	     ./src/backend/data/virtual-datahandler.cpp
+	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/pad-handler.cpp
 	     ./src/backend/data/mot-data.cpp
 	     ./src/backend/data/dab-data.cpp
@@ -248,6 +257,8 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
 	     ./src/various/tii_table.cpp
+	     ./src/various/tii_detector.cpp
+	     ./src/various/tii_verify.cpp
 	)
 
 	set (${objectName}_MOCS

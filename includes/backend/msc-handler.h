@@ -65,6 +65,7 @@ private:
 	bool		work_to_be_done;
 	bool		newChannel;
 	int16_t		new_packetAddress;
+	int16_t		new_appType;
 	int16_t		new_ASCTy;
 	int16_t		new_DSCTy;
 	int16_t		new_startAddr;

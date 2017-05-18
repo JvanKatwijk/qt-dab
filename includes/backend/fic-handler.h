@@ -32,29 +32,20 @@
 #include	"viterbi-768.h"
 #include	<QObject>
 #include	"fib-processor.h"
-#include	<QMutex>
 
 class	RadioInterface;
 class	mscHandler;
 class	dabParams;
 
-class ficHandler: public QObject, public viterbi_768 {
+class ficHandler: public fib_processor {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *);
 		~ficHandler		(void);
 	void	process_ficBlock	(int16_t *, int16_t);
 	void	setBitsforMode		(uint8_t);
-	void	clearEnsemble		(void);
-	bool	syncReached		(void);
-	int16_t	get_ficRatio		(void);
-	uint8_t	kindofService		(QString &);
-	void	dataforDataService	(QString &, packetdata *);
-	void	dataforAudioService	(QString &, audiodata *);
-
-	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
-	int16_t	mainId			(void);
 private:
+	viterbi_768	myViterbi;
 	void		process_ficInput	(int16_t *, int16_t);
 	int8_t		*PI_15;
 	int8_t		*PI_16;
@@ -69,8 +60,6 @@ private:
 	int16_t		ficMissed;
 	int16_t		ficRatio;
 	uint16_t	convState;
-	QMutex		fibProtector;
-	fib_processor	fibProcessor;
 	uint8_t		PRBS [768];
 	uint8_t		shiftRegister [9];
 signals:

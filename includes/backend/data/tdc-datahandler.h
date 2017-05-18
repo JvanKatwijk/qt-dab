@@ -4,8 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
- *
+ *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,35 +19,25 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#ifndef		__TDC_DATAHANDLER__
+#define		__TDC_DATAHANDLER__
 #include	"dab-constants.h"
-#include	<vector>
-#include	<QMutex>
+#include	<QByteArray>
+#include	"virtual-datahandler.h"
 
-class	tii_element {
+class	tdc_dataHandler : public virtual_dataHandler {
 public:
-	int16_t	subId;
-	float	latitudeOffset;
-	float	longitudeOffset;
-	tii_element (int16_t subId,
-	             float latitudeOffset, float longitudeOffset);
-	~tii_element (void) {}
+		tdc_dataHandler		(int16_t appType);
+		~tdc_dataHandler	(void);
+	void	add_mscDatagroup	(QByteArray &);
+private:
+	int32_t	handleFrame_type_0	(uint8_t *data,
+                                         int32_t offset, int32_t length);
+	int32_t	handleFrame_type_1	(uint8_t *data,
+                                         int32_t offset, int32_t length);
+	bool	serviceComponentFrameheaderCRC (uint8_t *, int16_t, int16_t);
 };
+#endif
 
-class	tii_table {
-public:
-		tii_table		(void);
-		~tii_table		(void);
-	void	cleanUp			(void);
-	void	add_element		(tii_element *);
-	void	add_main		(int16_t, float, float);
-	QMutex	tiiLocker;
-	DSPCOMPLEX	get_coordinates (int16_t, int16_t, bool *);
-	void	print_coordinates	(void);
-	int16_t	get_mainId		(void);
-	int16_t	mainId;
-	float	latitude;
-	float	longitude;
-	std::vector<tii_element> offsets;
 
-};
 

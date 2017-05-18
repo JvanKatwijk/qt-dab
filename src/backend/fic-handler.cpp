@@ -41,15 +41,15 @@ uint8_t PI_X [24] = {
 
 /**
   *	\class ficHandler
-  * 	We get in - through get_ficBlock - the FIC data
+  * 	We get in - through process_ficBlock - the FIC data
   * 	in units of 768 bits.
   * 	We follow the standard and apply conv coding and
   * 	puncturing.
-  *	The data is sent through to the fic processor
+  *	The data is sent through to the fib processor
   */
 		ficHandler::ficHandler (RadioInterface *mr):
-	                                             viterbi_768 (768, true),
-	                                             fibProcessor (mr) {
+	                                             fib_processor (mr),
+	                                             myViterbi (768, true) {
 int16_t	i, j;
 	bitBuffer_out	= new uint8_t [768];
 	ofdm_input 	= new int16_t [2304];
@@ -198,7 +198,7 @@ int16_t	viterbiBlock [3072 + 24];
   *	Now we have the full word ready for deconvolution
   *	deconvolution is according to DAB standard section 11.2
   */
-	deconvolve (viterbiBlock, bitBuffer_out);
+	myViterbi. deconvolve (viterbiBlock, bitBuffer_out);
 /**
   *	if everything worked as planned, we now have a
   *	768 bit vector containing three FIB's
@@ -220,68 +220,9 @@ int16_t	viterbiBlock [3072 + 24];
 	      show_ficSuccess (false);
 	      continue;
 	   }
+
 	   show_ficSuccess (true);
-	   fibProtector. lock ();
-	   fibProcessor. process_FIB (p, ficno);
-	   fibProtector. unlock ();
+	   fib_processor::process_FIB (p, ficno);
 	}
-//	fibProcessor. printActions (ficno);
-}
-
-void	ficHandler::clearEnsemble (void) {
-	fibProtector. lock ();
-	fibProcessor. clearEnsemble ();
-	fibProtector. unlock ();
-}
-
-uint8_t	ficHandler::kindofService	(QString &s) {
-uint8_t	result;
-	fibProtector. lock ();
-	result	= fibProcessor. kindofService (s);
-	fibProtector. unlock ();
-	return result;
-}
-
-void	ficHandler::dataforAudioService	(QString &s, audiodata *d) {
-	fibProtector. lock ();
-	fibProcessor. dataforAudioService (s, d);
-	fibProtector. unlock ();
-}
-
-void	ficHandler::dataforDataService	(QString &s, packetdata *d) {
-	fibProtector. lock ();
-	fibProcessor. dataforDataService (s, d);
-	fibProtector. unlock ();
-}
-
-int16_t	ficHandler::get_ficRatio (void) {
-	return ficRatio;
-}
-
-bool	ficHandler::syncReached	(void) {
-bool	result;
-	fibProtector. lock ();
-        result = fibProcessor. syncReached ();
-        fibProtector. unlock ();
-	return result;
-}
-
-DSPCOMPLEX	ficHandler::get_coordinates (int16_t mainId,
-	                                     int16_t subId, bool *success) {
-DSPCOMPLEX result;
-
-	fibProtector. lock ();
-        result = fibProcessor. get_coordinates (mainId, subId, success);
-        fibProtector. unlock ();
-	return result;
-}
-
-int16_t		ficHandler::mainId (void) {
-int16_t	res;
-
-	fibProtector. lock ();
-	res	= fibProcessor. mainId ();
-	fibProtector. unlock ();
-	return res;
 }
 

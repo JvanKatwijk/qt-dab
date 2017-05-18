@@ -8,12 +8,12 @@ TEMPLATE	= app
 TARGET		= qt-dab-0.999
 QT		+= widgets network 
 CONFIG		+= console
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#QMAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_LFLAGS	+=  -flto
-QMAKE_CFLAGS	+=  -pg
-QMAKE_CXXFLAGS	+=  -pg
-QMAKE_LFLAGS	+=  -pg
+QMAKE_CFLAGS	+=  -flto -ffast-math
+QMAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_LFLAGS	+=  -flto
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 
 DEPENDPATH += . \
 	      ./src \
@@ -80,6 +80,7 @@ HEADERS += ./radio.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
 	   ./includes/backend/data/virtual-datahandler.h \
+	   ./includes/backend/data/tdc-datahandler.h \
 	   ./includes/backend/data/ip-datahandler.h \
 	   ./includes/backend/data/mot-databuilder.h \
 	   ./includes/backend/data/mot-data.h \
@@ -141,6 +142,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/data/dab-data.cpp \
 	   ./src/backend/data/data-processor.cpp \
 	   ./src/backend/data/virtual-datahandler.cpp \
+	   ./src/backend/data/tdc-datahandler.cpp \
 	   ./src/backend/data/ip-datahandler.cpp \
 	   ./src/backend/data/mot-databuilder.cpp \
 	   ./src/backend/data/mot-data.cpp \
@@ -198,18 +200,18 @@ CONFIG		+= spectrum
 #you might - or might not - want to see some data on the selected program
 DEFINES		+= TECHNICAL_DATA
 
-#you might - or might not - see MOT data if it is in the datastream
+#you might - or might not - see MOT data if it is in the audiostream
 DEFINES		+= MOT_DATA
 
 #you do not want this
 DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and certainly, you do not want this
-CONFIG		+= try-epg		# do not use
+#CONFIG		+= try-epg		# do not use
 DEFINES		+= __QUALITY		# just a counter in spectrum display
 
-#if you uncomment this one, you will get lots of compiler errors, it is just private
-#CONFIG		+= try_tii		# sorry, just private stuff
+#experimental, might show transmitter coordinates
+#CONFIG		+= try_tii		# 
 }
 #
 # an attempt to have it run under W32
@@ -247,8 +249,8 @@ DEFINES		+= TECHNICAL_DATA
 DEFINES		+= MOT_DATA
 DEFINES	+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
-#DEFINES	+= __QUALITY		# just a counter in spectrum display
-#CONFIG		+= try_tii
+DEFINES	+= __QUALITY		# just a counter in spectrum display
+CONFIG		+= try_tii
 }
 
 #######################################
@@ -370,11 +372,10 @@ tcp-streamer	{
 }
 
 try_tii		{
-#private stuff, not part of the public distribution
-#	DEFINES		+= TII_ATTEMPT
+# experimental stuff
 	DEFINES		+= TII_COORDINATES
-	INCLUDEPATH	+= ../janSpul
-	DEPENDPATH	+= ../janSpul
-	HEADERS		+= ../janSpul/tii_detector.h
-	SOURCES		+= ../janSpul/tii_detector.cpp
+	HEADERS		+= ./includes/various/tii_detector.h \
+	                   ./includes/various/tii_verify.h
+	SOURCES		+= ./src/various/tii_detector.cpp \
+	                   ./src/various/tii_verify.cpp
 }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>259</width>
-    <height>570</height>
+    <height>580</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,8 +48,8 @@
   <widget class="QLabel" name="language">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>350</y>
+     <x>30</x>
+     <y>340</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -122,8 +122,8 @@
   <widget class="QLabel" name="programType">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>370</y>
+     <x>30</x>
+     <y>360</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -196,8 +196,8 @@
   <widget class="QLabel" name="uepField">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>310</y>
+     <x>30</x>
+     <y>300</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -212,8 +212,8 @@
   <widget class="QLabel" name="ASCTy">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>330</y>
+     <x>30</x>
+     <y>320</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -242,7 +242,7 @@
    <property name="geometry">
     <rect>
      <x>30</x>
-     <y>50</y>
+     <y>40</y>
      <width>91</width>
      <height>31</height>
     </rect>
@@ -264,7 +264,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>50</y>
+     <y>40</y>
      <width>63</width>
      <height>31</height>
     </rect>
@@ -276,8 +276,8 @@
   <widget class="QProgressBar" name="ficError_display">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>400</y>
+     <x>50</x>
+     <y>390</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -292,8 +292,8 @@
   <widget class="QProgressBar" name="frameError_display">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>430</y>
+     <x>50</x>
+     <y>420</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -308,8 +308,8 @@
   <widget class="QProgressBar" name="rsError_display">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>460</y>
+     <x>50</x>
+     <y>450</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -324,8 +324,8 @@
   <widget class="QProgressBar" name="aacError_display">
    <property name="geometry">
     <rect>
-     <x>40</x>
-     <y>490</y>
+     <x>50</x>
+     <y>480</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -370,14 +370,14 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>80</y>
+     <y>70</y>
      <width>211</width>
-     <height>31</height>
+     <height>41</height>
     </rect>
    </property>
    <property name="font">
     <font>
-     <pointsize>15</pointsize>
+     <pointsize>16</pointsize>
     </font>
    </property>
    <property name="text">
@@ -387,8 +387,8 @@
   <widget class="QLabel" name="motAvailable">
    <property name="geometry">
     <rect>
-     <x>192</x>
-     <y>530</y>
+     <x>202</x>
+     <y>520</y>
      <width>41</width>
      <height>20</height>
     </rect>
@@ -400,14 +400,27 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>530</y>
+     <x>20</x>
+     <y>520</y>
      <width>141</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string>MOT decoding</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="transmitter_coordinates">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>550</y>
+     <width>211</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

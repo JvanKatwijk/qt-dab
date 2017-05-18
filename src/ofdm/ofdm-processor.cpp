@@ -27,7 +27,6 @@
 #include	"fft.h"
 //
 #define	SEARCH_RANGE		(2 * 36)
-#define	CORRELATION_LENGTH	24
 
 /**
   *	\brief ofdmProcessor
@@ -54,8 +53,7 @@ int16_t	res	= 1;
 	                                 uint8_t	dabMode,
 	                                 mscHandler 	*msc,
 	                                 ficHandler 	*fic,
-	                                 int16_t	threshold,
-	                                 uint8_t	freqsyncMethod
+	                                 int16_t	threshold
 #ifdef	HAVE_SPECTRUM
 		                        ,RingBuffer<DSPCOMPLEX>	*spectrumBuffer,
 	                                 RingBuffer<DSPCOMPLEX>	*iqBuffer
@@ -79,7 +77,6 @@ int32_t	i;
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
 	this	-> my_ficHandler	= fic;
-	this	-> freqsyncMethod	= freqsyncMethod;
 
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
@@ -103,13 +100,11 @@ int32_t	i;
         localCounter    = 0;
 #endif
 //
-#ifdef	TII_ATTEMPT
-	tiiFound			= false;
-	tiiCount			= 0;
-#endif
-	tiiSwitch			= false;
+#ifdef	TII_COORDINATES
 	tiiCoordinates			= false;
-	tiiBuffers			= 0;
+	connect (this, SIGNAL (showCoordinates (float, float)),
+	         mr,   SLOT   (showCoordinates (float, float)));
+#endif
 	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
@@ -154,13 +149,6 @@ int32_t	i;
 
 	bufferContent	= 0;
 //
-//	and for the correlation 
-	refArg			= new float [CORRELATION_LENGTH];
-	correlationVector	= new float [SEARCH_RANGE + CORRELATION_LENGTH];
-	for (i = 0; i < CORRELATION_LENGTH; i ++)  {
-	   refArg [i] = arg (phaseSynchronizer. refTable [(T_u + i) % T_u] *
-	              conj (phaseSynchronizer. refTable [(T_u + i + 1) % T_u]));
-	}
 	start ();
 }
 
@@ -176,8 +164,6 @@ int32_t	i;
 	delete		ofdmBuffer;
 	delete		oscillatorTable;
 	delete		fft_handler;
-	delete[] 	correlationVector;
-	delete[]	refArg;
 }
 
 
@@ -236,10 +222,8 @@ DSPCOMPLEX temp;
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 	   sampleCnt = 0;
 #ifdef  HAVE_SPECTRUM
-	   if (!tiiSwitch) {
-              spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
-              emit showSpectrum (bufferSize);
-	   }
+           spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
+           emit showSpectrum (bufferSize);
            localCounter = 0;
 #endif
 	}
@@ -294,10 +278,8 @@ int32_t		i;
 	   show_fineCorrector	(fineCorrector);
 	   show_coarseCorrector	(coarseCorrector / KHz (1));
 #ifdef  HAVE_SPECTRUM
-	   if (!tiiSwitch) {
-              spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
-              emit showSpectrum (bufferSize);
-	   }
+           spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+           emit showSpectrum (bufferSize);
            localCounter = 0;
 #endif
 	   sampleCnt = 0;
@@ -438,7 +420,8 @@ SyncOnPhase:
 
 Block_0:
 /**
-  *	Block 0 is special in that it is used for coarse time synchronization
+  *	Block 0 is special in that it is used for fine time synchronization,
+  *	for coarse frequency synchronization
   *	and its content is used as a reference for decoding the
   *	first datablock.
   *	We read the missing samples in the ofdm buffer
@@ -504,62 +487,26 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
-#ifdef	TII_ATTEMPT
-	   if (tiiSwitch) {
-#ifdef	HAVE_SPECTRUM
-              spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
-              emit showSpectrum (T_null);
-#endif
-	      if (tiiCount < 150) {
-	         int16_t mainId, subId;
-	         if (!tiiFound &&
-	            my_TII_Detector. processNULL (ofdmBuffer,
-	                                          phaseSynchronizer. refTable,
-	                                          &mainId, &subId)) {
-	            bool cFound = false;
-	            DSPCOMPLEX coord;
-	            tiiFound = true;
-	            fprintf (stderr, "p = %d, c = %d\n", mainId, subId);
-	            coord = my_ficHandler -> get_coordinates (mainId,
-	                                                      subId,
-	                                                      &cFound);
-	            if (cFound) 
-	               fprintf (stderr, "transmitter coordinates received %f %f\n",
-	                              real (coord), imag (coord));
-	
-	            else
-	               fprintf (stderr, "no coordinate table found (yet)\n");
-	            fprintf (stderr, "mainId = %d\n",
-	                                        my_ficHandler -> mainId ());
-	         }
-	         tiiCount ++;
-	      }
-	   }
-#endif
+
 #ifdef TII_COORDINATES
 	   if (tiiCoordinates) {
 	      int16_t mainId	= my_ficHandler -> mainId ();
 	      if (mainId > 0) {
                  int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
 	                                                   phaseSynchronizer. refTable,
-	                                                   mainId, tiiBuffers ++); 
+	                                                   mainId); 
 	         if (subId >= 0) {
 	            bool found;
 	            DSPCOMPLEX coord =
 	                      my_ficHandler -> get_coordinates (mainId,
-	                                                        subId + 1,
+	                                                        subId,
 	                                                        &found);
 	            if (found) {
-//	               show_coordinates (real (coord), imag (coord));
-	               fprintf (stderr, "Estimated coordinates of transmitter %f %f\n",
-	                      real (coord), imag (coord));
+	               showCoordinates (real (coord), imag (coord));
 	            }
-	            tiiCoordinates = false;
 	         }
 	      }
-	      else
-	      if (++tiiBuffers > 15)
-	         tiiCoordinates = false;
+	      tiiCoordinates = false;
 	   }
 #endif
 	           
@@ -597,7 +544,6 @@ void	ofdmProcessor:: reset	(void) {
 	   
 	   wait ();
 	}
-	set_tiiSwitch (false);
 	start ();
 }
 
@@ -628,87 +574,51 @@ void	ofdmProcessor::coarseCorrectorOff (void) {
 	f2Correction	= false;
 }
 
-#define	RANGE	36
+//
+//	Processing block 0 here is needed as long as we are not in sync.
+//	Several algorithms were tried, plain  correlating the
+//	block 0, as used in locating the start index, with the
+//	data block here did not work very well. The structure
+//	of block 0 does not seem to lenf itself for that kind of matching
+//	The current approach is to look for a particular pattern
+//	of phiase differences between successive carriers.
 int16_t	ofdmProcessor::processBlock_0 (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
 
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
 	fft_handler	-> do_FFT ();
-	if (freqsyncMethod == 0)
-	   return getMiddle (fft_buffer);
-	else
-	if (freqsyncMethod == 1) {
-//	The "best" approach for computing the coarse frequency
-//	offset is to look at the spectrum of block 0 and relate that
-//	with the spectrum as it should be, i.e. the refTable
-//	However, since there might be 
-//	a pretty large phase offset between the incoming data and
-//	the reference table data, we correlate the
-//	phase differences between the subsequent carriers rather
-//	than the values in the segments themselves.
-//	It seems to work pretty well
-//
-//	The phase differences are computed once
-	   for (i = 0; i < SEARCH_RANGE + CORRELATION_LENGTH; i ++) {
-	      int16_t baseIndex = T_u - SEARCH_RANGE / 2 + i;
-	      correlationVector [i] =
-	                   arg (fft_buffer [baseIndex % T_u] *
-	                    conj (fft_buffer [(baseIndex + 1) % T_u]));
-	   }
 
-	   float	MMax	= 0;
-	   float	oldMMax	= 0;
-	   for (i = 0; i < SEARCH_RANGE; i ++) {
-	      float sum	= 0;
-	      for (j = 0; j < CORRELATION_LENGTH; j ++) {
-	         sum += abs (refArg [j] * correlationVector [i + j]);
-	         if (sum > MMax) {
-	            oldMMax	= MMax;
-	            MMax 		= sum;
-	            index 		= i;
-	         }
-	      }
-	   }
-
-//	to avoid a compiler warning
-	   (void)oldMMax;
-//
-//	Now map the index back to the right carrier
-//	   fprintf (stderr, "index = %d (%f %f)\n",
-//	                T_u - SEARCH_RANGE / 2 + index - T_u, MMax, oldMMax);
-	   return T_u - SEARCH_RANGE / 2 + index - T_u;
-	}
-	else {
 //	An alternative way is to look at a special pattern consisting
-//	of zeros in the row of args between successive carriers.
-	   float Mmin	= 1000;
-	   for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
-                 float a1  =  abs (abs (arg (fft_buffer [(i + 1) % T_u] *
-                                conj (fft_buffer [(i + 2) % T_u])) / M_PI) - 1);
-                 float a2  =  abs (abs (arg (fft_buffer [(i + 2) % T_u] *
-                                conj (fft_buffer [(i + 3) % T_u])) / M_PI) - 1);
-	         float a3	= abs (arg (fft_buffer [(i + 3) % T_u] *
-	         	                    conj (fft_buffer [(i + 4) % T_u])));
-	         float a4	= abs (arg (fft_buffer [(i + 4) % T_u] *
-	         	                    conj (fft_buffer [(i + 5) % T_u])));
-	         float a5	= abs (arg (fft_buffer [(i + 5) % T_u] *
-	         	                    conj (fft_buffer [(i + 6) % T_u])));
-	         float b1	= abs (abs (arg (fft_buffer [(i + 16 + 1) % T_u] *
-	         	                    conj (fft_buffer [(i + 16 + 3) % T_u])) / M_PI) - 1);
-	         float b2	= abs (arg (fft_buffer [(i + 16 + 3) % T_u] *
-	         	                    conj (fft_buffer [(i + 16 + 4) % T_u])));
-	         float b3	= abs (arg (fft_buffer [(i + 16 + 4) % T_u] *
-	         	                    conj (fft_buffer [(i + 16 + 5) % T_u])));
-	         float b4	= abs (arg (fft_buffer [(i + 16 + 5) % T_u] *
-	         	                    conj (fft_buffer [(i + 16 + 6) % T_u])));
-	         float sum = a1 + a2 + a3 + a4 + a5 + b1 + b2 + b3 + b4;
-	         if (sum < Mmin) {
-	            Mmin = sum;
-	            index = i;
-	         }
+//	of zeros in the row of phasedifferences between successive carriers.
+//	we investigate a sequence of phasedifferences that should
+//	be zero around carrier 0
+	float Mmin	= 1000;
+	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
+           float a1  =  abs (abs (arg (fft_buffer [(i + 1) % T_u] *
+                          conj (fft_buffer [(i + 2) % T_u])) / M_PI) - 1);
+           float a2  =  abs (abs (arg (fft_buffer [(i + 2) % T_u] *
+                          conj (fft_buffer [(i + 3) % T_u])) / M_PI) - 1);
+	   float a3  = abs (arg (fft_buffer [(i + 3) % T_u] *
+	   	                    conj (fft_buffer [(i + 4) % T_u])));
+	   float a4	= abs (arg (fft_buffer [(i + 4) % T_u] *
+	   	                    conj (fft_buffer [(i + 5) % T_u])));
+	   float a5	= abs (arg (fft_buffer [(i + 5) % T_u] *
+	   	                    conj (fft_buffer [(i + 6) % T_u])));
+	   float b1	= abs (abs (arg (fft_buffer [(i + 16 + 1) % T_u] *
+	   	                    conj (fft_buffer [(i + 16 + 3) % T_u])) / M_PI) - 1);
+	   float b2	= abs (arg (fft_buffer [(i + 16 + 3) % T_u] *
+	   	                    conj (fft_buffer [(i + 16 + 4) % T_u])));
+	   float b3	= abs (arg (fft_buffer [(i + 16 + 4) % T_u] *
+	   	                    conj (fft_buffer [(i + 16 + 5) % T_u])));
+	   float b4	= abs (arg (fft_buffer [(i + 16 + 5) % T_u] *
+	   	                    conj (fft_buffer [(i + 16 + 6) % T_u])));
+	   float sum = a1 + a2 + a3 + a4 + a5 + b1 + b2 + b3 + b4;
+	   if (sum < Mmin) {
+	      Mmin = sum;
+	      index = i;
 	   }
-	   return index - T_u;
 	}
+	return index - T_u;
 }
 
 int16_t	ofdmProcessor::getMiddle (DSPCOMPLEX *v) {
@@ -737,25 +647,13 @@ DSPFLOAT	oldMax	= 0;
 	}
 	return maxIndex - (T_u - carriers) / 2;
 }
-
 	
 void	ofdmProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
 
-void	ofdmProcessor::set_tiiSwitch	(bool b) {
-	tiiSwitch	= b;
-	tiiBuffers	= 0;
-#ifdef	TII_ATTEMPT
-	tiiFound	= false;
-	tiiCount	= 0;
-	fprintf (stderr, "tiiswitch gezet op %d\n", b);
-#endif
-}
-
 void	ofdmProcessor::set_tiiCoordinates	(void) {
 	tiiCoordinates	= true;
-	tiiBuffers	= 0;
 }
 

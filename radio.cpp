@@ -100,7 +100,7 @@ static	bool	thereisSound	= false;
 static	int	frameErrors	= 0;
 
 	RadioInterface::RadioInterface (QSettings	*Si,
-	                                uint8_t		freqsyncMethod,
+	                                int16_t		tii_delay,
 	                                bool		tracing,
 	                                QWidget		*parent):
 	                                        QMainWindow (parent),
@@ -109,8 +109,10 @@ int16_t	latency;
 int16_t k;
 
 	dabSettings		= Si;
+#ifdef	TII_COORDINATES
+	this	-> tii_delay	= tii_delay;
+#endif
 	this	-> tracing	= tracing;
-	this	-> tii_switch	= false;
 // 	the setup for the generated part of the ui
 	setupUi (this);
 
@@ -212,7 +214,6 @@ int16_t k;
   *	and ofdmDecoder for the ofdm related part, ficHandler
   *	for the FIC's and mscHandler for the MSC.
   */
-	this	-> freqsyncMethod	= freqsyncMethod;
 	my_mscHandler		= new mscHandler	(this,
 	                                                 convert (modeSelector -> currentText ()),
 	                                                 audioBuffer,
@@ -227,8 +228,7 @@ int16_t k;
 	                                        convert (modeSelector -> currentText ()),
 	                                        my_mscHandler,
 	                                        &my_ficHandler,
-	                                        threshold,
-	                                        freqsyncMethod
+	                                        threshold
 #ifdef	HAVE_SPECTRUM
 	                                       ,spectrumBuffer,
 	                                        iqBuffer
@@ -249,13 +249,6 @@ int16_t k;
 	               setStyleSheet ("QLabel {background-color : red}");
 #endif
 
-#ifdef	TII_ATTEMPT
-	tii_switch		= false;
-	connect (tii_button, SIGNAL (clicked (void)),
-	         this, SLOT (set_tiiDetect (void)));
-#else
-	tii_button	-> hide ();
-#endif;
 	if (autoStart)
 	   setStart ();
 }
@@ -615,7 +608,6 @@ int	cc	= channelSelector -> currentIndex ();
 
 	connect    (channelSelector, SIGNAL (activated (const QString &)),
 	              this, SLOT (set_channelSelect (const QString &)));
-	tii_switch	= false;
 }
 
 /**
@@ -635,7 +627,6 @@ void	RadioInterface::clearEnsemble	(void) {
 	my_ofdmProcessor	-> reset ();
 
 	clear_showElements	();
-	tii_switch		= false;
 }
 
 //
@@ -965,7 +956,6 @@ int32_t	tunedFrequency;
 bool	localRunning	= running;
 
 	setStereo (false);
-	tii_switch	= false;
 	if (scanning)
 	   set_Scanning ();	// switch it off
 
@@ -995,9 +985,11 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if (numberofSeconds % 10 == 0)
+#ifdef	TII_COORDINATES
+	if (numberofSeconds % tii_delay == 0)
 	   if (my_ofdmProcessor != NULL)
 	      my_ofdmProcessor	-> set_tiiCoordinates ();
+#endif
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
 	text. append (" hr, ");
@@ -1075,8 +1067,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                              convert (Mode),
 	                                              my_mscHandler,
 	                                              &my_ficHandler,
-	                                              threshold,
-	                                              freqsyncMethod
+	                                              threshold
 #ifdef	HAVE_SPECTRUM
 	                                              ,spectrumBuffer,
 	                                              iqBuffer
@@ -1148,7 +1139,6 @@ QString	file;
 	delete	my_ofdmProcessor;
 	delete	inputDevice;
 	dynamicLabel	-> setText ("");
-	tii_switch	= false;
 
 ///	OK, everything quiet, now let us see what to do
 #ifdef	HAVE_AIRSPY
@@ -1314,14 +1304,12 @@ QString	file;
 	                                               convert (modeSelector -> currentText ()),
 	                                               my_mscHandler,
 	                                               &my_ficHandler,
-	                                               threshold,
-	                                               freqsyncMethod
+	                                               threshold
 #ifdef	HAVE_SPECTRUM
 	                                              ,spectrumBuffer,
 	                                               iqBuffer
 #endif
 	                                              );
-	tii_switch	= false;
 }
 
 //
@@ -1409,6 +1397,8 @@ QString a = ensemble. data (s, Qt::DisplayRole). toString ();
 	               showLabel (QString ("unimplemented Data"));
 	               break;
 	            case 5:
+	               fprintf (stderr, "selected apptype %d\n", 
+	                                                 d. appType);
 	               showLabel (QString ("Transp. Channel not implemented"));
 	               break;
 	            case 60:
@@ -1613,10 +1603,17 @@ void	RadioInterface::setSyncLost	(void) {
 //	my_ofdmProcessor	-> reset ();
 }
 
-void	RadioInterface::set_tiiDetect           (void) {
-	tii_switch	= !tii_switch;
-	if (my_ofdmProcessor != NULL)
-	   my_ofdmProcessor -> set_tiiSwitch (tii_switch);
+#ifdef	TII_COORDINATES
+void	RadioInterface::showCoordinates (float lat, float lon) {
+QString a, b;
+	a	= QString::number (lat);
+	b	= QString::number (lon);
+	a. append ("  ");
+	a. append (b);
+#ifdef  TECHNICAL_DATA
+	techData. transmitter_coordinates -> setText (a);
+#endif
 }
+#endif
 
 

@@ -26,6 +26,7 @@
 #include	"ip-datahandler.h"
 #include	"mot-databuilder.h"
 #include	"journaline-datahandler.h"
+#include	"tdc-datahandler.h"
 
 //	\class dataProcessor
 //	The main function of this class is to assemble the 
@@ -35,6 +36,7 @@
 	dataProcessor::dataProcessor	(RadioInterface *mr,
 	                                 int16_t	bitRate,
 	                         	 uint8_t	DSCTy,
+	                                 int16_t	appType,
 	                                 uint8_t	DGflag,
 	                         	 int16_t	FEC_scheme,
 	                                 bool		show_crcErrors) {
@@ -42,15 +44,20 @@ int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= bitRate;
 	this	-> DSCTy		= DSCTy;
+	this	-> appType		= appType;
 	this	-> DGflag		= DGflag;
 	this	-> FEC_scheme		= FEC_scheme;
+	this	-> expectedIndex	= 0;
 	this	-> show_crcErrors	= show_crcErrors;
 	connect (this, SIGNAL (show_mscErrors (int)),
 	         mr, SLOT (show_mscErrors (int)));
 	switch (DSCTy) {
 	   default:
-	   case 5:			// do know yet
 	      my_dataHandler	= new virtual_dataHandler ();
+	      break;
+
+	   case 5:			
+	      my_dataHandler	= new tdc_dataHandler (appType);
 	      break;
 
 	   case 44:
@@ -126,7 +133,11 @@ int16_t	i;
 	   handledPackets = 0;
 	}
 
-	(void)continuityIndex;
+	if (continuityIndex != expectedIndex) {
+	   expectedIndex = 0;
+	   return;
+	}
+	expectedIndex = (expectedIndex + 1 ) % 4;
 	(void)command;
 	if (!check_CRC_bits (data, packetLength * 8)) {
 	   crcErrors ++;

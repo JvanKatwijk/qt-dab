@@ -9,8 +9,10 @@
 //	For our particular viterbi decoder, we have
 #define	RATE	4
 #define NUMSTATES 64
-#define DECISIONTYPE uint8_t
-#define DECISIONTYPE_BITSIZE 8
+#define DECISIONTYPE uint32_t
+//#define DECISIONTYPE uint8_t
+//#define DECISIONTYPE_BITSIZE 8
+#define DECISIONTYPE_BITSIZE 32
 #define COMPUTETYPE uint32_t
 
 //decision_t is a BIT vector
@@ -51,7 +53,7 @@ private:
 //	int	parityb		(uint8_t);
 	int	parity		(int);
 	void	partab_init	(void);
-	uint8_t	Partab	[256];
+//	uint8_t	Partab	[256];
 	void	init_viterbi	(struct v *, int16_t);
 	void	update_viterbi_blk_GENERIC	(struct v *, COMPUTETYPE *,
 	                                         int16_t);

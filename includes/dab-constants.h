@@ -140,6 +140,7 @@ float	im	= imag (z);
 //
 //	for service handling we define
 typedef struct {
+	bool	defined;
 	int16_t subchId;
 	int16_t	startAddr;
 	bool	shortForm;
@@ -149,10 +150,12 @@ typedef struct {
 	int16_t	bitRate;
 	int16_t	FEC_scheme;
 	int16_t	DGflag;
+	int16_t	appType;
 	int16_t	packetAddress;
 } packetdata;
 
 typedef	struct {
+	bool	defined;
 	int16_t	subchId;
 	int16_t	startAddr;
 	bool	shortForm;
@@ -162,14 +165,13 @@ typedef	struct {
 	int16_t	ASCTy;
 	int16_t	language;
 	int16_t	programType;
-	bool	defined;
 } audiodata;
 
 //	just some locals
 //
 //	generic, up to 16 bits
 static inline
-uint16_t	getBits (uint8_t *d, int16_t offset, int16_t size) {
+uint16_t	getBits (uint8_t *d, int32_t offset, int16_t size) {
 int16_t	i;
 uint16_t	res	= 0;
 

@@ -37,30 +37,45 @@
 }
 
 void	tii_table::cleanUp (void) {
+	tiiLocker. lock ();
 	offsets. clear ();
 	mainId		= -1;
+	tiiLocker. unlock ();
 }
 
-void	tii_table::add_main	(int16_t mainId, float latitude, float longitude) {
-	if (this -> mainId > 0)
+void	tii_table::add_main	(int16_t mainId,
+	                         float latitude, float longitude) {
+	tiiLocker. lock ();
+	if (this -> mainId > 0) {
+	   tiiLocker. unlock ();
 	   return;
-	this	-> mainId = mainId;
+	}
+	this	-> mainId	= mainId;
 	this	-> latitude	= latitude;
 	this	-> longitude	= longitude;
+	tiiLocker. unlock ();
 }
 
 void	tii_table::add_element (tii_element *t) {
 int16_t i;
-
+	tiiLocker. lock ();
+	if (this -> mainId < 0) {
+	   tiiLocker. unlock ();
+	   return;
+	}
 	for (i = 0; i < offsets. size (); i ++)
-	   if (offsets [i]. subId == t -> subId)
+	   if (offsets [i]. subId == t -> subId) {
+	      tiiLocker. unlock ();
 	      return;
-
-	fprintf (stderr, "adding %d (%f %f)\n",
+	   }
+#ifdef	TII_COORDINATES
+	fprintf (stderr, "transmitter  %d at\t(%f %f)\n",
 	                        t -> subId,
-	                        t -> latitudeOffset,
-	                        t -> longitudeOffset);
+	                        latitude + t -> latitudeOffset,
+	                        longitude + t -> longitudeOffset);
+#endif
 	offsets. push_back (*t);
+	tiiLocker. unlock ();
 	
 }
 
@@ -69,31 +84,36 @@ DSPCOMPLEX tii_table::get_coordinates (int16_t mainId,
 int16_t i;
 float x, y;
 
+	tiiLocker. lock ();
 	*success	= false;
-	if (this -> mainId != mainId)
+	if (this -> mainId != mainId) {
+	   tiiLocker. unlock ();
 	   return DSPCOMPLEX (0, 0);
+	}
 
-	fprintf (stderr, "central point (%f %f)\n", 
-	                               latitude, longitude);
 //	print_coordinates ();
 	for (i = 0; i < offsets. size (); i ++) {
 	   if (offsets [i]. subId != subId)
 	      continue;
-
 	   x	= latitude + offsets [i]. latitudeOffset;
 	   y	= longitude + offsets [i]. longitudeOffset;
 	
 	   *success = true;
+	   tiiLocker. unlock ();
 	   return DSPCOMPLEX (x, y);
 	}
+	tiiLocker. unlock ();
 	return DSPCOMPLEX (0, 0);
 }
 
 void	tii_table::print_coordinates	(void) {
 int16_t	i;
 
-	if (mainId < 0)
+	tiiLocker. lock ();
+	if (mainId < 0) {
+	   tiiLocker. unlock ();
 	   return;
+	}
 
 	fprintf (stderr, "mainId = %d\n", mainId);
 	fprintf (stderr, "Transmitter coordinates (%f %f)\n",
@@ -103,9 +123,14 @@ int16_t	i;
 	   float y	= longitude + offsets [i]. longitudeOffset;
 	   fprintf (stderr, "%d\t-> %f\t%f\n", offsets [i]. subId, x, y);
 	}
+	tiiLocker. unlock ();
 }
 
 int16_t	tii_table::get_mainId	(void) {
-	return mainId;
+int16_t m;
+	tiiLocker. lock ();
+	m	= mainId;
+	tiiLocker. unlock ();
+	return m;
 }
 

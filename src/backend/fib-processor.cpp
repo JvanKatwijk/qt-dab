@@ -19,7 +19,9 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * 	fib and fig processor
+ * 	fib processor. Functionality is shared between fic handler, i.e. the
+ *	one preparing the FIC blocks for processing, and the mainthread
+ *	from which calls are coming on selecting a program
  */
 #include	"fib-processor.h"
 #include	<cstring>
@@ -126,32 +128,34 @@ uint8_t	FIGtype;
 int8_t	processedBytes	= 0;
 uint8_t	*d		= p;
 
-	   (void)fib;
-	   while (processedBytes  < 30) {
-	      FIGtype 		= getBits_3 (d, 0);
-	      switch (FIGtype) {
-	         case 0:
-	            process_FIG0 (d);	
-	            break;
+	fibLocker. lock ();
+	(void)fib;
+	while (processedBytes  < 30) {
+	   FIGtype 		= getBits_3 (d, 0);
+	   switch (FIGtype) {
+	      case 0:
+	         process_FIG0 (d);	
+	         break;
 
-	         case 1:
-	            process_FIG1 (d);
-	            break;
+	      case 1:
+	         process_FIG1 (d);
+	         break;
 
-	         case 7:
-	            return;
+	      case 7:
+	         break;
 
-	         default:
-//	            fprintf (stderr, "FIG%d aanwezig\n", FIGtype);
-	            break;
-	      }
+	      default:
+//	         fprintf (stderr, "FIG%d aanwezig\n", FIGtype);
+	         break;
+	   }
 //
 //	Thanks to Ronny Kunze, who discovered that I used
 //	a p rather than a d
 	      processedBytes += getBits_5 (d, 3) + 1;
 //	      processedBytes += getBits (p, 3, 5) + 1;
 	      d = p + processedBytes * 8;
-	   }
+	}
+	fibLocker. unlock ();
 }
 //
 //	Handle ensemble is all through FIG0
@@ -372,12 +376,12 @@ int16_t		numberofComponents;
 	if (pd == 1) {		// long Sid
 	   ecc	= getBits_8 (d, lOffset);	(void)ecc;
 	   cId	= getBits_4 (d, lOffset + 1);
-	   SId	= getLBits (d, lOffset, 32);
+	   SId	= getLBits  (d, lOffset, 32);
 	   lOffset	+= 32;
 	}
 	else {
 	   cId	= getBits_4 (d, lOffset);	(void)cId;
-	   SId	= getBits (d, lOffset, 16);
+	   SId	= getBits   (d, lOffset, 16);
 	   lOffset	+= 16;
 	}
 
@@ -394,7 +398,7 @@ int16_t		numberofComponents;
 	   }
 	   else
 	   if (TMid == 3) { // MSC packet data
-	      int16_t SCId	= getBits (d, lOffset + 2, 12);
+	      int16_t SCId	= getBits   (d, lOffset + 2, 12);
 	      uint8_t PS_flag	= getBits_1 (d, lOffset + 14);
 	      uint8_t CA_flag	= getBits_1 (d, lOffset + 15);
 	      bind_packetService (TMid, SId, i, SCId, PS_flag, CA_flag);
@@ -435,6 +439,7 @@ serviceComponent *packetComp = find_packetComponent (SCId);
            return used;
 serviceId *service = packetComp -> service;
 
+	packetComp	-> SCId		= SCId;
         packetComp      -> subchannelId = SubChId;
         packetComp      -> DSCTy        = DSCTy;
 	packetComp	-> DGflag	= DGflag;
@@ -583,17 +588,18 @@ int16_t	fib_processor::HandleFIG0Extension13 (uint8_t *d,
 	                                     uint8_t pdBit) {
 int16_t	lOffset		= used * 8;
 uint32_t	SId	= getLBits (d, lOffset, pdBit == 1 ? 32 : 16);
-uint16_t	SCIds;
+uint16_t	SCIdS;
 int16_t		NoApplications;
 int16_t		i;
+int16_t		appType;
 
 	lOffset		+= pdBit == 1 ? 32 : 16;
-	SCIds		= getBits_4 (d, lOffset);
+	SCIdS		= getBits_4 (d, lOffset);
 	NoApplications	= getBits_4 (d, lOffset + 4);
 	lOffset += 8;
 
 	for (i = 0; i < NoApplications; i ++) {
-	   int16_t appType	= getBits (d, lOffset, 11);
+	   appType		= getBits (d, lOffset, 11);
 	   int16_t length	= getBits_5 (d, lOffset + 11);
 	   lOffset += (11 + 5 + 8 * length);
 	   switch (appType) {
@@ -619,8 +625,12 @@ int16_t		i;
 	   }
 	}
 
-	(void)SId;
-	(void)SCIds;
+	if (appType == 4) {
+	   serviceComponent *packetComp	= find_serviceComponent (SId, SCIdS);
+	   if (packetComp != NULL) {
+	      packetComp      -> appType	= appType;
+	   }
+	}
 	return lOffset / 8;
 }
 
@@ -651,12 +661,11 @@ serviceId	*s;
 	while (offset < length * 8) {
 	   uint16_t	SId	= getBits (d, offset, 16);
 	   s	= findServiceId (SId);
-	   if (!s -> hasPNum) {
-	      uint8_t PNum = getBits (d, offset + 16, 16);
-	      s -> pNum		= PNum;
-	      s -> hasPNum	= true;
+	   if (s -> pNum < 0) {
+	      uint8_t pNum = getBits (d, offset + 16, 16);
+	      s -> pNum		= pNum;
 //	      fprintf (stderr, "Program number info SId = %.8X, PNum = %d\n",
-//	      	                               SId, PNum);
+//	      	                               SId, pNum);
 	   }
 	   offset += 72;
 	}
@@ -677,7 +686,6 @@ serviceId	*s;
 	   if (L_flag) {		// language field present
 	      Language = getBits_8 (d, offset + 24);
 	      s -> language = Language;
-	      s -> hasLanguage = true;
 	      offset += 8;
 	   }
 
@@ -728,7 +736,7 @@ uint8_t		region_Id_Lower;
 	   if (region_flag) {
 	      region_Id_Lower = getBits_6 (d, offset + 34);
 	      offset += 40;
-	      fprintf(stderr,"for region %u",region_Id_Lower);
+//	      fprintf(stderr,"for region %u",region_Id_Lower);
 	   }
 	   else
 	      offset += 32;
@@ -769,10 +777,14 @@ int	i;
 	   int16_t latitudeCoarse = getBits (d, used * 8 + 8, 16);
 	   int16_t longitudeCoarse = getBits (d, used * 8 + 24, 16);
 
+	   int16_t latitudeFine		= getBits (d, used * 8 + 40, 4);
+	   int16_t longitudeFine	= getBits (d, used * 8 + 44, 4);
 	   coordinates. add_main (mainId,
-	                          latitudeCoarse * 90.0 / 32768.0,
-	                          longitudeCoarse * 180.0 / 32768.0);
-	   return used + 48 / 6;
+	                          latitudeCoarse * 90.0 / 32768.0 +
+	                          latitudeFine * 90 / (16 * 32768.0),
+	                          longitudeCoarse * 180.0 / 32768.0 +
+	                          longitudeFine * 180 / (16 * 32768.0));
+	   return used + 48 / 8;
 	}
 
 	//	MS == 1
@@ -957,6 +969,7 @@ int16_t	i;
 	      listofServices [i]. serviceLabel. hasName = false;
 	      listofServices [i]. serviceId = serviceId;
 	      listofServices [i]. language = -1;
+	      listofServices [i]. pNum	   = -1;
 	      return &listofServices [i];
 	   }
 
@@ -975,6 +988,22 @@ int16_t i;
               return &components [i];
         }
         return NULL;
+}
+
+serviceComponent *fib_processor::find_serviceComponent (int32_t SId,
+	                                                int16_t SCIdS) {
+int16_t i;
+
+	for (i = 0; i < 64; i ++) {
+	   if (!components [i]. inUse)
+	      continue;
+
+	   if ( (findServiceId (SId) == components [i]. service)) {
+	      return &components [i];
+	   }
+	}
+
+	return NULL;
 }
 
 //	bind_audioService is the main processor for - what the name suggests -
@@ -1051,6 +1080,7 @@ int16_t	i;
 
 void	fib_processor::clearEnsemble (void) {
 int16_t i;
+	fibLocker. lock ();
 	setupforNewFrame ();
 	coordinates. cleanUp ();
 	memset (components, 0, sizeof (components));
@@ -1059,18 +1089,24 @@ int16_t i;
 	   listofServices [i]. inUse = false;
 	   listofServices [i]. serviceId = -1;
 	   listofServices [i]. serviceLabel. label = QString ();
+	   listofServices [i]. programType = -1;
+	   listofServices [i]. language = -1;
+	   listofServices [i]. pNum     = -1;
 	   components [i]. inUse = false;
 	}
 
 	firstTime	= true;
 	isSynced	= false;
+	fibLocker. unlock ();
 }
 
 
 uint8_t	fib_processor::kindofService (QString &s) {
 int16_t	i, j;
-int32_t	selectedService;
+int32_t	selectedService	= -1;
+int16_t	service		= UNKNOWN_SERVICE;
 
+	fibLocker. lock ();
 //	first we locate the serviceId
 	for (i = 0; i < 64; i ++) {
 	   if (!listofServices [i]. inUse)
@@ -1091,21 +1127,29 @@ int32_t	selectedService;
 	      if (selectedService != components [j]. service -> serviceId)
 	         continue;
 
-	      if (components [j]. TMid == 03) 
-	         return PACKET_SERVICE;
+	      if (components [j]. TMid == 03) {
+	         service = PACKET_SERVICE;
+	         break;
+	      }
 
-	      if (components [j]. TMid == 00) 
-	         return AUDIO_SERVICE;
-//	      fprintf (stderr, "TMid == %d\n", components [j]. TMid);
+	      if (components [j]. TMid == 00) {
+	         service = AUDIO_SERVICE;
+	         break;
+	      }
 	   }
+	   if (service != UNKNOWN_SERVICE)
+	      break;
 	}
-	return UNKNOWN_SERVICE;
+	fibLocker. unlock ();
+	return service;
 }
 
 void	fib_processor::dataforDataService (QString &s, packetdata *d) {
 int16_t	i, j;
 int32_t	selectedService;
 
+	d	-> defined	= false;
+	fibLocker. lock ();
 //	first we locate the serviceId
 	for (i = 0; i < 64; i ++) {
 	   if (!listofServices [i]. inUse)
@@ -1123,11 +1167,6 @@ int32_t	selectedService;
 	         continue;
 	      if (selectedService != components [j]. service -> serviceId)
 	         continue;
-
-	      if (components [j]. TMid != 03) {
-	         fprintf (stderr, "fatal error, expected data service\n");
-	         return;
-	      }
 
 	      subchId	= components [j]. subchannelId;
 	      d	-> subchId	= subchId;
@@ -1140,18 +1179,25 @@ int32_t	selectedService;
 	      d	-> FEC_scheme	= ficList [subchId]. FEC_scheme;
 	      d	-> DGflag	= components [j]. DGflag;
 	      d	-> packetAddress = components [j]. packetAddress;
-	      return;
+	      d -> appType	= components [j]. appType;
+	      d	-> defined	= true;
+	      break;
 	   }
+	   if (d -> defined)
+	      break;
 	}
-	fprintf (stderr, "service %s insuffiently defined\n", s. toLatin1 (). data ());
+	if (!d -> defined)
+	   fprintf (stderr,
+	       "service %s insuffiently defined\n", s. toLatin1 (). data ());
+	fibLocker. unlock ();
 }
 
 void	fib_processor::dataforAudioService (QString &s, audiodata *d) {
 int16_t	i, j;
 int32_t	selectedService;
-
 	d	-> defined	= false;
 //	first we locate the serviceId
+	fibLocker. lock ();
 	for (i = 0; i < 64; i ++) {
 	   if (!listofServices [i]. inUse)
 	      continue;
@@ -1169,11 +1215,6 @@ int32_t	selectedService;
 	      if (selectedService != components [j]. service -> serviceId)
 	         continue;
 
-	      if (components [j]. TMid != 00) {
-	         fprintf (stderr, "fatal error, expected audio service\n");
-	         return;
-	      }
-	      d	-> defined	= true;
 	      subchId	= components [j]. subchannelId;
 	      d	-> subchId	= subchId;
 	      d	-> startAddr	= ficList [subchId]. StartAddr;
@@ -1184,10 +1225,15 @@ int32_t	selectedService;
 	      d	-> ASCTy	= components [j]. ASCTy;
 	      d	-> language	= listofServices [i]. language;
 	      d	-> programType	= listofServices [i]. programType;
-	      return;
+	      d	-> defined	= true;
+	      break;
 	   }
+	   if (d -> defined)
+	      break;
 	}
-	fprintf (stderr, "service %s insuffiently defined\n", s. toLatin1 (). data ());
+	if (!d -> defined)
+	   fprintf (stderr, "service %s insuffiently defined\n", s. toLatin1 (). data ());
+	fibLocker. unlock ();
 }
 
 bool    fib_processor::syncReached (void) {
@@ -1197,8 +1243,7 @@ bool    fib_processor::syncReached (void) {
 DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
 	                                        int16_t subId,
 	                                        bool *success) {
-//	coordinates. print_coordinates ();
-	return coordinates. get_coordinates (mainId, subId, success);
+	return  coordinates. get_coordinates (mainId, subId, success);
 }
 
 int16_t		fib_processor::mainId	(void) {

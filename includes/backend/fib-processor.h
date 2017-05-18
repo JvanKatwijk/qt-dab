@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-TAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
 #ifndef	__FIB_PROCESSOR__
@@ -30,32 +29,31 @@
 #include	<QObject>
 #include	"msc-handler.h"
 #include	"tii_table.h"
+#include	<QMutex>
 
 	struct dablabel {
-//	   uint8_t	label [17];
 	   QString	label;
-	   uint8_t	mask;
 	   bool		hasName;
 	};
 
 	typedef struct dablabel	dabLabel;
 
 	typedef struct subchannelmap channelMap;
+
 //	from FIG1/2
 	struct serviceid {
+	   bool		inUse;
 	   uint32_t	serviceId;
 	   dabLabel	serviceLabel;
-	   bool		inUse;
-	   bool		hasPNum;
-	   bool		hasLanguage;
 	   int16_t	language;
 	   int16_t	programType;
-	   uint16_t	pNum;
-	   
+	   int16_t	pNum;
 	};
 	typedef	struct serviceid serviceId;
+
 //      The service component describes the actual service
-//      It really should be a union
+//      It really should be a union, the component data for
+//	audio and data are quite different
         struct servicecomponents {
            bool         inUse;          // just administration
            int8_t       TMid;           // the transport mode
@@ -70,6 +68,7 @@
            int16_t      DSCTy;          // used in packet
 	   uint8_t	DGflag;		// used for TDC
            int16_t      packetAddress;  // used in packet
+	   int16_t	appType;	// used in packet
         };
 
         typedef struct servicecomponents serviceComponent;
@@ -92,7 +91,6 @@ Q_OBJECT
 public:
 		fib_processor		(RadioInterface *);
 		~fib_processor		(void);
-	void	process_FIB		(uint8_t *, uint16_t);
 
 	void	setupforNewFrame	(void);
 	void	clearEnsemble		(void);
@@ -103,10 +101,13 @@ public:
 	void	dataforDataService	(QString &, packetdata *);
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
 	int16_t	mainId			(void);
+protected:
+	void	process_FIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;
 	serviceId	*findServiceId (int32_t);
 	serviceComponent *find_packetComponent (int16_t);
+	serviceComponent *find_serviceComponent (int32_t SId, int16_t SCId);
         void            bind_audioService (int8_t,
                                            uint32_t, int16_t,
                                            int16_t, int16_t, int16_t);
@@ -151,6 +152,7 @@ private:
 	bool		dateFlag;
 	bool		firstTime;
 	bool		isSynced;
+	QMutex		fibLocker;
 signals:
 	void		addtoEnsemble	(const QString &);
 	void		nameofEnsemble  (int, const QString &);

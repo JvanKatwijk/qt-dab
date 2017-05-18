@@ -60,19 +60,19 @@ RadioInterface	*MyRadioInterface;
 
 // Default values
 bool		tracing		= false;
-uint8_t		syncMethod	= 2;
+int16_t		tii_delay	= 60;
 QSettings	*dabSettings;		// ini file
 //
 	int	opt;
 
-	while ((opt = getopt (argc, argv, "i:S:TP")) != -1) {
+	while ((opt = getopt (argc, argv, "i:D:T")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
 	         break;
 
-	      case 'S':
-	         syncMethod	= atoi (optarg);
+	      case 'D':
+	         tii_delay	= atoi (optarg);
 	         break;
 
 	      case 'T':
@@ -94,7 +94,7 @@ QSettings	*dabSettings;		// ini file
  */
 	QApplication a (argc, argv);
 	MyRadioInterface = new RadioInterface (dabSettings,
-	                                       syncMethod,
+	                                       tii_delay,
 	                                       tracing);
 	MyRadioInterface -> show ();
 

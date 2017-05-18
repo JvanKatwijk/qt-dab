@@ -42,6 +42,7 @@
 	dabData::dabData	(RadioInterface *mr,
 	                         uint8_t DSCTy,
 	                       	 int16_t packetAddress,
+	                         int16_t appType,
 	                         int16_t fragmentSize,
 	                         int16_t bitRate,
 	                       	 bool	shortForm,
@@ -64,6 +65,7 @@ int32_t i, j;
 	our_dabProcessor	= new dataProcessor (mr,
 	                                             bitRate,
 	                                             DSCTy,
+	                                             appType,
 	                                             DGflag,
 	                                             FEC_scheme,
 	                                             show_crcErrors);

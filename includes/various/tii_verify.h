@@ -1,11 +1,10 @@
 #
 /*
- *    Copyright (C) 2017
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Computing
+ *    Lazy Chair Programming
  *
- *    This file is part of the Qt-DAB
- *
+ *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,35 +19,28 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#ifndef	__TII_VERIFY__
+#define	__TII_VERIFY__
+
 #include	"dab-constants.h"
-#include	<vector>
-#include	<QMutex>
+#include	"fft.h"
 
-class	tii_element {
+class tii_verify {
 public:
-	int16_t	subId;
-	float	latitudeOffset;
-	float	longitudeOffset;
-	tii_element (int16_t subId,
-	             float latitudeOffset, float longitudeOffset);
-	~tii_element (void) {}
+		tii_verify (int16_t, int16_t, uint64_t, int16_t, DSPCOMPLEX *);
+		~tii_verify (void);
+	int16_t	correlate (DSPCOMPLEX *v);
+private:
+	int16_t		length;
+	uint64_t	pattern;
+	common_fft	*fft_up;
+	common_ifft	*fft_down;
+	DSPCOMPLEX	*fft_buffer_1;
+	DSPCOMPLEX	*fft_buffer_2;
+	DSPCOMPLEX	*refVector;
 };
+#endif
 
-class	tii_table {
-public:
-		tii_table		(void);
-		~tii_table		(void);
-	void	cleanUp			(void);
-	void	add_element		(tii_element *);
-	void	add_main		(int16_t, float, float);
-	QMutex	tiiLocker;
-	DSPCOMPLEX	get_coordinates (int16_t, int16_t, bool *);
-	void	print_coordinates	(void);
-	int16_t	get_mainId		(void);
-	int16_t	mainId;
-	float	latitude;
-	float	longitude;
-	std::vector<tii_element> offsets;
 
-};
-
+	

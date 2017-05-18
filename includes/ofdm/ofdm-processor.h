@@ -34,7 +34,7 @@
 #include	"ofdm-decoder.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-#if defined (TII_ATTEMPT) || defined(TII_COORDINATES)
+#ifdef TII_COORDINATES
 #include	"tii_detector.h"
 #endif
 //
@@ -45,6 +45,7 @@
 
 class	RadioInterface;
 class	common_fft;
+class	common_ifft;
 class	ficHandler;
 class	mscHandler;
 class	dabParams;
@@ -57,8 +58,7 @@ public:
 	                         uint8_t,
 	                         mscHandler *,
 	                         ficHandler *,
-	                         int16_t,
-	                         uint8_t
+	                         int16_t
 #ifdef	HAVE_SPECTRUM
 	                        ,RingBuffer<DSPCOMPLEX>	*,
 	                         RingBuffer<DSPCOMPLEX>	*
@@ -73,21 +73,14 @@ public:
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		(void);
 	void		set_scanMode		(bool);
-	void		set_tiiSwitch		(bool);
 	void		set_tiiCoordinates	(void);
 private:
 	virtualInput	*theRig;
 	dabParams	params;
 	RadioInterface	*myRadioInterface;
 	ficHandler	*my_ficHandler;
-	bool		tiiSwitch;
 	bool		tiiCoordinates;
-	int16_t		tiiBuffers;
-#ifdef	TII_ATTEMPT
-	bool		tiiFound;
-        int16_t		tiiCount;
-#endif
-#if defined (TII_ATTEMPT) || defined (TII_COORDINATES)
+#ifdef	TII_COORDINATES
 	TII_Detector	my_TII_Detector;
 #endif
 	int16_t		attempts;
@@ -114,7 +107,6 @@ private:
 	int16_t		fineCorrector;
 	int32_t		coarseCorrector;
 
-	uint8_t		freqsyncMethod;
 	bool		f2Correction;
 	int32_t		tokenCount;
 	DSPCOMPLEX	*ofdmBuffer;
@@ -122,9 +114,6 @@ private:
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
-	DSPFLOAT	avgCorr;
-	float		*correlationVector;
-	float		*refArg;
 	int32_t		sampleCnt;
 	int32_t		inputSize;
 	int32_t		inputPointer;
@@ -152,6 +141,7 @@ signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
+	void		showCoordinates		(float, float);
 };
 #endif
 

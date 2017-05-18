@@ -115,6 +115,7 @@ void	mscHandler::set_dataChannel (packetdata	*d) {
 	new_FEC_scheme	= d	-> FEC_scheme;
 	new_DSCTy	= d	-> DSCTy;
 	new_packetAddress = d	-> packetAddress;
+	new_appType	= d	-> appType;
 	newChannel	= true;
 	locker. unlock ();
 }
@@ -155,6 +156,7 @@ int16_t	*myBegin;
 	   else	 {	// dealing with data
 	      dabHandler = new dabData (myRadioInterface,
 	                                new_DSCTy,
+	                                new_appType,
 	                                new_packetAddress,
 	                                new_Length * CUSize,
 	                                new_bitRate,
