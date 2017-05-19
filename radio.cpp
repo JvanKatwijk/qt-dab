@@ -1603,7 +1603,7 @@ void	RadioInterface::setSyncLost	(void) {
 //	my_ofdmProcessor	-> reset ();
 }
 
-#ifdef	TII_COORDINATES
+
 void	RadioInterface::showCoordinates (float lat, float lon) {
 QString a, b;
 	a	= QString::number (lat);
@@ -1614,6 +1614,6 @@ QString a, b;
 	techData. transmitter_coordinates -> setText (a);
 #endif
 }
-#endif
+
 
 
