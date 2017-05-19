@@ -141,7 +141,9 @@ signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
+#ifdef	TII_COORDINATES
 	void		showCoordinates		(float, float);
+#endif
 };
 #endif
 
