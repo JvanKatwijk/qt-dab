@@ -6,7 +6,7 @@
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
  *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
+ *    other work, made available through the GNU general Public License.
  *    All copyrights of the original authors are acknowledged.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -23,22 +23,22 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *	Main program
+ *      Main program
  */
-#include	<QApplication>
-#include	<QSettings>
-#include	<QDir>
-#include	<unistd.h>
-#include	"dab-constants.h"
-#include	"radio.h"
+#include        <QApplication>
+#include        <QSettings>
+#include        <QDir>
+#include        <unistd.h>
+#include        "dab-constants.h"
+#include        "radio.h"
 
-QString	fullPathfor (QString v) {
-QString	fileName;
+QString fullPathfor (QString v) {
+QString fileName;
 
-	if (v == QString ("")) 
+	if (v == QString (""))
 	   return QString ("/tmp/xxx");
 
-	if (v. at (0) == QChar ('/')) 		// full path specified
+	if (v. at (0) == QChar ('/'))           // full path specified
 	   return v;
 
 	fileName = QDir::homePath ();
@@ -52,18 +52,18 @@ QString	fileName;
 	return fileName;
 }
 
-#define	DEFAULT_INI	".qt-dab.ini"
+#define DEFAULT_INI     ".qt-dab.ini"
 
-int	main (int argc, char **argv) {
-QString	initFileName;
-RadioInterface	*MyRadioInterface;
+int     main (int argc, char **argv) {
+QString initFileName;
+RadioInterface  *MyRadioInterface;
 
 // Default values
-bool		tracing		= false;
-int16_t		tii_delay	= 60;
-QSettings	*dabSettings;		// ini file
+bool            tracing         = false;
+int16_t         tii_delay       = 60;
+QSettings       *dabSettings;           // ini file
 //
-	int	opt;
+	int     opt;
 
 	while ((opt = getopt (argc, argv, "i:D:T")) != -1) {
 	   switch (opt) {
@@ -72,40 +72,40 @@ QSettings	*dabSettings;		// ini file
 	         break;
 
 	      case 'D':
-	         tii_delay	= atoi (optarg);
+	         tii_delay      = atoi (optarg);
 	         break;
 
 	      case 'T':
-	         tracing	= true;
+	         tracing        = true;
 	         break;
 
-	      default:
+	     default:
 	         break;
 	   }
 	}
 
 	if (initFileName == QString (""))
-	   initFileName	= fullPathfor (QString (DEFAULT_INI));
+	   initFileName = fullPathfor (QString (DEFAULT_INI));
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
 
 /*
- *	Before we connect control to the gui, we have to
- *	instantiate
+ *      Before we connect control to the gui, we have to
+ *      instantiate
  */
 	QApplication a (argc, argv);
 	MyRadioInterface = new RadioInterface (dabSettings,
-	                                       tii_delay,
-	                                       tracing);
+                                               tii_delay,
+                                               tracing);
 	MyRadioInterface -> show ();
 
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
-	a. exec ();
+        a. exec ();
 /*
- *	done:
+ *      done:
  */
-	fprintf (stderr, "we zzitten weer in main\n");
+	fprintf (stderr, "back in main program\n");
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");

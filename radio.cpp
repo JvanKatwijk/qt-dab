@@ -1614,4 +1614,3 @@ QString a, b;
 #endif
 }
 
-
