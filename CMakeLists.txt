@@ -55,7 +55,6 @@ endif ()
 add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 #add_definitions (-DMSC_DATA__)		# use at your own risk
-#add_definitions (-DTII_COORDINATES)	# experimental
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -68,11 +67,11 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
-	if(LSB_ID_SHORT STREQUAL "Debian")
-		find_package(Qt5Quick REQUIRED)
-	else()
-		find_package (Qt5Declarative REQUIRED)
-	endif()
+#	if(LSB_ID_SHORT STREQUAL "Debian")
+#		find_package(Qt5Quick REQUIRED)
+#	else()
+#		find_package (Qt5Declarative REQUIRED)
+#	endif()
 	include_directories (
 	  ${Qt5Network_INCLUDE_DIRS}
 	)

@@ -138,6 +138,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/audio/dab-audio.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
+	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
 	   ./src/backend/data/dab-data.cpp \
 	   ./src/backend/data/data-processor.cpp \
@@ -211,7 +212,7 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= __QUALITY		# just a counter in spectrum display
 
 #experimental, might show transmitter coordinates
-#CONFIG		+= try_tii		# 
+CONFIG		+= try_tii		# 
 }
 #
 # an attempt to have it run under W32

@@ -119,7 +119,7 @@ private:
 private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(const QString &);
-	void		set_fCorrection		(int);
+	void		set_ppmCorrection	(int);
 	void		set_KhzOffset		(int);
 
 };

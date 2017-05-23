@@ -41,7 +41,7 @@
      <string>dabstick</string>
     </property>
    </widget>
-   <widget class="QSpinBox" name="f_correction">
+   <widget class="QSpinBox" name="ppm_correction">
     <property name="geometry">
      <rect>
       <x>10</x>

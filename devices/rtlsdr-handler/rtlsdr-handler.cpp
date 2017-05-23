@@ -19,7 +19,6 @@
  *    along with Qt-SDR; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
  * 	This particular driver is a very simple wrapper around the
  * 	librtlsdr.  In order to keep things simple, we dynamically
  * 	load the dll (or .so). The librtlsdr is osmocom software and all rights
@@ -162,6 +161,7 @@ int	k;
 	   delete myFrame;
 	   throw (23);
 	}
+
 	open			= true;
 	r			= this -> rtlsdr_set_sample_rate (device,
 	                                                          inputRate);
@@ -195,6 +195,8 @@ int	k;
 	_I_Buffer		= new RingBuffer<uint8_t>(1024 * 1024);
 
 	theGain		= gains [gainsCount / 2];	// default
+//
+//	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	temp = rtlsdrSettings -> value ("externalGain", "10"). toString ();
 	k	= combo_gain -> findText (temp);
@@ -209,21 +211,26 @@ int	k;
 	if (k != -1) 
 	   combo_autogain	-> setCurrentIndex (k);
 	
-	rtlsdr_set_tuner_gain_mode (device,
-	                   combo_autogain -> currentText () == "autogain_on");
-	rtlsdr_set_tuner_gain (device, theGain);
 	
-	f_correction	-> setValue (rtlsdrSettings -> value ("f_correction", 0). toInt ());
+	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt ());
 	KhzOffset	-> setValue (rtlsdrSettings -> value ("KhzOffset", 0). toInt ());
 	rtlsdrSettings	-> endGroup ();
-	set_fCorrection	(f_correction -> value ());
-	set_KhzOffset	(KhzOffset -> value ());
+//
+//	all sliders/values are set to previous values, now do the settings
+//	based on these slider values
+	rtlsdr_set_tuner_gain_mode (device,
+	                   combo_autogain -> currentText () == "autogain_on");
+	rtlsdr_set_tuner_gain	(device, theGain);
+	set_ppmCorrection	(ppm_correction -> value ());
+	set_KhzOffset		(KhzOffset -> value ());
+//
+//	and attach the buttons/sliders to the actions
 	connect (combo_gain, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_ExternalGain (const QString &)));
 	connect (combo_autogain, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_autogain (const QString &)));
-	connect (f_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_fCorrection  (int)));
+	connect (ppm_correction, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_ppmCorrection  (int)));
 	connect (KhzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_KhzOffset (int)));
 }
@@ -233,6 +240,7 @@ int	k;
 	   delete myFrame;
 	   return;
 	}
+	
 	if (!open) {
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
@@ -243,14 +251,17 @@ int	k;
 	}
 
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	rtlsdrSettings	-> setValue ("externalGain", theGain);
+	rtlsdrSettings	-> setValue ("externalGain",
+	                                      combo_gain -> currentText ());
 	rtlsdrSettings	-> setValue ("autogain",
 	                                      combo_autogain -> currentText ());
-	rtlsdrSettings	-> setValue ("f_correction",
-	                                      f_correction -> value ());
+	rtlsdrSettings	-> setValue ("ppm_correction",
+	                                      ppm_correction -> value ());
 	rtlsdrSettings	-> setValue ("KhzOffset",
 	                                      KhzOffset	-> value ());
+	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup ();
+
 	if (workerHandle != NULL) { // we are running
 	   this -> rtlsdr_cancel_async (device);
 	   if (workerHandle != NULL) {
@@ -259,6 +270,7 @@ int	k;
 	      delete	workerHandle;
 	   }
 	}
+
 	workerHandle	= NULL;
 	this -> rtlsdr_close (device);
 #ifdef __MINGW32__
@@ -306,15 +318,6 @@ void	rtlsdrHandler::stopReader	(void) {
 	if (workerHandle == NULL)
 	   return;
 
-	this -> rtlsdr_cancel_async (device);
-	if (workerHandle != NULL) {
-	   while (!workerHandle -> isFinished ()) 
-	      usleep (100);
-
-	   delete	workerHandle;
-	}
-
-	workerHandle	= NULL;
 }
 //
 //	when selecting  the gain from a table, use the table value
@@ -329,7 +332,7 @@ void	rtlsdrHandler::set_autogain	(const QString &autogain) {
 }
 //
 //	correction is in Hz
-void	rtlsdrHandler::set_fCorrection	(int32_t ppm) {
+void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
 	this -> rtlsdr_set_freq_correction (device, ppm);
 }
 

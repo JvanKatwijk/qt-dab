@@ -924,10 +924,10 @@ void	RadioInterface::TerminateProcess (void) {
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
-	delete	soundOut;
+	delete		soundOut;
 	delete		inputDevice;
 #ifdef	TECHNICAL_DATA
-	delete	dataDisplay;
+//	delete		dataDisplay;
 #endif
 //	everything should be halted by now
 	delete	my_mscHandler;	
@@ -1603,7 +1603,6 @@ void	RadioInterface::setSyncLost	(void) {
 //	my_ofdmProcessor	-> reset ();
 }
 
-#ifdef	TII_COORDINATES
 void	RadioInterface::showCoordinates (float lat, float lon) {
 QString a, b;
 	a	= QString::number (lat);
@@ -1614,6 +1613,5 @@ QString a, b;
 	techData. transmitter_coordinates -> setText (a);
 #endif
 }
-#endif
 
 

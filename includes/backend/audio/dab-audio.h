@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
 #ifndef	__DAB_AUDIO
@@ -60,7 +59,8 @@ volatile bool		running;
 	int16_t		protLevel;
 	uint8_t		*outV;
 	int16_t		**interleaveData;
-
+	int16_t		*Data;
+	int16_t		*tempX;
 	QWaitCondition	Locker;
 	QMutex		ourMutex;
 

@@ -87,6 +87,8 @@ int32_t i, j;
 
 	fprintf (stderr, "we have now %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
 	Buffer		= new RingBuffer<int16_t>(64 * 32768);
+	Data		= new int16_t [fragmentSize];
+	tempX		= new int16_t [fragmentSize];
 	running		= true;
 	start ();
 }
@@ -103,6 +105,8 @@ int16_t	i;
 	for (i = 0; i < 16; i ++) 
 	   delete[]  interleaveData [i];
 	delete [] interleaveData;
+	delete [] Data;
+	delete [] tempX;
 }
 
 int32_t	dabAudio::process	(int16_t *v, int16_t cnt) {
@@ -127,8 +131,6 @@ int16_t	i, j;
 int16_t	countforInterleaver	= 0;
 int16_t	interleaverIndex	= 0;
 uint8_t	shiftRegister [9];
-int16_t	Data [fragmentSize];
-int16_t tempX [fragmentSize];
 
 	while (running) {
 	   while (Buffer -> GetRingBufferReadAvailable () <= fragmentSize) {
