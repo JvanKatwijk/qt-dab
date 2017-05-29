@@ -23,6 +23,7 @@
 #include	"tdc-datahandler.h"
 
 	tdc_dataHandler::tdc_dataHandler (int16_t appType) {
+//	for the moment we assume appType 4
 }
 
 	tdc_dataHandler::~tdc_dataHandler (void) {
@@ -139,7 +140,7 @@ int16_t i;
 	         fprintf (stderr, "ready to handle component frame\n");
 	      else
 	         fprintf (stderr, "crc check failed\n");
-	      if (getBits (data, loffset + 0, 8) == 0) {
+	      if (getBits (data, loffset + 0, 8) >= 0) {
 	         for (i = 0; i < 30; i ++)
 	            fprintf (stderr, "%o ", getBits (data, loffset + 40 + 8 * i, 8));
 	         fprintf (stderr, "\n");

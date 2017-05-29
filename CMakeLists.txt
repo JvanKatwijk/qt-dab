@@ -225,6 +225,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	     ./src/backend/galois.cpp
 	     ./src/backend/reed-solomon.cpp
 	     ./src/backend/audio/dab-audio.cpp
+	     ./src/backend/audio/faad-decoder.cpp
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
 	     ./src/backend/data/ip-datahandler.cpp

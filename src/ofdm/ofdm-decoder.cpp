@@ -195,12 +195,13 @@ void	ofdmDecoder::processBlock_0 (void) {
   *	The SNR is determined by looking at a segment of bins
   *	within the signal region and bits outside.
   *	It is just an indication
-  */
-	snr		= 0.7 * snr + 0.3 * get_snr (fft_buffer);
-	if (++snrCount > 10) {
-	   show_snr (snr);
-	   snrCount = 0;
-	}
+
+	if (++snrCount & 011) {
+	   snr		= 0.7 * snr + 0.3 * get_snr (fft_buffer);
+	   if (snrCount > 15) {
+	      show_snr (snr);
+	      snrCount = 0;
+	   }
 /**
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
@@ -296,8 +297,8 @@ toBitsLabel:
 	   conjVector [index] = r1;
 #endif;
 	   DSPFLOAT ab1	= jan_abs (r1);
-///	split the real and the imaginary part and scale it
-
+//	split the real and the imaginary part and scale it
+//	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
@@ -331,6 +332,7 @@ handlerLabel:
 }
 /**
   *	Msc block decoding is equal to FIC block decoding,
+  *	further processing is different though
   */
 void	ofdmDecoder::decodeMscblock (int32_t blkno) {
 int16_t	i;

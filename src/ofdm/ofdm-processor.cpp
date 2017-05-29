@@ -39,7 +39,6 @@
   *	map samples to bits and that will pass on the bits
   *	to the interpreters for FIC and MSC
   */
-
 static	inline
 int16_t	valueFor (int16_t b) {
 int16_t	res	= 1;
@@ -264,6 +263,8 @@ int32_t		i;
 //	first: adjust frequency. We need Hz accuracy
 	for (i = 0; i < n; i ++) {
 	   localPhase	-= phase;
+//
+//	Note that "phase" itself might be negative
 	   localPhase	= (localPhase + INPUT_RATE) % INPUT_RATE;
 #ifdef  HAVE_SPECTRUM
            if (localCounter < bufferSize)
@@ -316,7 +317,6 @@ float		envBuffer	[syncBufferSize];
 	my_ofdmDecoder. start ();
 
 	try {
-
 	   sLevel	= 0;
 	   for (i = 0; i < T_F / 5; i ++) {
 	      jan_abs (getSample (0));
@@ -328,7 +328,7 @@ notSynced:
 ///	first, we need samples to get a reasonable sLevel
 
 //	read in T_s samples for a next attempt;
-	   syncBufferIndex = 0;
+	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   for (i = 0; i < 50; i ++) {
 	      DSPCOMPLEX sample			= getSample (0);
@@ -356,7 +356,7 @@ SyncOnNull:
 	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
 	      counter ++;
 	      if (counter > T_F) { // hopeless
-	         if (scanMode && (++attempts >= 5)) {
+	         if (scanMode && (++ attempts >= 5)) {
 	            emit (No_Signal_Found ());
                     attempts = 0;
                  }
@@ -405,7 +405,7 @@ SyncOnPhase:
 //	the real "first" sample
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
 	   if (startIndex < 0) { // no sync, try again
-	      if (f2Correction) {
+	      if (!f2Correction) {
 	         setSyncLost ();
 	      }
 	      goto notSynced;
@@ -598,9 +598,9 @@ int16_t	i, j, index = 100;
                           conj (fft_buffer [(i + 2) % T_u])) / M_PI) - 1);
            float a2  =  abs (abs (arg (fft_buffer [(i + 2) % T_u] *
                           conj (fft_buffer [(i + 3) % T_u])) / M_PI) - 1);
-	   float a3  = abs (arg (fft_buffer [(i + 3) % T_u] *
+	   float a3  =	abs (arg (fft_buffer [(i + 3) % T_u] *
 	   	                    conj (fft_buffer [(i + 4) % T_u])));
-	   float a4	= abs (arg (fft_buffer [(i + 4) % T_u] *
+	   float a4  =	abs (arg (fft_buffer [(i + 4) % T_u] *
 	   	                    conj (fft_buffer [(i + 5) % T_u])));
 	   float a5	= abs (arg (fft_buffer [(i + 5) % T_u] *
 	   	                    conj (fft_buffer [(i + 6) % T_u])));
