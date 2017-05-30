@@ -195,13 +195,13 @@ void	ofdmDecoder::processBlock_0 (void) {
   *	The SNR is determined by looking at a segment of bins
   *	within the signal region and bits outside.
   *	It is just an indication
+  */
 
-	if (++snrCount & 011) {
+	if (++snrCount > 10) {
 	   snr		= 0.7 * snr + 0.3 * get_snr (fft_buffer);
-	   if (snrCount > 15) {
-	      show_snr (snr);
-	      snrCount = 0;
-	   }
+	   show_snr (snr);
+	   snrCount = 0;
+	}
 /**
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.

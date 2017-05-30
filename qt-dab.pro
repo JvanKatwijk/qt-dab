@@ -8,12 +8,12 @@ TEMPLATE	= app
 TARGET		= qt-dab-0.999
 QT		+= widgets network 
 CONFIG		+= console
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#QMAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_LFLAGS	+=  -flto
-QMAKE_CFLAGS	+=  -pg
-QMAKE_CXXFLAGS	+=  -pg
-QMAKE_LFLAGS	+=  -pg
+QMAKE_CFLAGS	+=  -flto -ffast-math
+QMAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_LFLAGS	+=  -flto
+#QMAKE_CFLAGS	+=  -pg
+#QMAKE_CXXFLAGS	+=  -pg
+#QMAKE_LFLAGS	+=  -pg
 
 DEPENDPATH += . \
 	      ./src \
