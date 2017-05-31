@@ -195,7 +195,14 @@ int16_t k;
 	                                       iqBuffer);
         spectrumHandler -> show ();
 #endif
-
+#ifdef	__MINGW32__
+	QString	defaultPath	= "%tmp%/qt-pictures";
+#else
+	QString	defaultPath	= "/tmp/qt-pictures";
+#endif
+	picturesPath	= dabSettings	-> value ("pictures", defaultPath). toString ();
+	if (!picturesPath. endsWith ("/"))
+	   picturesPath. append ("/");
 	QString t	= dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
 	k	= bandSelector -> findText (t);
 	if (k != -1) 
@@ -217,6 +224,7 @@ int16_t k;
 	my_mscHandler		= new mscHandler	(this,
 	                                                 convert (modeSelector -> currentText ()),
 	                                                 audioBuffer,
+	                                                 picturesPath,
 	                                                 show_crcErrors);
 /**
   *	The default for the ofdmProcessor depends on
@@ -732,6 +740,20 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 }
 //
+void	checkDir (QString &s) {
+int16_t	ind	= s. lastIndexOf (QChar ('/'));
+int16_t	i;
+QString	dir;
+	if (ind == -1)		// no slash, no directory
+	   return;
+
+	for (i = 0; i < ind; i ++)
+	   dir. append (s [i]);
+
+	if (QDir (dir). exists ())
+	   return;
+	QDir (). mkpath (dir);
+}
 //	showMOT is triggered by the MOT handler,
 //	the GUI may decide to ignore the data sent
 //	since data is only sent whenever a data channel is selected
@@ -751,10 +773,14 @@ void	RadioInterface::showMOT		(QByteArray data,
 	QPixmap p;
 	p. loadFromData (data, type);
 	if (saveSlide && (pictureName != QString (""))) {
-	   FILE *x = fopen ((pictureName. toLatin1 (). data ()), "w+b");
+	   QString pictureAddress = picturesPath;
+	   pictureAddress. append (pictureName);
+	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);
+	   checkDir (pictureAddress);
+	   FILE *x = fopen (pictureAddress. toLatin1 (). data (), "w+b");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureName. toLatin1 (). data ());
+	                            pictureAddress. toLatin1 (). data ());
 	   else {
 	      (void)fwrite (data. data (), 1, data.length (), x);
 	      fclose (x);
@@ -1060,6 +1086,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	my_mscHandler		= new mscHandler    (this,
 	                                             convert (Mode),
 	                                             audioBuffer,
+	                                             picturesPath,
 	                                             show_crcErrors);
 	delete my_ofdmProcessor;
 	my_ofdmProcessor	= new ofdmProcessor  (this,

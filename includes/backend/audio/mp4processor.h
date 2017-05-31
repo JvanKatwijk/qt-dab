@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2013, 2014
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the SDR-J (JSDR).
  *    SDR-J is free software; you can redistribute it and/or modify
@@ -18,11 +18,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with SDR-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
-#ifndef	MP4PROCESSOR
-#define	MP4PROCESSOR
+#ifndef	__MP4PROCESSOR__
+#define	__MP4PROCESSOR__
 /*
  * 	Handling superframes for DAB+ and delivering
  * 	frames into the ffmpeg or faad decoding library
@@ -46,7 +45,8 @@ Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,
 	                                 int16_t,
-	                                 RingBuffer<int16_t> *);
+	                                 RingBuffer<int16_t> *,
+	                                 QString);
 			~mp4Processor	(void);
 	void		addtoFrame	(uint8_t *);
 private:

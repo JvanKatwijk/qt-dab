@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2015
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@ public:
 	                 int16_t	protLevel,
 	                 uint8_t	DGflag,
 	                 int16_t	FEC_scheme,
+	                 QString	picturesPath,
 	                 bool		show_crcErrors);
 	~dabData	(void);
 int32_t	process		(int16_t *, int16_t);

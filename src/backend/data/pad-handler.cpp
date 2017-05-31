@@ -28,13 +28,13 @@
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
-	padHandler::padHandler	(RadioInterface *mr) {
+	padHandler::padHandler	(RadioInterface *mr, QString picturesPath) {
 	myRadioInterface	= mr;
 	connect (this, SIGNAL (showLabel (QString)),
 	         mr, SLOT (showLabel (QString)));
 	connect (this, SIGNAL (show_motHandling (bool)),
 	         mr, SLOT (show_motHandling (bool)));
-	my_motHandler	= new motHandler (mr);
+	my_motHandler	= new motHandler (mr, picturesPath);
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.

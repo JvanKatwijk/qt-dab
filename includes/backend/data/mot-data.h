@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #ifndef	__MOT_HANDLER__
@@ -81,7 +80,7 @@ int16_t	i;
 class	motHandler: public QObject {
 Q_OBJECT
 public:
-		motHandler	(RadioInterface *);
+		motHandler	(RadioInterface *, QString);
 		~motHandler	(void);
 void		process_mscGroup	(uint8_t *,
 	                                 uint8_t,
@@ -136,6 +135,7 @@ private:
 	void	handleComplete		(motElement *);
 	void    handle_epgTopElement	(motElement *p);
 	void	checkDir		(QString &);
+	QString	picturesPath;
 signals:
 	void	the_picture	(QByteArray, int, QString);
 };

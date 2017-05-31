@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #include	"mot-data.h"
 #include	"radio.h"
@@ -32,9 +31,11 @@
 //	The "directory" case, where a directory of files is maintained
 //	to form together a slideshow or a website
 //
-		motHandler::motHandler (RadioInterface *mr) {
+		motHandler::motHandler (RadioInterface *mr,
+	                                QString		picturesPath) {
 int16_t	i, j;
-//
+
+	this	-> picturesPath	= picturesPath;
 //	For "non-directory" MOT's, we have a descriptortable
 	for (i = 0; i < 16; i ++) {
 	   table [i]. ordernumber = -1;
@@ -194,13 +195,16 @@ QByteArray result;
 
 	if (p -> contentType != 2) {
            if (p -> name != QString ("")) {
+	      QString realName = picturesPath;
+	      realName. append (p -> name);
+	      realName	= QDir::toNativeSeparators (realName);
 	      fprintf (stderr, "going to write file %s\n",
-	                           (p ->  name). toLatin1 (). data ());
-	      checkDir (p -> name);
-	      FILE *x = fopen (((p -> name). toLatin1 (). data ()), "w+b");
+	                           realName. toLatin1 (). data ());
+	      checkDir (realName);
+	      FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
 	      if (x == NULL)
 	         fprintf (stderr, "cannot write file %s\n",
-	                            (p -> name). toLatin1 (). data ());
+	                            realName. toLatin1 (). data ());
 	      else {
 	         (void)fwrite (result. data (), 1, p -> bodySize, x);
 	         fclose (x);

@@ -68,6 +68,7 @@ HEADERS += ./radio.h \
 	   ./includes/backend/fib-processor.h  \
 	   ./includes/backend/galois.h \
 	   ./includes/backend/reed-solomon.h \
+	   ./includes/backend/rscodec.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/dab-processor.h \
@@ -130,6 +131,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/fib-processor.cpp  \
 	   ./src/backend/galois.cpp \
 	   ./src/backend/reed-solomon.cpp \
+	   ./src/backend/rscodec.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/dab-virtual.cpp \

@@ -1,7 +1,7 @@
 /*
  *    Copyright (C) 2015 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -39,6 +39,7 @@
 	                                 int16_t	appType,
 	                                 uint8_t	DGflag,
 	                         	 int16_t	FEC_scheme,
+	                                 QString	picturesPath,
 	                                 bool		show_crcErrors) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
@@ -69,7 +70,7 @@ int32_t i, j;
 	      break;
 
 	   case 60:
-	      my_dataHandler	= new mot_databuilder (mr);
+	      my_dataHandler	= new mot_databuilder (mr, picturesPath);
 	      break;
 	}
 

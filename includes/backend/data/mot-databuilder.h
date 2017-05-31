@@ -31,7 +31,7 @@ class	motHandler;
 
 class	mot_databuilder:public virtual_dataHandler {
 public:
-	mot_databuilder		(RadioInterface *);
+	mot_databuilder		(RadioInterface *, QString );
 	~mot_databuilder	(void);
 void	add_mscDatagroup	(QByteArray &);
 private:

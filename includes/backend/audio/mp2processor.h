@@ -54,7 +54,8 @@ Q_OBJECT
 public:
 			mp2Processor	(RadioInterface *,
 	                                 int16_t,
-	                                 RingBuffer<int16_t> *);
+	                                 RingBuffer<int16_t> *,
+	                                 QString);
 			~mp2Processor	(void);
 	void		addtoFrame	(uint8_t *);
 	void		setFile		(FILE *);

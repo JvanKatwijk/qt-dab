@@ -135,6 +135,7 @@ const	char		*get_programm_language_string (int16_t);
 	RingBuffer<DSPCOMPLEX>	*iqBuffer;
 #endif
 
+	QString		picturesPath;
 	uint8_t		convert			(QString);
 	void		hideButtons		(void);
 	void		showButtons		(void);

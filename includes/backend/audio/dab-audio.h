@@ -42,7 +42,8 @@ public:
 	                 int16_t bitRate,
 	                 bool	shortForm,
 	                 int16_t protLevel,
-	                 RingBuffer<int16_t> *);
+	                 RingBuffer<int16_t> *,
+	                 QString	picturesPath);
 	~dabAudio	(void);
 int32_t	process		(int16_t *, int16_t);
 void	stopRunning	(void);

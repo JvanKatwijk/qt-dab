@@ -25,8 +25,9 @@
 #include	"mot-data.h"
 #include	"radio.h"
 
-	mot_databuilder::mot_databuilder (RadioInterface *mr) {
-	my_motHandler	= new motHandler (mr);
+	mot_databuilder::mot_databuilder (RadioInterface *mr,
+	                                  QString	picturesPath) {
+	my_motHandler	= new motHandler (mr, picturesPath);
 }
 
 	mot_databuilder::~mot_databuilder (void) {

@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2016
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -41,10 +41,12 @@
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	mode,
 	                                 RingBuffer<int16_t> *buffer,
+	                                 QString	picturesPath,
 	                                 bool	show_crcErrors) :
 	                                       params (mode) {
 	myRadioInterface	= mr;
 	audioBuffer		= buffer;
+	this	-> picturesPath	= picturesPath;
 	this	-> show_crcErrors	= show_crcErrors;
 	cifVector		= new int16_t [55296];
 	cifCount		= 0;	// msc blocks in CIF
@@ -151,7 +153,8 @@ int16_t	*myBegin;
 	                                 new_bitRate,
 	                                 new_shortForm,
 	                                 new_protLevel,
-	                                 audioBuffer);
+	                                 audioBuffer,
+	                                 picturesPath);
 
 	   else	 {	// dealing with data
 	      dabHandler = new dabData (myRadioInterface,
@@ -164,6 +167,7 @@ int16_t	*myBegin;
 	                                new_protLevel,
 	                                new_DGflag,
 	                                new_FEC_scheme,
+	                                picturesPath,
 	                                show_crcErrors);
 	   }
 //

@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -18,15 +18,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
-/*
- * 	MSC data
- */
-#
-#ifndef	MSC_HANDLER
-#define	MSC_HANDLER
+#ifndef	__MSC_HANDLER__
+#define	__MSC_HANDLER__
 
 #include	<QMutex>
 #include	<stdio.h>
@@ -44,6 +39,7 @@ public:
 		mscHandler		(RadioInterface *,
 	                                 uint8_t,
 	                                 RingBuffer<int16_t> *,
+	                                 QString,
 	                                 bool);
 		~mscHandler		(void);
 	void	process_mscBlock	(int16_t *, int16_t);
@@ -54,6 +50,7 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;
+	QString		picturesPath;
 	dabParams	params;
 	bool		show_crcErrors;
 	QMutex		locker;

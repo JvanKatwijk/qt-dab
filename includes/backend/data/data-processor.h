@@ -42,6 +42,7 @@ public:
 	                 int16_t	appType,
 	                 uint8_t	DGflag,
 	                 int16_t	FEC_scheme,
+	                 QString	picturesPath,
 	                 bool		show_crcErrors);
 	~dataProcessor	(void);
 void	addtoFrame	(uint8_t *);

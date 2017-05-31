@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -49,7 +49,8 @@
 	                         int16_t bitRate,
 	                         bool	shortForm,
 	                         int16_t protLevel,
-	                         RingBuffer<int16_t> *buffer) {
+	                         RingBuffer<int16_t> *buffer,
+	                         QString	picturesPath) {
 int32_t i, j;
 	this	-> dabModus		= dabModus;
 	this	-> fragmentSize		= fragmentSize;
@@ -76,12 +77,14 @@ int32_t i, j;
 	if (dabModus == DAB) 
 	   our_dabProcessor = new mp2Processor (myRadioInterface,
 	                                        bitRate,
-	                                        audioBuffer);
+	                                        audioBuffer,
+	                                        picturesPath);
 	else
 	if (dabModus == DAB_PLUS) 
 	   our_dabProcessor = new mp4Processor (myRadioInterface,
 	                                        bitRate,
-	                                        audioBuffer);
+	                                        audioBuffer,
+	                                        picturesPath);
 	else		// cannot happen
 	   our_dabProcessor = new dabProcessor ();
 

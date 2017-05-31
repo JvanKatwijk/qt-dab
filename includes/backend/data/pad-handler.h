@@ -33,7 +33,7 @@ class	motHandler;
 class	padHandler: public QObject {
 Q_OBJECT
 public:
-		padHandler	(RadioInterface *);
+		padHandler	(RadioInterface *, QString);
 		~padHandler	(void);
 	void	processPAD		(uint8_t *, int16_t, uint8_t, uint8_t);
 private:

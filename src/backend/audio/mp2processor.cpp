@@ -221,8 +221,9 @@ struct quantizer_spec quantizer_table [17] = {
 
 	mp2Processor::mp2Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<int16_t> *buffer):
-	                                my_padhandler (mr) {
+	                            RingBuffer<int16_t> *buffer,
+	                            QString		picturesPath):
+	                                my_padhandler (mr, picturesPath) {
 int16_t	i, j;
 int16_t *nPtr = &N [0][0];
 

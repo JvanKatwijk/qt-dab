@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2015
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -49,6 +49,7 @@
 	                         int16_t protLevel,
 	                         uint8_t DGflag,
 	                       	 int16_t FEC_scheme,
+	                         QString	picturesPath,
 	                         bool	show_crcErrors) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
@@ -68,6 +69,7 @@ int32_t i, j;
 	                                             appType,
 	                                             DGflag,
 	                                             FEC_scheme,
+	                                             picturesPath,
 	                                             show_crcErrors);
 	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // the size
