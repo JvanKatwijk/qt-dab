@@ -1,4 +1,4 @@
-# Qt-DAB
+# Qt-DAB [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two programs created by the author that did DAB decoding.
 
