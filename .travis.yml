@@ -23,7 +23,7 @@ script:
   - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
-  - cmake . -DDABSTICK=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSPECTRUM=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - cmake .. -DDABSTICK=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSPECTRUM=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
