@@ -46,6 +46,7 @@ public:
 #ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<DSPCOMPLEX> *,
 #endif
+	                                 int16_t,
 	                                 ficHandler	*,
 	                                 mscHandler	*);
 		~ofdmDecoder		(void);
@@ -91,6 +92,7 @@ private:
 	int16_t		*ibits;
 	int16_t		snrCount;
 	int16_t		snr;
+	int16_t		maxSignal;
 signals:
 	void		show_snr	(int);
 	void		showIQ		(int);

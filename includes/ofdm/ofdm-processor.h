@@ -83,6 +83,7 @@ private:
 #ifdef	TII_COORDINATES
 	TII_Detector	my_TII_Detector;
 #endif
+
 	int16_t		attempts;
 	bool		scanMode;
 	bool		running;

@@ -93,7 +93,6 @@ private:
 	bandHandler	theBand;
 	bool		running;
 	bool		scanning;
-
 	virtualInput	*inputDevice;
 
 	ofdmProcessor	*my_ofdmProcessor;
@@ -179,7 +178,7 @@ private slots:
 //	Somehow, these must be connected to the GUI
 	void	setStart		(void);
 	void	TerminateProcess	(void);
-	void	set_channelSelect	(QString);
+	void	selectChannel		(QString);
 	void	updateTimeDisplay	(void);
 	void	signalTimer_out		(void);
 
@@ -189,6 +188,7 @@ private slots:
 	void	set_bandSelect		(QString);
 	void	setDevice		(QString);
 	void	selectService		(QModelIndex);
+	void	selectService		(QString);
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
 };

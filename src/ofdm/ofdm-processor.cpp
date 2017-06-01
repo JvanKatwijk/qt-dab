@@ -28,6 +28,15 @@
 //
 #define	SEARCH_RANGE		(2 * 36)
 
+static inline
+float	computeAverage (DSPCOMPLEX *v, int a) {
+int i;
+float s	= 0;
+	for (i = 50; i < a - 50; i ++)
+	   s += abs (v [i]);
+	return s / (a - 100);
+}
+
 /**
   *	\brief ofdmProcessor
   *	The ofdmProcessor class is the driver of the processing
@@ -69,6 +78,7 @@ int16_t	res	= 1;
 #ifdef	HAVE_SPECTRUM
 	                                                   iqBuffer,
 #endif
+	                                                   theRig -> bitDepth (),
 	                                                   fic,
 	                                                   msc) {
 int32_t	i;
@@ -147,19 +157,21 @@ int32_t	i;
 	         myRadioInterface, SLOT (setSyncLost (void)));
 
 	bufferContent	= 0;
-//
-	start ();
+	running		= false;
+//	the thread will be started from somewhere else
 }
 
 	ofdmProcessor::~ofdmProcessor	(void) {
-	running		= false;	// this will cause an
+	if (isRunning ()) {
+	   running	= false;	// this will cause an
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
-	msleep (100);
-	if (isRunning ()) {
-	   wait ();
-	   my_ofdmDecoder. stop ();
+	   msleep (100);
+	   while (isRunning ()) {
+	      usleep (100);
+	   }
 	}
+	
 	delete		ofdmBuffer;
 	delete		oscillatorTable;
 	delete		fft_handler;
@@ -319,7 +331,7 @@ float		envBuffer	[syncBufferSize];
 	try {
 	   sLevel	= 0;
 	   for (i = 0; i < T_F / 5; i ++) {
-	      jan_abs (getSample (0));
+	      getSample (0);
 	   }
 Initing:
 notSynced:
@@ -431,7 +443,7 @@ Block_0:
 	               T_u - ofdmBufferIndex,
 	               coarseCorrector + fineCorrector);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
-//
+
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
 //	The width is limited to 2 * 35 Khz (i.e. positive and negative)
@@ -487,7 +499,6 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
-
 #ifdef TII_COORDINATES
 	   if (tiiCoordinates) {
 	      int16_t mainId	= my_ficHandler -> mainId ();
@@ -532,6 +543,7 @@ ReadyForNewFrame:
 	   goto SyncOnPhase;
 	}
 	catch (int e) {
+	   fprintf (stderr, "ofdmProcessor is stopping\n");
 	   ;
 	}
 	my_ofdmDecoder. stop ();
@@ -549,6 +561,8 @@ void	ofdmProcessor:: reset	(void) {
 
 void	ofdmProcessor::stop	(void) {
 	running	= false;
+	while (isRunning ())
+	   msleep (100);
 }
 
 void	ofdmProcessor::startDumping	(SNDFILE *f) {

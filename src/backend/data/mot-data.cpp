@@ -212,14 +212,12 @@ QByteArray result;
 	   }
 	   return;
 	}
-
+//	MOT slide
 	if (old_slide != NULL)
 	   for (i = 0; i < p ->  numofSegments; i ++) {
 	      p -> marked [i] = false;
 	      p -> segments [i]. clear ();
 	   }
-	fprintf (stderr, "going to show picture %s\n",
-	                                   (p -> name). toLatin1 (). data ());
 	checkDir (p -> name);
 	the_picture (result, p -> contentsubType, p -> name);
 	old_slide	= p;

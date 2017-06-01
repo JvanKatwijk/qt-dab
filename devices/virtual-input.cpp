@@ -54,11 +54,11 @@ void	virtualInput::stopReader	(void) {
 int32_t	virtualInput::getSamples	(DSPCOMPLEX *v, int32_t amount) {
 	(void)v; 
 	(void)amount; 
-	return 0;
+	return amount;
 }
 
 int32_t	virtualInput::Samples		(void) {
-	return 0;
+	return 1024;
 }
 
 int32_t	virtualInput::defaultFrequency	(void) {

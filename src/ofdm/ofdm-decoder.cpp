@@ -44,6 +44,7 @@
 #ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<DSPCOMPLEX> *iqBuffer,
 #endif
+	                                 int16_t	bitDepth,
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
 	                                    params (dabMode),
@@ -60,6 +61,12 @@ int16_t	i;
 	         myRadioInterface, SLOT (showQuality (float)));
 #endif
 #endif
+	maxSignal	= 1;
+	while (bitDepth > 0) {
+	   bitDepth --;
+	   maxSignal <<= 1;
+	}
+
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
 	this	-> T_s			= params. get_T_s ();
@@ -187,7 +194,13 @@ void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
   *	handle block 0 as collected from the buffer
   */
 void	ofdmDecoder::processBlock_0 (void) {
+float val	= 0;
+int16_t	i;
 
+	for (i = 0; i < T_u; i ++)
+	   val += abs (command [0][i]);
+
+	
 	memcpy (fft_buffer, command [0], T_u * sizeof (DSPCOMPLEX));
 
 	fft_handler	-> do_FFT ();
@@ -198,7 +211,7 @@ void	ofdmDecoder::processBlock_0 (void) {
   */
 
 	if (++snrCount > 10) {
-	   snr		= 0.7 * snr + 0.3 * get_snr (fft_buffer);
+	   snr	= get_snr (fft_buffer);
 	   show_snr (snr);
 	   snrCount = 0;
 	}
@@ -213,7 +226,7 @@ void	ofdmDecoder::processBlock_0 (void) {
 //	decoded symbols is precisely in the four points 
 //	k * (1. 0), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	We show the offset in degrees
-//	To ease comptation, we map all incoming values onto quadrant 1
+//	To ease computation, we map all incoming values onto quadrant 1
 #ifdef	HAVE_SPECTRUM
 #ifdef	__QUALITY
 float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
@@ -376,17 +389,15 @@ DSPFLOAT	signal	= 0;
 int16_t	low	= T_u / 2 -  carriers / 2;
 int16_t	high	= low + carriers;
 
-	for (i = 10; i < low - 20; i ++)
-	   noise += abs (v [(T_u / 2 + i) % T_u]);
+	for (i = -100; i < 100; i ++)
+	   noise += abs (v [(T_u / 2 + i)]);
 
-	for (i = high + 20; i < T_u - 10; i ++)
-	   noise += abs (v [(T_u / 2 + i) % T_u]);
+	noise	/= 200;
+	for (i =  - carriers / 4;  i <  carriers / 4; i ++)
+	   signal += abs (v [(T_u + i) % T_u]);
+	signal	/= (carriers / 2);
 
-	noise	/= (low - 30 + T_u - high - 30);
-	for (i = T_u / 2 - carriers / 4;  i < T_u / 2 + carriers / 4; i ++)
-	   signal += abs (v [(T_u / 2 + i) % T_u]);
-
-	return get_db (signal / (carriers / 2)) - get_db (noise);
+	return 20 * log10 ((signal + 0.001) / (noise + 0.001));
 }
 
 
