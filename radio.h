@@ -104,7 +104,8 @@ private:
 const	char		*get_programm_type_string (int16_t);
 const	char		*get_programm_language_string (int16_t);
 	QLabel		*pictureLabel;
-	bool		saveSlide;
+	bool		saveSlides;
+	bool		showPictures;
 	QUdpSocket	DSCTy_59_socket;
 	QString		ipAddress;
 	int32_t		port;

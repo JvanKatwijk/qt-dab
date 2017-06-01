@@ -87,7 +87,7 @@ bool get_cpu_times(size_t &idle_time, size_t &total_time) {
     if (cpu_times.size() < 4)
         return false;
     idle_time = cpu_times[3];
-    total_time = std::accumulate(cpu_times.begin(), cpu_times.end(), 0);
+    total_time = std::accumulate (cpu_times.begin(), cpu_times.end(), 0);
     return true;
 }
 /**
@@ -217,6 +217,8 @@ int16_t k;
 	if (k != -1) 
 	   modeSelector -> setCurrentIndex (k);
 
+	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt ();
+	showPictures	= dabSettings -> value ("showPictures", 1). toInt ();
 /**
   *	The actual work is done elsewhere: in ofdmProcessor
   *	and ofdmDecoder for the ofdm related part, ficHandler
@@ -274,13 +276,15 @@ int16_t k;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
-	s	-> setValue ("autoStart", autoStart);
+	s	-> setValue ("autoStart", autoStart? 1 : 0);
 	s	-> setValue ("band", bandSelector -> currentText ());
 	s	-> setValue ("channel",
 	                      channelSelector -> currentText ());
 	s	-> setValue ("device", deviceSelector -> currentText ());
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText ());
+	s	-> setValue ("saveSlides", saveSlides ? 1 : 0);
+	s	-> setValue ("showPictures", showPictures ? 1 : 0);
 	s	-> sync ();
 }
 
@@ -428,7 +432,6 @@ void	RadioInterface::init_your_gui (void) {
   *	of the ensemble and selecting an item
   */
 	pictureLabel	= NULL;
-	saveSlide	= dabSettings -> value ("saveSlides", 1). toInt ();
 	ensemble.setStringList (Services);
 	ensembleDisplay	-> setModel (&ensemble);
 	Services << " ";
@@ -774,7 +777,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 
 	QPixmap p;
 	p. loadFromData (data, type);
-	if (saveSlide && (pictureName != QString (""))) {
+	if (saveSlides && (pictureName != QString (""))) {
 	   QString pictureAddress = picturesPath;
 	   pictureAddress. append (pictureName);
 	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);
@@ -791,7 +794,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 
 //	pictureLabel -> setFrameRect (QRect (0, 0, p. height (), p. width ()));
 
-	if (picturesPath != QString ("")) {
+	if (showPictures) {
 	   pictureLabel ->  setPixmap (p);
 	   pictureLabel ->  show ();
 	}
