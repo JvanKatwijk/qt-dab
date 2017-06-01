@@ -67,11 +67,6 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
-#	if(LSB_ID_SHORT STREQUAL "Debian")
-#		find_package(Qt5Quick REQUIRED)
-#	else()
-#		find_package (Qt5Declarative REQUIRED)
-#	endif()
 	include_directories (
 	  ${Qt5Network_INCLUDE_DIRS}
 	)
@@ -300,12 +295,12 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 #	The devices
 #
 	if (SDRPLAY)
-	   find_path (SDRPLAYLIB_INCLUDE_DIR
-                      NAMES mirsdrapi-rsp.h
-                      PATHS
-                      /usr/local/include/
-	   )
-           include_directories (${SDRPLAYLIB_INCLUDE_DIR})
+#	   find_path (SDRPLAYLIB_INCLUDE_DIR
+#                      NAMES mirsdrapi-rsp.h
+#                      PATHS
+#                      /usr/local/include/
+#	   )
+#	   include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./devices/sdrplay-handler/sdrplay-widget.ui
@@ -325,6 +320,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	        ${${objectName}_HDRS}
 	        ./devices/sdrplay-handler/sdrplay-handler.h
 	        ./devices/sdrplay-handler/sdrplayselect.h
+	        ./devices/sdrplay-handler/mirsdrapi-rsp.h
            )
 
 	   set (${objectName}_SRCS
@@ -337,11 +333,11 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 	endif (SDRPLAY)
 
 	if (AIRSPY)
-           find_package(LibAIRSPY)
-           if (NOT LIBAIRSPY_FOUND)
-               message(FATAL_ERROR "please install airspy library")
-           endif ()
-	   ### include_directories (${AIRSPYLIB_INCLUDE_DIR})
+#           find_package(LibAIRSPY)
+#           if (NOT LIBAIRSPY_FOUND)
+#               message(FATAL_ERROR "please install airspy library")
+#           endif ()
+#	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
@@ -355,11 +351,13 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 
 	   include_directories (
 	     ./devices/airspy-handler
+	     ./devices/airspy-handler/libairspy
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/airspy-handler/airspy-handler.h
+	        ./devices/airspy-handler/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
