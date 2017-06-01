@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Qt DAB
+Exec=qt-dab
+Icon=qt-dab
+Type=Application
+Categories=AudioVideo;
