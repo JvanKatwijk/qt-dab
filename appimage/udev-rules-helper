@@ -19,5 +19,7 @@ mv /tmp/66-mirics.rules /etc/udev/rules.d/66-mirics.rules
 cat </tmp/52-airspy.rules <<\EOF
 ATTR{idVendor}=="1d50", ATTR{idProduct}=="60a1", SYMLINK+="airspy-%k", MODE="660"
 
+mv /tmp/52-airspy.rules /etc/udev/rules.d/52-airspy.rules
+
 udevadm control --reload-rules
 udevadm trigger --attr-match=subsystem=usb
