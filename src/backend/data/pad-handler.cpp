@@ -220,7 +220,7 @@ int16_t  dataLength                = 0;
 	      dynamicLabelText. clear ();
 	   }
 	   else 
-	      segmentno = (prefix >> 4) & 07 + 1;
+	      segmentno = ((prefix >> 4) & 07) + 1;
 
 	   if (Cflag) {		// special dynamic label command
 	      // the only specified command is to clear the display
