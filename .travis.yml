@@ -44,7 +44,7 @@ after_success:
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
   - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
-  - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
+  - squashfs-root/usr/bin/appimagetool -n $(readlink -f ./appdir/)
   - find ./appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
   - ls -l *
   - curl --upload-file ./Qt_DAB*.AppImage https://transfer.sh/Qt_DAB-git.$(git rev-parse --short HEAD)-x86_64.AppImage
