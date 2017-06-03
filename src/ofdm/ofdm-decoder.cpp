@@ -386,8 +386,6 @@ int16_t	ofdmDecoder::get_snr (DSPCOMPLEX *v) {
 int16_t	i;
 DSPFLOAT	noise 	= 0;
 DSPFLOAT	signal	= 0;
-int16_t	low	= T_u / 2 -  carriers / 2;
-int16_t	high	= low + carriers;
 
 	for (i = -100; i < 100; i ++)
 	   noise += abs (v [(T_u / 2 + i)]);
@@ -397,7 +395,7 @@ int16_t	high	= low + carriers;
 	   signal += abs (v [(T_u + i) % T_u]);
 	signal	/= (carriers / 2);
 
-	return 20 * log10 ((signal + 0.001) / (noise + 0.001));
+	return 20 * log10 ((signal + 0.005) / (noise + 0.005));
 }
 
 

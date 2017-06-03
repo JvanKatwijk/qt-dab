@@ -218,7 +218,7 @@ int16_t k;
 	   modeSelector -> setCurrentIndex (k);
 
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt ();
-	showPictures	= dabSettings -> value ("showPictures", 1). toInt ();
+	showSlides	= dabSettings -> value ("showPictures", 1). toInt ();
 /**
   *	The actual work is done elsewhere: in ofdmProcessor
   *	and ofdmDecoder for the ofdm related part, ficHandler
@@ -284,7 +284,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText ());
 	s	-> setValue ("saveSlides", saveSlides ? 1 : 0);
-	s	-> setValue ("showPictures", showPictures ? 1 : 0);
+	s	-> setValue ("showSlides", showSlides ? 1 : 0);
 	s	-> sync ();
 }
 
@@ -794,7 +794,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 
 //	pictureLabel -> setFrameRect (QRect (0, 0, p. height (), p. width ()));
 
-	if (showPictures) {
+	if (showSlides) {
 	   pictureLabel ->  setPixmap (p);
 	   pictureLabel ->  show ();
 	}

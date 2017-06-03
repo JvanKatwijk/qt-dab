@@ -104,7 +104,7 @@ DSPCOMPLEX cdiv (DSPCOMPLEX x, float y) {
 
 static inline
 float	get_db (DSPFLOAT x) {
-	return 20 * log10 ((x + 1) / (float)(256));
+	return 20 * log10 ((x + 0.005) / (float)(256));
 }
 //
 static	inline
