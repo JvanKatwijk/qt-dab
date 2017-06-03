@@ -54,7 +54,7 @@ endif ()
 
 add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
-#add_definitions (-DMSC_DATA__)		# use at your own risk
+add_definitions (-DMSC_DATA__)		# use at your own risk
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -62,7 +62,7 @@ add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 ########################################################################
 
 	find_package (PkgConfig)
-	find_package(LSBId)
+	find_package (LSBId)
 
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
