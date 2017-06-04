@@ -304,10 +304,11 @@ Some values of settings are maintained between program invocations. This is done
 which is kept in the home directory of the user.
 
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
+````
 
 Typical examples are
+```` 
 
-````
    autoStart=0, when set to 1 the program will start the DAB handling atomatically
    
 ````
@@ -318,9 +319,11 @@ Typical examples are
 ````
 
    picturesPath, when given a value, will overrule the directory where the slides are stored
+   
 ````
 
    showSlides=1, when set to 0 the slides will not be shown
+   
 ````
 
 
