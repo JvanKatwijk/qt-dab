@@ -309,13 +309,11 @@ Some settings are not influenced by buttons or sliders of the GUI, they will onl
 Typical examples are
 
 autoStart=0, when set to 1 the program will start the DAB handling atomatically`
-````
    
 saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 
 the slides will be saved in a directory /tmp/qt-pictures
    
 picturesPath, when given a value, will overrule the directory where the slides are stored
-
 
 showSlides=1, when set to 0 the slides will not be shown
    
