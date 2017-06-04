@@ -296,8 +296,9 @@ The software uses the Qt library and - for the spectrum and the constellation di
 
 The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (January 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
 
+
 ------------------------------------------------------------------------------------------------------------------
-# Comment on some settings
+Comment on some settings
 -------------------------------------------------------------------------------------------------------------------
 
 Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini,
