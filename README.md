@@ -298,16 +298,21 @@ The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have t
 
 # Comment on some settings
 
-Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which is kept in the home directory of the user.
+Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini,
+which is kept in the home directory of the user.
+
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
+
 Typical examples are
 
 ````
    autoStart=0, when set to 1 the program will start the DAB handling atomatically
+   
 ````
    
    saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1
    the slides will be saved in a directory /tmp/qt-pictures
+   
 ````
 
    picturesPath, when given a value, will overrule the directory where the slides are stored
