@@ -209,6 +209,7 @@ DEFINES         += TECHNICAL_DATA
 For basic MSC data handling, i.e. MOT handling etc, uncomment
 ```
 DEFINES         += MSC_DATA__           # use at your own risk
+
 ```
 	
 The sourcetree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
@@ -280,26 +281,6 @@ Typical examples are
    
    showSlides=1, when set to 0 the slides will not be shown
    
-In the qt-dab.pro there are some configuration parameters that are not quite intuitive 
-
-   spectrum, when configured a widget with the spectrum and the constellation of the incoming signal is displayed
-   
-   TECHNICAL_DATA, when configured a widget with some technical data of the selected program in the ensemble is displayed.
-   typical data elements are the bitrate, the address in the data stream, the length of the segment etc
-
-   MSC_DATA, when configured, includes handling of non-audio programs. This is still pretty incomplete and experimental
-   
-   MOT_DATA, when configured, includes handling of MOT in the non-audio programs.
-   
-   QUALITY, when configured, includes a simple counter in the spectrum widget that displays the standard deviation of the
-   carriers in the ofdm symbols. It holds here: small is beautiful.
-   
-   try_epg, when configured will include a section in the program that maps the epg data onto files
-   
-   try_tii, when configures will include a section in the program that attempts to extract Transmitter Indentification
-   information from the input.
-   
-It goes without saying that adding features influences performance.
 
 # Copyright
 
