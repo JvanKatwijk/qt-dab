@@ -195,12 +195,26 @@ Having the spectrum and the constellation shown, uncomment
 ```
 CONFIG          += spectrum  
 ```
-	
+
+When "spectrum" is configured, a define
+
+DEFINES		+= __QUALITY
+````
+
+can be set in which case a "quality indicator" of the signal, i.e. the
+standard deviation of the phases of the demodulated signal, will show.
+It holds: smaller is better
+
+````
+
 For selecting the output to be sent to a RCP port, uncomment
 ```
 CONFIG         += tcp-streamer         # use for remote listening
 ```
 
+The sourcetree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
+
+````
 For showing some information on the selected program uncomment
 ```
 DEFINES         += TECHNICAL_DATA
@@ -214,12 +228,23 @@ DEFINES         += MSC_DATA__           # use at your own risk
 and for experimental MOT handling within the data handling, uncomment
 ``
 DEFINES		+= MOT_DATA
-
 ```
+Two experimental configuration parameters are
+
+CONFIG		+= try_epg
+````
+
+and
+
+CONFIG		+= try_tii
+````
+
+When the first one is configured, epg data, when selected, will be written to
+xml files. When the second one is configured an attempt will be made
+to decode the Transmitter Identification Information. Note however, that
+many ensembles do not carry this information.
 
 	
-The sourcetree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
-
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------
@@ -276,8 +301,8 @@ The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have t
 Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which is kept in the home directory of the user.
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
 Typical examples are
-````
 
+````
    autoStart=0, when set to 1 the program will start the DAB handling atomatically
 ````
    
@@ -287,8 +312,11 @@ Typical examples are
 
    picturesPath, when given a value, will overrule the directory where the slides are stored
 ````
+
    showSlides=1, when set to 0 the slides will not be shown
 ````
+
+
 
 # Copyright
 
