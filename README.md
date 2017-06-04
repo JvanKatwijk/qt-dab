@@ -181,11 +181,11 @@ Options in the configuration are:
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
 Comment the lines out by prefixing the line with a `#` in the `qt-dab.pro` file (section "unix") for the device(s)
-you want to exclude in the configuration. In the example below, sdrplay won't be used.
+you want to exclude in the configuration. In the example below, rtl_tcp (i.e. the connection to the rtlsdr server) won't be used.
 ```
 CONFIG          += dabstick
-#CONFIG          += sdrplay
-CONFIG          += rtl_tcp
+CONFIG          += sdrplay
+#CONFIG          += rtl_tcp
 CONFIG          += airspy
 ```
 	
@@ -209,8 +209,14 @@ DEFINES         += TECHNICAL_DATA
 For basic MSC data handling, i.e. MOT handling etc, uncomment
 ```
 DEFINES         += MSC_DATA__           # use at your own risk
+````
+
+and for experimental MOT handling within the data handling, uncomment
+``
+DEFINES		+= MOT_DATA
 
 ```
+
 	
 The sourcetree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
 
@@ -267,20 +273,22 @@ The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have t
 
 # Comment on some settings
 
-Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which
-is kept in the home directory of the user.
-Some settings are nor influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
+Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which is kept in the home directory of the user.
+Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
 Typical examples are
+````
 
    autoStart=0, when set to 1 the program will start the DAB handling atomatically
+````
    
    saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1
    the slides will be saved in a directory /tmp/qt-pictures
-   
+````
+
    picturesPath, when given a value, will overrule the directory where the slides are stored
-   
+````
    showSlides=1, when set to 0 the slides will not be shown
-   
+````
 
 # Copyright
 
