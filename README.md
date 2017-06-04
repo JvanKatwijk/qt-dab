@@ -325,7 +325,7 @@ showSlides=1, when set to 0 the slides will not be shown
 
 	Copyright (C)  2013, 2014, 2015, 2016, 2017
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
-	Lazy Chair Programming
+	Lazy Chair Computing
 
 	The Qt-DAB software is made available under the GPL-2.0.
 	The SDR-J software, of which the Qt-DAB software is a part, is distributed in the hope that it will be useful,
