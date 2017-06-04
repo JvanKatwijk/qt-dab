@@ -189,7 +189,7 @@ CONFIG          += sdrplay
 CONFIG          += airspy
 ```
 	
-Input from prerecorded files is always part of the configuration.
+Input from prerecorded files (8 bit raw and "wav" files) is always part of the configuration.
 
 Having the spectrum and the constellation shown, uncomment
 ```
@@ -305,9 +305,11 @@ Some values of settings are maintained between program invocations. This is done
 which is kept in the home directory of the user.
 
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
+
 ````
 
 Typical examples are
+
 ```` 
 
    autoStart=0, when set to 1 the program will start the DAB handling atomatically
