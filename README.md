@@ -15,6 +15,7 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
+ * [comment on some settings]
  * [Copyright](#copyright)
  
 ------------------------------------------------------------------
@@ -263,7 +264,42 @@ The software uses the Qt library and - for the spectrum and the constellation di
 
 The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (January 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
 
+# Comment on some settings
 
+Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which
+is kept in the home directory of the user.
+Some settings are nor influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
+Typical examples are
+
+   autoStart=0, when set to 1 the program will start the DAB handling atomatically
+   
+   saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1
+   the slides will be saved in a directory /tmp/qt-pictures
+   
+   picturesPath, when given a value, will overrule the directory where the slides are stored
+   
+   showSlides=1, when set to 0 the slides will not be shown
+   
+In the qt-dab.pro there are some configuration parameters that are not quite intuitive 
+
+   spectrum, when configured a widget with the spectrum and the constellation of the incoming signal is displayed
+   
+   TECHNICAL_DATA, when configured a widget with some technical data of the selected program in the ensemble is displayed.
+   typical data elements are the bitrate, the address in the data stream, the length of the segment etc
+
+   MSC_DATA, when configured, includes handling of non-audio programs. This is still pretty incomplete and experimental
+   
+   MOT_DATA, when configured, includes handling of MOT in the non-audio programs.
+   
+   QUALITY, when configured, includes a simple counter in the spectrum widget that displays the standard deviation of the
+   carriers in the ofdm symbols. It holds here: small is beautiful.
+   
+   try_epg, when configured will include a section in the program that maps the epg data onto files
+   
+   try_tii, when configures will include a section in the program that attempts to extract Transmitter Indentification
+   information from the input.
+   
+It goes without saying that adding features influences performance.
 
 # Copyright
 
