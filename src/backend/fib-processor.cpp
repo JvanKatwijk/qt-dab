@@ -25,9 +25,9 @@
  */
 #include	"fib-processor.h"
 #include	<cstring>
+#include	<vector>
 #include	"radio.h"
 #include	"charsets.h"
-#include	<vector>
 //
 //
 // Tabelle ETSI EN 300 401 Page 50
