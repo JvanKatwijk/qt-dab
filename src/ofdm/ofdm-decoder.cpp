@@ -61,12 +61,7 @@ int16_t	i;
 	         myRadioInterface, SLOT (showQuality (float)));
 #endif
 #endif
-	maxSignal	= 1;
-	while (bitDepth > 0) {
-	   bitDepth --;
-	   maxSignal <<= 1;
-	}
-
+//
 	this	-> my_ficHandler	= my_ficHandler;
 	this	-> my_mscHandler	= my_mscHandler;
 	this	-> T_s			= params. get_T_s ();
