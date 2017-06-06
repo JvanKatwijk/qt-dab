@@ -15,7 +15,8 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
- * [comment on some settings]
+  * [appImage](#appImage)
+ * [comment on some settings](#comment-on-settings)
  * [Copyright](#copyright)
  
 ------------------------------------------------------------------
@@ -249,6 +250,12 @@ many ensembles do not carry this information.
 Configuring using CMake
 ------------------------------------------------------------------
 
+Note that there are now TWO CMakeLists.txt-xxx files in the directory,
+if you want to use cmake, copy CMakeLists.txt-qt5 to CMakeLists.txt.
+
+The CMakeLists.txt-qt4 file is used for creating an appImage and still
+"under development".
+
 The `CMakeLists.txt` file has all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
 An example
@@ -296,10 +303,20 @@ In arch, it was essential to add the username to the group "audio".
 
 Note that on the current distribution of Raspbian Jessie (i.e. January 2017) the best way to generate the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram -  in the distribution is compiled with Qt4. 
 
+---------------------------------------------------------------------------
+appImage
+---------------------------------------------------------------------------
 
-------------------------------------------------------------------------------------------------------------------
+The releases section contains a generated appImage. This appImage is created
+on Ubuntu 14.05 (Trusty), and uses qt4.
+
+It assumes that you have installed a device, either a dabstick (i.e. rtlsdr),
+an Airspy or a SDRplay.
+
+All further dependencies are includes
+--------------------------------------------------------------------------------
 Comment on some settings
--------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini,
 which is kept in the home directory of the user.
