@@ -189,7 +189,7 @@ CONFIG          += sdrplay
 CONFIG          += airspy
 ```
 	
-Input from prerecorded files is always part of the configuration.
+Input from prerecorded files (8 bit raw and "wav" files) is always part of the configuration.
 
 Having the spectrum and the constellation shown, uncomment
 ```
@@ -277,6 +277,14 @@ SDRplay
 The current set of sources has some support for the RSP-II. It is assumed that at least library version 2.09 is installed.
 
 ------------------------------------------------------------------
+Qt
+------------------------------------------------------------------
+
+The software uses the Qt library and - for the spectrum and the constellation diagram - the qwt library.
+
+The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (January 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
+
+-----------------------------------------------------------------
 Raspberry PI
 ------------------------------------------------------------------
 
@@ -288,33 +296,27 @@ In arch, it was essential to add the username to the group "audio".
 
 Note that on the current distribution of Raspbian Jessie (i.e. January 2017) the best way to generate the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram -  in the distribution is compiled with Qt4. 
 
-------------------------------------------------------------------
-Qt
-------------------------------------------------------------------
 
-The software uses the Qt library and - for the spectrum and the constellation diagram - the qwt library.
+------------------------------------------------------------------------------------------------------------------
+Comment on some settings
+-------------------------------------------------------------------------------------------------------------------
 
-The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (January 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
+Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini,
+which is kept in the home directory of the user.
 
-# Comment on some settings
+Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.`
 
-Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini, which is kept in the home directory of the user.
-Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.
 Typical examples are
 
-````
-   autoStart=0, when set to 1 the program will start the DAB handling atomatically
-````
+autoStart=0, when set to 1 the program will start the DAB handling atomatically`
    
-   saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1
-   the slides will be saved in a directory /tmp/qt-pictures
-````
+saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 
+the slides will be saved in a directory /tmp/qt-pictures
+   
+picturesPath, when given a value, will overrule the directory where the slides are stored
 
-   picturesPath, when given a value, will overrule the directory where the slides are stored
-````
-
-   showSlides=1, when set to 0 the slides will not be shown
-````
+showSlides=1, when set to 0 the slides will not be shown
+   
 
 
 
@@ -323,7 +325,7 @@ Typical examples are
 
 	Copyright (C)  2013, 2014, 2015, 2016, 2017
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
-	Lazy Chair Programming
+	Lazy Chair Computing
 
 	The Qt-DAB software is made available under the GPL-2.0.
 	The SDR-J software, of which the Qt-DAB software is a part, is distributed in the hope that it will be useful,
