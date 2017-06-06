@@ -316,6 +316,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
+	        ./devices/sdrplay-handler/rtl-sdr.h
 	        ./devices/sdrplay-handler/sdrplay-handler.h
 	        ./devices/sdrplay-handler/sdrplayselect.h
 	        ./devices/sdrplay-handler/mirsdrapi-rsp.h
