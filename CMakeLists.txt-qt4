@@ -331,11 +331,11 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	endif (SDRPLAY)
 
 	if (AIRSPY)
-           find_package(LibAIRSPY)
-           if (NOT LIBAIRSPY_FOUND)
-               message(FATAL_ERROR "please install airspy library")
-           endif ()
-	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
+#           find_package(LibAIRSPY)
+#           if (NOT LIBAIRSPY_FOUND)
+#               message(FATAL_ERROR "please install airspy library")
+#           endif ()
+#	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
@@ -368,11 +368,11 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 #
 	if (DABSTICK)
-           find_package(LibRTLSDR)
-           if (NOT LIBRTLSDR_FOUND)
-               message(FATAL_ERROR "please install librtlsdr")
-           endif ()
-	   ###include_directories (${RTLSDR_INCLUDE_DIR})
+#           find_package(LibRTLSDR)
+#           if (NOT LIBRTLSDR_FOUND)
+#               message(FATAL_ERROR "please install librtlsdr")
+#           endif ()
+#	   ###include_directories (${RTLSDR_INCLUDE_DIR})
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
