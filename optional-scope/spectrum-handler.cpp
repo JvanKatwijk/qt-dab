@@ -161,7 +161,7 @@ int16_t	averageCount	= 5;
 //
 //	average the image a little.
 	for (i = 0; i < displaySize; i ++) {
-	   if (isnan (Y_values [i]) || isinf (Y_values [i]))
+	   if (std::isnan (Y_values [i]) || std::isinf (Y_values [i]))
 	      continue;
 	   displayBuffer [i] = 
 	          (double)(averageCount - 1) /averageCount * displayBuffer [i] +
@@ -232,7 +232,7 @@ int	scopeWidth	= scopeSlider -> value ();
 	t = iqBuffer -> getDataFromBuffer (Values, amount);
 	for (i = 0; i < t; i ++) {
 	   float x = abs (Values [i]);
-	   if (!isnan (x) && !isinf (x))
+	   if (!std::isnan (x) && !std::isinf (x))
 	      avg += abs (Values [i]);
 	}
 

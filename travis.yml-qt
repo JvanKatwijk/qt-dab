@@ -1,0 +1,45 @@
+language: c++
+compiler: gcc
+sudo: require
+dist: trusty
+
+before_install:
+    - sudo add-apt-repository ppa:beineri/opt-qt532-trusty -y
+    - sudo apt-get update -qq
+    
+install: 
+  -  sudo apt-get install qt4-qmake build-essential g++
+  -  sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev 
+  -  sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev
+  - sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+
+  - cp CmakeLists.txt-qt4 CMakeLists.txt
+script:
+  - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
+  - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
+  - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
+  - cmake . -DDABSTICK=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSPECTRUM=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - make -j4
+  - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
+  - ls -lh .
+  - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab 
+  - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
+  - cp screenshot_qt-dab.png appdir/qt-dab.png
+  - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
+  
+after_success:
+  - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
+  - chmod a+x linuxdeployqt*.AppImage
+  - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
+  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
+  - # Workaround for https://github.com/probonopd/linuxdeployqt/issues/31#issuecomment-289267637
+  - ./linuxdeployqt*.AppImage --appimage-extract
+  - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
+  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
+  - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
+  - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
+  - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
+  - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
+  - find ./appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq
+  - curl --upload-file ./Qt_DAB*.AppImage https://transfer.sh/Qt_DAB-git.$(git rev-parse --short HEAD)-x86_64.AppImage
