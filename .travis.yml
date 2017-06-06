@@ -13,7 +13,7 @@ install:
   -  sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev
   - sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
 
-  - cp CmakeLists.txt-qt4 CMakeLists.txt
+  - cp CMakeLists.txt-qt4 CMakeLists.txt
 script:
   - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
