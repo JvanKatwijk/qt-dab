@@ -211,7 +211,7 @@ int16_t	i;
   */
 
 	if (++snrCount > 10) {
-	   snr	= get_snr (fft_buffer);
+	   snr	= 0.8 * snr + 0.2 * get_snr (fft_buffer);
 	   show_snr (snr);
 	   snrCount = 0;
 	}
