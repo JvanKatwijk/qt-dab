@@ -24,7 +24,6 @@ script:
   - ls -lh .
   - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab 
   - mkdir -p appdir/usr/lib
-  - mkdir -p appdir/usr/bin
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp screenshot_qt-dab.png appdir/qt-dab.png
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
@@ -36,12 +35,12 @@ script:
   - mkdir build
   - cd build
 #	udev rules are installed separately
-  - cmake ../ -DCMAKE_INSTALL_PREFIX=appdir/usr
+  - cmake ../ -DCMAKE_INSTALL_PREFIX=../../appdir/usr
   - make
   - make install
   - cd ..
   - cd ..
-
+  - ls -l appdir/usr/lib
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
   - chmod a+x linuxdeployqt*.AppImage
