@@ -37,6 +37,8 @@ script:
   - cmake ../ -DINSTALL_UDEV_RULES=ON -DCMAKE_INSTALL_PREFIX=appdir/usr/lib
   - make
   - make install
+  - cd ..
+  - cd ..
 
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
