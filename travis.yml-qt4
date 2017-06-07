@@ -35,7 +35,8 @@ script:
   - cd airspyone_host-master
   - mkdir build
   - cd build
-  - cmake ../ -DINSTALL_UDEV_RULES=ON -DCMAKE_INSTALL_PREFIX=appdir/usr
+#	udev rules are installed separately
+  - cmake ../ -DCMAKE_INSTALL_PREFIX=appdir/usr
   - make
   - make install
   - cd ..
