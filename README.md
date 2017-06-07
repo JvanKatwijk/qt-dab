@@ -128,7 +128,7 @@ For generating an executable under Ubuntu, you can put the following commands in
   sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
   wget https://github.com/airspy/host/archive/master.zip
   unzip master.zip
-  cd host-master
+  cd airspyone_host-master
   mkdir build
   cd build
   cmake ../ -DINSTALL_UDEV_RULES=ON
