@@ -314,9 +314,9 @@ airspy {
 	DEFINES		+= HAVE_AIRSPY
 	DEPENDPATH	+= ./devices/airspy 
 	INCLUDEPATH	+= ./devices/airspy-handler \
-	                    /local/include/libairspy
+	                   ./devices/airspy-handler/libairspy
 	HEADERS		+= ./devices/airspy-handler/airspy-handler.h \
-	                    /usr/local/include/libairspy/airspy.h
+	                   ./devices/airspy-handler/libairspy/airspy.h
 	SOURCES		+= ./devices/airspy-handler/airspy-handler.cpp 
 	FORMS		+= ./devices/airspy-handler/airspy-widget.ui
 }
