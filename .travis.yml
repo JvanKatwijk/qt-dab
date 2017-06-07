@@ -23,10 +23,21 @@ script:
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
   - mkdir -p appdir/usr/bin ; cp qt-dab-* appdir/usr/bin/qt-dab 
+  - mkdir -p appdir/usr/lib
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp screenshot_qt-dab.png appdir/qt-dab.png
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
-  
+
+  - sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
+  - wget https://github.com/airspy/host/archive/master.zip
+  - unzip master.zip
+  - cd host-master
+  - mkdir build
+  - cd build
+  - cmake ../ -DINSTALL_UDEV_RULES=ON -DCMAKE_INSTALL_PREFIX=appdir/usr/lib
+  - make
+  - make install
+
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
   - chmod a+x linuxdeployqt*.AppImage
@@ -45,5 +56,4 @@ after_success:
   - curl --upload-file ./Qt_DAB*.AppImage https://transfer.sh/Qt_DAB-git.$(git rev-parse --short HEAD)-x86_64.AppImage
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - bash ./upload.sh ./Qt_DAB*.AppImage
-
 
