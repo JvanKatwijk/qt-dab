@@ -28,6 +28,17 @@ script:
   - cp screenshot_qt-dab.png appdir/qt-dab.png
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
 
+  - wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
+  - tar xvfj rtl-sdr-linrad4.tbz
+  - cd rtl-sdr-linrad4
+  - mkdir build
+  - cd build
+  - cmake .. -DDETACH_KERNEL_DRIVER=ON  -DCMAKE_INSTALL_PREFIX=../../appdir/usr
+  - make
+  - make install
+  - cd ..
+  - cd ..
+
   - sudo apt-get install build-essential cmake libusb-1.0-0-dev pkg-config
   - wget https://github.com/airspy/host/archive/master.zip
   - unzip master.zip
@@ -51,7 +62,7 @@ after_success:
   - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
-  - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - # find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
   - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
