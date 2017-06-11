@@ -87,7 +87,7 @@ gridcolor=red
 Windows
 ------------------------------------------------------------------
 
-There are two executable (exe files) to be found under https://github.com/JvanKatwijk/qt-dab/releases . One is with a spectrum viewer and constellation diagram, the other without. Please copy them into the same directory you've unzipped http://www.sdr-j.tk/windows-bin.zip as it uses the same libraries.
+Windows releases are to be found under https://github.com/JvanKatwijk/qt-dab/releases . Please copy them into the same directory you've unzipped http://www.sdr-j.tk/windows-bin.zip as it uses the same libraries.
 
 If you want to compile it by yourself, please install Qt through their online installer, see https://www.qt.io/ 
 
@@ -199,14 +199,14 @@ CONFIG          += spectrum
 
 When "spectrum" is configured, a define
 
+```
 DEFINES		+= __QUALITY
-````
+```
 
 can be set in which case a "quality indicator" of the signal, i.e. the
 standard deviation of the phases of the demodulated signal, will show.
 It holds: smaller is better
 
-````
 
 For selecting the output to be sent to a RCP port, uncomment
 ```
@@ -215,7 +215,6 @@ CONFIG         += tcp-streamer         # use for remote listening
 
 The sourcetree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
 
-````
 For showing some information on the selected program uncomment
 ```
 DEFINES         += TECHNICAL_DATA
@@ -224,37 +223,33 @@ DEFINES         += TECHNICAL_DATA
 For basic MSC data handling, i.e. MOT handling etc, uncomment
 ```
 DEFINES         += MSC_DATA__           # use at your own risk
-````
+```
 
 and for experimental MOT handling within the data handling, uncomment
-``
+```
 DEFINES		+= MOT_DATA
 ```
-Two experimental configuration parameters are
 
+Two experimental configuration parameters are
+```
 CONFIG		+= try_epg
-````
+```
 
 and
-
+```
 CONFIG		+= try_tii
-````
+```
 
-When the first one is configured, epg data, when selected, will be written to
-xml files. When the second one is configured an attempt will be made
-to decode the Transmitter Identification Information. Note however, that
-many ensembles do not carry this information.
+When the first one is configured, epg data, when selected, will be written to xml files. When the second one is configured an attempt will be made to decode the Transmitter Identification Information. Note however, that many ensembles do not carry this information.
 
 	
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------
 
-Note that there are now TWO CMakeLists.txt-xxx files in the directory,
-if you want to use cmake, copy CMakeLists.txt-qt5 to CMakeLists.txt.
+Note that there are now TWO CMakeLists.txt-xxx files in the directory, if you want to use cmake, copy `CMakeLists.txt-qt5` to `CMakeLists.txt`.
 
-The CMakeLists.txt-qt4 file is used for creating an appImage and still
-"under development".
+The `CMakeLists.txt-qt4` file is used for creating an appImage and still "under development".
 
 The `CMakeLists.txt` file has all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
@@ -307,35 +302,29 @@ Note that on the current distribution of Raspbian Jessie (i.e. January 2017) the
 appImage
 ---------------------------------------------------------------------------
 
-The releases section contains a generated appImage. This appImage is created
-on Ubuntu 14.05 (Trusty), and uses qt4.
+The releases section contains a generated appImage. This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4.
 
-It assumes that you have installed a device, either a dabstick (i.e. rtlsdr),
-an Airspy or a SDRplay.
+It assumes that you have installed a device, either a dabstick (i.e. rtlsdr), an Airspy or a SDRplay.
 
-All further dependencies are includes
+All further dependencies are included
+
 --------------------------------------------------------------------------------
 Comment on some settings
 -------------------------------------------------------------------------------
 
-Some values of settings are maintained between program invocations. This is done in a file .qt-dab.ini,
-which is kept in the home directory of the user.
+Some values of settings are maintained between program invocations. This is done in a file `.qt-dab.ini`, which is kept in the home directory of the user.
 
-Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the ini file.`
+Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the .ini file.
 
 Typical examples are
 
-autoStart=0, when set to 1 the program will start the DAB handling atomatically`
-   
-saveSlides=1, when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 
-the slides will be saved in a directory /tmp/qt-pictures
-   
-picturesPath, when given a value, will overrule the directory where the slides are stored
+`autoStart=0` when set to 1 the program will start the DAB handling automatically
 
-showSlides=1, when set to 0 the slides will not be shown
-   
+`saveSlides=1` when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows)
 
+`picturesPath` when given a value, will overrule the directory where the slides are stored
 
+`showSlides=1` when set to 0 the slides will not be shown
 
 # Copyright
 
