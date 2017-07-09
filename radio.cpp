@@ -130,6 +130,8 @@ int16_t k;
 	showProgramData	-> hide ();	// do not show the button
 #endif
 
+	connect (saveEnsembleData, SIGNAL (clicked (void)),
+	         this, SLOT (showEnsembleData (void)));
 //
 //	Before printing anything, we set
 	setlocale (LC_ALL, "");
@@ -662,6 +664,7 @@ QString s;
 	my_ofdmProcessor	-> coarseCorrectorOff ();
 	Yes_Signal_Found ();
 }
+
 
 /**
   *	\brief show_successRate
@@ -1660,3 +1663,97 @@ QString a, b;
 #endif
 }
 
+#include	"country-codes.h"
+
+const char *code_to_string (uint8_t ecc, uint8_t countryId) {
+int16_t	i = 0;
+
+	while (countryTable [i]. ecc != 0) {
+	   if ((countryTable [i]. ecc == ecc) &&
+	       (countryTable [i]. countryId == countryId))
+	      return countryTable [i]. countryName;
+	   i ++;
+	}
+	return "          ";
+}
+
+const char *uep_rates []   = {NULL, "7/20", "2/5", "1/2", "3/5"};
+const char *eep_Arates [] = {NULL, "1/4", "3/8", "1/2", "3/4"};
+const char *eep_Brates [] = {NULL, "4/9", "4/7", "4/6", "4/5"};
+
+void	RadioInterface::showEnsembleData (void) {
+uint8_t	countryId;
+int16_t	i;
+uint8_t ecc_byte	= my_ficHandler. get_ecc ();
+QString	ensembleLabel	= my_ficHandler. get_ensembleName ();
+int32_t	ensembleId	= my_ficHandler. get_ensembleId ();
+QString currentChannel	= channelSelector -> currentText ();
+int32_t	frequency	= inputDevice -> getVFOFrequency ();
+
+	if (ensembleLabel == QString (""))
+	   return;
+	QString fileName = QFileDialog::getSaveFileName (this,
+	                                        tr ("Save file ..."),
+	                                        QDir::homePath (),
+	                                        tr ("Text (*.txt)"));
+	fileName	= QDir::toNativeSeparators (fileName);
+	FILE *file_P	= fopen (fileName. toLatin1 (). data (), "w");
+
+	if (file_P == NULL) {
+	   fprintf (stderr, "Could not open file %s\n", fileName. toLatin1 (). data ());
+	   return;
+	}
+
+	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
+	                  ensembleLabel. toLatin1 (). data (),
+	                  ensembleId,
+	                  currentChannel. toLatin1 (). data (),
+	                  frequency / 1000);
+	                
+	fprintf (file_P, "program name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
+	for (i = 0; i < 64; i ++) {
+	   audiodata d;
+	   my_ficHandler. dataforAudioService (i, &d);
+	   if (!d. defined)
+	      continue;
+	   uint16_t h = d. protLevel;
+	   QString protL;
+	   QString codeRate;
+	   if (!d. shortForm) {
+	      protL = "EEP ";
+	      if ((h & (1 << 2)) == 0) {
+	         protL. append ("A ");
+	         codeRate = eep_Arates [(h & 03) + 1];
+	      }
+	      else {
+	         protL. append ("B ");
+	         codeRate = eep_Brates [(h & 03) + 1];
+	      }
+	      h = (h & 03) + 1;
+	      protL. append (QString::number (h));
+	   }
+	   else  {
+	      h = h & 03;
+	      protL = "UEP ";
+	      protL. append (QString::number (h));
+	      codeRate = uep_rates [h + 1];
+	   }
+
+	   countryId = (d. serviceId >> 12) & 0xF;
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
+	                     d. serviceName. toLatin1(). data (),
+	                     code_to_string (ecc_byte, countryId),
+	                     d. serviceId,
+	                     d. subchId,
+	                     d. startAddr,
+	                     d. length,
+	                     d. bitRate,
+	                     d. ASCTy == 077 ? "DAB+" : "DAB",
+	                     protL. toLatin1 (). data (),
+	                     codeRate. toLatin1 (). data (),
+	                     get_programm_language_string (d. language),
+	                     get_programm_type_string (d. programType) );
+	}
+	   
+	fclose (file_P);
+}

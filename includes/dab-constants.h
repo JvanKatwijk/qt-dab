@@ -25,7 +25,7 @@
 
 #ifndef	__DAB_CONSTANTS__
 #define	__DAB_CONSTANTS__
-#
+#include	<QString>
 #include	<math.h>
 #include	<stdint.h>
 #include	<stdlib.h>
@@ -156,6 +156,8 @@ typedef struct {
 
 typedef	struct {
 	bool	defined;
+	QString serviceName;
+	int32_t	serviceId;
 	int16_t	subchId;
 	int16_t	startAddr;
 	bool	shortForm;

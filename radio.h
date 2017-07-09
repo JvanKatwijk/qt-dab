@@ -192,6 +192,8 @@ private slots:
 	void	selectService		(QString);
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
+	void    showEnsembleData	(void);
+
 };
 #endif
 

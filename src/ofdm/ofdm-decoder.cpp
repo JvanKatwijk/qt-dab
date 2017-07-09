@@ -300,7 +300,7 @@ toBitsLabel:
   *	on the same position in the next block
   */
 	   DSPCOMPLEX	r1 = fft_buffer [index] * conj (phaseReference [index]);
-	   phaseReference [index] = fft_buffer [index];
+//	   phaseReference [index] = fft_buffer [index];
 #ifdef	HAVE_SPECTRUM
 	   conjVector [index] = r1;
 #endif;
@@ -310,6 +310,7 @@ toBitsLabel:
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
+	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 
 handlerLabel:
 	my_ficHandler -> process_ficBlock (ibits, blkno);
@@ -358,13 +359,14 @@ toBitsLabel:
 	      index += T_u;
 	      
 	   DSPCOMPLEX	r1 = fft_buffer [index] * conj (phaseReference [index]);
-	   phaseReference [index] = fft_buffer [index];
+//	   phaseReference [index] = fft_buffer [index];
 	   DSPFLOAT ab1	= jan_abs (r1);
 //	Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
+	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 handlerLabel:;
 	my_mscHandler -> process_mscBlock (ibits, blkno);
 }

@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2014
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -109,11 +109,12 @@
 	         myRadioInterface, SLOT (addtoEnsemble (const QString &)));
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface, SLOT (nameofEnsemble (int, const QString &)));
+
 	connect (this, SIGNAL (changeinConfiguration (void)),
-	         myRadioInterface,
-	         SLOT (changeinConfiguration (void)));
+	         myRadioInterface, SLOT (changeinConfiguration (void)));
 
 	coordinates. cleanUp ();
+
 }
 	
 	fib_processor::~fib_processor (void) {
@@ -532,11 +533,19 @@ uint8_t		extensionFlag;
 //	Michael Hoehn
 void fib_processor::FIG0Extension9 (uint8_t *d) {
 int16_t	offset	= 16;
+uint8_t ecc;
+uint8_t tableId;
 
 	dateTime [6] = (getBits_1 (d, offset + 2) == 1)?
 	                -1 * getBits_4 (d, offset + 3):
 	                     getBits_4 (d, offset + 3);
 	dateTime [7] = (getBits_1 (d, offset + 7) == 1)? 30 : 0;
+
+	ecc	     = getBits (d, offset + 8, 8);
+	if (!ensemble_Descriptor. ecc_Present) {
+	   ensemble_Descriptor. ecc_byte = ecc;
+	   ensemble_Descriptor. ecc_Present = true;
+	}
 }
 
 //
@@ -842,9 +851,12 @@ char		label [17];
 	            const QString name = toQStringUsingCharset (
 	                                      (const char *) label,
 	                                      (CharacterSet) charSet);
-	            if (firstTime)
+	            if (!ensemble_Descriptor. name_Present) {
+	               ensemble_Descriptor. ensembleName = name;
+	               ensemble_Descriptor. ensembleId  = SId;
+	               ensemble_Descriptor. name_Present  = true;
 	               nameofEnsemble (SId, name);
-	            firstTime	= false;
+	            }
 	            isSynced	= true;
 	         }
 	      }
@@ -1095,7 +1107,8 @@ int16_t i;
 	   components [i]. inUse = false;
 	}
 
-	firstTime	= true;
+	ensemble_Descriptor. name_Present = false;
+	ensemble_Descriptor. ecc_Present  = false;
 	isSynced	= false;
 	fibLocker. unlock ();
 }
@@ -1117,8 +1130,8 @@ int16_t	service		= UNKNOWN_SERVICE;
 	   if (listofServices [i]. serviceLabel. label != s)
 	      continue;
 
-	   fprintf (stderr, "we found for %s serviceId %X\n", s. toLatin1 (). data (), 
-	                      listofServices [i]. serviceId);
+//	   fprintf (stderr, "we found for %s serviceId %X\n", s. toLatin1 (). data (), 
+//	                      listofServices [i]. serviceId);
 	   selectedService = listofServices [i]. serviceId;
 	   for (j = 0; j < 64; j ++) {
 	      int16_t subchId;
@@ -1192,6 +1205,50 @@ int32_t	selectedService;
 	fibLocker. unlock ();
 }
 
+void	fib_processor::dataforAudioService (int16_t subchId, audiodata *d) {
+int16_t i, j;
+
+	d -> defined = false;
+	fibLocker. lock ();
+	for (i = 0; i < 64; i ++) {
+	   if (!listofServices [i]. inUse)
+	      continue;
+	   if (!listofServices [i]. serviceLabel. hasName)
+	      continue;
+	   for (j = 0; j < 64; j ++) {
+	      if (!components [j]. inUse)
+	         continue;
+	      if (listofServices [i]. serviceId !=
+	                        components [j]. service -> serviceId)
+	         continue;
+
+	      if (subchId != components [j]. subchannelId)
+	         continue;
+
+	      if (components [j]. TMid != 00) {
+	         continue;
+	      }
+
+	      d -> serviceId	= listofServices [i]. serviceId;
+	      d -> serviceName	= listofServices [i]. serviceLabel. label;
+	      d	-> subchId	= subchId;
+	      d	-> startAddr	= ficList [subchId]. StartAddr;
+	      d	-> shortForm	= ficList [subchId]. shortForm;
+	      d	-> protLevel	= ficList [subchId]. protLevel;
+	      d	-> length	= ficList [subchId]. Length;
+	      d	-> bitRate	= ficList [subchId]. BitRate;
+	      d	-> ASCTy	= components [j]. ASCTy;
+	      d	-> language	= listofServices [i]. language;
+	      d	-> programType	= listofServices [i]. programType;
+	      d	-> defined	= true;
+	      break;
+	   }
+	   if (d -> defined)
+	      break;
+	}
+	fibLocker. unlock ();
+}
+	
 void	fib_processor::dataforAudioService (QString &s, audiodata *d) {
 int16_t	i, j;
 int32_t	selectedService;
@@ -1216,6 +1273,8 @@ int32_t	selectedService;
 	         continue;
 
 	      subchId	= components [j]. subchannelId;
+	      d -> serviceId	= selectedService;
+	      d -> serviceName	= s;
 	      d	-> subchId	= subchId;
 	      d	-> startAddr	= ficList [subchId]. StartAddr;
 	      d	-> shortForm	= ficList [subchId]. shortForm;
@@ -1249,4 +1308,23 @@ DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
 int16_t		fib_processor::mainId	(void) {
 	return coordinates. get_mainId ();
 }
+
+uint8_t		fib_processor::get_ecc (void) {
+	if (ensemble_Descriptor. ecc_Present)
+	   return ensemble_Descriptor. ecc_byte;
+	return 0;
+}
+
+int32_t		fib_processor::get_ensembleId (void) {
+	if (ensemble_Descriptor. name_Present)
+	   return ensemble_Descriptor. ensembleId;
+	return 0;
+}
+
+QString		fib_processor::get_ensembleName (void) {
+	if (ensemble_Descriptor. name_Present)
+	   return ensemble_Descriptor. ensembleName;
+	return " ";
+}
+
 

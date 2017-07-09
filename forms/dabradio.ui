@@ -232,9 +232,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>260</y>
       <width>401</width>
-      <height>51</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -633,6 +633,19 @@ details</string>
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="saveEnsembleData">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>211</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>save ensemble info</string>
     </property>
    </widget>
   </widget>

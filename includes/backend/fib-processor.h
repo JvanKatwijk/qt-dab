@@ -84,6 +84,14 @@
 	   int16_t	FEC_scheme;
 	};
 
+	struct {
+	   QString ensembleName;
+	   int32_t ensembleId;
+	   uint8_t ecc_byte;
+	   bool	   name_Present;
+	   bool	   ecc_Present;
+	} ensemble_Descriptor;
+
 class	RadioInterface;
 
 class	fib_processor: public QObject {
@@ -98,9 +106,13 @@ public:
 	void	setSelectedService	(QString &);
 	uint8_t	kindofService		(QString &);
 	void	dataforAudioService	(QString &, audiodata *);
+	void	dataforAudioService	(int16_t,   audiodata *);
 	void	dataforDataService	(QString &, packetdata *);
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
 	int16_t	mainId			(void);
+	uint8_t	get_ecc			(void);
+	int32_t	get_ensembleId		(void);
+	QString get_ensembleName	(void);
 protected:
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
@@ -150,7 +162,6 @@ private:
 	serviceId	*listofServices;
 	tii_table	coordinates;
 	bool		dateFlag;
-	bool		firstTime;
 	bool		isSynced;
 	QMutex		fibLocker;
 signals:
