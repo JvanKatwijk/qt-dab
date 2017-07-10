@@ -29,9 +29,6 @@
 #include	"dab-params.h"
 //
 //	Interface program for processing the MSC.
-//	Merely a dispatcher for the selected service
-//	and selecting the datapart from the CIF for further treatment
-//
 //	The ofdm processor assumes the existence of an msc-handler, whether
 //	a service is selected or not. 
 
@@ -52,7 +49,6 @@
 	cifCount		= 0;	// msc blocks in CIF
 	blkCount		= 0;
 	dabHandler		= new dabVirtual;
-	newChannel		= false;
 	work_to_be_done		= false;
 	dabModus		= 0;
 	BitsperBlock		= 2 * params. get_carriers ();
@@ -74,7 +70,6 @@
 	      break;
 	}
 
-	audioService		= true;		// default
 }
 
 		mscHandler::~mscHandler	(void) {
@@ -91,34 +86,59 @@
 //	thread executing process_mscBlock
 void	mscHandler::set_audioChannel (audiodata *d) {
 	locker. lock ();
-	audioService	= true;
-	new_shortForm	= d	-> shortForm;
-	new_startAddr	= d	-> startAddr;
-	new_Length	= d	-> length;
-	new_protLevel	= d	-> protLevel;
-	new_bitRate	= d	-> bitRate;
-	new_language	= d	-> language;
-	new_type	= d	-> programType;
-	new_ASCTy	= d	-> ASCTy;
-	new_dabModus	= new_ASCTy == 077 ? DAB_PLUS : DAB;
-	newChannel	= true;
+	shortForm	= d	-> shortForm;
+	startAddr	= d	-> startAddr;
+	Length		= d	-> length;
+	protLevel	= d	-> protLevel;
+	bitRate		= d	-> bitRate;
+	language	= d	-> language;
+	type		= d	-> programType;
+	ASCTy		= d	-> ASCTy;
+	dabModus	= ASCTy == 077 ? DAB_PLUS : DAB;
+	dabHandler -> stopRunning ();
+	delete dabHandler;
+
+	dabHandler = new dabAudio (myRadioInterface,
+	                           dabModus,
+	                           Length * CUSize,
+	                           bitRate,
+	                           shortForm,
+	                           protLevel,
+	                           audioBuffer,
+	                           picturesPath);
+	work_to_be_done	= true;
 	locker. unlock ();
 }
 //
 void	mscHandler::set_dataChannel (packetdata	*d) {
 	locker. lock ();
-	audioService	= false;
-	new_shortForm	= d	-> shortForm;
-	new_startAddr	= d	-> startAddr;
-	new_Length	= d	-> length;
-	new_protLevel	= d	-> protLevel;
-	new_DGflag	= d	-> DGflag;
-	new_bitRate	= d	-> bitRate;
-	new_FEC_scheme	= d	-> FEC_scheme;
-	new_DSCTy	= d	-> DSCTy;
-	new_packetAddress = d	-> packetAddress;
-	new_appType	= d	-> appType;
-	newChannel	= true;
+	shortForm	= d	-> shortForm;
+	startAddr	= d	-> startAddr;
+	Length		= d	-> length;
+	protLevel	= d	-> protLevel;
+	DGflag		= d	-> DGflag;
+	bitRate		= d	-> bitRate;
+	FEC_scheme	= d	-> FEC_scheme;
+	DSCTy		= d	-> DSCTy;
+	packetAddress	= d	-> packetAddress;
+	appType		= d	-> appType;
+	dabHandler -> stopRunning ();
+	delete dabHandler;
+	dabHandler = new dabData (myRadioInterface,
+	                          DSCTy,
+	                          appType,
+	                          packetAddress,
+	                          Length * CUSize,
+	                          bitRate,
+	                          shortForm,
+	                          protLevel,
+	                          DGflag,
+	                          FEC_scheme,
+	                          picturesPath,
+	                          show_crcErrors);
+//	these we need for actual processing
+//	and this one to get started
+	work_to_be_done	= true;
 	locker. unlock ();
 }
 
@@ -135,55 +155,17 @@ void	mscHandler::process_mscBlock	(int16_t *fbits,
 int16_t	currentblk;
 int16_t	*myBegin;
 
-	if (!work_to_be_done && !newChannel)
+	if (!work_to_be_done)
 	   return;
 
 	currentblk	= (blkno - 4) % numberofblocksperCIF;
-//
-	if (newChannel) {
-	   locker. lock ();
-	   newChannel	= false;
-	   dabHandler -> stopRunning ();
-	   delete dabHandler;
-
-	   if (audioService)
-	      dabHandler = new dabAudio (myRadioInterface,
-	                                 new_dabModus,
-	                                 new_Length * CUSize,
-	                                 new_bitRate,
-	                                 new_shortForm,
-	                                 new_protLevel,
-	                                 audioBuffer,
-	                                 picturesPath);
-
-	   else	 {	// dealing with data
-	      dabHandler = new dabData (myRadioInterface,
-	                                new_DSCTy,
-	                                new_appType,
-	                                new_packetAddress,
-	                                new_Length * CUSize,
-	                                new_bitRate,
-	                                new_shortForm,
-	                                new_protLevel,
-	                                new_DGflag,
-	                                new_FEC_scheme,
-	                                picturesPath,
-	                                show_crcErrors);
-	   }
-//
-//	these we need for actual processing
-	   startAddr	= new_startAddr;
-	   Length	= new_Length;
-//	and this one to get started
-	   work_to_be_done	= true;
-	   locker. unlock ();
-	}
-//
 //	and the normal operation is:
 	memcpy (&cifVector [currentblk * BitsperBlock],
 	                    fbits, BitsperBlock * sizeof (int16_t));
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
+
+	locker. lock ();
 //
 //	OK, now we have a full CIF
 	blkCount	= 0;
@@ -193,6 +175,7 @@ int16_t	*myBegin;
 //	separate task or separate function, depending on
 //	the settings in the ini file, we might take advantage of multi cores
 	(void) dabHandler -> process (myBegin, Length * CUSize);
+	locker. unlock ();
 }
 //
 

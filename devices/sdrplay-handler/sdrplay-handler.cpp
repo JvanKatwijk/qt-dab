@@ -39,6 +39,7 @@ mir_sdr_DeviceT devDesc [4];
 mir_sdr_GainValuesT gainDesc;
 sdrplaySelect	*sdrplaySelector;
 
+	fprintf (stderr, "size of devdesc is %d\n", sizeof (mir_sdr_DeviceT));
 	sdrplaySettings			= s;
 	this	-> myFrame		= new QFrame (NULL);
 	setupUi (this -> myFrame);

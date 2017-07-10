@@ -138,7 +138,7 @@ uint8_t	shiftRegister [9];
 	while (running) {
 	   while (Buffer -> GetRingBufferReadAvailable () <= fragmentSize) {
 	      ourMutex. lock ();
-	      Locker. wait (&ourMutex, 1);	// 1 msec waiting time
+	      Locker. wait (&ourMutex, 10);	// 10 msec waiting time
 	      ourMutex. unlock ();
 	      if (!running)
 	         break;

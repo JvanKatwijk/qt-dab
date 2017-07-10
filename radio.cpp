@@ -894,6 +894,7 @@ void	RadioInterface::clear_showElements (void) {
 	techData. programType		-> setText (QString (""));
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
+	techData. transmitter_coordinates -> setText (" ");
 #endif
 	snrDisplay		-> display (0);
 	if (pictureLabel != NULL)
@@ -1375,13 +1376,14 @@ void	RadioInterface::selectService (QString s) {
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
+	techData. transmitter_coordinates -> setText (" ");
 #endif
 	switch (my_ficHandler. kindofService (s)) {
 	   case AUDIO_SERVICE:
 	      { audiodata d;
 	        my_ficHandler. dataforAudioService (s, &d);
 	        if (d. bitRate == 0) {
-               QMessageBox::warning (this, tr ("Warning"),
+                   QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("unknown bitrate for this program\n"));
  	           return;
  	        }
@@ -1555,6 +1557,7 @@ SF_INFO *sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   qDebug () << "cannot open " << file. toLatin1 (). data ();
 	   return;
 	}
+
 	dumpButton	-> setText ("writing");
 	sourceDumping		= true;
 	my_ofdmProcessor -> startDumping (dumpfilePointer);
