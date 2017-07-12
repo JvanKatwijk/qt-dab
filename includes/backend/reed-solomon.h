@@ -13,8 +13,8 @@
 class	reedSolomon {
 private:
 	galois	myGalois;
-	uint16_t symsize;		/* Bits per symbol */
-	uint16_t codeLength;		/* Symbols per block (= (1<<mm)-1) */
+	uint16_t symsize;	/* Bits per symbol */
+	uint16_t codeLength;	/* Symbols per block (= (1<<mm)-1) */
 	uint8_t *generator;	/* Generator polynomial */
 	uint16_t nroots;	/* Number of generator roots = number of parity symbols */
 	uint8_t fcr;		/* First consecutive root, index form */

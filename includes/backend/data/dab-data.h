@@ -23,10 +23,9 @@
 #ifndef	__DAB_DATA__
 #define	__DAB_DATA__
 
+#include	<QSemaphore>
 #include	"dab-virtual.h"
 #include	<QThread>
-#include	<QMutex>
-#include	<QWaitCondition>
 #include	"ringbuffer.h"
 #include	<stdio.h>
 #include	<string.h>
@@ -68,9 +67,6 @@ private:
 	int16_t		crcErrors;
 void	run		(void);
 	volatile bool	running;
-	QWaitCondition	Locker;
-	QMutex		ourMutex;
-	FILE		*tstFile;
 	int32_t		countforInterleaver;
 	uint8_t		*outV;
 	int16_t		**interleaveData;
@@ -78,6 +74,12 @@ void	run		(void);
 	protection	*protectionHandler;
 	RingBuffer<int16_t>	*Buffer;
 	dabProcessor	*our_dabProcessor;
+	QSemaphore      freeSlots;
+	QSemaphore      usedSlots;
+	int16_t         *theData [20];
+	int16_t         nextIn;
+	int16_t         nextOut;
+
 //
 signals:
 	void		show_mscErrors		(int);

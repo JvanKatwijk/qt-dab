@@ -34,7 +34,7 @@
 class	RadioInterface;
 class	dabVirtual;
 
-class mscHandler {
+class mscHandler  {
 public:
 		mscHandler		(RadioInterface *,
 	                                 uint8_t,

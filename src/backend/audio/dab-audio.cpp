@@ -22,25 +22,14 @@
 #
 #include	"dab-constants.h"
 #include	"dab-audio.h"
-#include	<QThread>
-#include	<QMutex>
-#include	<QWaitCondition>
 #include	"mp2processor.h"
 #include	"mp4processor.h"
 #include	"eep-protection.h"
 #include	"uep-protection.h"
 #include	"radio.h"
 //
-//	As an experiment a version of the backend is created
-//	that will be running in a separate thread. Might be
-//	useful for multicore processors.
-//
 //	Interleaving is - for reasons of simplicity - done
 //	inline rather than through a special class-object
-//static
-//int8_t	interleaveDelays [] = {
-//	     15, 7, 11, 3, 13, 5, 9, 1, 14, 6, 10, 2, 12, 4, 8, 0};
-//
 //
 //	fragmentsize == Length * CUSize
 	dabAudio::dabAudio	(RadioInterface *mr,
@@ -50,7 +39,8 @@
 	                         bool	shortForm,
 	                         int16_t protLevel,
 	                         RingBuffer<int16_t> *buffer,
-	                         QString	picturesPath) {
+	                         QString	picturesPath):
+	                             freeSlots (20) {
 int32_t i, j;
 	this	-> dabModus		= dabModus;
 	this	-> fragmentSize		= fragmentSize;
@@ -59,6 +49,12 @@ int32_t i, j;
 	this	-> protLevel		= protLevel;
 	this	-> myRadioInterface	= mr;
 	this	-> audioBuffer		= buffer;
+
+//	for local buffering the input, we have
+	nextIn				= 0;
+	nextOut				= 0;
+	for (i = 0; i < 20; i ++)
+	   theData [i] = new int16_t [fragmentSize];
 
 	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // max size
@@ -89,7 +85,6 @@ int32_t i, j;
 	   our_dabProcessor = new dabProcessor ();
 
 	fprintf (stderr, "we have now %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
-	Buffer		= new RingBuffer<int16_t>(64 * 32768);
 	Data		= new int16_t [fragmentSize];
 	tempX		= new int16_t [fragmentSize];
 	running		= true;
@@ -103,29 +98,25 @@ int16_t	i;
 	   usleep (1);
 	delete protectionHandler;
 	delete our_dabProcessor;
-	delete	Buffer;
 	delete[]	outV;
 	for (i = 0; i < 16; i ++) 
 	   delete[]  interleaveData [i];
+	for (i = 0; i < 20; i ++)
+	   delete [] theData [i];
 	delete [] interleaveData;
 	delete [] Data;
 	delete [] tempX;
 }
 
 int32_t	dabAudio::process	(int16_t *v, int16_t cnt) {
-int32_t	fr;
 
-	if (Buffer -> GetRingBufferWriteAvailable () < cnt)
-	   fprintf (stderr, "dab-concurrent: buffer full\n");
-	while ((fr = Buffer -> GetRingBufferWriteAvailable ()) <= cnt) {
+	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
-	   usleep (1);
-	}
-
-	Buffer	-> putDataIntoBuffer (v, cnt);
-	Locker. wakeAll ();
-	return fr;
+	memcpy (theData [nextIn], v, fragmentSize * sizeof (int16_t));
+	nextIn = (nextIn + 1) % 20;
+	usedSlots. release ();
+	return 1;
 }
 
 const	int16_t interleaveMap [] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
@@ -136,26 +127,23 @@ int16_t	interleaverIndex	= 0;
 uint8_t	shiftRegister [9];
 
 	while (running) {
-	   while (Buffer -> GetRingBufferReadAvailable () <= fragmentSize) {
-	      ourMutex. lock ();
-	      Locker. wait (&ourMutex, 10);	// 10 msec waiting time
-	      ourMutex. unlock ();
+	   while (!usedSlots. tryAcquire (1, 200)) 
 	      if (!running)
-	         break;
-	   }
-
-	   if (!running) 
-	      break;
-
-	   Buffer	-> getDataFromBuffer (Data, fragmentSize);
+	         return;
+//
+//	rather than copying the data to a separate vector, we
+//	"use" it directly in the interleaver
+//	   memcpy (Data, theData [nextOut], fragmentSize * sizeof (int16_t));
 
 	   for (i = 0; i < fragmentSize; i ++) {
 	      tempX [i] = interleaveData [(interleaverIndex + 
 	                                  interleaveMap [i & 017]) & 017][i];
-	      interleaveData [interleaverIndex][i] = Data [i];
+	      interleaveData [interleaverIndex][i] = theData [nextOut] [i];
 	   }
+	   nextOut = (nextOut + 1) % 20;
+	   freeSlots. release ();
+
 	   interleaverIndex = (interleaverIndex + 1) & 0x0F;
-//
 //	only continue when de-interleaver is filled
 	   if (countforInterleaver <= 15) {
 	      countforInterleaver ++;

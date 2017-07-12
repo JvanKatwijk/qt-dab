@@ -23,10 +23,9 @@
 #ifndef	__DAB_AUDIO
 #define	__DAB_AUDIO
 
+#include	<QSemaphore>
 #include	"dab-virtual.h"
 #include	<QThread>
-#include	<QMutex>
-#include	<QWaitCondition>
 #include	"ringbuffer.h"
 #include	<stdio.h>
 
@@ -62,12 +61,14 @@ volatile bool		running;
 	int16_t		**interleaveData;
 	int16_t		*Data;
 	int16_t		*tempX;
-	QWaitCondition	Locker;
-	QMutex		ourMutex;
 
 	protection	*protectionHandler;
 	dabProcessor	*our_dabProcessor;
-	RingBuffer<int16_t>	*Buffer;
+	QSemaphore	freeSlots;
+	QSemaphore	usedSlots;
+	int16_t		*theData [20];
+	int16_t		nextIn;
+	int16_t		nextOut;
 };
 
 #endif

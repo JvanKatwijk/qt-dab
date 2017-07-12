@@ -50,7 +50,8 @@
 	                         uint8_t DGflag,
 	                       	 int16_t FEC_scheme,
 	                         QString	picturesPath,
-	                         bool	show_crcErrors) {
+	                         bool	show_crcErrors):
+	                            freeSlots (20) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> DSCTy		= DSCTy;
@@ -71,6 +72,11 @@ int32_t i, j;
 	                                             FEC_scheme,
 	                                             picturesPath,
 	                                             show_crcErrors);
+	nextIn                          = 0;
+        nextOut                         = 0;
+        for (i = 0; i < 20; i ++)
+           theData [i] = new int16_t [fragmentSize];
+
 	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // the size
 	for (i = 0; i < 16; i ++) {
@@ -104,19 +110,19 @@ int16_t	i;
 	delete[]	outV;
 	for (i = 0; i < 16; i ++)
 	   delete[] interleaveData [i];
+        for (i = 0; i < 20; i ++)
+           delete [] theData [i];
 	delete[]	interleaveData;
 }
 
 int32_t	dabData::process	(int16_t *v, int16_t cnt) {
-int32_t	fr;
-	   while ((fr = Buffer -> GetRingBufferWriteAvailable ()) < cnt) {
-	      if (!running)
-	         return 0;
-	      usleep (10);
-	   }
-	   Buffer	-> putDataIntoBuffer (v, cnt);
-	   Locker. wakeAll ();
-	   return fr;
+	while (!freeSlots. tryAcquire (1, 200))
+           if (!running)
+              return 0;
+        memcpy (theData [nextIn], v, fragmentSize * sizeof (int16_t));
+        nextIn = (nextIn + 1) % 20;
+        usedSlots. release ();
+        return 1;
 }
 
 const   int16_t interleaveMap[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
@@ -131,24 +137,20 @@ int16_t	i, j;
 
 	running	= true;
 	while (running) {
-	   while (Buffer -> GetRingBufferReadAvailable () < fragmentSize) {
-	      ourMutex. lock ();
-	      Locker. wait (&ourMutex, 1);	// 1 msec waiting time
-	      ourMutex. unlock ();
-	      if (!running)
-	         break;
-	   }
+	   while (!usedSlots. tryAcquire (1, 200))
+              if (!running)
+                 return;
 
-	   if (!running) 
-	      break;
+//	   memcpy (Data, theData [nextOut], fragmentSize * sizeof (int16_t));
 
-	   Buffer	-> getDataFromBuffer (Data, fragmentSize);
-//
 	   for (i = 0; i < fragmentSize; i ++) {
 	      tempX [i] = interleaveData [(interleaverIndex + 
 	                                 interleaveMap [i & 017]) & 017][i];
-	      interleaveData [interleaverIndex][i] = Data [i];
+	      interleaveData [interleaverIndex][i] = theData [nextOut] [i];
 	   }
+           nextOut = (nextOut + 1) % 20;
+	   freeSlots. release ();
+
 	   interleaverIndex = (interleaverIndex + 1) & 0x0F;
 
 //	only continue when de-interleaver is filled
