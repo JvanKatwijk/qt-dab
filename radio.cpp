@@ -1692,6 +1692,7 @@ QString	ensembleLabel	= my_ficHandler. get_ensembleName ();
 int32_t	ensembleId	= my_ficHandler. get_ensembleId ();
 QString currentChannel	= channelSelector -> currentText ();
 int32_t	frequency	= inputDevice -> getVFOFrequency ();
+bool	firstData;
 
 	if (ensembleLabel == QString (""))
 	   return;
@@ -1713,7 +1714,7 @@ int32_t	frequency	= inputDevice -> getVFOFrequency ();
 	                  currentChannel. toLatin1 (). data (),
 	                  frequency / 1000);
 	                
-	fprintf (file_P, "program name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
+	fprintf (file_P, "\nAufio services\nprogram name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 	for (i = 0; i < 64; i ++) {
 	   audiodata d;
 	   my_ficHandler. dataforAudioService (i, &d);
@@ -1757,6 +1758,53 @@ int32_t	frequency	= inputDevice -> getVFOFrequency ();
 	                     get_programm_language_string (d. language),
 	                     get_programm_type_string (d. programType) );
 	}
+
+	firstData	= true;
+	for (i = 0; i < 64; i ++) {
+	   packetdata d;
+	   my_ficHandler. dataforDataService (i, &d);
+	   if (!d. defined)
+	      continue;
+
+	   if (firstData) {
+	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;sub channel;start address;length (CU); bit rate; FEC; prot level; appType ; ; \n\n");
+	      firstData = false;
+	   }
 	   
+	   uint16_t h = d. protLevel;
+	   QString protL;
+	   QString codeRate;
+	   if (!d. shortForm) {
+	      protL = "EEP ";
+	      if ((h & (1 << 2)) == 0) {
+	         protL. append ("A ");
+	         codeRate = eep_Arates [(h & 03) + 1];
+	      }
+	      else {
+	         protL. append ("B ");
+	         codeRate = eep_Brates [(h & 03) + 1];
+	      }
+	      h = (h & 03) + 1;
+	      protL. append (QString::number (h));
+	   }
+	   else  {
+	      h = h & 03;
+	      protL = "UEP ";
+	      protL. append (QString::number (h));
+	      codeRate = uep_rates [h + 1];
+	   }
+	   countryId = (d. serviceId >> (5 * 4)) & 0xF;
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;;;\n",
+	                     d. serviceName. toLatin1(). data (),
+	                     code_to_string (ecc_byte, countryId),
+	                     d. serviceId,
+	                     d. subchId,
+	                     d. startAddr,
+	                     d. length,
+	                     d. bitRate,
+	                     d. FEC_scheme,
+	                     protL. toLatin1 (). data (),
+	                     d. appType);
+	}
 	fclose (file_P);
 }

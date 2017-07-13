@@ -141,6 +141,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	set (${objectName}_HDRS
 	     ./includes/dab-constants.h
+	     ./includes/country-codes.h
 	     ./includes/ofdm/ofdm-processor.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h

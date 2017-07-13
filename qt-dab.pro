@@ -56,6 +56,7 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./includes/dab-constants.h \
+	   ./includes/country-codes.h \
 	   ./includes/ofdm/ofdm-processor.h \
 	   ./includes/ofdm/ofdm-decoder.h \
 	   ./includes/ofdm/phasereference.h \

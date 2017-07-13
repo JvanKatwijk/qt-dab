@@ -141,6 +141,8 @@ float	im	= imag (z);
 //	for service handling we define
 typedef struct {
 	bool	defined;
+	QString	serviceName;
+	int32_t	serviceId;
 	int16_t subchId;
 	int16_t	startAddr;
 	bool	shortForm;

@@ -74,6 +74,7 @@
         typedef struct servicecomponents serviceComponent;
 
 	struct subchannelmap {
+	   bool		inUse;
 	   int32_t	SubChId;
 	   int32_t	StartAddr;
 	   int32_t	Length;
@@ -108,6 +109,7 @@ public:
 	void	dataforAudioService	(QString &, audiodata *);
 	void	dataforAudioService	(int16_t,   audiodata *);
 	void	dataforDataService	(QString &, packetdata *);
+	void	dataforDataService	(int16_t, packetdata *);
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
 	int16_t	mainId			(void);
 	uint8_t	get_ecc			(void);
@@ -126,6 +128,8 @@ private:
         void            bind_packetService (int8_t,
                                             uint32_t, int16_t,
                                             int16_t, int16_t, int16_t);
+	int32_t		findServiceIdwithName (QString &s);
+
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
 	void		FIG0Extension0		(uint8_t *);
