@@ -15,7 +15,7 @@
  */
 /*
  *	Rewritten - and slightly adapted while doing so -
- *	as a C++ class for use in the sdr-j dab decoder(s)
+ *	as a C++ class for use in the Qt-DAB program
  *	Copyright 2015 Jan van Katwijk
  *	May be used under the terms of the GNU General Public License (GPL)
  */
