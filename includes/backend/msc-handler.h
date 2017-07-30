@@ -77,6 +77,9 @@ private:
 	int16_t		BitsperBlock;
 	int16_t		numberofblocksperCIF;
 	int16_t		blockCount;
+
+	int16_t		**interleaveData;
+	int16_t		interleaverIndex;
 };
 
 #endif

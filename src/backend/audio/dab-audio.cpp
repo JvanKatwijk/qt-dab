@@ -140,6 +140,7 @@ uint8_t	shiftRegister [9];
 	                                  interleaveMap [i & 017]) & 017][i];
 	      interleaveData [interleaverIndex][i] = theData [nextOut] [i];
 	   }
+
 	   nextOut = (nextOut + 1) % 20;
 	   freeSlots. release ();
 

@@ -85,6 +85,7 @@ private:
 	int16_t		getMiddle	(void);
 	DSPCOMPLEX	*phaseReference;
 	common_fft	*fft_handler;
+	DSPCOMPLEX	*vector_2;
 	DSPCOMPLEX	*fft_buffer;
 	interLeaver	myMapper;
 	phaseTable	*phasetable;

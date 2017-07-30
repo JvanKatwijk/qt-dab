@@ -70,6 +70,7 @@ int16_t	i;
 	this	-> carriers		= params. get_carriers ();
 	ibits				= new int16_t [2 * this -> carriers];
 
+//	vector_2			= new DSPCOMPLEX [T_u];
 	this	-> T_g			= T_s - T_u;
 	fft_handler			= new common_fft (T_u);
 	fft_buffer			= fft_handler -> getVector ();
@@ -106,6 +107,7 @@ int16_t	i;
 	for (i = 0; i < nrBlocks; i ++)
 	   delete[] command [i];
 	delete[]	command;
+//	delete[]	vector_2;
 }
 
 void	ofdmDecoder::stop		(void) {
@@ -321,6 +323,7 @@ handlerLabel:
 //	fftbuffer contained low and high at the ends
 //	and we maintain that format
 	if (blkno == 2) {
+//	   memcpy (vector_2, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 	   if (++cnt > 7) {
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [0],
 	                                      carriers / 2);
@@ -366,7 +369,21 @@ toBitsLabel:
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
+
 	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
+
+//	if (cnt == 0)
+//	   if (blkno == nrBlocks - 1) {
+//	      for (i = 0; i < T_u; i ++)
+//	         vector_2 [i] = vector_2 [i] * conj (fft_buffer [i]);
+//	   
+//	      iqBuffer	-> putDataIntoBuffer (&vector_2 [0],
+//	                                         carriers / 2);
+//	      iqBuffer	-> putDataIntoBuffer (&vector_2 [T_u - 1 - carriers / 2],
+//	                                         carriers / 2);
+//	      showIQ    (carriers);
+//	   }
+//	
 handlerLabel:;
 	my_mscHandler -> process_mscBlock (ibits, blkno);
 }

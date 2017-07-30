@@ -220,6 +220,10 @@ int	k;
 //	based on these slider values
 	rtlsdr_set_tuner_gain_mode (device,
 	                   combo_autogain -> currentText () == "autogain_on");
+	if (combo_autogain -> currentText () == "autogain_on")
+	   rtlsdr_set_agc_mode (device, 1);
+	else
+	   rtlsdr_set_agc_mode (device, 0);
 	rtlsdr_set_tuner_gain	(device, theGain);
 	set_ppmCorrection	(ppm_correction -> value ());
 	set_KhzOffset		(KhzOffset -> value ());
@@ -308,7 +312,7 @@ int32_t	r;
 
 	this -> rtlsdr_set_center_freq (device, lastFrequency + vfoOffset);
 	workerHandle	= new dll_driver (this);
-	rtlsdr_set_tuner_gain_mode (device,
+	rtlsdr_set_agc_mode (device,
                 combo_autogain -> currentText () == "autogain_on" ? 1 : 0);
 	rtlsdr_set_tuner_gain (device, theGain);
 	return true;
@@ -327,7 +331,7 @@ void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
 }
 //
 void	rtlsdrHandler::set_autogain	(const QString &autogain) {
-	rtlsdr_set_tuner_gain_mode (device, autogain == "autogain_off" ? 0 : 1);
+	rtlsdr_set_agc_mode (device, autogain == "autogain_off" ? 0 : 1);
 	rtlsdr_set_tuner_gain (device, theGain);
 }
 //
@@ -403,6 +407,13 @@ bool	rtlsdrHandler::load_rtlFunctions (void) {
 	                     GETPROCADDRESS (Handle, "rtlsdr_set_tuner_gain_mode");
 	if (rtlsdr_set_tuner_gain_mode == NULL) {
 	   fprintf (stderr, "Could not find rtlsdr_set_tuner_gain_mode\n");
+	   return false;
+	}
+
+	rtlsdr_set_agc_mode	= (pfnrtlsdr_set_agc_mode)
+	                     GETPROCADDRESS (Handle, "rtlsdr_set_agc_mode");
+	if (rtlsdr_set_agc_mode == NULL) {
+	   fprintf (stderr, "Could not find rtlsdr_set_agc_mode\n");
 	   return false;
 	}
 

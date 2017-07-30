@@ -69,7 +69,6 @@
 	      numberofblocksperCIF	= 18;
 	      break;
 	}
-
 }
 
 		mscHandler::~mscHandler	(void) {
@@ -106,7 +105,7 @@ void	mscHandler::set_audioChannel (audiodata *d) {
 	                           protLevel,
 	                           audioBuffer,
 	                           picturesPath);
-	work_to_be_done	= true;
+	work_to_be_done		= true;
 	locker. unlock ();
 }
 //
@@ -172,8 +171,7 @@ int16_t	*myBegin;
 	cifCount	= (cifCount + 1) & 03;
 	myBegin		= &cifVector [startAddr * CUSize];
 //	Here we move the vector to be processed to a
-//	separate task or separate function, depending on
-//	the settings in the ini file, we might take advantage of multi cores
+//	separate function executed by a separate thread
 	(void) dabHandler -> process (myBegin, Length * CUSize);
 	locker. unlock ();
 }
