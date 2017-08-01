@@ -123,6 +123,9 @@ const	char		*get_programm_language_string (int16_t);
 	QString		ensembleLabel;
 	QTimer		displayTimer;
 	QTimer		signalTimer;
+	QTimer		presetTimer;
+	QString		presetName;
+	QString		currentName;
 	int32_t		numberofSeconds;
 	void		resetSelector		(void);
 	int16_t		ficBlocks;
@@ -193,7 +196,7 @@ private slots:
 	void	set_dumping		(void);
 	void	set_audioDump		(void);
 	void    showEnsembleData	(void);
-
+	void	setPresetStation	(void);
 };
 #endif
 

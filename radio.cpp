@@ -144,7 +144,6 @@ int16_t k;
 	threshold	=
 	           dabSettings -> value ("threshold", 3). toInt ();
 
-
 	isSynced		= UNSYNCED;
 //
 //	latency is used to allow different settings for different
@@ -160,7 +159,12 @@ int16_t k;
 //	value is passed on though
 	show_crcErrors		= dabSettings -> value ("show_crcErrors", 0). toInt () != 0;
 	autoStart		= dabSettings -> value ("autoStart", 0). toInt () != 0;
-//
+#ifdef	PRESET_NAME
+	presetName		= dabSettings -> value ("presetname", ""). toString ();
+	currentName		= QString ("");
+	if (presetName != QString (""))
+	   autoStart = true;
+#endif
 
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
@@ -194,7 +198,7 @@ int16_t k;
         spectrumHandler -> show ();
 #endif
 #ifdef	__MINGW32__
-    QString	defaultPath	= "%tmp%/qt-pictures";
+	QString	defaultPath	= "%tmp%/qt-pictures";
 #else
 	QString	defaultPath	= "/tmp/qt-pictures";
 #endif
@@ -258,8 +262,18 @@ int16_t k;
                            setStyleSheet ("QLabel {background-color : red}");
 #endif
 
-	if (autoStart)
+	if (autoStart) {
+#ifdef	PRESET_NAME
+	   if (presetName != QString ("")) {
+	      presetTimer. setSingleShot (true);
+	      presetTimer. setInterval (8000);
+	      connect (&presetTimer, SIGNAL (timeout (void)),
+	               this, SLOT (setPresetStation (void)));
+	      presetTimer. start (8000);
+	   }
+#endif
 	   setStart ();
+	}
 }
 
 	RadioInterface::~RadioInterface () {
@@ -274,6 +288,9 @@ int16_t k;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
+#ifdef	PRESET_NAME
+	s	-> setValue ("presetname", currentName);
+#endif
 	s	-> setValue ("autoStart", autoStart? 1 : 0);
 	s	-> setValue ("band", bandSelector -> currentText ());
 	s	-> setValue ("channel",
@@ -579,6 +596,7 @@ void	RadioInterface::Yes_Signal_Found (void) {
 }
 
 void	RadioInterface::set_Scanning	(void) {
+	presetTimer. stop ();
 	setStereo (false);
 	if (!running)
 	   return;
@@ -660,7 +678,6 @@ QString s;
 	my_ofdmProcessor	-> coarseCorrectorOff ();
 	Yes_Signal_Found ();
 }
-
 
 /**
   *	\brief show_successRate
@@ -989,6 +1006,7 @@ void	RadioInterface::selectChannel (QString s) {
 int32_t	tunedFrequency;
 bool	localRunning	= running;
 
+	presetTimer. stop ();
 	setStereo (false);
 	if (scanning)
 	   set_Scanning ();	// switch it off
@@ -1147,6 +1165,7 @@ void	RadioInterface::setDevice (QString s) {
 QString	file;
 //
 ///	first stop dumping
+	presetTimer. stop ();
 	dynamicLabel    -> setText (" ");
         if (pictureLabel != NULL)
            delete pictureLabel;
@@ -1354,6 +1373,7 @@ QString	file;
 //	hand over the relevant data in two steps
 void	RadioInterface::selectService (QModelIndex s) {
 QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString ();
+	presetTimer. stop ();
 	selectService (currentProgram);
 }
 //
@@ -1362,7 +1382,9 @@ void	RadioInterface::selectService (QString s) {
 	if ((my_ficHandler. kindofService (s) != AUDIO_SERVICE) &&
 	    (my_ficHandler. kindofService (s) != PACKET_SERVICE))
 	return;
-
+#ifdef	PRESET_NAME
+	currentName = s;
+#endif
 	setStereo (false);
 	soundOut	-> stop ();
 	thereisSound	= false;
@@ -1676,9 +1698,9 @@ int16_t	i = 0;
 	return "          ";
 }
 
-const char *uep_rates []   = {NULL, "7/20", "2/5", "1/2", "3/5"};
-const char *eep_Arates [] = {NULL, "1/4", "3/8", "1/2", "3/4"};
-const char *eep_Brates [] = {NULL, "4/9", "4/7", "4/6", "4/5"};
+const char *uep_rates  [] = {NULL, "7/20", "2/5", "1/2", "3/5"};
+const char *eep_Arates [] = {NULL, "1/4",  "3/8", "1/2", "3/4"};
+const char *eep_Brates [] = {NULL, "4/9",  "4/7", "4/6", "4/5"};
 
 void	RadioInterface::showEnsembleData (void) {
 uint8_t	countryId;
@@ -1804,3 +1826,21 @@ bool	firstData;
 	}
 	fclose (file_P);
 }
+
+void	RadioInterface::setPresetStation (void) {
+int16_t i;
+
+	if (ensembleLabel == QString (""))
+	   return;
+#ifdef	PRESET_NAME
+	if (presetName == QString (""))		// should not happen
+	   return;
+
+	for (i = 0; i < Services. size (); i ++)
+	   if (Services. at (i). contains (presetName)) {
+	      selectService (presetName);
+	      return;
+	   }
+#endif
+}
+

@@ -214,6 +214,9 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
 DEFINES		+= __QUALITY		# just a counter in spectrum display
 
+#and this one is experimental
+DEFINES		+= PRESET_NAME
+
 #experimental, might show transmitter coordinates
 CONFIG		+= try_tii		# 
 }

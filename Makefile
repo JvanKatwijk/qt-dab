@@ -12,7 +12,7 @@ MAKEFILE      = Makefile
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DTECHNICAL_DATA -DMOT_DATA -DMSC_DATA__ -D__QUALITY -DHAVE_SPECTRUM -DHAVE_RTLSDR -DHAVE_SDRPLAY -DHAVE_AIRSPY -DHAVE_RTL_TCP -DTII_COORDINATES -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
+DEFINES       = -DTECHNICAL_DATA -DMOT_DATA -DMSC_DATA__ -D__QUALITY -DPRESET_NAME -DHAVE_SPECTRUM -DHAVE_RTLSDR -DHAVE_SDRPLAY -DHAVE_AIRSPY -DHAVE_RTL_TCP -DTII_COORDINATES -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -flto -ffast-math -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -flto -ffast-math -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I. -I. -Isrc -Iincludes -Iincludes/ofdm -Iincludes/backend -Iincludes/backend/viterbi_768 -Iincludes/backend/audio -Iincludes/backend/data -Iincludes/backend/data/journaline -Iincludes/output -Iincludes/various -Idevices -Idevices/rawfiles -Idevices/wavfiles -I../../../../local/include -I../../../../local/include -isystem /usr/include/qt4/qwt -I../../../../include/qt5/qwt -isystem /usr/include/qt4/qwt -isystem /usr/include/qwt -I/usr/local/qwt-6.1.4-svn/ -Iincludes/scopes-qwt6 -Iincludes/scopes-qwt6 -Ioptional-scope -Idevices/rtlsdr-handler -Idevices/sdrplay-handler -Idevices/airspy-handler -Idevices/airspy-handler/libairspy -Idevices/rtl_tcp -I../../../../include/qt5 -I../../../../include/qt5/QtWidgets -I../../../../include/qt5/QtGui -I../../../../include/qt5/QtNetwork -I../../../../include/qt5/QtCore -I. -I. -I../../../../lib64/qt5/mkspecs/linux-g++
@@ -981,6 +981,34 @@ moc_radio.cpp: includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -1006,6 +1034,8 @@ moc_radio.cpp: includes/dab-constants.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		radio.h \
 		moc_predefs.h \
 		../../../../lib64/qt5/bin/moc
@@ -2162,10 +2192,43 @@ moc_spectrum-handler.cpp: includes/dab-constants.h \
 		../../../../include/qt5/QtGui/qtouchdevice.h \
 		../../../../include/qt5/QtCore/QObject \
 		ui_scopewidget.h \
-		includes/various/ringbuffer.h \
-		../../../../include/qt5/qwt/qwt.h \
-		../../../../include/qt5/qwt/qwt_global.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QWidget \
 		../../../../include/qt5/qwt/qwt_plot.h \
+		../../../../include/qt5/qwt/qwt_global.h \
 		../../../../include/qt5/qwt/qwt_text.h \
 		../../../../include/qt5/qwt/qwt_plot_dict.h \
 		../../../../include/qt5/qwt/qwt_plot_item.h \
@@ -2179,6 +2242,8 @@ moc_spectrum-handler.cpp: includes/dab-constants.h \
 		../../../../include/qt5/qwt/qwt_scale_map.h \
 		../../../../include/qt5/qwt/qwt_transform.h \
 		../../../../include/qt5/qwt/qwt_interval.h \
+		includes/various/ringbuffer.h \
+		../../../../include/qt5/qwt/qwt.h \
 		../../../../include/qt5/qwt/qwt_plot_marker.h \
 		../../../../include/qt5/qwt/qwt_plot_grid.h \
 		../../../../include/qt5/qwt/qwt_scale_div.h \
@@ -2266,6 +2331,81 @@ moc_rtlsdr-handler.cpp: ../../../../include/qt5/QtCore/QObject \
 		devices/virtual-input.h \
 		includes/various/ringbuffer.h \
 		ui_rtlsdr-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qkeysequence.h \
+		../../../../include/qt5/QtWidgets/qwidget.h \
+		../../../../include/qt5/QtGui/qwindowdefs.h \
+		../../../../include/qt5/QtGui/qwindowdefs_win.h \
+		../../../../include/qt5/QtCore/qmargins.h \
+		../../../../include/qt5/QtGui/qpaintdevice.h \
+		../../../../include/qt5/QtCore/qrect.h \
+		../../../../include/qt5/QtCore/qsize.h \
+		../../../../include/qt5/QtGui/qpalette.h \
+		../../../../include/qt5/QtGui/qcolor.h \
+		../../../../include/qt5/QtGui/qrgb.h \
+		../../../../include/qt5/QtGui/qrgba64.h \
+		../../../../include/qt5/QtGui/qbrush.h \
+		../../../../include/qt5/QtGui/qmatrix.h \
+		../../../../include/qt5/QtGui/qpolygon.h \
+		../../../../include/qt5/QtGui/qregion.h \
+		../../../../include/qt5/QtCore/qdatastream.h \
+		../../../../include/qt5/QtCore/qline.h \
+		../../../../include/qt5/QtGui/qtransform.h \
+		../../../../include/qt5/QtGui/qpainterpath.h \
+		../../../../include/qt5/QtGui/qimage.h \
+		../../../../include/qt5/QtGui/qpixelformat.h \
+		../../../../include/qt5/QtGui/qpixmap.h \
+		../../../../include/qt5/QtGui/qfont.h \
+		../../../../include/qt5/QtGui/qfontmetrics.h \
+		../../../../include/qt5/QtGui/qfontinfo.h \
+		../../../../include/qt5/QtWidgets/qsizepolicy.h \
+		../../../../include/qt5/QtGui/qcursor.h \
+		../../../../include/qt5/QtGui/qevent.h \
+		../../../../include/qt5/QtCore/qurl.h \
+		../../../../include/qt5/QtCore/qurlquery.h \
+		../../../../include/qt5/QtCore/qfile.h \
+		../../../../include/qt5/QtCore/qfiledevice.h \
+		../../../../include/qt5/QtGui/qvector2d.h \
+		../../../../include/qt5/QtGui/qtouchdevice.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QComboBox \
+		../../../../include/qt5/QtWidgets/qcombobox.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/qframe.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtWidgets/QFrame \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		devices/rtlsdr-handler/rtlsdr-handler.h \
 		moc_predefs.h \
 		../../../../lib64/qt5/bin/moc
@@ -2506,6 +2646,50 @@ moc_sdrplay-handler.cpp: ../../../../include/qt5/QtCore/QObject \
 		includes/various/ringbuffer.h \
 		devices/virtual-input.h \
 		ui_sdrplay-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QCheckBox \
+		../../../../include/qt5/QtWidgets/qcheckbox.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QComboBox \
+		../../../../include/qt5/QtWidgets/qcombobox.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		devices/sdrplay-handler/mirsdrapi-rsp.h \
 		devices/sdrplay-handler/sdrplay-handler.h \
 		moc_predefs.h \
@@ -2747,6 +2931,47 @@ moc_airspy-handler.cpp: ../../../../include/qt5/QtCore/QObject \
 		includes/various/ringbuffer.h \
 		devices/virtual-input.h \
 		ui_airspy-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QTabWidget \
+		../../../../include/qt5/QtWidgets/QWidget \
 		devices/airspy-handler/libairspy/airspy.h \
 		devices/airspy-handler/libairspy/airspy_commands.h \
 		devices/airspy-handler/airspy-handler.h \
@@ -3045,6 +3270,27 @@ moc_rtl_tcp_client.cpp: ../../../../include/qt5/QtNetwork/QtNetwork \
 		devices/virtual-input.h \
 		includes/various/ringbuffer.h \
 		ui_rtl_tcp-widget.h \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QFrame \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		devices/rtl_tcp/rtl_tcp_client.h \
 		moc_predefs.h \
 		../../../../lib64/qt5/bin/moc
@@ -3353,6 +3599,27 @@ main.o: main.cpp ../../../../include/qt5/QtWidgets/QApplication \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -3377,7 +3644,9 @@ main.o: main.cpp ../../../../include/qt5/QtWidgets/QApplication \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
@@ -3525,6 +3794,34 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -3550,6 +3847,8 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/output/audiosink.h \
 		includes/output/audio-base.h \
 		includes/output/newconverter.h \
@@ -3591,16 +3890,13 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		../../../../include/qt5/QtCore/qtemporaryfile.h \
 		../../../../include/qt5/QtCore/qabstractproxymodel.h \
 		../../../../include/qt5/QtCore/qidentityproxymodel.h \
-		../../../../include/qt5/QtCore/qitemselectionmodel.h \
 		../../../../include/qt5/QtCore/qsortfilterproxymodel.h \
 		../../../../include/qt5/QtCore/qjsonarray.h \
 		../../../../include/qt5/QtCore/qjsonvalue.h \
 		../../../../include/qt5/QtCore/qjsondocument.h \
 		../../../../include/qt5/QtCore/qjsonobject.h \
 		../../../../include/qt5/QtCore/qabstracteventdispatcher.h \
-		../../../../include/qt5/QtCore/qeventloop.h \
 		../../../../include/qt5/QtCore/qabstractnativeeventfilter.h \
-		../../../../include/qt5/QtCore/qcoreapplication.h \
 		../../../../include/qt5/QtCore/qmath.h \
 		../../../../include/qt5/QtCore/qmetaobject.h \
 		../../../../include/qt5/QtCore/qmimedata.h \
@@ -3662,7 +3958,6 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		../../../../include/qt5/QtNetwork/qnetworkrequest.h \
 		../../../../include/qt5/QtCore/QSharedDataPointer \
 		../../../../include/qt5/QtCore/QUrl \
-		../../../../include/qt5/QtCore/QVariant \
 		../../../../include/qt5/QtNetwork/qhttpmultipart.h \
 		../../../../include/qt5/QtCore/QIODevice \
 		../../../../include/qt5/QtNetwork/QNetworkRequest \
@@ -3706,8 +4001,13 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		../../../../include/qt5/QtNetwork/QTcpSocket \
 		devices/rtlsdr-handler/rtlsdr-handler.h \
 		ui_rtlsdr-widget.h \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
 		devices/sdrplay-handler/sdrplay-handler.h \
 		ui_sdrplay-widget.h \
+		../../../../include/qt5/QtWidgets/QCheckBox \
+		../../../../include/qt5/QtWidgets/qcheckbox.h \
+		../../../../include/qt5/QtWidgets/QSlider \
 		devices/sdrplay-handler/mirsdrapi-rsp.h \
 		devices/rtl_tcp/rtl_tcp_client.h \
 		../../../../include/qt5/QtWidgets/QLineEdit \
@@ -3719,13 +4019,13 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		ui_rtl_tcp-widget.h \
 		devices/airspy-handler/airspy-handler.h \
 		ui_airspy-widget.h \
+		../../../../include/qt5/QtWidgets/QTabWidget \
 		devices/airspy-handler/libairspy/airspy.h \
 		devices/airspy-handler/libairspy/airspy_commands.h \
 		optional-scope/spectrum-handler.h \
 		ui_scopewidget.h \
-		../../../../include/qt5/qwt/qwt.h \
-		../../../../include/qt5/qwt/qwt_global.h \
 		../../../../include/qt5/qwt/qwt_plot.h \
+		../../../../include/qt5/qwt/qwt_global.h \
 		../../../../include/qt5/qwt/qwt_text.h \
 		../../../../include/qt5/qwt/qwt_plot_dict.h \
 		../../../../include/qt5/qwt/qwt_plot_item.h \
@@ -3737,6 +4037,7 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		../../../../include/qt5/qwt/qwt_scale_map.h \
 		../../../../include/qt5/qwt/qwt_transform.h \
 		../../../../include/qt5/qwt/qwt_interval.h \
+		../../../../include/qt5/qwt/qwt.h \
 		../../../../include/qt5/qwt/qwt_plot_marker.h \
 		../../../../include/qt5/qwt/qwt_plot_grid.h \
 		../../../../include/qt5/qwt/qwt_scale_div.h \
@@ -3905,8 +4206,38 @@ ofdm-processor.o: src/ofdm/ofdm-processor.cpp includes/ofdm/ofdm-processor.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ofdm-processor.o src/ofdm/ofdm-processor.cpp
 
 ofdm-decoder.o: src/ofdm/ofdm-decoder.cpp includes/ofdm/ofdm-decoder.h \
@@ -4053,6 +4384,34 @@ ofdm-decoder.o: src/ofdm/ofdm-decoder.cpp includes/ofdm/ofdm-decoder.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -4064,7 +4423,9 @@ ofdm-decoder.o: src/ofdm/ofdm-decoder.cpp includes/ofdm/ofdm-decoder.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ofdm-decoder.o src/ofdm/ofdm-decoder.cpp
 
 phasereference.o: src/ofdm/phasereference.cpp includes/ofdm/phasereference.h \
@@ -4355,6 +4716,34 @@ fic-handler.o: src/backend/fic-handler.cpp includes/backend/fic-handler.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/ofdm/ofdm-processor.h \
 		../../../../include/qt5/QtCore/QThread \
 		../../../../include/qt5/QtCore/qthread.h \
@@ -4371,6 +4760,8 @@ fic-handler.o: src/backend/fic-handler.cpp includes/backend/fic-handler.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/protTables.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fic-handler.o src/backend/fic-handler.cpp
 
@@ -4505,6 +4896,34 @@ msc-handler.o: src/backend/msc-handler.cpp includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -4530,6 +4949,8 @@ msc-handler.o: src/backend/msc-handler.cpp includes/dab-constants.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/dab-virtual.h \
 		includes/backend/audio/dab-audio.h \
 		includes/backend/data/dab-data.h
@@ -4752,6 +5173,34 @@ fib-processor.o: src/backend/fib-processor.cpp includes/backend/fib-processor.h 
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/ofdm/ofdm-processor.h \
@@ -4770,6 +5219,8 @@ fib-processor.o: src/backend/fib-processor.cpp includes/backend/fib-processor.h 
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/charsets.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o fib-processor.o src/backend/fib-processor.cpp
 
@@ -4952,6 +5403,34 @@ dab-virtual.o: src/backend/dab-virtual.cpp includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -4977,6 +5456,8 @@ dab-virtual.o: src/backend/dab-virtual.cpp includes/dab-constants.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/output/audiosink.h \
 		includes/output/audio-base.h \
 		includes/output/newconverter.h
@@ -5143,6 +5624,34 @@ dab-audio.o: src/backend/audio/dab-audio.cpp includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/fib-processor.h \
 		includes/backend/msc-handler.h \
@@ -5159,7 +5668,9 @@ dab-audio.o: src/backend/audio/dab-audio.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dab-audio.o src/backend/audio/dab-audio.cpp
 
 mp2processor.o: src/backend/audio/mp2processor.cpp includes/backend/audio/mp2processor.h \
@@ -5298,6 +5809,34 @@ mp2processor.o: src/backend/audio/mp2processor.cpp includes/backend/audio/mp2pro
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -5320,7 +5859,9 @@ mp2processor.o: src/backend/audio/mp2processor.cpp includes/backend/audio/mp2pro
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mp2processor.o src/backend/audio/mp2processor.cpp
 
 mp4processor.o: src/backend/audio/mp4processor.cpp includes/backend/audio/mp4processor.h \
@@ -5467,6 +6008,34 @@ mp4processor.o: src/backend/audio/mp4processor.cpp includes/backend/audio/mp4pro
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -5489,6 +6058,8 @@ mp4processor.o: src/backend/audio/mp4processor.cpp includes/backend/audio/mp4pro
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/charsets.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mp4processor.o src/backend/audio/mp4processor.cpp
 
@@ -5627,6 +6198,34 @@ faad-decoder.o: src/backend/audio/faad-decoder.cpp includes/backend/audio/faad-d
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -5649,7 +6248,9 @@ faad-decoder.o: src/backend/audio/faad-decoder.cpp includes/backend/audio/faad-d
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o faad-decoder.o src/backend/audio/faad-decoder.cpp
 
 pad-handler.o: src/backend/data/pad-handler.cpp includes/backend/data/pad-handler.h \
@@ -5785,6 +6386,34 @@ pad-handler.o: src/backend/data/pad-handler.cpp includes/backend/data/pad-handle
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -5809,6 +6438,8 @@ pad-handler.o: src/backend/data/pad-handler.cpp includes/backend/data/pad-handle
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/charsets.h \
 		includes/backend/data/mot-data.h \
 		../../../../include/qt5/QtGui/QImage \
@@ -5946,6 +6577,34 @@ dab-data.o: src/backend/data/dab-data.cpp includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -5971,6 +6630,8 @@ dab-data.o: src/backend/data/dab-data.cpp includes/dab-constants.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/dab-processor.h \
 		includes/backend/data/dab-data.h \
 		includes/backend/dab-virtual.h \
@@ -6111,6 +6772,34 @@ data-processor.o: src/backend/data/data-processor.cpp includes/dab-constants.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		../../../../include/qt5/QtCore/QObject \
@@ -6136,6 +6825,8 @@ data-processor.o: src/backend/data/data-processor.cpp includes/dab-constants.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		includes/backend/data/data-processor.h \
 		includes/backend/dab-processor.h \
 		includes/backend/data/virtual-datahandler.h \
@@ -6393,6 +7084,34 @@ ip-datahandler.o: src/backend/data/ip-datahandler.cpp includes/backend/data/ip-d
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -6416,7 +7135,9 @@ ip-datahandler.o: src/backend/data/ip-datahandler.cpp includes/backend/data/ip-d
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ip-datahandler.o src/backend/data/ip-datahandler.cpp
 
 mot-databuilder.o: src/backend/data/mot-databuilder.cpp includes/backend/data/mot-databuilder.h \
@@ -6556,6 +7277,34 @@ mot-databuilder.o: src/backend/data/mot-databuilder.cpp includes/backend/data/mo
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -6579,7 +7328,9 @@ mot-databuilder.o: src/backend/data/mot-databuilder.cpp includes/backend/data/mo
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
-		ui_technical_data.h
+		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mot-databuilder.o src/backend/data/mot-databuilder.cpp
 
 mot-data.o: src/backend/data/mot-data.cpp includes/backend/data/mot-data.h \
@@ -6717,6 +7468,34 @@ mot-data.o: src/backend/data/mot-data.cpp includes/backend/data/mot-data.h \
 		../../../../include/qt5/QtCore/qtimer.h \
 		../../../../include/qt5/QtCore/qbasictimer.h \
 		ui_dabradio.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QStatusBar \
+		../../../../include/qt5/QtWidgets/qstatusbar.h \
+		../../../../include/qt5/QtWidgets/QWidget \
 		includes/backend/fic-handler.h \
 		includes/backend/viterbi_768/viterbi-768.h \
 		includes/backend/fib-processor.h \
@@ -6741,6 +7520,8 @@ mot-data.o: src/backend/data/mot-data.cpp includes/backend/data/mot-data.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
 		ui_technical_data.h \
+		../../../../include/qt5/QtWidgets/QProgressBar \
+		../../../../include/qt5/QtWidgets/qprogressbar.h \
 		../../../../include/qt5/QtCore/QDir \
 		../../../../include/qt5/QtCore/qdir.h \
 		../../../../include/qt5/QtCore/qfileinfo.h
@@ -7476,7 +8257,41 @@ rawfiles.o: devices/rawfiles/rawfiles.cpp devices/rawfiles/rawfiles.h \
 		devices/virtual-input.h \
 		../../../../include/qt5/QtCore/QObject \
 		includes/various/ringbuffer.h \
-		ui_filereader-widget.h
+		ui_filereader-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rawfiles.o devices/rawfiles/rawfiles.cpp
 
 wavfiles.o: devices/wavfiles/wavfiles.cpp ../../../../include/qt5/QtCore/QString \
@@ -7586,7 +8401,41 @@ wavfiles.o: devices/wavfiles/wavfiles.cpp ../../../../include/qt5/QtCore/QString
 		devices/virtual-input.h \
 		../../../../include/qt5/QtCore/QObject \
 		includes/various/ringbuffer.h \
-		ui_filereader-widget.h
+		ui_filereader-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o wavfiles.o devices/wavfiles/wavfiles.cpp
 
 iqdisplay.o: src/scopes-qwt6/iqdisplay.cpp includes/scopes-qwt6/iqdisplay.h \
@@ -7845,10 +8694,43 @@ spectrum-handler.o: optional-scope/spectrum-handler.cpp optional-scope/spectrum-
 		../../../../include/qt5/QtGui/qtouchdevice.h \
 		../../../../include/qt5/QtCore/QObject \
 		ui_scopewidget.h \
-		includes/various/ringbuffer.h \
-		../../../../include/qt5/qwt/qwt.h \
-		../../../../include/qt5/qwt/qwt_global.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QWidget \
 		../../../../include/qt5/qwt/qwt_plot.h \
+		../../../../include/qt5/qwt/qwt_global.h \
 		../../../../include/qt5/qwt/qwt_text.h \
 		../../../../include/qt5/qwt/qwt_plot_dict.h \
 		../../../../include/qt5/qwt/qwt_plot_item.h \
@@ -7862,6 +8744,8 @@ spectrum-handler.o: optional-scope/spectrum-handler.cpp optional-scope/spectrum-
 		../../../../include/qt5/qwt/qwt_scale_map.h \
 		../../../../include/qt5/qwt/qwt_transform.h \
 		../../../../include/qt5/qwt/qwt_interval.h \
+		includes/various/ringbuffer.h \
+		../../../../include/qt5/qwt/qwt.h \
 		../../../../include/qt5/qwt/qwt_plot_marker.h \
 		../../../../include/qt5/qwt/qwt_plot_grid.h \
 		../../../../include/qt5/qwt/qwt_scale_div.h \
@@ -7973,9 +8857,10 @@ rtlsdr-handler.o: devices/rtlsdr-handler/rtlsdr-handler.cpp ../../../../include/
 		devices/virtual-input.h \
 		includes/various/ringbuffer.h \
 		ui_rtlsdr-widget.h \
-		devices/rtlsdr-handler/rtl-dongleselect.h \
-		../../../../include/qt5/QtWidgets/QDialog \
-		../../../../include/qt5/QtWidgets/qdialog.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qkeysequence.h \
 		../../../../include/qt5/QtWidgets/qwidget.h \
 		../../../../include/qt5/QtGui/qwindowdefs.h \
 		../../../../include/qt5/QtGui/qwindowdefs_win.h \
@@ -8003,7 +8888,6 @@ rtlsdr-handler.o: devices/rtlsdr-handler/rtlsdr-handler.cpp ../../../../include/
 		../../../../include/qt5/QtGui/qfontinfo.h \
 		../../../../include/qt5/QtWidgets/qsizepolicy.h \
 		../../../../include/qt5/QtGui/qcursor.h \
-		../../../../include/qt5/QtGui/qkeysequence.h \
 		../../../../include/qt5/QtGui/qevent.h \
 		../../../../include/qt5/QtCore/qurl.h \
 		../../../../include/qt5/QtCore/qurlquery.h \
@@ -8011,27 +8895,48 @@ rtlsdr-handler.o: devices/rtlsdr-handler/rtlsdr-handler.cpp ../../../../include/
 		../../../../include/qt5/QtCore/qfiledevice.h \
 		../../../../include/qt5/QtGui/qvector2d.h \
 		../../../../include/qt5/QtGui/qtouchdevice.h \
-		../../../../include/qt5/QtWidgets/QLabel \
-		../../../../include/qt5/QtWidgets/qlabel.h \
-		../../../../include/qt5/QtWidgets/qframe.h \
-		../../../../include/qt5/QtWidgets/QListView \
-		../../../../include/qt5/QtWidgets/qlistview.h \
-		../../../../include/qt5/QtWidgets/qabstractitemview.h \
-		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
-		../../../../include/qt5/QtCore/qabstractitemmodel.h \
-		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QComboBox \
+		../../../../include/qt5/QtWidgets/qcombobox.h \
 		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
 		../../../../include/qt5/QtWidgets/qstyleoption.h \
 		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
 		../../../../include/qt5/QtGui/qvalidator.h \
 		../../../../include/qt5/QtCore/qregularexpression.h \
-		../../../../include/qt5/QtGui/qicon.h \
 		../../../../include/qt5/QtWidgets/qslider.h \
 		../../../../include/qt5/QtWidgets/qabstractslider.h \
 		../../../../include/qt5/QtWidgets/qstyle.h \
 		../../../../include/qt5/QtWidgets/qtabbar.h \
 		../../../../include/qt5/QtWidgets/qtabwidget.h \
 		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/qframe.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtWidgets/QFrame \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget \
+		devices/rtlsdr-handler/rtl-dongleselect.h \
+		../../../../include/qt5/QtWidgets/QDialog \
+		../../../../include/qt5/QtWidgets/qdialog.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
 		../../../../include/qt5/QtCore/QStringListModel \
 		../../../../include/qt5/QtCore/qstringlistmodel.h \
 		../../../../include/qt5/QtCore/QStringList \
@@ -8287,28 +9192,54 @@ sdrplay-handler.o: devices/sdrplay-handler/sdrplay-handler.cpp ../../../../inclu
 		includes/various/ringbuffer.h \
 		devices/virtual-input.h \
 		ui_sdrplay-widget.h \
-		devices/sdrplay-handler/mirsdrapi-rsp.h \
-		devices/sdrplay-handler/sdrplayselect.h \
-		../../../../include/qt5/QtWidgets/QDialog \
-		../../../../include/qt5/QtWidgets/qdialog.h \
-		../../../../include/qt5/QtWidgets/QListView \
-		../../../../include/qt5/QtWidgets/qlistview.h \
-		../../../../include/qt5/QtWidgets/qabstractitemview.h \
-		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
-		../../../../include/qt5/QtCore/qabstractitemmodel.h \
-		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QCheckBox \
+		../../../../include/qt5/QtWidgets/qcheckbox.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QComboBox \
+		../../../../include/qt5/QtWidgets/qcombobox.h \
 		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
 		../../../../include/qt5/QtWidgets/qstyleoption.h \
 		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
 		../../../../include/qt5/QtGui/qvalidator.h \
 		../../../../include/qt5/QtCore/qregularexpression.h \
-		../../../../include/qt5/QtGui/qicon.h \
 		../../../../include/qt5/QtWidgets/qslider.h \
 		../../../../include/qt5/QtWidgets/qabstractslider.h \
 		../../../../include/qt5/QtWidgets/qstyle.h \
 		../../../../include/qt5/QtWidgets/qtabbar.h \
 		../../../../include/qt5/QtWidgets/qtabwidget.h \
 		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget \
+		devices/sdrplay-handler/mirsdrapi-rsp.h \
+		devices/sdrplay-handler/sdrplayselect.h \
+		../../../../include/qt5/QtWidgets/QDialog \
+		../../../../include/qt5/QtWidgets/qdialog.h \
+		../../../../include/qt5/QtWidgets/QListView \
+		../../../../include/qt5/QtWidgets/qlistview.h \
 		../../../../include/qt5/QtCore/QStringListModel \
 		../../../../include/qt5/QtCore/qstringlistmodel.h \
 		../../../../include/qt5/QtCore/QStringList
@@ -8553,6 +9484,47 @@ airspy-handler.o: devices/airspy-handler/airspy-handler.cpp devices/airspy-handl
 		includes/various/ringbuffer.h \
 		devices/virtual-input.h \
 		ui_airspy-widget.h \
+		../../../../include/qt5/QtCore/QVariant \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtGui/qicon.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtCore/qcoreapplication.h \
+		../../../../include/qt5/QtCore/qeventloop.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtCore/qabstractitemmodel.h \
+		../../../../include/qt5/QtCore/qitemselectionmodel.h \
+		../../../../include/qt5/QtWidgets/qabstractitemdelegate.h \
+		../../../../include/qt5/QtWidgets/qstyleoption.h \
+		../../../../include/qt5/QtWidgets/qabstractspinbox.h \
+		../../../../include/qt5/QtGui/qvalidator.h \
+		../../../../include/qt5/QtCore/qregularexpression.h \
+		../../../../include/qt5/QtWidgets/qslider.h \
+		../../../../include/qt5/QtWidgets/qabstractslider.h \
+		../../../../include/qt5/QtWidgets/qstyle.h \
+		../../../../include/qt5/QtWidgets/qtabbar.h \
+		../../../../include/qt5/QtWidgets/qtabwidget.h \
+		../../../../include/qt5/QtWidgets/qrubberband.h \
+		../../../../include/qt5/QtWidgets/QLCDNumber \
+		../../../../include/qt5/QtWidgets/qlcdnumber.h \
+		../../../../include/qt5/QtWidgets/QLabel \
+		../../../../include/qt5/QtWidgets/qlabel.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QSlider \
+		../../../../include/qt5/QtWidgets/QTabWidget \
+		../../../../include/qt5/QtWidgets/QWidget \
 		devices/airspy-handler/libairspy/airspy.h \
 		devices/airspy-handler/libairspy/airspy_commands.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o airspy-handler.o devices/airspy-handler/airspy-handler.cpp
@@ -8848,7 +9820,28 @@ rtl_tcp_client.o: devices/rtl_tcp/rtl_tcp_client.cpp ../../../../include/qt5/QtC
 		includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/ringbuffer.h \
-		ui_rtl_tcp-widget.h
+		ui_rtl_tcp-widget.h \
+		../../../../include/qt5/QtWidgets/QAction \
+		../../../../include/qt5/QtWidgets/qaction.h \
+		../../../../include/qt5/QtWidgets/qactiongroup.h \
+		../../../../include/qt5/QtWidgets/QApplication \
+		../../../../include/qt5/QtWidgets/qapplication.h \
+		../../../../include/qt5/QtWidgets/qdesktopwidget.h \
+		../../../../include/qt5/QtGui/qguiapplication.h \
+		../../../../include/qt5/QtGui/qinputmethod.h \
+		../../../../include/qt5/QtWidgets/QButtonGroup \
+		../../../../include/qt5/QtWidgets/qbuttongroup.h \
+		../../../../include/qt5/QtWidgets/QFrame \
+		../../../../include/qt5/QtWidgets/QHeaderView \
+		../../../../include/qt5/QtWidgets/qheaderview.h \
+		../../../../include/qt5/QtWidgets/qabstractitemview.h \
+		../../../../include/qt5/QtWidgets/qabstractscrollarea.h \
+		../../../../include/qt5/QtWidgets/QPushButton \
+		../../../../include/qt5/QtWidgets/qpushbutton.h \
+		../../../../include/qt5/QtWidgets/qabstractbutton.h \
+		../../../../include/qt5/QtWidgets/QSpinBox \
+		../../../../include/qt5/QtWidgets/qspinbox.h \
+		../../../../include/qt5/QtWidgets/QWidget
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o rtl_tcp_client.o devices/rtl_tcp/rtl_tcp_client.cpp
 
 tii_detector.o: src/various/tii_detector.cpp includes/various/tii_detector.h \
