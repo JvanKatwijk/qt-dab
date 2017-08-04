@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB.
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -18,32 +19,26 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
+
+#
+#ifndef	TEXT_MAPPER
+#define	TEXT_MAPPER
+
 //
-//	dummy for the dab handler
-//
+//	simple convenience class
+
 #include	"dab-constants.h"
-#include	"dab-virtual.h"
 
-#include	"radio.h"		// defines RadioInterface
-#include	"audiosink.h"	// defines audioSink
 
-	dabVirtual::dabVirtual	(void) {
-}
+class	textMapper {
+public:
+	textMapper	(void);
+	~textMapper	(void);
+const
+char	*get_programm_type_string (int16_t type);
+const
+char	*get_programm_language_string (int16_t language);
+};
 
-	dabVirtual::~dabVirtual	(void) {
-}
-
-int32_t	dabVirtual::process	(int16_t *v, int16_t c) {
-	(void)v;
-	(void)c;
-	return 32768;
-}
-
-void	dabVirtual::stopRunning	(void) {
-}
-
-void	dabVirtual::stop	(void) {
-}
-
+#endif

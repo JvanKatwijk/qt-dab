@@ -83,7 +83,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	if (cpu_times. size () < 4)
            return false;
 	idle_time  = cpu_times [3];
-	total_time = std::accumulate (cpu_times. begin(), cpu_times. end (), 0);
+	total_time = std::accumulate (cpu_times. begin (), cpu_times. end (), 0);
 	return true;
 }
 /**
@@ -159,12 +159,13 @@ int16_t k;
 //	value is passed on though
 	show_crcErrors		= dabSettings -> value ("show_crcErrors", 0). toInt () != 0;
 	autoStart		= dabSettings -> value ("autoStart", 0). toInt () != 0;
-#ifdef	PRESET_NAME
-	presetName		= dabSettings -> value ("presetname", ""). toString ();
+	has_presetName		= dabSettings -> value ("has-presetName", 0). toInt () != 0;
+	if (has_presetName) {
+	   presetName		= dabSettings -> value ("presetname", ""). toString ();
+	   if (presetName != QString (""))
+	      autoStart = true;
+	}
 	currentName		= QString ("");
-	if (presetName != QString (""))
-	   autoStart = true;
-#endif
 
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
@@ -202,10 +203,13 @@ int16_t k;
 #else
 	QString	defaultPath	= "/tmp/qt-pictures";
 #endif
-	picturesPath	= dabSettings	-> value ("pictures", defaultPath). toString ();
+	picturesPath	=
+	        dabSettings	-> value ("pictures", defaultPath). toString ();
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
-	QString t	= dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
+
+	QString t	=
+	        dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
 	k	= bandSelector -> findText (t);
 	if (k != -1) 
 	   bandSelector -> setCurrentIndex (k);
@@ -263,15 +267,14 @@ int16_t k;
 #endif
 
 	if (autoStart) {
-#ifdef	PRESET_NAME
-	   if (presetName != QString ("")) {
+	   if (has_presetName && (presetName != QString (""))) {
 	      presetTimer. setSingleShot (true);
 	      presetTimer. setInterval (8000);
 	      connect (&presetTimer, SIGNAL (timeout (void)),
 	               this, SLOT (setPresetStation (void)));
 	      presetTimer. start (8000);
 	   }
-#endif
+
 	   setStart ();
 	}
 }
@@ -288,10 +291,10 @@ int16_t k;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == NULL)	// cannot happen
 	   return;
-#ifdef	PRESET_NAME
-	s	-> setValue ("presetname", currentName);
-#endif
-	s	-> setValue ("autoStart", autoStart? 1 : 0);
+
+	if (has_presetName)
+	   s	-> setValue ("presetname", currentName);
+	
 	s	-> setValue ("band", bandSelector -> currentText ());
 	s	-> setValue ("channel",
 	                      channelSelector -> currentText ());
@@ -301,113 +304,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> setValue ("saveSlides", saveSlides ? 1 : 0);
 	s	-> setValue ("showSlides", showSlides ? 1 : 0);
 	s	-> sync ();
-}
-
-
-///////////////////////////////////////////////////////////////////////
-static 
-const char *table12 [] = {
-"None",
-"News",
-"Current affairs",
-"Information",
-"Sport",
-"Education",
-"Drama",
-"Arts",
-"Science",
-"Talk",
-"Pop music",
-"Rock music",
-"Easy listening",
-"Light classical",
-"Classical music",
-"Other music",
-"Wheather",
-"Finance",
-"Children\'s",
-"Factual",
-"Religion",
-"Phone in",
-"Travel",
-"Leisure",
-"Jazz and Blues",
-"Country music",
-"National music",
-"Oldies music",
-"Folk music",
-"entry 29 not used",
-"entry 30 not used",
-"entry 31 not used"
-};
-
-const char *RadioInterface::get_programm_type_string (int16_t type) {
-	if (type > 0x40) {
-	   fprintf (stderr, "GUI: program type wrong (%d)\n", type);
-	   return (table12 [0]);
-	}
-	if (type < 0)
-	   return " ";
-
-	return table12 [type];
-}
-
-static
-const char *table9 [] = {
-"unknown language",
-"Albanian",
-"Breton",
-"Catalan",
-"Croatian",
-"Welsh",
-"Czech",
-"Danish",
-"German",
-"English",
-"Spanish",
-"Esperanto",
-"Estonian",
-"Basque",
-"Faroese",
-"French",
-"Frisian",
-"Irish",
-"Gaelic",
-"Galician",
-"Icelandic",
-"Italian",
-"Lappish",
-"Latin",
-"Latvian",
-"Luxembourgian",
-"Lithuanian",
-"Hungarian",
-"Maltese",
-"Dutch",
-"Norwegian",
-"Occitan",
-"Polish",
-"Postuguese",
-"Romanian",
-"Romansh",
-"Serbian",
-"Slovak",
-"Slovene",
-"Finnish",
-"Swedish",
-"Tuskish",
-"Flemish",
-"Walloon"
-};
-
-const char *RadioInterface::get_programm_language_string (int16_t language) {
-	if (language > 43) {
-	   fprintf (stderr, "GUI: wrong language (%d)\n", language);
-	   return table9 [0];
-	}
-	if (language < 0)
-	   return " ";
-	return table9 [language];
 }
 
 //
@@ -639,6 +535,7 @@ int	cc	= channelSelector -> currentIndex ();
 	              this, SLOT (selectChannel (const QString &)));
 }
 
+///////////////////////////////////////////////////////////////////////////
 /**
   *	clearEnsemble
   *	on changing settings, we clear all things in the gui
@@ -679,6 +576,7 @@ QString s;
 	Yes_Signal_Found ();
 }
 
+///////////////////////////////////////////////////////////////////////
 /**
   *	\brief show_successRate
   *	a slot, called by the MSC handler to show the
@@ -759,6 +657,16 @@ void	RadioInterface::setSynced	(char b) {
 void	RadioInterface::showLabel	(QString s) {
 	if (running)
 	   dynamicLabel	-> setText (s);
+}
+
+void	RadioInterface::setStereo	(bool s) {
+	if (s) 
+	   stereoLabel -> 
+	               setStyleSheet ("QLabel {background-color : green}");
+
+	else
+	   stereoLabel ->
+	               setStyleSheet ("QLabel {background-color : red}");
 }
 //
 void	checkDir (QString &s) {
@@ -846,15 +754,6 @@ void	RadioInterface::newAudio	(int rate) {
 	}
 }
 
-void	RadioInterface::setStereo	(bool s) {
-	if (s) 
-	   stereoLabel -> 
-	               setStyleSheet ("QLabel {background-color : green}");
-
-	else
-	   stereoLabel ->
-	               setStyleSheet ("QLabel {background-color : red}");
-}
 
 //	if so configured, the function might be triggered
 //	from the message decoding software. The GUI
@@ -953,7 +852,8 @@ bool	r = 0;
 void	RadioInterface::TerminateProcess (void) {
 	running		= false;
 	displayTimer. stop ();
-	signalTimer. stop  ();
+	signalTimer.  stop ();
+	presetTimer.  stop ();
 	if (sourceDumping) {
 	   my_ofdmProcessor	-> stopDumping ();
 	   sf_close (dumpfilePointer);
@@ -1382,9 +1282,7 @@ void	RadioInterface::selectService (QString s) {
 	if ((my_ficHandler. kindofService (s) != AUDIO_SERVICE) &&
 	    (my_ficHandler. kindofService (s) != PACKET_SERVICE))
 	return;
-#ifdef	PRESET_NAME
 	currentName = s;
-#endif
 	setStereo (false);
 	soundOut	-> stop ();
 	thereisSound	= false;
@@ -1436,8 +1334,10 @@ void	RadioInterface::selectService (QString s) {
 	           techData. rsError_display -> show ();
 	           techData. aacError_display -> show ();
 	        }
-	        techData. language -> setText (get_programm_language_string (d. language));
-	        techData. programType -> setText (get_programm_type_string (d. programType));
+	        techData. language ->
+	           setText (the_textMapper. get_programm_language_string (d. language));
+	        techData. programType ->
+	            setText (the_textMapper. get_programm_type_string (d. programType));
 	         if (show_data)
 	            dataDisplay -> show ();
 #endif
@@ -1773,8 +1673,8 @@ bool	firstData;
 	                     d. ASCTy == 077 ? "DAB+" : "DAB",
 	                     protL. toLatin1 (). data (),
 	                     codeRate. toLatin1 (). data (),
-	                     get_programm_language_string (d. language),
-	                     get_programm_type_string (d. programType) );
+	                     the_textMapper. get_programm_language_string (d. language),
+	                     the_textMapper. get_programm_type_string (d. programType) );
 	}
 
 	firstData	= true;
@@ -1832,7 +1732,7 @@ int16_t i;
 
 	if (ensembleLabel == QString (""))
 	   return;
-#ifdef	PRESET_NAME
+
 	if (presetName == QString (""))		// should not happen
 	   return;
 
@@ -1841,6 +1741,5 @@ int16_t i;
 	      selectService (presetName);
 	      return;
 	   }
-#endif
 }
 

@@ -40,6 +40,7 @@
 #include	"ofdm-processor.h"
 #include	"ringbuffer.h"
 #include	"band-handler.h"
+#include	"text-mapper.h"
 
 class	QSettings;
 class	virtualInput;
@@ -94,7 +95,7 @@ private:
 	bool		running;
 	bool		scanning;
 	virtualInput	*inputDevice;
-
+	textMapper	the_textMapper;
 	ofdmProcessor	*my_ofdmProcessor;
 	ficHandler	my_ficHandler;
 	mscHandler	*my_mscHandler;
@@ -126,6 +127,7 @@ const	char		*get_programm_language_string (int16_t);
 	QTimer		presetTimer;
 	QString		presetName;
 	QString		currentName;
+	bool		has_presetName;
 	int32_t		numberofSeconds;
 	void		resetSelector		(void);
 	int16_t		ficBlocks;

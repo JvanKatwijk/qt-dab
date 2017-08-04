@@ -318,14 +318,19 @@ Some settings are not influenced by buttons or sliders of the GUI, they will onl
 
 Typical examples are
 
-`autoStart=0` when set to 1 the program will start the DAB handling automatically
+`autoStart=0` when set to 1 the program will start the
+DAB handling automatically, so you do not have to press the `start' button.
 
-`saveSlides=1` when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows)
+`saveSlides=1` when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
 
-`picturesPath` when given a value, will overrule the directory where the slides are stored
+`picturesPath` when given a value, will overrule the directory where the slides are stored.
 
-`showSlides=1` when set to 0 the slides will not be shown
+`showSlides=1` when set to 0 the slides will not be shown.
 
+`has-presetName=1' when set the name of the selected service - that is selected when closing down the program - is kept and at the
+next invocation of the program, an attempt is made to start that particular
+service.
+The name of the service is kept as `presetname=xxxx'
 # Copyright
 
 

@@ -55,6 +55,7 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
+	   ./text-mapper.h \
 	   ./includes/dab-constants.h \
 	   ./includes/country-codes.h \
 	   ./includes/ofdm/ofdm-processor.h \
@@ -116,6 +117,7 @@ FORMS +=	./devices/filereader-widget.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
+	   ./text-mapper.cpp \
 	   ./src/ofdm/ofdm-processor.cpp \
 	   ./src/ofdm/ofdm-decoder.cpp \
 	   ./src/ofdm/phasereference.cpp \

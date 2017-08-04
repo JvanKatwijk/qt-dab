@@ -50,6 +50,7 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		radio.cpp \
+		text-mapper.cpp \
 		src/ofdm/ofdm-processor.cpp \
 		src/ofdm/ofdm-decoder.cpp \
 		src/ofdm/phasereference.cpp \
@@ -137,6 +138,7 @@ SOURCES       = main.cpp \
 		moc_rtl_tcp_client.cpp
 OBJECTS       = main.o \
 		radio.o \
+		text-mapper.o \
 		ofdm-processor.o \
 		ofdm-decoder.o \
 		phasereference.o \
@@ -364,6 +366,7 @@ DIST          = ../../../../lib64/qt5/mkspecs/features/spec_pre.prf \
 		../../../../lib64/qt5/mkspecs/features/yacc.prf \
 		../../../../lib64/qt5/mkspecs/features/lex.prf \
 		qt-dab.pro radio.h \
+		text-mapper.h \
 		includes/dab-constants.h \
 		includes/country-codes.h \
 		includes/ofdm/ofdm-processor.h \
@@ -433,6 +436,7 @@ DIST          = ../../../../lib64/qt5/mkspecs/features/spec_pre.prf \
 		includes/various/tii_detector.h \
 		includes/various/tii_verify.h main.cpp \
 		radio.cpp \
+		text-mapper.cpp \
 		src/ofdm/ofdm-processor.cpp \
 		src/ofdm/ofdm-decoder.cpp \
 		src/ofdm/phasereference.cpp \
@@ -814,8 +818,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents ../../../../lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents radio.h includes/dab-constants.h includes/country-codes.h includes/ofdm/ofdm-processor.h includes/ofdm/ofdm-decoder.h includes/ofdm/phasereference.h includes/ofdm/phasetable.h includes/ofdm/freq-interleaver.h includes/backend/viterbi_768/viterbi-768.h includes/backend/fic-handler.h includes/backend/msc-handler.h includes/backend/fib-processor.h includes/backend/galois.h includes/backend/reed-solomon.h includes/backend/rscodec.h includes/backend/charsets.h includes/backend/firecode-checker.h includes/backend/dab-processor.h includes/backend/dab-virtual.h includes/backend/audio/dab-audio.h includes/backend/audio/mp2processor.h includes/backend/audio/mp4processor.h includes/backend/audio/faad-decoder.h includes/backend/data/dab-data.h includes/backend/data/data-processor.h includes/backend/data/pad-handler.h includes/backend/data/virtual-datahandler.h includes/backend/data/tdc-datahandler.h includes/backend/data/ip-datahandler.h includes/backend/data/mot-databuilder.h includes/backend/data/mot-data.h includes/backend/data/journaline-datahandler.h includes/backend/data/journaline/dabdatagroupdecoder.h includes/backend/data/journaline/crc_8_16.h includes/backend/data/journaline/log.h includes/backend/data/journaline/newssvcdec_impl.h includes/backend/data/journaline/Splitter.h includes/backend/data/journaline/dabdgdec_impl.h includes/backend/data/journaline/newsobject.h includes/backend/data/journaline/NML.h includes/backend/protection.h includes/backend/eep-protection.h includes/backend/uep-protection.h includes/output/audio-base.h includes/output/newconverter.h includes/output/audiosink.h includes/output/fir-filters.h includes/various/fft.h includes/various/ringbuffer.h includes/various/Xtan2.h includes/various/dab-params.h includes/various/band-handler.h includes/various/tii_table.h devices/virtual-input.h devices/rawfiles/rawfiles.h devices/wavfiles/wavfiles.h includes/scopes-qwt6/spectrogramdata.h includes/scopes-qwt6/iqdisplay.h optional-scope/spectrum-handler.h includes/scopes-qwt6 devices/rtlsdr-handler/rtlsdr-handler.h devices/rtlsdr-handler/rtl-dongleselect.h devices/sdrplay-handler/sdrplay-handler.h devices/sdrplay-handler/sdrplayselect.h devices/airspy-handler/airspy-handler.h devices/airspy-handler/libairspy/airspy.h devices/rtl_tcp/rtl_tcp_client.h includes/various/tii_detector.h includes/various/tii_verify.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp radio.cpp src/ofdm/ofdm-processor.cpp src/ofdm/ofdm-decoder.cpp src/ofdm/phasereference.cpp src/ofdm/phasetable.cpp src/ofdm/freq-interleaver.cpp src/backend/viterbi_768/viterbi-768.cpp src/backend/viterbi_768/spiral-no-sse.c src/backend/fic-handler.cpp src/backend/msc-handler.cpp src/backend/protection.cpp src/backend/eep-protection.cpp src/backend/uep-protection.cpp src/backend/fib-processor.cpp src/backend/galois.cpp src/backend/reed-solomon.cpp src/backend/rscodec.cpp src/backend/charsets.cpp src/backend/firecode-checker.cpp src/backend/dab-virtual.cpp src/backend/dab-processor.cpp src/backend/protTables.cpp src/backend/audio/dab-audio.cpp src/backend/audio/mp2processor.cpp src/backend/audio/mp4processor.cpp src/backend/audio/faad-decoder.cpp src/backend/data/pad-handler.cpp src/backend/data/dab-data.cpp src/backend/data/data-processor.cpp src/backend/data/virtual-datahandler.cpp src/backend/data/tdc-datahandler.cpp src/backend/data/ip-datahandler.cpp src/backend/data/mot-databuilder.cpp src/backend/data/mot-data.cpp src/backend/data/journaline-datahandler.cpp src/backend/data/journaline/crc_8_16.c src/backend/data/journaline/log.c src/backend/data/journaline/newssvcdec_impl.cpp src/backend/data/journaline/Splitter.cpp src/backend/data/journaline/dabdgdec_impl.c src/backend/data/journaline/newsobject.cpp src/backend/data/journaline/NML.cpp src/output/audio-base.cpp src/output/newconverter.cpp src/output/audiosink.cpp src/output/fir-filters.cpp src/various/fft.cpp src/various/Xtan2.cpp src/various/dab-params.cpp src/various/band-handler.cpp src/various/tii_table.cpp devices/virtual-input.cpp devices/rawfiles/rawfiles.cpp devices/wavfiles/wavfiles.cpp src/scopes-qwt6/iqdisplay.cpp optional-scope/spectrum-handler.cpp devices/rtlsdr-handler/rtlsdr-handler.cpp devices/rtlsdr-handler/rtl-dongleselect.cpp devices/sdrplay-handler/sdrplay-handler.cpp devices/sdrplay-handler/sdrplayselect.cpp devices/airspy-handler/airspy-handler.cpp devices/rtl_tcp/rtl_tcp_client.cpp src/various/tii_detector.cpp src/various/tii_verify.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents radio.h text-mapper.h includes/dab-constants.h includes/country-codes.h includes/ofdm/ofdm-processor.h includes/ofdm/ofdm-decoder.h includes/ofdm/phasereference.h includes/ofdm/phasetable.h includes/ofdm/freq-interleaver.h includes/backend/viterbi_768/viterbi-768.h includes/backend/fic-handler.h includes/backend/msc-handler.h includes/backend/fib-processor.h includes/backend/galois.h includes/backend/reed-solomon.h includes/backend/rscodec.h includes/backend/charsets.h includes/backend/firecode-checker.h includes/backend/dab-processor.h includes/backend/dab-virtual.h includes/backend/audio/dab-audio.h includes/backend/audio/mp2processor.h includes/backend/audio/mp4processor.h includes/backend/audio/faad-decoder.h includes/backend/data/dab-data.h includes/backend/data/data-processor.h includes/backend/data/pad-handler.h includes/backend/data/virtual-datahandler.h includes/backend/data/tdc-datahandler.h includes/backend/data/ip-datahandler.h includes/backend/data/mot-databuilder.h includes/backend/data/mot-data.h includes/backend/data/journaline-datahandler.h includes/backend/data/journaline/dabdatagroupdecoder.h includes/backend/data/journaline/crc_8_16.h includes/backend/data/journaline/log.h includes/backend/data/journaline/newssvcdec_impl.h includes/backend/data/journaline/Splitter.h includes/backend/data/journaline/dabdgdec_impl.h includes/backend/data/journaline/newsobject.h includes/backend/data/journaline/NML.h includes/backend/protection.h includes/backend/eep-protection.h includes/backend/uep-protection.h includes/output/audio-base.h includes/output/newconverter.h includes/output/audiosink.h includes/output/fir-filters.h includes/various/fft.h includes/various/ringbuffer.h includes/various/Xtan2.h includes/various/dab-params.h includes/various/band-handler.h includes/various/tii_table.h devices/virtual-input.h devices/rawfiles/rawfiles.h devices/wavfiles/wavfiles.h includes/scopes-qwt6/spectrogramdata.h includes/scopes-qwt6/iqdisplay.h optional-scope/spectrum-handler.h includes/scopes-qwt6 devices/rtlsdr-handler/rtlsdr-handler.h devices/rtlsdr-handler/rtl-dongleselect.h devices/sdrplay-handler/sdrplay-handler.h devices/sdrplay-handler/sdrplayselect.h devices/airspy-handler/airspy-handler.h devices/airspy-handler/libairspy/airspy.h devices/rtl_tcp/rtl_tcp_client.h includes/various/tii_detector.h includes/various/tii_verify.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp radio.cpp text-mapper.cpp src/ofdm/ofdm-processor.cpp src/ofdm/ofdm-decoder.cpp src/ofdm/phasereference.cpp src/ofdm/phasetable.cpp src/ofdm/freq-interleaver.cpp src/backend/viterbi_768/viterbi-768.cpp src/backend/viterbi_768/spiral-no-sse.c src/backend/fic-handler.cpp src/backend/msc-handler.cpp src/backend/protection.cpp src/backend/eep-protection.cpp src/backend/uep-protection.cpp src/backend/fib-processor.cpp src/backend/galois.cpp src/backend/reed-solomon.cpp src/backend/rscodec.cpp src/backend/charsets.cpp src/backend/firecode-checker.cpp src/backend/dab-virtual.cpp src/backend/dab-processor.cpp src/backend/protTables.cpp src/backend/audio/dab-audio.cpp src/backend/audio/mp2processor.cpp src/backend/audio/mp4processor.cpp src/backend/audio/faad-decoder.cpp src/backend/data/pad-handler.cpp src/backend/data/dab-data.cpp src/backend/data/data-processor.cpp src/backend/data/virtual-datahandler.cpp src/backend/data/tdc-datahandler.cpp src/backend/data/ip-datahandler.cpp src/backend/data/mot-databuilder.cpp src/backend/data/mot-data.cpp src/backend/data/journaline-datahandler.cpp src/backend/data/journaline/crc_8_16.c src/backend/data/journaline/log.c src/backend/data/journaline/newssvcdec_impl.cpp src/backend/data/journaline/Splitter.cpp src/backend/data/journaline/dabdgdec_impl.c src/backend/data/journaline/newsobject.cpp src/backend/data/journaline/NML.cpp src/output/audio-base.cpp src/output/newconverter.cpp src/output/audiosink.cpp src/output/fir-filters.cpp src/various/fft.cpp src/various/Xtan2.cpp src/various/dab-params.cpp src/various/band-handler.cpp src/various/tii_table.cpp devices/virtual-input.cpp devices/rawfiles/rawfiles.cpp devices/wavfiles/wavfiles.cpp src/scopes-qwt6/iqdisplay.cpp optional-scope/spectrum-handler.cpp devices/rtlsdr-handler/rtlsdr-handler.cpp devices/rtlsdr-handler/rtl-dongleselect.cpp devices/sdrplay-handler/sdrplay-handler.cpp devices/sdrplay-handler/sdrplayselect.cpp devices/airspy-handler/airspy-handler.cpp devices/rtl_tcp/rtl_tcp_client.cpp src/various/tii_detector.cpp src/various/tii_verify.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents devices/filereader-widget.ui forms/dabradio.ui forms/technical_data.ui optional-scope/scopewidget.ui devices/rtlsdr-handler/rtlsdr-widget.ui devices/sdrplay-handler/sdrplay-widget.ui devices/airspy-handler/airspy-widget.ui devices/rtl_tcp/rtl_tcp-widget.ui $(DISTDIR)/
 
 
@@ -1033,6 +1037,7 @@ moc_radio.cpp: includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -3644,6 +3649,7 @@ main.o: main.cpp ../../../../include/qt5/QtWidgets/QApplication \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -3846,6 +3852,7 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -4052,6 +4059,41 @@ radio.o: radio.cpp ../../../../include/qt5/QtCore/QSettings \
 		includes/country-codes.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o radio.o radio.cpp
 
+text-mapper.o: text-mapper.cpp text-mapper.h \
+		includes/dab-constants.h \
+		../../../../include/qt5/QtCore/QString \
+		../../../../include/qt5/QtCore/qstring.h \
+		../../../../include/qt5/QtCore/qchar.h \
+		../../../../include/qt5/QtCore/qglobal.h \
+		../../../../include/qt5/QtCore/qconfig.h \
+		../../../../include/qt5/QtCore/qconfig-64.h \
+		../../../../include/qt5/QtCore/qfeatures.h \
+		../../../../include/qt5/QtCore/qsystemdetection.h \
+		../../../../include/qt5/QtCore/qprocessordetection.h \
+		../../../../include/qt5/QtCore/qcompilerdetection.h \
+		../../../../include/qt5/QtCore/qtypeinfo.h \
+		../../../../include/qt5/QtCore/qtypetraits.h \
+		../../../../include/qt5/QtCore/qisenum.h \
+		../../../../include/qt5/QtCore/qsysinfo.h \
+		../../../../include/qt5/QtCore/qlogging.h \
+		../../../../include/qt5/QtCore/qflags.h \
+		../../../../include/qt5/QtCore/qatomic.h \
+		../../../../include/qt5/QtCore/qbasicatomic.h \
+		../../../../include/qt5/QtCore/qatomic_bootstrap.h \
+		../../../../include/qt5/QtCore/qgenericatomic.h \
+		../../../../include/qt5/QtCore/qatomic_cxx11.h \
+		../../../../include/qt5/QtCore/qatomic_msvc.h \
+		../../../../include/qt5/QtCore/qglobalstatic.h \
+		../../../../include/qt5/QtCore/qmutex.h \
+		../../../../include/qt5/QtCore/qnumeric.h \
+		../../../../include/qt5/QtCore/qversiontagging.h \
+		../../../../include/qt5/QtCore/qbytearray.h \
+		../../../../include/qt5/QtCore/qrefcount.h \
+		../../../../include/qt5/QtCore/qnamespace.h \
+		../../../../include/qt5/QtCore/qarraydata.h \
+		../../../../include/qt5/QtCore/qstringbuilder.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o text-mapper.o text-mapper.cpp
+
 ofdm-processor.o: src/ofdm/ofdm-processor.cpp includes/ofdm/ofdm-processor.h \
 		includes/dab-constants.h \
 		../../../../include/qt5/QtCore/QString \
@@ -4235,6 +4277,7 @@ ofdm-processor.o: src/ofdm/ofdm-processor.cpp includes/ofdm/ofdm-processor.h \
 		../../../../include/qt5/QtWidgets/qstatusbar.h \
 		../../../../include/qt5/QtWidgets/QWidget \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -4423,6 +4466,7 @@ ofdm-decoder.o: src/ofdm/ofdm-decoder.cpp includes/ofdm/ofdm-decoder.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -4759,6 +4803,7 @@ fic-handler.o: src/backend/fic-handler.cpp includes/backend/fic-handler.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -4948,6 +4993,7 @@ msc-handler.o: src/backend/msc-handler.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -5218,6 +5264,7 @@ fib-processor.o: src/backend/fib-processor.cpp includes/backend/fib-processor.h 
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -5455,6 +5502,7 @@ dab-virtual.o: src/backend/dab-virtual.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -5668,6 +5716,7 @@ dab-audio.o: src/backend/audio/dab-audio.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -5859,6 +5908,7 @@ mp2processor.o: src/backend/audio/mp2processor.cpp includes/backend/audio/mp2pro
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -6057,6 +6107,7 @@ mp4processor.o: src/backend/audio/mp4processor.cpp includes/backend/audio/mp4pro
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -6248,6 +6299,7 @@ faad-decoder.o: src/backend/audio/faad-decoder.cpp includes/backend/audio/faad-d
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -6437,6 +6489,7 @@ pad-handler.o: src/backend/data/pad-handler.cpp includes/backend/data/pad-handle
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -6629,6 +6682,7 @@ dab-data.o: src/backend/data/dab-data.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -6824,6 +6878,7 @@ data-processor.o: src/backend/data/data-processor.cpp includes/dab-constants.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
@@ -7135,6 +7190,7 @@ ip-datahandler.o: src/backend/data/ip-datahandler.cpp includes/backend/data/ip-d
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -7328,6 +7384,7 @@ mot-databuilder.o: src/backend/data/mot-databuilder.cpp includes/backend/data/mo
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h
@@ -7519,6 +7576,7 @@ mot-data.o: src/backend/data/mot-data.cpp includes/backend/data/mot-data.h \
 		devices/virtual-input.h \
 		includes/various/tii_detector.h \
 		includes/various/band-handler.h \
+		text-mapper.h \
 		ui_technical_data.h \
 		../../../../include/qt5/QtWidgets/QProgressBar \
 		../../../../include/qt5/QtWidgets/qprogressbar.h \
