@@ -39,8 +39,7 @@ public:
 		mscHandler		(RadioInterface *,
 	                                 uint8_t,
 	                                 RingBuffer<int16_t> *,
-	                                 QString,
-	                                 bool);
+	                                 QString);
 		~mscHandler		(void);
 	void	process_mscBlock	(int16_t *, int16_t);
 	void	set_audioChannel	(audiodata	*);
@@ -52,7 +51,6 @@ private:
 	RingBuffer<int16_t>	*audioBuffer;
 	QString		picturesPath;
 	dabParams	params;
-	bool		show_crcErrors;
 	QMutex		locker;
 	bool		audioService;
 	dabVirtual	*dabHandler;

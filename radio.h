@@ -110,10 +110,8 @@ const	char		*get_programm_language_string (int16_t);
 	QUdpSocket	DSCTy_59_socket;
 	QString		ipAddress;
 	int32_t		port;
-	bool		show_crcErrors;
 	void		init_your_gui		(void);
 	void		dumpControlState	(QSettings *);
-	FILE		*crcErrors_File;
 	bool		sourceDumping;
 	SNDFILE		*dumpfilePointer;
 	bool		audioDumping;
@@ -163,8 +161,6 @@ public slots:
 	void		changeinConfiguration	(void);
 	void		newAudio		(int);
 //
-	void		show_mscErrors		(int);
-	void		show_ipErrors		(int);
 	void		setStereo		(bool);
 	void		set_streamSelector	(int);
 	void		No_Signal_Found		(void);

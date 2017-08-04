@@ -23,15 +23,10 @@
 #include	"ip-datahandler.h"
 #include	"radio.h"
 
-	ip_dataHandler::ip_dataHandler (RadioInterface *mr,
-	                                bool	show_crcErrors) {
+	ip_dataHandler::ip_dataHandler (RadioInterface *mr) {
 	connect (this, SIGNAL (writeDatagram (char *, int)),
 	         mr, SLOT (sendDatagram (char *, int)));
-	this	-> show_crcErrors	= show_crcErrors;
-	this	-> crcErrors		= 0;
 	this	-> handledPackets	= 0;
-	connect (this, SIGNAL (show_ipErrors (int)),
-	         mr, SLOT (show_ipErrors (int)));
 }
 
 	ip_dataHandler::~ip_dataHandler (void) {
@@ -97,16 +92,10 @@ uint8_t	protocol	= data [9];
 uint32_t checkSum	= 0;
 int16_t	i;
 
-	if (show_crcErrors && ( ++handledPackets >= 100)) {
-	   show_ipErrors (100 - crcErrors);
-	   crcErrors	= 0;
-	   handledPackets	= 0;
-	}
 	for (i = 0; i < 2 * headerSize; i ++)
 	   checkSum +=  ((data [2 * i] << 8) | data [2 * i + 1]);
 	checkSum = (checkSum >> 16) + (checkSum & 0xFFFF);
 	if ((~checkSum & 0xFFFF) != 0) {
-	   crcErrors ++;
 	   return;
 	}
 	   

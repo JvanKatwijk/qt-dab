@@ -42,8 +42,7 @@ public:
 	                 int16_t	appType,
 	                 uint8_t	DGflag,
 	                 int16_t	FEC_scheme,
-	                 QString	picturesPath,
-	                 bool		show_crcErrors);
+	                 QString	picturesPath);
 	~dataProcessor	(void);
 void	addtoFrame	(uint8_t *);
 private:
@@ -54,9 +53,6 @@ private:
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
 	int16_t		expectedIndex;
-	bool		show_crcErrors;
-	int16_t		crcErrors;
-	int16_t		handledPackets;
 	QByteArray	series;
 	uint8_t		packetState;
 	int32_t		streamAddress;		// int since we init with -1

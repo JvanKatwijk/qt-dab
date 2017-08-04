@@ -38,13 +38,11 @@
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	mode,
 	                                 RingBuffer<int16_t> *buffer,
-	                                 QString	picturesPath,
-	                                 bool	show_crcErrors) :
+	                                 QString	picturesPath) :
 	                                       params (mode) {
 	myRadioInterface	= mr;
 	audioBuffer		= buffer;
 	this	-> picturesPath	= picturesPath;
-	this	-> show_crcErrors	= show_crcErrors;
 	cifVector		= new int16_t [55296];
 	cifCount		= 0;	// msc blocks in CIF
 	blkCount		= 0;
@@ -133,8 +131,7 @@ void	mscHandler::set_dataChannel (packetdata	*d) {
 	                          protLevel,
 	                          DGflag,
 	                          FEC_scheme,
-	                          picturesPath,
-	                          show_crcErrors);
+	                          picturesPath);
 //	these we need for actual processing
 //	and this one to get started
 	work_to_be_done	= true;

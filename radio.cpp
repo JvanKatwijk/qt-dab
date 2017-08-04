@@ -155,9 +155,6 @@ int16_t k;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
 	port			= dabSettings -> value ("port", 8888). toInt ();
 //
-//	show_crcErrors can be ignored in other GUI's, the
-//	value is passed on though
-	show_crcErrors		= dabSettings -> value ("show_crcErrors", 0). toInt () != 0;
 	autoStart		= dabSettings -> value ("autoStart", 0). toInt () != 0;
 	has_presetName		= dabSettings -> value ("has-presetName", 0). toInt () != 0;
 	if (has_presetName) {
@@ -233,8 +230,7 @@ int16_t k;
 	my_mscHandler		= new mscHandler	(this,
 	                                                 convert (modeSelector -> currentText ()),
 	                                                 audioBuffer,
-	                                                 picturesPath,
-	                                                 show_crcErrors);
+	                                                 picturesPath);
 /**
   *	The default for the ofdmProcessor depends on
   *	the input device, so changing the selection for an input device
@@ -419,25 +415,6 @@ void	RadioInterface::init_your_gui (void) {
 	versionName	-> setText (v);
 //	and start the timer
 	displayTimer. start (1000);
-	crcErrors_File		= NULL;
-	crcErrors_1	-> hide ();
-	crcErrors_2	-> hide ();
-	if (show_crcErrors) {
-	   QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file ..."),
-	                                        QDir::homePath (),
-	                                        tr ("Text (*.txt)"));
-	   file		= QDir::toNativeSeparators (file);
-	   crcErrors_File	= fopen (file. toLatin1 (). data (), "w");
-
-	   if (crcErrors_File == NULL) {
-	      qDebug () << "Cannot open " << file. toLatin1 (). data ();
-	   }
-	   else {
-	      crcErrors_1	-> show ();
-	      crcErrors_2	-> show ();
-	   }
-	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -754,24 +731,6 @@ void	RadioInterface::newAudio	(int rate) {
 	}
 }
 
-
-//	if so configured, the function might be triggered
-//	from the message decoding software. The GUI
-//	might decide to ignore the data sent
-void	RadioInterface::show_mscErrors	(int er) {
-	crcErrors_1	-> display (er);
-	if (crcErrors_File != 0) 
-	   fprintf (crcErrors_File, "%d %% of MSC packets passed crc test\n",
-	                                                        er);
-}
-//
-//	a slot, called by the iphandler
-void	RadioInterface::show_ipErrors	(int er) {
-	crcErrors_2	-> display (er);
-	if (crcErrors_File != 0) 
-	   fprintf (crcErrors_File, "%d %% of ip packets passed crc test\n",
-	                                                        er);
-}
 //
 //	This function is only used in the Gui to clear
 //	the details of a selection
@@ -864,8 +823,6 @@ void	RadioInterface::TerminateProcess (void) {
 	   sf_close (audiofilePointer);
 	}
 
-	if (crcErrors_File != NULL)
-	   fclose (crcErrors_File);
 	inputDevice		-> stopReader ();	// might be concurrent
 	my_mscHandler		-> stopHandler ();	// might be concurrent
 	my_ofdmProcessor	-> stop ();		// definitely concurrent
@@ -1013,8 +970,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	my_mscHandler		= new mscHandler    (this,
 	                                             convert (Mode),
 	                                             audioBuffer,
-	                                             picturesPath,
-	                                             show_crcErrors);
+	                                             picturesPath);
 	delete my_ofdmProcessor;
 	my_ofdmProcessor	= new ofdmProcessor  (this,
 	                                              inputDevice,

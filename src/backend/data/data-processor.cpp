@@ -39,8 +39,7 @@
 	                                 int16_t	appType,
 	                                 uint8_t	DGflag,
 	                         	 int16_t	FEC_scheme,
-	                                 QString	picturesPath,
-	                                 bool		show_crcErrors) {
+	                                 QString	picturesPath) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= bitRate;
@@ -49,9 +48,6 @@ int32_t i, j;
 	this	-> DGflag		= DGflag;
 	this	-> FEC_scheme		= FEC_scheme;
 	this	-> expectedIndex	= 0;
-	this	-> show_crcErrors	= show_crcErrors;
-	connect (this, SIGNAL (show_mscErrors (int)),
-	         mr, SLOT (show_mscErrors (int)));
 	switch (DSCTy) {
 	   default:
 	      my_dataHandler	= new virtual_dataHandler ();
@@ -66,7 +62,7 @@ int32_t i, j;
 	      break;
 
 	   case 59:
-	      my_dataHandler	= new ip_dataHandler (mr, show_crcErrors);
+	      my_dataHandler	= new ip_dataHandler (mr);
 	      break;
 
 	   case 60:
@@ -76,9 +72,6 @@ int32_t i, j;
 
 	packetState	= 0;
 	streamAddress	= -1;
-//
-	handledPackets	= 0;
-	crcErrors	= 0;
 }
 
 	dataProcessor::~dataProcessor	(void) {
@@ -128,12 +121,6 @@ int16_t	i;
 //	if (usefulLength > 0)
 //	   fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
 //	                    continuityIndex, address, usefulLength);
-	if (show_crcErrors && (++ handledPackets >= 500)) {
-	   show_mscErrors (100 - crcErrors / 5);
-	   crcErrors	= 0;
-	   handledPackets = 0;
-	}
-
 	if (continuityIndex != expectedIndex) {
 	   expectedIndex = 0;
 	   return;
@@ -141,7 +128,6 @@ int16_t	i;
 	expectedIndex = (expectedIndex + 1 ) % 4;
 	(void)command;
 	if (!check_CRC_bits (data, packetLength * 8)) {
-	   crcErrors ++;
 	   return;
 	}
 	if (address == 0)

@@ -40,17 +40,16 @@
 //
 //	fragmentsize == Length * CUSize
 	dabData::dabData	(RadioInterface *mr,
-	                         uint8_t DSCTy,
-	                       	 int16_t packetAddress,
-	                         int16_t appType,
-	                         int16_t fragmentSize,
-	                         int16_t bitRate,
-	                       	 bool	shortForm,
-	                         int16_t protLevel,
-	                         uint8_t DGflag,
-	                       	 int16_t FEC_scheme,
-	                         QString	picturesPath,
-	                         bool	show_crcErrors):
+	                         uint8_t	DSCTy,
+	                       	 int16_t	packetAddress,
+	                         int16_t	appType,
+	                         int16_t	fragmentSize,
+	                         int16_t	bitRate,
+	                       	 bool		shortForm,
+	                         int16_t 	protLevel,
+	                         uint8_t 	DGflag,
+	                       	 int16_t 	FEC_scheme,
+	                         QString	picturesPath) :
 	                            freeSlots (20) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
@@ -63,15 +62,13 @@ int32_t i, j;
 	fprintf (stderr, "data: protlevel = %d\n", protLevel);
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
-	this	-> show_crcErrors	= show_crcErrors;
 	our_dabProcessor	= new dataProcessor (mr,
 	                                             bitRate,
 	                                             DSCTy,
 	                                             appType,
 	                                             DGflag,
 	                                             FEC_scheme,
-	                                             picturesPath,
-	                                             show_crcErrors);
+	                                             picturesPath);
 	nextIn                          = 0;
         nextOut                         = 0;
         for (i = 0; i < 20; i ++)
