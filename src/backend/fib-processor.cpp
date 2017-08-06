@@ -1325,6 +1325,10 @@ bool    fib_processor::syncReached (void) {
         return isSynced;
 }
 
+void	fib_processor::resetSync   (void) {
+	isSynced = false;
+}
+
 DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
 	                                        int16_t subId,
 	                                        bool *success) {

@@ -210,10 +210,13 @@ int16_t	viterbiBlock [3072 + 24];
 	   bitBuffer_out [i] ^= PRBS [i];
 /**
   *	each of the fib blocks is protected by a crc
-  *	(we know that there are three fib blocks each time we are here
+  *	(we know that there are three fib blocks each time we are here)
   *	we keep track of the successrate
   *	and show that per 100 fic blocks
+  *	One issue is what to do when we really believe the synchronization
+  *	was lost.
   */
+
 	for (i = ficno * 3; i < ficno * 3 + 3; i ++) {
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
 	   if (!check_CRC_bits (p, 256)) {

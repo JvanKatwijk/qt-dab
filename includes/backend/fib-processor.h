@@ -104,12 +104,13 @@ public:
 	void	setupforNewFrame	(void);
 	void	clearEnsemble		(void);
 	bool	syncReached		(void);
+	void	resetSync		(void);
 	void	setSelectedService	(QString &);
 	uint8_t	kindofService		(QString &);
 	void	dataforAudioService	(QString &, audiodata *);
 	void	dataforAudioService	(int16_t,   audiodata *);
 	void	dataforDataService	(QString &, packetdata *);
-	void	dataforDataService	(int16_t, packetdata *);
+	void	dataforDataService	(int16_t,   packetdata *);
 	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
 	int16_t	mainId			(void);
 	uint8_t	get_ecc			(void);
