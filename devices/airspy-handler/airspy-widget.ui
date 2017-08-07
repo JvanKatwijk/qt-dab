@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab_1">
     <attribute name="title">
@@ -32,9 +32,9 @@
     <widget class="QSlider" name="sensitivitySlider">
      <property name="geometry">
       <rect>
-       <x>20</x>
+       <x>10</x>
        <y>20</y>
-       <width>321</width>
+       <width>311</width>
        <height>20</height>
       </rect>
      </property>
@@ -171,9 +171,9 @@
     <widget class="QSlider" name="linearitySlider">
      <property name="geometry">
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>20</y>
-       <width>261</width>
+       <width>251</width>
        <height>20</height>
       </rect>
      </property>
@@ -192,7 +192,7 @@
       <rect>
        <x>270</x>
        <y>20</y>
-       <width>64</width>
+       <width>51</width>
        <height>23</height>
       </rect>
      </property>
@@ -423,7 +423,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
+       <y>70</y>
        <width>66</width>
        <height>20</height>
       </rect>
@@ -453,7 +453,7 @@
       <rect>
        <x>20</x>
        <y>110</y>
-       <width>61</width>
+       <width>81</width>
        <height>32</height>
       </rect>
      </property>
@@ -464,9 +464,9 @@
     <widget class="QPushButton" name="mixerButton">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>110</y>
-       <width>90</width>
+       <width>101</width>
        <height>32</height>
       </rect>
      </property>
@@ -477,9 +477,9 @@
     <widget class="QPushButton" name="biasButton">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>220</x>
        <y>110</y>
-       <width>90</width>
+       <width>101</width>
        <height>32</height>
       </rect>
      </property>
