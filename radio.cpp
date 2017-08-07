@@ -1588,7 +1588,7 @@ bool	firstData;
 	                  currentChannel. toLatin1 (). data (),
 	                  frequency / 1000);
 	                
-	fprintf (file_P, "\nAufio services\nprogram name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
+	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 	for (i = 0; i < 64; i ++) {
 	   audiodata d;
 	   my_ficHandler. dataforAudioService (i, &d);
