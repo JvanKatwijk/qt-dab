@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>499</width>
-    <height>325</height>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -42,7 +42,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -65,7 +65,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for saving the audio output into a file. First push will show a menu for file selection. &lt;/p&gt;&lt;p&gt;Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. &lt;/p&gt;&lt;p&gt;Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>Save audio</string>
@@ -86,7 +86,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for saving the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>Dump to raw file</string>
@@ -102,7 +102,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB mode. &lt;/p&gt;&lt;p&gt;Mode 1 is selected as default, which is used by almost all DAB ensembles worldwide.&lt;br/&gt;Please note that other modes are not tested.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB mode. &lt;/p&gt;&lt;p&gt;Mode 1 is selected as default, which is used by almost all DAB ensembles worldwide.&lt;/p&gt;&lt;p&gt;Please note that other modes are not tested.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -234,7 +234,7 @@
       <x>10</x>
       <y>260</y>
       <width>471</width>
-      <height>41</height>
+      <height>61</height>
      </rect>
     </property>
     <property name="toolTip">
@@ -259,7 +259,7 @@
      <bool>true</bool>
     </property>
     <property name="textInteractionFlags">
-     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
    <widget class="QPushButton" name="startButton">
@@ -271,12 +271,52 @@
       <height>61</height>
      </rect>
     </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>78</red>
+          <green>154</green>
+          <blue>6</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>78</red>
+          <green>154</green>
+          <blue>6</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>78</red>
+          <green>154</green>
+          <blue>6</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
     <property name="font">
      <font>
       <pointsize>16</pointsize>
       <weight>50</weight>
       <bold>false</bold>
      </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push to start the selected device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>START</string>
@@ -291,6 +331,46 @@
       <height>51</height>
      </rect>
     </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>239</red>
+          <green>41</green>
+          <blue>41</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>239</red>
+          <green>41</green>
+          <blue>41</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="Button">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>239</red>
+          <green>41</green>
+          <blue>41</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quit the program&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>QUIT</string>
     </property>
@@ -303,6 +383,9 @@
       <width>96</width>
       <height>51</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset player&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>RESET</string>
@@ -430,7 +513,7 @@
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble ID&lt;/p&gt;&lt;p&gt;The hecadecimal number indicates the ensemble being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble ID&lt;/p&gt;&lt;p&gt;The hecadecimal number shows the ensemble ID.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="frameShape">
      <enum>QFrame::NoFrame</enum>
@@ -570,7 +653,7 @@
      </font>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information on the selected program&amp;gt;&lt;/p&gt;&lt;p&gt;Push gain for having  the widget disappear.&amp;gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>Technical
@@ -587,7 +670,7 @@ details</string>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current BAND. Scanning will continue until DAB data is detected in the channel currently  selected.&amp;gt;&lt;/p&gt;&lt;p&gt;&amp;gt;&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current selected band (default VHF Band III or optionally L-Band)&lt;/p&gt;&lt;p&gt;Scanning will continue until an active DAB or DAB+ signal is found.&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>Scan band</string>
@@ -617,6 +700,9 @@ details</string>
       <width>211</width>
       <height>20</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
      <string>save ensemble info</string>

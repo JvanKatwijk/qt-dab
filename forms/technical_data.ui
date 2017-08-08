@@ -54,6 +54,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language (defined by provider)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="frameShape">
     <enum>QFrame::Box</enum>
    </property>
@@ -85,12 +88,12 @@
     <rect>
      <x>30</x>
      <y>150</y>
-     <width>111</width>
+     <width>141</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>startAddress</string>
+    <string>Start Address of CU</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -98,12 +101,12 @@
     <rect>
      <x>30</x>
      <y>180</y>
-     <width>63</width>
+     <width>121</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>Length</string>
+    <string>Used CUs</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -115,8 +118,11 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ uses protection levels 1, 2, 3 or 4 (A or B), whereas DAB uses 1, 2, 3, 4 or 5.&lt;/p&gt;&lt;p&gt;Lower numbers have usually better error correction.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
-    <string>ProtectionLevel</string>
+    <string>Protection Level</string>
    </property>
   </widget>
   <widget class="QLabel" name="programType">
@@ -127,6 +133,9 @@
      <width>201</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PTY (Program Type)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::Box</enum>
@@ -140,12 +149,12 @@
     <rect>
      <x>30</x>
      <y>270</y>
-     <width>63</width>
+     <width>121</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>bitRate</string>
+    <string>Bitrate in kBit/s</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="bitrateDisplay">
@@ -190,7 +199,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Subchannel Id</string>
+    <string>Subchannel ID</string>
    </property>
   </widget>
   <widget class="QLabel" name="uepField">
@@ -201,6 +210,9 @@
      <width>201</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows Protection Level and Type (A or B)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::Box</enum>
@@ -234,6 +246,9 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -246,6 +261,9 @@
      <width>91</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz&lt;/p&gt;&lt;p&gt;Only shown when the input is not a pre-recorded file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
     <enum>QFrame::NoFrame</enum>
@@ -268,6 +286,9 @@
      <width>63</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz&lt;/p&gt;&lt;p&gt;Only shown when the input is not a pre-recorded file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>MHz</string>
@@ -315,7 +336,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality of the DAB+ frames. Indicator for the amount of times that the frames contain&lt;/p&gt;&lt;p&gt;more errors than the Reed Solomon correction can correct. 100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality of the DAB+ frames. &lt;/p&gt;&lt;p&gt;Indicator for the amount of times meaning the frames contain more errors than the Reed Solomon correction can correct. &lt;/p&gt;&lt;p&gt;100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="value">
     <number>24</number>
@@ -331,7 +352,7 @@
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator of the successrate of handling the aac frames in the DAB+ transmissions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator of the success rate of handling the AAC frames in the DAB+ transmissions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="value">
     <number>24</number>
@@ -342,12 +363,12 @@
     <rect>
      <x>30</x>
      <y>118</y>
-     <width>81</width>
+     <width>121</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>cpu usage</string>
+    <string>CPU Usage in %</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="cpuMonitor">
@@ -380,6 +401,9 @@
      <pointsize>16</pointsize>
     </font>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -407,7 +431,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>MOT decoding</string>
+    <string>MOT Decoding</string>
    </property>
   </widget>
   <widget class="QLabel" name="transmitter_coordinates">
