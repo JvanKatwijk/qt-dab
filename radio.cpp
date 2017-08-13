@@ -195,15 +195,21 @@ int16_t k;
 	                                       iqBuffer);
         spectrumHandler -> show ();
 #endif
-#ifdef	__MINGW32__
-	QString	defaultPath	= "%tmp%/qt-pictures";
-#else
-	QString	defaultPath	= "/tmp/qt-pictures";
-#endif
+
+	QString defaultPath	= QDir::tempPath ();
+	if (defaultPath. endsWith ("/"))
+	   defaultPath. append ("qt-pictures/");
+	else
+	   defaultPath. append ("/qt-pictures/");
+
 	picturesPath	=
 	        dabSettings	-> value ("pictures", defaultPath). toString ();
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
+	QDir testdir (defaultPath);
+
+	if (!testdir. exists ())
+	   testdir. mkdir (defaultPath);
 
 	QString t	=
 	        dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
