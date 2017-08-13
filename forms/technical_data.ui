@@ -61,7 +61,7 @@
     <enum>QFrame::Box</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>language</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="protectionlevelDisplay">
@@ -141,7 +141,7 @@
     <enum>QFrame::Box</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>programType</string>
    </property>
   </widget>
   <widget class="QLabel" name="l6">
@@ -218,7 +218,7 @@
     <enum>QFrame::Box</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>uepField</string>
    </property>
   </widget>
   <widget class="QLabel" name="ASCTy">
@@ -234,7 +234,7 @@
     <enum>QFrame::Box</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>ASCTy</string>
    </property>
   </widget>
   <widget class="QLabel" name="ensemble">
@@ -242,15 +242,20 @@
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>201</width>
-     <height>20</height>
+     <width>231</width>
+     <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>16</pointsize>
+    </font>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string/>
+    <string>ensemble</string>
    </property>
   </widget>
   <widget class="QLCDNumber" name="frequency">
@@ -258,9 +263,14 @@
     <rect>
      <x>30</x>
      <y>40</y>
-     <width>91</width>
+     <width>141</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz&lt;/p&gt;&lt;p&gt;Only shown when the input is not a pre-recorded file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -281,7 +291,7 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>140</x>
+     <x>190</x>
      <y>40</y>
      <width>63</width>
      <height>31</height>
@@ -374,7 +384,7 @@
   <widget class="QLCDNumber" name="cpuMonitor">
    <property name="geometry">
     <rect>
-     <x>150</x>
+     <x>160</x>
      <y>110</y>
      <width>71</width>
      <height>31</height>
@@ -405,20 +415,23 @@
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string/>
+    <string>programName</string>
    </property>
   </widget>
   <widget class="QLabel" name="motAvailable">
    <property name="geometry">
     <rect>
-     <x>202</x>
+     <x>210</x>
      <y>520</y>
      <width>41</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string/>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;MOT&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_7">
@@ -426,12 +439,12 @@
     <rect>
      <x>20</x>
      <y>520</y>
-     <width>141</width>
+     <width>191</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>MOT Decoding</string>
+    <string>MOT Decoding (Slide show)</string>
    </property>
   </widget>
   <widget class="QLabel" name="transmitter_coordinates">
@@ -443,8 +456,11 @@
      <height>20</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII Transmitter coordinates (if available)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
    <property name="text">
-    <string/>
+    <string>transmitter_coordinates</string>
    </property>
   </widget>
  </widget>
