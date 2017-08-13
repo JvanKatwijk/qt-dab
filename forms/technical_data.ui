@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>259</width>
-    <height>580</height>
+    <width>249</width>
+    <height>589</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,17 +48,17 @@
   <widget class="QLabel" name="language">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>130</x>
      <y>340</y>
-     <width>201</width>
-     <height>20</height>
+     <width>101</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language (defined by provider)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::Box</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="text">
     <string>language</string>
@@ -128,17 +128,17 @@
   <widget class="QLabel" name="programType">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>130</x>
      <y>360</y>
-     <width>201</width>
-     <height>20</height>
+     <width>101</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PTY (Program Type)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::Box</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="text">
     <string>programType</string>
@@ -205,17 +205,23 @@
   <widget class="QLabel" name="uepField">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>130</x>
      <y>300</y>
-     <width>201</width>
-     <height>20</height>
+     <width>101</width>
+     <height>21</height>
     </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows Protection Level and Type (A or B)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="frameShape">
-    <enum>QFrame::Box</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="text">
     <string>uepField</string>
@@ -224,14 +230,14 @@
   <widget class="QLabel" name="ASCTy">
    <property name="geometry">
     <rect>
-     <x>30</x>
+     <x>130</x>
      <y>320</y>
-     <width>201</width>
-     <height>20</height>
+     <width>101</width>
+     <height>21</height>
     </rect>
    </property>
    <property name="frameShape">
-    <enum>QFrame::Box</enum>
+    <enum>QFrame::NoFrame</enum>
    </property>
    <property name="text">
     <string>ASCTy</string>
@@ -240,9 +246,9 @@
   <widget class="QLabel" name="ensemble">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>10</y>
-     <width>231</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
@@ -307,7 +313,7 @@
   <widget class="QProgressBar" name="ficError_display">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>390</y>
      <width>201</width>
      <height>23</height>
@@ -323,7 +329,7 @@
   <widget class="QProgressBar" name="frameError_display">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>420</y>
      <width>201</width>
      <height>23</height>
@@ -339,7 +345,7 @@
   <widget class="QProgressBar" name="rsError_display">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>450</y>
      <width>201</width>
      <height>23</height>
@@ -355,7 +361,7 @@
   <widget class="QProgressBar" name="aacError_display">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>480</y>
      <width>201</width>
      <height>23</height>
@@ -400,9 +406,9 @@
   <widget class="QLabel" name="programName">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>70</y>
-     <width>211</width>
+     <width>201</width>
      <height>41</height>
     </rect>
    </property>
@@ -421,11 +427,14 @@
   <widget class="QLabel" name="motAvailable">
    <property name="geometry">
     <rect>
-     <x>210</x>
+     <x>190</x>
      <y>520</y>
      <width>41</width>
      <height>20</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slide show indicator&lt;/p&gt;&lt;p&gt;Green means MOT frames are received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;MOT&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -437,23 +446,23 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>520</y>
-     <width>191</width>
+     <width>151</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>MOT Decoding (Slide show)</string>
+    <string>MOT Decoding</string>
    </property>
   </widget>
   <widget class="QLabel" name="transmitter_coordinates">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>30</x>
      <y>550</y>
-     <width>211</width>
-     <height>20</height>
+     <width>201</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -461,6 +470,64 @@
    </property>
    <property name="text">
     <string>transmitter_coordinates</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>300</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>0</width>
+     <height>17</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>Prot. level:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>320</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Type:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>340</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Language:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_10">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>360</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>PTY:</string>
    </property>
   </widget>
  </widget>
