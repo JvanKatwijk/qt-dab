@@ -764,7 +764,7 @@ void	RadioInterface::clear_showElements (void) {
 	techData. startAddressDisplay	-> display (0);
 	techData. lengthDisplay		-> display (0);
 	techData. subChIdDisplay	-> display (0);
-	techData. protectionlevelDisplay -> display (0);
+//	techData. protectionlevelDisplay -> display (0);
 	techData. uepField		-> setText (QString (""));
 	techData. ASCTy			-> setText (QString (""));
 	techData. language		-> setText (QString (""));
@@ -1277,8 +1277,8 @@ void	RadioInterface::selectService (QString s) {
 	        QString protL;
 	        if (!d. shortForm) {
 	           protL = "EEP ";
-               h = (h & 03) + 1;
-               protL. append (QString::number (h));
+
+               protL. append (QString::number ((h & 03) + 1));
                if ((h & (1 << 2)) == 0)
                   protL. append ("-A");
 	           else
@@ -1292,7 +1292,7 @@ void	RadioInterface::selectService (QString s) {
 	           protL. append (QString::number (h));
 	        }
 	        techData. uepField -> setText (protL);
-	        techData. protectionlevelDisplay -> display (h);
+//	        techData. protectionlevelDisplay -> display (h);   // no more needed
 	        techData. ASCTy -> setText (d. ASCTy == 077 ? "DAB+" : "DAB");
 	        if (d. ASCTy == 077) {
 	           techData. rsError_display -> show ();
@@ -1607,8 +1607,8 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
-          h = (h & 03) + 1;
-          protL. append (QString::number (h));
+
+          protL. append (QString::number ((h & 03) + 1));
 	      if ((h & (1 << 2)) == 0) {
              protL. append ("-A");
 	         codeRate = eep_Arates [(h & 03) + 1];
@@ -1617,7 +1617,7 @@ bool	firstData;
              protL. append ("-B");
 	         codeRate = eep_Brates [(h & 03) + 1];
 	      }
-
+          h = (h & 03) + 1;
 	   }
 	   else  {
 	      h = h & 03;
@@ -1659,8 +1659,7 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
-          h = (h & 03) + 1;
-          protL. append (QString::number (h));
+          protL. append (QString::number ((h & 03) + 1));
 	      if ((h & (1 << 2)) == 0) {
              protL. append ("-A");
 	         codeRate = eep_Arates [(h & 03) + 1];
@@ -1669,7 +1668,7 @@ bool	firstData;
              protL. append ("-B");
 	         codeRate = eep_Brates [(h & 03) + 1];
 	      }
-
+          h = (h & 03) + 1;
 	   }
 	   else  {
 	      h = h & 03;
