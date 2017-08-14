@@ -1277,12 +1277,14 @@ void	RadioInterface::selectService (QString s) {
 	        QString protL;
 	        if (!d. shortForm) {
 	           protL = "EEP ";
-	           if ((h & (1 << 2)) == 0) 
-	              protL. append ("A ");
+               h = (h & 03) + 1;
+               protL. append (QString::number (h));
+               if ((h & (1 << 2)) == 0)
+                  protL. append ("-A");
 	           else
-	              protL. append ("B ");
-	           h = (h & 03) + 1;
-	           protL. append (QString::number (h));
+                  protL. append ("-B");
+
+
 	        }
 	        else  {
 	           h = h & 03;
@@ -1605,16 +1607,17 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
+          h = (h & 03) + 1;
+          protL. append (QString::number (h));
 	      if ((h & (1 << 2)) == 0) {
-	         protL. append ("A ");
+             protL. append ("-A");
 	         codeRate = eep_Arates [(h & 03) + 1];
 	      }
 	      else {
-	         protL. append ("B ");
+             protL. append ("-B");
 	         codeRate = eep_Brates [(h & 03) + 1];
 	      }
-	      h = (h & 03) + 1;
-	      protL. append (QString::number (h));
+
 	   }
 	   else  {
 	      h = h & 03;
@@ -1656,16 +1659,17 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
+          h = (h & 03) + 1;
+          protL. append (QString::number (h));
 	      if ((h & (1 << 2)) == 0) {
-	         protL. append ("A ");
+             protL. append ("-A");
 	         codeRate = eep_Arates [(h & 03) + 1];
 	      }
 	      else {
-	         protL. append ("B ");
+             protL. append ("-B");
 	         codeRate = eep_Brates [(h & 03) + 1];
 	      }
-	      h = (h & 03) + 1;
-	      protL. append (QString::number (h));
+
 	   }
 	   else  {
 	      h = h & 03;

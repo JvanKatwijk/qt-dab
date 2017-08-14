@@ -1132,8 +1132,8 @@ int16_t	service		= UNKNOWN_SERVICE;
 	   if (listofServices [i]. serviceLabel. label != s)
 	      continue;
 
-//	   fprintf (stderr, "we found for %s serviceId %X\n", s. toLatin1 (). data (), 
-//	                      listofServices [i]. serviceId);
+       fprintf (stderr, "Playing %s serviceId %X\n", s. toLatin1 (). data (),
+                          listofServices [i]. serviceId);
 	   selectedService = listofServices [i]. serviceId;
 	   for (j = 0; j < 64; j ++) {
 	      int16_t subchId;
