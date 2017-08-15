@@ -493,6 +493,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   )
 
 	   add_definitions (-DHAVE_SPECTRUM)
+	   add_definitions (-D__QUALITY)
 	endif (SPECTRUM)
 
 	if (TRY_EPG)
