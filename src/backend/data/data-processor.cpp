@@ -39,6 +39,7 @@
 	                                 int16_t	appType,
 	                                 uint8_t	DGflag,
 	                         	 int16_t	FEC_scheme,
+	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath) {
 int32_t i, j;
 	this	-> myRadioInterface	= mr;
@@ -47,6 +48,7 @@ int32_t i, j;
 	this	-> appType		= appType;
 	this	-> DGflag		= DGflag;
 	this	-> FEC_scheme		= FEC_scheme;
+	this	-> dataBuffer		= dataBuffer;
 	this	-> expectedIndex	= 0;
 	switch (DSCTy) {
 	   default:
@@ -54,7 +56,7 @@ int32_t i, j;
 	      break;
 
 	   case 5:			
-	      my_dataHandler	= new tdc_dataHandler (appType);
+	      my_dataHandler	= new tdc_dataHandler (mr, dataBuffer, appType);
 	      break;
 
 	   case 44:
@@ -62,7 +64,7 @@ int32_t i, j;
 	      break;
 
 	   case 59:
-	      my_dataHandler	= new ip_dataHandler (mr);
+	      my_dataHandler	= new ip_dataHandler (mr, dataBuffer);
 	      break;
 
 	   case 60:

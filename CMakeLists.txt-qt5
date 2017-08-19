@@ -52,6 +52,10 @@ if (DEFINED SPECTRUM)
    set(SPECTRUM true)
 endif ()
 
+if (DEFINED DATA_STREAMER)
+   set(DATA_STREAMER true)
+endif ()
+
 add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 add_definitions (-DMSC_DATA__)		# use at your own risk
@@ -175,7 +179,6 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/journaline/NML.h
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/virtual-datahandler.h
-	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/dab-data.h
@@ -227,7 +230,6 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
 	     ./src/backend/data/ip-datahandler.cpp
-	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/journaline-datahandler.cpp
 	     ./src/backend/data/journaline/crc_8_16.c
 	     ./src/backend/data/journaline/log.c
@@ -273,6 +275,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/ip-datahandler.h
+	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/dab-data.h
@@ -508,6 +511,23 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   )
 	   add_definitions (-DTRY_EPG)
 	endif (TRY_EPG)
+
+	if (DATA_STREAMER)
+	   include_directories (
+	      ./server-thread
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	             ./server-thread/tcp-server.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	             ./server-thread/tcp-server.cpp
+	   )
+	   add_definitions (-DDATA_STREAMER)
+	endif (DATA_STREAMER)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
 	             ./devices/filereader-widget.ui)

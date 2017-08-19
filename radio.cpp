@@ -97,6 +97,7 @@ static	int	frameErrors	= 0;
 
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                int16_t		tii_delay,
+	                                int32_t		dataPort,
 	                                bool		tracing,
 	                                QWidget		*parent):
 	                                        QMainWindow (parent),
@@ -152,6 +153,7 @@ int16_t k;
 	           dabSettings -> value ("latency", 1). toInt ();
 
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
+	dataBuffer		= new RingBuffer<uint8_t>(32768);
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
 	port			= dabSettings -> value ("port", 8888). toInt ();
 //
@@ -164,6 +166,9 @@ int16_t k;
 	}
 	currentName		= QString ("");
 
+#ifdef	DATA_STREAMER
+	dataStreamer		= new tcpServer (dataPort);
+#endif
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(audioBuffer,
@@ -187,6 +192,7 @@ int16_t k;
 	connect (streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 #endif
+
 #ifdef  HAVE_SPECTRUM
         spectrumBuffer          = new RingBuffer<DSPCOMPLEX> (2 * 32768);
 	iqBuffer		= new RingBuffer<DSPCOMPLEX> (2 * 1536);
@@ -204,6 +210,7 @@ int16_t k;
 
 	picturesPath	=
 	        dabSettings	-> value ("pictures", defaultPath). toString ();
+
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
 	QDir testdir (defaultPath);
@@ -236,6 +243,7 @@ int16_t k;
 	my_mscHandler		= new mscHandler	(this,
 	                                                 convert (modeSelector -> currentText ()),
 	                                                 audioBuffer,
+	                                                 dataBuffer,
 	                                                 picturesPath);
 /**
   *	The default for the ofdmProcessor depends on
@@ -694,6 +702,8 @@ void	RadioInterface::showMOT		(QByteArray data,
 	      fprintf (stderr, "cannot write file %s\n",
 	                            pictureAddress. toLatin1 (). data ());
 	   else {
+	      fprintf (stderr, "going to write file %s\n",
+	                            pictureAddress. toLatin1 (). data ());
 	      (void)fwrite (data. data (), 1, data.length (), x);
 	      fclose (x);
 	   }
@@ -708,11 +718,34 @@ void	RadioInterface::showMOT		(QByteArray data,
 }
 //
 //	sendDatagram is triggered by the ip handler,
-void	RadioInterface::sendDatagram	(char *data, int length) {
+void	RadioInterface::sendDatagram	(int length) {
+uint8_t localBuffer [length];
+	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
+	   fprintf (stderr, "Something went wrong\n");
+	   return;
+	}
+	dataBuffer -> getDataFromBuffer (localBuffer, length);
 	if (running)
-	   DSCTy_59_socket. writeDatagram (data, length,
+	   dataOut_socket. writeDatagram ((const char *)localBuffer, length,
 	                                   QHostAddress (ipAddress),
 	                                   port);
+}
+
+void	RadioInterface::handle_tdcdata (int length) {
+uint8_t localBuffer [length];
+int16_t i;
+	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
+	   fprintf (stderr, "Something went wrong\n");
+	   return;
+	}
+	dataBuffer -> getDataFromBuffer (localBuffer, length);
+	for (i = 0; i < 8; i ++)
+	   fprintf (stderr, "%2x", localBuffer [i] & 0xFF);
+	fprintf (stderr, "\n");
+#ifdef	DATA_STREAMER
+	if (running)
+	   dataStreamer -> sendData (localBuffer, length);
+#endif
 }
 
 /**
@@ -816,6 +849,10 @@ bool	r = 0;
   */
 void	RadioInterface::TerminateProcess (void) {
 	running		= false;
+#ifdef	DATA_STREAMER
+	fprintf (stderr, "going to close the dataStreamer\n");
+	delete		dataStreamer;
+#endif
 	displayTimer. stop ();
 	signalTimer.  stop ();
 	presetTimer.  stop ();
@@ -976,6 +1013,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	my_mscHandler		= new mscHandler    (this,
 	                                             convert (Mode),
 	                                             audioBuffer,
+	                                             dataBuffer,
 	                                             picturesPath);
 	delete my_ofdmProcessor;
 	my_ofdmProcessor	= new ofdmProcessor  (this,

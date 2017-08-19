@@ -197,6 +197,9 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 #CONFIG		+= elad_s1
 
+#very experimental, simple server for connecting to a tdc handler
+#CONFIG		+= datastreamer
+
 #if you want to see a spectrum and a constellation plot, uncomment
 CONFIG		+= spectrum
 
@@ -388,3 +391,11 @@ try_tii		{
 	SOURCES		+= ./src/various/tii_detector.cpp \
 	                   ./src/various/tii_verify.cpp
 }
+
+datastreamer	{
+	DEFINES		+= DATA_STREAMER
+	INCLUDEPATH	+= ./server-thread
+	HEADERS		+= ./server-thread/tcp-server.h
+	SOURCES		+= ./server-thread/tcp-server.cpp
+}
+

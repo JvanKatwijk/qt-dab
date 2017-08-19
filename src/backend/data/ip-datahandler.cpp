@@ -23,10 +23,12 @@
 #include	"ip-datahandler.h"
 #include	"radio.h"
 
-	ip_dataHandler::ip_dataHandler (RadioInterface *mr) {
-	connect (this, SIGNAL (writeDatagram (char *, int)),
-	         mr, SLOT (sendDatagram (char *, int)));
+	ip_dataHandler::ip_dataHandler (RadioInterface *mr,
+	                                RingBuffer<uint8_t> *dataBuffer) {
+	this	-> dataBuffer		= dataBuffer;
 	this	-> handledPackets	= 0;
+	connect (this, SIGNAL (writeDatagram (int)),
+	         mr, SLOT (sendDatagram (int)));
 }
 
 	ip_dataHandler::~ip_dataHandler (void) {
@@ -112,6 +114,7 @@ int16_t	i;
 //	udp packet to port 8888
 void	ip_dataHandler::process_udpVector (uint8_t *data, int16_t length) {
 char *message = (char *)(&(data [8]));
-	   writeDatagram ((char *)message, length - 8);
+	dataBuffer -> putDataIntoBuffer ((uint8_t *)message, length - 8);
+	writeDatagram (length - 8);
 }
 

@@ -39,6 +39,7 @@ public:
 		mscHandler		(RadioInterface *,
 	                                 uint8_t,
 	                                 RingBuffer<int16_t> *,
+	                                 RingBuffer<uint8_t> *,
 	                                 QString);
 		~mscHandler		(void);
 	void	process_mscBlock	(int16_t *, int16_t);
@@ -49,6 +50,7 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;
+	RingBuffer<uint8_t>	*dataBuffer;
 	QString		picturesPath;
 	dabParams	params;
 	QMutex		locker;

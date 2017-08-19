@@ -20,26 +20,29 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef	IP_DATAHANDLER
-#define	IP_DATAHANDLER
+#ifndef	__IP_DATAHANDLER__
+#define	__IP_DATAHANDLER__
 #include	"dab-constants.h"
 #include	"virtual-datahandler.h"
 #include	<QByteArray>
+#include	"ringbuffer.h"
 
 class	RadioInterface;
 
 class	ip_dataHandler:public virtual_dataHandler {
 Q_OBJECT
 public:
-		ip_dataHandler		(RadioInterface *);
+		ip_dataHandler		(RadioInterface *,
+	                                 RingBuffer<uint8_t> *);
 		~ip_dataHandler		(void);
 	void	add_mscDatagroup	(QByteArray &);
 private:
 	void	process_ipVector	(QByteArray &);
 	void	process_udpVector	(uint8_t *, int16_t);
 	int16_t	handledPackets;
+	RingBuffer<uint8_t>*	dataBuffer;
 signals:
-	void	writeDatagram		(char *, int);
+	void	writeDatagram		(int);
 };
 
 #endif

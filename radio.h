@@ -31,6 +31,7 @@
 #include	<QStringList>
 #include	<QStringListModel>
 #include	<QUdpSocket>
+#include	<QTcpSocket>
 #include	<QComboBox>
 #include	<QLabel>
 #include	<QTimer>
@@ -41,16 +42,15 @@
 #include	"ringbuffer.h"
 #include	"band-handler.h"
 #include	"text-mapper.h"
+#ifdef	DATA_STREAMER
+#include	"tcp-server.h"
+#endif
 
 class	QSettings;
 class	virtualInput;
 class	audioBase;
 class	mscHandler;
 class	common_fft;
-
-#ifdef	TCP_STREAMER
-class	tcpStreamer;
-#endif
 
 #ifdef	TECHNICAL_DATA
 #include	"ui_technical_data.h"
@@ -70,6 +70,7 @@ Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
 	                                 int16_t	tii_delay,
+	                                 int32_t	dataPort,
 	                                 bool		tracing,
 	                                 QWidget	*parent = NULL);
 		~RadioInterface		();
@@ -100,14 +101,18 @@ private:
 	ficHandler	my_ficHandler;
 	mscHandler	*my_mscHandler;
 	audioBase	*soundOut;
+#ifdef	DATA_STREAMER
+	tcpServer	*dataStreamer;
+#endif
 	RingBuffer<int16_t>	*audioBuffer;
+	RingBuffer<uint8_t>	*dataBuffer;
 	bool		autoCorrector;
 const	char		*get_programm_type_string (int16_t);
 const	char		*get_programm_language_string (int16_t);
 	QLabel		*pictureLabel;
 	bool		saveSlides;
 	bool		showSlides;
-	QUdpSocket	DSCTy_59_socket;
+	QUdpSocket	dataOut_socket;
 	QString		ipAddress;
 	int32_t		port;
 	void		init_your_gui		(void);
@@ -157,7 +162,8 @@ public slots:
 	void		setSynced		(char);
 	void		showLabel		(QString);
 	void		showMOT			(QByteArray, int, QString);
-	void		sendDatagram		(char *, int);
+	void		sendDatagram		(int);
+	void		handle_tdcdata		(int);
 	void		changeinConfiguration	(void);
 	void		newAudio		(int);
 //

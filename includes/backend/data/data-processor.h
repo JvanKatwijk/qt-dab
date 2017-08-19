@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2015
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -27,6 +27,7 @@
 #include	<stdio.h>
 #include	<string.h>
 #include	<QObject>
+#include	"ringbuffer.h"
 
 class	RadioInterface;
 class	uep_deconvolve;
@@ -42,6 +43,7 @@ public:
 	                 int16_t	appType,
 	                 uint8_t	DGflag,
 	                 int16_t	FEC_scheme,
+	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 QString	picturesPath);
 	~dataProcessor	(void);
 void	addtoFrame	(uint8_t *);
@@ -52,6 +54,7 @@ private:
 	int16_t		appType;
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
+	RingBuffer<uint8_t>* dataBuffer;
 	int16_t		expectedIndex;
 	QByteArray	series;
 	uint8_t		packetState;

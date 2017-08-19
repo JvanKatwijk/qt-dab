@@ -37,11 +37,13 @@
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	mode,
-	                                 RingBuffer<int16_t> *buffer,
+	                                 RingBuffer<int16_t> *audioBuffer,
+	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath) :
 	                                       params (mode) {
 	myRadioInterface	= mr;
-	audioBuffer		= buffer;
+	this	-> audioBuffer	= audioBuffer;
+	this	-> dataBuffer	= dataBuffer;
 	this	-> picturesPath	= picturesPath;
 	cifVector		= new int16_t [55296];
 	cifCount		= 0;	// msc blocks in CIF
@@ -131,6 +133,7 @@ void	mscHandler::set_dataChannel (packetdata	*d) {
 	                          protLevel,
 	                          DGflag,
 	                          FEC_scheme,
+	                          dataBuffer,
 	                          picturesPath);
 //	these we need for actual processing
 //	and this one to get started

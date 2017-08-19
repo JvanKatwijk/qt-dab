@@ -62,10 +62,10 @@ RadioInterface  *MyRadioInterface;
 bool            tracing         = false;
 int16_t         tii_delay       = 60;
 QSettings       *dabSettings;           // ini file
-//
+int32_t		dataPort	= 8888;
 	int     opt;
 
-	while ((opt = getopt (argc, argv, "i:D:T")) != -1) {
+	while ((opt = getopt (argc, argv, "i:D:TP:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -77,6 +77,10 @@ QSettings       *dabSettings;           // ini file
 
 	      case 'T':
 	         tracing        = true;
+	         break;
+
+	      case 'P':
+	         dataPort	= atoi (optarg);
 	         break;
 
 	     default:
@@ -95,6 +99,7 @@ QSettings       *dabSettings;           // ini file
 	QApplication a (argc, argv);
 	MyRadioInterface = new RadioInterface (dabSettings,
                                                tii_delay,
+	                                       dataPort,
                                                tracing);
 	MyRadioInterface -> show ();
 

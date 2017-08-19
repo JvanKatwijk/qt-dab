@@ -49,6 +49,7 @@
 	                         int16_t 	protLevel,
 	                         uint8_t 	DGflag,
 	                       	 int16_t 	FEC_scheme,
+	                         RingBuffer<uint8_t> *dataBuffer,
 	                         QString	picturesPath) :
 	                            freeSlots (20) {
 int32_t i, j;
@@ -68,6 +69,7 @@ int32_t i, j;
 	                                             appType,
 	                                             DGflag,
 	                                             FEC_scheme,
+	                                             dataBuffer,
 	                                             picturesPath);
 	nextIn                          = 0;
         nextOut                         = 0;

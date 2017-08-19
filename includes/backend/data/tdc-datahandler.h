@@ -24,10 +24,14 @@
 #include	"dab-constants.h"
 #include	<QByteArray>
 #include	"virtual-datahandler.h"
+#include	"ringbuffer.h"
 
+class	RadioInterface;
 class	tdc_dataHandler : public virtual_dataHandler {
+Q_OBJECT
 public:
-		tdc_dataHandler		(int16_t appType);
+		tdc_dataHandler		(RadioInterface *,
+	                                 RingBuffer<uint8_t> *, int16_t);
 		~tdc_dataHandler	(void);
 	void	add_mscDatagroup	(QByteArray &);
 private:
@@ -36,6 +40,10 @@ private:
 	int32_t	handleFrame_type_1	(uint8_t *data,
                                          int32_t offset, int32_t length);
 	bool	serviceComponentFrameheaderCRC (uint8_t *, int16_t, int16_t);
+	RadioInterface	 *myRadioInterface;
+	RingBuffer<uint8_t> *dataBuffer;
+signals:
+	void	bytesOut		(int);
 };
 #endif
 
