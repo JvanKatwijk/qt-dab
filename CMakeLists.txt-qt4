@@ -271,6 +271,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/ip-datahandler.h
+	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/dab-data.h
