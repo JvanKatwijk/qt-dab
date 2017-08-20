@@ -163,7 +163,7 @@ public slots:
 	void		showLabel		(QString);
 	void		showMOT			(QByteArray, int, QString);
 	void		sendDatagram		(int);
-	void		handle_tdcdata		(int);
+	void		handle_tdcdata		(int, int);
 	void		changeinConfiguration	(void);
 	void		newAudio		(int);
 //

@@ -731,20 +731,25 @@ uint8_t localBuffer [length];
 	                                   port);
 }
 
-void	RadioInterface::handle_tdcdata (int length) {
-uint8_t localBuffer [length];
+void	RadioInterface::handle_tdcdata (int frametype, int length) {
+uint8_t localBuffer [length + 8];
 int16_t i;
 	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
 	}
-	dataBuffer -> getDataFromBuffer (localBuffer, length);
-	for (i = 0; i < 8; i ++)
-	   fprintf (stderr, "%2x", localBuffer [i] & 0xFF);
-	fprintf (stderr, "\n");
 #ifdef	DATA_STREAMER
+	dataBuffer -> getDataFromBuffer (&localBuffer [8], length);
+	localBuffer [0] = 0xFF;
+	localBuffer [1] = 0x00;
+	localBuffer [2] = 0xFF;
+	localBuffer [3] = 0x00;
+	localBuffer [4] = (length & 0xFF) >> 8;
+	localBuffer [5] = length & 0xFF;
+	localBuffer [6] = 0x00;
+	localBuffer [7] = frametype == 0 ? 0 : 0xFF;
 	if (running)
-	   dataStreamer -> sendData (localBuffer, length);
+	   dataStreamer -> sendData (localBuffer, length + 8);
 #endif
 }
 

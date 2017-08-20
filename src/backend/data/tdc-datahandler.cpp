@@ -29,8 +29,8 @@
 	myRadioInterface	= mr;
 	this	-> dataBuffer	= dataBuffer;
 //	for the moment we assume appType 4
-	connect (this, SIGNAL (bytesOut (int)),
-	         myRadioInterface, SLOT (handle_tdcdata (int)));
+	connect (this, SIGNAL (bytesOut (int, int)),
+	         myRadioInterface, SLOT (handle_tdcdata (int, int)));
 }
 
 	tdc_dataHandler::~tdc_dataHandler (void) {
@@ -115,28 +115,12 @@ int32_t	tdc_dataHandler::handleFrame_type_0 (uint8_t *data,
 	                                    int32_t offset, int32_t length) {
 int16_t i;
 int16_t noS	= getBits (data, offset, 8);
-uint8_t buffer [length + 8];
-
-        buffer [0] = 0xFF;
-        buffer [1] = 0x00;
-        buffer [2] = 0xFF;
-        buffer [3] = 0x00;
-        buffer [4] = length >> 8;
-        buffer [5] = length & 0xFF;
-        buffer [6] = 0;
-        buffer [7] = 0;
+uint8_t buffer [length];
 
         for (i = 0; i < length; i ++)
-           buffer [8 + i] = getBits (data, offset + i * 8, 8);
-	dataBuffer -> putDataIntoBuffer (buffer, length + 8);
-        bytesOut (length + 8);
-
-//	fprintf (stderr, "frametype 0 :");
-//	for (i = 0; i < noS; i ++)
-//	    fprintf (stderr, "%o %o %o   ", getBits (data, offset + 8, 8),
-//	                                    getBits (data, offset + 16, 8),
-//	                                    getBits (data, offset + 24, 8));
-//	fprintf (stderr, "\n");
+           buffer [i] = getBits (data, offset + i * 8, 8);
+	dataBuffer -> putDataIntoBuffer (buffer, length);
+        bytesOut (0, length);
 	return offset + length * 8;
 }
 
@@ -144,55 +128,12 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t offset,
 	                                     int32_t length) {
 int16_t i;
-uint8_t buffer [length + 8];
-
-        buffer [0] = 0xFF;
-        buffer [1] = 0x00;
-        buffer [2] = 0xFF;
-        buffer [3] = 0x00;
-        buffer [4] = length >> 8;
-        buffer [5] = length & 0xFF;
-        buffer [6] = 0;
-        buffer [7] = 0xFF;
+uint8_t buffer [length];
 
         for (i = 0; i < length; i ++)
-           buffer [8 + i] = getBits (data, offset + i * 8, 8);
-	dataBuffer	-> putDataIntoBuffer (buffer, length + 8);
-        bytesOut (length + 8);
-
-//	fprintf (stderr, " frametype 1 met %o %o %o\n",
-//	                             getBits (data, offset,      8),
-//	                             getBits (data, offset + 8,  8),
-//	                             getBits (data, offset + 16, 8));
-//
-//	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
-//	if (getBits (data, offset + 24, 8) == 0) {	// encryption 0
-//	   int llength = length - 5; 
-//	   int loffset = offset + 32;
-//	   do {
-//	      fprintf (stderr, "component identifier = %d\n",
-//	                                    getBits (data, loffset + 0, 8));
-//	      fprintf (stderr, "fieldlength = %d\n", 
-//	                                    getBits (data, loffset + 8, 16));
-//	      fprintf (stderr, "header crc = %o\n",
-//	                                    getBits (data, loffset + 24, 16));
-//	      if (serviceComponentFrameheaderCRC (data, loffset, llength))
-//	         fprintf (stderr, "ready to handle component frame\n");
-//	      else
-//	         fprintf (stderr, "crc check failed\n");
-//	      if (getBits (data, loffset + 0, 8) >= 0) {
-//	         for (i = 0; i < 30; i ++)
-//	            fprintf (stderr, "%o ", getBits (data, loffset + 40 + 8 * i, 8));
-//	         fprintf (stderr, "\n");
-//	      }
-//	      int16_t fieldLength = getBits (data, loffset + 8, 16);
-//	      llength -= fieldLength + 5;
-//	      loffset += fieldLength * 8 + 5 * 8;
-//	   } while (llength > 0);
-//	}
-//	else
-//	   fprintf (stderr, "need to decompress\n");
-//
+           buffer [i] = getBits (data, offset + i * 8, 8);
+	dataBuffer	-> putDataIntoBuffer (buffer, length);
+        bytesOut (1, length);
 	return offset + length * 8;
 }
 //	The component header CRC is two bytes long,
