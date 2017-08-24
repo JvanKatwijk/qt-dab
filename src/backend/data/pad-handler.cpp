@@ -60,36 +60,67 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 //
 //	OK, we'll try
 	
-	uint8_t x_padInd = (L1 >> 4) & 03;
+	uint8_t x_padInd	= (L1 >> 4) & 03;
+	uint8_t CI_flag         = L0 & 02;
+
 	switch (x_padInd) {
 	   default:
 	      break;
 
 	   case  01 :
-	      handle_shortPAD (buffer, last);
+	      handle_shortPAD (buffer, last, CI_flag);
 	      break;
 
 	   case  02:
-	      uint8_t Z_bit		= L0 & 01;
-	      uint8_t CI_flag		= L0 & 02;
+//	      uint8_t Z_bit		= L0 & 01;
 	      handle_variablePAD	(buffer, last, CI_flag);
 	      break;
 	}
 }
-//
+int16_t	still_to_go	= 0;
 //	Since the data is stored in reversed order, we pass
 //	on the vector address and the offset of the last element
 //	in that vector
-void	padHandler::handle_shortPAD (uint8_t *b, int16_t last) {
-uint8_t CI	= b [last];
-uint8_t data [4];
+void	padHandler::handle_shortPAD (uint8_t *b, int16_t last, uint8_t CIf) {
+uint8_t data [5];
 int16_t	i;
 
-	for (i = 0; i < 3; i ++)
-	   data [i] = b [last - 1 - i];
-	data [3] = 0;
-	if ((CI & 037)  == 02 || (CI & 037) == 03)
-	   dynamicLabel (data, 3, CI);
+	if (CIf != 0) {	// has a CI flag
+	   uint8_t CI = b [last];
+	   uint8_t AcTy = CI & 037;	// application type
+	   switch (AcTy) {
+	      default:
+	         fprintf (stderr, "AcTy: %d\n", AcTy);
+	         break;
+
+	      case 0:	// end marker
+	         if ((still_to_go <= 0) && (dynamicLabelText. length () > 0)) {
+	            showLabel (dynamicLabelText);
+	            dynamicLabelText. clear ();
+	         }
+	         break;
+
+	      case 2:	// start of fragment, extract the length
+	         still_to_go = b [last - 1] & 0x0F;
+	         dynamicLabelText. append (QChar(b [last - 3]));
+	         break;
+	   }
+	}
+	else {	// No CI flag
+	   uint8_t len = 0;
+	   data [4] = 0;
+	   if (still_to_go > 0) {
+ //	X-PAD field is all data
+	      for (i = 0; (i < 4) && (still_to_go > 0); i ++) {
+	         data [i] = b [last - i] & 0x7F;
+	         still_to_go --;
+	      }
+	      for (; i < 4; i ++)
+	         data [i] = 0;
+
+	       dynamicLabelText. append ((char *)data);
+	    }
+	}
 }
 ///////////////////////////////////////////////////////////////////////
 //

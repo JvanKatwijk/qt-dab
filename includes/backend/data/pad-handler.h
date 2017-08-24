@@ -39,7 +39,7 @@ public:
 private:
 		RadioInterface	*myRadioInterface;
 	void	handle_variablePAD	(uint8_t *, int16_t, uint8_t);
-	void	handle_shortPAD		(uint8_t *, int16_t);
+	void	handle_shortPAD		(uint8_t *, int16_t, uint8_t);
 	void	dynamicLabel		(uint8_t *, int16_t, uint8_t);
 	void	new_MSC_element		(QByteArray, int);
 	void	add_MSC_element		(QByteArray);
