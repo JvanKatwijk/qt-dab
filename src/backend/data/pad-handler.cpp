@@ -104,13 +104,13 @@ int16_t	i;
 	         break;
 
 	      case 2:	// start of fragment, extract the length
-	         if ((b [last - 1] & 0xF0) == 0x40) {
+	         if ((b [last - 1] & 0x40) == 0x40) {
 	            firstSegment = true;
 	            dynamicLabelText. clear ();
                  }
 	         else
 	            firstSegment = false;
-	         if ((b [last - 1] & 0xF0) == 0x20) {
+	         if ((b [last - 1] & 0x20) == 0x20) {
 	            lastSegment = true;
 	         }
 	         else
