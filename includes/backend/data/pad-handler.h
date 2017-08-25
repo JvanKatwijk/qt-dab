@@ -51,6 +51,9 @@ private:
 	uint8_t	last_appType;
 	bool	mscGroupElement;
 	int	xpadLength;
+	int16_t	still_to_go;
+        bool	lastSegment;
+        bool	firstSegment;
 signals:
 	void		showLabel			(QString);
 	void		show_motHandling		(bool);

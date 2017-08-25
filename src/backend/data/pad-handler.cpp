@@ -42,6 +42,11 @@
 //	xpadLength tells - if mscGroupElement is "on" - the size of the
 //	xpadfields, needed for handling xpads without CI's
 	xpadLength	= -1;
+//
+//	and for the shortPad we maintain
+	still_to_go	= 0;
+	lastSegment	= false;
+	firstSegment	= false;
 }
 
 	padHandler::~padHandler	(void) {
@@ -68,15 +73,14 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 	      break;
 
 	   case  01 :
-	      handle_shortPAD		(buffer, last, CI_flag);
+	      handle_shortPAD	 (buffer, last, CI_flag);
 	      break;
 
 	   case  02:
-	      handle_variablePAD	(buffer, last, CI_flag);
+	      handle_variablePAD (buffer, last, CI_flag);
 	      break;
 	}
 }
-int16_t	still_to_go	= 0;
 //	Since the data is stored in reversed order, we pass
 //	on the vector address and the offset of the last element
 //	in that vector
@@ -93,22 +97,24 @@ int16_t	i;
 	         break;
 
 	      case 0:	// end marker
-	         if ((still_to_go <= 0) && (dynamicLabelText. length () > 0)) {
-	            showLabel (dynamicLabelText);
-	            dynamicLabelText. clear ();
-	         }
+//	         if ((still_to_go <= 0) && (dynamicLabelText. length () > 0)) {
+//	            showLabel (dynamicLabelText);
+//	            dynamicLabelText. clear ();
+//	         }
 	         break;
 
 	      case 2:	// start of fragment, extract the length
 	         if ((b [last - 1] & 0xF0) == 0x40) {
-	            if (dynamicLabelText. length () > 0) {
-	               showLabel (dynamicLabelText);
-	               dynamicLabelText. clear ();
-	            }
+	            firstSegment = true;
+	            dynamicLabelText. clear ();
                  }
+	         else
+	            firstSegment = false;
 	         if ((b [last - 1] & 0xF0) == 0x20) {
-// start of a new message
+	            lastSegment = true;
 	         }
+	         else
+	            lastSegment = false;
 	         still_to_go = b [last - 1] & 0x0F;
 	         dynamicLabelText. append (QChar(b [last - 3]));
 	         break;
@@ -117,17 +123,16 @@ int16_t	i;
 	else {	// No CI flag
 	   uint8_t len = 0;
 	   data [4] = 0;
-	   if (still_to_go > 0) {
  //	X-PAD field is all data
-	      for (i = 0; (i < 4) && (still_to_go > 0); i ++) {
-	         data [i] = b [last - i] & 0x7F;
-	         still_to_go --;
-	      }
-	      for (; i < 4; i ++)
-	         data [i] = 0;
-
-	       dynamicLabelText. append ((char *)data);
-	    }
+	   for (i = 0; (i < 4) && (still_to_go > 0); i ++) {
+	      dynamicLabelText. append (QChar (b [last - i] & 0x7F));
+	      still_to_go --;
+	   }
+	   if ((still_to_go <= 0) && (lastSegment)) {
+	      if (dynamicLabelText. length () > 0)
+	         showLabel (dynamicLabelText);
+	      dynamicLabelText. clear ();
+	   }
 	}
 }
 ///////////////////////////////////////////////////////////////////////
