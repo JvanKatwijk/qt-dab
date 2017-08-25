@@ -68,11 +68,10 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 	      break;
 
 	   case  01 :
-	      handle_shortPAD (buffer, last, CI_flag);
+	      handle_shortPAD		(buffer, last, CI_flag);
 	      break;
 
 	   case  02:
-//	      uint8_t Z_bit		= L0 & 01;
 	      handle_variablePAD	(buffer, last, CI_flag);
 	      break;
 	}
@@ -101,6 +100,15 @@ int16_t	i;
 	         break;
 
 	      case 2:	// start of fragment, extract the length
+	         if ((b [last - 1] & 0xF0) == 0x40) {
+	            if (dynamicLabelText. length () > 0) {
+	               showLabel (dynamicLabelText);
+	               dynamicLabelText. clear ();
+	            }
+                 }
+	         if ((b [last - 1] & 0xF0) == 0x20) {
+// start of a new message
+	         }
 	         still_to_go = b [last - 1] & 0x0F;
 	         dynamicLabelText. append (QChar(b [last - 3]));
 	         break;
