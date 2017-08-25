@@ -54,6 +54,7 @@ private:
 	int16_t	still_to_go;
         bool	lastSegment;
         bool	firstSegment;
+	int16_t	segmentNumber;
 signals:
 	void		showLabel			(QString);
 	void		show_motHandling		(bool);

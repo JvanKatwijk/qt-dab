@@ -47,6 +47,7 @@
 	still_to_go	= 0;
 	lastSegment	= false;
 	firstSegment	= false;
+	segmentNumber	= -1;
 }
 
 	padHandler::~padHandler	(void) {
@@ -85,53 +86,68 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 //	on the vector address and the offset of the last element
 //	in that vector
 void	padHandler::handle_shortPAD (uint8_t *b, int16_t last, uint8_t CIf) {
-uint8_t data [5];
 int16_t	i;
+static 
+uint8_t data [20];
+static
+int16_t	index = 0;
 
 	if (CIf != 0) {	// has a CI flag
-	   uint8_t CI = b [last];
-	   uint8_t AcTy = CI & 037;	// application type
+	   uint8_t CI    = b [last];
+	   firstSegment  = (b [last - 1] & 0x40) != 0;
+	   lastSegment   = (b [last - 1] & 0x20) != 0;
+	   charSet       = b [last - 2] & 0x0F;
+	   uint8_t AcTy  = CI & 037;	// application type
+
 	   switch (AcTy) {
 	      default:
-	         fprintf (stderr, "AcTy: %d\n", AcTy);
+//	         fprintf (stderr, "AcTy: %d\n", AcTy);
 	         break;
 
 	      case 0:	// end marker
-//	         if ((still_to_go <= 0) && (dynamicLabelText. length () > 0)) {
-//	            showLabel (dynamicLabelText);
-//	            dynamicLabelText. clear ();
-//	         }
 	         break;
 
 	      case 2:	// start of fragment, extract the length
-	         if ((b [last - 1] & 0x40) == 0x40) {
-	            firstSegment = true;
+	         if (firstSegment) {
 	            dynamicLabelText. clear ();
-                 }
-	         else
-	            firstSegment = false;
-	         if ((b [last - 1] & 0x20) == 0x20) {
-	            lastSegment = true;
+	            segmentNumber = 0;
 	         }
-	         else
-	            lastSegment = false;
-	         still_to_go = b [last - 1] & 0x0F;
-	         dynamicLabelText. append (QChar(b [last - 3]));
+	         else {
+	            if ((b [last - 2] >> 4) != segmentNumber + 1) {
+	               segmentNumber = -1;
+	               return;
+	            }
+	         }
+	         segmentNumber   = b [last - 2] >> 4;
+	         still_to_go     = b [last - 1] & 0x0F;
+	         index           = 0;	// for the fragmnt
+	         data [index ++] = b [last - 3];
 	         break;
 	   }
 	}
 	else {	// No CI flag
-	   uint8_t len = 0;
-	   data [4] = 0;
  //	X-PAD field is all data
 	   for (i = 0; (i < 4) && (still_to_go > 0); i ++) {
-	      dynamicLabelText. append (QChar (b [last - i] & 0x7F));
+	      data [index ++] = b [last - i];
 	      still_to_go --;
 	   }
-	   if ((still_to_go <= 0) && (lastSegment)) {
-	      if (dynamicLabelText. length () > 0)
-	         showLabel (dynamicLabelText);
-	      dynamicLabelText. clear ();
+//	at the end of a frame
+	   if ((still_to_go <= 0) && (index > 0)) {
+	      data [index] = 0;
+//
+//	just to avoid doubling by unsollicited shortpads
+	      index = 0;
+	      dynamicLabelText.
+	               append (toQStringUsingCharset ((char *)data,
+                                                      (CharacterSet)charSet));
+	                                        
+//	if we are at the end of the last segment (and the text is not empty)
+//	then show it.
+	      if (lastSegment) {
+	         if (dynamicLabelText. length () > 0)
+	            showLabel (dynamicLabelText);
+	         dynamicLabelText. clear ();
+	      }
 	   }
 	}
 }
