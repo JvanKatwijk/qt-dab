@@ -290,7 +290,8 @@ One remark: getting "sound" is not always easy. Be certain that you have install
 
 In arch, it was essential to add the username to the group "audio".
 
-Note that on the current distribution of Raspbian Jessie (i.e. January 2017) the best way to generate the executable for Qt-DAB is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in the distribution is compiled with Qt4. 
+The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
+The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 ---------------------------------------------------------------------------
 appImage
