@@ -237,9 +237,9 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 }
 
 //
-//	FOG0/0 indicated a change in channel organization
+//	FIG0/0 indicated a change in channel organization
 //	we are not equipped for that, so we just return
-//	control to the init
+//	control to the init see DAB 6.4
 void	fib_processor::FIG0Extension0 (uint8_t *d) {
 uint16_t	EId;
 uint8_t		changeflag;
@@ -251,8 +251,8 @@ uint8_t	CN	= getBits_1 (d, 8 + 0);
 	changeflag	= getBits_2 (d, 16 + 16);
 	if (changeflag == 0)
 	   return;
-
-	EId			= getBits (d, 16, 16);
+	
+	EId			= getBits   (d, 16, 16);
 	(void)EId;
 	highpart		= getBits_5 (d, 16 + 19) % 20;
 	(void)highpart;
@@ -261,18 +261,24 @@ uint8_t	CN	= getBits_1 (d, 8 + 0);
 	occurrenceChange	= getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
 
-//	if (changeflag == 1) {
-//	   fprintf (stderr, "Changes in sub channel organization\n");
-//	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
-//	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
-//	}
-//	else if (changeflag == 3) {
-//	   fprintf (stderr, "Changes in subchannel and service organization\n");
-//	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
-//	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
-//	}
-	fprintf (stderr, "changes in config not supported, choose again\n");
-	emit  changeinConfiguration ();
+	if (getBits (d, 34, 1))		// only alarm, just ignore
+	   return;
+
+	if (changeflag == 1) {
+	   fprintf (stderr, "Changes in sub channel organization\n");
+	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
+	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
+	}
+	else if (changeflag == 3) {
+	   fprintf (stderr, "Changes in subchannel and service organization\n");
+	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
+	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
+	}
+
+//	fprintf (stderr, "changes in config not supported, choose again\n");
+	if (highpart * 250 + lowpart == occurrenceChange) {
+	   emit  changeinConfiguration ();
+	}
 //
 }
 //
@@ -718,8 +724,8 @@ int16_t		Length	= getBits_5 (d, 3);
 	   int16_t NumClusters = getBits_5 (d, offset + 35);
 	   SId	= getBits (d, offset, 16);
 	   AsuFlags	= getBits (d, offset + 16, 16);
-//	   fprintf (stderr, "Announcement %d for SId %d with %d clusters\n",
-//	                    AsuFlags, SId, NumClusters);
+	   fprintf (stderr, "Announcement %d for SId %d with %d clusters\n",
+	                    AsuFlags, SId, NumClusters);
 	   offset += 40 + NumClusters * 8;
 	}
 	(void)SId;

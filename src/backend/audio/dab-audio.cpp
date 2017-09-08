@@ -106,6 +106,7 @@ int16_t	i;
 	delete [] interleaveData;
 	delete [] Data;
 	delete [] tempX;
+	fprintf (stderr, "dab-audio is gone\n");
 }
 
 int32_t	dabAudio::process	(int16_t *v, int16_t cnt) {

@@ -108,6 +108,7 @@ int16_t	i;
 	   delete[] command [i];
 	delete[]	command;
 //	delete[]	vector_2;
+	fprintf (stderr, "ofdmDecoder is gone\n");
 }
 
 void	ofdmDecoder::stop		(void) {

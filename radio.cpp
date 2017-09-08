@@ -213,10 +213,10 @@ int16_t k;
 
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
-	QDir testdir (defaultPath);
+	QDir testdir (picturesPath);
 
 	if (!testdir. exists ())
-	   testdir. mkdir (defaultPath);
+	   testdir. mkdir (picturesPath);
 
 	QString t	=
 	        dabSettings	-> value ("dabBand", "VHF Band III"). toString ();
@@ -693,6 +693,14 @@ void	RadioInterface::showMOT		(QByteArray data,
 	QPixmap p;
 	p. loadFromData (data, type);
 	if (saveSlides && (pictureName != QString (""))) {
+	   pictureName		= QDir::toNativeSeparators (pictureName);
+#ifdef __MINGW32__
+	   if (pictureName. lastIndexOf ("\\") > 1)
+	      pictureName. remove (1, pictureName. lastIndexOf ("\\"));
+#else
+	   if (pictureName. lastIndexOf ("/") > 1)
+	      pictureName. remove (1, pictureName. lastIndexOf ("/"));
+#endif
 	   QString pictureAddress = picturesPath;
 	   pictureAddress. append (pictureName);
 	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);

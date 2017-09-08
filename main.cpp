@@ -114,7 +114,7 @@ int32_t		dataPort	= 8888;
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-	delete MyRadioInterface;
+//	delete MyRadioInterface;
 	delete dabSettings;
 }
 
