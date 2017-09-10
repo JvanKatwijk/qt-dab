@@ -17,6 +17,7 @@ Table of Contents
   * [Raspberry PI](#raspberry-pi)
   * [appImage](#appimage)
  * [Comment on some settings](#comment-on-some-settings)
+ * [A note on intermittent sound] (#note-on-intermittent-sound)
  * [Copyright](#copyright)
  
 ------------------------------------------------------------------
@@ -328,6 +329,25 @@ The background colors of the spectrum can be changed by setting
 displaycolor=blue
 gridcolor=red
 ```
+
+--------------------------------------------------------------------------------
+A note on intermittent sound
+-------------------------------------------------------------------------------
+
+In some cases, in some periods of listening, the sound is (or at least seems)
+interrupted. There are two different causes for this
+
+First of all the incoming signal is weak and audio packages do not pass the
+many controls that are executed. This shows in the widget
+"technical data", not all the colored bars at the bottom are 100 percent green. 
+An audio package represents 24 milliseconds of audio, loss of a few packages
+leads to an interruption of the sound.
+
+A second reason has to do with system parameters. Too small a buffersize
+in the audio driver causes too high a frequency of calls to a callback
+function. In Linux this shows by an underrun reported by the alsa sound system.
+The buffer size can be set (in multiples of 256 audio samples)
+by the value of "latency" in the ".ini" file.
 
 # Copyright
 

@@ -724,8 +724,8 @@ int16_t		Length	= getBits_5 (d, 3);
 	   int16_t NumClusters = getBits_5 (d, offset + 35);
 	   SId	= getBits (d, offset, 16);
 	   AsuFlags	= getBits (d, offset + 16, 16);
-	   fprintf (stderr, "Announcement %d for SId %d with %d clusters\n",
-	                    AsuFlags, SId, NumClusters);
+//	   fprintf (stderr, "Announcement %d for SId %d with %d clusters\n",
+//	                    AsuFlags, SId, NumClusters);
 	   offset += 40 + NumClusters * 8;
 	}
 	(void)SId;

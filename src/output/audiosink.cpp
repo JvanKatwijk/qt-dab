@@ -34,8 +34,10 @@
 	                         RingBuffer<int16_t> *b): audioBase (b) {
 int32_t	i;
 	this	-> latency	= latency;
+	if (latency <= 0)
+	   latency = 1;
 	this	-> CardRate	= 48000;
-	_O_Buffer		= new RingBuffer<float>(2 * 32768);
+	_O_Buffer		= new RingBuffer<float>(4 * 32768);
 	portAudio		= false;
 	writerRunning		= false;
 	if (Pa_Initialize () != paNoError) {
@@ -107,7 +109,12 @@ int16_t	outputDevice;
 	                          Pa_GetDeviceInfo (outputDevice) ->
 	                                      defaultHighOutputLatency;
 //	bufSize	= (int)((float)outputParameters. suggestedLatency * latency);
-	bufSize	= latency * 128;
+//
+//	A small buffer causes more callback invocations, sometimes
+//	causing underflows and intermittent output.
+//	buffersize is
+	
+	bufSize	= latency * 512;
 
 	outputParameters. hostApiSpecificStreamInfo = NULL;
 //
