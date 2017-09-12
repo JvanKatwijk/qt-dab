@@ -205,7 +205,7 @@ can be set in which case a "quality indicator" of the signal, i.e. the standard 
 
 For selecting the output to be sent to a RCP port, uncomment
 ```
-CONFIG         += tcp-streamer         # use for remote listening
+#CONFIG         += tcp-streamer         # use for remote listening
 ```
 
 The source tree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
@@ -272,7 +272,7 @@ Important: Note that CMake expects Qt5 to be installed.
 SDRplay
 -----------------------------------------------------------------
 
-The current set of sources has some support for the RSP-II. It is assumed that at least library version 2.09 is installed.
+The current set of sources provides support for both the RSP-I and the RSP-II, it is assumed that at least library version 2.09 is installed.
 
 ------------------------------------------------------------------
 Qt
