@@ -307,7 +307,7 @@ does not work well)
 
 Note that while the rtlsdr library and the airspy library are included in the appImage, the
 "udev" settings are expected to be set already on your system. Note further that, while it
-is possible to select the sdrPlay, the sdrPlay library is not part of the appImage and should
+is possible to select the SDRplay, the SDRplay library is not part of the appImage and should
 be installed from "www.sdrplay.com".
 
 All further dependencies are included
