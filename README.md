@@ -15,7 +15,7 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-NEW))
+  * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-(NEW))
   * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
  * [Comment on some settings](#comment-on-some-settings)
  * [A note on intermittent sound] (#a-note-on-intermittent-sound)
