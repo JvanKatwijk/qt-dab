@@ -299,11 +299,12 @@ The best way to generate the executable for Qt-DAB when building under Raspbian 
 appImage for Raspberry PI 2 (NEW)
 ---------------------------------------------------------------------------
 
-The release section now contains as an experiment a generated appImage for running on an RPI 2.
-The image is created using Stretch, it uses Qt5.
+The release section now contains a slightly EXPERIMENTALLY generated appImage for running on an RPI 2.
+The image is created on an RPI running Stretch, it uses Qt5.
 To keep the processor load limited, the spectrum widget is not activated, i.e you will see
 neither the spectrum nor the constellation diagram (showing these things on a headless RPI
-does not work well)
+does not work well). Sound to an IP port is NOT selected, sound is output through the
+sound chip(s) on the RPI 2.
 
 Note that while the rtlsdr library and the airspy library are included in the appImage, the
 "udev" settings are expected to be set already on your system. Note further that, while it
