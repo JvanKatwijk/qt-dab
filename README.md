@@ -8,7 +8,7 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Features](#features)
-* Installation
+* [Installation](#features)
   * [Windows](#windows)
   * [Ubuntu Linux](#ubuntu-linux)
   	- [Configuring using the qt-dab.pro file](#configuring-using-the-qt-dabpro-file)
@@ -17,9 +17,9 @@ Table of Contents
   * [Raspberry PI](#raspberry-pi)
   * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-(NEW))
   * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
- * [Comment on some settings](#comment-on-some-settings)
- * [A note on intermittent sound] (#a-note-on-intermittent-sound)
- * [Copyright](#copyright)
+  * [Comment on some settings](#comment-on-some-settings)
+  * [A note on intermittent sound](#a-note-on-intermittent-sound)
+  * [Copyright](#copyright)
  
 ------------------------------------------------------------------
 Features
