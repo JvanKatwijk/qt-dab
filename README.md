@@ -354,7 +354,7 @@ gridcolor=red
 ```
 
 --------------------------------------------------------------------------------
-A note on intermittent sound
+A note on intermittent sound 
 -------------------------------------------------------------------------------
 
 In some cases, in some periods of listening, the sound is (or at least seems)
