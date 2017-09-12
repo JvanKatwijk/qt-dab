@@ -15,8 +15,8 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage for Raspberry](#appimage RPI2)
-  * [appImage for x64 Linux systems](#appImage-x64)
+  * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-NEW))
+  * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
  * [Comment on some settings](#comment-on-some-settings)
  * [A note on intermittent sound] (#note-on-intermittent-sound)
  * [Copyright](#copyright)
@@ -34,7 +34,7 @@ Features
   * Spectrum view (incl. constellation diagram)
   * Scanning function (scan the subsequent channels in the selected band  until a channel is encountered where a DAB signal is detected)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
-  * Dumping of the complete DAB channel (Warning: produces large raw files!) into *.sdr files and playing them again later
+  * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
   * Saving audio as uncompressed wave file
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
@@ -296,7 +296,7 @@ The most recent distribution of Raspbian Stretch (i.e. august 2017) supports bot
 The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 ---------------------------------------------------------------------------
-appImage Raspberry (NEW)
+appImage for Raspberry PI 2 (NEW)
 ---------------------------------------------------------------------------
 
 The release section now contains as an experiment a generated appImage for running on an RPI 2.
@@ -313,7 +313,7 @@ be installed from "www.airspy.com".
 All further dependencies are included
 
 ---------------------------------------------------------------------------
-appImage x64 Linux
+appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
 The releases section contains a generated appImage for use on an x64 Linux box.
