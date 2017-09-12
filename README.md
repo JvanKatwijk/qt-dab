@@ -15,7 +15,8 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage](#appimage)
+  * [appImage for Raspberry](#appimage RPI2)
+  * [appImage for x64 Linux systems](#appImage-x64)
  * [Comment on some settings](#comment-on-some-settings)
  * [A note on intermittent sound] (#note-on-intermittent-sound)
  * [Copyright](#copyright)
@@ -295,14 +296,36 @@ The most recent distribution of Raspbian Stretch (i.e. august 2017) supports bot
 The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 ---------------------------------------------------------------------------
-appImage
+appImage Raspberry (NEW)
 ---------------------------------------------------------------------------
 
-The releases section contains a generated appImage. This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4.
+The release section now contains as an experiment a generated appImage for running on an RPI 2.
+The image is created using Stretch, it uses Qt5.
+To keep the processor load limited, the spectrum widget is not activated, i.e you will see
+neither the spectrum nor the constellation diagram (showing these things on a headless RPI
+does not work well)
 
-It assumes that you have installed a device, either a dabstick (i.e. rtlsdr), an Airspy or a SDRplay.
+Note that while the rtlsdr library and the airspy library are included in the appImage, the
+"udev" settings are expected to be set already on your system. Note further that, while it
+is possible to select the sdrPlay, the sdrPlay library is not part of the appImage and should
+be installed from "www.airspy.com".
 
 All further dependencies are included
+
+---------------------------------------------------------------------------
+appImage x64 Linux
+---------------------------------------------------------------------------
+
+The releases section contains a generated appImage for use on an x64 Linux box.
+This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4, so it basically should run
+on any x-64 based linux system that isn't too old.
+Note that on start up the appImage will try to set the udev settings for the airspy and dabstick
+right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that
+while the SDRplay is selectable, the library for the device should be installed from the supplier,
+i.e. "www.sdrplay.com".
+
+All further dependencies are included
+
 
 --------------------------------------------------------------------------------
 Comment on some settings
