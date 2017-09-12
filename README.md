@@ -370,7 +370,7 @@ A second reason has to do with system parameters. Too small a buffersize
 in the audio driver causes too high a frequency of calls to a callback
 function. In Linux this shows by an underrun reported by the alsa sound system.
 The buffer size can be set (in multiples of 256 audio samples)
-by the value of "latency" in the ".ini" file.
+by the value of "latency" in the ".ini" file. The default value is 1.
 
 # Copyright
 
