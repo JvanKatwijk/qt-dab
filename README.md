@@ -8,17 +8,18 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Features](#features)
-* Installation
+* [Installation](#features)
   * [Windows](#windows)
   * [Ubuntu Linux](#ubuntu-linux)
   	- [Configuring using the qt-dab.pro file](#configuring-using-the-qt-dabpro-file)
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage](#appimage)
- * [Comment on some settings](#comment-on-some-settings)
- * [A note on intermittent sound] (#note-on-intermittent-sound)
- * [Copyright](#copyright)
+  * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-(NEW))
+  * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
+  * [Comment on some settings](#comment-on-some-settings)
+  * [A note on intermittent sound](#a-note-on-intermittent-sound)
+  * [Copyright](#copyright)
  
 ------------------------------------------------------------------
 Features
@@ -33,7 +34,7 @@ Features
   * Spectrum view (incl. constellation diagram)
   * Scanning function (scan the subsequent channels in the selected band  until a channel is encountered where a DAB signal is detected)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
-  * Dumping of the complete DAB channel (Warning: produces large raw files!) into *.sdr files and playing them again later
+  * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
   * Saving audio as uncompressed wave file
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
@@ -204,7 +205,7 @@ can be set in which case a "quality indicator" of the signal, i.e. the standard 
 
 For selecting the output to be sent to a RCP port, uncomment
 ```
-CONFIG         += tcp-streamer         # use for remote listening
+#CONFIG         += tcp-streamer         # use for remote listening
 ```
 
 The source tree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
@@ -271,7 +272,7 @@ Important: Note that CMake expects Qt5 to be installed.
 SDRplay
 -----------------------------------------------------------------
 
-The current set of sources has some support for the RSP-II. It is assumed that at least library version 2.09 is installed.
+The current set of sources provides support for both the RSP-I and the RSP-II, it is assumed that at least library version 2.09 is installed.
 
 ------------------------------------------------------------------
 Qt
@@ -295,14 +296,37 @@ The most recent distribution of Raspbian Stretch (i.e. august 2017) supports bot
 The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 ---------------------------------------------------------------------------
-appImage
+appImage for Raspberry PI 2 (NEW)
 ---------------------------------------------------------------------------
 
-The releases section contains a generated appImage. This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4.
+The release section now contains a slightly EXPERIMENTALLY generated appImage for running on an RPI 2.
+The image is created on an RPI running Stretch, it uses Qt5.
+To keep the processor load limited, the spectrum widget is not activated, i.e you will see
+neither the spectrum nor the constellation diagram (showing these things on a headless RPI
+does not work well). Sound to an IP port is NOT selected, sound is output through the
+sound chip(s) on the RPI 2.
 
-It assumes that you have installed a device, either a dabstick (i.e. rtlsdr), an Airspy or a SDRplay.
+Note that while the rtlsdr library and the airspy library are included in the appImage, the
+"udev" settings are expected to be set already on your system. Note further that, while it
+is possible to select the SDRplay, the SDRplay library is not part of the appImage and should
+be installed from "www.sdrplay.com".
 
 All further dependencies are included
+
+---------------------------------------------------------------------------
+appImage for x64 Linux systems
+---------------------------------------------------------------------------
+
+The releases section contains a generated appImage for use on an x64 Linux box.
+This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4, so it basically should run
+on any x-64 based linux system that isn't too old.
+Note that on start up the appImage will try to set the udev settings for the airspy and dabstick
+right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that
+while the SDRplay is selectable, the library for the device should be installed from the supplier,
+i.e. "www.sdrplay.com".
+
+All further dependencies are included
+
 
 --------------------------------------------------------------------------------
 Comment on some settings
@@ -331,7 +355,7 @@ gridcolor=red
 ```
 
 --------------------------------------------------------------------------------
-A note on intermittent sound
+A note on intermittent sound 
 -------------------------------------------------------------------------------
 
 In some cases, in some periods of listening, the sound is (or at least seems)
@@ -347,7 +371,7 @@ A second reason has to do with system parameters. Too small a buffersize
 in the audio driver causes too high a frequency of calls to a callback
 function. In Linux this shows by an underrun reported by the alsa sound system.
 The buffer size can be set (in multiples of 256 audio samples)
-by the value of "latency" in the ".ini" file.
+by the value of "latency" in the ".ini" file. The default value is 1.
 
 # Copyright
 
