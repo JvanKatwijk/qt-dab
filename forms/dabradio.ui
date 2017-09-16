@@ -599,7 +599,7 @@ background-color: rgb(255, 0, 0);</string>
       <x>410</x>
       <y>10</y>
       <width>91</width>
-      <height>34</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -621,7 +621,7 @@ details</string>
       <x>410</x>
       <y>45</y>
       <width>91</width>
-      <height>34</height>
+      <height>41</height>
      </rect>
     </property>
     <property name="toolTip">

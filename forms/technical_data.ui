@@ -266,10 +266,15 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>40</y>
+     <y>50</y>
      <width>41</width>
      <height>31</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>10</pointsize>
+    </font>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz&lt;/p&gt;&lt;p&gt;Only shown when the input is not a pre-recorded file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -355,29 +360,13 @@
     <string>CPU Usage in %</string>
    </property>
   </widget>
-  <widget class="QLCDNumber" name="cpuMonitor">
-   <property name="geometry">
-    <rect>
-     <x>150</x>
-     <y>110</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <property name="segmentStyle">
-    <enum>QLCDNumber::Flat</enum>
-   </property>
-  </widget>
   <widget class="QLabel" name="programName">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>70</y>
+     <y>80</y>
      <width>201</width>
-     <height>41</height>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
@@ -496,6 +485,22 @@
    </property>
    <property name="text">
     <string>PTY:</string>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="cpuMonitor">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>120</y>
+     <width>64</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="segmentStyle">
+    <enum>QLCDNumber::Flat</enum>
    </property>
   </widget>
  </widget>

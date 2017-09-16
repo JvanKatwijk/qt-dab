@@ -45,7 +45,7 @@ Features
 Not (or partly) implemented:
 
   * DMB (Audio and Video)
-  * TPEG
+  * TPEG when configured, TPEG messages are being send to a TCP port.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources)
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)

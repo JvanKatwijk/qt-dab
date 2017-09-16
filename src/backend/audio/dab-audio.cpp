@@ -84,7 +84,7 @@ int32_t i, j;
 	else		// cannot happen
 	   our_dabProcessor = new dabProcessor ();
 
-	fprintf (stderr, "we have now %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
+	fprintf (stderr, "we now have %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
 	Data		= new int16_t [fragmentSize];
 	tempX		= new int16_t [fragmentSize];
 	running		= true;
