@@ -27,7 +27,7 @@
 
 #include	<QThread>
 #include	"rtlsdr-handler.h"
-#include    "rtl-dongleselect.h"
+#include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 
 #ifdef	__MINGW32__
@@ -245,7 +245,7 @@ int	k;
 	   return;
 	}
 	
-	if (!open) {
+	if (!open) {	
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
 #else
@@ -266,16 +266,7 @@ int	k;
 	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup ();
 
-	if (workerHandle != NULL) { // we are running
-	   this -> rtlsdr_cancel_async (device);
-	   if (workerHandle != NULL) {
-	      while (!workerHandle -> isFinished ()) 
-	         usleep (100);
-	      delete	workerHandle;
-	   }
-	}
-
-	workerHandle	= NULL;
+	stopReader ();
 	this -> rtlsdr_close (device);
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
@@ -321,7 +312,15 @@ int32_t	r;
 void	rtlsdrHandler::stopReader	(void) {
 	if (workerHandle == NULL)
 	   return;
-
+	if (workerHandle != NULL) { // we are running
+	   this -> rtlsdr_cancel_async (device);
+	   if (workerHandle != NULL) {
+	      while (!workerHandle -> isFinished ()) 
+	         usleep (100);
+	      delete	workerHandle;
+	   }
+	}
+	workerHandle = NULL;
 }
 //
 //	when selecting  the gain from a table, use the table value

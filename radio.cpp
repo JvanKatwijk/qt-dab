@@ -888,14 +888,14 @@ void	RadioInterface::TerminateProcess (void) {
 #endif
 //	everything should be halted by now
 	dumpControlState (dabSettings);
-	delete		soundOut;
+//	delete		soundOut;
 	delete		inputDevice;
 #ifdef	TECHNICAL_DATA
 //	delete		dataDisplay;
 #endif
 //	everything should be halted by now
-	delete	my_mscHandler;	
-	delete	my_ofdmProcessor;
+//	delete	my_mscHandler;	
+//	delete	my_ofdmProcessor;
 #ifdef	HAVE_SPECTRUM
 	delete	spectrumHandler;
 	delete	spectrumBuffer;
@@ -1295,6 +1295,7 @@ void	RadioInterface::selectService (QString s) {
 	if ((my_ficHandler. kindofService (s) != AUDIO_SERVICE) &&
 	    (my_ficHandler. kindofService (s) != PACKET_SERVICE))
 	return;
+	fprintf (stderr, "Selected service %s\n", s. toLatin1 (). data ());
 	currentName = s;
 	setStereo (false);
 	soundOut	-> stop ();
