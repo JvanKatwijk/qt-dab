@@ -326,7 +326,9 @@ float		envBuffer	[syncBufferSize];
 	attempts	= 0;
         theRig  -> resetBuffer ();
         running         = true;
+#ifdef	__THREADED_DECODING
 	my_ofdmDecoder. start ();
+#endif
 
 	try {
 	   sLevel	= 0;

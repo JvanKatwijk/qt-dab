@@ -48,7 +48,9 @@
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
 	                                    params (dabMode),
+#ifdef	__THREADED_DECODING
 	                                    bufferSpace (params. get_L ()),
+#endif
 	                                    myMapper (&params) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
@@ -81,6 +83,7 @@ int16_t	i;
 	snrCount		= 0;
 	snr			= 0;	
 
+#ifdef __THREADED_DECODING
 /**
   *	When implemented in a thread, the thread controls the
   *	reading in of the data and processing the data through
@@ -93,33 +96,38 @@ int16_t	i;
 	for (i = 0; i < nrBlocks; i ++)
 	   command [i] = new DSPCOMPLEX [T_u];
 	amount		= 0;
+#endif
 }
 
 	ofdmDecoder::~ofdmDecoder	(void) {
 int16_t	i;
+#ifdef	__THREADED_DECODING
 	running	= false;
 	while (isRunning ()) {
 	   commandHandler. wakeAll ();
 	   usleep (1000);
 	}
-	delete		fft_handler;
-	delete[]	phaseReference;
 	for (i = 0; i < nrBlocks; i ++)
 	   delete[] command [i];
 	delete[]	command;
-//	delete[]	vector_2;
-	fprintf (stderr, "ofdmDecoder is gone\n");
+#endif
+
+	delete		fft_handler;
+	delete[]	phaseReference;
 }
 
 void	ofdmDecoder::stop		(void) {
+#ifdef	__THREADED_DECODING
 	running = false;
 	while (isRunning ()) {
 	   commandHandler. wakeAll ();
 	   usleep (1000);
 	}
+#endif
 }
 //
-//
+
+#ifdef	__THREADED_DECODING
 /**
   *	The code in the thread executes a simple loop,
   *	waiting for the next block and executing the interpretation
@@ -182,6 +190,7 @@ void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
 	commandHandler. wakeOne ();
 	helper. unlock ();
 }
+#endif
 /**
   *	Note that the distinction, made in the ofdmProcessor class
   *	does not add much here, iff we decide to choose the multi core
@@ -191,15 +200,14 @@ void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
 /**
   *	handle block 0 as collected from the buffer
   */
+#ifdef	__THREADED_DECODING
 void	ofdmDecoder::processBlock_0 (void) {
-float val	= 0;
-int16_t	i;
 
-	for (i = 0; i < T_u; i ++)
-	   val += abs (command [0][i]);
-
-	
 	memcpy (fft_buffer, command [0], T_u * sizeof (DSPCOMPLEX));
+#else
+void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *buffer) {
+	memcpy (fft_buffer, buffer, T_u * sizeof (DSPCOMPLEX));
+#endif
 
 	fft_handler	-> do_FFT ();
 /**
@@ -271,12 +279,22 @@ float	S	= 0;
   */
 static
 int	cnt	= 0;
+#ifdef	__THREADED_DECODING
 void	ofdmDecoder::decodeFICblock (int32_t blkno) {
 int16_t	i;
 #ifdef	HAVE_SPECTRUM
 DSPCOMPLEX conjVector [T_u];
 #endif
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
+#else
+void	ofdmDecoder::decodeFICblock (DSPCOMPLEX *buffer, int32_t blkno) {
+	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
+int16_t i;
+#ifdef  HAVE_SPECTRUM
+DSPCOMPLEX conjVector [T_u];
+#endif
+#endif
+
 fftlabel:
 /**
   *	first step: do the FFT
@@ -347,10 +365,17 @@ handlerLabel:
   *	Msc block decoding is equal to FIC block decoding,
   *	further processing is different though
   */
+#ifdef	__THREADED_DECODING
 void	ofdmDecoder::decodeMscblock (int32_t blkno) {
 int16_t	i;
 
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
+#else
+void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *buffer, int32_t blkno) {
+	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
+int16_t i;
+#endif
+
 fftLabel:
 	fft_handler -> do_FFT ();
 //

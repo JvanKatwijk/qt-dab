@@ -23,10 +23,14 @@
 #define	__OFDM_DECODER__
 
 #include	"dab-constants.h"
+#ifdef	__THREADED_DECODING
 #include	<QThread>
 #include	<QWaitCondition>
 #include	<QMutex>
 #include	<QSemaphore>
+#else
+#include	<QObject>
+#endif
 #include	<stdint.h>
 #include	"fft.h"
 #include	"ringbuffer.h"
@@ -38,7 +42,11 @@ class	RadioInterface;
 class	ficHandler;
 class	mscHandler;
 
+#ifdef	__THREADED_DECODING
 class	ofdmDecoder: public QThread {
+#else
+class	ofdmDecoder: public QObject {
+#endif
 Q_OBJECT
 public:
 		ofdmDecoder		(RadioInterface *,
@@ -66,6 +74,7 @@ private:
 #endif
 	ficHandler	*my_ficHandler;
 	mscHandler	*my_mscHandler;
+#ifdef	__THREADED_DECODING
 	void		run		(void);
 	bool		running;
 	DSPCOMPLEX	**command;
@@ -77,6 +86,7 @@ private:
 	QSemaphore	bufferSpace;
 	QWaitCondition	commandHandler;
 	QMutex		helper;
+#endif
 	int32_t		T_s;
 	int32_t		T_u;
 	int32_t		T_g;
@@ -85,7 +95,6 @@ private:
 	int16_t		getMiddle	(void);
 	DSPCOMPLEX	*phaseReference;
 	common_fft	*fft_handler;
-	DSPCOMPLEX	*vector_2;
 	DSPCOMPLEX	*fft_buffer;
 	interLeaver	myMapper;
 	phaseTable	*phasetable;

@@ -224,6 +224,9 @@ DEFINES		+= PRESET_NAME
 
 #experimental, might show transmitter coordinates
 CONFIG		+= try_tii		# 
+
+#for the raspberry you want this one
+DEFINES		+= __THREADED_DECODING
 }
 #
 # an attempt to have it run under W32
