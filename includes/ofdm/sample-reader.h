@@ -29,7 +29,8 @@
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<sndfile.h>
-#include	"stdint.h"
+#include	"<stdint.h>"
+#include	<atomic>
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
 //
