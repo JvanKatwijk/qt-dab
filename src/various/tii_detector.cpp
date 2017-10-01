@@ -52,7 +52,6 @@
 		TII_Detector::TII_Detector (uint8_t dabMode):
 	                                          params (dabMode) {
 int16_t	p, c, k;
-int16_t	i;
 
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
@@ -348,7 +347,6 @@ int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
 float	maxCorr		= -1;
 int	maxIndex	= -1;
-int	maxIndex_2	= -1;
 float	avg		= 0;
 float	corrTable [48];
 
@@ -413,7 +411,6 @@ float	TII_Detector::correlate (DSPCOMPLEX 	*v,
 	                         uint64_t	pattern,
 	                         DSPCOMPLEX	*refTable,
 	                         float threshold) {
-static bool flag = true;
 int16_t	realIndex;
 int16_t	i;
 int16_t	carrier;

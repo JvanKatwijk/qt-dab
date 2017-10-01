@@ -41,7 +41,6 @@
 	                         	 int16_t	FEC_scheme,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath) {
-int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= bitRate;
 	this	-> DSCTy		= DSCTy;
@@ -77,7 +76,6 @@ int32_t i, j;
 }
 
 	dataProcessor::~dataProcessor	(void) {
-int16_t	i;
 	delete		my_dataHandler;
 }
 

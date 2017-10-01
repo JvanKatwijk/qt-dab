@@ -40,7 +40,7 @@
 class	tcpStreamer: public audioBase {
 Q_OBJECT
 public:
-		tcpStreamer	(RingBuffer<int16_t> *, int32_t);
+		tcpStreamer	(int32_t);
 		~tcpStreamer	(void);
 	void	audioOutput	(float *, int32_t);
 private:

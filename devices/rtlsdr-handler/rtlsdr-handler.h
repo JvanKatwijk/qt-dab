@@ -30,6 +30,7 @@
 
 #include	<QObject>
 #include	<QSettings>
+#include	<stdio.h>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
@@ -98,6 +99,8 @@ private:
 	bool		open;
 	int		*gains;
 	int16_t		gainsCount;
+	bool		dumping;
+	FILE		*dumpfilePointer;
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	(void);
 	pfnrtlsdr_open	rtlsdr_open;
@@ -123,7 +126,7 @@ private slots:
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
 	void		set_KhzOffset		(int);
-
+	void		dumpButton_pressed	(void);
 };
 #endif
 

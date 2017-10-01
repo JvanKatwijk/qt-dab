@@ -33,6 +33,7 @@
 #include	<QTcpSocket>
 #include	<QTimer>
 #include	<QComboBox>
+#include	<stdio.h>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
@@ -52,7 +53,6 @@ public:
 	int32_t		getSamples	(DSPCOMPLEX *V, int32_t size);
 	int32_t		Samples		(void);
 	int16_t		bitDepth	(void);
-//
 private slots:
 	void		sendGain	(int);
 	void		set_Offset	(int);
@@ -61,6 +61,7 @@ private slots:
 	void		setConnection	(void);
 	void		wantConnect	(void);
 	void		setDisconnect	(void);
+	void		dumpButton_pressed (void);
 private:
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
@@ -79,6 +80,8 @@ private:
 	QHostAddress	serverAddress;
 	QTcpSocket	toServer;
 	qint64		basePort;
+	bool		dumping;
+	FILE		*dumpfilePointer;
 };
 
 #endif

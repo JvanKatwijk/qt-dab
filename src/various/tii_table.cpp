@@ -63,7 +63,7 @@ int16_t i;
 	   tiiLocker. unlock ();
 	   return;
 	}
-	for (i = 0; i < offsets. size (); i ++)
+	for (i = 0; i < (int16_t) offsets. size (); i ++)
 	   if (offsets [i]. subId == t -> subId) {
 	      tiiLocker. unlock ();
 	      return;
@@ -92,7 +92,7 @@ float x, y;
 	}
 
 //	print_coordinates ();
-	for (i = 0; i < offsets. size (); i ++) {
+	for (i = 0; i < (int16_t) offsets. size (); i ++) {
 	   if (offsets [i]. subId != subId)
 	      continue;
 	   x	= latitude + offsets [i]. latitudeOffset;
@@ -118,7 +118,7 @@ int16_t	i;
 	fprintf (stderr, "mainId = %d\n", mainId);
 	fprintf (stderr, "Transmitter coordinates (%f %f)\n",
 	                              latitude, longitude);
-	for (i = 0; i < offsets. size (); i ++) {
+	for (i = 0; i <  (int16_t)offsets. size (); i ++) {
 	   float x	= latitude + offsets [i]. latitudeOffset;
 	   float y	= longitude + offsets [i]. longitudeOffset;
 	   fprintf (stderr, "%d\t-> %f\t%f\n", offsets [i]. subId, x, y);

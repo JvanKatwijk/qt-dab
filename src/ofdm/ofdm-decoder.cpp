@@ -34,10 +34,15 @@
 
 /**
   *	\brief ofdmDecoder
-  *	The class ofdmDecoder is - when implemented in a separate thread -
+  *	The class ofdmDecoder is
   *	taking the data from the ofdmProcessor class in, and
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
+  *	In the threaded version, a thread will run, fetch the
+  *	data blocks asynchronously and do all computations.
+  *	Threading is needed for e.g. the RPI 2 version
+  *	In the non-threaded version, the functions in the class
+  *	are just executed in the caller's thread
   */
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
@@ -115,8 +120,15 @@ int16_t	i;
 	delete		fft_handler;
 	delete[]	phaseReference;
 }
+//
+//	the client of this class should not known whether
+//	we run with a separate thread or not,
+#ifndef	__THREADED_DECODING
+void	ofdmDecoder::start	(void) {
+}
+#endif
 
-void	ofdmDecoder::stop		(void) {
+void	ofdmDecoder::stop	(void) {
 #ifdef	__THREADED_DECODING
 	running = false;
 	while (isRunning ()) {
@@ -125,6 +137,14 @@ void	ofdmDecoder::stop		(void) {
 	}
 #endif
 }
+
+void	ofdmDecoder::reset	(void) {
+#ifdef	__THREADED_DECODING
+	stop  ();
+	start ();
+#endif
+}
+
 //
 
 #ifdef	__THREADED_DECODING
@@ -138,6 +158,7 @@ void	ofdmDecoder::stop		(void) {
 void	ofdmDecoder::run	(void) {
 int16_t	currentBlock	= 0;
 
+	fprintf (stderr, "ofdm decoder starts\n");
 	running		= true;
 	while (running) {
 	   helper. lock ();

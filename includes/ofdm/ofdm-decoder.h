@@ -63,6 +63,10 @@ public:
 	void	decodeMscblock		(DSPCOMPLEX *, int32_t n);
 	int16_t	get_snr			(DSPCOMPLEX *);
 	void	stop			(void);
+	void	reset			(void);
+#ifndef	__THREADED_DECODING
+	void	start			(void);
+#endif
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;

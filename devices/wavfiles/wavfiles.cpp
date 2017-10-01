@@ -73,14 +73,18 @@ SF_INFO *sf_info;
 }
 
 	wavFiles::~wavFiles (void) {
+	fprintf (stderr, " delete wavfiles aangeroepen\n"); fflush (stderr);
 	ExitCondition = true;
 	if (readerOK) {
 	   while (isRunning ())
 	      usleep (100);
+	   fprintf (stderr, "not running anymore\n"); fflush (stderr);
 	   sf_close (filePointer);
 	}
+	fprintf (stderr, "file is now closed\n"); fflush (stderr);
 	delete _I_Buffer;
 	delete	myFrame;
+	fprintf (stderr, "Nou zijn we met delete klaar\n"); fflush (stderr);
 }
 
 bool	wavFiles::restartReader	(void) {
@@ -100,7 +104,7 @@ int32_t	amount;
 	if (filePointer == NULL)
 	   return 0;
 
-	while (_I_Buffer -> GetRingBufferReadAvailable () < (uint32_t)size)
+	while (_I_Buffer -> GetRingBufferReadAvailable () < size)
 	   if (readerPausing)
 	      usleep (100000);
 	   else
@@ -153,7 +157,7 @@ int64_t	nextStop;
 	   if (nextStop - getMyTime () > 0)
 	      usleep (nextStop - getMyTime ());
 	}
-	fprintf (stderr, "taak voor replay eindigt hier\n");
+	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);
 }
 /*
  *	length is number of uints that we read.

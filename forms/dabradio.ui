@@ -184,34 +184,12 @@
      <string>timeDisplay</string>
     </property>
    </widget>
-   <widget class="QLCDNumber" name="finecorrectorDisplay">
+   <widget class="QLCDNumber" name="correctorDisplay">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>120</x>
       <y>90</y>
-      <width>51</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;fine corrector, indicates the offset (in Hz) to the nearest carrier frequency.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::NoFrame</enum>
-    </property>
-    <property name="digitCount">
-     <number>3</number>
-    </property>
-    <property name="segmentStyle">
-     <enum>QLCDNumber::Flat</enum>
-    </property>
-   </widget>
-   <widget class="QLCDNumber" name="coarsecorrectorDisplay">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>90</y>
-      <width>51</width>
+      <width>91</width>
       <height>21</height>
      </rect>
     </property>
@@ -262,33 +240,6 @@
      <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
-   <widget class="QPushButton" name="startButton">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>90</y>
-      <width>91</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>16</pointsize>
-      <weight>50</weight>
-      <bold>false</bold>
-     </font>
-    </property>
-    <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push to start the selected device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">color: rgb(255, 255, 255);
-background-color: rgb(0, 128, 0);</string>
-    </property>
-    <property name="text">
-     <string>START</string>
-    </property>
-   </widget>
    <widget class="QPushButton" name="quitButton">
     <property name="geometry">
      <rect>
@@ -324,7 +275,7 @@ background-color: rgb(255, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>190</y>
+      <y>200</y>
       <width>91</width>
       <height>51</height>
      </rect>
@@ -370,7 +321,7 @@ background-color: rgb(255, 0, 0);</string>
    <widget class="QLabel" name="syncedLabel">
     <property name="geometry">
      <rect>
-      <x>310</x>
+      <x>400</x>
       <y>10</y>
       <width>41</width>
       <height>21</height>
@@ -505,7 +456,7 @@ background-color: rgb(255, 0, 0);</string>
    <widget class="QLabel" name="stereoLabel">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>450</x>
       <y>10</y>
       <width>41</width>
       <height>21</height>
@@ -597,7 +548,7 @@ background-color: rgb(255, 0, 0);</string>
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>10</y>
+      <y>40</y>
       <width>91</width>
       <height>41</height>
      </rect>
@@ -619,7 +570,7 @@ details</string>
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>45</y>
+      <y>90</y>
       <width>91</width>
       <height>41</height>
      </rect>

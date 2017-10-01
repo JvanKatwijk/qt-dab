@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB-E (formerly SDR-J, JSDR).
  *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License.
  *    All copyrights of the original authors are acknowledged.
@@ -32,6 +32,8 @@
 #include        "dab-constants.h"
 #include        "radio.h"
 
+#define DEFAULT_INI     ".qt-dab.ini"
+
 QString fullPathfor (QString v) {
 QString fileName;
 
@@ -52,7 +54,6 @@ QString fileName;
 	return fileName;
 }
 
-#define DEFAULT_INI     ".qt-dab.ini"
 
 int     main (int argc, char **argv) {
 QString initFileName;
@@ -65,18 +66,14 @@ QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 	int     opt;
 
-	while ((opt = getopt (argc, argv, "i:D:TP:")) != -1) {
+	while ((opt = getopt (argc, argv, "i:d:P:B:M:D:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
 	         break;
 
-	      case 'D':
+	      case 'd':
 	         tii_delay      = atoi (optarg);
-	         break;
-
-	      case 'T':
-	         tracing        = true;
 	         break;
 
 	      case 'P':
@@ -99,8 +96,8 @@ int32_t		dataPort	= 8888;
 	QApplication a (argc, argv);
 	MyRadioInterface = new RadioInterface (dabSettings,
                                                tii_delay,
-	                                       dataPort,
-                                               tracing);
+	                                       dataPort
+                                               );
 	MyRadioInterface -> show ();
 
 #if QT_VERSION >= 0x050600

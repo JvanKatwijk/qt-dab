@@ -20,51 +20,47 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__OFDM_PROCESSOR__
-#define	__OFDM_PROCESSOR__
+#ifndef	__DAB_PROCESSOR__
+#define	__DAB_PROCESSOR__
 /*
- *
+ *	dabProcessor is the embodying of all functionality related
+ *	to the actal DAB processing.
  */
 #include	"dab-constants.h"
 #include	<QThread>
 #include	<QObject>
 #include	"stdint.h"
 #include	<sndfile.h>
+#include	"sample-reader.h"
 #include	"phasereference.h"
 #include	"ofdm-decoder.h"
+#include	"fic-handler.h"
+#include	"msc-handler.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-#ifdef TII_COORDINATES
 #include	"tii_detector.h"
-#endif
 //
-//	Note:
-//	It was found that enlarging the buffersize to e.g. 8192
-//	cannot be handled properly by the underlying system.
-#define	DUMPSIZE		4096
 
 class	RadioInterface;
 class	common_fft;
-class	common_ifft;
-class	ficHandler;
-class	mscHandler;
 class	dabParams;
 
-class ofdmProcessor: public QThread {
+class dabProcessor: public QThread {
 Q_OBJECT
 public:
-		ofdmProcessor  	(RadioInterface *,
+		dabProcessor  	(RadioInterface *,
 	                         virtualInput *,
 	                         uint8_t,
-	                         mscHandler *,
-	                         ficHandler *,
-	                         int16_t
+	                         int16_t,
+	                         RingBuffer<int16_t> *,
+	                         RingBuffer<uint8_t> *,
+	                         QString
 #ifdef	HAVE_SPECTRUM
 	                        ,RingBuffer<DSPCOMPLEX>	*,
 	                         RingBuffer<DSPCOMPLEX>	*
 #endif
 	                        );
-		~ofdmProcessor	(void);
+		~dabProcessor	(void);
 	void		reset			(void);
 	void		stop			(void);
 	void		setOffset		(int32_t);
@@ -73,25 +69,34 @@ public:
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		(void);
 	void		set_scanMode		(bool);
+//
+//	inheriting from our delegates
 	void		set_tiiCoordinates	(void);
+	void		setSelectedService      (QString &);
+        uint8_t		kindofService           (QString &);
+        void		dataforAudioService     (QString &, audiodata *);
+        void		dataforAudioService     (int16_t,   audiodata *);
+        void		dataforDataService      (QString &, packetdata *);
+        void		dataforDataService      (int16_t,   packetdata *);
+	void		set_audioChannel	(audiodata *);
+	void		set_dataChannel		(packetdata *);
+        uint8_t		get_ecc                 (void);
+        int32_t		get_ensembleId          (void);
+        QString		get_ensembleName        (void);
+	void		clearEnsemble		(void);
 private:
 	virtualInput	*theRig;
 	dabParams	params;
+	sampleReader	myReader;
 	RadioInterface	*myRadioInterface;
-	ficHandler	*my_ficHandler;
-	bool		tiiCoordinates;
-#ifdef	TII_COORDINATES
+	ficHandler	my_ficHandler;
+	mscHandler	my_mscHandler;
 	TII_Detector	my_TII_Detector;
-#endif
+	bool		tiiCoordinates;
 
 	int16_t		attempts;
 	bool		scanMode;
 	bool		running;
-	bool		dumping;
-	int16_t		dumpIndex;
-	int16_t		dumpScale;
-	int16_t		dumpBuffer [DUMPSIZE];
-	SNDFILE		*dumpFile;
 	int32_t		T_null;
 	int32_t		T_u;
 	int32_t		T_s;
@@ -100,11 +105,8 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int32_t		carrierDiff;
-	float		sLevel;
 	DSPCOMPLEX	*dataBuffer;
 	int32_t		FreqOffset;
-	DSPCOMPLEX	*oscillatorTable;
-	int32_t		localPhase;
 	int16_t		fineCorrector;
 	int32_t		coarseCorrector;
 
@@ -115,36 +117,16 @@ private:
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
-	int32_t		sampleCnt;
-	int32_t		inputSize;
-	int32_t		inputPointer;
-	DSPCOMPLEX	getSample	(int32_t);
-	void		getSamples	(DSPCOMPLEX *, int16_t, int32_t);
 virtual	void		run		(void);
-	int32_t		bufferContent;
 	bool		isReset;
 	int16_t		processBlock_0	(DSPCOMPLEX *);
-	void		processNULL	(DSPCOMPLEX *);
-	int16_t		getMiddle	(DSPCOMPLEX *);
 	common_fft	*fft_handler;
 	DSPCOMPLEX	*fft_buffer;
-#ifdef  HAVE_SPECTRUM
-        RingBuffer<DSPCOMPLEX> *spectrumBuffer;
-        int32_t         bufferSize;
-        int32_t         localCounter;
-        DSPCOMPLEX      *localBuffer;
 signals:
-        void            showSpectrum            (int);
-#endif
-signals:
-	void		show_fineCorrector	(int);
-	void		show_coarseCorrector	(int);
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
-#ifdef	TII_COORDINATES
 	void		showCoordinates		(float, float);
-#endif
 };
 #endif
 

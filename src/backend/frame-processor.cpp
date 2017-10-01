@@ -1,11 +1,10 @@
 #
 /*
- *
- *    Copyright (C) 2010 .. 2017
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of the Qt-DAB.
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -21,22 +20,15 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#
-#ifndef	DAB_PROCESSOR
-#define	DAB_PROCESSOR
+#include	"frame-processor.h"
 
-#include	<stdint.h>
-#include	<stdio.h>
+	frameProcessor::frameProcessor (void) {
+}
 
-//
-//	virtual class, just for providing a common base
-//	for the real decoder classes
+	frameProcessor::~frameProcessor	(void) {
+}
 
-class	dabProcessor {
-public:
-		dabProcessor	(void);
-virtual		~dabProcessor	(void);
-virtual	void	addtoFrame	(uint8_t *);
-};
-#endif
+void	frameProcessor::addtoFrame	(uint8_t *v) {
+	(void)v;
+}
 

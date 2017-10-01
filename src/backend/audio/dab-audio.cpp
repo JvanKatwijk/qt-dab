@@ -39,8 +39,11 @@
 	                         bool	shortForm,
 	                         int16_t protLevel,
 	                         RingBuffer<int16_t> *buffer,
-	                         QString	picturesPath):
-	                             freeSlots (20) {
+	                         QString	picturesPath)
+#ifdef	__THREADED_DECODING
+	                             :freeSlots (20) 
+#endif 
+	                                          {
 int32_t i, j;
 	this	-> dabModus		= dabModus;
 	this	-> fragmentSize		= fragmentSize;
@@ -50,18 +53,14 @@ int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> audioBuffer		= buffer;
 
-//	for local buffering the input, we have
-	nextIn				= 0;
-	nextOut				= 0;
-	for (i = 0; i < 20; i ++)
-	   theData [i] = new int16_t [fragmentSize];
-
 	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // max size
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i] = new int16_t [fragmentSize];
 	   memset (interleaveData [i], 0, fragmentSize * sizeof (int16_t));
 	}
+	countforInterleaver	= 0;
+	interleaverIndex	= 0;
 
 	if (shortForm)
 	   protectionHandler	= new uep_protection (bitRate,
@@ -82,97 +81,116 @@ int32_t i, j;
 	                                        audioBuffer,
 	                                        picturesPath);
 	else		// cannot happen
-	   our_dabProcessor = new dabProcessor ();
+	   our_dabProcessor = new frameProcessor ();
 
 	fprintf (stderr, "we now have %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
 	Data		= new int16_t [fragmentSize];
 	tempX		= new int16_t [fragmentSize];
-	running		= true;
+
+#ifdef	__THREADED_DECODING
+//	for local buffering the input, we have
+	nextIn				= 0;
+	nextOut				= 0;
+	for (i = 0; i < 20; i ++)
+	   theData [i] = new int16_t [fragmentSize];
+	running. store (true);
 	start ();
+#endif
 }
 
 	dabAudio::~dabAudio	(void) {
 int16_t	i;
-	running = false;
+#ifdef	__THREADED_DECODING
+	running. store (false);
 	while (this -> isRunning ())
 	   usleep (1);
+#endif
 	delete protectionHandler;
 	delete our_dabProcessor;
 	delete[]	outV;
 	for (i = 0; i < 16; i ++) 
 	   delete[]  interleaveData [i];
+	delete [] interleaveData;
+#ifdef	__THREADED_DECODING
 	for (i = 0; i < 20; i ++)
 	   delete [] theData [i];
-	delete [] interleaveData;
-	delete [] Data;
+#endif
 	delete [] tempX;
-	fprintf (stderr, "dab-audio is gone\n");
 }
 
 int32_t	dabAudio::process	(int16_t *v, int16_t cnt) {
 
+#ifdef	__THREADED_DECODING
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
 	memcpy (theData [nextIn], v, fragmentSize * sizeof (int16_t));
 	nextIn = (nextIn + 1) % 20;
 	usedSlots. release ();
+#else
+	processSegment (v);
+#endif
 	return 1;
 }
 
-const	int16_t interleaveMap [] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
-void	dabAudio::run	(void) {
-int16_t	i, j;
-int16_t	countforInterleaver	= 0;
-int16_t	interleaverIndex	= 0;
-uint8_t	shiftRegister [9];
 
-	while (running) {
+const	int16_t interleaveMap [] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
+void	dabAudio::processSegment (int16_t *Data) {
+uint8_t shiftRegister [9];
+int16_t	i, j;
+
+	for (i = 0; i < fragmentSize; i ++) {
+	   tempX [i] = interleaveData [(interleaverIndex + 
+	                                interleaveMap [i & 017]) & 017][i];
+	   interleaveData [interleaverIndex][i] = Data [i];
+	}
+
+	interleaverIndex = (interleaverIndex + 1) & 0x0F;
+#ifdef	__THREADED_DECODING
+	nextOut = (nextOut + 1) % 20;
+	freeSlots. release ();
+#endif
+
+//	only continue when de-interleaver is filled
+	if (countforInterleaver <= 15) {
+	   countforInterleaver ++;
+	   return;
+	}
+
+	protectionHandler -> deconvolve (tempX, fragmentSize, outV);
+//
+//	and the inline energy dispersal
+	memset (shiftRegister, 1, 9);
+	for (i = 0; i < bitRate * 24; i ++) {
+	   uint8_t b = shiftRegister [8] ^ shiftRegister [4];
+	   for (j = 8; j > 0; j--)
+	      shiftRegister [j] = shiftRegister [j - 1];
+	   shiftRegister [0] = b;
+	   outV [i] ^= b;
+	}
+
+	our_dabProcessor -> addtoFrame (outV);
+}
+
+#ifdef	__THREADED_DECODING
+void	dabAudio::run	(void) {
+
+	while (running. load ()) {
 	   while (!usedSlots. tryAcquire (1, 200)) 
 	      if (!running)
 	         return;
-//
-//	rather than copying the data to a separate vector, we
-//	"use" it directly in the interleaver
-//	   memcpy (Data, theData [nextOut], fragmentSize * sizeof (int16_t));
-
-	   for (i = 0; i < fragmentSize; i ++) {
-	      tempX [i] = interleaveData [(interleaverIndex + 
-	                                  interleaveMap [i & 017]) & 017][i];
-	      interleaveData [interleaverIndex][i] = theData [nextOut] [i];
-	   }
-
-	   nextOut = (nextOut + 1) % 20;
-	   freeSlots. release ();
-
-	   interleaverIndex = (interleaverIndex + 1) & 0x0F;
-//	only continue when de-interleaver is filled
-	   if (countforInterleaver <= 15) {
-	      countforInterleaver ++;
-	      continue;
-	   }
-
-	   protectionHandler -> deconvolve (tempX, fragmentSize, outV);
-
-//
-//	and the inline energy dispersal
-	   memset (shiftRegister, 1, 9);
-	   for (i = 0; i < bitRate * 24; i ++) {
-	      uint8_t b = shiftRegister [8] ^ shiftRegister [4];
-	      for (j = 8; j > 0; j--)
-	         shiftRegister [j] = shiftRegister [j - 1];
-	      shiftRegister [0] = b;
-	      outV [i] ^= b;
-	   }
-	   our_dabProcessor -> addtoFrame (outV);
+	   processSegment (theData [nextOut]);
 	}
 }
-//
+#endif
+
 //	It might take a msec for the task to stop
 void	dabAudio::stopRunning (void) {
+#ifdef	__THREADED_DECODING
 	running = false;
 	while (this -> isRunning ())
 	   usleep (1);
 //	myAudioSink	-> stop ();
+#endif
 }
 

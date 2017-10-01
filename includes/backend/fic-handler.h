@@ -40,10 +40,11 @@ class	dabParams;
 class ficHandler: public fib_processor {
 Q_OBJECT
 public:
-		ficHandler		(RadioInterface *);
+		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler		(void);
 	void	process_ficBlock	(int16_t *, int16_t);
-	void	setBitsforMode		(uint8_t);
+	void	stop			(void);
+	void	reset			(void);
 private:
 	viterbi_768	myViterbi;
 	void		process_ficInput	(int16_t *, int16_t);

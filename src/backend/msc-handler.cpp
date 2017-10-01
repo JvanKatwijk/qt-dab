@@ -177,11 +177,16 @@ int16_t	*myBegin;
 }
 //
 
-void	mscHandler::stopProcessing (void) {
+void	mscHandler::stopProcessing	(void) {
 	work_to_be_done	= false;
 }
 
-void	mscHandler::stopHandler	(void) {
+void	mscHandler::stop		(void) {
+	work_to_be_done	= false;
+	dabHandler	-> stopRunning ();
+}
+
+void	mscHandler::reset		(void) {
 	work_to_be_done	= false;
 	dabHandler	-> stopRunning ();
 }

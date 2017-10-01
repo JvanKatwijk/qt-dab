@@ -38,8 +38,7 @@ class	QComboBox;
 
 class	audioSink  : public audioBase {
 public:
-	                audioSink		(int16_t,
-	                                         RingBuffer<int16_t> *);
+	                audioSink		(int16_t);
 			~audioSink		(void);
 	bool		setupChannels		(QComboBox *);
 	void		stop			(void);

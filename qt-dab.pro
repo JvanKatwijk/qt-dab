@@ -5,15 +5,15 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-0.999
+TARGET		= qt-dab-1.0-alpha
 QT		+= widgets network 
 CONFIG		+= console
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 
 DEPENDPATH += . \
 	      ./src \
@@ -56,9 +56,10 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./text-mapper.h \
+	   ./dab-processor.h \
 	   ./includes/dab-constants.h \
 	   ./includes/country-codes.h \
-	   ./includes/ofdm/ofdm-processor.h \
+	   ./includes/ofdm/sample-reader.h \
 	   ./includes/ofdm/ofdm-decoder.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
@@ -73,7 +74,7 @@ HEADERS += ./radio.h \
 	   ./includes/backend/rscodec.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
-	   ./includes/backend/dab-processor.h \
+	   ./includes/backend/frame-processor.h \
 	   ./includes/backend/dab-virtual.h \
 	   ./includes/backend/audio/dab-audio.h \
 	   ./includes/backend/audio/mp2processor.h \
@@ -118,7 +119,8 @@ FORMS +=	./devices/filereader-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./text-mapper.cpp \
-	   ./src/ofdm/ofdm-processor.cpp \
+	   ./dab-processor.cpp \
+	   ./src/ofdm/sample-reader.cpp \
 	   ./src/ofdm/ofdm-decoder.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
@@ -138,7 +140,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/dab-virtual.cpp \
-	   ./src/backend/dab-processor.cpp \
+	   ./src/backend/frame-processor.cpp \
 	   ./src/backend/protTables.cpp \
 	   ./src/backend/audio/dab-audio.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
@@ -225,12 +227,14 @@ DEFINES		+= PRESET_NAME
 #experimental, might show transmitter coordinates
 CONFIG		+= try_tii		# 
 
-#for the raspberry you want this one
-DEFINES		+= __THREADED_DECODING
+#for the raspberry you definitely want this one
+#when this one is enabled, load is spread over different threads
+DEFINES	+= __THREADED_DECODING
 }
 #
 # an attempt to have it run under W32
 win32 {
+#DESTDIR	= ../../../dab-win
 DESTDIR	= ../../windows-bin
 # includes in mingw differ from the includes in fedora linux
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
@@ -268,6 +272,10 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #CONFIG		+= try-epg		# do not use
 DEFINES		+= __QUALITY		# just a counter in spectrum display
 CONFIG		+= try_tii
+
+# for the raspberry you definitely want this one
+# when this one is enables, load is spread over different threads
+#DEFINES	+= __THREADED_DECODING
 }
 
 #######################################

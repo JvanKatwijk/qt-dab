@@ -1,10 +1,11 @@
+
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB.
+ *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -18,43 +19,50 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+#
+#ifndef	__SAMPLE_READER__
+#define	__SAMPLE_READER__
+/*
  *
  */
-
-#ifndef __AUDIO_BASE__
-#define	__AUDIO_BASE__
 #include	"dab-constants.h"
-#include	<stdio.h>
-#include	<samplerate.h>
-#include	<sndfile.h>
-#include	<QMutex>
 #include	<QObject>
-#include	"newconverter.h"
+#include	"stdint.h"
+#include	"virtual-input.h"
 #include	"ringbuffer.h"
+//
 
-
-class	audioBase: public QObject{
+class	RadioInterface;
+class	Reader : public QObject {
 Q_OBJECT
 public:
-			audioBase		(void);
-virtual			~audioBase		(void);
-virtual	void		stop			(void);
-virtual	void		restart			(void);
-	void		audioOut		(int16_t *, int32_t, int);
-	void		startDumping		(SNDFILE *);
-	void		stopDumping		(void);
-private:
-	void		audioOut_16000		(int16_t *, int32_t);
-	void		audioOut_24000		(int16_t *, int32_t);
-	void		audioOut_32000		(int16_t *, int32_t);
-	void		audioOut_48000		(int16_t *, int32_t);
-	newConverter	converter_16;
-	newConverter	converter_24;
-	newConverter	converter_32;
-	SNDFILE		*dumpFile;
-	QMutex		myLocker;
-protected:
-virtual	void		audioOutput		(float *, int32_t);
-};
+			Reader		(RadioInterface *mr,
+	                         	virtualInput *theRig,
+#ifdef	HAVE_SPECTRUM
+	                         	,RingBuffer<DSPCOMPLEX> *spectrumBuffer
 #endif
+	       				);
+
+			~Reader		(void);
+		void	setRunning	(bool b);
+		float	get_sLevel	(void);
+		DSPCOMPLEX getSample	(int32_t);
+	        void	getSamples	(DSPCOMPLEX *v,
+	                                 int16_t n, int32_t phase);
+private:
+	int32_t		bufferSize;
+	DSPCOMPLEX	*localBuffer;
+	int32_t		localCounter;
+	int32_t		localPhase;
+	DSPCOMPLEX	*oscillatorTable;
+	std::atomic<bool>	running;
+	int32_t		bufferContent;
+	float		sLevel;
+	int32_t		sampleCount;
+
+signals:
+	void		show
+	void		showSpectrum (int);
+};
 

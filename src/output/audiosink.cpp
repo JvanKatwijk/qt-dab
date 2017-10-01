@@ -30,8 +30,7 @@
 #include	<QMessageBox>
 #include	<QComboBox>
 
-	audioSink::audioSink	(int16_t latency,
-	                         RingBuffer<int16_t> *b): audioBase (b) {
+	audioSink::audioSink	(int16_t latency) {
 int32_t	i;
 	this	-> latency	= latency;
 	if (latency <= 0)

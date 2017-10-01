@@ -55,7 +55,7 @@ bool    initialize      (uint8_t        dacRate,
         int32_t         baudRate;
         RingBuffer<int16_t>     *audioBuffer;
 signals:
-        void                    newAudio (int);
+        void                    newAudio (int, int);
 };
 #endif
 

@@ -35,6 +35,7 @@
 	                        DSPCOMPLEX *refBase) {
 int16_t i;
 	this -> length		= length;
+	(void)carriers;
 	fft_up			= new common_fft (length);
 	fft_buffer_1		= fft_up -> getVector ();
 	refVector		= new DSPCOMPLEX [length];

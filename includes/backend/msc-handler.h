@@ -46,7 +46,8 @@ public:
 	void	set_audioChannel	(audiodata	*);
 	void    set_dataChannel         (packetdata	*);
 	void	stopProcessing		(void);
-	void	stopHandler		(void);
+	void	stop			(void);
+	void	reset			(void);
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;

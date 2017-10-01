@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-0.999)
+set (objectName qt-dab-1.0-alpha)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -18,7 +18,8 @@ endif()
 # select the release build type by default to get optimization flags
 ########################################################################
 if(NOT CMAKE_BUILD_TYPE)
-   set(CMAKE_BUILD_TYPE "Release")
+   
+set(CMAKE_BUILD_TYPE "Release")
    message(STATUS "Build type not specified: defaulting to release.")
 endif(NOT CMAKE_BUILD_TYPE)
 set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "")
@@ -60,6 +61,13 @@ add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DTII_COORDINATES)
+#
+#	just to test a few things, a choice is allowed to handle
+#	the ofdm decoding in a single thread or in one thread for
+#	capturing and one thread for converting time to frequency
+#	domain (i.e. fft) and mapping onto bits
+add_definitions (-D__THREADED_DECODING) # 
+
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -146,9 +154,10 @@ add_definitions (-DTII_COORDINATES)
 
 	set (${objectName}_HDRS
 	     ./text-mapper.h
-	     ./includes/dab-constants.h
+	     ./dab-processor.h
 	     ./includes/country-codes.h
-	     ./includes/ofdm/ofdm-processor.h
+	     ./includes/ofdm/sample-reader.h
+	     ./includes/dab-constants.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
@@ -157,7 +166,7 @@ add_definitions (-DTII_COORDINATES)
 	     ./includes/backend/uep-protection.h
 	     ./includes/backend/eep-protection.h
 	     ./includes/backend/firecode-checker.h
-	     ./includes/backend/dab-processor.h
+	     ./includes/backend/frame-processor.h
 	     ./includes/backend/dab-virtual.h
 	     ./includes/backend/charsets.h
 	     ./includes/backend/galois.h
@@ -205,7 +214,8 @@ add_definitions (-DTII_COORDINATES)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./text-mapper.cpp
-	     ./src/ofdm/ofdm-processor.cpp
+	     ./dab-processor.cpp
+	     ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
@@ -220,7 +230,7 @@ add_definitions (-DTII_COORDINATES)
 	     ./src/backend/fib-processor.cpp
 	     ./src/backend/firecode-checker.cpp
 	     ./src/backend/dab-virtual.cpp
-	     ./src/backend/dab-processor.cpp
+	     ./src/backend/frame-processor.cpp
 	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
 	     ./src/backend/dab-virtual.cpp
@@ -263,9 +273,10 @@ add_definitions (-DTII_COORDINATES)
 	)
 
 	set (${objectName}_MOCS
+	     ./dab-processor.h
+	     ./includes/ofdm/sample-reader.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
-	     ./includes/ofdm/ofdm-processor.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/backend/fic-handler.h
 	     ./includes/backend/fib-processor.h

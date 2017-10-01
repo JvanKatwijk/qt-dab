@@ -31,7 +31,7 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"audio-base.h"
-#include	"dab-processor.h"
+#include	"frame-processor.h"
 #include	"faad-decoder.h"
 #include	"firecode-checker.h"
 #include	"reed-solomon.h"
@@ -40,7 +40,7 @@
 
 class	RadioInterface;
 
-class	mp4Processor : public QObject, public dabProcessor {
+class	mp4Processor : public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,

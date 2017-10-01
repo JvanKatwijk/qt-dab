@@ -244,8 +244,8 @@ int16_t *nPtr = &N [0][0];
 	this	-> bitRate	= bitRate;
 	connect (this, SIGNAL (show_frameErrors (int)),
 	         mr, SLOT (show_frameErrors (int)));
-	connect (this, SIGNAL (newAudio (int)),
-	         mr, SLOT (newAudio (int)));
+	connect (this, SIGNAL (newAudio (int, int)),
+	         mr, SLOT (newAudio (int, int)));
 	connect (this, SIGNAL (isStereo (bool)),
 	         mr, SLOT (setStereo (bool)));
 
@@ -607,7 +607,9 @@ int16_t	vLength	= 24 * bitRate / 8;
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
 	            buffer -> putDataIntoBuffer (sample_buf, 
 	                                 2 * (int32_t)KJMP2_SAMPLES_PER_FRAME);
-	            newAudio (baudRate);
+	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
+	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
+	                         baudRate);
 	         }
 
 	         MP2Header_OK = 0;

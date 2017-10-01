@@ -26,9 +26,7 @@
 
 #include	"tcp-streamer.h"
 
-		tcpStreamer::tcpStreamer	(RingBuffer<int16_t> *b,
-	                                         int32_t port):
-	                                             audioBase (b) {
+		tcpStreamer::tcpStreamer	(int32_t port) {
 	buffer			= new RingBuffer<float> (2 * 32768);
 	this	-> port		= port;
 	connected		= false;

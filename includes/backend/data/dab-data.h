@@ -31,7 +31,7 @@
 #include	<string.h>
 
 
-class	dabProcessor;
+class	frameProcessor;
 class	RadioInterface;
 class	protection;
 
@@ -72,7 +72,7 @@ void	run		(void);
 	int16_t		*Data;
 	protection	*protectionHandler;
 	RingBuffer<int16_t>	*Buffer;
-	dabProcessor	*our_dabProcessor;
+	frameProcessor	*our_frameProcessor;
 	QSemaphore      freeSlots;
 	QSemaphore      usedSlots;
 	int16_t         *theData [20];

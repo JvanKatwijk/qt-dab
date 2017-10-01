@@ -31,6 +31,8 @@
 
 	virtualInput::virtualInput (void) {
 	lastFrequency	= 100000;
+	vfoOffset	= 0;
+	theGain		= 50;
 }
 
 	virtualInput::~virtualInput (void) {

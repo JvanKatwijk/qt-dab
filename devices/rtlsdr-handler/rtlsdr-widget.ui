@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>260</width>
-    <height>226</height>
+    <height>258</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>221</width>
-     <height>191</height>
+     <height>231</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -141,6 +141,19 @@
       <string>autogain_on</string>
      </property>
     </item>
+   </widget>
+   <widget class="QPushButton" name="dumpButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>141</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>write raw bytes</string>
+    </property>
    </widget>
   </widget>
  </widget>

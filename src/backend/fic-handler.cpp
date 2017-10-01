@@ -47,15 +47,15 @@ uint8_t PI_X [24] = {
   * 	puncturing.
   *	The data is sent through to the fib processor
   */
-		ficHandler::ficHandler (RadioInterface *mr):
+		ficHandler::ficHandler (RadioInterface *mr, uint8_t dabMode):
 	                                             fib_processor (mr),
 	                                             myViterbi (768, true) {
 int16_t	i, j;
 	bitBuffer_out	= new uint8_t [768];
 	ofdm_input 	= new int16_t [2304];
-	params		= new dabParams (1);
+	params		= new dabParams (dabMode);
 	index		= 0;
-	BitsperBlock	= 2 * 1536;
+	BitsperBlock	= 2 * params -> get_carriers ();
 	ficno		= 0;
 	ficBlocks	= 0;
 	ficMissed	= 0;
@@ -83,24 +83,6 @@ int16_t	i, j;
 }
 
 	
-/**
-  *	\brief setBitsperBlock
-  *	The number of bits to be processed per incoming block
-  *	is 2 * p -> K, which still depends on the Mode.
-  *	for Mode I it is 2 * 1536, for Mode II, it is 2 * 384,
-  *	for Mode III it is 192, Mode IV gives 2 * 768.
-  *	for Mode II we will get the 2304 bits after having read
-  *	the 3 FIC blocks,
-  *	for Mode IV we will get 3 * 2 * 768 = 4608, i.e. two resulting blocks
-  *	Note that Mode III is NOT supported
-  */
-
-void	ficHandler::setBitsforMode	(uint8_t mode) {
-	BitsperBlock = 2 * params -> get_carriers ();
-	index		= 0;
-	ficno		= 0;
-}
-
 /**
   *	\brief process_ficBlock
   *	The number of bits to be processed per incoming block
@@ -228,4 +210,12 @@ int16_t	viterbiBlock [3072 + 24];
 	   fib_processor::process_FIB (p, ficno);
 	}
 }
+
+void	ficHandler::stop (void) {
+}
+
+void	ficHandler::reset	(void) {
+	clearEnsemble ();
+}
+
 

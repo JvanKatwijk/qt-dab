@@ -19,7 +19,7 @@
  *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"ofdm-processor.h"
+#include	"dab-processor.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
@@ -28,65 +28,53 @@
 //
 #define	SEARCH_RANGE		(2 * 36)
 
-static inline
-float	computeAverage (DSPCOMPLEX *v, int a) {
-int i;
-float s	= 0;
-	for (i = 50; i < a - 50; i ++)
-	   s += abs (v [i]);
-	return s / (a - 100);
-}
-
 /**
-  *	\brief ofdmProcessor
-  *	The ofdmProcessor class is the driver of the processing
+  *	\brief dabProcessor
+  *	The dabProcessor class is the driver of the processing
   *	of the samplestream.
-  *	It takes as parameter (a.o) the handler for the
-  *	input device as well as the interpreters for
-  *	FIC blocks and for MSC blocks.
-  *	Local is a class ofdmDecoder that will - as the name suggests -
-  *	map samples to bits and that will pass on the bits
-  *	to the interpreters for FIC and MSC
+  *	It is the main interface to the qt-dab-ng program,
+  *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
-static	inline
-int16_t	valueFor (int16_t b) {
-int16_t	res	= 1;
-	while (--b > 0)
-	   res <<= 1;
-	return res;
-}
 
-	ofdmProcessor::ofdmProcessor	(RadioInterface	*mr,
+	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
-	                                 mscHandler 	*msc,
-	                                 ficHandler 	*fic,
-	                                 int16_t	threshold
+	                                 int16_t	threshold,
+	                                 RingBuffer<int16_t> *audioBuffer,
+	                                 RingBuffer<uint8_t> *dataBuffer,
+	                                 QString	picturesPath
 #ifdef	HAVE_SPECTRUM
 		                        ,RingBuffer<DSPCOMPLEX>	*spectrumBuffer,
 	                                 RingBuffer<DSPCOMPLEX>	*iqBuffer
 #endif
 	                                 ):
-	                                   params (dabMode),
-	                                   phaseSynchronizer (dabMode, 
-                                                              threshold),
-#if defined (TII_ATTEMPT) || defined (TII_COORDINATES)
-	                                   my_TII_Detector (dabMode), 
-#endif
-	                                   my_ofdmDecoder (mr,
-	                                                   dabMode,
+	                                 params (dabMode),
+	                                 myReader (mr,
+	                                           theRig
 #ifdef	HAVE_SPECTRUM
-	                                                   iqBuffer,
+	                                           ,spectrumBuffer
 #endif
-	                                                   theRig -> bitDepth (),
-	                                                   fic,
-	                                                   msc) {
+	                                 ),
+	                                 my_ficHandler (mr, dabMode),
+	                                 my_mscHandler (mr, dabMode,
+	                                                audioBuffer,
+	                                                dataBuffer,
+	                                                picturesPath),
+	                                 phaseSynchronizer (dabMode, 
+                                                            threshold),
+	                                 my_TII_Detector (dabMode), 
+	                                 my_ofdmDecoder (mr,
+	                                                 dabMode,
+#ifdef	HAVE_SPECTRUM
+	                                                 iqBuffer,
+#endif
+	                                                 theRig -> bitDepth (),
+	                                                 &my_ficHandler,
+	                                                 &my_mscHandler) {
 int32_t	i;
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
-	this	-> my_ficHandler	= fic;
-
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
@@ -96,59 +84,20 @@ int32_t	i;
 	this	-> carrierDiff		= params. get_carrierDiff ();
 	fft_handler			= new common_fft (T_u);
 	fft_buffer			= fft_handler -> getVector ();
-	dumping				= false;
-	dumpIndex			= 0;
-	dumpScale			= valueFor (theRig -> bitDepth ());
 
-#ifdef  HAVE_SPECTRUM
-        bufferSize      = 32768;
-        this    -> spectrumBuffer       = spectrumBuffer;
-        connect (this, SIGNAL (showSpectrum (int)),
-                 mr, SLOT (showSpectrum (int)));
-        localBuffer     = new DSPCOMPLEX [bufferSize];
-        localCounter    = 0;
-#endif
-//
-#ifdef	TII_COORDINATES
-	tiiCoordinates			= false;
-	connect (this, SIGNAL (showCoordinates (float, float)),
-	         mr,   SLOT   (showCoordinates (float, float)));
-#endif
 	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
-	sampleCnt			= 0;
-/**
-  *	the class phaseReference will take a number of samples
-  *	and indicate - using some threshold - whether there is
-  *	a strong correlation or not.
-  *	It is used to decide on the first non-null sample
-  *	of the frame.
-  *	The size of the blocks handed over for inspection
-  *	is T_u
-  */
-/**
-  *	the ofdmDecoder takes time domain samples, will do an FFT,
-  *	map the result on (soft) bits and hand over control for handling
-  *	the decoded blocks
-  */
-	fineCorrector		= 0;	
-	coarseCorrector		= 0;
-	f2Correction		= true;
-	oscillatorTable		= new DSPCOMPLEX [INPUT_RATE];
-	localPhase		= 0;
-	attempts		= 0;
-	scanMode		= false;
+	fineCorrector			= 0;	
+	coarseCorrector			= 0;
+	f2Correction			= true;
+	attempts			= 0;
+	scanMode			= false;
+	tiiCoordinates			= false;
 
-	for (i = 0; i < INPUT_RATE; i ++)
-	   oscillatorTable [i] = DSPCOMPLEX (cos (2.0 * M_PI * i / INPUT_RATE),
-	                                     sin (2.0 * M_PI * i / INPUT_RATE));
-
-	connect (this, SIGNAL (show_fineCorrector (int)),
-	         myRadioInterface, SLOT (set_fineCorrectorDisplay (int)));
-	connect (this, SIGNAL (show_coarseCorrector (int)),
-	         myRadioInterface, SLOT (set_coarseCorrectorDisplay (int)));
+	connect (this, SIGNAL (showCoordinates (float, float)),
+	         mr,   SLOT   (showCoordinates (float, float)));
 	connect (this, SIGNAL (setSynced (char)),
 	         myRadioInterface, SLOT (setSynced (char)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -156,14 +105,15 @@ int32_t	i;
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
 
-	bufferContent	= 0;
 	running		= false;
+	myReader. setRunning (running);
 //	the thread will be started from somewhere else
 }
 
-	ofdmProcessor::~ofdmProcessor	(void) {
+	dabProcessor::~dabProcessor	(void) {
 	if (isRunning ()) {
 	   running	= false;	// this will cause an
+	   myReader. setRunning (running);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	   msleep (100);
@@ -173,131 +123,9 @@ int32_t	i;
 	}
 	
 	delete		ofdmBuffer;
-	delete		oscillatorTable;
 	delete		fft_handler;
 }
 
-
-/**
-  *	\brief getSample
-  *	Profiling shows that gettting a sample, together
-  *	with the frequency shift, is a real performance killer.
-  *	we therefore distinguish between getting a single sample
-  *	and getting a vector full of samples
-  */
-
-DSPCOMPLEX ofdmProcessor::getSample (int32_t phase) {
-DSPCOMPLEX temp;
-	if (!running)
-	   throw 21;
-
-///	bufferContent is an indicator for the value of ... -> Samples ()
-	if (bufferContent == 0) {
-	   bufferContent = theRig -> Samples ();
-	   while ((bufferContent == 0) && running) {
-	      usleep (10);
-	      bufferContent = theRig -> Samples (); 
-	   }
-	}
-
-	if (!running)	
-	   throw 20;
-//
-//	so here, bufferContent > 0
-	theRig -> getSamples (&temp, 1);
-	bufferContent --;
-	if (dumping) {
-           dumpBuffer [2 * dumpIndex    ] = real (temp) * dumpScale;
-           dumpBuffer [2 * dumpIndex + 1] = imag (temp) * dumpScale;
-           if ( ++dumpIndex >= DUMPSIZE / 2) {
-              sf_writef_short (dumpFile, dumpBuffer, dumpIndex);
-              dumpIndex = 0;
-           }
-        }
-#ifdef  HAVE_SPECTRUM
-	if (localCounter < bufferSize)
-	   localBuffer [localCounter ++]        = temp;
-#endif
-//
-//	OK, we have a sample!!
-//	first: adjust frequency. We need Hz accuracy
-	localPhase	-= phase;
-	localPhase	= (localPhase + INPUT_RATE) % INPUT_RATE;
-
-	temp		*= oscillatorTable [localPhase];
-	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
-#define	N	5
-	sampleCnt	++;
-	if (++ sampleCnt > INPUT_RATE / N) {
-	   show_fineCorrector	(fineCorrector);
-	   show_coarseCorrector	(coarseCorrector / KHz (1));
-	   sampleCnt = 0;
-#ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
-           emit showSpectrum (bufferSize);
-           localCounter = 0;
-#endif
-	}
-	return temp;
-}
-//
-
-void	ofdmProcessor::getSamples (DSPCOMPLEX *v, int16_t n, int32_t phase) {
-int32_t		i;
-
-	if (!running)
-	   throw 21;
-	if (n > bufferContent) {
-	   bufferContent = theRig -> Samples ();
-	   while ((bufferContent < n) && running) {
-	      usleep (10);
-	      bufferContent = theRig -> Samples ();
-	   }
-	}
-	if (!running)	
-	   throw 20;
-//
-//	so here, bufferContent >= n
-	n	= theRig -> getSamples (v, n);
-	bufferContent -= n;
-	if (dumping) {
-           for (i = 0; i < n; i ++) {
-              dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
-              dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
-              if (++dumpIndex >= DUMPSIZE / 2) {
-                 sf_writef_short (dumpFile, dumpBuffer, dumpIndex);
-                 dumpIndex = 0;
-              }
-           }
-        }
-
-//	OK, we have samples!!
-//	first: adjust frequency. We need Hz accuracy
-	for (i = 0; i < n; i ++) {
-	   localPhase	-= phase;
-//
-//	Note that "phase" itself might be negative
-	   localPhase	= (localPhase + INPUT_RATE) % INPUT_RATE;
-#ifdef  HAVE_SPECTRUM
-           if (localCounter < bufferSize)
-              localBuffer [localCounter ++]     = v [i];
-#endif
-	   v [i]	*= oscillatorTable [localPhase];
-	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
-	}
-
-	sampleCnt	+= n;
-	if (sampleCnt > INPUT_RATE / N) {
-	   show_fineCorrector	(fineCorrector);
-	   show_coarseCorrector	(coarseCorrector / KHz (1));
-#ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
-           emit showSpectrum (bufferSize);
-           localCounter = 0;
-#endif
-	   sampleCnt = 0;
-	}
-}
 /***
    *	\brief run
    *	The main thread, reading samples,
@@ -306,7 +134,7 @@ int32_t		i;
    *	and sending them to the ofdmDecoder who will transfer the results
    *	Finally, estimating the small freqency error
    */
-void	ofdmProcessor::run	(void) {
+void	dabProcessor::run	(void) {
 int32_t		startIndex;
 int32_t		i;
 DSPCOMPLEX	FreqCorr;
@@ -321,31 +149,26 @@ float		envBuffer	[syncBufferSize];
         fineCorrector   = 0;
         f2Correction    = true;
         syncBufferIndex = 0;
-        sLevel          = 0;
-        localPhase      = 0;
 	attempts	= 0;
         theRig  -> resetBuffer ();
         running         = true;
-#ifdef	__THREADED_DECODING
+	myReader. setRunning (running);
 	my_ofdmDecoder. start ();
-#endif
-
+//
+//	tp set up some idea of the signal strength
 	try {
-	   sLevel	= 0;
 	   for (i = 0; i < T_F / 5; i ++) {
-	      getSample (0);
+	      myReader. getSample (0);
 	   }
 Initing:
 notSynced:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
-///	first, we need samples to get a reasonable sLevel
 
-//	read in T_s samples for a next attempt;
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   for (i = 0; i < 50; i ++) {
-	      DSPCOMPLEX sample			= getSample (0);
+	      DSPCOMPLEX sample			= myReader. getSample (0);
 	      envBuffer [syncBufferIndex]	= jan_abs (sample);
 	      currentStrength 			+= envBuffer [syncBufferIndex];
 	      syncBufferIndex ++;
@@ -360,9 +183,9 @@ SyncOnNull:
   */
 	   counter	= 0;
 	   setSynced (false);
-	   while (currentStrength / 50  > 0.50 * sLevel) {
+	   while (currentStrength / 50  > 0.50 * myReader. get_sLevel ()) {
 	      DSPCOMPLEX sample	=
-	                      getSample (coarseCorrector + fineCorrector);
+	                      myReader. getSample (coarseCorrector + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
 	      currentStrength += envBuffer [syncBufferIndex] -
@@ -384,8 +207,9 @@ SyncOnNull:
   */
 	   counter	= 0;
 SyncOnEndNull:
-	   while (currentStrength / 50 < 0.75 * sLevel) {
-	      DSPCOMPLEX sample = getSample (coarseCorrector + fineCorrector);
+	   while (currentStrength / 50 < 0.75 * myReader. get_sLevel ()) {
+	      DSPCOMPLEX sample =
+	              myReader. getSample (coarseCorrector + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
 	      currentStrength += envBuffer [syncBufferIndex] -
@@ -398,8 +222,8 @@ SyncOnEndNull:
 	      }
 	   }
 /**
-  *	The end of the null period is identified, probably about 40
-  *	samples earlier.
+  *	The end of the null period is identified, the actual end
+  *	is probably about 40 samples earlier.
   */
 SyncOnPhase:
 /**
@@ -413,7 +237,8 @@ SyncOnPhase:
   *	as long as we can be sure that the first sample to be identified
   *	is part of the samples read.
   */
-	getSamples (ofdmBuffer, T_u, coarseCorrector + fineCorrector);
+	myReader. getSamples (ofdmBuffer,
+	                        T_u, coarseCorrector + fineCorrector);
 //
 //	and then, call upon the phase synchronizer to verify/compute
 //	the real "first" sample
@@ -441,15 +266,15 @@ Block_0:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
-	   getSamples (&ofdmBuffer [ofdmBufferIndex],
-	               T_u - ofdmBufferIndex,
-	               coarseCorrector + fineCorrector);
+	   myReader. getSamples (&ofdmBuffer [ofdmBufferIndex],
+	                           T_u - ofdmBufferIndex,
+	                           coarseCorrector + fineCorrector);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
 //	The width is limited to 2 * 35 Khz (i.e. positive and negative)
-	   f2Correction	= !my_ficHandler -> syncReached ();
+	   f2Correction	= !my_ficHandler. syncReached ();
 	   if (f2Correction) {
 	      int correction		= processBlock_0 (ofdmBuffer);
 	      if (correction != 100) {
@@ -471,7 +296,8 @@ Data_blocks:
 	   FreqCorr		= DSPCOMPLEX (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
-	      getSamples (ofdmBuffer, T_s, coarseCorrector + fineCorrector);
+	      myReader. getSamples (ofdmBuffer,
+	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 	
@@ -482,7 +308,8 @@ Data_blocks:
 	   for (ofdmSymbolCount = 4;
 	        ofdmSymbolCount <  (uint16_t)nrBlocks;
 	        ofdmSymbolCount ++) {
-	      getSamples (ofdmBuffer, T_s, coarseCorrector + fineCorrector);
+	      myReader. getSamples (ofdmBuffer,
+	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -500,10 +327,10 @@ NewOffset:
   */
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
-	   getSamples (ofdmBuffer, T_null, coarseCorrector + fineCorrector);
-#ifdef TII_COORDINATES
+	   myReader. getSamples (ofdmBuffer,
+	                         T_null, coarseCorrector + fineCorrector);
 	   if (tiiCoordinates) {
-	      int16_t mainId	= my_ficHandler -> mainId ();
+	      int16_t mainId	= my_ficHandler. mainId ();
 	      if (mainId > 0) {
                  int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
 	                                                   phaseSynchronizer. refTable,
@@ -511,9 +338,9 @@ NewOffset:
 	         if (subId >= 0) {
 	            bool found;
 	            DSPCOMPLEX coord =
-	                      my_ficHandler -> get_coordinates (mainId,
-	                                                        subId,
-	                                                        &found);
+	                      my_ficHandler. get_coordinates (mainId,
+	                                                      subId,
+	                                                      &found);
 	            if (found) {
 	               showCoordinates (real (coord), imag (coord));
 	            }
@@ -521,16 +348,12 @@ NewOffset:
 	      }
 	      tiiCoordinates = false;
 	   }
-#endif
 	           
 /**
   *	The first sample to be found for the next frame should be T_g
-  *	samples ahead
-  *	Here we just check the fineCorrector
+  *	samples ahead. Before going for the next frame, we
+  *	we just check the fineCorrector
   */
-	   counter	= 0;
-//
-
 	   if (fineCorrector > carrierDiff / 2) {
 	      coarseCorrector += carrierDiff;
 	      fineCorrector -= carrierDiff;
@@ -542,54 +365,41 @@ NewOffset:
 	   }
 ReadyForNewFrame:
 ///	and off we go, up to the next frame
+	   counter	= 0;
 	   goto SyncOnPhase;
 	}
 	catch (int e) {
-	   fprintf (stderr, "ofdmProcessor is stopping\n");
+	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
 	my_ofdmDecoder. stop ();
+	my_mscHandler.  stop ();
+	my_ficHandler.  stop ();
 }
 
-void	ofdmProcessor:: reset	(void) {
-	running	= false;
-	if (isRunning ()) {
-//	   terminate ();
-	   
-	   wait ();
-	}
+void	dabProcessor:: reset	(void) {
+	stop  ();
 	start ();
 }
 
-void	ofdmProcessor::stop	(void) {
+void	dabProcessor::stop	(void) {
 	running	= false;
+	myReader. setRunning (running);
 	while (isRunning ())
-	   msleep (100);
+	   wait ();
+	my_mscHandler.  reset ();
+	my_ofdmDecoder. reset ();
+	my_ficHandler.  reset ();
 }
 
-void	ofdmProcessor::startDumping	(SNDFILE *f) {
-	if (dumping)
-	   return;
-//	do not change the order here.
-	dumpFile 	= f;
-	dumping		= true;
-	dumpIndex	= 0;
-}
-
-void	ofdmProcessor::stopDumping	(void) {
-	dumping = false;
-}
-//
-
-void	ofdmProcessor::coarseCorrectorOn (void) {
+void	dabProcessor::coarseCorrectorOn (void) {
 	f2Correction 	= true;
 	coarseCorrector	= 0;
 }
 
-void	ofdmProcessor::coarseCorrectorOff (void) {
+void	dabProcessor::coarseCorrectorOff (void) {
 	f2Correction	= false;
 }
-
 //
 //	Processing block 0 here is needed as long as we are not in sync.
 //	Several algorithms were tried, plain  correlating the
@@ -597,17 +407,17 @@ void	ofdmProcessor::coarseCorrectorOff (void) {
 //	data block here did not work very well. The structure
 //	of block 0 does not seem to lenf itself for that kind of matching
 //	The current approach is to look for a particular pattern
-//	of phiase differences between successive carriers.
-int16_t	ofdmProcessor::processBlock_0 (DSPCOMPLEX *v) {
+//	of phase differences between successive carriers.
+int16_t	dabProcessor::processBlock_0 (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
 
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
 	fft_handler	-> do_FFT ();
 
-//	An alternative way is to look at a special pattern consisting
-//	of zeros in the row of phasedifferences between successive carriers.
-//	we investigate a sequence of phasedifferences that should
-//	be zero around carrier 0
+//	We investigate a sequence of phasedifferences that should
+//	are known around carrier 0. In previous versions we looked
+//	at the "weight" of the positive and negative carriers in the
+//	fft, but that did not work too well.
 	float Mmin	= 1000;
 	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
            float a1  =  abs (abs (arg (fft_buffer [(i + 1) % T_u] *
@@ -637,39 +447,67 @@ int16_t	i, j, index = 100;
 	return index - T_u;
 }
 
-int16_t	ofdmProcessor::getMiddle (DSPCOMPLEX *v) {
-int16_t		i;
-DSPFLOAT	sum = 0;
-int16_t		maxIndex = 0;
-DSPFLOAT	oldMax	= 0;
-//
-//	basic sum over K carriers that are - most likely -
-//	in the range
-//	The range in which the carrier should be is
-//	T_u / 2 - K / 2 .. T_u / 2 + K / 2
-//	We first determine an initial sum over params -> K carriers
-	for (i = 40; i < carriers + 40; i ++)
-	   sum += abs (v [(T_u / 2 + i) % T_u]);
-//
-//	Now a moving sum, look for a maximum within a reasonable
-//	range (around (T_u - K) / 2, the start of the useful frequencies)
-	for (i = 40; i < T_u - (carriers - 40); i ++) {
-	   sum -= abs (v [(T_u / 2 + i) % T_u]);
-	   sum += abs (v [(T_u / 2 + i + carriers) % T_u]);
-	   if (sum > oldMax) {
-	      sum = oldMax;
-	      maxIndex = i;
-	   }
-	}
-	return maxIndex - (T_u - carriers) / 2;
-}
-	
-void	ofdmProcessor::set_scanMode	(bool b) {
+void	dabProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
 
-void	ofdmProcessor::set_tiiCoordinates	(void) {
+void	dabProcessor::set_tiiCoordinates	(void) {
 	tiiCoordinates	= true;
+}
+//
+//	we could have derive the dab processor from fic and msc handlers,
+//	however, from a logical point of view they are more delegates than
+//	parents.
+uint8_t dabProcessor::kindofService           (QString &s) {
+	return my_ficHandler. kindofService (s);
+}
+
+void	dabProcessor::dataforAudioService     (QString &s, audiodata *d) {
+	my_ficHandler. dataforAudioService (s, d);
+}
+
+void	dabProcessor::dataforAudioService     (int16_t d,   audiodata *dd) {
+	my_ficHandler. dataforAudioService (d, dd);
+}
+
+void	dabProcessor::dataforDataService	(QString &s, packetdata *d) {
+	my_ficHandler. dataforDataService (s, d);
+}
+
+void	dabProcessor::dataforDataService	(int16_t d,   packetdata *dd) {
+	my_ficHandler. dataforDataService (d, dd);
+}
+
+void	dabProcessor::set_audioChannel (audiodata *d) {
+	my_mscHandler. set_audioChannel (d);
+}
+
+void	dabProcessor::set_dataChannel (packetdata *d) {
+	my_mscHandler. set_dataChannel (d);
+}
+
+uint8_t	dabProcessor::get_ecc		(void) {
+	return my_ficHandler. get_ecc ();
+}
+
+int32_t dabProcessor::get_ensembleId	(void) {
+	return my_ficHandler. get_ensembleId ();
+}
+
+QString dabProcessor::get_ensembleName	(void) {
+	return my_ficHandler. get_ensembleName ();
+}
+
+void	dabProcessor::clearEnsemble	(void) {
+	my_ficHandler. clearEnsemble ();
+}
+
+void	dabProcessor::startDumping	(SNDFILE *f) {
+	myReader. startDumping (f);
+}
+
+void	dabProcessor::stopDumping	(void) {
+	myReader. stopDumping ();
 }
 

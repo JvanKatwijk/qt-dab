@@ -125,7 +125,8 @@ double	*Y_values	= (double *)alloca (displaySize * sizeof (double));
 int16_t	i, j;
 double	temp	= (double)INPUT_RATE / 2 / displaySize;
 int16_t	averageCount	= 5;
-//
+
+	(void)amount;
 	if (scopeBuffer -> GetRingBufferReadAvailable () < spectrumSize)
 	   return;
 

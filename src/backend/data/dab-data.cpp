@@ -22,7 +22,7 @@
 #
 #include	"dab-constants.h"
 #include	"radio.h"
-#include	"dab-processor.h"
+#include	"frame-processor.h"
 #include	"dab-data.h"
 #include	"eep-protection.h"
 #include	"uep-protection.h"
@@ -52,7 +52,7 @@
 	                         RingBuffer<uint8_t> *dataBuffer,
 	                         QString	picturesPath) :
 	                            freeSlots (20) {
-int32_t i, j;
+int32_t i;
 	this	-> myRadioInterface	= mr;
 	this	-> DSCTy		= DSCTy;
 	this	-> packetAddress	= packetAddress;
@@ -63,7 +63,7 @@ int32_t i, j;
 	fprintf (stderr, "data: protlevel = %d\n", protLevel);
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
-	our_dabProcessor	= new dataProcessor (mr,
+	our_frameProcessor	= new dataProcessor (mr,
 	                                             bitRate,
 	                                             DSCTy,
 	                                             appType,
@@ -115,6 +115,7 @@ int16_t	i;
 }
 
 int32_t	dabData::process	(int16_t *v, int16_t cnt) {
+	(void)cnt;
 	while (!freeSlots. tryAcquire (1, 200))
            if (!running)
               return 0;
@@ -130,7 +131,6 @@ void	dabData::run	(void) {
 int16_t	countforInterleaver	= 0;
 int16_t interleaverIndex	= 0;
 uint8_t	shiftRegister [9];
-int16_t	Data [fragmentSize];
 int16_t	tempX [fragmentSize];
 int16_t	i, j;
 
@@ -172,7 +172,7 @@ int16_t	i, j;
 //	What we get here is a long sequence (24 * bitrate) of bits, not packed
 //	but forming a DAB packet
 //	we hand it over to make an MSC data group
-	   our_dabProcessor -> addtoFrame (outV);
+	   our_frameProcessor -> addtoFrame (outV);
 	}
 }
 

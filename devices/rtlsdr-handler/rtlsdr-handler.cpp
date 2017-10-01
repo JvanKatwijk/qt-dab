@@ -26,6 +26,8 @@
  */
 
 #include	<QThread>
+#include	<QFileDialog>
+#include	<QDir>
 #include	"rtlsdr-handler.h"
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
@@ -192,7 +194,7 @@ int	k;
 
 	rtlsdr_set_tuner_gain_mode (device, 1);
 
-	_I_Buffer		= new RingBuffer<uint8_t>(1024 * 1024);
+	_I_Buffer		= new RingBuffer<uint8_t>(8 * 1024 * 1024);
 
 	theGain		= gains [gainsCount / 2];	// default
 //
@@ -228,6 +230,7 @@ int	k;
 	set_ppmCorrection	(ppm_correction -> value ());
 	set_KhzOffset		(KhzOffset -> value ());
 //
+	dumping			= false;
 //	and attach the buttons/sliders to the actions
 	connect (combo_gain, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_ExternalGain (const QString &)));
@@ -237,6 +240,8 @@ int	k;
 	         this, SLOT (set_ppmCorrection  (int)));
 	connect (KhzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_KhzOffset (int)));
+	connect (dumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (dumpButton_pressed (void)));
 }
 
 	rtlsdrHandler::~rtlsdrHandler	(void) {
@@ -353,6 +358,9 @@ int32_t	amount, i;
 uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 //
 	amount = _I_Buffer	-> getDataFromBuffer (tempBuffer, 2 * size);
+	if (dumping)
+ 	   fwrite (tempBuffer, amount, 1, dumpfilePointer);
+
 	for (i = 0; i < amount / 2; i ++)
 	    V [i] = DSPCOMPLEX ((float (tempBuffer [2 * i] - 128)) / 128.0,
 	                        (float (tempBuffer [2 * i + 1] - 128)) / 128.0);
@@ -508,3 +516,28 @@ int16_t	rtlsdrHandler::bitDepth	(void) {
 	return 8;
 }
 
+void	rtlsdrHandler::dumpButton_pressed (void) {
+	if (!dumping) {
+	   QString file = QFileDialog::getSaveFileName (NULL,
+	                                                tr ("Save file ..."),
+	                                                QDir::homePath (),
+	                                                tr ("iq file (*.iq)"));
+	   if (file == QString (""))
+	      return;
+	   file		= QDir::toNativeSeparators (file);
+	   if (!file.endsWith (".iq", Qt::CaseInsensitive))
+	      file.append (".iq");
+	   dumpfilePointer = fopen (file. toLatin1 (). data (), "w+b");
+	   if (dumpfilePointer == NULL)
+	      return;
+	   dumpButton -> setText ("WRITING");
+	   dumping = true;
+	}
+	else {
+	   dumping = false;
+	   fclose (dumpfilePointer);
+	   dumpfilePointer = NULL;
+	   dumpButton -> setText ("write raw bytes");
+	}
+}
+	

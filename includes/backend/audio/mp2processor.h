@@ -32,7 +32,7 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<math.h>
-#include	"dab-processor.h"
+#include	"frame-processor.h"
 #include	<QObject>
 #include	<stdio.h>
 #include	"ringbuffer.h"
@@ -50,7 +50,7 @@ struct quantizer_spec {
 
 class	RadioInterface;
 
-class	mp2Processor: public QObject, public dabProcessor {
+class	mp2Processor: public QObject, public frameProcessor {
 Q_OBJECT
 public:
 			mp2Processor	(RadioInterface *,
@@ -95,7 +95,7 @@ private:
 	int16_t		errorFrames;
 signals:
 	void		show_frameErrors	(int);
-	void		newAudio		(int);
+	void		newAudio		(int, int);
 	void		isStereo		(bool);
 };
 #endif

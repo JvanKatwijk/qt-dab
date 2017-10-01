@@ -37,10 +37,9 @@
 #include	<QTimer>
 #include	<sndfile.h>
 #include	"ui_dabradio.h"
-#include	"fic-handler.h"
-#include	"ofdm-processor.h"
+#include	"dab-processor.h"
 #include	"ringbuffer.h"
-#include	"band-handler.h"
+#include        "band-handler.h"
 #include	"text-mapper.h"
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
@@ -49,12 +48,9 @@
 class	QSettings;
 class	virtualInput;
 class	audioBase;
-class	mscHandler;
 class	common_fft;
 
-#ifdef	TECHNICAL_DATA
 #include	"ui_technical_data.h"
-#endif
 
 #ifdef	HAVE_SPECTRUM
 class	spectrumhandler;
@@ -69,37 +65,43 @@ class RadioInterface: public QMainWindow,
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 int16_t	tii_delay,
-	                                 int32_t	dataPort,
-	                                 bool		tracing,
+	                                 int16_t	 tii_delay,
+	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = NULL);
-		~RadioInterface		();
+		~RadioInterface		(void);
 
 private:
 	QSettings	*dabSettings;
 	int16_t		tii_delay;
-	bool		tracing;
-#ifdef	TECHNICAL_DATA
+	int32_t         dataPort;
+	QString         deviceName;
+	uint8_t		dabMode;
 	Ui_technical_data	techData;
 	QFrame		*dataDisplay;
 	bool		show_data;
-private slots:
-	void		toggle_show_data	(void);
 private:
-#endif
-	bool		autoStart;
-	int16_t		threshold;
 	void		clear_showElements	(void);
-	uint8_t		isSynced;
+	void		set_picturePath		(void);
+const	char		*get_programm_type_string (int16_t);
+const	char		*get_programm_language_string (int16_t);
+	void		dumpControlState	(QSettings *);
+	void		Yes_Signal_Found	(void);
+	void		Increment_Channel	(void);
+	uint8_t		convert			(QString);
+	void		hideButtons		(void);
+	void		showButtons		(void);
+	virtualInput	*setDevice		(QString);
+
 	uint8_t		dabBand;
-	bandHandler	theBand;
-	bool		running;
+	bool		thereisSound;
+	uint8_t		isSynced;
+	int16_t		threshold;
+	bandHandler     theBand;
+	std::atomic<bool>	running;
 	bool		scanning;
 	virtualInput	*inputDevice;
 	textMapper	the_textMapper;
-	ofdmProcessor	*my_ofdmProcessor;
-	ficHandler	my_ficHandler;
-	mscHandler	*my_mscHandler;
+	dabProcessor	*my_dabProcessor;
 	audioBase	*soundOut;
 #ifdef	DATA_STREAMER
 	tcpServer	*dataStreamer;
@@ -107,16 +109,15 @@ private:
 	RingBuffer<int16_t>	*audioBuffer;
 	RingBuffer<uint8_t>	*dataBuffer;
 	bool		autoCorrector;
-const	char		*get_programm_type_string (int16_t);
-const	char		*get_programm_language_string (int16_t);
 	QLabel		*pictureLabel;
 	bool		saveSlides;
 	bool		showSlides;
 	QUdpSocket	dataOut_socket;
 	QString		ipAddress;
 	int32_t		port;
-	void		init_your_gui		(void);
-	void		dumpControlState	(QSettings *);
+
+	void		start_sourceDumping	(void);
+	void		stop_sourceDumping	(void);
 	bool		sourceDumping;
 	SNDFILE		*dumpfilePointer;
 	bool		audioDumping;
@@ -128,15 +129,13 @@ const	char		*get_programm_language_string (int16_t);
 	QTimer		displayTimer;
 	QTimer		signalTimer;
 	QTimer		presetTimer;
+	QTimer		startTimer;
 	QString		presetName;
 	QString		currentName;
 	bool		has_presetName;
 	int32_t		numberofSeconds;
-	void		resetSelector		(void);
 	int16_t		ficBlocks;
 	int16_t		ficSuccess;
-	void		Yes_Signal_Found	(void);
-	void		Increment_Channel	(void);
 #ifdef	HAVE_SPECTRUM
         spectrumhandler         *spectrumHandler;
 	RingBuffer<DSPCOMPLEX>  *spectrumBuffer;
@@ -144,13 +143,9 @@ const	char		*get_programm_language_string (int16_t);
 #endif
 
 	QString		picturesPath;
-	uint8_t		convert			(QString);
-	void		hideButtons		(void);
-	void		showButtons		(void);
 public slots:
 	void		set_Scanning		(void);
-	void		set_fineCorrectorDisplay	(int);
-	void		set_coarseCorrectorDisplay	(int);
+	void		set_CorrectorDisplay	(int);
 	void		clearEnsemble		(void);
 	void		addtoEnsemble		(const QString &);
 	void		nameofEnsemble		(int, const QString &);
@@ -165,7 +160,7 @@ public slots:
 	void		sendDatagram		(int);
 	void		handle_tdcdata		(int, int);
 	void		changeinConfiguration	(void);
-	void		newAudio		(int);
+	void		newAudio		(int, int);
 //
 	void		setStereo		(bool);
 	void		set_streamSelector	(int);
@@ -181,26 +176,28 @@ public slots:
 	void		showQuality		(float);
 #endif
 #endif
-private slots:
 //
 //	Somehow, these must be connected to the GUI
-	void	setStart		(void);
-	void	TerminateProcess	(void);
-	void	selectChannel		(QString);
-	void	updateTimeDisplay	(void);
-	void	signalTimer_out		(void);
+private slots:
+	void		toggle_show_data	(void);
+	void		doStart			(QString);
+	void		doStart			(void);
+	void		TerminateProcess	(void);
+	void		selectChannel		(QString);
+	void		updateTimeDisplay	(void);
+	void		signalTimer_out		(void);
+	void		autoCorrector_on	(void);
 
-	void	autoCorrector_on	(void);
+	void		newDevice		(QString);
+	void		set_modeSelect		(const QString &);
+	void		set_bandSelect		(QString s);
 
-	void	set_modeSelect		(const QString &);
-	void	set_bandSelect		(QString);
-	void	setDevice		(QString);
-	void	selectService		(QModelIndex);
-	void	selectService		(QString);
-	void	set_dumping		(void);
-	void	set_audioDump		(void);
-	void    showEnsembleData	(void);
-	void	setPresetStation	(void);
+	void		selectService		(QModelIndex);
+	void		selectService		(QString);
+	void		set_audioDump		(void);
+	void		set_sourceDump		(void);
+	void		showEnsembleData	(void);
+	void		setPresetStation	(void);
 };
 #endif
 

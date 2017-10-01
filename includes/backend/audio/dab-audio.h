@@ -25,15 +25,21 @@
 
 #include	<QSemaphore>
 #include	"dab-virtual.h"
+#ifdef	__THREADED_DECODING
 #include	<QThread>
+#endif
 #include	"ringbuffer.h"
 #include	<stdio.h>
 
-class	dabProcessor;
+class	frameProcessor;
 class	protection;
 class	RadioInterface;
 
+#ifdef	__THREADED_DECODING
 class	dabAudio:public QThread, public dabVirtual {
+#else
+class	dabAudio:public dabVirtual {
+#endif
 public:
 	dabAudio	(RadioInterface	*mr,
 	                 uint8_t dabModus,
@@ -50,8 +56,17 @@ protected:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;
 private:
+#ifdef	__THREADED_DECODING
 void	run		(void);
-volatile bool		running;
+	atomic<bool>	running;
+	QSemaphore	freeSlots;
+	QSemaphore	usedSlots;
+	int16_t		*theData [20];
+	int16_t		nextIn;
+	int16_t		nextOut;
+#endif
+void	processSegment	(int16_t *Data);
+
 	uint8_t		dabModus;
 	int16_t		fragmentSize;
 	int16_t		bitRate;
@@ -61,14 +76,12 @@ volatile bool		running;
 	int16_t		**interleaveData;
 	int16_t		*Data;
 	int16_t		*tempX;
+	int16_t		countforInterleaver;
+	int16_t		interleaverIndex;
+
 
 	protection	*protectionHandler;
-	dabProcessor	*our_dabProcessor;
-	QSemaphore	freeSlots;
-	QSemaphore	usedSlots;
-	int16_t		*theData [20];
-	int16_t		nextIn;
-	int16_t		nextOut;
+	frameProcessor	*our_dabProcessor;
 };
 
 #endif

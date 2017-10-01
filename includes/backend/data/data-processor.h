@@ -23,7 +23,7 @@
 #ifndef	__DATA_PROCESSOR__
 #define	__DATA_PROCESSOR__
 
-#include	"dab-processor.h"
+#include	"frame-processor.h"
 #include	<stdio.h>
 #include	<string.h>
 #include	<QObject>
@@ -34,7 +34,7 @@ class	uep_deconvolve;
 class	eep_deconvolve;
 class	virtual_dataHandler;
 
-class	dataProcessor:public QObject, public dabProcessor {
+class	dataProcessor:public QObject, public frameProcessor {
 Q_OBJECT
 public:
 	dataProcessor	(RadioInterface *mr,
