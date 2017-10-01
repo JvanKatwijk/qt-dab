@@ -264,9 +264,10 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	)
 
 	set (${objectName}_MOCS
+	     ./dab-processor.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
-	     ./includes/ofdm/ofdm-processor.h
+	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/backend/fic-handler.h
 	     ./includes/backend/fib-processor.h
