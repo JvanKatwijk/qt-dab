@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-0.999)
+set (objectName qt-dab-1.0-alpha)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -139,9 +139,10 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	set (${objectName}_HDRS
 	     ./text-mapper.h
-	     ./includes/dab-constants.h
+	     ./dab-processor.h
 	     ./includes/country-codes.h
-	     ./includes/ofdm/ofdm-processor.h
+	     ./includes/ofdm/sample-reader.h
+	     ./includes/dab-constants.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
@@ -150,8 +151,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/uep-protection.h
 	     ./includes/backend/eep-protection.h
 	     ./includes/backend/firecode-checker.h
-	     ./includes/backend/dab-processor.h
 	     ./includes/backend/dab-virtual.h
+	     ./includes/backend/frame-processor.h
 	     ./includes/backend/charsets.h
 	     ./includes/backend/galois.h
 	     ./includes/backend/msc-handler.h
@@ -199,7 +200,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./text-mapper.cpp
-	     ./src/ofdm/ofdm-processor.cpp
+	     ./dab-processor.cpp
+             ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
@@ -214,7 +216,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/backend/fib-processor.cpp
 	     ./src/backend/firecode-checker.cpp
 	     ./src/backend/dab-virtual.cpp
-	     ./src/backend/dab-processor.cpp
+	     ./src/backend/frame-processor.cpp
 	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
 	     ./src/backend/dab-virtual.cpp
