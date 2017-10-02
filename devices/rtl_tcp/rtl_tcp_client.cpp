@@ -172,8 +172,8 @@ int32_t	rtl_tcp_client::getVFOFrequency	(void) {
 }
 
 bool	rtl_tcp_client::restartReader	(void) {
-	if (!connected)
-	   return false;
+	if (connected)
+	   return true;
 	connect (&toServer, SIGNAL (readyRead (void)),
 	         this, SLOT (readData (void)));
 	return true;

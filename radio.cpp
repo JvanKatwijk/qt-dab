@@ -882,7 +882,7 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if (numberofSeconds % tii_delay == 0)
+	if ((numberofSeconds % tii_delay == 0) && running. load ())
 	   my_dabProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
@@ -1044,6 +1044,7 @@ virtualInput	*inputDevice	= NULL;
 	}
 	else
 	if (s == "file input (.sdr)") {
+	   fprintf (stderr, "file input (.sdr) is touched\n");
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
@@ -1075,6 +1076,7 @@ void	RadioInterface::newDevice (QString deviceName) {
 	if (!running. load ())		// should not happen
 	   return;
 
+	presetTimer. stop ();
 	running. store (false);
 	inputDevice	-> stopReader ();
 	my_dabProcessor	-> stop ();
@@ -1370,6 +1372,8 @@ uint8_t	RadioInterface::convert (QString s) {
 void	RadioInterface::showButtons	(void) {
 	scanButton	-> show ();
 	channelSelector	-> show	();
+	modeSelector	-> show ();
+	bandSelector	-> show ();
 	techData. frequency	-> show ();
 
 }
@@ -1377,6 +1381,8 @@ void	RadioInterface::showButtons	(void) {
 void	RadioInterface::hideButtons	(void) {
 	scanButton	-> hide ();
 	channelSelector	-> hide ();
+	modeSelector	-> hide ();
+	bandSelector	-> hide ();
 	techData. frequency	-> hide ();
 }
 

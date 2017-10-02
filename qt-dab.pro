@@ -229,7 +229,7 @@ CONFIG		+= try_tii		#
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
-DEFINES	+= __THREADED_DECODING
+#DEFINES	+= __THREADED_DECODING
 }
 #
 # an attempt to have it run under W32
