@@ -181,7 +181,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>timeDisplay</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLCDNumber" name="correctorDisplay">
@@ -225,7 +225,7 @@
      <enum>QFrame::Plain</enum>
     </property>
     <property name="text">
-     <string>dynamicLabel</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -315,7 +315,7 @@ background-color: rgb(255, 0, 0);</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright (C) 2016, 2017 Jan van Katwijk (J.vanKatwijk@gmail.com), Lazy Chair Programming&lt;/p&gt;&lt;p&gt;Qt-DAB is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>versionName</string>
+     <string/>
     </property>
    </widget>
    <widget class="QLabel" name="syncedLabel">
@@ -447,7 +447,7 @@ background-color: rgb(255, 0, 0);</string>
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string>ensembleName</string>
+     <string/>
     </property>
     <property name="textInteractionFlags">
      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
