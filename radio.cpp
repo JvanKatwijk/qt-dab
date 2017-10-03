@@ -292,15 +292,17 @@ QString h;
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
 	
-//	inputDevice		= NULL;
+	inputDevice	= NULL;
 	h               =
                    dabSettings -> value ("device", "no device"). toString ();
 	k               = deviceSelector -> findText (h);
+	fprintf (stderr, "%d %s\n", k, h. toLatin1 (). data ());
         if (k != -1) {
            deviceSelector       -> setCurrentIndex (k);
            inputDevice	= setDevice (deviceSelector -> currentText ());
         }
 
+	
 	my_dabProcessor	= NULL;
 //	if a device is selected, we just start, otherwise
 //	we wait until one is selected
