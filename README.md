@@ -286,7 +286,7 @@ The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have t
 Raspberry PI
 ------------------------------------------------------------------
 
-The Qt-DAB software runs pretty well on the author's RPI-2. The average load on the 4 cores is somewhat over 60 percent.
+The Qt-DAB software runs pretty well on the author's RPI-2. The average load on the 4 cores is somewhere between 50 and 60 percent.
 
 One remark: getting "sound" is not always easy. Be certain that you have installed the alsa-utils, and that you are - as non-root user - able to see devices with `aplay -L`
 
@@ -294,6 +294,14 @@ In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
 The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
+
+IMPORTANT NOTE:
+Since I was studying the (potential) difference in behaviour between
+a version with and a version without concurrency in the front end,
+there is a setting in the ".pro" file for selecting this.
+Use for the DAB the concurrency option.
+For the ".pro" file uncomment #DEFINES += __THREADED_DECODING.
+For the CMakeLists.txt file, uncomment #add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
 
 ---------------------------------------------------------------------------
 appImage for Raspberry PI 2 (NEW)

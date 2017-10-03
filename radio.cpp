@@ -1059,6 +1059,7 @@ virtualInput	*inputDevice	= NULL;
 	                               tr ("file not found"));
 	      return NULL;
 	   }
+	   fprintf (stderr, "klaar voor file input (%s)\n", file. toLatin1 (). data ());
 	}
 	else {
 	   fprintf (stderr, "unknown device, failing\n");
@@ -1076,6 +1077,10 @@ void	RadioInterface::newDevice (QString deviceName) {
 	if (!running. load ())		// should not happen
 	   return;
 
+	disconnect (deviceSelector, SIGNAL (activated (QString)),
+	            this,  SLOT (newDevice (QString)));
+	fprintf (stderr, "newDevice is called with %s\n",
+	                            deviceName. toLatin1 (). data ());
 	presetTimer. stop ();
 	running. store (false);
 	inputDevice	-> stopReader ();
@@ -1088,8 +1093,6 @@ void	RadioInterface::newDevice (QString deviceName) {
 	if (inputDevice == NULL) {
 //
 //	Note that the device handler itself will complain already
-	   connect (deviceSelector, SIGNAL (activated (QString)),
-	            this,  SLOT (doStart (QString)));
 	   return;
 	}
 	doStart ();		// will set running

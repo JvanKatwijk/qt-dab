@@ -46,6 +46,7 @@ SF_INFO *sf_info;
 	setupUi (myFrame);
 	myFrame		-> show ();
 
+	tester		= 3;
 	readerOK	= false;
 	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(__BUFFERSIZE);
 
@@ -69,27 +70,24 @@ SF_INFO *sf_info;
 	readerOK	= true;
 	readerPausing	= true;
 	currPos		= 0;
-	start	();
+//	start	();
 }
 
 	wavFiles::~wavFiles (void) {
-	fprintf (stderr, " delete wavfiles aangeroepen\n"); fflush (stderr);
 	ExitCondition = true;
 	if (readerOK) {
 	   while (isRunning ())
 	      usleep (100);
-	   fprintf (stderr, "not running anymore\n"); fflush (stderr);
 	   sf_close (filePointer);
 	}
-	fprintf (stderr, "file is now closed\n"); fflush (stderr);
 	delete _I_Buffer;
 	delete	myFrame;
-	fprintf (stderr, "Nou zijn we met delete klaar\n"); fflush (stderr);
 }
 
 bool	wavFiles::restartReader	(void) {
 	if (readerOK)
 	   readerPausing = false;
+	start ();
 	return readerOK;
 }
 
@@ -97,10 +95,12 @@ void	wavFiles::stopReader	(void) {
 	if (readerOK)
 	   readerPausing = true;
 }
-//
+
 //	size is in I/Q pairs
 int32_t	wavFiles::getSamples	(DSPCOMPLEX *V, int32_t size) {
 int32_t	amount;
+
+	
 	if (filePointer == NULL)
 	   return 0;
 
@@ -111,6 +111,7 @@ int32_t	amount;
 	      usleep (100);
 
 	amount = _I_Buffer	-> getDataFromBuffer (V, size);
+	
 	return amount;
 }
 

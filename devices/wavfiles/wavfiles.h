@@ -44,6 +44,7 @@ public:
 	void		stopReader	(void);
 private:
 	QString		fileName;
+	int		tester;
 	QFrame		*myFrame;
 virtual	void		run		(void);
 	int32_t		readBuffer	(DSPCOMPLEX *, int32_t);

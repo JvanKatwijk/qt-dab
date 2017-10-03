@@ -86,7 +86,7 @@ DSPCOMPLEX temp;
 ///	bufferContent is an indicator for the value of ... -> Samples ()
 	if (bufferContent == 0) {
 	   bufferContent = theRig -> Samples ();
-	   while ((bufferContent == 0) && running. load ()) {
+	   while ((bufferContent <= 2048) && running. load ()) {
 	      usleep (10);
 	      bufferContent = theRig -> Samples (); 
 	   }
