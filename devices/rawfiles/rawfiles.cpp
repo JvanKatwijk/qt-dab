@@ -50,7 +50,7 @@ struct timeval	tv;
 	myFrame		-> show ();
 	_I_Buffer	= new RingBuffer<uint8_t>(INPUT_FRAMEBUFFERSIZE);
 	readerOK	= false;
-	filePointer	= fopen (f. toLatin1 (). data (), "r");
+	filePointer	= fopen (f. toLatin1 (). data (), "r+b");
 	if (filePointer == NULL) {
 	   fprintf (stderr, "file %s cannot open\n", f. toLatin1 (). data ());
 	   delete myFrame;

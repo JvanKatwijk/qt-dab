@@ -7,6 +7,7 @@ if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "/usr/local/bin" CACHE PATH "default install path" FORCE )
 endif()
 #set (CMAKE_INSTALL_PREFIX /usr/local/bin)
+
 #	modify if you want
 
 if(MINGW)
@@ -51,10 +52,13 @@ if (DEFINED SPECTRUM)
    set(SPECTRUM true)
 endif ()
 
+if (DEFINED DATA_STREAMER)
+   set(DATA_STREAMER true)
+endif ()
+
 add_definitions (-DMOT_DATA)
 add_definitions (-DTECHNICAL_DATA)	# to show some additional data
 add_definitions (-DMSC_DATA__)		# use at your own risk
-#add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
 #
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, uncomment
@@ -64,11 +68,12 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	find_package (PkgConfig)
 	find_package (LSBId)
 
-#	set(CMAKE_AUTOMOC ON)
-	set(CMAKE_INCLUDE_CURRENT_DIR ON)
-	find_package(Qt4 REQUIRED COMPONENTS QtCore QtNetwork)
-	include(${QT_USE_FILE})
-	find_package(QWT REQUIRED)
+	find_package (Qt5Core REQUIRED)
+	find_package (Qt5Widgets REQUIRED)
+	find_package (Qt5Network REQUIRED)
+	include_directories (
+	  ${Qt5Network_INCLUDE_DIRS}
+	)
 
         find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
@@ -140,9 +145,9 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	set (${objectName}_HDRS
 	     ./text-mapper.h
-	     ./dab-processor.h
-	     ./includes/country-codes.h
-	     ./includes/ofdm/sample-reader.h
+	      ./dab-processor.h
+             ./includes/country-codes.h
+             ./includes/ofdm/sample-reader.h
 	     ./includes/dab-constants.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
@@ -152,8 +157,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/uep-protection.h
 	     ./includes/backend/eep-protection.h
 	     ./includes/backend/firecode-checker.h
-	     ./includes/backend/dab-virtual.h
 	     ./includes/backend/frame-processor.h
+	     ./includes/backend/dab-virtual.h
 	     ./includes/backend/charsets.h
 	     ./includes/backend/galois.h
 	     ./includes/backend/msc-handler.h
@@ -175,7 +180,6 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./includes/backend/data/journaline/NML.h
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/virtual-datahandler.h
-	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/dab-data.h
@@ -228,7 +232,6 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
 	     ./src/backend/data/ip-datahandler.cpp
-	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/journaline-datahandler.cpp
 	     ./src/backend/data/journaline/crc_8_16.c
 	     ./src/backend/data/journaline/log.c
@@ -324,7 +327,6 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay-handler/rtl-sdr.h
 	        ./devices/sdrplay-handler/sdrplay-handler.h
 	        ./devices/sdrplay-handler/sdrplayselect.h
 	        ./devices/sdrplay-handler/mirsdrapi-rsp.h
@@ -377,11 +379,11 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 
 #
 	if (DABSTICK)
-#           find_package(LibRTLSDR)
-#           if (NOT LIBRTLSDR_FOUND)
-#               message(FATAL_ERROR "please install librtlsdr")
-#           endif ()
-#	   ###include_directories (${RTLSDR_INCLUDE_DIR})
+           find_package(LibRTLSDR)
+           if (NOT LIBRTLSDR_FOUND)
+               message(FATAL_ERROR "please install librtlsdr")
+           endif ()
+	   ###include_directories (${RTLSDR_INCLUDE_DIR})
 
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
@@ -413,54 +415,54 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   add_definitions (-DHAVE_RTLSDR)
 	endif()
 #
-#	if (TCP_STREAMER)
-#	   add_definitions (-DTCP_STREAMER)
-#	   find_package (Qt5Network REQUIRED)
-#	   set (${objectName}_MOCS
-#	        ${${objectName}_MOCS}
-#	        ./includes/output/tcp-streamer.h
-#	   )
-#	   set (${objectName}_HDRS
-#	        ${${objectName}_HDRS}
-#	        ./includes/output/tcp-streamer.h
-#	   )
-#
-#	   set (${objectName}_SRCS
-#	        ${${objectName}_SRCS}
-#	        ./src/output/tcp-streamer.cpp
-#	   )
-#	endif (TCP_STREAMER)
-#
-#	if (RTLTCP)
-#	   find_package (Qt5Network REQUIRED)
-#	   set (${objectName}_UIS
-#	        ${${objectName}_UIS}
-#	        ./devices/rtl_tcp/rtl_tcp-widget.ui
-#	   )
-#
-#	   set (${objectName}_MOCS
-#	        ${${objectName}_MOCS}
-#	        ./devices/rtl_tcp/rtl_tcp_client.h
-#	   )
-#
-#	   include_directories (
-#	      ./devices/rtl_tcp
-#	      ${Qt5Network_INCLUDE_DIRS}
-#	   )
-#
-#	   set ($(objectName)_HDRS
-#	        ${${objectName}_HDRS}
-#	        ./devices/rtl_tcp/rtl_tcp_client.h
-#	   )
-#
-#	   set (${objectName}_SRCS
-#	        ${${objectName}_SRCS}
-#	        ./devices/rtl_tcp/rtl_tcp_client.cpp
-#	   )
-#
-#	   set (RTLTCP_lib Qt5::Network)
-#	   add_definitions (-DHAVE_RTL_TCP)
-#	endif (RTLTCP)
+	if (TCP_STREAMER)
+	   add_definitions (-DTCP_STREAMER)
+	   find_package (Qt5Network REQUIRED)
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./includes/output/tcp-streamer.h
+	   )
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./includes/output/tcp-streamer.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./src/output/tcp-streamer.cpp
+	   )
+	endif (TCP_STREAMER)
+
+	if (RTLTCP)
+	   find_package (Qt5Network REQUIRED)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/rtl_tcp/rtl_tcp-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   include_directories (
+	      ./devices/rtl_tcp
+	      ${Qt5Network_INCLUDE_DIRS}
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/rtl_tcp/rtl_tcp_client.cpp
+	   )
+
+	   set (RTLTCP_lib Qt5::Network)
+	   add_definitions (-DHAVE_RTL_TCP)
+	endif (RTLTCP)
 
 	if (SPECTRUM)
 	   find_package(Qwt)
@@ -513,7 +515,24 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   add_definitions (-DTRY_EPG)
 	endif (TRY_EPG)
 
-	QT4_WRAP_UI (UIS ${${objectName}_UIS}
+	if (DATA_STREAMER)
+	   include_directories (
+	      ./server-thread
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	             ./server-thread/tcp-server.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	             ./server-thread/tcp-server.cpp
+	   )
+	   add_definitions (-DDATA_STREAMER)
+	endif (DATA_STREAMER)
+
+	QT5_WRAP_UI (UIS ${${objectName}_UIS}
 	             ./devices/filereader-widget.ui)
 
 	include_directories (
@@ -527,7 +546,7 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	          ${SNDFILES_INCLUDE_DIRS}
 	)
 
-	QT4_WRAP_CPP (MOCS ${${objectName}_MOCS})
+	QT5_WRAP_CPP (MOCS ${${objectName}_MOCS})
 
 	add_executable (${objectName}
 	                ${${objectName}_SRCS}
@@ -538,8 +557,8 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	)
 
 	target_link_libraries (${objectName}
-	                       Qt4::QtGui
-	                       Qt4::QtNetwork
+	                       Qt5::Widgets
+	                       Qt5::Network
 	                       ${RTLTCP_lib}
 	                       ${FFTW3F_LIBRARIES}
 	                       ${extraLibs}
