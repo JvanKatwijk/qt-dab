@@ -19,7 +19,7 @@ Table of Contents
   * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
   * [Comment on some settings](#comment-on-some-settings)
   * [A note on intermittent sound](#a-note-on-intermittent-sound)
-  * [Copyright](#copyright)
+* [Copyright](#copyright)
  
 ------------------------------------------------------------------
 Features
@@ -246,9 +246,9 @@ Configuring using CMake
 
 Note that there are now **TWO** (!) `CMakeLists.txt-xxx` files in the directory, if you want to use cmake, copy `CMakeLists.txt-qt5` to `CMakeLists.txt`.
 
-The `CMakeLists.txt-qt4` file is used for creating an appImage and still "under development".
+The `CMakeLists.txt-qt4` file is used for creating an appImage and can be used for Qt4 based system.
 
-The `CMakeLists.txt` file has all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
+The `CMakeLists.txt-xxx` files have all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
 An example:
 ```
@@ -266,7 +266,7 @@ The default location for installation depends on your system, mostly `/usr/local
 
 For other options, see the `CMakeLists.txt` file.
 
-Important: Note that CMake expects Qt5 to be installed.
+Important: Note that CMakeLists.txt file expects the appropriate Qt version (and - if configured - the qwt library) to be installed.
 
 -----------------------------------------------------------------
 SDRplay
@@ -280,7 +280,7 @@ Qt
 
 The software uses the Qt library and - for the spectrum and the constellation diagram - the qwt library.
 
-The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well). As mentioned above, in the (January 2017) distribution of Raspbian Jessie, the qwt library provided is compiled against Qt4. 
+The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well).  
 
 -----------------------------------------------------------------
 Raspberry PI
@@ -296,12 +296,16 @@ The most recent distribution of Raspbian Stretch (i.e. august 2017) supports bot
 The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 IMPORTANT NOTE:
-Since I was studying the (potential) difference in behaviour between
-a version with and a version without concurrency in the front end,
-there is a setting in the ".pro" file for selecting this.
+Since I was studying the (potential) difference in behaviour between a version with and a version without concurrency in the front end, there is a setting in the ".pro" file for selecting this.
 Use for the DAB the concurrency option.
-For the ".pro" file uncomment #DEFINES += __THREADED_DECODING.
-For the CMakeLists.txt file, uncomment #add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
+For the ".pro" file uncomment 
+
+	#DEFINES += __THREADED_DECODING.
+
+For the CMakeLists.txt file, uncomment 
+
+	#add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
+
 
 ---------------------------------------------------------------------------
 appImage for Raspberry PI 2 (NEW)
@@ -346,11 +350,9 @@ Some settings are not influenced by buttons or sliders of the GUI, they will onl
 
 Typical examples are
 
-`autoStart=0` when set to 1 the program will start the DAB handling automatically, so you do not have to press the `START` button.
-
 `saveSlides=1` when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
 
-`picturesPath` defines the directory where the slides (MOT slideshow) should be stored.
+`picturesPath` defines the directory where the slides (MOT slideshow) should be stored. Default is the home directory.
 
 `showSlides=1` when set to 0 the slides will not be shown.
 
@@ -380,6 +382,8 @@ in the audio driver causes too high a frequency of calls to a callback
 function. In Linux this shows by an underrun reported by the alsa sound system.
 The buffer size can be set (in multiples of 256 audio samples)
 by the value of "latency" in the ".ini" file. The default value is 1.
+
+On my RPI 2 - with Stretch - latency=2 works best.
 
 # Copyright
 
