@@ -8,6 +8,7 @@ TEMPLATE	= app
 TARGET		= qt-dab-1.0-alpha
 QT		+= widgets network 
 CONFIG		+= console
+CONFIG		+= c++11
 #QMAKE_CFLAGS	+=  -flto -ffast-math
 #QMAKE_CXXFLAGS	+=  -flto -ffast-math
 #QMAKE_LFLAGS	+=  -flto
