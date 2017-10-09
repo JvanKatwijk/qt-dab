@@ -130,12 +130,12 @@
      <rect>
       <x>8</x>
       <y>210</y>
-      <width>151</width>
+      <width>141</width>
       <height>29</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. After selecting a device, please push the START button to activate the program.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -161,9 +161,9 @@
    <widget class="QComboBox" name="channelSelector">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>150</x>
       <y>210</y>
-      <width>61</width>
+      <width>71</width>
       <height>29</height>
      </rect>
     </property>

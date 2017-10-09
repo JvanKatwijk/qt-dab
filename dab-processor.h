@@ -96,7 +96,6 @@ private:
 
 	int16_t		attempts;
 	bool		scanMode;
-	bool		running;
 	int32_t		T_null;
 	int32_t		T_u;
 	int32_t		T_s;

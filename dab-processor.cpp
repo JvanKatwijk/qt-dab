@@ -105,15 +105,13 @@ int32_t	i;
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
 
-	running		= false;
-	myReader. setRunning (running);
+	myReader. setRunning (false);
 //	the thread will be started from somewhere else
 }
 
 	dabProcessor::~dabProcessor	(void) {
 	if (isRunning ()) {
-	   running	= false;	// this will cause an
-	   myReader. setRunning (running);
+	   myReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	   msleep (100);
@@ -151,8 +149,7 @@ float		envBuffer	[syncBufferSize];
         syncBufferIndex = 0;
 	attempts	= 0;
         theRig  -> resetBuffer ();
-        running         = true;
-	myReader. setRunning (running);
+	myReader. setRunning (true);
 	my_ofdmDecoder. start ();
 //
 //	tp set up some idea of the signal strength
@@ -378,17 +375,23 @@ ReadyForNewFrame:
 }
 
 void	dabProcessor:: reset	(void) {
-	stop  ();
+	myReader. setRunning (false);
+	while (isRunning ())
+	   wait ();
+	usleep (10000);
+	my_ofdmDecoder. stop ();
+	my_mscHandler.  reset ();
+	my_ficHandler.  reset ();
 	start ();
 }
 
 void	dabProcessor::stop	(void) {
-	running	= false;
-	myReader. setRunning (running);
+	myReader. setRunning (false);
 	while (isRunning ())
 	   wait ();
+	usleep (10000);
+	my_ofdmDecoder. stop ();
 	my_mscHandler.  reset ();
-	my_ofdmDecoder. reset ();
 	my_ficHandler.  reset ();
 }
 

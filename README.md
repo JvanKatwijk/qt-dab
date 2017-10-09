@@ -293,11 +293,12 @@ One remark: getting "sound" is not always easy. Be certain that you have install
 In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
-The best way to generate the executable for Qt-DAB when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
+
+The best way to generate the executable when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
 
 IMPORTANT NOTE:
 Since I was studying the (potential) difference in behaviour between a version with and a version without concurrency in the front end, there is a setting in the ".pro" file for selecting this.
-Use for the DAB the concurrency option.
+Use for the Qt-DAB the concurrency option.
 For the ".pro" file uncomment 
 
 	#DEFINES += __THREADED_DECODING.

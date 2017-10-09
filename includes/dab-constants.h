@@ -57,6 +57,9 @@ typedef	void	*HINSTANCE;
 typedef	float	DSPFLOAT;
 typedef	std::complex<DSPFLOAT> DSPCOMPLEX;
 
+#ifndef	M_PI
+# define M_PI           3.14159265358979323846  /* pi */
+#endif
 using namespace std;
 //
 #define	Hz(x)		(x)
@@ -67,7 +70,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"-1.0 alfa"
+#define	CURRENT_VERSION	"-1.0 alpha"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -107,17 +110,17 @@ float	get_db (DSPFLOAT x) {
 	return 20 * log10 ((x + 0.005) / (float)(256));
 }
 //
-static	inline
-DSPFLOAT	PI_Constrain (DSPFLOAT val) {
-	if (0 <= val && val < 2 * M_PI)
-	   return val;
-	if (val >= 2 * M_PI)
-	   return fmod (val, 2 * M_PI);
-//	apparently val < 0
-	if (val > - 2 * M_PI)
-	   return val + 2 * M_PI;
-	return 2 * M_PI - fmod (- val, 2 * M_PI);
-}
+//static	inline
+//DSPFLOAT	PI_Constrain (DSPFLOAT val) {
+//	if (0 <= val && val < 2 * M_PI)
+//	   return val;
+//	if (val >= 2 * M_PI)
+//	   return fmod (val, 2 * M_PI);
+////	apparently val < 0
+//	if (val > - 2 * M_PI)
+//	   return val + 2 * M_PI;
+//	return 2 * M_PI - fmod (- val, 2 * M_PI);
+//}
 /*
  */
 

@@ -27,6 +27,7 @@
 #include	"dab-virtual.h"
 #ifdef	__THREADED_DECODING
 #include	<QThread>
+#include	<atomic>
 #endif
 #include	"ringbuffer.h"
 #include	<stdio.h>

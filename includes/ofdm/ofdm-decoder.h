@@ -28,6 +28,7 @@
 #include	<QWaitCondition>
 #include	<QMutex>
 #include	<QSemaphore>
+#include	<atomic>
 #else
 #include	<QObject>
 #endif
@@ -80,7 +81,7 @@ private:
 	mscHandler	*my_mscHandler;
 #ifdef	__THREADED_DECODING
 	void		run		(void);
-	bool		running;
+	std::atomic<bool>		running;
 	DSPCOMPLEX	**command;
 	int16_t		amount;
 	int16_t		currentBlock;

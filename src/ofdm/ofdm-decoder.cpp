@@ -107,7 +107,7 @@ int16_t	i;
 	ofdmDecoder::~ofdmDecoder	(void) {
 int16_t	i;
 #ifdef	__THREADED_DECODING
-	running	= false;
+	running. store (false);
 	while (isRunning ()) {
 	   commandHandler. wakeAll ();
 	   usleep (1000);
@@ -130,7 +130,7 @@ void	ofdmDecoder::start	(void) {
 
 void	ofdmDecoder::stop	(void) {
 #ifdef	__THREADED_DECODING
-	running = false;
+	running. store (false);
 	while (isRunning ()) {
 	   commandHandler. wakeAll ();
 	   usleep (1000);
@@ -141,6 +141,7 @@ void	ofdmDecoder::stop	(void) {
 void	ofdmDecoder::reset	(void) {
 #ifdef	__THREADED_DECODING
 	stop  ();
+	usleep (10000);
 	start ();
 #endif
 }
@@ -158,13 +159,12 @@ void	ofdmDecoder::reset	(void) {
 void	ofdmDecoder::run	(void) {
 int16_t	currentBlock	= 0;
 
-	fprintf (stderr, "ofdm decoder starts\n");
-	running		= true;
-	while (running) {
+	running. store (true);
+	while (running. load ()) {
 	   helper. lock ();
 	   commandHandler. wait (&helper, 100);
 	   helper. unlock ();
-	   while ((amount > 0) && running) {
+	   while ((amount > 0) && running. load ()) {
 	      if (currentBlock == 0)
 	         processBlock_0 ();
 	      else

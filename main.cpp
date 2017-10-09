@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB-E (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
  *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License.
  *    All copyrights of the original authors are acknowledged.
@@ -60,8 +60,7 @@ QString initFileName;
 RadioInterface  *MyRadioInterface;
 
 // Default values
-bool            tracing         = false;
-int16_t         tii_delay       = 60;
+int16_t         tii_delay       = 20;
 QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 	int     opt;

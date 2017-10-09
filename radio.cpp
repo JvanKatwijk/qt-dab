@@ -4,13 +4,13 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB-NG (formerly SDR-J, JSDR).
- *    Qt-DAB-NG is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    Qt-DAB-NG is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -68,7 +68,6 @@
 #ifdef	HAVE_SPECTRUM
 #include	"spectrum-handler.h"
 #endif
-
 
 std::vector<size_t> get_cpu_times (void) {
 	std::ifstream proc_stat ("/proc/stat");
@@ -164,7 +163,8 @@ QString h;
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
-#else			// just sound out
+#else	
+// just sound out
 	soundOut		= new audioSink		(latency);
 
 	((audioSink *)soundOut)	-> setupChannels (streamoutSelector);
@@ -473,7 +473,7 @@ void	RadioInterface::set_Scanning	(void) {
 	   signalTimer. start (10000);
 	}
 	else
-	scanButton -> setText ("Scan band");
+	   scanButton -> setText ("Scan band");
 }
 //
 //	Increment channel is called during scanning.
@@ -621,6 +621,8 @@ void	RadioInterface::setStereo	(bool s) {
 	               setStyleSheet ("QLabel {background-color : red}");
 }
 //
+//////////////////////////////////////////////////////////////////////////
+//
 void	checkDir (QString &s) {
 int16_t	ind	= s. lastIndexOf (QChar ('/'));
 int16_t	i;
@@ -687,6 +689,7 @@ void	RadioInterface::showMOT		(QByteArray data,
 }
 //
 //	sendDatagram is triggered by the ip handler,
+//
 void	RadioInterface::sendDatagram	(int length) {
 uint8_t localBuffer [length];
 	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
@@ -699,10 +702,12 @@ uint8_t localBuffer [length];
 	                                   QHostAddress (ipAddress),
 	                                   port);
 }
-
+//
+//
 void	RadioInterface::handle_tdcdata (int frametype, int length) {
+#ifdef DATA_STREAMER
 uint8_t localBuffer [length + 8];
-int16_t i;
+#endif
 	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
@@ -740,6 +745,7 @@ void	RadioInterface::changeinConfiguration	(void) {
 //
 //	In order to not overload with an enormous amount of
 //	signals, we trigger this function at most 10 times a second
+//
 void	RadioInterface::newAudio	(int amount, int rate) {
 	if (running. load ()) {
 	   int16_t vec [amount];
@@ -1074,15 +1080,13 @@ virtualInput	*inputDevice	= NULL;
 	return inputDevice;
 }
 //
-//	newDevice is called from the GUI while already running
+//	newDevice is called from the GUI when selecting a device
 void	RadioInterface::newDevice (QString deviceName) {
 	if (!running. load ())		// should not happen
 	   return;
 
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (newDevice (QString)));
-	fprintf (stderr, "newDevice is called with %s\n",
-	                            deviceName. toLatin1 (). data ());
 	presetTimer. stop ();
 	running. store (false);
 	inputDevice	-> stopReader ();
@@ -1094,13 +1098,14 @@ void	RadioInterface::newDevice (QString deviceName) {
 	inputDevice	= setDevice (deviceName);
 	if (inputDevice == NULL) {
 //
-//	Note that the device handler itself will complain already
+//	Note that the device handler itself will do the complaining
 	   return;
 	}
 	doStart ();		// will set running
 }
 
 void	RadioInterface::set_modeSelect (const QString &Mode) {
+	(void)Mode;		// we will enquire the selector
 	if (!running. load ())
 	   return;		// setting will be picked up
 
@@ -1163,7 +1168,7 @@ QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString ();
 	selectService (currentProgram);
 }
 //
-//	Might be called from the GUI as well as with an internal call
+//	Might be called from the GUI as well as from an internal call
 void	RadioInterface::selectService (QString s) {
 	if ((my_dabProcessor -> kindofService (s) != AUDIO_SERVICE) &&
 	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
@@ -1309,7 +1314,8 @@ void	RadioInterface::showQuality	(float q) {
 #endif
 #endif
 
-///	audiodumping is similar
+//
+//
 void	RadioInterface::set_audioDump (void) {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 
