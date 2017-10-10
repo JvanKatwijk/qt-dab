@@ -15,7 +15,6 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage for Raspberry PI 2 (NEW)](#appimage-for-Raspberry-PI2-(NEW))
   * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
   * [Comment on some settings](#comment-on-some-settings)
   * [A note on intermittent sound](#a-note-on-intermittent-sound)
@@ -307,24 +306,6 @@ For the CMakeLists.txt file, uncomment
 
 	#add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
 
-
----------------------------------------------------------------------------
-appImage for Raspberry PI 2 (NEW)
----------------------------------------------------------------------------
-
-The release section now contains a slightly EXPERIMENTALLY generated appImage for running on an RPI 2.
-The image is created on an RPI running Stretch, it uses Qt5.
-To keep the processor load limited, the spectrum widget is not activated, i.e you will see
-neither the spectrum nor the constellation diagram (showing these things on a headless RPI
-does not work well). Sound to an IP port is NOT selected, sound is output through the
-sound chip(s) on the RPI 2.
-
-Note that while the rtlsdr library and the airspy library are included in the appImage, the
-"udev" settings are expected to be set already on your system. Note further that, while it
-is possible to select the SDRplay, the SDRplay library is not part of the appImage and should
-be installed from "www.sdrplay.com".
-
-All further dependencies are included
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
