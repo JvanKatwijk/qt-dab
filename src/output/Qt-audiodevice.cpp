@@ -69,7 +69,3 @@ qint64	Qt_AudioDevice::writeData (const char* data, qint64 len) {
 	return 0;
 }
 
-//qint64	Qt_AudioDevice::bytesAvailable (void) const {
-//	return Buffer -> GetRingBufferReadAvailable ();
-//}
-
