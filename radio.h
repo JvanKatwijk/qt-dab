@@ -44,7 +44,6 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
-
 class	QSettings;
 class	virtualInput;
 class	audioBase;

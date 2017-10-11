@@ -29,6 +29,9 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 ######################################################################
 #
 #####################################################################
+#
+#	default value
+	set(USE_PORTAUDIO true)
 
 if(DEFINED AIRSPY)
    set(AIRSPY true)
@@ -46,8 +49,6 @@ if(DEFINED RTLTCP)
    set(RTLTCP true)
 endif ()
 
-##########################################################################
-#	to include showing the spectrum
 if (DEFINED SPECTRUM)
    set(SPECTRUM true)
 endif ()
@@ -56,14 +57,24 @@ if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
 endif ()
 
-add_definitions (-DMOT_DATA)
-add_definitions (-DTECHNICAL_DATA)	# to show some additional data
-add_definitions (-DMSC_DATA__)		# use at your own risk
-add_definitions (-DTHREADED_DECODING)	# use for an RPI
-#
 #	If you want a tcp stream of the audio rather than
-#	audio being sent to the soundcard, uncomment
-#	set(TCP_STREAMER true)
+#	audio being sent to the soundcard, set
+if (DEFINED TCP_STREAMER)
+	set(TCP_STREAMER true)
+	set(USE_PORTAUDIO false)
+endif ()
+
+#	If you want the Qt system to handle the audio (only default out)
+#	then set
+if (DEFINED QT_AUDIO)
+	set(QT_AUDIO true)
+	set(USE_PORTAUDIO false)
+endif ()
+
+add_definitions (-DMSC_DATA__)		# use at your own risk
+add_definitions (-DPRESET_NAME)
+#add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
+#
 ########################################################################
 
 	find_package (PkgConfig)
@@ -80,12 +91,6 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
         if (NOT FFTW3F_FOUND)
             message(FATAL_ERROR "please install FFTW3")
         endif ()
-
-        find_package(Portaudio)
-        if (NOT PORTAUDIO_FOUND)
-            message(FATAL_ERROR "please install portaudio V19")
-        endif ()
-        list(APPEND extraLibs ${PORTAUDIO_LIBRARIES})
 
         find_package(Faad)
         if (NOT FAAD_FOUND )
@@ -146,7 +151,7 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 
 	set (${objectName}_HDRS
 	     ./text-mapper.h
-	      ./dab-processor.h
+	     ./dab-processor.h
              ./includes/country-codes.h
              ./includes/ofdm/sample-reader.h
 	     ./includes/dab-constants.h
@@ -190,7 +195,6 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	     ./devices/wavfiles/wavfiles.h
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
-	     ./includes/output/audiosink.h
 	     ./includes/output/newconverter.h
 	     ./includes/various/fft.h
 	     ./includes/various/ringbuffer.h
@@ -252,7 +256,6 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	     ./devices/rawfiles/rawfiles.cpp
 	     ./devices/wavfiles/wavfiles.cpp
 	     ./src/output/audio-base.cpp
-	     ./src/output/audiosink.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
 	     ./src/various/fft.cpp
@@ -267,7 +270,6 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	set (${objectName}_MOCS
 	     ./dab-processor.h
 	     ./includes/output/audio-base.h
-	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/backend/fic-handler.h
@@ -434,6 +436,30 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	   )
 	endif (TCP_STREAMER)
 
+	if (QT_AUDIO)
+	   add_definitions (-DQT_AUDIO)
+	   find_package (Qt5Multimedia REQUIRED)
+	   include_directories (
+	      ${Qt5Multimedia_INCLUDE_DIRS}
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./includes/output/Qt-audio.h
+	        ./includes/output/Qt-audiodevice.h
+	   )
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./includes/output/Qt-audio.h
+	        ./includes/output/Qt-audiodevice.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./src/output/Qt-audio.cpp
+	        ./src/output/Qt-audiodevice.cpp
+	   )
+	endif (QT_AUDIO)
+
 	if (RTLTCP)
 	   find_package (Qt5Network REQUIRED)
 	   set (${objectName}_UIS
@@ -533,6 +559,28 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	   add_definitions (-DDATA_STREAMER)
 	endif (DATA_STREAMER)
 
+	if (USE_PORTAUDIO)
+           find_package(Portaudio)
+           if (NOT PORTAUDIO_FOUND)
+               message(FATAL_ERROR "please install portaudio V19")
+           endif ()
+           list(APPEND extraLibs ${PORTAUDIO_LIBRARIES})
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	       ./includes/output/audiosink.h
+	   )
+
+	   set (${objectName}_MOCS
+	       ${${objectName}_MOCS}
+	      ./includes/output/audiosink.h
+	   )
+
+	   set (${objectName}_SRCS
+	      ${${objectName}_SRCS}
+	      ./src/output/audiosink.cpp
+	   )
+	endif (USE_PORTAUDIO)
+
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
 	             ./devices/filereader-widget.ui)
 
@@ -566,6 +614,9 @@ add_definitions (-DTHREADED_DECODING)	# use for an RPI
 	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}
 	)
+	if (QT_AUDIO)
+	   target_link_libraries (${objectName} Qt5::Multimedia)
+	endif (QT_AUDIO)
 
 	INSTALL (TARGETS ${objectName} DESTINATION  ${CMAKE_INSTALL_PREFIX})
 #	INSTALL (TARGETS ${objectName} DESTINATION ./linux-bin)

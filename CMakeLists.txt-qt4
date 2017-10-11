@@ -45,20 +45,29 @@ if(DEFINED RTLTCP)
    set(RTLTCP true)
 endif ()
 
-##########################################################################
-#	to include showing the spectrum
 if (DEFINED SPECTRUM)
    set(SPECTRUM true)
 endif ()
 
-add_definitions (-DMOT_DATA)
-add_definitions (-DTECHNICAL_DATA)	# to show some additional data
-add_definitions (-DMSC_DATA__)		# use at your own risk
-#add_definitions (-DTHREADED_DECODING)	# use for the RPI
-#
+if (DEFINED DATA_STREAMER)
+   set(DATA_STREAMER true)
+endif ()
+
 #	If you want a tcp stream of the audio rather than
-#	audio being sent to the soundcard, uncomment
-#	set(TCP_STREAMER true)
+#	audio being sent to the soundcard, set
+if (DEFINED TCP_STREAMER)
+   set(TCP_STREAMER true)
+endif ()
+
+#	If you want the Qt system to handle the audio (only default out)
+#	then set
+if (DEFINED QT_AUDIO)
+   set(QT_AUDIO true)
+endif ()
+
+add_definitions (-DMSC_DATA__)		# use at your own risk
+add_definitions (-DPRESET_NAME)
+#add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
 ########################################################################
 
 	find_package (PkgConfig)
@@ -431,6 +440,26 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 #	   )
 #	endif (TCP_STREAMER)
 #
+#	if (QT_AUDIO)
+#           add_definitions (-DQT_AUDIO)
+#           find_package (Qt5Multimedia REQUIRED)
+#           set (${objectName}_MOCS
+#                ${${objectName}_MOCS}
+#                ./includes/output/Qt-audio.h
+#                ./includes/output/Qt-audiodevice.h
+#           )
+#           set (${objectName}_HDRS
+#                ${${objectName}_HDRS}
+#                ./includes/output/Qt-audio.h
+#                ./includes/output/Qt-audiodevice.h
+#           )
+#           set (${objectName}_SRCS
+#                ${${objectName}_SRCS}
+#                ./src/output/Qt-audio.cpp
+#                ./src/output/Qt-audiodevice.cpp
+#           )
+#        endif (QT_AUDIO)
+#
 #	if (RTLTCP)
 #	   find_package (Qt5Network REQUIRED)
 #	   set (${objectName}_UIS
@@ -512,6 +541,23 @@ add_definitions (-DMSC_DATA__)		# use at your own risk
 	   )
 	   add_definitions (-DTRY_EPG)
 	endif (TRY_EPG)
+
+	if (DATA_STREAMER)
+	   include_directories (
+	      ./server-thread
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	             ./server-thread/tcp-server.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	             ./server-thread/tcp-server.cpp
+	   )
+	   add_definitions (-DDATA_STREAMER)
+	endif (DATA_STREAMER)
 
 	QT4_WRAP_UI (UIS ${${objectName}_UIS}
 	             ./devices/filereader-widget.ui)

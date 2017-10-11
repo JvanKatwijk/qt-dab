@@ -56,7 +56,7 @@ QString fileName;
 
 
 int     main (int argc, char **argv) {
-QString initFileName;
+QString initFileName = QString ("");
 RadioInterface  *MyRadioInterface;
 
 // Default values

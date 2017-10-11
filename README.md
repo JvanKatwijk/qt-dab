@@ -186,7 +186,14 @@ CONFIG          += sdrplay
 #CONFIG          += rtl_tcp
 CONFIG          += airspy
 ```
-	
+
+In the Windows configuration one may also choose
+````
+CONFIG		+= extio
+````
+
+for use with (appropriate) extio handlers
+
 Remark: Input from pre-recorded files (8 bit raw and "wav" files) is configured by default.
 
 Having the spectrum and the constellation shown, uncomment
@@ -203,26 +210,26 @@ DEFINES		+= __QUALITY
 can be set in which case a "quality indicator" of the signal, i.e. the standard deviation of the phases of the demodulated signal, will be shown (smaller is better).
 
 
-For selecting the output to be sent to a RCP port, uncomment
+Audio samples are - by default - sent to an audio device using the portaudio
+library. Two alternatives are available:
+
+
+For selecting the output to be sent to a TCP port, uncomment
 ```
 #CONFIG         += tcp-streamer         # use for remote listening
 ```
 
 The source tree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
 
-For showing some information on the selected program, uncomment
-```
-DEFINES         += TECHNICAL_DATA
-```
+For selecting the output to be handled by the Qt system (default device only)
+uncomment
+````
+#CONFIG		+= qt-audio
+````
 
 For basic MSC data handling, i.e. MOT handling etc, uncomment
 ```
 DEFINES         += MSC_DATA__           # use at your own risk
-```
-
-and for experimental MOT handling within the data handling, uncomment
-```
-DEFINES		+= MOT_DATA
 ```
 
 Two experimental configuration parameters are
@@ -237,7 +244,7 @@ CONFIG		+= try_tii
 
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
 
-If `try_tii` is configured an attempt will be made to decode the Transmitter Identification Information (TII). Note: Many ensembles do not carry this information.
+If `try_tii` is configured an attempt will be made to decode the Transmitter Identification Information (TII). Note: Not many ensembles carry this information.
 
 	
 ------------------------------------------------------------------
@@ -307,24 +314,6 @@ For the CMakeLists.txt file, uncomment
 
 	#add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
 
-
----------------------------------------------------------------------------
-appImage for Raspberry PI 2 (NEW)
----------------------------------------------------------------------------
-
-The release section now contains a slightly EXPERIMENTALLY generated appImage for running on an RPI 2.
-The image is created on an RPI running Stretch, it uses Qt5.
-To keep the processor load limited, the spectrum widget is not activated, i.e you will see
-neither the spectrum nor the constellation diagram (showing these things on a headless RPI
-does not work well). Sound to an IP port is NOT selected, sound is output through the
-sound chip(s) on the RPI 2.
-
-Note that while the rtlsdr library and the airspy library are included in the appImage, the
-"udev" settings are expected to be set already on your system. Note further that, while it
-is possible to select the SDRplay, the SDRplay library is not part of the appImage and should
-be installed from "www.sdrplay.com".
-
-All further dependencies are included
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems

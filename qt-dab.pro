@@ -6,7 +6,7 @@
 
 TEMPLATE	= app
 TARGET		= qt-dab-1.0-alpha
-QT		+= widgets network 
+QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -115,7 +115,8 @@ HEADERS += ./radio.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
 
-FORMS +=	./devices/filereader-widget.ui 
+FORMS	+= ./devices/filereader-widget.ui 
+FORMS	+= ./forms/technical_data.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -183,7 +184,6 @@ SOURCES += ./main.cpp \
 unix {
 DESTDIR		= ./linux-bin
 FORMS 		+= ./forms/dabradio.ui 
-FORMS		+= ./forms/technical_data.ui
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lfftw3f  -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
@@ -208,22 +208,12 @@ CONFIG		+= spectrum
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
-
-#you might - or might not - want to see some data on the selected program
-DEFINES		+= TECHNICAL_DATA
-
-#you might - or might not - see MOT data if it is in the audiostream
-DEFINES		+= MOT_DATA
-
-#you do not want this
-DEFINES		+= MSC_DATA__		# use at your own risk
+#otherwise, if you want to use the default qt way of soud out
+#CONFIG		+= qt-audio
+#comment both out if you just want to use the "normal" way
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
-DEFINES		+= __QUALITY		# just a counter in spectrum display
-
-#and this one is experimental
-DEFINES		+= PRESET_NAME
 
 #experimental, might show transmitter coordinates
 CONFIG		+= try_tii		# 
@@ -231,6 +221,12 @@ CONFIG		+= try_tii		#
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
 #DEFINES	+= __THREADED_DECODING
+
+#you do not want this
+DEFINES		+= MSC_DATA__		# use at your own risk
+
+#and this one is experimental
+DEFINES		+= PRESET_NAME
 }
 #
 # an attempt to have it run under W32
@@ -263,20 +259,33 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 
-#CONFIG		+= tcp-streamer		# use for remote listening
+#very experimental, simple server for connecting to a tdc handler
+#CONFIG		+= datastreamer
 
+#if you want to see a spectrum and a constellation plot, uncomment
 CONFIG		+= spectrum
 
-DEFINES		+= TECHNICAL_DATA
-DEFINES		+= MOT_DATA
-DEFINES		+= MSC_DATA__		# use at your own risk
-#CONFIG		+= try-epg		# do not use
-DEFINES		+= __QUALITY		# just a counter in spectrum display
-CONFIG		+= try_tii
+#if you want to listen remote, uncomment
+#CONFIG		+= tcp-streamer		# use for remote listening
+#otherwise, if you want to use the default qt way of soud out
+#CONFIG		+= qt-audio
+#comment both out if you just want to use the "normal" way
 
-# for the raspberry you definitely want this one
-# when this one is enables, load is spread over different threads
+#and certainly, you do not want this
+#CONFIG		+= try-epg		# do not use
+
+#experimental, might show transmitter coordinates
+CONFIG		+= try_tii		# 
+
+#for the raspberry you definitely want this one
+#when this one is enabled, load is spread over different threads
 #DEFINES	+= __THREADED_DECODING
+
+#you do not want this
+DEFINES		+= MSC_DATA__		# use at your own risk
+
+#and this one is experimental
+DEFINES		+= PRESET_NAME
 }
 
 #######################################
@@ -285,6 +294,8 @@ CONFIG		+= try_tii
 #       If you want to see the spectrum, take "CONFIG += spectrum"
 spectrum {
         DEFINES         += HAVE_SPECTRUM
+
+	DEFINES		+= __QUALITY	# just a counter in spectrum display
 #adapt to the correct path for your system
 	INCLUDEPATH += /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 	INCLUDEPATH	+= ./includes/scopes-qwt6
@@ -395,6 +406,15 @@ tcp-streamer	{
 	QT		+= network
 	HEADERS		+= ./includes/output/tcp-streamer.h
 	SOURCES		+= ./src/output/tcp-streamer.cpp
+}
+
+qt-audio	{
+	DEFINES		+= QT_AUDIO
+	QT		+= multimedia
+	HEADERS		+= ./includes/output/Qt-audio.h \
+	                   ./includes/output/Qt-audiodevice.h
+	SOURCES		+= ./src/output/Qt-audio.cpp \
+	                   ./src/output/Qt-audiodevice.cpp
 }
 
 try_tii		{

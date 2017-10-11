@@ -41,6 +41,8 @@
 #include	"wavfiles.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
+#elif	QT_AUDIO
+#include	"Qt-audio.h"
 #else
 #include	"audiosink.h"
 #endif
@@ -163,7 +165,9 @@ QString h;
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
-#else	
+#elif	QT_AUDIO
+	soundOut		= new Qt_Audio ();
+#else
 // just sound out
 	soundOut		= new audioSink		(latency);
 
@@ -1353,7 +1357,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 }
 
 void	RadioInterface:: set_streamSelector (int k) {
-#ifndef	TCP_STREAMER
+#if	not defined (TCP_STREAMER) &&  not defined (QT_AUDIO)
 	((audioSink *)(soundOut)) -> selectDevice (k);
 #else
 	(void)k;
