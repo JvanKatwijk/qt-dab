@@ -200,7 +200,7 @@
      <enum>QFrame::NoFrame</enum>
     </property>
     <property name="digitCount">
-     <number>3</number>
+     <number>6</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -407,7 +407,7 @@ background-color: rgb(255, 0, 0);</string>
    <widget class="QLCDNumber" name="ensembleId">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>240</x>
       <y>10</y>
       <width>71</width>
       <height>31</height>

@@ -1056,7 +1056,6 @@ virtualInput	*inputDevice	= NULL;
 	}
 	else
 	if (s == "file input (.sdr)") {
-	   fprintf (stderr, "file input (.sdr) is touched\n");
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
@@ -1071,7 +1070,6 @@ virtualInput	*inputDevice	= NULL;
 	                               tr ("file not found"));
 	      return NULL;
 	   }
-	   fprintf (stderr, "klaar voor file input (%s)\n", file. toLatin1 (). data ());
 	}
 	else {
 	   fprintf (stderr, "unknown device, failing\n");

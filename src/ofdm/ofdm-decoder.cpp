@@ -251,8 +251,7 @@ void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *buffer) {
 //
 //	Just interested. In the ideal case the constellation of the
 //	decoded symbols is precisely in the four points 
-//	k * (1. 0), k * (1, -1), k * (-1, -1), k * (-1, 1)
-//	We show the offset in degrees
+//	k * (1, 1), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	To ease computation, we map all incoming values onto quadrant 1
 #ifdef	HAVE_SPECTRUM
 #ifdef	__QUALITY
@@ -263,24 +262,14 @@ DSPCOMPLEX	x [T_u];
 float	avg	= 0;
 float	S	= 0;
 
-	for (i = 0; i < carriers / 2; i ++) {
-	   x [i]	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
-	   avgPoint	+= x [i];
-	}
-
-	for (i = T_u - 1; i >= T_u - carriers / 2; i --) {
-	   x [i]	= DSPCOMPLEX (abs (real (v [i])), abs (imag (v [i])));
+	for (i = 0; i < carriers; i ++) {
+	   x [i]	= DSPCOMPLEX (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
 	   avgPoint	+= x [i];
 	}
 
 	avg	= arg (avgPoint * conj (DSPCOMPLEX (1, 1)));
 
-	for (i = 0; i < carriers / 2; i ++) {
-	   float f = arg (x [i] * conj (DSPCOMPLEX (1, 1))) - avg;
-	   S += f * f;
-	}
-
-	for (i = T_u - 1; i >= T_u - carriers / 2; i --)  {
+	for (i = 0; i < carriers; i ++) {
 	   float f = arg (x [i] * conj (DSPCOMPLEX (1, 1))) - avg;
 	   S += f * f;
 	}
@@ -313,8 +302,10 @@ void	ofdmDecoder::decodeFICblock (DSPCOMPLEX *buffer, int32_t blkno) {
 int16_t i;
 #ifdef  HAVE_SPECTRUM
 DSPCOMPLEX conjVector [T_u];
+DSPCOMPLEX	freqOff	= DSPCOMPLEX (0, 0);
 #endif
 #endif
+
 
 fftlabel:
 /**
@@ -331,6 +322,7 @@ toBitsLabel:
   *	Note that from here on, we are only interested in the
   *	"carriers" useful carriers of the FFT output
   */
+
 	for (i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -363,16 +355,9 @@ handlerLabel:
 //	fftbuffer contained low and high at the ends
 //	and we maintain that format
 	if (blkno == 2) {
-//	   memcpy (vector_2, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 	   if (++cnt > 7) {
-	      iqBuffer	-> putDataIntoBuffer (&conjVector [0],
-	                                      carriers / 2);
-	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u - 1 - carriers / 2],
-	                                      carriers / 2);
-//	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [0],
-//	                                      carriers / 2);
-//	      iqBuffer	-> putDataIntoBuffer (&fft_buffer [T_u - 1 - carriers / 2],
-//	                                      carriers / 2);
+	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
+	                                      carriers);
 	      showIQ	(carriers);
 #ifdef	__QUALITY
 	      showQuality (computeQuality (conjVector));
@@ -419,18 +404,6 @@ toBitsLabel:
 
 	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
 
-//	if (cnt == 0)
-//	   if (blkno == nrBlocks - 1) {
-//	      for (i = 0; i < T_u; i ++)
-//	         vector_2 [i] = vector_2 [i] * conj (fft_buffer [i]);
-//	   
-//	      iqBuffer	-> putDataIntoBuffer (&vector_2 [0],
-//	                                         carriers / 2);
-//	      iqBuffer	-> putDataIntoBuffer (&vector_2 [T_u - 1 - carriers / 2],
-//	                                         carriers / 2);
-//	      showIQ    (carriers);
-//	   }
-//	
 handlerLabel:;
 	my_mscHandler -> process_mscBlock (ibits, blkno);
 }

@@ -26,7 +26,7 @@
 #include	"dab-params.h"
 #include	"fft.h"
 //
-#define	SEARCH_RANGE		(2 * 36)
+#define	SEARCH_RANGE		(2 * 35)
 
 /**
   *	\brief dabProcessor
@@ -290,14 +290,14 @@ Data_blocks:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
-	   FreqCorr		= DSPCOMPLEX (0, 0);
+	   FreqCorr	= DSPCOMPLEX (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer,
 	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-	
+
 	      my_ofdmDecoder. decodeFICblock (ofdmBuffer, ofdmSymbolCount);
 	   }
 
@@ -316,7 +316,7 @@ Data_blocks:
 NewOffset:
 ///	we integrate the newly found frequency error with the
 ///	existing frequency error.
-	   fineCorrector += 0.1 * arg (FreqCorr) / M_PI * (carrierDiff / 2);
+	   fineCorrector += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 //
 /**
   *	OK,  here we are at the end of the frame
@@ -325,7 +325,7 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;
 	   myReader. getSamples (ofdmBuffer,
-	                         T_null, coarseCorrector + fineCorrector);
+	                         T_null, coarseCorrector);
 	   if (tiiCoordinates) {
 	      int16_t mainId	= my_ficHandler. mainId ();
 	      if (mainId > 0) {
@@ -408,9 +408,19 @@ void	dabProcessor::coarseCorrectorOff (void) {
 //	Several algorithms were tried, plain  correlating the
 //	block 0, as used in locating the start index, with the
 //	data block here did not work very well. The structure
-//	of block 0 does not seem to lenf itself for that kind of matching
-//	The current approach is to look for a particular pattern
-//	of phase differences between successive carriers.
+//	of block 0 does not seem to lend itself for that kind of matching
+//	The current approach is to look at the difference of 
+//	phasedifferences between successive carriers to what it should be.
+//
+//	The phasedifferences are expressed in steps (size PI/2) (absolute vals).
+//	The table tells what the values should be (starting at carrier 1 -> 2)
+int16_t phasedifferences [] = {
+	2, 2, 0, 0, 0,
+	1, 0, 1, 2, 0,
+	0, 2, 0, 1, 0,
+	1, 2, 2, 0, 0,
+	0, 1, 0, 1, 2, 0};
+
 int16_t	dabProcessor::processBlock_0 (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
 
@@ -421,29 +431,17 @@ int16_t	i, j, index = 100;
 //	are known around carrier 0. In previous versions we looked
 //	at the "weight" of the positive and negative carriers in the
 //	fft, but that did not work too well.
-	float Mmin	= 1000;
+	int Mmin	= 1000;
 	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
-           float a1  =  abs (abs (arg (fft_buffer [(i + 1) % T_u] *
-                          conj (fft_buffer [(i + 2) % T_u])) / M_PI) - 1);
-           float a2  =  abs (abs (arg (fft_buffer [(i + 2) % T_u] *
-                          conj (fft_buffer [(i + 3) % T_u])) / M_PI) - 1);
-	   float a3  =	abs (arg (fft_buffer [(i + 3) % T_u] *
-	   	                    conj (fft_buffer [(i + 4) % T_u])));
-	   float a4  =	abs (arg (fft_buffer [(i + 4) % T_u] *
-	   	                    conj (fft_buffer [(i + 5) % T_u])));
-	   float a5	= abs (arg (fft_buffer [(i + 5) % T_u] *
-	   	                    conj (fft_buffer [(i + 6) % T_u])));
-	   float b1	= abs (abs (arg (fft_buffer [(i + 16 + 1) % T_u] *
-	   	                    conj (fft_buffer [(i + 16 + 3) % T_u])) / M_PI) - 1);
-	   float b2	= abs (arg (fft_buffer [(i + 16 + 3) % T_u] *
-	   	                    conj (fft_buffer [(i + 16 + 4) % T_u])));
-	   float b3	= abs (arg (fft_buffer [(i + 16 + 4) % T_u] *
-	   	                    conj (fft_buffer [(i + 16 + 5) % T_u])));
-	   float b4	= abs (arg (fft_buffer [(i + 16 + 5) % T_u] *
-	   	                    conj (fft_buffer [(i + 16 + 6) % T_u])));
-	   float sum = a1 + a2 + a3 + a4 + a5 + b1 + b2 + b3 + b4;
-	   if (sum < Mmin) {
-	      Mmin = sum;
+	   float diff = 0;
+	   for (j = 0; j < sizeof (phasedifferences) / sizeof(int16_t); j ++) {
+	      int16_t ind1 = (i + j + 1) % T_u;
+	      int16_t ind2 = (i + j + 2) % T_u;
+	      float pd = arg (fft_buffer [ind1] * conj (fft_buffer [ind2]));
+	      diff += abs (abs (pd) / (M_PI / 2) - phasedifferences [j]);
+	   }
+	   if (diff < Mmin) {
+	      Mmin = diff;
 	      index = i;
 	   }
 	}

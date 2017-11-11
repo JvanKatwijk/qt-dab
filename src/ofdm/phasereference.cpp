@@ -54,6 +54,12 @@ DSPFLOAT	Phi_k;
 	   Phi_k = get_Phi (-i);
 	   refTable [T_u - i] = DSPCOMPLEX (cos (Phi_k), sin (Phi_k));
 	}
+//	for (i = 1; i < 40; i ++) {
+//	   float x = arg (refTable [(T_u + i) % T_u] *
+//	                  conj (refTable [(T_u + i + 1) % T_u]));
+//	   fprintf (stderr, "(%d -> %d (%f)\n",
+//	              i, (int) (abs (x) / (M_PI / 2) + 0.5), x);
+//	}
 }
 
 	phaseReference::~phaseReference (void) {
@@ -65,11 +71,12 @@ DSPFLOAT	Phi_k;
   *	\brief findIndex
   *	the vector v contains "Tu" samples that are believed to
   *	belong to the first non-null block of a DAB frame.
-  *	We correlate the data in this verctor with the predefined
+  *	We correlate the data in this vector with the predefined
   *	data, and if the maximum exceeds a threshold value,
   *	we believe that that indicates the first sample we were
   *	looking for.
   */
+
 int32_t	phaseReference::findIndex (DSPCOMPLEX *v) {
 int32_t	i;
 int32_t	maxIndex	= -1;
@@ -100,8 +107,9 @@ float	sum		= 0;
   */
 	if (Max < threshold * sum / T_u)
 	   return  - abs (Max * T_u / sum) - 1;
-	else
+	else {
 	   return maxIndex;	
+	}
 }
 //
 

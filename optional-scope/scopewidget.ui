@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>875</width>
+    <width>820</width>
     <height>232</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>50</x>
      <y>10</y>
-     <width>571</width>
+     <width>521</width>
      <height>181</height>
     </rect>
    </property>
@@ -48,7 +48,7 @@
   <widget class="QwtPlot" name="iqDisplay">
    <property name="geometry">
     <rect>
-     <x>640</x>
+     <x>590</x>
      <y>10</y>
      <width>211</width>
      <height>141</height>
@@ -61,7 +61,7 @@
   <widget class="QSlider" name="scopeSlider">
    <property name="geometry">
     <rect>
-     <x>640</x>
+     <x>590</x>
      <y>160</y>
      <width>211</width>
      <height>24</height>
@@ -80,7 +80,7 @@
   <widget class="QLCDNumber" name="quality_display">
    <property name="geometry">
     <rect>
-     <x>753</x>
+     <x>710</x>
      <y>190</y>
      <width>81</width>
      <height>23</height>
