@@ -82,7 +82,7 @@ int16_t	i;
 	fft_handler			= new common_fft (T_u);
 	fft_buffer			= fft_handler -> getVector ();
 	phaseReference			= new DSPCOMPLEX [T_u];
-//
+
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	snrCount		= 0;
@@ -298,8 +298,8 @@ DSPCOMPLEX conjVector [T_u];
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
 #else
 void	ofdmDecoder::decodeFICblock (DSPCOMPLEX *buffer, int32_t blkno) {
+int16_t	i;
 	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
-int16_t i;
 #ifdef  HAVE_SPECTRUM
 DSPCOMPLEX conjVector [T_u];
 DSPCOMPLEX	freqOff	= DSPCOMPLEX (0, 0);
@@ -378,8 +378,8 @@ int16_t	i;
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
 #else
 void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *buffer, int32_t blkno) {
+int16_t	i;
 	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
-int16_t i;
 #endif
 
 fftLabel:

@@ -246,6 +246,8 @@ QString h;
 	         this, SLOT (autoCorrector_on (void)));
 	connect	(scanButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_Scanning (void)));
+	connect (nextChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_nextChannel (void)));
 	connect (quitButton, SIGNAL (clicked ()),
 	         this, SLOT (TerminateProcess (void)));
 	connect (modeSelector, SIGNAL (activated (const QString &)),
@@ -1387,6 +1389,7 @@ void	RadioInterface::showButtons	(void) {
 	channelSelector	-> show	();
 	modeSelector	-> show ();
 	bandSelector	-> show ();
+	nextChannelButton	-> show ();
 	techData. frequency	-> show ();
 
 }
@@ -1396,6 +1399,7 @@ void	RadioInterface::hideButtons	(void) {
 	channelSelector	-> hide ();
 	modeSelector	-> hide ();
 	bandSelector	-> hide ();
+	nextChannelButton	-> hide ();
 	techData. frequency	-> hide ();
 }
 
@@ -1636,5 +1640,17 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	dumpButton      -> setText ("writing");
 	sourceDumping           = true;
 	my_dabProcessor -> startDumping (dumpfilePointer);
+}
+
+void	RadioInterface::set_nextChannel (void) {
+//	we stop the thread from running,
+//	Increment the frequency
+//	and restart
+	my_dabProcessor -> stop ();
+	while (!my_dabProcessor -> isFinished ())
+	   usleep (10000);
+	Increment_Channel ();
+	clearEnsemble ();
+	my_dabProcessor	-> start ();
 }
 

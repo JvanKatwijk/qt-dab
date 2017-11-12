@@ -178,6 +178,7 @@ public slots:
 //
 //	Somehow, these must be connected to the GUI
 private slots:
+	void		set_nextChannel		(void);
 	void		toggle_show_data	(void);
 	void		doStart			(QString);
 	void		doStart			(void);
