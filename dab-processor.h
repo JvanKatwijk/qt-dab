@@ -118,7 +118,6 @@ private:
 	ofdmDecoder	my_ofdmDecoder;
 virtual	void		run		(void);
 	bool		isReset;
-	int16_t		processBlock_0	(DSPCOMPLEX *);
 	common_fft	*fft_handler;
 	DSPCOMPLEX	*fft_buffer;
 signals:

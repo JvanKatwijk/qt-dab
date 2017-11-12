@@ -273,7 +273,7 @@ Block_0:
 //	The width is limited to 2 * 35 Khz (i.e. positive and negative)
 	   f2Correction	= !my_ficHandler. syncReached ();
 	   if (f2Correction) {
-	      int correction		= processBlock_0 (ofdmBuffer);
+	      int correction		= phaseSynchronizer. estimateOffset (ofdmBuffer);
 	      if (correction != 100) {
 	         coarseCorrector	+= correction * carrierDiff;
 	         if (abs (coarseCorrector) > Khz (35))
@@ -402,50 +402,6 @@ void	dabProcessor::coarseCorrectorOn (void) {
 
 void	dabProcessor::coarseCorrectorOff (void) {
 	f2Correction	= false;
-}
-//
-//	Processing block 0 here is needed as long as we are not in sync.
-//	Several algorithms were tried, plain  correlating the
-//	block 0, as used in locating the start index, with the
-//	data block here did not work very well. The structure
-//	of block 0 does not seem to lend itself for that kind of matching
-//	The current approach is to look at the difference of 
-//	phasedifferences between successive carriers to what it should be.
-//
-//	The phasedifferences are expressed in steps (size PI/2) (absolute vals).
-//	The table tells what the values should be (starting at carrier 1 -> 2)
-int16_t phasedifferences [] = {
-	2, 2, 0, 0, 0,
-	1, 0, 1, 2, 0,
-	0, 2, 0, 1, 0,
-	1, 2, 2, 0, 0,
-	0, 1, 0, 1, 2, 0};
-
-int16_t	dabProcessor::processBlock_0 (DSPCOMPLEX *v) {
-int16_t	i, j, index = 100;
-
-	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
-	fft_handler	-> do_FFT ();
-
-//	We investigate a sequence of phasedifferences that should
-//	are known around carrier 0. In previous versions we looked
-//	at the "weight" of the positive and negative carriers in the
-//	fft, but that did not work too well.
-	int Mmin	= 1000;
-	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
-	   float diff = 0;
-	   for (j = 0; j < sizeof (phasedifferences) / sizeof(int16_t); j ++) {
-	      int16_t ind1 = (i + j + 1) % T_u;
-	      int16_t ind2 = (i + j + 2) % T_u;
-	      float pd = arg (fft_buffer [ind1] * conj (fft_buffer [ind2]));
-	      diff += abs (abs (pd) / (M_PI / 2) - phasedifferences [j]);
-	   }
-	   if (diff < Mmin) {
-	      Mmin = diff;
-	      index = i;
-	   }
-	}
-	return index - T_u;
 }
 
 void	dabProcessor::set_scanMode	(bool b) {

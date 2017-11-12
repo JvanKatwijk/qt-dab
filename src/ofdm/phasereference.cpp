@@ -28,6 +28,9 @@
   *	the first non-null block of a frame
   *	The class inherits from the phaseTable.
   */
+
+static float phasedifferences [DIFF_LENGTH];
+
 	phaseReference::phaseReference (uint8_t	dabMode,
 	                                int16_t	threshold):
 	                                     phaseTable (dabMode),
@@ -45,7 +48,7 @@ DSPFLOAT	Phi_k;
 	fft_buffer		= fft_processor		-> getVector ();
 	res_processor		= new common_ifft 	(T_u);
 	res_buffer		= res_processor		-> getVector ();
-
+	
 	memset (refTable, 0, sizeof (DSPCOMPLEX) * T_u);
 
 	for (i = 1; i <= params. get_carriers () / 2; i ++) {
@@ -54,12 +57,16 @@ DSPFLOAT	Phi_k;
 	   Phi_k = get_Phi (-i);
 	   refTable [T_u - i] = DSPCOMPLEX (cos (Phi_k), sin (Phi_k));
 	}
-//	for (i = 1; i < 40; i ++) {
-//	   float x = arg (refTable [(T_u + i) % T_u] *
-//	                  conj (refTable [(T_u + i + 1) % T_u]));
-//	   fprintf (stderr, "(%d -> %d (%f)\n",
-//	              i, (int) (abs (x) / (M_PI / 2) + 0.5), x);
-//	}
+//
+//	prepare a table for the coarse frequency synchronization
+//	can be a static one
+	for (i = 1; i <= DIFF_LENGTH; i ++) 
+	   phasedifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
+	                                conj (refTable [(T_u + i + 1) % T_u])));
+
+//	for (i = 0; i < DIFF_LENGTH; i ++)
+//	   fprintf (stderr, "%f ", phasedifferences [i]);
+//	fprintf (stderr, "\n");
 }
 
 	phaseReference::~phaseReference (void) {
@@ -111,5 +118,35 @@ float	sum		= 0;
 	   return maxIndex;	
 	}
 }
-//
+
+#define	SEARCH_RANGE	(2 * 35)
+int16_t	phaseReference::estimateOffset (DSPCOMPLEX *v) {
+int16_t	i, j, index = 100;
+
+	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
+	fft_processor	-> do_FFT ();
+
+//	We investigate a sequence of phasedifferences that should
+//	are known around carrier 0. In previous versions we looked
+//	at the "weight" of the positive and negative carriers in the
+//	fft, but that did not work too well.
+//	Note that due to phases being in a modulo system,
+//	plain correlation does not work well, so we just compute
+//	the difference.
+	int Mmin	= 1000;
+	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
+	   float diff = 0;
+	   for (j = 0; j < DIFF_LENGTH; j ++) {
+	      int16_t ind1 = (i + j + 1) % T_u;
+	      int16_t ind2 = (i + j + 2) % T_u;
+	      float pd = arg (fft_buffer [ind1] * conj (fft_buffer [ind2]));
+	      diff += abs (abs (pd)  - phasedifferences [j]);
+	   }
+	   if (diff < Mmin) {
+	      Mmin = diff;
+	      index = i;
+	   }
+	}
+	return index - T_u;
+}
 

@@ -35,6 +35,8 @@ public:
 		phaseReference 			(uint8_t, int16_t);
 		~phaseReference			(void);
 	int32_t	findIndex			(DSPCOMPLEX *);
+	int16_t	estimateOffset			(DSPCOMPLEX *v);
+
 	DSPCOMPLEX	*refTable;
 private:
 	dabParams	params;

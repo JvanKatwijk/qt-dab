@@ -35,10 +35,6 @@
 #include	<cstring>
 #include	<unistd.h>
 
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) > 0x0601)
-//#define	QT_STATIC_CONST
-//#endif
-
 #ifndef	__FREEBSD__
 #include	<malloc.h>
 #endif
@@ -84,7 +80,9 @@ using namespace std;
 
 #define		SYNCED		01
 #define		UNSYNCED	04
-
+//
+//	40 up shows good results
+#define		DIFF_LENGTH	42
 static inline
 bool	isIndeterminate (DSPFLOAT x) {
 	return x != x;
