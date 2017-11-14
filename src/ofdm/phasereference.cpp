@@ -29,20 +29,20 @@
   *	The class inherits from the phaseTable.
   */
 
-static float phasedifferences [DIFF_LENGTH];
-
 	phaseReference::phaseReference (uint8_t	dabMode,
-	                                int16_t	threshold):
+	                                int16_t	threshold,
+	                                int16_t	diff_length):
 	                                     phaseTable (dabMode),
 	                                     params (dabMode) {
 int32_t	i;
 DSPFLOAT	Phi_k;
 
+	this	-> threshold	= threshold;
+	this	-> diff_length	= diff_length;
+	phasedifferences	= new DSPCOMPLEX [diff_length];
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
-	this	-> threshold	= threshold;
 
-	Max			= 0.0;
 	refTable		= new DSPCOMPLEX 	[T_u];	//
 	fft_processor		= new common_fft 	(T_u);
 	fft_buffer		= fft_processor		-> getVector ();
@@ -60,18 +60,19 @@ DSPFLOAT	Phi_k;
 //
 //	prepare a table for the coarse frequency synchronization
 //	can be a static one
-	for (i = 1; i <= DIFF_LENGTH; i ++) 
-	   phasedifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
-	                                conj (refTable [(T_u + i + 1) % T_u])));
+	for (i = 1; i <= diff_length; i ++) 
+	   phasedifferences [i - 1] = refTable [(T_u + i) % T_u] *
+	                              conj (refTable [(T_u + i + 1) % T_u]);
 
-//	for (i = 0; i < DIFF_LENGTH; i ++)
-//	   fprintf (stderr, "%f ", phasedifferences [i]);
+//	for (i = 0; i < diff_length; i ++)
+//	   fprintf (stderr, "%f ", abs (arg (phasedifferences [i])));
 //	fprintf (stderr, "\n");
 }
 
 	phaseReference::~phaseReference (void) {
-	delete []	refTable;
 	delete		fft_processor;
+	delete []	refTable;
+	delete []	phasedifferences;
 }
 
 /**
@@ -88,8 +89,8 @@ int32_t	phaseReference::findIndex (DSPCOMPLEX *v) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
+float	Max		= -1000;
 
-	Max	= 1.0;
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
 	fft_processor -> do_FFT ();
 //
@@ -103,7 +104,6 @@ float	sum		= 0;
   */
 	for (i = 0; i < T_u; i ++)
 	   sum	+= abs (res_buffer [i]);
-	Max	= -10000;
 	for (i = 0; i < T_u; i ++)
 	   if (abs (res_buffer [i]) > Max) {
 	      maxIndex = i;
@@ -119,6 +119,17 @@ float	sum		= 0;
 	}
 }
 
+//	We investigate a sequence of phasedifferences that
+//	are known starting at real carrier 0.
+//	Note that due to phases being in a modulo system,
+//	plain correlation (i.e. sum (x, y, i) does not work well,
+//	so we just compute the phasedifference between phasedifferences
+//	as measured and as they should be. To be on the safe side
+//	the difference is the difference of the absolute phasedifference
+//	values.
+//	In previous versions we looked
+//	at the "weight" of the positive and negative carriers in the
+//	fft, but that did not work too well.
 #define	SEARCH_RANGE	(2 * 35)
 int16_t	phaseReference::estimateOffset (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
@@ -126,21 +137,14 @@ int16_t	i, j, index = 100;
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
 	fft_processor	-> do_FFT ();
 
-//	We investigate a sequence of phasedifferences that should
-//	are known around carrier 0. In previous versions we looked
-//	at the "weight" of the positive and negative carriers in the
-//	fft, but that did not work too well.
-//	Note that due to phases being in a modulo system,
-//	plain correlation does not work well, so we just compute
-//	the difference.
 	int Mmin	= 1000;
 	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
 	   float diff = 0;
-	   for (j = 0; j < DIFF_LENGTH; j ++) {
+	   for (j = 0; j < diff_length; j ++) {
 	      int16_t ind1 = (i + j + 1) % T_u;
 	      int16_t ind2 = (i + j + 2) % T_u;
-	      float pd = arg (fft_buffer [ind1] * conj (fft_buffer [ind2]));
-	      diff += abs (abs (pd)  - phasedifferences [j]);
+	      DSPCOMPLEX pd = fft_buffer [ind1] * conj (fft_buffer [ind2]);
+	      diff += abs (arg (pd * conj (phasedifferences [j])));
 	   }
 	   if (diff < Mmin) {
 	      Mmin = diff;

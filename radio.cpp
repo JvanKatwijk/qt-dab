@@ -131,6 +131,9 @@ QString h;
 //	this need to be a pretty large value (e.g. 5 to 10)
 	latency		=
 	           dabSettings -> value ("latency", 5). toInt ();
+	diff_length	=
+	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt ();
+
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -367,6 +370,7 @@ int32_t	frequency;
 	                                      inputDevice,
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
+	                                      diff_length,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
@@ -1120,6 +1124,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                      inputDevice,
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
+	                                      diff_length,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath

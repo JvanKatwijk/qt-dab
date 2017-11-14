@@ -52,6 +52,7 @@ public:
 	                         virtualInput *,
 	                         uint8_t,
 	                         int16_t,
+	                         int16_t,
 	                         RingBuffer<int16_t> *,
 	                         RingBuffer<uint8_t> *,
 	                         QString

@@ -32,7 +32,7 @@
   *	\brief dabProcessor
   *	The dabProcessor class is the driver of the processing
   *	of the samplestream.
-  *	It is the main interface to the qt-dab-ng program,
+  *	It is the main interface to the qt-dab program,
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
@@ -40,6 +40,7 @@
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
 	                                 int16_t	threshold,
+	                                 int16_t	diff_length,
 	                                 RingBuffer<int16_t> *audioBuffer,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
@@ -61,7 +62,8 @@
 	                                                dataBuffer,
 	                                                picturesPath),
 	                                 phaseSynchronizer (dabMode, 
-                                                            threshold),
+                                                            threshold,
+	                                                    diff_length),
 	                                 my_TII_Detector (dabMode), 
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,

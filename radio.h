@@ -95,6 +95,7 @@ const	char		*get_programm_language_string (int16_t);
 	bool		thereisSound;
 	uint8_t		isSynced;
 	int16_t		threshold;
+	int16_t		diff_length;
 	bandHandler     theBand;
 	std::atomic<bool>	running;
 	bool		scanning;

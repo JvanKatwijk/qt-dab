@@ -32,24 +32,26 @@
 
 class phaseReference : public phaseTable {
 public:
-		phaseReference 			(uint8_t, int16_t);
-		~phaseReference			(void);
-	int32_t	findIndex			(DSPCOMPLEX *);
-	int16_t	estimateOffset			(DSPCOMPLEX *v);
-
+			phaseReference 		(uint8_t, int16_t, int16_t);
+			~phaseReference		(void);
+	int32_t		findIndex		(DSPCOMPLEX *);
+	int16_t		estimateOffset		(DSPCOMPLEX *v);
+//
+//	This one is used in the ofdm decoder
 	DSPCOMPLEX	*refTable;
 private:
 	dabParams	params;
+	int16_t		threshold;
+	int16_t		diff_length;
 	int32_t		T_u;
 	int16_t		carriers;
-	int16_t		threshold;
+	DSPCOMPLEX	*phasedifferences;
 
 	common_fft	*fft_processor;
 	DSPCOMPLEX	*fft_buffer;
 	common_ifft	*res_processor;
 	DSPCOMPLEX	*res_buffer;
 	int32_t		fft_counter;
-	DSPFLOAT	Max;
 };
 #endif
 
