@@ -187,6 +187,7 @@ QString h;
 	if ((k == -1) || err)
 	   ((audioSink *)soundOut)	-> selectDefaultDevice ();
 #endif
+
 #ifdef	HAVE_SPECTRUM
         spectrumHandler = new spectrumhandler (this, dabSettings,
 	                                       spectrumBuffer,

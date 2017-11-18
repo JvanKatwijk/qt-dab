@@ -26,8 +26,6 @@
 #include	"dab-params.h"
 #include	"fft.h"
 //
-#define	SEARCH_RANGE		(2 * 35)
-
 /**
   *	\brief dabProcessor
   *	The dabProcessor class is the driver of the processing
@@ -154,7 +152,7 @@ float		envBuffer	[syncBufferSize];
 	myReader. setRunning (true);
 	my_ofdmDecoder. start ();
 //
-//	tp set up some idea of the signal strength
+//	to get some idea of the signal strength
 	try {
 	   for (i = 0; i < T_F / 5; i ++) {
 	      myReader. getSample (0);
@@ -272,10 +270,10 @@ Block_0:
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-//	The width is limited to 2 * 35 Khz (i.e. positive and negative)
 	   f2Correction	= !my_ficHandler. syncReached ();
 	   if (f2Correction) {
-	      int correction		= phaseSynchronizer. estimateOffset (ofdmBuffer);
+	      int correction	=
+	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
 	      if (correction != 100) {
 	         coarseCorrector	+= correction * carrierDiff;
 	         if (abs (coarseCorrector) > Khz (35))
@@ -323,6 +321,7 @@ NewOffset:
 /**
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
+  *	If we handle TII, we have to process them though
   */
 	   syncBufferIndex	= 0;
 	   currentStrength	= 0;

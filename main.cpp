@@ -102,6 +102,7 @@ int32_t		dataPort	= 8888;
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
+	a. setWindowIcon (QIcon ("./qt-dab.ico"));
         a. exec ();
 /*
  *      done:

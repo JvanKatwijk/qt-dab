@@ -35,7 +35,8 @@ public:
 			phaseReference 		(uint8_t, int16_t, int16_t);
 			~phaseReference		(void);
 	int32_t		findIndex		(DSPCOMPLEX *);
-	int16_t		estimateOffset		(DSPCOMPLEX *v);
+	int16_t		estimate_CarrierOffset	(DSPCOMPLEX *v);
+	float		estimate_FrequencyOffset	(DSPCOMPLEX *v);
 //
 //	This one is used in the ofdm decoder
 	DSPCOMPLEX	*refTable;

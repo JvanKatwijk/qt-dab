@@ -121,9 +121,13 @@ float	Max		= -1000;
 
 //	We investigate a sequence of phasedifferences that
 //	are known starting at real carrier 0.
-//	Note that due to phases being in a modulo system,
-//	plain correlation (i.e. sum (x, y, i) does not work well,
-//	so we just compute the phasedifference between phasedifferences
+//	Phase of the carriers of the "real" block 0 may be
+//	quite different than the phase of the carriers of the "reference"
+//	block, plain correlation (i.e. sum (x, y, i) does not work well.
+//	What is a good measure though is looking at the phase differences
+//	between successive carriers in both the "real" block and the
+//	reference block. These should be more or less the same.
+//	So we just compute the phasedifference between phasedifferences
 //	as measured and as they should be. To be on the safe side
 //	the difference is the difference of the absolute phasedifference
 //	values.
@@ -131,26 +135,48 @@ float	Max		= -1000;
 //	at the "weight" of the positive and negative carriers in the
 //	fft, but that did not work too well.
 #define	SEARCH_RANGE	(2 * 35)
-int16_t	phaseReference::estimateOffset (DSPCOMPLEX *v) {
+int16_t	phaseReference::estimate_CarrierOffset (DSPCOMPLEX *v) {
 int16_t	i, j, index = 100;
+float	diff;
 
 	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
 	fft_processor	-> do_FFT ();
 
-	int Mmin	= 1000;
+	float	Mmin = 1000;
 	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
-	   float diff = 0;
+	   float sum	= 0;
 	   for (j = 0; j < diff_length; j ++) {
 	      int16_t ind1 = (i + j + 1) % T_u;
 	      int16_t ind2 = (i + j + 2) % T_u;
 	      DSPCOMPLEX pd = fft_buffer [ind1] * conj (fft_buffer [ind2]);
-	      diff += abs (arg (pd * conj (phasedifferences [j])));
+	      sum += abs (arg (pd) - arg (phasedifferences [j]));
+//	      sum += abs (arg (pd * conj (phasedifferences [j])));
 	   }
-	   if (diff < Mmin) {
-	      Mmin = diff;
+	   if (sum < Mmin) {
+	      Mmin = sum;
 	      index = i;
 	   }
 	}
-	return index - T_u;
+	return index - T_u; 
+}
+//
+//	NOT USED, just for some tests
+//	An alternative way to compute the small frequency offset
+//	is to look at the phase offset of subsequent carriers
+//	in block 0, compared to the values as computed from the
+//	reference block.
+//	The values are reasonably close to the values computed
+//	on the fly
+#define	LLENGTH	100
+float	phaseReference::estimate_FrequencyOffset (DSPCOMPLEX *v) {
+int16_t	i, j;
+float pd	= 0;
+
+	for (i = - LLENGTH / 2 ; i < LLENGTH / 2; i ++) {
+	   DSPCOMPLEX a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
+	   DSPCOMPLEX a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
+	   pd += arg (a2) - arg (a1);
+	}
+	return pd / LLENGTH;
 }
 

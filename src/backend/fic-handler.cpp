@@ -43,7 +43,7 @@ uint8_t PI_X [24] = {
   *	\class ficHandler
   * 	We get in - through process_ficBlock - the FIC data
   * 	in units of 768 bits.
-  * 	We follow the standard and apply conv coding and
+  * 	We follow the standard and apply convolution decoding and
   * 	puncturing.
   *	The data is sent through to the fib processor
   */
