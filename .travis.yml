@@ -28,7 +28,9 @@ script:
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
   - mkdir -p appdir/usr/bin
-  - cp qt-dab-*  appdir/usr/bin/qt-dab 
+  - cp qt-dab-*  appdir/usr/bin/
+  - mv appdir/usr/bin/qt-dab-* appdir/usr/bin/qt-dab
+ 
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp qt-dab.png appdir/qt-dab.png
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
