@@ -98,6 +98,7 @@ int     opt;
  *      instantiate
  */
 	QApplication a (argc, argv);
+//	setting the language
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 
