@@ -1682,8 +1682,8 @@ QTranslator *Translator = new QTranslator;
 	   Language = "en_GB";
 	}
 
-	QLocale curLocale (QLocale((const QString&)Language));
-	QLocale::setDefault(curLocale);
+	QLocale curLocale (QLocale ((const QString&)Language));
+	QLocale::setDefault (curLocale);
 	return Translator;
 }
 
