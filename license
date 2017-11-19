@@ -4,17 +4,27 @@
 	Lazy Chair Computing
 	J.vanKatwijk@gmail.com
 
-The  Qt-DAB software - as well as its predecessors DAB-rpi and sdr-j-dab -
-are made available under GPL license Version 2. Using this software in 
-another product or in a modified form (i.e. with a different GUI)
-is allowed as long as the copyrights are explicitly acknowledged.
+The  Qt-DAB software - as well as its predecessors DAB-rpi and sdr-j-dab 
+and derivatives - are made available under GPL license Version 2.
+
+Many of the ideas as implemented in Qt-DAB are derived from
+other work, made available through the GNU general Public License.
+All copyrights of the original authors are acknowledged.
+
+Qt-DAB is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License, version 2,
+as published by the Free Software Foundation.
+
+Qt-DAB is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
 Any non-GPL usage of this software or parts of this software is strictly
 forbidden. Commercial non-GPL licensing of this software is possible.
 For more info contact the author, named above.
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+===========================================================================
             GNU GENERAL PUBLIC LICENSE
                Version 2, June 1991
 

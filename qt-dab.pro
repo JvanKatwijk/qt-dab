@@ -6,7 +6,7 @@
 
 TEMPLATE	= app
 TARGET		= qt-dab-1.0-alpha
-QT		+= widgets 
+QT		+= widgets qml multimedia
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -15,6 +15,11 @@ QMAKE_LFLAGS	+=  -flto
 #QMAKE_CFLAGS	+=  -g
 #QMAKE_CXXFLAGS	+=  -g
 #QMAKE_LFLAGS	+=  -g
+QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
+RC_ICONS	=  qt-dab.ico
+RESOURCES	+= resources.qrc
+
+TRANSLATIONS = i18n/de_DE.ts i18n/it_IT.ts i18n/hu_HU.ts
 
 DEPENDPATH += . \
 	      ./src \
@@ -183,6 +188,12 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
+GITHASHSTRING = $$system(git rev-parse --short HEAD)
+!isEmpty(GITHASHSTRING) {
+    message("Current git hash = $$GITHASHSTRING")
+    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+}
+
 FORMS 		+= ./forms/dabradio.ui 
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lfftw3f  -lusb-1.0 -ldl  #
@@ -229,11 +240,17 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 }
 #
-# an attempt to have it run under W32
+# an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR	= ../../windows-bin
+DESTDIR		= ../../windows-bin
 # includes in mingw differ from the includes in fedora linux
+
+GITHASHSTRING = $$system(git rev-parse --short HEAD)
+!isEmpty(GITHASHSTRING) {
+    message("Current git hash = $$GITHASHSTRING")
+    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+}
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt

@@ -63,7 +63,12 @@ RadioInterface  *MyRadioInterface;
 int16_t         tii_delay       = 20;
 QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
-	int     opt;
+int     opt;
+
+	QCoreApplication::setOrganizationName ("Lazy Chain Computing");
+	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
+	QCoreApplication::setApplicationName("qt-dab");
+	QCoreApplication::setApplicationVersion(QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
 	while ((opt = getopt (argc, argv, "i:d:P:B:M:D:")) != -1) {
 	   switch (opt) {
@@ -93,16 +98,21 @@ int32_t		dataPort	= 8888;
  *      instantiate
  */
 	QApplication a (argc, argv);
+	QString locale = QLocale::system (). name ();
+	qDebug() << "main:" <<  "Detected system language" << locale;
+
+	a. setWindowIcon (QIcon (":/qt-dab.ico"));
+
 	MyRadioInterface = new RadioInterface (dabSettings,
                                                tii_delay,
-	                                       dataPort
+	                                       dataPort,
+	                                       locale
                                                );
 	MyRadioInterface -> show ();
 
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
-	a. setWindowIcon (QIcon ("./qt-dab.ico"));
         a. exec ();
 /*
  *      done:

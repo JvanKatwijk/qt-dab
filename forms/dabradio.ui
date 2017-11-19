@@ -307,7 +307,7 @@ background-color: rgb(255, 0, 0);</string>
      <rect>
       <x>190</x>
       <y>50</y>
-      <width>141</width>
+      <width>171</width>
       <height>20</height>
      </rect>
     </property>
@@ -407,7 +407,7 @@ background-color: rgb(255, 0, 0);</string>
    <widget class="QLCDNumber" name="ensembleId">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>210</x>
       <y>10</y>
       <width>71</width>
       <height>31</height>
@@ -434,7 +434,7 @@ background-color: rgb(255, 0, 0);</string>
      <rect>
       <x>20</x>
       <y>10</y>
-      <width>191</width>
+      <width>171</width>
       <height>31</height>
      </rect>
     </property>

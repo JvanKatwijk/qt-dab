@@ -14,6 +14,17 @@ if(MINGW)
     add_definitions ( -municode)
 endif()
 
+execute_process (
+	COMMAND git rev-parse --short HEAD
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_COMMIT_HASH
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+if(GIT_COMMIT_HASH)
+	add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+endif()
+
 ########################################################################
 # select the release build type by default to get optimization flags
 ########################################################################
@@ -41,8 +52,8 @@ if(DEFINED SDRPLAY)
    set(SDRPLAY true)
 endif ()
 
-if(DEFINED DABSTICK)
-   set(DABSTICK true)
+if(DEFINED RTLSDR)
+   set(RTLSDR true)
 endif ()
 
 if(DEFINED RTLTCP)
@@ -381,7 +392,7 @@ add_definitions (-DPRESET_NAME)
 	endif (AIRSPY)
 
 #
-	if (DABSTICK)
+	if (RTLSDR)
            find_package(LibRTLSDR)
            if (NOT LIBRTLSDR_FOUND)
                message(FATAL_ERROR "please install librtlsdr")
@@ -603,6 +614,7 @@ add_definitions (-DPRESET_NAME)
 	                ${RSCS}
 	                ${TRS}
 	                ${MOCS}
+	                resources.qrc
 	)
 
 	target_link_libraries (${objectName}
