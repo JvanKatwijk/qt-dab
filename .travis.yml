@@ -32,7 +32,7 @@ script:
   - cp qt-dab.png appdir/qt-dab.png
   - touch appdir/qt-dab.png # Dear upstream developers, please provide an application icon
   - mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
-  - cp qt-tab.png appdir/usr/share/icons/hicolor/256x256/apps/qt-dab.png
+  - cp qt-dab.png appdir/usr/share/icons/hicolor/256x256/apps/qt-dab.png
   
 after_success:
   - wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
