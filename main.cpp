@@ -27,6 +27,7 @@
  */
 #include        <QApplication>
 #include        <QSettings>
+#include	<QTranslator>
 #include        <QDir>
 #include        <unistd.h>
 #include        "dab-constants.h"
@@ -54,9 +55,10 @@ QString fileName;
 	return fileName;
 }
 
+void    setTranslator (QString Language);
 
 int     main (int argc, char **argv) {
-QString initFileName = QString ("");
+QString initFileName = fullPathfor (QString (DEFAULT_INI));
 RadioInterface  *MyRadioInterface;
 
 // Default values
@@ -65,10 +67,10 @@ QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 int     opt;
 
-	QCoreApplication::setOrganizationName ("Lazy Chain Computing");
+	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
-	QCoreApplication::setApplicationName("qt-dab");
-	QCoreApplication::setApplicationVersion(QString (CURRENT_VERSION) + " Git: " + GITHASH);
+	QCoreApplication::setApplicationName ("qt-dab");
+	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
 	while ((opt = getopt (argc, argv, "i:d:P:B:M:D:")) != -1) {
 	   switch (opt) {
@@ -89,8 +91,6 @@ int     opt;
 	   }
 	}
 
-	if (initFileName == QString (""))
-	   initFileName = fullPathfor (QString (DEFAULT_INI));
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
 
 /*
@@ -101,13 +101,13 @@ int     opt;
 //	setting the language
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
+	setTranslator (locale);
 
 	a. setWindowIcon (QIcon (":/qt-dab.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
                                                tii_delay,
-	                                       dataPort,
-	                                       locale
+	                                       dataPort
                                                );
 	MyRadioInterface -> show ();
 
@@ -124,5 +124,26 @@ int     opt;
 	qDebug ("It is done\n");
 //	delete MyRadioInterface;
 	delete dabSettings;
+}
+
+void	setTranslator (QString Language) {
+QTranslator *Translator = new QTranslator;
+
+//	German is special (as always)
+	if ((Language == "de_AT") || (Language ==  "de_CH"))
+	   Language = "de_DE";
+
+	bool TranslatorLoaded =
+	             Translator -> load (QString(":/i18n/") + Language);
+	qDebug() << "main:" <<  "Set language" << Language;
+	QCoreApplication::installTranslator (Translator);
+
+	if (!TranslatorLoaded) {
+	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
+	   Language = "en_GB";
+	}
+
+	QLocale curLocale (QLocale ((const QString&)Language));
+	QLocale::setDefault (curLocale);
 }
 

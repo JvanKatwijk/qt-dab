@@ -27,7 +27,6 @@
 #include	<QFile>
 #include	<QStringList>
 #include	<QStringListModel>
-#include	<QTranslator>
 #include	<QDir>
 #include	<fstream>
 #include	"dab-constants.h"
@@ -98,7 +97,6 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                int16_t		tii_delay,
 	                                int32_t		dataPort,
-	                                QString		locale,
 	                                QWidget		*parent):
 	                                        QMainWindow (parent) {
 int16_t	latency;
@@ -117,10 +115,6 @@ QString h;
 	iqBuffer		= new RingBuffer<DSPCOMPLEX> (2 * 1536);
 #endif
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
-
-//	Before printing anything, we set
-	setTranslator		(locale);
-//	setlocale (LC_ALL, "");
 
 /**	threshold is used in the phaseReference class 
   *	as threshold for checking the validity of the correlation result
@@ -268,10 +262,10 @@ QString h;
 
 //	display the version
 	QString v = "Qt-DAB " + QString (CURRENT_VERSION);
-	QString InfoText = "qt-dab version: " + QString(CURRENT_VERSION);
-        InfoText += "Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
+	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
+        versionText += "Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
 	versionName	-> setText (v);
-	versionName	-> setToolTip (InfoText);
+	versionName	-> setToolTip (versionText);
 
 //	and start the timer(s)
 //	The displaytimer is there to show the number of
@@ -1663,27 +1657,5 @@ void	RadioInterface::set_nextChannel (void) {
 	Increment_Channel ();
 	clearEnsemble ();
 	my_dabProcessor	-> start ();
-}
-
-QTranslator* RadioInterface::setTranslator (QString Language) {
-QTranslator *Translator = new QTranslator;
-
-//	Special handling for German
-	if ((Language == "de_AT") || (Language ==  "de_CH"))
-	   Language = "de_DE";
-
-	bool TranslatorLoaded =
-	             Translator -> load (QString(":/i18n/") + Language);
-	qDebug() << "main:" <<  "Set language" << Language;
-	QCoreApplication::installTranslator (Translator);
-
-	if (!TranslatorLoaded) {
-	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
-	   Language = "en_GB";
-	}
-
-	QLocale curLocale (QLocale ((const QString&)Language));
-	QLocale::setDefault (curLocale);
-	return Translator;
 }
 

@@ -27,8 +27,9 @@ script:
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
+  - rm -rf *_autogen
   - mkdir -p appdir/usr/bin
-  - cp qt-dab-1.0-alpha  appdir/usr/bin/qt-dab
+  - cp qt-dab-*  appdir/usr/bin/qt-dab
  
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp qt-dab.png appdir/qt-dab.png

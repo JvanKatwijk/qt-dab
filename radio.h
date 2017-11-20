@@ -66,7 +66,6 @@ public:
 		RadioInterface		(QSettings	*,
 	                                 int16_t	 tii_delay,
 	                                 int32_t	 dataPort,
-	                                 QString	locale,
 	                                 QWidget	*parent = NULL);
 		~RadioInterface		(void);
 
@@ -144,8 +143,6 @@ const	char		*get_programm_language_string (int16_t);
 #endif
 
 	QString		picturesPath;
-	QTranslator	*setTranslator		(QString);
-	QTranslator	*theTransLator;
 public slots:
 	void		set_Scanning		(void);
 	void		set_CorrectorDisplay	(int);
