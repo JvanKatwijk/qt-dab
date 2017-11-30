@@ -88,7 +88,7 @@ int16_t	success;
 	statusLabel	-> setText ("Loaded");
 //
 //	buffersize app 0.5 seconds of data
-	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(32 * 32768);
+	_I_Buffer	= new RingBuffer<std::complex<float>>(32 * 32768);
 	vfoFrequency	= Khz (220000);
 //
 //	since localFilter and gainReduced are also used as
@@ -166,7 +166,7 @@ void	eladHandler::stopReader	(void) {
 
 //	we are - in this context - certain that whenever getSamples
 //	is called, there are sufficient samples available.
-int32_t	eladHandler::getSamples (DSPCOMPLEX *V, int32_t size) { 
+int32_t	eladHandler::getSamples (std::complex<float> *V, int32_t size) { 
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 

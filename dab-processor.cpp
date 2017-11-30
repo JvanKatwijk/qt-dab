@@ -24,7 +24,6 @@
 #include	"msc-handler.h"
 #include	"radio.h"
 #include	"dab-params.h"
-#include	"fft.h"
 //
 /**
   *	\brief dabProcessor
@@ -34,6 +33,7 @@
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
+#define	C_LEVEL_SIZE	50
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
@@ -43,8 +43,8 @@
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
 #ifdef	HAVE_SPECTRUM
-		                        ,RingBuffer<DSPCOMPLEX>	*spectrumBuffer,
-	                                 RingBuffer<DSPCOMPLEX>	*iqBuffer
+		                        ,RingBuffer<std::complex<float>>	*spectrumBuffer,
+	                                 RingBuffer<std::complex<float>>	*iqBuffer
 #endif
 	                                 ):
 	                                 params (dabMode),
@@ -82,10 +82,8 @@ int32_t	i;
 	this	-> nrBlocks		= params. get_L ();
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
-	fft_handler			= new common_fft (T_u);
-	fft_buffer			= fft_handler -> getVector ();
 
-	ofdmBuffer			= new DSPCOMPLEX [2 * T_s];
+	ofdmBuffer			= new std::complex<float> [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
@@ -119,9 +117,7 @@ int32_t	i;
 	      usleep (100);
 	   }
 	}
-	
 	delete		ofdmBuffer;
-	delete		fft_handler;
 }
 
 /***
@@ -135,11 +131,13 @@ int32_t	i;
 void	dabProcessor::run	(void) {
 int32_t		startIndex;
 int32_t		i;
-DSPCOMPLEX	FreqCorr;
+std::complex<float>	FreqCorr;
 int32_t		counter;
-float		currentStrength;
+float		cLevel;
 int32_t		syncBufferIndex	= 0;
+const
 int32_t		syncBufferSize	= 32768;
+const
 int32_t		syncBufferMask	= syncBufferSize - 1;
 float		envBuffer	[syncBufferSize];
 
@@ -160,19 +158,17 @@ float		envBuffer	[syncBufferSize];
 Initing:
 notSynced:
 	   syncBufferIndex	= 0;
-	   currentStrength	= 0;
+	   cLevel		= 0;
 
-	   syncBufferIndex	= 0;
-	   currentStrength	= 0;
-	   for (i = 0; i < 50; i ++) {
-	      DSPCOMPLEX sample			= myReader. getSample (0);
+	   for (i = 0; i < C_LEVEL_SIZE; i ++) {
+	      std::complex<float> sample	= myReader. getSample (0);
 	      envBuffer [syncBufferIndex]	= jan_abs (sample);
-	      currentStrength 			+= envBuffer [syncBufferIndex];
+	      cLevel	 			+= envBuffer [syncBufferIndex];
 	      syncBufferIndex ++;
 	   }
 /**
-  *	We now have initial values for currentStrength (i.e. the sum
-  *	over the last 50 samples) and sLevel, the long term average.
+  *	We now have initial values for cLevel (i.e. the sum
+  *	over the last C_LEVEL_SIZE samples) and sLevel, the long term average.
   */
 SyncOnNull:
 /**
@@ -180,13 +176,13 @@ SyncOnNull:
   */
 	   counter	= 0;
 	   setSynced (false);
-	   while (currentStrength / 50  > 0.50 * myReader. get_sLevel ()) {
-	      DSPCOMPLEX sample	=
+	   while (cLevel / C_LEVEL_SIZE  > 0.40 * myReader. get_sLevel ()) {
+	      std::complex<float> sample	=
 	                      myReader. getSample (coarseCorrector + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
-	      currentStrength += envBuffer [syncBufferIndex] -
-	                         envBuffer [(syncBufferIndex - 50) & syncBufferMask];
+	      cLevel += envBuffer [syncBufferIndex] -
+	                envBuffer [(syncBufferIndex - C_LEVEL_SIZE) & syncBufferMask];
 	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
 	      counter ++;
 	      if (counter > T_F) { // hopeless
@@ -204,13 +200,13 @@ SyncOnNull:
   */
 	   counter	= 0;
 SyncOnEndNull:
-	   while (currentStrength / 50 < 0.75 * myReader. get_sLevel ()) {
-	      DSPCOMPLEX sample =
+	   while (cLevel / C_LEVEL_SIZE < 0.80 * myReader. get_sLevel ()) {
+	      std::complex<float> sample =
 	              myReader. getSample (coarseCorrector + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
-	      currentStrength += envBuffer [syncBufferIndex] -
-	                         envBuffer [(syncBufferIndex - 50) & syncBufferMask];
+	      cLevel += envBuffer [syncBufferIndex] -
+	                envBuffer [(syncBufferIndex - C_LEVEL_SIZE) & syncBufferMask];
 	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
 	      counter	++;
 //
@@ -251,7 +247,7 @@ SyncOnPhase:
   *	used for synchronization for block 0
   */
 	   memmove (ofdmBuffer, &ofdmBuffer [startIndex],
-	                  (T_u - startIndex) * sizeof (DSPCOMPLEX));
+	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   ofdmBufferIndex	= T_u - startIndex;
 
 Block_0:
@@ -290,7 +286,7 @@ Data_blocks:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
-	   FreqCorr	= DSPCOMPLEX (0, 0);
+	   FreqCorr	= std::complex<float> (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer,
@@ -324,18 +320,18 @@ NewOffset:
   *	If we handle TII, we have to process them though
   */
 	   syncBufferIndex	= 0;
-	   currentStrength	= 0;
+	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
 	   if (tiiCoordinates) {
 	      int16_t mainId	= my_ficHandler. mainId ();
 	      if (mainId > 0) {
                  int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
-	                                                   phaseSynchronizer. refTable,
+	                                                   phaseSynchronizer. refTable. data (),
 	                                                   mainId); 
 	         if (subId >= 0) {
 	            bool found;
-	            DSPCOMPLEX coord =
+	            std::complex<float> coord =
 	                      my_ficHandler. get_coordinates (mainId,
 	                                                      subId,
 	                                                      &found);

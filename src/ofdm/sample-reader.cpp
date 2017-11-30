@@ -34,7 +34,7 @@ int16_t res     = 1;
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            virtualInput	*theRig
 #ifdef	HAVE_SPECTRUM
-	                            ,RingBuffer<DSPCOMPLEX> *spectrumBuffer
+	                            ,RingBuffer<std::complex<float>> *spectrumBuffer
 #endif
 	                           ) {
 int	i;
@@ -44,7 +44,7 @@ int	i;
         this    -> spectrumBuffer       = spectrumBuffer;
         connect (this, SIGNAL (show_Spectrum (int)),
                  mr, SLOT (showSpectrum (int)));
-        localBuffer		= new DSPCOMPLEX [bufferSize];
+        localBuffer		= new std::complex<float> [bufferSize];
         localCounter		= 0;
 #endif
 	connect (this, SIGNAL (show_Corrector (int)),
@@ -52,10 +52,11 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	oscillatorTable                 = new DSPCOMPLEX [INPUT_RATE];
+	oscillatorTable = new std::complex<float> [INPUT_RATE];
         for (i = 0; i < INPUT_RATE; i ++)
-           oscillatorTable [i] = DSPCOMPLEX (cos (2.0 * M_PI * i / INPUT_RATE),
-                                             sin (2.0 * M_PI * i / INPUT_RATE));
+           oscillatorTable [i] = std::complex<float>
+	                            (cos (2.0 * M_PI * i / INPUT_RATE),
+                                     sin (2.0 * M_PI * i / INPUT_RATE));
 
 	bufferContent	= 0;
 	corrector	= 0;
@@ -76,8 +77,8 @@ float	sampleReader::get_sLevel (void) {
 	return sLevel;
 }
 
-DSPCOMPLEX sampleReader::getSample (int32_t phaseOffset) {
-DSPCOMPLEX temp;
+std::complex<float> sampleReader::getSample (int32_t phaseOffset) {
+std::complex<float> temp;
 
 	corrector	= phaseOffset;
 	if (!running. load ())
@@ -133,9 +134,8 @@ DSPCOMPLEX temp;
 	}
 	return temp;
 }
-//
 
-void	sampleReader::getSamples (DSPCOMPLEX *v,
+void	sampleReader::getSamples (std::complex<float> *v,
 	                          int16_t n, int32_t phaseOffset) {
 int32_t		i;
 

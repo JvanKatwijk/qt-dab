@@ -27,7 +27,8 @@
 //	This is the - almost empty - default implementation
 #include	"virtual-reader.h"
 
-	virtualReader::virtualReader	(RingBuffer<DSPCOMPLEX> *p, int32_t rate) {
+	virtualReader::virtualReader	(RingBuffer<std::complex<float>> *p,
+	                                                       int32_t rate) {
 	theBuffer	= p;
 	blockSize	= -1;
 	setMapper (rate, 2048000);
@@ -59,15 +60,16 @@ int32_t	i;
 
 	this	-> inSize	= inRate / 1000;
 	this	-> outSize	= outRate / 1000;
-	inTable		= new DSPCOMPLEX [inSize];
-	outTable	= new DSPCOMPLEX [outSize];
-	mapTable	= new float [outSize];
+	inTable			= new std::complex<float> [inSize];
+	outTable		= new std::complex<float> [outSize];
+	mapTable		= new float [outSize];
 	for (i = 0; i < outSize; i ++)
 	   mapTable [i] = (float) i * inRate / outRate;
 	conv	= 0;
 }
 
-void	virtualReader::convertandStore (DSPCOMPLEX *s, int32_t amount) {
+void	virtualReader::convertandStore (std::complex<float> *s,
+	                                             int32_t amount) {
 int32_t	i, j;
 
 	for (i = 0; i < amount; i ++) {

@@ -42,7 +42,7 @@ public:
 	void	add_element		(tii_element *);
 	void	add_main		(int16_t, float, float);
 	QMutex	tiiLocker;
-	DSPCOMPLEX	get_coordinates (int16_t, int16_t, bool *);
+	std::complex<float> get_coordinates (int16_t, int16_t, bool *);
 	void	print_coordinates	(void);
 	int16_t	get_mainId		(void);
 	int16_t	mainId;

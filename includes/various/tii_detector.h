@@ -2,9 +2,9 @@
 /*
  *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DB program
+ *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -25,30 +25,33 @@
 
 #include	<stdint.h>
 #include	"dab-params.h"
-#include	"fft.h"
+#include	"fft-handler.h"
 
 class	TII_Detector {
 public:
 		TII_Detector	(uint8_t dabMode);
 		~TII_Detector	(void);
-	bool	processNULL	(DSPCOMPLEX *, DSPCOMPLEX *, int16_t *, int16_t *);
-	int16_t	find_C		(DSPCOMPLEX *, DSPCOMPLEX *, int16_t);
+	bool	processNULL	(std::complex<float> *,
+	                         std::complex<float> *, int16_t *, int16_t *);
+	int16_t	find_C		(std::complex<float> *, 
+	                         std::complex<float> *, int16_t);
 private:
 	dabParams	params;
+	fftHandler	my_fftHandler;
 	int16_t		T_u;
 	int16_t		carriers;
 	bool		ind;
-	DSPCOMPLEX	*theBuffer;
-	DSPCOMPLEX	*buffer_2;
-	common_fft	*fft_handler;
-	DSPCOMPLEX	*fft_buffer;
+	std::complex<float>	*theBuffer;
+	std::complex<float>	*buffer_2;
+	std::complex<float>	*fft_buffer;
 	int16_t		fillCount;
 	int16_t		A		(uint8_t c, uint8_t p, int16_t k);
-	float		correlate	(DSPCOMPLEX *,
+	float		correlate	(std::complex<float> *,
 	                                 int16_t, uint64_t,
-	                                 DSPCOMPLEX *, float);
-	float		correlate_2	(DSPCOMPLEX *,
-	                                 int16_t, int16_t, DSPCOMPLEX *);
+	                                 std::complex<float> *, float);
+	float		correlate_2	(std::complex<float> *,
+	                                 int16_t, int16_t,
+	                                 std::complex<float> *);
 
 	struct nullTable {
 	   int16_t	carrier;

@@ -22,7 +22,6 @@
 
 #include	"fic-handler.h"
 #include	"radio.h"
-#include	"msc-handler.h"
 #include	"protTables.h"
 //
 //	The 3072 bits of the serial motherword shall be split into
@@ -47,15 +46,16 @@ uint8_t PI_X [24] = {
   * 	puncturing.
   *	The data is sent through to the fib processor
   */
-		ficHandler::ficHandler (RadioInterface *mr, uint8_t dabMode):
-	                                             fib_processor (mr),
-	                                             myViterbi (768, true) {
+		ficHandler::ficHandler (RadioInterface *mr,
+	                                uint8_t dabMode):
+	                                    params (dabMode),
+	                                    fib_processor (mr),
+	                                    myViterbi (768, true) {
 int16_t	i, j;
-	bitBuffer_out	= new uint8_t [768];
-	ofdm_input 	= new int16_t [2304];
-	params		= new dabParams (dabMode);
+//	bitBuffer_out	= new uint8_t [768];
+//	ofdm_input 	= new int16_t [2304];
 	index		= 0;
-	BitsperBlock	= 2 * params -> get_carriers ();
+	BitsperBlock	= 2 * params. get_carriers ();
 	ficno		= 0;
 	ficBlocks	= 0;
 	ficMissed	= 0;
@@ -77,9 +77,8 @@ int16_t	i, j;
 }
 
 		ficHandler::~ficHandler (void) {
-	delete	bitBuffer_out;
-	delete	ofdm_input;
-	delete params;
+//	delete	bitBuffer_out;
+//	delete	ofdm_input;
 }
 
 	
@@ -110,7 +109,7 @@ int32_t	i;
 	   for (i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
 	      if (index >= 2304) {
-	         process_ficInput (ofdm_input, ficno);
+	         process_ficInput (ficno);
 	         index = 0;
 	         ficno ++;
 	      }
@@ -131,8 +130,7 @@ int32_t	i;
   *	In the next coding step, we will combine this function with the
   *	one above
   */
-void	ficHandler::process_ficInput (int16_t *ficblock,
-	                              int16_t ficno) {
+void	ficHandler::process_ficInput (int16_t ficno) {
 int16_t	input_counter	= 0;
 int16_t	i, k;
 int32_t	local		= 0;
@@ -149,7 +147,7 @@ int16_t	viterbiBlock [3072 + 24];
 	for (i = 0; i < 21; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (PI_16 [k % 32] != 0)  
-	         viterbiBlock [local] = ficblock [input_counter ++];
+	         viterbiBlock [local] = ofdm_input [input_counter ++];
 	      local ++;
 	   }
 	}
@@ -162,7 +160,7 @@ int16_t	viterbiBlock [3072 + 24];
 	for (i = 0; i < 3; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (PI_15 [k % 32] != 0)  
-	         viterbiBlock [local] = ficblock [input_counter ++];
+	         viterbiBlock [local] = ofdm_input [input_counter ++];
 	      local ++;
 	   }
 	}
@@ -173,7 +171,7 @@ int16_t	viterbiBlock [3072 + 24];
   */
 	for (k = 0; k < 24; k ++) {
 	   if (PI_X [k] != 0) 
-	      viterbiBlock [local] = ficblock [input_counter ++];
+	      viterbiBlock [local] = ofdm_input [input_counter ++];
 	   local ++;
 	}
 /**

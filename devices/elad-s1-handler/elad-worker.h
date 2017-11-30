@@ -42,7 +42,7 @@ public:
 			eladWorker	(int32_t,	// initial freq
 	                                 eladLoader *,
 	                                 eladHandler *,
-	                                 RingBuffer<DSPCOMPLEX> *,
+	                                 RingBuffer<std::complex<float>> *,
 	                                 bool *);
 			~eladWorker	(void);
 	void		setVFOFrequency	(int32_t);
@@ -52,7 +52,7 @@ private:
 	void			run	(void);
 	eladLoader		*functions;	// 
 	RingBuffer<uint8_t>	*_I_Buffer;
-	RingBuffer<DSPCOMPLEX>	*theBuffer;
+	RingBuffer<std::complex<float>>	*theBuffer;
 	int32_t			defaultFreq;
 	long int		lastFrequency;
 	bool			runnable;
@@ -64,7 +64,7 @@ private:
         int			iqSize;
         int			convBufferSize;
         int			convIndex;
-        DSPCOMPLEX		*convBuffer;
+        std::complex<float>	*convBuffer;
 	bool			iqSwitch;
 signals:
 	void			show_eladFrequency	(int);

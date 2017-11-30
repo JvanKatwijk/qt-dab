@@ -2,12 +2,9 @@
 /*
  *    Copyright (C) 2011, 2012, 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by

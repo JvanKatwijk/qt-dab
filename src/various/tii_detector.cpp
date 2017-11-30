@@ -21,7 +21,7 @@
  */
 
 #include	"tii_detector.h"
-#include	"tii_verify.h"
+//#include	"tii_verify.h"
 #include	<stdio.h>
 //
 //	Transmitter Identification Info is carrier in the null period
@@ -50,16 +50,16 @@
 //	The constructor of the class generates the patterns, according
 //	to the algorithm in the standard.
 		TII_Detector::TII_Detector (uint8_t dabMode):
-	                                          params (dabMode) {
+	                                          params (dabMode),
+	                                          my_fftHandler (dabMode) {
 int16_t	p, c, k;
 
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
-	this	-> theBuffer	= new DSPCOMPLEX [T_u];
-	this	-> buffer_2	= new DSPCOMPLEX [T_u];
+	this	-> theBuffer	= new std::complex<float> [T_u];
+	this	-> buffer_2	= new std::complex<float> [T_u];
 	fillCount		= 0;
-	fft_handler		= new common_fft (T_u);
-	fft_buffer		= fft_handler -> getVector ();	
+	fft_buffer		= my_fftHandler. getVector ();	
 //
 //	create the patterns
 	for (p = 0; p < 70; p ++) {
@@ -119,7 +119,6 @@ int16_t	p, c, k;
 
 		TII_Detector::~TII_Detector (void) {
 	delete []	theBuffer;
-	delete		fft_handler;
 }
 
 //	Zm (0, k) is a function of the P and the C, together forming the key to
@@ -262,7 +261,8 @@ int16_t res	= 0;
 //	carriers of the null period, and then just try patterns.
 //
 //	This function is not used.
-bool	TII_Detector::processNULL (DSPCOMPLEX *v, DSPCOMPLEX *refTable,
+bool	TII_Detector::processNULL (std::complex<float> *v,
+	                           std::complex<float> *refTable,
 	                           int16_t *mainId, int16_t *subId) {
 int	i, j;
 float		maxCorr		= 0;
@@ -270,11 +270,11 @@ int16_t		startCarrier	= -carriers / 2 - 1;
 float		avg		= 0;
 
 	if (fillCount == 0)
-	   memset (theBuffer, 0, T_u * sizeof (DSPCOMPLEX));
+	   memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
 
-	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
 
-	fft_handler	-> do_FFT ();
+	my_fftHandler. do_FFT ();
 
 	for (i = 0; i < T_u; i ++)
 	   theBuffer [i] += cmul (fft_buffer [i], 0.125);
@@ -340,8 +340,9 @@ L1:
 //	the other way is the FFT approach were taking an FFT/iFFT
 //	will give us the "best" guess for the start position
 static int cnt	= 0;
-int16_t	TII_Detector::find_C (DSPCOMPLEX *v,  DSPCOMPLEX *refTable,
-	                            int16_t mainId) {
+int16_t	TII_Detector::find_C (std::complex<float> *v,
+	                      std::complex<float> *refTable,
+	                      int16_t mainId) {
 int16_t	i;
 int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
@@ -353,11 +354,11 @@ float	corrTable [48];
 	if (mainId < 0)
 	   return - 1;
 
-	memcpy (fft_buffer, v, T_u * sizeof (DSPCOMPLEX));
-	fft_handler	-> do_FFT ();
+	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
+	my_fftHandler. do_FFT ();
 
 	if (cnt == 0)
-	   memcpy (buffer_2, fft_buffer, T_u * sizeof (DSPCOMPLEX));
+	   memcpy (buffer_2, fft_buffer, T_u * sizeof (std::complex<float>));
 	else
 	   for (i = 0; i < T_u; i ++)
 	      buffer_2 [i] += fft_buffer [i];
@@ -386,17 +387,6 @@ float	corrTable [48];
 	if (maxCorr < 2 * avg)
 	   maxIndex = -1;
 
-#ifdef	TII_VERIFICATION
-//	as a kind of verification we could use
-	if (maxIndex > 0) {
-           tii_verify	helper (T_u,
-	                        startCarrier + 2 * maxIndex,
-	                        pattern,
-	                        carriers, refTable);
-	   int16_t offset = helper. correlate (buffer_2);
-	   return offset == 0 ? maxIndex : -1;
-	}
-#endif
 	return maxIndex;
 }
 //
@@ -406,10 +396,10 @@ float	corrTable [48];
 //	value from "startIndex + k * 48" (where k is 1 .. 5, determined
 //	by the pattern)
 //
-float	TII_Detector::correlate (DSPCOMPLEX 	*v,
+float	TII_Detector::correlate (std::complex<float> 	*v,
 	                         int16_t	startCarrier,
 	                         uint64_t	pattern,
-	                         DSPCOMPLEX	*refTable,
+	                         std::complex<float>	*refTable,
 	                         float threshold) {
 int16_t	realIndex;
 int16_t	i;
@@ -443,10 +433,10 @@ float	s1	= 0;
 //	function to identify the relevant bins would be as in the
 //	function correlate_2. This function was used to demonstrate
 //	the legality of the use of patterns above
-float	TII_Detector::correlate_2 (DSPCOMPLEX *v,
+float	TII_Detector::correlate_2 (std::complex<float> *v,
 	                           int16_t    p,
 	                           int16_t    c,
-	                           DSPCOMPLEX *refTable) {
+	                           std::complex<float> *refTable) {
 int16_t k;
 float	s	= 0;
 

@@ -95,6 +95,6 @@ float	compAtan::atan2 (float y, float x) {
 	}
 }
 
-float	compAtan::argX	(DSPCOMPLEX v) {
+float	compAtan::argX	(std::complex<float> v) {
 	return this -> atan2 (imag (v), real (v));
 }

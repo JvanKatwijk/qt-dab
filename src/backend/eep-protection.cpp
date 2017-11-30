@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -32,10 +32,7 @@
   */
 	eep_protection::eep_protection (int16_t bitRate,
 	                                int16_t protLevel):
-	                                    viterbi_768 (24 * bitRate) {
-	this	-> bitRate = bitRate;
-	outSize		= 24 * bitRate;
-	viterbiBlock	= new int16_t [outSize * 4 + 24];
+	                                     protection (bitRate, protLevel) {
 	if ((protLevel & (1 << 2)) == 0) {	// set A profiles
 	   switch (protLevel & 03) {
 	      case 0:			// actually level 1
@@ -109,7 +106,6 @@
 }
 
 	eep_protection::~eep_protection (void) {
-	delete[]	viterbiBlock;
 }
 
 bool	eep_protection::deconvolve (int16_t *v,
@@ -119,7 +115,8 @@ int16_t	i, j;
 int32_t	inputCounter	= 0;
 int32_t	viterbiCounter	= 0;
 	(void)size;			// currently unused
-	memset (viterbiBlock, 0, (outSize * 4 + 24) * sizeof (int16_t)); 
+	memset (viterbiBlock. data (), 0,
+	                 (outSize * 4 + 24) * sizeof (int16_t)); 
 //
 //	according to the standard we process the logical frame
 //	with a pair of tuples
@@ -148,7 +145,7 @@ int32_t	viterbiCounter	= 0;
 	   viterbiCounter ++;
 	}
 
-	viterbi_768::deconvolve (viterbiBlock, outBuffer);
+	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;
 }
 

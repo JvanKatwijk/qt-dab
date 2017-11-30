@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
 /*
@@ -32,10 +31,10 @@
 #include	"viterbi-768.h"
 #include	<QObject>
 #include	"fib-processor.h"
+#include	"dab-params.h"
+
 
 class	RadioInterface;
-class	mscHandler;
-class	dabParams;
 
 class ficHandler: public fib_processor {
 Q_OBJECT
@@ -47,13 +46,14 @@ public:
 	void	reset			(void);
 private:
 	viterbi_768	myViterbi;
-	void		process_ficInput	(int16_t *, int16_t);
+	dabParams	params;
+	uint8_t		bitBuffer_out	[768];
+        int16_t		ofdm_input	[2304];
+	int16_t		viterbiBlock	[3072 + 24];
+
+	void		process_ficInput	(int16_t);
 	int8_t		*PI_15;
 	int8_t		*PI_16;
-	uint8_t		*bitBuffer_in;
-	uint8_t		*bitBuffer_out;
-	int16_t		*ofdm_input;
-	dabParams	*params;
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;
@@ -61,8 +61,8 @@ private:
 	int16_t		ficMissed;
 	int16_t		ficRatio;
 	uint16_t	convState;
-	uint8_t		PRBS [768];
-	uint8_t		shiftRegister [9];
+	uint8_t		PRBS		[768];
+	uint8_t		shiftRegister	[9];
 signals:
 	void		show_ficSuccess	(bool);
 };

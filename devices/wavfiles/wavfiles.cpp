@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
@@ -48,7 +48,7 @@ SF_INFO *sf_info;
 
 	tester		= 3;
 	readerOK	= false;
-	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(__BUFFERSIZE);
+	_I_Buffer	= new RingBuffer<std::complex<float>>(__BUFFERSIZE);
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
@@ -97,7 +97,7 @@ void	wavFiles::stopReader	(void) {
 }
 
 //	size is in I/Q pairs
-int32_t	wavFiles::getSamples	(DSPCOMPLEX *V, int32_t size) {
+int32_t	wavFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
 
 	
@@ -121,7 +121,7 @@ int32_t	wavFiles::Samples (void) {
 
 void	wavFiles::run (void) {
 int32_t	t, i;
-DSPCOMPLEX	*bi;
+std::complex<float>	*bi;
 int32_t	bufferSize	= 32768;
 int64_t	period;
 int64_t	nextStop;
@@ -133,7 +133,7 @@ int64_t	nextStop;
 
 	period		= (32768 * 1000) / 2048;	// full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
-	bi		= new DSPCOMPLEX [bufferSize];
+	bi		= new std::complex<float> [bufferSize];
 	nextStop	= getMyTime ();
 	while (!ExitCondition) {
 	   if (readerPausing) {
@@ -163,7 +163,7 @@ int64_t	nextStop;
 /*
  *	length is number of uints that we read.
  */
-int32_t	wavFiles::readBuffer (DSPCOMPLEX *data, int32_t length) {
+int32_t	wavFiles::readBuffer (std::complex<float> *data, int32_t length) {
 int32_t	i, n;
 float	temp [2 * length];
 
@@ -173,7 +173,7 @@ float	temp [2 * length];
 	   fprintf (stderr, "End of file, restarting\n");
 	}
 	for (i = 0; i < n; i ++)
-	   data [i] = DSPCOMPLEX (temp [2 * i], temp [2 * i + 1]);
+	   data [i] = std::complex<float> (temp [2 * i], temp [2 * i + 1]);
 	return	n & ~01;
 }
 

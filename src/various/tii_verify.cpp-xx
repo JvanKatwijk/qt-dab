@@ -36,10 +36,10 @@
 int16_t i;
 	this -> length		= length;
 	(void)carriers;
-	fft_up			= new common_fft (length);
+	fft_up			= new fftHandler (length);
 	fft_buffer_1		= fft_up -> getVector ();
-	refVector		= new DSPCOMPLEX [length];
-	memset (fft_buffer_1, 0, length * sizeof (DSPCOMPLEX));
+	refVector		= new std::complex<float> [length];
+	memset (fft_buffer_1, 0, length * sizeof (std::complex<float>));
 
 //	we create a reference vector, using the known startposition
 //	of the pattern and the pattern elements themselves.
@@ -60,7 +60,7 @@ int16_t i;
 //	Then we take the fft and store the result in refVector
 	fft_up	-> do_FFT ();
 	memcpy (refVector, fft_buffer_1, length * sizeof (DSPCOMPLEX));
-	fft_down		= new common_ifft (length);
+	fft_down		= new fftHandler (length);
 	fft_buffer_2		= fft_down -> getVector ();
 }
 

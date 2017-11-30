@@ -4,10 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are acknowledged.
+ *    This file is part of Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -22,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #include	"Qt-audiodevice.h"
 //
@@ -43,7 +39,6 @@ void	Qt_AudioDevice::stop (void) {
 	Buffer -> FlushRingBuffer ();
 	close ();
 }
-
 //
 //	we always return "len" bytes
 qint64	Qt_AudioDevice::readData (char* buffer, qint64 maxSize) {

@@ -87,7 +87,8 @@ public:
 	int32_t		defaultFrequency	(void);
 	bool		restartReader		(void);
 	void		stopReader		(void);
-	int32_t		getSamples		(DSPCOMPLEX *v, int32_t size);
+	int32_t		getSamples		(std::complex<float> *v,
+	                                                 int32_t size);
 	int32_t		Samples			(void);
 	void		resetBuffer		(void);
 	int16_t		bitDepth		(void);
@@ -144,13 +145,13 @@ const	char*		board_id_name (void);
 	int16_t		mixerGain;
 	int16_t		lnaGain;
 	int32_t		selectedRate;
-	DSPCOMPLEX	*convBuffer;
+	std::complex<float>	*convBuffer;
 	int16_t		convBufferSize;
 	int16_t		convIndex;
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;
-	RingBuffer<DSPCOMPLEX> *theBuffer;
+	RingBuffer<std::complex<float>> *theBuffer;
 	int32_t		inputRate;
 	struct airspy_device* device;
 	uint64_t 	serialNumber;

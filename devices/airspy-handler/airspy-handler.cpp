@@ -180,9 +180,10 @@ uint32_t samplerate_count;
 	   mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
 	}
 	convIndex		= 0;
-	convBuffer		= new DSPCOMPLEX [convBufferSize + 1];
+	convBuffer		= new std::complex<float> [convBufferSize + 1];
 
-	theBuffer		= new RingBuffer<DSPCOMPLEX> (256 *1024);
+	theBuffer		= new RingBuffer<std::complex<float>>
+	                                                    (256 * 1024);
 	tabWidget	-> setCurrentIndex (0);
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_linearity (int)));
@@ -360,12 +361,13 @@ airspyHandler *p;
 int 	airspyHandler::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-DSPCOMPLEX temp [2048];
+std::complex<float> temp [2048];
 int32_t  i, j;
 
 	for (i = 0; i < nSamples; i ++) {
-	   convBuffer [convIndex ++] = DSPCOMPLEX (sbuf [2 * i] / (float)2048,
-	                                           sbuf [2 * i + 1] / (float)2048);
+	   convBuffer [convIndex ++] = std::complex<float>
+	                                     (sbuf [2 * i] / (float)2048,
+	                                      sbuf [2 * i + 1] / (float)2048);
 	   if (convIndex > convBufferSize) {
 	      for (j = 0; j < 2048; j ++) {
 	         int16_t  inpBase	= mapTable_int [j];
@@ -424,7 +426,7 @@ int16_t	airspyHandler::bitDepth (void) {
 	return 13;
 }
 
-int32_t	airspyHandler::getSamples (DSPCOMPLEX *v, int32_t size) {
+int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 
 	return theBuffer	-> getDataFromBuffer (v, size);
 }

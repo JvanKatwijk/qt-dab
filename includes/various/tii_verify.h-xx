@@ -24,18 +24,18 @@
 #define	__TII_VERIFY__
 
 #include	"dab-constants.h"
-#include	"fft.h"
+#include	"fft-handler.h"
 
 class tii_verify {
 public:
 		tii_verify (int16_t, int16_t, uint64_t, int16_t, DSPCOMPLEX *);
 		~tii_verify (void);
-	int16_t	correlate (DSPCOMPLEX *v);
+	int16_t	correlate (std::complex<float> *v);
 private:
 	int16_t		length;
 	uint64_t	pattern;
-	common_fft	*fft_up;
-	common_ifft	*fft_down;
+	fftHandler	*fft_up;
+	fftHandler	*fft_down;
 	DSPCOMPLEX	*fft_buffer_1;
 	DSPCOMPLEX	*fft_buffer_2;
 	DSPCOMPLEX	*refVector;

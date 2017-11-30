@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2008, 2009, 2010
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -21,70 +20,56 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"fft.h"
+#include	"fft-handler.h"
 #include	<cstring>
-/*
- */
-
-	common_fft::common_fft (int32_t fft_size) {
-
-	this	-> fft_size = fft_size;
-
-	vector	= (DSPCOMPLEX *) FFTW_MALLOC (sizeof (DSPCOMPLEX) * fft_size);
-	memset (vector, 0, sizeof (DSPCOMPLEX) * fft_size);
-	plan	= FFTW_PLAN_DFT_1D (fft_size,
+//
+//	The basic idea was to have a single instance of the
+//	fftHandler, for all DFT's. Makes sense, since they are all
+//	of size T_u.
+//	However, in the concurrent version this does not work,
+//	it seems some locking there is inevitable
+//
+	fftHandler::fftHandler (uint8_t mode): p (mode) {
+	this	-> fftSize = p. get_T_u ();
+	vector	= (std::complex<float> *)
+	          FFTW_MALLOC (sizeof (std::complex<float>) * fftSize);
+	plan	= FFTW_PLAN_DFT_1D (fftSize,
 	                            reinterpret_cast <fftwf_complex *>(vector),
 	                            reinterpret_cast <fftwf_complex *>(vector),
 	                            FFTW_FORWARD, FFTW_ESTIMATE);
 }
 
-	common_fft::~common_fft () {
+	fftHandler::~fftHandler (void) {
 	   FFTW_DESTROY_PLAN (plan);
 	   FFTW_FREE (vector);
 }
 
-DSPCOMPLEX	*common_fft::getVector () {
+std::complex<float>	*fftHandler::getVector (void) {
 	return vector;
 }
 
-void	common_fft::do_FFT () {
+void	fftHandler::do_FFT (void) {
 	FFTW_EXECUTE (plan);
 }
+//
+//	Note that we do not scale here, not needed
+//	for the purpose we are using it for
+void	fftHandler::do_IFFT (void) {
+int16_t i;
 
-void	common_fft::do_IFFT () {
-	FFTW_EXECUTE	(plan);
-	Scale		(vector);
+	for (i = 0; i < fftSize; i ++)
+	   vector [i] = conj (vector [i]);
+	FFTW_EXECUTE (plan);
+	for (i = 0; i < fftSize; i ++)
+	   vector [i] = conj (vector [i]);
 }
 
-void	common_fft::do_Shift (void) {
-DSPCOMPLEX	*v = (DSPCOMPLEX *)alloca (fft_size * sizeof (DSPCOMPLEX));
-
-	memcpy (v, vector, fft_size * sizeof (DSPCOMPLEX));
-	memcpy (vector, &v [fft_size / 2], fft_size / 2 * sizeof (DSPCOMPLEX));
-	memcpy (&vector [fft_size / 2], v, fft_size / 2 * sizeof (DSPCOMPLEX));
-}
-	
-void	common_fft::Scale (DSPCOMPLEX *Data) {
-const DSPFLOAT  Factor = 1.0 / DSPFLOAT (fft_size);
-int32_t	Position;
-
-	// scale all entries
-	for (Position = 0; Position < fft_size; Position ++)
-	   Data [Position] *= Factor;
-}
-
-/*
- * 	and a wrapper for the inverse transformation
- */
+//	Obsolete
 	common_ifft::common_ifft (int32_t fft_size) {
 int32_t	i;
 
-//	if ((fft_size & (fft_size - 1)) == 0)
-	   this	-> fft_size = fft_size;
-//	else
-//	   this -> fft_size = 4096;	/* just a default	*/
-
-	vector	= (DSPCOMPLEX *)FFTW_MALLOC (sizeof (DSPCOMPLEX) * fft_size);
+	this	-> fft_size = fft_size;
+	vector	= (std::complex<float> *)FFTW_MALLOC (sizeof (std::complex<float>) * fft_size);
 	for (i = 0; i < fft_size; i ++)
 	   vector [i] = 0;
 	plan	= FFTW_PLAN_DFT_1D (fft_size,
@@ -93,27 +78,16 @@ int32_t	i;
 	                            FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-	common_ifft::~common_ifft () {
+	common_ifft::~common_ifft (void) {
 	   FFTW_DESTROY_PLAN (plan);
 	   FFTW_FREE (vector);
 }
 
-DSPCOMPLEX	*common_ifft::getVector () {
+std::complex<float>	*common_ifft::getVector () {
 	return vector;
 }
 
-void	common_ifft::do_IFFT () {
+void	common_ifft::do_IFFT (void) {
 	FFTW_EXECUTE	(plan);
-	Scale		(vector);
 }
-
-void	common_ifft::Scale (DSPCOMPLEX *Data) {
-const DSPFLOAT  Factor = 1.0 / DSPFLOAT (fft_size);
-int32_t	Position;
-
-	// scale all entries
-	for (Position = 0; Position < fft_size; Position ++)
-	   Data [Position] *= Factor;
-}
-
 

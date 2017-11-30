@@ -27,8 +27,8 @@
 
 	spectrumhandler::spectrumhandler	(RadioInterface	*mr,
 	                                         QSettings	*dabSettings,
-	                                         RingBuffer<DSPCOMPLEX> *sbuffer,
-	                                         RingBuffer<DSPCOMPLEX>* ibuffer) {
+	                                         RingBuffer<std::complex<float>> *sbuffer,
+	                                         RingBuffer<std::complex<float>>* ibuffer) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -56,7 +56,7 @@ QColor	curveColor;
 	displayBuffer		= new double [displaySize];
 	memset (displayBuffer, 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 8 * displaySize;
-	spectrum		= (DSPCOMPLEX *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
+	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
                                     reinterpret_cast <fftwf_complex *>(spectrum),
                                     reinterpret_cast <fftwf_complex *>(spectrum),
@@ -224,7 +224,7 @@ void	spectrumhandler::hide		(void) {
 }
 
 void	spectrumhandler::showIQ	(int amount) {
-DSPCOMPLEX *Values	= (DSPCOMPLEX *)alloca (amount * sizeof (DSPCOMPLEX));
+std::complex<float> Values [amount];
 int16_t	i;
 int16_t	t;
 double	avg	= 0;

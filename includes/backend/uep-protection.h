@@ -26,9 +26,8 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"protection.h"
-#include	"viterbi-768.h"
 
-	class uep_protection: public protection, public viterbi_768 {
+	class uep_protection: public protection {
 public:
 		uep_protection (int16_t, int16_t);
 		~uep_protection	(void);
@@ -42,9 +41,6 @@ private:
 	int8_t		*PI2;
 	int8_t		*PI3;
 	int8_t		*PI4;
-	int16_t		bitRate;
-	int32_t		outSize;
-	int16_t		*viterbiBlock;
 };
 
 #endif

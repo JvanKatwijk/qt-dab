@@ -37,7 +37,7 @@ class	wavFiles: public virtualInput,
 public:
 			wavFiles	(QString);
 	       		~wavFiles	(void);
-	int32_t		getSamples	(DSPCOMPLEX *, int32_t);
+	int32_t		getSamples	(std::complex<float> *, int32_t);
 	uint8_t		myIdentity	(void);
 	int32_t		Samples		(void);
 	bool		restartReader	(void);
@@ -47,8 +47,8 @@ private:
 	int		tester;
 	QFrame		*myFrame;
 virtual	void		run		(void);
-	int32_t		readBuffer	(DSPCOMPLEX *, int32_t);
-	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
+	int32_t		readBuffer	(std::complex<float> *, int32_t);
+	RingBuffer<std::complex<float>>	*_I_Buffer;
 	int32_t		bufferSize;
 	SNDFILE		*filePointer;
 	bool		readerOK;

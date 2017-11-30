@@ -50,7 +50,7 @@ public:
 	int32_t		getVFOFrequency	(void);
 	bool		restartReader	(void);
 	void		stopReader	(void);
-	int32_t		getSamples	(DSPCOMPLEX *V, int32_t size);
+	int32_t		getSamples	(std::complex<float> *V, int32_t size);
 	int32_t		Samples		(void);
 	int16_t		bitDepth	(void);
 private slots:
@@ -61,7 +61,6 @@ private slots:
 	void		setConnection	(void);
 	void		wantConnect	(void);
 	void		setDisconnect	(void);
-	void		dumpButton_pressed (void);
 private:
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);

@@ -87,7 +87,7 @@ void	rawFiles::stopReader	(void) {
 }
 
 //	size is in I/Q pairs, file contains 8 bits values
-int32_t	rawFiles::getSamples	(DSPCOMPLEX *V, int32_t size) {
+int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
 uint8_t	*temp = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 
@@ -102,8 +102,8 @@ uint8_t	*temp = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 
 	amount = _I_Buffer	-> getDataFromBuffer (temp, 2 * size);
 	for (i = 0; i < amount / 2; i ++)
-	   V [i] = DSPCOMPLEX (float (temp [2 * i] - 128) / 128.0,
-	                       float (temp [2 * i + 1] - 128) / 128.0);
+	   V [i] = std::complex<float> (float (temp [2 * i] - 128) / 128.0,
+	                                float (temp [2 * i + 1] - 128) / 128.0);
 	return amount / 2;
 }
 

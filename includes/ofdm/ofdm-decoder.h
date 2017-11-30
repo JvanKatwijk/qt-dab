@@ -32,8 +32,9 @@
 #else
 #include	<QObject>
 #endif
+#include	<vector>
 #include	<stdint.h>
-#include	"fft.h"
+#include	"fft-handler.h"
 #include	"ringbuffer.h"
 #include	"phasetable.h"
 #include	"freq-interleaver.h"
@@ -53,16 +54,16 @@ public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
 #ifdef	HAVE_SPECTRUM
-	                                 RingBuffer<DSPCOMPLEX> *,
+	                                 RingBuffer<std::complex<float>> *,
 #endif
 	                                 int16_t,
 	                                 ficHandler	*,
 	                                 mscHandler	*);
 		~ofdmDecoder		(void);
-	void	processBlock_0		(DSPCOMPLEX *);
-	void	decodeFICblock		(DSPCOMPLEX *, int32_t n);
-	void	decodeMscblock		(DSPCOMPLEX *, int32_t n);
-	int16_t	get_snr			(DSPCOMPLEX *);
+	void	processBlock_0		(std::complex<float> *);
+	void	decodeFICblock		(std::complex<float> *, int32_t n);
+	void	decodeMscblock		(std::complex<float> *, int32_t n);
+	int16_t	get_snr			(std::complex<float> *);
 	void	stop			(void);
 	void	reset			(void);
 #ifndef	__THREADED_DECODING
@@ -71,10 +72,11 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
+	fftHandler	my_fftHandler;
 #ifdef	HAVE_SPECTRUM
-	RingBuffer<DSPCOMPLEX> *iqBuffer;
+	RingBuffer<std::complex<float>> *iqBuffer;
 #ifdef	__QUALITY
-	float		computeQuality	(DSPCOMPLEX *);
+	float		computeQuality	(std::complex<float> *);
 #endif
 #endif
 	ficHandler	*my_ficHandler;
@@ -82,7 +84,7 @@ private:
 #ifdef	__THREADED_DECODING
 	void		run		(void);
 	std::atomic<bool>		running;
-	DSPCOMPLEX	**command;
+	std::complex<float>	**command;
 	int16_t		amount;
 	int16_t		currentBlock;
 	void		processBlock_0		(void);
@@ -98,9 +100,9 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int16_t		getMiddle	(void);
-	DSPCOMPLEX	*phaseReference;
-	common_fft	*fft_handler;
-	DSPCOMPLEX	*fft_buffer;
+	std::vector<complex<float>>	phaseReference;
+//	std::complex<float>	*phaseReference;
+	std::complex<float>	*fft_buffer;
 	interLeaver	myMapper;
 	phaseTable	*phasetable;
 	int32_t		blockIndex;

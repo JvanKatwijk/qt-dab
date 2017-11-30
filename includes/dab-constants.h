@@ -50,8 +50,6 @@
 typedef	void	*HINSTANCE;
 #endif
 
-typedef	float	DSPFLOAT;
-typedef	std::complex<DSPFLOAT> DSPCOMPLEX;
 
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -84,54 +82,40 @@ using namespace std;
 //	40 up shows good results
 #define		DIFF_LENGTH	30
 static inline
-bool	isIndeterminate (DSPFLOAT x) {
+bool	isIndeterminate (float x) {
 	return x != x;
 }
 
 static inline
-bool	isInfinite (double x) {
-	return x == numeric_limits<DSPFLOAT>::infinity ();
+bool	isInfinite (float x) {
+	return x == numeric_limits<float>::infinity ();
 }
 
 static inline
-DSPCOMPLEX cmul (DSPCOMPLEX x, float y) {
-	return DSPCOMPLEX (real (x) * y, imag (x) * y);
+std::complex<float> cmul (std::complex<float> x, float y) {
+	return std::complex<float> (real (x) * y, imag (x) * y);
 }
 
 static inline
-DSPCOMPLEX cdiv (DSPCOMPLEX x, float y) {
-	return DSPCOMPLEX (real (x) / y, imag (x) / y);
+std::complex<float> cdiv (std::complex<float> x, float y) {
+	return std::complex<float> (real (x) / y, imag (x) / y);
 }
 
 static inline
-float	get_db (DSPFLOAT x) {
+float	get_db (float x) {
 	return 20 * log10 ((x + 0.005) / (float)(256));
 }
 //
-//static	inline
-//DSPFLOAT	PI_Constrain (DSPFLOAT val) {
-//	if (0 <= val && val < 2 * M_PI)
-//	   return val;
-//	if (val >= 2 * M_PI)
-//	   return fmod (val, 2 * M_PI);
-////	apparently val < 0
-//	if (val > - 2 * M_PI)
-//	   return val + 2 * M_PI;
-//	return 2 * M_PI - fmod (- val, 2 * M_PI);
-//}
-/*
- */
 
 #define	MINIMUM(x, y)	((x) < (y) ? x : y)
 #define	MAXIMUM(x, y)	((x) > (y) ? x : y)
 
 static inline
-float	jan_abs (DSPCOMPLEX z) {
+float	jan_abs (std::complex<float> z) {
 float	re	= real (z);
 float	im	= imag (z);
-	if (re < 0) re = - re;
-	if (im < 0) im = - im;
-	return re + im;
+	return (re < 0 ? -re : re) +
+	       (im < 0 ? -im : im);
 }
 
 

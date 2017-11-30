@@ -180,11 +180,11 @@ public:
 	bool		restartReader		(void);
 	void		stopReader		(void);
 	int32_t		Samples			(void);
-	int32_t		getSamples		(DSPCOMPLEX *, int32_t);
+	int32_t		getSamples		(std::complex<float> *,
+	                                                        int32_t);
 	int16_t		bitDepth		(void);
-	long		GetHWLO		(void);	// should be available
-	long		GetHWSR		(void); // may be a noop
-
+	long		GetHWLO			(void);	// should be available
+	long		GetHWSR			(void); // may be a noop
 //
 //	The call back need access to
 	virtualReader	*theReader;
@@ -195,7 +195,7 @@ private:
 	int32_t		base_32;
 	int32_t		inputRate;
 	bool		loadFunctions	(void);
-	RingBuffer<DSPCOMPLEX>	*theBuffer;
+	RingBuffer<std::complex<float>>	*theBuffer;
 //	functions to be extracted from the dll
 	pfnInitHW	InitHW;		// should be available
 	pfnOpenHW	OpenHW;		// should be available

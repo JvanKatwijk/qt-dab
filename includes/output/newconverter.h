@@ -49,8 +49,8 @@ public:
 
 		~newConverter (void);
 
-bool	convert (DSPCOMPLEX v,
-	                       DSPCOMPLEX *out, int32_t *amount);
+	bool	convert (std::complex<float> v,
+	                       std::complex<float> *out, int32_t *amount);
 
 int32_t	getOutputsize (void);
 };

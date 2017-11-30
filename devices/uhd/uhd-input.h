@@ -62,7 +62,7 @@ virtual	int32_t	getVFOFrequency	(void);
 	int32_t	defaultFrequency	(void) {return 100000000;}
 virtual	bool	restartReader	(void);
 virtual	void	stopReader	(void);
-virtual	int32_t	getSamples	(DSPCOMPLEX *, int32_t size);
+virtual	int32_t	getSamples	(std::complex<float> *, int32_t size);
 virtual	int32_t	Samples		(void);
 	uint8_t	myIdentity	(void);
 virtual	void	resetBuffer	(void);

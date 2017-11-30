@@ -46,15 +46,15 @@ public:
 			sampleReader	(RadioInterface *mr,
 	                         	virtualInput *theRig
 #ifdef	HAVE_SPECTRUM
-	                         	,RingBuffer<DSPCOMPLEX> *spectrumBuffer
+	                         	,RingBuffer<std::complex<float>> *spectrumBuffer
 #endif
 	       				);
 
 			~sampleReader		(void);
 		void	setRunning	(bool b);
 		float	get_sLevel	(void);
-		DSPCOMPLEX getSample	(int32_t);
-	        void	getSamples	(DSPCOMPLEX *v,
+		std::complex<float> getSample	(int32_t);
+	        void	getSamples	(std::complex<float> *v,
 	                                 int16_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping	(void);
@@ -62,13 +62,13 @@ private:
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;
 #ifdef	HAVE_SPECTRUM
-		RingBuffer<DSPCOMPLEX> *spectrumBuffer;
-		DSPCOMPLEX	*localBuffer;
+		RingBuffer<std::complex<float>> *spectrumBuffer;
+		std::complex<float>	*localBuffer;
 		int32_t		localCounter;
 #endif
 		int32_t		bufferSize;
 		int32_t		currentPhase;
-		DSPCOMPLEX	*oscillatorTable;
+		std::complex<float>	*oscillatorTable;
 		std::atomic<bool>	running;
 		int32_t		bufferContent;
 		float		sLevel;

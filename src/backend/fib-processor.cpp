@@ -1336,9 +1336,9 @@ void	fib_processor::resetSync   (void) {
 	isSynced = false;
 }
 
-DSPCOMPLEX	fib_processor::get_coordinates (int16_t mainId,
-	                                        int16_t subId,
-	                                        bool *success) {
+std::complex<float> fib_processor::get_coordinates (int16_t mainId,
+	                                            int16_t subId,
+	                                            bool *success) {
 	return  coordinates. get_coordinates (mainId, subId, success);
 }
 

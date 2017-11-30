@@ -35,7 +35,7 @@
 class	QSettings;
 class	eladWorker;
 class	eladLoader;
-typedef	DSPCOMPLEX(*makeSampleP)(uint8_t *);
+typedef	std::complex<float>(*makeSampleP)(uint8_t *);
 
 class	eladHandler: public virtualInput, public Ui_Form {
 Q_OBJECT
@@ -49,7 +49,7 @@ public:
 
 	bool	restartReader		(void);
 	void	stopReader		(void);
-	int32_t	getSamples		(DSPCOMPLEX *, int32_t);
+	int32_t	getSamples		(std::complex<float> *, int32_t);
 	int32_t	Samples			(void);
 	void	resetBuffer		(void);
 	int32_t	getRate			(void);
@@ -66,7 +66,7 @@ private:
 	bool		deviceOK;
 	eladLoader	*theLoader;
 	eladWorker	*theWorker;
-	RingBuffer<DSPCOMPLEX>	*_I_Buffer;
+	RingBuffer<std::complex<float>>	*_I_Buffer;
 	QFrame		*myFrame;
 	int32_t		vfoFrequency;
 	int32_t		vfoOffset;

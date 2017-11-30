@@ -23,35 +23,35 @@
 #ifndef	__PHASEREFERENCE__
 #define	__PHASEREFERENCE__
 
-#include	"fft.h"
 #include	<stdio.h>
 #include	<stdint.h>
+#include	<vector>
+#include	"fft-handler.h"
 #include	"phasetable.h"
 #include	"dab-constants.h"
 #include	"dab-params.h"
 
 class phaseReference : public phaseTable {
 public:
-			phaseReference 		(uint8_t, int16_t, int16_t);
+			phaseReference 		(uint8_t,
+	                                         int16_t, int16_t);
 			~phaseReference		(void);
-	int32_t		findIndex		(DSPCOMPLEX *);
-	int16_t		estimate_CarrierOffset	(DSPCOMPLEX *v);
-	float		estimate_FrequencyOffset	(DSPCOMPLEX *v);
+	int32_t		findIndex		(std::complex<float> *);
+	int16_t		estimate_CarrierOffset	(std::complex<float> *v);
+	float		estimate_FrequencyOffset (std::complex<float> *v);
 //
 //	This one is used in the ofdm decoder
-	DSPCOMPLEX	*refTable;
+	std::vector<std::complex<float>> refTable;
 private:
+	fftHandler	my_fftHandler;
 	dabParams	params;
+	std::vector<std::complex<float>> phaseDifferences;;
 	int16_t		threshold;
 	int16_t		diff_length;
 	int32_t		T_u;
 	int16_t		carriers;
-	DSPCOMPLEX	*phasedifferences;
 
-	common_fft	*fft_processor;
-	DSPCOMPLEX	*fft_buffer;
-	common_ifft	*res_processor;
-	DSPCOMPLEX	*res_buffer;
+	std::complex<float>	*fft_buffer;
 	int32_t		fft_counter;
 };
 #endif

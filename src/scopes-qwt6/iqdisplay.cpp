@@ -2,27 +2,23 @@
 /*
  *    Copyright (C) 2008, 2009, 2010, 2011, 2012, 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J (JSDR).
- *    Many of the ideas as implemented in JSDR are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of Qt-DAB
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #include	"iqdisplay.h"
 #include	"spectrogramdata.h"
@@ -40,8 +36,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	plotgrid	= plot;
 	x_amount	= x;
 	CycleCount	= 0;
-	Points		= new DSPCOMPLEX [x_amount];
-	memset (Points, 0, x_amount * sizeof (DSPCOMPLEX));
+	Points		= new std::complex<float> [x_amount];
+	memset (Points, 0, x_amount * sizeof (std::complex<float>));
 	this		-> setColorMap (colorMap);
 	plotData	= new double [2 * Radius * 2 * Radius];
 	plot2		= new double [2 * Radius * 2 * Radius];
@@ -66,7 +62,7 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 //	delete		IQData;
 }
 
-void	IQDisplay::DisplayIQ (DSPCOMPLEX *z, float scale) {
+void	IQDisplay::DisplayIQ (std::complex<float> *z, float scale) {
 int16_t	i;
 
 	for (i = 0; i < x_amount; i ++) {
@@ -88,7 +84,7 @@ int16_t	i;
 	   if (y <= - Radius)
 	      y = -(Radius - 1);
 
-	   Points [i] = DSPCOMPLEX (x, y);
+	   Points [i] = std::complex<float> (x, y);
 	   plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 100;
 	}
 

@@ -2,12 +2,9 @@
 /*
  *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -22,11 +19,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
-#ifndef __FIR_LOWPASSFILTER
-#define __FIR_LOWPASSFILTER
+#ifndef __FIR_LOWPASSFILTER__
+#define __FIR_LOWPASSFILTER__
 
 #include	"dab-constants.h"
 
@@ -36,13 +32,13 @@ public:
 	                            int32_t, 	// cutoff frequency
 	                            int32_t	// samplerate
 	                           );
-			~LowPassFIR (void);
-	DSPCOMPLEX	Pass		(DSPCOMPLEX);
-	DSPFLOAT	Pass		(DSPFLOAT);
+			~LowPassFIR	(void);
+std::complex<float>	Pass		(std::complex<float>);
+		float	Pass		(float);
 private:
 	int16_t		filterSize;
-	DSPCOMPLEX	*filterKernel;
-	DSPCOMPLEX	*Buffer;
+	std::complex<float>	*filterKernel;
+	std::complex<float>	*Buffer;
 	int16_t		ip;
 };
 

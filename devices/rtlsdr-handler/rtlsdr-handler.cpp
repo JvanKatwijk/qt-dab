@@ -353,7 +353,7 @@ void	rtlsdrHandler::set_KhzOffset	(int32_t o) {
 //	The brave old getSamples. For the dab stick, we get
 //	size samples: still in I/Q pairs, but we have to convert the data from
 //	uint8_t to DSPCOMPLEX *
-int32_t	rtlsdrHandler::getSamples (DSPCOMPLEX *V, int32_t size) { 
+int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) { 
 int32_t	amount, i;
 uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 //
@@ -362,7 +362,8 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
  	   fwrite (tempBuffer, amount, 1, dumpfilePointer);
 
 	for (i = 0; i < amount / 2; i ++)
-	    V [i] = DSPCOMPLEX ((float (tempBuffer [2 * i] - 128)) / 128.0,
+	    V [i] = std::complex<float>
+	                       ((float (tempBuffer [2 * i] - 128)) / 128.0,
 	                        (float (tempBuffer [2 * i + 1] - 128)) / 128.0);
 	return amount / 2;
 }

@@ -4,25 +4,21 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the SDR-J
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of Qt-DAB
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include	"newconverter.h"
@@ -56,8 +52,8 @@ int	err;
 	delete		src_data;
 }
 
-bool	newConverter::convert (DSPCOMPLEX v,
-	                       DSPCOMPLEX *out, int32_t *amount) {
+bool	newConverter::convert (std::complex<float> v,
+	                       std::complex<float> *out, int32_t *amount) {
 int32_t	i;
 int32_t	framesOut;
 int	res;
@@ -78,7 +74,8 @@ int	res;
 	inp		= 0;
 	framesOut	= src_data -> output_frames_gen;
 	for (i = 0; i < framesOut; i ++)
-	   out [i] = DSPCOMPLEX (outBuffer [2 * i], outBuffer [2 * i + 1]);
+	   out [i] = std::complex<float> (outBuffer [2 * i],
+	                                  outBuffer [2 * i + 1]);
 	*amount		= framesOut;
 	return true;
 }

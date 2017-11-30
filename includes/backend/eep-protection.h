@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -18,7 +18,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
 #ifndef	__EEP_PROTECTION__
@@ -27,22 +26,17 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"protection.h"
-#include	"viterbi-768.h"
 
-
-	class eep_protection: public protection, public viterbi_768 {
+        class eep_protection: public protection {
 public:
-		eep_protection		(int16_t, int16_t);
-		~eep_protection		(void);
-bool		deconvolve		(int16_t *, int32_t, uint8_t *);
+                eep_protection          (int16_t, int16_t);
+                ~eep_protection         (void);
+bool            deconvolve              (int16_t *, int32_t, uint8_t *);
 private:
-	int16_t		L1;
-	int16_t		L2;
-	int8_t		*PI1;
-	int8_t		*PI2;
-	int16_t		bitRate;
-	int32_t		outSize;
-	int16_t		*viterbiBlock;
+        int16_t         L1;
+        int16_t         L2;
+        int8_t          *PI1;
+        int8_t          *PI2;
 };
 
 #endif

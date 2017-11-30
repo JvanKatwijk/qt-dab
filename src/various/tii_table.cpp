@@ -68,19 +68,18 @@ int16_t i;
 	      tiiLocker. unlock ();
 	      return;
 	   }
-#ifdef	TII_COORDINATES
 	fprintf (stderr, "transmitter  %d at\t(%f %f)\n",
 	                        t -> subId,
 	                        latitude + t -> latitudeOffset,
 	                        longitude + t -> longitudeOffset);
-#endif
 	offsets. push_back (*t);
 	tiiLocker. unlock ();
 	
 }
 
-DSPCOMPLEX tii_table::get_coordinates (int16_t mainId,
-	                               int16_t subId, bool *success) {
+std::complex<float>
+	tii_table::get_coordinates (int16_t mainId,
+	                            int16_t subId, bool *success) {
 int16_t i;
 float x, y;
 
@@ -88,7 +87,7 @@ float x, y;
 	*success	= false;
 	if (this -> mainId != mainId) {
 	   tiiLocker. unlock ();
-	   return DSPCOMPLEX (0, 0);
+	   return std::complex<float> (0, 0);
 	}
 
 //	print_coordinates ();
@@ -100,10 +99,10 @@ float x, y;
 	
 	   *success = true;
 	   tiiLocker. unlock ();
-	   return DSPCOMPLEX (x, y);
+	   return std::complex<float> (x, y);
 	}
 	tiiLocker. unlock ();
-	return DSPCOMPLEX (0, 0);
+	return std::complex<float> (0, 0);
 }
 
 void	tii_table::print_coordinates	(void) {

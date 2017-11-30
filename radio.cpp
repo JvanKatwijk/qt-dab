@@ -35,7 +35,6 @@
 #include	<unistd.h>
 #include	<vector>
 #include	"radio.h"
-#include	"fft.h"
 #include	"band-handler.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
@@ -111,8 +110,8 @@ QString h;
 	thereisSound		= false;
 	dabBand			= BAND_III;
 #ifdef  HAVE_SPECTRUM
-        spectrumBuffer          = new RingBuffer<DSPCOMPLEX> (2 * 32768);
-	iqBuffer		= new RingBuffer<DSPCOMPLEX> (2 * 1536);
+        spectrumBuffer          = new RingBuffer<std::complex<float>> (2 * 32768);
+	iqBuffer		= new RingBuffer<std::complex<float>> (2 * 1536);
 #endif
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 

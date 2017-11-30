@@ -119,7 +119,7 @@ ULONG APIkeyValue_length = 255;
 	}
 
 	api_version	-> display (ver);
-	_I_Buffer	= new RingBuffer<DSPCOMPLEX>(2 * 1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 	vfoFrequency	= Khz (220000);
 	currentGred	= DEFAULT_GRED;
 //
@@ -301,11 +301,12 @@ void myStreamCallback (int16_t		*xi,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
-DSPCOMPLEX *localBuf = (DSPCOMPLEX *)alloca (numSamples * sizeof (DSPCOMPLEX));
+std::complex<float> *localBuf =
+	   (std::complex<float> *)alloca (numSamples * sizeof (std::complex<float>));
 
 	for (i = 0; i <  (int)numSamples; i ++)
-	   localBuf [i] = DSPCOMPLEX (float (xi [i]) / 2048.0,
-	                              float (xq [i]) / 2048.0);
+	   localBuf [i] = std::complex<float> (float (xi [i]) / 2048.0,
+	                                       float (xq [i]) / 2048.0);
 	p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
 	(void)	firstSampleNum;
 	(void)	grChanged;
@@ -370,7 +371,7 @@ void	sdrplayHandler::stopReader	(void) {
 //
 //	The brave old getSamples. For the sdrplay, we get
 //	size still in I/Q pairs
-int32_t	sdrplayHandler::getSamples (DSPCOMPLEX *V, int32_t size) { 
+int32_t	sdrplayHandler::getSamples (std::complex<float> *V, int32_t size) { 
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 

@@ -48,7 +48,7 @@
 	cifVector		= new int16_t [55296];
 	cifCount		= 0;	// msc blocks in CIF
 	blkCount		= 0;
-	dabHandler		= new dabVirtual;
+	dabHandler		= new dabVirtual ();
 	work_to_be_done		= false;
 	dabModus		= 0;
 	BitsperBlock		= 2 * params. get_carriers ();

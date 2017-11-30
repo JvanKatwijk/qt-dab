@@ -110,12 +110,14 @@ HEADERS += ./radio.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
 	   ./includes/output/fir-filters.h \
-           ./includes/various/fft.h \
+           ./includes/various/fft-handler.h \
 	   ./includes/various/ringbuffer.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
 	   ./includes/various/band-handler.h \
 	   ./includes/various/tii_table.h \
+	   ./includes/various/tii_detector.h \
+#	   ./includes/various/tii_verify.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
@@ -173,11 +175,13 @@ SOURCES += ./main.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
 	   ./src/output/fir-filters.cpp \
-           ./src/various/fft.cpp \
+           ./src/various/fft-handler.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
 	   ./src/various/band-handler.cpp \
 	   ./src/various/tii_table.cpp \
+	   ./src/various/tii_detector.cpp \
+#	   ./src/various/tii_verify.cpp  \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
            ./devices/wavfiles/wavfiles.cpp
@@ -225,9 +229,6 @@ CONFIG		+= spectrum
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
-
-#experimental, might show transmitter coordinates
-CONFIG		+= try_tii		# 
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
@@ -290,9 +291,6 @@ CONFIG		+= spectrum
 
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
-
-#experimental, might show transmitter coordinates
-CONFIG		+= try_tii		# 
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
@@ -432,15 +430,6 @@ qt-audio	{
 	                   ./includes/output/Qt-audiodevice.h
 	SOURCES		+= ./src/output/Qt-audio.cpp \
 	                   ./src/output/Qt-audiodevice.cpp
-}
-
-try_tii		{
-# experimental stuff
-	DEFINES		+= TII_COORDINATES
-	HEADERS		+= ./includes/various/tii_detector.h \
-	                   ./includes/various/tii_verify.h
-	SOURCES		+= ./src/various/tii_detector.cpp \
-	                   ./src/various/tii_verify.cpp
 }
 
 datastreamer	{

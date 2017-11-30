@@ -208,14 +208,13 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/newconverter.h
-	     ./includes/various/fft.h
+	     ./includes/various/fft-handler.h
 	     ./includes/various/ringbuffer.h
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
 	     ./includes/various/tii_table.h
 	     ./includes/various/tii_detector.h
-	     ./includes/various/tii_verify.h
 	)
 
 	set (${objectName}_SRCS
@@ -270,13 +269,12 @@ add_definitions (-DPRESET_NAME)
 	     ./src/output/audio-base.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
-	     ./src/various/fft.cpp
+	     ./src/various/fft-handler.cpp
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
 	     ./src/various/tii_table.cpp
 	     ./src/various/tii_detector.cpp
-	     ./src/various/tii_verify.cpp
 	)
 
 	set (${objectName}_MOCS

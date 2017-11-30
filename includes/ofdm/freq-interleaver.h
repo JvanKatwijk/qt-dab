@@ -18,15 +18,13 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
 #ifndef	__FREQ_INTERLEAVER__
 #define	__FREQ_INTERLEAVER__
 #include	<stdint.h>
 #include	"dab-constants.h"
-
-class	dabParams;
+#include	"dab-params.h"
 
 /**
   *	\class interLeaver
@@ -35,11 +33,13 @@ class	dabParams;
   */
 class	interLeaver {
 public:
-	interLeaver	(dabParams *);
-	~interLeaver	(void);
-int16_t	mapIn		(int16_t);
+		interLeaver	(uint8_t);
+		~interLeaver	(void);
+	int16_t	mapIn		(int16_t);
 private:
-
+	dabParams	p;
+	void    createMapper	(int16_t T_u, int16_t V1,
+                                    int16_t lwb, int16_t upb, int16_t *v);
 	int16_t	*permTable;
 };
 

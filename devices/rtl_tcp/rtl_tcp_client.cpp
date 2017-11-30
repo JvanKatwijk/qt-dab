@@ -69,8 +69,6 @@
 	         this, SLOT (set_fCorrection (int)));
 	connect (khzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_Offset (int)));
-        connect (dumpButton, SIGNAL (clicked (void)),
-                 this, SLOT (dumpButton_pressed (void)));
 	state	-> setText ("waiting to start");
 }
 
@@ -189,7 +187,7 @@ void	rtl_tcp_client::stopReader	(void) {
 //	The brave old getSamples. For the dab stick, we get
 //	size: still in I/Q pairs, but we have to convert the data from
 //	uint8_t to DSPCOMPLEX *
-int32_t	rtl_tcp_client::getSamples (DSPCOMPLEX *V, int32_t size) { 
+int32_t	rtl_tcp_client::getSamples (std::complex<float> *V, int32_t size) { 
 int32_t	amount, i;
 uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 //
@@ -198,8 +196,9 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 	   fwrite (tempBuffer, amount, 1, dumpfilePointer);
 
 	for (i = 0; i < amount / 2; i ++)
-	    V [i] = DSPCOMPLEX ((float (tempBuffer [2 * i] - 128)) / 128.0,
-	                        (float (tempBuffer [2 * i + 1] - 128)) / 128.0);
+	    V [i] = std::complex<float>
+	                   ((float (tempBuffer [2 * i] - 128)) / 128.0,
+	                    (float (tempBuffer [2 * i + 1] - 128)) / 128.0);
 	return amount / 2;
 }
 
@@ -284,30 +283,5 @@ void	rtl_tcp_client::setDisconnect (void) {
 void	rtl_tcp_client::set_Offset	(int32_t o) {
 	sendCommand (0x0a, Khz (o));
 	vfoOffset	= o;
-}
-
-void	rtl_tcp_client::dumpButton_pressed (void) {
-	if (!dumping) {
-	   QString file = QFileDialog::getSaveFileName (NULL,
-	                                                tr ("Save file ..."),
-	                                                QDir::homePath (),
-	                                                tr ("iq file (*.iq)"));
-	   if (file == QString (""))
-	      return;
-	   file		= QDir::toNativeSeparators (file);
-	   if (!file.endsWith (".iq", Qt::CaseInsensitive))
-	      file.append (".iq");
-	   dumpfilePointer = fopen (file. toLatin1 (). data (), "w+b");
-	   if (dumpfilePointer == NULL)
-	      return;
-	   dumpButton -> setText ("WRITING");
-	   dumping = true;
-	}
-	else {
-	   dumping = false;
-	   fclose (dumpfilePointer);
-	   dumpfilePointer = NULL;
-	   dumpButton -> setText ("write raw bytes");
-	}
 }
 

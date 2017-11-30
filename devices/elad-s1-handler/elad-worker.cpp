@@ -34,7 +34,7 @@
 	eladWorker::eladWorker (int32_t		defaultFreq,
 	                        eladLoader	*f,
 	                        eladHandler	*h,
-	                        RingBuffer<DSPCOMPLEX> *theBuffer,
+	                        RingBuffer<std::complex<float>> *theBuffer,
 	                        bool	*OK) {
 int	i;
 	fprintf (stderr, "creating a worker\n");
@@ -54,7 +54,7 @@ int	i;
 	iqSize			= conversionNumber == 3 ? 4 : 8;
 	convBufferSize          = theRate / 1000;
 	convIndex		= 0;
-	convBuffer 		= new DSPCOMPLEX [convBufferSize + 1];
+	convBuffer 		= new std::complex<float> [convBufferSize + 1];
 
 	fprintf (stderr, "iqSize = %d, conversion = %d\n",	
 	                       iqSize, conversionNumber);
@@ -99,9 +99,9 @@ void	eladWorker::stop	(void) {
 	delete [] convBuffer;
 }
 
-DSPCOMPLEX	makeSample_31bits (uint8_t *);
-DSPCOMPLEX	makeSample_30bits (uint8_t *, bool);
-DSPCOMPLEX	makeSample_15bits (uint8_t *);
+std::complex<float>	makeSample_31bits (uint8_t *);
+std::complex<float>	makeSample_30bits (uint8_t *, bool);
+std::complex<float>	makeSample_15bits (uint8_t *);
 
 typedef union {
 	struct __attribute__((__packed__)) {
@@ -129,7 +129,7 @@ typedef union {
 #define	SCALE_FACTOR_14 16384.000
 
 
-DSPCOMPLEX	makeSample_31bits (uint8_t *buf) {
+std::complex<float>	makeSample_31bits (uint8_t *buf) {
 int ii = 0; int qq = 0;
 int16_t	i = 0;
 
@@ -145,14 +145,14 @@ int16_t	i = 0;
 
 	ii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
 	qq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
-	return DSPCOMPLEX ((float)qq / SCALE_FACTOR_30,
+	return std::complex<float> ((float)qq / SCALE_FACTOR_30,
 	                   (float)ii / SCALE_FACTOR_30);
-	return DSPCOMPLEX ((float)ii / SCALE_FACTOR_30,
+	return std::complex<float> ((float)ii / SCALE_FACTOR_30,
 	                   (float)qq / SCALE_FACTOR_30);
 }
 
 
-DSPCOMPLEX	makeSample_30bits (uint8_t *buf, bool flag) {
+std::complex<float>	makeSample_30bits (uint8_t *buf, bool flag) {
 int ii = 0; int qq = 0;
 int16_t	i = 0;
 
@@ -169,14 +169,14 @@ int16_t	i = 0;
 	ii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
 	qq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
 	if (flag) 
-	   return DSPCOMPLEX ((float)qq / SCALE_FACTOR_29,
-	                      (float)ii / SCALE_FACTOR_29);
+	   return std::complex<float> ((float)qq / SCALE_FACTOR_29,
+	                               (float)ii / SCALE_FACTOR_29);
 	else
-	   return DSPCOMPLEX ((float)ii / SCALE_FACTOR_29,
-	                      (float)qq / SCALE_FACTOR_29);
+	   return std::complex<float> ((float)ii / SCALE_FACTOR_29,
+	                               (float)qq / SCALE_FACTOR_29);
 }
 //
-DSPCOMPLEX	makeSample_15bits (uint8_t *buf) {
+std::complex<float>	makeSample_15bits (uint8_t *buf) {
 int ii	= 0; int qq = 0;
 int16_t	i = 0;
 
@@ -184,10 +184,10 @@ int16_t	i = 0;
               ii  += (int)((unsigned char)(buf[i++])) << 8;
               qq   = (int)((unsigned char)(buf[i++]));
               qq  += (int)((unsigned char)(buf[i++])) << 8;
-              return DSPCOMPLEX ((float)ii / SCALE_FACTOR_14,
-	                         (float)ii / SCALE_FACTOR_14);
-              return DSPCOMPLEX ((float)qq / SCALE_FACTOR_14,
-	                         (float)ii / SCALE_FACTOR_14);
+              return std::complex<float> ((float)ii / SCALE_FACTOR_14,
+	                                  (float)ii / SCALE_FACTOR_14);
+              return std::complex<float> ((float)qq / SCALE_FACTOR_14,
+	                                  (float)ii / SCALE_FACTOR_14);
 }
 
 #define	BUFFER_SIZE	(8 * 8192)
@@ -237,8 +237,7 @@ int	rc, i;
 	                       makeSample_30bits (&myBuffer [iqSize * i],
 	                                          iqSwitch);
 	         if (convIndex > convBufferSize) {
-	            DSPCOMPLEX temp [2048];
-	            fprintf (stderr, "start converting\n");
+	            std::complex<float> temp [2048];
 	            int16_t j;
 	            for (j = 0; j < 2048; j ++) {
 	               int16_t  inpBase       = mapTable_int [j];

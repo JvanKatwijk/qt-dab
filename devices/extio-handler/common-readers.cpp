@@ -29,7 +29,7 @@
 //
 //	The reader for 16 bit int values
 //
-	reader_16::reader_16 (RingBuffer<DSPCOMPLEX> *p,
+	reader_16::reader_16 (RingBuffer<std::complex<float>> *p,
 	                      int32_t base_16,
 	                      int32_t rate):virtualReader (p, rate) {
 	this	-> base = base_16;
@@ -41,7 +41,7 @@
 //	apparently bytes are read in from low byte to high byte
 void	reader_16::processData	(float IQoffs, void *data, int cnt) {
 int32_t	i;
-DSPCOMPLEX IQData [blockSize];
+std::complex<float> IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
@@ -53,7 +53,8 @@ uint8_t	*p	= (uint8_t *)data;
 	   uint8_t i1	= p [4 * i + 3];
 	   int16_t re	= (r1 << 8) | r0;
 	   int16_t im	= (i1 << 8) | i0;
-	   IQData [i]	= DSPCOMPLEX ((float)re / base, (float)im / base);
+	   IQData [i]	= std::complex<float> ((float)re / base,
+	                                       (float)im / base);
 	}
 	
 	convertandStore (IQData, blockSize);
@@ -65,7 +66,7 @@ int16_t reader_16::bitDepth	(void) {
 //
 //	The reader for 24 bit integer values
 //
-	reader_24::reader_24 (RingBuffer<DSPCOMPLEX> *p,
+	reader_24::reader_24 (RingBuffer<std::complex<float>> *p,
 	                      int32_t base_24, int32_t rate):
 	                                       virtualReader (p, rate) {
 	this	-> base	= base_24;
@@ -76,7 +77,7 @@ int16_t reader_16::bitDepth	(void) {
 
 void	reader_24::processData	(float IQoffs, void *data, int cnt) {
 int32_t	i;
-DSPCOMPLEX	IQData [blockSize];
+std::complex<float>	IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
@@ -90,7 +91,8 @@ uint8_t	*p	= (uint8_t *)data;
 	   uint8_t i2	= p [6 * i + 5];
 	   int32_t re	= int32_t (uint32_t (r2 << 16 | r1 << 8 | r0));
 	   int32_t im	= int32_t (uint32_t (i2 << 16 | i1 << 8 | i0));
-	   IQData [i]	= DSPCOMPLEX ((float)re / base, (float)im / base);
+	   IQData [i]	= std::complex<float> ((float)re / base,
+	                                       (float)im / base);
 	}
 	
 	convertandStore (IQData, blockSize);
@@ -102,7 +104,7 @@ int16_t reader_24::bitDepth	(void) {
 //
 //	The reader for 32 bit integer values
 //
-	reader_32::reader_32 (RingBuffer<DSPCOMPLEX> *p,
+	reader_32::reader_32 (RingBuffer<std::complex<float>> *p,
 	                      int32_t base_32, int32_t rate):
 	                                         virtualReader (p, rate) {
 	this	-> base = base_32;
@@ -113,7 +115,7 @@ int16_t reader_24::bitDepth	(void) {
 
 void	reader_32::processData	(float IQoffs, void *data, int cnt) {
 int32_t	i;
-DSPCOMPLEX IQData [blockSize];
+std::complex<float> IQData [blockSize];
 uint8_t	*p	= (uint8_t *)data;
 	(void)IQoffs;
 	(void)cnt;
@@ -131,7 +133,8 @@ uint8_t	*p	= (uint8_t *)data;
 	                                             r1 << 8 | r0));
 	   int32_t im	= int32_t (uint32_t (i3 << 24 | i2 << 16 |
 	                                             i1 << 8 | i0));
-	   IQData [i]	= DSPCOMPLEX ((float)re / base, (float)im / base);
+	   IQData [i]	= std::complex<float> ((float)re / base,
+	                                       (float)im / base);
 	}
 	
 	convertandStore (IQData, blockSize);
@@ -143,7 +146,8 @@ int16_t	reader_32::bitDepth	(void) {
 //
 //	The reader for 32 bit float values
 //
-	reader_float::reader_float (RingBuffer<DSPCOMPLEX> *p, int32_t rate):
+	reader_float::reader_float (RingBuffer<std::complex<float>> *p,
+	                                                     int32_t rate):
 	                                             virtualReader (p, rate) {
 int16_t	i;
 }
@@ -153,13 +157,13 @@ int16_t	i;
 //
 void	reader_float::processData	(float IQoffs, void *data, int cnt) {
 int32_t	i, j;
-DSPCOMPLEX IQData [blockSize];
+std::complex<float> IQData [blockSize];
 float	*p	= (float *)data;
 	(void)IQoffs;
 	(void)cnt;
 
 	for (i = 0; i < blockSize; i ++) 
-	   IQData [i]	= DSPCOMPLEX (p [2 * i], p [2 * i + 1]);
+	   IQData [i]	= std::complex<float> (p [2 * i], p [2 * i + 1]);
 
 	convertandStore (IQData, blockSize);
 }

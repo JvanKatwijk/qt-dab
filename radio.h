@@ -138,8 +138,8 @@ const	char		*get_programm_language_string (int16_t);
 	int16_t		ficSuccess;
 #ifdef	HAVE_SPECTRUM
         spectrumhandler         *spectrumHandler;
-	RingBuffer<DSPCOMPLEX>  *spectrumBuffer;
-	RingBuffer<DSPCOMPLEX>	*iqBuffer;
+	RingBuffer<std::complex<float>>  *spectrumBuffer;
+	RingBuffer<std::complex<float>>	*iqBuffer;
 #endif
 
 	QString		picturesPath;

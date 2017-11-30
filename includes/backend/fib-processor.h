@@ -111,7 +111,7 @@ public:
 	void	dataforAudioService	(int16_t,   audiodata *);
 	void	dataforDataService	(QString &, packetdata *);
 	void	dataforDataService	(int16_t,   packetdata *);
-	DSPCOMPLEX get_coordinates	(int16_t, int16_t, bool *);
+	std::complex<float> get_coordinates	(int16_t, int16_t, bool *);
 	int16_t	mainId			(void);
 	uint8_t	get_ecc			(void);
 	int32_t	get_ensembleId		(void);

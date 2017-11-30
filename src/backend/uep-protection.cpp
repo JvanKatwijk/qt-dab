@@ -133,19 +133,16 @@ int16_t	i;
   *	The bitRate and the protectionLevel determine the 
   *	depuncturing scheme.
   */
-	uep_protection::uep_protection (int16_t bitRate,
-	                                int16_t protLevel):
-	                                        viterbi_768 (24 * bitRate) {
-int16_t	index;
+     uep_protection::uep_protection (int16_t bitRate,
+                                        int16_t protLevel):
+                                            protection (bitRate, protLevel) {
+int16_t index;
 
-	this	-> bitRate		= bitRate;
 	index	= findIndex (bitRate, protLevel);
 	if (index == -1) {
 	   fprintf (stderr, "%d (%d) has a problem\n", bitRate, protLevel);
 	   index = 1;
 	}
-	outSize		= 24 * bitRate;
-	viterbiBlock	= new int16_t [outSize * 4 + 24];
 	L1	= profileTable [index]. L1;
 	L2	= profileTable [index]. L2;
 	L3	= profileTable [index]. L3;
@@ -161,7 +158,6 @@ int16_t	index;
 }
 
 	uep_protection::~uep_protection (void) {
-	delete[]	viterbiBlock;
 }
 
 bool	uep_protection::deconvolve (int16_t *v,
@@ -177,7 +173,8 @@ int32_t	viterbiCounter	= 0;
 
 ///	clear the bits in the viterbiBlock,
 ///	only the non-punctured ones are set
-	memset (viterbiBlock, 0, (outSize * 4 + 24) * sizeof (int16_t)); 
+	memset (viterbiBlock. data (), 0,
+	                        (outSize * 4 + 24) * sizeof (int16_t)); 
 
 	for (i = 0; i < L1; i ++) {
 	   for (j = 0; j < 128; j ++) {
@@ -223,6 +220,6 @@ int32_t	viterbiCounter	= 0;
 //
 ///	The actual deconvolution is done by the viterbi decoder
 
-	viterbi_768::deconvolve (viterbiBlock, outBuffer);
+	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;
 }

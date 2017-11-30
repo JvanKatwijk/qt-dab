@@ -2,27 +2,23 @@
 /*
  *    Copyright (C) 2010, 2011, 2012
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of the Qt-DAB
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include	"fir-filters.h"
@@ -34,14 +30,14 @@
 
 	LowPassFIR::LowPassFIR (int16_t firsize,
 	                        int32_t Fc, int32_t fs){
-DSPFLOAT	f	= (DSPFLOAT)Fc / fs;
-DSPFLOAT	sum	= 0.0;
+float	f	= (float)Fc / fs;
+float	sum	= 0.0;
 int16_t		i;
-DSPFLOAT	*temp 	= (DSPFLOAT *)alloca (firsize * sizeof (DSPFLOAT));
+float	*temp 	= (float *)alloca (firsize * sizeof (float));
 
 	filterSize	= firsize;
-	filterKernel	= new DSPCOMPLEX [filterSize];
-	Buffer		= new DSPCOMPLEX [filterSize];
+	filterKernel	= new std::complex<float> [filterSize];
+	Buffer		= new std::complex<float> [filterSize];
 	ip		= 0;
 
 	for (i = 0; i < filterSize; i ++) {
@@ -58,14 +54,14 @@ DSPFLOAT	*temp 	= (DSPFLOAT *)alloca (firsize * sizeof (DSPFLOAT));
 //
 //	Blackman window
 	   temp [i]  *= (0.42 -
-		    0.5 * cos (2 * M_PI * (DSPFLOAT)i / filterSize) +
-		    0.08 * cos (4 * M_PI * (DSPFLOAT)i / filterSize));
+		    0.5 * cos (2 * M_PI * (float)i / filterSize) +
+		    0.08 * cos (4 * M_PI * (float)i / filterSize));
 
 	   sum += temp [i];
 	}
 
 	for (i = 0; i < filterSize; i ++)
-	   filterKernel [i] = DSPCOMPLEX (temp [i] / sum, 0);
+	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
 }
 
 	LowPassFIR::~LowPassFIR () {
@@ -75,9 +71,9 @@ DSPFLOAT	*temp 	= (DSPFLOAT *)alloca (firsize * sizeof (DSPFLOAT));
 //
 //	we process the samples backwards rather than reversing
 //	the kernel
-DSPCOMPLEX	LowPassFIR::Pass (DSPCOMPLEX z) {
+std::complex<float>	LowPassFIR::Pass (std::complex<float> z) {
 int16_t	i;
-DSPCOMPLEX	tmp	= 0;
+std::complex<float>	tmp	= 0;
 
 	Buffer [ip]	= z;
 	for (i = 0; i < filterSize; i ++) {
@@ -91,11 +87,11 @@ DSPCOMPLEX	tmp	= 0;
 	return tmp;
 }
 
-DSPFLOAT LowPassFIR::Pass (DSPFLOAT v) {
+float LowPassFIR::Pass (float v) {
 int16_t		i;
-DSPFLOAT	tmp	= 0;
+float	tmp	= 0;
 
-	Buffer [ip] = DSPCOMPLEX (v, 0);
+	Buffer [ip] = std::complex<float> (v, 0);
 	for (i = 0; i < filterSize; i ++) {
 	   int16_t index = ip - i;
 	   if (index < 0)

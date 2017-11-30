@@ -168,7 +168,7 @@ int32_t		phaseTable::h_table (int32_t i, int32_t j) {
 	}
 }
 
-DSPFLOAT	phaseTable::get_Phi (int32_t k) {
+float	phaseTable::get_Phi (int32_t k) {
 int32_t k_prime, i, j, n = 0;
 
 	for (j = 0; currentTable [j]. kmin != -1000; j ++) {

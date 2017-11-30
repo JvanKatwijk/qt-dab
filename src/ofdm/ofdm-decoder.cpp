@@ -47,16 +47,17 @@
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 #ifdef	HAVE_SPECTRUM
-	                                 RingBuffer<DSPCOMPLEX> *iqBuffer,
+	                                 RingBuffer<std::complex<float>> *iqBuffer,
 #endif
 	                                 int16_t	bitDepth,
 	                                 ficHandler	*my_ficHandler,
 	                                 mscHandler	*my_mscHandler):
 	                                    params (dabMode),
+	                                    my_fftHandler (dabMode),
 #ifdef	__THREADED_DECODING
 	                                    bufferSpace (params. get_L ()),
 #endif
-	                                    myMapper (&params) {
+	                                    myMapper (dabMode) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
 #ifdef	HAVE_SPECTRUM
@@ -77,11 +78,10 @@ int16_t	i;
 	this	-> carriers		= params. get_carriers ();
 	ibits				= new int16_t [2 * this -> carriers];
 
-//	vector_2			= new DSPCOMPLEX [T_u];
 	this	-> T_g			= T_s - T_u;
-	fft_handler			= new common_fft (T_u);
-	fft_buffer			= fft_handler -> getVector ();
-	phaseReference			= new DSPCOMPLEX [T_u];
+	fft_buffer			= my_fftHandler. getVector ();
+	phaseReference			.resize (T_u);
+//	phaseReference			= new std::complex<float> [T_u];
 
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
@@ -97,9 +97,9 @@ int16_t	i;
   *	We just create a large buffer where index i refers to block i.
   *
   */
-	command			= new DSPCOMPLEX * [nrBlocks];
+	command			= new std::complex<float> * [nrBlocks];
 	for (i = 0; i < nrBlocks; i ++)
-	   command [i] = new DSPCOMPLEX [T_u];
+	   command [i] = new std::complex<float> [T_u];
 	amount		= 0;
 #endif
 }
@@ -117,8 +117,8 @@ int16_t	i;
 	delete[]	command;
 #endif
 
-	delete		fft_handler;
-	delete[]	phaseReference;
+//	delete[]	phaseReference;
+	delete[]	ibits;
 }
 //
 //	the client of this class should not known whether
@@ -185,27 +185,27 @@ int16_t	currentBlock	= 0;
   *	We need some functions to enter the ofdmProcessor data
   *	in the buffer.
   */
-void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *vi) {
+void	ofdmDecoder::processBlock_0 (std::complex<float> *vi) {
 	bufferSpace. acquire (1);
-	memcpy (command [0], vi, sizeof (DSPCOMPLEX) * T_u);
+	memcpy (command [0], vi, sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
 	helper. unlock ();
 }
 
-void	ofdmDecoder::decodeFICblock (DSPCOMPLEX *vi, int32_t blkno) {
+void	ofdmDecoder::decodeFICblock (std::complex<float> *vi, int32_t blkno) {
 	bufferSpace. acquire (1);
-	memcpy (command [blkno], &vi [T_g], sizeof (DSPCOMPLEX) * T_u);
+	memcpy (command [blkno], &vi [T_g], sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
 	helper. unlock ();
 }
 
-void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
+void	ofdmDecoder::decodeMscblock (std::complex<float> *vi, int32_t blkno) {
 	bufferSpace. acquire (1);
-	memcpy (command [blkno], &vi [T_g], sizeof (DSPCOMPLEX) * T_u);
+	memcpy (command [blkno], &vi [T_g], sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
@@ -224,13 +224,13 @@ void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *vi, int32_t blkno) {
 #ifdef	__THREADED_DECODING
 void	ofdmDecoder::processBlock_0 (void) {
 
-	memcpy (fft_buffer, command [0], T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, command [0], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *buffer) {
-	memcpy (fft_buffer, buffer, T_u * sizeof (DSPCOMPLEX));
+void	ofdmDecoder::processBlock_0 (std::complex<float> *buffer) {
+	memcpy (fft_buffer, buffer, T_u * sizeof (std::complex<float>));
 #endif
 
-	fft_handler	-> do_FFT ();
+	my_fftHandler. do_FFT ();
 /**
   *	The SNR is determined by looking at a segment of bins
   *	within the signal region and bits outside.
@@ -246,7 +246,8 @@ void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *buffer) {
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
-	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
+	memcpy (phaseReference. data (), fft_buffer,
+	                   T_u * sizeof (std::complex<float>));
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -255,22 +256,22 @@ void	ofdmDecoder::processBlock_0 (DSPCOMPLEX *buffer) {
 //	To ease computation, we map all incoming values onto quadrant 1
 #ifdef	HAVE_SPECTRUM
 #ifdef	__QUALITY
-float	ofdmDecoder::computeQuality (DSPCOMPLEX *v) {
+float	ofdmDecoder::computeQuality (std::complex<float> *v) {
 int16_t i;
-DSPCOMPLEX	avgPoint	= DSPCOMPLEX (0, 0);
-DSPCOMPLEX	x [T_u];
+std::complex<float>	avgPoint	= std::complex<float> (0, 0);
+std::complex<float>	x [T_u];
 float	avg	= 0;
 float	S	= 0;
 
 	for (i = 0; i < carriers; i ++) {
-	   x [i]	= DSPCOMPLEX (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
+	   x [i]	= std::complex<float> (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
 	   avgPoint	+= x [i];
 	}
 
-	avg	= arg (avgPoint * conj (DSPCOMPLEX (1, 1)));
+	avg	= arg (avgPoint * conj (std::complex<float> (1, 1)));
 
 	for (i = 0; i < carriers; i ++) {
-	   float f = arg (x [i] * conj (DSPCOMPLEX (1, 1))) - avg;
+	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;
 	   S += f * f;
 	}
 
@@ -293,16 +294,16 @@ int	cnt	= 0;
 void	ofdmDecoder::decodeFICblock (int32_t blkno) {
 int16_t	i;
 #ifdef	HAVE_SPECTRUM
-DSPCOMPLEX conjVector [T_u];
+std::complex<float> conjVector [T_u];
 #endif
-	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::decodeFICblock (DSPCOMPLEX *buffer, int32_t blkno) {
+void	ofdmDecoder::decodeFICblock (std::complex<float> *buffer, int32_t blkno) {
 int16_t	i;
-	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (std::complex<float>));
 #ifdef  HAVE_SPECTRUM
-DSPCOMPLEX conjVector [T_u];
-DSPCOMPLEX	freqOff	= DSPCOMPLEX (0, 0);
+std::complex<float> conjVector [T_u];
+std::complex<float> freqOff	= std::complex<float> (0, 0);
 #endif
 #endif
 
@@ -311,7 +312,7 @@ fftlabel:
 /**
   *	first step: do the FFT
   */
-	fft_handler -> do_FFT ();
+	my_fftHandler. do_FFT ();
 /**
   *	a little optimization: we do not interchange the
   *	positive/negative frequencies to their right positions.
@@ -333,18 +334,19 @@ toBitsLabel:
   *	The carrier of a block is the reference for the carrier
   *	on the same position in the next block
   */
-	   DSPCOMPLEX	r1 = fft_buffer [index] * conj (phaseReference [index]);
-//	   phaseReference [index] = fft_buffer [index];
+	   std::complex<float>	r1 = fft_buffer [index] *
+	                                    conj (phaseReference [index]);
 #ifdef	HAVE_SPECTRUM
 	   conjVector [index] = r1;
 #endif;
-	   DSPFLOAT ab1	= jan_abs (r1);
+	   float ab1	= jan_abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
-	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
+	memcpy (phaseReference. data (), fft_buffer,
+	                            T_u * sizeof (std::complex<float>));
 
 handlerLabel:
 	my_ficHandler -> process_ficBlock (ibits, blkno);
@@ -375,15 +377,15 @@ handlerLabel:
 void	ofdmDecoder::decodeMscblock (int32_t blkno) {
 int16_t	i;
 
-	memcpy (fft_buffer, command [blkno], T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::decodeMscblock (DSPCOMPLEX *buffer, int32_t blkno) {
+void	ofdmDecoder::decodeMscblock (std::complex<float> *buffer, int32_t blkno) {
 int16_t	i;
-	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (DSPCOMPLEX));
+	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (std::complex<float>));
 #endif
 
 fftLabel:
-	fft_handler -> do_FFT ();
+	my_fftHandler. do_FFT ();
 //
 //	Note that "mapIn" maps to -carriers / 2 .. carriers / 2
 //	we did not set the fft output to low .. high
@@ -393,16 +395,17 @@ toBitsLabel:
 	   if (index < 0) 
 	      index += T_u;
 	      
-	   DSPCOMPLEX	r1 = fft_buffer [index] * conj (phaseReference [index]);
-//	   phaseReference [index] = fft_buffer [index];
-	   DSPFLOAT ab1	= jan_abs (r1);
+	   std::complex<float>	r1 = fft_buffer [index] *
+	                               conj (phaseReference [index]);
+	   float ab1	= jan_abs (r1);
 //	Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
 
-	memcpy (phaseReference, fft_buffer, T_u * sizeof (DSPCOMPLEX));
+	memcpy (phaseReference. data (), fft_buffer,
+	                           T_u * sizeof (std::complex<float>));
 
 handlerLabel:;
 	my_mscHandler -> process_mscBlock (ibits, blkno);
@@ -416,10 +419,10 @@ handlerLabel:;
   *	Just get the strength from the selected carriers compared
   *	to the strength of the carriers outside that region
   */
-int16_t	ofdmDecoder::get_snr (DSPCOMPLEX *v) {
+int16_t	ofdmDecoder::get_snr (std::complex<float> *v) {
 int16_t	i;
-DSPFLOAT	noise 	= 0;
-DSPFLOAT	signal	= 0;
+float	noise 	= 0;
+float	signal	= 0;
 
 	for (i = -100; i < 100; i ++)
 	   noise += abs (v [(T_u / 2 + i)]);

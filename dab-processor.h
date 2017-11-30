@@ -42,7 +42,6 @@
 //
 
 class	RadioInterface;
-class	common_fft;
 class	dabParams;
 
 class dabProcessor: public QThread {
@@ -57,8 +56,8 @@ public:
 	                         RingBuffer<uint8_t> *,
 	                         QString
 #ifdef	HAVE_SPECTRUM
-	                        ,RingBuffer<DSPCOMPLEX>	*,
-	                         RingBuffer<DSPCOMPLEX>	*
+	                        ,RingBuffer<std::complex<float>>	*,
+	                         RingBuffer<std::complex<float>>	*
 #endif
 	                        );
 		~dabProcessor	(void);
@@ -105,22 +104,19 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int32_t		carrierDiff;
-	DSPCOMPLEX	*dataBuffer;
-	int32_t		FreqOffset;
+	std::complex<float>	*dataBuffer;
 	int16_t		fineCorrector;
 	int32_t		coarseCorrector;
 
 	bool		f2Correction;
 	int32_t		tokenCount;
-	DSPCOMPLEX	*ofdmBuffer;
+	std::complex<float>	*ofdmBuffer;
 	uint32_t	ofdmBufferIndex;
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
 virtual	void		run		(void);
 	bool		isReset;
-	common_fft	*fft_handler;
-	DSPCOMPLEX	*fft_buffer;
 signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);

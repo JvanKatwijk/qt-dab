@@ -52,8 +52,8 @@ Q_OBJECT
 public:
 			spectrumhandler		(RadioInterface *,
 	                                         QSettings	*,
-	                                         RingBuffer<DSPCOMPLEX> *,
-	                                         RingBuffer<DSPCOMPLEX> *);
+	                                         RingBuffer<std::complex<float>> *,
+	                                         RingBuffer<std::complex<float>> *);
 			~spectrumhandler	(void);
 	void		showSpectrum		(int32_t, int32_t);
 	void		showIQ			(int32_t);
@@ -64,11 +64,11 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	RingBuffer<DSPCOMPLEX>	*scopeBuffer;
-	RingBuffer<DSPCOMPLEX>	*iqBuffer;
+	RingBuffer<std::complex<float>>	*scopeBuffer;
+	RingBuffer<std::complex<float>>	*iqBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	DSPCOMPLEX	*spectrum;
+	std::complex<float>	*spectrum;
 	double		*displayBuffer;
 	float		*Window;
 	fftwf_plan	plan;
