@@ -177,7 +177,10 @@ uint32_t samplerate_count;
 	
 	airspySettings	-> beginGroup ("airspyHandler");
 	filtering 	= airspySettings -> value ("filtering", 0). toInt ();
-	filter		= new airspyFilter (7, 1024000, selectedRate);
+	int filterDegree = airspySettings -> value ("filterdegree", 9). toInt ();
+	filterDegree =(filterDegree & ~01) + 1;
+	filter		= new airspyFilter (filterDegree,
+	                                        1024000, selectedRate);
 	airspySettings	-> endGroup ();
 
 //	The sizes of the mapTable and the convTable are
