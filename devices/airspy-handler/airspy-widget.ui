@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>349</width>
+    <width>384</width>
     <height>302</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>10</x>
      <y>90</y>
-     <width>331</width>
+     <width>351</width>
      <height>191</height>
     </rect>
    </property>
@@ -34,7 +34,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>311</width>
+       <width>251</width>
        <height>20</height>
       </rect>
      </property>
@@ -46,25 +46,6 @@
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLCDNumber" name="sensitivityDisplay">
-     <property name="geometry">
-      <rect>
-       <x>340</x>
-       <y>20</y>
-       <width>41</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::NoFrame</enum>
-     </property>
-     <property name="digitCount">
-      <number>2</number>
-     </property>
-     <property name="segmentStyle">
-      <enum>QLCDNumber::Flat</enum>
      </property>
     </widget>
     <widget class="QLCDNumber" name="sensitivity_lnaDisplay">
@@ -127,7 +108,7 @@
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>100</x>
        <y>60</y>
        <width>101</width>
        <height>20</height>
@@ -140,7 +121,7 @@
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>100</x>
        <y>80</y>
        <width>91</width>
        <height>20</height>
@@ -153,7 +134,7 @@
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>100</x>
        <y>100</y>
        <width>81</width>
        <height>20</height>
@@ -161,6 +142,22 @@
      </property>
      <property name="text">
       <string>vga gain</string>
+     </property>
+    </widget>
+    <widget class="QLCDNumber" name="sensitivityDisplay">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>20</y>
+       <width>41</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="digitCount">
+      <number>2</number>
+     </property>
+     <property name="segmentStyle">
+      <enum>QLCDNumber::Flat</enum>
      </property>
     </widget>
    </widget>
@@ -307,9 +304,9 @@
     <widget class="QSlider" name="lnaSlider">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>80</x>
        <y>10</y>
-       <width>221</width>
+       <width>201</width>
        <height>20</height>
       </rect>
      </property>
@@ -339,7 +336,7 @@
     <widget class="QLCDNumber" name="lnaDisplay">
      <property name="geometry">
       <rect>
-       <x>343</x>
+       <x>290</x>
        <y>10</y>
        <width>51</width>
        <height>23</height>
@@ -355,9 +352,9 @@
     <widget class="QSlider" name="mixerSlider">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>80</x>
        <y>40</y>
-       <width>221</width>
+       <width>201</width>
        <height>20</height>
       </rect>
      </property>
@@ -374,7 +371,7 @@
     <widget class="QLCDNumber" name="mixerDisplay">
      <property name="geometry">
       <rect>
-       <x>343</x>
+       <x>290</x>
        <y>40</y>
        <width>51</width>
        <height>23</height>
@@ -403,9 +400,9 @@
     <widget class="QSlider" name="vgaSlider">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>80</x>
        <y>70</y>
-       <width>221</width>
+       <width>201</width>
        <height>20</height>
       </rect>
      </property>
@@ -435,7 +432,7 @@
     <widget class="QLCDNumber" name="vgaDisplay">
      <property name="geometry">
       <rect>
-       <x>343</x>
+       <x>290</x>
        <y>70</y>
        <width>51</width>
        <height>23</height>

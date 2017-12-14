@@ -365,8 +365,10 @@ airspy {
 	INCLUDEPATH	+= ./devices/airspy-handler \
 	                   ./devices/airspy-handler/libairspy
 	HEADERS		+= ./devices/airspy-handler/airspy-handler.h \
+	                   ./devices/airspy-handler/airspyfilter.h \
 	                   ./devices/airspy-handler/libairspy/airspy.h
-	SOURCES		+= ./devices/airspy-handler/airspy-handler.cpp 
+	SOURCES		+= ./devices/airspy-handler/airspy-handler.cpp \
+	                   ./devices/airspy-handler/airspyfilter.cpp
 	FORMS		+= ./devices/airspy-handler/airspy-widget.ui
 }
 

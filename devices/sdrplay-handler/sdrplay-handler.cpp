@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -106,6 +103,7 @@ ULONG APIkeyValue_length = 255;
 	   delete myFrame;
 	   throw (23);
 	}
+
 	err		= my_mir_sdr_ApiVersion (&ver);
 	if (ver < 2.05) {
 	   fprintf (stderr, "sorry, library too old\n");
@@ -123,7 +121,7 @@ ULONG APIkeyValue_length = 255;
 	vfoFrequency	= Khz (220000);
 	currentGred	= DEFAULT_GRED;
 //
-//	See if there are settings from previos incarnations
+//	See if there are settings from previous incarnations
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	gainSlider 		-> setValue (
 	            sdrplaySettings -> value ("sdrplayGain", 50). toInt ());
@@ -135,7 +133,7 @@ ULONG APIkeyValue_length = 255;
 	setExternalGain	(gainSlider	-> value ());
 	set_ppmControl  (ppmControl	-> value ());
 //
-//	and be prepared for changes in the settings
+//	and be prepared for future changes in the settings
 	connect (gainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (setExternalGain (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
@@ -215,18 +213,22 @@ ULONG APIkeyValue_length = 255;
 //
 static inline
 int16_t	bankFor_sdr (int32_t freq) {
+	if (freq < 12 * MHz (1))
+	   return mir_sdr_BAND_AM_LO;
+	if (freq < 30 * MHz (1))
+	   return mir_sdr_BAND_AM_MID;
 	if (freq < 60 * MHz (1))
-	   return 1;
+	   return mir_sdr_BAND_AM_HI;
 	if (freq < 120 * MHz (1))
-	   return 2;
+	   return mir_sdr_BAND_VHF;
 	if (freq < 250 * MHz (1))
-	   return 3;
+	   return mir_sdr_BAND_3;
 	if (freq < 420 * MHz (1))
-	   return 4;
+	   return mir_sdr_BAND_X;
 	if (freq < 1000 * MHz (1))
-	   return 5;
+	   return mir_sdr_BAND_4_5;
 	if (freq < 2000 * MHz (1))
-	   return 6;
+	   return mir_sdr_BAND_L;
 	return -1;
 }
 
@@ -270,7 +272,7 @@ int	localGred	= currentGred;
 }
 
 int32_t	sdrplayHandler::getVFOFrequency	(void) {
-	return vfoFrequency - vfoOffset;
+	return vfoFrequency;
 }
 
 void	sdrplayHandler::setExternalGain	(int newGain) {
@@ -318,6 +320,7 @@ std::complex<float> *localBuf =
 void	myGainChangeCallback (uint32_t	gRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
+	fprintf (stderr, "GainChangeCallback gives %X\n", gRdB);
 	(void)gRdB;
 	(void)lnaGRdB;	
 	(void)cbContext;

@@ -45,7 +45,7 @@ public:
 private:
 	fftHandler	my_fftHandler;
 	dabParams	params;
-	std::vector<std::complex<float>> phaseDifferences;;
+	std::vector<float> phaseDifferences;;
 	int16_t		threshold;
 	int16_t		diff_length;
 	int32_t		T_u;

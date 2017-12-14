@@ -57,17 +57,11 @@ float	Phi_k;
 	}
 //
 //	prepare a table for the coarse frequency synchronization
-//	can be a static one
+//	can be a static one, actually, we are only interested in
+//	the ones with a null
 	for (i = 1; i <= diff_length; i ++) 
-	   phaseDifferences [i - 1] = refTable [(T_u + i) % T_u] *
-	                              conj (refTable [(T_u + i + 1) % T_u]);
-
-//	for (i = 0; i < diff_length; i ++)
-//	   fprintf (stderr, "%f %f %f\n",
-//	                        abs (arg (phaseDifferences [i])),
-//	                        real (refTable [i + 1]),
-//	                        imag (refTable [i + 1]));
-//	fprintf (stderr, "\n");
+	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
+                                 conj (refTable [(T_u + i + 1) % T_u])));
 }
 
 	phaseReference::~phaseReference (void) {
@@ -127,9 +121,9 @@ float	Max		= -1000;
 //	between successive carriers in both the "real" block and the
 //	reference block. These should be more or less the same.
 //	So we just compute the phasedifference between phasedifferences
-//	as measured and as they should be. To be on the safe side
-//	the difference is the difference of the absolute phasedifference
-//	values.
+//	as measured and as they should be.
+//	To keep things simple, we just look at the locations where
+//	the phasedifference with the successor should be 0
 //	In previous versions we looked
 //	at the "weight" of the positive and negative carriers in the
 //	fft, but that did not work too well.
@@ -137,26 +131,31 @@ float	Max		= -1000;
 int16_t	phaseReference::estimate_CarrierOffset (std::complex<float> *v) {
 int16_t	i, j, index = 100;
 float	diff;
+float	computedDiffs [SEARCH_RANGE + diff_length + 1];
+int	index_1	= 0;
 
 	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
 
+	for (i = T_u - SEARCH_RANGE / 2;
+	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) 
+	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
+	      abs (arg (fft_buffer [i % T_u] * conj (fft_buffer [(i + 1) % T_u])));
+
 	float	Mmin = 1000;
-	for (i = T_u - SEARCH_RANGE / 2; i < T_u + SEARCH_RANGE / 2; i ++) {
-	   float sum	= 0;
-	   for (j = 0; j < diff_length; j ++) {
-	      int16_t ind1 = (i + j + 1) % T_u;
-	      int16_t ind2 = (i + j + 2) % T_u;
-	      std::complex<float> pd = fft_buffer [ind1] *
-	                                   conj (fft_buffer [ind2]);
-//	      sum += abs (arg (pd) - arg (phaseDifferences [j]));
-	      sum += abs (arg (pd * conj (phaseDifferences [j])));
-	   }
+	for (i = T_u - SEARCH_RANGE /2;
+	     i < T_u + SEARCH_RANGE / 2; i ++) {
+	   float sum = 0;
+
+	   for (j = 1; j < diff_length; j ++)
+	      if (phaseDifferences [j - 1] < 0.1)
+	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	   if (sum < Mmin) {
 	      Mmin = sum;
 	      index = i;
 	   }
 	}
+	
 	return index - T_u; 
 }
 //

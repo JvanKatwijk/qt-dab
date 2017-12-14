@@ -21,7 +21,8 @@
 #define	GETPROCADDRESS	dlsym
 #endif
 
-#include "airspy-handler.h"
+#include	"airspy-handler.h"
+#include	"airspyfilter.h"
 
 static
 const	int	EXTIO_NS	=  8192;
@@ -38,6 +39,8 @@ uint32_t samplerate_count;
 	this	-> myFrame		= new QFrame (NULL);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show ();
+
+	filter			= NULL;
 	airspySettings	-> beginGroup ("airspyHandler");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
 	                                                          toInt ();
@@ -47,6 +50,7 @@ uint32_t samplerate_count;
 	                                                          toInt ();
 	sensitivitySlider	-> setValue (temp);
 	sensitivityDisplay	-> display (temp);
+
 	vgaGain			= airspySettings -> value ("vga", 5).toInt ();
 	vgaSlider		-> setValue (vgaGain);
 	vgaDisplay		-> display (vgaGain);
@@ -61,7 +65,7 @@ uint32_t samplerate_count;
 	lna_agc			= false;
 	rf_bias			= false;
 	airspySettings	-> endGroup ();
-//
+
 	device			= 0;
 	serialNumber		= 0;
 	theBuffer		= NULL;
@@ -170,6 +174,12 @@ uint32_t samplerate_count;
 	   throw (24);
 	}
 
+	
+	airspySettings	-> beginGroup ("airspyHandler");
+	filtering 	= airspySettings -> value ("filtering", 0). toInt ();
+	filter		= new airspyFilter (7, 1024000, selectedRate);
+	airspySettings	-> endGroup ();
+
 //	The sizes of the mapTable and the convTable are
 //	predefined and follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
@@ -229,7 +239,8 @@ uint32_t samplerate_count;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
-
+	if (filter	!= NULL)
+	   delete filter;
 	delete myFrame;
 	if (Handle == NULL) {
 	   return;	// nothing achieved earlier
@@ -364,10 +375,34 @@ int nSamples	= buf_size / (sizeof (int16_t) * 2);
 std::complex<float> temp [2048];
 int32_t  i, j;
 
+	if (filtering) {
+	   for (i = 0; i < nSamples; i ++) {
+	      convBuffer [convIndex ++] = filter -> Pass (
+//	   convBuffer [convIndex ++] = std::complex<float>
+	                                        sbuf [2 * i] / (float)2048,
+	                                        sbuf [2 * i + 1] / (float)2048);
+	      if (convIndex > convBufferSize) {
+	         for (j = 0; j < 2048; j ++) {
+	            int16_t  inpBase	= mapTable_int [j];
+	            float    inpRatio	= mapTable_float [j];
+	            temp [j]	= cmul (convBuffer [inpBase + 1], inpRatio) + 
+	                             cmul (convBuffer [inpBase], 1 - inpRatio);
+	         }
+
+	         theBuffer	-> putDataIntoBuffer (temp, 2048);
+//
+//	shift the sample at the end to the beginning, it is needed
+//	as the starting sample for the next time
+	         convBuffer [0] = convBuffer [convBufferSize];
+	         convIndex = 1;
+	      }
+	   }
+	}
+	else
 	for (i = 0; i < nSamples; i ++) {
-	   convBuffer [convIndex ++] = std::complex<float>
-	                                     (sbuf [2 * i] / (float)2048,
-	                                      sbuf [2 * i + 1] / (float)2048);
+	   convBuffer [convIndex ++] = std::complex<float> (
+	                                     sbuf [2 * i] / (float)2048,
+	                                     sbuf [2 * i + 1] / (float)2048);
 	   if (convIndex > convBufferSize) {
 	      for (j = 0; j < 2048; j ++) {
 	         int16_t  inpBase	= mapTable_int [j];

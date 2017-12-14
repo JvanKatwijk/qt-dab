@@ -30,6 +30,8 @@
 #include	"libairspy/airspy.h"
 #endif
 
+class	airspyFilter;
+
 extern "C"  {
 typedef	int (*pfn_airspy_init) (void);
 typedef int (*pfn_airspy_exit) (void);
@@ -153,6 +155,8 @@ const	char*		board_id_name (void);
 	QSettings	*airspySettings;
 	RingBuffer<std::complex<float>> *theBuffer;
 	int32_t		inputRate;
+	airspyFilter	*filter;
+	bool		filtering;
 	struct airspy_device* device;
 	uint64_t 	serialNumber;
 	char		serial[128];

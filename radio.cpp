@@ -142,8 +142,8 @@ QString h;
 
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt ();
 	showSlides	= dabSettings -> value ("showPictures", 1). toInt ();
-
-	set_picturePath ();
+	if (saveSlides != 0)
+	   set_picturePath ();
 
 ///////////////////////////////////////////////////////////////////////////
 
