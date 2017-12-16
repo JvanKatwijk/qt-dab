@@ -351,7 +351,9 @@ of geographical positions of the transmitters of the FSN is printed
 on the terminal. If the identification of the transmitter received can be
 decoded, it will be shown at the bottom line of the Technical Data Widget.
 
-The periodicity of the search can be set by setting
+The periodicity of the search can be set by adding a line to the .qt-dab.ini 
+file
+
 ```
 tii_delay=xxx
 ```
