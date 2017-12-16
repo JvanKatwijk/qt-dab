@@ -298,6 +298,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/wavfiles/wavfiles.h
+	     ./includes/various/tii_detector.h
+	     ./includes/various/tii_table.h
 	)
 
 	set (${objectName}_UIS

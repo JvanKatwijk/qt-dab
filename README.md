@@ -353,6 +353,20 @@ displaycolor=blue
 gridcolor=red
 ```
 
+The Qt-DAB program now searches - if available - for tii (transmitter
+identification information) data. If tii data is available,
+the small label at the bottom of the Technical Data widget will color
+green, and the main ID if the transmitters is shown. Also the list
+of geographical positions of the transmitters of the FSN is printed
+on the terminal. If the identification of the transmitter received can be
+decoded, it will be shown at the bottom line of the Technical Data Widget.
+
+The periodicity of the search can be set by setting
+```
+tii_delay=xxx
+```
+
+where xxx is the number of seconds. Default the delay is 20 seconds.
 --------------------------------------------------------------------------------
 A note on intermittent sound 
 -------------------------------------------------------------------------------
