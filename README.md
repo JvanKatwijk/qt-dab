@@ -248,12 +248,13 @@ The `CMakeLists.txt` file has all devices and the spectrum switched off as defau
 
 An example:
 ```
-cmake .. -DDABSTICK=ON -DRTLTCP=ON -DSPECTRUM=ON
+cmake .. -DSDRPLAY=ON -DRTLTCP=ON -DSPECTRUM=ON
 ```
 	
-will generate a makefile with support for a) the dabstick, b) for the remote dabstick (using the rtl_tcp connection) and c) for the spectrum in the configuration.
+will generate a makefile with support for a) the SDRplay device, b) for the remote dabstick (using the rtl_tcp connection) and c) for the spectrum in the configuration.
 
-Other devices that can be selected beside of the dabstick and rtl_tcp are sdrplay and airspy.
+Other devices that can be selected besides the SDRPlay and rtl_tcp are dabstick (-DRTLSDR=ON) and airspy (-DAIRSPY=ON).
+Support for reading files is always included.
 
 The default location for installation depends on your system, mostly `/usr/local/bin` or something like that. Set your own location by adding
 ```
@@ -309,7 +310,7 @@ appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
 The releases section contains a generated appImage for use on an x64 Linux box.
-This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt4, so it basically should run
+This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt5, so it basically should run
 on any x-64 based linux system that isn't too old.
 Note that on start up the appImage will try to set the udev settings for the airspy and dabstick
 right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that
@@ -343,22 +344,17 @@ displaycolor=blue
 gridcolor=red
 ```
 
-The Qt-DAB program now searches - if available - for tii (transmitter
-identification information) data. If tii data is available,
-the small label at the bottom of the Technical Data widget will color
-green, and the main ID if the transmitters is shown. Also the list
-of geographical positions of the transmitters of the FSN is printed
-on the terminal. If the identification of the transmitter received can be
-decoded, it will be shown at the bottom line of the Technical Data Widget.
+The Qt-DAB program now searches - if available - for tii (transmitter identification information) data.
+If tii data is available, the small label at the bottom of the Technical Data widget will color
+green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the FSN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
 
-The periodicity of the search can be set by adding a line to the .qt-dab.ini 
-file
+The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the .qt-dab.ini file
 
 ```
 tii_delay=xxx
 ```
 
-where xxx is the number of seconds. Default the delay is 20 seconds.
+where xxx is the number of seconds. Default of the delay is 20 seconds.
 
 --------------------------------------------------------------------------------
 A note on intermittent sound 
