@@ -357,6 +357,7 @@ tii_delay=xxx
 ```
 
 where xxx is the number of seconds. Default the delay is 20 seconds.
+
 --------------------------------------------------------------------------------
 A note on intermittent sound 
 -------------------------------------------------------------------------------
