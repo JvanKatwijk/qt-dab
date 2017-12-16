@@ -72,14 +72,10 @@ int     opt;
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "i:d:P:B:M:D:")) != -1) {
+	while ((opt = getopt (argc, argv, "i:P:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
-	         break;
-
-	      case 'd':
-	         tii_delay      = atoi (optarg);
 	         break;
 
 	      case 'P':
@@ -106,7 +102,6 @@ int     opt;
 	a. setWindowIcon (QIcon (":/qt-dab.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
-                                               tii_delay,
 	                                       dataPort
                                                );
 	MyRadioInterface -> show ();

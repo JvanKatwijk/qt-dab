@@ -98,7 +98,8 @@
                                    {416,1,384}};
 
 //
-	fib_processor::fib_processor (RadioInterface *mr) {
+	fib_processor::fib_processor (RadioInterface *mr):
+	                                           coordinates (mr) {
 	myRadioInterface	= mr;
 
 	listofServices	= new serviceId [64];

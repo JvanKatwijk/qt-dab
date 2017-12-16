@@ -20,9 +20,15 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#ifndef	__TII_TABLE__
+#define	__TII_TABLE__
 #include	"dab-constants.h"
+#include	<QObject>
 #include	<vector>
 #include	<QMutex>
+
+class	RadioInterface;
 
 class	tii_element {
 public:
@@ -34,21 +40,25 @@ public:
 	~tii_element (void) {}
 };
 
-class	tii_table {
+class	tii_table : public QObject {
+Q_OBJECT
 public:
-		tii_table		(void);
-		~tii_table		(void);
-	void	cleanUp			(void);
-	void	add_element		(tii_element *);
-	void	add_main		(int16_t, float, float);
-	QMutex	tiiLocker;
+			tii_table		(RadioInterface *);
+			~tii_table		(void);
+	void		cleanUp			(void);
+	void		add_element		(tii_element *);
+	void		add_main		(int16_t, float, float);
 	std::complex<float> get_coordinates (int16_t, int16_t, bool *);
-	void	print_coordinates	(void);
-	int16_t	get_mainId		(void);
-	int16_t	mainId;
-	float	latitude;
-	float	longitude;
+	void		print_coordinates	(void);
+	int16_t		get_mainId		(void);
+private:
+	RadioInterface	*myRadio;
+	QMutex		tiiLocker;
+	int16_t		mainId;
+	float		latitude;
+	float		longitude;
 	std::vector<tii_element> offsets;
-
+signals:
+	void		show_tiiLabel		(int);
 };
-
+#endif

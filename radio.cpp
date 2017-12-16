@@ -94,7 +94,6 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
   */
 
 	RadioInterface::RadioInterface (QSettings	*Si,
-	                                int16_t		tii_delay,
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QMainWindow (parent) {
@@ -103,7 +102,6 @@ int16_t k;
 QString h;
 
 	dabSettings		= Si;
-	this	-> tii_delay	= tii_delay;
 	running. store (false);
 	scanning		= false;
 	isSynced		= UNSYNCED;
@@ -130,6 +128,8 @@ QString h;
 	diff_length	=
 	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt ();
 
+	tii_delay	=
+	           dabSettings	-> value ("tii_delay", 20). toInt ();
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -214,6 +214,8 @@ QString h;
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
+                           setStyleSheet ("QLabel {background-color : red}");
+	techData. tii_Label		->
                            setStyleSheet ("QLabel {background-color : red}");
 //
 //
@@ -800,6 +802,9 @@ void	RadioInterface::clear_showElements (void) {
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 	techData. transmitter_coordinates -> setText (" ");
+	techData. tii_Label		  -> setText (" ");
+	techData. tii_Label		  ->
+	               setStyleSheet ("QLabel {background-color : red}");
 
 	snrDisplay		-> display (0);
 	if (pictureLabel != NULL)
@@ -899,7 +904,7 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if ((numberofSeconds % tii_delay == 0) && running. load ())
+	if (((numberofSeconds % tii_delay) == 0) && running. load ())
 	   my_dabProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
@@ -1418,6 +1423,22 @@ QString a, b;
 	a. append (b);
 	techData. transmitter_coordinates -> setText (a);
 }
+
+void	RadioInterface::show_tiiLabel (int mainId) {
+	if (mainId < 0) {
+	   techData. tii_Label ->
+	                 setStyleSheet ("QLabel {background-color : red}");
+	   techData. tii_Label -> setText ("");
+	}
+	else {
+	   QString s = QString::number (mainId);
+	   s	= "<font color ='white'>" + s + "</font>";
+	   techData. tii_Label ->
+	                 setStyleSheet ("QLabel {background-color : green}");
+	   techData. tii_Label -> setText (s);
+	}
+}
+
 
 #include	"country-codes.h"
 

@@ -143,6 +143,7 @@ int16_t index;
 	   fprintf (stderr, "%d (%d) has a problem\n", bitRate, protLevel);
 	   index = 1;
 	}
+
 	L1	= profileTable [index]. L1;
 	L2	= profileTable [index]. L2;
 	L3	= profileTable [index]. L3;
@@ -155,6 +156,8 @@ int16_t index;
 	   PI4	= get_PCodes (profileTable [index]. PI4 -1);
 	else
 	   PI4	= NULL;
+
+	PI_X	= get_PCodes (8 - 1);
 }
 
 	uep_protection::~uep_protection (void) {

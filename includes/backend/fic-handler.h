@@ -54,6 +54,7 @@ private:
 	void		process_ficInput	(int16_t);
 	int8_t		*PI_15;
 	int8_t		*PI_16;
+	int8_t		*PI_X;
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;

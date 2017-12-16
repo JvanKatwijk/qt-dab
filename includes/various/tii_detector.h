@@ -31,10 +31,7 @@ class	TII_Detector {
 public:
 		TII_Detector	(uint8_t dabMode);
 		~TII_Detector	(void);
-	bool	processNULL	(std::complex<float> *,
-	                         std::complex<float> *, int16_t *, int16_t *);
-	int16_t	find_C		(std::complex<float> *, 
-	                         std::complex<float> *, int16_t);
+	int16_t	find_C		(std::complex<float> *, int16_t);
 private:
 	dabParams	params;
 	fftHandler	my_fftHandler;
@@ -42,16 +39,11 @@ private:
 	int16_t		carriers;
 	bool		ind;
 	std::complex<float>	*theBuffer;
-	std::complex<float>	*buffer_2;
 	std::complex<float>	*fft_buffer;
 	int16_t		fillCount;
 	int16_t		A		(uint8_t c, uint8_t p, int16_t k);
 	float		correlate	(std::complex<float> *,
-	                                 int16_t, uint64_t,
-	                                 std::complex<float> *, float);
-	float		correlate_2	(std::complex<float> *,
-	                                 int16_t, int16_t,
-	                                 std::complex<float> *);
+	                                 int16_t, uint64_t);
 
 	struct nullTable {
 	   int16_t	carrier;

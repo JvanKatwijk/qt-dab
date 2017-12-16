@@ -55,8 +55,8 @@ private:
 	int16_t	conv;
 	int16_t	inSize;
 	int16_t	outSize;
-	DSPCOMPLEX	*inTable;
-	DSPCOMPLEX	*outTable;
+	std::complex<float>	*inTable;
+	std::complex<float>	*outTable;
 	
 };
 

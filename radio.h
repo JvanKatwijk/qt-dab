@@ -64,7 +64,6 @@ class RadioInterface: public QMainWindow,
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 int16_t	 tii_delay,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = NULL);
 		~RadioInterface		(void);
@@ -168,6 +167,7 @@ public slots:
 	void		show_motHandling	(bool);
 	void		setSyncLost		(void);
 	void		showCoordinates		(float, float);
+	void		show_tiiLabel		(int);
 
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);

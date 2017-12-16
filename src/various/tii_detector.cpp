@@ -57,7 +57,6 @@ int16_t	p, c, k;
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
 	this	-> theBuffer	= new std::complex<float> [T_u];
-	this	-> buffer_2	= new std::complex<float> [T_u];
 	fillCount		= 0;
 	fft_buffer		= my_fftHandler. getVector ();	
 //
@@ -260,75 +259,6 @@ int16_t res	= 0;
 //	available, we first look for the likely startcarrier in the
 //	carriers of the null period, and then just try patterns.
 //
-//	This function is not used.
-bool	TII_Detector::processNULL (std::complex<float> *v,
-	                           std::complex<float> *refTable,
-	                           int16_t *mainId, int16_t *subId) {
-int	i, j;
-float		maxCorr		= 0;
-int16_t		startCarrier	= -carriers / 2 - 1;
-float		avg		= 0;
-
-	if (fillCount == 0)
-	   memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
-
-	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
-
-	my_fftHandler. do_FFT ();
-
-	for (i = 0; i < T_u; i ++)
-	   theBuffer [i] += cmul (fft_buffer [i], 0.125);
-
-	if (++fillCount < 2)
-	   return false;
-
-	fillCount = 0;
-
-	for (i = 0; i < carriers / 2; i ++)
-	   avg += abs (theBuffer [i]) +
-	          abs (theBuffer [T_u - carriers / 2 - 1 + i]);
-	avg	/= carriers;
-
-	for (i = 0; i < 5; i ++) {
-	   for (j = 0; j < 48; j += 2) {
-	      int16_t realIndex = (T_u - carriers / 2 - 1 + i * 48 + j) % T_u;
-	      if ((abs (theBuffer [realIndex])  > 3 * avg) &&
-	          (abs (theBuffer [(realIndex + 1) % T_u]) > 3 * avg)) {
-	         startCarrier = 48 * i + j - carriers / 2;
-	         goto L1;
-	      }
-	   }
-	}
-
-L1:
-	if (startCarrier <  - carriers / 2)
-	   return false;
-	fprintf (stderr, "startCarrier is %d\n", startCarrier);
-	maxCorr	= -1;
-	*mainId	= -1;
-	*subId	= -1;
-	for (i = 0; i < 70; i ++) {
-	   if ((startCarrier < theTable [i]. carrier) ||
-	       (theTable [i]. carrier + 48 <= startCarrier))
-	      continue;
-	   float corr = correlate (theBuffer,
-	                           startCarrier, 
-	                           theTable [i]. pattern,
-	                           refTable, avg);
-	   if (corr > maxCorr) {
-	      maxCorr = corr;
-	      *mainId	= i;
-	      *subId	= (startCarrier - theTable [i]. carrier) / 2;
-	   }
-	}
-
-	if (*mainId != -1)
-	   fprintf (stderr, "the pattern is %lX at carrier %d\n",
-	                                 theTable [*mainId]. pattern, 
-	                                 startCarrier);
-	return *mainId != -1;
-}
-//
 //	If we know the "mainId" from the FIG0/22, we can try to locate
 //	the pattern and compute the C
 //
@@ -341,7 +271,6 @@ L1:
 //	will give us the "best" guess for the start position
 static int cnt	= 0;
 int16_t	TII_Detector::find_C (std::complex<float> *v,
-	                      std::complex<float> *refTable,
 	                      int16_t mainId) {
 int16_t	i;
 int16_t	startCarrier	= theTable [mainId]. carrier;
@@ -358,22 +287,21 @@ float	corrTable [48];
 	my_fftHandler. do_FFT ();
 
 	if (cnt == 0)
-	   memcpy (buffer_2, fft_buffer, T_u * sizeof (std::complex<float>));
+	   memcpy (theBuffer, fft_buffer, T_u * sizeof (std::complex<float>));
 	else
 	   for (i = 0; i < T_u; i ++)
-	      buffer_2 [i] += fft_buffer [i];
+	      theBuffer [i] += fft_buffer [i];
 	if (++cnt < 2)
 	   return -1;
 	cnt = 0;
 
-//	We collected two  "spectra', and start correlating the 
+//	We collected two "spectra', and start correlating the 
 //	combined spectrum with the pattern.
 
 	for (i = 1; i < 24; i ++)  
-	   corrTable [i] = correlate (buffer_2,
+	   corrTable [i] = correlate (theBuffer,
 	                              startCarrier + 2 * i,
-	                              pattern,
-	                              refTable, 0);
+	                              pattern);
 
 	for (i = 1; i < 24; i ++) {
 	   avg += corrTable [i];
@@ -398,68 +326,27 @@ float	corrTable [48];
 //
 float	TII_Detector::correlate (std::complex<float> 	*v,
 	                         int16_t	startCarrier,
-	                         uint64_t	pattern,
-	                         std::complex<float>	*refTable,
-	                         float threshold) {
+	                         uint64_t	pattern) {
 int16_t	realIndex;
 int16_t	i;
 int16_t	carrier;
 float	s1	= 0;
 
-	(void)threshold;	// not used right now
 	if (pattern == 0)
 	   return 0;
 
 	carrier		= startCarrier;
 	realIndex	= T_u - 1 + carrier;
 	s1		= abs (real (v [realIndex] *
-	                              conj (refTable [realIndex]))) +
-	                  abs (real (v [realIndex + 1] *
-	                              conj (refTable [realIndex])));
+	                              conj (v [realIndex + 1])));
 	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
 	   realIndex	= carrier < 0 ? T_u - 1 + carrier : carrier + 1;
-	   s1		+= abs (real (v [realIndex] *
-	                               conj (refTable [realIndex]))) +
-	                   abs (real (v [realIndex + 1] *
-	                               conj (refTable [realIndex])));
+	   s1		+= abs (real (v [realIndex] * conj (v [realIndex + 1])));
 	   pattern <<= 4;
 	}
 	
 	return s1;
 }
 //
-//	An alternative way to compute the correlation, using the "A"
-//	function to identify the relevant bins would be as in the
-//	function correlate_2. This function was used to demonstrate
-//	the legality of the use of patterns above
-float	TII_Detector::correlate_2 (std::complex<float> *v,
-	                           int16_t    p,
-	                           int16_t    c,
-	                           std::complex<float> *refTable) {
-int16_t k;
-float	s	= 0;
-
-	for (k = - carriers / 2; k < -1; k ++)
-	   if (A (c, p, k) > 0) {
-	      s += abs (real (v [T_u - 1 + k] * conj (refTable [T_u - 1 + k])))
-	         + abs (real (v [T_u     + k] * conj (refTable [T_u - 1 + k])));
-	      break;
-	   }
-	k += 48;
-	while (k < 0) {
-	   if (A (c, p, k) > 0) 
-	      s += abs (real (v [T_u - 1 + k] * conj (refTable [T_u - 1 + k])))
-	         + abs (real (v [T_u     + k] * conj (refTable [T_u - 1 + k])));
-	   k += 48;
-	}
-	k += 1;
-	while (k < carriers / 2) {
-	   if (A (c, p, k) > 0) 
-	      s += abs (real (v [k] * conj (refTable [k])))
-	         + abs (real (v [k + 1] * conj (refTable [k])));
-	   k += 48;
-	}
-	return s;
-}
 

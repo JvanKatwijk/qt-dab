@@ -41,6 +41,7 @@ private:
 	int8_t		*PI2;
 	int8_t		*PI3;
 	int8_t		*PI4;
+	int8_t		*PI_X;
 };
 
 #endif

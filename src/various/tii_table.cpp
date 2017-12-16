@@ -21,16 +21,20 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"tii_table.h"
-
+#include	"radio.h"
 
 	tii_element::tii_element (int16_t subId,
-	                     float latitudeOffset, float longitudeOffset) {
+	                          float latitudeOffset,
+	                          float longitudeOffset) {
 	this	-> subId	= subId;
 	this	-> latitudeOffset = latitudeOffset;
 	this	-> longitudeOffset = longitudeOffset;
 }
 
-	tii_table::tii_table (void) {
+	tii_table::tii_table (RadioInterface *mr) {
+	   myRadio	= mr;
+	   connect (this, SIGNAL (show_tiiLabel (int)),
+	            mr,   SLOT   (show_tiiLabel (int)));
 }
 
 	tii_table::~tii_table (void) {
@@ -41,6 +45,7 @@ void	tii_table::cleanUp (void) {
 	offsets. clear ();
 	mainId		= -1;
 	tiiLocker. unlock ();
+	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_main	(int16_t mainId,
@@ -54,6 +59,7 @@ void	tii_table::add_main	(int16_t mainId,
 	this	-> latitude	= latitude;
 	this	-> longitude	= longitude;
 	tiiLocker. unlock ();
+	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_element (tii_element *t) {

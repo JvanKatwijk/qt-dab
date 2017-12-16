@@ -103,6 +103,7 @@
 	         break;
 	   }
 	}
+	PI_X	= get_PCodes (8 - 1);
 }
 
 	eep_protection::~eep_protection (void) {

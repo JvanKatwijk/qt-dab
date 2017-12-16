@@ -28,6 +28,7 @@
 //
 #include "firecode-checker.h"
 #include <cstring>
+#include	<stdio.h>
 
 //	g(x)=(x^11+1)(x^5+x^3+x^2+x+1)=1+x+x^2+x^3+x^5+x^11+x^12+x^13+x^14+x^16
 const uint8_t firecode_checker::g[16]={1,1,1,1,0,1,0,0,0,0,0,1,1,1,1,0};
@@ -47,7 +48,7 @@ uint16_t itab [8];
 	   tab [i] = 0;
 	   for (j = 0; j < 8; j++) {
 	      if (i & (1 << j))
-	         tab [i] = tab[i] ^ itab[j];
+	         tab [i] = tab [i] ^ itab [j];
 	   }
 	}
 }

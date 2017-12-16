@@ -92,7 +92,7 @@ int32_t	i;
 	f2Correction			= true;
 	attempts			= 0;
 	scanMode			= false;
-	tiiCoordinates			= false;
+	tiiCoordinates			= 0;
 
 	connect (this, SIGNAL (showCoordinates (float, float)),
 	         mr,   SLOT   (showCoordinates (float, float)));
@@ -323,26 +323,23 @@ NewOffset:
 	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
-	   if (tiiCoordinates) {
+	   if ((tiiCoordinates > 0) && (my_ficHandler. mainId () > 0)) {
+	      tiiCoordinates --;
 	      int16_t mainId	= my_ficHandler. mainId ();
-	      if (mainId > 0) {
-                 int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
-	                                                   phaseSynchronizer. refTable. data (),
-	                                                   mainId); 
-	         if (subId >= 0) {
-	            bool found;
-	            std::complex<float> coord =
-	                      my_ficHandler. get_coordinates (mainId,
-	                                                      subId,
-	                                                      &found);
-	            if (found) {
-	               showCoordinates (real (coord), imag (coord));
-	            }
+              int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
+	                                                mainId); 
+	      if (subId >= 0) {
+	         bool found;
+	         std::complex<float> coord =
+	                   my_ficHandler. get_coordinates (mainId,
+	                                                   subId,
+	                                                   &found);
+	         if (found) {
+	            showCoordinates (real (coord), imag (coord));
+	            tiiCoordinates = 0;
 	         }
 	      }
-	      tiiCoordinates = false;
 	   }
-	           
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
@@ -407,7 +404,7 @@ void	dabProcessor::set_scanMode	(bool b) {
 }
 
 void	dabProcessor::set_tiiCoordinates	(void) {
-	tiiCoordinates	= true;
+	tiiCoordinates	= 2;
 }
 //
 //	we could have derive the dab processor from fic and msc handlers,

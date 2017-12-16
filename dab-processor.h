@@ -92,7 +92,7 @@ private:
 	ficHandler	my_ficHandler;
 	mscHandler	my_mscHandler;
 	TII_Detector	my_TII_Detector;
-	bool		tiiCoordinates;
+	int		tiiCoordinates;
 
 	int16_t		attempts;
 	bool		scanMode;
