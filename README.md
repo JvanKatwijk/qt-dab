@@ -231,13 +231,14 @@ For basic MSC data handling, i.e. MOT handling etc, uncomment
 DEFINES         += MSC_DATA__           # use at your own risk
 ```
 
-Two experimental configuration parameters are
+An experimental configuration parameter is
 ```
 CONFIG		+= try_epg
 ```
 
 
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
+
 
 ------------------------------------------------------------------
 Configuring using CMake
