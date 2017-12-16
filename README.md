@@ -236,25 +236,14 @@ Two experimental configuration parameters are
 CONFIG		+= try_epg
 ```
 
-and
-```
-CONFIG		+= try_tii
-```
 
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
 
-If `try_tii` is configured an attempt will be made to decode the Transmitter Identification Information (TII). Note: Not many ensembles carry this information.
-
-	
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------
 
-Note that there are now **TWO** (!) `CMakeLists.txt-xxx` files in the directory, if you want to use cmake, copy `CMakeLists.txt-qt5` to `CMakeLists.txt`.
-
-The `CMakeLists.txt-qt4` file is used for creating an appImage and can be used for Qt4 based system.
-
-The `CMakeLists.txt-xxx` files have all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
+The `CMakeLists.txt` file has all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
 An example:
 ```
