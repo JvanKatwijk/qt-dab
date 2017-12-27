@@ -39,6 +39,8 @@
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
 	mscGroupElement	= false;
+	dataGroupLength	= 0;
+
 //	xpadLength tells - if mscGroupElement is "on" - the size of the
 //	xpadfields, needed for handling xpads without CI's
 	xpadLength	= -1;
@@ -156,20 +158,6 @@ int16_t	index = 0;
 //	Here we end up when F_PAD type = 00 and X-PAD Ind = 02
 static
 int16_t	lengthTable [] = {4, 6, 8, 12, 16, 24, 32, 48};
-
-//
-//	dataGroupLength is set when having processed an appType 1
-static int dataGroupLength	= 0;
-//
-//	msc_dataGroupLength is used while assembling an msc_data group,
-//	in the end it should be equal or somewhat larger than dataGroupLength
-static int	msc_dataGroupLength;
-
-//
-//	The msc_dataGroupBuffer is - as the name suggests - used for
-//	assembling the msc_data group.
-static
-QByteArray msc_dataGroupBuffer;
 
 //	Since the data is reversed, we pass on the vector address
 //	and the offset of the last element in the vector,
@@ -382,7 +370,7 @@ uint8_t *data = (uint8_t *)(mscdataGroup. data ());
 int16_t	size	= mscdataGroup. length ();
 
 	uint8_t		groupType	=  data [0] & 0xF;
-	uint8_t		continuityIndex = (data [1] & 0xF) >> 4;
+	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
 	uint8_t		repetitionIndex =  data [1] & 0xF;
 	int16_t		segmentNumber	= -1;		// default
 	int16_t		transportId	= -1;		// default

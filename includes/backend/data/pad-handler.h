@@ -55,6 +55,18 @@ private:
         bool	lastSegment;
         bool	firstSegment;
 	int16_t	segmentNumber;
+//      dataGroupLength is set when having processed an appType 1
+        int dataGroupLength;
+//
+//      msc_dataGroupLength is used while assembling an msc_data group,
+//      in the end it should be equal or somewhat larger than dataGroupLength
+        int      msc_dataGroupLength;
+
+//
+//      The msc_dataGroupBuffer is - as the name suggests - used for
+//      assembling the msc_data group.
+        QByteArray msc_dataGroupBuffer;
+
 signals:
 	void		showLabel			(QString);
 	void		show_motHandling		(bool);

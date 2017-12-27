@@ -31,12 +31,7 @@
 //	The next three blocks shall be subjected to 
 //	puncturing (per 32 bits) according to PI_15
 //	The last 24 bits shall be subjected to puncturing
-//	according to the table X
-//extern
-//uint8_t PI_X [24] = {
-//	1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0,
-//	1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0
-//};
+//	according to the table 8
 
 /**
   *	\class ficHandler
@@ -46,23 +41,23 @@
   * 	puncturing.
   *	The data is sent through to the fib processor
   */
+
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t dabMode):
 	                                    params (dabMode),
 	                                    fib_processor (mr),
 	                                    myViterbi (768, true) {
-int16_t	i, j;
-//	bitBuffer_out	= new uint8_t [768];
-//	ofdm_input 	= new int16_t [2304];
+int16_t	i, j, k;
+int	local	= 0;
+int	input_counter	= 0;
+
 	index		= 0;
 	BitsperBlock	= 2 * params. get_carriers ();
 	ficno		= 0;
 	ficBlocks	= 0;
 	ficMissed	= 0;
 	ficRatio	= 0;
-	PI_15		= get_PCodes (15 - 1);
-	PI_16		= get_PCodes (16 - 1);
-	PI_X		= get_PCodes (8  - 1);
+
 	memset (shiftRegister, 1, 9);
 
 	for (i = 0; i < 768; i ++) {
@@ -71,6 +66,42 @@ int16_t	i, j;
 	      shiftRegister [j] = shiftRegister [j - 1];
 
 	   shiftRegister [0] = PRBS [i];
+	}
+//
+//	Since the depuncturing is the same throughout all calls
+//	(even through all instances, so we could create a static
+//	table), we make an indexTable that contains the indices of
+//	the ofdmInput table
+	memset (indexTable, 0, (3072 + 24) * sizeof (int16_t));
+	for (i = 0; i < 21; i ++) {
+	   for (k = 0; k < 32 * 4; k ++) {
+	      if (get_PCodes (16 - 1) [k % 32] != 0)  
+	         indexTable [local] = input_counter ++;
+	      local ++;
+	   }
+	}
+/**
+  *	In the second step
+  *	we have 3 blocks with puncturing according to PI_15
+  *	each 128 bit block contains 4 subblocks of 32 bits
+  *	on which the given puncturing is applied
+  */
+	for (i = 0; i < 3; i ++) {
+	   for (k = 0; k < 32 * 4; k ++) {
+	      if (get_PCodes (15 - 1) [k % 32] != 0)  
+	         indexTable [local] = input_counter ++;
+	      local ++;
+	   }
+	}
+
+/**
+  *	we have a final block of 24 bits  with puncturing according to PI_X
+  *	This block constitues the 6 * 4 bits of the register itself.
+  */
+	for (k = 0; k < 24; k ++) {
+	   if (get_PCodes (9 - 1) [k] != 0) 
+	      indexTable [local] = input_counter ++;
+	   local ++;
 	}
 
 	connect (this, SIGNAL (show_ficSuccess (bool)),
@@ -132,49 +163,15 @@ int32_t	i;
   *	one above
   */
 void	ficHandler::process_ficInput (int16_t ficno) {
-int16_t	input_counter	= 0;
-int16_t	i, k;
-int32_t	local		= 0;
+int16_t	i;
 int16_t	viterbiBlock [3072 + 24];
 
-/**
-  *	a block of 2304 bits is considered to be a codeword
-  *	In the first step we have 21 blocks with puncturing according to PI_16
-  *	each 128 bit block contains 4 subblocks of 32 bits
-  *	on which the given puncturing is applied
-  */
 	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
 
-	for (i = 0; i < 21; i ++) {
-	   for (k = 0; k < 32 * 4; k ++) {
-	      if (PI_16 [k % 32] != 0)  
-	         viterbiBlock [local] = ofdm_input [input_counter ++];
-	      local ++;
-	   }
-	}
-/**
-  *	In the second step
-  *	we have 3 blocks with puncturing according to PI_15
-  *	each 128 bit block contains 4 subblocks of 32 bits
-  *	on which the given puncturing is applied
-  */
-	for (i = 0; i < 3; i ++) {
-	   for (k = 0; k < 32 * 4; k ++) {
-	      if (PI_15 [k % 32] != 0)  
-	         viterbiBlock [local] = ofdm_input [input_counter ++];
-	      local ++;
-	   }
-	}
 
-/**
-  *	we have a final block of 24 bits  with puncturing according to PI_X
-  *	This block constitues the 6 * 4 bits of the register itself.
-  */
-	for (k = 0; k < 24; k ++) {
-	   if (PI_X [k] != 0) 
-	      viterbiBlock [local] = ofdm_input [input_counter ++];
-	   local ++;
-	}
+	for (i = 0; i < 3072 + 24; i ++)
+	   if (indexTable [i] != 0)
+	      viterbiBlock [i] = ofdm_input [indexTable [i]];
 /**
   *	Now we have the full word ready for deconvolution
   *	deconvolution is according to DAB standard section 11.2

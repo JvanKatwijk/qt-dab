@@ -136,7 +136,18 @@ int16_t	i;
      uep_protection::uep_protection (int16_t bitRate,
                                         int16_t protLevel):
                                             protection (bitRate, protLevel) {
-int16_t index;
+int16_t index, i, j;
+int16_t	viterbiCounter	= 0;
+int16_t	inputCounter	= 0;
+int16_t         L1;
+int16_t         L2;
+int16_t         L3;
+int16_t         L4;
+int8_t          *PI1;
+int8_t          *PI2;
+int8_t          *PI3;
+int8_t          *PI4;
+int8_t          *PI_X;
 
 	index	= findIndex (bitRate, protLevel);
 	if (index == -1) {
@@ -158,31 +169,12 @@ int16_t index;
 	   PI4	= NULL;
 
 	PI_X	= get_PCodes (8 - 1);
-}
-
-	uep_protection::~uep_protection (void) {
-}
-
-bool	uep_protection::deconvolve (int16_t *v,
-	                            int32_t size, uint8_t *outBuffer) {
-int16_t	i, j;
-int16_t	inputCounter	= 0;
-int32_t	viterbiCounter	= 0;
-	(void)size;			// currently unused
-
-//	according to the standard we process the logical frame
-//	with a pair of tuples
-//	(L1, PI1), (L2, PI2), (L3, PI3), (L4, PI4)
-
-///	clear the bits in the viterbiBlock,
-///	only the non-punctured ones are set
-	memset (viterbiBlock. data (), 0,
-	                        (outSize * 4 + 24) * sizeof (int16_t)); 
-
+//
+//	We prepare a mapping table with the given punctures
 	for (i = 0; i < L1; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI1 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	         indexTable [viterbiCounter] = inputCounter ++;
 	      viterbiCounter ++;
 	   }
 	}
@@ -190,7 +182,7 @@ int32_t	viterbiCounter	= 0;
 	for (i = 0; i < L2; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI2 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	         indexTable [viterbiCounter] = inputCounter ++;
 	      viterbiCounter ++;
 	   }
 	}
@@ -198,18 +190,19 @@ int32_t	viterbiCounter	= 0;
 	for (i = 0; i < L3; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI3 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	         indexTable [viterbiCounter] = inputCounter ++;
 	      viterbiCounter ++;	
 	   }
 	}
 
-	for (i = 0; i < L4; i ++) {
-	   for (j = 0; j < 128; j ++) {
-	      if (PI4 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
-	      viterbiCounter ++;	
+	if (PI4 != NULL)
+	   for (i = 0; i < L4; i ++) {
+	      for (j = 0; j < 128; j ++) {
+	         if (PI4 [j % 32] != 0) 
+	            indexTable [viterbiCounter] = inputCounter ++;
+	         viterbiCounter ++;	
+	      }
 	   }
-	}
 
 /**
   *	we have a final block of 24 bits  with puncturing according to PI_X
@@ -217,12 +210,27 @@ int32_t	viterbiCounter	= 0;
   */
 	for (i = 0; i < 24; i ++) {
 	   if (PI_X [i] != 0)  
-	      viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	      indexTable [viterbiCounter] = inputCounter ++;
 	   viterbiCounter ++;
 	}
-//
+}
+
+	uep_protection::~uep_protection (void) {
+}
+
+bool	uep_protection::deconvolve (int16_t *v,
+	                            int32_t size, uint8_t *outBuffer) {
+int16_t	i;
+
+//	clear the bits in the viterbiBlock,
+//	only the non-punctured ones are set
+	memset (viterbiBlock. data (), 0,
+	                        (outSize * 4 + 24) * sizeof (int16_t)); 
 ///	The actual deconvolution is done by the viterbi decoder
 
+	for (i = 0; i < outSize * 4 + 24; i ++)
+	   if (indexTable [i] != 0)
+	      viterbiBlock [i] = v [indexTable [i]];
 	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;
 }

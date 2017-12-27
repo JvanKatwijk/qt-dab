@@ -50,11 +50,9 @@ private:
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	int16_t		viterbiBlock	[3072 + 24];
+	int16_t		indexTable	[3072 + 24];
 
 	void		process_ficInput	(int16_t);
-	int8_t		*PI_15;
-	int8_t		*PI_16;
-	int8_t		*PI_X;
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;

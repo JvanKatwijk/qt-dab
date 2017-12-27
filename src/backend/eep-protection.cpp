@@ -33,6 +33,12 @@
 	eep_protection::eep_protection (int16_t bitRate,
 	                                int16_t protLevel):
 	                                     protection (bitRate, protLevel) {
+int16_t	i, j;
+int16_t	viterbiCounter	= 0;
+int16_t	inputCounter	= 0;
+int16_t	L1, L2;
+int8_t	*PI1, *PI2, *PI_X;
+
 	if ((protLevel & (1 << 2)) == 0) {	// set A profiles
 	   switch (protLevel & 03) {
 	      case 0:			// actually level 1
@@ -104,19 +110,8 @@
 	   }
 	}
 	PI_X	= get_PCodes (8 - 1);
-}
 
-	eep_protection::~eep_protection (void) {
-}
-
-bool	eep_protection::deconvolve (int16_t *v,
-	                            int32_t size, uint8_t *outBuffer) {
-
-int16_t	i, j;
-int32_t	inputCounter	= 0;
-int32_t	viterbiCounter	= 0;
-	(void)size;			// currently unused
-	memset (viterbiBlock. data (), 0,
+	memset (indexTable. data (), 0,
 	                 (outSize * 4 + 24) * sizeof (int16_t)); 
 //
 //	according to the standard we process the logical frame
@@ -126,7 +121,7 @@ int32_t	viterbiCounter	= 0;
 	for (i = 0; i < L1; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI1 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	         indexTable [viterbiCounter] = inputCounter ++;
 	      viterbiCounter ++;	
 	   }
 	}
@@ -134,7 +129,7 @@ int32_t	viterbiCounter	= 0;
 	for (i = 0; i < L2; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI2 [j % 32] != 0) 
-	         viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	         indexTable [viterbiCounter] = inputCounter ++;
 	      viterbiCounter ++;	
 	   }
 	}
@@ -142,9 +137,26 @@ int32_t	viterbiCounter	= 0;
 //	This block constitues the 6 * 4 bits of the register itself.
 	for (i = 0; i < 24; i ++) {
 	   if (PI_X [i] != 0) 
-	      viterbiBlock [viterbiCounter] = v [inputCounter ++];
+	      indexTable [viterbiCounter] = inputCounter ++;
 	   viterbiCounter ++;
 	}
+}
+
+	eep_protection::~eep_protection (void) {
+}
+
+bool	eep_protection::deconvolve (int16_t *v,
+	                            int32_t size, uint8_t *outBuffer) {
+
+int16_t	i;
+
+	(void)size;			// currently unused
+	memset (viterbiBlock. data (), 0,
+	                 (outSize * 4 + 24) * sizeof (int16_t)); 
+
+	for (i = 0; i < outSize * 4 + 24; i ++)
+	   if (indexTable [i] != 0)
+	      viterbiBlock [i] = v [indexTable [i]];
 
 	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;
