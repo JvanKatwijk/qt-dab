@@ -40,7 +40,7 @@ protected:
         int16_t         bitRate;
         int32_t         outSize;
         std::vector<int16_t> viterbiBlock;
-	std::vector<int16_t> indexTable;
+	std::vector<uint8_t> indexTable;
 };
 
 #endif

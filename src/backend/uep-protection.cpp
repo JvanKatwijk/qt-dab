@@ -138,7 +138,6 @@ int16_t	i;
                                             protection (bitRate, protLevel) {
 int16_t index, i, j;
 int16_t	viterbiCounter	= 0;
-int16_t	inputCounter	= 0;
 int16_t         L1;
 int16_t         L2;
 int16_t         L3;
@@ -171,10 +170,11 @@ int8_t          *PI_X;
 	PI_X	= get_PCodes (8 - 1);
 //
 //	We prepare a mapping table with the given punctures
+	memset (indexTable. data (), 0, (4 * outSize + 24) * sizeof (uint8_t));
 	for (i = 0; i < L1; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI1 [j % 32] != 0) 
-	         indexTable [viterbiCounter] = inputCounter ++;
+	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;
 	   }
 	}
@@ -182,7 +182,7 @@ int8_t          *PI_X;
 	for (i = 0; i < L2; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI2 [j % 32] != 0) 
-	         indexTable [viterbiCounter] = inputCounter ++;
+	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;
 	   }
 	}
@@ -190,7 +190,7 @@ int8_t          *PI_X;
 	for (i = 0; i < L3; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI3 [j % 32] != 0) 
-	         indexTable [viterbiCounter] = inputCounter ++;
+	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;	
 	   }
 	}
@@ -199,7 +199,7 @@ int8_t          *PI_X;
 	   for (i = 0; i < L4; i ++) {
 	      for (j = 0; j < 128; j ++) {
 	         if (PI4 [j % 32] != 0) 
-	            indexTable [viterbiCounter] = inputCounter ++;
+	            indexTable [viterbiCounter] = true;
 	         viterbiCounter ++;	
 	      }
 	   }
@@ -210,7 +210,7 @@ int8_t          *PI_X;
   */
 	for (i = 0; i < 24; i ++) {
 	   if (PI_X [i] != 0)  
-	      indexTable [viterbiCounter] = inputCounter ++;
+	      indexTable [viterbiCounter] = true;
 	   viterbiCounter ++;
 	}
 }
@@ -221,7 +221,7 @@ int8_t          *PI_X;
 bool	uep_protection::deconvolve (int16_t *v,
 	                            int32_t size, uint8_t *outBuffer) {
 int16_t	i;
-
+int16_t	inputCounter	= 0;
 //	clear the bits in the viterbiBlock,
 //	only the non-punctured ones are set
 	memset (viterbiBlock. data (), 0,
@@ -229,8 +229,8 @@ int16_t	i;
 ///	The actual deconvolution is done by the viterbi decoder
 
 	for (i = 0; i < outSize * 4 + 24; i ++)
-	   if (indexTable [i] != 0)
-	      viterbiBlock [i] = v [indexTable [i]];
+	   if (indexTable [i])
+	      viterbiBlock [i] = v [inputCounter ++];
 	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;
 }

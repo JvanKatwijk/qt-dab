@@ -35,7 +35,6 @@
 	                                     protection (bitRate, protLevel) {
 int16_t	i, j;
 int16_t	viterbiCounter	= 0;
-int16_t	inputCounter	= 0;
 int16_t	L1, L2;
 int8_t	*PI1, *PI2, *PI_X;
 
@@ -112,7 +111,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	PI_X	= get_PCodes (8 - 1);
 
 	memset (indexTable. data (), 0,
-	                 (outSize * 4 + 24) * sizeof (int16_t)); 
+	                 (outSize * 4 + 24) * sizeof (uint8_t)); 
 //
 //	according to the standard we process the logical frame
 //	with a pair of tuples
@@ -121,7 +120,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	for (i = 0; i < L1; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI1 [j % 32] != 0) 
-	         indexTable [viterbiCounter] = inputCounter ++;
+	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;	
 	   }
 	}
@@ -129,7 +128,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	for (i = 0; i < L2; i ++) {
 	   for (j = 0; j < 128; j ++) {
 	      if (PI2 [j % 32] != 0) 
-	         indexTable [viterbiCounter] = inputCounter ++;
+	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;	
 	   }
 	}
@@ -137,7 +136,7 @@ int8_t	*PI1, *PI2, *PI_X;
 //	This block constitues the 6 * 4 bits of the register itself.
 	for (i = 0; i < 24; i ++) {
 	   if (PI_X [i] != 0) 
-	      indexTable [viterbiCounter] = inputCounter ++;
+	      indexTable [viterbiCounter] = true;
 	   viterbiCounter ++;
 	}
 }
@@ -149,14 +148,15 @@ bool	eep_protection::deconvolve (int16_t *v,
 	                            int32_t size, uint8_t *outBuffer) {
 
 int16_t	i;
-
+int16_t	inputCounter	= 0;
 	(void)size;			// currently unused
+
 	memset (viterbiBlock. data (), 0,
 	                 (outSize * 4 + 24) * sizeof (int16_t)); 
 
 	for (i = 0; i < outSize * 4 + 24; i ++)
-	   if (indexTable [i] != 0)
-	      viterbiBlock [i] = v [indexTable [i]];
+	   if (indexTable [i])
+	      viterbiBlock [i] = v [inputCounter ++];
 
 	viterbi_768::deconvolve (viterbiBlock. data (), outBuffer);
 	return true;

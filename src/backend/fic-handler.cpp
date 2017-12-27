@@ -49,7 +49,6 @@
 	                                    myViterbi (768, true) {
 int16_t	i, j, k;
 int	local	= 0;
-int	input_counter	= 0;
 
 	index		= 0;
 	BitsperBlock	= 2 * params. get_carriers ();
@@ -72,11 +71,11 @@ int	input_counter	= 0;
 //	(even through all instances, so we could create a static
 //	table), we make an indexTable that contains the indices of
 //	the ofdmInput table
-	memset (indexTable, 0, (3072 + 24) * sizeof (int16_t));
+	memset (indexTable, 0, (3072 + 24) * sizeof (uint8_t));
 	for (i = 0; i < 21; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (16 - 1) [k % 32] != 0)  
-	         indexTable [local] = input_counter ++;
+	         indexTable [local] = true;
 	      local ++;
 	   }
 	}
@@ -89,7 +88,7 @@ int	input_counter	= 0;
 	for (i = 0; i < 3; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (15 - 1) [k % 32] != 0)  
-	         indexTable [local] = input_counter ++;
+	         indexTable [local] = true;
 	      local ++;
 	   }
 	}
@@ -99,8 +98,8 @@ int	input_counter	= 0;
   *	This block constitues the 6 * 4 bits of the register itself.
   */
 	for (k = 0; k < 24; k ++) {
-	   if (get_PCodes (9 - 1) [k] != 0) 
-	      indexTable [local] = input_counter ++;
+	   if (get_PCodes (8 - 1) [k] != 0) 
+	      indexTable [local] = true;
 	   local ++;
 	}
 
@@ -165,13 +164,14 @@ int32_t	i;
 void	ficHandler::process_ficInput (int16_t ficno) {
 int16_t	i;
 int16_t	viterbiBlock [3072 + 24];
+int16_t	inputCount	= 0;
 
 	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
 
 
 	for (i = 0; i < 3072 + 24; i ++)
-	   if (indexTable [i] != 0)
-	      viterbiBlock [i] = ofdm_input [indexTable [i]];
+	   if (indexTable [i])
+	      viterbiBlock [i] = ofdm_input [inputCount ++];
 /**
   *	Now we have the full word ready for deconvolution
   *	deconvolution is according to DAB standard section 11.2
