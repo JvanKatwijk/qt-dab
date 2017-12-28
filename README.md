@@ -33,19 +33,21 @@ Features
   * Spectrum view (incl. constellation diagram)
   * Scanning function (scan the subsequent channels in the selected band  until a channel is encountered where a DAB signal is detected)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
+  * Automatic display of TII (Transmitter Identification Information) data when transmitted
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
   * Saving audio as uncompressed wave file
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
+  	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
-   	- SDR DAB sticks (RTL2838U or similar), 
-   	- SDRplay and 
+   	- SDR DAB sticks (RTL2838U or similar), and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not (or partly) implemented:
 
   * DMB (Audio and Video)
-  * TPEG when configured, TPEG messages are being send to a TCP port.
+  * TPEG when configured, TPEG messages are being send to a TCP port, sources for a simple client
+    are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources)
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
@@ -67,6 +69,8 @@ Therefore, it was decided to merge DAB-rpi and sdr-j-DAB and rename the result *
 The Qt-free version, the "command line only" version, is named dab-cmdline, and is built around a library that does the DAB decoding. It has its own repository on Github.
 
 The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay or a dabstick (rtl_sdr).
+
+Next to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
 
 The Qt-DAB version also supports input from an rtl-tcp server and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`), which obviously provides the opportunity of dumping the input into a (*.sdr)-file. 
 
