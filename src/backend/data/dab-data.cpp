@@ -60,7 +60,7 @@ int32_t i;
 	this	-> bitRate	= bitRate;
 	this	-> shortForm	= shortForm;
 	this	-> protLevel	= protLevel;
-	fprintf (stderr, "data: protlevel = %d\n", protLevel);
+        fprintf (stderr, "data: protlevel = %d\n", protLevel+1);
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
 	our_frameProcessor	= new dataProcessor (mr,
