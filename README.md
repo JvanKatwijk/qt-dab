@@ -62,23 +62,21 @@ Introduction
 
 Since furthermore a separate "command line only" version is developed (a version not using Qt at all), while a large part of the sources is also used in the development of a version handling ETI files, there was a real need to re-organize.
 
-It was therefore decided to merge the DAB-rpi and sdr-j-DAB version and rename the result **Qt-DAB** - to distinguish from the Qt-free version.
+Therefore, it was decided to merge DAB-rpi and sdr-j-DAB and rename the result **Qt-DAB** - to distinguish from the Qt-free version.
 
-The Qt-free version, the "command line only" version, is named dab-cmdline, is built around a library that does the DAB decoding, and has its own repository.
+The Qt-free version, the "command line only" version, is named dab-cmdline, and is built around a library that does the DAB decoding. It has its own repository on Github.
 
-Both the Qt-DAB and the dab-cmdline version support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay or a dabstick (rtl_sdr).
+The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay or a dabstick (rtl_sdr).
 
 The Qt-DAB version also supports input from an rtl-tcp server and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`), which obviously provides the opportunity of dumping the input into a (*.sdr)-file. 
 
 Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. 
 
-Furthermore, as the Qt-DAB version has to run on a headless RPI 2, a configuration option is included to have the sound output delivered its samples through a TCP connection.
-
 For further information please visit http://www.sdr-j.tk
 
 An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf (is valid for qt-dab as well)
 
-Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more information.
+Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 
 ------------------------------------------------------------------
 Windows
@@ -92,6 +90,8 @@ If you want to compile it by yourself, please install Qt through its online inst
 Ubuntu Linux
 ------------------------------------------------------------------
 
+If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage) which is much easier for Linux beginners.
+
 For generating an executable under Ubuntu, you can put the following commands into a script. 
 
 1. Fetch the required components
@@ -101,12 +101,13 @@ For generating an executable under Ubuntu, you can put the following commands in
    sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev  
    sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev 
    sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+   sudo apt-get install qtbase5-dev
    cd
    ```
    
 2. Fetch the required libraries 
 
-  a) Assuming you want to use a dabstick as device, fetch a version of the library for the dabstick
+  a) Assuming you want to use a dabstick (also known as rtlsdr) as device, fetch a version of the library for the dabstick
   ```
   wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
   tar xvfj rtl-sdr-linrad4.tbz 
@@ -161,7 +162,7 @@ For generating an executable under Ubuntu, you can put the following commands in
 
   You could also use QtCreator, load the `qt-dab.pro` file and build the executable.
   
-  Remark: The excutable file can be found in the sub-directory linux-bin. A make install command is not implemented.
+  Remark: The exacutable file can be found in the sub-directory linux-bin. A make install command is not implemented.
 
 
 ------------------------------------------------------------------
@@ -193,20 +194,19 @@ CONFIG		+= extio
 
 for use with (appropriate) extio handlers
 
-Remark: Input from pre-recorded files (8 bit raw and "wav" files) is configured by default.
+Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and 16-bit "wav" `*.sdr` files) is configured by default.
 
-Having the spectrum and the constellation shown, uncomment
+In order to show the spectrum and the constellation shown, uncomment
 ```
 CONFIG          += spectrum  
 ```
 
-When "spectrum" is configured, a define
-
+In such a case
 ```
 DEFINES		+= __QUALITY
 ```
 
-can be set in which case a "quality indicator" of the signal, i.e. the standard deviation of the phases of the demodulated signal, will be shown (smaller is better).
+a "quality indicator" (standard phase deviation of the demodulated signal) will be shown (smaller is better).
 
 
 Audio samples are - by default - sent to an audio device using the portaudio
@@ -253,8 +253,7 @@ cmake .. -DSDRPLAY=ON -DRTLTCP=ON -DSPECTRUM=ON
 	
 will generate a makefile with support for a) the SDRplay device, b) for the remote dabstick (using the rtl_tcp connection) and c) for the spectrum in the configuration.
 
-Other devices that can be selected besides the SDRPlay and rtl_tcp are dabstick (-DRTLSDR=ON) and airspy (-DAIRSPY=ON).
-Support for reading files is always included.
+Other devices that can be selected (beside dabstick and rtl_tcp) are sdrplay and airspy. Use `-DRTLSDR=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
 
 The default location for installation depends on your system, mostly `/usr/local/bin` or something like that. Set your own location by adding
 ```
@@ -296,6 +295,7 @@ The best way to generate the executable when building under Raspbian Jessie is t
 IMPORTANT NOTE:
 Since I was studying the (potential) difference in behaviour between a version with and a version without concurrency in the front end, there is a setting in the ".pro" file for selecting this.
 Use for the Qt-DAB the concurrency option.
+
 For the ".pro" file uncomment 
 
 	#DEFINES += __THREADED_DECODING.
@@ -309,16 +309,13 @@ For the CMakeLists.txt file, uncomment
 appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
-The releases section contains a generated appImage for use on an x64 Linux box.
-This appImage is created on Ubuntu 14.04 (Trusty), and uses Qt5, so it basically should run
-on any x-64 based linux system that isn't too old.
-Note that on start up the appImage will try to set the udev settings for the airspy and dabstick
-right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that
-while the SDRplay is selectable, the library for the device should be installed from the supplier,
-i.e. "www.sdrplay.com".
+https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage which is created on Ubuntu 14.04 (Trusty), and uses Qt5 (so it basically should run on any x-64 based linux system that isn't too old.). It assumes that you have installed a device, either a dabstick (i.e. rtlsdr), an Airspy or a SDRplay. All further dependencies are included. There is only one file which you have to make executable in order to run.
+
+Note that on start up the appImage will try to set the udev settings for the airspy and dabstick right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that while the SDRplay is selectable, the library for the device should be installed from the supplier, i.e. "www.sdrplay.com".
 
 All further dependencies are included
 
+For more information see http://appimage.org/
 
 --------------------------------------------------------------------------------
 Comment on some settings
@@ -330,13 +327,17 @@ Some settings are not influenced by buttons or sliders of the GUI, they will onl
 
 Typical examples are
 
-`saveSlides=1` when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
+`saveSlides=1` 
+when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
 
-`picturesPath` defines the directory where the slides (MOT slideshow) should be stored. Default is the home directory.
+`picturesPath` 
+defines the directory where the slides (MOT slideshow) should be stored. Default is the home directory.
 
-`showSlides=1` when set to 0 the slides will not be shown.
+`showSlides=1` 
+when set to 0 the slides will not be shown.
 
-`has-presetName=1` when set the name of the selected service - that is selected when closing down the program - is kept and at the next invocation of the program, an attempt is made to start that particular service. The name of the service is kept as `presetname=xxxx`
+`has-presetName=1` 
+when set the name of the selected service - that is selected when closing down the program - is kept and at the next invocation of the program, an attempt is made to start that particular service. The name of the service is kept as `presetname=xxxx`
 
 The background colors of the spectrum can be changed by setting 
 ```
@@ -344,11 +345,9 @@ displaycolor=blue
 gridcolor=red
 ```
 
-The Qt-DAB program now searches - if available - for tii (transmitter identification information) data.
-If tii data is available, the small label at the bottom of the Technical Data widget will color
-green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the FSN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
+The Qt-DAB program now searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the FSN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
 
-The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the .qt-dab.ini file
+The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the `.qt-dab.ini` file
 
 ```
 tii_delay=xxx

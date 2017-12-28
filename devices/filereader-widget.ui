@@ -6,19 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>411</width>
+    <width>589</width>
     <height>124</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>filereader</string>
+   <string>Qt-DAB File Reader</string>
   </property>
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>20</y>
-     <width>401</width>
+     <width>571</width>
      <height>91</height>
     </rect>
    </property>
@@ -31,14 +31,20 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>10</x>
       <y>20</y>
-      <width>91</width>
+      <width>181</width>
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
-     <string>fileReader</string>
+     <string>Playing pre-recorded file:</string>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
    <widget class="QLabel" name="nameofFile">
@@ -46,12 +52,15 @@
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>361</width>
+      <width>551</width>
       <height>21</height>
      </rect>
     </property>
     <property name="text">
      <string/>
+    </property>
+    <property name="textInteractionFlags">
+     <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
     </property>
    </widget>
   </widget>
