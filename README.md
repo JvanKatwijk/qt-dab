@@ -15,7 +15,7 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
+  * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
   * [Comment on some settings](#comment-on-some-settings)
   * [A note on intermittent sound](#a-note-on-intermittent-sound)
 * [Copyright](#copyright)
@@ -95,7 +95,7 @@ If you want to compile it by yourself, please install Qt through its online inst
 Ubuntu Linux
 ------------------------------------------------------------------
 
-If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage) which is much easier for Linux beginners.
+If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage-for-x64-linux-systems) which is much easier for Linux beginners.
 
 For generating an executable under Ubuntu, you can put the following commands into a script. 
 
