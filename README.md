@@ -74,7 +74,8 @@ Next to these C++ based versions, a version in Java is being developed, it has i
 
 The Qt-DAB version also supports input from an rtl-tcp server and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`), which obviously provides the opportunity of dumping the input into a (*.sdr)-file. 
 
-Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. 
+Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. Furthermore, the resulting PCM output can be sent - if so
+configured - to a TCP port (Sources for a small client are part of the source distribution).
 
 For further information please visit http://www.sdr-j.tk
 
