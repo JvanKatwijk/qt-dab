@@ -84,7 +84,10 @@ public:
         int32_t		get_ensembleId          (void);
         QString		get_ensembleName        (void);
 	void		clearEnsemble		(void);
+	void		set_tiiSwitch		(void);
 private:
+	bool		tiiSwitch;
+	RingBuffer<std::complex<float> > *spectrumBuffer;
 	virtualInput	*theRig;
 	dabParams	params;
 	sampleReader	myReader;
@@ -122,6 +125,7 @@ signals:
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
 	void		showCoordinates		(float, float);
+	void		show_Spectrum		(int);
 };
 #endif
 

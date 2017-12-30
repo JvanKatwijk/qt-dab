@@ -75,6 +75,7 @@ int32_t	i;
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
+	this	-> spectrumBuffer	= spectrumBuffer;
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
@@ -93,7 +94,7 @@ int32_t	i;
 	attempts			= 0;
 	scanMode			= false;
 	tiiCoordinates			= 0;
-
+	tiiSwitch			= false;
 	connect (this, SIGNAL (showCoordinates (float, float)),
 	         mr,   SLOT   (showCoordinates (float, float)));
 	connect (this, SIGNAL (setSynced (char)),
@@ -102,7 +103,11 @@ int32_t	i;
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
-
+	connect (this, SIGNAL (show_Spectrum (int)),
+	         myRadioInterface, SLOT (showSpectrum (int)));
+	
+	
+	myReader. setSpectrum (!tiiSwitch);
 	myReader. setRunning (false);
 //	the thread will be started from somewhere else
 }
@@ -323,6 +328,14 @@ NewOffset:
 	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
+	   if (tiiSwitch) {
+	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
+static int cc = 0;
+	      if (++cc > 10) {
+	         show_Spectrum (T_u);
+	         cc = 0;
+	      }
+	   }
 	   if ((tiiCoordinates > 0) && (my_ficHandler. mainId () > 0)) {
 	      tiiCoordinates --;
 	      int16_t mainId	= my_ficHandler. mainId ();
@@ -462,3 +475,9 @@ void	dabProcessor::stopDumping	(void) {
 	myReader. stopDumping ();
 }
 
+void	dabProcessor::set_tiiSwitch	(void) {
+	tiiSwitch = !tiiSwitch;
+	myReader. setSpectrum (!tiiSwitch);
+}
+
+	

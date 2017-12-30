@@ -53,12 +53,20 @@
 	                                          params (dabMode),
 	                                          my_fftHandler (dabMode) {
 int16_t	p, c, k;
+int16_t	i;
 
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
 	this	-> theBuffer	= new std::complex<float> [T_u];
+	this	-> buffer_2	= new std::complex<float> [T_u];
 	fillCount		= 0;
 	fft_buffer		= my_fftHandler. getVector ();	
+	window			= new float [T_u];
+	for (i = 0; i < T_u; i ++)
+	   window [i]  = (0.42 -
+                    0.5 * cos (2 * M_PI * (float)i / T_u) +
+                    0.08 * cos (4 * M_PI * (float)i / T_u));
+
 //
 //	create the patterns
 	for (p = 0; p < 70; p ++) {
@@ -259,6 +267,57 @@ int16_t res	= 0;
 //	available, we first look for the likely startcarrier in the
 //	carriers of the null period, and then just try patterns.
 //
+bool	TII_Detector::processNULL (std::complex<float> *v,
+	                           int16_t *mainId, int16_t *subId) {
+int	i, j;
+float		maxCorr		= 0;
+int16_t		startCarrier	= -carriers / 2 - 1;
+float		avg		= 0;
+std::complex<float> dum [T_u];
+
+	if (fillCount == 0) 
+	   memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
+
+	for (i = 0; i < T_u; i ++)
+	   fft_buffer [i] = cmul (v [i], window [i]);
+	my_fftHandler. do_FFT ();
+
+	for (i = 0; i < T_u; i ++)
+	   theBuffer [i] += fft_buffer [i];
+
+	if (++fillCount < 2)
+	   return false;
+
+	fillCount = 0;
+
+	if (startCarrier < - carriers / 2)
+	   return false;
+	fprintf (stderr, "startCarrier is %d\n", startCarrier);
+
+	maxCorr	= -1;
+	*mainId	= -1;
+	*subId	= -1;
+	for (i = 0; i < 70; i ++) {
+	   if ((startCarrier < theTable [i]. carrier) ||
+	       (theTable [i]. carrier + 48 <= startCarrier))
+	      continue;
+	   float corr = correlate (theBuffer,
+	                           startCarrier, 
+	                           theTable [i]. pattern);
+	   if (corr > maxCorr) {
+	      maxCorr = corr;
+	      *mainId	= i;
+	      *subId	= (startCarrier - theTable [i]. carrier) / 2;
+	   }
+	}
+
+//	if (*mainId != -1)
+//	   fprintf (stderr, "the pattern is %lX at carrier %d\n",
+//	                                 theTable [*mainId]. pattern, 
+//	                                 startCarrier);
+	return *mainId != -1;
+}
+//
 //	If we know the "mainId" from the FIG0/22, we can try to locate
 //	the pattern and compute the C
 //
@@ -270,38 +329,40 @@ int16_t res	= 0;
 //	the other way is the FFT approach were taking an FFT/iFFT
 //	will give us the "best" guess for the start position
 static int cnt	= 0;
-int16_t	TII_Detector::find_C (std::complex<float> *v,
-	                      int16_t mainId) {
+int16_t	TII_Detector::find_C (std::complex<float> *v, int16_t mainId) {
 int16_t	i;
 int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
 float	maxCorr		= -1;
 int	maxIndex	= -1;
+int	maxIndex_2	= -1;
 float	avg		= 0;
 float	corrTable [48];
 
 	if (mainId < 0)
 	   return - 1;
 
-	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
+	for (i = 0; i < T_u; i ++)
+	   fft_buffer [i] = cmul (v [i], window [i]);
 	my_fftHandler. do_FFT ();
 
 	if (cnt == 0)
-	   memcpy (theBuffer, fft_buffer, T_u * sizeof (std::complex<float>));
+	   memcpy (buffer_2, fft_buffer, T_u * sizeof (std::complex<float>));
 	else
 	   for (i = 0; i < T_u; i ++)
-	      theBuffer [i] += fft_buffer [i];
+	      buffer_2 [i] += fft_buffer [i];
 	if (++cnt < 2)
 	   return -1;
 	cnt = 0;
 
-//	We collected two "spectra', and start correlating the 
+//	We collected two  "spectra', and start correlating the 
 //	combined spectrum with the pattern.
 
-	for (i = 1; i < 24; i ++)  
-	   corrTable [i] = correlate (theBuffer,
+	for (i = 1; i < 24; i ++) {
+	   corrTable [i] = correlate (buffer_2,
 	                              startCarrier + 2 * i,
 	                              pattern);
+	}
 
 	for (i = 1; i < 24; i ++) {
 	   avg += corrTable [i];
@@ -327,10 +388,12 @@ float	corrTable [48];
 float	TII_Detector::correlate (std::complex<float> 	*v,
 	                         int16_t	startCarrier,
 	                         uint64_t	pattern) {
+static bool flag = true;
 int16_t	realIndex;
 int16_t	i;
 int16_t	carrier;
 float	s1	= 0;
+float	avg	= 0;
 
 	if (pattern == 0)
 	   return 0;
@@ -338,15 +401,15 @@ float	s1	= 0;
 	carrier		= startCarrier;
 	realIndex	= T_u - 1 + carrier;
 	s1		= abs (real (v [realIndex] *
-	                              conj (v [realIndex + 1])));
+	                             conj (v [realIndex + 1])));
 	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
 	   realIndex	= carrier < 0 ? T_u - 1 + carrier : carrier + 1;
-	   s1		+= abs (real (v [realIndex] * conj (v [realIndex + 1])));
+	   float x	= abs (real (v [realIndex] * conj (v [realIndex + 1])));
+	   s1 += x;
 	   pattern <<= 4;
 	}
 	
-	return s1;
+	return s1 / 15;
 }
 //
-

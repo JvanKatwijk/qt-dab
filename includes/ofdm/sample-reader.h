@@ -58,7 +58,9 @@ public:
 	                                 int16_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping	(void);
+	        void	setSpectrum	(bool);
 private:
+	        bool	spectrum;
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;
 #ifdef	HAVE_SPECTRUM

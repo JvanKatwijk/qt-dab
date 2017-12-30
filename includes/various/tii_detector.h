@@ -32,6 +32,9 @@ public:
 		TII_Detector	(uint8_t dabMode);
 		~TII_Detector	(void);
 	int16_t	find_C		(std::complex<float> *, int16_t);
+	bool	processNULL	(std::complex<float> *v,
+                                 int16_t *mainId, int16_t *subId);
+
 private:
 	dabParams	params;
 	fftHandler	my_fftHandler;
@@ -40,6 +43,8 @@ private:
 	bool		ind;
 	std::complex<float>	*theBuffer;
 	std::complex<float>	*fft_buffer;
+	std::complex<float>	*buffer_2;
+	float		*window;
 	int16_t		fillCount;
 	int16_t		A		(uint8_t c, uint8_t p, int16_t k);
 	float		correlate	(std::complex<float> *,

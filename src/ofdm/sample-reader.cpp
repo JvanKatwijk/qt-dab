@@ -51,6 +51,7 @@ int	i;
 	         mr, SLOT (set_CorrectorDisplay (int)));
 	currentPhase	= 0;
 	sLevel		= 0;
+	spectrum	= false;
 	sampleCount	= 0;
 	oscillatorTable = new std::complex<float> [INPUT_RATE];
         for (i = 0; i < INPUT_RATE; i ++)
@@ -67,6 +68,10 @@ int	i;
 
 	sampleReader::~sampleReader (void) {
 	delete[] oscillatorTable;
+}
+
+void	sampleReader::setSpectrum (bool b) {
+	spectrum	= b;
 }
 
 void	sampleReader::setRunning (bool b) {
@@ -127,8 +132,10 @@ std::complex<float> temp;
 	   show_Corrector	(corrector);
 	   sampleCount = 0;
 #ifdef  HAVE_SPECTRUM
-           spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
-           emit show_Spectrum (bufferSize);
+	   if (spectrum) {
+              spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
+              emit show_Spectrum (bufferSize);
+	   }
            localCounter = 0;
 #endif
 	}

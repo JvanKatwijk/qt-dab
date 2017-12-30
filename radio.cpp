@@ -225,7 +225,7 @@ QString h;
 	audiofilePointer	= NULL;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
-	pictureLabel	= NULL;
+	pictureLabel		= NULL;
 	syncedLabel		->
 	               setStyleSheet ("QLabel {background-color : red}");
 
@@ -260,7 +260,8 @@ QString h;
 	         this, SLOT (set_sourceDump (void)));
 	connect (audioDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_audioDump (void)));
-
+	connect (tiiButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_tiiSwitch (void)));
 //	display the version
 	QString v = "Qt-DAB " + QString (CURRENT_VERSION);
 	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
@@ -1677,5 +1678,9 @@ void	RadioInterface::set_nextChannel (void) {
 	Increment_Channel ();
 	clearEnsemble ();
 	my_dabProcessor	-> start ();
+}
+
+void	RadioInterface::set_tiiSwitch (void) {
+	my_dabProcessor	-> set_tiiSwitch ();
 }
 
