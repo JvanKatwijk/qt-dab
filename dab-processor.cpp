@@ -332,7 +332,7 @@ NewOffset:
 	   if (tiiSwitch) {
 static int cc	= 0;
 static int dd	= 0;
-//	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
+	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
 //	      int16_t mi = 0;
 //	      if (dd == 0)
 //	         my_TII_Guessor. reset ();
