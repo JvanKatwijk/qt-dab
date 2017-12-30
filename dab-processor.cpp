@@ -63,6 +63,7 @@
                                                             threshold,
 	                                                    diff_length),
 	                                 my_TII_Detector (dabMode), 
+	                                 my_TII_Guessor  (dabMode),
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
 #ifdef	HAVE_SPECTRUM
@@ -329,9 +330,19 @@ NewOffset:
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
 	   if (tiiSwitch) {
-	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
-static int cc = 0;
-	      if (++cc > 10) {
+static int cc	= 0;
+static int dd	= 0;
+//	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
+//	      int16_t mi = 0;
+//	      if (dd == 0)
+//	         my_TII_Guessor. reset ();
+//	      if (++dd <= 30)
+//	         my_TII_Guessor. addBuffer (ofdmBuffer);
+//	      if (dd == 30) 
+//	         my_TII_Guessor. guess (&mi);
+//	      if (dd == 100)
+//	         dd = 0;
+	      if (++cc > 2) {
 	         show_Spectrum (T_u);
 	         cc = 0;
 	      }

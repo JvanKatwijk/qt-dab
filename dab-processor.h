@@ -39,6 +39,7 @@
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
 #include	"tii_detector.h"
+#include	"tii_guessor.h"
 //
 
 class	RadioInterface;
@@ -95,6 +96,7 @@ private:
 	ficHandler	my_ficHandler;
 	mscHandler	my_mscHandler;
 	TII_Detector	my_TII_Detector;
+	TII_Guessor	my_TII_Guessor;
 	int		tiiCoordinates;
 
 	int16_t		attempts;

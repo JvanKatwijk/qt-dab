@@ -51,7 +51,7 @@ int	i;
 	         mr, SLOT (set_CorrectorDisplay (int)));
 	currentPhase	= 0;
 	sLevel		= 0;
-	spectrum	= false;
+	spectrum	= true;
 	sampleCount	= 0;
 	oscillatorTable = new std::complex<float> [INPUT_RATE];
         for (i = 0; i < INPUT_RATE; i ++)
@@ -194,8 +194,10 @@ int32_t		i;
 	if (sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
 #ifdef  HAVE_SPECTRUM
-	   spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
-	   emit show_Spectrum (bufferSize);
+	   if (spectrum) {
+	      spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+	      emit show_Spectrum (bufferSize);
+	   }
 	   localCounter = 0;
 #endif
 	   sampleCount = 0;
