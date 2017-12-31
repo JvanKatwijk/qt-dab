@@ -239,6 +239,9 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
+
+#and this one is just for me
+#DEFINES	+= TII_GUESSING
 }
 #
 # an attempt to have it run under W32 through cross compilation

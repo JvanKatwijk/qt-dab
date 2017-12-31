@@ -329,38 +329,48 @@ NewOffset:
 	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
+//
+//	The TII data  is encoded in the null period of the
+//	frame containing a CIFcount with CIFcount & 07 < 4
+//	Here we are looking at the CIFcount of the previous frame
 	   if (tiiSwitch) {
+#ifdef	TII_GUESSING
 static int cc	= 0;
 static int dd	= 0;
-	      spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
-//	      int16_t mi = 0;
-//	      if (dd == 0)
-//	         my_TII_Guessor. reset ();
-//	      if (++dd <= 30)
-//	         my_TII_Guessor. addBuffer (ofdmBuffer);
-//	      if (dd == 30) 
-//	         my_TII_Guessor. guess (&mi);
-//	      if (dd == 100)
-//	         dd = 0;
-	      if (++cc > 2) {
-	         show_Spectrum (T_u);
-	         cc = 0;
+	      if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
+	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
+	         int16_t mi = 0;
+	         if (dd == 0)
+	            my_TII_Guessor. reset ();
+	         if (++dd <= 10)
+	            my_TII_Guessor. addBuffer (ofdmBuffer);
+	         if (dd == 10) 
+	            my_TII_Guessor. guess (&mi);
+	         if (dd == 10)
+	            dd = 0;
+	         if (++cc > 2) {
+	            show_Spectrum (1);
+	            cc = 0;
+	         }
 	      }
+#endif
 	   }
 	   if ((tiiCoordinates > 0) && (my_ficHandler. mainId () > 0)) {
-	      tiiCoordinates --;
-	      int16_t mainId	= my_ficHandler. mainId ();
-              int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
-	                                                mainId); 
-	      if (subId >= 0) {
-	         bool found;
-	         std::complex<float> coord =
-	                   my_ficHandler. get_coordinates (mainId,
-	                                                   subId,
-	                                                   &found);
-	         if (found) {
-	            showCoordinates (real (coord), imag (coord));
-	            tiiCoordinates = 0;
+	      if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
+	         tiiCoordinates --;
+	         int16_t mainId	= my_ficHandler. mainId ();
+                 int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
+	                                                   mainId); 
+	         if (subId >= 0) {
+	            bool found;
+	            std::complex<float> coord =
+	                      my_ficHandler. get_coordinates (mainId,
+	                                                      subId,
+	                                                      &found);
+	            if (found) {
+	               showCoordinates (real (coord), imag (coord));
+	               tiiCoordinates = 0;
+	            }
 	         }
 	      }
 	   }
@@ -487,8 +497,10 @@ void	dabProcessor::stopDumping	(void) {
 }
 
 void	dabProcessor::set_tiiSwitch	(void) {
+#ifdef	TII_GUESSING
 	tiiSwitch = !tiiSwitch;
 	myReader. setSpectrum (!tiiSwitch);
+#endif
 }
 
 	

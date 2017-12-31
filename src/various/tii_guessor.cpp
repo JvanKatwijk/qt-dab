@@ -29,25 +29,19 @@
 //	to identify the transmitter by inspecting the null period.
 //	The information in the null-period is encoded in a "p"
 //	a "pattern" and a "c", a "carrier"
-//	value. The "p" value, derived from the FIB, defines the
-//	pattern within the null-period as well as a set of
+//	value. The "p" value defines the
+//	pattern within the null-period as well as a set of potential
 //	startcarriers, i.e. carrier numbers where the pattern
 //	could start.
-//	The start carrier itself determined the "c" value.
+//	The start carrier itself determines the "c" value.
 //	Basically, within an SFN the "p" is fixed for all transmitters,
 //	while the latter show the pattern on different positions in
 //	the carriers of the null-period.
 //
-//	Matching the position of the pattern is relatively easy, since
-//	the standard defines the signals (i.e. phase and amplitude) of
-//	the carriers in the pattern.
 //
-//	As it turns out, the pattern is represented by a sequence
-//	consisting of elements with two subsequent bins with the same
-//	value, followed by a "gap" of K * 48 (-1) bins.
+//	Here we try to figure out where the start of the pattern is
+//	in the spectrum of the null-period
 //
-//	The constructor of the class generates the patterns, according
-//	to the algorithm in the standard.
 		TII_Guessor::TII_Guessor (uint8_t dabMode):
 	                                          params (dabMode),
 	                                          my_fftHandler (dabMode) {
@@ -73,7 +67,6 @@ void		TII_Guessor::reset (void) {
 	memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
 }
 
-
 void		TII_Guessor:: addBuffer (std::complex<float> *buffer) {
 int	i;
 
@@ -98,10 +91,10 @@ int	startCarrier;
 	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
 	   int index = T_u / 2 + i;
 	   float sum = 0;
-	   if (abs (real (theBuffer [index] * conj (theBuffer [index + 1]))) < 5 * avg)
+	   if (abs (real (theBuffer [index] * conj (theBuffer [index + 1]))) < 8 * avg)
 	      continue;
-	   for (j = 0; j < 32; j ++) {
-	      int ci = index + j * 48;
+	   for (j = 0; j < 4; j ++) {
+	      int ci = index + j * 8 * 48;
 	      if (ci >= T_u / 2) ci ++;
 	      sum += abs (real (theBuffer [ci]* conj (theBuffer [ci + i])));
 	   }
@@ -111,6 +104,26 @@ int	startCarrier;
 	      startCarrier = i;
 	   }
 	}
+
+	if (startCarrier < -768 + 48)
+	   fprintf (stderr, "estimated subId = %d\n",
+	                            (startCarrier + 768) / 2);
+	else
+	if (startCarrier < -768 + 2 * 48)
+	   fprintf (stderr, "estimated subId = %d\n",
+	                            (startCarrier + (768 - 48)) / 2);
+	else
+	if (startCarrier < -768 + 3 * 48)
+	   fprintf (stderr, "estimated subId = %d\n",
+	                            (startCarrier + (768 - 2 * 48)) / 2);
+	else
+	if (startCarrier < -768 + 4 * 48)
+	   fprintf (stderr, "estimated subId = %d\n",
+	                            (startCarrier + (768 - 3 * 48)) / 2);
+	else
+	if (startCarrier < -768 + 5 * 48)
+	   fprintf (stderr, "estimated subId = %d\n",
+	                            (startCarrier + (768 - 4 * 48)) / 2);
 
 	fprintf (stderr, "estimated startcarrier %d\n", startCarrier);
 }

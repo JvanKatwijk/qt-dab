@@ -116,7 +116,9 @@ public:
 	uint8_t	get_ecc			(void);
 	int32_t	get_ensembleId		(void);
 	QString get_ensembleName	(void);
+	int32_t	get_CIFcount		(void);
 protected:
+	void	newFrame		(void);
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;
@@ -130,7 +132,7 @@ private:
                                             uint32_t, int16_t,
                                             int16_t, int16_t, int16_t);
 	int32_t		findServiceIdwithName (QString &s);
-
+	int32_t		CIFcount;
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
 	void		FIG0Extension0		(uint8_t *);
