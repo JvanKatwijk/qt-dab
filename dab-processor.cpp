@@ -351,8 +351,8 @@ NewOffset:
 	            my_TII_Guessor. guess (&mi);
 	         if ((tii_counter & 02) != 0) 
 	            show_Spectrum (1);
-	      }
 #endif
+	      }
 	      if (my_ficHandler. mainId () > 0) {
 	         if (tii_counter == 1)
 	            my_TII_Detector. reset ();
