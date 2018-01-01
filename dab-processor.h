@@ -123,7 +123,8 @@ private:
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
-virtual	void		run		(void);
+	bool		wasSecond		(int16_t, dabParams *);
+virtual	void		run			(void);
 	bool		isReset;
 signals:
 	void		setSynced		(char);

@@ -34,6 +34,7 @@
 	      T_u	= 512;		// useful part
 	      T_g	= 126;
 	      carrierDiff	= 4000;
+	      CIFs		= 1;
 	      break;
 
 	   case 4:
@@ -46,6 +47,7 @@
 	      T_u		= 1024;
 	      T_g		= 252;
 	      carrierDiff	= 2000;
+	      CIFs		= 2;
 	      break;
 
 	   case 3:
@@ -58,6 +60,7 @@
 	      T_u		= 256;
 	      T_g		= 63;
 	      carrierDiff	= 2000;
+	      CIFs		= 1;
 	      break;
 
 	   case 1:
@@ -71,6 +74,7 @@
 	       T_u		= 2048;
 	       T_g		= 504;
 	       carrierDiff	= 1000;
+	       CIFs		= 4;
 	      break;
 	}
 }
@@ -113,5 +117,9 @@ int32_t	dabParams::get_T_F (void) {
 
 int32_t	dabParams::get_carrierDiff (void) {
 	return carrierDiff;
+}
+
+int16_t	dabParams::get_CIFs	(void) {
+	return CIFs;
 }
 

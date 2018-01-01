@@ -28,27 +28,29 @@
 
 class	dabParams {
 public:
-			dabParams (uint8_t);
-			~dabParams (void);
-	int16_t		get_dabMode (void);
-	int16_t		get_L (void);
-	int16_t		get_carriers (void);
-	int16_t		get_T_null (void);
-	int16_t		get_T_s (void);
-	int16_t		get_T_u (void);
-	int16_t		get_T_g (void);
-	int32_t		get_T_F (void);
+			dabParams	(uint8_t);
+			~dabParams	(void);
+	int16_t		get_dabMode	(void);
+	int16_t		get_L		(void);
+	int16_t		get_carriers	(void);
+	int16_t		get_T_null	(void);
+	int16_t		get_T_s		(void);
+	int16_t		get_T_u		(void);
+	int16_t		get_T_g		(void);
+	int32_t		get_T_F		(void);
 	int32_t		get_carrierDiff (void);
+	int16_t		get_CIFs	(void);
 private:
-	uint8_t	dabMode;
-	int16_t	L;
-	int16_t	K;
-	int16_t	T_null;
-	int32_t	T_F;
-	int16_t	T_s;
-	int16_t	T_u;
-	int16_t	T_g;
-	int16_t	carrierDiff;
+	uint8_t		dabMode;
+	int16_t		L;
+	int16_t		K;
+	int16_t		T_null;
+	int32_t		T_F;
+	int16_t		T_s;
+	int16_t		T_u;
+	int16_t		T_g;
+	int16_t		carrierDiff;
+	int16_t		CIFs;
 };
 
 #endif

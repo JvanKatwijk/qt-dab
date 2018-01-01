@@ -334,13 +334,13 @@ NewOffset:
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
 /*
- *	The TII data  is encoded in the null period of the
- *	frame containing a CIFcount with CIFcount & 07 < 4
+ *	The TII data is encoded in the null period of the
+ *	odd frames 
  *	Here we are looking at the CIFcount of the previous frame
  *	Note that tiiSwitch == true implies switching off the "normal"
  *	spectrum
  */
-	   if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
+	   if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
 	      if (tiiSwitch) {
 	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
 #ifdef	TII_GUESSING
@@ -503,6 +503,19 @@ void	dabProcessor::set_tiiSwitch	(void) {
 	tiiSwitch = !tiiSwitch;
 	myReader. setSpectrum (!tiiSwitch);
 #endif
+}
+
+bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
+	switch (p -> get_dabMode ()) {
+	   default:
+	   case 1:
+	      return (cf & 07) >= 4;
+	   case 2:
+	   case 3:
+	      return (cf & 02);
+	   case 4:
+	      return (cf & 03) >= 2;
+	}
 }
 
 	
