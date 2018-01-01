@@ -261,16 +261,28 @@ int16_t res	= 0;
 //
 //	If we know the "mainId" from the FIG0/22, we can try to locate
 //	the pattern and compute the C
-//
+
+void	TII_Detector::reset (void) {
+	memset (buffer_2, 0, T_u * sizeof (std::complex<float>));
+}
+
 //	To eliminate (reduce?) noise in the input signal, we
 //	add a few spectra before computing.
-//	We compute two ways, one by just computing the product
-//	of the "pattern" with relevant elements from the input,
-//	which we then obviously do for all 48 elements to consider,
-//	the other way is the FFT approach were taking an FFT/iFFT
-//	will give us the "best" guess for the start position
-static int cnt	= 0;
-int16_t	TII_Detector::find_C (std::complex<float> *v, int16_t mainId) {
+void	TII_Detector::addBuffer (std::complex<float> *v) {
+int	i;
+
+	for (i = 0; i < T_u; i ++)
+	   fft_buffer [i] = cmul (v [i], window [i]);
+	my_fftHandler. do_FFT ();
+
+	for (i = 0; i < T_u; i ++)
+	    buffer_2 [i] += fft_buffer [i];
+}
+
+//	We collected some  "spectra', and start correlating the 
+//	combined spectrum with the pattern.
+
+int16_t	TII_Detector::find_C (int16_t mainId) {
 int16_t	i;
 int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
@@ -284,21 +296,6 @@ float	corrTable [48];
 	   return - 1;
 
 //	fprintf (stderr, "the carrier is %d\n", startCarrier);
-	for (i = 0; i < T_u; i ++)
-	   fft_buffer [i] = cmul (v [i], window [i]);
-	my_fftHandler. do_FFT ();
-
-	if (cnt == 0)
-	   memcpy (buffer_2, fft_buffer, T_u * sizeof (std::complex<float>));
-	else
-	   for (i = 0; i < T_u; i ++)
-	      buffer_2 [i] += fft_buffer [i];
-	if (++cnt < 2)
-	   return -1;
-	cnt = 0;
-
-//	We collected two  "spectra', and start correlating the 
-//	combined spectrum with the pattern.
 
 	for (i = 1; i < 24; i ++) {
 	   corrTable [i] = correlate (buffer_2,
@@ -325,7 +322,10 @@ float	corrTable [48];
 //	It turns out that the location "startIndex + k * 48"
 //	and "startIndex + k * 48 + 1" both contain the refTable
 //	value from "startIndex + k * 48" (where k is 1 .. 5, determined
-//	by the pattern)
+//	by the pattern). Since there might be a pretty large
+//	phase difference between the values in the spectrum of the
+//	null period here and the values in the predefined refTable,
+//	we just correlate  here over the values here
 //
 float	TII_Detector::correlate (std::complex<float> 	*v,
 	                         int16_t	startCarrier,

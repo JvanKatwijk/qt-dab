@@ -39,6 +39,7 @@
 	                                 uint8_t	dabMode,
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,
+	                                 int16_t	tii_delay,
 	                                 RingBuffer<int16_t> *audioBuffer,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
@@ -85,6 +86,9 @@ int32_t	i;
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
+	this	-> tii_delay		= tii_delay;
+	this	-> tii_counter		= 0;
+
 	ofdmBuffer			= new std::complex<float> [2 * T_s];
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
@@ -94,7 +98,6 @@ int32_t	i;
 	f2Correction			= true;
 	attempts			= 0;
 	scanMode			= false;
-	tiiCoordinates			= 0;
 	tiiSwitch			= false;
 	connect (this, SIGNAL (showCoordinates (float, float)),
 	         mr,   SLOT   (showCoordinates (float, float)));
@@ -323,56 +326,55 @@ NewOffset:
 /**
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
-  *	If we handle TII, we have to process them though
   */
 	   syncBufferIndex	= 0;
 	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer,
 	                         T_null, coarseCorrector);
-//
-//	The TII data  is encoded in the null period of the
-//	frame containing a CIFcount with CIFcount & 07 < 4
-//	Here we are looking at the CIFcount of the previous frame
-	   if (tiiSwitch) {
+/*
+ *	The TII data  is encoded in the null period of the
+ *	frame containing a CIFcount with CIFcount & 07 < 4
+ *	Here we are looking at the CIFcount of the previous frame
+ *	Note that tiiSwitch == true implies switching off the "normal"
+ *	spectrum
+ */
+	   if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
+	      if (tiiSwitch) {
+	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
 #ifdef	TII_GUESSING
-static int cc	= 0;
-static int dd	= 0;
-	      if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
-	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_null);
 	         int16_t mi = 0;
-	         if (dd == 0)
+	         if (tii_counter == 1)
 	            my_TII_Guessor. reset ();
-	         if (++dd <= 10)
+	         if (tii_counter <= 10)
 	            my_TII_Guessor. addBuffer (ofdmBuffer);
-	         if (dd == 10) 
+	         if (tii_counter == 10) 		// 20 frames
 	            my_TII_Guessor. guess (&mi);
-	         if (dd == 10)
-	            dd = 0;
-	         if (++cc > 2) {
+	         if ((tii_counter & 02) != 0) 
 	            show_Spectrum (1);
-	            cc = 0;
-	         }
 	      }
 #endif
-	   }
-	   if ((tiiCoordinates > 0) && (my_ficHandler. mainId () > 0)) {
-	      if ((my_ficHandler. get_CIFcount () & 07) >= 4) {
-	         tiiCoordinates --;
-	         int16_t mainId	= my_ficHandler. mainId ();
-                 int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
-	                                                   mainId); 
-	         if (subId >= 0) {
-	            bool found;
-	            std::complex<float> coord =
-	                      my_ficHandler. get_coordinates (mainId,
-	                                                      subId,
-	                                                      &found);
-	            if (found) {
-	               showCoordinates (real (coord), imag (coord));
-	               tiiCoordinates = 0;
+	      if (my_ficHandler. mainId () > 0) {
+	         if (tii_counter == 1)
+	            my_TII_Detector. reset ();
+	         if (tii_counter <= 3)
+                    my_TII_Detector. addBuffer (ofdmBuffer);
+	         if (tii_counter == 3) {
+	            int16_t mainId	= my_ficHandler. mainId ();
+                    int16_t subId =  my_TII_Detector. find_C (mainId); 
+	            if (subId >= 0) {
+	               bool found;
+	               std::complex<float> coord =
+	                        my_ficHandler. get_coordinates (mainId,
+	                                                        subId,
+	                                                        &found);
+	               if (found) {
+	                  showCoordinates (real (coord), imag (coord));
+	               }
 	            }
-	         }
+	         } 
 	      }
+	      if (++tii_counter >= tii_delay)
+	         tii_counter = 1;
 	   }
 /**
   *	The first sample to be found for the next frame should be T_g
@@ -437,10 +439,6 @@ void	dabProcessor::set_scanMode	(bool b) {
 	attempts	= 0;
 }
 
-void	dabProcessor::set_tiiCoordinates	(void) {
-	tiiCoordinates	= 2;
-}
-//
 //	we could have derive the dab processor from fic and msc handlers,
 //	however, from a logical point of view they are more delegates than
 //	parents.

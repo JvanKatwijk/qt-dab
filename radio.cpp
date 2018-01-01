@@ -130,6 +130,8 @@ QString h;
 
 	tii_delay	=
 	           dabSettings	-> value ("tii_delay", 20). toInt ();
+	if (tii_delay < 20)
+	   tii_delay = 20;
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -373,6 +375,7 @@ int32_t	frequency;
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
 	                                      diff_length,
+	                                      tii_delay,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
@@ -905,8 +908,6 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if (((numberofSeconds % tii_delay) == 0) && running. load ())
-	   my_dabProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
 	text. append (" hr, ");
@@ -1130,6 +1131,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
 	                                      diff_length,
+	                                      tii_delay,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath

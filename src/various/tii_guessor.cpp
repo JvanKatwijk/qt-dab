@@ -125,5 +125,5 @@ int	startCarrier;
 	   fprintf (stderr, "estimated subId = %d\n",
 	                            (startCarrier + (768 - 4 * 48)) / 2);
 
-	fprintf (stderr, "estimated startcarrier %d\n", startCarrier);
+//	fprintf (stderr, "estimated startcarrier %d\n", startCarrier);
 }

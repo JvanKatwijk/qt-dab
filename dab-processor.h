@@ -53,6 +53,7 @@ public:
 	                         uint8_t,
 	                         int16_t,
 	                         int16_t,
+	                         int16_t,
 	                         RingBuffer<int16_t> *,
 	                         RingBuffer<uint8_t> *,
 	                         QString
@@ -91,6 +92,8 @@ private:
 	RingBuffer<std::complex<float> > *spectrumBuffer;
 	virtualInput	*theRig;
 	dabParams	params;
+	int16_t		tii_delay;
+	int16_t		tii_counter;
 	sampleReader	myReader;
 	RadioInterface	*myRadioInterface;
 	ficHandler	my_ficHandler;

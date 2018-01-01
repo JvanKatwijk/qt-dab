@@ -31,9 +31,9 @@ class	TII_Detector {
 public:
 		TII_Detector	(uint8_t dabMode);
 		~TII_Detector	(void);
-	int16_t	find_C		(std::complex<float> *, int16_t);
-	bool	processNULL	(std::complex<float> *v,
-                                 int16_t *mainId, int16_t *subId);
+	void	reset		(void);
+	void	addBuffer	(std::complex<float> *);
+	int16_t	find_C		(int16_t);
 
 private:
 	dabParams	params;
