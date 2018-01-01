@@ -265,9 +265,9 @@ QString h;
 	connect (tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_tiiSwitch (void)));
 //	display the version
-	QString v = "Qt-DAB " + QString (CURRENT_VERSION);
+	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
 	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
-        versionText += "Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
+        versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
 	versionName	-> setText (v);
 	versionName	-> setToolTip (versionText);
 

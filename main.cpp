@@ -35,6 +35,10 @@
 
 #define DEFAULT_INI     ".qt-dab.ini"
 
+#ifndef	GITHASH
+#define	GITHASH	"      "
+#endif
+
 QString fullPathfor (QString v) {
 QString fileName;
 

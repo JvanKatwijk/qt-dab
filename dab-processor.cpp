@@ -107,8 +107,10 @@ int32_t	i;
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
+#ifdef	HAVE_SPECTRUM
 	connect (this, SIGNAL (show_Spectrum (int)),
 	         myRadioInterface, SLOT (showSpectrum (int)));
+#endif
 	
 	
 	myReader. setSpectrum (!tiiSwitch);
@@ -349,8 +351,10 @@ NewOffset:
 	            my_TII_Guessor. addBuffer (ofdmBuffer);
 	         if (tii_counter == 10) 		// 20 frames
 	            my_TII_Guessor. guess (&mi);
+#ifdef	HAVE_SPECTRUM
 	         if ((tii_counter & 02) != 0) 
 	            show_Spectrum (1);
+#endif
 #endif
 	      }
 	      if (my_ficHandler. mainId () > 0) {

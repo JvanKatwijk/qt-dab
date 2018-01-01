@@ -192,10 +192,15 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-GITHASHSTRING = $$system(git rev-parse --short HEAD)
-!isEmpty(GITHASHSTRING) {
-    message("Current git hash = $$GITHASHSTRING")
-    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+exists ("./.git") {
+   GITHASHSTRING = $$system(git rev-parse --short HEAD)
+   !isEmpty(GITHASHSTRING) {
+       message("Current git hash = $$GITHASHSTRING")
+       DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+   }
+}
+isEmpty(GITHASHSTRING) {
+    DEFINES += GITHASH=\\\"------\\\"
 }
 
 FORMS 		+= ./forms/dabradio.ui 
@@ -241,7 +246,7 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 
 #and this one is just for me
-DEFINES	+= TII_GUESSING
+#DEFINES	+= TII_GUESSING
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -250,11 +255,17 @@ win32 {
 DESTDIR		= ../../windows-bin
 # includes in mingw differ from the includes in fedora linux
 
-GITHASHSTRING = $$system(git rev-parse --short HEAD)
-!isEmpty(GITHASHSTRING) {
-    message("Current git hash = $$GITHASHSTRING")
-    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+exists ("./.git") {
+   GITHASHSTRING = $$system(git rev-parse --short HEAD)
+   !isEmpty(GITHASHSTRING) {
+       message("Current git hash = $$GITHASHSTRING")
+       DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+   }
 }
+isEmpty(GITHASHSTRING) {
+    DEFINES += GITHASH=\\\"------\\\"
+}
+
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
@@ -304,6 +315,8 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
+
+#DEFINES	+= TII_GUESSING
 }
 
 #######################################

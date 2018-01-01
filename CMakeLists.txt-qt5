@@ -15,16 +15,21 @@ if(MINGW)
     add_definitions ( -municode)
 endif()
 
-execute_process (
-	COMMAND git rev-parse --short HEAD
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	OUTPUT_VARIABLE GIT_COMMIT_HASH
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+IF(EXISTS (".git") AND IS_DIRECTORY (".git"))
+   execute_process (
+      COMMAND git rev-parse --short HEAD
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_COMMIT_HASH
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+   )
+endif ()
 
 if(GIT_COMMIT_HASH)
-	add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+   add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+else ()
+   add_definitions ("-DGITHASH=\"       \"")
 endif()
+
 
 ########################################################################
 # select the release build type by default to get optimization flags

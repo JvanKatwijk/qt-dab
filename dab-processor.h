@@ -130,7 +130,9 @@ signals:
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
 	void		showCoordinates		(float, float);
+#ifdef	HAVE_SPECTRUM
 	void		show_Spectrum		(int);
+#endif
 };
 #endif
 
