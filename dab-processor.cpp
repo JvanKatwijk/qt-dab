@@ -64,7 +64,6 @@
                                                             threshold,
 	                                                    diff_length),
 	                                 my_TII_Detector (dabMode), 
-	                                 my_TII_Guessor  (dabMode),
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
 #ifdef	HAVE_SPECTRUM
@@ -341,41 +340,41 @@ NewOffset:
  *	spectrum
  */
 	   if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
-	      if (tiiSwitch) {
+	      if (tiiSwitch) 
 	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
-#ifdef	TII_GUESSING
+	      if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
 	         int16_t mi = 0;
-	         if (tii_counter == 1)
-	            my_TII_Guessor. reset ();
-	         if (tii_counter <= 10)
-	            my_TII_Guessor. addBuffer (ofdmBuffer);
-	         if (tii_counter == 10) 		// 20 frames
-	            my_TII_Guessor. guess (&mi);
-#ifdef	HAVE_SPECTRUM
-	         if ((tii_counter & 02) != 0) 
-	            show_Spectrum (1);
-#endif
-#endif
-	      }
-	      if (my_ficHandler. mainId () > 0) {
 	         if (tii_counter == 1)
 	            my_TII_Detector. reset ();
 	         if (tii_counter <= 3)
-                    my_TII_Detector. addBuffer (ofdmBuffer);
-	         if (tii_counter == 3) {
-	            int16_t mainId	= my_ficHandler. mainId ();
-                    int16_t subId =  my_TII_Detector. find_C (mainId); 
-	            if (subId >= 0) {
-	               bool found;
-	               std::complex<float> coord =
-	                        my_ficHandler. get_coordinates (mainId,
-	                                                        subId,
-	                                                        &found);
-	               if (found) {
-	                  showCoordinates (real (coord), imag (coord));
-	               }
+	            my_TII_Detector. addBuffer (ofdmBuffer);
+	      }
+#ifdef	HAVE_SPECTRUM
+	      if ( tiiSwitch && ((tii_counter & 02) != 0)) 
+	            show_Spectrum (1);
+#endif
+	      if ((my_ficHandler. mainId () > 0) && (tii_counter == 3)) {
+	         int16_t mainId	= my_ficHandler. mainId ();
+                 int16_t subId =  my_TII_Detector. find_C (mainId); 
+	         if (subId >= 0) {
+	            bool found;
+	            std::complex<float> coord =
+	                     my_ficHandler. get_coordinates (mainId,
+	                                                     subId,
+	                                                     &found);
+	            if (found) {
+	               showCoordinates (real (coord), imag (coord));
 	            }
-	         } 
+	         }
+	      }
+
+	      if (tiiSwitch && (tii_counter == 3)) {
+	         int16_t mainId = -1;
+	         int16_t subId	= -1;
+	         my_TII_Detector. processNULL (&mainId, &subId);
+	         if (mainId > 0)
+	            fprintf (stderr, "educated guess is mainId %d, subId %d\n",
+	                                              mainId, subId);
 	      }
 	      if (++tii_counter >= tii_delay)
 	         tii_counter = 1;

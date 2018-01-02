@@ -21,7 +21,6 @@
  */
 
 #include	"tii_detector.h"
-//#include	"tii_verify.h"
 #include	<stdio.h>
 //
 //	Transmitter Identification Info is carrier in the null period
@@ -58,7 +57,6 @@ int16_t	i;
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
 	this	-> theBuffer	= new std::complex<float> [T_u];
-	this	-> buffer_2	= new std::complex<float> [T_u];
 	fillCount		= 0;
 	fft_buffer		= my_fftHandler. getVector ();	
 	window			= new float [T_u];
@@ -263,7 +261,7 @@ int16_t res	= 0;
 //	the pattern and compute the C
 
 void	TII_Detector::reset (void) {
-	memset (buffer_2, 0, T_u * sizeof (std::complex<float>));
+	memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
 }
 
 //	To eliminate (reduce?) noise in the input signal, we
@@ -276,7 +274,7 @@ int	i;
 	my_fftHandler. do_FFT ();
 
 	for (i = 0; i < T_u; i ++)
-	    buffer_2 [i] += fft_buffer [i];
+	    theBuffer [i] += fft_buffer [(T_u / 2 + i) % T_u];
 }
 
 //	We collected some  "spectra', and start correlating the 
@@ -290,7 +288,7 @@ float	maxCorr		= -1;
 int	maxIndex	= -1;
 int	maxIndex_2	= -1;
 float	avg		= 0;
-float	corrTable [48];
+float	corrTable [24];
 
 	if (mainId < 0)
 	   return - 1;
@@ -298,7 +296,7 @@ float	corrTable [48];
 //	fprintf (stderr, "the carrier is %d\n", startCarrier);
 
 	for (i = 1; i < 24; i ++) {
-	   corrTable [i] = correlate (buffer_2,
+	   corrTable [i] = correlate (theBuffer,
 	                              startCarrier + 2 * i,
 	                              pattern);
 	}
@@ -317,6 +315,65 @@ float	corrTable [48];
 
 	return maxIndex;
 }
+
+void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
+int i, j;
+float   maxCorr	= 0;
+float   avg	= 0;
+int     startCarrier	= -1;
+
+        for (i = - carriers / 2; i < - carriers / 4 - 1; i ++)
+           avg += abs (real (theBuffer [T_u / 2 + i] *
+                                    conj (theBuffer [T_u / 2 + i + 1])));
+        avg /= (carriers / 4);
+
+	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
+	   int index = T_u / 2 + i;
+	   float sum = 0;
+	   if (abs (real (theBuffer [index] *
+	                     conj (theBuffer [index + 1]))) < 5 * avg)
+	      continue;
+	   for (j = 0; j < 32; j ++) {
+	      int ci = index + j * 48;
+	      if (ci >= T_u / 2) ci ++;
+	      sum += abs (real (theBuffer [ci]* conj (theBuffer [ci + 1])));
+	   }
+
+	   if (sum > maxCorr) {
+	      maxCorr = sum;
+	      startCarrier = i;
+	   }
+	}
+
+        if (startCarrier <  -carriers / 2)
+           return;
+//	fprintf (stderr, "startCarrier is %d\n", startCarrier);
+
+L1:
+        maxCorr = -1;
+        *mainId = -1;
+        *subId  = -1;
+
+        for (i = 0; i < 70; i ++) {
+           if ((startCarrier < theTable [i]. carrier) ||
+               (theTable [i]. carrier + 48 <= startCarrier))
+              continue;
+           float corr = correlate (theBuffer,
+                                   startCarrier,
+                                   theTable [i]. pattern);
+           if (corr > maxCorr) {
+              maxCorr = corr;
+              *mainId   = i;
+              *subId    = (startCarrier - theTable [i]. carrier) / 2;
+           }
+        }
+
+	if (*mainId != -1)
+           fprintf (stderr, "the pattern is %lX at carrier %d\n",
+                                         theTable [*mainId]. pattern,
+                                         startCarrier);
+}
+
 //
 //
 //	It turns out that the location "startIndex + k * 48"
@@ -341,13 +398,13 @@ float	avg	= 0;
 	   return 0;
 
 	carrier		= startCarrier;
-	realIndex	= T_u - 1 + carrier;
-	s1		= abs (real (v [realIndex] *
-	                             conj (v [realIndex + 1])));
+	s1		= abs (real (v [T_u / 2 + startCarrier] *
+	                             conj (v [T_u / 2 + startCarrier + 1])));
 	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
-	   realIndex	= carrier < 0 ? T_u - 1 + carrier : carrier + 1;
-	   float x	= abs (real (v [realIndex] * conj (v [realIndex + 1])));
+	   realIndex	= carrier < 0 ? T_u / 2 + carrier :  T_u / 2 + carrier + 1;
+	   float x	= abs (real (v [realIndex] *
+	                                   conj (v [realIndex + 1])));
 	   s1 += x;
 	   pattern <<= 4;
 	}

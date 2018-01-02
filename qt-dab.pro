@@ -117,7 +117,6 @@ HEADERS += ./radio.h \
 	   ./includes/various/band-handler.h \
 	   ./includes/various/tii_table.h \
 	   ./includes/various/tii_detector.h \
-	   ./includes/various/tii_guessor.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
@@ -181,7 +180,6 @@ SOURCES += ./main.cpp \
 	   ./src/various/band-handler.cpp \
 	   ./src/various/tii_table.cpp \
 	   ./src/various/tii_detector.cpp \
-	   ./src/various/tii_guessor.cpp  \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
            ./devices/wavfiles/wavfiles.cpp
@@ -246,7 +244,7 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 
 #and this one is just for me
-#DEFINES	+= TII_GUESSING
+DEFINES	+= TII_GUESSING
 }
 #
 # an attempt to have it run under W32 through cross compilation

@@ -34,6 +34,7 @@ public:
 	void	reset		(void);
 	void	addBuffer	(std::complex<float> *);
 	int16_t	find_C		(int16_t);
+	void	processNULL	(int16_t *, int16_t *);
 
 private:
 	dabParams	params;

@@ -220,7 +220,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/various/band-handler.h
 	     ./includes/various/tii_table.h
 	     ./includes/various/tii_detector.h
-	     ./includes/various/tii_guessor.h
 	)
 
 	set (${objectName}_SRCS
@@ -281,7 +280,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/various/band-handler.cpp
 	     ./src/various/tii_table.cpp
 	     ./src/various/tii_detector.cpp
-	     ./src/various/tii_guessor.cpp
 	)
 
 	set (${objectName}_MOCS
