@@ -39,9 +39,10 @@
 	                         bool	shortForm,
 	                         int16_t protLevel,
 	                         RingBuffer<int16_t> *buffer,
-	                         QString	picturesPath)
+	                         QString	picturesPath):
+	                             outV (bitRate * 24)
 #ifdef	__THREADED_DECODING
-	                             :freeSlots (20) 
+	                             ,freeSlots (20) 
 #endif 
 	                                          {
 int32_t i, j;
@@ -53,7 +54,6 @@ int32_t i, j;
 	this	-> myRadioInterface	= mr;
 	this	-> audioBuffer		= buffer;
 
-	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // max size
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i] = new int16_t [fragmentSize];
@@ -107,7 +107,6 @@ int16_t	i;
 #endif
 	delete protectionHandler;
 	delete our_dabProcessor;
-	delete[]	outV;
 	for (i = 0; i < 16; i ++) 
 	   delete[]  interleaveData [i];
 	delete [] interleaveData;
@@ -157,7 +156,7 @@ int16_t	i, j;
 	   return;
 	}
 
-	protectionHandler -> deconvolve (tempX, fragmentSize, outV);
+	protectionHandler -> deconvolve (tempX, fragmentSize, outV. data ());
 //
 //	and the inline energy dispersal
 	memset (shiftRegister, 1, 9);

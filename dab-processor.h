@@ -29,6 +29,7 @@
 #include	"dab-constants.h"
 #include	<QThread>
 #include	<QObject>
+#include	<vector>
 #include	"stdint.h"
 #include	<sndfile.h>
 #include	"sample-reader.h"
@@ -110,13 +111,13 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int32_t		carrierDiff;
-	std::complex<float>	*dataBuffer;
+	std::vector<std::complex<float> > dataBuffer;
 	int16_t		fineCorrector;
 	int32_t		coarseCorrector;
 
 	bool		f2Correction;
 	int32_t		tokenCount;
-	std::complex<float>	*ofdmBuffer;
+	std::vector<std::complex<float>	>ofdmBuffer;
 	uint32_t	ofdmBufferIndex;
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;

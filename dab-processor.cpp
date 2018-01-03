@@ -88,7 +88,7 @@ int32_t	i;
 	this	-> tii_delay		= tii_delay;
 	this	-> tii_counter		= 0;
 
-	ofdmBuffer			= new std::complex<float> [2 * T_s];
+	ofdmBuffer. resize (2 * T_s);
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
@@ -127,7 +127,6 @@ int32_t	i;
 	      usleep (100);
 	   }
 	}
-	delete		ofdmBuffer;
 }
 
 /***
@@ -240,7 +239,7 @@ SyncOnPhase:
   *	as long as we can be sure that the first sample to be identified
   *	is part of the samples read.
   */
-	myReader. getSamples (ofdmBuffer,
+	myReader. getSamples (ofdmBuffer. data (),
 	                        T_u, coarseCorrector + fineCorrector);
 //
 //	and then, call upon the phase synchronizer to verify/compute
@@ -256,7 +255,8 @@ SyncOnPhase:
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
   */
-	   memmove (ofdmBuffer, &ofdmBuffer [startIndex],
+	   memmove (ofdmBuffer. data (),
+	            &((ofdmBuffer. data ()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   ofdmBufferIndex	= T_u - startIndex;
 
@@ -269,7 +269,7 @@ Block_0:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
-	   myReader. getSamples (&ofdmBuffer [ofdmBufferIndex],
+	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseCorrector + fineCorrector);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
@@ -299,7 +299,7 @@ Data_blocks:
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer,
+	      myReader. getSamples (ofdmBuffer. data (),
 	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
@@ -311,7 +311,7 @@ Data_blocks:
 	   for (ofdmSymbolCount = 4;
 	        ofdmSymbolCount <  (uint16_t)nrBlocks;
 	        ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer,
+	      myReader. getSamples (ofdmBuffer. data (),
 	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
@@ -330,7 +330,7 @@ NewOffset:
   */
 	   syncBufferIndex	= 0;
 	   cLevel		= 0;
-	   myReader. getSamples (ofdmBuffer,
+	   myReader. getSamples (ofdmBuffer. data (),
 	                         T_null, coarseCorrector);
 /*
  *	The TII data is encoded in the null period of the
@@ -341,12 +341,12 @@ NewOffset:
  */
 	   if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
 	      if (tiiSwitch) 
-	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer, T_u);
+	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	      if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
 	         int16_t mi = 0;
 	         if (tii_counter == 1)
 	            my_TII_Detector. reset ();
-	         if (tii_counter <= 3)
+	         if (tii_counter <= 2)
 	            my_TII_Detector. addBuffer (ofdmBuffer);
 	      }
 #ifdef	HAVE_SPECTRUM
@@ -373,8 +373,10 @@ NewOffset:
 	         int16_t subId	= -1;
 	         my_TII_Detector. processNULL (&mainId, &subId);
 	         if (mainId > 0)
-	            fprintf (stderr, "educated guess is mainId %d, subId %d\n",
-	                                              mainId, subId);
+	            fprintf (stderr,
+	                     "guess is: mainId %d (%x), subId %d (%x)\n",
+	                                              mainId, mainId,
+	                                              subId,  subId);
 	      }
 	      if (++tii_counter >= tii_delay)
 	         tii_counter = 1;

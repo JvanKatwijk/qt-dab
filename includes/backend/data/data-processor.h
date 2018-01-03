@@ -23,6 +23,7 @@
 #ifndef	__DATA_PROCESSOR__
 #define	__DATA_PROCESSOR__
 
+#include	<vector>
 #include	"frame-processor.h"
 #include	<stdio.h>
 #include	<string.h>
@@ -46,7 +47,7 @@ public:
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 QString	picturesPath);
 	~dataProcessor	(void);
-void	addtoFrame	(uint8_t *);
+void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;

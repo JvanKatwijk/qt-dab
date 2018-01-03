@@ -44,7 +44,7 @@ int	i;
         this    -> spectrumBuffer       = spectrumBuffer;
         connect (this, SIGNAL (show_Spectrum (int)),
                  mr, SLOT (showSpectrum (int)));
-        localBuffer		= new std::complex<float> [bufferSize];
+        localBuffer. resize (bufferSize);
         localCounter		= 0;
 #endif
 	connect (this, SIGNAL (show_Corrector (int)),
@@ -133,7 +133,8 @@ std::complex<float> temp;
 	   sampleCount = 0;
 #ifdef  HAVE_SPECTRUM
 	   if (spectrum) {
-              spectrumBuffer -> putDataIntoBuffer (localBuffer, localCounter);
+              spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	                                                    localCounter);
               emit show_Spectrum (bufferSize);
 	   }
            localCounter = 0;
@@ -142,7 +143,7 @@ std::complex<float> temp;
 	return temp;
 }
 
-void	sampleReader::getSamples (std::complex<float> *v,
+void	sampleReader::getSamples (std::complex<float>  *v,
 	                          int16_t n, int32_t phaseOffset) {
 int32_t		i;
 
@@ -195,7 +196,8 @@ int32_t		i;
 	   show_Corrector	(corrector);
 #ifdef  HAVE_SPECTRUM
 	   if (spectrum) {
-	      spectrumBuffer -> putDataIntoBuffer (localBuffer, bufferSize);
+	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	                                               bufferSize);
 	      emit show_Spectrum (bufferSize);
 	   }
 	   localCounter = 0;

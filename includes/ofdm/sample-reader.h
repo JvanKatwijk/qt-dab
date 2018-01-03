@@ -31,6 +31,7 @@
 #include	<sndfile.h>
 #include	<stdint.h>
 #include	<atomic>
+#include	<vector>
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
 //
@@ -65,7 +66,7 @@ private:
 		virtualInput	*theRig;
 #ifdef	HAVE_SPECTRUM
 		RingBuffer<std::complex<float>> *spectrumBuffer;
-		std::complex<float>	*localBuffer;
+		std::vector<std::complex<float>> localBuffer;
 		int32_t		localCounter;
 #endif
 		int32_t		bufferSize;

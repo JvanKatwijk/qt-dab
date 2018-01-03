@@ -102,7 +102,6 @@
 	                                           coordinates (mr) {
 	myRadioInterface	= mr;
 
-	listofServices	= new serviceId [64];
 	memset (dateTime, 0, 8);
 	dateFlag	= false;
 	clearEnsemble	();
@@ -119,7 +118,6 @@
 }
 	
 	fib_processor::~fib_processor (void) {
-	delete[] listofServices;
 }
 
 void	fib_processor::newFrame (void) {

@@ -24,6 +24,7 @@
 #define	__DAB_DATA__
 
 #include	<QSemaphore>
+#include	<vector>
 #include	"dab-virtual.h"
 #include	<QThread>
 #include	"ringbuffer.h"
@@ -67,7 +68,7 @@ private:
 void	run		(void);
 	volatile bool	running;
 	int32_t		countforInterleaver;
-	uint8_t		*outV;
+	std::vector<uint8_t> outV;
 	int16_t		**interleaveData;
 	int16_t		*Data;
 	protection	*protectionHandler;

@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2010 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -19,12 +18,11 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #
-#ifndef	__FRAME_PROCESSOR
-#define	__FRAME_PROCESSOR
-
+#ifndef	__FRAME_PROCESSOR__
+#define	__FRAME_PROCESSOR__
+#include	<vector>
 #include	<stdint.h>
 #include	<stdio.h>
 
@@ -36,7 +34,7 @@ class	frameProcessor {
 public:
 		frameProcessor	(void);
 virtual		~frameProcessor	(void);
-virtual	void	addtoFrame	(uint8_t *);
+virtual	void	addtoFrame	(std::vector<uint8_t>);
 };
 #endif
 

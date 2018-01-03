@@ -219,7 +219,8 @@ int8_t          *PI_X;
 }
 
 bool	uep_protection::deconvolve (int16_t *v,
-	                            int32_t size, uint8_t *outBuffer) {
+	                            int32_t size,
+	                            uint8_t *outBuffer) {
 int16_t	i;
 int16_t	inputCounter	= 0;
 //	clear the bits in the viterbiBlock,

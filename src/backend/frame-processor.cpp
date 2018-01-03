@@ -28,7 +28,8 @@
 	frameProcessor::~frameProcessor	(void) {
 }
 
-void	frameProcessor::addtoFrame	(uint8_t *v) {
+void	frameProcessor::addtoFrame	(std::vector<uint8_t> v) {
 	(void)v;
+	fprintf (stderr, "xxx");
 }
 

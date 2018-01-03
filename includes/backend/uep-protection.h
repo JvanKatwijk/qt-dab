@@ -23,6 +23,7 @@
 #ifndef	__UEP_PROTECTION__
 #define	__UEP_PROTECTION__
 
+#include	<vector>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"protection.h"

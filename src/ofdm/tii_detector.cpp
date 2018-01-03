@@ -49,21 +49,33 @@
 //	The constructor of the class generates the patterns, according
 //	to the algorithm in the standard.
 		TII_Detector::TII_Detector (uint8_t dabMode):
+	                                          phaseTable (dabMode),
 	                                          params (dabMode),
 	                                          my_fftHandler (dabMode) {
 int16_t	p, c, k;
 int16_t	i;
+float	Phi_k;
 
 	this	-> T_u		= params. get_T_u ();
-	this	-> carriers	= params. get_carriers ();
-	this	-> theBuffer	= new std::complex<float> [T_u];
+	carriers		= params. get_carriers ();
+	theBuffer. resize	(T_u);
 	fillCount		= 0;
 	fft_buffer		= my_fftHandler. getVector ();	
-	window			= new float [T_u];
+	window. resize 		(T_u);
 	for (i = 0; i < T_u; i ++)
 	   window [i]  = (0.42 -
                     0.5 * cos (2 * M_PI * (float)i / T_u) +
                     0.08 * cos (4 * M_PI * (float)i / T_u));
+
+        refTable.               resize (T_u);
+
+        memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
+        for (i = 1; i <= params. get_carriers () / 2; i ++) {
+           Phi_k =  get_Phi (i);
+           refTable [i      ] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+           Phi_k = get_Phi (-i);
+           refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+        }
 
 //
 //	create the patterns
@@ -123,7 +135,6 @@ int16_t	i;
 }
 
 		TII_Detector::~TII_Detector (void) {
-	delete []	theBuffer;
 }
 
 //	Zm (0, k) is a function of the P and the C, together forming the key to
@@ -261,12 +272,12 @@ int16_t res	= 0;
 //	the pattern and compute the C
 
 void	TII_Detector::reset (void) {
-	memset (theBuffer, 0, T_u * sizeof (std::complex<float>));
+	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
 }
 
 //	To eliminate (reduce?) noise in the input signal, we
 //	add a few spectra before computing.
-void	TII_Detector::addBuffer (std::complex<float> *v) {
+void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
 int	i;
 
 	for (i = 0; i < T_u; i ++)
@@ -318,7 +329,8 @@ float	corrTable [24];
 
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
-float   maxCorr	= 0;
+float   maxCorr_1 = 0;
+float   maxCorr_2	= 0;
 float   avg	= 0;
 int     startCarrier	= -1;
 
@@ -329,18 +341,26 @@ int     startCarrier	= -1;
 
 	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
 	   int index = T_u / 2 + i;
-	   float sum = 0;
+	   float sum_1 = 0;
+	   float sum_2 = 0;
 	   if (abs (real (theBuffer [index] *
 	                     conj (theBuffer [index + 1]))) < 5 * avg)
 	      continue;
-	   for (j = 0; j < 32; j ++) {
-	      int ci = index + j * 48;
+//
+//	the phasedifference between the actual data and the
+//	refTable:
+
+	   for (j = 1; j < 4; j ++) {
+	      int ci = index + j * 8 * 48;
 	      if (ci >= T_u / 2) ci ++;
-	      sum += abs (real (theBuffer [ci]* conj (theBuffer [ci + 1])));
+	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
+	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci])) +
+	                     real (theBuffer [ci + 1] * conj (refTable [ci])));
 	   }
 
-	   if (sum > maxCorr) {
-	      maxCorr = sum;
+	   if ((sum_1 > maxCorr_1) && (sum_2 > maxCorr_2)){
+	      maxCorr_1	= sum_1;
+	      maxCorr_2	= sum_2;
 	      startCarrier = i;
 	   }
 	}
@@ -350,7 +370,7 @@ int     startCarrier	= -1;
 //	fprintf (stderr, "startCarrier is %d\n", startCarrier);
 
 L1:
-        maxCorr = -1;
+	float  maxCorr = -1;
         *mainId = -1;
         *subId  = -1;
 
@@ -384,7 +404,7 @@ L1:
 //	null period here and the values in the predefined refTable,
 //	we just correlate  here over the values here
 //
-float	TII_Detector::correlate (std::complex<float> 	*v,
+float	TII_Detector::correlate (std::vector<complex<float>> v,
 	                         int16_t	startCarrier,
 	                         uint64_t	pattern) {
 static bool flag = true;

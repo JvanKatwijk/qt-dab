@@ -166,7 +166,7 @@ private:
 	int32_t		dateTime	[8];
 	channelMap	ficList [64];
 	serviceComponent	components [64];
-	serviceId	*listofServices;
+	serviceId	listofServices [64];
 	tii_table	coordinates;
 	bool		dateFlag;
 	bool		isSynced;
