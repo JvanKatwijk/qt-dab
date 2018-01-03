@@ -72,9 +72,9 @@ float	Phi_k;
         memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
         for (i = 1; i <= params. get_carriers () / 2; i ++) {
            Phi_k =  get_Phi (i);
-           refTable [i      ] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+           refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
            Phi_k = get_Phi (-i);
-           refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+           refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
         }
 
 //
@@ -329,10 +329,11 @@ float	corrTable [24];
 
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
-float   maxCorr_1 = 0;
+float   maxCorr_1	= 0;
 float   maxCorr_2	= 0;
-float   avg	= 0;
+float   avg		= 0;
 int     startCarrier	= -1;
+int	altCarrier	= -1;
 
         for (i = - carriers / 2; i < - carriers / 4 - 1; i ++)
            avg += abs (real (theBuffer [T_u / 2 + i] *
@@ -348,7 +349,7 @@ int     startCarrier	= -1;
 	      continue;
 //
 //	the phasedifference between the actual data and the
-//	refTable:
+//	refTable computed two ways:
 
 	   for (j = 1; j < 4; j ++) {
 	      int ci = index + j * 8 * 48;
@@ -358,16 +359,22 @@ int     startCarrier	= -1;
 	                     real (theBuffer [ci + 1] * conj (refTable [ci])));
 	   }
 
-	   if ((sum_1 > maxCorr_1) && (sum_2 > maxCorr_2)){
+	   if (sum_1 > maxCorr_1) {
 	      maxCorr_1	= sum_1;
-	      maxCorr_2	= sum_2;
 	      startCarrier = i;
+	   }
+	   if (sum_2 > maxCorr_2) {
+	      maxCorr_2 = sum_2;
+	      altCarrier = i;
 	   }
 	}
 
+	if (startCarrier != altCarrier)
+	   return;
         if (startCarrier <  -carriers / 2)
            return;
-//	fprintf (stderr, "startCarrier is %d\n", startCarrier);
+//	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
+//	                         startCarrier, altCarrier);
 
 L1:
 	float  maxCorr = -1;

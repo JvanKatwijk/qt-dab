@@ -346,7 +346,7 @@ NewOffset:
 	         int16_t mi = 0;
 	         if (tii_counter == 1)
 	            my_TII_Detector. reset ();
-	         if (tii_counter <= 2)
+	         if (tii_counter <= 1)
 	            my_TII_Detector. addBuffer (ofdmBuffer);
 	      }
 #ifdef	HAVE_SPECTRUM
@@ -368,7 +368,7 @@ NewOffset:
 	         }
 	      }
 
-	      if (tiiSwitch && (tii_counter == 3)) {
+	      if (tiiSwitch && (tii_counter == 1)) {
 	         int16_t mainId = -1;
 	         int16_t subId	= -1;
 	         my_TII_Detector. processNULL (&mainId, &subId);
