@@ -648,10 +648,10 @@ details</string>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Puhsing this button will switch the spectrum display - if configured - between &amp;quot;regular&amp;quot; and a spectrum showing of the &amp;quot;null&amp;quot; period.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="text">
-     <string/>
+     <string>TII</string>
     </property>
    </widget>
   </widget>
