@@ -355,8 +355,8 @@ int	altCarrier	= -1;
 	      int ci = index + j * 8 * 48;
 	      if (ci >= T_u / 2) ci ++;
 	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
-	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci])) +
-	                     real (theBuffer [ci + 1] * conj (refTable [ci])));
+	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci]))) +
+	                abs (real (theBuffer [ci + 1] * conj (refTable [ci])));
 	   }
 
 	   if (sum_1 > maxCorr_1) {

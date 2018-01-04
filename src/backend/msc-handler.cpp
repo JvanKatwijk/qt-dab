@@ -45,7 +45,7 @@
 	this	-> audioBuffer	= audioBuffer;
 	this	-> dataBuffer	= dataBuffer;
 	this	-> picturesPath	= picturesPath;
-	cifVector		= new int16_t [55296];
+	cifVector. resize (55296);
 	cifCount		= 0;	// msc blocks in CIF
 	blkCount		= 0;
 	dabHandler		= new dabVirtual ();
@@ -72,9 +72,8 @@
 }
 
 		mscHandler::~mscHandler	(void) {
-	delete[]  cifVector;
 	dabHandler	-> stopRunning ();
-	delete	dabHandler;
+	delete		dabHandler;
 }
 
 //
@@ -149,7 +148,7 @@ void	mscHandler::set_dataChannel (packetdata	*d) {
 //
 //	Any change in the selected service will only be active
 //	during te next process_mscBlock call.
-void	mscHandler::process_mscBlock	(int16_t *fbits,
+void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
 int16_t	*myBegin;
@@ -160,7 +159,7 @@ int16_t	*myBegin;
 	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	and the normal operation is:
 	memcpy (&cifVector [currentblk * BitsperBlock],
-	                    fbits, BitsperBlock * sizeof (int16_t));
+	                    fbits. data (), BitsperBlock * sizeof (int16_t));
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
 

@@ -28,6 +28,7 @@
 
 #include	<stdio.h>
 #include	<stdint.h>
+#include	<vector>
 #include	"viterbi-768.h"
 #include	<QObject>
 #include	"fib-processor.h"
@@ -41,7 +42,7 @@ Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler		(void);
-	void	process_ficBlock	(int16_t *, int16_t);
+	void	process_ficBlock	(std::vector<int16_t>, int16_t);
 	void	stop			(void);
 	void	reset			(void);
 private:
@@ -50,7 +51,7 @@ private:
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	int16_t		viterbiBlock	[3072 + 24];
-	uint8_t		indexTable	[3072 + 24];
+	bool		punctureTable	[3072 + 24];
 
 	void		process_ficInput	(int16_t);
 	int16_t		index;

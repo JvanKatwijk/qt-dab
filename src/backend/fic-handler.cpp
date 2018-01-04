@@ -69,13 +69,13 @@ int	local	= 0;
 //
 //	Since the depuncturing is the same throughout all calls
 //	(even through all instances, so we could create a static
-//	table), we make an indexTable that contains the indices of
+//	table), we make an punctureTable that contains the indices of
 //	the ofdmInput table
-	memset (indexTable, 0, (3072 + 24) * sizeof (uint8_t));
+	memset (punctureTable, 0, (3072 + 24) * sizeof (uint8_t));
 	for (i = 0; i < 21; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (16 - 1) [k % 32] != 0)  
-	         indexTable [local] = true;
+	         punctureTable [local] = true;
 	      local ++;
 	   }
 	}
@@ -88,7 +88,7 @@ int	local	= 0;
 	for (i = 0; i < 3; i ++) {
 	   for (k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (15 - 1) [k % 32] != 0)  
-	         indexTable [local] = true;
+	         punctureTable [local] = true;
 	      local ++;
 	   }
 	}
@@ -99,7 +99,7 @@ int	local	= 0;
   */
 	for (k = 0; k < 24; k ++) {
 	   if (get_PCodes (8 - 1) [k] != 0) 
-	      indexTable [local] = true;
+	      punctureTable [local] = true;
 	   local ++;
 	}
 
@@ -108,8 +108,6 @@ int	local	= 0;
 }
 
 		ficHandler::~ficHandler (void) {
-//	delete	bitBuffer_out;
-//	delete	ofdm_input;
 }
 
 	
@@ -127,7 +125,7 @@ int	local	= 0;
   *	The function is called with a blkno. This should be 1, 2 or 3
   *	for each time 2304 bits are in, we call process_ficInput
   */
-void	ficHandler::process_ficBlock (int16_t *data,
+void	ficHandler::process_ficBlock (std::vector<int16_t> data,
 	                              int16_t blkno) {
 int32_t	i;
 
@@ -171,7 +169,7 @@ int16_t	inputCount	= 0;
 
 
 	for (i = 0; i < 3072 + 24; i ++)
-	   if (indexTable [i])
+	   if (punctureTable [i])
 	      viterbiBlock [i] = ofdm_input [inputCount ++];
 /**
   *	Now we have the full word ready for deconvolution

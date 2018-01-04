@@ -1054,7 +1054,7 @@ virtualInput	*inputDevice	= NULL;
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
-	                                                tr ("raw data (*)"));
+	                                                tr ("raw data (*.raw)"));
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);

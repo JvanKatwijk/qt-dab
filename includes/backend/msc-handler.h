@@ -27,6 +27,7 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<stdio.h>
+#include	<vector>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"dab-params.h"
@@ -36,18 +37,18 @@ class	dabVirtual;
 
 class mscHandler  {
 public:
-		mscHandler		(RadioInterface *,
-	                                 uint8_t,
-	                                 RingBuffer<int16_t> *,
-	                                 RingBuffer<uint8_t> *,
-	                                 QString);
-		~mscHandler		(void);
-	void	process_mscBlock	(int16_t *, int16_t);
-	void	set_audioChannel	(audiodata	*);
-	void    set_dataChannel         (packetdata	*);
-	void	stopProcessing		(void);
-	void	stop			(void);
-	void	reset			(void);
+			mscHandler		(RadioInterface *,
+	                                         uint8_t,
+	                                         RingBuffer<int16_t> *,
+	                                         RingBuffer<uint8_t> *,
+	                                         QString);
+			~mscHandler		(void);
+	void		process_mscBlock	(std::vector<int16_t>, int16_t);
+	void		set_audioChannel	(audiodata	*);
+	void		set_dataChannel         (packetdata	*);
+	void		stopProcessing		(void);
+	void		stop			(void);
+	void		reset			(void);
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;
@@ -57,7 +58,7 @@ private:
 	QMutex		locker;
 	bool		audioService;
 	dabVirtual	*dabHandler;
-	int16_t		*cifVector;
+	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;
 	bool		work_to_be_done;

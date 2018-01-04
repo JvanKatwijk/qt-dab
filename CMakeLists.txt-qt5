@@ -218,8 +218,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
-	     ./includes/various/tii_table.h
-	     ./includes/various/tii_detector.h
+	     ./includes/ofdm/tii_table.h
+	     ./includes/ofdm/tii_detector.h
 	)
 
 	set (${objectName}_SRCS
@@ -278,8 +278,8 @@ add_definitions (-DPRESET_NAME)
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
-	     ./src/various/tii_table.cpp
-	     ./src/various/tii_detector.cpp
+	     ./src/ofdm/tii_table.cpp
+	     ./src/ofdm/tii_detector.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -303,8 +303,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/wavfiles/wavfiles.h
-	     ./includes/various/tii_detector.h
-	     ./includes/various/tii_table.h
+	     ./includes/ofdm/tii_detector.h
+	     ./includes/ofdm/tii_table.h
 	)
 
 	set (${objectName}_UIS

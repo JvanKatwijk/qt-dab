@@ -101,12 +101,11 @@ private:
 	int32_t		carriers;
 	int16_t		getMiddle	(void);
 	std::vector<complex<float>>	phaseReference;
-//	std::complex<float>	*phaseReference;
+	std::vector<int16_t>		ibits;
 	std::complex<float>	*fft_buffer;
 	interLeaver	myMapper;
 	phaseTable	*phasetable;
 	int32_t		blockIndex;
-	int16_t		*ibits;
 	int16_t		snrCount;
 	int16_t		snr;
 	int16_t		maxSignal;

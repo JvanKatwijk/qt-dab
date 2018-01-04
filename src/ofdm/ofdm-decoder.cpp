@@ -77,7 +77,7 @@ int16_t	i;
 	this	-> T_u			= params. get_T_u ();
 	this	-> nrBlocks		= params. get_L ();
 	this	-> carriers		= params. get_carriers ();
-	ibits				= new int16_t [2 * this -> carriers];
+	ibits. resize (2 * this -> carriers);
 
 	this	-> T_g			= T_s - T_u;
 	fft_buffer			= my_fftHandler. getVector ();
@@ -117,8 +117,6 @@ int16_t	i;
 	delete[]	command;
 #endif
 
-//	delete[]	phaseReference;
-	delete[]	ibits;
 }
 //
 //	the client of this class should not know whether
