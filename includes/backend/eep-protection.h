@@ -23,6 +23,7 @@
 #ifndef	__EEP_PROTECTION__
 #define	__EEP_PROTECTION__
 
+#include	<vector>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	"protection.h"
@@ -31,7 +32,9 @@
 public:
                 eep_protection          (int16_t, int16_t);
                 ~eep_protection         (void);
-bool            deconvolve              (int16_t *, int32_t, uint8_t *);
+bool            deconvolve              (int16_t *,
+	                                 int32_t,
+	                                 uint8_t *);
 };
 
 #endif

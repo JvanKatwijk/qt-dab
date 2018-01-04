@@ -130,6 +130,8 @@ QString h;
 
 	tii_delay	=
 	           dabSettings	-> value ("tii_delay", 20). toInt ();
+	if (tii_delay < 20)
+	   tii_delay = 20;
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
@@ -225,7 +227,7 @@ QString h;
 	audiofilePointer	= NULL;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
-	pictureLabel	= NULL;
+	pictureLabel		= NULL;
 	syncedLabel		->
 	               setStyleSheet ("QLabel {background-color : red}");
 
@@ -260,11 +262,12 @@ QString h;
 	         this, SLOT (set_sourceDump (void)));
 	connect (audioDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_audioDump (void)));
-
+	connect (tiiButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_tiiSwitch (void)));
 //	display the version
-	QString v = "Qt-DAB " + QString (CURRENT_VERSION);
+	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
 	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
-        versionText += "Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
+        versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
 	versionName	-> setText (v);
 	versionName	-> setToolTip (versionText);
 
@@ -372,6 +375,7 @@ int32_t	frequency;
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
 	                                      diff_length,
+	                                      tii_delay,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
@@ -904,8 +908,6 @@ void	RadioInterface::updateTimeDisplay (void) {
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
-	if (((numberofSeconds % tii_delay) == 0) && running. load ())
-	   my_dabProcessor	-> set_tiiCoordinates ();
 	QString text = QString ("runtime ");
 	text. append (QString::number (numberHours));
 	text. append (" hr, ");
@@ -1052,7 +1054,7 @@ virtualInput	*inputDevice	= NULL;
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
-	                                                tr ("raw data (*.raw)"));
+	                                                tr ("raw data (*)"));
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1129,6 +1131,7 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                      convert (modeSelector -> currentText ()),
 	                                      threshold,
 	                                      diff_length,
+	                                      tii_delay,
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
@@ -1677,5 +1680,9 @@ void	RadioInterface::set_nextChannel (void) {
 	Increment_Channel ();
 	clearEnsemble ();
 	my_dabProcessor	-> start ();
+}
+
+void	RadioInterface::set_tiiSwitch (void) {
+	my_dabProcessor	-> set_tiiSwitch ();
 }
 

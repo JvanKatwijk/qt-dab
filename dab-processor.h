@@ -29,6 +29,7 @@
 #include	"dab-constants.h"
 #include	<QThread>
 #include	<QObject>
+#include	<vector>
 #include	"stdint.h"
 #include	<sndfile.h>
 #include	"sample-reader.h"
@@ -50,6 +51,7 @@ public:
 		dabProcessor  	(RadioInterface *,
 	                         virtualInput *,
 	                         uint8_t,
+	                         int16_t,
 	                         int16_t,
 	                         int16_t,
 	                         RingBuffer<int16_t> *,
@@ -84,9 +86,14 @@ public:
         int32_t		get_ensembleId          (void);
         QString		get_ensembleName        (void);
 	void		clearEnsemble		(void);
+	void		set_tiiSwitch		(void);
 private:
+	bool		tiiSwitch;
+	RingBuffer<std::complex<float> > *spectrumBuffer;
 	virtualInput	*theRig;
 	dabParams	params;
+	int16_t		tii_delay;
+	int16_t		tii_counter;
 	sampleReader	myReader;
 	RadioInterface	*myRadioInterface;
 	ficHandler	my_ficHandler;
@@ -104,24 +111,28 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int32_t		carrierDiff;
-	std::complex<float>	*dataBuffer;
+	std::vector<std::complex<float> > dataBuffer;
 	int16_t		fineCorrector;
 	int32_t		coarseCorrector;
 
 	bool		f2Correction;
 	int32_t		tokenCount;
-	std::complex<float>	*ofdmBuffer;
+	std::vector<std::complex<float>	>ofdmBuffer;
 	uint32_t	ofdmBufferIndex;
 	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
-virtual	void		run		(void);
+	bool		wasSecond		(int16_t, dabParams *);
+virtual	void		run			(void);
 	bool		isReset;
 signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
 	void		showCoordinates		(float, float);
+#ifdef	HAVE_SPECTRUM
+	void		show_Spectrum		(int);
+#endif
 };
 #endif
 

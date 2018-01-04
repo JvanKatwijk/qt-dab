@@ -276,9 +276,9 @@ int32_t	sdrplayHandler::getVFOFrequency	(void) {
 }
 
 void	sdrplayHandler::setExternalGain	(int newGain) {
-	fprintf (stderr, "newGain = %d, slidervalue = %d\n",
-	                     newGain, 
-                             gainSlider -> value ());
+//	fprintf (stderr, "newGain = %d, slidervalue = %d\n",
+//	                     newGain, 
+//                             gainSlider -> value ());
 	if (newGain < 0 || newGain >= 102)
 	   return;
 
@@ -320,7 +320,7 @@ std::complex<float> *localBuf =
 void	myGainChangeCallback (uint32_t	gRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
-	fprintf (stderr, "GainChangeCallback gives %X\n", gRdB);
+//	fprintf (stderr, "GainChangeCallback gives %X\n", gRdB);
 	(void)gRdB;
 	(void)lnaGRdB;	
 	(void)cbContext;

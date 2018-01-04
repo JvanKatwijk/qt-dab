@@ -102,7 +102,6 @@
 	                                           coordinates (mr) {
 	myRadioInterface	= mr;
 
-	listofServices	= new serviceId [64];
 	memset (dateTime, 0, 8);
 	dateFlag	= false;
 	clearEnsemble	();
@@ -115,12 +114,16 @@
 	         myRadioInterface, SLOT (changeinConfiguration (void)));
 
 	coordinates. cleanUp ();
-
+	CIFcount	= 0;
 }
 	
 	fib_processor::~fib_processor (void) {
-	delete[] listofServices;
 }
+
+void	fib_processor::newFrame (void) {
+	   CIFcount ++;
+	}
+
 //
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
@@ -243,15 +246,13 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 //	control to the init see DAB 6.4
 void	fib_processor::FIG0Extension0 (uint8_t *d) {
 uint16_t	EId;
-uint8_t		changeflag;
+uint8_t		changeFlag;
 uint16_t	highpart, lowpart;
 int16_t		occurrenceChange;
 uint8_t	CN	= getBits_1 (d, 8 + 0);
 
 	(void)CN;
-	changeflag	= getBits_2 (d, 16 + 16);
-	if (changeflag == 0)
-	   return;
+	changeFlag		= getBits_2 (d, 16 + 16);
 	
 	EId			= getBits   (d, 16, 16);
 	(void)EId;
@@ -262,22 +263,26 @@ uint8_t	CN	= getBits_1 (d, 8 + 0);
 	occurrenceChange	= getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
 
-	if (getBits (d, 34, 1))		// only alarm, just ignore
+//	if (getBits (d, 34, 1))		// only alarm, just ignore
+//	   return;
+
+	CIFcount = highpart * 250 + lowpart;
+	if (changeFlag == 0)
 	   return;
 
-	if (changeflag == 1) {
+	if (changeFlag == 1) {
 	   fprintf (stderr, "Changes in sub channel organization\n");
 	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
 	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
 	}
-	else if (changeflag == 3) {
+	else if (changeFlag == 3) {
 	   fprintf (stderr, "Changes in subchannel and service organization\n");
 	   fprintf (stderr, "cifcount = %d\n", highpart * 250 + lowpart);
 	   fprintf (stderr, "Change happening in %d CIFs\n", occurrenceChange);
 	}
 
 //	fprintf (stderr, "changes in config not supported, choose again\n");
-	if (highpart * 250 + lowpart == occurrenceChange) {
+	if (CIFcount == occurrenceChange) {
 	   emit  changeinConfiguration ();
 	}
 //
@@ -1365,4 +1370,8 @@ QString		fib_processor::get_ensembleName (void) {
 	return " ";
 }
 
+
+int32_t		fib_processor::get_CIFcount (void) {
+	return CIFcount;
+}
 

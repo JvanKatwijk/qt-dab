@@ -77,13 +77,13 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::complex<float> *v) {
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
 
-	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
+	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
 //
 //	into the frequency domain, now correlate
@@ -128,13 +128,13 @@ float	Max		= -1000;
 //	at the "weight" of the positive and negative carriers in the
 //	fft, but that did not work too well.
 #define	SEARCH_RANGE	(2 * 35)
-int16_t	phaseReference::estimate_CarrierOffset (std::complex<float> *v) {
+int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
 int16_t	i, j, index = 100;
 float	diff;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 int	index_1	= 0;
 
-	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
+	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
 
 	for (i = T_u - SEARCH_RANGE / 2;
@@ -167,7 +167,7 @@ int	index_1	= 0;
 //	The values are reasonably close to the values computed
 //	on the fly
 #define	LLENGTH	100
-float	phaseReference::estimate_FrequencyOffset (std::complex<float> *v) {
+float	phaseReference::estimate_FrequencyOffset (std::vector <std::complex<float>> v) {
 int16_t	i, j;
 float pd	= 0;
 

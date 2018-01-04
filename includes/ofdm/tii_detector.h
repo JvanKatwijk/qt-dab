@@ -20,29 +20,37 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__TII_PROCESSOR__
-#define	__TII_PROCESSOR__
+#ifndef	__TII_DETECTOR__
+#define	__TII_DETECTOR__
 
 #include	<stdint.h>
 #include	"dab-params.h"
 #include	"fft-handler.h"
+#include	"phasetable.h"
+#include	<vector>
 
-class	TII_Detector {
+class	TII_Detector : public phaseTable {
 public:
 		TII_Detector	(uint8_t dabMode);
 		~TII_Detector	(void);
-	int16_t	find_C		(std::complex<float> *, int16_t);
+	void	reset		(void);
+	void	addBuffer	(std::vector<std::complex<float>>);
+	int16_t	find_C		(int16_t);
+	void	processNULL	(int16_t *, int16_t *);
+
 private:
-	dabParams	params;
-	fftHandler	my_fftHandler;
-	int16_t		T_u;
-	int16_t		carriers;
-	bool		ind;
-	std::complex<float>	*theBuffer;
+	dabParams		params;
+	fftHandler		my_fftHandler;
+	int16_t			T_u;
+	int16_t			carriers;
+	bool			ind;
 	std::complex<float>	*fft_buffer;
+	std::vector<complex<float> >	theBuffer;
+	std::vector<float>	window;
+	std::vector<complex<float> >	refTable;
 	int16_t		fillCount;
 	int16_t		A		(uint8_t c, uint8_t p, int16_t k);
-	float		correlate	(std::complex<float> *,
+	float		correlate	(std::vector<complex<float> >,
 	                                 int16_t, uint64_t);
 
 	struct nullTable {

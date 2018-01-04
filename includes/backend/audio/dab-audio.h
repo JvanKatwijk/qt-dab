@@ -25,6 +25,7 @@
 
 #include	<QSemaphore>
 #include	"dab-virtual.h"
+#include	<vector>
 #ifdef	__THREADED_DECODING
 #include	<QThread>
 #include	<atomic>
@@ -73,7 +74,7 @@ void	processSegment	(int16_t *Data);
 	int16_t		bitRate;
 	bool		shortForm;
 	int16_t		protLevel;
-	uint8_t		*outV;
+	std::vector<uint8_t> outV;
 	int16_t		**interleaveData;
 	int16_t		*Data;
 	int16_t		*tempX;

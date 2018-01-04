@@ -24,6 +24,7 @@
  *	Ofdm_decoder is called once every Ts samples, and
  *	its invocation results in 2 * Tu bits
  */
+#include	<vector>
 #include	"ofdm-decoder.h"
 #include	"radio.h"
 #include	"phasetable.h"
@@ -81,7 +82,6 @@ int16_t	i;
 	this	-> T_g			= T_s - T_u;
 	fft_buffer			= my_fftHandler. getVector ();
 	phaseReference			.resize (T_u);
-//	phaseReference			= new std::complex<float> [T_u];
 
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
@@ -121,7 +121,7 @@ int16_t	i;
 	delete[]	ibits;
 }
 //
-//	the client of this class should not known whether
+//	the client of this class should not know whether
 //	we run with a separate thread or not,
 #ifndef	__THREADED_DECODING
 void	ofdmDecoder::start	(void) {
@@ -185,27 +185,31 @@ int16_t	currentBlock	= 0;
   *	We need some functions to enter the ofdmProcessor data
   *	in the buffer.
   */
-void	ofdmDecoder::processBlock_0 (std::complex<float> *vi) {
+void	ofdmDecoder::processBlock_0 (std::vector<std::complex<float>>vi) {
 	bufferSpace. acquire (1);
-	memcpy (command [0], vi, sizeof (std::complex<float>) * T_u);
+	memcpy (command [0], vi. data (), sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
 	helper. unlock ();
 }
 
-void	ofdmDecoder::decodeFICblock (std::complex<float> *vi, int32_t blkno) {
+void	ofdmDecoder::decodeFICblock (std::vector<std::complex<float>> vi,
+		                                             int32_t blkno) {
 	bufferSpace. acquire (1);
-	memcpy (command [blkno], &vi [T_g], sizeof (std::complex<float>) * T_u);
+	memcpy (command [blkno], &((vi. data ()) [T_g]),
+	                                  sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
 	helper. unlock ();
 }
 
-void	ofdmDecoder::decodeMscblock (std::complex<float> *vi, int32_t blkno) {
+void	ofdmDecoder::decodeMscblock (std::vector<std::complex<float> > vi,
+	                                                     int32_t blkno) {
 	bufferSpace. acquire (1);
-	memcpy (command [blkno], &vi [T_g], sizeof (std::complex<float>) * T_u);
+	memcpy (command [blkno], &((vi. data ()) [T_g]),
+	                                   sizeof (std::complex<float>) * T_u);
 	helper. lock ();
 	amount ++;
 	commandHandler. wakeOne ();
@@ -226,8 +230,9 @@ void	ofdmDecoder::processBlock_0 (void) {
 
 	memcpy (fft_buffer, command [0], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::processBlock_0 (std::complex<float> *buffer) {
-	memcpy (fft_buffer, buffer, T_u * sizeof (std::complex<float>));
+void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
+	memcpy (fft_buffer, buffer. data (),
+	                             T_u * sizeof (std::complex<float>));
 #endif
 
 	my_fftHandler. do_FFT ();
@@ -298,9 +303,11 @@ std::complex<float> conjVector [T_u];
 #endif
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::decodeFICblock (std::complex<float> *buffer, int32_t blkno) {
+void	ofdmDecoder::decodeFICblock (std::vector <std::complex<float>> buffer,
+	                                                int32_t blkno) {
 int16_t	i;
-	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (std::complex<float>));
+	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
+	                               T_u * sizeof (std::complex<float>));
 #ifdef  HAVE_SPECTRUM
 std::complex<float> conjVector [T_u];
 std::complex<float> freqOff	= std::complex<float> (0, 0);
@@ -379,9 +386,10 @@ int16_t	i;
 
 	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
 #else
-void	ofdmDecoder::decodeMscblock (std::complex<float> *buffer, int32_t blkno) {
+void	ofdmDecoder::decodeMscblock (std::vector <std::complex<float>>buffer,
+	                                                  int32_t blkno) {
 int16_t	i;
-	memcpy (fft_buffer, &buffer [T_g], T_u * sizeof (std::complex<float>));
+	memcpy (fft_buffer, &((buffer. data ())[T_g]), T_u * sizeof (std::complex<float>));
 #endif
 
 fftLabel:
@@ -419,7 +427,7 @@ handlerLabel:;
   *	Just get the strength from the selected carriers compared
   *	to the strength of the carriers outside that region
   */
-int16_t	ofdmDecoder::get_snr (std::complex<float> *v) {
+int16_t	ofdmDecoder::get_snr (std::complex<float>  *v) {
 int16_t	i;
 float	noise 	= 0;
 float	signal	= 0;

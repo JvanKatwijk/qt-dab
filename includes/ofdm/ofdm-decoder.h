@@ -60,9 +60,9 @@ public:
 	                                 ficHandler	*,
 	                                 mscHandler	*);
 		~ofdmDecoder		(void);
-	void	processBlock_0		(std::complex<float> *);
-	void	decodeFICblock		(std::complex<float> *, int32_t n);
-	void	decodeMscblock		(std::complex<float> *, int32_t n);
+	void	processBlock_0		(std::vector<std::complex<float> >);
+	void	decodeFICblock		(std::vector<std::complex<float> >, int32_t n);
+	void	decodeMscblock		(std::vector<std::complex<float> >, int32_t n);
 	int16_t	get_snr			(std::complex<float> *);
 	void	stop			(void);
 	void	reset			(void);

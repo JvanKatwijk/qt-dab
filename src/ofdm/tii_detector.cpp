@@ -21,7 +21,6 @@
  */
 
 #include	"tii_detector.h"
-//#include	"tii_verify.h"
 #include	<stdio.h>
 //
 //	Transmitter Identification Info is carrier in the null period
@@ -50,15 +49,34 @@
 //	The constructor of the class generates the patterns, according
 //	to the algorithm in the standard.
 		TII_Detector::TII_Detector (uint8_t dabMode):
+	                                          phaseTable (dabMode),
 	                                          params (dabMode),
 	                                          my_fftHandler (dabMode) {
 int16_t	p, c, k;
+int16_t	i;
+float	Phi_k;
 
 	this	-> T_u		= params. get_T_u ();
-	this	-> carriers	= params. get_carriers ();
-	this	-> theBuffer	= new std::complex<float> [T_u];
+	carriers		= params. get_carriers ();
+	theBuffer. resize	(T_u);
 	fillCount		= 0;
 	fft_buffer		= my_fftHandler. getVector ();	
+	window. resize 		(T_u);
+	for (i = 0; i < T_u; i ++)
+	   window [i]  = (0.42 -
+                    0.5 * cos (2 * M_PI * (float)i / T_u) +
+                    0.08 * cos (4 * M_PI * (float)i / T_u));
+
+        refTable.               resize (T_u);
+
+        memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
+        for (i = 1; i <= params. get_carriers () / 2; i ++) {
+           Phi_k =  get_Phi (i);
+           refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+           Phi_k = get_Phi (-i);
+           refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+        }
+
 //
 //	create the patterns
 	for (p = 0; p < 70; p ++) {
@@ -117,7 +135,6 @@ int16_t	p, c, k;
 }
 
 		TII_Detector::~TII_Detector (void) {
-	delete []	theBuffer;
 }
 
 //	Zm (0, k) is a function of the P and the C, together forming the key to
@@ -250,58 +267,50 @@ int16_t res	= 0;
 
 	return res;
 }
-
-//
-//	The current, simplistic, approach is to compute the
-//	pattern as appearing in the null symbol,
-//
-//	For a "wild guess", i.e. if we do not have the FIB information
-//	available, we first look for the likely startcarrier in the
-//	carriers of the null period, and then just try patterns.
 //
 //	If we know the "mainId" from the FIG0/22, we can try to locate
 //	the pattern and compute the C
-//
+
+void	TII_Detector::reset (void) {
+	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
+}
+
 //	To eliminate (reduce?) noise in the input signal, we
 //	add a few spectra before computing.
-//	We compute two ways, one by just computing the product
-//	of the "pattern" with relevant elements from the input,
-//	which we then obviously do for all 48 elements to consider,
-//	the other way is the FFT approach were taking an FFT/iFFT
-//	will give us the "best" guess for the start position
-static int cnt	= 0;
-int16_t	TII_Detector::find_C (std::complex<float> *v,
-	                      int16_t mainId) {
+void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
+int	i;
+
+	for (i = 0; i < T_u; i ++)
+	   fft_buffer [i] = cmul (v [i], window [i]);
+	my_fftHandler. do_FFT ();
+
+	for (i = 0; i < T_u; i ++)
+	    theBuffer [i] += fft_buffer [(T_u / 2 + i) % T_u];
+}
+
+//	We collected some  "spectra', and start correlating the 
+//	combined spectrum with the pattern.
+
+int16_t	TII_Detector::find_C (int16_t mainId) {
 int16_t	i;
 int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
 float	maxCorr		= -1;
 int	maxIndex	= -1;
+int	maxIndex_2	= -1;
 float	avg		= 0;
-float	corrTable [48];
+float	corrTable [24];
 
 	if (mainId < 0)
 	   return - 1;
 
-	memcpy (fft_buffer, v, T_u * sizeof (std::complex<float>));
-	my_fftHandler. do_FFT ();
+//	fprintf (stderr, "the carrier is %d\n", startCarrier);
 
-	if (cnt == 0)
-	   memcpy (theBuffer, fft_buffer, T_u * sizeof (std::complex<float>));
-	else
-	   for (i = 0; i < T_u; i ++)
-	      theBuffer [i] += fft_buffer [i];
-	if (++cnt < 2)
-	   return -1;
-	cnt = 0;
-
-//	We collected two "spectra', and start correlating the 
-//	combined spectrum with the pattern.
-
-	for (i = 1; i < 24; i ++)  
+	for (i = 1; i < 24; i ++) {
 	   corrTable [i] = correlate (theBuffer,
 	                              startCarrier + 2 * i,
 	                              pattern);
+	}
 
 	for (i = 1; i < 24; i ++) {
 	   avg += corrTable [i];
@@ -317,36 +326,116 @@ float	corrTable [48];
 
 	return maxIndex;
 }
+
+void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
+int i, j;
+float   maxCorr_1	= 0;
+float   maxCorr_2	= 0;
+float   avg		= 0;
+int     startCarrier	= -1;
+int	altCarrier	= -1;
+
+        for (i = - carriers / 2; i < - carriers / 4 - 1; i ++)
+           avg += abs (real (theBuffer [T_u / 2 + i] *
+                                    conj (theBuffer [T_u / 2 + i + 1])));
+        avg /= (carriers / 4);
+
+	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
+	   int index = T_u / 2 + i;
+	   float sum_1 = 0;
+	   float sum_2 = 0;
+	   if (abs (real (theBuffer [index] *
+	                     conj (theBuffer [index + 1]))) < 5 * avg)
+	      continue;
+//
+//	the phasedifference between the actual data and the
+//	refTable computed two ways:
+
+	   for (j = 1; j < 4; j ++) {
+	      int ci = index + j * 8 * 48;
+	      if (ci >= T_u / 2) ci ++;
+	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
+	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci])) +
+	                     real (theBuffer [ci + 1] * conj (refTable [ci])));
+	   }
+
+	   if (sum_1 > maxCorr_1) {
+	      maxCorr_1	= sum_1;
+	      startCarrier = i;
+	   }
+	   if (sum_2 > maxCorr_2) {
+	      maxCorr_2 = sum_2;
+	      altCarrier = i;
+	   }
+	}
+
+	if (startCarrier != altCarrier)
+	   return;
+        if (startCarrier <  -carriers / 2)
+           return;
+//	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
+//	                         startCarrier, altCarrier);
+
+L1:
+	float  maxCorr = -1;
+        *mainId = -1;
+        *subId  = -1;
+
+        for (i = 0; i < 70; i ++) {
+           if ((startCarrier < theTable [i]. carrier) ||
+               (theTable [i]. carrier + 48 <= startCarrier))
+              continue;
+           float corr = correlate (theBuffer,
+                                   startCarrier,
+                                   theTable [i]. pattern);
+           if (corr > maxCorr) {
+              maxCorr = corr;
+              *mainId   = i;
+              *subId    = (startCarrier - theTable [i]. carrier) / 2;
+           }
+        }
+
+	if (*mainId != -1)
+           fprintf (stderr, "the pattern is %lX at carrier %d\n",
+                                         theTable [*mainId]. pattern,
+                                         startCarrier);
+}
+
 //
 //
 //	It turns out that the location "startIndex + k * 48"
 //	and "startIndex + k * 48 + 1" both contain the refTable
 //	value from "startIndex + k * 48" (where k is 1 .. 5, determined
-//	by the pattern)
+//	by the pattern). Since there might be a pretty large
+//	phase difference between the values in the spectrum of the
+//	null period here and the values in the predefined refTable,
+//	we just correlate  here over the values here
 //
-float	TII_Detector::correlate (std::complex<float> 	*v,
+float	TII_Detector::correlate (std::vector<complex<float>> v,
 	                         int16_t	startCarrier,
 	                         uint64_t	pattern) {
+static bool flag = true;
 int16_t	realIndex;
 int16_t	i;
 int16_t	carrier;
 float	s1	= 0;
+float	avg	= 0;
 
 	if (pattern == 0)
 	   return 0;
 
 	carrier		= startCarrier;
-	realIndex	= T_u - 1 + carrier;
-	s1		= abs (real (v [realIndex] *
-	                              conj (v [realIndex + 1])));
+	s1		= abs (real (v [T_u / 2 + startCarrier] *
+	                             conj (v [T_u / 2 + startCarrier + 1])));
 	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
-	   realIndex	= carrier < 0 ? T_u - 1 + carrier : carrier + 1;
-	   s1		+= abs (real (v [realIndex] * conj (v [realIndex + 1])));
+	   realIndex	= carrier < 0 ? T_u / 2 + carrier :  T_u / 2 + carrier + 1;
+	   float x	= abs (real (v [realIndex] *
+	                                   conj (v [realIndex + 1])));
+	   s1 += x;
 	   pattern <<= 4;
 	}
 	
-	return s1;
+	return s1 / 15;
 }
 //
-

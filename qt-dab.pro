@@ -70,6 +70,8 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
 	   ./includes/ofdm/freq-interleaver.h \
+	   ./includes/ofdm/tii_table.h \
+	   ./includes/ofdm/tii_detector.h \
 #	   ./includes/backend/viterbi.h \
 	   ./includes/backend/viterbi_768/viterbi-768.h \
 	   ./includes/backend/fic-handler.h \
@@ -115,9 +117,6 @@ HEADERS += ./radio.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
 	   ./includes/various/band-handler.h \
-	   ./includes/various/tii_table.h \
-	   ./includes/various/tii_detector.h \
-#	   ./includes/various/tii_verify.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
@@ -134,6 +133,8 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
+	   ./src/ofdm/tii_table.cpp \
+	   ./src/ofdm/tii_detector.cpp \
 #	   ./src/backend/viterbi.cpp \
 	   ./src/backend/viterbi_768/viterbi-768.cpp \
 	   ./src/backend/viterbi_768/spiral-no-sse.c \
@@ -179,9 +180,6 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
 	   ./src/various/band-handler.cpp \
-	   ./src/various/tii_table.cpp \
-	   ./src/various/tii_detector.cpp \
-#	   ./src/various/tii_verify.cpp  \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
            ./devices/wavfiles/wavfiles.cpp
@@ -192,10 +190,15 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-GITHASHSTRING = $$system(git rev-parse --short HEAD)
-!isEmpty(GITHASHSTRING) {
-    message("Current git hash = $$GITHASHSTRING")
-    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+exists ("./.git") {
+   GITHASHSTRING = $$system(git rev-parse --short HEAD)
+   !isEmpty(GITHASHSTRING) {
+       message("Current git hash = $$GITHASHSTRING")
+       DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+   }
+}
+isEmpty(GITHASHSTRING) {
+    DEFINES += GITHASH=\\\"------\\\"
 }
 
 FORMS 		+= ./forms/dabradio.ui 
@@ -239,6 +242,9 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
+
+#and this one is just for me
+#DEFINES	+= TII_GUESSING
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -247,11 +253,17 @@ win32 {
 DESTDIR		= ../../windows-bin
 # includes in mingw differ from the includes in fedora linux
 
-GITHASHSTRING = $$system(git rev-parse --short HEAD)
-!isEmpty(GITHASHSTRING) {
-    message("Current git hash = $$GITHASHSTRING")
-    DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+exists ("./.git") {
+   GITHASHSTRING = $$system(git rev-parse --short HEAD)
+   !isEmpty(GITHASHSTRING) {
+       message("Current git hash = $$GITHASHSTRING")
+       DEFINES += GITHASH=\\\"$$GITHASHSTRING\\\"
+   }
 }
+isEmpty(GITHASHSTRING) {
+    DEFINES += GITHASH=\\\"------\\\"
+}
+
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
@@ -301,6 +313,8 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
+
+#DEFINES	+= TII_GUESSING
 }
 
 #######################################

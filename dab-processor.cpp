@@ -39,6 +39,7 @@
 	                                 uint8_t	dabMode,
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,
+	                                 int16_t	tii_delay,
 	                                 RingBuffer<int16_t> *audioBuffer,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
@@ -75,6 +76,7 @@ int32_t	i;
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
+	this	-> spectrumBuffer	= spectrumBuffer;
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
@@ -83,7 +85,10 @@ int32_t	i;
 	this	-> carriers		= params. get_carriers ();
 	this	-> carrierDiff		= params. get_carrierDiff ();
 
-	ofdmBuffer			= new std::complex<float> [2 * T_s];
+	this	-> tii_delay		= tii_delay;
+	this	-> tii_counter		= 0;
+
+	ofdmBuffer. resize (2 * T_s);
 	ofdmBufferIndex			= 0;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
@@ -92,8 +97,7 @@ int32_t	i;
 	f2Correction			= true;
 	attempts			= 0;
 	scanMode			= false;
-	tiiCoordinates			= 0;
-
+	tiiSwitch			= false;
 	connect (this, SIGNAL (showCoordinates (float, float)),
 	         mr,   SLOT   (showCoordinates (float, float)));
 	connect (this, SIGNAL (setSynced (char)),
@@ -102,7 +106,13 @@ int32_t	i;
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
-
+#ifdef	HAVE_SPECTRUM
+	connect (this, SIGNAL (show_Spectrum (int)),
+	         myRadioInterface, SLOT (showSpectrum (int)));
+#endif
+	
+	
+	myReader. setSpectrum (!tiiSwitch);
 	myReader. setRunning (false);
 //	the thread will be started from somewhere else
 }
@@ -117,7 +127,6 @@ int32_t	i;
 	      usleep (100);
 	   }
 	}
-	delete		ofdmBuffer;
 }
 
 /***
@@ -230,7 +239,7 @@ SyncOnPhase:
   *	as long as we can be sure that the first sample to be identified
   *	is part of the samples read.
   */
-	myReader. getSamples (ofdmBuffer,
+	myReader. getSamples (ofdmBuffer. data (),
 	                        T_u, coarseCorrector + fineCorrector);
 //
 //	and then, call upon the phase synchronizer to verify/compute
@@ -246,7 +255,8 @@ SyncOnPhase:
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
   */
-	   memmove (ofdmBuffer, &ofdmBuffer [startIndex],
+	   memmove (ofdmBuffer. data (),
+	            &((ofdmBuffer. data ()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   ofdmBufferIndex	= T_u - startIndex;
 
@@ -259,7 +269,7 @@ Block_0:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
-	   myReader. getSamples (&ofdmBuffer [ofdmBufferIndex],
+	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseCorrector + fineCorrector);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
@@ -289,7 +299,7 @@ Data_blocks:
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer,
+	      myReader. getSamples (ofdmBuffer. data (),
 	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
@@ -301,7 +311,7 @@ Data_blocks:
 	   for (ofdmSymbolCount = 4;
 	        ofdmSymbolCount <  (uint16_t)nrBlocks;
 	        ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer,
+	      myReader. getSamples (ofdmBuffer. data (),
 	                              T_s, coarseCorrector + fineCorrector);
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
@@ -317,28 +327,59 @@ NewOffset:
 /**
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
-  *	If we handle TII, we have to process them though
   */
 	   syncBufferIndex	= 0;
 	   cLevel		= 0;
-	   myReader. getSamples (ofdmBuffer,
+	   myReader. getSamples (ofdmBuffer. data (),
 	                         T_null, coarseCorrector);
-	   if ((tiiCoordinates > 0) && (my_ficHandler. mainId () > 0)) {
-	      tiiCoordinates --;
-	      int16_t mainId	= my_ficHandler. mainId ();
-              int16_t subId =  my_TII_Detector. find_C (ofdmBuffer,
-	                                                mainId); 
-	      if (subId >= 0) {
-	         bool found;
-	         std::complex<float> coord =
-	                   my_ficHandler. get_coordinates (mainId,
-	                                                   subId,
-	                                                   &found);
-	         if (found) {
-	            showCoordinates (real (coord), imag (coord));
-	            tiiCoordinates = 0;
+/*
+ *	The TII data is encoded in the null period of the
+ *	odd frames 
+ *	Here we are looking at the CIFcount of the previous frame
+ *	Note that tiiSwitch == true implies switching off the "normal"
+ *	spectrum
+ */
+	   if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
+	      if (tiiSwitch) 
+	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
+	      if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
+	         int16_t mi = 0;
+	         if (tii_counter == 1)
+	            my_TII_Detector. reset ();
+	         if (tii_counter <= 1)
+	            my_TII_Detector. addBuffer (ofdmBuffer);
+	      }
+#ifdef	HAVE_SPECTRUM
+	      if ( tiiSwitch && ((tii_counter & 02) != 0)) 
+	            show_Spectrum (1);
+#endif
+	      if ((my_ficHandler. mainId () > 0) && (tii_counter == 3)) {
+	         int16_t mainId	= my_ficHandler. mainId ();
+                 int16_t subId =  my_TII_Detector. find_C (mainId); 
+	         if (subId >= 0) {
+	            bool found;
+	            std::complex<float> coord =
+	                     my_ficHandler. get_coordinates (mainId,
+	                                                     subId,
+	                                                     &found);
+	            if (found) {
+	               showCoordinates (real (coord), imag (coord));
+	            }
 	         }
 	      }
+
+	      if (tiiSwitch && (tii_counter == 1)) {
+	         int16_t mainId = -1;
+	         int16_t subId	= -1;
+	         my_TII_Detector. processNULL (&mainId, &subId);
+	         if (mainId > 0)
+	            fprintf (stderr,
+	                     "guess is: mainId %d (%x), subId %d (%x)\n",
+	                                              mainId, mainId,
+	                                              subId,  subId);
+	      }
+	      if (++tii_counter >= tii_delay)
+	         tii_counter = 1;
 	   }
 /**
   *	The first sample to be found for the next frame should be T_g
@@ -403,10 +444,6 @@ void	dabProcessor::set_scanMode	(bool b) {
 	attempts	= 0;
 }
 
-void	dabProcessor::set_tiiCoordinates	(void) {
-	tiiCoordinates	= 2;
-}
-//
 //	we could have derive the dab processor from fic and msc handlers,
 //	however, from a logical point of view they are more delegates than
 //	parents.
@@ -462,3 +499,24 @@ void	dabProcessor::stopDumping	(void) {
 	myReader. stopDumping ();
 }
 
+void	dabProcessor::set_tiiSwitch	(void) {
+#ifdef	TII_GUESSING
+	tiiSwitch = !tiiSwitch;
+	myReader. setSpectrum (!tiiSwitch);
+#endif
+}
+
+bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
+	switch (p -> get_dabMode ()) {
+	   default:
+	   case 1:
+	      return (cf & 07) >= 4;
+	   case 2:
+	   case 3:
+	      return (cf & 02);
+	   case 4:
+	      return (cf & 03) >= 2;
+	}
+}
+
+	

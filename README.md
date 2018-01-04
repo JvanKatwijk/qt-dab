@@ -15,7 +15,7 @@ Table of Contents
    	- [Configuring using CMake](#configuring-using-cmake)
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
-  * [appImage for x64 Linux systems](#appImage-for-x64-Linux-systems)
+  * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
   * [Comment on some settings](#comment-on-some-settings)
   * [A note on intermittent sound](#a-note-on-intermittent-sound)
 * [Copyright](#copyright)
@@ -95,19 +95,21 @@ If you want to compile it by yourself, please install Qt through its online inst
 Ubuntu Linux
 ------------------------------------------------------------------
 
-If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage) which is much easier for Linux beginners.
+If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage-for-x64-linux-systems) which is much easier for Linux beginners.
 
-For generating an executable under Ubuntu, you can put the following commands into a script. 
+Ubuntu 16.04 (and on) have good support for Qt5 and qwt (compiled for Qt5).
+For generating an executable under Ubuntu (16.04 or newer), you can put the following commands into a script. 
+(For Ubuntu 14.04 look into the package manager for Qt4 packages)
 
 1. Fetch the required components
    ```
    sudo apt-get update
-   sudo apt-get install qt4-qmake build-essential g++
-   sudo apt-get install libsndfile1-dev qt4-default libfftw3-dev portaudio19-dev  
-   sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev 
-   sudo apt-get install libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev libqwt-dev
+   sudo apt-get install qt5-qmake build-essential g++
+   sudo apt-get install libsndfile1-dev qt5-default libfftw3-dev portaudio19-dev 
+   sudo apt-get install libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev
+   sudo apt-get install libgl1-mesa-dev libqt5opengl5-dev libsamplerate0-dev libqwt-qt5-dev
    sudo apt-get install qtbase5-dev
-   cd
+
    ```
    
 2. Fetch the required libraries 
@@ -199,14 +201,14 @@ CONFIG		+= extio
 
 for use with (appropriate) extio handlers
 
-Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and 16-bit "wav" `*.sdr` files) is configured by default.
+Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq' as well as 16-bit "wav" `*.sdr` files) is configured by default.
 
 In order to show the spectrum and the constellation shown, uncomment
 ```
 CONFIG          += spectrum  
 ```
 
-In such a case
+In such a case, when uncommenting
 ```
 DEFINES		+= __QUALITY
 ```
@@ -240,7 +242,6 @@ An experimental configuration parameter is
 ```
 CONFIG		+= try_epg
 ```
-
 
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
 

@@ -134,6 +134,7 @@ int32_t	i;
 	if (blkno == 1) {
 	   index = 0;
 	   ficno = 0;
+	   fib_processor::newFrame ();
 	}
 //
 	if ((1 <= blkno) && (blkno <= 3)) {

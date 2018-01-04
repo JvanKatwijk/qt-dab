@@ -609,9 +609,9 @@ details</string>
    <widget class="QPushButton" name="saveEnsembleData">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>80</x>
       <y>240</y>
-      <width>211</width>
+      <width>141</width>
       <height>20</height>
      </rect>
     </property>
@@ -636,6 +636,22 @@ details</string>
     </property>
     <property name="text">
      <string>next channel</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="tiiButton">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>240</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Puhsing this button will switch the spectrum display - if configured - between &amp;quot;regular&amp;quot; and a spectrum showing of the &amp;quot;null&amp;quot; period.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

@@ -36,9 +36,9 @@ public:
 			phaseReference 		(uint8_t,
 	                                         int16_t, int16_t);
 			~phaseReference		(void);
-	int32_t		findIndex		(std::complex<float> *);
-	int16_t		estimate_CarrierOffset	(std::complex<float> *v);
-	float		estimate_FrequencyOffset (std::complex<float> *v);
+	int32_t		findIndex		(std::vector<std::complex<float>>);
+	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
+	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);
 //
 //	This one is used in the ofdm decoder
 	std::vector<std::complex<float>> refTable;

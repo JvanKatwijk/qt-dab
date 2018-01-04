@@ -199,6 +199,7 @@ private slots:
 	void		set_sourceDump		(void);
 	void		showEnsembleData	(void);
 	void		setPresetStation	(void);
+	void		set_tiiSwitch		(void);
 };
 #endif
 

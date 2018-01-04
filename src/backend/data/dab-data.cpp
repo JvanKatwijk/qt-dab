@@ -51,6 +51,7 @@
 	                       	 int16_t 	FEC_scheme,
 	                         RingBuffer<uint8_t> *dataBuffer,
 	                         QString	picturesPath) :
+	                            outV (24 * bitRate),
 	                            freeSlots (20) {
 int32_t i;
 	this	-> myRadioInterface	= mr;
@@ -76,7 +77,6 @@ int32_t i;
         for (i = 0; i < 20; i ++)
            theData [i] = new int16_t [fragmentSize];
 
-	outV			= new uint8_t [bitRate * 24];
 	interleaveData		= new int16_t *[16]; // the size
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i] = new int16_t [fragmentSize];
@@ -106,7 +106,6 @@ int16_t	i;
 	   usleep (1);
 	delete Buffer;
 	delete protectionHandler;
-	delete[]	outV;
 	for (i = 0; i < 16; i ++)
 	   delete[] interleaveData [i];
         for (i = 0; i < 20; i ++)
@@ -158,7 +157,7 @@ int16_t	i, j;
 	      continue;
 	   }
 //
-	   protectionHandler -> deconvolve (tempX, fragmentSize, outV);
+	   protectionHandler -> deconvolve (tempX, fragmentSize, outV. data ());
 //
 //	and the inline energy dispersal
 	   memset (shiftRegister, 1, 9);

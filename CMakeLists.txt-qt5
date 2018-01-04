@@ -15,16 +15,21 @@ if(MINGW)
     add_definitions ( -municode)
 endif()
 
-execute_process (
-	COMMAND git rev-parse --short HEAD
-	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-	OUTPUT_VARIABLE GIT_COMMIT_HASH
-	OUTPUT_STRIP_TRAILING_WHITESPACE
-)
+IF(EXISTS (".git") AND IS_DIRECTORY (".git"))
+   execute_process (
+      COMMAND git rev-parse --short HEAD
+      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+      OUTPUT_VARIABLE GIT_COMMIT_HASH
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+   )
+endif ()
 
 if(GIT_COMMIT_HASH)
-	add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+   add_definitions("-DGITHASH=\"${GIT_COMMIT_HASH}\"")
+else ()
+   add_definitions ("-DGITHASH=\"       \"")
 endif()
+
 
 ########################################################################
 # select the release build type by default to get optimization flags
@@ -215,7 +220,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/various/band-handler.h
 	     ./includes/various/tii_table.h
 	     ./includes/various/tii_detector.h
-	     ./includes/various/tii_verify.h
 	)
 
 	set (${objectName}_SRCS
@@ -276,7 +280,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/various/band-handler.cpp
 	     ./src/various/tii_table.cpp
 	     ./src/various/tii_detector.cpp
-	     ./src/various/tii_verify.cpp
 	)
 
 	set (${objectName}_MOCS
