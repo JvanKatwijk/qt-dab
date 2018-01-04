@@ -374,7 +374,7 @@ NewOffset:
 	         my_TII_Detector. processNULL (&mainId, &subId);
 	         if (mainId > 0)
 	            fprintf (stderr,
-	                     "guess is: mainId %d (%x), subId %d (%x)\n",
+                         "guess is: mainId %d (0x%X), subId %d (0x%X)\n",
 	                                              mainId, mainId,
 	                                              subId,  subId);
 	      }
