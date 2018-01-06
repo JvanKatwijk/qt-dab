@@ -26,6 +26,7 @@
 #include	<QObject>
 #include	<cstring>
 #include	<stdint.h>
+#include	<vector>
 
 class	RadioInterface;
 class	motHandler;
@@ -41,9 +42,9 @@ private:
 	void	handle_variablePAD	(uint8_t *, int16_t, uint8_t);
 	void	handle_shortPAD		(uint8_t *, int16_t, uint8_t);
 	void	dynamicLabel		(uint8_t *, int16_t, uint8_t);
-	void	new_MSC_element		(QByteArray, int);
-	void	add_MSC_element		(QByteArray);
-	void	build_MSC_segment	(QByteArray, int);
+	void	new_MSC_element		(std::vector<uint8_t>, int);
+	void	add_MSC_element		(std::vector<uint8_t>);
+	void	build_MSC_segment	(std::vector<uint8_t>, int);
 	bool	pad_crc			(uint8_t *, int16_t);
 	QString	dynamicLabelText;
 	int16_t	charSet;
@@ -65,7 +66,7 @@ private:
 //
 //      The msc_dataGroupBuffer is - as the name suggests - used for
 //      assembling the msc_data group.
-        QByteArray msc_dataGroupBuffer;
+        std::vector<uint8_t> msc_dataGroupBuffer;
 
 signals:
 	void		showLabel			(QString);

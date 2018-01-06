@@ -52,7 +52,7 @@ uint	count;
 	return ((uint16_t)(crc ^ 0xFFFF));
 }
 
-void	tdc_dataHandler::add_mscDatagroup (QByteArray &m) {
+void	tdc_dataHandler::add_mscDatagroup (std::vector<uint8_t> m) {
 int32_t	offset	= 0;
 uint8_t	*data	= (uint8_t *)(m. data ());
 int32_t	size	= m. size ();
@@ -101,6 +101,7 @@ uint16_t	crc;
 	      return;
 	   }
 
+	   fprintf (stderr, "handling tdc frametype %d\n", frametypeIndicator);
 	   if (frametypeIndicator == 0)
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else
@@ -129,6 +130,13 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t length) {
 int16_t i;
 uint8_t buffer [length];
+
+  fprintf (stderr, " frametype 1 met %o %o %o\n",
+                                     getBits (data, offset,      8),
+                                     getBits (data, offset + 8,  8),
+                                     getBits (data, offset + 16, 8));
+
+        fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
 
         for (i = 0; i < length; i ++)
            buffer [i] = getBits (data, offset + i * 8, 8);

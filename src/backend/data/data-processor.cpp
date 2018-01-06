@@ -119,14 +119,17 @@ uint16_t command	= getBits_1 (data, 16);
 int16_t	usefulLength	= getBits_7 (data, 17);
 int16_t	i;
 //	if (usefulLength > 0)
-//	   fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
-//	                    continuityIndex, address, usefulLength);
-	if (continuityIndex != expectedIndex) {
-	   expectedIndex = 0;
-	   return;
-	}
-	expectedIndex = (expectedIndex + 1 ) % 4;
+//	      fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
+//	                       continuityIndex, address, usefulLength);
+
+//	if (continuityIndex != expectedIndex) {
+//	   expectedIndex = 0;
+//	   return;
+//	}
+////
+//	expectedIndex = (expectedIndex + 1 ) % 4;
 	(void)command;
+
 	if (!check_CRC_bits (data, packetLength * 8)) {
 	   return;
 	}
@@ -141,6 +144,7 @@ int16_t	i;
 	   return;
 	
 //	assemble the full MSC datagroup
+
 	if (packetState == 0) {	// waiting for a start
 	   if (firstLast == 02) {	// first packet
 	      packetState = 1;
@@ -172,6 +176,7 @@ int16_t	i;
 	      series. resize (currentLength + 8 * usefulLength);
 	      for (i = 0; i < 8 * usefulLength; i ++)
 	         series [currentLength + i] = data [24 + i];
+
 	      my_dataHandler	-> add_mscDatagroup (series);
 	      packetState = 0;
 	   }

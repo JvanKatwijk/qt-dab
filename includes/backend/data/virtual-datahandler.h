@@ -24,7 +24,7 @@
 #define		__VIRTUAL_DATAHANDLER__
 #include	"dab-constants.h"
 #include	<QObject>
-#include	<QByteArray>
+#include	<vector>
 
 
 class	virtual_dataHandler:public QObject {
@@ -33,7 +33,7 @@ public:
 		virtual_dataHandler	(void);
 virtual		~virtual_dataHandler	(void);
 virtual
-	void	add_mscDatagroup	(QByteArray &);
+	void	add_mscDatagroup	(std::vector<uint8_t>);
 };
 #endif
 

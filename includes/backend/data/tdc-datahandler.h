@@ -22,7 +22,7 @@
 #ifndef		__TDC_DATAHANDLER__
 #define		__TDC_DATAHANDLER__
 #include	"dab-constants.h"
-#include	<QByteArray>
+#include	<vector>
 #include	"virtual-datahandler.h"
 #include	"ringbuffer.h"
 
@@ -33,7 +33,7 @@ public:
 		tdc_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *, int16_t);
 		~tdc_dataHandler	(void);
-	void	add_mscDatagroup	(QByteArray &);
+	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 	int32_t	handleFrame_type_0	(uint8_t *data,
                                          int32_t offset, int32_t length);

@@ -132,6 +132,9 @@ QString	name 	= QString ("");
 	         pointer += length;
 	   } 
 	}
+	if (getHandle (transportId) != NULL)
+	   return;
+
 	newEntry (transportId, bodySize, contentType, contentsubType, name);
 }
 //
@@ -186,6 +189,7 @@ QByteArray result;
 	if (p -> contentType == 7) {
 	   std::vector<uint8_t> epgData (result. begin (), result. end ());
 #ifdef  TRY_EPG
+	   fprintf (stderr, "epgdata being handled\n");
 	   epgHandler. decode (epgData, p -> name);
 #endif
 	   return;
@@ -211,15 +215,21 @@ QByteArray result;
 	   return;
 	}
 //	MOT slide
-	if (old_slide != NULL)
+	if (old_slide != NULL) {
 	   for (i = 0; i < p ->  numofSegments; i ++) {
 	      p -> marked [i] = false;
 	      p -> segments [i]. clear ();
 	   }
-    fprintf (stderr, "going to show picture %s\n",
-                                       (p -> name). toLatin1 (). data ());
-	checkDir (p -> name);
-	the_picture (result, p -> contentsubType, p -> name);
+	}
+	if (p -> name == QString (""))
+	   return;
+	QString realName = picturesPath;
+	realName. append (p -> name);
+	realName	= QDir::toNativeSeparators (realName);
+	checkDir (realName);
+	fprintf (stderr, "going to show picture %s\n",
+                                       realName. toLatin1 (). data ());
+	the_picture (result, p -> contentsubType, realName);
 	old_slide	= p;
 }
 
@@ -278,15 +288,14 @@ void	motHandler::processDirectory (int16_t	transportId,
                                       uint8_t	*segment,
                                       int16_t	segmentSize,
                                       bool	lastFlag) {
-uint32_t directorySize	=
-	 ((segment [0] & 0x3F) << 24) | ((segment [1]) << 16) |
+uint32_t directorySize	= ((segment [0] & 0x3F) << 24) |
+	                  ((segment [1]) << 16) |
 	                  ((segment [2]) <<  8) | segment [3];
-uint16_t numObjects	=
-	 (segment [4] << 8) | segment [5];
-int32_t	period		=
-	 (segment [6] << 16) | (segment [7] <<  8) | segment [8];
-int16_t segSize		=
-	 ((segment [9] & 0x1F) << 8) | segment [10];
+uint16_t numObjects	= (segment [4] << 8) | segment [5];
+int32_t	period		= (segment [6] << 16) |
+	                  (segment [7] <<  8) | segment [8];
+int16_t segSize		= ((segment [9] & 0x1F) << 8) |
+	                   segment [10];
 //
 //	If we had already a directory with that transportId, do not do anything
 	if ((theDirectory != NULL) &&
@@ -365,14 +374,17 @@ uint16_t headerSize	= ((data [currentBase + 5] & 0x0F) << 9) |
 uint8_t  contentType	=  (data [currentBase + 7] >> 1) & 0x3F;
 uint16_t subType	= ((data [currentBase + 7] & 0x1) << 8) |
 	                    data [currentBase + 8];
-uint16_t theEnd		= currentBase + 2 + headerSize;
+int16_t theEnd		= currentBase + 2 + headerSize;
 
+	if (headerSize == 0)
+	   return currentBase + 2;
 	currentBase	+= 7 + 2;
-	while (currentBase < theEnd) {
+	while ((int)currentBase < (int)theEnd) {
 	   uint8_t PLI = (data [currentBase] & 0300) >> 6;
 	   uint8_t paramId = (data [currentBase] & 077);
 	   uint16_t	length;
 //	   fprintf (stderr, "PLI = %d, paramId = %d\n", PLI, paramId);
+//	   fprintf (stderr, "currentBase %d, theEnd %d\n", currentBase, theEnd);
 	   switch (PLI) {
 	      case 00:
 	         currentBase += 1;
@@ -403,6 +415,9 @@ uint16_t theEnd		= currentBase + 2 + headerSize;
 	         currentBase += length;
 	   } 
 	}
+
+	if ((transportId == 0) || (getHandle (transportId) != NULL))
+	   return currentBase;
 //
 //	creating an entry for an object mentioned in the directory
 //	strongly resembles creating a standalone entry, some differences though
@@ -421,6 +436,7 @@ int16_t		i;
 uint16_t	lowest;
 int16_t		lowIndex;
 
+	
 	for (i = 0; i < 16; i ++) {
 	   if (table [i]. ordernumber == -1) {
 	      table [i]. ordernumber	= ordernumber ++;
@@ -464,7 +480,6 @@ void	motHandler::newEntry (int16_t	index,
 	                      int16_t	contentsubType,
 	                      QString	name) {
 motElement	*currEntry = &(theDirectory -> dir_proper [index]);
-
 	currEntry -> ordernumber	= ordernumber ++;
 	currEntry -> transportId	= transportId;
 	currEntry -> bodySize		= size;

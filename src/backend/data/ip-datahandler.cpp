@@ -34,7 +34,7 @@
 	ip_dataHandler::~ip_dataHandler (void) {
 }
 
-void	ip_dataHandler::add_mscDatagroup (QByteArray &msc) {
+void	ip_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
 uint8_t *data		= (uint8_t *)(msc. data ());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
@@ -75,7 +75,7 @@ int16_t	i;
 	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
 	ipLength = getBits (data, next + 16, 16);
 	if (ipLength < msc. size () / 8) {	// just to be sure
-	   QByteArray ipVector;
+	   std::vector<uint8_t> ipVector;
 	   ipVector. resize (ipLength);
 	   for (i = 0; i < ipLength; i ++)
 	      ipVector [i] = getBits_8 (data, next + 8 * i);
@@ -85,7 +85,7 @@ int16_t	i;
 	}
 }
 
-void	ip_dataHandler::process_ipVector (QByteArray &v) {
+void	ip_dataHandler::process_ipVector (std::vector<uint8_t> v) {
 uint8_t	*data		= (uint8_t *)(v. data ());
 int16_t	headerSize	= data [0] & 0x0F;	// in 32 bits words
 int16_t ipSize		= (data [2] << 8) | data [3];
@@ -100,7 +100,8 @@ int16_t	i;
 	if ((~checkSum & 0xFFFF) != 0) {
 	   return;
 	}
-	   
+
+	fprintf (stderr, "sending udp");
 	switch (protocol) {
 	   case 17:			// UDP protocol
 	      process_udpVector (&data [4 * headerSize], ipSize - 4 * headerSize);

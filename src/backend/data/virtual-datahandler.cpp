@@ -29,7 +29,8 @@
 	virtual_dataHandler::~virtual_dataHandler (void) {
 }
 
-void	virtual_dataHandler::add_mscDatagroup (QByteArray &m) {
+void	virtual_dataHandler::add_mscDatagroup (std::vector<uint8_t> m) {
 	(void)m;
+	fprintf (stderr, "fout");
 }
 

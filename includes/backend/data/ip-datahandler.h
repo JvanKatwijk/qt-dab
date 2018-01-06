@@ -24,7 +24,7 @@
 #define	__IP_DATAHANDLER__
 #include	"dab-constants.h"
 #include	"virtual-datahandler.h"
-#include	<QByteArray>
+#include	<vector>
 #include	"ringbuffer.h"
 
 class	RadioInterface;
@@ -35,9 +35,9 @@ public:
 		ip_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *);
 		~ip_dataHandler		(void);
-	void	add_mscDatagroup	(QByteArray &);
+	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
-	void	process_ipVector	(QByteArray &);
+	void	process_ipVector	(std::vector<uint8_t>);
 	void	process_udpVector	(uint8_t *, int16_t);
 	int16_t	handledPackets;
 	RingBuffer<uint8_t>*	dataBuffer;

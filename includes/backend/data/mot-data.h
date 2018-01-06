@@ -34,6 +34,7 @@
 class	RadioInterface;
 
 typedef struct  {
+	bool		inUse;
 	int32_t		ordernumber;
 	uint16_t	transportId;
 	int32_t		bodySize;
@@ -69,6 +70,8 @@ int16_t	i;
 	   this	-> dir_segmentSize	= segmentSize;
 	   dir_segments = new uint8_t [dirSize];
 	   dir_proper  = new motElement [objects];
+	   for (i = 0; i < objects; i ++)
+	      dir_proper [i]. ordernumber = -1;
 	}
 
 	~MOT_directory (void) {

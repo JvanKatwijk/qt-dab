@@ -146,7 +146,7 @@ int16_t	index = 0;
 //	if we are at the end of the last segment (and the text is not empty)
 //	then show it.
 	      if (lastSegment) {
-	         if (dynamicLabelText. length () > 0)
+	         if (dynamicLabelText. size () > 0)
 	            showLabel (dynamicLabelText);
 	         dynamicLabelText. clear ();
 	      }
@@ -168,7 +168,7 @@ int16_t	CI_Index = 0;
 uint8_t CI_table [4];
 int16_t	i, j;
 int16_t	base	= last;	
-QByteArray data;		// for the local addition
+std::vector<uint8_t> data;		// for the local addition
 
 //	If an xpadfield shows with a CI_flag == 0, and if we are
 //	dealing with an msc field, the size to be taken is
@@ -224,7 +224,7 @@ QByteArray data;		// for the local addition
 	      case 2:
 	      case 3:
 	         dynamicLabel ((uint8_t *)(data. data ()),
-	                        data. length (), CI_table [i]);
+	                        data. size (), CI_table [i]);
 	         break;
 
 	      case 12:
@@ -323,7 +323,7 @@ int16_t  dataLength                = 0;
 	                              (const char *) data,
 	                              (CharacterSet) charSet,
 	                              dataLength);
-	   dynamicLabelText. append(segmentText);
+	   dynamicLabelText. append (segmentText);
 	   if (!moreXPad && isLastSegment) {
 	      showLabel (dynamicLabelText);
 	   }
@@ -333,7 +333,8 @@ int16_t  dataLength                = 0;
 //
 //	Called at the start of the msc datagroupfield,
 //	the msc_length was given by the preceding appType "1"
-void	padHandler::new_MSC_element (QByteArray data, int msc_length) {
+void	padHandler::new_MSC_element (std::vector<uint8_t> data,
+	                                      int msc_length) {
 	mscGroupElement		= true;
 	msc_dataGroupBuffer. clear ();
 	msc_dataGroupBuffer	= data;
@@ -342,17 +343,18 @@ void	padHandler::new_MSC_element (QByteArray data, int msc_length) {
 }
 
 //
-void	padHandler::add_MSC_element	(QByteArray data) {
+void	padHandler::add_MSC_element	(std::vector<uint8_t> data) {
 int16_t	i;
-int16_t	currentLength = msc_dataGroupBuffer. length ();
+int16_t	currentLength = msc_dataGroupBuffer. size ();
 //
 //	just to ensure that, when a "12" appType is missing, the
 //	data of "13" appType elements is not  endless collected.
 	if (currentLength == 0)
 	   return;
 
-	msc_dataGroupBuffer. append (data);
-	if (msc_dataGroupBuffer. length () >= msc_dataGroupLength) {
+	msc_dataGroupBuffer. insert (std::end (msc_dataGroupBuffer),
+	                             std::begin (data), std::end (data));
+	if (msc_dataGroupBuffer. size () >= msc_dataGroupLength) {
 	   build_MSC_segment (msc_dataGroupBuffer, msc_dataGroupLength);
 	   msc_dataGroupBuffer. clear ();
 //	   mscGroupElement	= false;
@@ -361,13 +363,12 @@ int16_t	currentLength = msc_dataGroupBuffer. length ();
 	}
 }
 
-void	padHandler::build_MSC_segment (QByteArray mscdataGroup,
+void	padHandler::build_MSC_segment (std::vector<uint8_t> data,
 	                               int msc_length) {
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
-uint8_t *data = (uint8_t *)(mscdataGroup. data ());
-int16_t	size	= mscdataGroup. length ();
+int16_t	size	= data. size ();
 
 	uint8_t		groupType	=  data [0] & 0xF;
 	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
@@ -378,7 +379,7 @@ int16_t	size	= mscdataGroup. length ();
 	uint16_t	index;
 
 	if ((data [0] & 0x40) != 0) {
-	   bool res	= check_crc_bytes (data, msc_length - 2);
+	   bool res	= check_crc_bytes (data. data (), msc_length - 2);
 	   if (!res) {
 //	      fprintf (stderr, "crc failed ");
 	      return;

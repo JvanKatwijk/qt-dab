@@ -60,7 +60,7 @@ int32_t i;
 	this	-> fragmentSize	= fragmentSize;
 	this	-> bitRate	= bitRate;
 	this	-> shortForm	= shortForm;
-	this	-> protLevel	= protLevel;
+//	this	-> protLevel	= protLevel;
         fprintf (stderr, "data: protlevel = %d\n", protLevel+1);
 	this	-> DGflag	= DGflag;
 	this	-> FEC_scheme	= FEC_scheme;
@@ -158,7 +158,7 @@ int16_t	i, j;
 	   }
 //
 	   protectionHandler -> deconvolve (tempX, fragmentSize, outV. data ());
-//
+
 //	and the inline energy dispersal
 	   memset (shiftRegister, 1, 9);
 	   for (i = 0; i < bitRate * 24; i ++) {

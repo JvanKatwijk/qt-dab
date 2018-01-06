@@ -152,6 +152,9 @@ QString h;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
+#ifndef	TII_GUESSING
+	tiiButton		-> hide ();
+#endif
 	dataDisplay	= new QFrame (NULL);
 	techData. setupUi (dataDisplay);
 	show_data		= false;
@@ -672,24 +675,24 @@ void	RadioInterface::showMOT		(QByteArray data,
 	p. loadFromData (data, type);
 	if (saveSlides && (pictureName != QString (""))) {
 	   pictureName		= QDir::toNativeSeparators (pictureName);
-#ifdef __MINGW32__
-	   if (pictureName. lastIndexOf ("\\") > 1)
-	      pictureName. remove (1, pictureName. lastIndexOf ("\\"));
-#else
-	   if (pictureName. lastIndexOf ("/") > 1)
-	      pictureName. remove (1, pictureName. lastIndexOf ("/"));
-#endif
-	   QString pictureAddress = picturesPath;
-	   pictureAddress. append (pictureName);
-	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);
-	   checkDir (pictureAddress);
-	   FILE *x = fopen (pictureAddress. toLatin1 (). data (), "w+b");
+//#ifdef __MINGW32__
+//	   if (pictureName. lastIndexOf ("\\") > 1)
+//	      pictureName. remove (1, pictureName. lastIndexOf ("\\"));
+//#else
+//	   if (pictureName. lastIndexOf ("/") > 1)
+//	      pictureName. remove (1, pictureName. lastIndexOf ("/"));
+//#endif
+//	   QString pictureAddress = picturesPath;
+//	   pictureAddress. append (pictureName);
+//	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);
+//	   checkDir (pictureAddress);
+	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureAddress. toLatin1 (). data ());
+	                            pictureName. toLatin1 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
-	                            pictureAddress. toLatin1 (). data ());
+	                            pictureName. toLatin1 (). data ());
 	      (void)fwrite (data. data (), 1, data.length (), x);
 	      fclose (x);
 	   }

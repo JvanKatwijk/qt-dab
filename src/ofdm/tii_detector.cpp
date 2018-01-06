@@ -275,8 +275,8 @@ void	TII_Detector::reset (void) {
 	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
 }
 
-//	To eliminate (reduce?) noise in the input signal, we
-//	add a few spectra before computing.
+//	To eliminate (reduce?) noise in the input signal, we might
+//	add a few spectra before computing (up to the user)
 void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
 int	i;
 
@@ -297,7 +297,6 @@ int16_t	startCarrier	= theTable [mainId]. carrier;
 uint64_t pattern	= theTable [mainId]. pattern;
 float	maxCorr		= -1;
 int	maxIndex	= -1;
-int	maxIndex_2	= -1;
 float	avg		= 0;
 float	corrTable [24];
 
@@ -348,15 +347,14 @@ int	altCarrier	= -1;
 	                     conj (theBuffer [index + 1]))) < 5 * avg)
 	      continue;
 //
-//	the phasedifference between the actual data and the
-//	refTable computed two ways:
+//	We just compute the "best" candidates two ways
 
-	   for (j = 1; j < 4; j ++) {
+	   for (j = 0; j < 4; j ++) {
 	      int ci = index + j * 8 * 48;
 	      if (ci >= T_u / 2) ci ++;
 	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
 	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci]))) +
-	                abs (real (theBuffer [ci + 1] * conj (refTable [ci])));
+	               abs (real (theBuffer [ci + 1] * conj (refTable [ci])));
 	   }
 
 	   if (sum_1 > maxCorr_1) {
@@ -368,7 +366,7 @@ int	altCarrier	= -1;
 	      altCarrier = i;
 	   }
 	}
-
+	
 	if (startCarrier != altCarrier)
 	   return;
         if (startCarrier <  -carriers / 2)
@@ -399,6 +397,7 @@ L1:
            fprintf (stderr, "the pattern is %lX at carrier %d\n",
                                          theTable [*mainId]. pattern,
                                          startCarrier);
+
 }
 
 //

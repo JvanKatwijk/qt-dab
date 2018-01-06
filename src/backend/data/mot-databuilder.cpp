@@ -33,7 +33,7 @@
 	mot_databuilder::~mot_databuilder (void) {
 }
 
-void	mot_databuilder::add_mscDatagroup (QByteArray &msc) {
+void	mot_databuilder::add_mscDatagroup (std::vector<uint8_t> msc) {
 uint8_t *data		= (uint8_t *)(msc. data ());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
@@ -77,15 +77,15 @@ int16_t	i;
 
 	int16_t		sizeinBits	=
 	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
+
 	if (transportIdFlag) {
-	   QByteArray motVector;
+	   std::vector<uint8_t> motVector;
 	   motVector. resize (sizeinBits / 8);
 	   for (i = 0; i < sizeinBits / 8; i ++)
 	      motVector [i] = getBits_8 (data, next + 8 * i);
 
-	
 	   my_motHandler -> 
-	                 process_mscGroup ((uint8_t *)(motVector. data ()),
+	                 process_mscGroup (motVector. data (),
 	                                   groupType,
 	                                   lastSegment,
 	                                   segmentNumber,

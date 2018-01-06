@@ -24,7 +24,7 @@
 #define	MOT_DATABUILDER
 #include	"dab-constants.h"
 #include	"virtual-datahandler.h"
-#include	<QByteArray>
+#include	<vector>
 
 class	RadioInterface;
 class	motHandler;
@@ -33,7 +33,7 @@ class	mot_databuilder:public virtual_dataHandler {
 public:
 	mot_databuilder		(RadioInterface *, QString );
 	~mot_databuilder	(void);
-void	add_mscDatagroup	(QByteArray &);
+void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 motHandler	*my_motHandler;
 };

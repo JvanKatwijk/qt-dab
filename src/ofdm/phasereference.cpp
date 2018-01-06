@@ -80,8 +80,10 @@ float	Phi_k;
 int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v) {
 int32_t	i;
 int32_t	maxIndex	= -1;
+int32_t	oldIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
+float	Max_2		= -1000;
 
 	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
@@ -102,8 +104,9 @@ float	Max		= -1000;
 	      Max = absValue;
 	   }
 	}
+	
 /**
-  *	that gives us a basis for defining the threshold
+  *	that gives us a basis for defining the actual threshold value
   */
 	if (Max < threshold * sum / T_u)
 	   return  - abs (Max * T_u / sum) - 1;
