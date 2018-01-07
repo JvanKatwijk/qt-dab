@@ -221,8 +221,10 @@ QByteArray result;
 	      p -> segments [i]. clear ();
 	   }
 	}
-	if (p -> name == QString (""))
+	if (p -> name == QString ("")) {
+	   the_picture (result, p -> contentsubType, QString ("no name"));
 	   return;
+	}
 	QString realName = picturesPath;
 	realName. append (p -> name);
 	realName	= QDir::toNativeSeparators (realName);
