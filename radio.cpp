@@ -69,6 +69,9 @@
 #ifdef	HAVE_SPECTRUM
 #include	"spectrum-handler.h"
 #endif
+#ifdef	IMPULSE_RESPONSE
+#include	"impulse-viewer.h"
+#endif
 
 std::vector<size_t> get_cpu_times (void) {
 	std::ifstream proc_stat ("/proc/stat");
@@ -110,6 +113,9 @@ QString h;
 #ifdef  HAVE_SPECTRUM
         spectrumBuffer          = new RingBuffer<std::complex<float>> (2 * 32768);
 	iqBuffer		= new RingBuffer<std::complex<float>> (2 * 1536);
+#endif
+#ifdef	IMPULSE_RESPONSE
+	responseBuffer		= new RingBuffer<float> (32768);
 #endif
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 
@@ -194,6 +200,11 @@ QString h;
 	                                       spectrumBuffer,
 	                                       iqBuffer);
         spectrumHandler -> show ();
+#endif
+#ifdef	IMPULSE_RESPONSE
+	my_impulseViewer	= new impulseViewer (this,
+	                                             responseBuffer);
+	my_impulseViewer	-> show ();
 #endif
 	QString t       =
                 dabSettings     -> value ("dabBand", "VHF Band III"). toString ();
@@ -382,6 +393,9 @@ int32_t	frequency;
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
+#ifdef	IMPULSE_RESPONSE
+	                                      ,responseBuffer
+#endif
 #ifdef	HAVE_SPECTRUM
 	                                      ,spectrumBuffer,
 	                                       iqBuffer
@@ -864,6 +878,9 @@ void	RadioInterface::TerminateProcess (void) {
 	delete	spectrumBuffer;
 	delete	iqBuffer;
 #endif
+#ifdef	IMPULSE_RESPONSE
+	delete	my_impulseViewer;
+#endif
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;		// signals may be pending, so careful
@@ -1138,6 +1155,9 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                      audioBuffer,
 	                                      dataBuffer,
 	                                      picturesPath
+#ifdef	IMPULSE_RESPONSE		
+	                                      , responseBuffer
+#endif
 #ifdef	HAVE_SPECTRUM
 	                                      ,spectrumBuffer,
 	                                       iqBuffer
@@ -1333,6 +1353,11 @@ void	RadioInterface::showQuality	(float q) {
 #endif
 #endif
 
+#ifdef	IMPULSE_RESPONSE
+void	RadioInterface::showImpulse (int amount) {
+	my_impulseViewer -> showImpulse (amount);
+}
+#endif
 //
 //
 void	RadioInterface::set_audioDump (void) {

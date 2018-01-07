@@ -23,6 +23,7 @@
 #ifndef	__FREQ_INTERLEAVER__
 #define	__FREQ_INTERLEAVER__
 #include	<stdint.h>
+#include	<vector>
 #include	"dab-constants.h"
 #include	"dab-params.h"
 
@@ -39,8 +40,9 @@ public:
 private:
 	dabParams	p;
 	void    createMapper	(int16_t T_u, int16_t V1,
-                                    int16_t lwb, int16_t upb, int16_t *v);
-	int16_t	*permTable;
+                                 int16_t lwb, int16_t upb,
+	                         int16_t * v);
+	std::vector<int16_t> permTable;
 };
 
 #endif

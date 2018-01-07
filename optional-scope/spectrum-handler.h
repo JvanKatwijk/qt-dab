@@ -69,8 +69,8 @@ private:
 	int16_t		displaySize;
 	int16_t		spectrumSize;
 	std::complex<float>	*spectrum;
-	double		*displayBuffer;
-	float		*Window;
+	std::vector<double>	displayBuffer;
+	std::vector<float>	Window;
 	fftwf_plan	plan;
 	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;

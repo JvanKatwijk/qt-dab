@@ -36,10 +36,10 @@ int	err;
 //	converter		= src_new (SRC_LINEAR, 2, &err);
 //	converter		= src_new (SRC_SINC_MEDIUM_QUALITY, 2, &err);
 	src_data		= new SRC_DATA;
-	inBuffer		= new float [2 * inputLimit + 20];
-	outBuffer		= new float [2 * outputLimit + 20];
-	src_data-> data_in	= inBuffer;
-	src_data-> data_out	= outBuffer;
+	inBuffer. resize (2 * inputLimit + 20);
+	outBuffer. resize (2 * outputLimit + 20);
+	src_data-> data_in	= inBuffer. data ();
+	src_data-> data_out	= outBuffer. data ();
 	src_data-> src_ratio	= ratio;
 	src_data-> end_of_input	= 0;
 	inp			= 0;
@@ -47,8 +47,6 @@ int	err;
 
 	newConverter::~newConverter (void) {
 	src_delete	(converter);
-	delete []	inBuffer;
-	delete []	outBuffer;
 	delete		src_data;
 }
 

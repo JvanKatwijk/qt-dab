@@ -21,6 +21,7 @@
  */
 #include	"phasereference.h" 
 #include	"string.h"
+#include	"radio.h"
 /**
   *	\class phaseReference
   *	Implements the correlation that is used to identify
@@ -29,7 +30,11 @@
   *	The class inherits from the phaseTable.
   */
 
-	phaseReference::phaseReference (uint8_t		dabMode,
+	phaseReference::phaseReference (RadioInterface *mr,
+	                                uint8_t		dabMode,
+#ifdef	IMPULSE_RESPONSE
+	                                RingBuffer<float> *b,
+#endif
 	                                int16_t		threshold,
 	                                int16_t		diff_length):
 	                                     phaseTable (dabMode),
@@ -38,6 +43,9 @@
 int32_t	i;
 float	Phi_k;
 
+#ifdef	IMPULSE_RESPONSE
+	this	-> response	= b;
+#endif
 	this	-> threshold	= threshold;
 	this	-> diff_length	= diff_length;
 	this	-> T_u		= params. get_T_u ();
@@ -62,6 +70,10 @@ float	Phi_k;
 	for (i = 1; i <= diff_length; i ++) 
 	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
                                  conj (refTable [(T_u + i + 1) % T_u])));
+#ifdef	IMPULSE_RESPONSE
+	connect (this, SIGNAL (showImpulse (int)),
+	         mr,   SLOT   (showImpulse (int)));
+#endif
 }
 
 	phaseReference::~phaseReference (void) {
@@ -83,7 +95,7 @@ int32_t	maxIndex	= -1;
 int32_t	oldIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
-float	Max_2		= -1000;
+float	lbuf [T_u];
 
 	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
@@ -97,14 +109,21 @@ float	Max_2		= -1000;
   *	We compute the average and the max signal values
   */
 	for (i = 0; i < T_u; i ++) {
-	   float absValue = jan_abs (fft_buffer [i]);
-	   sum	+= absValue;
-	   if (absValue > Max) {
+	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   sum	+= lbuf [i];
+	   if (lbuf [i] > Max) {
 	      maxIndex = i;
-	      Max = absValue;
+	      Max = lbuf [i];
 	   }
 	}
-	
+
+	for (i = 0; i < T_u; i ++)
+	   lbuf [i] /= (sum / T_u);
+
+#ifdef	IMPULSE_RESPONSE
+	response	-> putDataIntoBuffer (lbuf, T_u);
+	showImpulse (T_u);
+#endif
 /**
   *	that gives us a basis for defining the actual threshold value
   */

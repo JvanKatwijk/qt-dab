@@ -246,6 +246,17 @@ CONFIG		+= try_epg
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
 
 
+An experimental configuration parameter is
+````
+CONFIG		+= impulseresponse
+````
+
+if `impulseresponse`  is configured, then another widget will appear 
+that will show the arrival of the signals from different transmitters
+in the SFN. Note that the signal that is strongest is the signal further
+processed.
+
+THIS FEATURE IS NOT AVAILABLE WHEN CMake IS USED.
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------

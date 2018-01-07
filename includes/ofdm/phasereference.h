@@ -22,7 +22,7 @@
 #
 #ifndef	__PHASEREFERENCE__
 #define	__PHASEREFERENCE__
-
+#include	<QObject>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<vector>
@@ -30,10 +30,17 @@
 #include	"phasetable.h"
 #include	"dab-constants.h"
 #include	"dab-params.h"
+#include	"ringbuffer.h"
+class	RadioInterface;
 
-class phaseReference : public phaseTable {
+class phaseReference : public QObject, public phaseTable {
+Q_OBJECT
 public:
-			phaseReference 		(uint8_t,
+			phaseReference 		(RadioInterface *,
+	                                         uint8_t,
+#ifdef	IMPULSE_RESPONSE
+						 RingBuffer<float> *b,
+#endif
 	                                         int16_t, int16_t);
 			~phaseReference		(void);
 	int32_t		findIndex		(std::vector<std::complex<float>>);
@@ -45,7 +52,10 @@ public:
 private:
 	fftHandler	my_fftHandler;
 	dabParams	params;
-	std::vector<float> phaseDifferences;;
+#ifdef	IMPULSE_RESPONSE
+	RingBuffer<float> *response;
+#endif
+	std::vector<float> phaseDifferences;
 	int16_t		threshold;
 	int16_t		diff_length;
 	int32_t		T_u;
@@ -53,6 +63,8 @@ private:
 
 	std::complex<float>	*fft_buffer;
 	int32_t		fft_counter;
+signals:
+	void		showImpulse (int);
 };
 #endif
 

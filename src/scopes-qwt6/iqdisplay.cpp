@@ -36,13 +36,14 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	plotgrid	= plot;
 	x_amount	= x;
 	CycleCount	= 0;
-	Points		= new std::complex<float> [x_amount];
-	memset (Points, 0, x_amount * sizeof (std::complex<float>));
+	Points. resize (x_amount);
+	memset (Points. data (), 0, x_amount * sizeof (std::complex<float>));
 	this		-> setColorMap (colorMap);
-	plotData	= new double [2 * Radius * 2 * Radius];
-	plot2		= new double [2 * Radius * 2 * Radius];
-	memset (plotData, 0, 2 * 2 * Radius * Radius * sizeof (double));
-	IQData		= new SpectrogramData (plot2,
+	plotData. resize (2 * Radius * 2 * Radius);
+	plot2.	  resize (2 * Radius * 2 * Radius);
+	memset (plotData. data (), 0,
+	                  2 * 2 * Radius * Radius * sizeof (double));
+	IQData		= new SpectrogramData (plot2. data (),
 	                                       0,
 	                                       2 * Radius,
 	                                       2 * Radius,
@@ -57,8 +58,6 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 
 	IQDisplay::~IQDisplay () {
 	this		-> detach ();
-	delete[]	plotData;
-	delete []	Points;
 //	delete		IQData;
 }
 
@@ -88,7 +87,7 @@ int16_t	i;
 	   plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 100;
 	}
 
-	memcpy (plot2, plotData,
+	memcpy (plot2. data (), plotData. data (),
 	        2 * 2 * Radius * Radius * sizeof (double));
 	this		-> detach	();
 	this		-> setData	(IQData);

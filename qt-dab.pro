@@ -244,7 +244,9 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 
 #and this one is just for me
-DEFINES	+= TII_GUESSING
+#DEFINES	+= TII_GUESSING
+
+#CONFIG	+= impulseresponse
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -453,5 +455,14 @@ datastreamer	{
 	INCLUDEPATH	+= ./server-thread
 	HEADERS		+= ./server-thread/tcp-server.h
 	SOURCES		+= ./server-thread/tcp-server.cpp
+}
+
+
+impulseresponse	{
+	DEFINES		+= IMPULSE_RESPONSE
+	INCLUDEPATH	+= ./optional-ir
+	FORMS		+= ./optional-ir/impulse-widget.ui
+	HEADERS		+= ./optional-ir/impulse-viewer.h
+	SOURCES		+= ./optional-ir/impulse-viewer.cpp
 }
 

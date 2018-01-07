@@ -54,6 +54,9 @@ class	common_fft;
 #ifdef	HAVE_SPECTRUM
 class	spectrumhandler;
 #endif
+#ifdef	IMPULSE_RESPONSE
+class	impulseViewer;
+#endif
 
 /*
  *	GThe main gui object. It inherits from
@@ -140,6 +143,10 @@ const	char		*get_programm_language_string (int16_t);
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>	*iqBuffer;
 #endif
+#ifdef	IMPULSE_RESPONSE
+	impulseViewer		*my_impulseViewer;
+	RingBuffer<float>	*responseBuffer;
+#endif
 
 	QString		picturesPath;
 public slots:
@@ -168,7 +175,9 @@ public slots:
 	void		setSyncLost		(void);
 	void		showCoordinates		(float, float);
 	void		show_tiiLabel		(int);
-
+#ifdef	IMPULSE_RESPONSE
+	void		showImpulse		(int);
+#endif
 #ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
 	void		showIQ			(int);

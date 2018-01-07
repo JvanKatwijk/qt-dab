@@ -43,6 +43,9 @@
 	                                 RingBuffer<int16_t> *audioBuffer,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
+#ifdef	IMPULSE_RESPONSE
+	                                 ,RingBuffer<float> *responseBuffer
+#endif
 #ifdef	HAVE_SPECTRUM
 		                        ,RingBuffer<std::complex<float>>	*spectrumBuffer,
 	                                 RingBuffer<std::complex<float>>	*iqBuffer
@@ -60,7 +63,11 @@
 	                                                audioBuffer,
 	                                                dataBuffer,
 	                                                picturesPath),
-	                                 phaseSynchronizer (dabMode, 
+	                                 phaseSynchronizer (mr,
+	                                                    dabMode, 
+#ifdef	IMPULSE_RESPONSE
+	                                                    responseBuffer,
+#endif
                                                             threshold,
 	                                                    diff_length),
 	                                 my_TII_Detector (dabMode), 
@@ -353,7 +360,7 @@ NewOffset:
 	      if ( tiiSwitch && ((tii_counter & 02) != 0)) 
 	            show_Spectrum (1);
 #endif
-	      if ((my_ficHandler. mainId () > 0) && (tii_counter == 3)) {
+	      if ((my_ficHandler. mainId () > 0) && (tii_counter == 1)) {
 	         int16_t mainId	= my_ficHandler. mainId ();
                  int16_t subId =  my_TII_Detector. find_C (mainId); 
 	         if (subId >= 0) {
@@ -368,7 +375,7 @@ NewOffset:
 	         }
 	      }
 
-	      if (tiiSwitch && (tii_counter == 1)) {
+	      if (tiiSwitch && (tii_counter == 2)) {
 	         int16_t mainId = -1;
 	         int16_t subId	= -1;
 	         my_TII_Detector. processNULL (&mainId, &subId);

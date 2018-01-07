@@ -27,6 +27,7 @@
 #include	<complex>
 #include	<stdint.h>
 #include	<unistd.h>
+#include	<vector>
 #include	<limits>
 #include	<samplerate.h>
 #include	"dab-constants.h"
@@ -40,8 +41,8 @@ private:
 	int32_t		inputLimit;
 	SRC_STATE	*converter;
 	SRC_DATA	*src_data;
-	float		*inBuffer;
-	float		*outBuffer;
+	std::vector<float> inBuffer;
+	std::vector<float> outBuffer;
 	int32_t		inp;
 public:
 		newConverter (int32_t inRate, int32_t outRate, 

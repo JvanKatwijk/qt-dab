@@ -53,9 +53,9 @@ QColor	curveColor;
 	this	-> myFrame		= new QFrame (NULL);
 	setupUi (this -> myFrame);
 
-	displayBuffer		= new double [displaySize];
-	memset (displayBuffer, 0, displaySize * sizeof (double));
-	this	-> spectrumSize	= 8 * displaySize;
+	displayBuffer. resize (displaySize);
+	memset (displayBuffer. data (), 0, displaySize * sizeof (double));
+	this	-> spectrumSize	= 4 * displaySize;
 	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
                                     reinterpret_cast <fftwf_complex *>(spectrum),
@@ -94,7 +94,7 @@ QColor	curveColor;
 	Marker		-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 
-	Window			= new float [spectrumSize];
+	Window. resize (spectrumSize);
 	for (i = 0; i < spectrumSize; i ++) 
 	   Window [i] =
 	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
@@ -116,12 +116,11 @@ QColor	curveColor;
 	delete		spectrumCurve;
 	delete		grid;
 	delete		myFrame;
-	delete[]	Window;
 }
 
 void	spectrumhandler::showSpectrum	(int32_t amount, int32_t vfoFrequency) {
-double	*X_axis 	= (double *)alloca (displaySize * sizeof (double));
-double	*Y_values	= (double *)alloca (displaySize * sizeof (double));
+double	X_axis [displaySize];
+double	Y_values [displaySize];
 int16_t	i, j;
 double	temp	= (double)INPUT_RATE / 2 / displaySize;
 int16_t	averageCount	= 5;
@@ -168,7 +167,9 @@ int16_t	averageCount	= 5;
 	          (double)(averageCount - 1) /averageCount * displayBuffer [i] +
 	           1.0f / averageCount * Y_values [i];
 	}
-	memcpy (Y_values, displayBuffer, displaySize * sizeof (double));
+
+	memcpy (Y_values,
+	        displayBuffer. data (), displaySize * sizeof (double));
 	ViewSpectrum (X_axis, Y_values,
 	              scopeAmplification -> value (),
 	              vfoFrequency / 1000);

@@ -57,10 +57,14 @@ public:
 	                         RingBuffer<int16_t> *,
 	                         RingBuffer<uint8_t> *,
 	                         QString
+#ifdef	IMPULSE_RESPONSE
+	                         , RingBuffer<float> *
+#endif
 #ifdef	HAVE_SPECTRUM
 	                        ,RingBuffer<std::complex<float>>	*,
 	                         RingBuffer<std::complex<float>>	*
 #endif
+
 	                        );
 		~dabProcessor	(void);
 	void		reset			(void);

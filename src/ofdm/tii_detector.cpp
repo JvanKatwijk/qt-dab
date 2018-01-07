@@ -344,9 +344,9 @@ int	altCarrier	= -1;
 	   float sum_1 = 0;
 	   float sum_2 = 0;
 	   if (abs (real (theBuffer [index] *
-	                     conj (theBuffer [index + 1]))) < 5 * avg)
+	                     conj (theBuffer [index + 1]))) < 4 * avg)
 	      continue;
-//
+
 //	We just compute the "best" candidates two ways
 
 	   for (j = 0; j < 4; j ++) {
@@ -361,14 +361,18 @@ int	altCarrier	= -1;
 	      maxCorr_1	= sum_1;
 	      startCarrier = i;
 	   }
+
 	   if (sum_2 > maxCorr_2) {
 	      maxCorr_2 = sum_2;
 	      altCarrier = i;
 	   }
 	}
-	
+
 	if (startCarrier != altCarrier)
-	   return;
+	   fprintf (stderr, "alternatieve start carriers %d %d\n",
+	                                         startCarrier, altCarrier);
+	                                   
+//	   return;
         if (startCarrier <  -carriers / 2)
            return;
 //	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
