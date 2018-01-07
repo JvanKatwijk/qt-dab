@@ -287,6 +287,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/output/audio-base.h
 	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
+	     ./includes/ofdm/phasereference.h
 	     ./includes/backend/fic-handler.h
 	     ./includes/backend/fib-processor.h
 	     ./includes/backend/audio/faad-decoder.h
