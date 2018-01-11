@@ -201,12 +201,12 @@ QByteArray result;
 	      realName. append (p -> name);
 	      realName	= QDir::toNativeSeparators (realName);
 	      fprintf (stderr, "going to write file %s\n",
-	                           realName. toLatin1 (). data ());
+	                           realName. toUtf8 (). data ());
 	      checkDir (realName);
-	      FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
+	      FILE *x = fopen (realName. toUtf8 (). data (), "wb");
 	      if (x == NULL)
 	         fprintf (stderr, "cannot write file %s\n",
-	                            realName. toLatin1 (). data ());
+	                            realName. toUtf8 (). data ());
 	      else {
 	         (void)fwrite (result. data (), 1, p -> bodySize, x);
 	         fclose (x);
@@ -229,8 +229,6 @@ QByteArray result;
 	realName. append (p -> name);
 	realName	= QDir::toNativeSeparators (realName);
 	checkDir (realName);
-	fprintf (stderr, "going to show picture %s\n",
-                                       realName. toLatin1 (). data ());
 	the_picture (result, p -> contentsubType, realName);
 	old_slide	= p;
 }

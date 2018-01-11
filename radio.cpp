@@ -323,7 +323,7 @@ QString h;
 	h               =
                    dabSettings -> value ("device", "no device"). toString ();
 	k               = deviceSelector -> findText (h);
-	fprintf (stderr, "%d %s\n", k, h. toLatin1 (). data ());
+	fprintf (stderr, "%d %s\n", k, h. toUtf8 (). data ());
         if (k != -1) {
            deviceSelector       -> setCurrentIndex (k);
            inputDevice	= setDevice (deviceSelector -> currentText ());
@@ -689,24 +689,13 @@ void	RadioInterface::showMOT		(QByteArray data,
 	p. loadFromData (data, type);
 	if (saveSlides && (pictureName != QString (""))) {
 	   pictureName		= QDir::toNativeSeparators (pictureName);
-//#ifdef __MINGW32__
-//	   if (pictureName. lastIndexOf ("\\") > 1)
-//	      pictureName. remove (1, pictureName. lastIndexOf ("\\"));
-//#else
-//	   if (pictureName. lastIndexOf ("/") > 1)
-//	      pictureName. remove (1, pictureName. lastIndexOf ("/"));
-//#endif
-//	   QString pictureAddress = picturesPath;
-//	   pictureAddress. append (pictureName);
-//	   pictureAddress	= QDir::toNativeSeparators (pictureAddress);
-//	   checkDir (pictureAddress);
-	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
+	   FILE *x = fopen (pictureName. toUtf8 (). data (), "w+b");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureName. toLatin1 (). data ());
+	                            pictureName. toUtf8 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
-	                            pictureName. toLatin1 (). data ());
+	                            pictureName. toUtf8 (). data ());
 	      (void)fwrite (data. data (), 1, data.length (), x);
 	      fclose (x);
 	   }
@@ -1166,8 +1155,6 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	inputDevice	-> restartReader ();
 	my_dabProcessor	-> start ();
 	running. store (true);
-	fprintf (stderr, "we should now be running in %s\n",
-	                (modeSelector -> currentText ()). toLatin1 (). data ());
 }
 
 
@@ -1186,7 +1173,6 @@ bool	localRunning = running. load ();
 	else
 	   dabBand	= L_BAND;
 
-	fprintf (stderr, "selecting band %s\n", s. toLatin1 (). data ());
 	theBand. setupChannels (channelSelector, dabBand);
 	if (localRunning) {
 	   my_dabProcessor -> reset ();
@@ -1212,7 +1198,7 @@ void	RadioInterface::selectService (QString s) {
 	if ((my_dabProcessor -> kindofService (s) != AUDIO_SERVICE) &&
 	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
 	return;
-	fprintf (stderr, "Selected service %s\n", s. toLatin1 (). data ());
+	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
 	currentName = s;
 	setStereo (false);
 	soundOut	-> stop ();
@@ -1384,10 +1370,10 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info		-> channels	= 2;
 	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
-	audiofilePointer	= sf_open (file. toLatin1 (). data (),
+	audiofilePointer	= sf_open (file. toUtf8 (). data (),
 	                                   SFM_WRITE, sf_info);
 	if (audiofilePointer == NULL) {
-	   qDebug () << "Cannot open " << file. toLatin1 (). data ();
+	   qDebug () << "Cannot open " << file. toUtf8 (). data ();
 	   return;
 	}
 
@@ -1473,16 +1459,16 @@ void	RadioInterface::show_tiiLabel (int mainId) {
 
 #include	"country-codes.h"
 
-const char *code_to_string (uint8_t ecc, uint8_t countryId) {
+QString	code_to_string (uint8_t ecc, uint8_t countryId) {
 int16_t	i = 0;
 
 	while (countryTable [i]. ecc != 0) {
 	   if ((countryTable [i]. ecc == ecc) &&
 	       (countryTable [i]. countryId == countryId))
-	      return countryTable [i]. countryName;
+	      return QString (countryTable [i]. countryName);
 	   i ++;
 	}
-	return "          ";
+	return QString ("          ");
 }
 
 const char *uep_rates  [] = {NULL, "7/20", "2/5", "1/2", "3/5"};
@@ -1506,17 +1492,18 @@ bool	firstData;
 	                                        QDir::homePath (),
 	                                        tr ("Text (*.txt)"));
 	fileName	= QDir::toNativeSeparators (fileName);
-	FILE *file_P	= fopen (fileName. toLatin1 (). data (), "w");
+	FILE *file_P	= fopen (fileName. toUtf8 (). data (), "w");
 
 	if (file_P == NULL) {
-	   fprintf (stderr, "Could not open file %s\n", fileName. toLatin1 (). data ());
+	   fprintf (stderr, "Could not open file %s\n",
+	                              fileName. toUtf8 (). data ());
 	   return;
 	}
 
 	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
-	                  ensembleLabel. toLatin1 (). data (),
+	                  ensembleLabel. toUtf8 (). data (),
 	                  ensembleId,
-	                  currentChannel. toLatin1 (). data (),
+	                  currentChannel. toUtf8 (). data (),
 	                  frequency / 1000);
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
@@ -1551,16 +1538,16 @@ bool	firstData;
 
 	   countryId = (d. serviceId >> 12) & 0xF;
 	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
-	                     d. serviceName. toLatin1(). data (),
-	                     code_to_string (ecc_byte, countryId),
+	                     d. serviceName. toUtf8(). data (),
+	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
 	                     d. serviceId,
 	                     d. subchId,
 	                     d. startAddr,
 	                     d. length,
 	                     d. bitRate,
 	                     d. ASCTy == 077 ? "DAB+" : "DAB",
-	                     protL. toLatin1 (). data (),
-	                     codeRate. toLatin1 (). data (),
+	                     protL. toUtf8 (). data (),
+	                     codeRate. toUtf8 (). data (),
 	                     the_textMapper. get_programm_language_string (d. language),
 	                     the_textMapper. get_programm_type_string (d. programType) );
 	}
@@ -1601,15 +1588,15 @@ bool	firstData;
 	   }
 	   countryId = (d. serviceId >> (5 * 4)) & 0xF;
 	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;;;\n",
-	                     d. serviceName. toLatin1(). data (),
-	                     code_to_string (ecc_byte, countryId),
+	                     d. serviceName. toUtf8 (). data (),
+	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
 	                     d. serviceId,
 	                     d. subchId,
 	                     d. startAddr,
 	                     d. length,
 	                     d. bitRate,
 	                     d. FEC_scheme,
-	                     protL. toLatin1 (). data (),
+	                     protL. toUtf8 (). data (),
 	                     d. appType);
 	}
 	fclose (file_P);
@@ -1685,11 +1672,10 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info -> samplerate   = INPUT_RATE;
 	sf_info -> channels     = 2;
 	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-	dumpfilePointer = sf_open (file. toLatin1 (). data (),
+	dumpfilePointer = sf_open (file. toUtf8 (). data (),
 	                                   SFM_WRITE, sf_info);
 	if (dumpfilePointer == NULL) {
-	   qDebug () << "cannot open " << file. toLatin1 (). data ();
+	   qDebug () << "cannot open " << file. toUtf8 (). data ();
 	   return;
 	}
 

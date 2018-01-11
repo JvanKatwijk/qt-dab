@@ -52,10 +52,10 @@ SF_INFO *sf_info;
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
-	filePointer	= sf_open (f. toLatin1 (). data (), SFM_READ, sf_info);
+	filePointer	= sf_open (f. toUtf8 (). data (), SFM_READ, sf_info);
 	if (filePointer == NULL) {
 	   fprintf (stderr, "file %s no legitimate sound file\n", 
-	                                f. toLatin1 ().data ());
+	                                f. toUtf8 ().data ());
 	   delete myFrame;
 	   throw (24);
 	}

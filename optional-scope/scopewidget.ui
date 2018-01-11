@@ -18,8 +18,8 @@
     <rect>
      <x>50</x>
      <y>20</y>
-     <width>431</width>
-     <height>151</height>
+     <width>461</width>
+     <height>161</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -48,10 +48,10 @@
   <widget class="QwtPlot" name="iqDisplay">
    <property name="geometry">
     <rect>
-     <x>490</x>
+     <x>510</x>
      <y>20</y>
-     <width>211</width>
-     <height>121</height>
+     <width>181</width>
+     <height>111</height>
     </rect>
    </property>
    <property name="toolTip">
@@ -61,9 +61,9 @@
   <widget class="QSlider" name="scopeSlider">
    <property name="geometry">
     <rect>
-     <x>500</x>
+     <x>530</x>
      <y>140</y>
-     <width>181</width>
+     <width>171</width>
      <height>24</height>
     </rect>
    </property>

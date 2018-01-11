@@ -182,19 +182,16 @@ int32_t	inputRate	= 0;
 	   throw (24);
 	}
 
-	fprintf (stderr, "Opening OK\n");
-
-	inputRate	= GetHWSR	();
-	fprintf (stderr, "inputRate = %d\n", inputRate);
-	if (inputRate < Khz (2000) ||
-	    (1000 * (inputRate / 1000) != inputRate)) {
-	   QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("cannot handle this rate"));
-	   
-	   StopHW ();
-	   CloseHW ();
-	   FREELIBRARY (Handle);
-	   throw (25);
+	bool	OK = false;
+	while (!OK) {
+	   inputRate	= GetHWSR	();
+	   fprintf (stderr, "inputRate = %d\n", inputRate);
+	   if (inputRate < Khz (2000) ||
+	       (1000 * (inputRate / 1000) != inputRate)) 
+	      QMessageBox::warning (NULL, tr ("sdr"),
+	                               tr ("please select an inputrate 2048000"));
+	   else
+	      OK = true;
 	}
 
 	theBuffer	= new RingBuffer<std::complex<float>>(1024 * 1024);

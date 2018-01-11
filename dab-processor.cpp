@@ -118,9 +118,8 @@ int32_t	i;
 	         myRadioInterface, SLOT (showSpectrum (int)));
 #endif
 	
-	
 	myReader. setSpectrum (!tiiSwitch);
-	myReader. setRunning (false);
+	myReader. setRunning  (false);
 //	the thread will be started from somewhere else
 }
 

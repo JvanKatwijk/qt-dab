@@ -110,15 +110,11 @@ float	lbuf [T_u];
   */
 	for (i = 0; i < T_u; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
-	   sum	+= lbuf [i];
 	   if (lbuf [i] > Max) {
 	      maxIndex = i;
 	      Max = lbuf [i];
 	   }
 	}
-
-	for (i = 0; i < T_u; i ++)
-	   lbuf [i] /= (sum / T_u);
 
 #ifdef	IMPULSE_RESPONSE
 	response	-> putDataIntoBuffer (lbuf, T_u);

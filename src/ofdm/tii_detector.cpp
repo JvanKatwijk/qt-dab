@@ -339,18 +339,18 @@ int	altCarrier	= -1;
                                     conj (theBuffer [T_u / 2 + i + 1])));
         avg /= (carriers / 4);
 
-	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
+	for (i = - carriers / 2; i < - carriers / 2 + 5 * 48; i += 2) {
 	   int index = T_u / 2 + i;
 	   float sum_1 = 0;
 	   float sum_2 = 0;
 	   if (abs (real (theBuffer [index] *
-	                     conj (theBuffer [index + 1]))) < 4 * avg)
+	                     conj (theBuffer [index + 1]))) < 3 * avg)
 	      continue;
 
 //	We just compute the "best" candidates two ways
 
-	   for (j = 0; j < 4; j ++) {
-	      int ci = index + j * 8 * 48;
+	   for (j = 0; j < 32; j ++) {
+	      int ci = index + j * 48;
 	      if (ci >= T_u / 2) ci ++;
 	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
 	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci]))) +
@@ -370,7 +370,7 @@ int	altCarrier	= -1;
 
 	if (startCarrier != altCarrier)
 	   fprintf (stderr, "alternatieve start carriers %d %d\n",
-	                                         startCarrier, altCarrier);
+	                                        startCarrier, altCarrier);
 	                                   
 //	   return;
         if (startCarrier <  -carriers / 2)
