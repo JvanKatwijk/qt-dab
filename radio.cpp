@@ -689,13 +689,13 @@ void	RadioInterface::showMOT		(QByteArray data,
 	p. loadFromData (data, type);
 	if (saveSlides && (pictureName != QString (""))) {
 	   pictureName		= QDir::toNativeSeparators (pictureName);
-	   FILE *x = fopen (pictureName. toUtf8 (). data (), "w+b");
+	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
 	   if (x == NULL)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureName. toUtf8 (). data ());
+	                            pictureName. toLatin1 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
-	                            pictureName. toUtf8 (). data ());
+	                            pictureName. toLatin1 (). data ());
 	      (void)fwrite (data. data (), 1, data.length (), x);
 	      fclose (x);
 	   }
