@@ -76,8 +76,7 @@ void	processSegment	(int16_t *Data);
 	int16_t		protLevel;
 	std::vector<uint8_t> outV;
 	int16_t		**interleaveData;
-	int16_t		*Data;
-	int16_t		*tempX;
+	std::vector<int16_t> tempX;
 	int16_t		countforInterleaver;
 	int16_t		interleaverIndex;
 

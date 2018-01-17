@@ -201,10 +201,12 @@ QString h;
 	                                       iqBuffer);
         spectrumHandler -> show ();
 #endif
+
 #ifdef	IMPULSE_RESPONSE
 	my_impulseViewer	= new impulseViewer (this,
 	                                             responseBuffer);
-	my_impulseViewer	-> show ();
+#else
+	show_irButton	-> hide ();
 #endif
 	QString t       =
                 dabSettings     -> value ("dabBand", "VHF Band III"). toString ();
@@ -222,7 +224,7 @@ QString h;
            modeSelector -> setCurrentIndex (k);
 
 	QPalette p	= techData. ficError_display -> palette ();
-	p. setColor (QPalette::Highlight, Qt::red);
+	p. setColor (QPalette::Highlight, Qt::green);
 	techData. ficError_display	-> setPalette (p);
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
@@ -278,6 +280,11 @@ QString h;
 	         this, SLOT (set_audioDump (void)));
 	connect (tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_tiiSwitch (void)));
+#ifdef	IMPULSE_RESPONSE
+	connect (show_irButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_irSwitch (void)));
+#endif
+	
 //	display the version
 	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
 	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
@@ -1100,6 +1107,7 @@ virtualInput	*inputDevice	= NULL;
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> setBitDepth (inputDevice -> bitDepth ());
 #endif
+	fprintf (stderr, "Hiero\n");
 	return inputDevice;
 }
 //
@@ -1699,4 +1707,13 @@ void	RadioInterface::set_nextChannel (void) {
 void	RadioInterface::set_tiiSwitch (void) {
 	my_dabProcessor	-> set_tiiSwitch ();
 }
+
+#ifdef	IMPULSE_RESPONSE
+void	RadioInterface::set_irSwitch (void) {
+	if (my_impulseViewer -> isHidden ())
+	   my_impulseViewer	-> show ();
+	else
+	   my_impulseViewer	-> hide ();
+}
+#endif
 

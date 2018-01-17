@@ -345,47 +345,49 @@ NewOffset:
  *	Note that tiiSwitch == true implies switching off the "normal"
  *	spectrum
  */
-	   if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
-	      if (tiiSwitch) 
-	         spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
-	      if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
-	         int16_t mi = 0;
-	         if (tii_counter == 1)
-	            my_TII_Detector. reset ();
-	         if (tii_counter <= 1)
-	            my_TII_Detector. addBuffer (ofdmBuffer);
-	      }
+	   if (params. get_dabMode () == 1) {
+	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
+	         if (tiiSwitch) 
+	            spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
+	         if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
+	            int16_t mi = 0;
+	            if (tii_counter == 1)
+	               my_TII_Detector. reset ();
+	            if (tii_counter <= 1)
+	               my_TII_Detector. addBuffer (ofdmBuffer);
+	         }
 #ifdef	HAVE_SPECTRUM
-	      if ( tiiSwitch && ((tii_counter & 02) != 0)) 
-	            show_Spectrum (1);
+	         if ( tiiSwitch && ((tii_counter & 02) != 0)) 
+	               show_Spectrum (1);
 #endif
-	      if ((my_ficHandler. mainId () > 0) && (tii_counter == 1)) {
-	         int16_t mainId	= my_ficHandler. mainId ();
-                 int16_t subId =  my_TII_Detector. find_C (mainId); 
-	         if (subId >= 0) {
-	            bool found;
-	            std::complex<float> coord =
+	         if ((my_ficHandler. mainId () > 0) && (tii_counter == 1)) {
+	            int16_t mainId	= my_ficHandler. mainId ();
+                    int16_t subId =  my_TII_Detector. find_C (mainId); 
+	            if (subId >= 0) {
+	               bool found;
+	               std::complex<float> coord =
 	                     my_ficHandler. get_coordinates (mainId,
 	                                                     subId,
 	                                                     &found);
-	            if (found) {
-	               showCoordinates (real (coord), imag (coord));
+	               if (found) {
+	                  showCoordinates (real (coord), imag (coord));
+	               }
 	            }
 	         }
-	      }
 
-	      if (tiiSwitch && (tii_counter == 2)) {
-	         int16_t mainId = -1;
-	         int16_t subId	= -1;
-	         my_TII_Detector. processNULL (&mainId, &subId);
-	         if (mainId > 0)
-	            fprintf (stderr,
+	         if (tiiSwitch && (tii_counter == 2)) {
+	            int16_t mainId = -1;
+	            int16_t subId	= -1;
+	            my_TII_Detector. processNULL (&mainId, &subId);
+	            if (mainId > 0)
+	               fprintf (stderr,
                          "guess is: mainId %d (0x%X), subId %d (0x%X)\n",
 	                                              mainId, mainId,
 	                                              subId,  subId);
+	         }
+	         if (++tii_counter >= tii_delay)
+	            tii_counter = 1;
 	      }
-	      if (++tii_counter >= tii_delay)
-	         tii_counter = 1;
 	   }
 /**
   *	The first sample to be found for the next frame should be T_g
@@ -507,8 +509,10 @@ void	dabProcessor::stopDumping	(void) {
 
 void	dabProcessor::set_tiiSwitch	(void) {
 #ifdef	TII_GUESSING
-	tiiSwitch = !tiiSwitch;
-	myReader. setSpectrum (!tiiSwitch);
+	if (params. get_dabMode () == 1) {
+	   tiiSwitch = !tiiSwitch;
+	   myReader. setSpectrum (!tiiSwitch);
+	}
 #endif
 }
 

@@ -22,6 +22,7 @@
 
 #include	"tii_detector.h"
 #include	<stdio.h>
+#include	<inttypes.h>
 //
 //	Transmitter Identification Info is carrier in the null period
 //	of a DAB frame. In case the FIB's carry information on the
@@ -331,8 +332,8 @@ int i, j;
 float   maxCorr_1	= 0;
 float   maxCorr_2	= 0;
 float   avg		= 0;
-int     startCarrier	= -1;
-int	altCarrier	= -1;
+int16_t	startCarrier	= -1;
+int16_t	altCarrier	= -1;
 
         for (i = - carriers / 2; i < - carriers / 4 - 1; i ++)
            avg += abs (real (theBuffer [T_u / 2 + i] *
@@ -398,10 +399,9 @@ L1:
         }
 
 	if (*mainId != -1)
-           fprintf (stderr, "the pattern is %lX at carrier %d\n",
-                                         theTable [*mainId]. pattern,
-                                         startCarrier);
-
+           fprintf (stderr, "the carrier is %d, the pattern is %llx\n",
+                                         startCarrier,
+	                                 theTable [*mainId]. pattern);
 }
 
 //

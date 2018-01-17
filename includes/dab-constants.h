@@ -80,7 +80,7 @@ using namespace std;
 #define		UNSYNCED	04
 //
 //	40 up shows good results
-#define		DIFF_LENGTH	30
+#define		DIFF_LENGTH	60
 static inline
 bool	isIndeterminate (float x) {
 	return x != x;

@@ -54,7 +54,10 @@ float	Phi_k;
 	refTable.		resize (T_u);
 	phaseDifferences.	resize (diff_length);
 	fft_buffer		= my_fftHandler. getVector ();
-	
+
+	framesperSecond		= 2048000 / params. get_T_F ();
+	displayCounter		= 0;
+
 	memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
 
 	for (i = 1; i <= params. get_carriers () / 2; i ++) {
@@ -117,8 +120,11 @@ float	lbuf [T_u];
 	}
 
 #ifdef	IMPULSE_RESPONSE
-	response	-> putDataIntoBuffer (lbuf, T_u);
-	showImpulse (T_u);
+	if (++displayCounter > framesperSecond / 4) {
+	   response	-> putDataIntoBuffer (lbuf, T_u);
+	   showImpulse (T_u);
+	   displayCounter	= 0;
+	}
 #endif
 /**
   *	that gives us a basis for defining the actual threshold value

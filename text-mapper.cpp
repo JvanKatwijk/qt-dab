@@ -112,7 +112,7 @@ const char *table9 [] = {
 "Norwegian",
 "Occitan",
 "Polish",
-"Portuguese",
+"Postuguese",
 "Romanian",
 "Romansh",
 "Serbian",
@@ -120,18 +120,108 @@ const char *table9 [] = {
 "Slovene",
 "Finnish",
 "Swedish",
-"Turkish",
+"Tuskish",
 "Flemish",
-"Walloon"
+"Walloon",
+"rfu",
+"rfu",
+"rfu",
+"rfu",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment",
+"Reserved for national assignment"
+};
+
+static
+const char *table10 [] = {
+"Background sound/clean feed",
+"rfu",
+"rfu",
+"rfu",
+"rfu",
+"Zulu",
+"Vietnamese",
+"Uzbek",
+"Urdu",
+"Ukranian",
+"Thai",
+"Telugu",
+"Tatar",
+"Tamil",
+"Tadzhik",
+"Swahili",
+"Sranan Tongo",
+"Somali",
+"Sinhalese",
+"Shona",
+"Serbo-Croat",
+"Rusyn",
+"Russian",
+"Quechua",
+"Pushtu",
+"Punjabi",
+"Persian",
+"Papiamento",
+"Oriya",
+"Nepali",
+"Ndebele",
+"Marathi",
+"Moldavian",
+"Malaysian",
+"Malagasay",
+"Macedonian",
+"Laotian",
+"Korean",
+"Khmer",
+"Kazakh",
+"Kannada",
+"Japanese",
+"Indonesian",
+"Hindi",
+"Hebrew",
+"Hausa",
+"Gurani",
+"Gujurati",
+"Greek",
+"Greek",
+"Georgian",
+"Fulani",
+"Dari",
+"Chuvash",
+"Chinese",
+"Burmese",
+"Bulgarian",
+"Bengali",
+"Belorussian",
+"Bambora",
+"Azerbaijani",
+"Assamese",
+"Armenian",
+"Arabic",
+"Amharic"
 };
 
 const char *textMapper::get_programm_language_string (int16_t language) {
-	if (language > 43) {
-	   fprintf (stderr, "GUI: wrong language (%d)\n", language);
-	   return table9 [0];
-	}
 	if (language < 0)
 	   return " ";
-	return table9 [language];
+	else if (language < 0x40)
+	   return table9[language];
+	else if (language < 0x7d)
+	   return table10[language-0x40];
+	fprintf(stderr, "GUI: wrong language (%d)\n", language);
+	return table9[0];
 }
 

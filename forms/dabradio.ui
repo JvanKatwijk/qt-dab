@@ -609,9 +609,9 @@ details</string>
    <widget class="QPushButton" name="saveEnsembleData">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>90</x>
       <y>240</y>
-      <width>141</width>
+      <width>131</width>
       <height>20</height>
      </rect>
     </property>
@@ -643,7 +643,7 @@ details</string>
      <rect>
       <x>10</x>
       <y>240</y>
-      <width>71</width>
+      <width>51</width>
       <height>21</height>
      </rect>
     </property>
@@ -652,6 +652,19 @@ details</string>
     </property>
     <property name="text">
      <string>TII</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="show_irButton">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>240</y>
+      <width>31</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ir</string>
     </property>
    </widget>
   </widget>

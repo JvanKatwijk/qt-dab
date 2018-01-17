@@ -82,6 +82,15 @@ void	impulseViewer::show	(void) {
 	myFrame		-> show ();
 }
 
+void	impulseViewer::hide	(void) {
+	myFrame		-> hide ();
+}
+
+bool	impulseViewer::isHidden	(void) {
+	return myFrame	-> isHidden ();
+}
+
+
 static int lcount = 0;
 void	impulseViewer::showImpulse (int32_t dots) {
 uint16_t	i;

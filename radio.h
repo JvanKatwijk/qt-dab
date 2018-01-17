@@ -209,6 +209,9 @@ private slots:
 	void		showEnsembleData	(void);
 	void		setPresetStation	(void);
 	void		set_tiiSwitch		(void);
+#ifdef	IMPULSE_RESPONSE
+	void		set_irSwitch		(void);
+#endif
 };
 #endif
 

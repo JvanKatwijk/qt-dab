@@ -248,15 +248,42 @@ int32_t		tmp;
 
 //	but first the crc check
 	   if (check_crc_bytes (&outVector [au_start [i]],
-	                        aac_frame_length)) {
+	                                aac_frame_length)) {
 	      bool err;
-	      handle_aacFrame (&outVector [au_start [i]],
-	                                   aac_frame_length,
-	                                   dacRate,
-	                                   sbrFlag,
-	                                   mpegSurround,
-	                                   aacChannelMode,
-	                                   &err);
+//
+//	first handle the pad data if any
+	      if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
+	                                      
+	         int16_t count = outVector [au_start [i] + 1];
+	         uint8_t buffer [count];
+	         memcpy (buffer, &outVector [au_start [i] + 2], count);
+	         uint8_t L0	= buffer [count - 1];
+	         uint8_t L1	= buffer [count - 2];
+	         my_padhandler. processPAD (buffer, count - 3, L1, L0);
+	      }
+//
+//	then handle the audio
+
+	      uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
+
+	      memcpy (theAudioUnit,
+	                 &outVector [au_start [i]], aac_frame_length);
+	      memset (&theAudioUnit [aac_frame_length], 0, 10);
+
+	      int tmp = aacDecoder. MP42PCM (dacRate,
+	                                     sbrFlag,
+	                                     mpegSurround,
+	                                     aacChannelMode,
+	                                     theAudioUnit,
+	                                     aac_frame_length);
+	      err	= tmp == 0;
+//	      handle_aacFrame (&outVector [au_start [i]],
+//	                                   aac_frame_length,
+//	                                   dacRate,
+//	                                   sbrFlag,
+//	                                   mpegSurround,
+//	                                   aacChannelMode,
+//	                                   &err);
 	      emit isStereo (aacChannelMode);
 	      if (err) 
 	         aacErrors ++;
@@ -285,15 +312,6 @@ uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
 
 	memcpy (theAudioUnit, v, frame_length);
 	memset (&theAudioUnit [frame_length], 0, 10);
-
-	if (((theAudioUnit [0] >> 5) & 07) == 4) {
-	   int16_t count = theAudioUnit [1];
-	   uint8_t buffer [count];
-	   memcpy (buffer, &theAudioUnit [2], count);
-	   uint8_t L0	= buffer [count - 1];
-	   uint8_t L1	= buffer [count - 2];
-	   my_padhandler. processPAD (buffer, count - 3, L1, L0);
-	}
 
 	int tmp = aacDecoder. MP42PCM (dacRate,
 	                               sbrFlag,

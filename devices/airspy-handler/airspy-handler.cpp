@@ -316,6 +316,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	bs_ = bufSize;
 	bl_ = 0;
 	running	= true;
+	fprintf (stderr, "airspy is gestart\n");
 	return true;
 }
 
@@ -343,7 +344,7 @@ airspyHandler *p;
 	p = static_cast<airspyHandler *> (transfer -> ctx);
 
 // AIRSPY_SAMPLE_FLOAT32_IQ:
-	uint32_t bytes_to_write = transfer -> sample_count * sizeof (int16_t) * 2; 
+	int32_t bytes_to_write = transfer -> sample_count * sizeof (int16_t) * 2; 
 	uint8_t *pt_rx_buffer   = (uint8_t *)transfer->samples;
 	
 	while (bytes_to_write > 0) {

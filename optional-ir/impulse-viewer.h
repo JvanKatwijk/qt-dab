@@ -47,6 +47,8 @@ public:
 			~impulseViewer		(void);
 	void		showImpulse		(int32_t);
 	void		show			(void);
+	void		hide			(void);
+	bool		isHidden		(void);
 private:
 	float		get_db (float);
 	RadioInterface	*myRadioInterface;

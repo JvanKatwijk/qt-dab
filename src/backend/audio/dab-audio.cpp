@@ -84,8 +84,7 @@ int32_t i, j;
 	   our_dabProcessor = new frameProcessor ();
 
 	fprintf (stderr, "we now have %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
-	Data		= new int16_t [fragmentSize];
-	tempX		= new int16_t [fragmentSize];
+	tempX. resize (fragmentSize);
 
 #ifdef	__THREADED_DECODING
 //	for local buffering the input, we have
@@ -114,7 +113,6 @@ int16_t	i;
 	for (i = 0; i < 20; i ++)
 	   delete [] theData [i];
 #endif
-	delete [] tempX;
 }
 
 int32_t	dabAudio::process	(int16_t *v, int16_t cnt) {
@@ -156,7 +154,9 @@ int16_t	i, j;
 	   return;
 	}
 
-	protectionHandler -> deconvolve (tempX, fragmentSize, outV. data ());
+	protectionHandler -> deconvolve (tempX. data (),
+	                                 fragmentSize,
+	                                 outV. data ());
 //
 //	and the inline energy dispersal
 	memset (shiftRegister, 1, 9);

@@ -37,6 +37,7 @@ int16_t	i;
 	this	-> buffer_re	= new float [firSize];
 	this	-> buffer_im	= new float [firSize];
 	this	-> kernel	= new float [firSize];
+	this	-> firSize	= firSize;
 	ip			= 0;
 //
 //	create a low pass filter for lo;

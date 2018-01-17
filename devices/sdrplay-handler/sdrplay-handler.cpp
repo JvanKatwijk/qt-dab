@@ -330,19 +330,21 @@ bool	sdrplayHandler::restartReader	(void) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	localGred	= currentGred;
+int	localGRed	= currentGred;
 
 	if (running)
 	   return true;
 
-	err	= my_mir_sdr_StreamInit (&localGred,
+	fprintf (stderr, "frequency = %d localGred = %d\n", vfoFrequency, localGRed);
+
+	err	= my_mir_sdr_StreamInit (&localGRed,
 	                                 double (inputRate) / MHz (1),
 	                                 double (vfoFrequency) / Mhz (1),
 	                                 mir_sdr_BW_1_536,
 	                                 mir_sdr_IF_Zero,
 	                                 0,	// lnaEnable do not know yet
 	                                 &gRdBSystem,
-	                                 agcMode, // useGrAltMode,do not know yet
+	                                 mir_sdr_USE_SET_GR,
 	                                 &samplesPerPacket,
 	                                 (mir_sdr_StreamCallback_t)myStreamCallback,
 	                                 (mir_sdr_GainChangeCallback_t)myGainChangeCallback,
@@ -357,7 +359,6 @@ int	localGred	= currentGred;
 //
 	my_mir_sdr_SetSyncUpdatePeriod ((int)(inputRate / 3));
 	my_mir_sdr_SetSyncUpdateSampleNum (samplesPerPacket);
-//	my_mir_sdr_AgcControl (1, -30, 0, 0, 0, 0, 0);
 	my_mir_sdr_DCoffsetIQimbalanceControl (0, 1);
 	running 	= true;
 	return true;

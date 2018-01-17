@@ -10,12 +10,12 @@ TARGET		= qt-dab-1.0-alpha
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -232,7 +232,7 @@ CONFIG		+= spectrum
 #comment both out if you just want to use the "normal" way
 
 #and certainly, you do not want this
-CONFIG		+= try-epg		# do not use
+#CONFIG		+= try-epg		# do not use
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
@@ -244,9 +244,8 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #and this one is experimental
 DEFINES		+= PRESET_NAME
 
-#and this one is just for me
+#and these one is just experimental,
 #DEFINES	+= TII_GUESSING
-
 #CONFIG		+= impulseresponse
 }
 #
@@ -317,9 +316,9 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #and this one is experimental
 DEFINES		+= PRESET_NAME
 
-#DEFINES	+= TII_GUESSING
+DEFINES		+= TII_GUESSING
 
-#CONFIG		+= impulseresponse
+CONFIG		+= impulseresponse
 }
 
 #######################################

@@ -50,7 +50,6 @@ private:
 	dabParams	params;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
-	int16_t		viterbiBlock	[3072 + 24];
 	bool		punctureTable	[3072 + 24];
 
 	void		process_ficInput	(int16_t);

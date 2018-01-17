@@ -63,6 +63,8 @@ private:
 
 	std::complex<float>	*fft_buffer;
 	int32_t		fft_counter;
+	int32_t		framesperSecond;	
+	int32_t		displayCounter;
 signals:
 	void		showImpulse (int);
 };
