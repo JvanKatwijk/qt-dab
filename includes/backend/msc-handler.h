@@ -44,7 +44,7 @@ public:
 	                                         QString);
 			~mscHandler		(void);
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-	void		set_audioChannel	(audiodata	*);
+	void		set_audioChannel	(audiodata	*, packetdata *);
 	void		set_dataChannel         (packetdata	*);
 	void		stopProcessing		(void);
 	void		stop			(void);

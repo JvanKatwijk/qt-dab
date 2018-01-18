@@ -82,7 +82,7 @@
 //	so, a little bit of locking seems wise while
 //	the actual changing of the settings is done in the
 //	thread executing process_mscBlock
-void	mscHandler::set_audioChannel (audiodata *d) {
+void	mscHandler::set_audioChannel (audiodata *d, packetdata *pd) {
 	locker. lock ();
 	shortForm	= d	-> shortForm;
 	startAddr	= d	-> startAddr;

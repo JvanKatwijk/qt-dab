@@ -215,7 +215,7 @@ SyncOnNull:
   */
 	   counter	= 0;
 SyncOnEndNull:
-	   while (cLevel / C_LEVEL_SIZE < 0.80 * myReader. get_sLevel ()) {
+	   while (cLevel / C_LEVEL_SIZE < 0.75 * myReader. get_sLevel ()) {
 	      std::complex<float> sample =
 	              myReader. getSample (coarseCorrector + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
@@ -475,8 +475,8 @@ void	dabProcessor::dataforDataService	(int16_t d,   packetdata *dd) {
 	my_ficHandler. dataforDataService (d, dd);
 }
 
-void	dabProcessor::set_audioChannel (audiodata *d) {
-	my_mscHandler. set_audioChannel (d);
+void	dabProcessor::set_audioChannel (audiodata *d, packetdata *pd) {
+	my_mscHandler. set_audioChannel (d, pd);
 }
 
 void	dabProcessor::set_dataChannel (packetdata *d) {

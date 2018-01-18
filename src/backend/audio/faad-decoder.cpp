@@ -91,7 +91,7 @@ uint8_t channels;
         uint8_t asc[2];
         asc[0] = 0b00010 << 3 | core_sr_index >> 1;
         asc[1] = (core_sr_index & 0x01) << 7 | core_ch_config << 3 | 0b100;
-     long int init_result = NeAACDecInit2 (aacHandle,
+	long int init_result = NeAACDecInit2 (aacHandle,
                                               asc,
                                               sizeof (asc),
                                               &sample_rate,
@@ -129,7 +129,6 @@ uint8_t channels;
                                                &hInfo, buffer, bufferLength);
         sampleRate      = hInfo. samplerate;
 
-       sampleRate      = hInfo. samplerate;
         samples         = hInfo. samples;
         if ((sampleRate == 24000) ||
             (sampleRate == 32000) ||
@@ -164,7 +163,7 @@ uint8_t channels;
               buffer [2 * i + 1] = buffer [2 * i];
            }
            audioBuffer  -> putDataIntoBuffer (buffer, samples);
-//	   if (audioBuffer -> GetRingBufferReadAvailable () > sampleRate / 8)
+	   if (audioBuffer -> GetRingBufferReadAvailable () > sampleRate / 8)
               newAudio (samples, sampleRate);
         }
         else

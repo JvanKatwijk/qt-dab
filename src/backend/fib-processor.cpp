@@ -310,6 +310,7 @@ int16_t	SubChId		= getBits_6 (d, bitOffset);
 int16_t StartAdr	= getBits (d, bitOffset + 6, 10);
 int16_t	tabelIndex;
 int16_t	option, protLevel, subChanSize;
+
 	(void)pd;		// not used right now, maybe later
 	ficList [SubChId]. StartAddr	= StartAdr;
 	ficList [SubChId]. inUse	= true;
@@ -419,7 +420,7 @@ int16_t		numberofComponents;
 	      bind_packetService (TMid, SId, i, SCId, PS_flag, CA_flag);
            }
 	   else
-	      {;}		// for now
+	      {;}
 	   lOffset += 16;
 	}
 	return lOffset / 8;		// in Bytes
@@ -439,6 +440,7 @@ int16_t	Length	= getBits_5 (d, 3);
 
 //
 //      DSCTy   DataService Component Type
+//	and subChannel are handled here for data elements
 int16_t fib_processor::HandleFIG0Extension3 (uint8_t *d, int16_t used) {
 int16_t SCId            = getBits   (d, used * 8, 12);
 int16_t CAOrgflag       = getBits_1 (d, used * 8 + 15);
@@ -449,16 +451,34 @@ int16_t packetAddress   = getBits   (d, used * 8 + 30, 10);
 uint16_t  CAOrg		= getBits   (d, used * 8 + 40, 16);
 
 serviceComponent *packetComp = find_packetComponent (SCId);
+serviceId	* service;
+
         used += 56 / 8;
         if (packetComp == NULL)		// no serviceComponent yet
            return used;
-serviceId *service = packetComp -> service;
+//
+//	If the component exists, we first look whether is
+//	was already handled
+	if (packetComp -> is_madePublic)
+	   return used;
+//
+//	if the  Data Service Component Type == 0, we do not deal
+//	with it
+	if (DSCTy == 0)
+	   return used;
 
+	service = packetComp -> service;
+	QString serviceName = service -> serviceLabel. label;
+	if (packetComp -> componentNr == 0) 	// otherwise sub component
+	   addtoEnsemble (serviceName);
+
+	packetComp 	-> is_madePublic = true;
 	packetComp	-> SCId		= SCId;
         packetComp      -> subchannelId = SubChId;
         packetComp      -> DSCTy        = DSCTy;
 	packetComp	-> DGflag	= DGflag;
         packetComp      -> packetAddress        = packetAddress;
+//	even if we did not add it to the GUI, we consider it to be "public"
         return used;
 }
 
@@ -891,7 +911,6 @@ char		label [17];
 	                        (const char *) label,
 	                           (CharacterSet) charSet));
 //	         fprintf (stderr, "FIG1/1: SId = %4x\t%s\n", SId, label);
-	         addtoEnsemble (myIndex -> serviceLabel. label);
 	         myIndex -> serviceLabel. hasName = true;
 	      }
 	      break;
@@ -938,13 +957,6 @@ char		label [17];
                                toQStringUsingCharset (
                                 (const char *) label,
                                    (CharacterSet) charSet));
-	         myIndex -> serviceLabel. label. append (
-                               toQStringUsingCharset (
-	                           " (data)",
-                                   (CharacterSet) charSet));
-#ifdef	MSC_DATA__
-	         addtoEnsemble (myIndex -> serviceLabel. label);
-#endif
                  myIndex -> serviceLabel. hasName = true;
               }
 	      break;
@@ -1006,12 +1018,12 @@ serviceComponent *fib_processor::find_packetComponent (int16_t SCId) {
 int16_t i;
 
         for (i = 0; i < 64; i ++) {
-           if (!components [i]. inUse)
+           if (!ServiceComps [i]. inUse)
               continue;
-           if (components [i]. TMid != 03)
+           if (ServiceComps [i]. TMid != 03)
               continue;
-           if (components [i]. SCId == SCId)
-              return &components [i];
+           if (ServiceComps [i]. SCId == SCId) 
+              return &ServiceComps [i];
         }
         return NULL;
 }
@@ -1021,11 +1033,11 @@ serviceComponent *fib_processor::find_serviceComponent (int32_t SId,
 int16_t i;
 
 	for (i = 0; i < 64; i ++) {
-	   if (!components [i]. inUse)
+	   if (!ServiceComps [i]. inUse)
 	      continue;
 
-	   if ( (findServiceId (SId) == components [i]. service)) {
-	      return &components [i];
+	   if ( (findServiceId (SId) == ServiceComps [i]. service)) {
+	      return &ServiceComps [i];
 	   }
 	}
 
@@ -1034,38 +1046,48 @@ int16_t i;
 
 //	bind_audioService is the main processor for - what the name suggests -
 //	connecting the description of audioservices to a SID
-void	fib_processor::bind_audioService (int8_t TMid,
-	                                  uint32_t SId,
-	                                  int16_t compnr,
-	                                  int16_t subChId,
-	                                  int16_t ps_flag,
-	                                  int16_t ASCTy) {
+//	by creating a service Component
+void	fib_processor::bind_audioService (int8_t	TMid,
+	                                  uint32_t	SId,
+	                                  int16_t	compnr,
+	                                  int16_t	subChId,
+	                                  int16_t	ps_flag,
+	                                  int16_t	ASCTy) {
 serviceId *s	= findServiceId	(SId);
 int16_t	i;
 int16_t	firstFree	= -1;
 
+	if (!s -> serviceLabel. hasName)
+	   return;
+
 	for (i = 0; i < 64; i ++) {
-	   if (!components [i]. inUse) {
+	   if (!ServiceComps [i]. inUse) {
 	      if (firstFree == -1)
 	         firstFree = i;
 	      continue;
 	   }
-	   if ((components [i]. service == s) &&
-               (components [i]. componentNr == compnr))
+
+	   if ((ServiceComps [i]. service == s) &&
+               (ServiceComps [i]. componentNr == compnr))
 	      return;
 	}
-	components [firstFree]. inUse	= true;
-	components [firstFree]. TMid	= TMid;
-	components [firstFree]. componentNr = compnr;
-	components [firstFree]. service = s;
-	components [firstFree]. subchannelId = subChId;
-	components [firstFree]. PS_flag = ps_flag;
-	components [firstFree]. ASCTy = ASCTy;
-//	fprintf (stderr, "service %8x (comp %d) is audio\n", SId, compnr);
+
+	QString dataName = s -> serviceLabel. label;
+	addtoEnsemble (dataName);
+	ServiceComps [firstFree]. inUse	= true;
+	ServiceComps [firstFree]. TMid	= TMid;
+	ServiceComps [firstFree]. componentNr = compnr;
+	ServiceComps [firstFree]. service = s;
+	ServiceComps [firstFree]. subchannelId = subChId;
+	ServiceComps [firstFree]. PS_flag = ps_flag;
+	ServiceComps [firstFree]. ASCTy = ASCTy;
 }
+
 //      bind_packetService is the main processor for - what the name suggests -
 //      connecting the service component defining the service to the SId,
-///     Note that the subchannel is assigned through a FIG0/3
+//	So, here we create a service component. Note however,
+//	that FIG0/3 provides additional data, after that we
+//	decide whether it should be visible or not
 void    fib_processor::bind_packetService (int8_t TMid,
                                            uint32_t SId,
                                            int16_t compnr,
@@ -1077,31 +1099,37 @@ int16_t i;
 int16_t	firstFree	= -1;
 QString name;
 
-       for (i = 0; i < 64; i ++) {
-	   if (!components [i]. inUse) {
+	if (!s -> serviceLabel. hasName)	// wait until we have a name
+	   return;
+
+	for (i = 0; i < 64; i ++) {
+	   if ((ServiceComps [i]. inUse) &&
+	                    (ServiceComps [i]. SCId == SCId))
+	      return;
+
+	   if (!ServiceComps [i]. inUse) {
 	      if (firstFree == -1)
 	         firstFree = i;
 	      continue;
 	   }
-	   if ((components [i]. service == s) && 
-	       (components [i]. componentNr == compnr))
-	      return;
 	}
-	components [firstFree]. inUse  = true;
-	components [firstFree]. TMid   = TMid;
-	components [firstFree]. service = s;
-	components [firstFree]. componentNr = compnr;
-	components [firstFree]. SCId   = SCId;
-	components [firstFree]. PS_flag = ps_flag;
-	components [firstFree]. CAflag = CAflag;
-//	fprintf (stderr, "service %8x (comp %d) is packet\n", SId, compnr);
+	
+	ServiceComps [firstFree]. inUse  = true;
+	ServiceComps [firstFree]. TMid   = TMid;
+	ServiceComps [firstFree]. service = s;
+	ServiceComps [firstFree]. componentNr = compnr;
+	ServiceComps [firstFree]. SCId   = SCId;
+	ServiceComps [firstFree]. PS_flag = ps_flag;
+	ServiceComps [firstFree]. CAflag = CAflag;
+	ServiceComps [firstFree]. is_madePublic	= false;
 }
 
+////////////////////////////////////////////////////////////////////////
 void	fib_processor::setupforNewFrame (void) {
 int16_t	i;
 
 	for (i = 0; i < 64; i ++)
-	   components [i]. inUse = false;
+	   ServiceComps [i]. inUse = false;
 }
 
 void	fib_processor::clearEnsemble (void) {
@@ -1109,7 +1137,7 @@ int16_t i;
 	fibLocker. lock ();
 	setupforNewFrame ();
 	coordinates. cleanUp ();
-	memset (components, 0, sizeof (components));
+	memset (ServiceComps, 0, sizeof (ServiceComps));
 	memset (ficList, 0, sizeof (ficList));
 	for (i = 0; i < 64; i ++) {
 	   listofServices [i]. inUse = false;
@@ -1118,7 +1146,7 @@ int16_t i;
 	   listofServices [i]. programType = -1;
 	   listofServices [i]. language = -1;
 	   listofServices [i]. pNum     = -1;
-	   components [i]. inUse = false;
+	   ServiceComps [i]. inUse = false;
 	}
 
 	ensemble_Descriptor. name_Present = false;
@@ -1127,54 +1155,12 @@ int16_t i;
 	fibLocker. unlock ();
 }
 
-
-uint8_t	fib_processor::kindofService (QString &s) {
-int16_t	i, j;
-int32_t	selectedService	= -1;
-int16_t	service		= UNKNOWN_SERVICE;
-
-	fibLocker. lock ();
-//	first we locate the serviceId
-	for (i = 0; i < 64; i ++) {
-	   if (!listofServices [i]. inUse)
-	      continue;
-
-	   if (!listofServices [i]. serviceLabel. hasName)
-	      continue;
-	   if (listofServices [i]. serviceLabel. label != s)
-	      continue;
-
-//	   fprintf (stderr, "Playing %s serviceId %X\n",
-//	                      s. toLatin1 (). data (),
-//	                      listofServices [i]. serviceId);
-	   selectedService = listofServices [i]. serviceId;
-	   for (j = 0; j < 64; j ++) {
-	      int16_t subchId;
-	      if (!components [j]. inUse)
-	         continue;
-	      if (selectedService != components [j]. service -> serviceId)
-	         continue;
-
-	      if (components [j]. TMid == 03) {
-	         service = PACKET_SERVICE;
-	         break;
-	      }
-
-	      if (components [j]. TMid == 00) {
-	         service = AUDIO_SERVICE;
-	         break;
-	      }
-	   }
-	   if (service != UNKNOWN_SERVICE)
-	      break;
-	}
-	fibLocker. unlock ();
-	return service;
-}
-
+//////////////////////////////////////////////////////////////////////
+//	The external world wants from time to time to select
+//	a service
 int32_t	fib_processor::findServiceIdwithName (QString &s) {
 int16_t i;
-
+	
 	for (i = 0; i < 64; i ++) {
 	   if (!listofServices [i]. inUse)
 	      continue;
@@ -1188,135 +1174,110 @@ int16_t i;
 	}
 	return -1;
 }
+//
+//
+uint8_t	fib_processor::kindofService (QString &s) {
+int16_t	i, j;
+int32_t	selectedService	= -1;
+int16_t	service		= UNKNOWN_SERVICE;
+QString	searchString	= s;
+
+	fibLocker. lock ();
+//	first we locate the serviceId
+	for (i = 0; i < 64; i ++) {
+	   if (!listofServices [i]. inUse)
+	      continue;
+
+	   if (!listofServices [i]. serviceLabel. hasName)
+	      continue;
+	   if (listofServices [i]. serviceLabel. label != searchString)
+	      continue;
+
+	   selectedService = listofServices [i]. serviceId;
+	   for (j = 0; j < 64; j ++) {
+	      int16_t subchId;
+	      if (!ServiceComps [j]. inUse)
+	         continue;
+	      if (selectedService != ServiceComps [j]. service -> serviceId)
+	         continue;
+
+	      if (ServiceComps [j]. TMid == 03)  {
+	         service = PACKET_SERVICE;
+	         break;
+	      }
+
+	      if (ServiceComps [j]. TMid == 00) {
+	         service = AUDIO_SERVICE;
+	         break;
+	      }
+	   }
+
+	   if (selectedService != -1)
+	      break;
+	}
+
+	fibLocker. unlock ();
+	return service;
+}
 
 void	fib_processor::dataforDataService (QString &s, packetdata *d) {
 int16_t	j;
 int32_t	selectedService;
-
+QString searchString	= s;
 	d	-> defined	= false;
+
 	fibLocker. lock ();
-	selectedService = findServiceIdwithName (s);
+	selectedService = findServiceIdwithName (searchString);
 	if (selectedService == -1)
 	   return;
 
 	for (j = 0; j < 64; j ++) {
 	   int16_t subchId;
-	   if (!components [j]. inUse)
+	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 03))
 	      continue;
-	   if (selectedService != components [j]. service -> serviceId)
+	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 
-	   subchId	= components [j]. subchannelId;
+	   subchId	= ServiceComps [j]. subchannelId;
 	   d	-> subchId	= subchId;
 	   d	-> startAddr	= ficList [subchId]. StartAddr;
 	   d	-> shortForm	= ficList [subchId]. shortForm;
 	   d	-> protLevel	= ficList [subchId]. protLevel;
-	   d	-> DSCTy	= components [j]. DSCTy;
 	   d	-> length	= ficList [subchId]. Length;
 	   d	-> bitRate	= ficList [subchId]. BitRate;
 	   d	-> FEC_scheme	= ficList [subchId]. FEC_scheme;
-	   d	-> DGflag	= components [j]. DGflag;
-	   d	-> packetAddress = components [j]. packetAddress;
-	   d	-> appType	= components [j]. appType;
+
+	   d	-> DSCTy	= ServiceComps [j]. DSCTy;
+	   d	-> DGflag	= ServiceComps [j]. DGflag;
+	   d	-> packetAddress = ServiceComps [j]. packetAddress;
+	   d	-> compnr	= ServiceComps [j]. componentNr;
+	   d	-> appType	= ServiceComps [j]. appType;
 	   d	-> defined	= true;
 	   break;
 	}
 	fibLocker. unlock ();
 }
 
-void	fib_processor::dataforDataService (int16_t subchId, packetdata *d) {
-int16_t	j;
-
-	
-	d	-> defined	= false;
-	if (ficList [subchId]. inUse == 0)
-	   return;
-	fibLocker. lock ();
-
-	for (j = 0; j < 64; j ++) {
-	   if (!components [j]. inUse)
-	      continue;
-
-	   if (subchId != components [j]. subchannelId)
-	      continue;
-
-	   if (components [j]. TMid != 03) 
-	      continue;
-
-	   d	-> serviceId	= components [j]. service -> serviceId;
-	   d	-> serviceName	= components [j]. service -> serviceLabel. label;
-	   d	-> subchId	= subchId;
-	   d	-> startAddr	= ficList [subchId]. StartAddr;
-	   d	-> shortForm	= ficList [subchId]. shortForm;
-	   d	-> protLevel	= ficList [subchId]. protLevel;
-	   d	-> DSCTy	= components [j]. DSCTy;
-	   d	-> length	= ficList [subchId]. Length;
-	   d	-> bitRate	= ficList [subchId]. BitRate;
-	   d	-> FEC_scheme	= ficList [subchId]. FEC_scheme;
-	   d	-> DGflag	= components [j]. DGflag;
-	   d	-> packetAddress = components [j]. packetAddress;
-	   d	-> appType	= components [j]. appType;
-	   d	-> defined	= true;
-	   break;
-	}
-
-	fibLocker. unlock ();
-}
-
-void	fib_processor::dataforAudioService (int16_t subchId, audiodata *d) {
-int16_t j;
-static bool flag = false;
-
-	d -> defined = false;
-	if (ficList [subchId]. inUse == 0)
-	   return;
-
-	fibLocker. lock ();
-	for (j = 0; j < 64; j ++) {
-	   if (!components [j]. inUse)
-	      continue;
-
-	   if (subchId != components [j]. subchannelId)
-	      continue;
-
-	   if (components [j]. TMid != 00) 
-	      continue;
-
-	   d	-> serviceId	= components [j]. service -> serviceId;
-	   d	-> serviceName	= components [j]. service -> serviceLabel. label;
-	   d	-> subchId	= subchId;
-	   d	-> startAddr	= ficList [subchId]. StartAddr;
-	   d	-> shortForm	= ficList [subchId]. shortForm;
-	   d	-> protLevel	= ficList [subchId]. protLevel;
-	   d	-> length	= ficList [subchId]. Length;
-	   d	-> bitRate	= ficList [subchId]. BitRate;
-	   d	-> ASCTy	= components [j]. ASCTy;
-	   d	-> language	= components [j]. service -> language;
-	   d	-> programType	= components [j]. service -> programType;
-	   d	-> defined	= true;
-	   break;
-	}
-	fibLocker. unlock ();
-}
-	
 void	fib_processor::dataforAudioService (QString &s, audiodata *d) {
 int16_t	j;
 int32_t	selectedService;
+QString	searchString	= s;
 
 	d	-> defined	= false;
-
 	fibLocker. lock ();
-	selectedService = findServiceIdwithName (s);
+
+	selectedService = findServiceIdwithName (searchString);
 	if (selectedService == -1)
 	   return;
+
 	for (j = 0; j < 64; j ++) {
 	   int16_t subchId;
-	   if (!components [j]. inUse)
+	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 0))
 	      continue;
-	   if (selectedService != components [j]. service -> serviceId)
+	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 
-	   subchId	= components [j]. subchannelId;
+	   subchId	= ServiceComps [j]. subchannelId;
 	   d	-> serviceId	= selectedService;
 	   d	-> serviceName	= s;
 	   d	-> subchId	= subchId;
@@ -1325,15 +1286,81 @@ int32_t	selectedService;
 	   d	-> protLevel	= ficList [subchId]. protLevel;
 	   d	-> length	= ficList [subchId]. Length;
 	   d	-> bitRate	= ficList [subchId]. BitRate;
-	   d	-> ASCTy	= components [j]. ASCTy;
-	   d	-> language	= components [j]. service -> language;
-	   d	-> programType	= components [j]. service -> programType;
+	   d	-> ASCTy	= ServiceComps [j]. ASCTy;
+	   d	-> language	= ServiceComps [j]. service -> language;
+	   d	-> programType	= ServiceComps [j]. service -> programType;
 	   d	-> defined	= true;
 	   break;
 	}
 	fibLocker. unlock ();
 }
 
+
+////////////////////////////////////////////////////////////////////////////
+//	For displaying ensemble data, we have two functions, mapping
+//	an index in the ServiceComps table to relevant data
+void	fib_processor::dataforAudioService (int16_t comp, audiodata *d) {
+serviceId *service;
+int16_t		subChId;
+
+	d -> defined = false;	// I do not trust myself
+	if (!ServiceComps [comp]. inUse)
+	   return;
+
+	if (!ServiceComps [comp]. TMid == 0)
+	   return;
+
+	fibLocker. lock ();
+	service	= ServiceComps [comp]. service;
+	subChId	= ServiceComps [comp]. subchannelId;
+	d	-> subchId	= subChId;
+	d	-> ASCTy	= ServiceComps [comp]. ASCTy;
+	d	-> serviceId	= service -> serviceId;
+	d	-> serviceName	= service -> serviceLabel. label;
+	d	-> language	= service -> language;
+	d	-> programType	= service -> programType;
+	d	-> startAddr	= ficList [subChId]. StartAddr;
+	d	-> shortForm	= ficList [subChId]. shortForm;
+	d	-> protLevel	= ficList [subChId]. protLevel;
+	d	-> length	= ficList [subChId]. Length;
+	d	-> bitRate	= ficList [subChId]. BitRate;
+	d	-> defined	= true;
+	fibLocker. unlock ();
+}
+
+void	fib_processor::dataforDataService (int16_t comp, packetdata *d) {
+serviceId *service;
+int16_t		subChId;
+
+	d -> defined = false;	// I do not trust myself
+	if (!ServiceComps [comp]. inUse)
+	   return;
+
+	if (ServiceComps [comp]. TMid != 03)
+	   return;
+
+	fibLocker. lock ();
+	service	= ServiceComps [comp]. service;
+	subChId	= ServiceComps [comp]. subchannelId;
+	d	-> DSCTy	= ServiceComps [comp]. DSCTy;
+	d	-> DGflag	= ServiceComps [comp]. DGflag;
+	d	-> packetAddress = ServiceComps [comp]. packetAddress;
+	d	-> appType	= ServiceComps [comp]. appType;
+	d	-> compnr	= ServiceComps [comp]. componentNr;
+	d	-> subchId	= subChId;
+	d	-> serviceId	= service -> serviceId;
+	d	-> serviceName	= service -> serviceLabel. label;
+	d	-> startAddr	= ficList [subChId]. StartAddr;
+	d	-> shortForm	= ficList [subChId]. shortForm;
+	d	-> protLevel	= ficList [subChId]. protLevel;
+	d	-> length	= ficList [subChId]. Length;
+	d	-> bitRate	= ficList [subChId]. BitRate;
+	d	-> FEC_scheme	= ficList [subChId]. FEC_scheme;
+	d	-> defined	= true;
+	fibLocker. unlock ();
+}
+//
+//////////////////////////////////////////////////////////////////////////
 bool    fib_processor::syncReached (void) {
         return isSynced;
 }
@@ -1374,4 +1401,5 @@ QString		fib_processor::get_ensembleName (void) {
 int32_t		fib_processor::get_CIFcount (void) {
 	return CIFcount;
 }
+
 

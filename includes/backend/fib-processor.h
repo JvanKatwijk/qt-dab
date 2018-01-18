@@ -69,6 +69,7 @@
 	   uint8_t	DGflag;		// used for TDC
            int16_t      packetAddress;  // used in packet
 	   int16_t	appType;	// used in packet
+	   bool		is_madePublic;	// used to make service visible
         };
 
         typedef struct servicecomponents serviceComponent;
@@ -165,7 +166,7 @@ private:
 	int16_t		HandleFIG0Extension22	(uint8_t *, int16_t);
 	int32_t		dateTime	[8];
 	channelMap	ficList [64];
-	serviceComponent	components [64];
+	serviceComponent	ServiceComps [64];
 	serviceId	listofServices [64];
 	tii_table	coordinates;
 	bool		dateFlag;

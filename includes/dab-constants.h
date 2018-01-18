@@ -138,6 +138,7 @@ typedef struct {
 	int16_t	FEC_scheme;
 	int16_t	DGflag;
 	int16_t	appType;
+	int16_t	compnr;
 	int16_t	packetAddress;
 } packetdata;
 
@@ -154,6 +155,7 @@ typedef	struct {
 	int16_t	ASCTy;
 	int16_t	language;
 	int16_t	programType;
+	int16_t	compnr;
 } audiodata;
 
 //	just some locals

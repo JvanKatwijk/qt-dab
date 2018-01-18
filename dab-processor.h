@@ -84,7 +84,7 @@ public:
         void		dataforAudioService     (int16_t,   audiodata *);
         void		dataforDataService      (QString &, packetdata *);
         void		dataforDataService      (int16_t,   packetdata *);
-	void		set_audioChannel	(audiodata *);
+	void		set_audioChannel	(audiodata *, packetdata *);
 	void		set_dataChannel		(packetdata *);
         uint8_t		get_ecc                 (void);
         int32_t		get_ensembleId          (void);

@@ -1217,7 +1217,6 @@ void	RadioInterface::selectService (QString s) {
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
-	techData. transmitter_coordinates -> setText (" ");
 
 	switch (my_dabProcessor -> kindofService (s)) {
 	   case AUDIO_SERVICE:
@@ -1266,7 +1265,7 @@ void	RadioInterface::selectService (QString s) {
 	         if (show_data)
 	            dataDisplay -> show ();
 
-	        my_dabProcessor	-> set_audioChannel (&d);
+	        my_dabProcessor	-> set_audioChannel (&d, NULL);
 	        soundOut	-> restart ();
 	        thereisSound	= true;
 	        showLabel (QString (" "));
@@ -1514,7 +1513,7 @@ bool	firstData;
 	                  currentChannel. toUtf8 (). data (),
 	                  frequency / 1000);
 	                
-	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;sub channel;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
+	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 	for (i = 0; i < 64; i ++) {
 	   audiodata d;
 	   my_dabProcessor -> dataforAudioService (i, &d);
@@ -1568,7 +1567,7 @@ bool	firstData;
 	      continue;
 
 	   if (firstData) {
-	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;sub channel;start address;length (CU); bit rate; FEC; prot level; appType ; ; \n\n");
+	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;subchannelId;start address;length (CU); bit rate; FEC; prot level; appType ; subChannel ; \n\n");
 	      firstData = false;
 	   }
 	   
@@ -1577,16 +1576,16 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
-          protL. append (QString::number ((h & 03) + 1));
+	      protL. append (QString::number ((h & 03) + 1));
 	      if ((h & (1 << 2)) == 0) {
-             protL. append ("-A");
+	         protL. append ("-A");
 	         codeRate = eep_Arates [(h & 03) + 1];
 	      }
 	      else {
-             protL. append ("-B");
+	         protL. append ("-B");
 	         codeRate = eep_Brates [(h & 03) + 1];
 	      }
-          h = (h & 03) + 1;
+	      h = (h & 03) + 1;
 	   }
 	   else  {
 	      h = h & 03;
@@ -1595,7 +1594,7 @@ bool	firstData;
 	      codeRate = uep_rates [h + 1];
 	   }
 	   countryId = (d. serviceId >> (5 * 4)) & 0xF;
-	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;;;\n",
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
 	                     d. serviceName. toUtf8 (). data (),
 	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
 	                     d. serviceId,
@@ -1605,7 +1604,8 @@ bool	firstData;
 	                     d. bitRate,
 	                     d. FEC_scheme,
 	                     protL. toUtf8 (). data (),
-	                     d. appType);
+	                     d. appType,
+	                     d. compnr == 0 ? "no": "yes");
 	}
 	fclose (file_P);
 }
