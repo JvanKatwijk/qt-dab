@@ -1567,7 +1567,7 @@ bool	firstData;
 	      continue;
 
 	   if (firstData) {
-	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;subchannelId;start address;length (CU); bit rate; FEC; prot level; appType ; subChannel ; \n\n");
+	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;subchannelId;start address;length (CU); bit rate; FEC; prot level; appType ; subService ; \n\n");
 	      firstData = false;
 	   }
 	   
