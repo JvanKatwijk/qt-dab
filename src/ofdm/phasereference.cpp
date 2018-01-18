@@ -113,6 +113,7 @@ float	lbuf [T_u];
   */
 	for (i = 0; i < T_u; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   sum += lbuf [i];
 	   if (lbuf [i] > Max) {
 	      maxIndex = i;
 	      Max = lbuf [i];
