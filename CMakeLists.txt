@@ -74,6 +74,10 @@ if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
 endif ()
 
+if (DEFINED IMPULSE_RESPONSE)
+   set (IMPULSE_RESPONSE true)
+endif ()
+
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, set
 if (DEFINED TCP_STREAMER)
@@ -91,6 +95,7 @@ endif ()
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
 #add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
+add_definitions (-DTII_GUESSING)
 #
 ########################################################################
 
@@ -579,6 +584,34 @@ add_definitions (-DPRESET_NAME)
 	   add_definitions (-DDATA_STREAMER)
 	endif (DATA_STREAMER)
 
+	if (IMPULSE_RESPONSE)
+	   include_directories (
+	      ./optional-ir
+	   )
+
+	   set (${objectName}_HDRS 
+	      ${${objectName}_HDRS}
+	           ./optional-ir/impulse-viewer.h
+	   )
+
+	   set (${objectName}_MOCS 
+	      ${${objectName}_MOCS}
+	           ./optional-ir/impulse-viewer.h
+	   )
+
+	   set (${objectName}_SRCS
+	      ${${objectName}_SRCS}
+	           ./optional-ir/impulse-viewer.cpp
+	   )
+
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./optional-ir/impulse-widget.ui
+	   )
+
+	   add_definitions (-DIMPULSE_RESPONSE)
+	endif (IMPULSE_RESPONSE)
+	
 	if (USE_PORTAUDIO)
            find_package(Portaudio)
            if (NOT PORTAUDIO_FOUND)
