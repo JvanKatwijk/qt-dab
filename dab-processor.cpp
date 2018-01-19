@@ -459,16 +459,18 @@ uint8_t dabProcessor::kindofService           (QString &s) {
 	return my_ficHandler. kindofService (s);
 }
 
-void	dabProcessor::dataforAudioService     (QString &s, audiodata *d) {
-	my_ficHandler. dataforAudioService (s, d);
+void	dabProcessor::dataforAudioService     (QString &s,
+	                                          audiodata *d, int16_t c) {
+	my_ficHandler. dataforAudioService (s, d, c);
 }
 
-void	dabProcessor::dataforAudioService     (int16_t d,   audiodata *dd) {
+void	dabProcessor::dataforAudioService     (int16_t d,  audiodata *dd) {
 	my_ficHandler. dataforAudioService (d, dd);
 }
 
-void	dabProcessor::dataforDataService	(QString &s, packetdata *d) {
-	my_ficHandler. dataforDataService (s, d);
+void	dabProcessor::dataforDataService	(QString &s,
+	                                            packetdata *d, int16_t c) {
+	my_ficHandler. dataforDataService (s, d, c);
 }
 
 void	dabProcessor::dataforDataService	(int16_t d,   packetdata *dd) {

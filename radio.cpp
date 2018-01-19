@@ -1229,13 +1229,17 @@ void	RadioInterface::selectService (QString s) {
 	switch (my_dabProcessor -> kindofService (s)) {
 	   case AUDIO_SERVICE:
 	      { audiodata d;
-	        my_dabProcessor -> dataforAudioService (s, &d);
-	        if (d. bitRate == 0) {
+	        packetdata pd;
+	        my_dabProcessor -> dataforAudioService (s, &d, 0);
+	        if (!d. defined) {
                    QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("unknown bitrate for this program\n"));
  	           return;
  	        }
-
+//	        my_dabProcessor -> dataforDataService (s, &pd, 1);
+//	        if (pd. defined) {
+//	           fprintf (stderr, "you have a data subservice\n");
+//	        }
 	        techData. ensemble	-> setText (ensembleLabel);
 	        techData. programName	-> setText (s);
 	        techData. frequency	-> display ((uint32_t)(inputDevice -> getVFOFrequency ()) / 1000000.0);
@@ -1282,7 +1286,7 @@ void	RadioInterface::selectService (QString s) {
 
 	   case PACKET_SERVICE:
 	      {  packetdata d;
-	         my_dabProcessor -> dataforDataService (s, &d);
+	         my_dabProcessor -> dataforDataService (s, &d, 0);
 	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
 	                               d. DSCTy, d. bitRate);

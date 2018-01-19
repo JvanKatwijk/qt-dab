@@ -922,7 +922,7 @@ char		label [17];
 	      for (i = 0; i < 16; i ++) 
 	         label [i] = getBits_8 (d, offset + 8 * i);
 
-	      fprintf (stderr, "FIG1/3: RegionID = %2x\t%s\n", region_id, label);
+//	      fprintf (stderr, "FIG1/3: RegionID = %2x\t%s\n", region_id, label);
 	      break;
 
 	   case 4:
@@ -1191,14 +1191,20 @@ QString	searchString	= s;
 
 	   if (!listofServices [i]. serviceLabel. hasName)
 	      continue;
+
 	   if (listofServices [i]. serviceLabel. label != searchString)
 	      continue;
 
 	   selectedService = listofServices [i]. serviceId;
+
 	   for (j = 0; j < 64; j ++) {
 	      int16_t subchId;
 	      if (!ServiceComps [j]. inUse)
 	         continue;
+
+	      if (ServiceComps [j]. componentNr != 0)
+	         continue;		// subservice
+
 	      if (selectedService != ServiceComps [j]. service -> serviceId)
 	         continue;
 
@@ -1222,6 +1228,11 @@ QString	searchString	= s;
 }
 
 void	fib_processor::dataforDataService (QString &s, packetdata *d) {
+	dataforDataService (s, d, 0);
+}
+
+void	fib_processor::dataforDataService (QString &s,
+	                                   packetdata *d, int16_t compnr) {
 int16_t	j;
 int32_t	selectedService;
 QString searchString	= s;
@@ -1229,13 +1240,19 @@ QString searchString	= s;
 
 	fibLocker. lock ();
 	selectedService = findServiceIdwithName (searchString);
-	if (selectedService == -1)
+	if (selectedService == -1)  {
+	   fibLocker. unlock ();
 	   return;
+	}
 
 	for (j = 0; j < 64; j ++) {
 	   int16_t subchId;
 	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 03))
 	      continue;
+
+	   if (ServiceComps [j]. componentNr != compnr)
+	      return;
+
 	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 
@@ -1260,6 +1277,11 @@ QString searchString	= s;
 }
 
 void	fib_processor::dataforAudioService (QString &s, audiodata *d) {
+	dataforAudioService (s, d, 0);
+}
+
+void	fib_processor::dataforAudioService (QString &s,
+	                                    audiodata *d, int16_t compnr) {
 int16_t	j;
 int32_t	selectedService;
 QString	searchString	= s;
@@ -1268,13 +1290,19 @@ QString	searchString	= s;
 	fibLocker. lock ();
 
 	selectedService = findServiceIdwithName (searchString);
-	if (selectedService == -1)
+	if (selectedService == -1) {
+	   fibLocker. unlock ();
 	   return;
+	}
 
 	for (j = 0; j < 64; j ++) {
 	   int16_t subchId;
 	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 0))
 	      continue;
+
+	   if (ServiceComps [j]. componentNr != compnr)
+	      continue;
+
 	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 

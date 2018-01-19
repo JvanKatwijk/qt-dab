@@ -290,7 +290,7 @@ int	i;
 }
 
 //	We collected some  "spectra', and start correlating the 
-//	combined spectrum with the pattern.
+//	combined spectrum with the pattern defined by the mainId
 
 int16_t	TII_Detector::find_C (int16_t mainId) {
 int16_t	i;
@@ -345,7 +345,7 @@ int16_t	altCarrier	= -1;
 	   float sum_1 = 0;
 	   float sum_2 = 0;
 	   if (abs (real (theBuffer [index] *
-	                     conj (theBuffer [index + 1]))) < 3 * avg)
+	                     conj (theBuffer [index + 1]))) < 5 * avg)
 	      continue;
 
 //	We just compute the "best" candidates two ways
@@ -374,7 +374,7 @@ int16_t	altCarrier	= -1;
 	                                        startCarrier, altCarrier);
 	                                   
 //	   return;
-        if (startCarrier <  -carriers / 2)
+        if (startCarrier <  -carriers / 2)	// nothing found
            return;
 //	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
 //	                         startCarrier, altCarrier);

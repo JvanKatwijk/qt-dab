@@ -80,9 +80,11 @@ public:
 	void		set_tiiCoordinates	(void);
 	void		setSelectedService      (QString &);
         uint8_t		kindofService           (QString &);
-        void		dataforAudioService     (QString &, audiodata *);
+        void		dataforAudioService     (QString &,
+	                                             audiodata *, int16_t);
         void		dataforAudioService     (int16_t,   audiodata *);
-        void		dataforDataService      (QString &, packetdata *);
+        void		dataforDataService      (QString &,
+	                                             packetdata *, int16_t);
         void		dataforDataService      (int16_t,   packetdata *);
 	void		set_audioChannel	(audiodata *, packetdata *);
 	void		set_dataChannel		(packetdata *);
