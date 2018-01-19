@@ -165,9 +165,9 @@ private:
 	                                         int16_t, uint8_t);
 	int16_t		HandleFIG0Extension22	(uint8_t *, int16_t);
 	int32_t		dateTime	[8];
-	channelMap	ficList [64];
+	channelMap	subChannels	[64];
 	serviceComponent	ServiceComps [64];
-	serviceId	listofServices [64];
+	serviceId	listofServices	[64];
 	tii_table	coordinates;
 	bool		dateFlag;
 	bool		isSynced;

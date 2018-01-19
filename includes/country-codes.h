@@ -1,4 +1,8 @@
 
+#ifndef	__COUNTRY_CODES__
+#define	__COUNTRY_CODES__
+
+#include	<stdint.h>
 
 struct country_codes {
 	uint8_t ecc;
@@ -71,4 +75,4 @@ struct country_codes {
 {0x00, 0x0, " "}
 };
 
-
+#endif

@@ -189,8 +189,11 @@ QByteArray result;
 	if (p -> contentType == 7) {
 	   std::vector<uint8_t> epgData (result. begin (), result. end ());
 #ifdef  TRY_EPG
+	   QString realName = picturesPath;
+	   realName. append (p -> name);
+	   realName	= QDir::toNativeSeparators (realName);
 	   fprintf (stderr, "epgdata being handled\n");
-	   epgHandler. decode (epgData, p -> name);
+	   epgHandler. decode (epgData, realName);
 #endif
 	   return;
 	}
@@ -221,12 +224,12 @@ QByteArray result;
 	      p -> segments [i]. clear ();
 	   }
 	}
-	if (p -> name == QString ("")) {
-	   the_picture (result, p -> contentsubType, QString ("no name"));
-	   return;
-	}
+
 	QString realName = picturesPath;
-	realName. append (p -> name);
+	if (p -> name == QString ("")) 
+	   realName. append (QString ("no name"));
+	else
+	   realName. append (p -> name);
 	realName	= QDir::toNativeSeparators (realName);
 	checkDir (realName);
 	the_picture (result, p -> contentsubType, realName);

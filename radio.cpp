@@ -36,6 +36,7 @@
 #include	<vector>
 #include	"radio.h"
 #include	"band-handler.h"
+#include	"ensemble-printer.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #ifdef	TCP_STREAMER
@@ -169,6 +170,7 @@ QString h;
 	techData. cpuMonitor	-> hide ();
 #endif
 //
+//	Where do we leave the audio out?
 #ifdef	DATA_STREAMER
 	dataStreamer		= new tcpServer (dataPort);
 #endif
@@ -194,7 +196,9 @@ QString h;
 	if ((k == -1) || err)
 	   ((audioSink *)soundOut)	-> selectDefaultDevice ();
 #endif
-
+//
+//	Showing a spectrum over the WiFi when running the dab software
+//	on an RPI 2 is not a great success
 #ifdef	HAVE_SPECTRUM
         spectrumHandler = new spectrumhandler (this, dabSettings,
 	                                       spectrumBuffer,
@@ -202,12 +206,16 @@ QString h;
         spectrumHandler -> show ();
 #endif
 
+//
+//	Experimental stuff
 #ifdef	IMPULSE_RESPONSE
 	my_impulseViewer	= new impulseViewer (this,
 	                                             responseBuffer);
 #else
 	show_irButton	-> hide ();
 #endif
+//
+//	restore some settings from previous incarnations
 	QString t       =
                 dabSettings     -> value ("dabBand", "VHF Band III"). toString ();
         k       = bandSelector -> findText (t);
@@ -222,7 +230,8 @@ QString h;
         k       = modeSelector -> findText (t);
         if (k != -1)
            modeSelector -> setCurrentIndex (k);
-
+//
+//
 	QPalette p	= techData. ficError_display -> palette ();
 	p. setColor (QPalette::Highlight, Qt::green);
 	techData. ficError_display	-> setPalette (p);
@@ -1165,7 +1174,6 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	running. store (true);
 }
 
-
 void	RadioInterface::set_bandSelect (QString s) {
 bool	localRunning = running. load ();
 
@@ -1463,34 +1471,10 @@ void	RadioInterface::show_tiiLabel (int mainId) {
 	}
 }
 
-
-#include	"country-codes.h"
-
-QString	code_to_string (uint8_t ecc, uint8_t countryId) {
-int16_t	i = 0;
-
-	while (countryTable [i]. ecc != 0) {
-	   if ((countryTable [i]. ecc == ecc) &&
-	       (countryTable [i]. countryId == countryId))
-	      return QString (countryTable [i]. countryName);
-	   i ++;
-	}
-	return QString ("          ");
-}
-
-const char *uep_rates  [] = {NULL, "7/20", "2/5", "1/2", "3/5"};
-const char *eep_Arates [] = {NULL, "1/4",  "3/8", "1/2", "3/4"};
-const char *eep_Brates [] = {NULL, "4/9",  "4/7", "4/6", "4/5"};
-
 void	RadioInterface::showEnsembleData (void) {
-uint8_t	countryId;
-int16_t	i;
-uint8_t ecc_byte	= my_dabProcessor -> get_ecc ();
-QString	ensembleLabel	= my_dabProcessor -> get_ensembleName ();
-int32_t	ensembleId	= my_dabProcessor -> get_ensembleId ();
 QString currentChannel	= channelSelector -> currentText ();
 int32_t	frequency	= inputDevice -> getVFOFrequency ();
-bool	firstData;
+ensemblePrinter	my_Printer;
 
 	if (ensembleLabel == QString (""))
 	   return;
@@ -1506,107 +1490,9 @@ bool	firstData;
 	                              fileName. toUtf8 (). data ());
 	   return;
 	}
+	my_Printer. showEnsembleData (currentChannel, frequency,
+	                              my_dabProcessor, file_P);
 
-	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
-	                  ensembleLabel. toUtf8 (). data (),
-	                  ensembleId,
-	                  currentChannel. toUtf8 (). data (),
-	                  frequency / 1000);
-	                
-	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
-	for (i = 0; i < 64; i ++) {
-	   audiodata d;
-	   my_dabProcessor -> dataforAudioService (i, &d);
-	   if (!d. defined)
-	      continue;
-	   uint16_t h = d. protLevel;
-	   QString protL;
-	   QString codeRate;
-	   if (!d. shortForm) {
-	      protL = "EEP ";
-
-          protL. append (QString::number ((h & 03) + 1));
-	      if ((h & (1 << 2)) == 0) {
-             protL. append ("-A");
-	         codeRate = eep_Arates [(h & 03) + 1];
-	      }
-	      else {
-             protL. append ("-B");
-	         codeRate = eep_Brates [(h & 03) + 1];
-	      }
-          h = (h & 03) + 1;
-	   }
-	   else  {
-	      h = h & 03;
-	      protL = "UEP ";
-	      protL. append (QString::number (h));
-	      codeRate = uep_rates [h + 1];
-	   }
-
-	   countryId = (d. serviceId >> 12) & 0xF;
-	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
-	                     d. serviceName. toUtf8(). data (),
-	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
-	                     d. serviceId,
-	                     d. subchId,
-	                     d. startAddr,
-	                     d. length,
-	                     d. bitRate,
-	                     d. ASCTy == 077 ? "DAB+" : "DAB",
-	                     protL. toUtf8 (). data (),
-	                     codeRate. toUtf8 (). data (),
-	                     the_textMapper. get_programm_language_string (d. language),
-	                     the_textMapper. get_programm_type_string (d. programType) );
-	}
-
-	firstData	= true;
-	for (i = 0; i < 64; i ++) {
-	   packetdata d;
-	   my_dabProcessor -> dataforDataService (i, &d);
-	   if (!d. defined)
-	      continue;
-
-	   if (firstData) {
-	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;subchannelId;start address;length (CU); bit rate; FEC; prot level; appType ; subService ; \n\n");
-	      firstData = false;
-	   }
-	   
-	   uint16_t h = d. protLevel;
-	   QString protL;
-	   QString codeRate;
-	   if (!d. shortForm) {
-	      protL = "EEP ";
-	      protL. append (QString::number ((h & 03) + 1));
-	      if ((h & (1 << 2)) == 0) {
-	         protL. append ("-A");
-	         codeRate = eep_Arates [(h & 03) + 1];
-	      }
-	      else {
-	         protL. append ("-B");
-	         codeRate = eep_Brates [(h & 03) + 1];
-	      }
-	      h = (h & 03) + 1;
-	   }
-	   else  {
-	      h = h & 03;
-	      protL = "UEP ";
-	      protL. append (QString::number (h));
-	      codeRate = uep_rates [h + 1];
-	   }
-	   countryId = (d. serviceId >> (5 * 4)) & 0xF;
-	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
-	                     d. serviceName. toUtf8 (). data (),
-	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
-	                     d. serviceId,
-	                     d. subchId,
-	                     d. startAddr,
-	                     d. length,
-	                     d. bitRate,
-	                     d. FEC_scheme,
-	                     protL. toUtf8 (). data (),
-	                     d. appType,
-	                     d. compnr == 0 ? "no": "yes");
-	}
 	fclose (file_P);
 }
 

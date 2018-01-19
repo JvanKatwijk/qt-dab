@@ -62,7 +62,6 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
-	   ./text-mapper.h \
 	   ./dab-processor.h \
 	   ./includes/dab-constants.h \
 	   ./includes/country-codes.h \
@@ -118,6 +117,8 @@ HEADERS += ./radio.h \
 	   ./includes/various/Xtan2.h \
 	   ./includes/various/dab-params.h \
 	   ./includes/various/band-handler.h \
+	   ./includes/various/text-mapper.h \
+	   ./includes/various/ensemble-printer.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
            ./devices/wavfiles/wavfiles.h
@@ -127,7 +128,6 @@ FORMS	+= ./forms/technical_data.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
-	   ./text-mapper.cpp \
 	   ./dab-processor.cpp \
 	   ./src/ofdm/sample-reader.cpp \
 	   ./src/ofdm/ofdm-decoder.cpp \
@@ -181,6 +181,8 @@ SOURCES += ./main.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
 	   ./src/various/band-handler.cpp \
+	   ./src/various/text-mapper.cpp \
+	   ./src/various/ensemble-printer.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
            ./devices/wavfiles/wavfiles.cpp

@@ -5,7 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,25 +19,27 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
-#
-#ifndef	TEXT_MAPPER
-#define	TEXT_MAPPER
-
+#ifndef	__ENSEMBLE_PRINTER__
+#define	__ENSEMBLE_PRINTER__
 //
-//	simple convenience class
-
+//	a simple convenience class to print - whenever the button is
+//	pressed - the content of the ensemble with relevant data.
+//	The output can be viewed (a.o) in LibreOfficeCalc
+#include	<QString>
 #include	"dab-constants.h"
+#include	<stdint.h>
+#include	<stdio.h>
 
+class	dabProcessor;
 
-class	textMapper {
+class	ensemblePrinter {
 public:
-	textMapper	(void);
-	~textMapper	(void);
-const
-char	*get_programm_type_string (int16_t type);
-const
-char	*get_programm_language_string (int16_t language);
+		ensemblePrinter		(void);
+		~ensemblePrinter	(void);
+	void	showEnsembleData	(QString, int32_t,
+	                                 dabProcessor *, FILE *);
+private:
+	QString	code_to_string		(uint8_t, uint8_t);
 };
 
-#endif
+#endif;

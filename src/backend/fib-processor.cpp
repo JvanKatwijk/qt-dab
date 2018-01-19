@@ -312,49 +312,49 @@ int16_t	tabelIndex;
 int16_t	option, protLevel, subChanSize;
 
 	(void)pd;		// not used right now, maybe later
-	ficList [SubChId]. StartAddr	= StartAdr;
-	ficList [SubChId]. inUse	= true;
+	subChannels [SubChId]. StartAddr	= StartAdr;
+	subChannels [SubChId]. inUse	= true;
 
 	if (getBits_1 (d, bitOffset + 16) == 0) {	// short form
 	   tabelIndex = getBits_6 (d, bitOffset + 18);
-	   ficList [SubChId]. Length  	= ProtLevel [tabelIndex][0];
-	   ficList [SubChId]. shortForm	= true;		// short form
-	   ficList [SubChId]. protLevel	= ProtLevel [tabelIndex][1];
-	   ficList [SubChId]. BitRate	= ProtLevel [tabelIndex][2];
+	   subChannels [SubChId]. Length  	= ProtLevel [tabelIndex][0];
+	   subChannels [SubChId]. shortForm	= true;		// short form
+	   subChannels [SubChId]. protLevel	= ProtLevel [tabelIndex][1];
+	   subChannels [SubChId]. BitRate	= ProtLevel [tabelIndex][2];
 	   bitOffset += 24;
 	}
 	else { 	// EEP long form
-	   ficList [SubChId]. shortForm	= false;
+	   subChannels [SubChId]. shortForm	= false;
 	   option = getBits_3 (d, bitOffset + 17);
 	   if (option == 0) { 		// A Level protection
 	      protLevel = getBits (d, bitOffset + 20, 2);
 //
-	      ficList [SubChId]. protLevel = protLevel;
+	      subChannels [SubChId]. protLevel = protLevel;
 	      subChanSize = getBits (d, bitOffset + 22, 10);
-	      ficList [SubChId]. Length	= subChanSize;
+	      subChannels [SubChId]. Length	= subChanSize;
 	      if (protLevel == 0)
-	         ficList [SubChId]. BitRate	= subChanSize / 12 * 8;
+	         subChannels [SubChId]. BitRate	= subChanSize / 12 * 8;
 	      if (protLevel == 1)
-	         ficList [SubChId]. BitRate	= subChanSize / 8 * 8;
+	         subChannels [SubChId]. BitRate	= subChanSize / 8 * 8;
 	      if (protLevel == 2)
-	         ficList [SubChId]. BitRate	= subChanSize / 6 * 8;
+	         subChannels [SubChId]. BitRate	= subChanSize / 6 * 8;
 	      if (protLevel == 3)
-	         ficList [SubChId]. BitRate	= subChanSize / 4 * 8;
+	         subChannels [SubChId]. BitRate	= subChanSize / 4 * 8;
 	   }
 	   else			// option should be 001
 	   if (option == 001) {		// B Level protection
 	      protLevel = getBits_2 (d, bitOffset + 20);
-	      ficList [SubChId]. protLevel = protLevel + (1 << 2);
+	      subChannels [SubChId]. protLevel = protLevel + (1 << 2);
 	      subChanSize = getBits (d, bitOffset + 22, 10);
-	      ficList [SubChId]. Length = subChanSize;
+	      subChannels [SubChId]. Length = subChanSize;
 	      if (protLevel == 0)
-	         ficList [SubChId]. BitRate	= subChanSize / 27 * 32;
+	         subChannels [SubChId]. BitRate	= subChanSize / 27 * 32;
 	      if (protLevel == 1)
-	         ficList [SubChId]. BitRate	= subChanSize / 21 * 32;
+	         subChannels [SubChId]. BitRate	= subChanSize / 21 * 32;
 	      if (protLevel == 2)
-	         ficList [SubChId]. BitRate	= subChanSize / 18 * 32;
+	         subChannels [SubChId]. BitRate	= subChanSize / 18 * 32;
 	      if (protLevel == 3)
-	         ficList [SubChId]. BitRate	= subChanSize / 15 * 32;
+	         subChannels [SubChId]. BitRate	= subChanSize / 15 * 32;
 	   }
 
 	   bitOffset += 32;
@@ -500,7 +500,7 @@ int16_t	subChId, serviceComp, language;
 	   if (getBits_1 (d, loffset + 1) == 0) {
 	      subChId	= getBits_6 (d, loffset + 2);
 	      language	= getBits_8 (d, loffset + 8);
-	      ficList [subChId]. language = language;
+	      subChannels [subChId]. language = language;
 	   }
 	   loffset += 16;
 	}
@@ -688,8 +688,8 @@ int16_t	i;
 	   used = used + 1;
 
 	   for (i = 0; i < 64; i ++) {
-              if (ficList [i]. SubChId == SubChId) {
-                 ficList [i]. FEC_scheme = FEC_scheme;
+              if (subChannels [i]. SubChId == SubChId) {
+                 subChannels [i]. FEC_scheme = FEC_scheme;
               }
            }
 
@@ -922,7 +922,7 @@ char		label [17];
 	      for (i = 0; i < 16; i ++) 
 	         label [i] = getBits_8 (d, offset + 8 * i);
 
-//	      fprintf (stderr, "FIG1/3: RegionID = %2x\t%s\n", region_id, label);
+	      fprintf (stderr, "FIG1/3: RegionID = %2x\t%s\n", region_id, label);
 	      break;
 
 	   case 4:
@@ -1029,7 +1029,7 @@ int16_t i;
 }
 
 serviceComponent *fib_processor::find_serviceComponent (int32_t SId,
-	                                                int16_t SCIdS) {
+	                                                int16_t SCId) {
 int16_t i;
 
 	for (i = 0; i < 64; i ++) {
@@ -1037,7 +1037,8 @@ int16_t i;
 	      continue;
 
 	   if ( (findServiceId (SId) == ServiceComps [i]. service)) {
-	      return &ServiceComps [i];
+	      if (ServiceComps [i]. SCId == SCId)
+	         return &ServiceComps [i];
 	   }
 	}
 
@@ -1138,7 +1139,7 @@ int16_t i;
 	setupforNewFrame ();
 	coordinates. cleanUp ();
 	memset (ServiceComps, 0, sizeof (ServiceComps));
-	memset (ficList, 0, sizeof (ficList));
+	memset (subChannels, 0, sizeof (subChannels));
 	for (i = 0; i < 64; i ++) {
 	   listofServices [i]. inUse = false;
 	   listofServices [i]. serviceId = -1;
@@ -1240,12 +1241,12 @@ QString searchString	= s;
 
 	   subchId	= ServiceComps [j]. subchannelId;
 	   d	-> subchId	= subchId;
-	   d	-> startAddr	= ficList [subchId]. StartAddr;
-	   d	-> shortForm	= ficList [subchId]. shortForm;
-	   d	-> protLevel	= ficList [subchId]. protLevel;
-	   d	-> length	= ficList [subchId]. Length;
-	   d	-> bitRate	= ficList [subchId]. BitRate;
-	   d	-> FEC_scheme	= ficList [subchId]. FEC_scheme;
+	   d	-> startAddr	= subChannels [subchId]. StartAddr;
+	   d	-> shortForm	= subChannels [subchId]. shortForm;
+	   d	-> protLevel	= subChannels [subchId]. protLevel;
+	   d	-> length	= subChannels [subchId]. Length;
+	   d	-> bitRate	= subChannels [subchId]. BitRate;
+	   d	-> FEC_scheme	= subChannels [subchId]. FEC_scheme;
 
 	   d	-> DSCTy	= ServiceComps [j]. DSCTy;
 	   d	-> DGflag	= ServiceComps [j]. DGflag;
@@ -1281,11 +1282,11 @@ QString	searchString	= s;
 	   d	-> serviceId	= selectedService;
 	   d	-> serviceName	= s;
 	   d	-> subchId	= subchId;
-	   d	-> startAddr	= ficList [subchId]. StartAddr;
-	   d	-> shortForm	= ficList [subchId]. shortForm;
-	   d	-> protLevel	= ficList [subchId]. protLevel;
-	   d	-> length	= ficList [subchId]. Length;
-	   d	-> bitRate	= ficList [subchId]. BitRate;
+	   d	-> startAddr	= subChannels [subchId]. StartAddr;
+	   d	-> shortForm	= subChannels [subchId]. shortForm;
+	   d	-> protLevel	= subChannels [subchId]. protLevel;
+	   d	-> length	= subChannels [subchId]. Length;
+	   d	-> bitRate	= subChannels [subchId]. BitRate;
 	   d	-> ASCTy	= ServiceComps [j]. ASCTy;
 	   d	-> language	= ServiceComps [j]. service -> language;
 	   d	-> programType	= ServiceComps [j]. service -> programType;
@@ -1315,15 +1316,16 @@ int16_t		subChId;
 	subChId	= ServiceComps [comp]. subchannelId;
 	d	-> subchId	= subChId;
 	d	-> ASCTy	= ServiceComps [comp]. ASCTy;
+	d	-> compnr	= ServiceComps [comp]. componentNr;
 	d	-> serviceId	= service -> serviceId;
 	d	-> serviceName	= service -> serviceLabel. label;
 	d	-> language	= service -> language;
 	d	-> programType	= service -> programType;
-	d	-> startAddr	= ficList [subChId]. StartAddr;
-	d	-> shortForm	= ficList [subChId]. shortForm;
-	d	-> protLevel	= ficList [subChId]. protLevel;
-	d	-> length	= ficList [subChId]. Length;
-	d	-> bitRate	= ficList [subChId]. BitRate;
+	d	-> startAddr	= subChannels [subChId]. StartAddr;
+	d	-> shortForm	= subChannels [subChId]. shortForm;
+	d	-> protLevel	= subChannels [subChId]. protLevel;
+	d	-> length	= subChannels [subChId]. Length;
+	d	-> bitRate	= subChannels [subChId]. BitRate;
 	d	-> defined	= true;
 	fibLocker. unlock ();
 }
@@ -1350,12 +1352,12 @@ int16_t		subChId;
 	d	-> subchId	= subChId;
 	d	-> serviceId	= service -> serviceId;
 	d	-> serviceName	= service -> serviceLabel. label;
-	d	-> startAddr	= ficList [subChId]. StartAddr;
-	d	-> shortForm	= ficList [subChId]. shortForm;
-	d	-> protLevel	= ficList [subChId]. protLevel;
-	d	-> length	= ficList [subChId]. Length;
-	d	-> bitRate	= ficList [subChId]. BitRate;
-	d	-> FEC_scheme	= ficList [subChId]. FEC_scheme;
+	d	-> startAddr	= subChannels [subChId]. StartAddr;
+	d	-> shortForm	= subChannels [subChId]. shortForm;
+	d	-> protLevel	= subChannels [subChId]. protLevel;
+	d	-> length	= subChannels [subChId]. Length;
+	d	-> bitRate	= subChannels [subChId]. BitRate;
+	d	-> FEC_scheme	= subChannels [subChId]. FEC_scheme;
 	d	-> defined	= true;
 	fibLocker. unlock ();
 }

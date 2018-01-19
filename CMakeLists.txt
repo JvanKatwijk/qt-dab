@@ -172,7 +172,6 @@ add_definitions (-DTII_GUESSING)
 	)
 
 	set (${objectName}_HDRS
-	     ./text-mapper.h
 	     ./dab-processor.h
              ./includes/country-codes.h
              ./includes/ofdm/sample-reader.h
@@ -180,6 +179,8 @@ add_definitions (-DTII_GUESSING)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
+	     ./includes/ofdm/tii_table.h
+	     ./includes/ofdm/tii_detector.h
 	     ./includes/backend/viterbi_768/viterbi-768.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
@@ -223,20 +224,21 @@ add_definitions (-DTII_GUESSING)
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
-	     ./includes/ofdm/tii_table.h
-	     ./includes/ofdm/tii_detector.h
+	     ./includes/various/text-mapper.h
+	     ./includes/various/ensemble-printer.h
 	)
 
 	set (${objectName}_SRCS
 	     ${${objectName}_SRCS}
 	     ./main.cpp
-	     ./text-mapper.cpp
 	     ./dab-processor.cpp
              ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
+	     ./src/ofdm/tii_table.cpp
+	     ./src/ofdm/tii_detector.cpp
 	     ./src/backend/viterbi_768/viterbi-768.cpp
 	     ./src/backend/viterbi_768/spiral-no-sse.c
 	     ./src/backend/fic-handler.cpp
@@ -283,8 +285,8 @@ add_definitions (-DTII_GUESSING)
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
-	     ./src/ofdm/tii_table.cpp
-	     ./src/ofdm/tii_detector.cpp
+	     ./src/various/text-mapper.cpp
+	     ./src/various/ensemble-printer.cpp
 	)
 
 	set (${objectName}_MOCS

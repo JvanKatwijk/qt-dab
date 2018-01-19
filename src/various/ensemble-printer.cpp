@@ -1,0 +1,173 @@
+#
+/*
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+#include	<stdio.h>
+#include	"ensemble-printer.h"
+#include	"country-codes.h"
+#include	"text-mapper.h"
+#include	"dab-processor.h"
+
+static
+const char *uep_rates  [] = {NULL, "7/20", "2/5", "1/2", "3/5"};
+static
+const char *eep_Arates [] = {NULL, "1/4",  "3/8", "1/2", "3/4"};
+static
+const char *eep_Brates [] = {NULL, "4/9",  "4/7", "4/6", "4/5"};
+
+
+		ensemblePrinter:: ensemblePrinter	(void) {
+}
+
+		ensemblePrinter::~ensemblePrinter	(void) {
+}
+
+QString		ensemblePrinter::code_to_string (uint8_t ecc,
+	                                           uint8_t countryId) {
+int16_t	i = 0;
+
+	while (countryTable [i]. ecc != 0) {
+	   if ((countryTable [i]. ecc == ecc) &&
+	       (countryTable [i]. countryId == countryId))
+	      return QString (countryTable [i]. countryName);
+	   i ++;
+	}
+	return QString ("          ");
+}
+
+void	ensemblePrinter::showEnsembleData (QString channel,
+	                                   int32_t freq,
+	                                   dabProcessor *my_dabProcessor,
+	                                   FILE *file_P) {
+uint8_t	countryId;
+int16_t	i;
+textMapper	theMapper;
+uint8_t ecc_byte	= my_dabProcessor -> get_ecc ();
+QString	ensembleLabel	= my_dabProcessor -> get_ensembleName ();
+int32_t	ensembleId	= my_dabProcessor -> get_ensembleId ();
+QString currentChannel	= channel;
+int32_t	frequency	= freq;
+bool	firstData;
+
+	if (ensembleLabel == QString (""))
+	   return;
+
+	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
+	                  ensembleLabel. toUtf8 (). data (),
+	                  ensembleId,
+	                  currentChannel. toUtf8 (). data (),
+	                  frequency / 1000);
+	                
+	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
+	for (i = 0; i < 64; i ++) {
+	   audiodata d;
+	   my_dabProcessor -> dataforAudioService (i, &d);
+	   if (!d. defined)
+	      continue;
+	   uint16_t h = d. protLevel;
+	   QString protL;
+	   QString codeRate;
+	   if (!d. shortForm) {
+	      protL = "EEP ";
+
+          protL. append (QString::number ((h & 03) + 1));
+	      if ((h & (1 << 2)) == 0) {
+             protL. append ("-A");
+	         codeRate = eep_Arates [(h & 03) + 1];
+	      }
+	      else {
+             protL. append ("-B");
+	         codeRate = eep_Brates [(h & 03) + 1];
+	      }
+          h = (h & 03) + 1;
+	   }
+	   else  {
+	      h = h & 03;
+	      protL = "UEP ";
+	      protL. append (QString::number (h));
+	      codeRate = uep_rates [h + 1];
+	   }
+
+	   countryId = (d. serviceId >> 12) & 0xF;
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
+	                     d. serviceName. toUtf8(). data (),
+	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
+	                     d. serviceId,
+	                     d. subchId,
+	                     d. startAddr,
+	                     d. length,
+	                     d. bitRate,
+	                     d. ASCTy == 077 ? "DAB+" : "DAB",
+	                     protL. toUtf8 (). data (),
+	                     codeRate. toUtf8 (). data (),
+	                     theMapper. get_programm_language_string (d. language),
+	                     theMapper. get_programm_type_string (d. programType) );
+	}
+
+	firstData	= true;
+	for (i = 0; i < 64; i ++) {
+	   packetdata d;
+	   my_dabProcessor -> dataforDataService (i, &d);
+	   if (!d. defined)
+	      continue;
+
+	   if (firstData) {
+	      fprintf (file_P, "\n\n\nData Services\nprogram name;;serviceId;subchannelId;start address;length (CU); bit rate; FEC; prot level; appType ; subService ; \n\n");
+	      firstData = false;
+	   }
+	   
+	   uint16_t h = d. protLevel;
+	   QString protL;
+	   QString codeRate;
+	   if (!d. shortForm) {
+	      protL = "EEP ";
+	      protL. append (QString::number ((h & 03) + 1));
+	      if ((h & (1 << 2)) == 0) {
+	         protL. append ("-A");
+	         codeRate = eep_Arates [(h & 03) + 1];
+	      }
+	      else {
+	         protL. append ("-B");
+	         codeRate = eep_Brates [(h & 03) + 1];
+	      }
+	      h = (h & 03) + 1;
+	   }
+	   else  {
+	      h = h & 03;
+	      protL = "UEP ";
+	      protL. append (QString::number (h));
+	      codeRate = uep_rates [h + 1];
+	   }
+	   countryId = (d. serviceId >> (5 * 4)) & 0xF;
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
+	                     d. serviceName. toUtf8 (). data (),
+	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
+	                     d. serviceId,
+	                     d. subchId,
+	                     d. startAddr,
+	                     d. length,
+	                     d. bitRate,
+	                     d. FEC_scheme,
+	                     protL. toUtf8 (). data (),
+	                     d. appType,
+	                     d. compnr == 0 ? "no": "yes");
+	}
+}
+
