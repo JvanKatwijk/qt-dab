@@ -78,61 +78,7 @@ float	Phi_k;
            refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
         }
 
-//
-//	create the patterns
-	for (p = 0; p < 70; p ++) {
-	   int16_t digits	= 0;
-	   c = 0;		// patterns are equal for all c values
-	   {
-	      bool first = true;
-	      int lastOne = 0;
-	      for (k = -carriers / 2; k < -carriers / 4; k ++) {
-	         if (A (c, p, k) > 0) {
-	            if (first) {
-	               first = false;
-	               theTable [p]. carrier = k;
-	               theTable [p]. pattern = 0;
-	            }
-	            else {
-	               theTable [p]. pattern <<= 4;
-	               theTable [p]. pattern |= (k - lastOne) / 48;
-	               digits ++;
-	            }
-	            lastOne = k;
-	         }
-	      }
-
-	      for (k = -carriers / 4; k < 0; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-
-	      for (k = 1; k <= carriers / 4; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-
-	      for (k = carriers / 4 + 1; k <= carriers / 2; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-	   }
-//	   fprintf (stderr, "p = %d\tc = %d\tk=%d\tpatter=%llX (digits = %d)\n",
-//	                     p, c, theTable [p]. carrier,
-//	                        theTable [p]. pattern, digits);
-	}
+	createPattern (dabMode);
 }
 
 		TII_Detector::~TII_Detector (void) {
@@ -244,7 +190,31 @@ uint8_t delta (int16_t a, int16_t b) {
 //	creating the patterns above can be done more efficient, however
 //	this approach feels more readable, while initialization, i.e.
 //	executing the constructor, is done once
-int16_t	TII_Detector::A (uint8_t c, uint8_t p, int16_t k) {
+int16_t	TII_Detector::A (uint8_t dabMode, uint8_t c, uint8_t p, int16_t k) {
+	if (dabMode == 2)
+	   return A_mode_2 (c, p, k);
+	if (dabMode == 4)
+	   return A_mode_4 (c, p, k);
+	return A_mode_1 (c, p, k);
+}
+
+int16_t	TII_Detector::A_mode_2 (uint8_t c, uint8_t p, int16_t k) {
+int16_t	res	= 0;
+int16_t	b;
+
+	if ((-192 <= k) && (k < - 191)) {
+	   for (b = 0; b <= 3; b ++)
+	      res += delta (k, -192 + 2 * c + 48 * b) * getbit (table [p], b);
+	   for (b = 4; b <= 7; b ++)
+	      res += delta (k, -191 + 2 * c + 48 * b) * getbit (table [p], b);
+	}
+	return res;
+}
+
+int16_t	TII_Detector::A_mode_4 (uint8_t c, uint8_t p, int16_t k) {
+}
+
+int16_t	TII_Detector::A_mode_1 (uint8_t c, uint8_t p, int16_t k) {
 int16_t b;
 int16_t res	= 0;
 
@@ -305,7 +275,8 @@ float	corrTable [24];
 	   return - 1;
 
 //	fprintf (stderr, "the carrier is %d\n", startCarrier);
-
+//
+//	The "c" value is in the range 1 .. 23
 	for (i = 1; i < 24; i ++) {
 	   corrTable [i] = correlate (theBuffer,
 	                              startCarrier + 2 * i,
@@ -326,7 +297,8 @@ float	corrTable [24];
 
 	return maxIndex;
 }
-
+//
+//	The difficult one: guessing for Mode 1 only
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
 float   maxCorr_1	= 0;
@@ -335,7 +307,7 @@ float   avg		= 0;
 int16_t	startCarrier	= -1;
 int16_t	altCarrier	= -1;
 
-        for (i = - carriers / 2; i < - carriers / 4 - 1; i ++)
+        for (i = - carriers / 2; i < - carriers / 4; i ++)
            avg += abs (real (theBuffer [T_u / 2 + i] *
                                     conj (theBuffer [T_u / 2 + i + 1])));
         avg /= (carriers / 4);
@@ -350,7 +322,7 @@ int16_t	altCarrier	= -1;
 
 //	We just compute the "best" candidates two ways
 
-	   for (j = 0; j < 32; j ++) {
+	   for (j = 0; j < 4 * 8; j ++) {
 	      int ci = index + j * 48;
 	      if (ci >= T_u / 2) ci ++;
 	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
@@ -441,4 +413,87 @@ float	avg	= 0;
 	
 	return s1 / 15;
 }
-//
+
+void	TII_Detector:: createPattern (uint8_t dabMode) {
+	switch (dabMode) {
+	   default:
+	   case 1:
+	      createPattern_1 ();
+	      break;
+
+	   case 2:
+	      createPattern_2 ();
+	      break;
+
+	   case 4:
+	      createPattern_4 ();
+	      break;
+	}
+}
+
+void	TII_Detector::createPattern_1 (void) {
+int	p, k, c;
+uint8_t	dabMode	= 1;
+
+	for (p = 0; p < 70; p ++) {
+	   int16_t digits	= 0;
+	   c = 0;		// patterns are equal for all c values
+	   {
+	      bool first = true;
+	      int lastOne = 0;
+	      for (k = -carriers / 2; k < -carriers / 4; k ++) {
+	         if (A (dabMode, c, p, k) > 0) {
+	            if (first) {
+	               first = false;
+	               theTable [p]. carrier = k;
+	               theTable [p]. pattern = 0;
+	            }
+	            else {
+	               theTable [p]. pattern <<= 4;
+	               theTable [p]. pattern |= (k - lastOne) / 48;
+	               digits ++;
+	            }
+	            lastOne = k;
+	         }
+	      }
+
+	      for (k = -carriers / 4; k < 0; k ++) {
+	         if (A (dabMode, c, p, k) > 0) {
+	            theTable [p]. pattern <<= 4;
+	            theTable [p]. pattern |= (k - lastOne) / 48;
+	            lastOne = k;
+	            digits ++;
+	         }
+	      }
+
+	      for (k = 1; k <= carriers / 4; k ++) {
+	         if (A (dabMode, c, p, k) > 0) {
+	            theTable [p]. pattern <<= 4;
+	            theTable [p]. pattern |= (k - lastOne) / 48;
+	            lastOne = k;
+	            digits ++;
+	         }
+	      }
+
+	      for (k = carriers / 4 + 1; k <= carriers / 2; k ++) {
+	         if (A (dabMode, c, p, k) > 0) {
+	            theTable [p]. pattern <<= 4;
+	            theTable [p]. pattern |= (k - lastOne) / 48;
+	            lastOne = k;
+	            digits ++;
+	         }
+	      }
+	   }
+//	   fprintf (stderr, "p = %d\tc = %d\tk=%d\tpatter=%llX (digits = %d)\n",
+//	                     p, c, theTable [p]. carrier,
+//	                        theTable [p]. pattern, digits);
+	}
+}
+
+
+void	TII_Detector::createPattern_2 (void) {
+}
+
+void	TII_Detector::createPattern_4 (void) {
+}
+

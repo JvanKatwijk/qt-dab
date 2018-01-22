@@ -32,8 +32,8 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 	airspyHandler::airspyHandler (QSettings *s) {
 int	result, i;
 int	distance	= 10000000;
-uint32_t myBuffer [20];
-uint32_t samplerate_count;
+std::vector <uint32_t> sampleRates;
+uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
 	this	-> myFrame		= new QFrame (NULL);
@@ -74,13 +74,6 @@ uint32_t samplerate_count;
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
 #else
 	const char *libraryString = "libairspy.so";
-//	Handle_usb	= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
-//	if (Handle_usb == NULL) {
-//	   fprintf (stderr, "libusb cannot be loaded\n");
-//	   delete myFrame;
-//	   throw (19);
-//	}
-	   
 	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
 #endif
 
@@ -109,7 +102,7 @@ uint32_t samplerate_count;
 	strcpy (serial,"");
 	result = this -> my_airspy_init ();
 	if (result != AIRSPY_SUCCESS) {
-	   printf("my_airspy_init () failed: %s (%d)\n",
+	   printf ("my_airspy_init () failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
@@ -120,7 +113,6 @@ uint32_t samplerate_count;
 	   throw (21);
 	}
 
-	fprintf (stderr, "airspy init is geslaagd\n");
 	result = my_airspy_open (&device);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airpsy_open () failed: %s (%d)\n",
@@ -135,16 +127,18 @@ uint32_t samplerate_count;
 	}
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
-	(void) my_airspy_get_samplerates (device, &samplerate_count, 0);
-	fprintf (stderr, "%d samplerates are supported\n", samplerate_count); 
-	my_airspy_get_samplerates (device, myBuffer, samplerate_count);
+	(void) my_airspy_get_samplerates (device, &samplerateCount, 0);
+	fprintf (stderr, "%d samplerates are supported\n", samplerateCount); 
+	sampleRates. resize (samplerateCount);
+	my_airspy_get_samplerates (device,
+	                            sampleRates. data (), samplerateCount);
 
 	selectedRate	= 0;
-	for (i = 0; i <  (int)samplerate_count; i ++) {
-	   fprintf (stderr, "%d \n", myBuffer [i]);
-	   if (abs (myBuffer [i] - 2048000.0) < distance) {
-	      distance	= abs (myBuffer [i] - 2048000.0);
-	      selectedRate = myBuffer [i];
+	for (i = 0; i < (int)samplerateCount; i ++) {
+	   fprintf (stderr, "%d \n", sampleRates [i]);
+	   if (abs ((int)sampleRates [i] - 2048000) < distance) {
+	      distance	= abs ((int)sampleRates [i] - 2048000);
+	      selectedRate = sampleRates [i];
 	   }
 	}
 
@@ -164,7 +158,7 @@ uint32_t samplerate_count;
 	result = my_airspy_set_samplerate (device, selectedRate);
 	if (result != AIRSPY_SUCCESS) {
            printf("airspy_set_samplerate() failed: %s (%d)\n",
-	             my_airspy_error_name((enum airspy_error)result), result);
+	             my_airspy_error_name ((enum airspy_error)result), result);
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
 #else
@@ -174,28 +168,29 @@ uint32_t samplerate_count;
 	   throw (24);
 	}
 
-	
 	airspySettings	-> beginGroup ("airspyHandler");
 	filtering 	= airspySettings -> value ("filtering", 0). toInt ();
 	int filterDegree = airspySettings -> value ("filterdegree", 9). toInt ();
-	filterDegree =(filterDegree & ~01) + 1;
+	filterDegree	= (filterDegree & ~01) + 1;
+//
+//	if we apply filtering it is using a symmetric lowpass filter
 	filter		= new airspyFilter (filterDegree,
 	                                        1024000, selectedRate);
 	airspySettings	-> endGroup ();
 
-//	The sizes of the mapTable and the convTable are
-//	predefined and follow from the input and output rate
+//	The sizes of the mapTables follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
+//	so we end up with buffers with 1 msec content
 	convBufferSize		= selectedRate / 1000;
 	for (i = 0; i < 2048; i ++) {
 	   float inVal	= float (selectedRate / 1000);
-	   mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
-	   mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
+	   mapTable_int [i]	=  int (floor (i * (inVal / 2048.0)));
+	   mapTable_float [i]	= i * (inVal / 2048.0) - mapTable_int [i];
 	}
-	convIndex		= 0;
-	convBuffer		= new std::complex<float> [convBufferSize + 1];
+	convIndex	= 0;
+	convBuffer. resize (convBufferSize + 1);
 
-	theBuffer		= new RingBuffer<std::complex<float>>
+	theBuffer	= new RingBuffer<std::complex<float>>
 	                                                    (256 * 1024);
 	tabWidget	-> setCurrentIndex (0);
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
@@ -217,7 +212,7 @@ uint32_t samplerate_count;
 	connect (tabWidget, SIGNAL (currentChanged (int)),
 	         this, SLOT (show_tab (int)));
 	displaySerial	-> setText (getSerial ());
-	running		= false;
+	running. store (false);
 	show_tab (0);			// will set currentTab
 }
 
@@ -253,7 +248,6 @@ uint32_t samplerate_count;
 	FreeLibrary (Handle);
 #else
 	dlclose (Handle);
-//	dlclose (Handle_usb);
 #endif
 err:
 	if (theBuffer != NULL)
@@ -280,7 +274,7 @@ int32_t	airspyHandler::defaultFrequency (void) {
 bool	airspyHandler::restartReader	(void) {
 int	result;
 int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
-	if (running)
+	if (running. load ())
 	   return true;
 
 	theBuffer	-> FlushRingBuffer ();
@@ -311,28 +305,22 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return false;
 	}
 //
-//	finally:
-	buffer = new uint8_t [bufSize];
-	bs_ = bufSize;
-	bl_ = 0;
-	running	= true;
-	fprintf (stderr, "airspy is gestart\n");
+	running. store (true);
 	return true;
 }
 
 void	airspyHandler::stopReader (void) {
-	if (!running)
-	   return;
-int result = my_airspy_stop_rx (device);
+int	result;
 
-	if (result != AIRSPY_SUCCESS ) {
+	if (!running. load ())
+	   return;
+	result = my_airspy_stop_rx (device);
+
+	if (result != AIRSPY_SUCCESS ) 
 	   printf ("my_airspy_stop_rx() failed: %s (%d)\n",
 	          my_airspy_error_name ((airspy_error)result), result);
-	} else {
-	   delete [] buffer;
-	   bs_ = bl_ = 0 ;
-	}
-	running	= false;
+
+	running. store (false);
 }
 //
 //	Directly copied from the airspy extio dll from Andrea Montefusco
@@ -343,35 +331,16 @@ airspyHandler *p;
 	   return 0;		// should not happen
 	p = static_cast<airspyHandler *> (transfer -> ctx);
 
-// AIRSPY_SAMPLE_FLOAT32_IQ:
+// we read  AIRSPY_SAMPLE_INT16_IQ:
 	int32_t bytes_to_write = transfer -> sample_count * sizeof (int16_t) * 2; 
 	uint8_t *pt_rx_buffer   = (uint8_t *)transfer->samples;
-	
-	while (bytes_to_write > 0) {
-	   int spaceleft = p -> bs_ - p -> bl_ ;
-	   int to_copy = std::min ((int)spaceleft, (int)bytes_to_write);
-	   ::memcpy (p -> buffer + p -> bl_, pt_rx_buffer, to_copy);
-	   bytes_to_write -= to_copy;
-	   pt_rx_buffer   += to_copy;
-//
-//	   bs (i.e. buffersize) in bytes
-	   if (p -> bl_ == p -> bs_) {
-	      p -> data_available ((void *)p -> buffer, p -> bl_);
-	      p->bl_ = 0;
-	   }
-	   p -> bl_ += to_copy;
-	}
+	p -> data_available (pt_rx_buffer, bytes_to_write);
 	return 0;
 }
 
 //	called from AIRSPY data callback
-//	this method is declared in airspyHandler class
-//	The buffer received from hardware contains
-//	32-bit floating point IQ samples (8 bytes per sample)
-//
-//	recoded for the sdr-j framework
 //	2*2 = 4 bytes for sample, as per AirSpy USB data stream format
-//	we do the rate conversion here, read in groups of 2 * 625 samples
+//	we do the rate conversion here, read in groups of 2 * xxx samples
 //	and transform them into groups of 2 * 512 samples
 int 	airspyHandler::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
@@ -382,7 +351,6 @@ int32_t  i, j;
 	if (filtering) {
 	   for (i = 0; i < nSamples; i ++) {
 	      convBuffer [convIndex ++] = filter -> Pass (
-//	   convBuffer [convIndex ++] = std::complex<float>
 	                                        sbuf [2 * i] / (float)2048,
 	                                        sbuf [2 * i + 1] / (float)2048);
 	      if (convIndex > convBufferSize) {

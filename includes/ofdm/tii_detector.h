@@ -49,10 +49,18 @@ private:
 	std::vector<float>	window;
 	std::vector<complex<float> >	refTable;
 	int16_t		fillCount;
-	int16_t		A		(uint8_t c, uint8_t p, int16_t k);
+	int16_t		A		(uint8_t, uint8_t c,
+	                                            uint8_t p, int16_t k);
+	int16_t		A_mode_1	(uint8_t c, uint8_t p, int16_t k);
+	int16_t		A_mode_2	(uint8_t c, uint8_t p, int16_t k);
+	int16_t		A_mode_4	(uint8_t c, uint8_t p, int16_t k);
 	float		correlate	(std::vector<complex<float> >,
 	                                 int16_t, uint64_t);
 
+	void		createPattern	(uint8_t);
+	void		createPattern_1	(void);
+	void		createPattern_2	(void);
+	void		createPattern_4	(void);
 	struct nullTable {
 	   int16_t	carrier;
 	   uint64_t	pattern;

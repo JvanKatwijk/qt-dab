@@ -20,6 +20,8 @@
 #include	<QObject>
 #include	<QSettings>
 #include	<QFrame>
+#include	<vector>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"virtual-input.h"
@@ -137,7 +139,7 @@ private:
 	bool		libraryLoaded;
 	QFrame		*myFrame;
 	bool		success;
-	bool		running;
+	std::atomic<bool>	running;
 	bool		lna_agc;
 	bool		mixer_agc;
 	bool		rf_bias;
@@ -147,9 +149,9 @@ const	char*		board_id_name (void);
 	int16_t		mixerGain;
 	int16_t		lnaGain;
 	int32_t		selectedRate;
-	std::complex<float>	*convBuffer;
 	int16_t		convBufferSize;
 	int16_t		convIndex;
+	std::vector <complex<float> >	convBuffer;
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;
@@ -160,10 +162,6 @@ const	char*		board_id_name (void);
 	struct airspy_device* device;
 	uint64_t 	serialNumber;
 	char		serial[128];
-    // callback buffer	
-	int 		bs_;
-	uint8_t 	*buffer;
-	int		bl_;
 static
 	int		callback(airspy_transfer_t *);
 	int		data_available (void *buf, int buf_size);

@@ -47,6 +47,7 @@ int	i;
 	*OK			= false;	// just the default
 	iqSwitch		= false;
 
+	theFilter		= new  eladFilter (5, 1024000, 3072000);
 	conversionNumber	= theRate == 192000 ? 1:
 	                          theRate <= 3072000 ? 2 : 3;
 //
@@ -234,6 +235,9 @@ int	rc, i;
 //	and start converting the rate
 	      for (i = 0; i < 1024; i ++) {
 	         convBuffer [convIndex ++] =
+//	                theFilter -> Pass (
+//	                       makeSample_30bits (&myBuffer [iqSize * i],
+//	                                          iqSwitch));
 	                       makeSample_30bits (&myBuffer [iqSize * i],
 	                                          iqSwitch);
 	         if (convIndex > convBufferSize) {

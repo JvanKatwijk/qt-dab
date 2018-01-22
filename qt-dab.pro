@@ -420,9 +420,11 @@ elad_s1	{
 	DEPENDPATH	+= ./devices/elad-s1-handler
 	INCLUDEPATH	+= ./devices/elad-s1-handler
 	HEADERS		+= ./devices/elad-s1-handler/elad-handler.h \
+	                   ./devices/elad-s1-handler/elad-filter.h \
 	                   ./devices/elad-s1-handler/elad-worker.h \
 	                   ./devices/elad-s1-handler/elad-loader.h 
 	SOURCES		+= ./devices/elad-s1-handler/elad-handler.cpp \
+	                   ./devices/elad-s1-handler/elad-filter.cpp \
 	                   ./devices/elad-s1-handler/elad-worker.cpp \
 	                   ./devices/elad-s1-handler/elad-loader.cpp 
 	FORMS		+= ./devices/elad-s1-handler/widget.ui

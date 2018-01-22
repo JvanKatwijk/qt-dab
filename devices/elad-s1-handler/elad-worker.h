@@ -31,6 +31,7 @@
 #include	<stdint.h>
 #include	<QThread>
 #include	"dab-constants.h"
+#include	"elad-filter.h"
 #include	"ringbuffer.h"
 
 class	eladLoader;
@@ -66,6 +67,7 @@ private:
         int			convIndex;
         std::complex<float>	*convBuffer;
 	bool			iqSwitch;
+	eladFilter		*theFilter;
 signals:
 	void			show_eladFrequency	(int);
 	void			show_iqSwitch	(bool);
