@@ -175,15 +175,20 @@ ULONG APIkeyValue_length = 255;
         fprintf (stderr, "hwVer = %d\n", hwVersion);
 	my_mir_sdr_SetDeviceIdx (deviceIndex);
 
-	if (hwVersion >= 2) {
+	if (hwVersion == 2) {
 	   antennaSelector -> show ();
 	   connect (antennaSelector, SIGNAL (activated (const QString &)),
 	            this, SLOT (set_antennaControl (const QString &)));
 	}
+
+	if (hwVersion == 255)
+	   nrBits	= 14;
+	else
+	   nrBits	= 12;
 	   
 	unsigned char text;
 	(void)my_mir_sdr_GetHwVersion (&text);
-        
+	fprintf (stderr, "hwVersion = %o\n", hwVersion);
 //	my_mir_sdr_ResetUpdateFlags (1, 0, 0);
 	running		= false;
 	agcMode		= false;
@@ -335,8 +340,6 @@ int	localGRed	= currentGred;
 	if (running)
 	   return true;
 
-	fprintf (stderr, "frequency = %d localGred = %d\n", vfoFrequency, localGRed);
-
 	err	= my_mir_sdr_StreamInit (&localGRed,
 	                                 double (inputRate) / MHz (1),
 	                                 double (vfoFrequency) / Mhz (1),
@@ -388,7 +391,7 @@ void	sdrplayHandler::resetBuffer	(void) {
 }
 
 int16_t	sdrplayHandler::bitDepth	(void) {
-	return 12;
+	return nrBits;
 }
 
 bool	sdrplayHandler::loadFunctions	(void) {

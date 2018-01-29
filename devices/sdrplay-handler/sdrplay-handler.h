@@ -142,6 +142,7 @@ private:
 	bool		running;
 	HINSTANCE	Handle;
 	bool		agcMode;
+	int16_t		nrBits;
 private slots:
 	void		setExternalGain	(int);
 	void		agcControl_toggled	(int);

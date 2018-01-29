@@ -1115,8 +1115,8 @@ virtualInput	*inputDevice	= NULL;
 
 #ifdef	HAVE_SPECTRUM
 	spectrumHandler	-> setBitDepth (inputDevice -> bitDepth ());
+	fprintf (stderr, "bitDepth set to %d\n", inputDevice -> bitDepth ());
 #endif
-	fprintf (stderr, "Hiero\n");
 	return inputDevice;
 }
 //
