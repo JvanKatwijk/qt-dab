@@ -131,7 +131,8 @@ QTranslator *Translator = new QTranslator;
 //	German is special (as always)
 	if ((Language == "de_AT") || (Language ==  "de_CH"))
 	   Language = "de_DE";
-
+//
+//	what about Dutch?
 	bool TranslatorLoaded =
 	             Translator -> load (QString(":/i18n/") + Language);
 	qDebug() << "main:" <<  "Set language" << Language;
