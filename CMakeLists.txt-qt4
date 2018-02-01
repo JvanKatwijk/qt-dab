@@ -149,7 +149,6 @@ add_definitions (-DPRESET_NAME)
 	)
 
 	set (${objectName}_HDRS
-	     ./text-mapper.h
 	     ./dab-processor.h
 	     ./includes/country-codes.h
 	     ./includes/ofdm/sample-reader.h
@@ -157,6 +156,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
+	     ./includes/ofdm/tii_table.h
+             ./includes/ofdm/tii_detector.h
 	     ./includes/backend/viterbi_768/viterbi-768.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
@@ -202,21 +203,21 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
-	     ./includes/various/tii_table.h
-	     ./includes/various/tii_detector.h
-	     ./includes/various/tii_guessor.h
+	     ./includes/various/text-mapper.h
+	     ./includes/various/ensemble-printer.h
 	)
 
 	set (${objectName}_SRCS
 	     ${${objectName}_SRCS}
 	     ./main.cpp
-	     ./text-mapper.cpp
 	     ./dab-processor.cpp
              ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
+	     ./src/ofdm/tii_table.cpp
+             ./src/ofdm/tii_detector.cpp
 	     ./src/backend/viterbi_768/viterbi-768.cpp
 	     ./src/backend/viterbi_768/spiral-no-sse.c
 	     ./src/backend/fic-handler.cpp
@@ -265,33 +266,34 @@ add_definitions (-DPRESET_NAME)
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
-	     ./src/various/tii_table.cpp
-	     ./src/various/tii_detector.cpp
-	     ./src/various/tii_guessor.cpp
+	     ./src/various/text-mapper.cpp
+             ./src/various/ensemble-printer.cpp
 	)
 
 	set (${objectName}_MOCS
 	     ./dab-processor.h
-	     ./includes/output/audio-base.h
-	     ./includes/output/audiosink.h
-	     ./includes/ofdm/sample-reader.h
-	     ./includes/ofdm/ofdm-decoder.h
-	     ./includes/backend/fic-handler.h
-	     ./includes/backend/fib-processor.h
-	     ./includes/backend/audio/faad-decoder.h
-	     ./includes/backend/audio/mp2processor.h
-	     ./includes/backend/audio/mp4processor.h
-	     ./includes/backend/data/virtual-datahandler.h
-	     ./includes/backend/data/pad-handler.h
-	     ./includes/backend/data/mot-data.h
-	     ./includes/backend/data/ip-datahandler.h
-	     ./includes/backend/data/tdc-datahandler.h
-	     ./includes/backend/data/journaline-datahandler.h
-	     ./includes/backend/data/mot-databuilder.h
-	     ./includes/backend/data/dab-data.h
-	     ./includes/backend/data/data-processor.h
-	     ./devices/rawfiles/rawfiles.h
-	     ./devices/wavfiles/wavfiles.h
+             ./includes/output/audio-base.h
+             ./includes/ofdm/sample-reader.h
+             ./includes/ofdm/ofdm-decoder.h
+             ./includes/ofdm/phasereference.h
+             ./includes/backend/fic-handler.h
+             ./includes/backend/fib-processor.h
+             ./includes/backend/audio/faad-decoder.h
+             ./includes/backend/audio/mp2processor.h
+             ./includes/backend/audio/mp4processor.h
+             ./includes/backend/data/virtual-datahandler.h
+             ./includes/backend/data/pad-handler.h
+             ./includes/backend/data/mot-data.h
+             ./includes/backend/data/ip-datahandler.h
+             ./includes/backend/data/tdc-datahandler.h
+             ./includes/backend/data/journaline-datahandler.h
+             ./includes/backend/data/mot-databuilder.h
+             ./includes/backend/data/dab-data.h
+             ./includes/backend/data/data-processor.h
+             ./devices/rawfiles/rawfiles.h
+             ./devices/wavfiles/wavfiles.h
+             ./includes/ofdm/tii_detector.h
+             ./includes/ofdm/tii_table.h
 	)
 
 	set (${objectName}_UIS
