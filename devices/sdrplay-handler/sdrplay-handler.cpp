@@ -175,6 +175,7 @@ ULONG APIkeyValue_length = 255;
         fprintf (stderr, "hwVer = %d\n", hwVersion);
 	my_mir_sdr_SetDeviceIdx (deviceIndex);
 
+	antennaSelector -> hide ();
 	if (hwVersion == 2) {
 	   antennaSelector -> show ();
 	   connect (antennaSelector, SIGNAL (activated (const QString &)),
@@ -190,7 +191,7 @@ ULONG APIkeyValue_length = 255;
 	(void)my_mir_sdr_GetHwVersion (&text);
 	fprintf (stderr, "hwVersion = %o\n", hwVersion);
 //	my_mir_sdr_ResetUpdateFlags (1, 0, 0);
-	running		= false;
+	running. store (false);
 	agcMode		= false;
 }
 
@@ -250,7 +251,7 @@ int	localGred	= currentGred;
 	if (bankFor_sdr (newFrequency) == -1)
 	   return;
 
-	if (!running) {
+	if (!running. load ()) {
 	   vfoFrequency = newFrequency;
 	   return;
 	}
@@ -337,7 +338,7 @@ int	samplesPerPacket;
 mir_sdr_ErrT	err;
 int	localGRed	= currentGred;
 
-	if (running)
+	if (running. load ())
 	   return true;
 
 	err	= my_mir_sdr_StreamInit (&localGRed,
@@ -345,7 +346,7 @@ int	localGRed	= currentGred;
 	                                 double (vfoFrequency) / Mhz (1),
 	                                 mir_sdr_BW_1_536,
 	                                 mir_sdr_IF_Zero,
-	                                 0,	// lnaEnable do not know yet
+	                                 1,	// lnaEnable do not know yet
 	                                 &gRdBSystem,
 	                                 mir_sdr_USE_SET_GR,
 	                                 &samplesPerPacket,
@@ -359,20 +360,16 @@ int	localGRed	= currentGred;
 	my_mir_sdr_SetPpm (double (ppmControl -> value ()));
 	err		= my_mir_sdr_SetDcMode (4, 1);
 	err		= my_mir_sdr_SetDcTrackTime (63);
-//
-	my_mir_sdr_SetSyncUpdatePeriod ((int)(inputRate / 3));
-	my_mir_sdr_SetSyncUpdateSampleNum (samplesPerPacket);
-	my_mir_sdr_DCoffsetIQimbalanceControl (0, 1);
-	running 	= true;
+	running. store (true);
 	return true;
 }
 
 void	sdrplayHandler::stopReader	(void) {
-	if (!running)
+	if (!running. load ())
 	   return;
 
 	my_mir_sdr_StreamUninit	();
-	running		= false;
+	running. store (false);
 }
 
 //
@@ -571,7 +568,7 @@ void	sdrplayHandler::agcControl_toggled (int agcMode) {
 }
 
 void	sdrplayHandler::set_ppmControl (int ppm) {
-	if (running) {
+	if (running. load ()) {
 	   my_mir_sdr_SetPpm	((float)ppm);
 	   my_mir_sdr_SetRf	((float)vfoFrequency, 1, 0);
 	}

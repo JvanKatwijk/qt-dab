@@ -25,6 +25,7 @@
 #include	<QObject>
 #include	<QFrame>
 #include	<QSettings>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"virtual-input.h"
@@ -139,7 +140,7 @@ private:
 	int32_t		vfoFrequency;
 	int		currentGred;
 	bool		libraryLoaded;
-	bool		running;
+	std::atomic<bool>	running;
 	HINSTANCE	Handle;
 	bool		agcMode;
 	int16_t		nrBits;

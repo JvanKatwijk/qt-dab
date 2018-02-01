@@ -316,6 +316,9 @@ int16_t	altCarrier	= -1;
 	   int index = T_u / 2 + i;
 	   float sum_1 = 0;
 	   float sum_2 = 0;
+//
+//	  5 * avg is a rather arbitrary threshold, sometimes we see
+//	  values of 100 * avg
 	   if (abs (real (theBuffer [index] *
 	                     conj (theBuffer [index + 1]))) < 5 * avg)
 	      continue;
@@ -324,9 +327,10 @@ int16_t	altCarrier	= -1;
 
 	   for (j = 0; j < 4 * 8; j ++) {
 	      int ci = index + j * 48;
-	      if (ci >= T_u / 2) ci ++;
+	      if (ci >= T_u / 2)
+	         ci ++;
 	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
-	      sum_2 += abs (real (theBuffer [ci] * conj (refTable [ci]))) +
+	      sum_2 += abs (real (theBuffer [ci] * conj (refTable  [ci]))) +
 	               abs (real (theBuffer [ci + 1] * conj (refTable [ci])));
 	   }
 
@@ -342,8 +346,8 @@ int16_t	altCarrier	= -1;
 	}
 
 	if (startCarrier != altCarrier)
-	   fprintf (stderr, "alternatieve start carriers %d %d\n",
-	                                        startCarrier, altCarrier);
+//	   fprintf (stderr, "alternative start carriers %d %d\n",
+//	                                        startCarrier, altCarrier);
 	                                   
 //	   return;
         if (startCarrier <  -carriers / 2)	// nothing found

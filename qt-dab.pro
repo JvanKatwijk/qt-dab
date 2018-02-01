@@ -248,7 +248,7 @@ DEFINES		+= PRESET_NAME
 
 #and these one is just experimental,
 DEFINES	+= TII_GUESSING
-CONFIG		+= impulseresponse
+CONFIG	+= impulseresponse
 }
 #
 # an attempt to have it run under W32 through cross compilation
