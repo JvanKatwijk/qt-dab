@@ -2,6 +2,7 @@ language: c++
 compiler: gcc
 sudo: require
 dist: trusty
+group: deprecated-2017Q4 
 
 before_install:
     - sudo add-apt-repository ppa:beineri/opt-qt532-trusty -y
