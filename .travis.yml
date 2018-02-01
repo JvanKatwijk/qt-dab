@@ -8,7 +8,7 @@ before_install:
     - sudo apt-get update -qq
     
 install: 
-    - sudo apt-get -y install qt53svg qt53base qt53tools qt53declarative libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt5-opengl-dev libsamplerate-dev 
+    - sudo apt-get -y install qt53svg qt53base qt53tools qt53declarative libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt4-opengl-dev libsamplerate-dev 
     - source /opt/qt53/bin/qt53-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
