@@ -276,7 +276,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/output/audiosink.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
-	     ./src/various/fft-handle.cpp
+	     ./src/various/fft-handler.cpp
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
