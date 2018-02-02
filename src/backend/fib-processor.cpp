@@ -1293,6 +1293,7 @@ int16_t i;
 }
 //
 //
+//	Note that here we only look for the main service
 uint8_t	fib_processor::kindofService (QString &s) {
 int16_t	i, j;
 bool	subComponent	= false;
