@@ -61,6 +61,8 @@ endif ()
 
 if (DEFINED SPECTRUM)
    set(SPECTRUM true)
+   set(TII_GUESSING true)
+   set(IMPULSE_RESPONSE true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
@@ -519,32 +521,39 @@ add_definitions (-DPRESET_NAME)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./optional-scope/scopewidget.ui
+	        ./optional-ir/impulse-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   include_directories (
 	      ./optional-scope
+	      ./optional-ir
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./optional-scope/spectrum-handler.cpp
 	        ./src/scopes-qwt6/iqdisplay.cpp
+	        ./optional-ir/impulse-viewer.cpp
 	   )
 
 	   add_definitions (-DHAVE_SPECTRUM)
 	   add_definitions (-D__QUALITY)
+	   add_definitions (-DTII_GUESSING)
+           add_definitions (-DIMPULSE_RESPONSE)
 	endif (SPECTRUM)
 
 	if (TRY_EPG)

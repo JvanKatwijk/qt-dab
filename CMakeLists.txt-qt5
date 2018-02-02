@@ -68,6 +68,8 @@ endif ()
 
 if (DEFINED SPECTRUM)
    set(SPECTRUM true)
+   set(TII_GUESSING true)
+   set(IMPULSE_RESPONSE true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
@@ -167,7 +169,6 @@ add_definitions (-DPRESET_NAME)
 	)
 
 	set (${objectName}_HDRS
-	     ./text-mapper.h
 	     ./dab-processor.h
              ./includes/country-codes.h
              ./includes/ofdm/sample-reader.h
@@ -218,6 +219,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/various/Xtan2.h
 	     ./includes/various/dab-params.h
 	     ./includes/various/band-handler.h
+	     ./includes/various/text-mapper.h
+	     ./includes/various/ensemble-printer.h
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	)
@@ -225,7 +228,6 @@ add_definitions (-DPRESET_NAME)
 	set (${objectName}_SRCS
 	     ${${objectName}_SRCS}
 	     ./main.cpp
-	     ./text-mapper.cpp
 	     ./dab-processor.cpp
              ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
@@ -278,6 +280,8 @@ add_definitions (-DPRESET_NAME)
 	     ./src/various/Xtan2.cpp
 	     ./src/various/dab-params.cpp
 	     ./src/various/band-handler.cpp
+	     ./src/various/text-mapper.cpp
+	     ./src/various/ensemble-printer.cpp
 	     ./src/ofdm/tii_table.cpp
 	     ./src/ofdm/tii_detector.cpp
 	)
@@ -521,32 +525,39 @@ add_definitions (-DPRESET_NAME)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./optional-scope/scopewidget.ui
+	        ./optional-ir/impulse-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   include_directories (
 	      ./optional-scope
+	      ./optional-ir
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./optional-scope/spectrum-handler.cpp
 	        ./src/scopes-qwt6/iqdisplay.cpp
+	        ./optional-ir/impulse-viewer.cpp
 	   )
 
 	   add_definitions (-DHAVE_SPECTRUM)
 	   add_definitions (-D__QUALITY)
+	   add_definitions (-DTII_GUESSING)
+	   add_definitions (-DIMPULSE_RESPONSE)
 	endif (SPECTRUM)
 
 	if (TRY_EPG)

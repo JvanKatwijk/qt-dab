@@ -68,14 +68,12 @@ endif ()
 
 if (DEFINED SPECTRUM)
    set(SPECTRUM true)
+   set(TII_GUESSING true)
+   set(IMPULSE_RESPONSE true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
-endif ()
-
-if (DEFINED IMPULSE_RESPONSE)
-   set (IMPULSE_RESPONSE true)
 endif ()
 
 #	If you want a tcp stream of the audio rather than
@@ -95,7 +93,6 @@ endif ()
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
 #add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
-add_definitions (-DTII_GUESSING)
 #
 ########################################################################
 
@@ -179,8 +176,6 @@ add_definitions (-DTII_GUESSING)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
-	     ./includes/ofdm/tii_table.h
-	     ./includes/ofdm/tii_detector.h
 	     ./includes/backend/viterbi_768/viterbi-768.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
@@ -226,6 +221,8 @@ add_definitions (-DTII_GUESSING)
 	     ./includes/various/band-handler.h
 	     ./includes/various/text-mapper.h
 	     ./includes/various/ensemble-printer.h
+	     ./includes/ofdm/tii_table.h
+	     ./includes/ofdm/tii_detector.h
 	)
 
 	set (${objectName}_SRCS
@@ -237,8 +234,6 @@ add_definitions (-DTII_GUESSING)
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
-	     ./src/ofdm/tii_table.cpp
-	     ./src/ofdm/tii_detector.cpp
 	     ./src/backend/viterbi_768/viterbi-768.cpp
 	     ./src/backend/viterbi_768/spiral-no-sse.c
 	     ./src/backend/fic-handler.cpp
@@ -287,6 +282,8 @@ add_definitions (-DTII_GUESSING)
 	     ./src/various/band-handler.cpp
 	     ./src/various/text-mapper.cpp
 	     ./src/various/ensemble-printer.cpp
+	     ./src/ofdm/tii_table.cpp
+	     ./src/ofdm/tii_detector.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -528,32 +525,39 @@ add_definitions (-DTII_GUESSING)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./optional-scope/scopewidget.ui
+	        ./optional-ir/impulse-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   include_directories (
 	      ./optional-scope
+	      ./optional-ir
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./optional-scope/spectrum-handler.h
 	        ./includes/scopes-qwt6/iqdisplay.h
+	        ./optional-ir/impulse-viewer.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./optional-scope/spectrum-handler.cpp
 	        ./src/scopes-qwt6/iqdisplay.cpp
+	        ./optional-ir/impulse-viewer.cpp
 	   )
 
 	   add_definitions (-DHAVE_SPECTRUM)
 	   add_definitions (-D__QUALITY)
+	   add_definitions (-DTII_GUESSING)
+	   add_definitions (-DIMPULSE_RESPONSE)
 	endif (SPECTRUM)
 
 	if (TRY_EPG)
@@ -586,34 +590,6 @@ add_definitions (-DTII_GUESSING)
 	   add_definitions (-DDATA_STREAMER)
 	endif (DATA_STREAMER)
 
-	if (IMPULSE_RESPONSE)
-	   include_directories (
-	      ./optional-ir
-	   )
-
-	   set (${objectName}_HDRS 
-	      ${${objectName}_HDRS}
-	           ./optional-ir/impulse-viewer.h
-	   )
-
-	   set (${objectName}_MOCS 
-	      ${${objectName}_MOCS}
-	           ./optional-ir/impulse-viewer.h
-	   )
-
-	   set (${objectName}_SRCS
-	      ${${objectName}_SRCS}
-	           ./optional-ir/impulse-viewer.cpp
-	   )
-
-	   set (${objectName}_UIS
-	        ${${objectName}_UIS}
-	        ./optional-ir/impulse-widget.ui
-	   )
-
-	   add_definitions (-DIMPULSE_RESPONSE)
-	endif (IMPULSE_RESPONSE)
-	
 	if (USE_PORTAUDIO)
            find_package(Portaudio)
            if (NOT PORTAUDIO_FOUND)
