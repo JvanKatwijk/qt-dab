@@ -390,17 +390,18 @@ add_definitions (-DPRESET_NAME)
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/airspy-handler/airspy-handler.h
+	        ./devices/airspy-handler/airspyfilter.h
 	        ./devices/airspy-handler/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./devices/airspy-handler/airspy-handler.cpp
+	        ./devices/airspy-handler/airspyfilter.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
 	endif (AIRSPY)
-
 #
 	if (DABSTICK)
 #           find_package(LibRTLSDR)
