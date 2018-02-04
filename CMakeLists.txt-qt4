@@ -293,6 +293,7 @@ add_definitions (-DPRESET_NAME)
              ./includes/ofdm/phasereference.h
              ./includes/backend/fic-handler.h
              ./includes/backend/fib-processor.h
+	     ./includes/backend/data-backend.h
              ./includes/backend/audio/faad-decoder.h
              ./includes/backend/audio/mp2processor.h
              ./includes/backend/audio/mp4processor.h
