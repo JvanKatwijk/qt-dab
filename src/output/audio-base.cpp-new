@@ -26,14 +26,12 @@
 
 /*
  *	The class is the abstract sink for the data generated
- *	It will handle the "dumping" though and assume that 
- *	someone else will handle the PCM samples, all made
- *	on a rate of 48000
+ *	It will handle the "dumping" though
  */
 	audioBase::audioBase	(void):
 	                              converter_16 (16000, 48000, 2 * 1600),
 	                              converter_24 (24000, 48000, 2 * 2400),
-	                              converter_32 (32000, 48000, 2 * 3200) {
+	                              converter_32 (32000, 48000, 16000) {
 	dumpFile		= NULL;
 }
 
@@ -123,6 +121,8 @@ int32_t	result;
 	   }
 }
 
+static	int incount	= 0;
+static	int outcount	= 0;
 //	scale up from 32000 -> 48000
 //	amount is number of pairs
 void	audioBase::audioOut_32000	(int16_t *V, int32_t amount) {
@@ -131,11 +131,13 @@ float      buffer       [2 * converter_32. getOutputsize ()];
 int32_t	i, j;
 int32_t	result;
 
+	incount += amount;
 	for (i = 0; i < amount; i ++) {
 	   if (converter_32.
 	            convert (std::complex<float> (V [2 * i] / 32767.0,
 	                                          V [2 * i + 1] / 32767.0),
 	                              outputBuffer, &result)) {
+	      outcount += result;
 	      for (j = 0; j < result; j ++) {
 	         buffer [2 * j    ] = real (outputBuffer [j]);
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
@@ -148,6 +150,12 @@ int32_t	result;
 //	      fprintf (stderr, "result %d\n", result);
 	      audioOutput (buffer, result);
 	   }
+	}
+
+	if (outcount > 48000) {
+	   fprintf (stderr, "incount %d outcount %d \n",
+	                               incount, outcount);
+	   incount = outcount = 0;
 	}
 }
 

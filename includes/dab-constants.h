@@ -124,7 +124,8 @@ float	im	= imag (z);
 
 //
 //	for service handling we define
-typedef struct {
+class packetdata {
+public:
 	bool	defined;
 	QString	serviceName;
 	int32_t	serviceId;
@@ -140,7 +141,13 @@ typedef struct {
 	int16_t	appType;
 	int16_t	compnr;
 	int16_t	packetAddress;
-} packetdata;
+	packetdata (void) {
+	   serviceName	= "";
+	   defined	= false;
+	}
+	~packetdata (void) {
+	}
+};
 
 typedef	struct {
 	bool	defined;

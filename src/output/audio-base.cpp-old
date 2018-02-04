@@ -32,7 +32,7 @@
  *	The class is the abstract sink for the data generated
  *	It will handle the "dumping" though
  */
-	audioBase::audioBase	(RingBuffer<int16_t> *b):
+	audioBase::audioBase	(void):
 	                            f_16000 (5,  8000, 48000),
 	                            f_24000 (5, 12000, 48000),
 	                            f_32000 (5, 16000, 96000) {
@@ -51,11 +51,8 @@ void	audioBase::stop	(void) {
 //
 //	This one is a hack for handling different baudrates coming from
 //	the aac decoder
-void	audioBase::audioOut	(int32_t rate) {
-int16_t V [rate / 8];
+void    audioBase::audioOut     (int16_t *V, int32_t amount, int32_t rate) {
 
-	while (buffer -> GetRingBufferReadAvailable () > rate / 8) {
-	   int16_t amount = buffer -> getDataFromBuffer (V, rate / 8);
 	   switch (rate) {
 	      case 16000:	
 	         audioOut_16000 (V, amount / 2);

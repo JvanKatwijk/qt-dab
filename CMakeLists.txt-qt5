@@ -182,12 +182,13 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/eep-protection.h
 	     ./includes/backend/firecode-checker.h
 	     ./includes/backend/frame-processor.h
-	     ./includes/backend/dab-virtual.h
 	     ./includes/backend/charsets.h
 	     ./includes/backend/galois.h
-	     ./includes/backend/msc-handler.h
 	     ./incluces/backend/reed-solomon.h
-	     ./includes/backend/audio/dab-audio.h
+	     ./includes/backend/msc-handler.h
+	     ./includes/backend/virtual-backend.h
+	     ./includes/backend/audio-backend.h
+	     ./includes/backend/data-backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp4processor.h
 	     ./includes/backend/audio/mp2processor.h
@@ -206,7 +207,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/virtual-datahandler.h
 	     ./includes/backend/data/pad-handler.h
 	     ./includes/backend/data/mot-data.h
-	     ./includes/backend/data/dab-data.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
 	     ./devices/rawfiles/rawfiles.h
@@ -237,20 +237,20 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/viterbi_768/viterbi-768.cpp
 	     ./src/backend/viterbi_768/spiral-no-sse.c
 	     ./src/backend/fic-handler.cpp
-	     ./src/backend/msc-handler.cpp
 	     ./src/backend/protection.cpp
 	     ./src/backend/eep-protection.cpp
 	     ./src/backend/uep-protection.cpp
 	     ./src/backend/fib-processor.cpp
 	     ./src/backend/firecode-checker.cpp
-	     ./src/backend/dab-virtual.cpp
 	     ./src/backend/frame-processor.cpp
 	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
-	     ./src/backend/dab-virtual.cpp
 	     ./src/backend/galois.cpp
 	     ./src/backend/reed-solomon.cpp
-	     ./src/backend/audio/dab-audio.cpp
+	     ./src/backend/msc-handler.cpp
+	     ./src/backend/virtual-backend.cpp
+	     ./src/backend/audio-backend.cpp
+	     ./src/backend/data-backend.cpp
 	     ./src/backend/audio/faad-decoder.cpp
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
@@ -268,7 +268,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/pad-handler.cpp
 	     ./src/backend/data/mot-data.cpp
-	     ./src/backend/data/dab-data.cpp
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
 	     ./devices/rawfiles/rawfiles.cpp
@@ -294,6 +293,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/backend/fic-handler.h
 	     ./includes/backend/fib-processor.h
+	     ./includes/backend/data-backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp2processor.h
 	     ./includes/backend/audio/mp4processor.h
@@ -304,7 +304,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/mot-databuilder.h
-	     ./includes/backend/data/dab-data.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/wavfiles/wavfiles.h

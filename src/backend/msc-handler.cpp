@@ -23,9 +23,9 @@
 #include	"dab-constants.h"
 #include	"radio.h"
 #include	"msc-handler.h"
-#include	"dab-virtual.h"
-#include	"dab-audio.h"
-#include	"dab-data.h"
+#include	"virtual-backend.h"
+#include	"audio-backend.h"
+#include	"data-backend.h"
 #include	"dab-params.h"
 //
 //	Interface program for processing the MSC.
@@ -37,20 +37,12 @@
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	mode,
-	                                 RingBuffer<int16_t> *audioBuffer,
-	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath) :
 	                                       params (mode) {
 	myRadioInterface	= mr;
-	this	-> audioBuffer	= audioBuffer;
-	this	-> dataBuffer	= dataBuffer;
 	this	-> picturesPath	= picturesPath;
 	cifVector. resize (55296);
-	cifCount		= 0;	// msc blocks in CIF
-	blkCount		= 0;
-	dabHandler		= new dabVirtual ();
-	work_to_be_done		= false;
-	dabModus		= 0;
+	theBackend		= new virtualBackend (0, 0);
 	BitsperBlock		= 2 * params. get_carriers ();
 	switch (mode) {
 	   case 4:	// 2 CIFS per 76 blocks
@@ -72,8 +64,8 @@
 }
 
 		mscHandler::~mscHandler	(void) {
-	dabHandler	-> stopRunning ();
-	delete		dabHandler;
+	theBackend	-> stopRunning ();
+	delete	theBackend;
 }
 
 //
@@ -82,61 +74,28 @@
 //	so, a little bit of locking seems wise while
 //	the actual changing of the settings is done in the
 //	thread executing process_mscBlock
-void	mscHandler::set_audioChannel (audiodata *d, packetdata *pd) {
+void	mscHandler::set_audioChannel (audiodata *d,
+	                              RingBuffer<int16_t> *audioBuffer) {
 	locker. lock ();
-	shortForm	= d	-> shortForm;
-	startAddr	= d	-> startAddr;
-	Length		= d	-> length;
-	protLevel	= d	-> protLevel;
-	bitRate		= d	-> bitRate;
-	language	= d	-> language;
-	type		= d	-> programType;
-	ASCTy		= d	-> ASCTy;
-	dabModus	= ASCTy == 077 ? DAB_PLUS : DAB;
-	dabHandler -> stopRunning ();
-	delete dabHandler;
-
-	dabHandler = new dabAudio (myRadioInterface,
-	                           dabModus,
-	                           Length * CUSize,
-	                           bitRate,
-	                           shortForm,
-	                           protLevel,
-	                           audioBuffer,
-	                           picturesPath);
-	work_to_be_done		= true;
+	theBackend -> stopRunning ();
+	delete theBackend;
+	theBackend = new audioBackend (myRadioInterface,
+	                               d,
+	                               audioBuffer,
+	                               picturesPath);
 	locker. unlock ();
 }
 //
-void	mscHandler::set_dataChannel (packetdata	*d) {
+void	mscHandler::set_dataChannel (packetdata	*d,
+	                             RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock ();
-	shortForm	= d	-> shortForm;
-	startAddr	= d	-> startAddr;
-	Length		= d	-> length;
-	protLevel	= d	-> protLevel;
-	DGflag		= d	-> DGflag;
-	bitRate		= d	-> bitRate;
-	FEC_scheme	= d	-> FEC_scheme;
-	DSCTy		= d	-> DSCTy;
-	packetAddress	= d	-> packetAddress;
-	appType		= d	-> appType;
-	dabHandler -> stopRunning ();
-	delete dabHandler;
-	dabHandler = new dabData (myRadioInterface,
-	                          DSCTy,
-	                          appType,
-	                          packetAddress,
-	                          Length * CUSize,
-	                          bitRate,
-	                          shortForm,
-	                          protLevel,
-	                          DGflag,
-	                          FEC_scheme,
-	                          dataBuffer,
-	                          picturesPath);
-//	these we need for actual processing
-//	and this one to get started
-	work_to_be_done	= true;
+	theBackend -> stopRunning ();
+	delete theBackend;
+//	fprintf (stderr, "bitRate = %d\n", d -> bitRate);
+	theBackend = new dataBackend (myRadioInterface,
+	                              d,
+	                              dataBuffer,
+	                              picturesPath);
 	locker. unlock ();
 }
 
@@ -151,10 +110,9 @@ void	mscHandler::set_dataChannel (packetdata	*d) {
 void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
-int16_t	*myBegin;
-
-	if (!work_to_be_done)
-	   return;
+std::vector<int16_t>myBegin;
+int16_t	startAddr;
+int16_t	Length;
 
 	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	and the normal operation is:
@@ -163,15 +121,18 @@ int16_t	*myBegin;
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
 
+
+//	OK, now we have a full CIF. We assume that the backend itself
+//	does the work in a separate thread.
 	locker. lock ();
-//
-//	OK, now we have a full CIF
-	blkCount	= 0;
-	cifCount	= (cifCount + 1) & 03;
-	myBegin		= &cifVector [startAddr * CUSize];
-//	Here we move the vector to be processed to a
-//	separate function executed by a separate thread
-	(void) dabHandler -> process (myBegin, Length * CUSize);
+	startAddr       = theBackend -> startAddr ();
+        Length          = theBackend -> Length    (); 
+	if (Length > 0) {		// Length = 0? virtual Backend
+	   myBegin. resize (Length * CUSize);
+	   memcpy (myBegin. data (), &cifVector [startAddr * CUSize],
+	                           Length * CUSize * sizeof (int16_t));
+	   (void) theBackend -> process (myBegin. data (), Length * CUSize);
+	}
 	locker. unlock ();
 }
 //
@@ -182,11 +143,15 @@ void	mscHandler::stopProcessing	(void) {
 
 void	mscHandler::stop		(void) {
 	work_to_be_done	= false;
-	dabHandler	-> stopRunning ();
+	theBackend	-> stopRunning ();
 }
 
 void	mscHandler::reset		(void) {
 	work_to_be_done	= false;
-	dabHandler	-> stopRunning ();
+	locker. lock ();
+	theBackend	-> stopRunning ();
+	delete theBackend;
+	theBackend	= new virtualBackend (0, 0);
+	locker. unlock ();
 }
 

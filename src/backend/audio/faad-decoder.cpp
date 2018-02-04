@@ -116,7 +116,6 @@ int16_t samples;
 long unsigned int       sampleRate;
 int16_t *outBuffer;
 NeAACDecFrameInfo       hInfo;
-uint8_t dummy   [10000];
 uint8_t channels;
 
         if (!aacInitialized) {
@@ -169,6 +168,6 @@ uint8_t channels;
         else
            fprintf (stderr, "Cannot handle these channels\n");
 
-        return samples / 2;
+        return samples;
 }
 

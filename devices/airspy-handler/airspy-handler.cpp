@@ -64,6 +64,7 @@ uint32_t samplerateCount;
 	mixer_agc		= false;
 	lna_agc			= false;
 	rf_bias			= false;
+	coarseOffset		= airspySettings -> value ("airspyOffset", 0). toInt ();
 	airspySettings	-> endGroup ();
 
 	device			= 0;
@@ -223,6 +224,7 @@ uint32_t samplerateCount;
 	airspySettings -> setValue ("vga", vgaGain);
 	airspySettings -> setValue ("mixer", mixerGain);
 	airspySettings -> setValue ("lna", lnaGain);
+	airspySettings	-> setValue ("airspyOffset", coarseOffset);
 	airspySettings	-> endGroup ();
 	if (device != NULL) {
 	   int result = my_airspy_stop_rx (device);

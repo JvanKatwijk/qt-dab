@@ -166,7 +166,7 @@ static
 	int		callback(airspy_transfer_t *);
 	int		data_available (void *buf, int buf_size);
 const	char *		getSerial (void);
-	int	open (void);
+	int		open (void);
 };
 
 #endif

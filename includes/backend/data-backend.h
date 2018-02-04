@@ -20,51 +20,38 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__DAB_DATA__
-#define	__DAB_DATA__
+#ifndef	__DATA_BACKEND__
+#define	__DATA_BACKEND__
 
 #include	<QSemaphore>
 #include	<vector>
-#include	"dab-virtual.h"
 #include	<QThread>
 #include	"ringbuffer.h"
 #include	<stdio.h>
 #include	<string.h>
-
+#include	"dab-constants.h"
+#include	"virtual-backend.h"
 
 class	frameProcessor;
 class	RadioInterface;
 class	protection;
 
-class	dabData:public QThread, public dabVirtual {
+class	dataBackend:public QThread, public virtualBackend {
 Q_OBJECT
 public:
-	dabData		(RadioInterface *mr,
-	                 uint8_t	DSCTy,
-	                 int16_t	packetAddress,
-	                 int16_t	appType,
-	                 int16_t	fragmentSize,
-	                 int16_t	bitRate,
-	                 bool		shortForm,
-	                 int16_t	protLevel,
-	                 uint8_t	DGflag,
-	                 int16_t	FEC_scheme,
+	dataBackend	(RadioInterface *mr,
+	                 packetdata	*d,
 	                 RingBuffer<uint8_t> *dataBuffer,
 	                 QString	picturesPath);
-	~dabData	(void);
+	~dataBackend	(void);
 int32_t	process		(int16_t *, int16_t);
 void	stopRunning	(void);
 private:
 	RadioInterface	*myRadioInterface;
-	uint8_t		DSCTy;
-	int16_t		packetAddress;
-	int16_t		fragmentSize;
-	int16_t		bitRate;
 	bool		shortForm;
 	int16_t		protLevel;
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
-	RingBuffer<uint8_t>	*dataBuffer;
 void	run		(void);
 	volatile bool	running;
 	int32_t		countforInterleaver;
@@ -79,10 +66,9 @@ void	run		(void);
 	int16_t         *theData [20];
 	int16_t         nextIn;
 	int16_t         nextOut;
-
-//
-signals:
-	void		show_mscErrors		(int);
+	int16_t		packetAddress;
+        int		fragmentSize;
+        int16_t		bitRate;
 };
 
 #endif

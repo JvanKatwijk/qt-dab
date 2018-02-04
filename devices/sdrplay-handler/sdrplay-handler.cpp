@@ -123,6 +123,8 @@ ULONG APIkeyValue_length = 255;
 //
 //	See if there are settings from previous incarnations
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
+	coarseOffset	=
+	           sdrplaySettings -> value ("sdrplayOffset", 0). toInt ();
 	gainSlider 		-> setValue (
 	            sdrplaySettings -> value ("sdrplayGain", 50). toInt ());
 
@@ -200,6 +202,7 @@ ULONG APIkeyValue_length = 255;
 	if (!libraryLoaded)
 	   return;
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
 	sdrplaySettings	-> setValue ("sdrplayGain", gainSlider -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value ());
 	sdrplaySettings	-> endGroup ();
@@ -587,4 +590,3 @@ mir_sdr_ErrT err;
 }
 
 	  
-

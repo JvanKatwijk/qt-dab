@@ -23,7 +23,7 @@
 #include	"dab-constants.h"
 #include	"radio.h"
 #include	"frame-processor.h"
-#include	"dab-data.h"
+#include	"data-backend.h"
 #include	"eep-protection.h"
 #include	"uep-protection.h"
 #include	"data-processor.h"
@@ -34,42 +34,29 @@
 //	and deconvolution, but it is a pretty simple operation
 //	so for now keep it in-line
 //
-//	\class dabData
 //	The main function of this class is to assemble the 
 //	MSCdatagroups and dispatch to the appropriate handler
 //
 //	fragmentsize == Length * CUSize
-	dabData::dabData	(RadioInterface *mr,
-	                         uint8_t	DSCTy,
-	                       	 int16_t	packetAddress,
-	                         int16_t	appType,
-	                         int16_t	fragmentSize,
-	                         int16_t	bitRate,
-	                       	 bool		shortForm,
-	                         int16_t 	protLevel,
-	                         uint8_t 	DGflag,
-	                       	 int16_t 	FEC_scheme,
+	dataBackend::dataBackend(RadioInterface *mr,
+	                         packetdata	*d,
 	                         RingBuffer<uint8_t> *dataBuffer,
 	                         QString	picturesPath) :
-	                            outV (24 * bitRate),
+	                             virtualBackend (d -> startAddr,
+	                                             d -> length),
+	                            outV (24 * d -> bitRate),
 	                            freeSlots (20) {
 int32_t i;
 	this	-> myRadioInterface	= mr;
-	this	-> DSCTy		= DSCTy;
-	this	-> packetAddress	= packetAddress;
-	this	-> fragmentSize	= fragmentSize;
-	this	-> bitRate	= bitRate;
-	this	-> shortForm	= shortForm;
-//	this	-> protLevel	= protLevel;
-        fprintf (stderr, "data: protlevel = %d\n", protLevel+1);
-	this	-> DGflag	= DGflag;
-	this	-> FEC_scheme	= FEC_scheme;
+	this	-> packetAddress	= d -> packetAddress;
+	this	-> fragmentSize		= d -> length * CUSize;
+	this	-> bitRate		= d -> bitRate;
 	our_frameProcessor	= new dataProcessor (mr,
-	                                             bitRate,
-	                                             DSCTy,
-	                                             appType,
-	                                             DGflag,
-	                                             FEC_scheme,
+	                                             d -> bitRate,
+	                                             d -> DSCTy,
+	                                             d -> appType,
+	                                             d -> DGflag,
+	                                             d -> FEC_scheme,
 	                                             dataBuffer,
 	                                             picturesPath);
 	nextIn                          = 0;
@@ -86,7 +73,7 @@ int32_t i;
 //
 //	The handling of the depuncturing and deconvolution is
 //	shared with that of the audio
-	if (shortForm)
+	if (d -> shortForm)
 	   protectionHandler	= new uep_protection (bitRate,
 	                                              protLevel);
 	else
@@ -95,16 +82,14 @@ int32_t i;
 //
 //	any reasonable (i.e. large) size will do here,
 //	as long as the parameter is a power of 2
-	Buffer		= new RingBuffer<int16_t>(64 * 32768);
 	start ();
 }
 
-	dabData::~dabData	(void) {
+	dataBackend::~dataBackend (void) {
 int16_t	i;
 	running = false;
 	while (this -> isRunning ())
 	   usleep (1);
-	delete Buffer;
 	delete protectionHandler;
 	for (i = 0; i < 16; i ++)
 	   delete[] interleaveData [i];
@@ -113,7 +98,7 @@ int16_t	i;
 	delete[]	interleaveData;
 }
 
-int32_t	dabData::process	(int16_t *v, int16_t cnt) {
+int32_t	dataBackend::process	(int16_t *v, int16_t cnt) {
 	(void)cnt;
 	while (!freeSlots. tryAcquire (1, 200))
            if (!running)
@@ -126,7 +111,7 @@ int32_t	dabData::process	(int16_t *v, int16_t cnt) {
 
 const   int16_t interleaveMap[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
 
-void	dabData::run	(void) {
+void	dataBackend::run	(void) {
 int16_t	countforInterleaver	= 0;
 int16_t interleaverIndex	= 0;
 uint8_t	shiftRegister [9];
@@ -176,7 +161,7 @@ int16_t	i, j;
 }
 
 //	It might take a msec for the task to stop
-void	dabData::stopRunning (void) {
+void	dataBackend::stopRunning (void) {
 	running = false;
 	while (this -> isRunning ())
 	   usleep (100);

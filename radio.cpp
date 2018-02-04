@@ -406,8 +406,6 @@ int32_t	frequency;
 	                                      threshold,
 	                                      diff_length,
 	                                      tii_delay,
-	                                      audioBuffer,
-	                                      dataBuffer,
 	                                      picturesPath
 #ifdef	IMPULSE_RESPONSE
 	                                      ,responseBuffer
@@ -1158,8 +1156,6 @@ void	RadioInterface::set_modeSelect (const QString &Mode) {
 	                                      threshold,
 	                                      diff_length,
 	                                      tii_delay,
-	                                      audioBuffer,
-	                                      dataBuffer,
 	                                      picturesPath
 #ifdef	IMPULSE_RESPONSE		
 	                                      , responseBuffer
@@ -1277,7 +1273,7 @@ void	RadioInterface::selectService (QString s) {
 	         if (show_data)
 	            dataDisplay -> show ();
 
-	        my_dabProcessor	-> set_audioChannel (&d, NULL);
+	        my_dabProcessor	-> set_audioChannel (&d, audioBuffer);
 	        soundOut	-> restart ();
 	        thereisSound	= true;
 	        showLabel (QString (" "));
@@ -1287,7 +1283,8 @@ void	RadioInterface::selectService (QString s) {
 	   case PACKET_SERVICE:
 	      {  packetdata d;
 	         my_dabProcessor -> dataforDataService (s, &d, 0);
-	         if ((d.  DSCTy == 0) || (d. bitRate == 0)) {
+	         if ((!d. defined) ||
+	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
 	                               d. DSCTy, d. bitRate);
 	            QMessageBox::warning (this, tr ("sdr"),
@@ -1295,7 +1292,7 @@ void	RadioInterface::selectService (QString s) {
 
 	            return;
 	         }
-	         my_dabProcessor -> set_dataChannel (&d);
+	         my_dabProcessor -> set_dataChannel (&d, dataBuffer);
 	         switch (d. DSCTy) {
 	            default:
 	               showLabel (QString ("unimplemented Data"));

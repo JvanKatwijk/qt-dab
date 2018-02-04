@@ -20,13 +20,13 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__DAB_AUDIO__
-#define	__DAB_AUDIO__
+#ifndef	__AUDIO_BACKEND__
+#define	__AUDIO_BACKEND__
 
 #include	<QSemaphore>
-#include	"dab-virtual.h"
+#include	"virtual-backend.h"
 #include	<vector>
-#ifdef	__THREADED_DECODING
+#ifdef	__THREADED_BACKEND
 #include	<QThread>
 #include	<atomic>
 #endif
@@ -37,28 +37,24 @@ class	frameProcessor;
 class	protection;
 class	RadioInterface;
 
-#ifdef	__THREADED_DECODING
-class	dabAudio:public QThread, public dabVirtual {
+#ifdef	__THREADED_BACKEND
+class	audioBackend:public QThread, public virtualBackend {
 #else
-class	dabAudio:public dabVirtual {
+class	audioBackend:public virtualBackend {
 #endif
 public:
-	dabAudio	(RadioInterface	*mr,
-	                 uint8_t dabModus,
-	                 int16_t fragmentSize,
-	                 int16_t bitRate,
-	                 bool	shortForm,
-	                 int16_t protLevel,
+	audioBackend	(RadioInterface	*mr,
+	                 audiodata	*d,
 	                 RingBuffer<int16_t> *,
 	                 QString	picturesPath);
-	~dabAudio	(void);
+	~audioBackend	(void);
 int32_t	process		(int16_t *, int16_t);
 void	stopRunning	(void);
 protected:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<int16_t>	*audioBuffer;
 private:
-#ifdef	__THREADED_DECODING
+#ifdef	__THREADED_BACKEND
 void	run		(void);
 	atomic<bool>	running;
 	QSemaphore	freeSlots;

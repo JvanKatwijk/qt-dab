@@ -10,12 +10,12 @@ TARGET		= qt-dab-1.0-alpha
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -83,12 +83,12 @@ HEADERS += ./radio.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/frame-processor.h \
-	   ./includes/backend/dab-virtual.h \
-	   ./includes/backend/audio/dab-audio.h \
+	   ./includes/backend/virtual-backend.h \
+	   ./includes/backend/audio-backend.h \
+	   ./includes/backend/data-backend.h \
 	   ./includes/backend/audio/mp2processor.h \
 	   ./includes/backend/audio/mp4processor.h \
 	   ./includes/backend/audio/faad-decoder.h \
-	   ./includes/backend/data/dab-data.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
 	   ./includes/backend/data/virtual-datahandler.h \
@@ -108,10 +108,10 @@ HEADERS += ./radio.h \
 	   ./includes/backend/protection.h \
 	   ./includes/backend/eep-protection.h \
 	   ./includes/backend/uep-protection.h \
+#	   ./includes/output/fir-filters.h \
 	   ./includes/output/audio-base.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
-	   ./includes/output/fir-filters.h \
            ./includes/various/fft-handler.h \
 	   ./includes/various/ringbuffer.h \
 	   ./includes/various/Xtan2.h \
@@ -150,15 +150,15 @@ SOURCES += ./main.cpp \
 	   ./src/backend/rscodec.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
-	   ./src/backend/dab-virtual.cpp \
 	   ./src/backend/frame-processor.cpp \
 	   ./src/backend/protTables.cpp \
-	   ./src/backend/audio/dab-audio.cpp \
+	   ./src/backend/virtual-backend.cpp \
+	   ./src/backend/audio-backend.cpp \
+	   ./src/backend/data-backend.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
 	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
-	   ./src/backend/data/dab-data.cpp \
 	   ./src/backend/data/data-processor.cpp \
 	   ./src/backend/data/virtual-datahandler.cpp \
 	   ./src/backend/data/tdc-datahandler.cpp \
@@ -173,10 +173,10 @@ SOURCES += ./main.cpp \
 	   ./src/backend/data/journaline/dabdgdec_impl.c \
 	   ./src/backend/data/journaline/newsobject.cpp \
 	   ./src/backend/data/journaline/NML.cpp \
+#	   ./src/output/fir-filters.cpp \
 	   ./src/output/audio-base.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
-	   ./src/output/fir-filters.cpp \
            ./src/various/fft-handler.cpp \
 	   ./src/various/Xtan2.cpp \
 	   ./src/various/dab-params.cpp \
@@ -238,6 +238,7 @@ CONFIG		+= try-epg		# do not use
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
+#DEFINES	+= __THREADED_BACKEND
 #DEFINES	+= __THREADED_DECODING
 
 #you do not want this
@@ -310,6 +311,7 @@ CONFIG		+= spectrum
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
+DEFINES	+= __THREADED_BACKEND
 #DEFINES	+= __THREADED_DECODING
 
 #you do not want this
@@ -319,7 +321,6 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 
 DEFINES		+= TII_GUESSING
-
 CONFIG		+= impulseresponse
 }
 

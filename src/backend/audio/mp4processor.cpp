@@ -277,6 +277,7 @@ int32_t		tmp;
 	                                     theAudioUnit,
 	                                     aac_frame_length);
 	      err	= tmp == 0;
+	      emit isStereo (!err);
 //	      handle_aacFrame (&outVector [au_start [i]],
 //	                                   aac_frame_length,
 //	                                   dacRate,
@@ -284,7 +285,6 @@ int32_t		tmp;
 //	                                   mpegSurround,
 //	                                   aacChannelMode,
 //	                                   &err);
-	      emit isStereo (aacChannelMode);
 	      if (err) 
 	         aacErrors ++;
 	      if (++aacFrames > 25) {

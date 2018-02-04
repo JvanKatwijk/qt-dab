@@ -100,6 +100,8 @@ public:
 	void	resetBuffer		(void);
 	int16_t	maxGain			(void);
 	int16_t	bitDepth		(void);
+//
+//	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 private:
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;

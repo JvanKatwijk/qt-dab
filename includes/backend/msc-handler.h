@@ -33,31 +33,30 @@
 #include	"dab-params.h"
 
 class	RadioInterface;
-class	dabVirtual;
+class	virtualBackend;
 
 class mscHandler  {
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
-	                                         RingBuffer<int16_t> *,
-	                                         RingBuffer<uint8_t> *,
 	                                         QString);
 			~mscHandler		(void);
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-	void		set_audioChannel	(audiodata	*, packetdata *);
-	void		set_dataChannel         (packetdata	*);
+	void		set_audioChannel	(audiodata *,
+	                                           RingBuffer<int16_t> *);
+	void		set_dataChannel         (packetdata *,
+	                                           RingBuffer<uint8_t> *);
 	void		stopProcessing		(void);
 	void		stop			(void);
 	void		reset			(void);
 private:
 	RadioInterface	*myRadioInterface;
-	RingBuffer<int16_t>	*audioBuffer;
 	RingBuffer<uint8_t>	*dataBuffer;
 	QString		picturesPath;
 	dabParams	params;
 	QMutex		locker;
 	bool		audioService;
-	dabVirtual	*dabHandler;
+	virtualBackend	*theBackend;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;

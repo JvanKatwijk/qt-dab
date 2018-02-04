@@ -36,18 +36,21 @@ public:
 virtual			~virtualInput 	(void);
 virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency	(void);
-virtual		int32_t	defaultFrequency	(void);
+virtual		int32_t	defaultFrequency(void);
 virtual		bool	restartReader	(void);
 virtual		void	stopReader	(void);
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples		(void);
 virtual		void	resetBuffer	(void);
 virtual		int16_t	bitDepth	(void) { return 10;}
+virtual		int32_t	getOffset	(void);
+virtual		void	setOffset	(int32_t);
 //
 protected:
 		int32_t	lastFrequency;
 	        int32_t	vfoOffset;
 	        int	theGain;
+		int32_t	coarseOffset;
 };
 #endif
 

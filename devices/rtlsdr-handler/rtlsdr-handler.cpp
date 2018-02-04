@@ -200,6 +200,7 @@ int	k;
 //
 //	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	coarseOffset	= rtlsdrSettings -> value ("rtlsdrOffset", 0). toInt ();
 	temp = rtlsdrSettings -> value ("externalGain", "10"). toString ();
 	k	= combo_gain -> findText (temp);
 	if (k != -1) {
@@ -259,7 +260,9 @@ int	k;
 	   return;
 	}
 
+	stopReader ();
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	rtlsdrSettings	-> setValue ("rtlsdrOffset", coarseOffset);
 	rtlsdrSettings	-> setValue ("externalGain",
 	                                      combo_gain -> currentText ());
 	rtlsdrSettings	-> setValue ("autogain",
@@ -270,8 +273,7 @@ int	k;
 	                                      KhzOffset	-> value ());
 	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup ();
-
-	stopReader ();
+	
 	this -> rtlsdr_close (device);
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
@@ -541,4 +543,4 @@ void	rtlsdrHandler::dumpButton_pressed (void) {
 	   dumpButton -> setText ("write raw bytes");
 	}
 }
-	
+

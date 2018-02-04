@@ -40,8 +40,6 @@
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,
 	                                 int16_t	tii_delay,
-	                                 RingBuffer<int16_t> *audioBuffer,
-	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath
 #ifdef	IMPULSE_RESPONSE
 	                                 ,RingBuffer<float> *responseBuffer
@@ -60,8 +58,6 @@
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
-	                                                audioBuffer,
-	                                                dataBuffer,
 	                                                picturesPath),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
@@ -100,7 +96,6 @@ int32_t	i;
 	ofdmSymbolCount			= 0;
 	tokenCount			= 0;
 	fineCorrector			= 0;	
-	coarseCorrector			= 0;
 	f2Correction			= true;
 	attempts			= 0;
 	scanMode			= false;
@@ -156,12 +151,12 @@ const
 int32_t		syncBufferMask	= syncBufferSize - 1;
 float		envBuffer	[syncBufferSize];
 
-	coarseCorrector = 0;
         fineCorrector   = 0;
         f2Correction    = true;
         syncBufferIndex = 0;
 	attempts	= 0;
         theRig  -> resetBuffer ();
+	coarseOffset	= theRig -> getOffset ();
 	myReader. setRunning (true);
 	my_ofdmDecoder. start ();
 //
@@ -193,7 +188,7 @@ SyncOnNull:
 	   setSynced (false);
 	   while (cLevel / C_LEVEL_SIZE  > 0.40 * myReader. get_sLevel ()) {
 	      std::complex<float> sample	=
-	                      myReader. getSample (coarseCorrector + fineCorrector);
+	                      myReader. getSample (coarseOffset + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
 	      cLevel += envBuffer [syncBufferIndex] -
@@ -217,7 +212,7 @@ SyncOnNull:
 SyncOnEndNull:
 	   while (cLevel / C_LEVEL_SIZE < 0.75 * myReader. get_sLevel ()) {
 	      std::complex<float> sample =
-	              myReader. getSample (coarseCorrector + fineCorrector);
+	              myReader. getSample (coarseOffset + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);
 //	update the levels
 	      cLevel += envBuffer [syncBufferIndex] -
@@ -246,7 +241,7 @@ SyncOnPhase:
   *	is part of the samples read.
   */
 	myReader. getSamples (ofdmBuffer. data (),
-	                        T_u, coarseCorrector + fineCorrector);
+	                        T_u, coarseOffset + fineCorrector);
 //
 //	and then, call upon the phase synchronizer to verify/compute
 //	the real "first" sample
@@ -277,7 +272,7 @@ Block_0:
 	   setSynced (true);
 	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
-	                           coarseCorrector + fineCorrector);
+	                           coarseOffset + fineCorrector);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 
 //	Here we look only at the block_0 when we need a coarse
@@ -287,9 +282,9 @@ Block_0:
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
 	      if (correction != 100) {
-	         coarseCorrector	+= correction * carrierDiff;
-	         if (abs (coarseCorrector) > Khz (35))
-	            coarseCorrector = 0;
+	         coarseOffset	+= correction * carrierDiff;
+	         if (abs (coarseOffset) > Khz (35))
+	            coarseOffset = 0;
 	      }
 	   }
 /**
@@ -306,7 +301,7 @@ Data_blocks:
 	   for (ofdmSymbolCount = 1;
 	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data (),
-	                              T_s, coarseCorrector + fineCorrector);
+	                              T_s, coarseOffset + fineCorrector);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -318,7 +313,7 @@ Data_blocks:
 	        ofdmSymbolCount <  (uint16_t)nrBlocks;
 	        ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data (),
-	                              T_s, coarseCorrector + fineCorrector);
+	                              T_s, coarseOffset + fineCorrector);
 	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -337,7 +332,7 @@ NewOffset:
 	   syncBufferIndex	= 0;
 	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer. data (),
-	                         T_null, coarseCorrector);
+	                         T_null, coarseOffset);
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 
@@ -395,12 +390,12 @@ NewOffset:
   *	we just check the fineCorrector
   */
 	   if (fineCorrector > carrierDiff / 2) {
-	      coarseCorrector += carrierDiff;
+	      coarseOffset += carrierDiff;
 	      fineCorrector -= carrierDiff;
 	   }
 	   else
 	   if (fineCorrector < -carrierDiff / 2) {
-	      coarseCorrector -= carrierDiff;
+	      coarseOffset -= carrierDiff;
 	      fineCorrector += carrierDiff;
 	   }
 ReadyForNewFrame:
@@ -440,11 +435,12 @@ void	dabProcessor::stop	(void) {
 
 void	dabProcessor::coarseCorrectorOn (void) {
 	f2Correction 	= true;
-	coarseCorrector	= 0;
+	coarseOffset	= 0;
 }
 
 void	dabProcessor::coarseCorrectorOff (void) {
 	f2Correction	= false;
+	theRig	-> setOffset (coarseOffset);
 }
 
 void	dabProcessor::set_scanMode	(bool b) {
@@ -477,12 +473,14 @@ void	dabProcessor::dataforDataService	(int16_t d,   packetdata *dd) {
 	my_ficHandler. dataforDataService (d, dd);
 }
 
-void	dabProcessor::set_audioChannel (audiodata *d, packetdata *pd) {
-	my_mscHandler. set_audioChannel (d, pd);
+void	dabProcessor::set_audioChannel (audiodata *d,
+	                                      RingBuffer<int16_t> *b) {
+	my_mscHandler. set_audioChannel (d, b);
 }
 
-void	dabProcessor::set_dataChannel (packetdata *d) {
-	my_mscHandler. set_dataChannel (d);
+void	dabProcessor::set_dataChannel (packetdata *d,
+	                                      RingBuffer<uint8_t> *b) {
+	my_mscHandler. set_dataChannel (d, b);
 }
 
 uint8_t	dabProcessor::get_ecc		(void) {

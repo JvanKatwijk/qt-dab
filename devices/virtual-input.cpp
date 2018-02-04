@@ -66,3 +66,11 @@ int32_t	virtualInput::defaultFrequency	(void) {
 void	virtualInput::resetBuffer	(void) {
 }
 
+void	virtualInput::setOffset		(int32_t o) {
+	coarseOffset = o;
+}
+
+int32_t	virtualInput::getOffset		(void) {
+	return coarseOffset;
+}
+

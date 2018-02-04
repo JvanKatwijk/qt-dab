@@ -18,32 +18,38 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 //
-//	dummy for the dab handler
+//	dummy for the dab backends
 //
 #include	"dab-constants.h"
-#include	"dab-virtual.h"
+#include	"virtual-backend.h"
 
-#include	"radio.h"		// defines RadioInterface
-#include	"audiosink.h"	// defines audioSink
-
-	dabVirtual::dabVirtual	(void) {
+	virtualBackend::virtualBackend	(int16_t a, int16_t b) {
+	startAddress	= a;
+	segmentLength	= b;
 }
 
-	dabVirtual::~dabVirtual	(void) {
+	virtualBackend::~virtualBackend	(void) {
 }
 
-int32_t	dabVirtual::process	(int16_t *v, int16_t c) {
+int32_t	virtualBackend::process	(int16_t *v, int16_t c) {
 	(void)v;
 	(void)c;
 	return 32768;
 }
 
-void	dabVirtual::stopRunning	(void) {
+int16_t	virtualBackend::startAddr (void) {
+	return startAddress;
 }
 
-void	dabVirtual::stop	(void) {
+int16_t	virtualBackend::Length    (void) {
+	return segmentLength;
+}
+
+void	virtualBackend::stopRunning	(void) {
+}
+
+void	virtualBackend::stop	(void) {
 }
 

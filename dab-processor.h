@@ -54,8 +54,6 @@ public:
 	                         int16_t,
 	                         int16_t,
 	                         int16_t,
-	                         RingBuffer<int16_t> *,
-	                         RingBuffer<uint8_t> *,
 	                         QString
 #ifdef	IMPULSE_RESPONSE
 	                         , RingBuffer<float> *
@@ -86,8 +84,10 @@ public:
         void		dataforDataService      (QString &,
 	                                             packetdata *, int16_t);
         void		dataforDataService      (int16_t,   packetdata *);
-	void		set_audioChannel	(audiodata *, packetdata *);
-	void		set_dataChannel		(packetdata *);
+	void		set_audioChannel	(audiodata *,
+	                                             RingBuffer<int16_t> *);
+	void		set_dataChannel		(packetdata *,
+	                                             RingBuffer<uint8_t> *);
         uint8_t		get_ecc                 (void);
         int32_t		get_ensembleId          (void);
         QString		get_ensembleName        (void);
@@ -119,7 +119,7 @@ private:
 	int32_t		carrierDiff;
 	std::vector<std::complex<float> > dataBuffer;
 	int16_t		fineCorrector;
-	int32_t		coarseCorrector;
+	int32_t		coarseOffset;
 
 	bool		f2Correction;
 	int32_t		tokenCount;
