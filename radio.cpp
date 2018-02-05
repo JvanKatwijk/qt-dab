@@ -364,7 +364,6 @@ QString h;
 void	RadioInterface::doStart (QString dev) {
 	inputDevice = setDevice	(deviceSelector -> currentText ());
 	if (inputDevice == NULL) {
-//
 //	just in case someone wants to push all those nice buttons that
 //	are now connected to erroneous constructs
 //	Some buttons should not be touched before we have a device
@@ -394,7 +393,7 @@ void	RadioInterface::doStart (QString dev) {
 	   disconnect (show_irButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_irSwitch (void)));
 #endif
-//
+
 	   return;
 	}
 	emit doStart ();
