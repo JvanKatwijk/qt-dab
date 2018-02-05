@@ -312,7 +312,7 @@ int16_t	altCarrier	= -1;
                                     conj (theBuffer [T_u / 2 + i + 1])));
         avg /= (carriers / 4);
 
-	for (i = - carriers / 2; i < - carriers / 2 + 5 * 48; i += 2) {
+	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
 	   int index = T_u / 2 + i;
 	   float sum_1 = 0;
 	   float sum_2 = 0;
@@ -345,11 +345,12 @@ int16_t	altCarrier	= -1;
 	   }
 	}
 
-	if (startCarrier != altCarrier)
+	if (startCarrier != altCarrier) {
 //	   fprintf (stderr, "alternative start carriers %d %d\n",
 //	                                        startCarrier, altCarrier);
 	                                   
-//	   return;
+	   return;
+	}
         if (startCarrier <  -carriers / 2)	// nothing found
            return;
 //	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
@@ -375,7 +376,8 @@ L1:
         }
 
 	if (*mainId != -1)
-           fprintf (stderr, "the carrier is %d, the pattern is %llx\n",
+           fprintf (stderr, "(%d) the carrier is %d, the pattern is %llx\n",
+	                                 *mainId,
                                          startCarrier,
 	                                 theTable [*mainId]. pattern);
 }

@@ -263,37 +263,38 @@ QString h;
 	ensembleDisplay	-> setModel (&ensemble);
 //
 //	The connects:
-	connect (streamoutSelector, SIGNAL (activated (int)),
-	         this,  SLOT (set_streamSelector (int)));
-	connect (showProgramData, SIGNAL (clicked (void)),
-	         this, SLOT (toggle_show_data (void)));
-	connect (saveEnsembleData, SIGNAL (clicked (void)),
-	         this, SLOT (showEnsembleData (void)));
-	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectService (QModelIndex)));
-	connect (resetButton, SIGNAL (clicked (void)),
-	         this, SLOT (autoCorrector_on (void)));
-	connect	(scanButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_Scanning (void)));
-	connect (nextChannelButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_nextChannel (void)));
 	connect (quitButton, SIGNAL (clicked ()),
 	         this, SLOT (TerminateProcess (void)));
-	connect (modeSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_modeSelect (const QString &)));
-	connect (bandSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_bandSelect (const QString &)));
-	connect (dumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_sourceDump (void)));
-	connect (audioDumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_audioDump (void)));
-	connect (tiiButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_tiiSwitch (void)));
-#ifdef	IMPULSE_RESPONSE
-	connect (show_irButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_irSwitch (void)));
-#endif
-	
+
+	connect (streamoutSelector, SIGNAL (activated (int)),
+	         this,  SLOT (set_streamSelector (int)));
+//	connect (showProgramData, SIGNAL (clicked (void)),
+//	         this, SLOT (toggle_show_data (void)));
+//	connect (saveEnsembleData, SIGNAL (clicked (void)),
+//	         this, SLOT (showEnsembleData (void)));
+//	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+//	         this, SLOT (selectService (QModelIndex)));
+//	connect (resetButton, SIGNAL (clicked (void)),
+//	         this, SLOT (autoCorrector_on (void)));
+//	connect	(scanButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_Scanning (void)));
+//	connect (nextChannelButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_nextChannel (void)));
+//	connect (modeSelector, SIGNAL (activated (const QString &)),
+//	         this, SLOT (set_modeSelect (const QString &)));
+//	connect (bandSelector, SIGNAL (activated (const QString &)),
+//	         this, SLOT (set_bandSelect (const QString &)));
+//	connect (dumpButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_sourceDump (void)));
+//	connect (audioDumpButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_audioDump (void)));
+//	connect (tiiButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_tiiSwitch (void)));
+//#ifdef	IMPULSE_RESPONSE
+//	connect (show_irButton, SIGNAL (clicked (void)),
+//	         this, SLOT (set_irSwitch (void)));
+//#endif
+//	
 //	display the version
 	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
 	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
@@ -347,7 +348,7 @@ QString h;
 
 	
 	my_dabProcessor	= NULL;
-//	if a device is selected, we just start, otherwise
+//	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	if (inputDevice != NULL) 
 	   emit doStart ();
@@ -363,6 +364,37 @@ QString h;
 void	RadioInterface::doStart (QString dev) {
 	inputDevice = setDevice	(deviceSelector -> currentText ());
 	if (inputDevice == NULL) {
+//
+//	just in case someone wants to push all those nice buttons that
+//	are now connected to erroneous constructs
+//	Some buttons should not be touched before we have a device
+	   disconnect (showProgramData, SIGNAL (clicked (void)),
+	               this, SLOT (toggle_show_data (void)));
+	   disconnect (saveEnsembleData, SIGNAL (clicked (void)),
+	               this, SLOT (showEnsembleData (void)));
+	   disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	               this, SLOT (selectService (QModelIndex)));
+	   disconnect (resetButton, SIGNAL (clicked (void)),
+	               this, SLOT (autoCorrector_on (void)));
+	   disconnect (scanButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_Scanning (void)));
+	   disconnect (nextChannelButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_nextChannel (void)));
+	   disconnect (modeSelector, SIGNAL (activated (const QString &)),
+	               this, SLOT (set_modeSelect (const QString &)));
+	   disconnect (bandSelector, SIGNAL (activated (const QString &)),
+	               this, SLOT (set_bandSelect (const QString &)));
+	   disconnect (dumpButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_sourceDump (void)));
+	   disconnect (audioDumpButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_audioDump (void)));
+	   disconnect (tiiButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_tiiSwitch (void)));
+#ifdef	IMPULSE_RESPONSE
+	   disconnect (show_irButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_irSwitch (void)));
+#endif
+//
 	   return;
 	}
 	emit doStart ();
@@ -387,6 +419,33 @@ int32_t	frequency;
 	                               tr ("Opening  input stream failed\n"));
 	   return;	// give it another try
 	}
+//	Some buttons should not be touched before we have a device
+	connect (showProgramData, SIGNAL (clicked (void)),
+	         this, SLOT (toggle_show_data (void)));
+	connect (saveEnsembleData, SIGNAL (clicked (void)),
+	         this, SLOT (showEnsembleData (void)));
+	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	         this, SLOT (selectService (QModelIndex)));
+	connect (resetButton, SIGNAL (clicked (void)),
+	         this, SLOT (autoCorrector_on (void)));
+	connect	(scanButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_Scanning (void)));
+	connect (nextChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_nextChannel (void)));
+	connect (modeSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (set_modeSelect (const QString &)));
+	connect (bandSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (set_bandSelect (const QString &)));
+	connect (dumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_sourceDump (void)));
+	connect (audioDumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_audioDump (void)));
+	connect (tiiButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_tiiSwitch (void)));
+#ifdef	IMPULSE_RESPONSE
+	connect (show_irButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_irSwitch (void)));
+#endif
 //
 //	we avoided up till now connecting the channel selector
 //	to the slot since that function does a lot more that we
