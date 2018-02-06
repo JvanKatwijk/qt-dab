@@ -1007,6 +1007,7 @@ char		label [17];
 	      flagfield	= getLBits (d, offset, 16);
 	      for (i = 0; i < 16; i ++)
 	         label [i] = getBits_8 (d, offset + 8 * i);
+	      offset += 16*8;
 //	      fprintf (stderr, "FIG1/4: Sid = %8x\tp/d=%d\tSCidS=%1X\tflag=%8X\t%s\n",
 //	                        SId, pd_flag, SCidS, flagfield, label);
 	      break;
