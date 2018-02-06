@@ -142,6 +142,7 @@ private:
 	void		FIG0Extension1		(uint8_t *);
 	void		FIG0Extension2		(uint8_t *);
 	void		FIG0Extension3		(uint8_t *);
+	void            FIG0Extension4          (uint8_t *);
 	void		FIG0Extension5		(uint8_t *);
 	void		FIG0Extension8		(uint8_t *);
 	void		FIG0Extension9		(uint8_t *);
