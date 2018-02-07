@@ -915,7 +915,6 @@ int	i;
 
 void	fib_processor::process_FIG1 (uint8_t *d) {
 uint8_t		charSet, extension;
-uint32_t    EId = 0;
 uint32_t	SId	= 0;
 uint8_t		Rfu;
 // oe not found in spec ETSI EN 300 401 V2.1.1 (2017-01)
@@ -937,7 +936,7 @@ char		label [17];
 	offset = 16;
 	switch (extension) {
 	   case 0: {	// Ensemble label 8.1.13
-	      EId	= getBits (d, 16, 16);
+	      SId	= getBits (d, 16, 16);
 	      offset += 16;
 	      if ((charSet <= 16)) { // EBU Latin based repertoire
 	         for (i = 0; i < 16; i ++) {
