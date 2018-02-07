@@ -42,4 +42,4 @@ private:
 	QString	code_to_string		(uint8_t, uint8_t);
 };
 
-#endif;
+#endif
