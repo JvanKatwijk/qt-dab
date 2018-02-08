@@ -87,22 +87,24 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
-		sdrplayHandler		(QSettings *);
-		~sdrplayHandler		(void);
-	void	setVFOFrequency		(int32_t);
-	int32_t	getVFOFrequency		(void);
-	int32_t	defaultFrequency	(void);
+			sdrplayHandler		(QSettings *);
+			~sdrplayHandler		(void);
+	void		setVFOFrequency		(int32_t);
+	int32_t		getVFOFrequency		(void);
+	int32_t		defaultFrequency	(void);
 
-	bool	restartReader		(void);
-	void	stopReader		(void);
-	int32_t	getSamples		(std::complex<float> *, int32_t);
-	int32_t	Samples			(void);
-	void	resetBuffer		(void);
-	int16_t	maxGain			(void);
-	int16_t	bitDepth		(void);
+	bool		restartReader		(void);
+	void		stopReader		(void);
+	int32_t		getSamples		(std::complex<float> *,
+	                                                          int32_t);
+	int32_t		Samples			(void);
+	void		resetBuffer		(void);
+	int16_t		maxGain			(void);
+	int16_t		bitDepth		(void);
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;
+	float		denominator;
 private:
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;

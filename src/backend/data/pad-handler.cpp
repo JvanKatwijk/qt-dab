@@ -219,19 +219,19 @@ std::vector<uint8_t> data;		// for the local addition
 
 	   switch (appType) {
 	      default:
-	         return;	// sorry, we do not handle this
+	         return; // sorry, we do not handle this
 
-	      case 2:
-	      case 3:
+	      case 2:	 // Dynamic label segment, start of X-PAD data group
+	      case 3:	 // Dynamic label segment, continuation of X-PAD data group
 	         dynamicLabel ((uint8_t *)(data. data ()),
 	                        data. size (), CI_table [i]);
 	         break;
 
-	      case 12:
+	      case 12:	 // MOT, start of X-PAD data group
 	         new_MSC_element (data, dataGroupLength);
 	         break;
 
- 	      case 13:
+ 	      case 13:	 // MOT, continuation of X-PAD data group
 	         add_MSC_element (data);
 	         break;
 	   }

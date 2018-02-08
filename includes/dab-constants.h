@@ -181,12 +181,12 @@ uint16_t	res	= 0;
 }
 
 static inline
-uint16_t	getBits_1 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_1 (uint8_t *d, int32_t offset) {
 	return (d [offset] & 0x01);
 }
 
 static inline
-uint16_t	getBits_2 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_2 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -194,7 +194,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_3 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_3 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -204,7 +204,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_4 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_4 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -216,7 +216,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_5 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_5 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -230,7 +230,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_6 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_6 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -246,7 +246,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_7 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_7 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -264,7 +264,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_8 (uint8_t *d, int16_t offset) {
+uint16_t	getBits_8 (uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -286,7 +286,7 @@ uint16_t	res	= d [offset];
 
 static inline
 uint32_t	getLBits	(uint8_t *d,
-	                         int16_t offset, int16_t amount) {
+	                         int32_t offset, int16_t amount) {
 uint32_t	res	= 0;
 int16_t		i;
 
@@ -298,11 +298,11 @@ int16_t		i;
 }
 
 static inline
-bool	check_CRC_bits (uint8_t *in, int16_t size) {
+bool	check_CRC_bits (uint8_t *in, int32_t size) {
 static
 const uint8_t crcPolynome [] =
 	{0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0};	// MSB .. LSB
-int16_t	i, f;
+int32_t	i, f;
 uint8_t	b [16];
 int16_t	Sum	= 0;
 
@@ -330,7 +330,7 @@ int16_t	Sum	= 0;
 }
 
 static inline
-bool	check_crc_bytes (uint8_t *msg, int16_t len) {
+bool	check_crc_bytes (uint8_t *msg, int32_t len) {
 int i, j;
 uint16_t	accumulator	= 0xFFFF;
 uint16_t	crc;

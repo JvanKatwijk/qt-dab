@@ -44,13 +44,13 @@
 	                         QString	picturesPath) :
 	                             virtualBackend (d -> startAddr,
 	                                             d -> length),
-	                            outV (24 * d -> bitRate),
 	                            freeSlots (20) {
 int32_t i;
 	this	-> myRadioInterface	= mr;
 	this	-> packetAddress	= d -> packetAddress;
 	this	-> fragmentSize		= d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
+	this	-> protLevel		= d -> protLevel;
 	our_frameProcessor	= new dataProcessor (mr,
 	                                             d -> bitRate,
 	                                             d -> DSCTy,
@@ -64,6 +64,7 @@ int32_t i;
         for (i = 0; i < 20; i ++)
            theData [i] = new int16_t [fragmentSize];
 
+	outV			= new uint8_t [24 * bitRate];
 	interleaveData		= new int16_t *[16]; // the size
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i] = new int16_t [fragmentSize];
@@ -75,13 +76,11 @@ int32_t i;
 //	shared with that of the audio
 	if (d -> shortForm)
 	   protectionHandler	= new uep_protection (bitRate,
-	                                              protLevel);
+	                                              d -> protLevel);
 	else
 	   protectionHandler	= new eep_protection (bitRate,
-	                                              protLevel);
+	                                              d -> protLevel);
 //
-//	any reasonable (i.e. large) size will do here,
-//	as long as the parameter is a power of 2
 	start ();
 }
 
@@ -96,6 +95,7 @@ int16_t	i;
         for (i = 0; i < 20; i ++)
            delete [] theData [i];
 	delete[]	interleaveData;
+	delete		outV;
 }
 
 int32_t	dataBackend::process	(int16_t *v, int16_t cnt) {
@@ -142,7 +142,7 @@ int16_t	i, j;
 	      continue;
 	   }
 //
-	   protectionHandler -> deconvolve (tempX, fragmentSize, outV. data ());
+	   protectionHandler -> deconvolve (tempX, fragmentSize, outV);
 
 //	and the inline energy dispersal
 	   memset (shiftRegister, 1, 9);

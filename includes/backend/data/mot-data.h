@@ -92,16 +92,16 @@ void		process_mscGroup	(uint8_t *,
 	                                 uint16_t);
 void		processHeader (int16_t	transportId,
 	                       uint8_t	*segment,
-	                       int16_t	segmentSize,
+	                       int32_t	segmentSize,
 	                       bool	lastFlag);
 void		processDirectory (int16_t	transportId,
 	                       uint8_t	*segment,
-	                       int16_t	segmentSize,
+	                       int32_t	segmentSize,
 	                       bool	lastFlag);
 void		directorySegment (uint16_t	transportId,
 	                          uint8_t	*segment,
 	                          int16_t	segmentNumber,
-	                          int16_t	segmentSize,
+	                          int32_t	segmentSize,
 	                          bool		lastFlag);
 void		analyse_theDirectory	(void);
 int16_t		get_dirEntry	(int16_t	number,
@@ -111,7 +111,7 @@ int16_t		get_dirEntry	(int16_t	number,
 void		processSegment	(int16_t	transportId,
 	                         uint8_t	*segment,
 	                         int16_t	segmentNumber,
-	                         int16_t	segmentSize,
+	                         int32_t	segmentSize,
 	                         bool		lastFlag);
 	void	my_help		(void);
 private:

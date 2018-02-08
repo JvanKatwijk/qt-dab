@@ -184,10 +184,14 @@ ULONG APIkeyValue_length = 255;
 	            this, SLOT (set_antennaControl (const QString &)));
 	}
 
-	if (hwVersion == 255)
+	if (hwVersion == 255) {
 	   nrBits	= 14;
-	else
+	   denominator	= 16384;
+	}
+	else {
 	   nrBits	= 12;
+	   denominator	= 2048;
+	}
 	   
 	unsigned char text;
 	(void)my_mir_sdr_GetHwVersion (&text);
@@ -312,12 +316,13 @@ void myStreamCallback (int16_t		*xi,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
+float	denominator	= p -> denominator;
 std::complex<float> *localBuf =
 	   (std::complex<float> *)alloca (numSamples * sizeof (std::complex<float>));
 
 	for (i = 0; i <  (int)numSamples; i ++)
-	   localBuf [i] = std::complex<float> (float (xi [i]) / 2048.0,
-	                                       float (xq [i]) / 2048.0);
+	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
+	                                       float (xq [i]) / denominator);
 	p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
 	(void)	firstSampleNum;
 	(void)	grChanged;

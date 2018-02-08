@@ -80,21 +80,21 @@
 }
 
 
-void	dataProcessor::addtoFrame (std::vector<uint8_t> outV) {
+void	dataProcessor::addtoFrame (uint8_t *outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
 	   if ((this -> DSCTy == 5) &&
 	       (this -> DGflag))	// no datagroups
-	      handleTDCAsyncstream (outV. data (), 24 * bitRate);
+	      handleTDCAsyncstream (outV, 24 * bitRate);
 	   else
-	      handlePackets (outV. data (), 24 * bitRate);
+	      handlePackets (outV, 24 * bitRate);
 }
 //
 //	While for a full mix data and audio there will be a single packet in a
 //	data compartment, for an empty mix, there may be many more
-void	dataProcessor::handlePackets (uint8_t *data, int16_t length) {
+void	dataProcessor::handlePackets (uint8_t *data, int32_t length) {
 	while (true) {
-	   int16_t pLength = (getBits_2 (data, 0) + 1) * 24 * 8;
+	   int32_t pLength = (getBits_2 (data, 0) + 1) * 24 * 8;
 	   if (length < pLength)	// be on the safe side
 	      return;
 	   handlePacket (data);
@@ -111,28 +111,29 @@ void	dataProcessor::handlePackets (uint8_t *data, int16_t length) {
 //	the address. For the time being we only handle a single
 //	stream!!!!
 void	dataProcessor::handlePacket (uint8_t *data) {
-int16_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
+int32_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
 int16_t	continuityIndex	= getBits_2 (data, 2);
 int16_t	firstLast	= getBits_2 (data, 4);
 int16_t	address		= getBits   (data, 6, 10);
 uint16_t command	= getBits_1 (data, 16);
-int16_t	usefulLength	= getBits_7 (data, 17);
-int16_t	i;
+int32_t	usefulLength	= getBits_7 (data, 17);
+int32_t	i;
 //	if (usefulLength > 0)
 //	      fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
 //	                       continuityIndex, address, usefulLength);
 
-//	if (continuityIndex != expectedIndex) {
-//	   expectedIndex = 0;
-//	   return;
-//	}
-////
-//	expectedIndex = (expectedIndex + 1 ) % 4;
+	if (continuityIndex != expectedIndex) {
+	   expectedIndex = 0;
+	   return;
+	}
+//
+	expectedIndex = (expectedIndex + 1 ) % 4;
 	(void)command;
 
 	if (!check_CRC_bits (data, packetLength * 8)) {
 	   return;
 	}
+
 	if (address == 0)
 	   return;		// padding packet
 //
@@ -196,7 +197,7 @@ int16_t	i;
 //
 //
 //	Really no idea what to do here
-void	dataProcessor::handleTDCAsyncstream (uint8_t *data, int16_t length) {
+void	dataProcessor::handleTDCAsyncstream (uint8_t *data, int32_t length) {
 int16_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
 int16_t	continuityIndex	= getBits_2 (data, 2);
 int16_t	firstLast	= getBits_2 (data, 4);

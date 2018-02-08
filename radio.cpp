@@ -1268,7 +1268,7 @@ void	RadioInterface::selectService (QString s) {
 	if ((my_dabProcessor -> kindofService (s) != AUDIO_SERVICE) &&
 	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
 	return;
-	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
+//	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
 	currentName = s;
 	setStereo (false);
 	soundOut	-> stop ();
@@ -1290,10 +1290,6 @@ void	RadioInterface::selectService (QString s) {
  	                               tr ("unknown bitrate for this program\n"));
  	           return;
  	        }
-//	        my_dabProcessor -> dataforDataService (s, &pd, 1);
-//	        if (pd. defined) {
-//	           fprintf (stderr, "you have a data subservice\n");
-//	        }
 	        techData. ensemble	-> setText (ensembleLabel);
 	        techData. programName	-> setText (s);
 	        techData. frequency	-> display ((uint32_t)(inputDevice -> getVFOFrequency ()) / 1000000.0);
@@ -1340,7 +1336,13 @@ void	RadioInterface::selectService (QString s) {
 
 	   case PACKET_SERVICE:
 	      {  packetdata d;
-	         my_dabProcessor -> dataforDataService (s, &d, 0);
+	         if (s.startsWith ("*")) {
+	            QString realName = s;
+	            realName. remove (0, 1);
+	            my_dabProcessor -> dataforDataService (realName, &d, 1);
+	         }
+	         else
+	            my_dabProcessor -> dataforDataService (s, &d, 0);
 	         if ((!d. defined) ||
 	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",

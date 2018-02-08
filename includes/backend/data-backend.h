@@ -32,7 +32,7 @@
 #include	"dab-constants.h"
 #include	"virtual-backend.h"
 
-class	frameProcessor;
+class	dataProcessor;
 class	RadioInterface;
 class	protection;
 
@@ -55,12 +55,12 @@ private:
 void	run		(void);
 	volatile bool	running;
 	int32_t		countforInterleaver;
-	std::vector<uint8_t> outV;
+	uint8_t		* outV;
 	int16_t		**interleaveData;
 	int16_t		*Data;
 	protection	*protectionHandler;
 	RingBuffer<int16_t>	*Buffer;
-	frameProcessor	*our_frameProcessor;
+	dataProcessor	*our_frameProcessor;
 	QSemaphore      freeSlots;
 	QSemaphore      usedSlots;
 	int16_t         *theData [20];

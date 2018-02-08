@@ -238,7 +238,7 @@ CONFIG		+= try-epg		# do not use
 
 #for the raspberry you definitely want this one
 #when this one is enabled, load is spread over different threads
-#DEFINES	+= __THREADED_BACKEND
+DEFINES	+= __THREADED_BACKEND
 #DEFINES	+= __THREADED_DECODING
 
 #you do not want this
