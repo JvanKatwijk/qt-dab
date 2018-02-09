@@ -1280,11 +1280,21 @@ void	RadioInterface::selectService (QString s) {
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 
-	switch (my_dabProcessor -> kindofService (s)) {
+	int k = my_dabProcessor -> kindofService (s);
+	int componentNr	= 0;	// default main service
+	QString searchString    = s;
+
+        if (s. startsWith ("*")) {
+           searchString. remove (0, 1);
+           componentNr = 1;
+        }
+
+	switch (k) {
 	   case AUDIO_SERVICE:
 	      { audiodata d;
 	        packetdata pd;
-	        my_dabProcessor -> dataforAudioService (s, &d, 0);
+	        my_dabProcessor -> dataforAudioService (searchString,
+	                                                &d, componentNr);
 	        if (!d. defined) {
                    QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("unknown bitrate for this program\n"));
@@ -1336,13 +1346,8 @@ void	RadioInterface::selectService (QString s) {
 
 	   case PACKET_SERVICE:
 	      {  packetdata d;
-	         if (s.startsWith ("*")) {
-	            QString realName = s;
-	            realName. remove (0, 1);
-	            my_dabProcessor -> dataforDataService (realName, &d, 1);
-	         }
-	         else
-	            my_dabProcessor -> dataforDataService (s, &d, 0);
+	         my_dabProcessor -> dataforDataService (searchString,
+	                                     &d, componentNr);
 	         if ((!d. defined) ||
 	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
