@@ -75,7 +75,7 @@ void	processSegment	(int16_t *Data);
 	std::vector<int16_t> tempX;
 	int16_t		countforInterleaver;
 	int16_t		interleaverIndex;
-
+	std::vector<uint8_t> disperseVector;
 
 	protection	*protectionHandler;
 	frameProcessor	*our_dabProcessor;

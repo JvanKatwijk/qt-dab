@@ -45,7 +45,8 @@
 	                             virtualBackend (d -> startAddr,
 	                                             d -> length),
 	                            freeSlots (20) {
-int32_t i;
+int32_t i, j;
+
 	this	-> myRadioInterface	= mr;
 	this	-> packetAddress	= d -> packetAddress;
 	this	-> fragmentSize		= d -> length * CUSize;
@@ -81,6 +82,18 @@ int32_t i;
 	   protectionHandler	= new eep_protection (bitRate,
 	                                              d -> protLevel);
 //
+	uint8_t shiftRegister [9];
+	disperseVector. resize (24 * bitRate);
+//	and the energy dispersal
+	memset (shiftRegister, 1, 9);
+	for (i = 0; i < bitRate * 24; i ++) {
+	   uint8_t b = shiftRegister [8] ^ shiftRegister [4];
+	   for (j = 8; j > 0; j--)
+	      shiftRegister [j] = shiftRegister [j - 1];
+	   shiftRegister [0] = b;
+	   disperseVector[i] = b;
+	}
+
 	start ();
 }
 
@@ -114,7 +127,6 @@ const   int16_t interleaveMap[] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
 void	dataBackend::run	(void) {
 int16_t	countforInterleaver	= 0;
 int16_t interleaverIndex	= 0;
-uint8_t	shiftRegister [9];
 int16_t	tempX [fragmentSize];
 int16_t	i, j;
 
@@ -144,15 +156,8 @@ int16_t	i, j;
 //
 	   protectionHandler -> deconvolve (tempX, fragmentSize, outV);
 
-//	and the inline energy dispersal
-	   memset (shiftRegister, 1, 9);
-	   for (i = 0; i < bitRate * 24; i ++) {
-	      uint8_t b = shiftRegister [8] ^ shiftRegister [4];
-	      for (j = 8; j > 0; j--)
-	         shiftRegister [j] = shiftRegister [j - 1];
-	      shiftRegister [0] = b;
-	      outV [i] ^= b;
-	   }
+	   for (i = 0; i < bitRate * 24; i ++)
+	      outV [i] ^= disperseVector [i];
 //	What we get here is a long sequence (24 * bitrate) of bits, not packed
 //	but forming a DAB packet
 //	we hand it over to make an MSC data group

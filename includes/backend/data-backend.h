@@ -52,6 +52,7 @@ private:
 	int16_t		protLevel;
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
+	std::vector<uint8_t> disperseVector;
 void	run		(void);
 	volatile bool	running;
 	int32_t		countforInterleaver;
