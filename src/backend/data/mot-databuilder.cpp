@@ -47,7 +47,7 @@ uint16_t segmentNumber	= 0;
 bool transportIdFlag	= false;
 uint16_t transportId	= 0;
 uint8_t	lengthInd;
-int16_t	i;
+int32_t	i;
 
 	(void)CI;
 	if (msc. size () <= 0) {

@@ -106,7 +106,7 @@ void		directorySegment (uint16_t	transportId,
 void		analyse_theDirectory	(void);
 int16_t		get_dirEntry	(int16_t	number,
 	                         uint8_t *data,
-	                         uint16_t currentBase);
+	                         uint32_t currentBase);
 
 void		processSegment	(int16_t	transportId,
 	                         uint8_t	*segment,

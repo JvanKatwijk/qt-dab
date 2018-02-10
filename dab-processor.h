@@ -92,7 +92,7 @@ public:
         int32_t		get_ensembleId          (void);
         QString		get_ensembleName        (void);
 	void		clearEnsemble		(void);
-	void		set_tiiSwitch		(void);
+	void		set_tiiSwitch		(bool);
 private:
 	bool		tiiSwitch;
 	RingBuffer<std::complex<float> > *spectrumBuffer;

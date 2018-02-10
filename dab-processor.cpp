@@ -507,10 +507,11 @@ void	dabProcessor::stopDumping	(void) {
 	myReader. stopDumping ();
 }
 
-void	dabProcessor::set_tiiSwitch	(void) {
+void	dabProcessor::set_tiiSwitch	(bool theSwitch) {
+	fprintf (stderr, "theSwitch = %d\n", theSwitch);
 #ifdef	TII_GUESSING
 	if (params. get_dabMode () == 1) {
-	   tiiSwitch = !tiiSwitch;
+	   tiiSwitch = theSwitch;
 	   myReader. setSpectrum (!tiiSwitch);
 	}
 #endif

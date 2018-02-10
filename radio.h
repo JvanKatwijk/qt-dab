@@ -101,6 +101,7 @@ const	char		*get_programm_language_string (int16_t);
 	bandHandler     theBand;
 	std::atomic<bool>	running;
 	bool		scanning;
+	bool		tiiSwitch;
 	virtualInput	*inputDevice;
 	textMapper	the_textMapper;
 	dabProcessor	*my_dabProcessor;
@@ -138,6 +139,8 @@ const	char		*get_programm_language_string (int16_t);
 	int32_t		numberofSeconds;
 	int16_t		ficBlocks;
 	int16_t		ficSuccess;
+	void		connectGUI		(void);
+	void		disconnectGUI		(void);
 #ifdef	HAVE_SPECTRUM
         spectrumhandler         *spectrumHandler;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;

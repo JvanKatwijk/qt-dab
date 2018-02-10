@@ -145,7 +145,7 @@ void	motHandler::processSegment	(int16_t	transportId,
 	                                 int16_t	segmentNumber,
 	                                 int32_t	segmentSize,
 	                                 bool		lastFlag) {
-int16_t	i;
+int32_t	i;
 
 	motElement *handle = getHandle (transportId);
 	if (handle == NULL) 	// cannot happen
@@ -297,7 +297,7 @@ uint32_t directorySize	= ((segment [0] & 0x3F) << 24) |
 uint16_t numObjects	= (segment [4] << 8) | segment [5];
 int32_t	period		= (segment [6] << 16) |
 	                  (segment [7] <<  8) | segment [8];
-int16_t segSize		= ((segment [9] & 0x1F) << 8) |
+int32_t segSize		= ((segment [9] & 0x1F) << 8) |
 	                   segment [10];
 //
 //	If we had already a directory with that transportId, do not do anything
@@ -350,7 +350,7 @@ int16_t	i;
 //	The directory
 void	motHandler::analyse_theDirectory (void) {
 uint16_t	numObjects	= theDirectory -> numObjects;
-uint16_t	currentBase	= 11;	// in bytes
+uint32_t	currentBase	= 11;	// in bytes
 uint8_t	*data			= theDirectory -> dir_segments;
 uint16_t extensionLength	= (data [currentBase] << 8) |
 	                                            data [currentBase + 1];
@@ -363,7 +363,7 @@ int16_t	i;
 
 int16_t	motHandler::get_dirEntry	(int16_t	index,
 	                                 uint8_t	*data,
-	                                 uint16_t	currentBase) {
+	                                 uint32_t	currentBase) {
 QString		name ("");
 
 uint16_t transportId	=  (data [currentBase] << 8) | data [currentBase + 1];
