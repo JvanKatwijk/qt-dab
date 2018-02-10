@@ -402,7 +402,6 @@ int16_t	option, protLevel, subChanSize;
 
 	   bitOffset += 32;
 	}
-	fprintf(stderr,"ProtLevel %d\n", protLevel);
 	return bitOffset / 8;	// we return bytes
 }
 //
