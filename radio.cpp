@@ -380,7 +380,9 @@ int32_t	frequency;
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
                     this,  SLOT (doStart (QString)));
 //
-//	this might be the case as well
+//	this might be the case as well, so just to be sure we
+//	disconnect here. It would have been helpful to have a function
+//	testing whether or not a connection exists
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
                     this,  SLOT (newDevice (QString)));
 
