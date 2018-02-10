@@ -70,9 +70,6 @@
 	      my_dataHandler	= new mot_databuilder (mr, picturesPath);
 	      break;
 	}
-
-	packetState	= 0;
-	streamAddress	= -1;
 }
 
 	dataProcessor::~dataProcessor	(void) {
@@ -105,11 +102,8 @@ void	dataProcessor::handlePackets (uint8_t *data, int32_t length) {
 	}
 }
 //
-//	Handle a single DAB packet:
-//	Note, although not yet encountered, the standard says that
-//	there may be multiple streams, to be identified by
-//	the address. For the time being we only handle a single
-//	stream!!!!
+//	Handle multiple DAB packet based on address:
+//
 void	dataProcessor::handlePacket (uint8_t *data) {
 int32_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
 int16_t	continuityIndex	= getBits_2 (data, 2);
@@ -118,10 +112,9 @@ int16_t	address		= getBits   (data, 6, 10);
 uint16_t command	= getBits_1 (data, 16);
 int32_t	usefulLength	= getBits_7 (data, 17);
 int32_t	i;
-//	if (usefulLength > 0)
-//	      fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
-//	                       continuityIndex, address, usefulLength);
 
+//	fprintf(stderr,"packetLength[%d] continuityIndex[%d] firstLast[%d] address[%d] command[%d] usefulLength[%d]\n", \
+//		packetLength, continuityIndex, firstLast, address, command, usefulLength);
 	if (continuityIndex != expectedIndex) {
 	   expectedIndex = 0;
 	   return;
@@ -136,63 +129,39 @@ int32_t	i;
 
 	if (address == 0)
 	   return;		// padding packet
-//
-//	In this early stage we only collect packets for a single
-//	i.e. the first, stream
-	if (streamAddress == -1)
-	   streamAddress = address;
-	if (streamAddress != address)	// sorry
-	   return;
 	
 //	assemble the full MSC datagroup
-
-	if (packetState == 0) {	// waiting for a start
-	   if (firstLast == 02) {	// first packet
-	      packetState = 1;
-	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
-	         series [i] = data [24 + i];
-	   }
-	   else
-	   if (firstLast == 03) {	// single packet, mostly padding
-	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
-	         series [i] = data [24 + i];
-	      my_dataHandler	-> add_mscDatagroup (series);
-	   }
-	   else 
-	      series. resize (0);	// packetState remains 0
+// Single packet is a special case and should be treated properly.
+	if (firstLast == 03) {	// single packet, mostly padding
+	      series[address]. resize (usefulLength * 8);
+	      for (i = 0; i < series[address]. size (); i ++)
+	         series[address] [i] = data [24 + i];
+	      my_dataHandler	-> add_mscDatagroup (series[address]);
+	      series[address]. resize (0); // reset buffer
+	}
+	 if (firstLast == 02) {	// first packet
+	      series[address]. resize (0); // reset buffer, just in case a packet is missed and new one is received.
+	      series[address]. resize (usefulLength * 8);
+	      for (i = 0; i < series[address]. size (); i ++)
+	         series[address] [i] = data [24 + i];
 	}
 	else
-	if (packetState == 01) {	// within a series
-	   if (firstLast == 0) {	// intermediate packet
-	      int32_t currentLength = series. size ();
-	      series. resize (currentLength + 8 * usefulLength);
+	   if (firstLast == 00) {	// intermediate packet
+	      int32_t currentLength = series[address]. size ();
+	      series[address]. resize (currentLength + 8 * usefulLength);
 	      for (i = 0; i < 8 * usefulLength; i ++)
-	         series [currentLength + i] = data [24 + i];
+	         series[address] [currentLength + i] = data [24 + i];
 	   }
 	   else
 	   if (firstLast == 01) {	// last packet
-	      int32_t currentLength = series. size ();
-	      series. resize (currentLength + 8 * usefulLength);
+	      int32_t currentLength = series[address]. size ();
+	      series[address]. resize (currentLength + 8 * usefulLength);
 	      for (i = 0; i < 8 * usefulLength; i ++)
-	         series [currentLength + i] = data [24 + i];
+	         series[address] [currentLength + i] = data [24 + i];
 
-	      my_dataHandler	-> add_mscDatagroup (series);
-	      packetState = 0;
+	      my_dataHandler	-> add_mscDatagroup (series[address]);
+	      series[address]. resize (0); // reset buffer
 	   }
-	   else
-	   if (firstLast == 02) {	// first packet, previous one erroneous
-	      packetState = 1;
-	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
-	         series [i] = data [24 + i];
-	   }
-	   else {
-	      packetState = 0;
-	      series. resize (0);
-	   }
-	}
 }
 //
 //

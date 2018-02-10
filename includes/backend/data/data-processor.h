@@ -57,7 +57,7 @@ private:
 	int16_t		FEC_scheme;
 	RingBuffer<uint8_t>* dataBuffer;
 	int16_t		expectedIndex;
-	std::vector<uint8_t>	series;
+	std::vector< std::vector< uint8_t > >	series;
 	uint8_t		packetState;
 	int32_t		streamAddress;		// int since we init with -1
 //
