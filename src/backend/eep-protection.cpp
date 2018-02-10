@@ -40,7 +40,7 @@ int16_t	L1, L2;
 int8_t	*PI1, *PI2, *PI_X;
 
 	if ((protLevel & (1 << 2)) == 0) {	// set A profiles
-	   switch (protLevel & 03) {
+	   switch (protLevel & 07) {
 	      case 0:			// actually level 1
 	         L1	= 6 * bitRate / 8 - 3;
 	         L2	= 3;
@@ -79,7 +79,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	}
 	else
 	if ((protLevel & (1 << 2)) != 0) {		// B series
-	   switch ((protLevel & 03)) {
+	   switch ((protLevel & 07)) {
 	      case 3:					// actually level 4
 	         L1	= 24 * bitRate / 32 - 3;
 	         L2	= 3;

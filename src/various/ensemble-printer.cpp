@@ -87,19 +87,19 @@ bool	firstData;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
 
-          protL. append (QString::number ((h & 03) + 1));
-	      if ((h & (1 << 2)) == 0) {
+          protL. append (QString::number ((h & 07) + 1));
+	      if ((h & (1 << 4)) == 0) {
              protL. append ("-A");
-	         codeRate = eep_Arates [(h & 03) + 1];
+	         codeRate = eep_Arates [(h & 07) + 1];
 	      }
 	      else {
              protL. append ("-B");
-	         codeRate = eep_Brates [(h & 03) + 1];
+	         codeRate = eep_Brates [(h & 07) + 1];
 	      }
-          h = (h & 03) + 1;
+          h = (h & 07) + 1;
 	   }
 	   else  {
-	      h = h & 03;
+	      h = h & 07;
 	      protL = "UEP ";
 	      protL. append (QString::number (h));
 	      codeRate = uep_rates [h + 1];
@@ -138,19 +138,19 @@ bool	firstData;
 	   QString codeRate;
 	   if (!d. shortForm) {
 	      protL = "EEP ";
-	      protL. append (QString::number ((h & 03) + 1));
-	      if ((h & (1 << 2)) == 0) {
+	      protL. append (QString::number ((h & 07) + 1));
+	      if ((h & (1 << 4)) == 0) {
 	         protL. append ("-A");
-	         codeRate = eep_Arates [(h & 03) + 1];
+	         codeRate = eep_Arates [(h & 07) + 1];
 	      }
 	      else {
 	         protL. append ("-B");
-	         codeRate = eep_Brates [(h & 03) + 1];
+	         codeRate = eep_Brates [(h & 07) + 1];
 	      }
-	      h = (h & 03) + 1;
+	      h = (h & 07) + 1;
 	   }
 	   else  {
-	      h = h & 03;
+	      h = h & 07;
 	      protL = "UEP ";
 	      protL. append (QString::number (h));
 	      codeRate = uep_rates [h + 1];

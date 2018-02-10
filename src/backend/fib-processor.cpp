@@ -372,7 +372,6 @@ int16_t	option, protLevel, subChanSize;
 	   option = getBits_3 (d, bitOffset + 17);
 	   if (option == 0) { 		// A Level protection
 	      protLevel = getBits (d, bitOffset + 20, 2);
-//
 	      subChannels [SubChId]. protLevel = protLevel;
 	      subChanSize = getBits (d, bitOffset + 22, 10);
 	      subChannels [SubChId]. Length	= subChanSize;
@@ -388,7 +387,7 @@ int16_t	option, protLevel, subChanSize;
 	   else			// option should be 001
 	   if (option == 001) {		// B Level protection
 	      protLevel = getBits_2 (d, bitOffset + 20);
-	      subChannels [SubChId]. protLevel = protLevel + (1 << 2);
+	      subChannels [SubChId]. protLevel = protLevel + (1 << 4);
 	      subChanSize = getBits (d, bitOffset + 22, 10);
 	      subChannels [SubChId]. Length = subChanSize;
 	      if (protLevel == 0)
@@ -403,7 +402,7 @@ int16_t	option, protLevel, subChanSize;
 
 	   bitOffset += 32;
 	}
-
+	fprintf(stderr,"ProtLevel %d\n", protLevel);
 	return bitOffset / 8;	// we return bytes
 }
 //

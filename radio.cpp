@@ -1313,13 +1313,13 @@ void	RadioInterface::selectService (QString s) {
 	           protL = "EEP ";
 
                protL. append (QString::number ((h & 03) + 1));
-               if ((h & (1 << 2)) == 0)
+               if ((h & (1 << 4)) == 0)
                   protL. append ("-A");
 	           else
                   protL. append ("-B");
 	        }
 	        else  {
-	           h = h & 03;
+	           h = h & 07;
 	           protL = "UEP ";
 	           protL. append (QString::number (h));
 	        }
