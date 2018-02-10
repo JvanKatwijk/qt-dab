@@ -1258,7 +1258,7 @@ void	RadioInterface::selectService (QString s) {
                   protL. append ("-B");
 	        }
 	        else  {
-	           h = h & 03;
+//	           h = h & 03;
 	           protL = "UEP ";
 	           protL. append (QString::number (h));
 	        }
