@@ -49,6 +49,11 @@ struct protectionProfile {
 	{48,	2,	3, 4, 26, 3,	24, 14, 8, 15},
 	{48,	1,	3, 5, 25, 3,	24, 18, 13, 18},
 
+	{56,	5,	6, 10, 23, 3,	5, 4, 2, 3},
+	{56,	4,	6, 10, 23, 3,	9, 6, 4, 5},
+	{56,	3,	6, 12, 21, 3,	16, 7, 6, 9},
+	{56,	2,	6, 10, 23, 3,	23, 13, 8, 13},
+
 	{64,	5,	6, 9, 31, 2,	5, 3, 2, 3},
 	{64,	4,	6, 9, 33, 0,	11, 6, 5, -1},
 	{64,	3,	6, 12, 27, 3,	16, 8, 6, 9},
@@ -148,6 +153,7 @@ int8_t          *PI3;
 int8_t          *PI4;
 int8_t          *PI_X;
 
+	fprintf (stderr, "protLevel %d, bitRate %d\n", protLevel, bitRate);
 	index	= findIndex (bitRate, protLevel);
 	if (index == -1) {
 	   fprintf (stderr, "%d (%d) has a problem\n", bitRate, protLevel);

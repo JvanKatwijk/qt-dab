@@ -67,7 +67,6 @@ void	run		(void);
 	int16_t         *theData [20];
 	int16_t         nextIn;
 	int16_t         nextOut;
-	int16_t		packetAddress;
         int		fragmentSize;
         int16_t		bitRate;
 };

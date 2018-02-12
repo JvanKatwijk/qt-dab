@@ -48,16 +48,11 @@
 int32_t i, j;
 
 	this	-> myRadioInterface	= mr;
-	this	-> packetAddress	= d -> packetAddress;
 	this	-> fragmentSize		= d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
 	this	-> protLevel		= d -> protLevel;
 	our_frameProcessor	= new dataProcessor (mr,
-	                                             d -> bitRate,
-	                                             d -> DSCTy,
-	                                             d -> appType,
-	                                             d -> DGflag,
-	                                             d -> FEC_scheme,
+	                                             d,
 	                                             dataBuffer,
 	                                             picturesPath);
 	nextIn                          = 0;

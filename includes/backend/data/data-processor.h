@@ -34,16 +34,13 @@ class	RadioInterface;
 class	uep_deconvolve;
 class	eep_deconvolve;
 class	virtual_dataHandler;
+class	packetdata;
 
 class	dataProcessor:public QObject, public frameProcessor {
 Q_OBJECT
 public:
 	dataProcessor	(RadioInterface *mr,
-	                 int16_t	bitRate,
-	                 uint8_t	DSCTy,
-	                 int16_t	appType,
-	                 uint8_t	DGflag,
-	                 int16_t	FEC_scheme,
+	                 packetdata	*pd,
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 QString	picturesPath);
 	~dataProcessor	(void);
@@ -53,6 +50,7 @@ private:
 	int16_t		bitRate;
 	uint8_t		DSCTy;
 	int16_t		appType;
+	int16_t		packetAddress;
 	uint8_t		DGflag;
 	int16_t		FEC_scheme;
 	RingBuffer<uint8_t>* dataBuffer;

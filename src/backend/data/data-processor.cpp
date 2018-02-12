@@ -34,19 +34,16 @@
 //
 //	fragmentsize == Length * CUSize
 	dataProcessor::dataProcessor	(RadioInterface *mr,
-	                                 int16_t	bitRate,
-	                         	 uint8_t	DSCTy,
-	                                 int16_t	appType,
-	                                 uint8_t	DGflag,
-	                         	 int16_t	FEC_scheme,
+	                                 packetdata	*pd,
 	                                 RingBuffer<uint8_t> *dataBuffer,
 	                                 QString	picturesPath) {
 	this	-> myRadioInterface	= mr;
-	this	-> bitRate		= bitRate;
-	this	-> DSCTy		= DSCTy;
-	this	-> appType		= appType;
-	this	-> DGflag		= DGflag;
-	this	-> FEC_scheme		= FEC_scheme;
+	this	-> bitRate		= pd -> bitRate;
+	this	-> DSCTy		= pd -> DSCTy;
+	this	-> appType		= pd -> appType;
+	this	-> packetAddress	= pd -> packetAddress;
+	this	-> DGflag		= pd -> DGflag;
+	this	-> FEC_scheme		= pd -> FEC_scheme;
 	this	-> dataBuffer		= dataBuffer;
 	this	-> expectedIndex	= 0;
 	switch (DSCTy) {
@@ -72,7 +69,6 @@
 	}
 
 	packetState	= 0;
-	streamAddress	= -1;
 }
 
 	dataProcessor::~dataProcessor	(void) {
@@ -137,11 +133,7 @@ int32_t	i;
 	if (address == 0)
 	   return;		// padding packet
 //
-//	In this early stage we only collect packets for a single
-//	i.e. the first, stream
-	if (streamAddress == -1)
-	   streamAddress = address;
-	if (streamAddress != address)	// sorry
+	if (packetAddress != address)	// sorry
 	   return;
 	
 //	assemble the full MSC datagroup

@@ -351,6 +351,7 @@ int16_t	altCarrier	= -1;
 	                                   
 	   return;
 	}
+
         if (startCarrier <  -carriers / 2)	// nothing found
            return;
 //	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
