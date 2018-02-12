@@ -53,6 +53,7 @@ private:
 	bool	mscGroupElement;
 	int	xpadLength;
 	int16_t	still_to_go;
+	std::vector<uint8_t> shortpadData;
         bool	lastSegment;
         bool	firstSegment;
 	int16_t	segmentNumber;

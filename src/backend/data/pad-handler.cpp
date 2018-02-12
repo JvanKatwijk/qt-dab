@@ -87,12 +87,17 @@ uint8_t	fpadType	= (L1 >> 6) & 03;
 //	Since the data is stored in reversed order, we pass
 //	on the vector address and the offset of the last element
 //	in that vector
+//
+//	shortPad's are 4  byte values. If the CI is on, then the type 2
+//	indicates the start of a segment. Type 3 the continuation.
+//	The start of a message, i.e. segment 0 is (a.o) found by
+//	a (1, 0) value of the firstSegment/lastSegment values.
+//	The end of a segment might be indicated by a specific pattern
+//	of these 2 values, but it is not clear to me how.
+//	For me, the end of a segment is when we collected the amount
+//	of values specified for the segment.
 void	padHandler::handle_shortPAD (uint8_t *b, int16_t last, uint8_t CIf) {
 int16_t	i;
-static 
-uint8_t data [20];
-static
-int16_t	index = 0;
 
 	if (CIf != 0) {	// has a CI flag
 	   uint8_t CI    = b [last];
@@ -100,52 +105,63 @@ int16_t	index = 0;
 	   lastSegment   = (b [last - 1] & 0x20) != 0;
 	   charSet       = b [last - 2] & 0x0F;
 	   uint8_t AcTy  = CI & 037;	// application type
-
+//	   fprintf (stderr, "type %d, firstS %d, lastS %d\n",
+//	                         AcTy, firstSegment, lastSegment);
 	   switch (AcTy) {
 	      default:
-//	         fprintf (stderr, "AcTy: %d\n", AcTy);
 	         break;
 
 	      case 0:	// end marker
 	         break;
+//
+	      case 3:	// continuation of fragment
+	         for (i = 0; (i < 3) && (still_to_go > 0); i ++) {
+	            still_to_go --;
+	            shortpadData. push_back (b [last - 1 - i]);
+	         }
+
+	         if ((still_to_go <= 0) && (shortpadData. size () > 1)) {
+	            shortpadData. push_back (0);
+	            dynamicLabelText.
+	               append (toQStringUsingCharset 
+	                             ((char *)(shortpadData. data ()),
+                                      (CharacterSet)charSet,
+	                              shortpadData. size ()));
+	            shortpadData. resize (0);
+	         }
+	         break;
 
 	      case 2:	// start of fragment, extract the length
-	         if (firstSegment) {
+	         if (firstSegment && !lastSegment) {
+	            segmentNumber   = b [last - 2] >> 4;
+	            if (dynamicLabelText. size () > 0)
+	               showLabel (dynamicLabelText);
 	            dynamicLabelText. clear ();
-	            segmentNumber = 0;
 	         }
-	         else {
-	            if ((b [last - 2] >> 4) != segmentNumber + 1) {
-	               segmentNumber = -1;
-	               return;
-	            }
-	         }
-	         segmentNumber   = b [last - 2] >> 4;
 	         still_to_go     = b [last - 1] & 0x0F;
-	         index           = 0;	// for the fragmnt
-	         data [index ++] = b [last - 3];
+	         shortpadData. resize (0);
+	         shortpadData. push_back (b [last - 3]);
 	         break;
 	   }
 	}
 	else {	// No CI flag
  //	X-PAD field is all data
 	   for (i = 0; (i < 4) && (still_to_go > 0); i ++) {
-	      data [index ++] = b [last - i];
+	      shortpadData. push_back (b [last - i]);
 	      still_to_go --;
 	   }
 //	at the end of a frame
-	   if ((still_to_go <= 0) && (index > 0)) {
-	      data [index] = 0;
+	   if ((still_to_go <= 0) && (shortpadData. size () > 0)) {
+	      shortpadData . push_back (0);
 //
 //	just to avoid doubling by unsollicited shortpads
-	      index = 0;
 	      dynamicLabelText.
-	               append (toQStringUsingCharset ((char *)data,
+	               append (toQStringUsingCharset ((char *)(shortpadData. data ()),
                                                       (CharacterSet)charSet));
-	                                        
+	      shortpadData. resize (0);
 //	if we are at the end of the last segment (and the text is not empty)
 //	then show it.
-	      if (lastSegment) {
+	      if (!firstSegment && lastSegment) {
 	         if (dynamicLabelText. size () > 0)
 	            showLabel (dynamicLabelText);
 	         dynamicLabelText. clear ();
