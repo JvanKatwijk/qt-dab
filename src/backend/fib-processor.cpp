@@ -495,14 +495,18 @@ uint16_t  CAOrg		= 0;
 serviceComponent *packetComp = find_packetComponent (SCId);
 serviceId	* service;
 
-        used += 40 / 8;
 	if (CAOrgflag == 1) {
 	   CAOrg = getBits (d, used * 8 + 40, 16);
 	   used += 16 / 8;
 	}
+        used += 40 / 8;
 	
         if (packetComp == NULL)		// no serviceComponent yet
            return used;
+//
+//	We want to have the subchannel OK
+	if (!subChannels [SubChId]. inUse)
+	   return used;
 //
 //	If the component exists, we first look whether is
 //	was already handled
@@ -1167,7 +1171,7 @@ int16_t i;
 void	fib_processor::bind_audioService (int8_t	TMid,
 	                                  uint32_t	SId,
 	                                  int16_t	compnr,
-	                                  int16_t	subChId,
+	                                  int16_t	SubChId,
 	                                  int16_t	ps_flag,
 	                                  int16_t	ASCTy) {
 serviceId *s	= findServiceId	(SId);
@@ -1175,6 +1179,9 @@ int16_t	i;
 int16_t	firstFree	= -1;
 
 	if (!s -> serviceLabel. hasName)
+	   return;
+
+	if (!subChannels [SubChId]. inUse)
 	   return;
 
 	for (i = 0; i < 64; i ++) {
@@ -1195,7 +1202,7 @@ int16_t	firstFree	= -1;
 	ServiceComps [firstFree]. TMid	= TMid;
 	ServiceComps [firstFree]. componentNr = compnr;
 	ServiceComps [firstFree]. service = s;
-	ServiceComps [firstFree]. subchannelId = subChId;
+	ServiceComps [firstFree]. subchannelId = SubChId;
 	ServiceComps [firstFree]. PS_flag = ps_flag;
 	ServiceComps [firstFree]. ASCTy = ASCTy;
 }
@@ -1231,13 +1238,13 @@ QString name;
 	   }
 	}
 	
-	ServiceComps [firstFree]. inUse  = true;
-	ServiceComps [firstFree]. TMid   = TMid;
-	ServiceComps [firstFree]. service = s;
-	ServiceComps [firstFree]. componentNr = compnr;
-	ServiceComps [firstFree]. SCId   = SCId;
-	ServiceComps [firstFree]. PS_flag = ps_flag;
-	ServiceComps [firstFree]. CAflag = CAflag;
+	ServiceComps [firstFree]. inUse		= true;
+	ServiceComps [firstFree]. TMid		= TMid;
+	ServiceComps [firstFree]. service	= s;
+	ServiceComps [firstFree]. componentNr	= compnr;
+	ServiceComps [firstFree]. SCId		= SCId;
+	ServiceComps [firstFree]. PS_flag	= ps_flag;
+	ServiceComps [firstFree]. CAflag	= CAflag;
 	ServiceComps [firstFree]. is_madePublic	= false;
 }
 
@@ -1377,7 +1384,7 @@ QString searchString	= s;
 	      continue;
 
 	   if (ServiceComps [j]. componentNr != compnr)
-	      return;
+	      continue;
 
 	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;

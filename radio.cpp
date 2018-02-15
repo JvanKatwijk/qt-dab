@@ -110,7 +110,6 @@ QString h;
 	scanning		= false;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
-	thereisSound		= false;
 	dabBand			= BAND_III;
 #ifdef  HAVE_SPECTRUM
         spectrumBuffer          = new RingBuffer<std::complex<float>> (2 * 32768);
@@ -1124,7 +1123,6 @@ void	RadioInterface::newDevice (QString deviceName) {
 	scanning		= false;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
-	thereisSound		= false;
 	my_dabProcessor	-> stop ();
 	delete inputDevice;
 	inputDevice		= NULL;
@@ -1210,8 +1208,7 @@ void	RadioInterface::selectService (QString s) {
 //	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
 	currentName = s;
 	setStereo (false);
-	soundOut	-> stop ();
-	thereisSound	= false;
+//	soundOut	-> stop ();
 
 	dataDisplay	-> hide ();
 	techData. rsError_display	-> hide ();
@@ -1278,7 +1275,6 @@ void	RadioInterface::selectService (QString s) {
 
 	        my_dabProcessor	-> set_audioChannel (&d, audioBuffer);
 	        soundOut	-> restart ();
-	        thereisSound	= true;
 	        showLabel (QString (" "));
 	        break;
 	      }
@@ -1286,7 +1282,7 @@ void	RadioInterface::selectService (QString s) {
 	   case PACKET_SERVICE:
 	      {  packetdata d;
 	         my_dabProcessor -> dataforDataService (searchString,
-	                                     &d, componentNr);
+	                                                &d, componentNr);
 	         if ((!d. defined) ||
 	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
