@@ -522,10 +522,6 @@ serviceId	* service;
 	QString serviceName = service -> serviceLabel. label;
 	if (packetComp -> componentNr == 0) 	// otherwise sub component
 	   addtoEnsemble (serviceName);
-	else {
-	   serviceName. prepend ("*");
-	   addtoEnsemble (serviceName);
-	}
 
 	packetComp 	-> is_madePublic = true;
 	packetComp	-> SCId		= SCId;
@@ -1307,11 +1303,6 @@ bool	subComponent	= false;
 int32_t	selectedService	= -1;
 int16_t	service		= UNKNOWN_SERVICE;
 QString	searchString	= s;
-
-	if (s. startsWith ("*")) {
-	   searchString. remove (0, 1);
-	   subComponent = true;
-	}
 
 	fibLocker. lock ();
 //	first we locate the serviceId
