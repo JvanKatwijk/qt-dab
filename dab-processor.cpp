@@ -100,8 +100,10 @@ int32_t	i;
 	attempts			= 0;
 	scanMode			= false;
 	tiiSwitch			= false;
-	connect (this, SIGNAL (showCoordinates (float, float)),
-	         mr,   SLOT   (showCoordinates (float, float)));
+//	connect (this, SIGNAL (showCoordinates (float, float)),
+//	         mr,   SLOT   (showCoordinates (float, float)));
+	connect (this, SIGNAL (showCoordinates (int, int)),
+	         mr,   SLOT   (showCoordinates (int, int)));
 	connect (this, SIGNAL (setSynced (char)),
 	         myRadioInterface, SLOT (setSynced (char)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -342,45 +344,23 @@ NewOffset:
  */
 	   if (params. get_dabMode () == 1) {
 	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
-	         if (tiiSwitch) 
-	            spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
-	         if (tiiSwitch || (my_ficHandler. mainId () > 0)) {
-	            int16_t mi = 0;
-	            if (tii_counter == 1)
-	               my_TII_Detector. reset ();
-	            if (tii_counter <= 1)
-	               my_TII_Detector. addBuffer (ofdmBuffer);
-	         }
-#ifdef	HAVE_SPECTRUM
-	         if ( tiiSwitch && ((tii_counter & 02) != 0)) 
-	               show_Spectrum (1);
-#endif
-	         if ((my_ficHandler. mainId () > 0) && (tii_counter == 1)) {
-	            int16_t mainId	= my_ficHandler. mainId ();
-                    int16_t subId =  my_TII_Detector. find_C (mainId); 
-	            if (subId >= 0) {
-	               bool found;
-	               std::complex<float> coord =
-	                     my_ficHandler. get_coordinates (mainId,
-	                                                     subId,
-	                                                     &found);
-	               if (found) {
-	                  showCoordinates (real (coord), imag (coord));
-	               }
-	            }
-	         }
-
-	         if (tiiSwitch && (tii_counter == 2)) {
-	            int16_t mainId = -1;
+	         my_TII_Detector. addBuffer (ofdmBuffer);
+	         if (++tii_counter >= tii_delay) {
+	            int16_t mainId	= -1;
 	            int16_t subId	= -1;
 	            my_TII_Detector. processNULL (&mainId, &subId);
 	            if (mainId > 0)
-	               fprintf (stderr,
-                         "guess is: mainId %d (0x%X), subId %d (0x%X)\n",
-	                                              mainId, mainId,
-	                                              subId,  subId);
+	              showCoordinates (mainId, subId);
 	         }
-	         if (++tii_counter >= tii_delay)
+	         if (tiiSwitch) {
+	            if ((tii_counter & 02) != 0) {
+#ifdef	HAVE_SPECTRUM
+	               spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
+	               show_Spectrum (1);
+#endif
+	            }
+	         }
+	         if (tii_counter >= tii_delay)
 	            tii_counter = 1;
 	      }
 	   }
@@ -455,13 +435,25 @@ uint8_t dabProcessor::kindofService           (QString &s) {
 	return my_ficHandler. kindofService (s);
 }
 
+void	dabProcessor::dataforAudioService     (int16_t c, audiodata *dd) {
+	my_ficHandler. dataforAudioService (c, dd);
+}
+
+void	dabProcessor::dataforAudioService     (QString &s,audiodata *dd) {
+	my_ficHandler. dataforAudioService (s, dd, 0);
+}
+
 void	dabProcessor::dataforAudioService     (QString &s,
 	                                          audiodata *d, int16_t c) {
 	my_ficHandler. dataforAudioService (s, d, c);
 }
 
-void	dabProcessor::dataforAudioService     (int16_t d,  audiodata *dd) {
-	my_ficHandler. dataforAudioService (d, dd);
+void	dabProcessor::dataforDataService	(int16_t c, packetdata *dd) {
+	my_ficHandler. dataforDataService (c, dd);
+}
+
+void	dabProcessor::dataforDataService	(QString &s, packetdata *dd) {
+	my_ficHandler. dataforDataService (s, dd, 0);
 }
 
 void	dabProcessor::dataforDataService	(QString &s,
@@ -469,8 +461,9 @@ void	dabProcessor::dataforDataService	(QString &s,
 	my_ficHandler. dataforDataService (s, d, c);
 }
 
-void	dabProcessor::dataforDataService	(int16_t d,   packetdata *dd) {
-	my_ficHandler. dataforDataService (d, dd);
+
+void	dabProcessor::reset_msc (void) {
+	my_mscHandler. reset ();
 }
 
 void	dabProcessor::set_audioChannel (audiodata *d,

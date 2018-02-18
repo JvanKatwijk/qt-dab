@@ -418,12 +418,12 @@
     <rect>
      <x>20</x>
      <y>520</y>
-     <width>141</width>
+     <width>201</width>
      <height>31</height>
     </rect>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII Transmitter coordinates (if available)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In EN300401 (2017) the possibility of passing transmitter coordinates through the FIC is cancelled.&lt;/p&gt;&lt;p&gt;The numbers given here are an estimate if the mainId and subId as derived from the null period.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>transmitter_coordinates</string>
@@ -501,36 +501,6 @@
    </property>
    <property name="segmentStyle">
     <enum>QLCDNumber::Flat</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="tii_Label">
-   <property name="geometry">
-    <rect>
-     <x>180</x>
-     <y>520</y>
-     <width>41</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>Ubuntu</family>
-     <pointsize>11</pointsize>
-     <weight>50</weight>
-     <bold>false</bold>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TTI indicator. If the field is colored green, TTI data is defined in the FIC.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="styleSheet">
-    <string notr="true">color: rgb(255, 255, 255);</string>
-   </property>
-   <property name="text">
-    <string>TII</string>
-   </property>
-   <property name="alignment">
-    <set>Qt::AlignCenter</set>
    </property>
   </widget>
  </widget>

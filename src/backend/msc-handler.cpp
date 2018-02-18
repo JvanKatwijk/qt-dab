@@ -61,12 +61,27 @@
 	      numberofblocksperCIF	= 18;
 	      break;
 	}
+	work_to_be_done. store (false);
 }
 
 		mscHandler::~mscHandler	(void) {
-	theBackend	-> stopRunning ();
-	delete	theBackend;
+	reset ();
 }
+//
+//	This function is to be called between invocations of
+//	services
+//	It might be called several times, so ...
+	void	mscHandler::reset	(void) {
+	int i;
+	   locker. lock ();
+	   work_to_be_done. store (false);
+	   if (theBackend != NULL) {
+	      theBackend -> stopRunning ();
+	      delete theBackend;
+	      theBackend	= NULL;
+	   }
+	   locker. unlock ();
+	}
 
 //
 //	Note, the set_xxx functions are called from within a
@@ -77,25 +92,24 @@
 void	mscHandler::set_audioChannel (audiodata *d,
 	                              RingBuffer<int16_t> *audioBuffer) {
 	locker. lock ();
-	theBackend -> stopRunning ();
-	delete theBackend;
-	theBackend = new audioBackend (myRadioInterface,
-	                               d,
-	                               audioBuffer,
-	                               picturesPath);
+//
+//	we could assert here that theBackend == NULL
+	theBackend	= new audioBackend (myRadioInterface,
+	                                    d,
+	                                    audioBuffer,
+	                                    picturesPath);
+	work_to_be_done. store (true);
 	locker. unlock ();
 }
 //
 void	mscHandler::set_dataChannel (packetdata	*d,
 	                             RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock ();
-	theBackend -> stopRunning ();
-	delete theBackend;
-//	fprintf (stderr, "bitRate = %d\n", d -> bitRate);
-	theBackend = new dataBackend (myRadioInterface,
-	                              d,
-	                              dataBuffer,
-	                              picturesPath);
+	theBackend	= new dataBackend (myRadioInterface,
+	                                   d,
+	                                   dataBuffer,
+	                                   picturesPath);
+	work_to_be_done. store (true);
 	locker. unlock ();
 }
 
@@ -110,9 +124,7 @@ void	mscHandler::set_dataChannel (packetdata	*d,
 void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
-std::vector<int16_t>myBegin;
-int16_t	startAddr;
-int16_t	Length;
+int16_t	i;
 
 	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	and the normal operation is:
@@ -121,37 +133,26 @@ int16_t	Length;
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
 
+	if (!work_to_be_done. load ())
+	   return;
 
-//	OK, now we have a full CIF. We assume that the backend itself
+//	OK, now we have a full CIF and it seems there is some work to
+//	be done.  We assume that the backend itself
 //	does the work in a separate thread.
 	locker. lock ();
-	startAddr       = theBackend -> startAddr ();
-        Length          = theBackend -> Length    (); 
+	int16_t startAddr	= theBackend -> startAddr ();
+	int16_t	Length		= theBackend -> Length    (); 
 	if (Length > 0) {		// Length = 0? virtual Backend
-	   myBegin. resize (Length * CUSize);
-	   memcpy (myBegin. data (), &cifVector [startAddr * CUSize],
+	   int16_t temp [Length * CUSize];
+	   memcpy (temp, &cifVector [startAddr * CUSize],
 	                           Length * CUSize * sizeof (int16_t));
-	   (void) theBackend -> process (myBegin. data (), Length * CUSize);
+	   (void) theBackend -> process (temp, Length * CUSize);
 	}
 	locker. unlock ();
 }
 //
 
-void	mscHandler::stopProcessing	(void) {
-	work_to_be_done	= false;
-}
-
-void	mscHandler::stop		(void) {
-	work_to_be_done	= false;
-	theBackend	-> stopRunning ();
-}
-
-void	mscHandler::reset		(void) {
-	work_to_be_done	= false;
-	locker. lock ();
-	theBackend	-> stopRunning ();
-	delete theBackend;
-	theBackend	= new virtualBackend (0, 0);
-	locker. unlock ();
+void	mscHandler::stop	(void) {
+	reset ();
 }
 

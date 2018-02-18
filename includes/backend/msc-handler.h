@@ -28,6 +28,7 @@
 #include	<stdint.h>
 #include	<stdio.h>
 #include	<vector>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"dab-params.h"
@@ -46,9 +47,13 @@ public:
 	                                           RingBuffer<int16_t> *);
 	void		set_dataChannel         (packetdata *,
 	                                           RingBuffer<uint8_t> *);
-	void		stopProcessing		(void);
-	void		stop			(void);
+//
+//	This function should be called beore issuing a request
+//	to handle a service
 	void		reset			(void);
+//
+//	This function will kill
+	void		stop			(void);
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
@@ -56,16 +61,16 @@ private:
 	dabParams	params;
 	QMutex		locker;
 	bool		audioService;
-	virtualBackend	*theBackend;
+	virtualBackend *theBackend;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;
-	bool		work_to_be_done;
+	std::atomic<bool> work_to_be_done;
 	int16_t		packetAddress;
 	int16_t		appType;
 	int16_t		ASCTy;
 	int16_t		DSCTy;
-	int16_t		startAddr;
+	int32_t		startAddr;
 	int16_t		Length;
 	bool		shortForm;
 	int16_t		protLevel;

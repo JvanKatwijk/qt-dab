@@ -243,8 +243,6 @@ QString h;
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
                            setStyleSheet ("QLabel {background-color : red}");
-	techData. tii_Label		->
-                           setStyleSheet ("QLabel {background-color : red}");
 //
 //
 	sourceDumping		= false;
@@ -784,7 +782,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 //	This function is only used in the Gui to clear
 //	the details of a selection
 void	RadioInterface::clear_showElements (void) {
-	Services = QStringList ();
+	Services		= QStringList ();
 	ensemble. setStringList (Services);
 	ensembleDisplay		-> setModel (&ensemble);
 	my_dabProcessor		-> clearEnsemble ();
@@ -815,9 +813,6 @@ void	RadioInterface::clear_showElements (void) {
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 	techData. transmitter_coordinates -> setText (" ");
-	techData. tii_Label		  -> setText (" ");
-	techData. tii_Label		  ->
-	               setStyleSheet ("QLabel {background-color : red}");
 
 	snrDisplay		-> display (0);
 	if (pictureLabel != NULL)
@@ -1206,6 +1201,7 @@ void	RadioInterface::selectService (QString s) {
 	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
 	return;
 //	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
+	my_dabProcessor -> reset_msc ();
 	currentName = s;
 	setStereo (false);
 //	soundOut	-> stop ();
@@ -1217,61 +1213,20 @@ void	RadioInterface::selectService (QString s) {
 	               setStyleSheet ("QLabel {background-color : red}");
 
 	int k = my_dabProcessor -> kindofService (s);
-	int componentNr	= 0;	// default main service
-	QString searchString    = s;
-
-        if (s. startsWith ("*")) {
-           searchString. remove (0, 1);
-           componentNr = 1;
-        }
 
 	switch (k) {
 	   case AUDIO_SERVICE:
 	      { audiodata d;
-	        packetdata pd;
-	        my_dabProcessor -> dataforAudioService (searchString,
-	                                                &d, componentNr);
+	        my_dabProcessor -> dataforAudioService (s, &d);
 	        if (!d. defined) {
                    QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("unknown bitrate for this program\n"));
  	           return;
  	        }
-	        techData. ensemble	-> setText (ensembleLabel);
-	        techData. programName	-> setText (s);
-	        techData. frequency	-> display ((uint32_t)(inputDevice -> getVFOFrequency ()) / 1000000.0);
-	        techData. bitrateDisplay -> display (d. bitRate);
-	        techData. startAddressDisplay -> display (d. startAddr);
-	        techData. lengthDisplay	-> display (d. length);
-	        techData. subChIdDisplay -> display (d. subchId);
-	        uint16_t h = d. protLevel;
-	        QString protL;
-	        if (!d. shortForm) {
-	           protL = "EEP ";
 
-               protL. append (QString::number ((h & 03) + 1));
-               if ((h & (1 << 2)) == 0)
-                  protL. append ("-A");
-	           else
-                  protL. append ("-B");
-	        }
-	        else  {
-//	           h = h & 03;
-	           protL = "UEP ";
-	           protL. append (QString::number (h));
-	        }
-	        techData. uepField -> setText (protL);
-//	        techData. protectionlevelDisplay -> display (h);   // no more needed
-	        techData. ASCTy -> setText (d. ASCTy == 077 ? "DAB+" : "DAB");
-	        if (d. ASCTy == 077) {
-	           techData. rsError_display -> show ();
-	           techData. aacError_display -> show ();
-	        }
-	        techData. language ->
-	           setText (the_textMapper. get_programm_language_string (d. language));
-	        techData. programType ->
-	            setText (the_textMapper. get_programm_type_string (d. programType));
-	         if (show_data)
-	            dataDisplay -> show ();
+	        show_techData (ensembleLabel, s, 
+	                       (int32_t)(inputDevice -> getVFOFrequency () / 1000000.0),
+	                       &d);
 
 	        my_dabProcessor	-> set_audioChannel (&d, audioBuffer);
 	        soundOut	-> restart ();
@@ -1281,8 +1236,7 @@ void	RadioInterface::selectService (QString s) {
 
 	   case PACKET_SERVICE:
 	      {  packetdata d;
-	         my_dabProcessor -> dataforDataService (searchString,
-	                                                &d, componentNr);
+	         my_dabProcessor -> dataforDataService (s, &d);
 	         if ((!d. defined) ||
 	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
@@ -1448,28 +1402,14 @@ void	RadioInterface::hideButtons	(void) {
 void	RadioInterface::setSyncLost	(void) {
 }
 
-void	RadioInterface::showCoordinates (float lat, float lon) {
-QString a, b;
-	a	= QString::number (lat);
-	b	= QString::number (lon);
-	a. append ("  ");
+void	RadioInterface::showCoordinates (int mainId, int subId) {
+QString a = "Estimate: ";
+QString b = "  ";
+
+	a	.append (QString::number (mainId));
+	b	.append (QString::number (subId));
 	a. append (b);
 	techData. transmitter_coordinates -> setText (a);
-}
-
-void	RadioInterface::show_tiiLabel (int mainId) {
-	if (mainId < 0) {
-	   techData. tii_Label ->
-	                 setStyleSheet ("QLabel {background-color : red}");
-	   techData. tii_Label -> setText ("");
-	}
-	else {
-	   QString s = QString::number (mainId);
-	   s	= "<font color ='white'>" + s + "</font>";
-	   techData. tii_Label ->
-	                 setStyleSheet ("QLabel {background-color : green}");
-	   techData. tii_Label -> setText (s);
-	}
 }
 
 void	RadioInterface::showEnsembleData (void) {
@@ -1666,4 +1606,45 @@ void	RadioInterface::disconnectGUI (void) {
 	   disconnect (show_irButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_irSwitch (void)));
 #endif
+}
+
+void	RadioInterface::show_techData (QString		ensembleLabel, 
+	                               QString 		serviceName, 
+	                               int32_t 		Frequency,
+	                               audiodata	*d) {
+	techData. ensemble	-> setText (ensembleLabel);
+	techData. programName	-> setText (serviceName);
+	techData. frequency	-> display (Frequency);
+	techData. bitrateDisplay -> display (d -> bitRate);
+	techData. startAddressDisplay -> display (d -> startAddr);
+	techData. lengthDisplay	-> display (d -> length);
+	techData. subChIdDisplay -> display (d -> subchId);
+	uint16_t h = d -> protLevel;
+	QString protL;
+	if (!d -> shortForm) {
+	   protL = "EEP ";
+	   protL. append (QString::number ((h & 03) + 1));
+	   if ((h & (1 << 2)) == 0)
+	      protL. append ("-A");
+	   else
+	      protL. append ("-B");
+	}
+	else  {
+	   protL = "UEP ";
+	   protL. append (QString::number (h));
+	}
+	techData. uepField	-> setText (protL);
+	techData. ASCTy		-> setText (d -> ASCTy == 077 ? "DAB+" : "DAB");
+	if (d -> ASCTy == 077) {
+	   techData. rsError_display -> show ();
+	   techData. aacError_display -> show ();
+	}
+	techData. language ->
+	   setText (the_textMapper.
+	               get_programm_language_string (d -> language));
+	techData. programType ->
+	   setText (the_textMapper.
+	               get_programm_type_string (d -> programType));
+	if (show_data)
+	   dataDisplay -> show ();
 }

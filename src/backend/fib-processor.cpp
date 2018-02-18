@@ -522,7 +522,7 @@ serviceId	* service;
 	QString serviceName = service -> serviceLabel. label;
 	if (packetComp -> componentNr == 0) 	// otherwise sub component
 	   addtoEnsemble (serviceName);
-
+	
 	packetComp 	-> is_madePublic = true;
 	packetComp	-> SCId		= SCId;
         packetComp      -> subchannelId = SubChId;
@@ -735,7 +735,6 @@ serviceId	*s	= findServiceId (SId);
                                  find_serviceComponent (SId, SCId);
            if (packetComp != NULL) 
                 packetComp  -> appType       = appType;
-
 	}
 
 	return lOffset / 8;
@@ -757,7 +756,6 @@ int16_t	i;
                  subChannels [i]. FEC_scheme = FEC_scheme;
               }
            }
-
 	}
 }
 
@@ -998,19 +996,6 @@ char		label [17];
 	            }
 	            isSynced = true;
 	         }
-	         
-//	         if (!oe) {
-//	            const QString name = toQStringUsingCharset (
-//	                                      (const char *) label,
-//	                                      (CharacterSet) charSet);
-//	            if (!ensemble_Descriptor. name_Present) {
-//	               ensemble_Descriptor. ensembleName = name;
-//	               ensemble_Descriptor. ensembleId  = SId;
-//	               ensemble_Descriptor. name_Present  = true;
-//	               nameofEnsemble (SId, name);
-//	            }
-//	            isSynced	= true;
-//	         }
 	      }
 //	      fprintf (stderr,
 //	               "charset %d is used for ensemblename\n", charSet);
@@ -1266,7 +1251,8 @@ int16_t i;
 	   listofServices [i]. programType = -1;
 	   listofServices [i]. language = -1;
 	   listofServices [i]. pNum     = -1;
-	   ServiceComps [i]. inUse = false;
+	   subChannels    [i]. inUse	= false;
+	   ServiceComps	  [i]. inUse = false;
 	}
 
 	ensemble_Descriptor. name_Present = false;
@@ -1302,7 +1288,6 @@ int16_t	i, j;
 bool	subComponent	= false;
 int32_t	selectedService	= -1;
 int16_t	service		= UNKNOWN_SERVICE;
-QString	searchString	= s;
 
 	fibLocker. lock ();
 //	first we locate the serviceId
@@ -1313,7 +1298,7 @@ QString	searchString	= s;
 	   if (!listofServices [i]. serviceLabel. hasName)
 	      continue;
 
-	   if (listofServices [i]. serviceLabel. label != searchString)
+	   if (listofServices [i]. serviceLabel. label != s)
 	      continue;
 
 	   selectedService = listofServices [i]. serviceId;
@@ -1351,19 +1336,14 @@ QString	searchString	= s;
 	return service;
 }
 
-void	fib_processor::dataforDataService (QString &s, packetdata *d) {
-	dataforDataService (s, d, 0);
-}
-
 void	fib_processor::dataforDataService (QString &s,
 	                                   packetdata *d, int16_t compnr) {
 int16_t	j;
 int32_t	selectedService;
-QString searchString	= s;
 
 	d	-> defined	= false;
 	fibLocker. lock ();
-	selectedService = findServiceIdwithName (searchString);
+	selectedService = findServiceIdwithName (s);
 	if (selectedService == -1)  {
 	   fibLocker. unlock ();
 	   return;
@@ -1401,20 +1381,15 @@ QString searchString	= s;
 	fibLocker. unlock ();
 }
 
-void	fib_processor::dataforAudioService (QString &s, audiodata *d) {
-	dataforAudioService (s, d, 0);
-}
-
 void	fib_processor::dataforAudioService (QString &s,
 	                                    audiodata *d, int16_t compnr) {
 int16_t	j;
 int32_t	selectedService;
-QString	searchString	= s;
 
 	d	-> defined	= false;
 	fibLocker. lock ();
 
-	selectedService = findServiceIdwithName (searchString);
+	selectedService = findServiceIdwithName (s);
 	if (selectedService == -1) {
 	   fibLocker. unlock ();
 	   return;
@@ -1514,7 +1489,7 @@ int16_t		subChId;
 	d	-> defined	= true;
 	fibLocker. unlock ();
 }
-//
+
 //////////////////////////////////////////////////////////////////////////
 bool    fib_processor::syncReached (void) {
         return isSynced;
@@ -1551,7 +1526,6 @@ QString		fib_processor::get_ensembleName (void) {
 	   return ensemble_Descriptor. ensembleName;
 	return " ";
 }
-
 
 int32_t		fib_processor::get_CIFcount (void) {
 	return CIFcount;

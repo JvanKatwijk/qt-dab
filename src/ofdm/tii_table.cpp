@@ -33,8 +33,8 @@
 
 	tii_table::tii_table (RadioInterface *mr) {
 	   myRadio	= mr;
-	   connect (this, SIGNAL (show_tiiLabel (int)),
-	            mr,   SLOT   (show_tiiLabel (int)));
+//	   connect (this, SIGNAL (show_tiiLabel (int)),
+//	            mr,   SLOT   (show_tiiLabel (int)));
 }
 
 	tii_table::~tii_table (void) {
@@ -45,7 +45,7 @@ void	tii_table::cleanUp (void) {
 	offsets. clear ();
 	mainId		= -1;
 	tiiLocker. unlock ();
-	show_tiiLabel (mainId);
+//	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_main	(int16_t mainId,
@@ -59,7 +59,7 @@ void	tii_table::add_main	(int16_t mainId,
 	this	-> latitude	= latitude;
 	this	-> longitude	= longitude;
 	tiiLocker. unlock ();
-	show_tiiLabel (mainId);
+//	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_element (tii_element *t) {

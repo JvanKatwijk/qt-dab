@@ -59,6 +59,6 @@ private:
 	float		longitude;
 	std::vector<tii_element> offsets;
 signals:
-	void		show_tiiLabel		(int);
+//	void		show_tiiLabel		(int);
 };
 #endif

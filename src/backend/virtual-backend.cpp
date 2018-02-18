@@ -25,7 +25,7 @@
 #include	"dab-constants.h"
 #include	"virtual-backend.h"
 
-	virtualBackend::virtualBackend	(int16_t a, int16_t b) {
+	virtualBackend::virtualBackend	(int32_t a, int16_t b) {
 	startAddress	= a;
 	segmentLength	= b;
 }
@@ -39,7 +39,7 @@ int32_t	virtualBackend::process	(int16_t *v, int16_t c) {
 	return 32768;
 }
 
-int16_t	virtualBackend::startAddr (void) {
+int32_t	virtualBackend::startAddr (void) {
 	return startAddress;
 }
 

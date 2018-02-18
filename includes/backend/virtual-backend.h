@@ -33,15 +33,15 @@ class	audioSink;
 
 class	virtualBackend {
 public:
-		virtualBackend	(int16_t, int16_t);
+		virtualBackend	(int32_t, int16_t);
 virtual		~virtualBackend	(void);
 virtual int32_t	process		(int16_t *, int16_t);
 virtual void	stopRunning	(void);
 virtual	void	stop		(void);
-	int16_t	startAddr	(void);
+	int32_t	startAddr	(void);
 	int16_t	Length		(void);
 protected:
-	int16_t	startAddress;
+	int32_t	startAddress;
 	int16_t	segmentLength;
 };
 #endif

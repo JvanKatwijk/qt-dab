@@ -171,13 +171,17 @@ public slots:
 	void		changeinConfiguration	(void);
 	void		newAudio		(int, int);
 //
+	void		show_techData		(QString,
+	                                         QString,
+	                                         int32_t,
+	                                         audiodata *);
+
 	void		setStereo		(bool);
 	void		set_streamSelector	(int);
 	void		No_Signal_Found		(void);
 	void		show_motHandling	(bool);
 	void		setSyncLost		(void);
-	void		showCoordinates		(float, float);
-	void		show_tiiLabel		(int);
+	void		showCoordinates		(int, int);
 #ifdef	IMPULSE_RESPONSE
 	void		showImpulse		(int);
 #endif
