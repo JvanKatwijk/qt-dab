@@ -118,7 +118,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
 	hostLineEdit	-> show ();
-	state	-> setText ("Give IP address, return");
+    state	-> setText ("Enter IP address, \nthen press return");
 	connect (hostLineEdit, SIGNAL (returnPressed (void)),
 	         this, SLOT (setConnection (void)));
 }
