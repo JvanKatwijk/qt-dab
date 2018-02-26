@@ -1216,22 +1216,22 @@ void	RadioInterface::selectService (QString s) {
 
 	switch (k) {
 	   case AUDIO_SERVICE:
-	      { audiodata d;
-	        my_dabProcessor -> dataforAudioService (s, &d);
-	        if (!d. defined) {
-                   QMessageBox::warning (this, tr ("Warning"),
+	      {  audiodata d;
+	         my_dabProcessor -> dataforAudioService (s, &d);
+	         if (!d. defined) {
+                    QMessageBox::warning (this, tr ("Warning"),
  	                               tr ("unknown bitrate for this program\n"));
- 	           return;
- 	        }
+ 	            return;
+ 	         }
 
-	        show_techData (ensembleLabel, s, 
+	         show_techData (ensembleLabel, s, 
 	                       (int32_t)(inputDevice -> getVFOFrequency () / 1000000.0),
 	                       &d);
 
-	        my_dabProcessor	-> set_audioChannel (&d, audioBuffer);
-	        soundOut	-> restart ();
-	        showLabel (QString (" "));
-	        break;
+	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
+	         soundOut	-> restart ();
+	         showLabel (QString (" "));
+	         break;
 	      }
 
 	   case PACKET_SERVICE:

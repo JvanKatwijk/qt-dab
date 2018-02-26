@@ -1285,7 +1285,6 @@ int16_t i;
 //	Note that here we only look for the main service
 uint8_t	fib_processor::kindofService (QString &s) {
 int16_t	i, j;
-bool	subComponent	= false;
 int32_t	selectedService	= -1;
 int16_t	service		= UNKNOWN_SERVICE;
 
@@ -1308,11 +1307,8 @@ int16_t	service		= UNKNOWN_SERVICE;
 	      if (!ServiceComps [j]. inUse)
 	         continue;
 
-	      if (!subComponent &&(ServiceComps [j]. componentNr != 0))
+	      if (ServiceComps [j]. componentNr != 0)
 	         continue;		// subservice
-
-	      if (subComponent && (ServiceComps [j]. componentNr == 0))
-	         continue;
 
 	      if (selectedService != ServiceComps [j]. service -> serviceId)
 	         continue;
@@ -1354,13 +1350,13 @@ int32_t	selectedService;
 	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 03))
 	      continue;
 
-	   if (ServiceComps [j]. componentNr != compnr)
-	      continue;
-
 	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 
-	   subchId	= ServiceComps [j]. subchannelId;
+	   if (ServiceComps [j]. componentNr != compnr)
+	      continue;
+
+	   subchId		= ServiceComps [j]. subchannelId;
 	   d	-> subchId	= subchId;
 	   d	-> startAddr	= subChannels [subchId]. startAddr;
 	   d	-> shortForm	= subChannels [subchId]. shortForm;
@@ -1378,6 +1374,7 @@ int32_t	selectedService;
 	   fprintf (stderr, "startAddr %d, Length %d, bitrate %d, DSCTy %d, appType %d\n", d -> startAddr, d -> length, d -> bitRate, d -> DSCTy, d -> appType);
 	   break;
 	}
+
 	fibLocker. unlock ();
 }
 
@@ -1400,13 +1397,13 @@ int32_t	selectedService;
 	   if ((!ServiceComps [j]. inUse) || (ServiceComps [j]. TMid != 0))
 	      continue;
 
-	   if (ServiceComps [j]. componentNr != compnr)
-	      continue;
-
 	   if (selectedService != ServiceComps [j]. service -> serviceId)
 	      continue;
 
-	   subchId	= ServiceComps [j]. subchannelId;
+	   if (ServiceComps [j]. componentNr != compnr)
+	      continue;
+
+	   subchId		= ServiceComps [j]. subchannelId;
 	   d	-> serviceId	= selectedService;
 	   d	-> serviceName	= s;
 	   d	-> subchId	= subchId;

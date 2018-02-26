@@ -61,7 +61,7 @@ private:
 	dabParams	params;
 	QMutex		locker;
 	bool		audioService;
-	virtualBackend *theBackend;
+	std::vector<virtualBackend *>theBackends;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;

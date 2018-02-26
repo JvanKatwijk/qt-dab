@@ -138,7 +138,6 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/tii_detector.cpp \
 #	   ./src/backend/viterbi.cpp \
 	   ./src/backend/viterbi_768/viterbi-768.cpp \
-	   ./src/backend/viterbi_768/spiral-no-sse.c \
 	   ./src/backend/fic-handler.cpp \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/protection.cpp \
@@ -250,6 +249,9 @@ DEFINES		+= PRESET_NAME
 #and these one is just experimental,
 DEFINES	+= TII_GUESSING
 CONFIG	+= impulseresponse
+
+#CONFIG	+= NEON
+CONFIG	+= SSE
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -293,6 +295,8 @@ CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
+
+CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
@@ -471,5 +475,22 @@ impulseresponse	{
 	FORMS		+= ./optional-ir/impulse-widget.ui
 	HEADERS		+= ./optional-ir/impulse-viewer.h
 	SOURCES		+= ./optional-ir/impulse-viewer.cpp
+}
+
+NEON	{
+	DEFINES		+= NEON_AVAILABLE
+	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
+	SOURCES		+= ./src/backend/viterbi_768/spiral-neon.c
+}
+
+SSE	{
+	DEFINES		+= SSE_AVAILABLE
+	HEADERS		+= ./src/backend/viterbi_768/spiral-sse.h
+	SOURCES		+= ./src/backend/viterbi_768/spiral-sse.c
+}
+
+NO_SSE	{
+	HEADERS		+= ./src/backend/viterbi_768/spiral-no-sse.h
+	SOURCES		+= ./src/backend/viterbi_768/spiral-no-sse.c
 }
 

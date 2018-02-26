@@ -1,0 +1,11 @@
+
+The viterbi implementation is copied from the spiral one, all
+rights gratefully acknowledged.
+Since we serve more than a single platform, we do not use the SSE
+implementation.
+
+The particular spiral implementation (see the file spiral_no_sse.c"
+is generated for the wordsize and the other parameters for FIC blocks.
+The implementation therefore has a "switch", that - when set to true -
+selects the spiral implementation, and - when set to false (the default) -
+it uses the generic implementation.

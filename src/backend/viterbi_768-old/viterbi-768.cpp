@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2013
+ *    Copyright (C) 201 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -104,7 +104,6 @@ int 	viterbi_768::parity (int x){
 	x ^= (x >> 16);
 	x ^= (x >> 8);
 	return Partab [x];
-//	return parityb(x);
 }
 
 static inline
@@ -194,11 +193,6 @@ uint8_t getbit (uint8_t v, int32_t o) {
         return  (v & maskTable [o]) ? 1 : 0;
 }
 
-//static
-//uint8_t getbit (uint8_t v, int32_t o) {
-//uint8_t	mask	= 1 << (7 - o);
-//	return  (v & mask) ? 1 : 0;
-//}
 	
 // depends: POLYS, RATE, COMPUTETYPE
 // 	encode was only used for testing purposes
@@ -300,12 +294,10 @@ int32_t  s, i;
 }
 
 extern "C" {
-#if defined(SSE_AVAILABLE)
-void FULL_SPIRAL_sse (int,
-#elif defined(NEON_AVAILABLE)
-void FULL_SPIRAL_neon (int,
+#ifndef	SSE_AVAILABLE
+void FULL_SPIRAL_no_sse (int, 
 #else
-void FULL_SPIRAL_no_sse (int,
+void	FULL_SPIRAL_sse (int,
 #endif
 	                 COMPUTETYPE *Y,
 	                 COMPUTETYPE *X,
@@ -323,12 +315,10 @@ int32_t s;
 	for (s = 0; s < nbits; s++)
 	   memset (d + s, 0, sizeof(decision_t));
 
-#if defined(SSE_AVAILABLE)
-	FULL_SPIRAL_sse (nbits,
-#elif defined(NEON_AVAILABLE)
-	FULL_SPIRAL_neon (nbits,
-#else
+#ifndef	SSE_AVAILABLE
 	FULL_SPIRAL_no_sse (nbits,
+#else
+	FULL_SPIRAL_sse (nbits,
 #endif
 	                 vp -> new_metrics -> t,
 	                 vp -> old_metrics -> t,

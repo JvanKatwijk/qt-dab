@@ -42,7 +42,7 @@
 	myRadioInterface	= mr;
 	this	-> picturesPath	= picturesPath;
 	cifVector. resize (55296);
-	theBackend		= new virtualBackend (0, 0);
+	theBackends. push_back (new virtualBackend (0, 0));
 	BitsperBlock		= 2 * params. get_carriers ();
 	switch (mode) {
 	   case 4:	// 2 CIFS per 76 blocks
@@ -75,11 +75,11 @@
 	int i;
 	   locker. lock ();
 	   work_to_be_done. store (false);
-	   if (theBackend != NULL) {
-	      theBackend -> stopRunning ();
-	      delete theBackend;
-	      theBackend	= NULL;
+	   for (i = 0; i < theBackends. size (); i ++) {
+	      theBackends [i] -> stopRunning ();
+	      delete theBackends [i];
 	   }
+	   theBackends. resize (0);
 	   locker. unlock ();
 	}
 
@@ -94,10 +94,10 @@ void	mscHandler::set_audioChannel (audiodata *d,
 	locker. lock ();
 //
 //	we could assert here that theBackend == NULL
-	theBackend	= new audioBackend (myRadioInterface,
-	                                    d,
-	                                    audioBuffer,
-	                                    picturesPath);
+	theBackends. push_back (new audioBackend (myRadioInterface,
+	                                          d,
+	                                          audioBuffer,
+	                                          picturesPath));
 	work_to_be_done. store (true);
 	locker. unlock ();
 }
@@ -105,10 +105,10 @@ void	mscHandler::set_audioChannel (audiodata *d,
 void	mscHandler::set_dataChannel (packetdata	*d,
 	                             RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock ();
-	theBackend	= new dataBackend (myRadioInterface,
-	                                   d,
-	                                   dataBuffer,
-	                                   picturesPath);
+	theBackends. push_back (new dataBackend (myRadioInterface,
+	                                         d,
+	                                         dataBuffer,
+	                                         picturesPath));
 	work_to_be_done. store (true);
 	locker. unlock ();
 }
@@ -140,13 +140,15 @@ int16_t	i;
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
 	locker. lock ();
-	int16_t startAddr	= theBackend -> startAddr ();
-	int16_t	Length		= theBackend -> Length    (); 
-	if (Length > 0) {		// Length = 0? virtual Backend
-	   int16_t temp [Length * CUSize];
-	   memcpy (temp, &cifVector [startAddr * CUSize],
+	for (i = 0; i < theBackends. size (); i ++) {
+	   int16_t startAddr	= theBackends [i] -> startAddr ();
+	   int16_t Length	= theBackends [i] -> Length    (); 
+	   if (Length > 0) {		// Length = 0? virtual Backend
+	      int16_t temp [Length * CUSize];
+	      memcpy (temp, &cifVector [startAddr * CUSize],
 	                           Length * CUSize * sizeof (int16_t));
-	   (void) theBackend -> process (temp, Length * CUSize);
+	      (void) theBackends [i] -> process (temp, Length * CUSize);
+	   }
 	}
 	locker. unlock ();
 }
