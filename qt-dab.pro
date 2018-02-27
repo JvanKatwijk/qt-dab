@@ -479,6 +479,8 @@ impulseresponse	{
 
 NEON	{
 	DEFINES		+= NEON_AVAILABLE
+	QMAKE_CFLAGS	+=  -mfpu=neon-vfpv4
+	QMAKE_CXXFLAGS	+=  -mfpu=neon-vfpv4
 	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
 	SOURCES		+= ./src/backend/viterbi_768/spiral-neon.c
 }

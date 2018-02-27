@@ -1229,31 +1229,40 @@ void	RadioInterface::selectService (QString s) {
 	                       &d);
 
 	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
+	         for (int i = 1; i < 10; i ++) {
+	            packetdata pd;
+	            my_dabProcessor -> dataforDataService (s, &pd, i);
+	            if (pd. defined) {
+	               my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	               break;
+	            }
+	         }
+
 	         soundOut	-> restart ();
 	         showLabel (QString (" "));
 	         break;
 	      }
 
 	   case PACKET_SERVICE:
-	      {  packetdata d;
-	         my_dabProcessor -> dataforDataService (s, &d);
-	         if ((!d. defined) ||
-	             (d.  DSCTy == 0) || (d. bitRate == 0)) {
+	      {  packetdata pd;
+	         my_dabProcessor -> dataforDataService (s, &pd);
+	         if ((!pd. defined) ||
+	             (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
-	                               d. DSCTy, d. bitRate);
+	                               pd. DSCTy, pd. bitRate);
 	            QMessageBox::warning (this, tr ("sdr"),
  	                               tr ("still insufficient data for this service\n"));
 
 	            return;
 	         }
-	         my_dabProcessor -> set_dataChannel (&d, dataBuffer);
-	         switch (d. DSCTy) {
+	         my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	         switch (pd. DSCTy) {
 	            default:
 	               showLabel (QString ("unimplemented Data"));
 	               break;
 	            case 5:
 	               fprintf (stderr, "selected apptype %d\n", 
-	                                                 d. appType);
+	                                                 pd. appType);
 	               showLabel (QString ("Transp. Channel not implemented"));
 	               break;
 	            case 60:

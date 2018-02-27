@@ -376,11 +376,11 @@ L1:
            }
         }
 
-	if (*mainId != -1)
-           fprintf (stderr, "(%d) the carrier is %d, the pattern is %llx\n",
-	                                 *mainId,
-                                         startCarrier,
-	                                 theTable [*mainId]. pattern);
+//	if (*mainId != -1)
+//	   fprintf (stderr, "(%d) the carrier is %d, the pattern is %llx\n",
+//	                                 *mainId,
+//                                         startCarrier,
+//	                                 theTable [*mainId]. pattern);
 }
 
 //
