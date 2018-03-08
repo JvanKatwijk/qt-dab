@@ -308,9 +308,9 @@ In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
 
-A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbia Stretch.
+A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbian Stretch.
 Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the airspy, while the
-API library for the SDRplay can be downloaded from sdrplay.com
+API library for the SDRplay can be downloaded from sdrplay.com. So, Qt-DAB can be used without the need for compiling anything.
 
 The AppImage version does not contain the Spectrum - I am using it in a headless environment.
 
@@ -321,6 +321,8 @@ For the ".pro" file uncomment
 	#DEFINES += __THREADED_DECODING.
 	#DEFINES += __THREADED_BACKEND
 for a maximal use of the 4 cores of the CPU.
+
+If you want to create a version with a spectrum widget, uncomment the line "#CONFIG += spectrum"
 
 For the CMakeLists.txt file, uncomment 
 
