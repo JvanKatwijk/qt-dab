@@ -308,15 +308,19 @@ In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
 
-The best way to generate the executable when building under Raspbian Jessie is to use Qt4. The qwt library - needed if you want the spectrum viewer and the constellation diagram - in that distribution is compiled with Qt4. 
+A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbia Stretch.
+Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the airspy, while the
+API library for the SDRplay can be downloaded from sdrplay.com
 
-IMPORTANT NOTE:
-Since I was studying the (potential) difference in behaviour between a version with and a version without concurrency in the front end, there is a setting in the ".pro" file for selecting this.
-Use for the Qt-DAB the concurrency option.
+The AppImage version does not contain the Spectrum - I am using it in a headless environment.
+
+Since Raspbian Stretch is a Debian derivative, the description for creating a version under Ubuntu applies.
 
 For the ".pro" file uncomment 
 
 	#DEFINES += __THREADED_DECODING.
+	#DEFINES += __THREADED_BACKEND
+for a maximal use of the 4 cores of the CPU.
 
 For the CMakeLists.txt file, uncomment 
 
