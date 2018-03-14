@@ -258,6 +258,7 @@ in the SFN. Note that the signal that is strongest is the signal further
 processed.
 
 THIS FEATURE IS NOT AVAILABLE WHEN CMake IS USED.
+
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------
