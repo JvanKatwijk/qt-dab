@@ -7,6 +7,7 @@
 TEMPLATE	= app
 TARGET		= qt-dab-1.0-alpha
 
+QT		+= network
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
