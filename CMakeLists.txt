@@ -93,7 +93,7 @@ endif ()
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
 #add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
-#
+#add_definitions (-D_SEND_DATAGRAM_)	# uncomment for sending datagrams
 ########################################################################
 
 	find_package (PkgConfig)

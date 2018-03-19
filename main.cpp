@@ -29,6 +29,7 @@
 #include        <QSettings>
 #include	<QTranslator>
 #include        <QDir>
+#include	<QDebug>
 #include        <unistd.h>
 #include        "dab-constants.h"
 #include        "radio.h"

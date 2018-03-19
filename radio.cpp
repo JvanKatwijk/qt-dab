@@ -142,8 +142,10 @@ QString h;
 
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
+#ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString ();
 	port			= dabSettings -> value ("port", 8888). toInt ();
+#endif
 //
 	has_presetName		= dabSettings -> value ("has-presetName", 1). toInt () != 0;
 	if (has_presetName) 
@@ -719,10 +721,12 @@ uint8_t localBuffer [length];
 	   return;
 	}
 	dataBuffer -> getDataFromBuffer (localBuffer, length);
+#ifdef	_SEND_DATAGRAM_
 	if (running. load ())
 	   dataOut_socket. writeDatagram ((const char *)localBuffer, length,
 	                                   QHostAddress (ipAddress),
 	                                   port);
+#endif
 }
 //
 //
@@ -1269,12 +1273,16 @@ void	RadioInterface::selectService (QString s) {
 	               showLabel (QString ("MOT partially implemented"));
 	               break;
 	            case 59: {
+#ifdef	_SEND_DATAGRAM_
 	                  QString text = QString ("Embedded IP: UDP data to ");
 	                  text. append (ipAddress);
 	                  text. append (" ");
 	                  QString n = QString::number (port);
 	                  text. append (n);
 	                  showLabel (text);
+#else
+	                  showLabel ("Embedded IP not supported ");
+#endif
 	               }
 	               break;
 	            case 44:

@@ -6,7 +6,6 @@
 
 TEMPLATE	= app
 TARGET		= qt-dab-1.0-alpha
-
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
@@ -226,6 +225,9 @@ CONFIG		+= airspy
 #if you want to see a spectrum and a constellation plot, uncomment
 CONFIG		+= spectrum
 
+#to handle output of embedded an IP data stream, uncomment
+#CONFIG		+= send_datagram
+
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of soud out
@@ -420,6 +422,11 @@ rtl_tcp {
 	FORMS		+= ./devices/rtl_tcp/rtl_tcp-widget.ui
 }
 
+send_datagram {
+	DEFINES		+= _SEND_DATAGRAM_
+	Qt		+= network
+}
+
 elad_s1	{
 	DEFINES		+= HAVE_ELAD_S1
 	DEPENDPATH	+= ./devices/elad-s1-handler
@@ -495,4 +502,5 @@ NO_SSE	{
 	HEADERS		+= ./src/backend/viterbi_768/spiral-no-sse.h
 	SOURCES		+= ./src/backend/viterbi_768/spiral-no-sse.c
 }
+
 

@@ -30,8 +30,9 @@
 #include	<QMainWindow>
 #include	<QStringList>
 #include	<QStringListModel>
+#ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
-#include	<QTcpSocket>
+#endif
 #include	<QComboBox>
 #include	<QLabel>
 #include	<QTimer>
@@ -115,9 +116,11 @@ const	char		*get_programm_language_string (int16_t);
 	QLabel		*pictureLabel;
 	bool		saveSlides;
 	bool		showSlides;
+#ifdef	_SEND_DATAGRAM_
 	QUdpSocket	dataOut_socket;
 	QString		ipAddress;
 	int32_t		port;
+#endif
 
 	void		start_sourceDumping	(void);
 	void		stop_sourceDumping	(void);
