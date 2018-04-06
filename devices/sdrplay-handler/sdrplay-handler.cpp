@@ -202,9 +202,9 @@ ULONG APIkeyValue_length = 255;
 }
 
 	sdrplayHandler::~sdrplayHandler	(void) {
-	stopReader ();
 	if (!libraryLoaded)
 	   return;
+	stopReader ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
 	sdrplaySettings	-> setValue ("sdrplayGain", gainSlider -> value ());

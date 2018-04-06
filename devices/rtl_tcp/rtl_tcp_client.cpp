@@ -118,7 +118,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
 	hostLineEdit	-> show ();
-    state	-> setText ("Enter IP address, \nthen press return");
+	state	-> setText ("Enter IP address, \nthen press return");
 	connect (hostLineEdit, SIGNAL (returnPressed (void)),
 	         this, SLOT (setConnection (void)));
 }
@@ -170,7 +170,7 @@ int32_t	rtl_tcp_client::getVFOFrequency	(void) {
 }
 
 bool	rtl_tcp_client::restartReader	(void) {
-	if (connected)
+	if (!connected)
 	   return true;
 	connect (&toServer, SIGNAL (readyRead (void)),
 	         this, SLOT (readData (void)));
@@ -178,9 +178,10 @@ bool	rtl_tcp_client::restartReader	(void) {
 }
 
 void	rtl_tcp_client::stopReader	(void) {
-	if (connected)
-	   disconnect (&toServer, SIGNAL (readyRead (void)),
-	               this, SLOT (readData (void)));
+	if (!connected)
+	   return;
+	disconnect (&toServer, SIGNAL (readyRead (void)),
+	            this, SLOT (readData (void)));
 }
 //
 //

@@ -202,7 +202,6 @@ SyncOnNull:
 	            emit (No_Signal_Found ());
                     attempts = 0;
                  }
-
 	         goto notSynced;
 	      }
 	   }
@@ -210,6 +209,8 @@ SyncOnNull:
   *	It seemed we found a dip that started app 65/100 * 50 samples earlier.
   *	We now start looking for the end of the null period.
   */
+	   fprintf (stderr, "%f %f\n", cLevel / C_LEVEL_SIZE, 
+	                                  myReader. get_sLevel ());
 	   counter	= 0;
 SyncOnEndNull:
 	   while (cLevel / C_LEVEL_SIZE < 0.75 * myReader. get_sLevel ()) {

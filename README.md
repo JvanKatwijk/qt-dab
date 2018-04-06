@@ -73,7 +73,12 @@ The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB 
 
 Next to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
 
-The Qt-DAB version also supports input from an rtl-tcp server and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`), which obviously provides the opportunity of dumping the input into a (*.sdr)-file. 
+The Qt-DAB version also supports input from an rtl-tcp server (see
+osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision
+for dumping the input into a (*.sdr)-file. 
+
+Note that if the rtl_tcp server is used as input device, the connection
+needs to support the inputrate, i.e. 2048000 I/Q samples (i.e. 2 * 2048000 bytes/second).
 
 Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. Furthermore, the resulting PCM output can be sent - if so
 configured - to a TCP port (Sources for a small client are part of the source distribution).
