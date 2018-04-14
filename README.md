@@ -209,6 +209,7 @@ for use with (appropriate) extio handlers
 
 Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq' as well as 16-bit "wav" `*.sdr` files) is configured by default.
 
+
 In order to show the spectrum and the constellation shown, uncomment
 ```
 CONFIG          += spectrum  

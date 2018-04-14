@@ -252,8 +252,10 @@ DEFINES		+= PRESET_NAME
 DEFINES	+= TII_GUESSING
 CONFIG	+= impulseresponse
 
+# select SSE is you are compiling on a x64 with SSE support
 #CONFIG	+= NEON
-CONFIG	+= SSE
+#CONFIG	+= SSE
+CONFIG	+= NO_SSE
 }
 #
 # an attempt to have it run under W32 through cross compilation
