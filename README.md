@@ -340,7 +340,10 @@ For the CMakeLists.txt file, uncomment
 appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
-https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.). It assumes that you have installed a device, either a dabstick (i.e. rtlsdr), an Airspy or a SDRplay. All further dependencies are included. There is only one file which you have to make executable in order to run.
+https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.).
+The AppImage includes the libraries for both the RTLSDR device and the Airspy device (for the Airspy you should be a member of the "plugdev" group.
+If you want to run an SDRplay device, you should install the library yourself.
+All further dependencies are included. There is only one file which you have to make executable in order to run.
 
 Note that on start up the appImage will try to set the udev settings for the airspy and dabstick right. Libraries for the dabstick (i.e. rtlsdr) and airspy are part of the appImage. Note that while the SDRplay is selectable, the library for the device should be installed from the supplier, i.e. "www.sdrplay.com".
 
