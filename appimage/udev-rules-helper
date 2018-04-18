@@ -5,7 +5,7 @@ HERE="$(dirname "$(readlink -f "${0}")")"
 rmmod dvb_usb_rtl28xxu || true
 
 cat > /tmp/10-rtl-sdr.rules <<\EOF
-SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2838", MODE="0666", SYMLINK+="rtl_sdr"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="0bda", ATTRS{idProduct}=="2832", MODE="0666", SYMLINK+="rtl_sdr"
 EOF
 
 mv /tmp/10-rtl-sdr.rules /etc/udev/rules.d/10-rtl-sdr.rules
