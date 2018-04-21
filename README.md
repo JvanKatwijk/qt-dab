@@ -226,7 +226,6 @@ a "quality indicator" (standard phase deviation of the demodulated signal) will 
 Audio samples are - by default - sent to an audio device using the portaudio
 library. Two alternatives are available:
 
-
 For selecting the output to be sent to a TCP port, uncomment
 ```
 #CONFIG         += tcp-streamer         # use for remote listening
@@ -264,6 +263,41 @@ in the SFN. Note that the signal that is strongest is the signal further
 processed.
 
 THIS FEATURE IS NOT AVAILABLE WHEN CMake IS USED.
+
+If you are compiling/running for an x64 based PC with SSE, then
+you could set
+```
+#CONFIG          += NEON_RPI2
+#CONFIG          += NEON_RPI3
+CONFIG          += SSE
+#CONFIG          += NO_SSE
+```
+
+If you are compiling/running for an RPI2, and want to check whether or
+not NEON instructions can be used, you could set
+```
+CONFIG          += NEON_RPI2
+#CONFIG          += NEON_RPI3
+#CONFIG          += SSE
+#CONFIG          += NO_SSE
+```
+
+If you are compiling/running for an RPI3, and want to check whether or
+not NEON instructions can be used, you could set
+```
+#CONFIG          += NEON_RPI2
+CONFIG          += NEON_RPI3
+#CONFIG          += SSE
+#CONFIG          += NO_SSE
+```
+
+The safest way - always - is to set
+```
+#CONFIG          += NEON_RPI2
+#CONFIG          += NEON_RPI3
+#CONFIG          += SSE
+CONFIG          += NO_SSE
+```
 
 ------------------------------------------------------------------
 Configuring using CMake

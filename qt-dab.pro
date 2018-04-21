@@ -252,8 +252,11 @@ DEFINES		+= PRESET_NAME
 DEFINES	+= TII_GUESSING
 CONFIG	+= impulseresponse
 
-# select SSE is you are compiling on a x64 with SSE support
-#CONFIG	+= NEON
+# you might select SSE if you are compiling on a x64 with SSE support
+# and you might select NEON if you are compiling for an arm (however
+# have a look at the config section for neon then)
+#CONFIG	+= NEON_RPI2
+#CONFIG	+= NEON_RPI3
 #CONFIG	+= SSE
 CONFIG	+= NO_SSE
 }
@@ -486,12 +489,18 @@ impulseresponse	{
 	SOURCES		+= ./optional-ir/impulse-viewer.cpp
 }
 
-NEON	{
-	DEFINES		+= NEON_AVAILABLE
 # for RPI2 use:
+NEON_RPI2	{
+	DEFINES		+= NEON_AVAILABLE
 	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
 	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
+	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
+	SOURCES		+= ./src/backend/viterbi_768/spiral-neon.c
+}
+
 # for RPI3 use:
+NEON_RPI3	{
+	DEFINES		+= NEON_AVAILABLE
 #	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
 #	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
 	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
