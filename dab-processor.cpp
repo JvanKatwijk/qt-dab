@@ -188,7 +188,7 @@ SyncOnNull:
   */
 	   counter	= 0;
 	   setSynced (false);
-	   while (cLevel / C_LEVEL_SIZE  > 0.40 * myReader. get_sLevel ()) {
+	   while (cLevel / C_LEVEL_SIZE  > 0.50 * myReader. get_sLevel ()) {
 	      std::complex<float> sample	=
 	                      myReader. getSample (coarseOffset + fineCorrector);
 	      envBuffer [syncBufferIndex] = jan_abs (sample);

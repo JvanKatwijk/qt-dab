@@ -176,7 +176,7 @@ public slots:
 //
 	void		show_techData		(QString,
 	                                         QString,
-	                                         int32_t,
+	                                         float,
 	                                         audiodata *);
 
 	void		setStereo		(bool);

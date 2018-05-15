@@ -186,7 +186,7 @@ ULONG APIkeyValue_length = 255;
 
 	if (hwVersion == 255) {
 	   nrBits	= 14;
-	   denominator	= 16384;
+	   denominator	= 2048;
 	}
 	else {
 	   nrBits	= 12;
@@ -316,7 +316,7 @@ void myStreamCallback (int16_t		*xi,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
-float	denominator	= p -> denominator;
+float	denominator	= (float)(p -> denominator);
 std::complex<float> *localBuf =
 	   (std::complex<float> *)alloca (numSamples * sizeof (std::complex<float>));
 

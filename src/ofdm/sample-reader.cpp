@@ -144,7 +144,7 @@ std::complex<float> temp;
 }
 
 void	sampleReader::getSamples (std::complex<float>  *v,
-	                          int16_t n, int32_t phaseOffset) {
+	                          int32_t n, int32_t phaseOffset) {
 int32_t		i;
 
 	corrector	= phaseOffset;

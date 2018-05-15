@@ -66,6 +66,9 @@
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
 #endif
+#ifdef	HAVE_HACKRF
+#include	"hackrf-handler.h"
+#endif
 #include	"ui_technical_data.h"
 #ifdef	HAVE_SPECTRUM
 #include	"spectrum-handler.h"
@@ -303,6 +306,9 @@ QString h;
 #endif
 #ifdef	HAVE_ELAD_S1
 	deviceSelector	-> addItem ("elad-s1");
+#endif
+#ifdef	HAVE_HACKRF
+	deviceSelector	-> addItem ("hackrf");
 #endif
 #ifdef  HAVE_EXTIO
 	deviceSelector	-> addItem ("extio");
@@ -972,6 +978,20 @@ virtualInput	*inputDevice	= NULL;
 	}
 	else
 #endif
+#ifdef	HAVE_HACKRF
+	if (s == "hackrf") {
+	   try {
+	      inputDevice	= new hackrfHandler (dabSettings);
+	      showButtons ();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+                                   tr ("hackrf not found\n"));
+	      return NULL;
+	   }
+	}
+	else
+#endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a
 //	wrap around the dll
@@ -1229,7 +1249,7 @@ void	RadioInterface::selectService (QString s) {
  	         }
 
 	         show_techData (ensembleLabel, s, 
-	                       (int32_t)(inputDevice -> getVFOFrequency () / 1000000.0),
+	                       inputDevice -> getVFOFrequency () / 1000000.0,
 	                       &d);
 
 	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
@@ -1627,7 +1647,7 @@ void	RadioInterface::disconnectGUI (void) {
 
 void	RadioInterface::show_techData (QString		ensembleLabel, 
 	                               QString 		serviceName, 
-	                               int32_t 		Frequency,
+	                               float 		Frequency,
 	                               audiodata	*d) {
 	techData. ensemble	-> setText (ensembleLabel);
 	techData. programName	-> setText (serviceName);

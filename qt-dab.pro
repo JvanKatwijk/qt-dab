@@ -217,6 +217,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
+#CONFIG		+= hackrf	# does not work yet
 #CONFIG		+= elad_s1
 
 #very experimental, simple server for connecting to a tdc handler
@@ -386,6 +387,19 @@ sdrplay {
 	SOURCES		+= ./devices/sdrplay-handler/sdrplay-handler.cpp \
 	                   ./devices/sdrplay-handler/sdrplayselect.cpp
 	FORMS		+= ./devices/sdrplay-handler/sdrplay-widget.ui
+}
+#
+#
+#	the SDRplay
+#
+hackrf {
+	DEFINES		+= HAVE_HACKRF
+	DEPENDPATH	+= ./devices/hackrf-handler 
+	INCLUDEPATH	+= ./devices/hackrf-handler 
+	HEADERS		+= ./devices/hackrf-handler/hackrf-handler.h 
+	SOURCES		+= ./devices/hackrf-handler/hackrf-handler.cpp 
+	FORMS		+= ./devices/hackrf-handler/hackrf-widget.ui
+	LIBS		+= -lhackrf
 }
 #
 #

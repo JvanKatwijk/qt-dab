@@ -56,7 +56,7 @@ public:
 		float	get_sLevel	(void);
 		std::complex<float> getSample	(int32_t);
 	        void	getSamples	(std::complex<float> *v,
-	                                 int16_t n, int32_t phase);
+	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping	(void);
 	        void	setSpectrum	(bool);

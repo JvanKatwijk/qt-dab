@@ -63,17 +63,17 @@ if(DEFINED RTLSDR)
 endif ()
 
 if(DEFINED RTLTCP)
-   set(RTLTCP true)
+	set(RTLTCP true)
 endif ()
 
 if (DEFINED SPECTRUM)
-   set(SPECTRUM true)
-   set(TII_GUESSING true)
-   set(IMPULSE_RESPONSE true)
+	set(SPECTRUM true)
+	set(TII_GUESSING true)
+	set(IMPULSE_RESPONSE true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
-   set(DATA_STREAMER true)
+	set(DATA_STREAMER true)
 endif ()
 
 #	If you want a tcp stream of the audio rather than
