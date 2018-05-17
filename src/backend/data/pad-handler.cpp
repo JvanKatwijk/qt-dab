@@ -364,7 +364,7 @@ int16_t	i;
 int16_t	currentLength = msc_dataGroupBuffer. size ();
 //
 //	just to ensure that, when a "12" appType is missing, the
-//	data of "13" appType elements is not  endless collected.
+//	data of "13" appType elements is not endlessly collected.
 	if (currentLength == 0)
 	   return;
 

@@ -41,6 +41,7 @@ Features
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), and
+	- (slightly experimental) HACKRF One, and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not  (Not yet or partly) implemented:
@@ -51,8 +52,6 @@ Not  (Not yet or partly) implemented:
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources)
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
-  *proper handling of subservices
-  * HackRF
 
 
 ------------------------------------------------------------------

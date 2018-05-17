@@ -11,14 +11,14 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>SDRplay control</string>
+   <string>HACKRF control</string>
   </property>
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
      <x>0</x>
-     <y>0</y>
-     <width>211</width>
+     <y>10</y>
+     <width>251</width>
      <height>291</height>
     </rect>
    </property>
@@ -28,19 +28,6 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>80</y>
-      <width>101</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>hackrf</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="statusLabel">
     <property name="geometry">
      <rect>
@@ -57,14 +44,14 @@
    <widget class="QSlider" name="lnagainSlider">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>29</y>
+      <x>210</x>
+      <y>30</y>
       <width>20</width>
-      <height>171</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="maximum">
-     <number>62</number>
+     <number>39</number>
     </property>
     <property name="orientation">
      <enum>Qt::Vertical</enum>
@@ -73,7 +60,7 @@
    <widget class="QLCDNumber" name="lnagainDisplay">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>200</x>
       <y>0</y>
       <width>41</width>
       <height>23</height>
@@ -102,10 +89,10 @@
    <widget class="QSlider" name="vgagainSlider">
     <property name="geometry">
      <rect>
-      <x>100</x>
-      <y>40</y>
+      <x>150</x>
+      <y>30</y>
       <width>24</width>
-      <height>160</height>
+      <height>161</height>
      </rect>
     </property>
     <property name="maximum">
@@ -118,7 +105,7 @@
    <widget class="QLCDNumber" name="vgagainDisplay">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>130</x>
       <y>0</y>
       <width>64</width>
       <height>23</height>
@@ -131,10 +118,10 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>220</y>
-      <width>59</width>
-      <height>15</height>
+      <x>150</x>
+      <y>200</y>
+      <width>31</width>
+      <height>16</height>
      </rect>
     </property>
     <property name="text">
@@ -144,14 +131,40 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>140</x>
-      <y>220</y>
-      <width>59</width>
-      <height>15</height>
+      <x>210</x>
+      <y>200</y>
+      <width>31</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>lna</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="serial_number_display">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>220</y>
+      <width>231</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="usb_board_id_display">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>180</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

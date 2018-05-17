@@ -217,7 +217,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
-#CONFIG		+= hackrf	# does not work yet
+CONFIG		+= hackrf	# does not work yet
 #CONFIG		+= elad_s1
 
 #very experimental, simple server for connecting to a tdc handler
@@ -399,7 +399,6 @@ hackrf {
 	HEADERS		+= ./devices/hackrf-handler/hackrf-handler.h 
 	SOURCES		+= ./devices/hackrf-handler/hackrf-handler.cpp 
 	FORMS		+= ./devices/hackrf-handler/hackrf-widget.ui
-	LIBS		+= -lhackrf
 }
 #
 #

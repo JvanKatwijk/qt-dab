@@ -55,6 +55,10 @@ if(DEFINED DABSTICK)
    set(DABSTICK true)
 endif ()
 
+if(DEFINED HACKRF)
+   set(HACKRF true)
+endif ()
+
 if(DEFINED RTLTCP)
    set(RTLTCP true)
 endif ()
@@ -403,6 +407,36 @@ add_definitions (-DPRESET_NAME)
 
 	   add_definitions (-DHAVE_AIRSPY)
 	endif (AIRSPY)
+#
+	if (HACKRF)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/hackrf-handler/hackrf-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/hackrf-handler/hackrf-handler.h
+	   )
+
+	   include_directories (
+	     ./devices/hackrf-handler
+	     ./devices/hackrf-handler/libhackrf
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/hackrf-handler/hackrf-handler.h
+	        ./devices/hackrf-handler/libhackrf/hackrf.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/hackrf-handler/hackrf-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_HACKRF)
+	endif (HACKRF)
 #
 	if (DABSTICK)
 #           find_package(LibRTLSDR)

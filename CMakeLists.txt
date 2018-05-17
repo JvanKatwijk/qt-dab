@@ -63,17 +63,21 @@ if(DEFINED RTLSDR)
 endif ()
 
 if(DEFINED RTLTCP)
-	set(RTLTCP true)
+   set(RTLTCP true)
+endif ()
+
+if(DEFINED HACKRF)
+	set(HACKRF true)
 endif ()
 
 if (DEFINED SPECTRUM)
-	set(SPECTRUM true)
-	set(TII_GUESSING true)
-	set(IMPULSE_RESPONSE true)
+   set(SPECTRUM true)
+   set(TII_GUESSING true)
+   set(IMPULSE_RESPONSE true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
-	set(DATA_STREAMER true)
+   set(DATA_STREAMER true)
 endif ()
 
 #	If you want a tcp stream of the audio rather than
@@ -93,7 +97,7 @@ endif ()
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
 #add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
-#add_definitions (-D_SEND_DATAGRAM_)	# uncomment for sending datagrams
+#
 ########################################################################
 
 	find_package (PkgConfig)
@@ -403,6 +407,35 @@ add_definitions (-DPRESET_NAME)
 	   add_definitions (-DHAVE_AIRSPY)
 	endif (AIRSPY)
 
+	if (HACKRF)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/hackrf-handler/hackrf-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/hackrf-handler/hackrf-handler.h
+	   )
+
+	   include_directories (
+	     ./devices/hackrf-handler
+	     ./devices/hackrf-handler/libhackrf
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/hackrf-handler/hackrf-handler.h
+	        ./devices/hackrf-handler/libhackrf/hackrf.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/hackrf-handler/hackrf-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_HACKRF)
+	endif (HACKRF)
 #
 	if (RTLSDR)
            find_package(LibRTLSDR)
