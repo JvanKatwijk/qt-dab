@@ -210,6 +210,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/virtual-datahandler.h
 	     ./includes/backend/data/pad-handler.h
+	     ./includes/backend/data/mot-class.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
@@ -271,6 +272,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/virtual-datahandler.cpp
 	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/pad-handler.cpp
+	     ./src/backend/data/mot-class.cpp
 	     ./src/backend/data/mot-data.cpp
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
@@ -303,6 +305,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/audio/mp4processor.h
 	     ./includes/backend/data/virtual-datahandler.h
 	     ./includes/backend/data/pad-handler.h
+	     ./includes/backend/data/mot-class.h
 	     ./includes/backend/data/mot-data.h
 	     ./includes/backend/data/ip-datahandler.h
 	     ./includes/backend/data/tdc-datahandler.h

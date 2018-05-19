@@ -106,7 +106,7 @@ int	res;
 	}
 
 	res	= this -> hackrf_set_baseband_filter_bandwidth (theDevice,
-	                                                        1536000);
+	                                                        1750000);
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_set_bw:");
 	   fprintf (stderr, "%s \n",
@@ -133,7 +133,7 @@ int	res;
 	         this, SLOT (setVGAGain (int)));
 
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list ();
-	if (deviceList != NULL) {
+	if (deviceList != NULL) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
 	   serial_number_display -> setText (serial);
 	   enum hackrf_usb_board_id board_id =

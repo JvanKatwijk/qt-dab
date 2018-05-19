@@ -9,12 +9,12 @@ TARGET		= qt-dab-1.0-alpha
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -90,6 +90,7 @@ HEADERS += ./radio.h \
 	   ./includes/backend/audio/faad-decoder.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
+	   ./includes/backend/data/mot-class.h \
 	   ./includes/backend/data/virtual-datahandler.h \
 	   ./includes/backend/data/tdc-datahandler.h \
 	   ./includes/backend/data/ip-datahandler.h \
@@ -157,6 +158,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
 	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
+	   ./src/backend/data/mot-class.cpp \
 	   ./src/backend/data/data-processor.cpp \
 	   ./src/backend/data/virtual-datahandler.cpp \
 	   ./src/backend/data/tdc-datahandler.cpp \

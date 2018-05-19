@@ -23,7 +23,7 @@
 #include	<cstring>
 #include	"radio.h"
 #include	"charsets.h"
-#include	"mot-data.h"
+#include	"mot-class.h"
 /**
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
@@ -34,7 +34,8 @@
 	         mr, SLOT (showLabel (QString)));
 	connect (this, SIGNAL (show_motHandling (bool)),
 	         mr, SLOT (show_motHandling (bool)));
-	my_motHandler	= new motHandler (mr, picturesPath);
+	this	-> picturePath	= picturesPath;
+	currentSlide	= NULL;
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
@@ -53,7 +54,8 @@
 }
 
 	padHandler::~padHandler	(void) {
-	delete my_motHandler;
+	if (currentSlide != NULL)
+	   delete currentSlide;
 }
 
 //	Data is stored reverse, we pass the vector and the index of the
@@ -434,12 +436,35 @@ int16_t	size	= data. size ();
 	   index += (lengthIndicator - 2);
 	}
 
-//	the segment is handled by the mot handler, which also
-//	handles the MOT's from the regular data services
-	my_motHandler	-> process_mscGroup (&data [index],
-	                                     groupType,
-	                                     lastFlag,
-	                                     segmentNumber,
-	                                     transportId);
+
+	uint32_t segmentSize	= ((data [index + 0] & 0x1F) << 8) |
+	                            data [index + 1];
+//
+//	handling MOT in the PAD, we only deal here with type 3/4
+	switch (groupType) {
+	   case 3:
+	      if (currentSlide != NULL) // new slide
+	         delete currentSlide;
+	      currentSlide	= new motClass (myRadioInterface,
+	                                        picturePath,
+	   	                                transportId,
+	                                        &data [index + 2],
+	                                        segmentSize,
+	                                        lastFlag);
+	      break;
+
+	   case 4:
+	      if (currentSlide == NULL)
+	         break;		// no header yet
+	      if (currentSlide -> get_transportId () == transportId)
+	         currentSlide -> addBodySegment (&data [index + 2],
+	                                         segmentNumber,
+	                                         segmentSize,
+	                                         lastFlag);
+	      break;
+
+	   default:		// cannot happen
+	      break;
+	}
 }
 
