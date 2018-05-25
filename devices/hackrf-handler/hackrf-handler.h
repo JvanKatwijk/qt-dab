@@ -33,7 +33,7 @@
 #include	"ui_hackrf-widget.h"
 #include	"libhackrf/hackrf.h"
 
-typedef int (*hackrf_sample_block_cd_fn)(hackrf_transfer *transfer);
+typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -48,7 +48,7 @@ typedef	int	(*pfn_hackrf_open)	(hackrf_device ** device);
 typedef	int	(*pfn_hackrf_close)	(hackrf_device *device);
 typedef	int	(*pfn_hackrf_exit)	(void);
 typedef	int	(*pfn_hackrf_start_rx)	(hackrf_device *,
-	                                 hackrf_sample_block_cd_fn, void *);
+	                                 hackrf_sample_block_cb_fn, void *);
 typedef	int	(*pfn_hackrf_stop_rx)	(hackrf_device *);
 typedef	hackrf_device_list_t	*(*pfn_hackrf_device_list)	(void);
 typedef	int	(*pfn_hackrf_set_baseband_filter_bandwidth) (hackrf_device *,

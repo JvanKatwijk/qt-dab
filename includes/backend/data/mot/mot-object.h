@@ -20,8 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__MOT_CLASS__
-#define	__MOT_CLASS__
+#ifndef	__MOT_OBJECT__
+#define	__MOT_OBJECT__
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<QImage>
@@ -29,29 +29,35 @@
 #include	<QByteArray>
 #include	<QString>
 #include	<QDir>
+#ifdef	TRY_EPG
+#include	"epgdec.h"
+#endif
 
 class	RadioInterface;
 
-class	motClass: public QObject {
+class	motObject: public QObject {
 Q_OBJECT
 public:
-		motClass (RadioInterface *mr,
-	                  QString	picturePath,
-	                  int16_t	transportId,
-	                  uint8_t	*segment,
-	                  int32_t	segmentSize,
-	                  bool		lastFlag);
-		~motClass (void);
+		motObject (RadioInterface *mr,
+	                   QString	picturePath,
+	                   bool		dirElement,
+	                   uint16_t	transportId,
+	                   uint8_t	*segment,
+	                   int32_t	segmentSize,
+	                   bool		lastFlag);
+		~motObject (void);
 	void	addBodySegment (uint8_t	*bodySegment,
                                 int16_t	segmentNumber,
                                 int32_t	segmentSize,
 	                        bool	lastFlag);
 	uint16_t	get_transportId (void);
+	int		get_headerSize	(void);
 private:
+	bool		dirElement;
 	void		checkDir	(QString&);
 	QString		picturePath;
 	uint16_t	transportId;
-	uint16_t	numofSegments;
+	int16_t		numofSegments;
 	uint32_t	segmentSize;
 	uint32_t	headerSize;
 	uint32_t	bodySize;
@@ -60,6 +66,11 @@ private:
 	QString		name;
 	bool		marked [128];
 	QByteArray	segments [128];
+	void		handleComplete	(void);
+#ifdef	TRY_EPG
+      CEPGDecoder     epgHandler;
+#endif
+
 signals:
         void	the_picture (QByteArray, int, QString);
 };

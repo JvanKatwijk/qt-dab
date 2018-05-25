@@ -24,7 +24,7 @@
 #include	"data-processor.h"
 #include	"virtual-datahandler.h"
 #include	"ip-datahandler.h"
-#include	"mot-databuilder.h"
+#include	"mot-handler.h"
 #include	"journaline-datahandler.h"
 #include	"tdc-datahandler.h"
 
@@ -64,7 +64,7 @@
 	      break;
 
 	   case 60:
-	      my_dataHandler	= new mot_databuilder (mr, picturesPath);
+	      my_dataHandler	= new motHandler (mr, picturesPath);
 	      break;
 	}
 

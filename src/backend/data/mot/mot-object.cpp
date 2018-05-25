@@ -22,17 +22,20 @@
  *	MOT handling is a crime, here we have a single class responsible
  *	for handling a single MOT message with a given transportId
  */
-#include	"mot-class.h"
+#include	"mot-object.h"
 #include	"radio.h"
 
-	   motClass::motClass (RadioInterface *mr,
-	                       QString	picturePath,
-	                       int16_t	transportId,
-	                       uint8_t	*segment,
-	                       int32_t	segmentSize,
-	                       bool		lastFlag) {
+	   motObject::motObject (RadioInterface *mr,
+	                         QString	picturePath,
+	                         bool		dirElement,
+	                         uint16_t	transportId,
+	                         uint8_t	*segment,
+	                         int32_t	segmentSize,
+	                         bool		lastFlag) {
 int32_t pointer = 7;
 
+	this	-> picturePath	= picturePath;
+	this	-> dirElement	= dirElement;
 	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
 	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
 	this	-> transportId		= transportId;
@@ -40,13 +43,14 @@ int32_t pointer = 7;
 	this	-> segmentSize		= -1;
 
 	headerSize     =
-             ((segment [3] & 0x0F) << 9) | (segment [4]) | (segment [5] >> 7);
+             ((segment [3] & 0x0F) << 9) |
+	               (segment [4] << 1) | ((segment [5] >> 7) && 0x01);
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
 	contentType     = ((segment [5] >> 1) & 0x3F);
 	contentsubType	= ((segment [5] & 0x01) << 8) | segment [6];
-//
+
 //	we are actually only interested in the name, if any
         while (pointer < headerSize) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
@@ -88,10 +92,10 @@ int32_t pointer = 7;
 	   marked [i] = false;
 }
 
-	motClass::~motClass	(void) {
+	motObject::~motObject	(void) {
 }
 
-uint16_t	motClass::get_transportId (void) {
+uint16_t	motObject::get_transportId (void) {
 	return transportId;
 }
 
@@ -99,10 +103,10 @@ uint16_t	motClass::get_transportId (void) {
 //	The pad software will only call this whenever it has
 //	established that the current slide has th right transportId
 //
-void	motClass::addBodySegment (uint8_t	*bodySegment,
-	                            int16_t	segmentNumber,
-	                            int32_t	segmentSize,
-	                            bool	lastFlag) {
+void	motObject::addBodySegment (uint8_t	*bodySegment,
+	                           int16_t	segmentNumber,
+	                           int32_t	segmentSize,
+	                           bool		lastFlag) {
 int32_t i;
 
         if (marked [segmentNumber])   // we already have the segment
@@ -126,27 +130,60 @@ int32_t i;
 //	once we know how many segments there are/should be,
 //	we check for completeness
 	for (i = 0; i < numofSegments; i ++) 
-           if (!(marked [i]))
+           if (!(marked [i])) {
 	      return;
+	   }
+//
+//	The motObject is (seems to be) complete
+	handleComplete ();
+}
 
-//	if we are complete, handle the content
-	if (contentType != 2)
-	   return;
 
-	QByteArray result;
+void	motObject::handleComplete (void) {
+int	i;
+QByteArray result;
+
 	for (i = 0; i < numofSegments; i ++)
 	   result. append (segments [i]);
 
+	if (contentType == 7) {		// epg data
+#ifdef	TRY_EPG
+	   std::vector<uint8_t> epgData (result. begin (), result. end ());
+	   epgHandler. decode (epgData, name);
+#endif
+	   return;
+	}
+	if ((contentType != 2) || dirElement) {
+	   if (name == QString (""))
+	      name = "no name";
+	   QString realName = picturePath;
+	   realName. append (name);
+	   realName  = QDir::toNativeSeparators (realName);
+	   fprintf (stderr, "going to write file %s\n",
+	                         realName. toLatin1 (). data ());
+	   checkDir (realName);
+	   FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
+	   if (x == NULL)
+	      fprintf (stderr, "cannot write file %s\n",
+	                           realName. toLatin1 (). data ());
+	   else {
+	      (void)fwrite (result. data (), 1, bodySize, x);
+	      fclose (x);
+	   }
+	   return;
+	}
+
+//	MOT slide, to show
 	QString realName = picturePath;
 	if (name == QString (""))
-           realName. append (QString ("no name"));
+	   realName. append (QString ("no name"));
         else
-           realName. append (name);
+	   realName. append (name);
 	checkDir (realName);
 	the_picture (result, contentsubType, realName);
 }
 
-void	motClass::checkDir (QString &s) {
+void	motObject::checkDir (QString &s) {
 int16_t	ind	= s. lastIndexOf (QChar ('/'));
 int16_t	i;
 QString	dir;
@@ -160,5 +197,9 @@ QString	dir;
 	if (QDir (dir). exists ())
 	   return;
 	QDir (). mkpath (dir);
+}
+
+int	motObject::get_headerSize	(void) {
+	return headerSize;
 }
 

@@ -29,6 +29,7 @@ DEPENDPATH += . \
 	      ./src/backend/viterbi_768 \
 	      ./src/backend/audio \
 	      ./src/backend/data \
+	      ./src/backend/data/mot \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/various \
@@ -39,6 +40,7 @@ DEPENDPATH += . \
 	      ./includes/backend \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
+	      ./includes/backend/data/mot \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various 
@@ -52,6 +54,7 @@ INCLUDEPATH += . \
 	      ./includes/backend/viterbi_768 \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
+	      ./includes/backend/data/mot \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/various \
@@ -90,12 +93,12 @@ HEADERS += ./radio.h \
 	   ./includes/backend/audio/faad-decoder.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
-	   ./includes/backend/data/mot-class.h \
 	   ./includes/backend/data/virtual-datahandler.h \
 	   ./includes/backend/data/tdc-datahandler.h \
 	   ./includes/backend/data/ip-datahandler.h \
-	   ./includes/backend/data/mot-databuilder.h \
-	   ./includes/backend/data/mot-data.h \
+	   ./includes/backend/data/mot/mot-handler.h \
+	   ./includes/backend/data/mot/mot-object.h \
+	   ./includes/backend/data/mot/mot-dir.h \
 	   ./includes/backend/data/journaline-datahandler.h \
 	   ./includes/backend/data/journaline/dabdatagroupdecoder.h \
 	   ./includes/backend/data/journaline/crc_8_16.h \
@@ -158,13 +161,13 @@ SOURCES += ./main.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
 	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
-	   ./src/backend/data/mot-class.cpp \
 	   ./src/backend/data/data-processor.cpp \
 	   ./src/backend/data/virtual-datahandler.cpp \
 	   ./src/backend/data/tdc-datahandler.cpp \
 	   ./src/backend/data/ip-datahandler.cpp \
-	   ./src/backend/data/mot-databuilder.cpp \
-	   ./src/backend/data/mot-data.cpp \
+	   ./src/backend/data/mot/mot-handler.cpp \
+	   ./src/backend/data/mot/mot-object.cpp \
+	   ./src/backend/data/mot/mot-dir.cpp \
 	   ./src/backend/data/journaline-datahandler.cpp \
 	   ./src/backend/data/journaline/crc_8_16.c \
 	   ./src/backend/data/journaline/log.c \
@@ -305,7 +308,7 @@ CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
-
+CONFIG		+= hackrf
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler

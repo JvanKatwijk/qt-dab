@@ -39,8 +39,8 @@ int	res;
 	_I_Buffer			= NULL;
 
 #ifdef  __MINGW32__
-        const char *libraryString = "hackrf.dll";
-        Handle          = LoadLibrary ((wchar_t *)L"hackrf.dll");
+        const char *libraryString = "libhackrf.dll";
+        Handle          = LoadLibrary ((wchar_t *)L"libhackrf.dll");
 #else
         const char *libraryString = "libhackrf.so";
         Handle          = dlopen (libraryString, RTLD_NOW);
@@ -208,6 +208,8 @@ int	res;
 //	we use a static large buffer, rather than trying to allocate
 //	a buffer on the stack
 static std::complex<float>buffer [32 * 32768];
+static	int64_t	sum	= 0;
+static	int	xount	= 0;
 static
 int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
@@ -216,11 +218,17 @@ uint8_t *p	= transfer -> buffer;
 RingBuffer<std::complex<float> > * q = ctx -> _I_Buffer;
 
 	for (i = 0; i < transfer -> valid_length / 2; i ++) {
-	   float re	= (int8_t)(p [2 * i]) / 128.0;
-	   float im	= (int8_t)(p [2 * i + 1]) / 128.0;
+	   float re	= (((int8_t *)p) [2 * i]) / 128.0;
+	   float im	= (((int8_t *)p) [2 * i + 1]) / 128.0;
 	   buffer [i]	= std::complex<float> (re, im);
+	   sum += (re < 0 ? - re : re) + (im < 0 ? -im : im);
 	}
 	q	-> putDataIntoBuffer (buffer, transfer -> valid_length / 2);
+	if (xount > 2048000) {
+	   xount = 0;
+	   fprintf (stderr, "%d\n", sum / xount);
+	   sum = 0;
+	}
 	return 0;
 }
 

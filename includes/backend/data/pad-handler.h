@@ -29,7 +29,7 @@
 #include	<vector>
 
 class	RadioInterface;
-class	motClass;
+class	motObject;
 
 class	padHandler: public QObject {
 Q_OBJECT
@@ -49,7 +49,7 @@ private:
 	QString	picturePath;
 	QString	dynamicLabelText;
 	int16_t	charSet;
-	motClass	*currentSlide;
+	motObject	*currentSlide;
 	uint8_t	last_appType;
 	bool	mscGroupElement;
 	int	xpadLength;

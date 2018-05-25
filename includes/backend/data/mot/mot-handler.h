@@ -20,22 +20,28 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef	MOT_DATABUILDER
-#define	MOT_DATABUILDER
+#ifndef	__MOT_HANDLER__
+#define	__MOT_HANDLER__
 #include	"dab-constants.h"
 #include	"virtual-datahandler.h"
 #include	<vector>
 
 class	RadioInterface;
-class	motHandler;
+class	motObject;
+class	motDirectory;
 
-class	mot_databuilder:public virtual_dataHandler {
+class	motHandler:public virtual_dataHandler {
 public:
-	mot_databuilder		(RadioInterface *, QString );
-	~mot_databuilder	(void);
-void	add_mscDatagroup	(std::vector<uint8_t>);
+		motHandler	(RadioInterface *, QString );
+		~motHandler	(void);
+	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
-motHandler	*my_motHandler;
+	RadioInterface	*myRadioInterface;
+	QString		picturesPath;
+	void		setHandle	(motObject *, uint16_t);
+	motObject	*getHandle	(uint16_t);
+	int		orderNumber;
+	motDirectory	*theDirectory;
 };
 #endif
 

@@ -23,7 +23,7 @@
 #include	<cstring>
 #include	"radio.h"
 #include	"charsets.h"
-#include	"mot-class.h"
+#include	"mot-object.h"
 /**
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
@@ -107,8 +107,6 @@ int16_t	i;
 	   lastSegment   = (b [last - 1] & 0x20) != 0;
 	   charSet       = b [last - 2] & 0x0F;
 	   uint8_t AcTy  = CI & 037;	// application type
-//	   fprintf (stderr, "type %d, firstS %d, lastS %d\n",
-//	                         AcTy, firstSegment, lastSegment);
 	   switch (AcTy) {
 	      default:
 	         break;
@@ -392,14 +390,13 @@ int16_t	size	= data. size ();
 	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
 	uint8_t		repetitionIndex =  data [1] & 0xF;
 	int16_t		segmentNumber	= -1;		// default
-	int16_t		transportId	= -1;		// default
+	uint16_t	transportId	= 0;	// default
 	bool		lastFlag	= false;	// default
 	uint16_t	index;
 
 	if ((data [0] & 0x40) != 0) {
 	   bool res	= check_crc_bytes (data. data (), msc_length - 2);
 	   if (!res) {
-//	      fprintf (stderr, "crc failed ");
 	      return;
 	   }
 //	   else
@@ -443,14 +440,28 @@ int16_t	size	= data. size ();
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {
 	   case 3:
-	      if (currentSlide != NULL) // new slide
+	      if (currentSlide == NULL) {
+	         currentSlide	= new motObject (myRadioInterface,
+	                                         picturePath,
+	                                         false,
+	   	                                 transportId,
+	                                         &data [index + 2],
+	                                         segmentSize,
+	                                         lastFlag);
+	      }
+	      else {
+	         if (currentSlide -> get_transportId () == transportId)
+	            break;
+
 	         delete currentSlide;
-	      currentSlide	= new motClass (myRadioInterface,
-	                                        picturePath,
-	   	                                transportId,
-	                                        &data [index + 2],
-	                                        segmentSize,
-	                                        lastFlag);
+	         currentSlide	= new motObject (myRadioInterface,
+	                                         picturePath,
+	                                         false,
+	   	                                 transportId,
+	                                         &data [index + 2],
+	                                         segmentSize,
+	                                         lastFlag);
+	      }
 	      break;
 
 	   case 4:

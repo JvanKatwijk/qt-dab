@@ -163,6 +163,7 @@ add_definitions (-DPRESET_NAME)
 	           ./includes/backend/audio
 	           ./includes/backend/data
 	           ./includes/backend/data/journaline
+	           ./includes/backend/data/mot
 	           ./includes/various
 	           ./includes/output
 	           ./includes/scopes-qwt6
@@ -207,11 +208,11 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/journaline/dabdgdec_impl.h
 	     ./includes/backend/data/journaline/newsobject.h
 	     ./includes/backend/data/journaline/NML.h
-	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/virtual-datahandler.h
 	     ./includes/backend/data/pad-handler.h
-	     ./includes/backend/data/mot-class.h
-	     ./includes/backend/data/mot-data.h
+	     ./includes/backend/data/mot/mot-handler.h
+	     ./includes/backend/data/mot/mot-object.h
+	     ./includes/backend/data/mot/mot-dir.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
 	     ./devices/rawfiles/rawfiles.h
@@ -268,12 +269,12 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/journaline/dabdgdec_impl.c
 	     ./src/backend/data/journaline/newsobject.cpp
 	     ./src/backend/data/journaline/NML.cpp
-	     ./src/backend/data/mot-databuilder.cpp
 	     ./src/backend/data/virtual-datahandler.cpp
 	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/pad-handler.cpp
-	     ./src/backend/data/mot-class.cpp
-	     ./src/backend/data/mot-data.cpp
+	     ./src/backend/data/mot/mot-handler.cpp
+	     ./src/backend/data/mot/mot-object.cpp
+	     ./src/backend/data/mot/mot-dir.cpp
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
 	     ./devices/rawfiles/rawfiles.cpp
@@ -305,12 +306,12 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/audio/mp4processor.h
 	     ./includes/backend/data/virtual-datahandler.h
 	     ./includes/backend/data/pad-handler.h
-	     ./includes/backend/data/mot-class.h
-	     ./includes/backend/data/mot-data.h
+	     ./includes/backend/data/mot/mot-handler.h
+	     ./includes/backend/data/mot/mot-object.h
+	     ./includes/backend/data/mot/mot-dir.h
 	     ./includes/backend/data/ip-datahandler.h
 	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
-	     ./includes/backend/data/mot-databuilder.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/wavfiles/wavfiles.h

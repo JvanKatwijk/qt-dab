@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    SDR-J is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
