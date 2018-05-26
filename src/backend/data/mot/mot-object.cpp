@@ -88,6 +88,7 @@ int32_t pointer = 7;
            }
 	}
 
+//	no segments as yet
 	for (int i = 0; i < 128; i ++)
 	   marked [i] = false;
 }
@@ -100,9 +101,10 @@ uint16_t	motObject::get_transportId (void) {
 }
 
 //      type 4 is a segment.
-//	The pad software will only call this whenever it has
+//	The pad/dir software will only call this whenever it has
 //	established that the current slide has th right transportId
 //
+//	Note that segments do not need to come in in the right order
 void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           int16_t	segmentNumber,
 	                           int32_t	segmentSize,
@@ -133,7 +135,7 @@ int32_t i;
            if (!(marked [i])) {
 	      return;
 	   }
-//
+
 //	The motObject is (seems to be) complete
 	handleComplete ();
 }
@@ -153,6 +155,9 @@ QByteArray result;
 #endif
 	   return;
 	}
+//
+//	Only send the picture to show when it is a slide and not
+//	an element of a directory
 	if ((contentType != 2) || dirElement) {
 	   if (name == QString (""))
 	      name = "no name";

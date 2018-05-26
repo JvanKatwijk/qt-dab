@@ -25,10 +25,12 @@
 #include	"mot-object.h"
 #include	"mot-dir.h"
 #include	"radio.h"
-
+//
+//	we "cache" the most recent single motSlides (not those in a directory)
+//
 struct {
 	uint16_t	transportId;
-	uint32_t	orderNumber;
+	int32_t		orderNumber;
 	motObject	*motSlide;
 } motTable [15];
 
@@ -114,7 +116,7 @@ int32_t	i;
 	   case 3:
 	      if (segmentNumber == 0) {
 	         motObject *h = getHandle (transportId);
-	         if (h != NULL)
+	         if (h != NULL) 
 	            break;
 	         h = new motObject (myRadioInterface,
 	                            picturesPath,
@@ -141,9 +143,10 @@ int32_t	i;
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
 	         if (theDirectory != NULL)
-	            if (theDirectory -> transportId == transportId)
-	               break;
-	         if (theDirectory != NULL)
+	            if (theDirectory -> get_transportId () == transportId)
+	               break;	// already existing
+
+	         if (theDirectory != NULL)	// an old one, replace it
 	            delete theDirectory;
 
 	         int32_t segmentSize = ((motVector [0] & 0x1F) << 8) |
@@ -164,19 +167,18 @@ int32_t	i;
 	                                            transportId,
 	                                            segmentSize,
 	                                            dirSize,
-	                                            numObjects);
-	         memcpy (theDirectory -> dir_segments, segment, segmentSize);
-	         theDirectory -> marked [0] = true;
+	                                            numObjects,
+	                                            segment);
 	      }
 	      else {
-	         if (theDirectory == NULL)
+	         if ((theDirectory == NULL) || 
+	                (theDirectory -> get_transportId () != transportId))
 	            break;
-	         if (theDirectory -> transportId == transportId)
-	            theDirectory -> directorySegment (transportId,
-	                                              &motVector [2],
-	                                              segmentNumber,
-	                                              segmentSize,
-	                                              lastFlag);
+	         theDirectory -> directorySegment (transportId,
+	                                           &motVector [2],
+	                                           segmentNumber,
+	                                           segmentSize,
+	                                           lastFlag);
 	      }
 	      break;
 

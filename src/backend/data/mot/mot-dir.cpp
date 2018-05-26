@@ -24,13 +24,13 @@
  */
 #include	"mot-dir.h"
 
-
 	motDirectory::motDirectory (RadioInterface *mr,
 	                            QString	picturesPath,
 	                            uint16_t	transportId,
 	                            int16_t	segmentSize,
 	                            int32_t	dirSize,
-	                            int16_t	objects) {
+	                            int16_t	objects,
+	                            uint8_t	*segment) {
 int16_t	i;
 
 	   this	-> myRadioInterface	= mr;
@@ -42,13 +42,15 @@ int16_t	i;
 	   this	-> dirSize	= dirSize;
 	   this	-> numObjects	= objects;
 	   this	-> dir_segmentSize	= segmentSize;
-	   dir_segments = new uint8_t [dirSize];
+	   dir_segments		= new uint8_t [dirSize];
 	   motComponents	= new motComponentType [objects];
 	   for (i = 0; i < objects; i ++)
 	      motComponents [i]. inUse = false;
+	   memcpy (&dir_segments [0], segment, segmentSize);
+	   marked [0] = true;
 	}
 
-	motDirectory::~motDirectory(void) {
+	motDirectory::~motDirectory (void) {
 int	i;
 	delete []	dir_segments;
 
@@ -79,7 +81,9 @@ int	i;
 	      return;
 	   }
 }
-
+//
+//	unfortunately, directory segments do not need to come in
+//	in order
 void	motDirectory::directorySegment (uint16_t transportId,
 	                                uint8_t	*segment,
 	                                int16_t	segmentNumber,
@@ -109,7 +113,9 @@ int16_t	i;
 	analyse_theDirectory ();
 }
 //
-//	The directory
+//	This is the tough one, we collected the bits, and now
+//	we need to extract the "motObject"s from it
+
 void	motDirectory::analyse_theDirectory (void) {
 uint32_t	currentBase	= 11;	// in bytes
 uint8_t	*data			= dir_segments;
@@ -136,5 +142,9 @@ int16_t	i;
 	   currentBase		+= 2 + handle -> get_headerSize ();
 	   setHandle (handle, transportId);
 	}
+}
+
+uint16_t	motDirectory::get_transportId	(void) {
+	return transportId;
 }
 

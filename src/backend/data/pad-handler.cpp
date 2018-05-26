@@ -107,6 +107,7 @@ int16_t	i;
 	   lastSegment   = (b [last - 1] & 0x20) != 0;
 	   charSet       = b [last - 2] & 0x0F;
 	   uint8_t AcTy  = CI & 037;	// application type
+
 	   switch (AcTy) {
 	      default:
 	         break;
@@ -351,29 +352,37 @@ int16_t  dataLength                = 0;
 //	the msc_length was given by the preceding appType "1"
 void	padHandler::new_MSC_element (std::vector<uint8_t> data,
 	                                      int msc_length) {
-	mscGroupElement		= true;
-	msc_dataGroupBuffer. clear ();
-	msc_dataGroupBuffer	= data;
-	msc_dataGroupLength	= msc_length;
-	show_motHandling (true);
+	if (data. size () >= msc_length) {	// msc element is single item
+	   build_MSC_segment (data, msc_length);
+	   xpadLength 	= -1;
+	   show_motHandling (true);
+	}
+	else {		// reset and start a new one
+	   mscGroupElement	= true;
+	   msc_dataGroupBuffer. clear ();
+	   msc_dataGroupBuffer	= data;
+	   msc_dataGroupLength	= msc_length;
+	   show_motHandling (true);
+	}
 }
 
 //
 void	padHandler::add_MSC_element	(std::vector<uint8_t> data) {
 int16_t	i;
-int16_t	currentLength = msc_dataGroupBuffer. size ();
+int32_t	currentLength = msc_dataGroupBuffer. size ();
 //
 //	just to ensure that, when a "12" appType is missing, the
 //	data of "13" appType elements is not endlessly collected.
-	if (currentLength == 0)
+	if (currentLength == 0) {
 	   return;
+	}
 
 	msc_dataGroupBuffer. insert (std::end (msc_dataGroupBuffer),
 	                             std::begin (data), std::end (data));
 	if (msc_dataGroupBuffer. size () >= msc_dataGroupLength) {
 	   build_MSC_segment (msc_dataGroupBuffer, msc_dataGroupLength);
 	   msc_dataGroupBuffer. clear ();
-//	   mscGroupElement	= false;
+	   mscGroupElement	= false;
 	   xpadLength		= -1;
 	   show_motHandling (false);
 	}
@@ -384,7 +393,7 @@ void	padHandler::build_MSC_segment (std::vector<uint8_t> data,
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
-int16_t	size	= data. size ();
+int32_t	size	= data. size ();
 
 	uint8_t		groupType	=  data [0] & 0xF;
 	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
@@ -403,9 +412,9 @@ int16_t	size	= data. size ();
 //	      fprintf (stderr, "crc success ");
 	}
 
-	if ((groupType != 3) && (groupType != 4))
+	if ((groupType != 3) && (groupType != 4)) {
 	   return;		// do not know yet
-
+	}
 //	extensionflag
 	bool	extensionFlag	= (data [0] & 0x80) != 0;
 //	if the segmentflag is on, then a lastflag and segmentnumber are
@@ -466,7 +475,7 @@ int16_t	size	= data. size ();
 
 	   case 4:
 	      if (currentSlide == NULL)
-	         break;		// no header yet
+	         return;
 	      if (currentSlide -> get_transportId () == transportId)
 	         currentSlide -> addBodySegment (&data [index + 2],
 	                                         segmentNumber,
@@ -478,4 +487,3 @@ int16_t	size	= data. size ();
 	      break;
 	}
 }
-

@@ -33,8 +33,11 @@ class	motDirectory {
 public:
 			motDirectory	(RadioInterface *,
 	                                 QString,
-	                                 uint16_t, int16_t,
-	                                 int32_t, int16_t);
+	                                 uint16_t,
+	                                 int16_t,
+	                                 int32_t,
+	                                 int16_t,
+	                                 uint8_t *);
 			~motDirectory	(void);
 	motObject	*getHandle	(uint16_t);
 	void		setHandle	(motObject *, uint16_t);
@@ -43,6 +46,8 @@ public:
                                         int16_t segmentNumber,
                                         int32_t segmentSize,
                                         bool    lastSegment);
+	uint16_t	get_transportId	(void);
+private:
 	void		analyse_theDirectory (void);
 	uint16_t	transportId;
 
