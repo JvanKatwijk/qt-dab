@@ -403,8 +403,9 @@ void	padHandler::build_MSC_segment (std::vector<uint8_t> data) {
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
-int32_t	size	= data. size ();
-
+int32_t	size	= data. size () < dataGroupLength ? data. size () :
+	                                            dataGroupLength;
+	   
 	uint8_t		groupType	=  data [0] & 0xF;
 	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
 	uint8_t		repetitionIndex =  data [1] & 0xF;
@@ -414,7 +415,7 @@ int32_t	size	= data. size ();
 	uint16_t	index;
 
 	if ((data [0] & 0x40) != 0) {
-	   bool res	= check_crc_bytes (data. data (), dataGroupLength - 2);
+	   bool res	= check_crc_bytes (data. data (), size - 2);
 	   if (!res) {
 //	      fprintf (stderr, "build_MSC_segment fails on crc check\n");
 	      return;
