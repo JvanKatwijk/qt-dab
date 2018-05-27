@@ -1149,7 +1149,7 @@ void	RadioInterface::newDevice (QString deviceName) {
 	my_dabProcessor		= NULL;
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == NULL) {
-//
+	   inputDevice = new virtualInput ();
 //	Note that the device handler itself will do the complaining
 	   return;
 	}

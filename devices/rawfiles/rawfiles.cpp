@@ -71,7 +71,8 @@ struct timeval	tv;
 	if (readerOK) {
 	   while (isRunning ())
 	      usleep (100);
-	   fclose (filePointer);
+	   if (filePointer != NULL)
+	      fclose (filePointer);
 	}
 	delete _I_Buffer;
 	delete	myFrame;
