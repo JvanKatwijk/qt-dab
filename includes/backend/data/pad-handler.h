@@ -42,9 +42,9 @@ private:
 	void	handle_variablePAD	(uint8_t *, int16_t, uint8_t);
 	void	handle_shortPAD		(uint8_t *, int16_t, uint8_t);
 	void	dynamicLabel		(uint8_t *, int16_t, uint8_t);
-	void	new_MSC_element		(std::vector<uint8_t>, int);
+	void	new_MSC_element		(std::vector<uint8_t>);
 	void	add_MSC_element		(std::vector<uint8_t>);
-	void	build_MSC_segment	(std::vector<uint8_t>, int);
+	void	build_MSC_segment	(std::vector<uint8_t>);
 	bool	pad_crc			(uint8_t *, int16_t);
 	QString	picturePath;
 	QString	dynamicLabelText;
@@ -60,11 +60,6 @@ private:
 	int16_t	segmentNumber;
 //      dataGroupLength is set when having processed an appType 1
         int dataGroupLength;
-//
-//      msc_dataGroupLength is used while assembling an msc_data group,
-//      in the end it should be equal or somewhat larger than dataGroupLength
-        int      msc_dataGroupLength;
-
 //
 //      The msc_dataGroupBuffer is - as the name suggests - used for
 //      assembling the msc_data group.

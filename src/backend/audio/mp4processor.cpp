@@ -170,6 +170,7 @@ int32_t		tmp;
 	   ler = my_rsDecoder. dec (rsIn, rsOut, 135);
 	   if (ler < 0) {
 	      rsErrors ++;
+	      fprintf (stderr, "RS failure\n");
 	      return false;
 	   }
 	   for (k = 0; k < 110; k ++) 
@@ -234,7 +235,7 @@ int32_t		tmp;
 
 ///	sanity check 1
 	   if (au_start [i + 1] < au_start [i]) {
-//	      fprintf (stderr, "%d %d (%d)\n", au_start [i], au_start [i + 1], i);
+	      fprintf (stderr, "%d %d (%d)\n", au_start [i], au_start [i + 1], i);
 //	should not happen, all errors were corrected
 	      return false;
 	   }
