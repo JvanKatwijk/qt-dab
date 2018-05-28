@@ -1071,6 +1071,8 @@ virtualInput	*inputDevice	= NULL;
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("iq data (*.iq)"));
+	   if (file == QString (""))
+	      return NULL;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1088,6 +1090,7 @@ virtualInput	*inputDevice	= NULL;
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.raw)"));
+//	      return NULL;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1105,6 +1108,9 @@ virtualInput	*inputDevice	= NULL;
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.sdr)"));
+	   if (file == QString (""))
+	      return NULL;
+
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new wavFiles (file);
@@ -1138,15 +1144,19 @@ void	RadioInterface::newDevice (QString deviceName) {
 	presetTimer. stop ();
 	running. store (false);
 	inputDevice	-> stopReader ();
-	
+
 	scanning		= false;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
-	my_dabProcessor	-> stop ();
+	if (my_dabProcessor == NULL)
+	   fprintf (stderr, "SCREAM\n");
+	else {
+	   my_dabProcessor	-> stop ();
+	   delete my_dabProcessor;
+	}
 	delete inputDevice;
-	inputDevice		= NULL;
-	delete my_dabProcessor;
 	my_dabProcessor		= NULL;
+	inputDevice		= NULL;
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == NULL) {
 	   inputDevice = new virtualInput ();
