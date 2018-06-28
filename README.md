@@ -92,7 +92,8 @@ Some settings are preserved between program invocations, they are stored in a fi
 Windows
 ------------------------------------------------------------------
 
-Windows releases can be found at https://github.com/JvanKatwijk/qt-dab/releases . Please copy them into the same directory you've unzipped http://www.sdr-j.tk/windows-bin.zip as it uses the same libraries.
+Windows releases can be found at https://github.com/JvanKatwijk/qt-dab/releases . A zipped folder contains the executable
+and libraries for this and other windows programs (previously maintained at the sdr-j.tk site).
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
