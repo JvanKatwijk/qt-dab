@@ -23,7 +23,7 @@ script:
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
   - mkdir -p appdir/usr/bin 
-  - cp qt-dab-1.0-alpha appdir/usr/bin/qt-dab 
+  - cp qt-dab-2.0 appdir/usr/bin/qt-dab 
   - mkdir -p appdir/usr/lib
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp screenshot_qt-dab.png appdir/qt-dab.png
