@@ -16,7 +16,7 @@
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-TAB; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
@@ -95,11 +95,12 @@
 	} ensemble_Descriptor;
 
 class	RadioInterface;
+class	dabParams;
 
 class	fib_processor: public QObject {
 Q_OBJECT
 public:
-		fib_processor		(RadioInterface *);
+		fib_processor		(RadioInterface *, uint8_t dabMode);
 		~fib_processor		(void);
 
 	void	setupforNewFrame	(void);
@@ -121,6 +122,7 @@ public:
 protected:
 	void	newFrame		(void);
 	void	process_FIB		(uint8_t *, uint16_t);
+	dabParams params;
 private:
 	RadioInterface	*myRadioInterface;
 	serviceId	*findServiceId (int32_t);

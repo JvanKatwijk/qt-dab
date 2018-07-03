@@ -23,15 +23,7 @@
 #define	__OFDM_DECODER__
 
 #include	"dab-constants.h"
-#ifdef	__THREADED_DECODING
-#include	<QThread>
-#include	<QWaitCondition>
-#include	<QMutex>
-#include	<QSemaphore>
-#include	<atomic>
-#else
 #include	<QObject>
-#endif
 #include	<vector>
 #include	<stdint.h>
 #include	"fft-handler.h"
@@ -41,59 +33,29 @@
 #include	"dab-params.h"
 
 class	RadioInterface;
-class	ficHandler;
-class	mscHandler;
 
-#ifdef	__THREADED_DECODING
-class	ofdmDecoder: public QThread {
-#else
 class	ofdmDecoder: public QObject {
-#endif
 Q_OBJECT
 public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
-#ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<std::complex<float>> *,
-#endif
-	                                 int16_t,
-	                                 ficHandler	*,
-	                                 mscHandler	*);
+	                                 int16_t);
 		~ofdmDecoder		(void);
 	void	processBlock_0		(std::vector<std::complex<float> >);
-	void	decodeFICblock		(std::vector<std::complex<float> >, int32_t n);
-	void	decodeMscblock		(std::vector<std::complex<float> >, int32_t n);
+	void	decode			(std::vector<std::complex<float> >,
+	                                 int32_t n, int16_t *);
 	int16_t	get_snr			(std::complex<float> *);
 	void	stop			(void);
 	void	reset			(void);
-#ifndef	__THREADED_DECODING
-	void	start			(void);
-#endif
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
 	fftHandler	my_fftHandler;
-#ifdef	HAVE_SPECTRUM
+	interLeaver     myMapper;
+
 	RingBuffer<std::complex<float>> *iqBuffer;
-#ifdef	__QUALITY
 	float		computeQuality	(std::complex<float> *);
-#endif
-#endif
-	ficHandler	*my_ficHandler;
-	mscHandler	*my_mscHandler;
-#ifdef	__THREADED_DECODING
-	void		run		(void);
-	std::atomic<bool>		running;
-	std::complex<float>	**command;
-	int16_t		amount;
-	int16_t		currentBlock;
-	void		processBlock_0		(void);
-	void		decodeFICblock		(int32_t n);
-	void		decodeMscblock		(int32_t n);
-	QSemaphore	bufferSpace;
-	QWaitCondition	commandHandler;
-	QMutex		helper;
-#endif
 	int32_t		T_s;
 	int32_t		T_u;
 	int32_t		T_g;
@@ -103,7 +65,6 @@ private:
 	std::vector<complex<float>>	phaseReference;
 	std::vector<int16_t>		ibits;
 	std::complex<float>	*fft_buffer;
-	interLeaver	myMapper;
 	phaseTable	*phasetable;
 	int32_t		blockIndex;
 	int16_t		snrCount;

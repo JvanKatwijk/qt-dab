@@ -22,14 +22,11 @@
 
 //
 //	Simple spectrum scope object
-//	can be in- or excluded from the set of sources to build
-//	an dabreceiver.
-//	Shows the spectrum of the incoming data stream and the
-//	constellation of the bits in the signal of the first data
-//	block of a dabframe
+//	Shows the spectrum of the incoming data stream 
+//	If made invisible, it is a "do nothing"
 //
-#ifndef		__SPECTRUM_HANDLER__
-#define		__SPECTRUM_HANDLER__
+#ifndef		__SPECTRUM_VIEWER__
+#define		__SPECTRUM_VIEWER__
 
 #include        "dab-constants.h"
 #include	<QFrame>
@@ -47,24 +44,25 @@
 class	RadioInterface;
 class	QSettings;
 class	IQDisplay;
-class	spectrumhandler: public QObject, Ui_scopeWidget {
+class	spectrumViewer: public QObject, Ui_scopeWidget {
 Q_OBJECT
 public:
-			spectrumhandler		(RadioInterface *,
-	                                         QSettings	*,
-	                                         RingBuffer<std::complex<float>> *,
-	                                         RingBuffer<std::complex<float>> *);
-			~spectrumhandler	(void);
-	void		showSpectrum		(int32_t, int32_t);
-	void		showIQ			(int32_t);
-	void		showQuality		(float);
-	void		setBitDepth		(int16_t);
-	void		show			(void);
-	void		hide			(void);
+			spectrumViewer	(RadioInterface *,
+	                                 QSettings	*,
+	                                 RingBuffer<std::complex<float>> *,
+	                                 RingBuffer<std::complex<float>> *);
+			~spectrumViewer	(void);
+	void		showSpectrum	(int32_t, int32_t);
+	void		showIQ		(int32_t);
+	void		showQuality	(float);
+	void		setBitDepth	(int16_t);
+	void		show		(void);
+	void		hide		(void);
+	bool		isHidden	(void);
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	RingBuffer<std::complex<float>>	*scopeBuffer;
+	RingBuffer<std::complex<float>>	*spectrumBuffer;
 	RingBuffer<std::complex<float>>	*iqBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;

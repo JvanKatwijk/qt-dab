@@ -21,7 +21,7 @@
  *
  *	Once the bits are "in", interpretation and manipulation
  *	should reconstruct the data blocks.
- *	Ofdm_decoder is called once every Ts samples, and
+ *	Ofdm_decoder is called for Block_0 and the FIC blocks,
  *	its invocation results in 2 * Tu bits
  */
 #include	<vector>
@@ -39,45 +39,26 @@
   *	taking the data from the ofdmProcessor class in, and
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
-  *	In the threaded version, a thread will run, fetch the
-  *	data blocks asynchronously and do all computations.
-  *	Threading is needed for e.g. the RPI 2 version
-  *	In the non-threaded version, the functions in the class
-  *	are just executed in the caller's thread
   */
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-#ifdef	HAVE_SPECTRUM
 	                                 RingBuffer<std::complex<float>> *iqBuffer,
-#endif
-	                                 int16_t	bitDepth,
-	                                 ficHandler	*my_ficHandler,
-	                                 mscHandler	*my_mscHandler):
+	                                 int16_t	bitDepth):
 	                                    params (dabMode),
 	                                    my_fftHandler (dabMode),
-#ifdef	__THREADED_DECODING
-	                                    bufferSpace (params. get_L ()),
-#endif
 	                                    myMapper (dabMode) {
 int16_t	i;
 	this	-> myRadioInterface	= mr;
-#ifdef	HAVE_SPECTRUM
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
-#ifdef	__QUALITY
 	connect (this, SIGNAL (showQuality (float)),
 	         myRadioInterface, SLOT (showQuality (float)));
-#endif
-#endif
 //
-	this	-> my_ficHandler	= my_ficHandler;
-	this	-> my_mscHandler	= my_mscHandler;
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
 	this	-> nrBlocks		= params. get_L ();
 	this	-> carriers		= params. get_carriers ();
-	ibits. resize (2 * this -> carriers);
 
 	this	-> T_g			= T_s - T_u;
 	fft_buffer			= my_fftHandler. getVector ();
@@ -87,151 +68,22 @@ int16_t	i;
 	         mr, SLOT (show_snr (int)));
 	snrCount		= 0;
 	snr			= 0;	
-
-#ifdef __THREADED_DECODING
-/**
-  *	When implemented in a thread, the thread controls the
-  *	reading in of the data and processing the data through
-  *	functions for handling block 0, FIC blocks and MSC blocks.
-  *
-  *	We just create a large buffer where index i refers to block i.
-  *
-  */
-	command			= new std::complex<float> * [nrBlocks];
-	for (i = 0; i < nrBlocks; i ++)
-	   command [i] = new std::complex<float> [T_u];
-	amount		= 0;
-#endif
 }
 
 	ofdmDecoder::~ofdmDecoder	(void) {
-int16_t	i;
-#ifdef	__THREADED_DECODING
-	running. store (false);
-	while (isRunning ()) {
-	   commandHandler. wakeAll ();
-	   usleep (1000);
-	}
-	for (i = 0; i < nrBlocks; i ++)
-	   delete[] command [i];
-	delete[]	command;
-#endif
-
 }
 //
-//	the client of this class should not know whether
-//	we run with a separate thread or not,
-#ifndef	__THREADED_DECODING
-void	ofdmDecoder::start	(void) {
-}
-#endif
-
 void	ofdmDecoder::stop	(void) {
-#ifdef	__THREADED_DECODING
-	running. store (false);
-	while (isRunning ()) {
-	   commandHandler. wakeAll ();
-	   usleep (1000);
-	}
-#endif
 }
 
 void	ofdmDecoder::reset	(void) {
-#ifdef	__THREADED_DECODING
-	stop  ();
-	usleep (10000);
-	start ();
-#endif
 }
-
-//
-
-#ifdef	__THREADED_DECODING
-/**
-  *	The code in the thread executes a simple loop,
-  *	waiting for the next block and executing the interpretation
-  *	operation for that block.
-  *	In our original code the block count was 1 higher than
-  *	our count here.
-  */
-void	ofdmDecoder::run	(void) {
-int16_t	currentBlock	= 0;
-
-	running. store (true);
-	while (running. load ()) {
-	   helper. lock ();
-	   commandHandler. wait (&helper, 100);
-	   helper. unlock ();
-	   while ((amount > 0) && running. load ()) {
-	      if (currentBlock == 0)
-	         processBlock_0 ();
-	      else
-	      if (currentBlock < 4)
-	         decodeFICblock (currentBlock);
-	      else
-	         decodeMscblock (currentBlock);
-	      bufferSpace. release (1);
-	      helper. lock ();
-	      currentBlock = (currentBlock + 1) % (nrBlocks);
-	      amount -= 1;
-	      helper. unlock ();
-	   }
-	}
-	fprintf (stderr, "ofdm decoder is closing down now\n");
-}
-/**
-  *	We need some functions to enter the ofdmProcessor data
-  *	in the buffer.
-  */
-void	ofdmDecoder::processBlock_0 (std::vector<std::complex<float>>vi) {
-	bufferSpace. acquire (1);
-	memcpy (command [0], vi. data (), sizeof (std::complex<float>) * T_u);
-	helper. lock ();
-	amount ++;
-	commandHandler. wakeOne ();
-	helper. unlock ();
-}
-
-void	ofdmDecoder::decodeFICblock (std::vector<std::complex<float>> vi,
-		                                             int32_t blkno) {
-	bufferSpace. acquire (1);
-	memcpy (command [blkno], &((vi. data ()) [T_g]),
-	                                  sizeof (std::complex<float>) * T_u);
-	helper. lock ();
-	amount ++;
-	commandHandler. wakeOne ();
-	helper. unlock ();
-}
-
-void	ofdmDecoder::decodeMscblock (std::vector<std::complex<float> > vi,
-	                                                     int32_t blkno) {
-	bufferSpace. acquire (1);
-	memcpy (command [blkno], &((vi. data ()) [T_g]),
-	                                   sizeof (std::complex<float>) * T_u);
-	helper. lock ();
-	amount ++;
-	commandHandler. wakeOne ();
-	helper. unlock ();
-}
-#endif
-/**
-  *	Note that the distinction, made in the ofdmProcessor class
-  *	does not add much here, iff we decide to choose the multi core
-  *	option definitely, then code may be simplified there.
-  */
 
 /**
-  *	handle block 0 as collected from the buffer
   */
-#ifdef	__THREADED_DECODING
-void	ofdmDecoder::processBlock_0 (void) {
-
-	memcpy (fft_buffer, command [0], T_u * sizeof (std::complex<float>));
-#else
 void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
 	memcpy (fft_buffer, buffer. data (),
 	                             T_u * sizeof (std::complex<float>));
-#endif
 
 	my_fftHandler. do_FFT ();
 /**
@@ -257,8 +109,6 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
 //	decoded symbols is precisely in the four points 
 //	k * (1, 1), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	To ease computation, we map all incoming values onto quadrant 1
-#ifdef	HAVE_SPECTRUM
-#ifdef	__QUALITY
 float	ofdmDecoder::computeQuality (std::complex<float> *v) {
 int16_t i;
 std::complex<float>	avgPoint	= std::complex<float> (0, 0);
@@ -283,34 +133,21 @@ float	S	= 0;
 	return sqrt (S);
 }
 
-#endif
-#endif
 /**
   *	for the other blocks of data, the first step is to go from
   *	time to frequency domain, to get the carriers.
   *	we distinguish between FIC blocks and other blocks,
   *	only to spare a test. The mapping code is the same
   */
-static
-int	cnt	= 0;
-#ifdef	__THREADED_DECODING
-void	ofdmDecoder::decodeFICblock (int32_t blkno) {
-int16_t	i;
-#ifdef	HAVE_SPECTRUM
-std::complex<float> conjVector [T_u];
-#endif
-	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
-#else
-void	ofdmDecoder::decodeFICblock (std::vector <std::complex<float>> buffer,
-	                                                int32_t blkno) {
+
+static	int	cnt	= 0;
+void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
+	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
-#ifdef  HAVE_SPECTRUM
 std::complex<float> conjVector [T_u];
 std::complex<float> freqOff	= std::complex<float> (0, 0);
-#endif
-#endif
 
 
 fftlabel:
@@ -326,9 +163,8 @@ fftlabel:
 toBitsLabel:
 /**
   *	Note that from here on, we are only interested in the
-  *	"carriers" useful carriers of the FFT output
+  *	"carriers", the useful carriers of the FFT output
   */
-
 	for (i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -341,9 +177,7 @@ toBitsLabel:
   */
 	   std::complex<float>	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
-#ifdef	HAVE_SPECTRUM
 	   conjVector [index] = r1;
-#endif;
 	   float ab1	= jan_abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
@@ -352,73 +186,17 @@ toBitsLabel:
 	}
 	memcpy (phaseReference. data (), fft_buffer,
 	                            T_u * sizeof (std::complex<float>));
-
-handlerLabel:
-	my_ficHandler -> process_ficBlock (ibits, blkno);
-
-#ifdef	HAVE_SPECTRUM
 //	From time to time we show the constellation of symbol 2.
-//	Note that we do it in two steps since the
-//	fftbuffer contained low and high at the ends
-//	and we maintain that format
 	if (blkno == 2) {
 	   if (++cnt > 7) {
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
 	                                      carriers);
 	      showIQ	(carriers);
-#ifdef	__QUALITY
 	      showQuality (computeQuality (conjVector));
-#endif
 	      cnt = 0;
 	   }
 	}
-#endif
 }
-/**
-  *	Msc block decoding is equal to FIC block decoding,
-  *	further processing is different though
-  */
-#ifdef	__THREADED_DECODING
-void	ofdmDecoder::decodeMscblock (int32_t blkno) {
-int16_t	i;
-
-	memcpy (fft_buffer, command [blkno], T_u * sizeof (std::complex<float>));
-#else
-void	ofdmDecoder::decodeMscblock (std::vector <std::complex<float>>buffer,
-	                                                  int32_t blkno) {
-int16_t	i;
-	memcpy (fft_buffer, &((buffer. data ())[T_g]), T_u * sizeof (std::complex<float>));
-#endif
-
-fftLabel:
-	my_fftHandler. do_FFT ();
-//
-//	Note that "mapIn" maps to -carriers / 2 .. carriers / 2
-//	we did not set the fft output to low .. high
-toBitsLabel:
-	for (i = 0; i < carriers; i ++) {
-	   int16_t	index	= myMapper. mapIn (i);
-	   if (index < 0) 
-	      index += T_u;
-	      
-	   std::complex<float>	r1 = fft_buffer [index] *
-	                               conj (phaseReference [index]);
-	   float ab1	= jan_abs (r1);
-//	Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
-//	we make the bits into softbits in the range -127 .. 127
-	   ibits [i]		=  - real (r1) / ab1 * 127.0;
-	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
-	}
-
-	memcpy (phaseReference. data (), fft_buffer,
-	                           T_u * sizeof (std::complex<float>));
-
-handlerLabel:;
-	my_mscHandler -> process_mscBlock (ibits, blkno);
-}
-
-//
-//
 /**
   *	for the snr we have a full T_u wide vector, with in the middle
   *	K carriers.

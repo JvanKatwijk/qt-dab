@@ -23,6 +23,7 @@
 #include	"fic-handler.h"
 #include	"radio.h"
 #include	"protTables.h"
+#include	"dab-params.h"
 //
 //	The 3072 bits of the serial motherword shall be split into
 //	24 blocks of 128 bits each.
@@ -44,8 +45,8 @@
 
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t dabMode):
-	                                    params (dabMode),
-	                                    fib_processor (mr),
+//	                                    params (dabMode),
+	                                    fib_processor (mr, dabMode),
 	                                    myViterbi (768, true) {
 int16_t	i, j, k;
 int	local	= 0;

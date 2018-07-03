@@ -28,7 +28,7 @@
 #include	<vector>
 #include	"radio.h"
 #include	"charsets.h"
-//
+#include	"dab-params.h"
 //
 // Tabelle ETSI EN 300 401 Page 50
 // Table is copied from the work of Michael Hoehn
@@ -98,7 +98,8 @@
                                    {416,1,384}};
 
 //
-	fib_processor::fib_processor (RadioInterface *mr):
+	fib_processor::fib_processor (RadioInterface *mr, uint8_t dabMode):
+	                                           params (dabMode),
 	                                           coordinates (mr) {
 	myRadioInterface	= mr;
 

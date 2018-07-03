@@ -8,6 +8,7 @@ Table of Contents
 
 * [Introduction](#introduction)
 * [Features](#features)
+* [Widgets and scopes](#widgets-and-scopes)
 * [Installation](#features)
   * [Windows](#windows)
   * [Ubuntu Linux](#ubuntu-linux)
@@ -41,7 +42,7 @@ Features
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), and
-	- (slightly experimental) HACKRF One, and
+	- HACKRF One, and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not  (Not yet or partly) implemented:
@@ -53,33 +54,36 @@ Not  (Not yet or partly) implemented:
   * Journaline (an untested Journaline implementation is part of the sources)
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
-
 ------------------------------------------------------------------
 Introduction
 ------------------------------------------------------------------
 
 ![Qt-DAB with SDR file loaded](/screenshot_qt-dab.png?raw=true)
 
-**Qt-DAB** is the result of merging the DAB-rpi and the sdr-j-DAB programs of the author. It became more and more complex to maintain different versions: modifications made in one version did not always end up in the other versions, so the versions started to diverge.
+**Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and
+Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Since furthermore a separate "command line only" version is developed (a version not using Qt at all), while a large part of the sources is also used in the development of a version handling ETI files, there was a real need to re-organize.
+Next to Qt-DAB, there exists a "light" version, dabradio, and a command-line
+based version. Both the Qt-DAB version and the dabradio version are implemented
+in C++, using the Qt framework for the implementation of the GUI.
+The command-line version is implemented using C++, but does not depend on Qt.
 
-Therefore, it was decided to merge DAB-rpi and sdr-j-DAB and rename the result **Qt-DAB** - to distinguish from the Qt-free version.
+dabradio and the Qt-free version, the "command-line only" version have
+their own repository on Github.
 
-The Qt-free version, the "command line only" version, is named dab-cmdline, and is built around a library that does the DAB decoding. It has its own repository on Github.
-
-The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay or a dabstick (rtl_sdr).
+The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay, the HACK rf, or a dabstick (rtl_sdr).
 
 Next to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
 
 The Qt-DAB version also supports input from an rtl-tcp server (see
-osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision
-for dumping the input into a (*.sdr)-file. 
+osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`).
+Obviously there is a provision for dumping the input into a (*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection
 needs to support the inputrate, i.e. 2048000 I/Q samples (i.e. 2 * 2048000 bytes/second).
 
-Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, in- or excluding the part for showing the spectrum and the constellation, is determined by setting the configuration. Furthermore, the resulting PCM output can be sent - if so
+Since the Qt-DAB version has to run on a headless RPI 2,
+using the home WiFi,  the resulting PCM output can be sent - if so
 configured - to a TCP port (Sources for a small client are part of the source distribution).
 
 For further information please visit http://www.sdr-j.tk
@@ -89,10 +93,34 @@ An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab
 Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 
 ------------------------------------------------------------------
+* widgets-and-scopes
+------------------------------------------------------------------
+
+The picture above shows the execution of the Qt-DAB software. It shows
+the main window, with the (few) control buttons, and 5 other widgets
+
+* a widget with controls for the attached device,
+* a widget showing the technical information of the selected service, 
+* a widget showing the spectrum of the received radio signal and the
+\ constellation of the decoded signal,
+* a widget showing the spectrum of the NULL period between successive DAB frames,
+* and a widget showing the response(s) from different transmitters in the SFN.
+
+While the main window and the widget for the device control
+are always shown,  each of the others is
+only shown when pushing a button on the main window. 
+In case a widget is invisible (i.e. not selected), the software to
+generate a spectrum is bypassed, so not to waste CPU power.
+
+------------------------------------------------------------------
 Windows
 ------------------------------------------------------------------
 
-Windows releases can be found at https://github.com/JvanKatwijk/qt-dab/releases . Please copy them into the same directory you've unzipped http://www.sdr-j.tk/windows-bin.zip as it uses the same libraries.
+Windows releases can be found at
+https://github.com/JvanKatwijk/qt-dab/releases. The software is packed
+in a zipped folder, (windows-bin.zip). The folder - after unpacking -
+contains the executable (and other executables) as well as the libraries
+to run the software.
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
@@ -121,16 +149,17 @@ For generating an executable under Ubuntu (16.04 or newer), you can put the foll
 
   a) Assuming you want to use a dabstick (also known as rtlsdr) as device, fetch a version of the library for the dabstick
   ```
-  wget http://sm5bsz.com/linuxdsp/hware/rtlsdr/rtl-sdr-linrad4.tbz
-  tar xvfj rtl-sdr-linrad4.tbz 
-  cd rtl-sdr-linrad4
-  sudo autoconf
-  sudo autoreconf -i
-  ./configure --enable-driver-detach
-  make
-  sudo make install
-  sudo ldconfig
-  cd
+   git clone git://git.osmocom.org/rtl-sdr.git
+   cd rtl-sdr/
+   mkdir build
+   cd build
+   cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER
+   make
+   sudo make install
+   sudo ldconfig
+   cd ..
+   rm -rf build
+   cd ..
   ```
    	
    b) Assuming you want to use an Airspy as device, fetch a version of the library for the Airspy	
@@ -161,11 +190,40 @@ For generating an executable under Ubuntu (16.04 or newer), you can put the foll
 	
 4. Edit the `qt-dab.pro` file for configuring the supported devices and other options. Comment the respective lines out if you don't own an Airspy (mini) or an SDRplay.
 
-5. If DAB spectrum and the constellation diagram should be displayed, check the installation path to qwt. If you were downloading it from http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in `qt-dab.pro` file (for other installation change it accordingly): 
+4.a. Check the installation path to qwt. If you were downloading it from http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in `qt-dab.pro` file (for other installation change it accordingly): 
   ```
   INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
-  ```
-	
+
+4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on
+the cores of the processor. 
+
+4.c. If you are compiling on/for a Linux x64 based PC, you might want to select to uncomment
+   ````
+   CONFIG += SSE
+   ````
+This will cause the SSE instructions to be used in some parts of the implementation.
+If you are compiling on/for an RPI2 with Stretch (or comparable system), you might want to uncomment
+   ````
+   CONFIG += NEON_RPI2
+   ````
+ and if you are compiling on/for an RPI3 with Stretch (or comparable system), you might want to uncomment
+   ````
+   CONFIG+= NEON_RPI3.
+   ````
+
+If unsure uncomment only 
+   ````
+   CONFIG+=NO_SSE.
+   ````
+BE SURE TO UNCOMMENT PRECISELY ONE OF
+
+   ````
+  #CONFIG += NEON_RPI2
+  #CONFIG += NEON_RPI3
+  #CONFIG  += SSE
+  CONFIG += NO_SSE
+  ``````
+
 6. Build and make
   ```
   qmake qt-dab.pro
@@ -209,19 +267,6 @@ for use with (appropriate) extio handlers
 Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq' as well as 16-bit "wav" `*.sdr` files) is configured by default.
 
 
-In order to show the spectrum and the constellation shown, uncomment
-```
-CONFIG          += spectrum  
-```
-
-In such a case, when uncommenting
-```
-DEFINES		+= __QUALITY
-```
-
-a "quality indicator" (standard phase deviation of the demodulated signal) will be shown (smaller is better).
-
-
 Audio samples are - by default - sent to an audio device using the portaudio
 library. Two alternatives are available:
 
@@ -250,18 +295,6 @@ CONFIG		+= try_epg
 
 If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
 
-
-An experimental configuration parameter is
-````
-CONFIG		+= impulseresponse
-````
-
-if `impulseresponse`  is configured, then another widget will appear 
-that will show the arrival of the signals from different transmitters
-in the SFN. Note that the signal that is strongest is the signal further
-processed.
-
-THIS FEATURE IS NOT AVAILABLE WHEN CMake IS USED.
 
 If you are compiling/running for an x64 based PC with SSE, then
 you could set
@@ -356,19 +389,6 @@ The AppImage version does not contain the Spectrum - I am using it in a headless
 
 Since Raspbian Stretch is a Debian derivative, the description for creating a version under Ubuntu applies.
 
-For the ".pro" file uncomment 
-
-	#DEFINES += __THREADED_DECODING.
-	#DEFINES += __THREADED_BACKEND
-for a maximal use of the 4 cores of the CPU.
-
-If you want to create a version with a spectrum widget, uncomment the line "#CONFIG += spectrum"
-
-For the CMakeLists.txt file, uncomment 
-
-	#add_definitions (-D__THREADED_DECODING) #uncomment for the RPI
-
-
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
 ---------------------------------------------------------------------------
@@ -379,6 +399,7 @@ libraries to support either a dabstick (i.e. rtlsdr) or an Airspy are
 included in the appImage (the appropriate udev rules, i.e. rules to
 allow a non-root user to use the device through USB, will be installed
 by the execution of the appImage, that is why it will ask for your password. If you have installed the device of your choice on your system, you can just cancel this request).
+
 If you want to run
 with an SDRplay, follow the installation instructions for the library from 
 "www.sdrplay.com". All further dependencies are included.

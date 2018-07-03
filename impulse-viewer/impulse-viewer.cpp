@@ -99,10 +99,13 @@ float data [dots];
 double Y_values [dots];
 float	mmax	= 0;
 
+	responseBuffer	-> getDataFromBuffer (data, dots);
+	if (myFrame -> isHidden ())
+	   return;
+
 	for (i = 0; i < dots; i ++) 
 	   X_axis [i] = i;
 
-	responseBuffer	-> getDataFromBuffer (data, dots);
 	for (i = 0; i < dots; i ++) {
 	   Y_values [i] = get_db (data [i]);
 	   if (Y_values [i] > mmax)

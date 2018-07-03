@@ -54,15 +54,11 @@ public:
 	                         int16_t,
 	                         int16_t,
 	                         int16_t,
-	                         QString
-#ifdef	IMPULSE_RESPONSE
-	                         , RingBuffer<float> *
-#endif
-#ifdef	HAVE_SPECTRUM
-	                        ,RingBuffer<std::complex<float>>	*,
+	                         QString,
+	                         RingBuffer<float> *,
+	                         RingBuffer<std::complex<float>>	*,
+	                         RingBuffer<std::complex<float>>	*,
 	                         RingBuffer<std::complex<float>>	*
-#endif
-
 	                        );
 		~dabProcessor	(void);
 	void		reset			(void);
@@ -95,12 +91,11 @@ public:
         int32_t		get_ensembleId          (void);
         QString		get_ensembleName        (void);
 	void		clearEnsemble		(void);
-	void		set_tiiSwitch		(bool);
 private:
 	bool		tiiSwitch;
-	RingBuffer<std::complex<float> > *spectrumBuffer;
 	virtualInput	*theRig;
 	dabParams	params;
+	RingBuffer<std::complex<float> > *tiiBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 	sampleReader	myReader;
@@ -108,7 +103,6 @@ private:
 	ficHandler	my_ficHandler;
 	mscHandler	my_mscHandler;
 	TII_Detector	my_TII_Detector;
-	int		tiiCoordinates;
 
 	int16_t		attempts;
 	bool		scanMode;
@@ -120,29 +114,23 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int32_t		carrierDiff;
-	std::vector<std::complex<float> > dataBuffer;
-	int16_t		fineCorrector;
+	int16_t		fineOffset;
 	int32_t		coarseOffset;
 
-	bool		f2Correction;
-	int32_t		tokenCount;
+	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
-	uint32_t	ofdmBufferIndex;
-	uint32_t	ofdmSymbolCount;
 	phaseReference	phaseSynchronizer;
 	ofdmDecoder	my_ofdmDecoder;
 	bool		wasSecond		(int16_t, dabParams *);
 virtual	void		run			(void);
-	bool		isReset;
 signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
 	void		showCoordinates		(int, int);
 //	void		showCoordinates		(float, float);
-#ifdef	HAVE_SPECTRUM
 	void		show_Spectrum		(int);
-#endif
+	void		show_tii		(int);
 };
 #endif
 

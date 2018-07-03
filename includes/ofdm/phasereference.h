@@ -38,9 +38,7 @@ Q_OBJECT
 public:
 			phaseReference 		(RadioInterface *,
 	                                         uint8_t,
-#ifdef	IMPULSE_RESPONSE
 						 RingBuffer<float> *b,
-#endif
 	                                         int16_t, int16_t);
 			~phaseReference		(void);
 	int32_t		findIndex		(std::vector<std::complex<float>>);
@@ -52,9 +50,7 @@ public:
 private:
 	fftHandler	my_fftHandler;
 	dabParams	params;
-#ifdef	IMPULSE_RESPONSE
 	RingBuffer<float> *response;
-#endif
 	std::vector<float> phaseDifferences;
 	int16_t		threshold;
 	int16_t		diff_length;

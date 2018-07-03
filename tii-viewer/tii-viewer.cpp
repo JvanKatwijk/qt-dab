@@ -20,15 +20,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"spectrum-handler.h"
-#include	<QSettings>
+#include	"tii-viewer.h"
 #include	"iqdisplay.h"
 #include	<QColor>
 
-	spectrumhandler::spectrumhandler	(RadioInterface	*mr,
-	                                         QSettings	*dabSettings,
-	                                         RingBuffer<std::complex<float>> *sbuffer,
-	                                         RingBuffer<std::complex<float>>* ibuffer) {
+	tiiViewer::tiiViewer	(RadioInterface	*mr,
+	                                         RingBuffer<std::complex<float>> *sbuffer) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -36,23 +33,18 @@ QColor	gridColor;
 QColor	curveColor;
 
 	this	-> myRadioInterface	= mr;
-	this	-> dabSettings		= dabSettings;
-	this	-> scopeBuffer		= sbuffer;
-	this	-> iqBuffer		= ibuffer;
+	this	-> tiiBuffer		= sbuffer;
 
-	colorString			= dabSettings -> value ("displaycolor", "black"). toString ();
 	displayColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("gridcolor", "white"). toString ();
+	colorString			= "white";
 	gridColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("gridcolor", "white"). toString ();
 	curveColor			= QColor (colorString);
 
-	displaySize			= dabSettings -> value ("displaySize", 1024).toInt ();
-	if ((displaySize & (displaySize - 1)) != 0)
-	   displaySize = 1024;
+	displaySize			= 1024;
 	this	-> myFrame		= new QFrame (NULL);
 	setupUi (this -> myFrame);
 
+	this	-> myFrame	-> hide ();
 	displayBuffer. resize (displaySize);
 	memset (displayBuffer. data (), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 4 * displaySize;
@@ -62,7 +54,7 @@ QColor	curveColor;
                                     reinterpret_cast <fftwf_complex *>(spectrum),
                                     FFTW_FORWARD, FFTW_ESTIMATE);
 	
-	plotgrid		= dabScope;
+	plotgrid		= tiiGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -100,14 +92,9 @@ QColor	curveColor;
 	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
 	              0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
 	setBitDepth	(12);
-
-	myIQDisplay	= new IQDisplay (iqDisplay, 256);
-#ifndef	__QUALITY
-	quality_display	-> hide ();
-#endif
 }
 
-	spectrumhandler::~spectrumhandler	(void) {
+	tiiViewer::~tiiViewer	(void) {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
 	myFrame		-> hide ();
@@ -118,27 +105,30 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
-void	spectrumhandler::showSpectrum	(int32_t amount, int32_t vfoFrequency) {
+void	tiiViewer::showSpectrum	(int32_t amount) {
 double	X_axis [displaySize];
 double	Y_values [displaySize];
 int16_t	i, j;
 double	temp	= (double)INPUT_RATE / 2 / displaySize;
-int16_t	averageCount	= 5;
+int16_t	averageCount	= 3;
 
+	   
 	(void)amount;
-	if (scopeBuffer -> GetRingBufferReadAvailable () < spectrumSize)
+	if (tiiBuffer -> GetRingBufferReadAvailable () < spectrumSize)
 	   return;
 
+	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
+	tiiBuffer	-> FlushRingBuffer ();
+	if (myFrame	-> isHidden ())
+	   return;
+//	and window it
 //	first X axis labels
 	for (i = 0; i < displaySize; i ++)
 	   X_axis [i] = 
-	         ((double)vfoFrequency - (double)(INPUT_RATE / 2) +
+	         ((double)0 - (double)(INPUT_RATE / 2) +
 	          (double)((i) * (double) 2 * temp)) / ((double)1000);
 //
 //	get the buffer data
-	scopeBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
-	scopeBuffer	-> FlushRingBuffer ();
-//	and window it
 	for (i = 0; i < spectrumSize; i ++)
 	   spectrum [i] = cmul (spectrum [i], Window [i]);
 
@@ -171,11 +161,11 @@ int16_t	averageCount	= 5;
 	memcpy (Y_values,
 	        displayBuffer. data (), displaySize * sizeof (double));
 	ViewSpectrum (X_axis, Y_values,
-	              scopeAmplification -> value (),
-	              vfoFrequency / 1000);
+	              AmplificationSlider -> value (),
+	              0 / 1000);
 }
 
-void	spectrumhandler::ViewSpectrum (double *X_axis,
+void	tiiViewer::ViewSpectrum (double *X_axis,
 		                       double *Y1_value,
 	                               double amp,
 	                               int32_t marker) {
@@ -202,11 +192,11 @@ uint16_t	i;
 	plotgrid	-> replot(); 
 }
 
-float	spectrumhandler::get_db (float x) {
+float	tiiViewer::get_db (float x) {
 	return 20 * log10 ((x + 1) / (float)(normalizer));
 }
 
-void	spectrumhandler::setBitDepth	(int16_t d) {
+void	tiiViewer::setBitDepth	(int16_t d) {
 
 	if (d < 0 || d > 32)
 	   d = 24;
@@ -216,33 +206,17 @@ void	spectrumhandler::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	spectrumhandler::show		(void) {
+void	tiiViewer::show		(void) {
 	myFrame	-> show ();
 }
 
-void	spectrumhandler::hide		(void) {
+void	tiiViewer::hide		(void) {
 	myFrame	-> hide ();
 }
 
-void	spectrumhandler::showIQ	(int amount) {
-std::complex<float> Values [amount];
-int16_t	i;
-int16_t	t;
-double	avg	= 0;
-int	scopeWidth	= scopeSlider -> value ();
-
-	t = iqBuffer -> getDataFromBuffer (Values, amount);
-	for (i = 0; i < t; i ++) {
-	   float x = abs (Values [i]);
-	   if (!std::isnan (x) && !std::isinf (x))
-	      avg += abs (Values [i]);
-	}
-
-	avg	/= t;
-	myIQDisplay -> DisplayIQ (Values, scopeWidth / avg);
+bool	tiiViewer::isHidden	(void) {
+	return myFrame -> isHidden ();
 }
 
-void	spectrumhandler:: showQuality (float q) {
-	quality_display -> display (q);
-}
+
 

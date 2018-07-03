@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
+    <width>612</width>
     <height>208</height>
    </rect>
   </property>
@@ -16,9 +16,9 @@
   <widget class="QwtPlot" name="dabScope">
    <property name="geometry">
     <rect>
-     <x>50</x>
+     <x>30</x>
      <y>20</y>
-     <width>461</width>
+     <width>361</width>
      <height>161</height>
     </rect>
    </property>
@@ -48,7 +48,7 @@
   <widget class="QwtPlot" name="iqDisplay">
    <property name="geometry">
     <rect>
-     <x>510</x>
+     <x>410</x>
      <y>20</y>
      <width>181</width>
      <height>111</height>
@@ -61,7 +61,7 @@
   <widget class="QSlider" name="scopeSlider">
    <property name="geometry">
     <rect>
-     <x>530</x>
+     <x>430</x>
      <y>140</y>
      <width>171</width>
      <height>24</height>
@@ -80,7 +80,7 @@
   <widget class="QLCDNumber" name="quality_display">
    <property name="geometry">
     <rect>
-     <x>620</x>
+     <x>450</x>
      <y>170</y>
      <width>81</width>
      <height>23</height>

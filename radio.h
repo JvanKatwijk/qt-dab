@@ -19,8 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *	Main program
  */
 
 #ifndef __RADIO__
@@ -52,13 +50,9 @@ class	common_fft;
 
 #include	"ui_technical_data.h"
 
-#ifdef	HAVE_SPECTRUM
-class	spectrumhandler;
-#endif
-#ifdef	IMPULSE_RESPONSE
+class	spectrumViewer;
 class	impulseViewer;
-#endif
-
+class	tiiViewer;
 /*
  *	GThe main gui object. It inherits from
  *	QDialog and the generated form
@@ -77,7 +71,6 @@ private:
 	int16_t		tii_delay;
 	int32_t         dataPort;
 	QString         deviceName;
-	uint8_t		dabMode;
 	Ui_technical_data	techData;
 	QFrame		*dataDisplay;
 	bool		show_data;
@@ -94,8 +87,8 @@ const	char		*get_programm_language_string (int16_t);
 	void		showButtons		(void);
 	virtualInput	*setDevice		(QString);
 
+	QString		dabMode;
 	uint8_t		dabBand;
-	bool		thereisSound;
 	uint8_t		isSynced;
 	int16_t		threshold;
 	int16_t		diff_length;
@@ -144,15 +137,13 @@ const	char		*get_programm_language_string (int16_t);
 	int16_t		ficSuccess;
 	void		connectGUI		(void);
 	void		disconnectGUI		(void);
-#ifdef	HAVE_SPECTRUM
-        spectrumhandler         *spectrumHandler;
+        spectrumViewer         *my_spectrumViewer;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
-	RingBuffer<std::complex<float>>	*iqBuffer;
-#endif
-#ifdef	IMPULSE_RESPONSE
+	RingBuffer<std::complex<float>>  *iqBuffer;
 	impulseViewer		*my_impulseViewer;
 	RingBuffer<float>	*responseBuffer;
-#endif
+	tiiViewer		*my_tiiViewer;
+	RingBuffer<std::complex<float>>  *tiiBuffer;
 
 	QString		picturesPath;
 public slots:
@@ -185,17 +176,13 @@ public slots:
 	void		show_motHandling	(bool);
 	void		setSyncLost		(void);
 	void		showCoordinates		(int, int);
-#ifdef	IMPULSE_RESPONSE
 	void		showImpulse		(int);
-#endif
-#ifdef	HAVE_SPECTRUM
 	void		showSpectrum		(int);
 	void		showIQ			(int);
-#ifdef	__QUALITY
 	void		showQuality		(float);
-#endif
-#endif
-//
+	void		show_tii		(int);
+	void		closeEvent		(QCloseEvent *event);
+
 //	Somehow, these must be connected to the GUI
 private slots:
 	void		set_nextChannel		(void);
@@ -209,7 +196,6 @@ private slots:
 	void		autoCorrector_on	(void);
 
 	void		newDevice		(QString);
-	void		set_modeSelect		(const QString &);
 	void		set_bandSelect		(QString s);
 
 	void		selectService		(QModelIndex);
@@ -219,9 +205,8 @@ private slots:
 	void		showEnsembleData	(void);
 	void		setPresetStation	(void);
 	void		set_tiiSwitch		(void);
-#ifdef	IMPULSE_RESPONSE
 	void		set_irSwitch		(void);
-#endif
+	void		set_spectrumSwitch	(void);
 };
 #endif
 

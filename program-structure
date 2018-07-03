@@ -1,0 +1,155 @@
+
+	Qt-DAB: structure of the program
+
+1. Introduction
+Qt-DAB is written in C++ and makes use of the Qt toolset.
+
+
+2. Overall structure
+The program implements a series of transformations on an input
+that consists of a continuous stream of I/Q samples, with an
+inputrate of 2048000.
+The implementation of the processing can be thought of to
+exist of 4 stages:
+a. reading samples
+b. mapping samples onto DAB frames 
+c. extracting services from these DAB frames
+d. generating output
+
+Main "driver" of the implementation is in a class "dabProcessor",
+a class implementing an interface to the input device is one
+of its parameters, as are the dabMode, some settings and a number
+of buffers, with which data is passed to the GUI handler.
+
+The dabProcessor extracts the samples from the input device (through
+a class "sampleReader", does time synchronization to estimate the
+first sample of the non-null part of a DAB frame (using a class
+"timeSyncer"), does the fine time synchronization - determining the
+first sample of the first data block (using a class "phaseReference"),
+collects the samples for the data blocks of the DAB frame, and
+makes a guess of the small error correction.
+
+Decoding the first few data blocks, FIC blocks, is delegated to an instance
+of the class "ofdmDecoder", processing the result is delegated
+to an instance of the class ficHandler.
+
+Decoding of the remaining data blocks, MSC blocks, is delegated to
+an instance of the class "mscProcessor". On selecting a service,
+a delegate is instatiated that is capable of dealing with it.
+Audio output is send back to the GUI for processing by an output module.
+
+The rationale for this choice is that the dabProcessor proper and
+the mscProcessor can be executed in different threads.
+
+Control of the GUI is implemented in the class "RadioInterface",
+it implements the two way communication betwene the (visual) outside
+world and the processing chain.
+
+3. the dabProcessor and processing
+3.0 the dabProcessor
+The dabProcessor is built as a thread, pulling the data in,
+processing the samples and emitting dabBlocks to its delegates.
+The "run" function will call upon an instance of the
+class "sampleReader" to obtain the samples - corrected for any
+frequency offset that might occur.
+
+If there is no (coarse) time sychronization yet, an instance
+of the class "timeSyncer" will try to obtain this.
+
+If the is (coarse) time synchronization, a - pretty arbitary - amount
+of samples are read in, and passed on to a n instance of the
+class "phaseReference", that will compute the precise offset
+of where the data is to be found in the sample stream.
+
+Reading in a frame is then straight forward, the first data block
+is used for frequency synchronization and acts as a reference for decoding
+the next block, samples constituing the next blocks are read in
+and the blocks are collected.
+
+The first datablocks are passed on to an instance of the class ficHandler,
+that class builds a structure with a description of the data that is
+contained in the MSC blocks.
+
+The remaining data blocks are passed on to the instance of the mscHandler.
+
+
+While reading in the data blocks, an estimate is made of the small (fine)
+frequency offset, by averaging over all blocks of the frame.
+
+Note that when there is time synchronization, there is not need to
+repeat that part of the procedure for the next DAB frame, so the code
+ends with a jump back to the part fine syncing with the next DAB frame.
+
+3.1 phaseReference
+
+A class "phaseReference" is built to handle the identification of the
+first sample of the first datablock in a DAB frame and the computation
+of the coarse frequency offset.
+
+Identification of the first sample is possible since the pattern of
+the first data block as transformed into the frequency domain is predefined.
+
+The actual computation is done by taking the IFFT of the product of the
+FFT of the incoming data and the aforementioned pattern.
+
+The frequency offset is computed by correlating elements of the
+predefined pattern with the FFT of the first data block.
+
+3.2 ofdmDecoder
+
+The mapping of the first data block and the first few FIC blocks
+is done in the class ofdmDecoder. Decoding is by computing - for each
+relevant carrier - the product of the carrier with the value of the
+carrier in the preceding block. Since there is some interleaving
+involved, computation takes the interleaving into account.
+
+3.3 ficHandler
+
+The decoder data of the FIC blocks is passed on to the instance of the
+ficHandler class. The class itself is derived from the fibProcessor class,
+that one does the real interpretation.
+
+The incoming data is partitioned into segments of 2304 (soft) bits,
+these segments are depunctured according to a predefined rule, and
+are fed into a deconvolutional decoder.
+
+The result are segments of 768 (hard) bits, each consisting of three
+vectors of 256 bits, 240 data bits and a 16 bit CRC.
+
+These vectors - if the CRC check is passed - are further processed
+by (an instance of) the "fibProcessor" class.
+
+The latter maintains three 64 element vectors, one for the "subChannels",
+one for the "subServices" and one for the "services".
+
+4. the mscHandler
+
+The class mscHandler is built as a thread, buffering the input.
+The "run" function will read the raw datablocks and will decode them,
+i.e. map them onto (soft)bits. These bits are collected into CIFs.
+
+This approach is chosen to (more or less) balance the workload between
+the ofdmProcessor and the mscHandler.
+
+As long as no service is selected, it ends here. If/when a service
+is selected, the GUI passes a description of the selected service
+to the mscHandler. The mscHandler then -  if applicable - terminates
+delegates operating on the previously selected service, and adds
+an appropriate delete to a "stack" of delegates. This allows handling
+of subservices.
+
+The service description contains an indication of the startaddress
+of the data i the CIF, of the length of the data segment, and an
+indication whether it is an audio or data (sub)service.
+
+Since the mscHandler has both the dabProcessor and the GUI as client,
+some locking is introduced, locking by simple mutexes.
+
+An audio (sub)service will be handled by an instance of the class 
+"audioProcessor", a data (sub)service by an instance of the class
+"dataProcessor".
+
+
+
+
+

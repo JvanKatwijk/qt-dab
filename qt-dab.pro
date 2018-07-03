@@ -5,16 +5,16 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-1.1-alpha
+TARGET		= qt-dab-2.0
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#QMAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_LFLAGS	+=  -flto
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+QMAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_LFLAGS	+=  -flto
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -32,7 +32,7 @@ DEPENDPATH += . \
 	      ./src/backend/data/mot \
 	      ./src/backend/data/journaline \
 	      ./src/output \
-	      ./src/various \
+	      ./src/support \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -43,7 +43,14 @@ DEPENDPATH += . \
 	      ./includes/backend/data/mot \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
-	      ./includes/various 
+	      ./includes/support \
+	      ./devices \
+	      ./devices/rawfiles \
+	      ./devices/wavfiles \
+	      ./includes/scopes-qwt6 \
+              ./spectrum-viewer \
+	      ./impulse-viewer \
+	      ./tii-viewer
 
 INCLUDEPATH += . \
 	      ./ \
@@ -57,16 +64,21 @@ INCLUDEPATH += . \
 	      ./includes/backend/data/mot \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
-	      ./includes/various \
+	      ./includes/support \
 	      ./devices \
 	      ./devices/rawfiles \
-	      ./devices/wavfiles 
+	      ./devices/wavfiles \
+	      ./includes/scopes-qwt6 \
+              ./spectrum-viewer \
+	      ./impulse-viewer \
+	      ./tii-viewer
 
 # Input
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
 	   ./includes/dab-constants.h \
 	   ./includes/country-codes.h \
+	   ./includes/ofdm/timesyncer.h \
 	   ./includes/ofdm/sample-reader.h \
 	   ./includes/ofdm/ofdm-decoder.h \
 	   ./includes/ofdm/phasereference.h \
@@ -74,11 +86,9 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/freq-interleaver.h \
 	   ./includes/ofdm/tii_table.h \
 	   ./includes/ofdm/tii_detector.h \
-#	   ./includes/backend/viterbi.h \
-	   ./includes/backend/viterbi_768/viterbi-768.h \
-	   ./includes/backend/fic-handler.h \
+	   ./includes/ofdm/fic-handler.h \
+	   ./includes/ofdm/fib-processor.h  \
 	   ./includes/backend/msc-handler.h \
-	   ./includes/backend/fib-processor.h  \
 	   ./includes/backend/galois.h \
 	   ./includes/backend/reed-solomon.h \
 	   ./includes/backend/rscodec.h \
@@ -115,23 +125,35 @@ HEADERS += ./radio.h \
 	   ./includes/output/audio-base.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
-           ./includes/various/fft-handler.h \
-	   ./includes/various/ringbuffer.h \
-	   ./includes/various/Xtan2.h \
-	   ./includes/various/dab-params.h \
-	   ./includes/various/band-handler.h \
-	   ./includes/various/text-mapper.h \
-	   ./includes/various/ensemble-printer.h \
+#	   ./includes/support/viterbi.h \
+	   ./includes/support/viterbi_768/viterbi-768.h \
+           ./includes/support/fft-handler.h \
+	   ./includes/support/ringbuffer.h \
+	   ./includes/support/Xtan2.h \
+	   ./includes/support/dab-params.h \
+	   ./includes/support/band-handler.h \
+	   ./includes/support/text-mapper.h \
+	   ./includes/support/ensemble-printer.h \
+	   ./includes/scopes-qwt6/spectrogramdata.h \
+	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
-           ./devices/wavfiles/wavfiles.h
+           ./devices/wavfiles/wavfiles.h \
+	   ./spectrum-viewer/spectrum-viewer.h \
+	   ./impulse-viewer/impulse-viewer.h \
+	   ./tii-viewer/tii-viewer.h
 
-FORMS	+= ./devices/filereader-widget.ui 
 FORMS	+= ./forms/technical_data.ui
+FORMS	+= ./forms/dabradio.ui 
+FORMS	+= ./spectrum-viewer/scopewidget.ui
+FORMS	+= ./impulse-viewer/impulse-widget.ui
+FORMS	+= ./tii-viewer/tii-widget.ui
+FORMS	+= ./devices/filereader-widget.ui 
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
+	   ./src/ofdm/timesyncer.cpp \
 	   ./src/ofdm/sample-reader.cpp \
 	   ./src/ofdm/ofdm-decoder.cpp \
 	   ./src/ofdm/phasereference.cpp \
@@ -139,14 +161,12 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
 	   ./src/ofdm/tii_table.cpp \
 	   ./src/ofdm/tii_detector.cpp \
-#	   ./src/backend/viterbi.cpp \
-	   ./src/backend/viterbi_768/viterbi-768.cpp \
-	   ./src/backend/fic-handler.cpp \
+	   ./src/ofdm/fic-handler.cpp \
+	   ./src/ofdm/fib-processor.cpp  \
 	   ./src/backend/msc-handler.cpp \
 	   ./src/backend/protection.cpp \
 	   ./src/backend/eep-protection.cpp \
 	   ./src/backend/uep-protection.cpp \
-	   ./src/backend/fib-processor.cpp  \
 	   ./src/backend/galois.cpp \
 	   ./src/backend/reed-solomon.cpp \
 	   ./src/backend/rscodec.cpp \
@@ -180,19 +200,22 @@ SOURCES += ./main.cpp \
 	   ./src/output/audio-base.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
-           ./src/various/fft-handler.cpp \
-	   ./src/various/Xtan2.cpp \
-	   ./src/various/dab-params.cpp \
-	   ./src/various/band-handler.cpp \
-	   ./src/various/text-mapper.cpp \
-	   ./src/various/ensemble-printer.cpp \
+#	   ./src/support/viterbi.cpp \
+	   ./src/support/viterbi_768/viterbi-768.cpp \
+           ./src/support/fft-handler.cpp \
+	   ./src/support/Xtan2.cpp \
+	   ./src/support/dab-params.cpp \
+	   ./src/support/band-handler.cpp \
+	   ./src/support/text-mapper.cpp \
+	   ./src/support/ensemble-printer.cpp \
+	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
-           ./devices/wavfiles/wavfiles.cpp
+           ./devices/wavfiles/wavfiles.cpp \
+	   ./spectrum-viewer/spectrum-viewer.cpp \
+	   ./impulse-viewer/impulse-viewer.cpp \
+	   ./tii-viewer/tii-viewer.cpp
 #
-#	for unix systems this is about it. Adapt when needed for naming
-#	and locating libraries. If you do not need a device as
-#	listed, just comment the line out.
 #
 unix {
 DESTDIR		= ./linux-bin
@@ -207,14 +230,17 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-FORMS 		+= ./forms/dabradio.ui 
 INCLUDEPATH	+= /usr/local/include
+INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 LIBS		+= -lfftw3f  -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
 LIBS		+= -lz
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
 LIBS		+= -lfaad
+#correct this for the correct path to the qwt6 library on your system
+#LIBS		+= -lqwt
+LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -222,14 +248,11 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
-CONFIG		+= hackrf	# does not work yet
-#CONFIG		+= elad_s1
+CONFIG		+= hackrf
+#CONFIG		+= elad_s1	# does not work yet
 
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
-
-#if you want to see a spectrum and a constellation plot, uncomment
-CONFIG		+= spectrum
 
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
@@ -240,23 +263,11 @@ CONFIG		+= spectrum
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-#and certainly, you do not want this
 CONFIG		+= try-epg		# do not use
-
-#for the raspberry you definitely want this one
-#when this one is enabled, load is spread over different threads
-DEFINES	+= __THREADED_BACKEND
-#DEFINES	+= __THREADED_DECODING
-
-#you do not want this
 DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
-
-#and these one is just experimental,
-DEFINES	+= TII_GUESSING
-CONFIG	+= impulseresponse
 
 # you might select SSE if you are compiling on a x64 with SSE support
 # and you might select NEON if you are compiling for an arm (however
@@ -285,6 +296,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
+INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
@@ -300,8 +312,9 @@ LIBS		+= -lws2_32
 LIBS		+= -lfaad
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
-FORMS 		+= ./forms/dabradio.ui 
-FORMS		+= ./forms/technical_data.ui
+#correct this for the correct path to the qwt6 library on your system
+#LIBS		+= -lqwt
+LIBS		+= -lqwt-qt5
 
 CONFIG		+= extio
 CONFIG		+= airspy
@@ -314,9 +327,6 @@ CONFIG		+= NO_SSE
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 
-#if you want to see a spectrum and a constellation plot, uncomment
-CONFIG		+= spectrum
-
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of soud out
@@ -326,45 +336,11 @@ CONFIG		+= spectrum
 #and certainly, you do not want this
 #CONFIG		+= try-epg		# do not use
 
-#for the raspberry you definitely want this one
-#when this one is enabled, load is spread over different threads
-DEFINES	+= __THREADED_BACKEND
-#DEFINES	+= __THREADED_DECODING
-
 #you do not want this
 DEFINES		+= MSC_DATA__		# use at your own risk
 
 #and this one is experimental
 DEFINES		+= PRESET_NAME
-
-DEFINES		+= TII_GUESSING
-CONFIG		+= impulseresponse
-}
-
-#######################################
-#
-
-#       If you want to see the spectrum, take "CONFIG += spectrum"
-spectrum {
-        DEFINES         += HAVE_SPECTRUM
-
-	DEFINES		+= __QUALITY	# just a counter in spectrum display
-#adapt to the correct path for your system
-	INCLUDEPATH += /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	INCLUDEPATH	+= ./includes/scopes-qwt6
-	HEADERS		+= ./includes/scopes-qwt6/spectrogramdata.h \
-	                   ./includes/scopes-qwt6/iqdisplay.h 
-	SOURCES		+= ./src/scopes-qwt6/iqdisplay.cpp
-        DEPENDPATH	+= ./optional-scope
-	INCLUDEPATH	+= ./includes/scopes-qwt6
-        INCLUDEPATH	+= ./optional-scope
-        FORMS           += ./optional-scope/scopewidget.ui
-        HEADERS         += ./optional-scope/spectrum-handler.h
-	HEADERS		+= ./includes/scopes-qwt6
-        SOURCES         += ./optional-scope/spectrum-handler.cpp
-#correct this for the correct path to the qwt6 library on your system
-#	LIBS		+= -lqwt
-	LIBS		+= -lqwt-qt5
 }
 
 #	devices
@@ -498,14 +474,6 @@ datastreamer	{
 	SOURCES		+= ./server-thread/tcp-server.cpp
 }
 
-
-impulseresponse	{
-	DEFINES		+= IMPULSE_RESPONSE
-	INCLUDEPATH	+= ./optional-ir
-	FORMS		+= ./optional-ir/impulse-widget.ui
-	HEADERS		+= ./optional-ir/impulse-viewer.h
-	SOURCES		+= ./optional-ir/impulse-viewer.cpp
-}
 
 # for RPI2 use:
 NEON_RPI2	{

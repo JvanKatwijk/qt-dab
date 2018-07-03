@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>impulseWidget</class>
- <widget class="QWidget" name="impulseWidget">
+ <class>tiiWidget</class>
+ <widget class="QWidget" name="tiiWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>501</width>
-    <height>208</height>
+    <width>397</width>
+    <height>164</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>impulse response</string>
+   <string>tii spectrum</string>
   </property>
-  <widget class="QwtPlot" name="impulseGrid">
+  <widget class="QwtPlot" name="tiiGrid">
    <property name="geometry">
     <rect>
-     <x>30</x>
-     <y>20</y>
-     <width>441</width>
-     <height>161</height>
+     <x>60</x>
+     <y>10</y>
+     <width>321</width>
+     <height>131</height>
     </rect>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum display, shows the frequency spectrum from the channel currently being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="AmplificationSlider">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>20</y>
+     <width>24</width>
+     <height>111</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>100</number>
+   </property>
+   <property name="value">
+    <number>50</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
    </property>
   </widget>
  </widget>

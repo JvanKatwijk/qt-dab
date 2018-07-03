@@ -24,6 +24,7 @@
 #include	"msc-handler.h"
 #include	"radio.h"
 #include	"dab-params.h"
+#include	"timesyncer.h"
 //
 /**
   *	\brief dabProcessor
@@ -40,49 +41,42 @@
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,
 	                                 int16_t	tii_delay,
-	                                 QString	picturesPath
-#ifdef	IMPULSE_RESPONSE
-	                                 ,RingBuffer<float> *responseBuffer
-#endif
-#ifdef	HAVE_SPECTRUM
-		                        ,RingBuffer<std::complex<float>>	*spectrumBuffer,
-	                                 RingBuffer<std::complex<float>>	*iqBuffer
-#endif
+	                                 QString	picturesPath,
+	                                 RingBuffer<float> *responseBuffer,
+		                         RingBuffer<std::complex<float>> *
+	                                                         spectrumBuffer,
+	                                 RingBuffer<std::complex<float>> *
+	                                                         iqBuffer,
+	                                 RingBuffer<std::complex<float>> *
+	                                                         tiiBuffer
 	                                 ):
 	                                 params (dabMode),
 	                                 myReader (mr,
-	                                           theRig
-#ifdef	HAVE_SPECTRUM
-	                                           ,spectrumBuffer
-#endif
+	                                           theRig,
+	                                           spectrumBuffer
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
 	                                                picturesPath),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
-#ifdef	IMPULSE_RESPONSE
 	                                                    responseBuffer,
-#endif
                                                             threshold,
 	                                                    diff_length),
 	                                 my_TII_Detector (dabMode), 
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
-#ifdef	HAVE_SPECTRUM
 	                                                 iqBuffer,
-#endif
-	                                                 theRig -> bitDepth (),
-	                                                 &my_ficHandler,
-	                                                 &my_mscHandler) {
+	                                                 theRig -> bitDepth ()) {
 int32_t	i;
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
-	this	-> spectrumBuffer	= spectrumBuffer;
+	this	-> tiiBuffer		= tiiBuffer;
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
+	this	-> T_g			= T_s - T_u;
 	this	-> T_F			= params. get_T_F ();
 	this	-> nrBlocks		= params. get_L ();
 	this	-> carriers		= params. get_carriers ();
@@ -92,16 +86,11 @@ int32_t	i;
 	this	-> tii_counter		= 0;
 
 	ofdmBuffer. resize (2 * T_s);
-	ofdmBufferIndex			= 0;
-	ofdmSymbolCount			= 0;
-	tokenCount			= 0;
-	fineCorrector			= 0;	
-	f2Correction			= true;
+	fineOffset			= 0;	
+	coarseOffset			= 0;	
+	correctionNeeded		= true;
 	attempts			= 0;
 	scanMode			= false;
-	tiiSwitch			= false;
-//	connect (this, SIGNAL (showCoordinates (float, float)),
-//	         mr,   SLOT   (showCoordinates (float, float)));
 	connect (this, SIGNAL (showCoordinates (int, int)),
 	         mr,   SLOT   (showCoordinates (int, int)));
 	connect (this, SIGNAL (setSynced (char)),
@@ -110,13 +99,11 @@ int32_t	i;
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
-#ifdef	HAVE_SPECTRUM
 	connect (this, SIGNAL (show_Spectrum (int)),
 	         myRadioInterface, SLOT (showSpectrum (int)));
-#endif
+	connect (this, SIGNAL (show_tii (int)),
+	         myRadioInterface, SLOT (show_tii (int)));
 	
-	myReader. setSpectrum (!tiiSwitch);
-	myReader. setRunning  (false);
 //	the thread will be started from somewhere else
 }
 
@@ -144,86 +131,38 @@ void	dabProcessor::run	(void) {
 int32_t		startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
-int32_t		counter;
-float		cLevel;
-int32_t		syncBufferIndex	= 0;
-const
-int32_t		syncBufferSize	= 32768;
-const
-int32_t		syncBufferMask	= syncBufferSize - 1;
-float		envBuffer	[syncBufferSize];
+timeSyncer	myTimeSyncer (&myReader);
 
-        fineCorrector   = 0;
-        f2Correction    = true;
-        syncBufferIndex = 0;
-	attempts	= 0;
+        fineOffset		= 0;
+        correctionNeeded	= true;
         theRig  -> resetBuffer ();
 	coarseOffset	= theRig -> getOffset ();
-	myReader. setRunning (true);
-	my_ofdmDecoder. start ();
+	fineOffset		= 0;
+	myReader. setRunning (true);	// useful after a restart
+	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
 	try {
 	   for (i = 0; i < T_F / 5; i ++) {
 	      myReader. getSample (0);
 	   }
-Initing:
+//Initing:
 notSynced:
-	   syncBufferIndex	= 0;
-	   cLevel		= 0;
-
-	   for (i = 0; i < C_LEVEL_SIZE; i ++) {
-	      std::complex<float> sample	= myReader. getSample (0);
-	      envBuffer [syncBufferIndex]	= jan_abs (sample);
-	      cLevel	 			+= envBuffer [syncBufferIndex];
-	      syncBufferIndex ++;
-	   }
-/**
-  *	We now have initial values for cLevel (i.e. the sum
-  *	over the last C_LEVEL_SIZE samples) and sLevel, the long term average.
-  */
-SyncOnNull:
-/**
-  *	here we start looking for the null level, i.e. a dip
-  */
-	   counter	= 0;
 	   setSynced (false);
-	   while (cLevel / C_LEVEL_SIZE  > 0.50 * myReader. get_sLevel ()) {
-	      std::complex<float> sample	=
-	                      myReader. getSample (coarseOffset + fineCorrector);
-	      envBuffer [syncBufferIndex] = jan_abs (sample);
-//	update the levels
-	      cLevel += envBuffer [syncBufferIndex] -
-	                envBuffer [(syncBufferIndex - C_LEVEL_SIZE) & syncBufferMask];
-	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
-	      counter ++;
-	      if (counter > T_F) { // hopeless
+	   switch (myTimeSyncer. sync (T_null, T_F)) {
+	      case TIMESYNC_ESTABLISHED:
+	         break;			// yes, we are ready
+
+	      case NO_DIP_FOUND:
 	         if (scanMode && (++ attempts >= 5)) {
 	            emit (No_Signal_Found ());
                     attempts = 0;
                  }
 	         goto notSynced;
-	      }
-	   }
-/**
-  *	It seemed we found a dip that started app 65/100 * 50 samples earlier.
-  *	We now start looking for the end of the null period.
-  */
-	   counter	= 0;
-SyncOnEndNull:
-	   while (cLevel / C_LEVEL_SIZE < 0.75 * myReader. get_sLevel ()) {
-	      std::complex<float> sample =
-	              myReader. getSample (coarseOffset + fineCorrector);
-	      envBuffer [syncBufferIndex] = jan_abs (sample);
-//	update the levels
-	      cLevel += envBuffer [syncBufferIndex] -
-	                envBuffer [(syncBufferIndex - C_LEVEL_SIZE) & syncBufferMask];
-	      syncBufferIndex = (syncBufferIndex + 1) & syncBufferMask;
-	      counter	++;
-//
-	      if (counter > T_null + 50) { // hopeless
+
+	      default:			// does not happen
+	      case NO_END_OF_DIP_FOUND:
 	         goto notSynced;
-	      }
 	   }
 /**
   *	The end of the null period is identified, the actual end
@@ -242,13 +181,13 @@ SyncOnPhase:
   *	is part of the samples read.
   */
 	myReader. getSamples (ofdmBuffer. data (),
-	                        T_u, coarseOffset + fineCorrector);
+	                        T_u, coarseOffset + fineOffset);
 //
 //	and then, call upon the phase synchronizer to verify/compute
 //	the real "first" sample
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
 	   if (startIndex < 0) { // no sync, try again
-	      if (!f2Correction) {
+	      if (!correctionNeeded) {
 	         setSyncLost ();
 	      }
 	      goto notSynced;
@@ -260,7 +199,7 @@ SyncOnPhase:
 	   memmove (ofdmBuffer. data (),
 	            &((ofdmBuffer. data ()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
-	   ofdmBufferIndex	= T_u - startIndex;
+	   int ofdmBufferIndex	= T_u - startIndex;
 
 Block_0:
 /**
@@ -273,13 +212,14 @@ Block_0:
 	   setSynced (true);
 	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
-	                           coarseOffset + fineCorrector);
+	                           coarseOffset + fineOffset);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
+	   my_mscHandler.  processBlock_0 (ofdmBuffer. data ());
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-	   f2Correction	= !my_ficHandler. syncReached ();
-	   if (f2Correction) {
+	   correctionNeeded	= !my_ficHandler. syncReached ();
+	   if (correctionNeeded) {
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
 	      if (correction != 100) {
@@ -293,53 +233,42 @@ Block_0:
   */
 Data_blocks:
 /**
-  *	The first ones are the FIC blocks. We immediately
+  *	The first ones are the FIC blocks these are handled within
+  *	the thread executing this "task", the other blocks
+  *	are passed on to be handled in the mscHandler, running
+  *	in a different thread.
+  *	 We immediately
   *	start with building up an average of the phase difference
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
 	   FreqCorr	= std::complex<float> (0, 0);
-	   for (ofdmSymbolCount = 1;
-	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
+	   for (int ofdmSymbolCount = 1;
+	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
+	      std::vector<int16_t> ibits;
+	      ibits. resize (2 * params. get_carriers ());
 	      myReader. getSamples (ofdmBuffer. data (),
-	                              T_s, coarseOffset + fineCorrector);
+	                              T_s, coarseOffset + fineOffset);
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
-	      my_ofdmDecoder. decodeFICblock (ofdmBuffer, ofdmSymbolCount);
+	      if (ofdmSymbolCount < 4) {
+	         my_ofdmDecoder. decode (ofdmBuffer,
+	                                ofdmSymbolCount, ibits. data ());
+	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
+	      }
+	      my_mscHandler. process_Msc  (&((ofdmBuffer. data ()) [T_g]),
+	                                                    ofdmSymbolCount);
 	   }
-
-///	and similar for the (params -> L - 4) MSC blocks
-	   for (ofdmSymbolCount = 4;
-	        ofdmSymbolCount <  (uint16_t)nrBlocks;
-	        ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer. data (),
-	                              T_s, coarseOffset + fineCorrector);
-	      for (i = (int32_t)T_u; i < (int32_t)T_s; i ++) 
-	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-
-	      my_ofdmDecoder. decodeMscblock (ofdmBuffer, ofdmSymbolCount);
-	   }
-
-NewOffset:
-///	we integrate the newly found frequency error with the
-///	existing frequency error.
-	   fineCorrector += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
-//
 /**
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	   syncBufferIndex	= 0;
-	   cLevel		= 0;
 	   myReader. getSamples (ofdmBuffer. data (),
-	                         T_null, coarseOffset);
+	                         T_null, coarseOffset + fineOffset);
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 
- *	Here we are looking at the CIFcount of the previous frame
- *	Note that tiiSwitch == true implies switching off the "normal"
- *	spectrum
  */
 	   if (params. get_dabMode () == 1) {
 	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
@@ -351,13 +280,10 @@ NewOffset:
 	            if (mainId > 0)
 	              showCoordinates (mainId, subId);
 	         }
-	         if (tiiSwitch) {
-	            if ((tii_counter & 02) != 0) {
-#ifdef	HAVE_SPECTRUM
-	               spectrumBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
-	               show_Spectrum (1);
-#endif
-	            }
+	         if ((tii_counter & 02) != 0) {
+	            tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (),
+	                                                              T_u);
+	            show_tii (1);
 	         }
 	         if (tii_counter >= tii_delay)
 	            tii_counter = 1;
@@ -368,25 +294,28 @@ NewOffset:
   *	samples ahead. Before going for the next frame, we
   *	we just check the fineCorrector
   */
-	   if (fineCorrector > carrierDiff / 2) {
+	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
-	      fineCorrector -= carrierDiff;
+	      fineOffset -= carrierDiff;
 	   }
 	   else
-	   if (fineCorrector < -carrierDiff / 2) {
+	   if (fineOffset < -carrierDiff / 2) {
 	      coarseOffset -= carrierDiff;
-	      fineCorrector += carrierDiff;
+	      fineOffset += carrierDiff;
 	   }
+
+//NewOffset:
+///	we integrate the newly found frequency error with the
+///	existing frequency error.
+	   fineOffset += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 ReadyForNewFrame:
 ///	and off we go, up to the next frame
-	   counter	= 0;
 	   goto SyncOnPhase;
 	}
 	catch (int e) {
 	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
-	my_ofdmDecoder. stop ();
 	my_mscHandler.  stop ();
 	my_ficHandler.  stop ();
 }
@@ -396,8 +325,6 @@ void	dabProcessor:: reset	(void) {
 	while (isRunning ())
 	   wait ();
 	usleep (10000);
-	my_ofdmDecoder. stop ();
-	my_mscHandler.  reset ();
 	my_ficHandler.  reset ();
 	start ();
 }
@@ -407,18 +334,16 @@ void	dabProcessor::stop	(void) {
 	while (isRunning ())
 	   wait ();
 	usleep (10000);
-	my_ofdmDecoder. stop ();
-	my_mscHandler.  reset ();
 	my_ficHandler.  reset ();
 }
 
 void	dabProcessor::coarseCorrectorOn (void) {
-	f2Correction 	= true;
+	correctionNeeded 	= true;
 	coarseOffset	= 0;
 }
 
 void	dabProcessor::coarseCorrectorOff (void) {
-	f2Correction	= false;
+	correctionNeeded	= false;
 	theRig	-> setOffset (coarseOffset);
 }
 
@@ -427,9 +352,6 @@ void	dabProcessor::set_scanMode	(bool b) {
 	attempts	= 0;
 }
 
-//	we could have derive the dab processor from fic and msc handlers,
-//	however, from a logical point of view they are more delegates than
-//	parents.
 uint8_t dabProcessor::kindofService           (QString &s) {
 	return my_ficHandler. kindofService (s);
 }
@@ -497,16 +419,6 @@ void	dabProcessor::startDumping	(SNDFILE *f) {
 
 void	dabProcessor::stopDumping	(void) {
 	myReader. stopDumping ();
-}
-
-void	dabProcessor::set_tiiSwitch	(bool theSwitch) {
-	fprintf (stderr, "theSwitch = %d\n", theSwitch);
-#ifdef	TII_GUESSING
-	if (params. get_dabMode () == 1) {
-	   tiiSwitch = theSwitch;
-	   myReader. setSpectrum (!tiiSwitch);
-	}
-#endif
 }
 
 bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {

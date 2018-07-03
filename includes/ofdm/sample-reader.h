@@ -46,9 +46,7 @@ Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
 	                         	virtualInput *theRig
-#ifdef	HAVE_SPECTRUM
 	                         	,RingBuffer<std::complex<float>> *spectrumBuffer
-#endif
 	       				);
 
 			~sampleReader		(void);
@@ -59,16 +57,12 @@ public:
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping	(void);
-	        void	setSpectrum	(bool);
 private:
-	        bool	spectrum;
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;
-#ifdef	HAVE_SPECTRUM
 		RingBuffer<std::complex<float>> *spectrumBuffer;
 		std::vector<std::complex<float>> localBuffer;
 		int32_t		localCounter;
-#endif
 		int32_t		bufferSize;
 		int32_t		currentPhase;
 		std::complex<float>	*oscillatorTable;

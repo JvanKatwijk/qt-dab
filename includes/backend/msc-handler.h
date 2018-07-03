@@ -23,26 +23,33 @@
 #ifndef	__MSC_HANDLER__
 #define	__MSC_HANDLER__
 
+#include	<QThread>
+#include	<QWaitCondition>
 #include	<QMutex>
+#include	<QSemaphore>
+#include	<atomic>
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<stdio.h>
 #include	<vector>
-#include	<atomic>
 #include	"dab-constants.h"
-#include	"ringbuffer.h"
 #include	"dab-params.h"
+#include        "fft-handler.h"
+#include        "ringbuffer.h"
+#include        "phasetable.h"
+#include        "freq-interleaver.h"
 
 class	RadioInterface;
 class	virtualBackend;
 
-class mscHandler  {
+class mscHandler: public QThread  {
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
 	                                         QString);
 			~mscHandler		(void);
-	void		process_mscBlock	(std::vector<int16_t>, int16_t);
+	void		processBlock_0		(std::complex<float> *);
+	void		process_Msc		(std::complex<float> *, int);
 	void		set_audioChannel	(audiodata *,
 	                                           RingBuffer<int16_t> *);
 	void		set_dataChannel         (packetdata *,
@@ -55,10 +62,17 @@ public:
 //	This function will kill
 	void		stop			(void);
 private:
+	void		process_mscBlock	(std::vector<int16_t>, int16_t);
+
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	QString		picturesPath;
 	dabParams	params;
+	fftHandler      my_fftHandler;
+	std::complex<float>     *fft_buffer;
+	std::vector<complex<float>>     phaseReference;
+
+        interLeaver     myMapper;
 	QMutex		locker;
 	bool		audioService;
 	std::vector<virtualBackend *>theBackends;
@@ -83,9 +97,17 @@ private:
 	int16_t		BitsperBlock;
 	int16_t		numberofblocksperCIF;
 	int16_t		blockCount;
-
-	int16_t		**interleaveData;
-	int16_t		interleaverIndex;
+	void            run             (void);
+        std::atomic<bool>       running;
+        std::complex<float>     **command;
+        int16_t         amount;
+        int16_t         currentBlock;
+        void            processBlock_0	(void);
+        void            processMsc	(int32_t n);
+        QSemaphore      bufferSpace;
+        QWaitCondition  commandHandler;
+        QMutex          helper;
+	int		nrBlocks;
 };
 
 #endif

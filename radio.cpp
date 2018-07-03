@@ -70,12 +70,9 @@
 #include	"hackrf-handler.h"
 #endif
 #include	"ui_technical_data.h"
-#ifdef	HAVE_SPECTRUM
-#include	"spectrum-handler.h"
-#endif
-#ifdef	IMPULSE_RESPONSE
+#include	"spectrum-viewer.h"
 #include	"impulse-viewer.h"
-#endif
+#include	"tii-viewer.h"
 
 std::vector<size_t> get_cpu_times (void) {
 	std::ifstream proc_stat ("/proc/stat");
@@ -114,13 +111,10 @@ QString h;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
 	dabBand			= BAND_III;
-#ifdef  HAVE_SPECTRUM
         spectrumBuffer          = new RingBuffer<std::complex<float>> (2 * 32768);
 	iqBuffer		= new RingBuffer<std::complex<float>> (2 * 1536);
-#endif
-#ifdef	IMPULSE_RESPONSE
 	responseBuffer		= new RingBuffer<float> (32768);
-#endif
+	tiiBuffer		= new RingBuffer<std::complex<float>> (32768);
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 
 /**	threshold is used in the phaseReference class 
@@ -165,9 +159,6 @@ QString h;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
-#ifndef	TII_GUESSING
-	tiiButton		-> hide ();
-#endif
 	dataDisplay	= new QFrame (NULL);
 	techData. setupUi (dataDisplay);
 	show_data		= false;
@@ -176,10 +167,13 @@ QString h;
 	techData. cpuMonitor	-> hide ();
 #endif
 //
-//	Where do we leave the audio out?
 #ifdef	DATA_STREAMER
 	dataStreamer		= new tcpServer (dataPort);
+#else
+	(void)dataPort;
 #endif
+
+//	Where do we leave the audio out?
 	streamoutSelector	-> hide ();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
@@ -203,23 +197,14 @@ QString h;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice ();
 #endif
 //
-//	Showing a spectrum over the WiFi when running the dab software
-//	on an RPI 2 is not a great success
-#ifdef	HAVE_SPECTRUM
-        spectrumHandler = new spectrumhandler (this, dabSettings,
+	my_spectrumViewer	= new spectrumViewer (this, dabSettings,
 	                                       spectrumBuffer,
 	                                       iqBuffer);
-        spectrumHandler -> show ();
-#endif
 
-//
-//	Experimental stuff
-#ifdef	IMPULSE_RESPONSE
 	my_impulseViewer	= new impulseViewer (this,
 	                                             responseBuffer);
-#else
-	show_irButton	-> hide ();
-#endif
+
+	my_tiiViewer		= new tiiViewer (this, tiiBuffer);
 //
 //	restore some settings from previous incarnations
 	QString t       =
@@ -232,11 +217,7 @@ QString h;
 
         theBand. setupChannels  (channelSelector, dabBand);
 
-        t       = dabSettings   -> value ("dabMode", 1). toString ();
-        k       = modeSelector -> findText (t);
-        if (k != -1)
-           modeSelector -> setCurrentIndex (k);
-//
+        dabMode       = dabSettings   -> value ("dabMode", "Mode 1"). toString ();
 //
 	QPalette p	= techData. ficError_display -> palette ();
 	p. setColor (QPalette::Highlight, Qt::green);
@@ -266,10 +247,6 @@ QString h;
 	ensemble. setStringList (Services);
 	ensembleDisplay	-> setModel (&ensemble);
 //
-//	The connects:
-	connect (quitButton, SIGNAL (clicked ()),
-	         this, SLOT (TerminateProcess (void)));
-
 	connect (streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 //	
@@ -321,7 +298,7 @@ QString h;
 	h               =
                    dabSettings -> value ("device", "no device"). toString ();
 	k               = deviceSelector -> findText (h);
-	fprintf (stderr, "%d %s\n", k, h. toUtf8 (). data ());
+//	fprintf (stderr, "%d %s\n", k, h. toUtf8 (). data ());
         if (k != -1) {
            deviceSelector       -> setCurrentIndex (k);
            inputDevice	= setDevice (deviceSelector -> currentText ());
@@ -337,10 +314,8 @@ QString h;
 	   connect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (doStart (QString)));
 }
-/**
-  *	The actual work is done elsewhere: the driver for
-  *	all this action is the dabProcessor.
-  */
+
+
 void	RadioInterface::doStart (QString dev) {
 	inputDevice = setDevice	(deviceSelector -> currentText ());
 	if (inputDevice == NULL) {
@@ -385,9 +360,10 @@ int32_t	frequency;
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
                     this,  SLOT (doStart (QString)));
 //
-//	this might be the case as well, so just to be sure we
-//	disconnect here. It would have been helpful to have a function
-//	testing whether or not a connection exists
+//	Just to be sure we disconnect here.
+//	It would have been helpful to have a function
+//	testing whether or not a connection exists, we need a kind
+//	of "reset"
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
                     this,  SLOT (newDevice (QString)));
 
@@ -397,18 +373,15 @@ int32_t	frequency;
 //	It is time for some action
 	my_dabProcessor = new dabProcessor   (this,
 	                                      inputDevice,
-	                                      convert (modeSelector -> currentText ()),
+	                                      convert (dabMode),
 	                                      threshold,
 	                                      diff_length,
 	                                      tii_delay,
-	                                      picturesPath
-#ifdef	IMPULSE_RESPONSE
-	                                      ,responseBuffer
-#endif
-#ifdef	HAVE_SPECTRUM
-	                                      ,spectrumBuffer,
-	                                       iqBuffer
-#endif
+	                                      picturesPath,
+	                                      responseBuffer,
+	                                      spectrumBuffer,
+	                                      iqBuffer,
+	                                      tiiBuffer
 	                                      );
 
 	if (has_presetName && (presetName != QString (""))) {
@@ -445,9 +418,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                      channelSelector -> currentText ());
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText ());
-	s	-> setValue ("saveSlides", saveSlides ? 1 : 0);
-	s	-> setValue ("showSlides", showSlides ? 1 : 0);
-	s	-> setValue ("dabMode", modeSelector -> currentText ());
 	s	-> setValue ("dabBand", bandSelector -> currentText ());
 	s	-> sync ();
 }
@@ -787,7 +757,6 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	   }
 	}
 }
-
 //
 //	This function is only used in the Gui to clear
 //	the details of a selection
@@ -870,14 +839,13 @@ void	RadioInterface::TerminateProcess (void) {
 	   delete		my_dabProcessor;
 	fprintf (stderr, "deleted dabProcessor\n");
 	delete		dataDisplay;
-#ifdef	HAVE_SPECTRUM
-	delete	spectrumHandler;
+	delete	my_spectrumViewer;
 	delete	spectrumBuffer;
 	delete	iqBuffer;
-#endif
-#ifdef	IMPULSE_RESPONSE
 	delete	my_impulseViewer;
-#endif
+	delete	responseBuffer;
+	delete	my_tiiViewer;
+	delete	tiiBuffer;
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
 	pictureLabel = NULL;		// signals may be pending, so careful
@@ -958,7 +926,9 @@ void	RadioInterface::autoCorrector_on (void) {
 /**
   *	\brief setDevice
   *	setDevice is called during the start up phase
-  *	of the dab program, 
+  *	of the dab program, and from within newDevice,
+  *	that would/should have taken care of proper
+  *	stopping service handling
   */
 virtualInput	*RadioInterface::setDevice (QString s) {
 QString	file;
@@ -1127,10 +1097,7 @@ virtualInput	*inputDevice	= NULL;
 	   return NULL;
 	}
 
-#ifdef	HAVE_SPECTRUM
-	spectrumHandler	-> setBitDepth (inputDevice -> bitDepth ());
-	fprintf (stderr, "bitDepth set to %d\n", inputDevice -> bitDepth ());
-#endif
+	my_spectrumViewer	-> setBitDepth (inputDevice -> bitDepth ());
 	return inputDevice;
 }
 //
@@ -1166,33 +1133,6 @@ void	RadioInterface::newDevice (QString deviceName) {
 	doStart ();		// will set running
 }
 
-void	RadioInterface::set_modeSelect (const QString &Mode) {
-	(void)Mode;		// we will enquire the selector
-	if (!running. load ())
-	   return;		// setting will be picked up
-
-	running. store (false);
-	inputDevice	-> stopReader ();
-	my_dabProcessor	-> stop ();
-	my_dabProcessor = new dabProcessor   (this,
-	                                      inputDevice,
-	                                      convert (modeSelector -> currentText ()),
-	                                      threshold,
-	                                      diff_length,
-	                                      tii_delay,
-	                                      picturesPath
-#ifdef	IMPULSE_RESPONSE		
-	                                      , responseBuffer
-#endif
-#ifdef	HAVE_SPECTRUM
-	                                      ,spectrumBuffer,
-	                                       iqBuffer
-#endif
-	                                      );
-	inputDevice	-> restartReader ();
-	my_dabProcessor	-> start ();
-	running. store (true);
-}
 
 void	RadioInterface::set_bandSelect (QString s) {
 bool	localRunning = running. load ();
@@ -1231,6 +1171,7 @@ QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString ();
 //
 //	Might be called from the GUI as well as from an internal call
 void	RadioInterface::selectService (QString s) {
+	serviceLabel -> setText (" ");
 	if ((my_dabProcessor -> kindofService (s) != AUDIO_SERVICE) &&
 	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
 	return;
@@ -1261,7 +1202,7 @@ void	RadioInterface::selectService (QString s) {
 	         show_techData (ensembleLabel, s, 
 	                       inputDevice -> getVFOFrequency () / 1000000.0,
 	                       &d);
-
+	         serviceLabel -> setText (s);
 	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
 	         for (int i = 1; i < 10; i ++) {
 	            packetdata pd;
@@ -1334,34 +1275,28 @@ void	RadioInterface::selectService (QString s) {
 }
 //
 
-#ifdef	HAVE_SPECTRUM
 //	signal, received from ofdm_decoder that a buffer is filled
 //	with amount values ready for display
 void	RadioInterface::showIQ	(int amount) {
-	if (spectrumHandler != NULL)
-	   spectrumHandler	-> showIQ (amount);
+	my_spectrumViewer	-> showIQ (amount);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
-	if (spectrumHandler != NULL ) 
-	   spectrumHandler -> showSpectrum (amount,
+	my_spectrumViewer -> showSpectrum (amount,
 				            inputDevice -> getVFOFrequency ());
 }
 
-#ifdef	__QUALITY
 void	RadioInterface::showQuality	(float q) {
-	if (spectrumHandler != NULL)
-	   spectrumHandler	-> showQuality (q);
+	my_spectrumViewer	-> showQuality (q);
 }
-#endif
-#endif
 
-#ifdef	IMPULSE_RESPONSE
 void	RadioInterface::showImpulse (int amount) {
 	my_impulseViewer -> showImpulse (amount);
 }
-#endif
 //
+void	RadioInterface::show_tii (int amount) {
+	my_tiiViewer	-> showSpectrum (amount);
+}
 //
 void	RadioInterface::set_audioDump (void) {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
@@ -1430,7 +1365,6 @@ uint8_t	RadioInterface::convert (QString s) {
 void	RadioInterface::showButtons	(void) {
 	scanButton	-> show ();
 	channelSelector	-> show	();
-	modeSelector	-> show ();
 	bandSelector	-> show ();
 	nextChannelButton	-> show ();
 	techData. frequency	-> show ();
@@ -1440,7 +1374,6 @@ void	RadioInterface::showButtons	(void) {
 void	RadioInterface::hideButtons	(void) {
 	scanButton	-> hide ();
 	channelSelector	-> hide ();
-	modeSelector	-> hide ();
 	bandSelector	-> hide ();
 	nextChannelButton	-> hide ();
 	techData. frequency	-> hide ();
@@ -1579,19 +1512,26 @@ void	RadioInterface::set_nextChannel (void) {
 }
 
 void	RadioInterface::set_tiiSwitch (void) {
-	tiiSwitch	= !tiiSwitch;
-	my_dabProcessor	-> set_tiiSwitch (tiiSwitch);
+	if (my_tiiViewer -> isHidden ())
+	   my_tiiViewer -> show ();
+	else
+	   my_tiiViewer -> hide ();
 }
 
-#ifdef	IMPULSE_RESPONSE
 void	RadioInterface::set_irSwitch (void) {
 	if (my_impulseViewer -> isHidden ())
 	   my_impulseViewer	-> show ();
 	else
 	   my_impulseViewer	-> hide ();
 }
-#endif
-//
+
+void	RadioInterface::set_spectrumSwitch (void) {
+	if (my_spectrumViewer -> isHidden ())
+	   my_spectrumViewer -> show ();
+	else
+	   my_spectrumViewer -> hide ();
+}
+
 //
 //	When changing (or setting) a device, we do not want anybody
 //	to have the buttons on the GUI touched, so
@@ -1610,8 +1550,6 @@ void	RadioInterface::connectGUI (void) {
 	         this, SLOT (set_Scanning (void)));
 	connect (nextChannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_nextChannel (void)));
-	connect (modeSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_modeSelect (const QString &)));
 	connect (bandSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_bandSelect (const QString &)));
 	connect (dumpButton, SIGNAL (clicked (void)),
@@ -1620,10 +1558,10 @@ void	RadioInterface::connectGUI (void) {
 	         this, SLOT (set_audioDump (void)));
 	connect (tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_tiiSwitch (void)));
-#ifdef	IMPULSE_RESPONSE
 	connect (show_irButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_irSwitch (void)));
-#endif
+	connect (show_spectrumButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_spectrumSwitch (void)));
 }
 
 void	RadioInterface::disconnectGUI (void) {
@@ -1639,8 +1577,6 @@ void	RadioInterface::disconnectGUI (void) {
 	               this, SLOT (set_Scanning (void)));
 	   disconnect (nextChannelButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_nextChannel (void)));
-	   disconnect (modeSelector, SIGNAL (activated (const QString &)),
-	               this, SLOT (set_modeSelect (const QString &)));
 	   disconnect (bandSelector, SIGNAL (activated (const QString &)),
 	               this, SLOT (set_bandSelect (const QString &)));
 	   disconnect (dumpButton, SIGNAL (clicked (void)),
@@ -1649,10 +1585,8 @@ void	RadioInterface::disconnectGUI (void) {
 	               this, SLOT (set_audioDump (void)));
 	   disconnect (tiiButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_tiiSwitch (void)));
-#ifdef	IMPULSE_RESPONSE
 	   disconnect (show_irButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_irSwitch (void)));
-#endif
 }
 
 void	RadioInterface::show_techData (QString		ensembleLabel, 
@@ -1695,3 +1629,20 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	if (show_data)
 	   dataDisplay -> show ();
 }
+
+#include <QCloseEvent>
+void RadioInterface::closeEvent (QCloseEvent *event) {
+
+        QMessageBox::StandardButton resultButton =
+                        QMessageBox::question (this, "dabRadio",
+                                               tr("Are you sure?\n"),
+                                               QMessageBox::No | QMessageBox::Yes,
+                                               QMessageBox::Yes);
+        if (resultButton != QMessageBox::Yes) {
+           event -> ignore();
+        } else {
+           TerminateProcess ();
+           event -> accept ();
+        }
+}
+

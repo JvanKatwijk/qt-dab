@@ -346,8 +346,8 @@ int16_t	altCarrier	= -1;
 	}
 
 	if (startCarrier != altCarrier) {
-//	   fprintf (stderr, "alternative start carriers %d %d\n",
-//	                                        startCarrier, altCarrier);
+	   fprintf (stderr, "alternative start carriers %d %d\n",
+	                                        startCarrier, altCarrier);
 	                                   
 	   return;
 	}

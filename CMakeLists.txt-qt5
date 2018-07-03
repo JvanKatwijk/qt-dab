@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-1.1-alpha)
+set (objectName qt-dab-2.0)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -70,12 +70,6 @@ if(DEFINED HACKRF)
 	set(HACKRF true)
 endif ()
 
-if (DEFINED SPECTRUM)
-   set(SPECTRUM true)
-   set(TII_GUESSING true)
-   set(IMPULSE_RESPONSE true)
-endif ()
-
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
 endif ()
@@ -109,6 +103,13 @@ add_definitions (-DPRESET_NAME)
 	include_directories (
 	  ${Qt5Network_INCLUDE_DIRS}
 	)
+
+	find_package(Qwt)
+	if (NOT QWT_FOUND)
+	   message(FATAL_ERROR "please install qwt library")
+	endif ()
+	include_directories ( ${QWT_INCLUDE_DIRS})
+	list(APPEND extraLibs ${QWT_LIBRARIES})
 
         find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
@@ -159,29 +160,36 @@ add_definitions (-DPRESET_NAME)
 	           ./includes
 	           ./includes/ofdm
 	           ./includes/backend
-	           ./includes/backend/viterbi_768
 	           ./includes/backend/audio
 	           ./includes/backend/data
 	           ./includes/backend/data/journaline
 	           ./includes/backend/data/mot
-	           ./includes/various
+	           ./includes/support
+	           ./includes/support/viterbi_768
 	           ./includes/output
 	           ./includes/scopes-qwt6
 	           ./devices
 	           ./devices/rawfiles
 	           ./devices/wavfiles
+	           ./spectrum-viewer
+	           ./impulse-viewer
+	           ./tii-viewer
 	           /usr/include/
 	)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
              ./includes/country-codes.h
-             ./includes/ofdm/sample-reader.h
 	     ./includes/dab-constants.h
+             ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
-	     ./includes/backend/viterbi_768/viterbi-768.h
+	     ./includes/ofdm/fib-processor.cpp
+	     ./includes/ofdm/fic-handler.cpp
+	     ./includes/ofdm/tii_table.h
+	     ./includes/ofdm/tii_detector.h
+	     ./includes/ofdm/timesyncer.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
 	     ./includes/backend/eep-protection.h
@@ -220,15 +228,18 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/newconverter.h
-	     ./includes/various/fft-handler.h
-	     ./includes/various/ringbuffer.h
-	     ./includes/various/Xtan2.h
-	     ./includes/various/dab-params.h
-	     ./includes/various/band-handler.h
-	     ./includes/various/text-mapper.h
-	     ./includes/various/ensemble-printer.h
-	     ./includes/ofdm/tii_table.h
-	     ./includes/ofdm/tii_detector.h
+	     ./includes/support/fft-handler.h
+	     ./includes/support/ringbuffer.h
+	     ./includes/support/Xtan2.h
+	     ./includes/support/dab-params.h
+	     ./includes/support/band-handler.h
+	     ./includes/support/text-mapper.h
+	     ./includes/support/ensemble-printer.h
+	     ./includes/support/viterbi_768/viterbi-768.h
+	     ./includes/scopes-qwt6/iqdisplay.h
+	     ./spectrum-viewer/spectrum-viewer.h 
+	     ./impulse-viewer/impulse-viewer.h 
+	     ./tii-viewer/tii-viewer.h
 	)
 
 	set (${objectName}_SRCS
@@ -240,13 +251,14 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
-	     ./src/backend/viterbi_768/viterbi-768.cpp
-	     ./src/backend/viterbi_768/spiral-no-sse.c
-	     ./src/backend/fic-handler.cpp
+	     ./src/ofdm/fib-processor.cpp
+	     ./src/ofdm/fic-handler.cpp
+	     ./src/ofdm/tii_table.cpp
+	     ./src/ofdm/tii_detector.cpp
+	     ./src/ofdm/timesyncer.cpp
 	     ./src/backend/protection.cpp
 	     ./src/backend/eep-protection.cpp
 	     ./src/backend/uep-protection.cpp
-	     ./src/backend/fib-processor.cpp
 	     ./src/backend/firecode-checker.cpp
 	     ./src/backend/frame-processor.cpp
 	     ./src/backend/protTables.cpp
@@ -282,14 +294,18 @@ add_definitions (-DPRESET_NAME)
 	     ./src/output/audio-base.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
-	     ./src/various/fft-handler.cpp
-	     ./src/various/Xtan2.cpp
-	     ./src/various/dab-params.cpp
-	     ./src/various/band-handler.cpp
-	     ./src/various/text-mapper.cpp
-	     ./src/various/ensemble-printer.cpp
-	     ./src/ofdm/tii_table.cpp
-	     ./src/ofdm/tii_detector.cpp
+	     ./src/support/fft-handler.cpp
+	     ./src/support/Xtan2.cpp
+	     ./src/support/dab-params.cpp
+	     ./src/support/band-handler.cpp
+	     ./src/support/text-mapper.cpp
+	     ./src/support/ensemble-printer.cpp
+	     ./src/support/viterbi_768/viterbi-768.cpp
+	     ./src/support/viterbi_768/spiral-no-sse.c
+	     ./src/scopes-qwt6/iqdisplay.cpp 
+	     ./spectrum-viewer/spectrum-viewer.cpp 
+	     ./impulse-viewer/impulse-viewer.cpp 
+	     ./tii-viewer/tii-viewer.cpp
 	)
 
 	set (${objectName}_MOCS
@@ -298,8 +314,10 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/ofdm/phasereference.h
-	     ./includes/backend/fic-handler.h
-	     ./includes/backend/fib-processor.h
+	     ./includes/ofdm/fic-handler.h
+	     ./includes/ofdm/fib-processor.h
+	     ./includes/ofdm/tii_detector.h
+	     ./includes/ofdm/tii_table.h
 	     ./includes/backend/data-backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp2processor.h
@@ -315,12 +333,20 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/wavfiles/wavfiles.h
-	     ./includes/ofdm/tii_detector.h
-	     ./includes/ofdm/tii_table.h
+	     ./includes/scopes-qwt6/iqdisplay.h
+	     ./spectrum-viewer/spectrum-viewer.h 
+	     ./impulse-viewer/impulse-viewer.h 
+ 	     ./tii-viewer/tii-viewer.h
 	)
 
 	set (${objectName}_UIS
-	        ${${objectName}_UIS} ./forms/dabradio.ui ./forms/technical_data.ui)
+	        ${${objectName}_UIS}
+	     ./forms/dabradio.ui
+	     ./forms/technical_data.ui
+	     ./spectrum-viewer/scopewidget.ui
+	     ./impulse-viewer/impulse-widget.ui
+	     ./tii-viewer/tii-widget.ui
+	   )
 
 	set (${objectName}_MOCS
 	        ${${objectName}_MOCS} ./radio.h)
@@ -550,51 +576,6 @@ add_definitions (-DPRESET_NAME)
 	   set (RTLTCP_lib Qt5::Network)
 	   add_definitions (-DHAVE_RTL_TCP)
 	endif (RTLTCP)
-
-	if (SPECTRUM)
-	   find_package(Qwt)
-           if (NOT QWT_FOUND)
-               message(FATAL_ERROR "please install qwt library")
-           endif ()
-	   include_directories ( ${QWT_INCLUDE_DIRS})
-           list(APPEND extraLibs ${QWT_LIBRARIES})
-	   set (${objectName}_UIS
-	        ${${objectName}_UIS}
-	        ./optional-scope/scopewidget.ui
-	        ./optional-ir/impulse-widget.ui
-	   )
-
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ./optional-scope/spectrum-handler.h
-	        ./includes/scopes-qwt6/iqdisplay.h
-	        ./optional-ir/impulse-viewer.h
-	   )
-
-	   include_directories (
-	      ./optional-scope
-	      ./optional-ir
-	   )
-
-	   set ($(objectName)_HDRS
-	        ${${objectName}_HDRS}
-	        ./optional-scope/spectrum-handler.h
-	        ./includes/scopes-qwt6/iqdisplay.h
-	        ./optional-ir/impulse-viewer.h
-	   )
-
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ./optional-scope/spectrum-handler.cpp
-	        ./src/scopes-qwt6/iqdisplay.cpp
-	        ./optional-ir/impulse-viewer.cpp
-	   )
-
-	   add_definitions (-DHAVE_SPECTRUM)
-	   add_definitions (-D__QUALITY)
-	   add_definitions (-DTII_GUESSING)
-	   add_definitions (-DIMPULSE_RESPONSE)
-	endif (SPECTRUM)
 
 	if (TRY_EPG)
 	   set ($(objectName)_HDRS

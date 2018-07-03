@@ -32,10 +32,11 @@
 #include	"viterbi-768.h"
 #include	<QObject>
 #include	"fib-processor.h"
-#include	"dab-params.h"
+//#include	"dab-params.h"
 
 
 class	RadioInterface;
+class	dabParams;
 
 class ficHandler: public fib_processor {
 Q_OBJECT
@@ -47,7 +48,7 @@ public:
 	void	reset			(void);
 private:
 	viterbi_768	myViterbi;
-	dabParams	params;
+//	dabParams	params;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];

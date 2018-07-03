@@ -33,59 +33,161 @@
 //	a service is selected or not. 
 
 #define	CUSize	(4 * 16)
+static int cifTable [] = {18, 72, 0, 36};
+
 //	Note CIF counts from 0 .. 3
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
-	                                 uint8_t	mode,
+	                                 uint8_t	dabMode,
 	                                 QString	picturesPath) :
-	                                       params (mode) {
+	                                       params (dabMode),
+	                                       my_fftHandler (dabMode),
+	                                       myMapper (dabMode),
+	                                       bufferSpace (params. get_L ()){
 	myRadioInterface	= mr;
 	this	-> picturesPath	= picturesPath;
 	cifVector. resize (55296);
 	theBackends. push_back (new virtualBackend (0, 0));
 	BitsperBlock		= 2 * params. get_carriers ();
-	switch (mode) {
-	   case 4:	// 2 CIFS per 76 blocks
-	      numberofblocksperCIF	= 36;
-	      break;
+	nrBlocks		= params. get_L ();
 
-	   case 1:	// 4 CIFS per 76 blocks
-	      numberofblocksperCIF	= 18;
-	      break;
+	command                 = new std::complex<float> * [nrBlocks];
+	
+	for (int i = 0; i < nrBlocks; i ++)
+	   command [i] = new std::complex<float> [params. get_T_u ()];
+	amount          = 0;
+	fft_buffer                      = my_fftHandler. getVector ();
+	phaseReference                  .resize (params. get_T_u ());
 
-	   case 2:	// 1 CIF per 76 blocks
-	      numberofblocksperCIF	= 72;
-	      break;
-
-	   default:
-	      numberofblocksperCIF	= 18;
-	      break;
-	}
+	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
+//	switch (dabMode) {
+//	   case 4:	// 2 CIFS per 76 blocks
+//	      numberofblocksperCIF	= 36;
+//	      break;
+//
+//	   case 1:	// 4 CIFS per 76 blocks
+//	      numberofblocksperCIF	= 18;
+//	      break;
+//
+//	   case 2:	// 1 CIF per 76 blocks
+//	      numberofblocksperCIF	= 72;
+//	      break;
+//
+//	   default:
+//	      numberofblocksperCIF	= 18;
+//	      break;
+//	}
 	work_to_be_done. store (false);
 }
 
 		mscHandler::~mscHandler	(void) {
-	reset ();
+	running. store (false);
+	while (isRunning ())
+	   usleep (100);
+	locker. lock ();
+	work_to_be_done. store (false);
+	for (int i = 0; i < theBackends. size (); i ++) {
+	   theBackends [i] -> stopRunning ();
+	   delete theBackends [i];
+	}
+	locker. unlock ();
+	theBackends. resize (0);
 }
+
 //
+//	Input is put into a buffer, a the code in a separate thread
+//	will handle the data from the buffer
+void	mscHandler::processBlock_0 (std::complex<float> *b) {
+	bufferSpace. acquire (1);
+	memcpy (command [0], b,
+	            params. get_T_u () * sizeof (std::complex<float>));
+	helper. lock ();
+	amount ++;
+        commandHandler. wakeOne ();
+        helper. unlock ();
+}
+
+void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
+	bufferSpace. acquire (1);
+        memcpy (command [blkno], b,
+	            params. get_T_u () * sizeof (std::complex<float>));
+        helper. lock ();
+        amount ++;
+        commandHandler. wakeOne ();
+        helper. unlock ();
+}
+
+void    mscHandler::run        (void) {
+int	currentBlock	= 0;
+std::vector<int16_t> ibits;
+
+	running. store (true);
+	ibits. resize (BitsperBlock);
+        while (running. load ()) {
+           helper. lock ();
+           commandHandler. wait (&helper, 100);
+           helper. unlock ();
+           while ((amount > 0) && running. load ()) {
+	      memcpy (fft_buffer, command [currentBlock],
+	                 params. get_T_u () * sizeof (std::complex<float>));
+//
+//	block 3 and up are needed as basis for demodulation the "mext" block
+//	"our" msc blocks start with blkno 4
+	      my_fftHandler. do_FFT ();
+              if (currentBlock >= 4) {
+                 for (int i = 0; i < params. get_carriers (); i ++) {
+                    int16_t      index   = myMapper. mapIn (i);
+                    if (index < 0)
+                       index += params. get_T_u ();
+
+                    std::complex<float>  r1 = fft_buffer [index] *
+                                       conj (phaseReference [index]);
+                    float ab1    = jan_abs (r1);
+//      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
+//      we make the bits into softbits in the range -127 .. 127
+                    ibits [i]            =  - real (r1) / ab1 * 127.0;
+                    ibits [params. get_carriers () + i]
+	                                 =  - imag (r1) / ab1 * 127.0;
+                 }
+
+	         process_mscBlock (ibits, currentBlock);
+	      }
+	      memcpy (phaseReference. data (), fft_buffer,
+	                 params. get_T_u () * sizeof (std::complex<float>));
+              bufferSpace. release (1);
+              helper. lock ();
+              currentBlock = (currentBlock + 1) % (nrBlocks);
+              amount -= 1;
+              helper. unlock ();
+           }
+        }
+}
 //	This function is to be called between invocations of
 //	services
 //	It might be called several times, so ...
-	void	mscHandler::reset	(void) {
-	int i;
-	   locker. lock ();
-	   work_to_be_done. store (false);
-	   for (i = 0; i < theBackends. size (); i ++) {
-	      theBackends [i] -> stopRunning ();
-	      delete theBackends [i];
-	   }
-	   theBackends. resize (0);
-	   locker. unlock ();
+void	mscHandler::reset	(void) {
+int i;
+	running. store (false);
+	while (isRunning ())
+	   usleep (100);
+	locker. lock ();
+	work_to_be_done. store (false);
+	for (i = 0; i < theBackends. size (); i ++) {
+	   theBackends [i] -> stopRunning ();
+	   delete theBackends [i];
 	}
+	theBackends. resize (0);
+	bufferSpace. release (nrBlocks - bufferSpace. available ());
+	locker. unlock ();
+	start ();
+}
 
+void	mscHandler::stop	(void) {
+	reset ();
+}
 //
 //	Note, the set_xxx functions are called from within a
-//	different thread than the process_mscBlock method,
+//	different thread than the process_mscBlock method is,
 //	so, a little bit of locking seems wise while
 //	the actual changing of the settings is done in the
 //	thread executing process_mscBlock
@@ -114,10 +216,11 @@ void	mscHandler::set_dataChannel (packetdata	*d,
 }
 
 //
-//	add blocks. First is (should be) block 5, last is (should be) 76
+//	add blocks. First is (should be) block 4, last is (should be) 
+//	nrBlocks -1.
 //	Note that this method is called from within the ofdm-processor thread
 //	while the set_xxx methods are called from within the 
-//	gui thread
+//	gui thread, so some locking is added
 //
 //	Any change in the selected service will only be active
 //	during te next process_mscBlock call.
@@ -153,8 +256,4 @@ int16_t	i;
 	locker. unlock ();
 }
 //
-
-void	mscHandler::stop	(void) {
-	reset ();
-}
 
