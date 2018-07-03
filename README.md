@@ -183,7 +183,13 @@ For generating an executable under Ubuntu (16.04 or newer), you can put the foll
   cd host-master/build
   rm -rf *
   ```
-	
+
+  Note that in order for the libraries to be effective, ensure that
+* (a) the path "/usr/local/lib" is in the load library paths (i.e. it \
+is named in one of the ".conf" files in the "etc/ld.so.conf" directory
+* (b) a file exists in the "/etc/udev/rules.d" directory describing the device,\
+allowing "ordinary" users to access the device.
+
 3. Get a copy of the Qt-DAB sources
   ```
   git clone https://github.com/JvanKatwijk/qt-dab.git
