@@ -93,7 +93,7 @@ An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab
 Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 
 ------------------------------------------------------------------
-* widgets-and-scopes
+Widgets and scopes
 ------------------------------------------------------------------
 
 The picture above shows the execution of the Qt-DAB software. It shows
