@@ -93,7 +93,12 @@ add_definitions (-DPRESET_NAME)
 	find_package(Qt4 REQUIRED COMPONENTS QtCore QtNetwork)
 	include(${QT_USE_FILE})
 	find_package(QWT REQUIRED)
-
+	if (NOT QWT_FOUND)
+	   message(FATAL_ERROR "please install qwt library")
+	endif ()
+	include_directories ( ${QWT_INCLUDE_DIRS})
+	list(APPEND extraLibs ${QWT_LIBRARIES})
+	
         find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
             message(FATAL_ERROR "please install FFTW3")
