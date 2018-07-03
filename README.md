@@ -193,6 +193,7 @@ For generating an executable under Ubuntu (16.04 or newer), you can put the foll
 4.a. Check the installation path to qwt. If you were downloading it from http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in `qt-dab.pro` file (for other installation change it accordingly): 
   ```
   INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
+  ````
 
 4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on
 the cores of the processor. 
