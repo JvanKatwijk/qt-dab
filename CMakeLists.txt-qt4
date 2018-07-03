@@ -176,6 +176,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/freq-interleaver.h
 	     ./includes/ofdm/tii_table.h
              ./includes/ofdm/tii_detector.h
+             ./includes/ofdm/fic-handler.h
+             ./includes/ofdm/fib-processor.h
 	     ./includes/ofdm/timesyncer.h
 	     ./includes/backend/protection.h
 	     ./includes/backend/uep-protection.h
@@ -243,11 +245,11 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/tii_table.cpp
              ./src/ofdm/tii_detector.cpp
 	     ./src/ofdm/timesyncer.cpp
-	     ./src/backend/fic-handler.cpp
+	     ./src/ofdm/fic-handler.cpp
+	     ./src/ofdm/fib-processor.cpp
 	     ./src/backend/protection.cpp
 	     ./src/backend/eep-protection.cpp
 	     ./src/backend/uep-protection.cpp
-	     ./src/backend/fib-processor.cpp
 	     ./src/backend/firecode-checker.cpp
 	     ./src/backend/frame-processor.cpp
 	     ./src/backend/protTables.cpp
@@ -307,8 +309,8 @@ add_definitions (-DPRESET_NAME)
              ./includes/ofdm/phasereference.h
              ./includes/ofdm/tii_detector.h
              ./includes/ofdm/tii_table.h
-             ./includes/backend/fic-handler.h
-             ./includes/backend/fib-processor.h
+             ./includes/ofdm/fic-handler.h
+             ./includes/ofdm/fib-processor.h
 	     ./includes/backend/data-backend.h
              ./includes/backend/audio/faad-decoder.h
              ./includes/backend/audio/mp2processor.h
