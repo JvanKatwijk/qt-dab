@@ -81,7 +81,7 @@ endif ()
 
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
-#add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
+#add_definitions (-DTHREADED_BACKEND__)	# uncomment for use for an RPI
 
 ########################################################################
 
@@ -336,7 +336,7 @@ add_definitions (-DPRESET_NAME)
 	     ./forms/technical_data.ui
 	     ./spectrum-viewer/scopewidget.ui
 	     ./impulse-viewer/impulse-widget.ui
-	     ./tii-viewer/tii-widget.ui
+	     ./tii-viewer/tii-widget.ui)
 
 
 	set (${objectName}_MOCS
