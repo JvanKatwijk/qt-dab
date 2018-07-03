@@ -48,8 +48,8 @@ public:
 //	This one is used in the ofdm decoder
 	std::vector<std::complex<float>> refTable;
 private:
-	fftHandler	my_fftHandler;
 	dabParams	params;
+	fftHandler	my_fftHandler;
 	RingBuffer<float> *response;
 	std::vector<float> phaseDifferences;
 	int16_t		threshold;

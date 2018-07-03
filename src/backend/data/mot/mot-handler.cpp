@@ -213,15 +213,16 @@ int	index	= 0;
 	   }
 //
 //	if here, the cache is full, so we delete the oldest one
+	index	= 0;
 	for (i = 0; i < 15; i ++)
 	   if (motTable [i]. orderNumber < oldest) {
 	      oldest = motTable [i]. orderNumber;
 	      index = i;
 	   }
 
-	delete motTable [i]. motSlide;
-	motTable [i]. orderNumber 	= orderNumber ++;
-	motTable [i]. transportId 	= transportId;
-	motTable [i]. motSlide		= h;
+	delete motTable [index]. motSlide;
+	motTable [index]. orderNumber 	= orderNumber ++;
+	motTable [index]. transportId 	= transportId;
+	motTable [index]. motSlide		= h;
 }
 

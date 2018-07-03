@@ -18,12 +18,12 @@ script:
   - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
-  - cmake . -DDABSTICK=ON  -DAIRSPY=ON -DSDRPLAY=ON -DHACKRF=ON -DSPECTRUM=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - cmake . -DDABSTICK=ON  -DAIRSPY=ON -DSDRPLAY=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
   - mkdir -p appdir/usr/bin 
-  - cp qt-dab-1.1-alpha appdir/usr/bin/qt-dab 
+  - cp qt-dab-2.0 appdir/usr/bin/qt-dab 
   - mkdir -p appdir/usr/lib
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp screenshot_qt-dab.png appdir/qt-dab.png

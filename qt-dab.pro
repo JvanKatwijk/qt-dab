@@ -26,13 +26,13 @@ DEPENDPATH += . \
 	      ./includes \
 	      ./src/ofdm \
 	      ./src/backend \
-	      ./src/backend/viterbi_768 \
 	      ./src/backend/audio \
 	      ./src/backend/data \
 	      ./src/backend/data/mot \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/support \
+	      ./src/support/viterbi_768 \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -58,13 +58,13 @@ INCLUDEPATH += . \
 	      ./includes \
 	      ./includes/ofdm \
 	      ./includes/backend \
-	      ./includes/backend/viterbi_768 \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
 	      ./includes/backend/data/mot \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/support \
+	      ./includes/support/viterbi_768 \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -480,8 +480,8 @@ NEON_RPI2	{
 	DEFINES		+= NEON_AVAILABLE
 	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
 	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
-	SOURCES		+= ./src/backend/viterbi_768/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi_768/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi_768/spiral-neon.c
 }
 
 # for RPI3 use:
@@ -489,19 +489,19 @@ NEON_RPI3	{
 	DEFINES		+= NEON_AVAILABLE
 #	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
 #	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-	HEADERS		+= ./src/backend/viterbi_768/spiral-neon.h
-	SOURCES		+= ./src/backend/viterbi_768/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi_768/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi_768/spiral-neon.c
 }
 
 SSE	{
 	DEFINES		+= SSE_AVAILABLE
-	HEADERS		+= ./src/backend/viterbi_768/spiral-sse.h
-	SOURCES		+= ./src/backend/viterbi_768/spiral-sse.c
+	HEADERS		+= ./src/support/viterbi_768/spiral-sse.h
+	SOURCES		+= ./src/support/viterbi_768/spiral-sse.c
 }
 
 NO_SSE	{
-	HEADERS		+= ./src/backend/viterbi_768/spiral-no-sse.h
-	SOURCES		+= ./src/backend/viterbi_768/spiral-no-sse.c
+	HEADERS		+= ./src/support/viterbi_768/spiral-no-sse.h
+	SOURCES		+= ./src/support/viterbi_768/spiral-no-sse.c
 }
 
 
