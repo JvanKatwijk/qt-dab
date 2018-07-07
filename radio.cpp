@@ -431,7 +431,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 //
 //	a slot called by the ofdmprocessor
 void	RadioInterface::set_CorrectorDisplay (int v) {
-	correctorDisplay	-> display (v);
+	if (running. load ())
+	   correctorDisplay	-> display (v);
 }
 
 //	If the ofdm processor has waited for a period of N frames
@@ -446,7 +447,7 @@ void	RadioInterface::signalTimer_out (void) {
 
 void	RadioInterface::No_Signal_Found (void) {
 	signalTimer. stop ();
-	if (!scanning)
+	if (!running. load () || !scanning)
 	   return;
 //
 //	we stop the thread from running,
@@ -464,6 +465,9 @@ void	RadioInterface::No_Signal_Found (void) {
 //	In case the scanning button was pressed, we
 //	set it off as soon as we have a signal found
 void	RadioInterface::Yes_Signal_Found (void) {
+	if (!running. load ())
+	   return;
+
 	signalTimer. stop ();
 	if (!scanning)
 	   return;
@@ -471,6 +475,8 @@ void	RadioInterface::Yes_Signal_Found (void) {
 }
 
 void	RadioInterface::set_Scanning	(void) {
+	if (!running. load ())
+	   return;
 	presetTimer. stop ();
 	setStereo (false);
 	if (!running. load ())
@@ -495,6 +501,9 @@ void	RadioInterface::set_Scanning	(void) {
 //	generate a signal
 void	RadioInterface::Increment_Channel (void) {
 int32_t	tunedFrequency;
+	if (!running. load ())
+	   return;
+
 int	cc	= channelSelector -> currentIndex ();
 
 	cc	+= 1;
@@ -523,7 +532,10 @@ int	cc	= channelSelector -> currentIndex ();
   *	might run in a separate thread and generate data to be displayed
   */
 void	RadioInterface::clearEnsemble	(void) {
-//
+
+	if (!running. load ())
+	   return;
+
 //	it obviously means: stop processing
 	my_dabProcessor	-> clearEnsemble ();
 	my_dabProcessor	-> reset ();
@@ -533,6 +545,9 @@ void	RadioInterface::clearEnsemble	(void) {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &s) {
+	if (!running. load ())
+	   return;
+
 	Services << s;
 	Services. removeDuplicates ();
 	ensemble. setStringList (Services);
@@ -543,6 +558,9 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 ///	a slot, called by the fib processor
 void	RadioInterface::nameofEnsemble (int id, const QString &v) {
 QString s;
+	if (!running. load ())
+	   return;
+
 	(void)v;
 	ensembleId		-> display (id);
 	ensembleLabel		= v;
@@ -665,7 +683,7 @@ QString	dir;
 //	since data is only sent whenever a data channel is selected
 void	RadioInterface::showMOT		(QByteArray data,
 	                                 int subtype, QString pictureName) {
-	const char *type;
+const char *type;
 	if (!running. load ())
 	   return;
 	if (pictureLabel == NULL) 
@@ -858,14 +876,14 @@ void	RadioInterface::TerminateProcess (void) {
 	delete	my_spectrumViewer;
 	delete	my_tiiViewer;
 	delete	my_impulseViewer;
+	if (pictureLabel != NULL)
+	   delete pictureLabel;
+	pictureLabel = NULL;		// signals may be pending, so careful
 	delete	iqBuffer;
 	delete	spectrumBuffer;
 	delete	responseBuffer;
 	delete	tiiBuffer;
-	if (pictureLabel != NULL)
-	   delete pictureLabel;
-	pictureLabel = NULL;		// signals may be pending, so careful
-	close ();
+//	close ();
 	fprintf (stderr, ".. end the radio silences\n");
 }
 
@@ -908,6 +926,9 @@ static size_t previous_idle_time	= 0;
 static size_t previous_total_time	= 0;
 
 void	RadioInterface::updateTimeDisplay (void) {
+	if (!running. load ())
+	   return;
+
 	numberofSeconds ++;
 	int16_t	numberHours	= numberofSeconds / 3600;
 	int16_t	numberMinutes	= (numberofSeconds / 60) % 60;
@@ -933,6 +954,9 @@ void	RadioInterface::updateTimeDisplay (void) {
 
 void	RadioInterface::autoCorrector_on (void) {
 //	first the real stuff
+	if (!running. load ())
+	   return;
+
 	clear_showElements	();
 	my_dabProcessor		-> clearEnsemble ();
 	my_dabProcessor		-> coarseCorrectorOn ();
@@ -1294,11 +1318,13 @@ void	RadioInterface::selectService (QString s) {
 //	signal, received from ofdm_decoder that a buffer is filled
 //	with amount values ready for display
 void	RadioInterface::showIQ	(int amount) {
-	my_spectrumViewer	-> showIQ (amount);
+	if (running. load ())
+	   my_spectrumViewer	-> showIQ (amount);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
-	my_spectrumViewer -> showSpectrum (amount,
+	if (!running. load ())
+	   my_spectrumViewer -> showSpectrum (amount,
 				            inputDevice -> getVFOFrequency ());
 }
 
@@ -1381,6 +1407,9 @@ uint8_t	RadioInterface::convert (QString s) {
 }
 
 void	RadioInterface::showButtons	(void) {
+	if (!running. load ())
+	   return;
+
 	scanButton	-> show ();
 	channelSelector	-> show	();
 	bandSelector	-> show ();
@@ -1390,6 +1419,8 @@ void	RadioInterface::showButtons	(void) {
 }
 
 void	RadioInterface::hideButtons	(void) {
+	if (!running. load ())
+	   return;
 	scanButton	-> hide ();
 	channelSelector	-> hide ();
 	bandSelector	-> hide ();
@@ -1404,6 +1435,9 @@ void	RadioInterface::showCoordinates (int mainId, int subId) {
 QString a = "Estimate: ";
 QString b = "  ";
 
+	if (!running. load ())
+	   return;
+
 	a	.append (QString::number (mainId));
 	b	.append (QString::number (subId));
 	a. append (b);
@@ -1415,7 +1449,7 @@ QString currentChannel	= channelSelector -> currentText ();
 int32_t	frequency	= inputDevice -> getVFOFrequency ();
 ensemblePrinter	my_Printer;
 
-	if (ensembleLabel == QString (""))
+	if (!running. load () || (ensembleLabel == QString ("")))
 	   return;
 	QString fileName = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
