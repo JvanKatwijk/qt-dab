@@ -161,7 +161,7 @@ QString h;
 //
 	dataDisplay	= new QFrame (NULL);
 	techData. setupUi (dataDisplay);
-	show_data		= false;
+	dataDisplay		->  hide ();
 #ifdef	__MINGW32__
 	techData. cpuLabel	-> hide ();
 	techData. cpuMonitor	-> hide ();
@@ -558,18 +558,23 @@ QString s;
   *	percentage of frames that could be handled
   */
 void	RadioInterface::show_frameErrors (int s) {
-	techData. frameError_display	-> setValue (100 - 4 * s);
+	if (running. load ())
+	   techData. frameError_display	-> setValue (100 - 4 * s);
 }
 
 void	RadioInterface::show_rsErrors (int s) {
-	techData. rsError_display	-> setValue (100 - 4 * s);
+	if (running. load ())
+	   techData. rsError_display	-> setValue (100 - 4 * s);
 }
 	
 void	RadioInterface::show_aacErrors (int s) {
-	techData. aacError_display	-> setValue (100 - 4 * s);
+	if (running. load ())
+	   techData. aacError_display	-> setValue (100 - 4 * s);
 }
 	
 void	RadioInterface::show_ficSuccess (bool b) {
+	if (!running. load ())	
+	   return;
 	if (b)
 	   ficSuccess ++;
 	if (++ficBlocks >= 100) {
@@ -580,6 +585,8 @@ void	RadioInterface::show_ficSuccess (bool b) {
 }
 
 void	RadioInterface::show_motHandling (bool b) {
+	if (!running. load ())
+	   return;
 	if (b) {
 	   techData. motAvailable -> 
 	               setStyleSheet ("QLabel {background-color : green}");
@@ -592,12 +599,15 @@ void	RadioInterface::show_motHandling (bool b) {
 	
 ///	called from the ofdmDecoder, which computed this for each frame
 void	RadioInterface::show_snr (int s) {
-	snrDisplay	-> display (s);
+	if (running. load ())
+	   snrDisplay	-> display (s);
 }
 
 ///	just switch a color, obviously GUI dependent, but called
 //	from the ofdmprocessor
 void	RadioInterface::setSynced	(char b) {
+	if (!running. load ())
+	   return;
 	if (isSynced == b)
 	   return;
 
@@ -623,6 +633,8 @@ void	RadioInterface::showLabel	(QString s) {
 }
 
 void	RadioInterface::setStereo	(bool s) {
+	if (!running. load ())
+	   return;
 	if (s) 
 	   stereoLabel -> 
 	               setStyleSheet ("QLabel {background-color : green}");
@@ -710,6 +722,8 @@ void	RadioInterface::handle_tdcdata (int frametype, int length) {
 #ifdef DATA_STREAMER
 uint8_t localBuffer [length + 8];
 #endif
+	if (!running. load ())
+	   return;
 	if (dataBuffer -> GetRingBufferReadAvailable () < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
@@ -741,8 +755,8 @@ void	RadioInterface::changeinConfiguration	(void) {
 	   inputDevice		-> stopReader ();
 	   inputDevice		-> resetBuffer ();
 	   my_dabProcessor	-> reset ();
+	   clear_showElements	();
 	}
-	clear_showElements	();
 }
 //
 //	In order to not overload with an enormous amount of
@@ -761,6 +775,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 //	This function is only used in the Gui to clear
 //	the details of a selection
 void	RadioInterface::clear_showElements (void) {
+	if (!running. load ())
+	   return;
 	Services		= QStringList ();
 	ensemble. setStringList (Services);
 	ensembleDisplay		-> setModel (&ensemble);
@@ -838,13 +854,13 @@ void	RadioInterface::TerminateProcess (void) {
 	if (my_dabProcessor != NULL)
 	   delete		my_dabProcessor;
 	fprintf (stderr, "deleted dabProcessor\n");
-	delete		dataDisplay;
+	delete	dataDisplay;
 	delete	my_spectrumViewer;
-	delete	spectrumBuffer;
-	delete	iqBuffer;
-	delete	my_impulseViewer;
-	delete	responseBuffer;
 	delete	my_tiiViewer;
+	delete	my_impulseViewer;
+	delete	iqBuffer;
+	delete	spectrumBuffer;
+	delete	responseBuffer;
 	delete	tiiBuffer;
 	if (pictureLabel != NULL)
 	   delete pictureLabel;
@@ -1287,15 +1303,18 @@ void	RadioInterface::showSpectrum	(int32_t amount) {
 }
 
 void	RadioInterface::showQuality	(float q) {
-	my_spectrumViewer	-> showQuality (q);
+	if (running. load ())
+	   my_spectrumViewer	-> showQuality (q);
 }
 
 void	RadioInterface::showImpulse (int amount) {
-	my_impulseViewer -> showImpulse (amount);
+	if (running. load ())
+	   my_impulseViewer -> showImpulse (amount);
 }
 //
 void	RadioInterface::show_tii (int amount) {
-	my_tiiViewer	-> showSpectrum (amount);
+	if (running. load ())
+	   my_tiiViewer	-> showSpectrum (amount);
 }
 //
 void	RadioInterface::set_audioDump (void) {
@@ -1343,8 +1362,7 @@ void	RadioInterface:: set_streamSelector (int k) {
 }
 
 void	RadioInterface::toggle_show_data (void) {
-	show_data	= !show_data;
-	if (show_data)
+	if (dataDisplay -> isHidden ())
 	   dataDisplay -> show ();
 	else
 	   dataDisplay -> hide ();
@@ -1626,8 +1644,6 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	techData. programType ->
 	   setText (the_textMapper.
 	               get_programm_type_string (d -> programType));
-	if (show_data)
-	   dataDisplay -> show ();
 }
 
 #include <QCloseEvent>

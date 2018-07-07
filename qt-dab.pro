@@ -334,7 +334,7 @@ CONFIG		+= NO_SSE
 #comment both out if you just want to use the "normal" way
 
 #and certainly, you do not want this
-#CONFIG		+= try-epg		# do not use
+CONFIG		+= try-epg		# do not use
 
 #you do not want this
 DEFINES		+= MSC_DATA__		# use at your own risk

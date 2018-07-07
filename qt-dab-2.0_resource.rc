@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	DISCARDABLE	"/usr/shared/sdr-j-development/systems/project-x/qt-dab.ico"
+IDI_ICON1	ICON	DISCARDABLE	"/usr/shared/sdr-j-development/systems/qt-dab/qt-dab.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0
