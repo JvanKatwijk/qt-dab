@@ -128,13 +128,13 @@ int16_t	averageCount	= 5;
 	if (spectrumBuffer -> GetRingBufferReadAvailable () < spectrumSize)
 	   return;
 
+	spectrumBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
+	spectrumBuffer	-> FlushRingBuffer ();
 	if (myFrame	-> isHidden ()) {
 	   spectrumBuffer	-> FlushRingBuffer ();
 	   return;
 	}
 
-	spectrumBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
-	spectrumBuffer	-> FlushRingBuffer ();
 //	and window it
 //	first X axis labels
 	for (i = 0; i < displaySize; i ++)

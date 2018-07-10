@@ -60,23 +60,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	phaseReference                  .resize (params. get_T_u ());
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
-//	switch (dabMode) {
-//	   case 4:	// 2 CIFS per 76 blocks
-//	      numberofblocksperCIF	= 36;
-//	      break;
-//
-//	   case 1:	// 4 CIFS per 76 blocks
-//	      numberofblocksperCIF	= 18;
-//	      break;
-//
-//	   case 2:	// 1 CIF per 76 blocks
-//	      numberofblocksperCIF	= 72;
-//	      break;
-//
-//	   default:
-//	      numberofblocksperCIF	= 18;
-//	      break;
-//	}
 	work_to_be_done. store (false);
 }
 
@@ -86,9 +69,9 @@ static int cifTable [] = {18, 72, 0, 36};
 	   usleep (100);
 	locker. lock ();
 	work_to_be_done. store (false);
-	for (int i = 0; i < theBackends. size (); i ++) {
-	   theBackends [i] -> stopRunning ();
-	   delete theBackends [i];
+	for (auto const &b : theBackends) {
+	   b -> stopRunning ();
+	   delete b;
 	}
 	locker. unlock ();
 	theBackends. resize (0);
@@ -172,11 +155,12 @@ int i;
 	   usleep (100);
 	locker. lock ();
 	work_to_be_done. store (false);
-	for (i = 0; i < theBackends. size (); i ++) {
-	   theBackends [i] -> stopRunning ();
-	   delete theBackends [i];
+	for (auto const &b : theBackends) {
+	   b -> stopRunning ();
+	   delete b;
 	}
 	theBackends. resize (0);
+
 	bufferSpace. release (nrBlocks - bufferSpace. available ());
 	locker. unlock ();
 	start ();
@@ -243,14 +227,14 @@ int16_t	i;
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
 	locker. lock ();
-	for (i = 0; i < theBackends. size (); i ++) {
-	   int16_t startAddr	= theBackends [i] -> startAddr ();
-	   int16_t Length	= theBackends [i] -> Length    (); 
+	for (auto const& b: theBackends) {
+	   int16_t startAddr	= b -> startAddr ();
+	   int16_t Length	= b -> Length    (); 
 	   if (Length > 0) {		// Length = 0? virtual Backend
 	      int16_t temp [Length * CUSize];
 	      memcpy (temp, &cifVector [startAddr * CUSize],
 	                           Length * CUSize * sizeof (int16_t));
-	      (void) theBackends [i] -> process (temp, Length * CUSize);
+	      (void) b -> process (temp, Length * CUSize);
 	   }
 	}
 	locker. unlock ();

@@ -50,6 +50,7 @@
 	                                    myViterbi (768, true) {
 int16_t	i, j, k;
 int	local	= 0;
+int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	index		= 0;
 	BitsperBlock	= 2 * params. get_carriers ();
@@ -57,8 +58,6 @@ int	local	= 0;
 	ficBlocks	= 0;
 	ficMissed	= 0;
 	ficRatio	= 0;
-
-	memset (shiftRegister, 1, 9);
 
 	for (i = 0; i < 768; i ++) {
 	   PRBS [i] = shiftRegister [8] ^ shiftRegister [4];
@@ -163,11 +162,10 @@ int32_t	i;
   */
 void	ficHandler::process_ficInput (int16_t ficno) {
 int16_t	i;
-int16_t	viterbiBlock [3072 + 24];
+int16_t	viterbiBlock [3072 + 24] = {0};
 int16_t	inputCount	= 0;
 
-	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
-
+//	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
 
 	for (i = 0; i < 3072 + 24; i ++)
 	   if (punctureTable [i])

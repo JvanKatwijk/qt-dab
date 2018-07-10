@@ -159,7 +159,7 @@ QString h;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
-	dataDisplay	= new QFrame (NULL);
+	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
 	dataDisplay		->  hide ();
 #ifdef	__MINGW32__
@@ -232,12 +232,12 @@ QString h;
 //
 //
 	sourceDumping		= false;
-	dumpfilePointer		= NULL;
+	dumpfilePointer		= nullptr;
 	audioDumping		= false;
-	audiofilePointer	= NULL;
+	audiofilePointer	= nullptr;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
-	pictureLabel		= NULL;
+	pictureLabel		= nullptr;
 	syncedLabel		->
 	               setStyleSheet ("QLabel {background-color : red}");
 
@@ -294,7 +294,7 @@ QString h;
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
 	
-	inputDevice	= NULL;
+	inputDevice	= nullptr;
 	h               =
                    dabSettings -> value ("device", "no device"). toString ();
 	k               = deviceSelector -> findText (h);
@@ -303,12 +303,11 @@ QString h;
            deviceSelector       -> setCurrentIndex (k);
            inputDevice	= setDevice (deviceSelector -> currentText ());
         }
-
 	
-	my_dabProcessor	= NULL;
+	my_dabProcessor	= nullptr;
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
-	if (inputDevice != NULL) 
+	if (inputDevice != nullptr) 
 	   emit doStart ();
 	else 
 	   connect (deviceSelector, SIGNAL (activated (QString)),
@@ -318,7 +317,7 @@ QString h;
 
 void	RadioInterface::doStart (QString dev) {
 	inputDevice = setDevice	(deviceSelector -> currentText ());
-	if (inputDevice == NULL) {
+	if (inputDevice == nullptr) {
 //	just in case someone wants to push all those nice buttons that
 //	are now connected to erroneous constructs
 //	Some buttons should not be touched before we have a device
@@ -407,7 +406,7 @@ int32_t	frequency;
   *	as the parameter
   */
 void	RadioInterface::dumpControlState (QSettings *s) {
-	if (s == NULL)	// cannot happen
+	if (s == nullptr)	// cannot happen
 	   return;
 
 	if (has_presetName)
@@ -686,8 +685,8 @@ void	RadioInterface::showMOT		(QByteArray data,
 const char *type;
 	if (!running. load ())
 	   return;
-	if (pictureLabel == NULL) 
-	   pictureLabel	= new QLabel (NULL);
+	if (pictureLabel == nullptr) 
+	   pictureLabel	= new QLabel (nullptr);
 
 	type = subtype == 0 ? "GIF" :
 	       subtype == 1 ? "JPG" :
@@ -699,7 +698,7 @@ const char *type;
 	if (saveSlides && (pictureName != QString (""))) {
 	   pictureName	= QDir::toNativeSeparators (pictureName);
 	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
-	   if (x == NULL)
+	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
 	                            pictureName. toLatin1 (). data ());
 	   else {
@@ -828,9 +827,9 @@ void	RadioInterface::clear_showElements (void) {
 	techData. transmitter_coordinates -> setText (" ");
 
 	snrDisplay		-> display (0);
-	if (pictureLabel != NULL)
+	if (pictureLabel != nullptr)
 	   delete pictureLabel;
-	pictureLabel = NULL;
+	pictureLabel = nullptr;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -857,28 +856,28 @@ void	RadioInterface::TerminateProcess (void) {
 	   sf_close (audiofilePointer);
 	}
 
-	if (inputDevice != NULL) 
+	if (inputDevice != nullptr) 
 	   inputDevice		-> stopReader ();	// might be concurrent
-	if (my_dabProcessor != NULL)
+	if (my_dabProcessor != nullptr)
 	   my_dabProcessor	-> stop ();		// definitely concurrent
 	soundOut		-> stop ();
 	dataDisplay		->  hide ();
 //	everything should be halted by now
 	dumpControlState (dabSettings);
 	delete		soundOut;
-	if (inputDevice != NULL)
+	if (inputDevice != nullptr)
 	   delete		inputDevice;
 	fprintf (stderr, "going to delete dabProcessor\n");
-	if (my_dabProcessor != NULL)
+	if (my_dabProcessor != nullptr)
 	   delete		my_dabProcessor;
 	fprintf (stderr, "deleted dabProcessor\n");
 	delete	dataDisplay;
 	delete	my_spectrumViewer;
 	delete	my_tiiViewer;
 	delete	my_impulseViewer;
-	if (pictureLabel != NULL)
+	if (pictureLabel != nullptr)
 	   delete pictureLabel;
-	pictureLabel = NULL;		// signals may be pending, so careful
+	pictureLabel = nullptr;		// signals may be pending, so careful
 	delete	iqBuffer;
 	delete	spectrumBuffer;
 	delete	responseBuffer;
@@ -972,7 +971,7 @@ void	RadioInterface::autoCorrector_on (void) {
   */
 virtualInput	*RadioInterface::setDevice (QString s) {
 QString	file;
-virtualInput	*inputDevice	= NULL;
+virtualInput	*inputDevice	= nullptr;
 ///	OK, everything quiet, now let us see what to do
 #ifdef	HAVE_AIRSPY
 	if (s == "airspy") {
@@ -983,7 +982,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
                                    tr ("Airspy or Airspy mini not found\n"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -997,7 +996,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
                                    tr ("hackrf not found\n"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1013,7 +1012,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                            tr ("extio: no luck\n") );
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1028,7 +1027,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                           tr ("rtl_tcp: no luck\n") );
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1042,7 +1041,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("SDRplay: no library or device\n"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1056,7 +1055,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("elad-s1: no library or device\n"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1071,7 +1070,7 @@ virtualInput	*inputDevice	= NULL;
 	      QMessageBox::warning (this, tr ("Warning"),
                                    tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      fprintf (stderr, "error = %d\n", e);
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1082,7 +1081,7 @@ virtualInput	*inputDevice	= NULL;
 	                                                QDir::homePath (),
 	                                                tr ("iq data (*.iq)"));
 	   if (file == QString (""))
-	      return NULL;
+	      return nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1091,7 +1090,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1100,7 +1099,7 @@ virtualInput	*inputDevice	= NULL;
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.raw)"));
-//	      return NULL;
+//	      return nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1109,7 +1108,7 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else
@@ -1119,7 +1118,7 @@ virtualInput	*inputDevice	= NULL;
 	                                                QDir::homePath (),
 	                                                tr ("raw data (*.sdr)"));
 	   if (file == QString (""))
-	      return NULL;
+	      return nullptr;
 
 	   file		= QDir::toNativeSeparators (file);
 	   try {
@@ -1129,12 +1128,12 @@ virtualInput	*inputDevice	= NULL;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
-	      return NULL;
+	      return nullptr;
 	   }
 	}
 	else {
 	   fprintf (stderr, "unknown device, failing\n");
-	   return NULL;
+	   return nullptr;
 	}
 
 	my_spectrumViewer	-> setBitDepth (inputDevice -> bitDepth ());
@@ -1155,17 +1154,17 @@ void	RadioInterface::newDevice (QString deviceName) {
 	scanning		= false;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
-	if (my_dabProcessor == NULL)
+	if (my_dabProcessor == nullptr)
 	   fprintf (stderr, "SCREAM\n");
 	else {
 	   my_dabProcessor	-> stop ();
 	   delete my_dabProcessor;
 	}
 	delete inputDevice;
-	my_dabProcessor		= NULL;
-	inputDevice		= NULL;
+	my_dabProcessor		= nullptr;
+	inputDevice		= nullptr;
 	inputDevice		= setDevice (deviceName);
-	if (inputDevice == NULL) {
+	if (inputDevice == nullptr) {
 	   inputDevice = new virtualInput ();
 //	Note that the device handler itself will do the complaining
 	   return;
@@ -1309,9 +1308,9 @@ void	RadioInterface::selectService (QString s) {
 	      return;
 	}
 
-	if (pictureLabel != NULL)
+	if (pictureLabel != nullptr)
 	   delete pictureLabel;
-	pictureLabel = NULL;
+	pictureLabel = nullptr;
 }
 //
 
@@ -1323,7 +1322,7 @@ void	RadioInterface::showIQ	(int amount) {
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
-	if (!running. load ())
+	if (running. load ())
 	   my_spectrumViewer -> showSpectrum (amount,
 				            inputDevice -> getVFOFrequency ());
 }
@@ -1369,7 +1368,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 
 	audiofilePointer	= sf_open (file. toUtf8 (). data (),
 	                                   SFM_WRITE, sf_info);
-	if (audiofilePointer == NULL) {
+	if (audiofilePointer == nullptr) {
 	   qDebug () << "Cannot open " << file. toUtf8 (). data ();
 	   return;
 	}
@@ -1458,7 +1457,7 @@ ensemblePrinter	my_Printer;
 	fileName	= QDir::toNativeSeparators (fileName);
 	FILE *file_P	= fopen (fileName. toUtf8 (). data (), "w");
 
-	if (file_P == NULL) {
+	if (file_P == nullptr) {
 	   fprintf (stderr, "Could not open file %s\n",
 	                              fileName. toUtf8 (). data ());
 	   return;
@@ -1478,8 +1477,8 @@ int16_t i;
 	if (presetName == QString (""))		// should not happen
 	   return;
 
-	for (i = 0; i < Services. size (); i ++)
-	   if (Services. at (i). contains (presetName)) {
+	for (const auto& service: Services)
+	   if (service. contains (presetName)) {
 	      selectService (presetName);
 	      return;
 	   }
@@ -1541,7 +1540,7 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	dumpfilePointer = sf_open (file. toUtf8 (). data (),
 	                                   SFM_WRITE, sf_info);
-	if (dumpfilePointer == NULL) {
+	if (dumpfilePointer == nullptr) {
 	   qDebug () << "cannot open " << file. toUtf8 (). data ();
 	   return;
 	}

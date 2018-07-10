@@ -62,7 +62,7 @@ private:
 	int16_t		ficRatio;
 	uint16_t	convState;
 	uint8_t		PRBS		[768];
-	uint8_t		shiftRegister	[9];
+//	uint8_t		shiftRegister	[9];
 signals:
 	void		show_ficSuccess	(bool);
 };

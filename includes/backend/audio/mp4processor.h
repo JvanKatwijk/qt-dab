@@ -53,13 +53,6 @@ private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
 	bool		processSuperframe (uint8_t [], int16_t);
-	void		handle_aacFrame (uint8_t *,
-	                                 int16_t,
-	                                 uint8_t,
-	                                 uint8_t,
-	                                 uint8_t,
-	                                 uint8_t,
-	                                 bool*);
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;
 	int16_t		blocksInBuffer;

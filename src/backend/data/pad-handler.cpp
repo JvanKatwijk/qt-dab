@@ -35,7 +35,7 @@
 	connect (this, SIGNAL (show_motHandling (bool)),
 	         mr, SLOT (show_motHandling (bool)));
 	this	-> picturePath	= picturesPath;
-	currentSlide	= NULL;
+	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
 //	msc datagroup or not.
@@ -54,7 +54,7 @@
 }
 
 	padHandler::~padHandler	(void) {
-	if (currentSlide != NULL)
+	if (currentSlide != nullptr)
 	   delete currentSlide;
 }
 
@@ -461,7 +461,7 @@ int32_t	size	= data. size () < dataGroupLength ? data. size () :
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {
 	   case 3:
-	      if (currentSlide == NULL) {
+	      if (currentSlide == nullptr) {
 //	         fprintf (stderr, "creating %d\n", transportId);
 	         currentSlide	= new motObject (myRadioInterface,
 	                                         picturePath,
@@ -489,7 +489,7 @@ int32_t	size	= data. size () < dataGroupLength ? data. size () :
 	      break;
 
 	   case 4:
-	      if (currentSlide == NULL)
+	      if (currentSlide == nullptr)
 	         return;
 	      if (currentSlide -> get_transportId () == transportId) {
 //	         fprintf (stderr, "add segment %d of  %d\n",

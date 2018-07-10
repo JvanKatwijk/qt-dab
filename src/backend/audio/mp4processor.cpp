@@ -279,13 +279,6 @@ int32_t		tmp;
 	                                     aac_frame_length);
 	      err	= tmp == 0;
 	      emit isStereo (!err);
-//	      handle_aacFrame (&outVector [au_start [i]],
-//	                                   aac_frame_length,
-//	                                   dacRate,
-//	                                   sbrFlag,
-//	                                   mpegSurround,
-//	                                   aacChannelMode,
-//	                                   &err);
 	      if (err) 
 	         aacErrors ++;
 	      if (++aacFrames > 25) {
@@ -300,26 +293,5 @@ int32_t		tmp;
 	   }
 	}
 	return true;
-}
-
-void	mp4Processor::handle_aacFrame (uint8_t *v,
-	                               int16_t frame_length,
-	                               uint8_t	dacRate,
-	                               uint8_t	sbrFlag,
-	                               uint8_t	mpegSurround,
-	                               uint8_t	aacChannelMode,
-	                               bool	*error) {
-uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
-
-	memcpy (theAudioUnit, v, frame_length);
-	memset (&theAudioUnit [frame_length], 0, 10);
-
-	int tmp = aacDecoder. MP42PCM (dacRate,
-	                               sbrFlag,
-	                               mpegSurround,
-	                               aacChannelMode,
-	                               theAudioUnit,
-	                               frame_length);
-	*error	= tmp == 0;
 }
 
