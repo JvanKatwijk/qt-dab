@@ -96,8 +96,7 @@ Some settings are preserved between program invocations, they are stored in a fi
 Widgets and scopes
 ------------------------------------------------------------------
 
-The picture above shows the execution of the Qt-DAB software. It shows
-the main window, with the (few) control buttons, and 5 other widgets
+The picture below shows Qt-DAB's main window, with the (few) control buttons, and 5 other widgets
 
 * a widget with controls for the attached device,
 * a widget showing the technical information of the selected service, 
@@ -348,12 +347,18 @@ The `CMakeLists.txt` file has all devices and the spectrum switched off as defau
 
 An example:
 ```
-cmake .. -DSDRPLAY=ON -DRTLTCP=ON -DSPECTRUM=ON
+cmake .. -DRTLSDR=ON -DRTLTCP=ON -DSPECTRUM=ON
 ```
 	
-will generate a makefile with support for a) the SDRplay device, b) for the remote dabstick (using the rtl_tcp connection) and c) for the spectrum in the configuration.
+will generate a makefile with support for 
 
-Other devices that can be selected (beside dabstick and rtl_tcp) are sdrplay and airspy. Use `-DRTLSDR=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
+ a) the RTLSDR (dabstick) device, 
+ 
+ b) for the remote dabstick (using the rtl_tcp connection) and 
+ 
+ c) for the spectrum in the configuration.
+
+Other devices that can be selected (beside dabstick and rtl_tcp) are sdrplay, HackRF and airspy. Use `-DHACKRF=ON`, `-DSDRPLAY=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
 
 The default location for installation depends on your system, mostly `/usr/local/bin` or something like that. Set your own location by adding
 ```
