@@ -241,7 +241,7 @@ BE SURE TO UNCOMMENT PRECISELY ONE OF
 
   You could also use QtCreator, load the `qt-dab.pro` file and build the executable.
   
-  Remark: The exacutable file can be found in the sub-directory linux-bin. A make install command is not implemented.
+  Remark: The executable file can be found in the sub-directory linux-bin. A make install command is not implemented.
 
 
 ------------------------------------------------------------------
@@ -388,10 +388,10 @@ One remark: getting "sound" is not always easy. Be certain that you have install
 
 In arch, it was essential to add the username to the group "audio".
 
-The most recent distribution of Raspbian Stretch (i.e. august 2017) supports both Qt5 and a qwt compiled against Qt5.
+The most recent distribution of Raspbian Stretch (i.e. August 2017) supports both Qt5 and a qwt compiled against Qt5.
 
 A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbian Stretch.
-Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the airspy, while the
+Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the Airspy, while the
 API library for the SDRplay can be downloaded from sdrplay.com. So, Qt-DAB can be used without the need for compiling anything.
 
 The AppImage version does not contain the Spectrum - I am using it in a headless environment.
@@ -447,7 +447,7 @@ displaycolor=blue
 gridcolor=red
 ```
 
-The Qt-DAB program now searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the FSN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
+The Qt-DAB program now searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the SFN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
 
 The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the `.qt-dab.ini` file
 
@@ -481,7 +481,7 @@ On my RPI 2 - with Stretch - latency=2 works best.
 # Copyright
 
 
-	Copyright (C)  2013, 2014, 2015, 2016, 2017
+	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
