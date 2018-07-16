@@ -15,7 +15,7 @@
 
 // Application code should check that it is compiled against the same API version
 // mir_sdr_ApiVersion() returns the API version 
-#define MIR_SDR_API_VERSION   (float)(2.09)
+#define MIR_SDR_API_VERSION   (float)(2.13)
 
 #if defined(ANDROID) || defined(__ANDROID__)
 // Android requires a mechanism to request info from Java application
@@ -24,10 +24,14 @@ typedef enum
   mir_sdr_GetFd              = 0,
   mir_sdr_FreeFd             = 1,
   mir_sdr_DevNotFound        = 2,
-  mir_sdr_DevRemoved         = 3
+  mir_sdr_DevRemoved         = 3,
+  mir_sdr_GetVendorId        = 4,
+  mir_sdr_GetProductId       = 5,
+  mir_sdr_GetRevId           = 6,
+  mir_sdr_GetDeviceId        = 7
 } mir_sdr_JavaReqT;
 
-typedef int (*mir_sdr_SendJavaReq_t)(mir_sdr_JavaReqT cmd, int param);
+typedef int (*mir_sdr_SendJavaReq_t)(mir_sdr_JavaReqT cmd, char *path, char *serNum);
 #endif
 
 typedef enum
@@ -45,7 +49,8 @@ typedef enum
   mir_sdr_NotInitialised     = 10,
   mir_sdr_NotEnabled         = 11,
   mir_sdr_HwVerError         = 12,
-  mir_sdr_OutOfMemError      = 13
+  mir_sdr_OutOfMemError      = 13,
+  mir_sdr_HwRemoved          = 14
 } mir_sdr_ErrT;
 
 typedef enum
@@ -173,8 +178,14 @@ typedef struct
    float min;
 } mir_sdr_GainValuesT;
 
+typedef enum
+{
+   mir_sdr_rspDuo_Tuner_1 = 1,
+   mir_sdr_rspDuo_Tuner_2 = 2,
+} mir_sdr_rspDuo_TunerSelT;
+
 // mir_sdr_StreamInit() callback function prototypes
-typedef void (*mir_sdr_StreamCallback_t)(short *xi, short *xq, unsigned int firstSampleNum, int grChanged, int rfChanged, int fsChanged, unsigned int numSamples, unsigned int reset, void *cbContext); 
+typedef void (*mir_sdr_StreamCallback_t)(short *xi, short *xq, unsigned int firstSampleNum, int grChanged, int rfChanged, int fsChanged, unsigned int numSamples, unsigned int reset, unsigned int hwRemoved, void *cbContext); 
 typedef void (*mir_sdr_GainChangeCallback_t)(unsigned int gRdB, unsigned int lnaGRdB, void *cbContext); 
 
 typedef mir_sdr_ErrT (*mir_sdr_Init_t)(int gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int *samplesPerPacket);
@@ -208,6 +219,7 @@ typedef mir_sdr_ErrT (*mir_sdr_Reinit_t)(int *gRdB, double fsMHz, double rfMHz, 
 typedef mir_sdr_ErrT (*mir_sdr_GetGrByFreq_t)(double rfMHz, mir_sdr_BandT *band, int *gRdB, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode); 
 typedef mir_sdr_ErrT (*mir_sdr_DebugEnable_t)(unsigned int enable);    
 typedef mir_sdr_ErrT (*mir_sdr_GetCurrentGain_t)(mir_sdr_GainValuesT *gainVals);    
+typedef mir_sdr_ErrT (*mir_sdr_GainChangeCallbackMessageReceived_t)(void); 
 
 typedef mir_sdr_ErrT (*mir_sdr_GetDevices_t)(mir_sdr_DeviceT *devices, unsigned int *numDevs, unsigned int maxDevs);    
 typedef mir_sdr_ErrT (*mir_sdr_SetDeviceIdx_t)(unsigned int idx);    
@@ -222,6 +234,17 @@ typedef mir_sdr_ErrT (*mir_sdr_RSP_SetGr_t)(int gRdB, int LNAstate, int abs, int
 typedef mir_sdr_ErrT (*mir_sdr_RSP_SetGrLimits_t)(mir_sdr_MinGainReductionT minGr);
 
 typedef mir_sdr_ErrT (*mir_sdr_AmPortSelect_t)(int port);                          
+
+typedef mir_sdr_ErrT (*mir_sdr_rsp1a_BiasT_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rsp1a_DabNotch_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rsp1a_BroadcastNotch_t)(int enable);
+
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_TunerSel_t)(mir_sdr_rspDuo_TunerSelT sel);
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_ExtRef_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_BiasT_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_Tuner1AmNotch_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_BroadcastNotch_t)(int enable);
+typedef mir_sdr_ErrT (*mir_sdr_rspDuo_DabNotch_t)(int enable);
 
 // API function definitions
 #ifdef __cplusplus
@@ -288,9 +311,10 @@ extern "C"
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_StreamInit(int *gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext); 
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_StreamUninit(void); 
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_Reinit(int *gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, mir_sdr_LoModeT loMode, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode, int *samplesPerPacket, mir_sdr_ReasonForReinitT reasonForReinit);
-   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GetGrByFreq(double rfMHz, mir_sdr_BandT *band, int *gRdB, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode); 
-   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_DebugEnable(unsigned int enable);  
-   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GetCurrentGain(mir_sdr_GainValuesT *gainVals);    
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GetGrByFreq(double rfMHz, mir_sdr_BandT *band, int *gRdB, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_DebugEnable(unsigned int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GetCurrentGain(mir_sdr_GainValuesT *gainVals);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GainChangeCallbackMessageReceived(void); 
 
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_GetDevices(mir_sdr_DeviceT *devices, unsigned int *numDevs, unsigned int maxDevs);    
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_SetDeviceIdx(unsigned int idx);   
@@ -311,6 +335,18 @@ extern "C"
 
    _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_AmPortSelect(int port);   // If called after mir_sdr_Init() a call to mir_sdr_Reinit(..., reasonForReinit = mir_sdr_CHANGE_AM_PORT)
                                                                      // is also required to change the port
+
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rsp1a_BiasT(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rsp1a_DabNotch(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rsp1a_BroadcastNotch(int enable);
+
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_TunerSel(mir_sdr_rspDuo_TunerSelT sel);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_ExtRef(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_BiasT(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_Tuner1AmNotch(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_BroadcastNotch(int enable);
+   _MIR_SDR_QUALIFIER mir_sdr_ErrT mir_sdr_rspDuo_DabNotch(int enable);
+
 #ifdef __cplusplus
 }
 #endif

@@ -914,7 +914,11 @@ bool	localRunning	= running. load ();
 	inputDevice	-> setVFOFrequency (tunedFrequency);
 
 	if (localRunning) {
-	   inputDevice		-> restartReader ();
+	   if (!inputDevice	-> restartReader ()) {
+	      QMessageBox::warning (this, tr ("Warning"),
+                                   tr ("Device will not restart\n"));
+	      return;
+	   }
 	   my_dabProcessor	-> reset ();
 	   running. store (true);
 	}

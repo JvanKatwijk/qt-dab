@@ -66,7 +66,7 @@ ULONG APIkeyValue_length = 255;
 	                 NULL,
 	                 (LPBYTE)&APIkeyValue,
 	                 (LPDWORD)&APIkeyValue_length);
-//	Ok, make explicit it is in the 64 bits section
+//	Ok, make explicit it is in the 32 bits section
 	wchar_t *x = wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
 //	wchar_t *x = wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
 //	fprintf (stderr, "Length of APIkeyValue = %d\n", APIkeyValue_length);
@@ -105,7 +105,7 @@ ULONG APIkeyValue_length = 255;
 	}
 
 	err		= my_mir_sdr_ApiVersion (&ver);
-	if (ver < 2.05) {
+	if (ver < 2.13) {
 	   fprintf (stderr, "sorry, library too old\n");
 #ifdef __MINGW32__
            FreeLibrary (Handle);
@@ -313,13 +313,15 @@ void myStreamCallback (int16_t		*xi,
 	               int32_t		fsChanged,
 	               uint32_t		numSamples,
 	               uint32_t		reset,
+	               uint32_t		hwRemoved,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 float	denominator	= (float)(p -> denominator);
 std::complex<float> *localBuf =
 	   (std::complex<float> *)alloca (numSamples * sizeof (std::complex<float>));
-
+	if (reset || hwRemoved)
+	   return;
 	for (i = 0; i <  (int)numSamples; i ++)
 	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
 	                                       float (xq [i]) / denominator);
@@ -328,7 +330,6 @@ std::complex<float> *localBuf =
 	(void)	grChanged;
 	(void)	rfChanged;
 	(void)	fsChanged;
-	(void)	reset;
 }
 
 void	myGainChangeCallback (uint32_t	gRdB,

@@ -373,7 +373,9 @@ Important: Note that CMakeLists.txt file expects the appropriate Qt version (and
 SDRplay
 -----------------------------------------------------------------
 
-The current set of sources provides support for both the RSP-I and the RSP-II, it is assumed that at least library version 2.09 is installed.
+The current set of sources provides support for both the RSP-I and
+the RSP-II. Due to an incompatibility between libraries 2.13 and older
+versions, be certain to have at least 1.13 installed.
 
 ------------------------------------------------------------------
 Qt

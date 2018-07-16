@@ -116,6 +116,18 @@ int16_t	i;
 	      case 0:	// end marker
 	         break;
 //
+	      case 2:	// start of fragment, extract the length
+	         if (firstSegment && !lastSegment) {
+	            segmentNumber   = b [last - 2] >> 4;
+	            if (dynamicLabelText. size () > 0)
+	               showLabel (dynamicLabelText);
+	            dynamicLabelText. clear ();
+	         }
+	         still_to_go     = b [last - 1] & 0x0F;
+	         shortpadData. resize (0);
+	         shortpadData. push_back (b [last - 3]);
+	         break;
+
 	      case 3:	// continuation of fragment
 	         for (i = 0; (i < 3) && (still_to_go > 0); i ++) {
 	            still_to_go --;
@@ -133,17 +145,6 @@ int16_t	i;
 	         }
 	         break;
 
-	      case 2:	// start of fragment, extract the length
-	         if (firstSegment && !lastSegment) {
-	            segmentNumber   = b [last - 2] >> 4;
-	            if (dynamicLabelText. size () > 0)
-	               showLabel (dynamicLabelText);
-	            dynamicLabelText. clear ();
-	         }
-	         still_to_go     = b [last - 1] & 0x0F;
-	         shortpadData. resize (0);
-	         shortpadData. push_back (b [last - 3]);
-	         break;
 	   }
 	}
 	else {	// No CI flag
