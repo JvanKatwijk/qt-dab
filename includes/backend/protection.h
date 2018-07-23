@@ -39,8 +39,8 @@ virtual bool    deconvolve      (int16_t *, int32_t, uint8_t *);
 protected:
         int16_t         bitRate;
         int32_t         outSize;
-        std::vector<int16_t> viterbiBlock;
 	std::vector<uint8_t> indexTable;
+        std::vector<int16_t> viterbiBlock;
 };
 
 #endif

@@ -295,11 +295,12 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-INCLUDEPATH += /usr/i686-w64-mingw32/sys-root/mingw/include
+INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+LIBS		+= -lfaad
 LIBS		+= -lfftw3f
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -322,6 +323,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
+
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler

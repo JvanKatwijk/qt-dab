@@ -28,6 +28,17 @@
 #include	"sdrplayselect.h"
 
 #define	DEFAULT_GRED	40
+static
+int     RSP1_Table [] = {0, 24, 19, 43};
+
+static
+int     RSP1A_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
+
+static
+int     RSP2_Table [] = {0, 10, 15, 21, 24, 34, 39, 45, 64};
+
+static
+int	RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 	sdrplayHandler::sdrplayHandler  (QSettings *s) {
 int	err;
@@ -119,14 +130,14 @@ ULONG APIkeyValue_length = 255;
 	api_version	-> display (ver);
 	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 	vfoFrequency	= Khz (220000);
-	currentGred	= DEFAULT_GRED;
+	agcMode		= false;
 //
 //	See if there are settings from previous incarnations
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	coarseOffset	=
 	           sdrplaySettings -> value ("sdrplayOffset", 0). toInt ();
 	gainSlider 		-> setValue (
-	            sdrplaySettings -> value ("sdrplayGain", 50). toInt ());
+	            sdrplaySettings -> value ("sdrplayGain", 20). toInt ());
 
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt ());
@@ -137,6 +148,8 @@ ULONG APIkeyValue_length = 255;
 //
 //	and be prepared for future changes in the settings
 	connect (gainSlider, SIGNAL (valueChanged (int)),
+	         this, SLOT (setExternalGain (int)));
+	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (setExternalGain (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (agcControl_toggled (int)));
@@ -175,6 +188,8 @@ ULONG APIkeyValue_length = 255;
 	serialNumber -> setText (devDesc [deviceIndex]. SerNo);
 	hwVersion = devDesc [deviceIndex]. hwVer;
         fprintf (stderr, "hwVer = %d\n", hwVersion);
+	fprintf (stderr, "devicename = %s\n", devDesc [deviceIndex]. DevNm);
+
 	my_mir_sdr_SetDeviceIdx (deviceIndex);
 
 	antennaSelector -> hide ();
@@ -184,6 +199,18 @@ ULONG APIkeyValue_length = 255;
 	            this, SLOT (set_antennaControl (const QString &)));
 	}
 
+	switch (hwVersion) {
+	   case 1:		// old RSP
+	      lnaGainSetting	-> setRange (0, 3);
+	      break;
+	   case 2:		// RSPII and duo
+	      lnaGainSetting	-> setRange (0, 8);
+	      break;
+	   default:
+	      lnaGainSetting	-> setRange (0, 9);
+	      break;
+	}
+	      
 	if (hwVersion == 255) {
 	   nrBits	= 14;
 	   denominator	= 2048;
@@ -198,7 +225,6 @@ ULONG APIkeyValue_length = 255;
 	fprintf (stderr, "hwVersion = %o\n", hwVersion);
 //	my_mir_sdr_ResetUpdateFlags (1, 0, 0);
 	running. store (false);
-	agcMode		= false;
 }
 
 	sdrplayHandler::~sdrplayHandler	(void) {
@@ -254,6 +280,7 @@ int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
 int	localGred	= currentGred;
+int	lnaState	= lnaGainSetting -> value ();
 
 	if (bankFor_sdr (newFrequency) == -1)
 	   return;
@@ -274,7 +301,7 @@ int	localGred	= currentGred;
 	                             mir_sdr_BW_1_536,
 	                             mir_sdr_IF_Zero,
 	                             mir_sdr_LO_Undefined,	// LOMode
-	                             0,	// LNA enable
+	                             lnaState,	// LNA enable
 	                             &gRdBSystem,
 	                             agcMode,	
 	                             &samplesPerPacket,
@@ -289,15 +316,28 @@ int32_t	sdrplayHandler::getVFOFrequency	(void) {
 }
 
 void	sdrplayHandler::setExternalGain	(int newGain) {
-//	fprintf (stderr, "newGain = %d, slidervalue = %d\n",
-//	                     newGain, 
-//                             gainSlider -> value ());
-	if (newGain < 0 || newGain >= 102)
+int	GRdB	= gainSlider	-> value ();
+int	lnaState	= lnaGainSetting -> value ();
+int	lnaGRdB;
+
+	if (agcMode)
 	   return;
 
-	currentGred = maxGain () - newGain;
-	(void) my_mir_sdr_SetGr (currentGred, 1, 0);
-	gainDisplay	-> display (newGain);
+	switch (hwVersion) {
+	   case 1:
+	      lnaGRdB = RSP1_Table [lnaState];
+	      break;
+	   case 2:
+	      lnaGRdB = RSP2_Table [lnaState];
+	      break;
+	   default:
+	      lnaGRdB = RSP1A_Table [lnaState];
+	      break;
+	}
+
+	(void) my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1, 0);
+	GRdBDisplay	-> display (GRdB);
+	lnaGRdBDisplay	-> display (lnaGRdB);
 }
 
 int16_t	sdrplayHandler::maxGain	(void) {
@@ -335,7 +375,8 @@ std::complex<float> *localBuf =
 void	myGainChangeCallback (uint32_t	gRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
-//	fprintf (stderr, "GainChangeCallback gives %X\n", gRdB);
+//	fprintf (stderr, "GainChangeCallback gives %d and lna %d\n", gRdB,
+//	                                                             lnaGRdB);
 	(void)gRdB;
 	(void)lnaGRdB;	
 	(void)cbContext;
@@ -345,19 +386,20 @@ bool	sdrplayHandler::restartReader	(void) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	localGRed	= currentGred;
+int	GRdB		= gainSlider	-> value ();
+int	lnaState	= lnaGainSetting -> value ();
 
 	if (running. load ())
 	   return true;
 
-	err	= my_mir_sdr_StreamInit (&localGRed,
+	err	= my_mir_sdr_StreamInit (&GRdB,
 	                                 double (inputRate) / MHz (1),
 	                                 double (vfoFrequency) / Mhz (1),
 	                                 mir_sdr_BW_1_536,
 	                                 mir_sdr_IF_Zero,
-	                                 1,	// lnaEnable do not know yet
+	                                 lnaState,
 	                                 &gRdBSystem,
-	                                 mir_sdr_USE_SET_GR,
+	                                 mir_sdr_USE_RSP_SET_GR,
 	                                 &samplesPerPacket,
 	                                 (mir_sdr_StreamCallback_t)myStreamCallback,
 	                                 (mir_sdr_GainChangeCallback_t)myGainChangeCallback,
@@ -435,6 +477,13 @@ bool	sdrplayHandler::loadFunctions	(void) {
 	                    GETPROCADDRESS (Handle, "mir_sdr_SetGr");
 	if (my_mir_sdr_SetGr == NULL) {
 	   fprintf (stderr, "Could not find mir_sdr_SetGr\n");
+	   return false;
+	}
+
+	my_mir_sdr_RSP_SetGr	= (pfn_mir_sdr_RSP_SetGr)
+	                    GETPROCADDRESS (Handle, "mir_sdr_RSP_SetGr");
+	if (my_mir_sdr_RSP_SetGr == NULL) {
+	   fprintf (stderr, "Could not find mir_sdr_RSP_SetGr\n");
 	   return false;
 	}
 
@@ -571,7 +620,8 @@ bool	sdrplayHandler::loadFunctions	(void) {
 
 void	sdrplayHandler::agcControl_toggled (int agcMode) {
 	this	-> agcMode	= agcControl -> isChecked ();
-	my_mir_sdr_AgcControl (this -> agcMode, -currentGred, 0, 0, 0, 0, 1);
+	my_mir_sdr_AgcControl (this -> agcMode,
+	                          -gainSlider -> value (), 0, 0, 0, 0, 1);
 	if (agcMode == 0)
 	   setExternalGain (gainSlider -> value ());
 }

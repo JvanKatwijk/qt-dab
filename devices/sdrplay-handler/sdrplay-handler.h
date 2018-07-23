@@ -64,6 +64,8 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamUninit)(void);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetRf)(double drfHz, int abs, int syncUpdate);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetFs)(double dfsHz, int abs, int syncUpdate, int reCal);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetGr)(int gRdB, int abs, int syncUpdate);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_RSP_SetGr)(int gRdB, int lnaState,
+		                                       int abs, int syncUpdate);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetGrParams)(int minimumGr, int lnaGrThreshold);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDcMode)(int dcCal, int speedUp);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDcTrackTime)(int trackTime);
@@ -113,6 +115,7 @@ private:
 	pfn_mir_sdr_SetRf	my_mir_sdr_SetRf;
 	pfn_mir_sdr_SetFs	my_mir_sdr_SetFs;
 	pfn_mir_sdr_SetGr	my_mir_sdr_SetGr;
+	pfn_mir_sdr_RSP_SetGr	my_mir_sdr_RSP_SetGr;
 	pfn_mir_sdr_SetGrParams	my_mir_sdr_SetGrParams;
 	pfn_mir_sdr_SetDcMode	my_mir_sdr_SetDcMode;
 	pfn_mir_sdr_SetDcTrackTime my_mir_sdr_SetDcTrackTime;
