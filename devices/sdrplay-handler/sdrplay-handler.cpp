@@ -203,7 +203,8 @@ ULONG APIkeyValue_length = 255;
 	   case 1:		// old RSP
 	      lnaGainSetting	-> setRange (0, 3);
 	      break;
-	   case 2:		// RSPII and duo
+	   case 2:
+	   case 3:		// RSPII and duo
 	      lnaGainSetting	-> setRange (0, 8);
 	      break;
 	   default:
@@ -219,11 +220,14 @@ ULONG APIkeyValue_length = 255;
 	   nrBits	= 12;
 	   denominator	= 2048;
 	}
-	   
+
+	if (hwVersion == 3) {
+	   mir_sdr_ErrT err;
+	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_1);
+	   fprintf (stderr, "error %d in setting of rspDuo\n", err);
+	}
 	unsigned char text;
 	(void)my_mir_sdr_GetHwVersion (&text);
-	fprintf (stderr, "hwVersion = %o\n", hwVersion);
-//	my_mir_sdr_ResetUpdateFlags (1, 0, 0);
 	running. store (false);
 }
 
@@ -556,6 +560,13 @@ bool	sdrplayHandler::loadFunctions	(void) {
 	   fprintf (stderr, "Could not find mir_sdr_DebugEnable\n");
 	   return false;
 	}
+
+	my_mir_sdr_rspDuo_TunerSel = (pfn_mir_sdr_rspDuo_TunerSel)
+	               GETPROCADDRESS (Handle, "mir_sdr_rspDuo_TunerSel");
+	if (my_mir_sdr_rspDuo_TunerSel == NULL) {
+           fprintf (stderr, "Could not find mir_sdr_rspDuo_TunerSel\n");
+           return false;
+        }
 
 	my_mir_sdr_DCoffsetIQimbalanceControl	=
 	                     (pfn_mir_sdr_DCoffsetIQimbalanceControl)

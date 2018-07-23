@@ -129,6 +129,7 @@ QString h;
 //	this need to be a pretty large value (e.g. 5 to 10)
 	latency		=
 	           dabSettings -> value ("latency", 5). toInt ();
+
 	diff_length	=
 	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt ();
 
@@ -953,6 +954,10 @@ void	RadioInterface::updateTimeDisplay (void) {
            previous_total_time = total_time;
 	}
 #endif
+//	if ((numberofSeconds % 10) == 0) {
+//	   int xxx = ((audioSink *)soundOut)	-> missed ();
+//	   fprintf (stderr, "missed %d\n", xxx);
+//	}
 }
 
 void	RadioInterface::autoCorrector_on (void) {
