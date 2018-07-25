@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>256</width>
-    <height>300</height>
+    <width>228</width>
+    <height>341</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>0</x>
      <y>0</y>
      <width>211</width>
-     <height>291</height>
+     <height>331</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -28,7 +28,7 @@
    <property name="frameShadow">
     <enum>QFrame::Raised</enum>
    </property>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="deviceLabel">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -70,7 +70,7 @@
      <enum>QLCDNumber::Flat</enum>
     </property>
    </widget>
-   <widget class="QSlider" name="gainSlider">
+   <widget class="QSlider" name="ifgainSlider">
     <property name="geometry">
      <rect>
       <x>170</x>
@@ -81,6 +81,9 @@
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;gain slider, its value is used as measure for the gain reduction of the baseband signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="minimum">
+     <number>20</number>
     </property>
     <property name="maximum">
      <number>57</number>
@@ -117,6 +120,9 @@
       <height>25</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to switch on automatic gain control - based on the setting of the lnastate and the ifgain.&lt;/p&gt;&lt;p&gt;If switched on, the lnastate switch and the ifgain slider are switched off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="text">
      <string>agc</string>
     </property>
@@ -140,8 +146,8 @@
    <widget class="QLabel" name="serialNumber">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>210</y>
+      <x>20</x>
+      <y>220</y>
       <width>141</width>
       <height>20</height>
      </rect>
@@ -153,11 +159,14 @@
    <widget class="QComboBox" name="antennaSelector">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>181</width>
+      <x>70</x>
+      <y>250</y>
+      <width>121</width>
       <height>36</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an antenna (RSP-II)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <item>
      <property name="text">
@@ -200,6 +209,42 @@
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="tunerSelector">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>290</y>
+      <width>121</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the device is an rspduo, select the tuner with this combobox&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <item>
+     <property name="text">
+      <string>Tuner 1</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Tuner 2</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QCheckBox" name="debugControl">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>140</y>
+      <width>88</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>debug</string>
     </property>
    </widget>
   </widget>

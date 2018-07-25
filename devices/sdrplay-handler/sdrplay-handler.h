@@ -139,6 +139,7 @@ private:
 	pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
 	pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
 
+	QString		errorCodes	(mir_sdr_ErrT);
 	int16_t		hwVersion;
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
@@ -156,8 +157,10 @@ private:
 private slots:
 	void		setExternalGain		(int);
 	void		agcControl_toggled	(int);
+	void		debugControl_toggled	(int);
 	void		set_ppmControl		(int);
-	void		set_antennaControl	(const QString &);
+	void		set_antennaSelect	(const QString &);
+	void		set_tunerSelect		(const QString &);
 };
 #endif
 
