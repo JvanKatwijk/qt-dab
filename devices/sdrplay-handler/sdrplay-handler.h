@@ -147,14 +147,14 @@ private:
 	QFrame		*myFrame;
 	int32_t		inputRate;
 	int32_t		vfoFrequency;
-	int		currentGred;
 	bool		libraryLoaded;
 	std::atomic<bool>	running;
 	HINSTANCE	Handle;
 	bool		agcMode;
 	int16_t		nrBits;
 private slots:
-	void		setExternalGain		(int);
+	void		set_ifgainReduction	(int);
+	void		set_lnagainReduction	(int);
 	void		agcControl_toggled	(int);
 	void		debugControl_toggled	(int);
 	void		set_ppmControl		(int);

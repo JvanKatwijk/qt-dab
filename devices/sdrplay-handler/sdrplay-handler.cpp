@@ -27,7 +27,6 @@
 #include	"sdrplay-handler.h"
 #include	"sdrplayselect.h"
 
-#define	DEFAULT_GRED	40
 static
 int     RSP1_Table [] = {0, 24, 19, 43};
 
@@ -231,7 +230,6 @@ ULONG APIkeyValue_length = 255;
 	      deviceLabel	-> setText ("RSP-II");
 	      break;
 	   case 3:	
-	      lnaGainSetting	-> setRange (0, 8);
 	      deviceLabel	-> setText ("RSP-DUO");
 	      break;
 	   default:
@@ -271,9 +269,9 @@ ULONG APIkeyValue_length = 255;
 
 //	and be prepared for future changes in the settings
 	connect (ifgainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
+	         this, SLOT (set_ifgainReduction (int)));
 	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (setExternalGain (int)));
+	         this, SLOT (set_lnagainReduction (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (agcControl_toggled (int)));
 	connect (debugControl, SIGNAL (stateChanged (int)),
@@ -336,7 +334,7 @@ void	sdrplayHandler::setVFOFrequency		(int32_t newFrequency) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	localGred	= currentGred;
+int	localGred	= ifgainSlider	-> value ();
 int	lnaState	= lnaGainSetting -> value ();
 
 	if (bankFor_sdr (newFrequency) == -1)
@@ -373,35 +371,54 @@ int32_t	sdrplayHandler::getVFOFrequency	(void) {
 	return vfoFrequency;
 }
 
-void	sdrplayHandler::setExternalGain	(int newGain) {
+static
+int	get_lnaGRdB (int hwVersion, int lnaState) {
+	switch (hwVersion) {
+	   case 1:
+	      return RSP1_Table [lnaState];
+
+	   case 2:
+	      return RSP2_Table [lnaState];
+
+	   default:
+	      return RSP1A_Table [lnaState];
+	}
+}
+
+void	sdrplayHandler::set_ifgainReduction	(int newGain) {
 mir_sdr_ErrT	err;
 int	GRdB		= ifgainSlider	-> value ();
 int	lnaState	= lnaGainSetting -> value ();
-int	lnaGRdB;
 
-	if (agcMode)
+	(void)newGain;
+
+	if (agcMode)	// should not happen, the slider is not visible
 	   return;
-
-	switch (hwVersion) {
-	   case 1:
-	      lnaGRdB = RSP1_Table [lnaState];
-	      break;
-	   case 2:
-	      lnaGRdB = RSP2_Table [lnaState];
-	      break;
-	   default:
-	      lnaGRdB = RSP1A_Table [lnaState];
-	      break;
-	}
 
 	err	=  my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1, 0);
 	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "Error at setExternal Gain %s\n",
+	   fprintf (stderr, "Error at set_ifgain %s\n",
 	                    errorCodes (err). toLatin1 (). data ());
 	else {
 	   GRdBDisplay		-> display (GRdB);
-	   lnaGRdBDisplay	-> display (lnaGRdB);
+	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 	}
+}
+
+void	sdrplayHandler::set_lnagainReduction (int lnaState) {
+mir_sdr_ErrT err;
+
+	if (!agcMode) {
+	   set_ifgainReduction (0);
+	   return;
+	}
+
+	err	= my_mir_sdr_AgcControl (true, -30, 0, 0, 0, 0, lnaState);
+	if (err != mir_sdr_Success) 
+	   fprintf (stderr, "Error at set_lnagainReduction %s\n",
+	                       errorCodes (err). toLatin1 (). data ());
+	else
+	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
 
 //
@@ -438,7 +455,7 @@ void	myGainChangeCallback (uint32_t	GRdB,
 	                      void	*cbContext) {
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 	p -> GRdBDisplay	-> display ((int)GRdB);
-	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
+//	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
 bool	sdrplayHandler::restartReader	(void) {
@@ -703,15 +720,15 @@ bool	sdrplayHandler::loadFunctions	(void) {
 void	sdrplayHandler::agcControl_toggled (int agcMode) {
 	this	-> agcMode	= agcControl -> isChecked ();
 	my_mir_sdr_AgcControl (this -> agcMode,
-	                          -ifgainSlider -> value (), 0, 0, 0, 0, 1);
+//	                       -ifgainSlider -> value (),
+	                       -30,
+	                       0, 0, 0, 0, lnaGainSetting -> value ());
 	if (agcMode == 0) {
 	   ifgainSlider		-> show ();
-	   lnaGainSetting	-> show ();
-	   setExternalGain (ifgainSlider -> value ());
+	   set_ifgainReduction (0);
 	}
 	else {
 	   ifgainSlider		-> hide ();
-	   lnaGainSetting	-> hide ();
 	}
 }
 
