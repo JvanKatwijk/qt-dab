@@ -265,7 +265,7 @@ ULONG APIkeyValue_length = 255;
 	   if (err != mir_sdr_Success) 
 	      fprintf (stderr, "error %d in setting of rspDuo\n", err);
 	   connect (tunerSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (set_tunerControl (const QString &)));
+	            this, SLOT (set_tunerSelect (const QString &)));
 	}
 
 
@@ -404,9 +404,6 @@ int	lnaGRdB;
 	}
 }
 
-int16_t	sdrplayHandler::maxGain	(void) {
-	return 101;
-}
 //
 static
 void myStreamCallback (int16_t		*xi,
@@ -436,14 +433,12 @@ std::complex<float> *localBuf =
 	(void)	fsChanged;
 }
 
-void	myGainChangeCallback (uint32_t	gRdB,
+void	myGainChangeCallback (uint32_t	GRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
-//	fprintf (stderr, "GainChangeCallback gives %d and lna %d\n", gRdB,
-//	                                                             lnaGRdB);
-	(void)gRdB;
-	(void)lnaGRdB;	
-	(void)cbContext;
+sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
+	p -> GRdBDisplay	-> display ((int)GRdB);
+	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
 bool	sdrplayHandler::restartReader	(void) {
@@ -709,8 +704,15 @@ void	sdrplayHandler::agcControl_toggled (int agcMode) {
 	this	-> agcMode	= agcControl -> isChecked ();
 	my_mir_sdr_AgcControl (this -> agcMode,
 	                          -ifgainSlider -> value (), 0, 0, 0, 0, 1);
-	if (agcMode == 0)
+	if (agcMode == 0) {
+	   ifgainSlider		-> show ();
+	   lnaGainSetting	-> show ();
 	   setExternalGain (ifgainSlider -> value ());
+	}
+	else {
+	   ifgainSlider		-> hide ();
+	   lnaGainSetting	-> hide ();
+	}
 }
 
 void	sdrplayHandler::debugControl_toggled (int debugMode) {
