@@ -141,10 +141,12 @@ ULONG APIkeyValue_length = 255;
 
 	api_version	-> display (ver);
 	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
-	vfoFrequency	= Khz (220000);
+	vfoFrequency	= Khz (220000);		// default
 	agcMode		= false;
-//
+
 //	See if there are settings from previous incarnations
+//	and config stuff
+
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	coarseOffset	=
 	            sdrplaySettings -> value ("sdrplayOffset", 0). toInt ();
@@ -155,6 +157,10 @@ ULONG APIkeyValue_length = 255;
 
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt ());
+	bool	debugFlag	=
+	            sdrplaySettings -> value ("sdrplay-debug", 0). toInt ();
+	if (!debugFlag)
+	   debugControl -> hide ();
 	sdrplaySettings	-> endGroup ();
 
 	err = my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
@@ -725,10 +731,12 @@ void	sdrplayHandler::agcControl_toggled (int agcMode) {
 	                       0, 0, 0, 0, lnaGainSetting -> value ());
 	if (agcMode == 0) {
 	   ifgainSlider		-> show ();
+	   gainsliderLabel	-> show ();
 	   set_ifgainReduction (0);
 	}
 	else {
 	   ifgainSlider		-> hide ();
+	   gainsliderLabel	-> hide ();
 	}
 }
 

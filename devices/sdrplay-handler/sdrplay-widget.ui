@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>228</width>
-    <height>341</height>
+    <width>280</width>
+    <height>301</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>211</width>
-     <height>331</height>
+     <width>261</width>
+     <height>291</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -33,7 +33,7 @@
      <rect>
       <x>10</x>
       <y>80</y>
-      <width>101</width>
+      <width>81</width>
       <height>21</height>
      </rect>
     </property>
@@ -57,11 +57,14 @@
    <widget class="QLCDNumber" name="api_version">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>40</y>
-      <width>91</width>
+      <x>90</x>
+      <y>80</y>
+      <width>81</width>
       <height>21</height>
      </rect>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version of the SDRplay library detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="lineWidth">
      <number>0</number>
@@ -73,14 +76,14 @@
    <widget class="QSlider" name="ifgainSlider">
     <property name="geometry">
      <rect>
-      <x>170</x>
-      <y>19</y>
+      <x>220</x>
+      <y>50</y>
       <width>20</width>
-      <height>151</height>
+      <height>121</height>
      </rect>
     </property>
     <property name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;gain slider, its value is used as measure for the gain reduction of the baseband signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;gain slider, its value is used as measure for the gain reduction of the baseband signal. If the agc is selected, the slider is not effective and is not shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="minimum">
      <number>20</number>
@@ -95,9 +98,9 @@
    <widget class="QLCDNumber" name="GRdBDisplay">
     <property name="geometry">
      <rect>
-      <x>160</x>
+      <x>190</x>
       <y>180</y>
-      <width>41</width>
+      <width>61</width>
       <height>31</height>
      </rect>
     </property>
@@ -105,7 +108,7 @@
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The display shows the gain reduction applied to the baseband signal in the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </property>
     <property name="digitCount">
-     <number>3</number>
+     <number>2</number>
     </property>
     <property name="segmentStyle">
      <enum>QLCDNumber::Flat</enum>
@@ -119,6 +122,14 @@
       <width>51</width>
       <height>25</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to switch on automatic gain control - based on the setting of the lnastate and the ifgain.&lt;/p&gt;&lt;p&gt;If switched on, the lnastate switch and the ifgain slider are switched off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -136,6 +147,9 @@
       <height>21</height>
      </rect>
     </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ppm control. Tells the device the offset (in ppm) of the observed oscillator offset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
     <property name="minimum">
      <number>-200</number>
     </property>
@@ -146,9 +160,9 @@
    <widget class="QLabel" name="serialNumber">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>220</y>
-      <width>141</width>
+      <x>10</x>
+      <y>110</y>
+      <width>151</width>
       <height>20</height>
      </rect>
     </property>
@@ -159,11 +173,19 @@
    <widget class="QComboBox" name="antennaSelector">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>250</y>
+      <x>130</x>
+      <y>240</y>
       <width>121</width>
-      <height>36</height>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an antenna (RSP-II)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -182,9 +204,9 @@
    <widget class="QSpinBox" name="lnaGainSetting">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>10</x>
       <y>180</y>
-      <width>96</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -195,7 +217,7 @@
    <widget class="QLCDNumber" name="lnaGRdBDisplay">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>140</x>
       <y>180</y>
       <width>51</width>
       <height>31</height>
@@ -214,11 +236,19 @@
    <widget class="QComboBox" name="tunerSelector">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>290</y>
+      <x>10</x>
+      <y>240</y>
       <width>121</width>
       <height>31</height>
      </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
     </property>
     <property name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the device is an rspduo, select the tuner with this combobox&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -245,6 +275,69 @@
     </property>
     <property name="text">
      <string>debug</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>ppm control</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="gainsliderLabel">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>20</y>
+      <width>121</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>if gain reduction</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>210</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>DejaVu Sans Mono</family>
+      <weight>75</weight>
+      <italic>true</italic>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>lna state selector</string>
     </property>
    </widget>
   </widget>
