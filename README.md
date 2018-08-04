@@ -58,7 +58,7 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-![Qt-DAB with Airspy input](/screenshot_qt-dab.png?raw=true)
+![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
 **Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and
 Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
@@ -111,7 +111,7 @@ only shown when pushing a button on the main window.
 In case a widget is invisible (i.e. not selected), the software to
 generate a spectrum is bypassed, so not to waste CPU power.
 
-![Qt-DAB with Airspy input](/screenshot-2_qt-dab.png?raw=true)
+![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
 
 ------------------------------------------------------------------
 Windows

@@ -424,7 +424,8 @@ mir_sdr_ErrT err;
 	   return;
 	}
 
-	err	= my_mir_sdr_AgcControl (true, -30, 0, 0, 0, 0, lnaState);
+	err	= my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	                                 -30, 0, 0, 0, 0, lnaState);
 	if (err != mir_sdr_Success) 
 	   fprintf (stderr, "Error at set_lnagainReduction %s\n",
 	                       errorCodes (err). toLatin1 (). data ());
@@ -503,7 +504,7 @@ int	lnaState	= lnaGainSetting -> value ();
 	                errorCodes (err). toLatin1 (). data ());
 
 	if (agcControl -> isChecked ()) {
-	   my_mir_sdr_AgcControl (this -> agcMode,
+	   my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
 	                          -30,
 	                          0, 0, 0, 0, lnaGainSetting -> value ());
 	   ifgainSlider		-> hide ();
@@ -739,7 +740,8 @@ bool	sdrplayHandler::loadFunctions	(void) {
 
 void	sdrplayHandler::set_agcControl (int dummy) {
 bool agcMode	= agcControl -> isChecked ();
-	my_mir_sdr_AgcControl (agcMode,
+	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
+	                                 mir_sdr_AGC_DISABLE,
 	                       -30,
 	                       0, 0, 0, 0, lnaGainSetting -> value ());
 	if (!agcMode) {
