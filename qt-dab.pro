@@ -317,12 +317,12 @@ LIBS		+= -lz
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
 
-#CONFIG		+= extio
-#CONFIG		+= airspy
-#CONFIG		+= rtl_tcp
-#CONFIG		+= dabstick
+CONFIG		+= extio
+CONFIG		+= airspy
+CONFIG		+= rtl_tcp
+CONFIG		+= dabstick
 CONFIG		+= sdrplay
-#CONFIG		+= hackrf
+CONFIG		+= hackrf
 
 CONFIG		+= NO_SSE
 

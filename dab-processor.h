@@ -102,7 +102,9 @@ private:
 	RadioInterface	*myRadioInterface;
 	ficHandler	my_ficHandler;
 	mscHandler	my_mscHandler;
+	phaseReference	phaseSynchronizer;
 	TII_Detector	my_TII_Detector;
+	ofdmDecoder	my_ofdmDecoder;
 
 	int16_t		attempts;
 	bool		scanMode;
@@ -119,8 +121,6 @@ private:
 
 	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
-	phaseReference	phaseSynchronizer;
-	ofdmDecoder	my_ofdmDecoder;
 	bool		wasSecond		(int16_t, dabParams *);
 virtual	void		run			(void);
 signals:
