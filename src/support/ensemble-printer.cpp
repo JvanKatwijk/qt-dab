@@ -149,7 +149,6 @@ bool	firstData;
 	      h = (h & 03) + 1;
 	   }
 	   else  {
-	      h = h & 03;
 	      protL = "UEP ";
 	      protL. append (QString::number (h));
 	      codeRate = uep_rates [h + 1];
