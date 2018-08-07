@@ -294,6 +294,11 @@ Data_blocks:
   *	samples ahead. Before going for the next frame, we
   *	we just check the fineCorrector
   */
+//NewOffset:
+///     we integrate the newly found frequency error with the
+///     existing frequency error.
+           fineOffset += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
+
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
 	      fineOffset -= carrierDiff;
@@ -304,10 +309,6 @@ Data_blocks:
 	      fineOffset += carrierDiff;
 	   }
 
-//NewOffset:
-///	we integrate the newly found frequency error with the
-///	existing frequency error.
-	   fineOffset += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 ReadyForNewFrame:
 ///	and off we go, up to the next frame
 	   goto SyncOnPhase;

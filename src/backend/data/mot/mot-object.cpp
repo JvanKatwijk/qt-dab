@@ -111,6 +111,9 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           bool		lastFlag) {
 int32_t i;
 
+	if ((segmentNumber < 0) || (segmentNumber >= 128))
+	   return;
+
         if (marked [segmentNumber])   // we already have the segment
            return;
 

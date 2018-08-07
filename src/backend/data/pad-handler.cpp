@@ -449,12 +449,14 @@ int32_t	size	= data. size () < dataGroupLength ? data. size () :
 	      index += 3;
 	   }
 	   else {
-	      fprintf (stderr, "sorry no transportId\n");
+//	      fprintf (stderr, "sorry no transportId\n");
 	      return;
 	   }
 	   index += (lengthIndicator - 2);
 	}
 
+	if (transportId == 0)	// no idea wat it means
+	   return;
 
 	uint32_t segmentSize	= ((data [index + 0] & 0x1F) << 8) |
 	                            data [index + 1];

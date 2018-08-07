@@ -68,7 +68,7 @@ private:
 	QByteArray	segments [128];
 	void		handleComplete	(void);
 #ifdef	TRY_EPG
-      CEPGDecoder     epgHandler;
+	CEPGDecoder     epgHandler;
 #endif
 
 signals:
