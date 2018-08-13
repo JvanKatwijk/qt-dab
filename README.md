@@ -31,12 +31,12 @@ Features
   * Both DAB bands supported: 
   	* VHF Band III
    	* L-Band (only used in Czech Republic and Vatican)
-  * Spectrum view (incl. constellation diagram)
-  * Scanning function (scan the subsequent channels in the selected band  until a channel is encountered where a DAB signal is detected)
+  * Spectrum view (incl. constellation diagram, impulse response, NULL symbol)
+  * Scanning function (scan the subsequent channels in the selected band until a channel is encountered where a DAB signal is detected)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
   * Automatic display of TII (Transmitter Identification Information) data when transmitted
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
-  * Saving audio as uncompressed wave file
+  * Saving audio as uncompressed wave files
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
   	- SDRplay (both RSP I and RSP II),
@@ -48,7 +48,7 @@ Features
 Not  (Not yet or partly) implemented:
 
   * DMB (Audio and Video)
-  * TPEG when configured, TPEG messages are being send to a TCP port, sources for a simple client
+  * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client
     are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources)
@@ -60,31 +60,21 @@ Introduction
 
 ![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
-**Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and
-Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Next to Qt-DAB, there exists a "light" version, dabradio, and a command-line
-based version. Both the Qt-DAB version and the dabradio version are implemented
-in C++, using the Qt framework for the implementation of the GUI.
-The command-line version is implemented using C++, but does not depend on Qt.
+Beside to Qt-DAB, there exists a "light" version, **dabradio**, and a command-line based version. Both, the Qt-DAB version and the dabradio version, are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, but does not depend on Qt.
 
-dabradio and the Qt-free version, the "command-line only" version have
-their own repository on Github.
+dabradio and the Qt-free version, the "command-line only" version have their own repository on Github.
 
-The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, a SDRplay, the HACK rf, or a dabstick (rtl_sdr).
+The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr).
 
-Next to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
+Beside to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
 
-The Qt-DAB version also supports input from an rtl-tcp server (see
-osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`).
-Obviously there is a provision for dumping the input into a (*.sdr)-file. 
+The Qt-DAB version also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
-Note that if the rtl_tcp server is used as input device, the connection
-needs to support the inputrate, i.e. 2048000 I/Q samples (i.e. 2 * 2048000 bytes/second).
+Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
-Since the Qt-DAB version has to run on a headless RPI 2,
-using the home WiFi,  the resulting PCM output can be sent - if so
-configured - to a TCP port (Sources for a small client are part of the source distribution).
+Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
 
 For further information please visit http://www.sdr-j.tk
 
@@ -100,16 +90,11 @@ The picture below shows Qt-DAB's main window, with the (few) control buttons, an
 
 * a widget with controls for the attached device,
 * a widget showing the technical information of the selected service, 
-* a widget showing the spectrum of the received radio signal and the
-\ constellation of the decoded signal,
+* a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
 * a widget showing the spectrum of the NULL period between successive DAB frames,
 * and a widget showing the response(s) from different transmitters in the SFN.
 
-While the main window and the widget for the device control
-are always shown,  each of the others is
-only shown when pushing a button on the main window. 
-In case a widget is invisible (i.e. not selected), the software to
-generate a spectrum is bypassed, so not to waste CPU power.
+While the main window and the widget for the device control are always shown, each of the others is only shown when pushing a button on the main window. In case a widget is invisible (i.e. not selected), the software to generate a spectrum is bypassed, so not to waste CPU power.
 
 ![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
 
@@ -117,11 +102,7 @@ generate a spectrum is bypassed, so not to waste CPU power.
 Windows
 ------------------------------------------------------------------
 
-Windows releases can be found at
-https://github.com/JvanKatwijk/qt-dab/releases. The software is packed
-in a zipped folder, (windows-bin.zip). The folder - after unpacking -
-contains the executable (and other executables) as well as the libraries
-to run the software.
+Windows releases can be found at https://github.com/JvanKatwijk/qt-dab/releases. The software is packed in a zipped folder, (windows-bin.zip). The folder - after unpacking - contains the executable (and other executables) as well as the libraries to run the software.
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
@@ -131,9 +112,7 @@ Ubuntu Linux
 
 If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage-for-x64-linux-systems) which is much easier for Linux beginners.
 
-Ubuntu 16.04 (and on) have good support for Qt5 and qwt (compiled for Qt5).
-For generating an executable under Ubuntu (16.04 or newer), you can put the following commands into a script. 
-(For Ubuntu 14.04 look into the package manager for Qt4 packages)
+Ubuntu 16.04 (and on) have good support for Qt5 and qwt (compiled for Qt5). For generating an executable under Ubuntu (16.04 or newer), you can put the following commands into a script. (For Ubuntu 14.04 look into the package manager for Qt4 packages)
 
 1. Fetch the required components
    ```
@@ -184,10 +163,10 @@ For generating an executable under Ubuntu (16.04 or newer), you can put the foll
   ```
 
   Note that in order for the libraries to be effective, ensure that
-* (a) the path "/usr/local/lib" is in the load library paths (i.e. it \
-is named in one of the ".conf" files in the "etc/ld.so.conf" directory
-* (b) a file exists in the "/etc/udev/rules.d" directory describing the device,\
-allowing "ordinary" users to access the device.
+  
+ a) the path `/usr/local/lib` is in the load library paths (i.e. it is named in one of the `.conf` files in the `etc/ld.so.conf` directory
+ 
+ b) a file exists in the `/etc/udev/rules.d` directory describing the device, allowing "ordinary" users to access the device.
 
 3. Get a copy of the Qt-DAB sources
   ```
@@ -202,8 +181,7 @@ allowing "ordinary" users to access the device.
   INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
   ````
 
-4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on
-the cores of the processor. 
+4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on the cores of the processor. 
 
 4.c. If you are compiling on/for a Linux x64 based PC, you might want to select to uncomment
    ````
@@ -219,7 +197,7 @@ If you are compiling on/for an RPI2 with Stretch (or comparable system), you mig
    CONFIG+= NEON_RPI3.
    ````
 
-If unsure uncomment only 
+If unsure, uncomment only 
    ````
    CONFIG+=NO_SSE.
    ````
@@ -240,7 +218,7 @@ BE SURE TO UNCOMMENT PRECISELY ONE OF
 
   You could also use QtCreator, load the `qt-dab.pro` file and build the executable.
   
-  Remark: The executable file can be found in the sub-directory linux-bin. A make install command is not implemented.
+  Remark: The executable file can be found in the sub-directory `linux-bin`. A make install command is not implemented.
 
 
 ------------------------------------------------------------------
@@ -272,21 +250,18 @@ CONFIG		+= extio
 
 for use with (appropriate) extio handlers
 
-Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq' as well as 16-bit "wav" `*.sdr` files) is configured by default.
+Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq` as well as 16-bit wav `*.sdr` files) is configured by default.
 
-
-Audio samples are - by default - sent to an audio device using the portaudio
-library. Two alternatives are available:
+Audio samples are - by default - sent to an audio device using the portaudio library. Two alternatives are available:
 
 For selecting the output to be sent to a TCP port, uncomment
 ```
 #CONFIG         += tcp-streamer         # use for remote listening
 ```
 
-The source tree contains a directory "sound-client", that contains sources to generate a simple "listener" for remote listening.
+The source tree contains a directory `sound-client`, that contains sources to generate a simple "listener" for remote listening.
 
-For selecting the output to be handled by the Qt system (default device only)
-uncomment
+For selecting the output to be handled by the Qt system (default device only) uncomment
 ````
 #CONFIG		+= qt-audio
 ````
@@ -301,11 +276,10 @@ An experimental configuration parameter is
 CONFIG		+= try_epg
 ```
 
-If `try_epg` is configured then EPG (which stands for Electronic Program Guide) data will be written to xml files. Please select the service carrying EPG data.
+If `try_epg` is configured then EPG (Electronic Program Guide) data will be written to `*.xml` files. Please select the service carrying EPG data.
 
 
-If you are compiling/running for an x64 based PC with SSE, then
-you could set
+If you are compiling/running for an x64 based PC with SSE, then you could set
 ```
 #CONFIG          += NEON_RPI2
 #CONFIG          += NEON_RPI3
@@ -313,8 +287,7 @@ CONFIG          += SSE
 #CONFIG          += NO_SSE
 ```
 
-If you are compiling/running for an RPI2, and want to check whether or
-not NEON instructions can be used, you could set
+If you are compiling/running for an RPI2, and want to check whether or not NEON instructions can be used, you could set
 ```
 CONFIG          += NEON_RPI2
 #CONFIG          += NEON_RPI3
@@ -322,8 +295,7 @@ CONFIG          += NEON_RPI2
 #CONFIG          += NO_SSE
 ```
 
-If you are compiling/running for an RPI3, and want to check whether or
-not NEON instructions can be used, you could set
+If you are compiling/running for an RPI3, and want to check whether or not NEON instructions can be used, you could set
 ```
 #CONFIG          += NEON_RPI2
 CONFIG          += NEON_RPI3
@@ -331,7 +303,7 @@ CONFIG          += NEON_RPI3
 #CONFIG          += NO_SSE
 ```
 
-The safest way - always - is to set
+The safest way is - always - to set
 ```
 #CONFIG          += NEON_RPI2
 #CONFIG          += NEON_RPI3
@@ -343,7 +315,7 @@ CONFIG          += NO_SSE
 Configuring using CMake
 ------------------------------------------------------------------
 
-The `CMakeLists.txt` file has all devices and the spectrum switched off as default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
+The `CMakeLists.txt` file has all devices and the spectrum switched off per default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
 An example:
 ```
@@ -367,15 +339,13 @@ The default location for installation depends on your system, mostly `/usr/local
 
 For other options, see the `CMakeLists.txt` file.
 
-Important: Note that CMakeLists.txt file expects the appropriate Qt version (and - if configured - the qwt library) to be installed.
+Important: Note that `CMakeLists.txt` file expects the appropriate Qt version (and - if configured - the qwt library) to be installed.
 
 -----------------------------------------------------------------
 SDRplay
 -----------------------------------------------------------------
 
-The current set of sources provides support for both the RSP-I and
-the RSP-II. Due to an incompatibility between libraries 2.13 and older
-versions, be certain to have at least 1.13 installed.
+The current set of sources provides support for both the RSP-I and the RSP-II. Due to an incompatibility between libraries 2.13 and older versions, be certain to have at least 1.13 installed.
 
 ------------------------------------------------------------------
 Qt
@@ -383,7 +353,7 @@ Qt
 
 The software uses the Qt library and - for the spectrum and the constellation diagram - the qwt library.
 
-The `CMakeLists.txt` assumes Qt5, if you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well).  
+The `CMakeLists.txt` assumes Qt5. If you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well).  
 
 -----------------------------------------------------------------
 Raspberry PI
@@ -397,30 +367,25 @@ In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. August 2017) supports both Qt5 and a qwt compiled against Qt5.
 
-A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbian Stretch.
-Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the Airspy, while the
-API library for the SDRplay can be downloaded from sdrplay.com. So, Qt-DAB can be used without the need for compiling anything.
+A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbian Stretch. Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the Airspy, while the API library for the SDRplay can be downloaded from sdrplay.com. So, Qt-DAB can be used without the need for compiling anything.
 
-The AppImage version does not contain the Spectrum - I am using it in a headless environment.
+The AppImage version does not contain the spectrum - I am using it in a headless environment.
 
-Since Raspbian Stretch is a Debian derivative, the description for creating a version under Ubuntu applies.
+Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies.
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
-https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, Qt-DAB-x64.Appimage, which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.).
-It assumes that you have installed an appropriate usb library,
-libraries to support either a dabstick (i.e. rtlsdr) or an Airspy are
-included in the appImage (the appropriate udev rules, i.e. rules to
-allow a non-root user to use the device through USB, will be installed
-by the execution of the appImage, that is why it will ask for your password. If you have installed the device of your choice on your system, you can just cancel this request).
+https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, **Qt-DAB-x64.Appimage**, which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.).
 
-If you want to run
-with an SDRplay, follow the installation instructions for the library from 
-"www.sdrplay.com". All further dependencies are included.
+It assumes that you have installed an appropriate usb library, libraries to support either a dabstick (i.e. rtlsdr) or an Airspy are included in the appImage (the appropriate udev rules, i.e. rules to allow a non-root user to use the device through USB, will be installed by the execution of the appImage, that is why it will ask for your password. If you have installed the device of your choice on your system, you can just cancel this request).
+
+If you want to run with an SDRplay, follow the installation instructions for the library from http://www.sdrplay.com . All further dependencies are included.
+
 The appImage is just a self-contained single file which you have to make executable in order to run.
-It furthermore contains an -experimental- appImage for use under Stretch on an RPI2/3, Qt-DAB-ARM.AppImage.
+
+It furthermore contains an (experimental) appImage for use under Stretch on an RPI2/3, **Qt-DAB-ARM.AppImage**.
 
 All further dependencies are included
 
@@ -454,36 +419,26 @@ displaycolor=blue
 gridcolor=red
 ```
 
-The Qt-DAB program now searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the SFN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
+The Qt-DAB program searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the SFN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
 
 The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the `.qt-dab.ini` file
 
 ```
 tii_delay=xxx
 ```
-
-where xxx is the number of seconds. Default of the delay is 20 seconds.
+where `xxx` is the number of seconds. Default of the delay is 20 seconds.
 
 --------------------------------------------------------------------------------
 A note on intermittent sound 
 -------------------------------------------------------------------------------
 
-In some cases, in some periods of listening, the sound is (or at least seems)
-interrupted. There are two different causes for this
+In some cases, in some periods of listening, the sound is (or at least seems) interrupted. There are two different causes for this:
 
-First of all the incoming signal is weak and audio packages do not pass the
-many controls that are executed. This shows in the widget
-"technical data", not all the colored bars at the bottom are 100 percent green. 
-An audio package represents 24 milliseconds of audio, loss of a few packages
-leads to an interruption of the sound.
+First of all the incoming signal is weak and audio packages do not pass the many controls that are executed. This shows in the widget "technical data", not all the colored bars at the bottom are 100 percent green. An audio package represents 24 milliseconds of audio, loss of a few packages leads to an interruption of the sound.
 
-A second reason has to do with system parameters. Too small a buffersize
-in the audio driver causes too high a frequency of calls to a callback
-function. In Linux this shows by an underrun reported by the alsa sound system.
-The buffer size can be set (in multiples of 256 audio samples)
-by the value of "latency" in the ".ini" file. The default value is 1.
+A second reason has to do with system parameters. Too small a buffersize in the audio driver causes too high a frequency of calls to a callback function. In Linux this shows by an underrun reported by the alsa sound system. The buffer size can be set (in multiples of 256 audio samples) by the value of "latency" in the `.ini` file. The default value is 1.
 
-On my RPI 2 - with Stretch - latency=2 works best.
+On my RPI 2 - with Stretch - `latency=2` works best.
 
 # Copyright
 
