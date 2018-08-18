@@ -117,7 +117,6 @@ std::complex<float> temp;
 	temp		*= oscillatorTable [currentPhase];
 	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
 #define	N	5
-	sampleCount	++;
 	if (++ sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
 	   sampleCount = 0;
