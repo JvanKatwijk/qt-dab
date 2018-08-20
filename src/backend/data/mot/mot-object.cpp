@@ -87,10 +87,6 @@ int32_t pointer = 7;
                  pointer += length;
            }
 	}
-
-//	no segments as yet
-	for (int i = 0; i < 128; i ++)
-	   marked [i] = false;
 }
 
 	motObject::~motObject	(void) {
@@ -111,20 +107,21 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           bool		lastFlag) {
 int32_t i;
 
-	if ((segmentNumber < 0) || (segmentNumber >= 128))
+	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 
-        if (marked [segmentNumber])   // we already have the segment
-           return;
+	if (motMap. find (segmentNumber) != motMap. end ())
+	   return;
 
 //      Note that the last segment may have a different size
         if (!lastFlag && (this -> segmentSize == -1))
            this -> segmentSize = segmentSize;
-//
-        segments [segmentNumber]. resize (segmentSize);
-        for (i = 0; i < segmentSize; i ++)
-           segments [segmentNumber][i] = bodySegment [i];
-        marked [segmentNumber] = true;
+
+	QByteArray segment;
+	segment. resize (segmentSize);
+	for (i = 0; i < segmentSize; i ++)
+	   segment [i] = bodySegment [i];
+	motMap. insert (std::make_pair (segmentNumber, segment));
 //
         if (lastFlag)
            numofSegments = segmentNumber + 1;
@@ -134,10 +131,10 @@ int32_t i;
 //
 //	once we know how many segments there are/should be,
 //	we check for completeness
-	for (i = 0; i < numofSegments; i ++) 
-           if (!(marked [i])) {
+	for (i = 0; i < numofSegments; i ++) {
+	   if (motMap. find (i) == motMap. end ())
 	      return;
-	   }
+	}
 
 //	The motObject is (seems to be) complete
 	handleComplete ();
@@ -145,11 +142,10 @@ int32_t i;
 
 
 void	motObject::handleComplete (void) {
-int	i;
 QByteArray result;
 
-	for (i = 0; i < numofSegments; i ++)
-	   result. append (segments [i]);
+	for (const auto &it : motMap)
+	   result. append (it. second);
 
 	if (contentType == 7) {		// epg data
 #ifdef	TRY_EPG
@@ -171,7 +167,7 @@ QByteArray result;
 	                         realName. toLatin1 (). data ());
 	   checkDir (realName);
 	   FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
-	   if (x == NULL)
+	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
 	                           realName. toLatin1 (). data ());
 	   else {

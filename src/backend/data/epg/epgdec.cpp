@@ -46,7 +46,7 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString ();
 	   FILE *epgFile = fopen (name. toUtf8 (). data (), "w");
-	   if (epgFile != NULL) {
+	   if (epgFile != nullptr) {
 	      fprintf (stderr, "filename = %s\n", name. toUtf8 (). data ());
 	      fprintf (epgFile, test. toLatin1 (). data ());
 	      fclose (epgFile);
@@ -570,7 +570,7 @@ uint16_t n	= get_uint16(p);
 static
 string	decode_attribute_name (const dectab& tab) {
 
-	if (tab.name == NULL) {
+	if (tab.name == nullptr) {
 	   return "unknown";
 	}
 	if (strlen (tab.name) > 64) { /* some reasonably big number */

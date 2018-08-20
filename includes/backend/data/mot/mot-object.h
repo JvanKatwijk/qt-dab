@@ -29,6 +29,8 @@
 #include	<QByteArray>
 #include	<QString>
 #include	<QDir>
+#include	<map>
+#include	<iterator>
 #ifdef	TRY_EPG
 #include	"epgdec.h"
 #endif
@@ -64,12 +66,11 @@ private:
 	int		contentType;
 	int		contentsubType;
 	QString		name;
-	bool		marked [128];
-	QByteArray	segments [128];
 	void		handleComplete	(void);
 #ifdef	TRY_EPG
 	CEPGDecoder     epgHandler;
 #endif
+	std::map<int, QByteArray> motMap;
 
 signals:
         void	the_picture (QByteArray, int, QString);

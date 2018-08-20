@@ -179,7 +179,7 @@ void	mscHandler::set_audioChannel (audiodata *d,
 	                              RingBuffer<int16_t> *audioBuffer) {
 	locker. lock ();
 //
-//	we could assert here that theBackend == NULL
+//	we could assert here that theBackend == nullptr
 	theBackends. push_back (new audioBackend (myRadioInterface,
 	                                          d,
 	                                          audioBuffer,

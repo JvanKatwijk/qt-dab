@@ -40,7 +40,7 @@ struct {
 	this	-> picturesPath	= picturesPath;
 	orderNumber		= 0;
 
-	theDirectory		= NULL;
+	theDirectory		= nullptr;
 	for (int i = 0; i < 15; i ++)
 	   motTable [i]. orderNumber = -1;
 }
@@ -51,7 +51,7 @@ int	i;
 	for (i = 0; i < 15; i ++)
 	   if (motTable [i]. orderNumber > 0)
 	      delete motTable [i]. motSlide;
-	if (theDirectory != NULL)
+	if (theDirectory != nullptr)
 	   delete theDirectory;
 }
 
@@ -116,7 +116,7 @@ int32_t	i;
 	   case 3:
 	      if (segmentNumber == 0) {
 	         motObject *h = getHandle (transportId);
-	         if (h != NULL) 
+	         if (h != nullptr) 
 	            break;
 	         h = new motObject (myRadioInterface,
 	                            picturesPath,
@@ -131,7 +131,7 @@ int32_t	i;
 
 	   case 4: {
 	         motObject *h = getHandle (transportId);
-	         if (h == NULL)
+	         if (h == nullptr)
 	            break;
 	         h -> addBodySegment (&motVector [2],
 	                              segmentNumber,
@@ -142,11 +142,11 @@ int32_t	i;
 
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
-	         if (theDirectory != NULL)
+	         if (theDirectory != nullptr)
 	            if (theDirectory -> get_transportId () == transportId)
 	               break;	// already existing
 
-	         if (theDirectory != NULL)	// an old one, replace it
+	         if (theDirectory != nullptr)	// an old one, replace it
 	            delete theDirectory;
 
 	         int32_t segmentSize = ((motVector [0] & 0x1F) << 8) |
@@ -171,7 +171,7 @@ int32_t	i;
 	                                            segment);
 	      }
 	      else {
-	         if ((theDirectory == NULL) || 
+	         if ((theDirectory == nullptr) || 
 	                (theDirectory -> get_transportId () != transportId))
 	            break;
 	         theDirectory -> directorySegment (transportId,
@@ -194,9 +194,9 @@ int	i;
 	   if ((motTable [i]. orderNumber >= 0) &&
 	                   (motTable [i]. transportId == transportId))
 	      return motTable [i]. motSlide;
-	if (theDirectory != NULL)
+	if (theDirectory != nullptr)
 	   return theDirectory -> getHandle (transportId);
-	return NULL;
+	return nullptr;
 }
 
 void	motHandler::setHandle (motObject *h, uint16_t transportId) {

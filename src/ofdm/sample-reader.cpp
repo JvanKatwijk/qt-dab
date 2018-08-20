@@ -56,7 +56,7 @@ int	i;
 
 	bufferContent	= 0;
 	corrector	= 0;
-	dumpfilePointer. store (NULL);
+	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth ());
 	running. store (true);
@@ -96,7 +96,7 @@ std::complex<float> temp;
 //	so here, bufferContent > 0
 	theRig -> getSamples (&temp, 1);
 	bufferContent --;
-	if (dumpfilePointer. load () != NULL) {
+	if (dumpfilePointer. load () != nullptr) {
 	   dumpBuffer [2 * dumpIndex    ] = real (temp) * dumpScale;
 	   dumpBuffer [2 * dumpIndex + 1] = imag (temp) * dumpScale;
 	   if ( ++dumpIndex >= DUMPSIZE / 2) {
@@ -149,7 +149,7 @@ int32_t		i;
 //	so here, bufferContent >= n
 	n	= theRig -> getSamples (v, n);
 	bufferContent -= n;
-	if (dumpfilePointer. load () != NULL) {
+	if (dumpfilePointer. load () != nullptr) {
 	   for (i = 0; i < n; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
@@ -190,6 +190,6 @@ void	sampleReader::startDumping (SNDFILE *f) {
 }
 
 void	sampleReader::stopDumping (void) {
-	dumpfilePointer. store (NULL);
+	dumpfilePointer. store (nullptr);
 }
 

@@ -173,7 +173,7 @@ int8_t          *PI_X;
 	if ((profileTable [index]. PI4 - 1) != -1)
 	   PI4	= get_PCodes (profileTable [index]. PI4 -1);
 	else
-	   PI4	= NULL;
+	   PI4	= nullptr;
 
 	PI_X	= get_PCodes (8 - 1);
 //
@@ -203,7 +203,7 @@ int8_t          *PI_X;
 	   }
 	}
 
-	if (PI4 != NULL)
+	if (PI4 != nullptr)
 	   for (i = 0; i < L4; i ++) {
 	      for (j = 0; j < 128; j ++) {
 	         if (PI4 [j % 32] != 0) 

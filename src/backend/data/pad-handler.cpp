@@ -356,7 +356,7 @@ int16_t  dataLength                = 0;
 //	the msc_length was given by the preceding appType "1"
 void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 	if (mscGroupElement) { 
-	   if (msc_dataGroupBuffer. size () < dataGroupLength)
+//	   if (msc_dataGroupBuffer. size () < dataGroupLength)
 //	      fprintf (stderr, "short ? %d %d\n",
 //	                              msc_dataGroupBuffer. size (),
 //	                              dataGroupLength);
@@ -373,7 +373,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 	   return;
 	}
 
-	mscGroupElement	= true;
+	mscGroupElement		= true;
 	msc_dataGroupBuffer. clear ();
 	msc_dataGroupBuffer	= data;
 	show_motHandling (true);
@@ -431,12 +431,14 @@ int32_t	size	= data. size () < dataGroupLength ? data. size () :
 //	extensionflag
 	bool	extensionFlag	= (data [0] & 0x80) != 0;
 //	if the segmentflag is on, then a lastflag and segmentnumber are
-//	available, i.e. 2 bytes more
+//	available, i.e. 2 bytes more.
+//	Theoretically, the segment number can be as large as 16384
 	index			= extensionFlag ? 4 : 2;
 	bool	segmentFlag	=  (data [0] & 0x20) != 0;
 	if ((segmentFlag) != 0) {
 	   lastFlag		= data [index] & 0x80;
-	   segmentNumber	= ((data [index] & 0x7F) << 8) | data [index + 1];
+	   segmentNumber	= ((data [index] & 0x7F) << 8) |
+	                                               data [index + 1];
 	   index += 2;
 	}
 

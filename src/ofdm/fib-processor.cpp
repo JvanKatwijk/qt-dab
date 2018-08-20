@@ -502,7 +502,7 @@ serviceId	* service;
 	}
         used += 40 / 8;
 	
-        if (packetComp == NULL)		// no serviceComponent yet
+        if (packetComp == nullptr)		// no serviceComponent yet
            return used;
 //
 //	We want to have the subchannel OK
@@ -617,7 +617,7 @@ uint8_t		extensionFlag;
         if (lsFlag == 1) {
            SCid = getBits (d, lOffset + 4, 12);
            lOffset += 16;
-//           if (find_packetComponent ((SCIds << 4) | SCid) != NULL) {
+//           if (find_packetComponent ((SCIds << 4) | SCid) != nullptr) {
 //              fprintf (stderr, "packet component bestaat !!\n");
 //           }
         }
@@ -734,7 +734,7 @@ serviceId	*s	= findServiceId (SId);
 ;
 	   serviceComponent *packetComp        =
                                  find_serviceComponent (SId, SCId);
-           if (packetComp != NULL) 
+           if (packetComp != nullptr) 
                 packetComp  -> appType       = appType;
 	}
 
@@ -1127,7 +1127,7 @@ int16_t i;
            if (ServiceComps [i]. SCId == SCId) 
               return &ServiceComps [i];
         }
-        return NULL;
+        return nullptr;
 }
 
 serviceComponent *fib_processor::find_serviceComponent (int32_t SId,
@@ -1144,7 +1144,7 @@ int16_t i;
 	   }
 	}
 
-	return NULL;
+	return nullptr;
 }
 
 //	bind_audioService is the main processor for - what the name suggests -
