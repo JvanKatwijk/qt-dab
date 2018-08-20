@@ -107,6 +107,7 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           bool		lastFlag) {
 int32_t i;
 
+//	fprintf (stderr, "adding segment %d\n", segmentNumber);
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 

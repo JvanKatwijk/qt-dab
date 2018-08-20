@@ -355,21 +355,24 @@ int16_t  dataLength                = 0;
 //	Called at the start of the msc datagroupfield,
 //	the msc_length was given by the preceding appType "1"
 void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
-	if (mscGroupElement) { 
-//	   if (msc_dataGroupBuffer. size () < dataGroupLength)
-//	      fprintf (stderr, "short ? %d %d\n",
-//	                              msc_dataGroupBuffer. size (),
-//	                              dataGroupLength);
-	   build_MSC_segment (msc_dataGroupBuffer);
-	   mscGroupElement	= false;
-	   show_motHandling (false);
-	}
+
+//	if (mscGroupElement) { 
+////	   if (msc_dataGroupBuffer. size () < dataGroupLength)
+////	      fprintf (stderr, "short ? %d %d\n",
+////	                              msc_dataGroupBuffer. size (),
+////	                              dataGroupLength);
+//	   msc_dataGroupBuffer. clear ();
+//	   build_MSC_segment (data);
+//	   mscGroupElement	= true;
+//	   show_motHandling (true);
+//	}
 
 	if (data. size () >= dataGroupLength) {	// msc element is single item
+	   msc_dataGroupBuffer. clear ();
 	   build_MSC_segment (data);
 	   mscGroupElement = false;
 	   show_motHandling (true);
-//	   fprintf (stderr, "msc element is single\n");
+	   fprintf (stderr, "msc element is single\n");
 	   return;
 	}
 
@@ -395,7 +398,7 @@ int32_t	currentLength = msc_dataGroupBuffer. size ();
 	if (msc_dataGroupBuffer. size () >= dataGroupLength) {
 	   build_MSC_segment (msc_dataGroupBuffer);
 	   msc_dataGroupBuffer. clear ();
-	   mscGroupElement	= false;
+//	   mscGroupElement	= false;
 	   show_motHandling (false);
 	}
 }
@@ -462,6 +465,8 @@ int32_t	size	= data. size () < dataGroupLength ? data. size () :
 
 	uint32_t segmentSize	= ((data [index + 0] & 0x1F) << 8) |
 	                            data [index + 1];
+//	fprintf (stderr, "segmentSize = %d (transportId = %d)\n",
+//	                      segmentSize, transportId);
 //
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {

@@ -22,6 +22,7 @@
 #include	<stdio.h>
 #include	"ensemble-printer.h"
 #include	"country-codes.h"
+#include	"dab_tables.h"
 #include	"text-mapper.h"
 #include	"dab-processor.h"
 
@@ -81,28 +82,30 @@ bool	firstData;
 	   my_dabProcessor -> dataforAudioService (i, &d);
 	   if (!d. defined)
 	      continue;
-	   uint16_t h = d. protLevel;
-	   QString protL;
-	   QString codeRate;
-	   if (!d. shortForm) {
-	      protL = "EEP ";
-
-          protL. append (QString::number ((h & 03) + 1));
-	      if ((h & (1 << 2)) == 0) {
-             protL. append ("-A");
-	         codeRate = eep_Arates [(h & 03) + 1];
-	      }
-	      else {
-             protL. append ("-B");
-	         codeRate = eep_Brates [(h & 03) + 1];
-	      }
-          h = (h & 03) + 1;
-	   }
-	   else  {
-	      protL = "UEP ";
-	      protL. append (QString::number (h));
-	      codeRate = uep_rates [h + 1];
-	   }
+	   QString protL	= getProtectionLevel (d. shortForm, 
+	                                              d. protLevel);
+	   QString codeRate	= getCodeRate (d. shortForm, 
+	                                       d. protLevel);
+//	   uint16_t h = d. protLevel;
+//	   if (!d. shortForm) {
+//	      protL = "EEP ";
+//
+//          protL. append (QString::number ((h & 03) + 1));
+//	      if ((h & (1 << 2)) == 0) {
+//             protL. append ("-A");
+//	         codeRate = eep_Arates [(h & 03) + 1];
+//	      }
+//	      else {
+//             protL. append ("-B");
+//	         codeRate = eep_Brates [(h & 03) + 1];
+//	      }
+//          h = (h & 03) + 1;
+//	   }
+//	   else  {
+//	      protL = "UEP ";
+//	      protL. append (QString::number (h));
+//	      codeRate = uep_rates [h + 1];
+//	   }
 
 	   countryId = (d. serviceId >> 12) & 0xF;
 	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",

@@ -116,6 +116,8 @@
 
 	coordinates. cleanUp ();
 	CIFcount	= 0;
+	ensemble_Descriptor. ecc_Present	= false;
+	ensemble_Descriptor. name_Present	= false;
 }
 	
 	fib_processor::~fib_processor (void) {

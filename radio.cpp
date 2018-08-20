@@ -39,6 +39,7 @@
 #include	"ensemble-printer.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
+#include	"dab_tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -1660,20 +1661,21 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	techData. startAddressDisplay -> display (d -> startAddr);
 	techData. lengthDisplay	-> display (d -> length);
 	techData. subChIdDisplay -> display (d -> subchId);
-	uint16_t h = d -> protLevel;
-	QString protL;
-	if (!d -> shortForm) {
-	   protL = "EEP ";
-	   protL. append (QString::number ((h & 03) + 1));
-	   if ((h & (1 << 2)) == 0)
-	      protL. append ("-A");
-	   else
-	      protL. append ("-B");
-	}
-	else  {
-	   protL = "UEP ";
-	   protL. append (QString::number (h));
-	}
+	QString protL	= getProtectionLevel (d -> shortForm,
+	                                      d -> protLevel);
+//	uint16_t h = d -> protLevel;
+//	if (!d -> shortForm) {
+//	   protL = "EEP ";
+//	   protL. append (QString::number ((h & 03) + 1));
+//	   if ((h & (1 << 2)) == 0)
+//	      protL. append ("-A");
+//	   else
+//	      protL. append ("-B");
+//	}
+//	else  {
+//	   protL = "UEP ";
+//	   protL. append (QString::number (h));
+//	}
 	techData. uepField	-> setText (protL);
 	techData. ASCTy		-> setText (d -> ASCTy == 077 ? "DAB+" : "DAB");
 	if (d -> ASCTy == 077) {
@@ -1681,8 +1683,9 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	   techData. aacError_display -> show ();
 	}
 	techData. language ->
-	   setText (the_textMapper.
-	               get_programm_language_string (d -> language));
+	   setText (getLanguage (d -> language));
+//	   setText (the_textMapper.
+//	               get_programm_language_string (d -> language));
 	techData. programType ->
 	   setText (the_textMapper.
 	               get_programm_type_string (d -> programType));

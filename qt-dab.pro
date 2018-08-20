@@ -133,6 +133,7 @@ HEADERS += ./radio.h \
 	   ./includes/support/dab-params.h \
 	   ./includes/support/band-handler.h \
 	   ./includes/support/text-mapper.h \
+	   ./includes/support/dab_tables.h \
 	   ./includes/support/ensemble-printer.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
@@ -207,6 +208,7 @@ SOURCES += ./main.cpp \
 	   ./src/support/dab-params.cpp \
 	   ./src/support/band-handler.cpp \
 	   ./src/support/text-mapper.cpp \
+	   ./src/support/dab_tables.cpp \
 	   ./src/support/ensemble-printer.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
