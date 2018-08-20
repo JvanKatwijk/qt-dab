@@ -234,6 +234,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/dab-params.h
 	     ./includes/support/band-handler.h
 	     ./includes/support/text-mapper.h
+	     ./includes/support/dab_tables.h
 	     ./includes/support/ensemble-printer.h
 	     ./includes/support/viterbi_768/viterbi-768.h
 	     ./includes/scopes-qwt6/iqdisplay.h
@@ -299,6 +300,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/dab-params.cpp
 	     ./src/support/band-handler.cpp
 	     ./src/support/text-mapper.cpp
+	     ./src/support/dab_tables.cpp
 	     ./src/support/ensemble-printer.cpp
 	     ./src/support/viterbi_768/viterbi-768.cpp
 	     ./src/support/viterbi_768/spiral-no-sse.c
