@@ -313,7 +313,7 @@ static country_codes countryTable[] = {
 };
 
 // from Table 2a
-const char * getASCTy(int16_t ASCTy) {
+const char * getASCTy (int16_t ASCTy) {
 	switch (ASCTy) {
 	   case 0:     return "DAB";
 	   case 63:    return "DAB+";
@@ -322,7 +322,7 @@ const char * getASCTy(int16_t ASCTy) {
 }
 
 // from Table 2b
-const char * getDSCTy(int16_t DSCTy) {
+const char * getDSCTy (int16_t DSCTy) {
 	switch (DSCTy) {
 	   case 1:     return "Traffic Message CHannel (TMC)";
 	   case 2:     return "Emergency Warning System (EWS)";

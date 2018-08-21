@@ -372,7 +372,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 	   build_MSC_segment (data);
 	   mscGroupElement = false;
 	   show_motHandling (true);
-	   fprintf (stderr, "msc element is single\n");
+//	   fprintf (stderr, "msc element is single\n");
 	   return;
 	}
 

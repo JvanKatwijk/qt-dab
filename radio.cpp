@@ -1663,19 +1663,6 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	techData. subChIdDisplay -> display (d -> subchId);
 	QString protL	= getProtectionLevel (d -> shortForm,
 	                                      d -> protLevel);
-//	uint16_t h = d -> protLevel;
-//	if (!d -> shortForm) {
-//	   protL = "EEP ";
-//	   protL. append (QString::number ((h & 03) + 1));
-//	   if ((h & (1 << 2)) == 0)
-//	      protL. append ("-A");
-//	   else
-//	      protL. append ("-B");
-//	}
-//	else  {
-//	   protL = "UEP ";
-//	   protL. append (QString::number (h));
-//	}
 	techData. uepField	-> setText (protL);
 	techData. ASCTy		-> setText (d -> ASCTy == 077 ? "DAB+" : "DAB");
 	if (d -> ASCTy == 077) {
@@ -1684,8 +1671,6 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	}
 	techData. language ->
 	   setText (getLanguage (d -> language));
-//	   setText (the_textMapper.
-//	               get_programm_language_string (d -> language));
 	techData. programType ->
 	   setText (the_textMapper.
 	               get_programm_type_string (d -> programType));

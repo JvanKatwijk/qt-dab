@@ -32,11 +32,11 @@
 int	err;
 int	res;
 	hackrfSettings			= s;
-	this	-> myFrame		= new QFrame (NULL);
+	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show ();
 	this	-> inputRate		= Khz (2048);
-	_I_Buffer			= NULL;
+	_I_Buffer			= nullptr;
 
 #ifdef  __MINGW32__
         const char *libraryString = "libhackrf.dll";
@@ -46,7 +46,7 @@ int	res;
         Handle          = dlopen (libraryString, RTLD_NOW);
 #endif
 
-	if (Handle == NULL) {
+	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 	   delete myFrame;
 	   throw (20);
@@ -133,7 +133,7 @@ int	res;
 	         this, SLOT (setVGAGain (int)));
 
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list ();
-	if (deviceList != NULL) {	// well, it should be
+	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
 	   serial_number_display -> setText (serial);
 	   enum hackrf_usb_board_id board_id =
@@ -148,7 +148,7 @@ int	res;
 	hackrfHandler::~hackrfHandler	(void) {
 	stopReader ();
 	delete myFrame;
-	if (_I_Buffer != NULL)
+	if (_I_Buffer != nullptr)
 	   delete _I_Buffer;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
@@ -208,8 +208,6 @@ int	res;
 //	we use a static large buffer, rather than trying to allocate
 //	a buffer on the stack
 static std::complex<float>buffer [32 * 32768];
-static	int64_t	sum	= 0;
-static	int	xount	= 0;
 static
 int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
@@ -221,14 +219,8 @@ RingBuffer<std::complex<float> > * q = ctx -> _I_Buffer;
 	   float re	= (((int8_t *)p) [2 * i]) / 128.0;
 	   float im	= (((int8_t *)p) [2 * i + 1]) / 128.0;
 	   buffer [i]	= std::complex<float> (re, im);
-	   sum += (re < 0 ? - re : re) + (im < 0 ? -im : im);
 	}
-	q	-> putDataIntoBuffer (buffer, transfer -> valid_length / 2);
-	if (xount > 2048000) {
-	   xount = 0;
-	   fprintf (stderr, "%d\n", sum / xount);
-	   sum = 0;
-	}
+	q -> putDataIntoBuffer (buffer, transfer -> valid_length / 2);
 	return 0;
 }
 
@@ -289,49 +281,49 @@ bool	hackrfHandler::load_hackrfFunctions (void) {
 //	link the required procedures
 	this -> hackrf_init	= (pfn_hackrf_init)
 	                       GETPROCADDRESS (Handle, "hackrf_init");
-	if (this -> hackrf_init == NULL) {
+	if (this -> hackrf_init == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_init\n");
 	   return false;
 	}
 
 	this -> hackrf_open	= (pfn_hackrf_open)
 	                       GETPROCADDRESS (Handle, "hackrf_open");
-	if (this -> hackrf_open == NULL) {
+	if (this -> hackrf_open == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_open\n");
 	   return false;
 	}
 
 	this -> hackrf_close	= (pfn_hackrf_close)
 	                       GETPROCADDRESS (Handle, "hackrf_close");
-	if (this -> hackrf_close == NULL) {
+	if (this -> hackrf_close == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_close\n");
 	   return false;
 	}
 
 	this -> hackrf_exit	= (pfn_hackrf_exit)
 	                       GETPROCADDRESS (Handle, "hackrf_exit");
-	if (this -> hackrf_exit == NULL) {
+	if (this -> hackrf_exit == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_exit\n");
 	   return false;
 	}
 
 	this -> hackrf_start_rx	= (pfn_hackrf_start_rx)
 	                       GETPROCADDRESS (Handle, "hackrf_start_rx");
-	if (this -> hackrf_start_rx == NULL) {
+	if (this -> hackrf_start_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_start_rx\n");
 	   return false;
 	}
 
 	this -> hackrf_stop_rx	= (pfn_hackrf_stop_rx)
 	                       GETPROCADDRESS (Handle, "hackrf_stop_rx");
-	if (this -> hackrf_stop_rx == NULL) {
+	if (this -> hackrf_stop_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_stop_rx\n");
 	   return false;
 	}
 
 	this -> hackrf_device_list	= (pfn_hackrf_device_list)
 	                       GETPROCADDRESS (Handle, "hackrf_device_list");
-	if (this -> hackrf_device_list == NULL) {
+	if (this -> hackrf_device_list == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_device_list\n");
 	   return false;
 	}
@@ -340,56 +332,56 @@ bool	hackrfHandler::load_hackrfFunctions (void) {
 	                      (pfn_hackrf_set_baseband_filter_bandwidth)
 	                      GETPROCADDRESS (Handle,
 	                         "hackrf_set_baseband_filter_bandwidth");
-	if (this -> hackrf_set_baseband_filter_bandwidth == NULL) {
+	if (this -> hackrf_set_baseband_filter_bandwidth == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_baseband_filter_bandwidth\n");
 	   return false;
 	}
 
 	this -> hackrf_set_lna_gain	= (pfn_hackrf_set_lna_gain)
 	                       GETPROCADDRESS (Handle, "hackrf_set_lna_gain");
-	if (this -> hackrf_set_lna_gain == NULL) {
+	if (this -> hackrf_set_lna_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_lna_gain\n");
 	   return false;
 	}
 
 	this -> hackrf_set_vga_gain	= (pfn_hackrf_set_vga_gain)
 	                       GETPROCADDRESS (Handle, "hackrf_set_vga_gain");
-	if (this -> hackrf_set_vga_gain == NULL) {
+	if (this -> hackrf_set_vga_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_vga_gain\n");
 	   return false;
 	}
 
 	this -> hackrf_set_freq	= (pfn_hackrf_set_freq)
 	                       GETPROCADDRESS (Handle, "hackrf_set_freq");
-	if (this -> hackrf_set_freq == NULL) {
+	if (this -> hackrf_set_freq == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_freq\n");
 	   return false;
 	}
 
 	this -> hackrf_set_sample_rate	= (pfn_hackrf_set_sample_rate)
 	                       GETPROCADDRESS (Handle, "hackrf_set_sample_rate");
-	if (this -> hackrf_set_sample_rate == NULL) {
+	if (this -> hackrf_set_sample_rate == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_sample_rate\n");
 	   return false;
 	}
 
 	this -> hackrf_is_streaming	= (pfn_hackrf_is_streaming)
 	                       GETPROCADDRESS (Handle, "hackrf_is_streaming");
-	if (this -> hackrf_is_streaming == NULL) {
+	if (this -> hackrf_is_streaming == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_is_streaming\n");
 	   return false;
 	}
 
 	this -> hackrf_error_name	= (pfn_hackrf_error_name)
 	                       GETPROCADDRESS (Handle, "hackrf_error_name");
-	if (this -> hackrf_error_name == NULL) {
+	if (this -> hackrf_error_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_error_name\n");
 	   return false;
 	}
 
 	this -> hackrf_usb_board_id_name = (pfn_hackrf_usb_board_id_name)
 	                       GETPROCADDRESS (Handle, "hackrf_usb_board_id_name");
-	if (this -> hackrf_usb_board_id_name == NULL) {
+	if (this -> hackrf_usb_board_id_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_usb_board_id_name\n");
 	   return false;
 	}
