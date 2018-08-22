@@ -216,7 +216,7 @@ float	signal	= 0;
 	   signal += abs (v [(T_u + i) % T_u]);
 	signal	/= (carriers / 2);
 
-	return 10 * log10 ((signal + 0.005) / (noise + 0.005));
+	return 20 * log10 ((signal + 0.005) / (noise + 0.005));
 }
 
 

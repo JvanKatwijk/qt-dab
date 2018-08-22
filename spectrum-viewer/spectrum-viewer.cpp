@@ -184,8 +184,9 @@ void	spectrumViewer::ViewSpectrum (double *X_axis,
 	                               double amp,
 	                               int32_t marker) {
 uint16_t	i;
+float	amp1	= amp / 100;
 
-	amp		= amp / 50.0 * (-get_db (0));
+	amp		= amp / 100.0 * (- get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
 				         X_axis [displaySize - 1]);
@@ -195,7 +196,7 @@ uint16_t	i;
 //				         get_db (0), 0);
 
 	for (i = 0; i < displaySize; i ++) 
-	   Y1_value [i] = get_db (amp * Y1_value [i]); 
+	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
 
 	spectrumCurve	-> setBaseline (get_db (0));
 	Y1_value [0]		= get_db (0);
@@ -207,7 +208,7 @@ uint16_t	i;
 }
 
 float	spectrumViewer::get_db (float x) {
-	return 10 * log10 ((x + 1) / (float)(normalizer));
+	return 20 * log10 ((x + 1) / (float)(normalizer));
 }
 
 void	spectrumViewer::setBitDepth	(int16_t d) {

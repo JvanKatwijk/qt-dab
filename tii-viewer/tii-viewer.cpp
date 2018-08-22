@@ -170,6 +170,7 @@ void	tiiViewer::ViewSpectrum (double *X_axis,
 	                               double amp,
 	                               int32_t marker) {
 uint16_t	i;
+float	amp1	= amp / 100;
 
 	amp		= amp / 50.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
@@ -181,7 +182,7 @@ uint16_t	i;
 //				         get_db (0), 0);
 
 	for (i = 0; i < displaySize; i ++) 
-	   Y1_value [i] = get_db (amp * Y1_value [i]); 
+	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
 
 	spectrumCurve	-> setBaseline (get_db (0));
 	Y1_value [0]		= get_db (0);
