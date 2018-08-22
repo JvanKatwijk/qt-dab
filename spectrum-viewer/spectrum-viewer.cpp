@@ -207,7 +207,7 @@ uint16_t	i;
 }
 
 float	spectrumViewer::get_db (float x) {
-	return 20 * log10 ((x + 1) / (float)(normalizer));
+	return 10 * log10 ((x + 1) / (float)(normalizer));
 }
 
 void	spectrumViewer::setBitDepth	(int16_t d) {

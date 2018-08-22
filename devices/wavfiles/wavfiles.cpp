@@ -46,7 +46,6 @@ SF_INFO *sf_info;
 	setupUi (myFrame);
 	myFrame		-> show ();
 
-	tester		= 3;
 	readerOK	= false;
 	_I_Buffer	= new RingBuffer<std::complex<float>>(__BUFFERSIZE);
 
@@ -125,9 +124,16 @@ std::complex<float>	*bi;
 int32_t	bufferSize	= 32768;
 int64_t	period;
 int64_t	nextStop;
+int64_t	fileLength;
+int	teller		= 0;
 
 	if (!readerOK)
 	   return;
+
+	fileProgress	-> setValue (0);
+	currentTime	-> display (0);
+	fileLength	= sf_seek (filePointer, 0, SEEK_END);
+	totalTime	-> display ((float)fileLength / 2048000);
 
 	ExitCondition = false;
 
@@ -145,6 +151,14 @@ int64_t	nextStop;
 	      if (ExitCondition)
 	         break;
 	      usleep (100);
+	   }
+
+	   if (++teller >= 20) {
+	      int xx = sf_seek (filePointer, 0, SEEK_CUR);
+	      float progress = (float)xx / fileLength;
+	      fileProgress -> setValue ((int) (progress * 100));
+	      currentTime	-> display ((float)xx / 2048000);
+	      teller = 0;
 	   }
 
 	   nextStop += period;
@@ -169,7 +183,8 @@ float	temp [2 * length];
 
 	n = sf_readf_float (filePointer, temp, length);
 	if (n < length) {
-	   sf_seek (filePointer, 0, SEEK_SET);
+	   int xx = sf_seek (filePointer, 0, SEEK_SET);
+	   fprintf (stderr, "xx = %d\n", xx);
 	   fprintf (stderr, "End of file, restarting\n");
 	}
 	for (i = 0; i < n; i ++)

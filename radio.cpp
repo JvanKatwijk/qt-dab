@@ -534,13 +534,13 @@ int	cc	= channelSelector -> currentIndex ();
   */
 void	RadioInterface::clearEnsemble	(void) {
 
+	clear_showElements	();
 	if (!running. load ())
 	   return;
 
 //	it obviously means: stop processing
 	my_dabProcessor	-> clearEnsemble ();
 	my_dabProcessor	-> reset ();
-	clear_showElements	();
 }
 
 //
@@ -794,8 +794,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 //	This function is only used in the Gui to clear
 //	the details of a selection
 void	RadioInterface::clear_showElements (void) {
-	if (!running. load ())
-	   return;
+//	if (!running. load ())
+//	   return;
 	Services		= QStringList ();
 	ensemble. setStringList (Services);
 	ensembleDisplay		-> setModel (&ensemble);
@@ -1416,9 +1416,9 @@ uint8_t	RadioInterface::convert (QString s) {
 }
 
 void	RadioInterface::showButtons	(void) {
-	if (!running. load ())
-	   return;
-
+//	if (!running. load ())
+//	   return;
+//
 	scanButton	-> show ();
 	channelSelector	-> show	();
 	bandSelector	-> show ();
@@ -1428,8 +1428,8 @@ void	RadioInterface::showButtons	(void) {
 }
 
 void	RadioInterface::hideButtons	(void) {
-	if (!running. load ())
-	   return;
+//	if (!running. load ())
+//	   return;
 	scanButton	-> hide ();
 	channelSelector	-> hide ();
 	bandSelector	-> hide ();

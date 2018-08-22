@@ -92,7 +92,7 @@ void	rawFiles::stopReader	(void) {
 //	size is in I/Q pairs, file contains 8 bits values
 int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
-uint8_t	*temp = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
+uint8_t	temp [2 * size];
 
 	if (filePointer == NULL)
 	   return 0;
@@ -120,11 +120,20 @@ uint8_t	*bi;
 int32_t	bufferSize	= 32768;
 int64_t	period;
 int64_t	nextStop;
+int64_t	fileLength;
+int	teller		= 0;
 
 	if (!readerOK)
 	   return;
 
 	ExitCondition = false;
+
+	fileProgress	-> setValue (0);
+	currentTime	-> display  (0);
+	fseek (filePointer, 0, SEEK_END);
+	fileLength	= ftell (filePointer);
+	fseek (filePointer, 0, SEEK_SET);
+	totalTime	-> display ((float)fileLength / 2048000);
 
 	period		= (32768 * 1000) / (2 * 2048);	// full IQś read
 	fprintf (stderr, "Period = %ld\n", period);
@@ -142,6 +151,14 @@ int64_t	nextStop;
 	      usleep (100);
 	   }
 
+	   if (++teller > 20) {
+	      teller = 0;
+	      int xx 		= ftell (filePointer);
+	      float progress	= (float)xx / fileLength;
+	      fileProgress	-> setValue (progress * 100);
+	      currentTime	-> display  ((float)xx / 2048000);
+	   }
+	     
 	   nextStop += period;
 	   t = readBuffer (bi, bufferSize);
 	   if (t <= 0) {
