@@ -157,6 +157,7 @@ add_definitions (-DPRESET_NAME)
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           .
 	           ./
+	           ./service-description
 	           ./includes
 	           ./includes/ofdm
 	           ./includes/backend
@@ -179,6 +180,9 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
+	     ./service-description/service-descriptor.h 
+	     ./service-description/audio-descriptor.h 
+	     ./service-description/data-descriptor.h 
              ./includes/country-codes.h
 	     ./includes/dab-constants.h
              ./includes/ofdm/sample-reader.h
@@ -247,6 +251,8 @@ add_definitions (-DPRESET_NAME)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./dab-processor.cpp
+	     ./service-description/audio-descriptor.cpp
+	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp
 	     ./src/ofdm/ofdm-decoder.cpp
 	     ./src/ofdm/phasereference.cpp
@@ -345,6 +351,8 @@ add_definitions (-DPRESET_NAME)
 	        ${${objectName}_UIS}
 	     ./forms/dabradio.ui
 	     ./forms/technical_data.ui
+	     ./forms/audio-description.ui
+	     ./forms/data-description.ui
 	     ./spectrum-viewer/scopewidget.ui
 	     ./impulse-viewer/impulse-widget.ui
 	     ./tii-viewer/tii-widget.ui

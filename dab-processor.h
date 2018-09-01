@@ -131,6 +131,7 @@ signals:
 //	void		showCoordinates		(float, float);
 	void		show_Spectrum		(int);
 	void		show_tii		(int);
+	void		show_snr		(int);
 };
 #endif
 

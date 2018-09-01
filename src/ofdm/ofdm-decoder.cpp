@@ -94,7 +94,7 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
 
 	if (++snrCount > 10) {
 	   snr	= 0.8 * snr + 0.2 * get_snr (fft_buffer);
-	   show_snr (snr);
+//	   show_snr (snr);
 	   snrCount = 0;
 	}
 /**
@@ -125,6 +125,7 @@ float	S	= 0;
 
 	for (i = 0; i < carriers; i ++) {
 	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;
+	   f = f / M_PI * 360;
 	   S += f * f;
 	}
 

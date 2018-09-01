@@ -51,10 +51,9 @@ static int cifTable [] = {18, 72, 0, 36};
 	BitsperBlock		= 2 * params. get_carriers ();
 	nrBlocks		= params. get_L ();
 
-	command                 = new std::complex<float> * [nrBlocks];
-	
+	command. resize (nrBlocks);
 	for (int i = 0; i < nrBlocks; i ++)
-	   command [i] = new std::complex<float> [params. get_T_u ()];
+	   command [i]. resize (params. get_T_u ());
 	amount          = 0;
 	fft_buffer                      = my_fftHandler. getVector ();
 	phaseReference                  .resize (params. get_T_u ());
@@ -82,7 +81,7 @@ static int cifTable [] = {18, 72, 0, 36};
 //	will handle the data from the buffer
 void	mscHandler::processBlock_0 (std::complex<float> *b) {
 	bufferSpace. acquire (1);
-	memcpy (command [0], b,
+	memcpy (command [0]. data (), b,
 	            params. get_T_u () * sizeof (std::complex<float>));
 	helper. lock ();
 	amount ++;
@@ -92,7 +91,7 @@ void	mscHandler::processBlock_0 (std::complex<float> *b) {
 
 void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 	bufferSpace. acquire (1);
-        memcpy (command [blkno], b,
+        memcpy (command [blkno]. data (), b,
 	            params. get_T_u () * sizeof (std::complex<float>));
         helper. lock ();
         amount ++;
@@ -111,7 +110,7 @@ std::vector<int16_t> ibits;
            commandHandler. wait (&helper, 100);
            helper. unlock ();
            while ((amount > 0) && running. load ()) {
-	      memcpy (fft_buffer, command [currentBlock],
+	      memcpy (fft_buffer, command [currentBlock]. data (),
 	                 params. get_T_u () * sizeof (std::complex<float>));
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block

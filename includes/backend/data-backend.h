@@ -31,8 +31,8 @@
 #include	<string.h>
 #include	"dab-constants.h"
 #include	"virtual-backend.h"
+#include	"data-processor.h"
 
-class	dataProcessor;
 class	RadioInterface;
 class	protection;
 
@@ -47,6 +47,8 @@ public:
 int32_t	process		(int16_t *, int16_t);
 void	stopRunning	(void);
 private:
+	dataProcessor	our_frameProcessor;
+	QSemaphore      freeSlots;
 	RadioInterface	*myRadioInterface;
 	bool		shortForm;
 	int16_t		protLevel;
@@ -61,8 +63,6 @@ void	run		(void);
 	int16_t		*Data;
 	protection	*protectionHandler;
 	RingBuffer<int16_t>	*Buffer;
-	dataProcessor	*our_frameProcessor;
-	QSemaphore      freeSlots;
 	QSemaphore      usedSlots;
 	int16_t         *theData [20];
 	int16_t         nextIn;

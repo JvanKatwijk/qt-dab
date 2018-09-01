@@ -59,8 +59,8 @@
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
-	frameBytes		= new uint8_t [RSDims * 120];	// input
-	outVector		= new uint8_t [RSDims * 110];
+	frameBytes. resize (RSDims * 120);	// input
+	outVector . resize (RSDims * 110);
 	blockFillIndex	= 0;
 	blocksInBuffer	= 0;
 	frameCount	= 0;
@@ -72,8 +72,6 @@
 }
 
 	mp4Processor::~mp4Processor (void) {
-	delete[]	frameBytes;
-	delete[]	outVector;
 }
 
 /**
@@ -118,7 +116,7 @@ int16_t	nbits	= 24 * bitRate;
   *	and adjust the buffer here for the next round
   */
 	   if (fc. check (&frameBytes [blockFillIndex * nbits / 8]) &&
-	       (processSuperframe (frameBytes,
+	       (processSuperframe (frameBytes. data (),
 	                           blockFillIndex * nbits / 8))) {
 //	since we processed a full cycle of 5 blocks, we just start a
 //	new sequence, beginning with block blockFillIndex

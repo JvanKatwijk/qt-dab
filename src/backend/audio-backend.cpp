@@ -53,10 +53,11 @@ int32_t i, j;
 
 	this	-> audioBuffer		= buffer;
 
-	interleaveData		= new int16_t *[16]; // max size
+	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
-	   interleaveData [i] = new int16_t [fragmentSize];
-	   memset (interleaveData [i], 0, fragmentSize * sizeof (int16_t));
+	   interleaveData [i]. resize (fragmentSize);
+	   memset (interleaveData [i]. data (), 0,
+	                               fragmentSize * sizeof (int16_t));
 	}
 
 	countforInterleaver	= 0;
@@ -101,7 +102,7 @@ int32_t i, j;
 	nextIn				= 0;
 	nextOut				= 0;
 	for (i = 0; i < 20; i ++)
-	   theData [i] = new int16_t [fragmentSize];
+	   theData [i]. resize (fragmentSize);
 	running. store (true);
 	start ();
 #endif
@@ -116,13 +117,6 @@ int16_t	i;
 #endif
 	delete protectionHandler;
 	delete our_dabProcessor;
-	for (i = 0; i < 16; i ++) 
-	   delete[]  interleaveData [i];
-	delete [] interleaveData;
-#ifdef	__THREADED_BACKEND
-	for (i = 0; i < 20; i ++)
-	   delete [] theData [i];
-#endif
 }
 
 int32_t	audioBackend::process	(int16_t *v, int16_t cnt) {
@@ -131,7 +125,7 @@ int32_t	audioBackend::process	(int16_t *v, int16_t cnt) {
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
-	memcpy (theData [nextIn], v, fragmentSize * sizeof (int16_t));
+	memcpy (theData [nextIn]. data (), v, fragmentSize * sizeof (int16_t));
 	nextIn = (nextIn + 1) % 20;
 	usedSlots. release ();
 #else
@@ -180,7 +174,7 @@ void	audioBackend::run	(void) {
 	   while (!usedSlots. tryAcquire (1, 200)) 
 	      if (!running)
 	         return;
-	   processSegment (theData [nextOut]);
+	   processSegment (theData [nextOut]. data ());
 	}
 }
 #endif

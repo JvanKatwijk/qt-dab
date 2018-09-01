@@ -24,6 +24,7 @@ TRANSLATIONS = i18n/de_DE.ts i18n/it_IT.ts i18n/hu_HU.ts
 DEPENDPATH += . \
 	      ./src \
 	      ./includes \
+	      ./service-description \
 	      ./src/ofdm \
 	      ./src/backend \
 	      ./src/backend/audio \
@@ -56,6 +57,7 @@ INCLUDEPATH += . \
 	      ./ \
 	      ./src \
 	      ./includes \
+	      ./service-description \
 	      ./includes/ofdm \
 	      ./includes/backend \
 	      ./includes/backend/audio \
@@ -76,6 +78,9 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
+	   ./service-description/service-descriptor.h \
+	   ./service-description/audio-descriptor.h \
+	   ./service-description/data-descriptor.h \
 	   ./includes/dab-constants.h \
 	   ./includes/country-codes.h \
 	   ./includes/ofdm/timesyncer.h \
@@ -146,6 +151,8 @@ HEADERS += ./radio.h \
 
 FORMS	+= ./forms/technical_data.ui
 FORMS	+= ./forms/dabradio.ui 
+FORMS	+= ./forms/audio-description.ui
+FORMS	+= ./forms/data-description.ui
 FORMS	+= ./spectrum-viewer/scopewidget.ui
 FORMS	+= ./impulse-viewer/impulse-widget.ui
 FORMS	+= ./tii-viewer/tii-widget.ui
@@ -154,6 +161,8 @@ FORMS	+= ./devices/filereader-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
+	   ./service-description/audio-descriptor.cpp \
+	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \
 	   ./src/ofdm/sample-reader.cpp \
 	   ./src/ofdm/ofdm-decoder.cpp \
@@ -250,7 +259,7 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= sdrplay
 #CONFIG		+= rtl_tcp
 #CONFIG		+= airspy
-#CONFIG		+= hackrf
+CONFIG		+= hackrf
 #CONFIG		+= elad_s1	# does not work yet
 
 #very experimental, simple server for connecting to a tdc handler

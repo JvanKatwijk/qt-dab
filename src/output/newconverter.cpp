@@ -36,19 +36,17 @@ int	err;
 //	converter		= src_new (SRC_SINC_BEST_QUALITY, 2, &err);
 	converter		= src_new (SRC_LINEAR, 2, &err);
 //	converter		= src_new (SRC_SINC_MEDIUM_QUALITY, 2, &err);
-	src_data		= new SRC_DATA;
-	inBuffer. resize (2 * inputLimit + 20);
+	inBuffer.  resize (2 * inputLimit + 20);
 	outBuffer. resize (2 * outputLimit + 20);
-	src_data-> data_in	= inBuffer. data ();
-	src_data-> data_out	= outBuffer. data ();
-	src_data-> src_ratio	= ratio;
-	src_data-> end_of_input	= 0;
+	src_data.  data_in	= inBuffer. data ();
+	src_data.  data_out	= outBuffer. data ();
+	src_data.  src_ratio	= ratio;
+	src_data.  end_of_input	= 0;
 	inp			= 0;
 }
 
 	newConverter::~newConverter (void) {
 	src_delete	(converter);
-	delete		src_data;
 }
 
 bool	newConverter::convert (std::complex<float> v,
@@ -63,15 +61,15 @@ int	res;
 	if (inp < inputLimit)
 	   return false;
 
-	src_data	-> input_frames		= inp;
-	src_data	-> output_frames	= outputLimit + 10;
-	res		= src_process (converter, src_data);
+	src_data.	input_frames	= inp;
+	src_data.	output_frames	= outputLimit + 10;
+	res		= src_process (converter, &src_data);
 	if (res != 0) {
 	   fprintf (stderr, "error %s\n", src_strerror (res));
 	   return false;
 	}
 	inp		= 0;
-	framesOut	= src_data -> output_frames_gen;
+	framesOut	= src_data.	output_frames_gen;
 	for (i = 0; i < framesOut; i ++)
 	   out [i] = std::complex<float> (outBuffer [2 * i],
 	                                  outBuffer [2 * i + 1]);

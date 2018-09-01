@@ -30,6 +30,7 @@
 #include	"dab-constants.h"
 #include	<stdio.h>
 #include	<stdint.h>
+#include	<vector>
 #include	"audio-base.h"
 #include	"frame-processor.h"
 #include	"faad-decoder.h"
@@ -58,8 +59,8 @@ private:
 	int16_t		blocksInBuffer;
 	int16_t		blockCount;
 	int16_t		bitRate;
-	uint8_t		*frameBytes;
-	uint8_t		**RSMatrix;
+	std::vector<uint8_t> frameBytes;
+	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
 	int16_t		au_start	[10];
 	int32_t		baudRate;
@@ -69,7 +70,6 @@ private:
 	int16_t		errorRate;
 	firecode_checker	fc;
 	reedSolomon	my_rsDecoder;
-	uint8_t		*outVector;
 //	and for the aac decoder
 	faadDecoder	aacDecoder;
 	int16_t		frameCount;

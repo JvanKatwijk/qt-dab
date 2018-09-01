@@ -38,8 +38,8 @@ uint16_t i;
 	this	-> gfpoly	= gfpoly;
 	this	-> codeLength	= (1 << mm) - 1;
 	this	-> d_q		= 1 << mm;
-	this	-> alpha_to	= new uint16_t [codeLength + 1];
-	this	-> index_of	= new uint16_t [codeLength + 1];
+	this	-> alpha_to. resize (codeLength + 1);
+	this	-> index_of. resize (codeLength + 1);
 /*	Generate Galois field lookup tables */
 	index_of [0] = codeLength;	/* log (zero) = -inf */
 	alpha_to [codeLength] = 0;	/* alpha**-inf = 0 */
@@ -64,8 +64,6 @@ int	galois::modnn (int x){
 }
 
 		galois::~galois	(void) {
-	delete [] alpha_to;
-	delete [] index_of;
 }
 
 static inline

@@ -25,6 +25,7 @@
 #define	__GALOIS
 
 #include	<stdint.h>
+#include	<vector>
 
 class	galois {
 private:
@@ -32,8 +33,8 @@ private:
 	uint16_t gfpoly;
 	uint16_t codeLength;	/* Symbols per block (= (1<<mm)-1) */
 	uint16_t d_q;
-	uint16_t *alpha_to;	/* log lookup table */
-	uint16_t *index_of;	/* Antilog lookup table */
+	std::vector<uint16_t> alpha_to;	/* log lookup table */
+	std::vector<uint16_t> index_of;	/* Antilog lookup table */
 public:
 		galois		(uint16_t mm, uint16_t poly);
 		~galois		(void);

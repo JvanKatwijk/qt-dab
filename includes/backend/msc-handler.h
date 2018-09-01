@@ -99,7 +99,7 @@ private:
 	int16_t		blockCount;
 	void            run             (void);
         std::atomic<bool>       running;
-        std::complex<float>     **command;
+        std::vector<std::vector<std::complex<float>>> command;
         int16_t         amount;
         int16_t         currentBlock;
         void            processBlock_0	(void);

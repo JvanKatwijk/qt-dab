@@ -103,6 +103,9 @@ int32_t	i;
 	         myRadioInterface, SLOT (showSpectrum (int)));
 	connect (this, SIGNAL (show_tii (int)),
 	         myRadioInterface, SLOT (show_tii (int)));
+	connect (this, SIGNAL (show_snr (int)),
+	         mr, SLOT (show_snr (int)));
+
 	
 //	the thread will be started from somewhere else
 }
@@ -266,6 +269,19 @@ Data_blocks:
   */
 	   myReader. getSamples (ofdmBuffer. data (),
 	                         T_null, coarseOffset + fineOffset);
+	   float sum	= 0;
+	   for (i = 0; i < T_null; i ++)
+	      sum += abs (ofdmBuffer [i]);
+	   sum /= T_null;
+
+	   static	float snr	= 0;
+	   snr = 0.9 * snr +
+	         0.1 * 20 * log10 ((myReader. get_sLevel () + 0.005) / sum);
+	   static int ccc	= 0;
+	   if (++ccc > 10) {
+	      ccc = 0;
+	      show_snr ((int)snr);
+	   }
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 

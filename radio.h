@@ -47,7 +47,7 @@ class	QSettings;
 class	virtualInput;
 class	audioBase;
 class	common_fft;
-
+class	serviceDescriptor;
 #include	"ui_technical_data.h"
 
 class	spectrumViewer;
@@ -66,6 +66,8 @@ public:
 	                                 QWidget	*parent = NULL);
 		~RadioInterface		(void);
 
+protected:
+	bool	eventFilter (QObject *obj, QEvent *event);
 private:
 	QSettings	*dabSettings;
 	int16_t		tii_delay;
@@ -74,11 +76,11 @@ private:
 	Ui_technical_data	techData;
 	QFrame		*dataDisplay;
 	bool		show_data;
-private:
+	serviceDescriptor	*currentService;
 	void		clear_showElements	(void);
 	void		set_picturePath		(void);
-const	char		*get_programm_type_string (int16_t);
-const	char		*get_programm_language_string (int16_t);
+//const	char		*get_programm_type_string (int16_t);
+//const	char		*get_programm_language_string (int16_t);
 	void		dumpControlState	(QSettings *);
 	void		Yes_Signal_Found	(void);
 	void		Increment_Channel	(void);

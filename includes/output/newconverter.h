@@ -40,7 +40,7 @@ private:
 	int32_t		outputLimit;
 	int32_t		inputLimit;
 	SRC_STATE	*converter;
-	SRC_DATA	*src_data;
+	SRC_DATA	src_data;
 	std::vector<float> inBuffer;
 	std::vector<float> outBuffer;
 	int32_t		inp;

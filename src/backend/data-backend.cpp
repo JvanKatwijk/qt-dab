@@ -44,6 +44,10 @@
 	                         QString	picturesPath) :
 	                             virtualBackend (d -> startAddr,
 	                                             d -> length),
+	                             our_frameProcessor (mr,
+	                                                 d,
+	                                                 dataBuffer,
+	                                                 picturesPath),
 	                            freeSlots (20) {
 int32_t i, j;
 
@@ -51,10 +55,6 @@ int32_t i, j;
 	this	-> fragmentSize		= d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
 	this	-> protLevel		= d -> protLevel;
-	our_frameProcessor	= new dataProcessor (mr,
-	                                             d,
-	                                             dataBuffer,
-	                                             picturesPath);
 	nextIn                          = 0;
         nextOut                         = 0;
         for (i = 0; i < 20; i ++)
@@ -156,7 +156,7 @@ int16_t	i, j;
 //	What we get here is a long sequence (24 * bitrate) of bits, not packed
 //	but forming a DAB packet
 //	we hand it over to make an MSC data group
-	   our_frameProcessor -> addtoFrame (outV);
+	   our_frameProcessor. addtoFrame (outV);
 	}
 }
 

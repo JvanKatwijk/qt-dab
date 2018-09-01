@@ -59,7 +59,7 @@ void	run		(void);
 	atomic<bool>	running;
 	QSemaphore	freeSlots;
 	QSemaphore	usedSlots;
-	int16_t		*theData [20];
+	std::vector<int16_t>	theData [20];
 	int16_t		nextIn;
 	int16_t		nextOut;
 #endif
@@ -71,7 +71,8 @@ void	processSegment	(int16_t *Data);
 	bool		shortForm;
 	int16_t		protLevel;
 	std::vector<uint8_t> outV;
-	int16_t		**interleaveData;
+	std::vector<std::vector <int16_t>> interleaveData;
+//	int16_t		**interleaveData;
 	std::vector<int16_t> tempX;
 	int16_t		countforInterleaver;
 	int16_t		interleaverIndex;

@@ -27,6 +27,7 @@
 #include	<QFile>
 #include	<QStringList>
 #include	<QStringListModel>
+#include	<QMouseEvent>
 #include	<QDir>
 #include	<fstream>
 #include	"dab-constants.h"
@@ -37,6 +38,8 @@
 #include	"radio.h"
 #include	"band-handler.h"
 #include	"ensemble-printer.h"
+#include	"audio-descriptor.h"
+#include	"data-descriptor.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"dab_tables.h"
@@ -314,6 +317,8 @@ QString h;
 	else 
 	   connect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (doStart (QString)));
+	qApp	-> installEventFilter (this);
+	currentService	= nullptr;
 }
 
 
@@ -862,6 +867,10 @@ void	RadioInterface::TerminateProcess (void) {
 	   inputDevice		-> stopReader ();	// might be concurrent
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor	-> stop ();		// definitely concurrent
+
+	if (currentService != nullptr)
+	   delete currentService;
+	currentService	= nullptr;
 	soundOut		-> stop ();
 	dataDisplay		->  hide ();
 //	everything should be halted by now
@@ -898,6 +907,9 @@ void	RadioInterface::selectChannel (QString s) {
 int32_t	tunedFrequency;
 bool	localRunning	= running. load ();
 
+	if (currentService != nullptr)
+	   delete currentService;
+	currentService	= nullptr;
 	presetTimer. stop ();
 	setStereo (false);
 	if (scanning)
@@ -1433,6 +1445,7 @@ void	RadioInterface::hideButtons	(void) {
 	scanButton	-> hide ();
 	channelSelector	-> hide ();
 	bandSelector	-> hide ();
+	dumpButton	-> hide	();
 	nextChannelButton	-> hide ();
 	techData. frequency	-> hide ();
 }
@@ -1690,5 +1703,33 @@ void RadioInterface::closeEvent (QCloseEvent *event) {
            TerminateProcess ();
            event -> accept ();
         }
+}
+
+bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
+	if ((obj == this -> ensembleDisplay -> viewport ()) &&
+	    (event -> type () == QEvent::MouseButtonPress )) {
+	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
+           if (ev -> buttons () & Qt::RightButton) {
+	      audiodata ad;
+	      packetdata pd;
+	      QString serviceName =
+	           this -> ensembleDisplay -> indexAt (ev -> pos()). data ().toString ();
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+              if (ad. defined) {
+	         if (currentService != NULL)
+	            delete currentService;
+	         currentService	= new audioDescriptor (&ad);
+	         return true;
+	      }
+	      my_dabProcessor -> dataforDataService (serviceName, &pd);
+              if (pd. defined) {
+	         if (currentService != NULL)
+	            delete currentService;
+	         currentService	= new dataDescriptor (&pd);
+	         return true;
+	      }
+	   }
+	}
+	return QMainWindow::eventFilter (obj, event);
 }
 
