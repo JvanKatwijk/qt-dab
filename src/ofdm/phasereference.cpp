@@ -32,9 +32,9 @@
 
 	phaseReference::phaseReference (RadioInterface *mr,
 	                                uint8_t		dabMode,
-	                                RingBuffer<float> *b,
 	                                int16_t		threshold,
-	                                int16_t		diff_length):
+	                                int16_t		diff_length,
+	                                RingBuffer<float> *b):
 	                                     phaseTable (dabMode),
 	                                     params (dabMode),
 	                                     my_fftHandler (dabMode) {
@@ -114,10 +114,12 @@ float	lbuf [T_u];
 	   }
 	}
 
-	if (++displayCounter > framesperSecond / 4) {
-	   response	-> putDataIntoBuffer (lbuf, T_u);
-	   showImpulse (T_u);
-	   displayCounter	= 0;
+	if (response != NULL) {
+	   if (++displayCounter > framesperSecond / 4) {
+	      response	-> putDataIntoBuffer (lbuf, T_u);
+	      showImpulse (T_u);
+	      displayCounter	= 0;
+	   }
 	}
 /**
   *	that gives us a basis for defining the actual threshold value

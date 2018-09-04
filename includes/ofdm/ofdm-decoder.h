@@ -39,8 +39,8 @@ Q_OBJECT
 public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
-	                                 RingBuffer<std::complex<float>> *,
-	                                 int16_t);
+	                                 int16_t,
+	                                 RingBuffer<std::complex<float>> * iqBuffer = nullptr);
 		~ofdmDecoder		(void);
 	void	processBlock_0		(std::vector<std::complex<float> >);
 	void	decode			(std::vector<std::complex<float> >,
@@ -77,5 +77,4 @@ signals:
 };
 
 #endif
-
 

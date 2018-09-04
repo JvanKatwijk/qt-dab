@@ -38,8 +38,8 @@ Q_OBJECT
 public:
 			phaseReference 		(RadioInterface *,
 	                                         uint8_t,
-						 RingBuffer<float> *b,
-	                                         int16_t, int16_t);
+	                                         int16_t, int16_t,
+						 RingBuffer<float> *b = NULL);
 			~phaseReference		(void);
 	int32_t		findIndex		(std::vector<std::complex<float>>);
 	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);

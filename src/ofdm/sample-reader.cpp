@@ -120,9 +120,11 @@ std::complex<float> temp;
 	if (++ sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
 	   sampleCount = 0;
-           spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
-	                                                    localCounter);
-           emit show_Spectrum (bufferSize);
+	   if (spectrumBuffer != nullptr) {
+              spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	                                                       localCounter);
+              emit show_Spectrum (bufferSize);
+	   }
            localCounter = 0;
 	}
 	return temp;
@@ -177,9 +179,11 @@ int32_t		i;
 	sampleCount	+= n;
 	if (sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
-	   spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
-	                                               bufferSize);
-	   emit show_Spectrum (bufferSize);
+	   if (spectrumBuffer != nullptr) {
+	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	                                                       bufferSize);
+	      emit show_Spectrum (bufferSize);
+	   }
 	   localCounter = 0;
 	   sampleCount = 0;
 	}

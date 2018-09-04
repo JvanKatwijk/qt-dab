@@ -45,9 +45,8 @@ class	sampleReader : public QObject {
 Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
-	                         	virtualInput *theRig
-	                         	,RingBuffer<std::complex<float>> *spectrumBuffer
-	       				);
+	                         	virtualInput *theRig,
+	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
 
 			~sampleReader		(void);
 		void	setRunning	(bool b);

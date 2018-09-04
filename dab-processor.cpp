@@ -34,7 +34,6 @@
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
-#define	C_LEVEL_SIZE	50
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
@@ -60,14 +59,14 @@
 	                                                picturesPath),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
-	                                                    responseBuffer,
                                                             threshold,
-	                                                    diff_length),
+	                                                    diff_length,
+	                                                    responseBuffer),
 	                                 my_TII_Detector (dabMode), 
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
-	                                                 iqBuffer,
-	                                                 theRig -> bitDepth ()) {
+	                                                 theRig -> bitDepth (), 
+	                                                 iqBuffer) {
 int32_t	i;
 
 	this	-> myRadioInterface	= mr;
@@ -135,9 +134,11 @@ int32_t		startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
+int		attempts;
 
         fineOffset		= 0;
         correctionNeeded	= true;
+	attempts		= 0;
         theRig  -> resetBuffer ();
 	coarseOffset	= theRig -> getOffset ();
 	fineOffset		= 0;

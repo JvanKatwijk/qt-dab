@@ -42,8 +42,8 @@
   */
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 RingBuffer<std::complex<float>> *iqBuffer,
-	                                 int16_t	bitDepth):
+	                                 int16_t	bitDepth,
+	                                 RingBuffer<std::complex<float>> *iqBuffer) :
 	                                    params (dabMode),
 	                                    my_fftHandler (dabMode),
 	                                    myMapper (dabMode) {

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>325</width>
-    <height>264</height>
+    <height>308</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,8 +38,8 @@
   <widget class="QLabel" name="subChannelId">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>100</y>
+     <x>140</x>
+     <y>140</y>
      <width>111</width>
      <height>20</height>
     </rect>
@@ -51,8 +51,8 @@
   <widget class="QLabel" name="startAddress">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>120</y>
+     <x>140</x>
+     <y>160</y>
      <width>171</width>
      <height>20</height>
     </rect>
@@ -64,8 +64,8 @@
   <widget class="QLabel" name="Length">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>140</y>
+     <x>140</x>
+     <y>180</y>
      <width>171</width>
      <height>20</height>
     </rect>
@@ -77,8 +77,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>160</y>
+     <x>20</x>
+     <y>200</y>
      <width>101</width>
      <height>20</height>
     </rect>
@@ -90,8 +90,8 @@
   <widget class="QLabel" name="protectionLevel">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>180</y>
+     <x>140</x>
+     <y>220</y>
      <width>161</width>
      <height>20</height>
     </rect>
@@ -103,8 +103,8 @@
   <widget class="QLabel" name="packetAddress">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>200</y>
+     <x>140</x>
+     <y>240</y>
      <width>171</width>
      <height>20</height>
     </rect>
@@ -116,8 +116,8 @@
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>100</y>
+     <x>20</x>
+     <y>140</y>
      <width>111</width>
      <height>21</height>
     </rect>
@@ -129,8 +129,8 @@
   <widget class="QLabel" name="label_3">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>120</y>
+     <x>20</x>
+     <y>160</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -142,8 +142,8 @@
   <widget class="QLabel" name="label_4">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>140</y>
+     <x>20</x>
+     <y>180</y>
      <width>81</width>
      <height>21</height>
     </rect>
@@ -155,8 +155,8 @@
   <widget class="QLabel" name="bitrate">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>160</y>
+     <x>140</x>
+     <y>200</y>
      <width>59</width>
      <height>15</height>
     </rect>
@@ -168,8 +168,8 @@
   <widget class="QLabel" name="label_6">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>180</y>
+     <x>20</x>
+     <y>220</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -181,8 +181,8 @@
   <widget class="QLabel" name="label_8">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>200</y>
+     <x>20</x>
+     <y>240</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -237,8 +237,8 @@
   <widget class="QLabel" name="FECscheme">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>220</y>
+     <x>140</x>
+     <y>260</y>
      <width>161</width>
      <height>31</height>
     </rect>
@@ -250,14 +250,40 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>220</y>
+     <x>20</x>
+     <y>260</y>
      <width>111</width>
      <height>31</height>
     </rect>
    </property>
    <property name="text">
     <string>FEC scheme</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_9">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>120</y>
+     <width>111</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>serviceId</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="serviceLabel">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>120</y>
+     <width>59</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
    </property>
   </widget>
  </widget>

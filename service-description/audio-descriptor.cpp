@@ -7,6 +7,12 @@
 	                                       myFrame (NULL) {
         setupUi (&myFrame);
         myFrame. show ();
+	serviceLabel    -> setText
+                      (QString ().number (ad -> serviceId, 16). toUpper ());
+        QFont font      = serviceLabel -> font ();
+        font. setBold (true);
+        serviceLabel    -> setFont (font);
+
 	serviceName  -> setText (ad -> serviceName);
 	subChannelId -> setText (QString::number (ad -> subchId));
 	startAddress -> setText (QString::number (ad -> startAddr));
