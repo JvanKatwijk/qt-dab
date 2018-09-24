@@ -324,7 +324,7 @@ add_definitions (-DPRESET_NAME)
              ./includes/ofdm/tii_table.h
              ./includes/ofdm/fic-handler.h
              ./includes/ofdm/fib-processor.h
-	     ./includes/backend/data-backend.h
+	     ./includes/backend/backend.h
              ./includes/backend/audio/faad-decoder.h
              ./includes/backend/audio/mp2processor.h
              ./includes/backend/audio/mp4processor.h
