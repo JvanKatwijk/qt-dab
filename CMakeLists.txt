@@ -160,6 +160,7 @@ add_definitions (-DPRESET_NAME)
 	           ./service-description
 	           ./includes
 	           ./includes/ofdm
+	           ./includes/protection
 	           ./includes/backend
 	           ./includes/backend/audio
 	           ./includes/backend/data
@@ -194,18 +195,19 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h
-	     ./includes/backend/protection.h
-	     ./includes/backend/uep-protection.h
-	     ./includes/backend/eep-protection.h
+	     ./includes/protection/protTables.cpp
+	     ./includes/protection/protection.h
+	     ./includes/protection/uep-protection.h
+	     ./includes/protection/eep-protection.h
 	     ./includes/backend/firecode-checker.h
 	     ./includes/backend/frame-processor.h
 	     ./includes/backend/charsets.h
 	     ./includes/backend/galois.h
 	     ./incluces/backend/reed-solomon.h
 	     ./includes/backend/msc-handler.h
-	     ./includes/backend/virtual-backend.h
-	     ./includes/backend/audio-backend.h
-	     ./includes/backend/data-backend.h
+	     ./includes/backend/backend.h
+	     ./includes/backend/backend-deconvolver.h
+	     ./includes/backend/backend-driver.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp4processor.h
 	     ./includes/backend/audio/mp2processor.h
@@ -263,19 +265,19 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/tii_table.cpp
 	     ./src/ofdm/tii_detector.cpp
 	     ./src/ofdm/timesyncer.cpp
-	     ./src/backend/protection.cpp
-	     ./src/backend/eep-protection.cpp
-	     ./src/backend/uep-protection.cpp
+	     ./src/protection/protTables.cpp
+	     ./src/protection/protection.cpp
+	     ./src/protection/eep-protection.cpp
+	     ./src/protection/uep-protection.cpp
 	     ./src/backend/firecode-checker.cpp
 	     ./src/backend/frame-processor.cpp
-	     ./src/backend/protTables.cpp
 	     ./src/backend/charsets.cpp
 	     ./src/backend/galois.cpp
 	     ./src/backend/reed-solomon.cpp
 	     ./src/backend/msc-handler.cpp
-	     ./src/backend/virtual-backend.cpp
-	     ./src/backend/audio-backend.cpp
-	     ./src/backend/data-backend.cpp
+	     ./src/backend/backend.cpp
+	     ./src/backend/backend-deconvolver.cpp
+	     ./src/backend/backend-driver.cpp
 	     ./src/backend/audio/faad-decoder.cpp
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
@@ -326,7 +328,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/fib-processor.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/tii_table.h
-	     ./includes/backend/data-backend.h
+	     ./includes/backend/backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp2processor.h
 	     ./includes/backend/audio/mp4processor.h

@@ -131,7 +131,7 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 int16_t i;
 uint8_t buffer [length];
 
-  fprintf (stderr, " frametype 1 met %o %o %o\n",
+	fprintf (stderr, " frametype 1 met %o %o %o\n",
                                      getBits (data, offset,      8),
                                      getBits (data, offset + 8,  8),
                                      getBits (data, offset + 16, 8));

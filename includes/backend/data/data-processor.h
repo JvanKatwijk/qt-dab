@@ -44,7 +44,7 @@ public:
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 QString	picturesPath);
 	~dataProcessor	(void);
-void	addtoFrame	(uint8_t *);
+void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;

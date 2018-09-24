@@ -26,6 +26,7 @@ DEPENDPATH += . \
 	      ./includes \
 	      ./service-description \
 	      ./src/ofdm \
+	      ./src/protection \
 	      ./src/backend \
 	      ./src/backend/audio \
 	      ./src/backend/data \
@@ -38,6 +39,7 @@ DEPENDPATH += . \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
 	      ./includes/ofdm \
+	      ./includes/protection \
 	      ./includes/backend \
 	      ./includes/backend/audio \
 	      ./includes/backend/data \
@@ -58,6 +60,7 @@ INCLUDEPATH += . \
 	      ./src \
 	      ./includes \
 	      ./service-description \
+	      ./includes/protection \
 	      ./includes/ofdm \
 	      ./includes/backend \
 	      ./includes/backend/audio \
@@ -93,6 +96,10 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/tii_detector.h \
 	   ./includes/ofdm/fic-handler.h \
 	   ./includes/ofdm/fib-processor.h  \
+	   ./includes/protection/protTables.h \
+	   ./includes/protection/protection.h \
+	   ./includes/protection/eep-protection.h \
+	   ./includes/protection/uep-protection.h \
 	   ./includes/backend/msc-handler.h \
 	   ./includes/backend/galois.h \
 	   ./includes/backend/reed-solomon.h \
@@ -100,9 +107,9 @@ HEADERS += ./radio.h \
 	   ./includes/backend/charsets.h \
 	   ./includes/backend/firecode-checker.h \
 	   ./includes/backend/frame-processor.h \
-	   ./includes/backend/virtual-backend.h \
-	   ./includes/backend/audio-backend.h \
-	   ./includes/backend/data-backend.h \
+	   ./includes/backend/backend.h \
+	   ./includes/backend/backend-driver.h \
+	   ./includes/backend/backend-deconvolver.h \
 	   ./includes/backend/audio/mp2processor.h \
 	   ./includes/backend/audio/mp4processor.h \
 	   ./includes/backend/audio/faad-decoder.h \
@@ -123,9 +130,6 @@ HEADERS += ./radio.h \
 	   ./includes/backend/data/journaline/dabdgdec_impl.h \
 	   ./includes/backend/data/journaline/newsobject.h \
 	   ./includes/backend/data/journaline/NML.h \
-	   ./includes/backend/protection.h \
-	   ./includes/backend/eep-protection.h \
-	   ./includes/backend/uep-protection.h \
 #	   ./includes/output/fir-filters.h \
 	   ./includes/output/audio-base.h \
 	   ./includes/output/newconverter.h \
@@ -173,20 +177,20 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/tii_detector.cpp \
 	   ./src/ofdm/fic-handler.cpp \
 	   ./src/ofdm/fib-processor.cpp  \
+	   ./src/protection/protTables.cpp \
+	   ./src/protection/protection.cpp \
+	   ./src/protection/eep-protection.cpp \
+	   ./src/protection/uep-protection.cpp \
 	   ./src/backend/msc-handler.cpp \
-	   ./src/backend/protection.cpp \
-	   ./src/backend/eep-protection.cpp \
-	   ./src/backend/uep-protection.cpp \
 	   ./src/backend/galois.cpp \
 	   ./src/backend/reed-solomon.cpp \
 	   ./src/backend/rscodec.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
 	   ./src/backend/frame-processor.cpp \
-	   ./src/backend/protTables.cpp \
-	   ./src/backend/virtual-backend.cpp \
-	   ./src/backend/audio-backend.cpp \
-	   ./src/backend/data-backend.cpp \
+	   ./src/backend/backend.cpp \
+           ./src/backend/backend-driver.cpp \
+           ./src/backend/backend-deconvolver.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
 	   ./src/backend/audio/faad-decoder.cpp \

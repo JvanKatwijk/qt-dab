@@ -76,14 +76,14 @@
 }
 
 
-void	dataProcessor::addtoFrame (uint8_t *outV) {
+void	dataProcessor::addtoFrame (std::vector<uint8_t> outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
 	   if ((this -> DSCTy == 5) &&
 	       (this -> DGflag))	// no datagroups
-	      handleTDCAsyncstream (outV, 24 * bitRate);
+	      handleTDCAsyncstream (outV. data (), 24 * bitRate);
 	   else
-	      handlePackets (outV, 24 * bitRate);
+	      handlePackets (outV. data (), 24 * bitRate);
 }
 //
 //	While for a full mix data and audio there will be a single packet in a

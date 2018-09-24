@@ -21,38 +21,35 @@
  */
 #
 #include	"dab-constants.h"
-#include	"audio-backend.h"
-#include	"mp2processor.h"
-#include	"mp4processor.h"
-#include	"eep-protection.h"
-#include	"uep-protection.h"
 #include	"radio.h"
+#include	"backend.h"
 //
 //	Interleaving is - for reasons of simplicity - done
 //	inline rather than through a special class-object
-//
+#define CUSize  (4 * 16)
+
 //	fragmentsize == Length * CUSize
-	audioBackend::audioBackend	(RadioInterface *mr,
-	                                 audiodata	*d,
-	                                 RingBuffer<int16_t> *buffer,
-	                                 QString	picturesPath):
-	                                    virtualBackend (d -> startAddr,
-	                                                    d -> length),
-	                                    outV (d -> bitRate * 24)
+	Backend::Backend	(RadioInterface *mr,
+	                         descriptorType	*d,
+	                         RingBuffer<int16_t> *audiobuffer,
+	                         RingBuffer<uint8_t> *databuffer,
+	                         QString	picturesPath):
+	                                    outV (d -> bitRate * 24),
+	                                    driver (mr, 
+	                                            d,
+	                                            audiobuffer,
+	                                            databuffer,
+	                                            picturesPath),
+	                                    deconvolver (d)
 #ifdef	__THREADED_BACKEND
 	                             ,freeSlots (20) 
 #endif 
 	                                          {
 int32_t i, j;
-	this	-> myRadioInterface	= mr;
-	this    -> dabModus             = d -> ASCTy == 077 ? DAB_PLUS : DAB;
+	this	-> startAddr		= d -> startAddr;
+	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;
-        this    -> bitRate              = d -> bitRate;
-        this    -> shortForm            = d -> shortForm;
-        this    -> protLevel            = d -> protLevel;
-
-	this	-> audioBuffer		= buffer;
-
+	this	-> bitRate		= d -> bitRate;
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
@@ -63,28 +60,6 @@ int32_t i, j;
 	countforInterleaver	= 0;
 	interleaverIndex	= 0;
 
-	if (shortForm)
-	   protectionHandler	= new uep_protection (bitRate,
-	                                              protLevel);
-	else
-	   protectionHandler	= new eep_protection (bitRate,
-	                                              protLevel);
-//
-	if (dabModus == DAB) 
-	   our_dabProcessor = new mp2Processor (myRadioInterface,
-	                                        bitRate,
-	                                        audioBuffer,
-	                                        picturesPath);
-	else
-	if (dabModus == DAB_PLUS) 
-	   our_dabProcessor = new mp4Processor (myRadioInterface,
-	                                        bitRate,
-	                                        audioBuffer,
-	                                        picturesPath);
-	else		// cannot happen
-	   our_dabProcessor = new frameProcessor ();
-
-	fprintf (stderr, "we now have %s\n", dabModus == DAB_PLUS ? "DAB+" : "DAB");
 	tempX. resize (fragmentSize);
 	
 	uint8_t shiftRegister [9];
@@ -108,19 +83,16 @@ int32_t i, j;
 #endif
 }
 
-	audioBackend::~audioBackend (void) {
-int16_t	i;
+	Backend::~Backend (void) {
 #ifdef	__THREADED_BACKEND
 	running. store (false);
 	while (this -> isRunning ())
 	   usleep (1000);
 #endif
-	delete protectionHandler;
-	delete our_dabProcessor;
 }
 
-int32_t	audioBackend::process	(int16_t *v, int16_t cnt) {
-
+int32_t	Backend::process	(int16_t *v, int16_t cnt) {
+	(void)cnt;
 #ifdef	__THREADED_BACKEND
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
@@ -135,8 +107,8 @@ int32_t	audioBackend::process	(int16_t *v, int16_t cnt) {
 }
 
 const	int16_t interleaveMap [] = {0,8,4,12,2,10,6,14,1,9,5,13,3,11,7,15};
-void	audioBackend::processSegment (int16_t *Data) {
-int16_t	i, j;
+void	Backend::processSegment (int16_t *Data) {
+int16_t	i;
 
 	for (i = 0; i < fragmentSize; i ++) {
 	   tempX [i] = interleaveData [(interleaverIndex + 
@@ -156,19 +128,16 @@ int16_t	i, j;
 	   return;
 	}
 
-	protectionHandler -> deconvolve (tempX. data (),
-	                                 fragmentSize,
-	                                 outV. data ());
-//
+	deconvolver. deconvolve (tempX. data (), fragmentSize, outV. data ());
 //	and the energy dispersal
 	for (i = 0; i < bitRate * 24; i ++)
 	   outV [i] ^= disperseVector [i];
 
-	our_dabProcessor -> addtoFrame (outV);
+	driver. addtoFrame (outV);
 }
 
 #ifdef	__THREADED_BACKEND
-void	audioBackend::run	(void) {
+void	Backend::run	(void) {
 
 	while (running. load ()) {
 	   while (!usedSlots. tryAcquire (1, 200)) 
@@ -180,7 +149,7 @@ void	audioBackend::run	(void) {
 #endif
 
 //	It might take a msec for the task to stop
-void	audioBackend::stopRunning (void) {
+void	Backend::stopRunning (void) {
 #ifdef	__THREADED_BACKEND
 	running = false;
 	while (this -> isRunning ())

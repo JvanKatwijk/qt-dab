@@ -30,6 +30,6 @@
 
 void	frameProcessor::addtoFrame	(std::vector<uint8_t> v) {
 	(void)v;
-	fprintf (stderr, "xxx");
+	fprintf (stderr, "foute boel");
 }
 
