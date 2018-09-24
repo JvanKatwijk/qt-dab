@@ -272,6 +272,8 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/reed-solomon.cpp
 	     ./src/backend/msc-handler.cpp
 	     ./src/backend/backend.cpp
+	     ./src/backend/backend-deconvolver.cpp
+             ./src/backend/backend-driver.cpp
 	     ./src/backend/audio/faad-decoder.cpp
 	     ./src/backend/audio/mp4processor.cpp
 	     ./src/backend/audio/mp2processor.cpp
