@@ -280,9 +280,9 @@ CONFIG		+= hackrf
 
 CONFIG		+= try-epg		# do not use
 DEFINES		+= MSC_DATA__		# use at your own risk
-
-#and this one is experimental
 DEFINES		+= PRESET_NAME
+
+DEFINES		+= __THREADED_BACKEND
 
 # you might select SSE if you are compiling on a x64 with SSE support
 # and you might select NEON if you are compiling for an arm (however
