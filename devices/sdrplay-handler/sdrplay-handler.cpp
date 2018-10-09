@@ -385,7 +385,7 @@ int	lnaState	= lnaGainSetting -> value ();
 	                             mir_sdr_LO_Undefined,	// LOMode
 	                             lnaState,	// LNA enable
 	                             &gRdBSystem,
-	                             agcControl -> isChecked (),	
+	                             mir_sdr_USE_RSP_SET_GR,
 	                             &samplesPerPacket,
 	                             mir_sdr_CHANGE_RF_FREQ);
 	if (err != mir_sdr_Success) 

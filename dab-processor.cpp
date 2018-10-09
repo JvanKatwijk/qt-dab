@@ -104,7 +104,7 @@ int32_t	i;
 	         myRadioInterface, SLOT (show_tii (int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
-
+	my_TII_Detector. reset ();
 	
 //	the thread will be started from somewhere else
 }
@@ -291,8 +291,7 @@ Data_blocks:
 	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
-	            int16_t mainId	= -1;
-	            int16_t subId	= -1;
+	            int16_t mainId, subId;
 	            my_TII_Detector. processNULL (&mainId, &subId);
 	            if (mainId > 0)
 	              showCoordinates (mainId, subId);

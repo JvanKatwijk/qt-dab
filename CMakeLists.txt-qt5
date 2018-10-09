@@ -195,7 +195,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h
-	     ./includes/protection/protTables.cpp
+	     ./includes/protection/protTables.h
 	     ./includes/protection/protection.h
 	     ./includes/protection/uep-protection.h
 	     ./includes/protection/eep-protection.h

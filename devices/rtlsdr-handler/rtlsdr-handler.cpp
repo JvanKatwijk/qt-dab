@@ -106,17 +106,21 @@ int	k;
 #ifdef	__MINGW32__
 	const char *libraryString = "rtlsdr.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
-#else
-	const char *libraryString = "librtlsdr.so";
-	Handle		= dlopen ("librtlsdr.so", RTLD_NOW);
-#endif
-
 	if (Handle == NULL) {
-	   fprintf (stderr, "failed to open %s\n", libraryString);
+	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError ());
 	   delete myFrame;
 	   throw (20);
 	}
+#else
+	const char *libraryString = "librtlsdr.so";
+	Handle		= dlopen ("librtlsdr.so", RTLD_NOW);
 
+	if (Handle == NULL) {
+	   fprintf (stderr, "failed to open %s (%s)\n", libraryString, dlerror ());
+	   delete myFrame;
+	   throw (20);
+	}
+#endif
 	libraryLoaded	= true;
 	if (!load_rtlFunctions ()) {
 #ifdef __MINGW32__

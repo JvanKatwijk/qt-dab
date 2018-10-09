@@ -65,18 +65,18 @@ float	Phi_k;
 	window. resize 		(T_u);
 	for (i = 0; i < T_u; i ++)
 	   window [i]  = (0.42 -
-                    0.5 * cos (2 * M_PI * (float)i / T_u) +
-                    0.08 * cos (4 * M_PI * (float)i / T_u));
+	            0.5 * cos (2 * M_PI * (float)i / T_u) +
+	            0.08 * cos (4 * M_PI * (float)i / T_u));
 
-        refTable.               resize (T_u);
+	refTable.               resize (T_u);
 
-        memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
-        for (i = 1; i <= params. get_carriers () / 2; i ++) {
-           Phi_k =  get_Phi (i);
-           refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
-           Phi_k = get_Phi (-i);
-           refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
-        }
+	memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
+	for (i = 1; i <= params. get_carriers () / 2; i ++) {
+	   Phi_k =  get_Phi (i);
+	   refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+	   Phi_k = get_Phi (-i);
+	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+	}
 
 	createPattern (dabMode);
 }
@@ -256,15 +256,16 @@ int	i;
 	my_fftHandler. do_FFT ();
 
 	for (i = 0; i < T_u; i ++)
-	    theBuffer [i] += fft_buffer [(T_u / 2 + i) % T_u];
+	    theBuffer [i] = cmul (theBuffer [i], 0.9) +
+	                    cmul (fft_buffer [i], 0.1);
 }
 
-//	We collected some  "spectra', and start correlating the 
+//	We collected some "spectra', and start correlating the 
 //	combined spectrum with the pattern defined by the mainId
 
-int16_t	TII_Detector::find_C (int16_t mainId) {
+int16_t	TII_Detector::find_C (int16_t mainId, int offset) {
 int16_t	i;
-int16_t	startCarrier	= theTable [mainId]. carrier;
+int16_t	startCarrier	= theTable [mainId]. carrier + offset;
 uint64_t pattern	= theTable [mainId]. pattern;
 float	maxCorr		= -1;
 int	maxIndex	= -1;
@@ -297,90 +298,88 @@ float	corrTable [24];
 
 	return maxIndex;
 }
-//
+
+#define	MAX_TABLE	4
 //	The difficult one: guessing for Mode 1 only
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
-float   maxCorr_1	= 0;
-float   maxCorr_2	= 0;
 float   avg		= 0;
 int16_t	startCarrier	= -1;
-int16_t	altCarrier	= -1;
+int	maxTable	[MAX_TABLE];
+float	maxValues	[MAX_TABLE];
 
-        for (i = - carriers / 2; i < - carriers / 4; i ++)
-           avg += abs (real (theBuffer [T_u / 2 + i] *
-                                    conj (theBuffer [T_u / 2 + i + 1])));
-        avg /= (carriers / 4);
+	*mainId	= -1;
+	*subId	= -1;
 
-	for (i = - carriers / 2; i < - carriers / 2 + 4 * 48; i += 2) {
-	   int index = T_u / 2 + i;
-	   float sum_1 = 0;
-	   float sum_2 = 0;
+	for (i = 0; i < MAX_TABLE; i ++) {
+	   maxTable [i] = 0;
+	   maxValues [i] = 0;
+	}
+
+	for (i = -carriers / 2; i < -carriers / 4; i += 2) {
+	   float temp = abs (real (theBuffer [(T_u + i) % T_u] *
+	                            conj (theBuffer [(T_u + i + 1) % T_u])));
+	   avg	+= temp;
+	   int k;
+	   for (j = 0; j < MAX_TABLE; j ++) {
+	      if (maxValues [j] < temp) {
+	         for (k = MAX_TABLE - 1; k > j; k --) {
+	            if (k > 0) {
+	               maxTable [k] = maxTable [k - 1];
+	               maxValues [k] = maxValues [k - 1];
+	            }
+	         }
+	         maxValues [j] = temp;
+	         maxTable [j] = i;
+	         break;
+	      }
+	   }
+	}
+	avg /= (carriers / 4);
+
+//	for (j = 0; j < MAX_TABLE; j ++)
+//	   fprintf (stderr, "%d -> %f\n", maxTable [j], maxValues [j]);
+//	fprintf (stderr, "avg -> %f\n", avg);
+
+	for (j = 0; j < MAX_TABLE; j ++) {
+	   startCarrier = maxTable [j];
+	   int index	= (T_u + startCarrier) % T_u;
+	   int main_1	= -1,  main_2 = -1;
+	   int subId_1	= -1,  subId_2	= 1;
 //
-//	  5 * avg is a rather arbitrary threshold, sometimes we see
-//	  values of 100 * avg
+//        5 * avg is a rather arbitrary threshold, sometimes we see
+//        values of 100 * avg
 	   if (abs (real (theBuffer [index] *
-	                     conj (theBuffer [index + 1]))) < 5 * avg)
+	                     conj (theBuffer [index + 1]))) < 10 * avg)
 	      continue;
 
-//	We just compute the "best" candidates two ways
-
-	   for (j = 0; j < 4 * 8; j ++) {
-	      int ci = index + j * 48;
-	      if (ci >= T_u / 2)
-	         ci ++;
-	      sum_1 += abs (real (theBuffer [ci] * conj (theBuffer [ci + 1])));
-	      sum_2 += abs (real (theBuffer [ci] * conj (refTable  [ci]))) +
-	               abs (real (theBuffer [ci + 1] * conj (refTable [ci])));
+	   float maxCorr	= 0;
+	   for (i = 0; i < 70; i ++) {
+	      if ((startCarrier < theTable [i]. carrier) ||
+	          (theTable [i]. carrier + 48 <= startCarrier))
+	         continue;
+	      float corr = correlate (theBuffer,
+	                              startCarrier,
+	                              theTable [i]. pattern);
+	      if (corr > maxCorr) {
+	         maxCorr = corr;
+	         main_1		= i;
+	         subId_1	= (startCarrier - theTable [i]. carrier) / 2;
+	      }
 	   }
-
-	   if (sum_1 > maxCorr_1) {
-	      maxCorr_1	= sum_1;
-	      startCarrier = i;
-	   }
-
-	   if (sum_2 > maxCorr_2) {
-	      maxCorr_2 = sum_2;
-	      altCarrier = i;
+//
+//	we might have found a (mainId, subId) pair, 
+//	verification is by looking two segments further for a match
+	   if ((main_1 != -1) && (subId_1 != -1)) {
+	      int subId_2 = find_C (main_1, carriers / 2);
+//	      fprintf (stderr, "we find %d and %d\n", subId_1, subId_2);
+	      if (subId_1 == subId_2) {
+	         *mainId	= main_1;
+	         *subId		= subId_1;
+	         return;
+	      }
 	   }
 	}
-
-	if (startCarrier != altCarrier) {
-//	   fprintf (stderr, "alternative start carriers %d %d\n",
-//	                                        startCarrier, altCarrier);
-	                                   
-	   return;
-	}
-
-        if (startCarrier <  -carriers / 2)	// nothing found
-           return;
-//	fprintf (stderr, "startCarrier is %d, altCarrier %d\n",
-//	                         startCarrier, altCarrier);
-
-L1:
-	float  maxCorr = -1;
-        *mainId = -1;
-        *subId  = -1;
-
-        for (i = 0; i < 70; i ++) {
-           if ((startCarrier < theTable [i]. carrier) ||
-               (theTable [i]. carrier + 48 <= startCarrier))
-              continue;
-           float corr = correlate (theBuffer,
-                                   startCarrier,
-                                   theTable [i]. pattern);
-           if (corr > maxCorr) {
-              maxCorr = corr;
-              *mainId   = i;
-              *subId    = (startCarrier - theTable [i]. carrier) / 2;
-           }
-        }
-
-//	if (*mainId != -1)
-//	   fprintf (stderr, "(%d) the carrier is %d, the pattern is %llx\n",
-//	                                 *mainId,
-//                                         startCarrier,
-//	                                 theTable [*mainId]. pattern);
 }
 
 //
@@ -407,11 +406,11 @@ float	avg	= 0;
 	   return 0;
 
 	carrier		= startCarrier;
-	s1		= abs (real (v [T_u / 2 + startCarrier] *
-	                             conj (v [T_u / 2 + startCarrier + 1])));
+	s1		= abs (real (v [(T_u + startCarrier) % T_u] *
+	                             conj (v [(T_u + startCarrier + 1) % T_u])));
 	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
-	   realIndex	= carrier < 0 ? T_u / 2 + carrier :  T_u / 2 + carrier + 1;
+	   realIndex	= carrier < 0 ? T_u + carrier :  carrier + 1;
 	   float x	= abs (real (v [realIndex] *
 	                                   conj (v [realIndex + 1])));
 	   s1 += x;

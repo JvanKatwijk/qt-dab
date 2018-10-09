@@ -9,12 +9,12 @@ TARGET		= qt-dab-2.0
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-QMAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_LFLAGS	+=  -flto
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#QMAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_LFLAGS	+=  -flto
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -259,10 +259,10 @@ LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
-#CONFIG		+= dabstick
+CONFIG		+= dabstick
 CONFIG		+= sdrplay
 #CONFIG		+= rtl_tcp
-#CONFIG		+= airspy
+CONFIG		+= airspy
 CONFIG		+= hackrf
 #CONFIG		+= elad_s1	# does not work yet
 
