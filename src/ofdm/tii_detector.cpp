@@ -281,7 +281,7 @@ float	corrTable [24];
 	for (i = 1; i < 24; i ++) {
 	   corrTable [i] = correlate (theBuffer,
 	                              startCarrier + 2 * i,
-	                              pattern);
+	                              pattern, 2);
 	}
 
 	for (i = 1; i < 24; i ++) {
@@ -354,20 +354,25 @@ float	maxValues	[MAX_TABLE];
 	      continue;
 
 	   float maxCorr	= 0;
+	   int pattern		= 0;
 	   for (i = 0; i < 70; i ++) {
 	      if ((startCarrier < theTable [i]. carrier) ||
 	          (theTable [i]. carrier + 48 <= startCarrier))
 	         continue;
 	      float corr = correlate (theBuffer,
 	                              startCarrier,
-	                              theTable [i]. pattern);
+	                              theTable [i]. pattern, 2);
 	      if (corr > maxCorr) {
 	         maxCorr = corr;
 	         main_1		= i;
 	         subId_1	= (startCarrier - theTable [i]. carrier) / 2;
+	         pattern	= i;
 	      }
 	   }
-//
+
+//	   if (main_1 > 0)
+//	      fprintf (stderr, "we found pattern %d, startCarrier %d\n",
+//	                        pattern, theTable [pattern]. carrier);
 //	we might have found a (mainId, subId) pair, 
 //	verification is by looking two segments further for a match
 	   if ((main_1 != -1) && (subId_1 != -1)) {
@@ -390,11 +395,11 @@ float	maxValues	[MAX_TABLE];
 //	by the pattern). Since there might be a pretty large
 //	phase difference between the values in the spectrum of the
 //	null period here and the values in the predefined refTable,
-//	we just correlate  here over the values here
+//	we just correlate here over the values here
 //
 float	TII_Detector::correlate (std::vector<complex<float>> v,
 	                         int16_t	startCarrier,
-	                         uint64_t	pattern) {
+	                         uint64_t	pattern, int segments) {
 static bool flag = true;
 int16_t	realIndex;
 int16_t	i;
@@ -408,7 +413,8 @@ float	avg	= 0;
 	carrier		= startCarrier;
 	s1		= abs (real (v [(T_u + startCarrier) % T_u] *
 	                             conj (v [(T_u + startCarrier + 1) % T_u])));
-	for (i = 0; i < 15; i ++) {
+	for (i = 0; i < 4 * segments; i ++) {
+//	for (i = 0; i < 15; i ++) {
 	   carrier	+= ((pattern >> 56) & 0xF) * 48;
 	   realIndex	= carrier < 0 ? T_u + carrier :  carrier + 1;
 	   float x	= abs (real (v [realIndex] *

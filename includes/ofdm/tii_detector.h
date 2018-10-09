@@ -55,7 +55,7 @@ private:
 	int16_t		A_mode_2	(uint8_t c, uint8_t p, int16_t k);
 	int16_t		A_mode_4	(uint8_t c, uint8_t p, int16_t k);
 	float		correlate	(std::vector<complex<float> >,
-	                                 int16_t, uint64_t);
+	                                 int16_t, uint64_t, int);
 
 	void		createPattern	(uint8_t);
 	void		createPattern_1	(void);
