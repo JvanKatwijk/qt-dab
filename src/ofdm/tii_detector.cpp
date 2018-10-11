@@ -303,6 +303,8 @@ float	avgTable	[24];
 //
 //	Determining the offset is then easy, look at the corresponding
 //	elements in the 8 sections and mark the highest ones
+//	The C_table contains the summed values, the
+//	D_table counts the amount of groups that contribute
 	for (j = 0; j < 8; j ++) {
 	   for (i = 0; i < 24; i ++) {
 	      if (hulpTable [j * 24 + i] > 3 * avgTable [i]) {
