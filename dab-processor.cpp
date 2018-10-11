@@ -67,7 +67,6 @@
 	                                                 dabMode,
 	                                                 theRig -> bitDepth (), 
 	                                                 iqBuffer) {
-int32_t	i;
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
@@ -153,6 +152,7 @@ int		attempts;
 //Initing:
 notSynced:
 	   setSynced (false);
+	   my_TII_Detector. reset();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
 	      case TIMESYNC_ESTABLISHED:
 	         break;			// yes, we are ready
@@ -295,7 +295,7 @@ Data_blocks:
 	            my_TII_Detector. processNULL (&mainId, &subId);
 	            if (mainId > 0)
 	              showCoordinates (mainId, subId);
-	         }
+
 	         if ((tii_counter & 02) != 0) {
 	            tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (),
 	                                                              T_u);
@@ -305,6 +305,7 @@ Data_blocks:
 	            tii_counter = 1;
 	      }
 	   }
+	}
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
@@ -452,4 +453,3 @@ bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
 	}
 }
 
-	

@@ -98,6 +98,7 @@ private:
 	RingBuffer<std::complex<float> > *tiiBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;
+
 	sampleReader	myReader;
 	RadioInterface	*myRadioInterface;
 	ficHandler	my_ficHandler;

@@ -34,7 +34,7 @@
 //	pattern within the null-period as well as a set of
 //	startcarriers, i.e. carrier numbers where the pattern
 //	could start.
-//	The start carrier itself determined the "c" value.
+//	The start carrier itself determines the "c" value.
 //	Basically, within an SFN the "p" is fixed for all transmitters,
 //	while the latter show the pattern on different positions in
 //	the carriers of the null-period.
@@ -78,11 +78,15 @@ float	Phi_k;
 	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 
-	createPattern (dabMode);
+	initInvTable	();
+	createPattern ();
+//	for (i = 0; i < 70; i ++)
+//	   printOverlap (i, 15);
 }
 
 		TII_Detector::~TII_Detector (void) {
 }
+
 
 //	Zm (0, k) is a function of the P and the C, together forming the key to
 //	the database where he transmitter locations are described.
@@ -174,8 +178,17 @@ uint8_t table [] = {
 	0360		// 1 1 1 1 0 0 0 0		69
 };
 
+
+void	TII_Detector::initInvTable() {
+	int	i;
+	for (i = 0; i < 256; ++i)
+	    invTable [i] =  -1;
+	for (i = 0; i < 70; ++i) 
+	    invTable [table [i]] = i;
+}
+
 static
-uint8_t bits [] = {128, 64, 32, 16, 8, 4, 2, 1};
+uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 static inline
 uint8_t getbit (uint8_t value, int16_t bitPos) {
 	return value & bits [bitPos] ? 1 : 0;
@@ -190,31 +203,7 @@ uint8_t delta (int16_t a, int16_t b) {
 //	creating the patterns above can be done more efficient, however
 //	this approach feels more readable, while initialization, i.e.
 //	executing the constructor, is done once
-int16_t	TII_Detector::A (uint8_t dabMode, uint8_t c, uint8_t p, int16_t k) {
-	if (dabMode == 2)
-	   return A_mode_2 (c, p, k);
-	if (dabMode == 4)
-	   return A_mode_4 (c, p, k);
-	return A_mode_1 (c, p, k);
-}
-
-int16_t	TII_Detector::A_mode_2 (uint8_t c, uint8_t p, int16_t k) {
-int16_t	res	= 0;
-int16_t	b;
-
-	if ((-192 <= k) && (k < - 191)) {
-	   for (b = 0; b <= 3; b ++)
-	      res += delta (k, -192 + 2 * c + 48 * b) * getbit (table [p], b);
-	   for (b = 4; b <= 7; b ++)
-	      res += delta (k, -191 + 2 * c + 48 * b) * getbit (table [p], b);
-	}
-	return res;
-}
-
-int16_t	TII_Detector::A_mode_4 (uint8_t c, uint8_t p, int16_t k) {
-}
-
-int16_t	TII_Detector::A_mode_1 (uint8_t c, uint8_t p, int16_t k) {
+int16_t	TII_Detector::A (uint8_t c, uint8_t p, int16_t k) {
 int16_t b;
 int16_t res	= 0;
 
@@ -239,8 +228,6 @@ int16_t res	= 0;
 	return res;
 }
 //
-//	If we know the "mainId" from the FIG0/22, we can try to locate
-//	the pattern and compute the C
 
 void	TII_Detector::reset (void) {
 	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
@@ -260,192 +247,126 @@ int	i;
 	                    cmul (fft_buffer [i], 0.1);
 }
 
-//	We collected some "spectra', and start correlating the 
-//	combined spectrum with the pattern defined by the mainId
+void	TII_Detector::collapse (std::complex<float> *inVec, float *outVec) {
+int	i;
 
-int16_t	TII_Detector::find_C (int16_t mainId, int offset) {
-int16_t	i;
-int16_t	startCarrier	= theTable [mainId]. carrier + offset;
-uint64_t pattern	= theTable [mainId]. pattern;
-float	maxCorr		= -1;
-int	maxIndex	= -1;
-float	avg		= 0;
-float	corrTable [24];
+	for (i = 0; i < carriers / 8; i ++) {
+	   int carr = - carriers / 2 + 2 * i;
+	   outVec [i] = abs (real (inVec [(T_u + carr) % T_u] *
+	                            conj (inVec [(T_u + carr + 1) % T_u])));
 
-	if (mainId < 0)
-	   return - 1;
+	   carr	= - carriers / 2 + 1 * carriers / 4 + 2 * i;
+	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
+	                            conj (inVec [(T_u + carr + 1) % T_u])));
 
-//	fprintf (stderr, "the carrier is %d\n", startCarrier);
-//
-//	The "c" value is in the range 1 .. 23
-	for (i = 1; i < 24; i ++) {
-	   corrTable [i] = correlate (theBuffer,
-	                              startCarrier + 2 * i,
-	                              pattern, 2);
+	   carr	= - carriers / 2 + 2 * carriers / 4 + 2 * i + 1;
+	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
+	                            conj (inVec [(T_u + carr + 1) % T_u])));
+
+	   carr	= - carriers / 2 + 3 * carriers / 4 + 2 * i + 1;
+	   outVec [i] += abs (real (inVec [(T_u + carr) % T_u] *
+	                            conj (inVec [(T_u + carr + 1) % T_u])));
 	}
-
-	for (i = 1; i < 24; i ++) {
-	   avg += corrTable [i];
-	   if (corrTable [i] > maxCorr) {
-	      maxCorr = corrTable [i];
-	      maxIndex = i;
-	   }
-	}
-
-	avg /= 23;
-	if (maxCorr < 2 * avg)
-	   maxIndex = -1;
-
-	return maxIndex;
 }
 
-#define	MAX_TABLE	4
-//	The difficult one: guessing for Mode 1 only
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
-float   avg		= 0;
-int16_t	startCarrier	= -1;
-int	maxTable	[MAX_TABLE];
-float	maxValues	[MAX_TABLE];
+float	hulpTable	[carriers / 8];
+float	C_table		[24];	// contains the values
+int	D_table		[24];	// marks for locs with data
+float	avgTable	[24];
 
 	*mainId	= -1;
 	*subId	= -1;
 
-	for (i = 0; i < MAX_TABLE; i ++) {
-	   maxTable [i] = 0;
-	   maxValues [i] = 0;
-	}
 
-	for (i = -carriers / 2; i < -carriers / 4; i += 2) {
-	   float temp = abs (real (theBuffer [(T_u + i) % T_u] *
-	                            conj (theBuffer [(T_u + i + 1) % T_u])));
-	   avg	+= temp;
-	   int k;
-	   for (j = 0; j < MAX_TABLE; j ++) {
-	      if (maxValues [j] < temp) {
-	         for (k = MAX_TABLE - 1; k > j; k --) {
-	            if (k > 0) {
-	               maxTable [k] = maxTable [k - 1];
-	               maxValues [k] = maxValues [k - 1];
-	            }
-	         }
-	         maxValues [j] = temp;
-	         maxTable [j] = i;
-	         break;
+//	we map the "carriers" carriers (complex values) onto
+//	a collapsed vector of "carriers / 8" length, 
+//	to be split up into 8 segments of 24 values
+
+	collapse (theBuffer. data (), hulpTable);
+//
+//	we have now a vector, length 8 times a segment of 24 values
+//	where we investigate what the "C" offset is
+	memset (C_table, 0, 24 * sizeof (float));
+	memset (D_table, 0, 24 * sizeof (int));
+//
+//	The amplitudes are far from constant over the "carriers" carriers
+//	so it seems best to collect an avg value for each of the 
+//	segments of 24 values
+	memset (avgTable, 0, 24 * sizeof (float));
+	for (i = 0; i < 24; i ++) {
+	   for (j = 0; j < 8; j ++) 
+	      avgTable [i] += hulpTable [i * 8 + j];
+	   avgTable [i] /= 8;
+	}
+//
+//	Determining the offset is then easy, look at the corresponding
+//	elements in the 8 sections and mark the highest ones
+	for (j = 0; j < 8; j ++) {
+	   for (i = 0; i < 24; i ++) {
+	      if (hulpTable [j * 24 + i] > 3 * avgTable [i]) {
+	         C_table [i] += hulpTable [j * 24 + i];
+	         D_table [i] ++;
 	      }
 	   }
 	}
-	avg /= (carriers / 4);
-
-//	for (j = 0; j < MAX_TABLE; j ++)
-//	   fprintf (stderr, "%d -> %f\n", maxTable [j], maxValues [j]);
-//	fprintf (stderr, "avg -> %f\n", avg);
-
-	for (j = 0; j < MAX_TABLE; j ++) {
-	   startCarrier = maxTable [j];
-	   int index	= (T_u + startCarrier) % T_u;
-	   int main_1	= -1,  main_2 = -1;
-	   int subId_1	= -1,  subId_2	= 1;
 //
-//        5 * avg is a rather arbitrary threshold, sometimes we see
-//        values of 100 * avg
-	   if (abs (real (theBuffer [index] *
-	                     conj (theBuffer [index + 1]))) < 10 * avg)
-	      continue;
+//	we mark the two highest ones that have a score of (at least) 4
+//	groups with "high" values
+	float	Max_1	= 0;
+	int	ind1	= -1;
+	float	Max_2	= 0;
+	int	ind2	= -1;
 
-	   float maxCorr	= 0;
-	   int pattern		= 0;
-	   for (i = 0; i < 70; i ++) {
-	      if ((startCarrier < theTable [i]. carrier) ||
-	          (theTable [i]. carrier + 48 <= startCarrier))
-	         continue;
-	      float corr = correlate (theBuffer,
-	                              startCarrier,
-	                              theTable [i]. pattern, 2);
-	      if (corr > maxCorr) {
-	         maxCorr = corr;
-	         main_1		= i;
-	         subId_1	= (startCarrier - theTable [i]. carrier) / 2;
-	         pattern	= i;
-	      }
+	for (j = 0; j < 24; j ++) {
+	   if ((D_table [j] >= 4) && (C_table [j] > Max_1)) {
+	      Max_1	= C_table [j];
+	      ind1	= j;
 	   }
-
-//	   if (main_1 > 0)
-//	      fprintf (stderr, "we found pattern %d, startCarrier %d\n",
-//	                        pattern, theTable [pattern]. carrier);
-//	we might have found a (mainId, subId) pair, 
-//	verification is by looking two segments further for a match
-	   if ((main_1 != -1) && (subId_1 != -1)) {
-	      int subId_2 = find_C (main_1, carriers / 2);
-//	      fprintf (stderr, "we find %d and %d\n", subId_1, subId_2);
-	      if (subId_1 == subId_2) {
-	         *mainId	= main_1;
-	         *subId		= subId_1;
-	         return;
-	      }
+	   else
+	   if ((D_table [j] >= 4) && (C_table [j] > Max_2)) {
+	      Max_2	= C_table [j];
+	      ind2	= j;
 	   }
 	}
-}
-
 //
-//
-//	It turns out that the location "startIndex + k * 48"
-//	and "startIndex + k * 48 + 1" both contain the refTable
-//	value from "startIndex + k * 48" (where k is 1 .. 5, determined
-//	by the pattern). Since there might be a pretty large
-//	phase difference between the values in the spectrum of the
-//	null period here and the values in the predefined refTable,
-//	we just correlate here over the values here
-//
-float	TII_Detector::correlate (std::vector<complex<float>> v,
-	                         int16_t	startCarrier,
-	                         uint64_t	pattern, int segments) {
-static bool flag = true;
-int16_t	realIndex;
-int16_t	i;
-int16_t	carrier;
-float	s1	= 0;
-float	avg	= 0;
-
-	if (pattern == 0)
-	   return 0;
-
-	carrier		= startCarrier;
-	s1		= abs (real (v [(T_u + startCarrier) % T_u] *
-	                             conj (v [(T_u + startCarrier + 1) % T_u])));
-	for (i = 0; i < 4 * segments; i ++) {
-//	for (i = 0; i < 15; i ++) {
-	   carrier	+= ((pattern >> 56) & 0xF) * 48;
-	   realIndex	= carrier < 0 ? T_u + carrier :  carrier + 1;
-	   float x	= abs (real (v [realIndex] *
-	                                   conj (v [realIndex + 1])));
-	   s1 += x;
-	   pattern <<= 4;
-	}
+//	The - almost - final step is then to figure out which
+//	groups contributed, obviously only where ind1 > 0
+//	we start with collecting the values of the correct
+//	elements of the 8 groups
 	
-	return s1 / 15;
-}
-
-void	TII_Detector:: createPattern (uint8_t dabMode) {
-	switch (dabMode) {
-	   default:
-	   case 1:
-	      createPattern_1 ();
-	      break;
-
-	   case 2:
-	      createPattern_2 ();
-	      break;
-
-	   case 4:
-	      createPattern_4 ();
-	      break;
+	if (ind1 > 0) {
+	   uint16_t pattern	= 0;
+	   float x [8];
+	   for (i = 0; i < 8; i ++) 
+	      x [i] = hulpTable [i * 24 + ind1];
+//
+//	we extract the four max values (it is known that they exist)
+	   for (i = 0; i < 4; i ++) {
+	      float	mmax	= 0;
+	      int ind	= -1;
+	      for (j = 0; j < 8; j ++) {
+	         if (x [j] > mmax) {
+	            mmax = x [j];
+	            ind  = j;
+	         }
+	      }
+	      if (ind != -1) {
+	         x [ind] = 0;
+	         pattern |= bits [ind];
+	      }
+	   }
+//
+//	The mainId is found using the match with the invTable
+	   *mainId	= int (invTable [pattern]);
+	   *subId	= ind1;
+	   return;
 	}
 }
 
-void	TII_Detector::createPattern_1 (void) {
+void	TII_Detector:: createPattern (void) {
 int	p, k, c;
-uint8_t	dabMode	= 1;
 
 	for (p = 0; p < 70; p ++) {
 	   int16_t digits	= 0;
@@ -454,7 +375,7 @@ uint8_t	dabMode	= 1;
 	      bool first = true;
 	      int lastOne = 0;
 	      for (k = -carriers / 2; k < -carriers / 4; k ++) {
-	         if (A (dabMode, c, p, k) > 0) {
+	         if (A (c, p, k) > 0) {
 	            if (first) {
 	               first = false;
 	               theTable [p]. carrier = k;
@@ -470,7 +391,7 @@ uint8_t	dabMode	= 1;
 	      }
 
 	      for (k = -carriers / 4; k < 0; k ++) {
-	         if (A (dabMode, c, p, k) > 0) {
+	         if (A (c, p, k) > 0) {
 	            theTable [p]. pattern <<= 4;
 	            theTable [p]. pattern |= (k - lastOne) / 48;
 	            lastOne = k;
@@ -479,7 +400,7 @@ uint8_t	dabMode	= 1;
 	      }
 
 	      for (k = 1; k <= carriers / 4; k ++) {
-	         if (A (dabMode, c, p, k) > 0) {
+	         if (A (c, p, k) > 0) {
 	            theTable [p]. pattern <<= 4;
 	            theTable [p]. pattern |= (k - lastOne) / 48;
 	            lastOne = k;
@@ -488,7 +409,7 @@ uint8_t	dabMode	= 1;
 	      }
 
 	      for (k = carriers / 4 + 1; k <= carriers / 2; k ++) {
-	         if (A (dabMode, c, p, k) > 0) {
+	         if (A (c, p, k) > 0) {
 	            theTable [p]. pattern <<= 4;
 	            theTable [p]. pattern |= (k - lastOne) / 48;
 	            lastOne = k;
@@ -502,10 +423,42 @@ uint8_t	dabMode	= 1;
 	}
 }
 
-
-void	TII_Detector::createPattern_2 (void) {
+int	shorten (int carrier) {
+	if (carrier > 1 + 384)
+	   carrier = carrier - 1 - 3 * 384;
+	if (carrier > 0)
+	   carrier = carrier - 1 - 2 * 384;
+	if (carrier > -384)
+	   carrier = carrier - 384;
+	return carrier;
 }
 
-void	TII_Detector::createPattern_4 (void) {
+void	TII_Detector::printOverlap (int pNum, int cNum) {
+int i, j;
+int	carrier		= theTable [pNum]. carrier + cNum * 2;
+uint64_t pattern	= theTable [pNum]. pattern;
+int	list [16];
+int	list_2 [16];
+bool	changes;
+
+	fprintf (stderr, "p (%d) %d:\t", pNum, theTable [pNum]. carrier);
+	
+        for (i = 0; i < 15; i ++) {
+
+           carrier      += ((pattern >> 56) & 0xF) * 48;
+	   list [i]	= carrier;
+	   if (list [i] >= 0) list [i] ++;
+           pattern <<= 4;
+	   list_2 [i] =  shorten (list [i]);
+        }
+
+//	for (i = 0; i < 15; i ++)
+//	   fprintf (stderr, " %d", list [i]);
+	fprintf (stderr, " || ");
+	for (i = 0; i < 15; i ++)
+	   fprintf (stderr, " %d", list_2 [i]);
+
+	fprintf (stderr, "\n");
 }
+
 

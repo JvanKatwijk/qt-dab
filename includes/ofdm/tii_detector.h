@@ -35,10 +35,13 @@ public:
 		~TII_Detector	(void);
 	void	reset		(void);
 	void	addBuffer	(std::vector<std::complex<float>>);
-	int16_t	find_C		(int16_t, int);
 	void	processNULL	(int16_t *, int16_t *);
 
 private:
+	void			collapse	(std::complex<float> *,
+	                                         float *);
+	uint8_t			invTable [256];
+	void			initInvTable	(void);
 	dabParams		params;
 	fftHandler		my_fftHandler;
 	int16_t			T_u;
@@ -49,18 +52,11 @@ private:
 	std::vector<float>	window;
 	std::vector<complex<float> >	refTable;
 	int16_t		fillCount;
-	int16_t		A		(uint8_t, uint8_t c,
+	int16_t		A		(uint8_t c,
 	                                            uint8_t p, int16_t k);
-	int16_t		A_mode_1	(uint8_t c, uint8_t p, int16_t k);
-	int16_t		A_mode_2	(uint8_t c, uint8_t p, int16_t k);
-	int16_t		A_mode_4	(uint8_t c, uint8_t p, int16_t k);
-	float		correlate	(std::vector<complex<float> >,
-	                                 int16_t, uint64_t, int);
+	void		createPattern	(void);
+	void		printOverlap (int pNum, int cNum);
 
-	void		createPattern	(uint8_t);
-	void		createPattern_1	(void);
-	void		createPattern_2	(void);
-	void		createPattern_4	(void);
 	struct nullTable {
 	   int16_t	carrier;
 	   uint64_t	pattern;
