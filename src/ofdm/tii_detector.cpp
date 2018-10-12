@@ -275,6 +275,7 @@ float	hulpTable	[carriers / 8];
 float	C_table		[24];	// contains the values
 int	D_table		[24];	// marks for locs with data
 float	avgTable	[24];
+float MMax	= 0;
 
 	*mainId	= -1;
 	*subId	= -1;
@@ -301,7 +302,23 @@ float	avgTable	[24];
 	      avgTable [i] += hulpTable [i * 8 + j];
 	   avgTable [i] /= 8;
 	}
+
+//	float	MMin	= 1000000;
+//	float avgTotal	= 0;
+//	MMax		= 0;
+//	for (i = 0; i < 24; i ++) {
+//	   avgTotal += avgTable [i];
+//	   if (avgTable [i] < MMin)
+//	      MMin = avgTable [i];
+//	   if (avgTable [i] > MMax)
+//	      MMax = avgTable [i];
+//	}
 //
+//	fprintf (stderr, "MMax = %f, MMin = %f, avgTotal = %f\n",
+//	                  MMax, MMin, avgTotal / 24);
+//	fprintf (stderr, "signal ratio %f, signal avg %f\n",
+//	                    20 / 2 * log10 (MMax / MMin),
+//	                    20 / 2 * log10 (avgTotal / 24 / MMin));
 //	Determining the offset is then easy, look at the corresponding
 //	elements in the 8 sections and mark the highest ones
 //	The C_table contains the summed values, the
@@ -318,7 +335,8 @@ float	avgTable	[24];
 //	we mark the highest one that have a score of (at least) 4
 //	groups with "high" values
 
-	float	MMax	= 0;
+	MMax		= 0;
+//	float	MMax	= 0;
 	int	indexM	= -1;
 //	just walk over the 24 D_table elements to see
 //	for indices with enough groups contributing

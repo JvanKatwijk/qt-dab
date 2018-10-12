@@ -138,9 +138,9 @@ QString h;
 	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt ();
 
 	tii_delay	=
-	           dabSettings	-> value ("tii_delay", 20). toInt ();
-	if (tii_delay < 20)
-	   tii_delay = 20;
+	           dabSettings	-> value ("tii_delay", 5). toInt ();
+	if (tii_delay < 5)
+	   tii_delay = 5;
 
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
