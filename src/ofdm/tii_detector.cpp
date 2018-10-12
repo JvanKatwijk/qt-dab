@@ -30,7 +30,7 @@
 //	to identify the transmitter by inspecting the null period.
 //	The information in the null-period is encoded in a "p"
 //	a "pattern" and a "c", a "carrier"
-//	value. The "p" value, derived from the FIB, defines the
+//	value. The "p" value defines the
 //	pattern within the null-period as well as a set of
 //	startcarriers, i.e. carrier numbers where the pattern
 //	could start.
@@ -293,7 +293,8 @@ float	avgTable	[24];
 //
 //	The amplitudes are far from constant over the "carriers" carriers
 //	so it seems best to collect an avg value for each of the 
-//	segments of 24 values
+//	segments of 24 values (note however that these are collected
+//	from all four regions in the full range of carriers
 	memset (avgTable, 0, 24 * sizeof (float));
 	for (i = 0; i < 24; i ++) {
 	   for (j = 0; j < 8; j ++) 
@@ -313,38 +314,37 @@ float	avgTable	[24];
 	      }
 	   }
 	}
-//
-//	we mark the two highest ones that have a score of (at least) 4
-//	groups with "high" values
-	float	Max_1	= 0;
-	int	ind1	= -1;
-	float	Max_2	= 0;
-	int	ind2	= -1;
 
+//	we mark the highest one that have a score of (at least) 4
+//	groups with "high" values
+
+	float	MMax	= 0;
+	int	indexM	= -1;
+//	just walk over the 24 D_table elements to see
+//	for indices with enough groups contributing
+//	and collect the 4 largest contributers
 	for (j = 0; j < 24; j ++) {
-	   if ((D_table [j] >= 4) && (C_table [j] > Max_1)) {
-	      Max_1	= C_table [j];
-	      ind1	= j;
-	   }
-	   else
-	   if ((D_table [j] >= 4) && (C_table [j] > Max_2)) {
-	      Max_2	= C_table [j];
-	      ind2	= j;
+	   if (D_table [j] < 4)
+	      continue;
+	   if (C_table [j] > MMax) {
+	      MMax = C_table [j];
+	      indexM	= j;
 	   }
 	}
 //
 //	The - almost - final step is then to figure out which
-//	groups contributed, obviously only where ind1 > 0
-//	we start with collecting the values of the correct
+//	groups contributed, obviously only where maxTable [x]. index > 0
+//	We start with collecting the values of the correct
 //	elements of the 8 groups
-	
-	if (ind1 > 0) {
+
+	if (indexM > 0) {
 	   uint16_t pattern	= 0;
 	   float x [8];
 	   for (i = 0; i < 8; i ++) 
-	      x [i] = hulpTable [i * 24 + ind1];
+	      x [i] = hulpTable [i * 24 + indexM];
 //
-//	we extract the four max values (it is known that they exist)
+//	we extract the four max values (it is known that they are
+//	at least as large as N * avg
 	   for (i = 0; i < 4; i ++) {
 	      float	mmax	= 0;
 	      int ind	= -1;
@@ -362,7 +362,7 @@ float	avgTable	[24];
 //
 //	The mainId is found using the match with the invTable
 	   *mainId	= int (invTable [pattern]);
-	   *subId	= ind1;
+	   *subId	= indexM;
 	   return;
 	}
 }
