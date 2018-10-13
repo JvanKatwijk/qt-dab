@@ -299,12 +299,10 @@ Data_blocks:
 	            tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (),
 	                                                              T_u);
 	            show_tii (1);
-	         }
-	         if (tii_counter >= tii_delay)
 	            tii_counter = 1;
 	      }
 	   }
-//	}
+	}
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we

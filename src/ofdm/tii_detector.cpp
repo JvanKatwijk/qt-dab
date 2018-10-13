@@ -269,104 +269,99 @@ int	i;
 	}
 }
 
+
+#define	NUM_GROUPS	8
+#define	GROUPSIZE	24
 void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
-float	hulpTable	[carriers / 8];
-float	C_table		[24];	// contains the values
-int	D_table		[24];	// marks for locs with data
-float	avgTable	[24];
-float MMax	= 0;
-
+float	hulpTable	[NUM_GROUPS * GROUPSIZE];
+float	C_table		[GROUPSIZE];	// contains the values
+int	D_table		[GROUPSIZE];	// marks for indices in C_table with data
+float	avgTable	[NUM_GROUPS];
+//
+//	defaults:
 	*mainId	= -1;
 	*subId	= -1;
 
 
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
-//	to be split up into 8 segments of 24 values
+//	considered to consist of 8 segments of 24 values
+//	Each "value" is the sum of 4 pairs of subsequent carriers,
+//	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
 
 	collapse (theBuffer. data (), hulpTable);
 //
-//	we have now a vector, length 8 times a segment of 24 values
-//	where we investigate what the "C" offset is
-	memset (C_table, 0, 24 * sizeof (float));
-	memset (D_table, 0, 24 * sizeof (int));
-//
-//	The amplitudes are far from constant over the "carriers" carriers
-//	so it seems best to collect an avg value for each of the 
-//	segments of 24 values (note however that these are collected
-//	from all four regions in the full range of carriers
-	memset (avgTable, 0, 24 * sizeof (float));
-	for (i = 0; i < 24; i ++) {
-	   for (j = 0; j < 8; j ++) 
-	      avgTable [i] += hulpTable [i * 8 + j];
-	   avgTable [i] /= 8;
-	}
+//	since the "energy levels" in the different GROUPSIZE'd values
+//	may differ, we compute an average for each of the
+//	NUM_GROUPS GROUPSIZE-value groups
 
-//	float	MMin	= 1000000;
-//	float avgTotal	= 0;
-//	MMax		= 0;
-//	for (i = 0; i < 24; i ++) {
-//	   avgTotal += avgTable [i];
-//	   if (avgTable [i] < MMin)
-//	      MMin = avgTable [i];
-//	   if (avgTable [i] > MMax)
-//	      MMax = avgTable [i];
-//	}
+	memset (avgTable, 0, NUM_GROUPS * sizeof (float));
+	for (i = 0; i < NUM_GROUPS; i ++) {
+	   for (j = 0; j < GROUPSIZE; j ++)
+	      avgTable [i] += hulpTable [i * GROUPSIZE + j];
+	   avgTable [i] /= GROUPSIZE;
+	}
 //
-//	fprintf (stderr, "MMax = %f, MMin = %f, avgTotal = %f\n",
-//	                  MMax, MMin, avgTotal / 24);
-//	fprintf (stderr, "signal ratio %f, signal avg %f\n",
-//	                    20 / 2 * log10 (MMax / MMin),
-//	                    20 / 2 * log10 (avgTotal / 24 / MMin));
+//	
 //	Determining the offset is then easy, look at the corresponding
-//	elements in the 8 sections and mark the highest ones
-//	The C_table contains the summed values, the
-//	D_table counts the amount of groups that contribute
-	for (j = 0; j < 8; j ++) {
-	   for (i = 0; i < 24; i ++) {
-	      if (hulpTable [j * 24 + i] > 3 * avgTable [i]) {
-	         C_table [i] += hulpTable [j * 24 + i];
+//	elements in the NUM_GROUPS sections and mark the highest ones
+//	The summation of the high values are stored in the C_table,
+//	the number of times the limit is reached in the group
+//	is recorded in the D_table
+//
+//	4 * avgTable is 6dB, we consider that a minimum
+	memset (D_table, 0, GROUPSIZE * sizeof (int));
+	memset (C_table, 0, GROUPSIZE * sizeof (float));
+//
+	for (j = 0; j < NUM_GROUPS; j ++) {
+	   for (i = 0; i < GROUPSIZE; i ++) {
+	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
+	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
 	      }
 	   }
 	}
+	
+//
+//	we extract from the group the two highest values that
+//	meet the constraint of 4 values that are sufficiently high
+	float	Max_1	= 0;
+	int	ind1	= -1;
+	float	Max_2	= 0;
+	int	ind2	= -1;
 
-//	we mark the highest one that have a score of (at least) 4
-//	groups with "high" values
-
-	MMax		= 0;
-//	float	MMax	= 0;
-	int	indexM	= -1;
-//	just walk over the 24 D_table elements to see
-//	for indices with enough groups contributing
-//	and collect the 4 largest contributers
-	for (j = 0; j < 24; j ++) {
-	   if (D_table [j] < 4)
-	      continue;
-	   if (C_table [j] > MMax) {
-	      MMax = C_table [j];
-	      indexM	= j;
+	for (j = 0; j < GROUPSIZE; j ++) {
+	   if ((D_table [j] >= 4) && (C_table [j] > Max_1)) {
+	      Max_2	= Max_1;
+	      ind1	= ind2;
+	      Max_1	= C_table [j];
+	      ind1	= j;
+	   }
+	   else
+	   if ((D_table [j] >= 4) && (C_table [j] > Max_2)) {
+	      Max_2	= C_table [j];
+	      ind2	= j;
 	   }
 	}
 //
 //	The - almost - final step is then to figure out which
-//	groups contributed, obviously only where maxTable [x]. index > 0
-//	We start with collecting the values of the correct
-//	elements of the 8 groups
-
-	if (indexM > 0) {
-	   uint16_t pattern	= 0;
-	   float x [8];
-	   for (i = 0; i < 8; i ++) 
-	      x [i] = hulpTable [i * 24 + indexM];
+//	groups contributed, obviously only where ind1 > 0
+//	we start with collecting the values of the correct
+//	elements of the NUM_GROUPS groups
 //
-//	we extract the four max values (it is known that they are
-//	at least as large as N * avg
+//	for the qt-dab, we only need the "top" performer
+	if (ind1 > 0) {
+	   uint16_t pattern	= 0;
+	   float x [NUM_GROUPS];
+	   for (i = 0; i < NUM_GROUPS; i ++) 
+	      x [i] = hulpTable [ind1 + GROUPSIZE * i];
+//
+//	we extract the four max values (it is known that they exist)
 	   for (i = 0; i < 4; i ++) {
 	      float	mmax	= 0;
 	      int ind	= -1;
-	      for (j = 0; j < 8; j ++) {
+	      for (j = 0; j < NUM_GROUPS; j ++) {
 	         if (x [j] > mmax) {
 	            mmax = x [j];
 	            ind  = j;
@@ -380,10 +375,11 @@ float MMax	= 0;
 //
 //	The mainId is found using the match with the invTable
 	   *mainId	= int (invTable [pattern]);
-	   *subId	= indexM;
+	   *subId	= ind1;
 	   return;
 	}
 }
+
 
 void	TII_Detector:: createPattern (void) {
 int	p, k, c;
