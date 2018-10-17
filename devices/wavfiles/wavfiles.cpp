@@ -130,8 +130,8 @@ int	teller		= 0;
 	if (!readerOK)
 	   return;
 
-	fileProgress	-> setValue (0);
-	currentTime	-> display (0);
+//	fileProgress	-> setValue (0);
+//	currentTime	-> display (0);
 	fileLength	= sf_seek (filePointer, 0, SEEK_END);
 	totalTime	-> display ((float)fileLength / 2048000);
 

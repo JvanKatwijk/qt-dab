@@ -128,8 +128,8 @@ int	teller		= 0;
 
 	ExitCondition = false;
 
-	fileProgress	-> setValue (0);
-	currentTime	-> display  (0);
+//	fileProgress	-> setValue (0);
+//	currentTime	-> display  (0);
 	fseek (filePointer, 0, SEEK_END);
 	fileLength	= ftell (filePointer);
 	fseek (filePointer, 0, SEEK_SET);
