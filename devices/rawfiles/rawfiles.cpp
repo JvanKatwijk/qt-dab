@@ -151,12 +151,12 @@ int	teller		= 0;
 	      usleep (100);
 	   }
 
-	   if (++teller > 20) {
-	      teller = 0;
+	   if (++teller > 40) {
 	      int xx 		= ftell (filePointer);
 	      float progress	= (float)xx / fileLength;
-	      fileProgress	-> setValue (progress * 100);
-	      currentTime	-> display  ((float)xx / 2048000);
+//	      fileProgress	-> setValue (progress);
+//	      currentTime	-> display  (filetime);
+	      teller = 0;
 	   }
 	     
 	   nextStop += period;

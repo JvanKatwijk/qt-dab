@@ -156,8 +156,8 @@ int	teller		= 0;
 	   if (++teller >= 20) {
 	      int xx = sf_seek (filePointer, 0, SEEK_CUR);
 	      float progress = (float)xx / fileLength;
-	      fileProgress -> setValue ((int) (progress * 100));
-	      currentTime	-> display ((float)xx / 2048000);
+//	      fileProgress	-> setValue (progress);
+//	      currentTime	-> display (timelength);
 	      teller = 0;
 	   }
 

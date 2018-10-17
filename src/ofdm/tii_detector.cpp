@@ -24,10 +24,6 @@
 #include	<stdio.h>
 #include	<inttypes.h>
 //
-//	Transmitter Identification Info is carrier in the null period
-//	of a DAB frame. In case the FIB's carry information on the
-//	set of transmitters used in the SFN, an attempt is made
-//	to identify the transmitter by inspecting the null period.
 //	The information in the null-period is encoded in a "p"
 //	a "pattern" and a "c", a "carrier"
 //	value. The "p" value defines the
@@ -38,10 +34,6 @@
 //	Basically, within an SFN the "p" is fixed for all transmitters,
 //	while the latter show the pattern on different positions in
 //	the carriers of the null-period.
-//
-//	Matching the position of the pattern is relatively easy, since
-//	the standard defines the signals (i.e. phase and amplitude) of
-//	the carriers in the pattern.
 //
 //	As it turns out, the pattern is represented by a sequence
 //	consisting of elements with two subsequent bins with the same
@@ -276,8 +268,9 @@ void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
 int i, j;
 float	hulpTable	[NUM_GROUPS * GROUPSIZE];
 float	C_table		[GROUPSIZE];	// contains the values
-int	D_table		[GROUPSIZE];	// marks for indices in C_table with data
+int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
+float	minTable	[NUM_GROUPS];
 //
 //	defaults:
 	*mainId	= -1;
@@ -294,14 +287,20 @@ float	avgTable	[NUM_GROUPS];
 //
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the
-//	NUM_GROUPS GROUPSIZE-value groups
+//	NUM_GROUPS GROUPSIZE-value groups. 
 
 	memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 	for (i = 0; i < NUM_GROUPS; i ++) {
-	   for (j = 0; j < GROUPSIZE; j ++)
+	   minTable [i] = hulpTable [i * GROUPSIZE + 0];
+	   avgTable [i] = 0;
+	   for (j = 0; j < GROUPSIZE; j ++) {
 	      avgTable [i] += hulpTable [i * GROUPSIZE + j];
+	      if (hulpTable [i * GROUPSIZE + j] < minTable [i])
+	         minTable [i] = hulpTable [i * GROUPSIZE + j];
+	   }
 	   avgTable [i] /= GROUPSIZE;
 	}
+
 //
 //	
 //	Determining the offset is then easy, look at the corresponding
@@ -310,22 +309,30 @@ float	avgTable	[NUM_GROUPS];
 //	the number of times the limit is reached in the group
 //	is recorded in the D_table
 //
-//	4 * avgTable is 6dB, we consider that a minimum
+//	Threshold 4 * avgTable is 6dB, we consider that a minimum
+//	measurement shows that that is a reasonable value,
+//	alternatively, we could take the "minValue" as reference
+//	and "raise" the threshold. However, while that might be
+//	too  much for 8-bit incoming values
 	memset (D_table, 0, GROUPSIZE * sizeof (int));
 	memset (C_table, 0, GROUPSIZE * sizeof (float));
 //
 	for (j = 0; j < NUM_GROUPS; j ++) {
 	   for (i = 0; i < GROUPSIZE; i ++) {
 	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
+//	         fprintf (stderr, "index (%d, %d) -> %f (%f)\n",
+//	                           i, j,
+//	             10 * log10 (hulpTable [j * GROUPSIZE + i] / avgTable [j]),
+//	             10 * log10 (hulpTable [j * GROUPSIZE + i] / minTable [j]));
 	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
 	      }
 	   }
 	}
-	
+
 //
-//	we extract from the group the two highest values that
-//	meet the constraint of 4 values that are sufficiently high
+//	we extract from this result the two highest values that
+//	meet the constraint of 4 values being sufficiently high
 	float	Max_1	= 0;
 	int	ind1	= -1;
 	float	Max_2	= 0;
@@ -373,6 +380,7 @@ float	avgTable	[NUM_GROUPS];
 	      }
 	   }
 //
+//	The final step is then to do the mapping of the bits
 //	The mainId is found using the match with the invTable
 	   *mainId	= int (invTable [pattern]);
 	   *subId	= ind1;
