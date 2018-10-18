@@ -195,7 +195,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h
-	     ./includes/protection/protTables.cpp
+	     ./includes/protection/protTables.h
 	     ./includes/protection/protection.h
 	     ./includes/protection/uep-protection.h
 	     ./includes/protection/eep-protection.h
@@ -230,7 +230,9 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
 	     ./devices/rawfiles/rawfiles.h
+	     ./devices/rawfiles/raw-reader.h
 	     ./devices/wavfiles/wavfiles.h
+	     ./devices/wavfiles/wav-reader.h
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/newconverter.h
@@ -299,7 +301,9 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
 	     ./devices/rawfiles/rawfiles.cpp
+	     ./devices/rawfiles/raw-reader.cpp
 	     ./devices/wavfiles/wavfiles.cpp
+	     ./devices/wavfiles/wav-reader.cpp
 	     ./src/output/audio-base.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp

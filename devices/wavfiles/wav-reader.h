@@ -19,38 +19,35 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__WAV_FILES__
-#define	__WAV_FILES__
+#ifndef	__WAV_READER__
+#define	__WAV_READER__
 
-#include	<QString>
-#include	<QFrame>
+#include	<QThread>
 #include	<sndfile.h>
 #include	"dab-constants.h"
-#include	"virtual-input.h"
 #include	"ringbuffer.h"
+#include	<atomic>
+class	wavFiles;
 
-#include	"ui_filereader-widget.h"
-#include		"wav-reader.h"
-
-class	wavFiles: public virtualInput,
-	          public Ui_filereaderWidget {
+class	wavReader:public QThread {
 Q_OBJECT
 public:
-			wavFiles	(QString);
-	       		~wavFiles	(void);
-	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		(void);
-	bool		restartReader	(void);
+			wavReader	(wavFiles *,
+	                                 SNDFILE *,
+	                                 RingBuffer<std::complex<float>> *); 
+			~wavReader	(void);
+	bool		isRunning	(void);
+	void		startReader	(void);
 	void		stopReader	(void);
 private:
-	QString		fileName;
-	QFrame		*myFrame;
-	RingBuffer<std::complex<float>>	*_I_Buffer;
-	int32_t		bufferSize;
+virtual void		run		(void);
 	SNDFILE		*filePointer;
-	wavReader	*readerTask;
-	bool		running;
-public slots:
+	RingBuffer<std::complex<float> >	*theBuffer;
+	uint64_t	period;
+	std::atomic<bool>	running;
+	wavFiles	*parent;
+	int64_t		fileLength;
+signals:
 	void		setProgress	(int, float);
 };
 

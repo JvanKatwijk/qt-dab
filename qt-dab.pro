@@ -148,7 +148,9 @@ HEADERS += ./radio.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
+	   ./devices/rawfiles/raw-reader.h \
            ./devices/wavfiles/wavfiles.h \
+           ./devices/wavfiles/wav-reader.h \
 	   ./spectrum-viewer/spectrum-viewer.h \
 	   ./impulse-viewer/impulse-viewer.h \
 	   ./tii-viewer/tii-viewer.h
@@ -226,7 +228,9 @@ SOURCES += ./main.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
+	   ./devices/rawfiles/raw-reader.cpp \
            ./devices/wavfiles/wavfiles.cpp \
+           ./devices/wavfiles/wav-reader.cpp \
 	   ./spectrum-viewer/spectrum-viewer.cpp \
 	   ./impulse-viewer/impulse-viewer.cpp \
 	   ./tii-viewer/tii-viewer.cpp

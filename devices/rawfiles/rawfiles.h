@@ -33,11 +33,12 @@
 
 class	QLabel;
 class	QSettings;
-class	fileHulp;
+class	rawReader;
 /*
  */
 class	rawFiles: public virtualInput,
-	          public Ui_filereaderWidget, QThread {
+	          public Ui_filereaderWidget {
+Q_OBJECT
 public:
 
 			rawFiles	(QString);
@@ -49,17 +50,13 @@ public:
 	void		stopReader	(void);
 private:
 	QString		fileName;
-virtual	void		run		(void);
 	QFrame		*myFrame;
-	int32_t		readBuffer	(uint8_t *, int32_t);
 	RingBuffer<uint8_t>	*_I_Buffer;
-	int32_t		bufferSize;
 	FILE		*filePointer;
-	bool		readerOK;
-	bool		readerPausing;
-	bool		ExitCondition;
-	bool		ThreadFinished;
-	int64_t		currPos;
+	rawReader	*readerTask;
+	bool		running;
+public slots:
+	void		setProgress	(int, float);
 };
 
 #endif
