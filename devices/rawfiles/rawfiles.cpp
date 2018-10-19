@@ -68,6 +68,7 @@
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (100);
+	   delete readerRask;
 	}
 	if (filePointer != NULL)
 	   fclose (filePointer);
@@ -89,6 +90,7 @@ void	rawFiles::stopReader	(void) {
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (100);
+	   delete readerTask;
 	}
 	running = false;
 }

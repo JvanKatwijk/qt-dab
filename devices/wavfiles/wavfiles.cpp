@@ -63,12 +63,15 @@ SF_INFO *sf_info;
 	totalTime	-> display ((float)fileLength / 2048000);
 	running		= false;
 }
+//
+//	Note that running == true <==> readerTask has value assigned
 
 	wavFiles::~wavFiles (void) {
 	if (running) {
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (500);
+	   delete readerTask;
 	}
 	if (filePointer != NULL)
 	   sf_close (filePointer);
@@ -89,6 +92,7 @@ void	wavFiles::stopReader	(void) {
            readerTask   -> stopReader ();
            while (readerTask -> isRunning ())
               usleep (100);
+	   delete readerTask;
         }
         running = false;
 }

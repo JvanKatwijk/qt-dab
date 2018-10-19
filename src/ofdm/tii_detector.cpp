@@ -375,6 +375,7 @@ float	minTable	[NUM_GROUPS];
 	         }
 	      }
 	      if (ind != -1) {
+	         int index = ind;
 	         x [ind] = 0;
 	         pattern |= bits [ind];
 	      }
