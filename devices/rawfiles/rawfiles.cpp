@@ -68,7 +68,7 @@
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (100);
-	   delete readerRask;
+	   delete readerTask;
 	}
 	if (filePointer != NULL)
 	   fclose (filePointer);
