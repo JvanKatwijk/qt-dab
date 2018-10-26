@@ -25,6 +25,7 @@
 #include	<QThread>
 #include	<QString>
 #include	<QFrame>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
@@ -54,7 +55,7 @@ private:
 	RingBuffer<uint8_t>	*_I_Buffer;
 	FILE		*filePointer;
 	rawReader	*readerTask;
-	bool		running;
+	std::atomic<bool>	running;
 public slots:
 	void		setProgress	(int, float);
 };

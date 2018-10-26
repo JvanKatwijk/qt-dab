@@ -101,7 +101,6 @@ int16_t	i;
 	   return;
 	}
 
-	fprintf (stderr, "sending udp");
 	switch (protocol) {
 	   case 17:			// UDP protocol
 	      process_udpVector (&data [4 * headerSize], ipSize - 4 * headerSize);

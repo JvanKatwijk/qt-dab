@@ -60,11 +60,11 @@
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);
 
-	running		= false;
+	running. store (false);
 }
 
 	rawFiles::~rawFiles (void) {
-	if (running) {
+	if (running. load ()) {
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (100);
@@ -78,21 +78,21 @@
 }
 
 bool	rawFiles::restartReader	(void) {
-	if (running)
+	if (running. load ())
 	   return true;
 	readerTask	= new rawReader (this, filePointer, _I_Buffer);
-	running		= true;
+	running. store (true);
 	return true;
 }
 
 void	rawFiles::stopReader	(void) {
-	if (running) {
+	if (running. load ()) {
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (100);
 	   delete readerTask;
 	}
-	running = false;
+	running. store (false);
 }
 
 //	size is in I/Q pairs, file contains 8 bits values

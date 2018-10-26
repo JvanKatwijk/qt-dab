@@ -57,10 +57,6 @@ struct timeval  tv;
 	delete[] bi;
 }
 
-bool	rawReader::isRunning	(void) {
-	return running. load ();
-}
-
 void	rawReader::stopReader	(void) {
 	if (running) {
 	   running = false;

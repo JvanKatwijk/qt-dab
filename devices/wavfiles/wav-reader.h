@@ -36,7 +36,6 @@ public:
 	                                 SNDFILE *,
 	                                 RingBuffer<std::complex<float>> *); 
 			~wavReader	(void);
-	bool		isRunning	(void);
 	void		startReader	(void);
 	void		stopReader	(void);
 private:

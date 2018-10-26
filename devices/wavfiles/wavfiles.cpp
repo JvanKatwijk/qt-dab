@@ -61,13 +61,13 @@ SF_INFO *sf_info;
 	currentTime	-> display (0);
 	int64_t fileLength	= sf_seek (filePointer, 0, SEEK_END);
 	totalTime	-> display ((float)fileLength / 2048000);
-	running		= false;
+	running. store (false);
 }
 //
 //	Note that running == true <==> readerTask has value assigned
 
 	wavFiles::~wavFiles (void) {
-	if (running) {
+	if (running. load ()) {
 	   readerTask	-> stopReader ();
 	   while (readerTask -> isRunning ())
 	      usleep (500);
@@ -80,21 +80,21 @@ SF_INFO *sf_info;
 }
 
 bool	wavFiles::restartReader	(void) {
-	if (running)
+	if (running. load ())
            return true;
         readerTask      = new wavReader (this, filePointer, _I_Buffer);
-        running         = true;
+        running. store (true);
         return true;
 }
 
 void	wavFiles::stopReader	(void) {
-       if (running) {
+       if (running. load ()) {
            readerTask   -> stopReader ();
            while (readerTask -> isRunning ())
               usleep (100);
 	   delete readerTask;
         }
-        running = false;
+        running. store (false);
 }
 
 //	size is in I/Q pairs

@@ -34,7 +34,6 @@ public:
 			rawReader	(rawFiles *,
 	                                 FILE *, RingBuffer<uint8_t> *); 
 			~rawReader	(void);
-	bool		isRunning	(void);
 	void		startReader	(void);
 	void		stopReader	(void);
 private:

@@ -25,6 +25,7 @@
 #include	<QString>
 #include	<QFrame>
 #include	<sndfile.h>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
@@ -49,7 +50,7 @@ private:
 	int32_t		bufferSize;
 	SNDFILE		*filePointer;
 	wavReader	*readerTask;
-	bool		running;
+	std::atomic<bool>	running;
 public slots:
 	void		setProgress	(int, float);
 };

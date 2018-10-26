@@ -346,7 +346,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/rawfiles/rawfiles.h
-	     ./devices/rawfiles/raw-readerh
+	     ./devices/rawfiles/raw-reader.h
 	     ./devices/wavfiles/wavfiles.h
 	     ./devices/wavfiles/wav-reader.h
 	     ./includes/scopes-qwt6/iqdisplay.h

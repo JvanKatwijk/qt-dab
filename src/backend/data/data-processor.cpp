@@ -133,8 +133,8 @@ int32_t	i;
 	if (address == 0)
 	   return;		// padding packet
 //
-	if (packetAddress != address)	// sorry
-	   return;
+//	if (packetAddress != address)	// sorry
+//	   return;
 	
 //	assemble the full MSC datagroup
 

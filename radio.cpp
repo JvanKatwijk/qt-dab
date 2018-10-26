@@ -734,10 +734,12 @@ uint8_t localBuffer [length];
 	}
 	dataBuffer -> getDataFromBuffer (localBuffer, length);
 #ifdef	_SEND_DATAGRAM_
-	if (running. load ())
+	if (running. load ()) {
 	   dataOut_socket. writeDatagram ((const char *)localBuffer, length,
 	                                   QHostAddress (ipAddress),
 	                                   port);
+	}
+	
 #endif
 }
 //

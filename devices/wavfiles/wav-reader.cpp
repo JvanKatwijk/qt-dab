@@ -53,10 +53,6 @@ struct timeval  tv;
 	stopReader ();
 }
 
-bool	wavReader::isRunning	(void) {
-	return running. load ();
-}
-
 void	wavReader::stopReader	(void) {
 	if (running. load ()) {
 	   running. store (false);
@@ -72,8 +68,6 @@ int32_t	bufferSize	= 32768;
 int64_t	nextStop;
 int	teller		= 0;
 
-	if (running. load ())
-	   return;
 	connect (this, SIGNAL (setProgress (int, float)),
                  parent,   SLOT (setProgress (int, float)));
 	sf_seek (filePointer, 0, SEEK_SET);
