@@ -52,7 +52,7 @@ Not  (Not yet or partly) implemented:
     are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources).
-  * ip output: when configured the ip data - if selected - is sent to a specificies ip address (default: 127.0.0.1:8888).
+  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 ------------------------------------------------------------------
@@ -63,13 +63,13 @@ Introduction
 
 **Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** and a command-line based version. All three versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, but does not depend on Qt.
+Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** and a command-line based version. All three versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
 
-dabradio and the Qt-free version, the "command-line only" version have their own repository on Github.
+**dabradio**, **sdrplayDab**  and the Qt-free version, **dab-cmdline** the "command-line only", version have their own repository on Github.
 
 The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr). The sdrplayDab version is tightly couples to the SDRplay device.
 
-Beside to these C++ based versions,  (slightly limited) versions are implemented in Java and Ada, both with  an own repository on Github. 
+Beside to these C++ based versions,  (slightly limited) versions are implemented in Java and Ada, both with their own repository on Github. 
 
 The Qt-DAB version also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
