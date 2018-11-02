@@ -51,7 +51,8 @@ Not  (Not yet or partly) implemented:
   * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client
     are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
-  * Journaline (an untested Journaline implementation is part of the sources)
+  * Journaline (an untested Journaline implementation is part of the sources).
+  * ip output: when configured the ip data - if selected - is sent to a specificies ip address (default: 127.0.0.1:8888).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 ------------------------------------------------------------------
