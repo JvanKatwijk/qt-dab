@@ -51,7 +51,8 @@ Not  (Not yet or partly) implemented:
   * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client
     are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
-  * Journaline (an untested Journaline implementation is part of the sources)
+  * Journaline (an untested Journaline implementation is part of the sources).
+  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 ------------------------------------------------------------------
@@ -62,23 +63,21 @@ Introduction
 
 **Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Beside to Qt-DAB, there exists a "light" version, **dabradio**, and a command-line based version. Both, the Qt-DAB version and the dabradio version, are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, but does not depend on Qt.
+Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** and a command-line based version. All three versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
 
-dabradio and the Qt-free version, the "command-line only" version have their own repository on Github.
+**dabradio**, **sdrplayDab**  and the Qt-free version, **dab-cmdline** the "command-line only", version have their own repository on Github.
 
-The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr).
+The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr). The sdrplayDab version is tightly couples to the SDRplay device.
 
-Beside to these C++ based versions, a version in Java is being developed, it has its own repository on Github.
+Beside to these C++ based versions,  (slightly limited) versions are implemented in Java and Ada, both with their own repository on Github. 
 
 The Qt-DAB version also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
-Since the Qt-DAB version has to run on a headless RPI 2, using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
+Since the Qt-DAB version has to run on a headless RPI 2/3, using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
 
 For further information please visit http://www.sdr-j.tk
-
-An (outdated) manual in PDF format can be found at http://www.sdr-j.tk/sdr-j-dab-manual-0.99.pdf (is valid for qt-dab as well)
 
 Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 

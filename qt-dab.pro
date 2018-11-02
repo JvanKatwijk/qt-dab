@@ -9,12 +9,12 @@ TARGET		= qt-dab-2.0
 QT		+= widgets 
 CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#QMAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_LFLAGS	+=  -flto
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+QMAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_LFLAGS	+=  -flto
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -148,7 +148,9 @@ HEADERS += ./radio.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
 	   ./devices/rawfiles/rawfiles.h \
+	   ./devices/rawfiles/raw-reader.h \
            ./devices/wavfiles/wavfiles.h \
+           ./devices/wavfiles/wav-reader.h \
 	   ./spectrum-viewer/spectrum-viewer.h \
 	   ./impulse-viewer/impulse-viewer.h \
 	   ./tii-viewer/tii-viewer.h
@@ -226,7 +228,9 @@ SOURCES += ./main.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles/rawfiles.cpp \
+	   ./devices/rawfiles/raw-reader.cpp \
            ./devices/wavfiles/wavfiles.cpp \
+           ./devices/wavfiles/wav-reader.cpp \
 	   ./spectrum-viewer/spectrum-viewer.cpp \
 	   ./impulse-viewer/impulse-viewer.cpp \
 	   ./tii-viewer/tii-viewer.cpp
@@ -270,7 +274,7 @@ CONFIG		+= hackrf
 #CONFIG		+= datastreamer
 
 #to handle output of embedded an IP data stream, uncomment
-#CONFIG		+= send_datagram
+CONFIG		+= send_datagram
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
@@ -440,7 +444,7 @@ rtl_tcp {
 
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
-	Qt		+= network
+	QT		+= network
 }
 
 elad_s1	{

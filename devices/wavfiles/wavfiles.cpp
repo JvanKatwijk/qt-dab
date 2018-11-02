@@ -28,14 +28,6 @@
 #include	<QString>
 #include	"wavfiles.h"
 
-static inline
-int64_t		getMyTime	(void) {
-struct timeval	tv;
-
-	gettimeofday (&tv, NULL);
-	return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
-}
-
 #define	__BUFFERSIZE	8 * 32768
 
 	wavFiles::wavFiles (QString f) {
@@ -46,8 +38,7 @@ SF_INFO *sf_info;
 	setupUi (myFrame);
 	myFrame		-> show ();
 
-	readerOK	= false;
-	_I_Buffer	= new RingBuffer<std::complex<float>>(__BUFFERSIZE);
+	_I_Buffer	= new RingBuffer<std::complex<float>> (__BUFFERSIZE);
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
@@ -66,47 +57,54 @@ SF_INFO *sf_info;
 	   throw (25);
 	}
 	nameofFile	-> setText (f);
-	readerOK	= true;
-	readerPausing	= true;
-	currPos		= 0;
-//	start	();
+	fileProgress	-> setValue (0);
+	currentTime	-> display (0);
+	int64_t fileLength	= sf_seek (filePointer, 0, SEEK_END);
+	totalTime	-> display ((float)fileLength / 2048000);
+	running. store (false);
 }
+//
+//	Note that running == true <==> readerTask has value assigned
 
 	wavFiles::~wavFiles (void) {
-	ExitCondition = true;
-	if (readerOK) {
-	   while (isRunning ())
-	      usleep (100);
-	   sf_close (filePointer);
+	if (running. load ()) {
+	   readerTask	-> stopReader ();
+	   while (readerTask -> isRunning ())
+	      usleep (500);
+	   delete readerTask;
 	}
+	if (filePointer != NULL)
+	   sf_close (filePointer);
 	delete _I_Buffer;
 	delete	myFrame;
 }
 
 bool	wavFiles::restartReader	(void) {
-	if (readerOK)
-	   readerPausing = false;
-	start ();
-	return readerOK;
+	if (running. load ())
+           return true;
+        readerTask      = new wavReader (this, filePointer, _I_Buffer);
+        running. store (true);
+        return true;
 }
 
 void	wavFiles::stopReader	(void) {
-	if (readerOK)
-	   readerPausing = true;
+       if (running. load ()) {
+           readerTask   -> stopReader ();
+           while (readerTask -> isRunning ())
+              usleep (100);
+	   delete readerTask;
+        }
+        running. store (false);
 }
 
 //	size is in I/Q pairs
 int32_t	wavFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
-
 	
 	if (filePointer == NULL)
 	   return 0;
 
 	while (_I_Buffer -> GetRingBufferReadAvailable () < size)
-	   if (readerPausing)
-	      usleep (100000);
-	   else
 	      usleep (100);
 
 	amount = _I_Buffer	-> getDataFromBuffer (V, size);
@@ -118,77 +116,10 @@ int32_t	wavFiles::Samples (void) {
 	return _I_Buffer -> GetRingBufferReadAvailable ();
 }
 
-void	wavFiles::run (void) {
-int32_t	t, i;
-std::complex<float>	*bi;
-int32_t	bufferSize	= 32768;
-int64_t	period;
-int64_t	nextStop;
-int64_t	fileLength;
-int	teller		= 0;
-
-	if (!readerOK)
-	   return;
-
-	fileProgress	-> setValue (0);
-	currentTime	-> display (0);
-	fileLength	= sf_seek (filePointer, 0, SEEK_END);
-	totalTime	-> display ((float)fileLength / 2048000);
-
-	ExitCondition = false;
-
-	period		= (32768 * 1000) / 2048;	// full IQś read
-	fprintf (stderr, "Period = %ld\n", period);
-	bi		= new std::complex<float> [bufferSize];
-	nextStop	= getMyTime ();
-	while (!ExitCondition) {
-	   if (readerPausing) {
-	      usleep (1000);
-	      nextStop = getMyTime ();
-	      continue;
-	   }
-	   while (_I_Buffer -> WriteSpace () < bufferSize) {
-	      if (ExitCondition)
-	         break;
-	      usleep (100);
-	   }
-
-	   if (++teller >= 20) {
-	      int xx = sf_seek (filePointer, 0, SEEK_CUR);
-	      float progress = (float)xx / fileLength;
-	      fileProgress -> setValue ((int) (progress * 100));
-	      currentTime	-> display ((float)xx / 2048000);
-	      teller = 0;
-	   }
-
-	   nextStop += period;
-	   t = readBuffer (bi, bufferSize);
-	   if (t < bufferSize) {
-	      for (i = t; i < bufferSize; i ++)
-	          bi [i] = 0;
-	      t = bufferSize;
-	   }
-	   _I_Buffer -> putDataIntoBuffer (bi, bufferSize);
-	   if (nextStop - getMyTime () > 0)
-	      usleep (nextStop - getMyTime ());
-	}
-	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);
+void    wavFiles::setProgress (int progress, float timelength) {
+        fileProgress      -> setValue (progress);
+        currentTime       -> display (timelength);
 }
-/*
- *	length is number of uints that we read.
- */
-int32_t	wavFiles::readBuffer (std::complex<float> *data, int32_t length) {
-int32_t	i, n;
-float	temp [2 * length];
 
-	n = sf_readf_float (filePointer, temp, length);
-	if (n < length) {
-	   int xx = sf_seek (filePointer, 0, SEEK_SET);
-	   fprintf (stderr, "xx = %d\n", xx);
-	   fprintf (stderr, "End of file, restarting\n");
-	}
-	for (i = 0; i < n; i ++)
-	   data [i] = std::complex<float> (temp [2 * i], temp [2 * i + 1]);
-	return	n & ~01;
-}
+
 
