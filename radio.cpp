@@ -1266,6 +1266,7 @@ void	RadioInterface::selectService (QString s) {
 	         show_techData (ensembleLabel, s, 
 	                       inputDevice -> getVFOFrequency () / 1000000.0,
 	                       &d);
+	         serviceLabel -> setAlignment(Qt::AlignCenter);
 	         serviceLabel -> setText (s);
 	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
 	         for (int i = 1; i < 10; i ++) {
