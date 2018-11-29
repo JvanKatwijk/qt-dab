@@ -568,9 +568,10 @@ QString s;
 	   return;
 
 	(void)v;
-	ensembleId		-> display (id);
-	ensembleLabel		= v;
-	ensembleName		-> setText (v);
+	ensembleId	-> display (id);
+	ensembleLabel	= v;
+        ensembleName	-> setAlignment(Qt::AlignCenter);
+	ensembleName	-> setText (v);
 	my_dabProcessor	-> coarseCorrectorOff ();
 	Yes_Signal_Found ();
 }
