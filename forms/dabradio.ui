@@ -6,98 +6,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>598</width>
+    <width>601</width>
     <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>qt-dab</string>
   </property>
-  <widget class="QPushButton" name="showProgramData">
-   <property name="geometry">
-    <rect>
-     <x>500</x>
-     <y>10</y>
-     <width>81</width>
-     <height>34</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Detail</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="audioDumpButton">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>280</y>
-     <width>88</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>REC</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="show_irButton">
-   <property name="geometry">
-    <rect>
-     <x>407</x>
-     <y>310</y>
-     <width>81</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="text">
-    <string>IR</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="dumpButton">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>310</y>
-     <width>88</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Raw</string>
-   </property>
-  </widget>
   <widget class="QListView" name="ensembleDisplay">
    <property name="geometry">
     <rect>
@@ -112,74 +27,6 @@
      <family>DejaVu Sans</family>
      <pointsize>10</pointsize>
     </font>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="streamoutSelector">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>280</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>Audio Device</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QPushButton" name="tiiButton">
-   <property name="geometry">
-    <rect>
-     <x>407</x>
-     <y>280</y>
-     <width>81</width>
-     <height>35</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>TII</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="scanButton">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>10</y>
-     <width>88</width>
-     <height>34</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current selected band (default VHF Band III or optionally L-Band)&lt;/p&gt;&lt;p&gt;Scanning will continue until an active DAB or DAB+ signal is found.&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Scan</string>
    </property>
   </widget>
   <widget class="QWidget" name="layoutWidget">
@@ -340,180 +187,6 @@
     </item>
    </layout>
   </widget>
-  <widget class="QComboBox" name="bandSelector">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>340</y>
-     <width>121</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>VHF Band III</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>L Band</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QComboBox" name="channelSelector">
-   <property name="geometry">
-    <rect>
-     <x>330</x>
-     <y>340</y>
-     <width>71</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <pointsize>12</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="saveEnsembleData">
-   <property name="geometry">
-    <rect>
-     <x>490</x>
-     <y>340</y>
-     <width>88</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Info</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="deviceSelector">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>310</y>
-     <width>191</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>Input Device</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>file input (.raw)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>file input (.iq)</string>
-    </property>
-   </item>
-   <item>
-    <property name="text">
-     <string>file input (.sdr)</string>
-    </property>
-   </item>
-  </widget>
-  <widget class="QPushButton" name="nextChannelButton">
-   <property name="geometry">
-    <rect>
-     <x>500</x>
-     <y>50</y>
-     <width>81</width>
-     <height>34</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for selecting the next channel in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Next</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="show_spectrumButton">
-   <property name="geometry">
-    <rect>
-     <x>407</x>
-     <y>340</y>
-     <width>81</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. Pressing it&lt;/p&gt;&lt;p&gt;again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Spect</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="resetButton">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>50</y>
-     <width>88</width>
-     <height>34</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset player&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <property name="text">
-    <string>Reset</string>
-   </property>
-  </widget>
   <widget class="QLabel" name="versionName">
    <property name="geometry">
     <rect>
@@ -525,14 +198,14 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>16</pointsize>
+     <pointsize>14</pointsize>
     </font>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright (C) 2016, 2017 Jan van Katwijk (J.vanKatwijk@gmail.com), Lazy Chair Programming&lt;/p&gt;&lt;p&gt;Qt-DAB is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Copyright (C) 2016 - 2018 Jan van Katwijk (J.vanKatwijk@gmail.com), Lazy Chair Programming&lt;/p&gt;&lt;p&gt;Qt-DAB is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
-    <string/>
+    <string>version</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -541,11 +214,16 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>180</x>
+     <x>570</x>
      <y>20</y>
      <width>21</width>
-     <height>21</height>
+     <height>20</height>
     </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>14</pointsize>
+    </font>
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB copyright:&lt;/p&gt;&lt;p&gt;J van Katwijk, Lazy Chair Computing. J.vanKatwijk@gmail.com&lt;/p&gt;&lt;p&gt;Copyright of the Qt toolkit used: the Qt Company&lt;/p&gt;&lt;p&gt;Copyright of the libraries used for SDRplay, rtl-sdr based sticks, AIRspy, portaudio, libsndfile and libsamplerate to their developers&lt;/p&gt;&lt;p&gt;Copyright of the MP2 library used Martin J Fiedler&lt;/p&gt;&lt;p&gt;Copyright of the firecode checker: Gnu Radio&lt;/p&gt;&lt;p&gt;Copyright of the viterbi decoder kernel: the Spiral project&lt;/p&gt;&lt;p&gt;Copyright of the Reed Solomon Decoder software: Phil Karns&lt;/p&gt;&lt;p&gt;All copyrights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The current layout of the GUI is based on a design of Luo Zhang, Thanks&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB (an SDR-J program) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -560,9 +238,9 @@
   <widget class="QLabel" name="timeDisplay">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>60</y>
-     <width>181</width>
+     <x>390</x>
+     <y>70</y>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
@@ -570,7 +248,7 @@
     <enum>QFrame::NoFrame</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>run-time</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -719,50 +397,65 @@
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>230</y>
-     <width>361</width>
-     <height>41</height>
+     <y>170</y>
+     <width>381</width>
+     <height>91</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>DejaVu Sans</family>
-     <pointsize>11</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">
     <string/>
    </property>
+   <property name="alignment">
+    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="openExternalLinks">
+    <bool>true</bool>
+   </property>
+   <property name="textInteractionFlags">
+    <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse|Qt::TextBrowserInteraction|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+   </property>
   </widget>
   <widget class="QLabel" name="ensembleName">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>120</y>
-     <width>361</width>
-     <height>41</height>
+     <x>20</x>
+     <y>50</y>
+     <width>191</width>
+     <height>31</height>
     </rect>
    </property>
    <property name="font">
     <font>
      <family>DejaVu Sans</family>
-     <pointsize>14</pointsize>
+     <pointsize>12</pointsize>
+     <weight>75</weight>
+     <italic>false</italic>
+     <bold>true</bold>
     </font>
    </property>
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="text">
-    <string/>
+    <string>Ensemble Lable</string>
    </property>
   </widget>
   <widget class="QLabel" name="serviceLabel">
    <property name="geometry">
     <rect>
      <x>210</x>
-     <y>170</y>
-     <width>361</width>
-     <height>51</height>
+     <y>140</y>
+     <width>241</width>
+     <height>23</height>
     </rect>
    </property>
    <property name="font">
@@ -772,8 +465,290 @@
     </font>
    </property>
    <property name="text">
-    <string/>
+    <string>please select a service</string>
    </property>
+   <property name="textInteractionFlags">
+    <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>280</y>
+     <width>168</width>
+     <height>89</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_2">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="tiiButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>TII</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="audioDumpButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Audio REC</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="show_irButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Impulse R.</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="dumpButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Raw dump</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="show_spectrumButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. Pressing it&lt;/p&gt;&lt;p&gt;again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Spectrum</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="saveEnsembleData">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Content</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>280</y>
+     <width>209</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_3">
+    <item row="0" column="0" colspan="2">
+     <widget class="QComboBox" name="streamoutSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Audio Device</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
+     <widget class="QComboBox" name="bandSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>VHF Band III</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>L Band</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QComboBox" name="channelSelector">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QComboBox" name="deviceSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Input Device</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>file input (.raw)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>file input (.iq)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>file input (.sdr)</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>390</x>
+     <y>10</y>
+     <width>168</width>
+     <height>58</height>
+    </rect>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_4">
+    <item row="0" column="0">
+     <widget class="QPushButton" name="scanButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current selected band (default VHF Band III or optionally L-Band)&lt;/p&gt;&lt;p&gt;Scanning will continue until an active DAB or DAB+ signal is found.&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Scan</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QPushButton" name="showProgramData">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Detail</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QPushButton" name="resetButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset player&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Reset</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QPushButton" name="nextChannelButton">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for selecting the next channel in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Next</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>
