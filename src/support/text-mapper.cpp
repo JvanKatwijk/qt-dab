@@ -61,7 +61,7 @@ const char *table12 [] = {
 "National Music",
 "Oldies Music",
 "Folk Music",
-"entry 29 not used",
+"Documentary",
 "entry 30 not used",
 "entry 31 not used"
 };
