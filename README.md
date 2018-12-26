@@ -63,11 +63,12 @@ Introduction
 
 **Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** and a command-line based version. All three versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
+Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
+server version. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
 
-**dabradio**, **sdrplayDab**  and the Qt-free version, **dab-cmdline** the "command-line only", version have their own repository on Github.
+**dabradio**, **sdrplayDab**, the Qt-free version, **dab-cmdline** the "command-line only", and the **dab-server** version have their own repository on Github.
 
-The Qt-DAB and the dab-cmdline version both support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr). The sdrplayDab version is tightly couples to the SDRplay device.
+The Qt-DAB, the dab-cmdline version, and the dab-server version support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr). The sdrplayDab version is tightly couples to the SDRplay device.
 
 Beside to these C++ based versions,  (slightly limited) versions are implemented in Java and Ada, both with their own repository on Github. 
 

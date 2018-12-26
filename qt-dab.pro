@@ -11,7 +11,6 @@ CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-QMAKE_LFLAGS	+=  -O3
 #QMAKE_CFLAGS	+=  -g
 #QMAKE_CXXFLAGS	+=  -g
 #QMAKE_LFLAGS	+=  -g
