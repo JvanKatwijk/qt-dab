@@ -168,6 +168,8 @@ char	manufac [256], product [256], serial [256];
 	   throw (23);
 	}
 
+	deviceName      -> setText (rtlsdr_get_device_name (deviceIndex));
+
 	open			= true;
 	r			= this -> rtlsdr_set_sample_rate (device,
 	                                                          inputRate);
@@ -226,8 +228,6 @@ char	manufac [256], product [256], serial [256];
 
 	rtlsdr_get_usb_strings (device, manufac, product, serial);
 
-	product_display -> setText (product); 
-	serial_display  -> setText (serial);
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
 	rtlsdr_set_tuner_gain_mode (device,
