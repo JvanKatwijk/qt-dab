@@ -43,6 +43,7 @@ extern "C"  {
 typedef	void (*rtlsdr_read_async_cb_t) (uint8_t *buf, uint32_t len, void *ctx);
 typedef	 int (*  pfnrtlsdr_open )(rtlsdr_dev_t **, uint32_t);
 typedef	int (*  pfnrtlsdr_close) (rtlsdr_dev_t *);
+typedef int (*  pfnrtlsdr_get_usb_strings) (rtlsdr_dev_t *, char *, char *, char *);
 typedef	int (*  pfnrtlsdr_set_center_freq) (rtlsdr_dev_t *, uint32_t);
 typedef uint32_t (*  pfnrtlsdr_get_center_freq) (rtlsdr_dev_t *);
 typedef	int (*  pfnrtlsdr_get_tuner_gains) (rtlsdr_dev_t *, int *);
@@ -105,6 +106,7 @@ private:
 	bool		load_rtlFunctions	(void);
 	pfnrtlsdr_open	rtlsdr_open;
 	pfnrtlsdr_close	rtlsdr_close;
+	pfnrtlsdr_get_usb_strings rtlsdr_get_usb_strings;
 
 	pfnrtlsdr_set_center_freq rtlsdr_set_center_freq;
 	pfnrtlsdr_get_center_freq rtlsdr_get_center_freq;
@@ -125,7 +127,6 @@ private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
-	void		set_KhzOffset		(int);
 	void		dumpButton_pressed	(void);
 };
 #endif

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>260</width>
+    <width>219</width>
     <height>258</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>221</width>
+     <width>201</width>
      <height>231</height>
     </rect>
    </property>
@@ -31,8 +31,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>150</y>
+      <x>20</x>
+      <y>140</y>
       <width>101</width>
       <height>21</height>
      </rect>
@@ -57,35 +57,6 @@
      <number>100</number>
     </property>
    </widget>
-   <widget class="QSpinBox" name="KhzOffset">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>40</y>
-      <width>91</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>-100</number>
-    </property>
-    <property name="maximum">
-     <number>100</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_3">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>40</y>
-      <width>41</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>KHz</string>
-    </property>
-   </widget>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
@@ -103,7 +74,7 @@
     <property name="geometry">
      <rect>
       <x>110</x>
-      <y>70</y>
+      <y>30</y>
       <width>41</width>
       <height>21</height>
      </rect>
@@ -116,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>70</y>
+      <y>30</y>
       <width>91</width>
       <height>21</height>
      </rect>
@@ -126,8 +97,8 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>120</y>
-      <width>141</width>
+      <y>60</y>
+      <width>131</width>
       <height>21</height>
      </rect>
     </property>
@@ -146,13 +117,39 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>170</y>
+      <y>100</y>
       <width>141</width>
       <height>36</height>
      </rect>
     </property>
     <property name="text">
      <string>write raw bytes</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="product_display">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>170</y>
+      <width>161</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="serial_display">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>161</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
     </property>
    </widget>
   </widget>

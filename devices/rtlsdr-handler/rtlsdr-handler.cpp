@@ -89,6 +89,7 @@ int16_t	deviceIndex;
 int16_t	i;
 QString	temp;
 int	k;
+char	manufac [256], product [256], serial [256];
 
 	rtlsdrSettings		= s;
 	this	-> myFrame	= new QFrame (NULL);
@@ -100,7 +101,6 @@ int	k;
 	_I_Buffer		= NULL;
 	workerHandle		= NULL;
 	lastFrequency		= KHz (22000);	// just a dummy
-	this	-> vfoOffset	= 0;
 	gains			= NULL;
 
 #ifdef	__MINGW32__
@@ -186,6 +186,7 @@ int	k;
 	r			= this -> rtlsdr_get_sample_rate (device);
 	fprintf (stderr, "samplerate set to %d\n", r);
 
+	
 	gainsCount = rtlsdr_get_tuner_gains (device, NULL);
 	fprintf(stderr, "Supported gain values (%d): ", gainsCount);
 	gains		= new int [gainsCount];
@@ -197,6 +198,7 @@ int	k;
 	fprintf(stderr, "\n");
 
 	rtlsdr_set_tuner_gain_mode (device, 1);
+	rtlsdr_set_agc_mode (device, 0);
 
 	_I_Buffer		= new RingBuffer<uint8_t>(8 * 1024 * 1024);
 
@@ -220,9 +222,12 @@ int	k;
 	
 	
 	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt ());
-	KhzOffset	-> setValue (rtlsdrSettings -> value ("KhzOffset", 0). toInt ());
 	rtlsdrSettings	-> endGroup ();
-//
+
+	rtlsdr_get_usb_strings (device, manufac, product, serial);
+
+	product_display -> setText (product); 
+	serial_display  -> setText (serial);
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
 	rtlsdr_set_tuner_gain_mode (device,
@@ -233,8 +238,7 @@ int	k;
 	   rtlsdr_set_agc_mode (device, 0);
 	rtlsdr_set_tuner_gain	(device, theGain);
 	set_ppmCorrection	(ppm_correction -> value ());
-	set_KhzOffset		(KhzOffset -> value ());
-//
+
 	dumping			= false;
 //	and attach the buttons/sliders to the actions
 	connect (combo_gain, SIGNAL (activated (const QString &)),
@@ -243,8 +247,6 @@ int	k;
 	         this, SLOT (set_autogain (const QString &)));
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
-	connect (KhzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_KhzOffset (int)));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (dumpButton_pressed (void)));
 }
@@ -273,8 +275,6 @@ int	k;
 	                                      combo_autogain -> currentText ());
 	rtlsdrSettings	-> setValue ("ppm_correction",
 	                                      ppm_correction -> value ());
-	rtlsdrSettings	-> setValue ("KhzOffset",
-	                                      KhzOffset	-> value ());
 	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup ();
 	
@@ -293,11 +293,11 @@ int	k;
 
 void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
 	lastFrequency	= f;
-	(void)(this -> rtlsdr_set_center_freq (device, f + vfoOffset));
+	(void)(this -> rtlsdr_set_center_freq (device, f));
 }
 
 int32_t	rtlsdrHandler::getVFOFrequency	(void) {
-	return (int32_t)(this -> rtlsdr_get_center_freq (device)) - vfoOffset;
+	return (int32_t)(this -> rtlsdr_get_center_freq (device));
 }
 //
 //
@@ -312,7 +312,7 @@ int32_t	r;
 	if (r < 0)
 	   return false;
 
-	this -> rtlsdr_set_center_freq (device, lastFrequency + vfoOffset);
+	this -> rtlsdr_set_center_freq (device, lastFrequency);
 	workerHandle	= new dll_driver (this);
 	rtlsdr_set_agc_mode (device,
                 combo_autogain -> currentText () == "autogain_on" ? 1 : 0);
@@ -350,11 +350,6 @@ void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
 	this -> rtlsdr_set_freq_correction (device, ppm);
 }
 
-void	rtlsdrHandler::set_KhzOffset	(int32_t o) {
-	vfoOffset	= Khz (o);
-	(void)(this -> rtlsdr_set_center_freq (device, lastFrequency + vfoOffset));
-}
-
 //
 //	The brave old getSamples. For the dab stick, we get
 //	size samples: still in I/Q pairs, but we have to convert the data from
@@ -388,10 +383,19 @@ bool	rtlsdrHandler::load_rtlFunctions (void) {
 	   fprintf (stderr, "Could not find rtlsdr_open\n");
 	   return false;
 	}
+
 	rtlsdr_close	= (pfnrtlsdr_close)
 	                     GETPROCADDRESS (Handle, "rtlsdr_close");
 	if (rtlsdr_close == NULL) {
 	   fprintf (stderr, "Could not find rtlsdr_close\n");
+	   return false;
+	}
+
+	rtlsdr_get_usb_strings =
+	    (pfnrtlsdr_get_usb_strings)
+	    GETPROCADDRESS (Handle, "rtlsdr_get_usb_strings");
+	if (rtlsdr_get_usb_strings == NULL) {
+	   fprintf (stderr, "Could not find rtlsdr_get_usb_strings\n");
 	   return false;
 	}
 
