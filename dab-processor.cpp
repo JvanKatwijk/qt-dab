@@ -196,7 +196,6 @@ SyncOnPhase:
 	      }
 	      goto notSynced;
 	   }
-	   fprintf (stderr, "startIndex = %d\n", startIndex);
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0

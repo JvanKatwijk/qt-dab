@@ -76,34 +76,40 @@ HKEY APIkey;
 wchar_t APIkeyValue [256];
 ULONG APIkeyValue_length = 255;
 
-	if (RegOpenKey (HKEY_LOCAL_MACHINE,
-	                TEXT("Software\\MiricsSDR\\API"),
-	                &APIkey) != ERROR_SUCCESS) {
-          fprintf (stderr,
+
+	wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
+	Handle	= LoadLibrary (libname);
+	if (Handle == NULL) {
+	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
+	                   TEXT("Software\\MiricsSDR\\API"),
+	                   &APIkey) != ERROR_SUCCESS) {
+              fprintf (stderr,
 	           "failed to locate API registry entry, error = %d\n",
 	           (int)GetLastError());
-	   delete myFrame;
-	   throw (21);
-	}
+	      delete myFrame;
+	      throw (21);
+	   }
 
-	RegQueryValueEx (APIkey,
-	                 (wchar_t *)L"Install_Dir",
-	                 NULL,
-	                 NULL,
-	                 (LPBYTE)&APIkeyValue,
-	                 (LPDWORD)&APIkeyValue_length);
+	   RegQueryValueEx (APIkey,
+	                    (wchar_t *)L"Install_Dir",
+	                    NULL,
+	                    NULL,
+	                    (LPBYTE)&APIkeyValue,
+	                    (LPDWORD)&APIkeyValue_length);
 //	Ok, make explicit it is in the 32 bits section
-	wchar_t *x = wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
-//	wchar_t *x = wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
-//	fprintf (stderr, "Length of APIkeyValue = %d\n", APIkeyValue_length);
-//	wprintf (L"API registry entry: %s\n", APIkeyValue);
-	RegCloseKey(APIkey);
+	   wchar_t *x =
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+//	   wchar_t *x =
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
+//	   wprintf (L"API registry entry: %s\n", APIkeyValue);
+	   RegCloseKey(APIkey);
 
-	Handle	= LoadLibrary (x);
-	if (Handle == NULL) {
-	  fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
-	  delete myFrame;
-	  throw (22);
+	   Handle	= LoadLibrary (x);
+	   if (Handle == NULL) {
+	      fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
+	      delete myFrame;
+	      throw (22);
+	   }
 	}
 #else
 	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
@@ -164,12 +170,10 @@ ULONG APIkeyValue_length = 255;
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	coarseOffset	=
 	            sdrplaySettings -> value ("sdrplayOffset", 0). toInt ();
-	ifgainSlider 		-> setValue (
+	GRdBSelector 		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt ());
 	lnaGainSetting		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-lnastate", 0). toInt ());
-//	show the value
-	GRdBDisplay		-> display (ifgainSlider -> value ());
 
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt ());
@@ -181,7 +185,7 @@ ULONG APIkeyValue_length = 255;
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt () != 0;
 	if (agcMode) {
 	   agcControl -> setChecked (true);
-	   ifgainSlider         -> hide ();
+	   GRdBSelector         -> hide ();
 	   gainsliderLabel      -> hide ();
 	}
 	sdrplaySettings	-> endGroup ();
@@ -289,7 +293,7 @@ ULONG APIkeyValue_length = 255;
 	}
 
 //	and be prepared for future changes in the settings
-	connect (ifgainSlider, SIGNAL (valueChanged (int)),
+	connect (GRdBSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ifgainReduction (int)));
 	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_lnagainReduction (int)));
@@ -311,10 +315,9 @@ ULONG APIkeyValue_length = 255;
 	stopReader ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
-	sdrplaySettings	-> setValue ("sdrplayGain", ifgainSlider -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
-	                                    ifgainSlider -> value ());
+	                                    GRdBSelector -> value ());
 	sdrplaySettings -> setValue ("sdrplay-lnastate",
 	                                    lnaGainSetting -> value ());
 	sdrplaySettings	-> setValue ("sdrplay-agcMode",
@@ -363,7 +366,7 @@ void	sdrplayHandler::setVFOFrequency		(int32_t newFrequency) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	localGred	= ifgainSlider	-> value ();
+int	localGred	= GRdBSelector	-> value ();
 int	lnaState	= lnaGainSetting -> value ();
 
 	if (bankFor_sdr (newFrequency) == -1)
@@ -401,7 +404,7 @@ int32_t	sdrplayHandler::getVFOFrequency	(void) {
 
 void	sdrplayHandler::set_ifgainReduction	(int newGain) {
 mir_sdr_ErrT	err;
-int	GRdB		= ifgainSlider	-> value ();
+int	GRdB		= GRdBSelector	-> value ();
 int	lnaState	= lnaGainSetting -> value ();
 
 	(void)newGain;
@@ -411,7 +414,6 @@ int	lnaState	= lnaGainSetting -> value ();
 	   fprintf (stderr, "Error at set_ifgain %s\n",
 	                    errorCodes (err). toLatin1 (). data ());
 	else {
-	   GRdBDisplay		-> display (GRdB);
 	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 	}
 }
@@ -466,7 +468,6 @@ void	myGainChangeCallback (uint32_t	GRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
-	p -> GRdBDisplay	-> display ((int)GRdB);
 	(void)lnaGRdB;
 //	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
@@ -475,7 +476,7 @@ bool	sdrplayHandler::restartReader	(void) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	GRdB		= ifgainSlider	-> value ();
+int	GRdB		= GRdBSelector	-> value ();
 int	lnaState	= lnaGainSetting -> value ();
 
 	if (running. load ())
@@ -507,8 +508,7 @@ int	lnaState	= lnaGainSetting -> value ();
 	   my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
 	                          -30,
 	                          0, 0, 0, 0, lnaGainSetting -> value ());
-	   ifgainSlider		-> hide ();
-	   gainsliderLabel	-> hide ();
+	   GRdBSelector		-> hide ();
 	}
 
 	err		= my_mir_sdr_SetDcMode (4, 1);
@@ -745,12 +745,12 @@ bool agcMode	= agcControl -> isChecked ();
 	                       -30,
 	                       0, 0, 0, 0, lnaGainSetting -> value ());
 	if (!agcMode) {
-	   ifgainSlider		-> show ();
-	   gainsliderLabel	-> show ();
+	   GRdBSelector		-> show ();
+	   gainsliderLabel	-> show ();	// old name actually
 	   set_ifgainReduction (0);
 	}
 	else {
-	   ifgainSlider		-> hide ();
+	   GRdBSelector		-> hide ();
 	   gainsliderLabel	-> hide ();
 	}
 }
