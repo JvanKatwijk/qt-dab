@@ -1245,7 +1245,7 @@ void	RadioInterface::selectService (QString s) {
 	setStereo (false);
 //	soundOut	-> stop ();
 
-	dataDisplay	-> hide ();
+//	dataDisplay	-> hide ();
 	techData. rsError_display	-> hide ();
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
