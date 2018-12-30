@@ -970,10 +970,12 @@ void	RadioInterface::updateTimeDisplay (void) {
            previous_total_time = total_time;
 	}
 #endif
-//	if ((numberofSeconds % 10) == 0) {
-//	   int xxx = ((audioSink *)soundOut)	-> missed ();
-//	   fprintf (stderr, "missed %d\n", xxx);
-//	}
+#ifdef	SHOW_MISSING
+	if ((numberofSeconds % 10) == 0) {
+	   int xxx = ((audioSink *)soundOut)	-> missed ();
+	   fprintf (stderr, "missed %d\n", xxx);
+	}
+#endif
 }
 
 void	RadioInterface::autoCorrector_on (void) {

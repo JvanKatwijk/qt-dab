@@ -33,8 +33,8 @@ DEPENDPATH += . \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/support \
-	      ./src/support/viterbi-jan \
-#	      ./src/support/viterbi-handler \
+#	      ./src/support/viterbi-jan \
+	      ./src/support/viterbi-handler \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -69,8 +69,8 @@ INCLUDEPATH += . \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/support \
-	      ./includes/support/viterbi-jan \
-#	      ./includes/support/viterbi-handler \
+#	      ./includes/support/viterbi-jan \
+	      ./includes/support/viterbi-handler \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -135,8 +135,8 @@ HEADERS += ./radio.h \
 	   ./includes/output/audio-base.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
-	   ./includes/support/viterbi-jan/viterbi-handler.h \
-#	   ./includes/support/viterbi-handler/viterbi-handler.h \
+#	   ./includes/support/viterbi-jan/viterbi-handler.h \
+	   ./includes/support/viterbi-handler/viterbi-handler.h \
            ./includes/support/fft-handler.h \
 	   ./includes/support/ringbuffer.h \
 	   ./includes/support/Xtan2.h \
@@ -216,8 +216,8 @@ SOURCES += ./main.cpp \
 	   ./src/output/audio-base.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
-	   ./src/support/viterbi-jan/viterbi-handler.cpp \
-#	   ./src/support/viterbi-handler/viterbi-handler.cpp \
+#	   ./src/support/viterbi-jan/viterbi-handler.cpp \
+	   ./src/support/viterbi-handler/viterbi-handler.cpp \
            ./src/support/fft-handler.cpp \
 	   ./src/support/Xtan2.cpp \
 	   ./src/support/dab-params.cpp \
@@ -285,15 +285,15 @@ CONFIG		+= send_datagram
 CONFIG		+= try-epg		# do not use
 DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
-
 DEFINES		+= __THREADED_BACKEND
+#DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support
 # and you might select NEON if you are compiling for an arm (however
 # have a look at the config section for neon then)
 #CONFIG	+= NEON_RPI2
 #CONFIG	+= NEON_RPI3
-#CONFIG	+= SSE
+CONFIG	+= SSE
 #CONFIG	+= NO_SSE
 }
 #
