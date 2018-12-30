@@ -29,7 +29,7 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<vector>
-#include	"viterbi-768.h"
+#include	"viterbi-handler.h"
 #include	<QObject>
 #include	"fib-processor.h"
 //#include	"dab-params.h"
@@ -47,7 +47,7 @@ public:
 	void	stop			(void);
 	void	reset			(void);
 private:
-	viterbi_768	myViterbi;
+	viterbiHandler	myViterbi;
 //	dabParams	params;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];

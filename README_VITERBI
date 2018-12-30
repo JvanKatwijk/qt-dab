@@ -1,0 +1,56 @@
+
+A Note on Viterbi Handling
+
+Deconvolution is one of the resource consuming operations in DAB decoding.
+Up until now, we used the deconvolution, using some variant of the
+do-called "spiral-code", heavily optimized code with different
+variants for use with and without SSE instructions etc etc.
+
+For the RPI there we also variants, using specialized NEON instructions.
+
+There are two reasons I was not happy with that solution,
+the first one - of course - being that I did not write it myself.
+The second, maybe even more important reason was that these spiral
+approached are higly optimized for fixed, known, length segments
+to be deconvolved.
+
+While for the FIC blocks the length is predefined, for the data blocks
+in the audio or data streams it is not. This lead to a construction
+where the full spiral could be used for deconvolving the data in the
+FIC blocks, while for the data in the MSC the more "generic" deconvolver
+was used.
+
+A further complication was that the mingw cross compilers for windows do not
+have support for SSE instructions, so there all data was handled by
+the "generic" deconvolver.
+
+Looking at the requirements for the deconvolution in the DAB decoder,
+I saw a number of potential optimizations (in this case reducing the amount of
+computations) that could be applied to my original
+straightforward implementation.
+
+To test the two versions, I created three versions, one with
+the locally manually optimized viterbi decoder, one with the
+spiral/generic  and on with only the generic deconvolver
+(all three versions with O3 as optimization, and - of course - profiling flags.
+Running the three versions on
+same channel and the same service with profiling versions
+gave the following results
+a. the locally optimized version takes  38.10 (deconvolve) + 0.62
+(computeCosts)app 38 % of the load, resulting in 38.7 %
+b. the no-sse version takes  22.5 (BFlY) + 9.87 (update_viterbi) + 6.36 (FULL_SPIRAL_no_sse) + 0.72 (deconvolve) resulting in app 39.5 % of the load.
+c. the sse_version takes 24.28 (BFlY) + 9.94 (update_viterbi) + 2.22 (FULL_SPIRAL_sse) + 0.72 (deconvolve) resulting in app 37 %.
+
+While there is no doubt that the "sse" version is fastest, I prefer to
+use the "locally optimized" version, and set the parameters accordingly.
+
+If you want to use the spiral version for the x64, then
+a. uncomment the "viterbi-handler" lines and comment the "viterbi-jan"
+lines out in the different sections in the ".pro" file
+b. uncomment the line "CONFIG += SSE" (and be sure to have commented out the other SSE related lines)
+
+If you want to use the "generic" version, then follow the steps above, however,
+be sure to have uncommented the line "CONFIG+=NO_SSE"
+
+
+

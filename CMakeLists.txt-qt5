@@ -167,7 +167,7 @@ add_definitions (-DPRESET_NAME)
 	           ./includes/backend/data/journaline
 	           ./includes/backend/data/mot
 	           ./includes/support
-	           ./includes/support/viterbi_768
+	           ./includes/support/viterbi-jan
 	           ./includes/output
 	           ./includes/scopes-qwt6
 	           ./devices
@@ -244,7 +244,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/text-mapper.h
 	     ./includes/support/dab_tables.h
 	     ./includes/support/ensemble-printer.h
-	     ./includes/support/viterbi_768/viterbi-768.h
+	     ./includes/support/viterbi-jan/viterbi-handler.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./impulse-viewer/impulse-viewer.h 
@@ -314,8 +314,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/text-mapper.cpp
 	     ./src/support/dab_tables.cpp
 	     ./src/support/ensemble-printer.cpp
-	     ./src/support/viterbi_768/viterbi-768.cpp
-	     ./src/support/viterbi_768/spiral-no-sse.c
+	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 
 	     ./impulse-viewer/impulse-viewer.cpp 

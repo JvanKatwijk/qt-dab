@@ -33,7 +33,8 @@ DEPENDPATH += . \
 	      ./src/backend/data/journaline \
 	      ./src/output \
 	      ./src/support \
-	      ./src/support/viterbi_768 \
+	      ./src/support/viterbi-jan \
+#	      ./src/support/viterbi-handler \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -68,7 +69,8 @@ INCLUDEPATH += . \
 	      ./includes/backend/data/journaline \
 	      ./includes/output \
 	      ./includes/support \
-	      ./includes/support/viterbi_768 \
+	      ./includes/support/viterbi-jan \
+#	      ./includes/support/viterbi-handler \
 	      ./devices \
 	      ./devices/rawfiles \
 	      ./devices/wavfiles \
@@ -133,8 +135,8 @@ HEADERS += ./radio.h \
 	   ./includes/output/audio-base.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
-#	   ./includes/support/viterbi.h \
-	   ./includes/support/viterbi_768/viterbi-768.h \
+	   ./includes/support/viterbi-jan/viterbi-handler.h \
+#	   ./includes/support/viterbi-handler/viterbi-handler.h \
            ./includes/support/fft-handler.h \
 	   ./includes/support/ringbuffer.h \
 	   ./includes/support/Xtan2.h \
@@ -211,12 +213,11 @@ SOURCES += ./main.cpp \
 	   ./src/backend/data/journaline/dabdgdec_impl.c \
 	   ./src/backend/data/journaline/newsobject.cpp \
 	   ./src/backend/data/journaline/NML.cpp \
-#	   ./src/output/fir-filters.cpp \
 	   ./src/output/audio-base.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
-#	   ./src/support/viterbi.cpp \
-	   ./src/support/viterbi_768/viterbi-768.cpp \
+	   ./src/support/viterbi-jan/viterbi-handler.cpp \
+#	   ./src/support/viterbi-handler/viterbi-handler.cpp \
            ./src/support/fft-handler.cpp \
 	   ./src/support/Xtan2.cpp \
 	   ./src/support/dab-params.cpp \
@@ -293,7 +294,7 @@ DEFINES		+= __THREADED_BACKEND
 #CONFIG	+= NEON_RPI2
 #CONFIG	+= NEON_RPI3
 #CONFIG	+= SSE
-CONFIG	+= NO_SSE
+#CONFIG	+= NO_SSE
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -342,7 +343,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
 
-CONFIG		+= NO_SSE
+#CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
@@ -500,8 +501,8 @@ NEON_RPI2	{
 	DEFINES		+= NEON_AVAILABLE
 	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
 	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	HEADERS		+= ./src/support/viterbi_768/spiral-neon.h
-	SOURCES		+= ./src/support/viterbi_768/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi-handler/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi-handler/spiral-neon.c
 }
 
 # for RPI3 use:
@@ -509,19 +510,19 @@ NEON_RPI3	{
 	DEFINES		+= NEON_AVAILABLE
 #	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
 #	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-	HEADERS		+= ./src/support/viterbi_768/spiral-neon.h
-	SOURCES		+= ./src/support/viterbi_768/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi-handler/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi-handler/spiral-neon.c
 }
 
 SSE	{
 	DEFINES		+= SSE_AVAILABLE
-	HEADERS		+= ./src/support/viterbi_768/spiral-sse.h
-	SOURCES		+= ./src/support/viterbi_768/spiral-sse.c
+	HEADERS		+= ./src/support/viterbi-handler/spiral-sse.h
+	SOURCES		+= ./src/support/viterbi-handler/spiral-sse.c
 }
 
 NO_SSE	{
-	HEADERS		+= ./src/support/viterbi_768/spiral-no-sse.h
-	SOURCES		+= ./src/support/viterbi_768/spiral-no-sse.c
+	HEADERS		+= ./src/support/viterbi-handler/spiral-no-sse.h
+	SOURCES		+= ./src/support/viterbi-handler/spiral-no-sse.c
 }
 
 

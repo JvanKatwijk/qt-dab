@@ -26,11 +26,11 @@
 
 #include	<stdint.h>
 #include        <vector>
-#include        "viterbi-768.h"
+#include        "viterbi-handler.h"
 
 extern uint8_t	PI_X [];
 
-class   protection: public viterbi_768 {
+class   protection: public viterbiHandler {
 public:
                 protection      (int16_t, int16_t);
 virtual         ~protection     (void);

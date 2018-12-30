@@ -1,6 +1,6 @@
 #
-#ifndef	__VITERBI_768__
-#define	__VITERBI_768__
+#ifndef	__VITERBI_HANDLER__
+#define	__VITERBI_HANDLER__
 /*
  * 	Viterbi.h according to the SPIRAL project
  */
@@ -40,10 +40,10 @@ struct v {
 	decision_t *decisions;   /* decisions */
 };
 
-class	viterbi_768 {
+class	viterbiHandler {
 public:
-		viterbi_768	(int16_t, bool spiral = false);
-		~viterbi_768	(void);
+		viterbiHandler	(int16_t, bool spiral = false);
+		~viterbiHandler	(void);
 	void	deconvolve	(int16_t *, uint8_t *);
 private:
 
