@@ -160,11 +160,11 @@ int	i;
 	      costs_1 = transCosts [i - 1] [prev_1] +
 	                costTable [indexTable [prev_1]];
 	      if (costs_0 < costs_1) {
-	         transCosts_i [cState] = costs_0;
-	         history_i    [cState] = prev_0;
+	         transCosts_i  [cState] = costs_0;
+	         history_i     [cState] = prev_0;
 	      } else {
 	         transCosts_i  [cState] = costs_1;
-	         history_i    [cState] = prev_1;
+	         history_i     [cState] = prev_1;
 	      }
 	   }
 
@@ -196,12 +196,12 @@ int	i;
 
 //      Once all costs are computed, we can look for the minimal cost
 //      Our "end state" is somewhere in column blockLength + 6
-	int minimalCosts	= 100000;
-	int bestState	= 0;
+	int minimalCosts	= 1000000;
+	int bestState		= 0;
 
 	for (i = 0; i < numofStates; i++) {
 	   if (transCosts [blockLength + 6 - 1][i] < minimalCosts) {
-	      minimalCosts = transCosts [blockLength][i];
+	      minimalCosts = transCosts [blockLength + 6 - 1][i];
 	      bestState = i;
 	   }
 	}
