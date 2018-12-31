@@ -12,7 +12,8 @@ There are two reasons I was not happy with that solution,
 the first one - of course - being that I did not write it myself.
 The second, maybe even more important reason was that these spiral
 approached are higly optimized for fixed, known, length segments
-to be deconvolved.
+to be deconvolved, but not usable for use in an environment with
+differently sized segments.
 
 While for the FIC blocks the length is predefined, for the data blocks
 in the audio or data streams it is not. This lead to a construction

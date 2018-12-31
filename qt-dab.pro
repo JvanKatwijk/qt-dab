@@ -7,7 +7,7 @@
 TEMPLATE	= app
 TARGET		= qt-dab-2.0
 QT		+= widgets 
-CONFIG		+= console
+#CONFIG		+= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
@@ -286,7 +286,7 @@ CONFIG		+= try-epg		# do not use
 DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
-#DEFINES	+= SHOW_MISSING
+DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support
 # and you might select NEON if you are compiling for an arm (however
