@@ -7,7 +7,7 @@
 TEMPLATE	= app
 TARGET		= qt-dab-2.0
 QT		+= widgets 
-#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
@@ -300,7 +300,7 @@ DEFINES	+= SHOW_MISSING
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= ../../windows-bin
+DESTDIR		= ../../windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {

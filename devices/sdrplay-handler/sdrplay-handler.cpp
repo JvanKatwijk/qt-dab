@@ -99,9 +99,6 @@ ULONG APIkeyValue_length = 255;
 //	Ok, make explicit it is in the 32 bits section
 	   wchar_t *x =
 	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
-//	   wchar_t *x =
-	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
-//	   wprintf (L"API registry entry: %s\n", APIkeyValue);
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);
