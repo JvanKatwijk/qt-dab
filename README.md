@@ -102,7 +102,10 @@ While the main window and the widget for the device control are always shown, ea
 Windows
 ------------------------------------------------------------------
 
-Windows releases can be found at https://github.com/JvanKatwijk/qt-dab/releases. The software is packed in a zipped folder, (windows-bin.zip). The folder - after unpacking - contains the executable (and other executables) as well as the libraries to run the software.
+For windows there is an installer, to be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
+The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.
+
+Furthermore, the releases section contains a "zipped" folder, with executables for this and other programs.
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
