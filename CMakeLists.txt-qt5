@@ -324,6 +324,7 @@ add_definitions (-DPRESET_NAME)
 	set (${objectName}_MOCS
 	     ./dab-processor.h
 	     ./includes/output/audio-base.h
+	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/ofdm/phasereference.h
