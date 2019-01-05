@@ -37,6 +37,7 @@
 class	QComboBox;
 
 class	audioSink  : public audioBase {
+Q_OBJECT
 public:
 	                audioSink		(int16_t);
 			~audioSink		(void);
