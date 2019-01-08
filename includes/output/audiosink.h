@@ -78,8 +78,6 @@ static	int		paCallback_o	(const void	*input,
 	                                 const PaStreamCallbackTimeInfo *timeInfo,
 					 PaStreamCallbackFlags statusFlags,
 	                                 void		*userData);
-signals:
-	void		missed		(int);
 };
 
 #endif

@@ -286,11 +286,17 @@ CONFIG		+= try-epg		# do not use
 DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
-DEFINES	+= SHOW_MISSING
+#DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support
 # and you might select NEON if you are compiling for an arm (however
 # have a look at the config section for neon then)
+# By default we are using an alternative implementation for the
+# deconvolution, it outperforms the "NO_SSE" version, so it is
+# usable for both windows and linux.
+# If you want it changed, make suire to adapt the specification
+# of the header and the source files.
+
 #CONFIG	+= NEON_RPI2
 #CONFIG	+= NEON_RPI3
 #CONFIG	+= SSE

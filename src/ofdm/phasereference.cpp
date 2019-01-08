@@ -22,6 +22,7 @@
 #include	"phasereference.h" 
 #include	"string.h"
 #include	"radio.h"
+#include	<vector>
 /**
   *	\class phaseReference
   *	Implements the correlation that is used to identify
@@ -40,6 +41,7 @@
 	                                     my_fftHandler (dabMode) {
 int32_t	i;
 float	Phi_k;
+FILE	*tableFile;
 
 	this	-> response	= b;
 	this	-> threshold	= threshold;
@@ -62,6 +64,22 @@ float	Phi_k;
 	   Phi_k = get_Phi (-i);
 	   refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
+
+//	for (i = 0; i < T_u / 2; i ++) {
+//	   fft_buffer [i] = cmul (refTable [i], 1.0 / T_u);
+//	   fft_buffer [T_u / 2 + i] = cmul (refTable [T_u / 2 + i], 1.0 / T_u);
+//	}
+//	my_fftHandler. do_IFFT ();
+//	char * begin	= "struct {float re; float im;} table [] = {";
+//	fprintf (stderr, "%s \n", begin);
+//	char buff [255];
+//	for (i = 0; i < T_u; i ++) {
+//	   sprintf (buff, "{%f, %f},", real (fft_buffer [i]), imag (fft_buffer [i]));
+//	   fprintf (stderr, " %s\n", buff);
+//	}
+//	fprintf (stderr, "};\n");
+
+	   
 //
 //	prepare a table for the coarse frequency synchronization
 //	can be a static one, actually, we are only interested in
@@ -113,6 +131,27 @@ float	lbuf [T_u];
 	      Max = lbuf [i];
 	   }
 	}
+//
+//	make the different "ghost transmitters" visible
+//	by uncommenting 
+//	std::vector<float>	ghostTable;
+//	std::vector<int>	ghostIndex;
+//	for (i = 0; i < T_u / 2; i ++)
+//	   if (lbuf [i] > 10 * threshold * sum / T_u) {
+//	      ghostTable . push_back (lbuf [i]);
+//	      ghostIndex . push_back (i);
+//	   }
+//
+//	static	int xxx	= 0;
+//	if (++ xxx > 20) {
+//	   xxx = 0;
+//	   for (i = 0; i < ghostIndex. size (); i ++)
+//	      fprintf (stderr, "%d (%f) ",
+//	                        ghostIndex. at (i), 
+//	                        ghostTable. at (i) / (threshold * sum / T_u));
+//	   if (ghostTable. size () > 0)
+//	      fprintf (stderr, "\n");
+//	}
 
 	if (response != NULL) {
 	   if (++displayCounter > framesperSecond / 4) {
@@ -124,7 +163,7 @@ float	lbuf [T_u];
 /**
   *	that gives us a basis for defining the actual threshold value
   */
-	if (Max < threshold * sum / T_u)
+	if (Max < threshold * sum / T_u) 
 	   return  - abs (Max * T_u / sum) - 1;
 	else {
 	   return maxIndex;	

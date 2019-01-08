@@ -2,7 +2,7 @@
 A Note on Viterbi Handling
 
 Deconvolution is one of the resource consuming operations in DAB decoding.
-Up until now, we used the deconvolution, using some variant of the
+Up until now, we used  for the deconvolution a  variant of the
 do-called "spiral-code", heavily optimized code with different
 variants for use with and without SSE instructions etc etc.
 
