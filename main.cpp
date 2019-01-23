@@ -109,11 +109,11 @@ int     opt;
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       dataPort
                                                );
-	MyRadioInterface -> show ();
 
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
+	MyRadioInterface -> show ();
         a. exec ();
 /*
  *      done:
