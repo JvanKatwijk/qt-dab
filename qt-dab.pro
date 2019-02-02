@@ -18,7 +18,7 @@ QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
 
-TRANSLATIONS = i18n/de_DE.ts i18n/it_IT.ts i18n/hu_HU.ts
+TRANSLATIONS = i18n/de_DE.ts
 
 DEPENDPATH += . \
 	      ./src \
