@@ -35,6 +35,7 @@
 	                                uint8_t		dabMode,
 	                                int16_t		threshold,
 	                                int16_t		diff_length,
+	                                int16_t		depth,
 	                                RingBuffer<float> *b):
 	                                     phaseTable (dabMode),
 	                                     params (dabMode),
@@ -46,6 +47,7 @@ FILE	*tableFile;
 	this	-> response	= b;
 	this	-> threshold	= threshold;
 	this	-> diff_length	= diff_length;
+	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
 
@@ -65,21 +67,6 @@ FILE	*tableFile;
 	   refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 
-//	for (i = 0; i < T_u / 2; i ++) {
-//	   fft_buffer [i] = cmul (refTable [i], 1.0 / T_u);
-//	   fft_buffer [T_u / 2 + i] = cmul (refTable [T_u / 2 + i], 1.0 / T_u);
-//	}
-//	my_fftHandler. do_IFFT ();
-//	char * begin	= "struct {float re; float im;} table [] = {";
-//	fprintf (stderr, "%s \n", begin);
-//	char buff [255];
-//	for (i = 0; i < T_u; i ++) {
-//	   sprintf (buff, "{%f, %f},", real (fft_buffer [i]), imag (fft_buffer [i]));
-//	   fprintf (stderr, " %s\n", buff);
-//	}
-//	fprintf (stderr, "};\n");
-
-	   
 //
 //	prepare a table for the coarse frequency synchronization
 //	can be a static one, actually, we are only interested in
@@ -89,6 +76,8 @@ FILE	*tableFile;
                                  conj (refTable [(T_u + i + 1) % T_u])));
 	connect (this, SIGNAL (showImpulse (int)),
 	         mr,   SLOT   (showImpulse (int)));
+	connect (this, SIGNAL (showIndex   (int)),
+	         mr,   SLOT   (showIndex   (int)));
 }
 
 	phaseReference::~phaseReference (void) {
@@ -111,6 +100,8 @@ int32_t	oldIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
 float	lbuf [T_u];
+float	mbuf [T_u];
+std::vector<int> resultVector;
 
 	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT ();
@@ -125,49 +116,51 @@ float	lbuf [T_u];
   */
 	for (i = 0; i < T_u; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   mbuf [i] = lbuf [i];
 	   sum	+= lbuf [i];
 	   if (lbuf [i] > Max) {
 	      maxIndex = i;
 	      Max = lbuf [i];
 	   }
 	}
-//
-//	make the different "ghost transmitters" visible
-//	by uncommenting 
-//	std::vector<float>	ghostTable;
-//	std::vector<int>	ghostIndex;
-//	for (i = 0; i < T_u / 2; i ++)
-//	   if (lbuf [i] > 10 * threshold * sum / T_u) {
-//	      ghostTable . push_back (lbuf [i]);
-//	      ghostIndex . push_back (i);
-//	   }
-//
-//	static	int xxx	= 0;
-//	if (++ xxx > 20) {
-//	   xxx = 0;
-//	   for (i = 0; i < ghostIndex. size (); i ++)
-//	      fprintf (stderr, "%d (%f) ",
-//	                        ghostIndex. at (i), 
-//	                        ghostTable. at (i) / (threshold * sum / T_u));
-//	   if (ghostTable. size () > 0)
-//	      fprintf (stderr, "\n");
-//	}
+
+	if (Max < threshold * sum / T_u) 
+	   return (- abs (Max * T_u / sum) - 1);
+	else 
+	   resultVector. push_back (maxIndex);	
+
+	for (int k = 0; k < depth; k ++) {
+	   float MMax = 4 * threshold * sum / T_u;
+	   int	lIndex = -1;
+	   for (i = 0; i < T_u / 2; i ++) {
+	      if (lbuf [i] > MMax) {
+	         MMax = lbuf [i];
+	         lIndex = i;
+	      }
+	   }
+	   if (lIndex > 0) {
+	      resultVector . push_back (lIndex);
+	      for (i = lIndex - 15; i < lIndex + 15; i ++)
+	         lbuf [i] = 0;
+	   }
+	   else
+	      break;
+	}
 
 	if (response != NULL) {
 	   if (++displayCounter > framesperSecond / 4) {
-	      response	-> putDataIntoBuffer (lbuf, T_u);
+	      response	-> putDataIntoBuffer (mbuf, T_u);
 	      showImpulse (T_u);
 	      displayCounter	= 0;
+	      if (resultVector. at (0) > 0) {
+	         showIndex (-1);
+	         for (i = 1; i < resultVector. size (); i ++)
+	            showIndex (resultVector. at (i));
+	         showIndex (0);
+	      }
 	   }
 	}
-/**
-  *	that gives us a basis for defining the actual threshold value
-  */
-	if (Max < threshold * sum / T_u) 
-	   return  - abs (Max * T_u / sum) - 1;
-	else {
-	   return maxIndex;	
-	}
+	return resultVector. at (0);
 }
 
 //	We investigate a sequence of phasedifferences that

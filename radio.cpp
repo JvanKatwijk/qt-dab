@@ -357,6 +357,9 @@ int32_t	frequency;
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
 
+	int	tii_depth	= dabSettings -> value ("tii_depth", 1). toInt ();
+	int	echo_depth	= dabSettings -> value ("echo_depth", 1). toInt ();
+	
 //	we avoided up till now connecting the channel selector
 //	to the slot since that function does a lot more that we
 //	do not want here
@@ -383,6 +386,8 @@ int32_t	frequency;
 	                                      threshold,
 	                                      diff_length,
 	                                      tii_delay,
+	                                      tii_depth,
+	                                      echo_depth,
 	                                      picturesPath,
 	                                      responseBuffer,
 	                                      spectrumBuffer,
@@ -399,6 +404,7 @@ int32_t	frequency;
 	}
 
 	clearEnsemble ();		// the display
+	secondariesVector. resize (0);
 	my_dabProcessor	-> start ();
 	running. store (true);
 }
@@ -835,11 +841,10 @@ void	RadioInterface::clear_showElements (void) {
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 	techData. transmitter_coordinates -> setText (" ");
-
-	snrDisplay		-> display (0);
 	if (pictureLabel != nullptr)
 	   delete pictureLabel;
 	pictureLabel = nullptr;
+	my_tiiViewer	-> clear ();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -926,7 +931,7 @@ bool	localRunning	= running. load ();
 	}
 
 	clear_showElements ();
-
+	secondariesVector. resize (0);
 	tunedFrequency	= theBand. Frequency (dabBand, s);
 	inputDevice	-> setVFOFrequency (tunedFrequency);
 
@@ -1364,10 +1369,20 @@ void	RadioInterface::showImpulse (int amount) {
 	if (running. load ())
 	   my_impulseViewer -> showImpulse (amount);
 }
+
+void	RadioInterface::showIndex (int ind) {
+	if (!running. load ())
+	   return;
+
+	my_impulseViewer -> showIndex (ind);
+}
+
 //
 void	RadioInterface::show_tii (int amount) {
-	if (running. load ())
-	   my_tiiViewer	-> showSpectrum (amount);
+	if (!running. load ())
+	   return;
+	my_tiiViewer	-> showSpectrum (amount);
+	my_tiiViewer	-> showSecondaries (secondariesVector);
 }
 //
 void	RadioInterface::set_audioDump (void) {
@@ -1459,9 +1474,12 @@ void	RadioInterface::hideButtons	(void) {
 void	RadioInterface::setSyncLost	(void) {
 }
 
-void	RadioInterface::showCoordinates (int mainId, int subId) {
+void	RadioInterface::showCoordinates (int data) {
+int	mainId	= data >> 8;
+int	subId	= data & 0xFF;
 QString a = "Estimate: ";
 QString b = "  ";
+QString c = "  ";
 
 	if (!running. load ())
 	   return;
@@ -1472,6 +1490,21 @@ QString b = "  ";
 	techData. transmitter_coordinates -> setText (a);
 }
 
+void	RadioInterface::showSecondaries (int data) {
+int	i;
+
+	if (!running. load ())
+	   return;
+
+	if (data == -1)
+	   secondariesVector. resize (0);
+	else
+	   secondariesVector. push_back (data);
+}
+
+
+	
+	
 void	RadioInterface::showEnsembleData (void) {
 QString currentChannel	= channelSelector -> currentText ();
 int32_t	frequency	= inputDevice -> getVFOFrequency ();

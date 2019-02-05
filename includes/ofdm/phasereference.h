@@ -38,7 +38,9 @@ Q_OBJECT
 public:
 			phaseReference 		(RadioInterface *,
 	                                         uint8_t,
-	                                         int16_t, int16_t,
+	                                         int16_t,
+	                                         int16_t,
+	                                         int16_t,
 						 RingBuffer<float> *b = NULL);
 			~phaseReference		(void);
 	int32_t		findIndex		(std::vector<std::complex<float>>);
@@ -54,6 +56,7 @@ private:
 	std::vector<float> phaseDifferences;
 	int16_t		threshold;
 	int16_t		diff_length;
+	int16_t		depth;
 	int32_t		T_u;
 	int16_t		carriers;
 
@@ -62,7 +65,8 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 signals:
-	void		showImpulse (int);
+	void		showImpulse	(int);
+	void		showIndex	(int);
 };
 #endif
 

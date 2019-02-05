@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>363</width>
-    <height>164</height>
+    <width>367</width>
+    <height>202</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,6 +24,22 @@
    </property>
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum display, shows the frequency spectrum from the channel currently being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="indexDisplay">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>160</y>
+     <width>301</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter is detected, the relative distance - in msec - is shown between&lt;/p&gt;&lt;p&gt;the arrival time of the data of the transmitter that is used, and the arrival time of the data of&lt;/p&gt;&lt;p&gt;the other transmitter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

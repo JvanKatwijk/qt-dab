@@ -431,6 +431,32 @@ tii_delay=xxx
 ```
 where `xxx` is the number of seconds. Default of the delay is 20 seconds.
 
+The Qt-DAB program will search for additional transmitter identification
+if
+
+```
+tii_depth=xx
+```
+
+is set. A reasonable value is 3, default the value will be set to 1.
+
+
+Similarly, if 
+
+```
+echo_depth=xxx
+```
+is set, a guess will be made about the relative delays of the incoming
+data of other transmitters in the SFN.
+
+
+If one uses the rtl_tcp handler, the default value for the "port" is 1234,
+a port can de set in the "ini" file by setting
+
+```
+rtl_tcp_port=xxx
+```
+
 --------------------------------------------------------------------------------
 A note on intermittent sound 
 -------------------------------------------------------------------------------
