@@ -2,6 +2,24 @@
 
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
+----------------------------------------------------------------------------
+NEW FEATURES
+----------------------------------------------------------------------------
+
+As known, DAB transmissions are brought to you by more than one transmitter,
+a so-called Single Frequency Network.
+Since I am always curious which transmitters "contribute" to the
+received signals, there are two extensions:
+a. The tii window shows - if detectable - the ids of the strongest transmitters
+b. the impulse window whows - if detectable - the relative delay - in micro seconds - of the data, relative to th strongest transmitter.
+
+Of course, all these computations cost a little additional CPU time,
+therefore they are optional.
+
+a. if "tii_depth=xxx" is set (xxx being 3 or 4) the tii search is done
+b. if "echo_depth=xxx" is set (xxx being 3 or 4) the delays of the secondary
+transmitters are computed.
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------

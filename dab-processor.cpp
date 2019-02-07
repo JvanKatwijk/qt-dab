@@ -307,11 +307,11 @@ Data_blocks:
 	                 showSecondaries (secondaries. at (i));
 	            }
 
-	            tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (),
-	                                                              T_u);
 	            show_tii (1);
-	            tii_counter = 1;
+	            tii_counter = 0;
+	            my_TII_Detector. reset ();
 	      }
+	      tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	   }
 	}
 /**
