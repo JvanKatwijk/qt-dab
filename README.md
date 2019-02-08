@@ -14,10 +14,10 @@ a. The tii window shows - if detectable - the ids of the strongest transmitters
 b. the impulse window whows - if detectable - the relative delay - in micro seconds - of the data, relative to th strongest transmitter.
 
 Of course, all these computations cost a little additional CPU time,
-therefore they are optional.
+therefore they are optional and can be set in the ".qt-dab.ini" file.
 
-a. if "tii_depth=xxx" is set (xxx being 3 or 4) the tii search is done
-b. if "echo_depth=xxx" is set (xxx being 3 or 4) the delays of the secondary
+a. if "tii_depth=xxx" is set (xxx being 3 or 4) the tii search is done for a maximum of xxx tii values,
+b. if "echo_depth=xxx" is set (xxx being 3 or 4) the delays of the secondary for a maximum of xxx 
 transmitters are computed.
 
 ------------------------------------------------------------------
