@@ -20,6 +20,11 @@ a. if "tii_depth=xxx" is set (xxx being 3 or 4) the tii search is done for a max
 b. if "echo_depth=xxx" is set (xxx being 3 or 4) the delays of the secondary for a maximum of xxx 
 transmitters are computed.
 
+The picture shows that (at least) two transmitters are being received,
+identified as (1, 4) and (1, 3) and that it seems that signals are
+being picked up from transmitters, other than the "main" one, with signals
+that arrive resp 19 msec and 8 msec earlier.
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
