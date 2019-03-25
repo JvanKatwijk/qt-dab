@@ -98,12 +98,12 @@
 	                           {416,1,384}};
 
 //
-class	serviceDescriptor {
+class	service {
 public:
-	serviceDescriptor	(void) {
+	service	(void) {
 	   clear ();
 	}
-	~serviceDescriptor	(void) {
+	~service	(void) {
 		clear ();
 	}
 	void		clear	(void) {
@@ -144,7 +144,7 @@ public:
 	bool	ecc_Present;
 	uint8_t	ecc_byte;
 	bool	isSynced;
-	serviceDescriptor	services [64];
+	service	services [64];
 };
 
 class	subChannelDescriptor {

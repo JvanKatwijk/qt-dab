@@ -20,6 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	<stdio.h>
+#include	<QStringList>
 #include	"ensemble-printer.h"
 #include	"country-codes.h"
 #include	"dab_tables.h"
