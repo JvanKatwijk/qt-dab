@@ -78,7 +78,7 @@ bool	firstData;
 	                  frequency / 1000);
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
-	for (auto& audioService: Services) {
+	for (QString& audioService: Services) {
 	   for (i = 0; i < 5; i ++) {
 	      audiodata d;
 	      my_dabProcessor -> dataforAudioService (audioService, &d, i);
@@ -106,7 +106,7 @@ bool	firstData;
 	}
 
 	firstData	= true;
-	for (auto& dataService: Services) {
+	for (QString& dataService: Services) {
 	   for (i = 0; i < 5; i ++) {
 	      packetdata d;
 	      my_dabProcessor -> dataforPacketService (dataService, &d, i);
