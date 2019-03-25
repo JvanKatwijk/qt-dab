@@ -150,7 +150,6 @@ int16_t	i;
 std::complex<float> conjVector [T_u];
 std::complex<float> freqOff	= std::complex<float> (0, 0);
 
-
 fftlabel:
 /**
   *	first step: do the FFT

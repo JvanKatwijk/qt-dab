@@ -190,7 +190,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
-	     ./includes/ofdm/fib-processor.cpp
+	     ./includes/ofdm/fib-decoder.cpp
 	     ./includes/ofdm/fic-handler.cpp
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
@@ -262,7 +262,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
-	     ./src/ofdm/fib-processor.cpp
+	     ./src/ofdm/fib-decoder.cpp
 	     ./src/ofdm/fic-handler.cpp
 	     ./src/ofdm/tii_table.cpp
 	     ./src/ofdm/tii_detector.cpp
@@ -329,7 +329,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/fic-handler.h
-	     ./includes/ofdm/fib-processor.h
+	     ./includes/ofdm/decoder.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/tii_table.h
 	     ./includes/backend/backend.h

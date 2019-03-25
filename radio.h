@@ -187,6 +187,7 @@ public slots:
 	void		showQuality		(float);
 	void		show_tii		(int);
 	void		closeEvent		(QCloseEvent *event);
+	void		showTime		(const QString &);
 
 //	Somehow, these must be connected to the GUI
 private slots:

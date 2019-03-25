@@ -6,6 +6,9 @@ Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terres
 NEW FEATURES
 ----------------------------------------------------------------------------
 
+If available, the frequency in the FM band on which the service
+can be heard, is given in the TechnicalData widget.
+
 As known, DAB transmissions are brought to you by more than one transmitter,
 a so-called Single Frequency Network.
 Since I am always curious which transmitters "contribute" to the

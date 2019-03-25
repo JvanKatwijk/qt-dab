@@ -45,8 +45,8 @@
 
 		ficHandler::ficHandler (RadioInterface *mr,
 	                                uint8_t dabMode):
-//	                                    params (dabMode),
-	                                    fib_processor (mr, dabMode),
+	                                    params (dabMode),
+	                                    fibDecoder (mr),
 	                                    myViterbi (768, true) {
 int16_t	i, j, k;
 int	local	= 0;
@@ -132,7 +132,6 @@ int32_t	i;
 	if (blkno == 1) {
 	   index = 0;
 	   ficno = 0;
-	   fib_processor::newFrame ();
 	}
 //
 	if ((1 <= blkno) && (blkno <= 3)) {
@@ -201,7 +200,7 @@ int16_t	inputCount	= 0;
 	   }
 
 	   show_ficSuccess (true);
-	   fib_processor::process_FIB (p, ficno);
+	   fibDecoder::process_FIB (p, ficno);
 	}
 }
 

@@ -201,7 +201,6 @@ SyncOnPhase:
 	      goto notSynced;
 	   }
 
-	   
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -310,10 +309,10 @@ Data_blocks:
 	            show_tii (1);
 	            tii_counter = 0;
 	            my_TII_Detector. reset ();
+	         }
+	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	      }
-	      tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	   }
-	}
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
@@ -377,35 +376,28 @@ void	dabProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
-
-uint8_t dabProcessor::kindofService           (QString &s) {
-	return my_ficHandler. kindofService (s);
+//
+//	just a convenience function
+bool	dabProcessor::is_audioService	(QString &s) {
+audiodata ad;
+	my_ficHandler. dataforAudioService (s, &ad, 0);
+	return ad. defined;
 }
 
-void	dabProcessor::dataforAudioService     (int16_t c, audiodata *dd) {
-	my_ficHandler. dataforAudioService (c, dd);
+bool	dabProcessor::is_packetService	(QString &s) {
+packetdata pd;
+	my_ficHandler. dataforPacketService (s, &pd, 0);
+	return pd. defined;
 }
 
-void	dabProcessor::dataforAudioService     (QString &s,audiodata *dd) {
-	my_ficHandler. dataforAudioService (s, dd, 0);
-}
-
-void	dabProcessor::dataforAudioService     (QString &s,
+void	dabProcessor::dataforAudioService	(QString &s,
 	                                          audiodata *d, int16_t c) {
 	my_ficHandler. dataforAudioService (s, d, c);
 }
 
-void	dabProcessor::dataforDataService	(int16_t c, packetdata *dd) {
-	my_ficHandler. dataforDataService (c, dd);
-}
-
-void	dabProcessor::dataforDataService	(QString &s, packetdata *dd) {
-	my_ficHandler. dataforDataService (s, dd, 0);
-}
-
-void	dabProcessor::dataforDataService	(QString &s,
-	                                            packetdata *d, int16_t c) {
-	my_ficHandler. dataforDataService (s, d, c);
+void	dabProcessor::dataforPacketService	(QString &s,
+	                                         packetdata *d, int16_t c) {
+	my_ficHandler. dataforPacketService (s, d, c);
 }
 
 

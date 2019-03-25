@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-2.1
+TARGET		= qt-dab-2.5
 QT		+= widgets 
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
@@ -96,7 +96,7 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/tii_table.h \
 	   ./includes/ofdm/tii_detector.h \
 	   ./includes/ofdm/fic-handler.h \
-	   ./includes/ofdm/fib-processor.h  \
+	   ./includes/ofdm/fib-decoder.h  \
 	   ./includes/protection/protTables.h \
 	   ./includes/protection/protection.h \
 	   ./includes/protection/eep-protection.h \
@@ -179,7 +179,7 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/tii_table.cpp \
 	   ./src/ofdm/tii_detector.cpp \
 	   ./src/ofdm/fic-handler.cpp \
-	   ./src/ofdm/fib-processor.cpp  \
+	   ./src/ofdm/fib-decoder.cpp  \
 	   ./src/protection/protTables.cpp \
 	   ./src/protection/protection.cpp \
 	   ./src/protection/eep-protection.cpp \

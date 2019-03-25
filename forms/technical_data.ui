@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>150</y>
+     <y>130</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>180</y>
+     <y>160</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -49,7 +49,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>310</y>
+     <y>290</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -68,7 +68,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>150</y>
+     <y>130</y>
      <width>141</width>
      <height>20</height>
     </rect>
@@ -81,7 +81,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>180</y>
+     <y>160</y>
      <width>121</width>
      <height>20</height>
     </rect>
@@ -94,7 +94,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>330</y>
+     <y>310</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -113,7 +113,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>240</y>
+     <y>220</y>
      <width>121</width>
      <height>20</height>
     </rect>
@@ -126,7 +126,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>240</y>
+     <y>220</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -142,7 +142,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>210</y>
+     <y>190</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -158,7 +158,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>210</y>
+     <y>190</y>
      <width>111</width>
      <height>20</height>
     </rect>
@@ -171,7 +171,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>270</y>
+     <y>250</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -196,7 +196,7 @@
    <property name="geometry">
     <rect>
      <x>120</x>
-     <y>290</y>
+     <y>270</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -211,8 +211,8 @@
   <widget class="QLabel" name="ensemble">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>10</y>
+     <x>10</x>
+     <y>0</y>
      <width>221</width>
      <height>31</height>
     </rect>
@@ -232,8 +232,8 @@
   <widget class="QLCDNumber" name="frequency">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>40</y>
+     <x>30</x>
+     <y>30</y>
      <width>141</width>
      <height>31</height>
     </rect>
@@ -266,7 +266,7 @@
    <property name="geometry">
     <rect>
      <x>180</x>
-     <y>50</y>
+     <y>30</y>
      <width>41</width>
      <height>31</height>
     </rect>
@@ -287,7 +287,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>360</y>
+     <y>340</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -303,7 +303,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>390</y>
+     <y>370</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -319,7 +319,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>420</y>
+     <y>400</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -335,7 +335,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>450</y>
+     <y>430</y>
      <width>201</width>
      <height>23</height>
     </rect>
@@ -351,7 +351,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>118</y>
+     <y>98</y>
      <width>121</width>
      <height>20</height>
     </rect>
@@ -364,7 +364,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>80</y>
+     <y>60</y>
      <width>221</width>
      <height>31</height>
     </rect>
@@ -384,8 +384,8 @@
   <widget class="QLabel" name="motAvailable">
    <property name="geometry">
     <rect>
-     <x>180</x>
-     <y>490</y>
+     <x>190</x>
+     <y>460</y>
      <width>41</width>
      <height>20</height>
     </rect>
@@ -403,8 +403,8 @@
   <widget class="QLabel" name="label_7">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>490</y>
+     <x>10</x>
+     <y>460</y>
      <width>151</width>
      <height>20</height>
     </rect>
@@ -416,8 +416,8 @@
   <widget class="QLabel" name="transmitter_coordinates">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>520</y>
+     <x>10</x>
+     <y>480</y>
      <width>201</width>
      <height>31</height>
     </rect>
@@ -433,7 +433,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>270</y>
+     <y>250</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -452,7 +452,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>290</y>
+     <y>270</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -465,7 +465,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>310</y>
+     <y>290</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -478,7 +478,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>330</y>
+     <y>310</y>
      <width>91</width>
      <height>21</height>
     </rect>
@@ -491,7 +491,7 @@
    <property name="geometry">
     <rect>
      <x>160</x>
-     <y>120</y>
+     <y>100</y>
      <width>64</width>
      <height>23</height>
     </rect>
@@ -501,6 +501,32 @@
    </property>
    <property name="segmentStyle">
     <enum>QLCDNumber::Flat</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fmFrequency">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>520</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fmLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>520</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>also on FM:</string>
    </property>
   </widget>
  </widget>

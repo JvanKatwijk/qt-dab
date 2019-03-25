@@ -75,14 +75,11 @@ public:
 //	inheriting from our delegates
 	void		set_tiiCoordinates	(void);
 	void		setSelectedService      (QString &);
-        uint8_t		kindofService           (QString &);
-        void		dataforAudioService     (int16_t,   audiodata *);
-        void		dataforAudioService     (QString &,   audiodata *);
+	bool		is_audioService		(QString &s);
+	bool		is_packetService	(QString &s);
         void		dataforAudioService     (QString &,
 	                                             audiodata *, int16_t);
-        void		dataforDataService      (int16_t,   packetdata *);
-        void		dataforDataService      (QString &,   packetdata *);
-        void		dataforDataService      (QString &,
+        void		dataforPacketService	(QString &,
 	                                             packetdata *, int16_t);
 	void		reset_msc		(void);
 	void		set_audioChannel	(audiodata *,

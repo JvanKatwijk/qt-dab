@@ -187,7 +187,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/tii_table.h
              ./includes/ofdm/tii_detector.h
              ./includes/ofdm/fic-handler.h
-             ./includes/ofdm/fib-processor.h
+             ./includes/ofdm/fib-decoder.h
 	     ./includes/ofdm/timesyncer.h
 	     ./includes/protection/protTables.h
              ./includes/protection/protection.h
@@ -261,7 +261,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/tii_table.cpp
              ./src/ofdm/tii_detector.cpp
 	     ./src/ofdm/fic-handler.cpp
-	     ./src/ofdm/fib-processor.cpp
+	     ./src/ofdm/fib-decoder.cpp
 	     ./src/ofdm/timesyncer.cpp
 	     ./src/protection/protTables.cpp
              ./src/protection/protection.cpp
@@ -329,7 +329,7 @@ add_definitions (-DPRESET_NAME)
              ./includes/ofdm/tii_detector.h
              ./includes/ofdm/tii_table.h
              ./includes/ofdm/fic-handler.h
-             ./includes/ofdm/fib-processor.h
+             ./includes/ofdm/fib-decoder.h
 	     ./includes/backend/backend.h
              ./includes/backend/audio/faad-decoder.h
              ./includes/backend/audio/mp2processor.h

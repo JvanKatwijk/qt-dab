@@ -234,6 +234,8 @@ QString h;
 	techData. aacError_display	-> hide ();
 	techData. motAvailable		-> 
                            setStyleSheet ("QLabel {background-color : red}");
+	techData. fmLabel		-> hide ();
+	techData. fmFrequency		-> hide ();
 //
 //
 	sourceDumping		= false;
@@ -1243,10 +1245,9 @@ QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString ();
 //	Might be called from the GUI as well as from an internal call
 void	RadioInterface::selectService (QString s) {
 	serviceLabel -> setText (" ");
-	if ((my_dabProcessor -> kindofService (s) != AUDIO_SERVICE) &&
-	    (my_dabProcessor -> kindofService (s) != PACKET_SERVICE))
-	return;
-//	fprintf (stderr, "Selected service %s\n", s. toUtf8 (). data ());
+	if (!my_dabProcessor -> is_audioService (s) &&
+	    !my_dabProcessor -> is_packetService (s))
+	   return;
 	my_dabProcessor -> reset_msc ();
 	currentName = s;
 	setStereo (false);
@@ -1258,88 +1259,78 @@ void	RadioInterface::selectService (QString s) {
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 
-	int k = my_dabProcessor -> kindofService (s);
+	if (my_dabProcessor -> is_audioService (s)) {
+	   audiodata d;
+	   my_dabProcessor -> dataforAudioService (s, &d, 0);
+	   if (!d. defined) {
+              QMessageBox::warning (this, tr ("Warning"),
+ 	                            tr ("unknown bitrate for this program\n"));
+ 	      return;
+ 	    }
 
-	switch (k) {
-	   case AUDIO_SERVICE:
-	      {  audiodata d;
-	         my_dabProcessor -> dataforAudioService (s, &d);
-	         if (!d. defined) {
-                    QMessageBox::warning (this, tr ("Warning"),
- 	                               tr ("unknown bitrate for this program\n"));
- 	            return;
- 	         }
+	    show_techData (ensembleLabel, s, 
+	                   inputDevice -> getVFOFrequency () / 1000000.0,
+	                   &d);
+	    serviceLabel -> setAlignment(Qt::AlignCenter);
+	    serviceLabel -> setText (s);
+	    my_dabProcessor -> set_audioChannel (&d, audioBuffer);
+	    for (int i = 1; i < 10; i ++) {
+	       packetdata pd;
+	       my_dabProcessor -> dataforPacketService (s, &pd, i);
+	       if (pd. defined) {
+	          my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	          break;
+	       }
+	    }
 
-	         show_techData (ensembleLabel, s, 
-	                       inputDevice -> getVFOFrequency () / 1000000.0,
-	                       &d);
-	         serviceLabel -> setAlignment(Qt::AlignCenter);
-	         serviceLabel -> setText (s);
-	         my_dabProcessor -> set_audioChannel (&d, audioBuffer);
-	         for (int i = 1; i < 10; i ++) {
-	            packetdata pd;
-	            my_dabProcessor -> dataforDataService (s, &pd, i);
-	            if (pd. defined) {
-	               my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
-	               break;
-	            }
-	         }
-
-	         soundOut	-> restart ();
-	         showLabel (QString (" "));
-	         break;
-	      }
-
-	   case PACKET_SERVICE:
-	      {  packetdata pd;
-	         my_dabProcessor -> dataforDataService (s, &pd);
-	         if ((!pd. defined) ||
-	             (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
-	            fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
-	                               pd. DSCTy, pd. bitRate);
-	            QMessageBox::warning (this, tr ("sdr"),
- 	                               tr ("still insufficient data for this service\n"));
-
-	            return;
-	         }
-	         my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
-	         switch (pd. DSCTy) {
-	            default:
-	               showLabel (QString ("unimplemented Data"));
-	               break;
-	            case 5:
-	               fprintf (stderr, "selected apptype %d\n", 
-	                                                 pd. appType);
-	               showLabel (QString ("Transp. Channel not implemented"));
-	               break;
-	            case 60:
-	               showLabel (QString ("MOT partially implemented"));
-	               break;
-	            case 59: {
-#ifdef	_SEND_DATAGRAM_
-	                  QString text = QString ("Embedded IP: UDP data to ");
-	                  text. append (ipAddress);
-	                  text. append (" ");
-	                  QString n = QString::number (port);
-	                  text. append (n);
-	                  showLabel (text);
-#else
-	                  showLabel ("Embedded IP not supported ");
-#endif
-	               }
-	               break;
-	            case 44:
-	               showLabel (QString ("Journaline"));
-	               break;
-	         }
-	        break;
-	      }
-
-	   default:
-               QMessageBox::warning (this, tr ("Warning"),
- 	                               tr ("unknown service\n"));
-	      return;
+	    soundOut	-> restart ();
+	    showLabel (QString (" "));
 	}
+	else
+	if (my_dabProcessor -> is_packetService (s)) {
+	   packetdata pd;
+	   my_dabProcessor -> dataforPacketService (s, &pd, 0);
+	   if ((!pd. defined) ||
+	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
+	      fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
+	                               pd. DSCTy, pd. bitRate);
+	      QMessageBox::warning (this, tr ("sdr"),
+ 	                            tr ("still insufficient data for this service\n"));
+	      return;
+	   }
+
+	   my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	   switch (pd. DSCTy) {
+	      default:
+	         showLabel (QString ("unimplemented Data"));
+	         break;
+	      case 5:
+	         fprintf (stderr, "selected apptype %d\n", pd. appType);
+	         showLabel (QString ("Transp. Channel not implemented"));
+	         break;
+	      case 60:
+	         showLabel (QString ("MOT partially implemented"));
+	         break;
+	      case 59: {
+#ifdef	_SEND_DATAGRAM_
+	         QString text = QString ("Embedded IP: UDP data to ");
+	         text. append (ipAddress);
+	         text. append (" ");
+	         QString n = QString::number (port);
+	         text. append (n);
+	         showLabel (text);
+#else
+	         showLabel ("Embedded IP not supported ");
+#endif
+	         }
+	         break;
+	      case 44:
+	         showLabel (QString ("Journaline"));
+	         break;
+	   }
+	}
+	else
+	   return;		// should not happen
 
 	if (pictureLabel != nullptr)
 	   delete pictureLabel;
@@ -1501,9 +1492,6 @@ int	i;
 	else
 	   secondariesVector. push_back (data);
 }
-
-
-	
 	
 void	RadioInterface::showEnsembleData (void) {
 QString currentChannel	= channelSelector -> currentText ();
@@ -1525,7 +1513,7 @@ ensemblePrinter	my_Printer;
 	   return;
 	}
 	my_Printer. showEnsembleData (currentChannel, frequency,
-	                              my_dabProcessor, file_P);
+                                      Services, my_dabProcessor, file_P);
 
 	fclose (file_P);
 }
@@ -1726,6 +1714,17 @@ void	RadioInterface::show_techData (QString		ensembleLabel,
 	techData. programType ->
 	   setText (the_textMapper.
 	               get_programm_type_string (d -> programType));
+	if (d -> fmFrequency == -1) {
+	   techData. fmFrequency -> hide ();
+	   techData. fmLabel	-> hide ();
+	}
+	else {
+	   techData. fmLabel -> show ();
+	   techData. fmFrequency -> show ();
+	   QString f = QString::number (d -> fmFrequency);
+	   f. append (" Khz");
+	   techData. fmFrequency -> setText (f);
+	}
 }
 
 #include <QCloseEvent>
@@ -1753,14 +1752,14 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      packetdata pd;
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data ().toString ();
-	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad, 0);
               if (ad. defined) {
 	         if (currentService != NULL)
 	            delete currentService;
 	         currentService	= new audioDescriptor (&ad);
 	         return true;
 	      }
-	      my_dabProcessor -> dataforDataService (serviceName, &pd);
+	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
               if (pd. defined) {
 	         if (currentService != NULL)
 	            delete currentService;
@@ -1770,5 +1769,9 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   }
 	}
 	return QMainWindow::eventFilter (obj, event);
+}
+
+void	RadioInterface::showTime	(const QString &s) {
+	localTimeDisplay	-> setText (s);
 }
 

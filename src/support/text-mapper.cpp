@@ -220,7 +220,7 @@ const char *textMapper::get_programm_language_string (int16_t language) {
 	else if (language < 0x40)
 	   return table9[language];
 	else if (language < 0x7d)
-	   return table10[language-0x40];
+	   return table10 [language - 0x40];
 	fprintf(stderr, "GUI: wrong language (%d)\n", language);
 	return table9[0];
 }

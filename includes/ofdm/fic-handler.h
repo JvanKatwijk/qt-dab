@@ -31,14 +31,14 @@
 #include	<vector>
 #include	"viterbi-handler.h"
 #include	<QObject>
-#include	"fib-processor.h"
-//#include	"dab-params.h"
+#include	"dab-params.h"
+#include	"fib-decoder.h"
 
 
 class	RadioInterface;
 class	dabParams;
 
-class ficHandler: public fib_processor {
+class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
@@ -48,7 +48,7 @@ public:
 	void	reset			(void);
 private:
 	viterbiHandler	myViterbi;
-//	dabParams	params;
+	dabParams	params;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];
