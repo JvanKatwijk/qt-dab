@@ -838,16 +838,21 @@ QString result	= QString::number (dateTime [0]);
 	result. append ("-");
 	result. append (monthTable [dateTime [1] - 1]);
 	result. append ("-");
-	result. append (QString::number (dateTime [2]));
+	QString day	= QString ("%1"). arg (dateTime [2], 2, 10, QChar ('0'));
+	result. append (day);
 	result. append (":");
 	int hours	= dateTime [3] + dateTime [6];
 	if (hours < 0)
 	   hours += 24;
 	if (hours >= 24)
 	   hours -= 24;
-	result. append (QString::number (hours));
+	QString hoursasString 
+		= QString ("%1"). arg (hours, 2, 10, QChar ('0'));
+	result. append (hoursasString);
 	result. append (":");
-	result. append (QString::number (dateTime [4]));
+	QString minutesasString =
+	              QString ("%1"). arg (dateTime [4], 2, 10, QChar ('0'));
+	result. append (minutesasString);
 	return result;
 }
 
