@@ -105,6 +105,30 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
+void	tiiViewer::clear		(void) {
+	secondariesDisplay	-> setText (" ");
+}
+
+void	tiiViewer::showSecondaries	(std::vector<int> data) {
+	if (myFrame	-> isHidden ())
+	   return;
+
+	if (data. size () == 0) {
+	   secondariesDisplay	-> setText (" ");
+	   return;
+	}
+
+	QString t	= "transmitter IDs ";
+	for (int i = 0; i < data. size (); i ++) {
+	   int mainId	= data. at (i) >> 8;
+	   int subId	= data. at (i) & 0xFF;
+	   char temp [255];
+	   sprintf (temp, " (%d, %d)", mainId, subId);
+	   t. append (QString (temp));
+	}
+	secondariesDisplay	-> setText (t);
+}
+
 void	tiiViewer::showSpectrum	(int32_t amount) {
 double	X_axis [displaySize];
 double	Y_values [displaySize];

@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-2.0
+TARGET		= qt-dab-2.5
 QT		+= widgets 
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
@@ -96,7 +96,7 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/tii_table.h \
 	   ./includes/ofdm/tii_detector.h \
 	   ./includes/ofdm/fic-handler.h \
-	   ./includes/ofdm/fib-processor.h  \
+	   ./includes/ofdm/fib-decoder.h  \
 	   ./includes/protection/protTables.h \
 	   ./includes/protection/protection.h \
 	   ./includes/protection/eep-protection.h \
@@ -139,7 +139,7 @@ HEADERS += ./radio.h \
 #	   ./includes/support/viterbi-handler/viterbi-handler.h \
            ./includes/support/fft-handler.h \
 	   ./includes/support/ringbuffer.h \
-	   ./includes/support/Xtan2.h \
+#	   ./includes/support/Xtan2.h \
 	   ./includes/support/dab-params.h \
 	   ./includes/support/band-handler.h \
 	   ./includes/support/text-mapper.h \
@@ -179,7 +179,7 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/tii_table.cpp \
 	   ./src/ofdm/tii_detector.cpp \
 	   ./src/ofdm/fic-handler.cpp \
-	   ./src/ofdm/fib-processor.cpp  \
+	   ./src/ofdm/fib-decoder.cpp  \
 	   ./src/protection/protTables.cpp \
 	   ./src/protection/protection.cpp \
 	   ./src/protection/eep-protection.cpp \
@@ -219,7 +219,7 @@ SOURCES += ./main.cpp \
 	   ./src/support/viterbi-jan/viterbi-handler.cpp \
 #	   ./src/support/viterbi-handler/viterbi-handler.cpp \
            ./src/support/fft-handler.cpp \
-	   ./src/support/Xtan2.cpp \
+#	   ./src/support/Xtan2.cpp \
 	   ./src/support/dab-params.cpp \
 	   ./src/support/band-handler.cpp \
 	   ./src/support/text-mapper.cpp \
@@ -265,7 +265,7 @@ LIBS		+= -lqwt-qt5
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
-#CONFIG		+= rtl_tcp
+CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 #CONFIG		+= elad_s1	# does not work yet
@@ -286,6 +286,10 @@ CONFIG		+= try-epg		# do not use
 DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
+
+#	if youn want additional information on other transmitters
+#	in the SFN
+DEFINES	+= __COMPUTE_ECHO__
 #DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>329</width>
-    <height>289</height>
+    <width>317</width>
+    <height>315</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -280,6 +280,32 @@
      <y>110</y>
      <width>59</width>
      <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fmLabel">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>270</y>
+     <width>101</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>alternative FM</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="fmFrequency">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>270</y>
+     <width>67</width>
+     <height>19</height>
     </rect>
    </property>
    <property name="text">

@@ -89,6 +89,7 @@ private:
 	void		showButtons		(void);
 	virtualInput	*setDevice		(QString);
 
+	std::vector<int> secondariesVector;
 	QString		dabMode;
 	uint8_t		dabBand;
 	uint8_t		isSynced;
@@ -177,13 +178,16 @@ public slots:
 	void		No_Signal_Found		(void);
 	void		show_motHandling	(bool);
 	void		setSyncLost		(void);
-	void		showCoordinates		(int, int);
+	void		showCoordinates		(int);
+	void		showSecondaries		(int);
 	void		showImpulse		(int);
+	void		showIndex		(int);
 	void		showSpectrum		(int);
 	void		showIQ			(int);
 	void		showQuality		(float);
 	void		show_tii		(int);
 	void		closeEvent		(QCloseEvent *event);
+	void		showTime		(const QString &);
 
 //	Somehow, these must be connected to the GUI
 private slots:

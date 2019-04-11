@@ -296,9 +296,10 @@ int32_t	mp2Processor::mp2sampleRate	(uint8_t *frame) {
 // DECODE HELPER FUNCTIONS                                                    //
 ////////////////////////////////////////////////////////////////////////////////
 
-struct quantizer_spec* mp2Processor::read_allocation(int sb, int b2_table) {
-    int table_idx = quant_lut_step3[b2_table][sb];
-    table_idx = quant_lut_step4[table_idx & 15][get_bits(table_idx >> 4)];
+struct quantizer_spec*
+	mp2Processor::read_allocation (int sb, int b2_table) {
+int table_idx = quant_lut_step3 [b2_table][sb];
+    table_idx = quant_lut_step4 [table_idx & 15] [get_bits(table_idx >> 4)];
     return table_idx ? (&quantizer_table[table_idx - 1]) : 0;
 }
 
@@ -326,13 +327,13 @@ register int val;
 	adj = q -> nlevels;
 	if (q -> grouping) { // decode grouped samples
 	   val = get_bits (q -> cw_bits);
-	   sample[0] = val % adj;
+	   sample [0] = val % adj;
 	   val /= adj;
-	   sample[1] = val % adj;
-	   sample[2] = val / adj;
+	   sample [1] = val % adj;
+	   sample [2] = val / adj;
 	} else { // decode direct samples
 	   for (idx = 0;  idx < 3;  ++idx)
-	      sample[idx] = get_bits(q->cw_bits);
+	      sample [idx] = get_bits (q -> cw_bits);
 	}
 
 	// postmultiply samples

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
-    <height>164</height>
+    <width>387</width>
+    <height>196</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,6 +43,22 @@
    </property>
    <property name="orientation">
     <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="secondariesDisplay">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>150</y>
+     <width>331</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter in the SFN can be identified, the (mainId, subId) of the transmitter&lt;/p&gt;&lt;p&gt;is shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="text">
+    <string/>
    </property>
   </widget>
  </widget>

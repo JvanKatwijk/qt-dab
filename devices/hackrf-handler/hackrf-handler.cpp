@@ -147,7 +147,6 @@ int	res;
 
 	hackrfHandler::~hackrfHandler	(void) {
 	stopReader ();
-	delete myFrame;
 	if (_I_Buffer != nullptr)
 	   delete _I_Buffer;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
@@ -158,6 +157,7 @@ int	res;
 	hackrfSettings	-> endGroup ();
 	this	-> hackrf_close (theDevice);
 	this	-> hackrf_exit ();
+	delete myFrame;
 }
 //
 

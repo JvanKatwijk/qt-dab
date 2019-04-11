@@ -54,6 +54,8 @@ public:
 	                         int16_t,
 	                         int16_t,
 	                         int16_t,
+	                         int16_t,	// tii_depth
+	                         int16_t,	// echo_depth
 	                         QString,
 	                         RingBuffer<float> *,
 	                         RingBuffer<std::complex<float>>	*,
@@ -73,14 +75,11 @@ public:
 //	inheriting from our delegates
 	void		set_tiiCoordinates	(void);
 	void		setSelectedService      (QString &);
-        uint8_t		kindofService           (QString &);
-        void		dataforAudioService     (int16_t,   audiodata *);
-        void		dataforAudioService     (QString &,   audiodata *);
+	bool		is_audioService		(QString &s);
+	bool		is_packetService	(QString &s);
         void		dataforAudioService     (QString &,
 	                                             audiodata *, int16_t);
-        void		dataforDataService      (int16_t,   packetdata *);
-        void		dataforDataService      (QString &,   packetdata *);
-        void		dataforDataService      (QString &,
+        void		dataforPacketService	(QString &,
 	                                             packetdata *, int16_t);
 	void		reset_msc		(void);
 	void		set_audioChannel	(audiodata *,
@@ -93,6 +92,8 @@ public:
 	void		clearEnsemble		(void);
 private:
 	bool		tiiSwitch;
+	int16_t		tii_depth;
+	int16_t		echo_depth;
 	virtualInput	*theRig;
 	dabParams	params;
 	RingBuffer<std::complex<float> > *tiiBuffer;
@@ -128,8 +129,8 @@ signals:
 	void		setSynced		(char);
 	void		No_Signal_Found		(void);
 	void		setSyncLost		(void);
-	void		showCoordinates		(int, int);
-//	void		showCoordinates		(float, float);
+	void		showCoordinates		(int);
+	void		showSecondaries		(int);
 	void		show_Spectrum		(int);
 	void		show_tii		(int);
 	void		show_snr		(int);

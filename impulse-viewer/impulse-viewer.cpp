@@ -78,6 +78,34 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
+void	impulseViewer::showIndex	(int32_t v) {
+int32_t	i;
+
+QString theText;
+
+	if (v == -1) {
+	   indexVector. resize (0);
+	   return;
+	}
+	if (v != 0) {
+	   indexVector. push_back (v);
+	   return;
+	}
+
+	if (indexVector. size () < 2)
+	   theText	= QString (" ");
+	else {
+	   theText	= QString (" trans ");
+	   for (int i = 1; i < indexVector. size (); i ++) {
+	      char t [255];
+	      sprintf (t, " (%d -> %d msec) ", i,
+	                      (indexVector. at (i) - indexVector. at (0)) / 2);
+              theText. append (t);
+	   }
+	}
+	indexDisplay -> setText (theText);
+}
+
 void	impulseViewer::show	(void) {
 	myFrame		-> show ();
 }

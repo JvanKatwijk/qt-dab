@@ -24,71 +24,6 @@
 #include	<stdio.h>
 #include	<inttypes.h>
 //
-//	The information in the null-period is encoded in a "p"
-//	a "pattern" and a "c", a "carrier"
-//	value. The "p" value defines the
-//	pattern within the null-period as well as a set of
-//	startcarriers, i.e. carrier numbers where the pattern
-//	could start.
-//	The start carrier itself determines the "c" value.
-//	Basically, within an SFN the "p" is fixed for all transmitters,
-//	while the latter show the pattern on different positions in
-//	the carriers of the null-period.
-//
-//	As it turns out, the pattern is represented by a sequence
-//	consisting of elements with two subsequent bins with the same
-//	value, followed by a "gap" of K * 48 (-1) bins.
-//
-//	The constructor of the class generates the patterns, according
-//	to the algorithm in the standard.
-		TII_Detector::TII_Detector (uint8_t dabMode):
-	                                          phaseTable (dabMode),
-	                                          params (dabMode),
-	                                          my_fftHandler (dabMode) {
-int16_t	p, c, k;
-int16_t	i;
-float	Phi_k;
-
-	this	-> T_u		= params. get_T_u ();
-	carriers		= params. get_carriers ();
-	theBuffer. resize	(T_u);
-	fillCount		= 0;
-	fft_buffer		= my_fftHandler. getVector ();	
-	window. resize 		(T_u);
-	for (i = 0; i < T_u; i ++)
-	   window [i]  = (0.42 -
-	            0.5 * cos (2 * M_PI * (float)i / T_u) +
-	            0.08 * cos (4 * M_PI * (float)i / T_u));
-
-	refTable.               resize (T_u);
-
-	memset (refTable. data (), 0, sizeof (std::complex<float>) * T_u);
-	for (i = 1; i <= params. get_carriers () / 2; i ++) {
-	   Phi_k =  get_Phi (i);
-	   refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
-	   Phi_k = get_Phi (-i);
-	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
-	}
-
-	initInvTable	();
-	createPattern ();
-//	for (i = 0; i < 70; i ++)
-//	   printOverlap (i, 15);
-}
-
-		TII_Detector::~TII_Detector (void) {
-}
-
-
-//	Zm (0, k) is a function of the P and the C, together forming the key to
-//	the database where he transmitter locations are described.
-//
-//	p is in the range  0 .. 69
-//	c is in the range 0 .. 23
-//	The transmitted signal - for a given p and c -
-//	   Zm (0, k) = A (c, p) (k) e^jPhi (k) + A (c, p) (k - 1) e ^jPhi (k - 1)
-//
-//	a (b, p) = getBit (table [p], b);
 
 static
 uint8_t table [] = {
@@ -171,55 +106,34 @@ uint8_t table [] = {
 };
 
 
-void	TII_Detector::initInvTable() {
-	int	i;
+		TII_Detector::TII_Detector (uint8_t dabMode, int16_t depth):
+	                                    params (dabMode),
+	                                    my_fftHandler (dabMode) {
+int16_t	p, c, k;
+int16_t	i;
+float	Phi_k;
+
+	this	-> depth	= depth;
+	this	-> T_u		= params. get_T_u ();
+	carriers		= params. get_carriers ();
+	theBuffer. resize	(T_u);
+	fillCount		= 0;
+	fft_buffer		= my_fftHandler. getVector ();	
+	window. resize 		(T_u);
+	for (i = 0; i < T_u; i ++)
+	   window [i]  = (0.42 -
+	            0.5 * cos (2 * M_PI * (float)i / T_u) +
+	            0.08 * cos (4 * M_PI * (float)i / T_u));
+
 	for (i = 0; i < 256; ++i)
 	    invTable [i] =  -1;
 	for (i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 }
 
-static
-uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
-static inline
-uint8_t getbit (uint8_t value, int16_t bitPos) {
-	return value & bits [bitPos] ? 1 : 0;
+		TII_Detector::~TII_Detector (void) {
 }
 
-static inline
-uint8_t delta (int16_t a, int16_t b) {
-	return a == b ? 1 : 0;
-}
-//
-//	Litterally copied from the standard. There is no doubt that
-//	creating the patterns above can be done more efficient, however
-//	this approach feels more readable, while initialization, i.e.
-//	executing the constructor, is done once
-int16_t	TII_Detector::A (uint8_t c, uint8_t p, int16_t k) {
-int16_t b;
-int16_t res	= 0;
-
-	if ((-768 <= k) && (k < - 384))
-	   for (b = 0; b <= 7; b ++)
-	      res += delta (k, -768 + 2 * c + 48 * b) * getbit (table [p], b);
-	else
-	if ((-384 <= k) && (k < 0))
-	   for (b = 0; b <= 7; b ++)
-	      res += delta (k, -384 + 2 * c + 48 * b) * getbit (table [p], b);
-	else
-	if ((0 < k) && (k <= 384))
-	   for (b = 0; b <= 7; b ++)
-	      res += delta (k, 1 + 2 * c + 48 * b) * getbit (table [p], b);
-	else
-	if ((384 < k) && (k <= 768))
-	   for (b = 0; b <= 7; b ++)
-	      res += delta (k, 385 + 2 * c + 48 * b) * getbit (table [p], b);
-	else
-	   return 0;
-
-	return res;
-}
-//
 
 void	TII_Detector::reset (void) {
 	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
@@ -261,22 +175,21 @@ int	i;
 	}
 }
 
+static
+uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
-void	TII_Detector::processNULL (int16_t *mainId, int16_t *subId) {
+std::vector<int>	TII_Detector::processNULL (void) {
 int i, j;
 float	hulpTable	[NUM_GROUPS * GROUPSIZE];
 float	C_table		[GROUPSIZE];	// contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 float	minTable	[NUM_GROUPS];
-//
-//	defaults:
-	*mainId	= -1;
-	*subId	= -1;
+std::vector<int> results;
 
-
+	results. resize (0);
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
@@ -300,19 +213,19 @@ float	minTable	[NUM_GROUPS];
 	   }
 	   avgTable [i] /= GROUPSIZE;
 	}
-
-//
 //	
 //	Determining the offset is then easy, look at the corresponding
-//	elements in the NUM_GROUPS sections and mark the highest ones
+//	elements in the NUM_GROUPS sections and mark the highest ones.
 //	The summation of the high values are stored in the C_table,
 //	the number of times the limit is reached in the group
 //	is recorded in the D_table
 //
+//	So, basically we look into GROUPSIZE colums of NUMGROUPS
+//	values and look for the maximum
 //	Threshold 4 * avgTable is 6dB, we consider that a minimum
 //	measurement shows that that is a reasonable value,
 //	alternatively, we could take the "minValue" as reference
-//	and "raise" the threshold. However, while that might be
+//	and "raise" the threshold. However, that might be
 //	too  much for 8-bit incoming values
 	memset (D_table, 0, GROUPSIZE * sizeof (int));
 	memset (C_table, 0, GROUPSIZE * sizeof (float));
@@ -322,168 +235,67 @@ float	minTable	[NUM_GROUPS];
 	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
 //	         fprintf (stderr, "index (%d, %d) -> %f (%f)\n",
 //	                           i, j,
-//	             10 * log10 (hulpTable [j * GROUPSIZE + i] / avgTable [j]),
-//	             10 * log10 (hulpTable [j * GROUPSIZE + i] / minTable [j]));
+//	             20 * log10 (hulpTable [j * GROUPSIZE + i] / avgTable [j]),
+//	             20 * log10 (hulpTable [j * GROUPSIZE + i] / minTable [j]));
 	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
 	      }
 	   }
 	}
 
-//
-//	we extract from this result the two highest values that
+//	we extract from this result the highest values that
 //	meet the constraint of 4 values being sufficiently high
-	float	Max_1	= 0;
-	int	ind1	= -1;
-	float	Max_2	= 0;
-	int	ind2	= -1;
-
-	for (j = 0; j < GROUPSIZE; j ++) {
-	   if ((D_table [j] >= 4) && (C_table [j] > Max_1)) {
-	      Max_2	= Max_1;
-	      ind1	= ind2;
-	      Max_1	= C_table [j];
-	      ind1	= j;
+//	up to "depth"  values.
+	float	maxTable [depth];
+	int	maxIndex [depth];
+	uint16_t pattern [depth];
+	
+	for (int k = 0; k < depth; k ++) {
+	   maxTable [k] = 0;
+	   maxIndex [k] = -1;
+	   pattern  [k] = 0;
+	   for (j = 0; j < GROUPSIZE; j ++) {
+	      if ((D_table [j] >= 4) && (C_table [j] > maxTable [k])) {
+	         maxTable [k] = C_table [j];
+	         maxIndex [k] = j;
+	      }
+	   }
+	   if (maxIndex [k] >= 0) {
+	      D_table [maxIndex [k]] = 0;
 	   }
 	   else
-	   if ((D_table [j] >= 4) && (C_table [j] > Max_2)) {
-	      Max_2	= C_table [j];
-	      ind2	= j;
-	   }
+	      break;
 	}
+
 //
 //	The - almost - final step is then to figure out which
-//	groups contributed, obviously only where ind1 > 0
+//	groups contributed, obviously only where maxIndex [k] > 0
 //	we start with collecting the values of the correct
 //	elements of the NUM_GROUPS groups
 //
-//	for the qt-dab, we only need the "top" performer
-	if (ind1 > 0) {
-	   uint16_t pattern	= 0;
+	for (j = 0; (j < depth) && (maxIndex [j] >= 0); j ++) {
 	   float x [NUM_GROUPS];
-	   for (i = 0; i < NUM_GROUPS; i ++) 
-	      x [i] = hulpTable [ind1 + GROUPSIZE * i];
+	   for (i = 0; i < NUM_GROUPS; i ++) {
+	      x [i] = hulpTable [maxIndex [j] + GROUPSIZE * i];
+	   }
 //
 //	we extract the four max values (it is known that they exist)
 	   for (i = 0; i < 4; i ++) {
 	      float	mmax	= 0;
 	      int ind	= -1;
-	      for (j = 0; j < NUM_GROUPS; j ++) {
-	         if (x [j] > mmax) {
-	            mmax = x [j];
-	            ind  = j;
+	      for (int k = 0; k < NUM_GROUPS; k ++) {
+	         if (x [k] > mmax) {
+	            mmax = x [k];
+	            ind  = k;
 	         }
 	      }
 	      if (ind != -1) {
-	         int index = ind;
 	         x [ind] = 0;
-	         pattern |= bits [ind];
+	         pattern [j] |= bits [ind];
 	      }
 	   }
-//
-//	The final step is then to do the mapping of the bits
-//	The mainId is found using the match with the invTable
-	   *mainId	= int (invTable [pattern]);
-	   *subId	= ind1;
-	   return;
+	   results. push_back ((invTable [pattern [j]] << 8) | maxIndex [j]);
 	}
+	return results;
 }
-
-
-void	TII_Detector:: createPattern (void) {
-int	p, k, c;
-
-	for (p = 0; p < 70; p ++) {
-	   int16_t digits	= 0;
-	   c = 0;		// patterns are equal for all c values
-	   {
-	      bool first = true;
-	      int lastOne = 0;
-	      for (k = -carriers / 2; k < -carriers / 4; k ++) {
-	         if (A (c, p, k) > 0) {
-	            if (first) {
-	               first = false;
-	               theTable [p]. carrier = k;
-	               theTable [p]. pattern = 0;
-	            }
-	            else {
-	               theTable [p]. pattern <<= 4;
-	               theTable [p]. pattern |= (k - lastOne) / 48;
-	               digits ++;
-	            }
-	            lastOne = k;
-	         }
-	      }
-
-	      for (k = -carriers / 4; k < 0; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-
-	      for (k = 1; k <= carriers / 4; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-
-	      for (k = carriers / 4 + 1; k <= carriers / 2; k ++) {
-	         if (A (c, p, k) > 0) {
-	            theTable [p]. pattern <<= 4;
-	            theTable [p]. pattern |= (k - lastOne) / 48;
-	            lastOne = k;
-	            digits ++;
-	         }
-	      }
-	   }
-//	   fprintf (stderr, "p = %d\tc = %d\tk=%d\tpatter=%llX (digits = %d)\n",
-//	                     p, c, theTable [p]. carrier,
-//	                        theTable [p]. pattern, digits);
-	}
-}
-
-int	shorten (int carrier) {
-	if (carrier > 1 + 384)
-	   carrier = carrier - 1 - 3 * 384;
-	if (carrier > 0)
-	   carrier = carrier - 1 - 2 * 384;
-	if (carrier > -384)
-	   carrier = carrier - 384;
-	return carrier;
-}
-
-void	TII_Detector::printOverlap (int pNum, int cNum) {
-int i, j;
-int	carrier		= theTable [pNum]. carrier + cNum * 2;
-uint64_t pattern	= theTable [pNum]. pattern;
-int	list [16];
-int	list_2 [16];
-bool	changes;
-
-	fprintf (stderr, "p (%d) %d:\t", pNum, theTable [pNum]. carrier);
-	
-        for (i = 0; i < 15; i ++) {
-
-           carrier      += ((pattern >> 56) & 0xF) * 48;
-	   list [i]	= carrier;
-	   if (list [i] >= 0) list [i] ++;
-           pattern <<= 4;
-	   list_2 [i] =  shorten (list [i]);
-        }
-
-//	for (i = 0; i < 15; i ++)
-//	   fprintf (stderr, " %d", list [i]);
-	fprintf (stderr, " || ");
-	for (i = 0; i < 15; i ++)
-	   fprintf (stderr, " %d", list_2 [i]);
-
-	fprintf (stderr, "\n");
-}
-
 

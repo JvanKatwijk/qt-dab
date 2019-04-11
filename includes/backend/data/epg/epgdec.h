@@ -55,7 +55,8 @@ class CEPGDecoder {
 public:
 		CEPGDecoder		(void) {
 	        }
-	void	decode			(const vector<_BYTE>&, const QString &);
+	void	decode			(const vector<_BYTE>&,
+	                                 const QString &);
 	QDomDocument	doc;
 };
 

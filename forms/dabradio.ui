@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
-    <height>394</height>
+    <width>622</width>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>20</x>
      <y>90</y>
      <width>181</width>
-     <height>281</height>
+     <height>301</height>
     </rect>
    </property>
    <property name="font">
@@ -214,8 +214,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>570</x>
-     <y>20</y>
+     <x>580</x>
+     <y>30</y>
      <width>21</width>
      <height>20</height>
     </rect>
@@ -226,7 +226,7 @@
     </font>
    </property>
    <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB copyright:&lt;/p&gt;&lt;p&gt;J van Katwijk, Lazy Chair Computing. J.vanKatwijk@gmail.com&lt;/p&gt;&lt;p&gt;Copyright of the Qt toolkit used: the Qt Company&lt;/p&gt;&lt;p&gt;Copyright of the libraries used for SDRplay, rtl-sdr based sticks, AIRspy, portaudio, libsndfile and libsamplerate to their developers&lt;/p&gt;&lt;p&gt;Copyright of the MP2 library used Martin J Fiedler&lt;/p&gt;&lt;p&gt;Copyright of the firecode checker: Gnu Radio&lt;/p&gt;&lt;p&gt;Copyright of the viterbi decoder kernel: the Spiral project&lt;/p&gt;&lt;p&gt;Copyright of the Reed Solomon Decoder software: Phil Karns&lt;/p&gt;&lt;p&gt;All copyrights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The current layout of the GUI is based on a design of Luo Zhang, Thanks&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB (an SDR-J program) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB copyright:&lt;/p&gt;&lt;p&gt;J van Katwijk, Lazy Chair Computing. J.vanKatwijk@gmail.com&lt;/p&gt;&lt;p&gt;Copyright of the Qt toolkit used: the Qt Company&lt;/p&gt;&lt;p&gt;Copyright of the libraries used for SDRplay, rtl-sdr based sticks, AIRspy, portaudio, libsndfile and libsamplerate and libfftw3 to their developers&lt;/p&gt;&lt;p&gt;Copyright of the MP2 library used Martin J Fiedler&lt;/p&gt;&lt;p&gt;Copyright of the firecode checker: Gnu Radio&lt;/p&gt;&lt;p&gt;Copyright of the Reed Solomon Decoder software: Phil Karns&lt;/p&gt;&lt;p&gt;All copyrights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The current layout of the GUI is based on a design of Luo Zhang, Thanks&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB (an SDR-J program) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
    <property name="text">
     <string>©</string>
@@ -239,7 +239,7 @@
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>70</y>
+     <y>110</y>
      <width>201</width>
      <height>20</height>
     </rect>
@@ -446,7 +446,7 @@
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="text">
-    <string>Ensemble Lable</string>
+    <string>Ensemble Label</string>
    </property>
   </widget>
   <widget class="QLabel" name="serviceLabel">
@@ -474,10 +474,10 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>430</x>
      <y>280</y>
-     <width>168</width>
-     <height>89</height>
+     <width>184</width>
+     <height>113</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
@@ -581,65 +581,12 @@
     <rect>
      <x>210</x>
      <y>280</y>
-     <width>209</width>
-     <height>91</height>
+     <width>201</width>
+     <height>111</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="0" column="0" colspan="2">
-     <widget class="QComboBox" name="streamoutSelector">
-      <property name="font">
-       <font>
-        <family>DejaVu Sans</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>Audio Device</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="2" column="0">
-     <widget class="QComboBox" name="bandSelector">
-      <property name="font">
-       <font>
-        <family>DejaVu Sans</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>VHF Band III</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>L Band</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="2" column="1">
-     <widget class="QComboBox" name="channelSelector">
-      <property name="font">
-       <font>
-        <pointsize>12</pointsize>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="2">
+    <item row="2" column="0" colspan="2">
      <widget class="QComboBox" name="deviceSelector">
       <property name="font">
        <font>
@@ -672,15 +619,68 @@
       </item>
      </widget>
     </item>
+    <item row="3" column="0">
+     <widget class="QComboBox" name="bandSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>VHF Band III</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>L Band</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QComboBox" name="channelSelector">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QComboBox" name="streamoutSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Audio Device</string>
+       </property>
+      </item>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>390</x>
-     <y>10</y>
-     <width>168</width>
-     <height>58</height>
+     <y>0</y>
+     <width>184</width>
+     <height>74</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_4">
@@ -749,6 +749,19 @@
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QLabel" name="localTimeDisplay">
+   <property name="geometry">
+    <rect>
+     <x>420</x>
+     <y>80</y>
+     <width>191</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
   </widget>
  </widget>
  <resources/>

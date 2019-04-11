@@ -40,6 +40,8 @@
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,
 	                                 int16_t	tii_delay,
+	                                 int16_t	tii_depth,
+	                                 int16_t	echo_depth,
 	                                 QString	picturesPath,
 	                                 RingBuffer<float> *responseBuffer,
 		                         RingBuffer<std::complex<float>> *
@@ -61,8 +63,9 @@
 	                                                    dabMode, 
                                                             threshold,
 	                                                    diff_length,
+	                                                    echo_depth,
 	                                                    responseBuffer),
-	                                 my_TII_Detector (dabMode), 
+	                                 my_TII_Detector (dabMode, tii_depth), 
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
 	                                                 theRig -> bitDepth (), 
@@ -89,8 +92,10 @@
 	correctionNeeded		= true;
 	attempts			= 0;
 	scanMode			= false;
-	connect (this, SIGNAL (showCoordinates (int, int)),
-	         mr,   SLOT   (showCoordinates (int, int)));
+	connect (this, SIGNAL (showCoordinates (int)),
+	         mr,   SLOT   (showCoordinates (int)));
+	connect (this, SIGNAL (showSecondaries (int)),
+	         mr,   SLOT   (showSecondaries (int)));
 	connect (this, SIGNAL (setSynced (char)),
 	         myRadioInterface, SLOT (setSynced (char)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -104,7 +109,6 @@
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	my_TII_Detector. reset ();
-	
 //	the thread will be started from somewhere else
 }
 
@@ -129,7 +133,7 @@
    *	Finally, estimating the small freqency error
    */
 void	dabProcessor::run	(void) {
-int32_t		startIndex;
+int32_t startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
@@ -139,7 +143,7 @@ int		attempts;
         correctionNeeded	= true;
 	attempts		= 0;
         theRig  -> resetBuffer ();
-	coarseOffset	= theRig -> getOffset ();
+	coarseOffset		= theRig -> getOffset ();
 	fineOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
 	my_mscHandler. start ();
@@ -196,6 +200,7 @@ SyncOnPhase:
 	      }
 	      goto notSynced;
 	   }
+
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -291,18 +296,23 @@ Data_blocks:
 	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
-	            int16_t mainId, subId;
-	            my_TII_Detector. processNULL (&mainId, &subId);
-	            if (mainId > 0)
-	              showCoordinates (mainId, subId);
+	            std::vector<int> secondaries;
+	            secondaries =
+	                my_TII_Detector. processNULL ();
+	            showSecondaries (-1);
+	            if (secondaries. size () > 0) {
+	              showCoordinates (secondaries. at (0));
+	              for (i = 0; i < secondaries. size (); i ++)
+	                 showSecondaries (secondaries. at (i));
+	            }
 
-	            tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (),
-	                                                              T_u);
 	            show_tii (1);
-	            tii_counter = 1;
+	            tii_counter = 0;
+	            my_TII_Detector. reset ();
+	         }
+	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	      }
 	   }
-	}
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
@@ -366,35 +376,28 @@ void	dabProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
-
-uint8_t dabProcessor::kindofService           (QString &s) {
-	return my_ficHandler. kindofService (s);
+//
+//	just a convenience function
+bool	dabProcessor::is_audioService	(QString &s) {
+audiodata ad;
+	my_ficHandler. dataforAudioService (s, &ad, 0);
+	return ad. defined;
 }
 
-void	dabProcessor::dataforAudioService     (int16_t c, audiodata *dd) {
-	my_ficHandler. dataforAudioService (c, dd);
+bool	dabProcessor::is_packetService	(QString &s) {
+packetdata pd;
+	my_ficHandler. dataforPacketService (s, &pd, 0);
+	return pd. defined;
 }
 
-void	dabProcessor::dataforAudioService     (QString &s,audiodata *dd) {
-	my_ficHandler. dataforAudioService (s, dd, 0);
-}
-
-void	dabProcessor::dataforAudioService     (QString &s,
+void	dabProcessor::dataforAudioService	(QString &s,
 	                                          audiodata *d, int16_t c) {
 	my_ficHandler. dataforAudioService (s, d, c);
 }
 
-void	dabProcessor::dataforDataService	(int16_t c, packetdata *dd) {
-	my_ficHandler. dataforDataService (c, dd);
-}
-
-void	dabProcessor::dataforDataService	(QString &s, packetdata *dd) {
-	my_ficHandler. dataforDataService (s, dd, 0);
-}
-
-void	dabProcessor::dataforDataService	(QString &s,
-	                                            packetdata *d, int16_t c) {
-	my_ficHandler. dataforDataService (s, d, c);
+void	dabProcessor::dataforPacketService	(QString &s,
+	                                         packetdata *d, int16_t c) {
+	my_ficHandler. dataforPacketService (s, d, c);
 }
 
 

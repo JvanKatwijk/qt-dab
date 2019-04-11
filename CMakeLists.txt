@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-2.0)
+set (objectName qt-dab-2.5)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -188,10 +188,11 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/dab-constants.h
              ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/phasereference.h
+	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
-	     ./includes/ofdm/fib-processor.cpp
-	     ./includes/ofdm/fic-handler.cpp
+	     ./includes/ofdm/fib-decoder.h
+	     ./includes/ofdm/fic-handler.h
 	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h
@@ -262,7 +263,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/phasereference.cpp
 	     ./src/ofdm/phasetable.cpp
 	     ./src/ofdm/freq-interleaver.cpp
-	     ./src/ofdm/fib-processor.cpp
+	     ./src/ofdm/fib-decoder.cpp
 	     ./src/ofdm/fic-handler.cpp
 	     ./src/ofdm/tii_table.cpp
 	     ./src/ofdm/tii_detector.cpp
@@ -328,8 +329,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/ofdm-decoder.h
 	     ./includes/ofdm/phasereference.h
+	     ./includes/ofdm/fib-decoder.h
 	     ./includes/ofdm/fic-handler.h
-	     ./includes/ofdm/fib-processor.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/tii_table.h
 	     ./includes/backend/backend.h

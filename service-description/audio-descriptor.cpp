@@ -26,6 +26,16 @@
 	programType  ->
 	   setText (the_textMapper.
 	               get_programm_type_string (ad -> programType));
+	if (ad -> fmFrequency == -1) {
+	   fmLabel	-> hide ();
+	   fmFrequency	-> hide ();
+	}
+	else {
+	   fmLabel	-> show ();
+	   QString f	= QString::number (ad -> fmFrequency);
+	   f. append (" Khz");
+	   fmFrequency	-> setText (f);
+	}
 }
 
 	audioDescriptor::~audioDescriptor (void) {

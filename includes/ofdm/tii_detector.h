@@ -26,22 +26,21 @@
 #include	<stdint.h>
 #include	"dab-params.h"
 #include	"fft-handler.h"
-#include	"phasetable.h"
 #include	<vector>
 
-class	TII_Detector : public phaseTable {
+class	TII_Detector {
 public:
-		TII_Detector	(uint8_t dabMode);
+		TII_Detector	(uint8_t dabMode, int16_t);
 		~TII_Detector	(void);
 	void	reset		(void);
 	void	addBuffer	(std::vector<std::complex<float>>);
-	void	processNULL	(int16_t *, int16_t *);
+	std::vector<int>	processNULL	(void);
 
 private:
 	void			collapse	(std::complex<float> *,
 	                                         float *);
+	int16_t			depth;
 	uint8_t			invTable [256];
-	void			initInvTable	(void);
 	dabParams		params;
 	fftHandler		my_fftHandler;
 	int16_t			T_u;
@@ -50,17 +49,7 @@ private:
 	std::complex<float>	*fft_buffer;
 	std::vector<complex<float> >	theBuffer;
 	std::vector<float>	window;
-	std::vector<complex<float> >	refTable;
 	int16_t		fillCount;
-	int16_t		A		(uint8_t c,
-	                                            uint8_t p, int16_t k);
-	void		createPattern	(void);
-	void		printOverlap (int pNum, int cNum);
-
-	struct nullTable {
-	   int16_t	carrier;
-	   uint64_t	pattern;
-	} theTable [70];
 };
 
 #endif

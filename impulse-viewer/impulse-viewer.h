@@ -46,10 +46,13 @@ public:
 	                                         RingBuffer<float> *);
 			~impulseViewer		(void);
 	void		showImpulse		(int32_t);
+	void		showIndex		(int32_t);
 	void		show			(void);
 	void		hide			(void);
 	bool		isHidden		(void);
+
 private:
+	std::vector<int> indexVector;
 	float		get_db (float);
 	RadioInterface	*myRadioInterface;
 	RingBuffer<float> *responseBuffer;
