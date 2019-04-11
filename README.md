@@ -2,23 +2,18 @@
 
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
-----------------------------------------------------------------------------
-NEW FEATURES
-----------------------------------------------------------------------------
 
-If configured, the epg data will be written to a file. The
-pathname to the directory in which the file will be written
-is set in the "picturePath"
+# NEW FEATURES in Qt-DAB 2.5
 
-If available, the frequency in the FM band on which the service
-can be heard, is given in the TechnicalData widget.
+If configured, the EPG data will be written to a file. The pathname to the directory in which the file will be written is set in the "picturePath"
 
-------------------------------------------------------------------
-Table of Contents
-------------------------------------------------------------------
+If available, the frequency in the FM band on which the service can be heard, is given in the Technical Data widget.
 
-* [Introduction](#introduction)
+
+# Table of Contents
+
 * [Features](#features)
+* [Introduction](#introduction)
 * [Widgets and scopes](#widgets-and-scopes)
 * [Installation](#features)
   * [Windows](#windows)
@@ -31,10 +26,9 @@ Table of Contents
   * [Comment on some settings](#comment-on-some-settings)
   * [A note on intermittent sound](#a-note-on-intermittent-sound)
 * [Copyright](#copyright)
- 
-------------------------------------------------------------------
-Features
-------------------------------------------------------------------
+
+
+# Features
 
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
   * MOT SlideShow (SLS)
@@ -63,16 +57,15 @@ Not  (Not yet or partly) implemented:
     are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources).
-  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888).
+  * IP output: when configured the IP data - if selected - is sent to a specificied IP address (default: 127.0.0.1:8888).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
-------------------------------------------------------------------
-Introduction
-------------------------------------------------------------------
+
+# Introduction
 
 ![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
-**Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.5** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
 server version. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
@@ -93,9 +86,8 @@ For further information please visit http://www.sdr-j.tk
 
 Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 
-------------------------------------------------------------------
-Widgets and scopes
-------------------------------------------------------------------
+
+# Widgets and scopes
 
 The picture below shows Qt-DAB's main window, with the (few) control buttons, and 5 other widgets
 
@@ -109,9 +101,8 @@ While the main window and the widget for the device control are always shown, ea
 
 ![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
 
-------------------------------------------------------------------
-Windows
-------------------------------------------------------------------
+
+## Windows
 
 For windows there is an installer, to be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.
@@ -120,9 +111,8 @@ Furthermore, the releases section contains a "zipped" folder, with executables f
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
-------------------------------------------------------------------
-Ubuntu Linux
-------------------------------------------------------------------
+
+## Ubuntu Linux
 
 If you are not familar with compiling then please continue reading by jumping to chapter [appImage](#appimage-for-x64-linux-systems) which is much easier for Linux beginners.
 
@@ -208,19 +198,19 @@ If you are compiling on/for an RPI2 with Stretch (or comparable system), you mig
    ````
  and if you are compiling on/for an RPI3 with Stretch (or comparable system), you might want to uncomment
    ````
-   CONFIG+= NEON_RPI3.
+   CONFIG += NEON_RPI3.
    ````
 
 If unsure, uncomment only 
    ````
-   CONFIG+=NO_SSE.
+   CONFIG += NO_SSE.
    ````
 BE SURE TO UNCOMMENT PRECISELY ONE OF
 
    ````
   #CONFIG += NEON_RPI2
   #CONFIG += NEON_RPI3
-  #CONFIG  += SSE
+  #CONFIG += SSE
   CONFIG += NO_SSE
   ``````
 
@@ -232,12 +222,14 @@ BE SURE TO UNCOMMENT PRECISELY ONE OF
 
   You could also use QtCreator, load the `qt-dab.pro` file and build the executable.
   
-  Remark: The executable file can be found in the sub-directory `linux-bin`. A make install command is not implemented.
+  Remark: The executable file can be found in the sub-directory `linux-bin`. 
+  A make install command is not implemented, but you could copy it to `/usr/local/bin`
+  (as root)
+  
+	sudo cp linux-bin/qt-dab* /usr/local/bin/
 
 
-------------------------------------------------------------------
-Configuring using the qt-dab.pro file
-------------------------------------------------------------------
+### Configuring using the qt-dab.pro file
 
 Options in the configuration are:
 
@@ -325,9 +317,8 @@ The safest way is - always - to set
 CONFIG          += NO_SSE
 ```
 
-------------------------------------------------------------------
-Configuring using CMake
-------------------------------------------------------------------
+
+### Configuring using CMake
 
 The `CMakeLists.txt` file has all devices and the spectrum switched off per default. You can select a device (or more devices) without altering the `CMakeLists.txt` file, but by passing on definitions to the command line.
 
@@ -355,23 +346,20 @@ For other options, see the `CMakeLists.txt` file.
 
 Important: Note that `CMakeLists.txt` file expects the appropriate Qt version (and - if configured - the qwt library) to be installed.
 
------------------------------------------------------------------
-SDRplay
------------------------------------------------------------------
+
+## SDRplay
 
 The current set of sources provides support for both the RSP-I and the RSP-II. Due to an incompatibility between libraries 2.13 and older versions, be certain to have at least 1.13 installed.
 
-------------------------------------------------------------------
-Qt
-------------------------------------------------------------------
+
+## Qt
 
 The software uses the Qt library and - for the spectrum and the constellation diagram - the qwt library.
 
 The `CMakeLists.txt` assumes Qt5. If you want to use Qt4, and you want to have the spectrum in the configuration, be aware of the binding of the qwt library (i.e. Qt4 and a qwt that uses Qt5 does not work well).  
 
------------------------------------------------------------------
-Raspberry PI
-------------------------------------------------------------------
+
+## Raspberry PI
 
 The Qt-DAB software runs pretty well on the author's RPI-2. The average load on the 4 cores is somewhere between 50 and 60 percent.
 
@@ -387,9 +375,8 @@ The AppImage version does not contain the spectrum - I am using it in a headless
 
 Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies.
 
----------------------------------------------------------------------------
-appImage for x64 Linux systems
----------------------------------------------------------------------------
+
+## appImage for x64 Linux systems
 
 https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, **Qt-DAB-x64.Appimage**, which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.).
 
@@ -405,9 +392,8 @@ All further dependencies are included
 
 For more information see http://appimage.org/
 
---------------------------------------------------------------------------------
-Comment on some settings
--------------------------------------------------------------------------------
+
+# Comment on some settings
 
 Some values of settings are maintained between program invocations. This is done in the (hidden) file `.qt-dab.ini` in the user's home directory.
 
@@ -468,22 +454,36 @@ a port can de set in the "ini" file by setting
 rtl_tcp_port=xxx
 ```
 
---------------------------------------------------------------------------------
-A note on intermittent sound 
--------------------------------------------------------------------------------
 
-In some cases, in some periods of listening, the sound is (or at least seems) interrupted. There are two different causes for this:
+# A note on intermittent sound 
 
-First of all the incoming signal is weak and audio packages do not pass the many controls that are executed. This shows in the widget "technical data", not all the colored bars at the bottom are 100 percent green. An audio package represents 24 milliseconds of audio, loss of a few packages leads to an interruption of the sound.
+In some cases, in some periods of listening, the sound is (or at least seems to be) interrupted. There are two different causes for this:
 
-A second reason has to do with system parameters. Too small a buffersize in the audio driver causes too high a frequency of calls to a callback function. In Linux this shows by an underrun reported by the alsa sound system. The buffer size can be set (in multiples of 256 audio samples) by the value of "latency" in the `.ini` file. The default value is 1.
+First of all the incoming signal is weak and audio packages do not pass the many controls that are executed. This is shown in the widget "technical data", in such a case not all the colored bars at the bottom are 100 percent green. An audio package represents 24 milliseconds of audio, loss of a few packages leads to an interruption of the sound.
+
+A second reason has to do with system parameters. A too small buffersize in the audio driver causes a too high frequency of calls to a callback function. In Linux this shows by an underrun reported by the alsa sound system. The buffer size can be set (in multiples of 256 audio samples) by the value of "latency" in the `.ini` file. The default value is 1.
 
 On my RPI 2 - with Stretch - `latency=2` works best.
 
+
+# Playing ETI files in Qt-DAB
+
+Qt-DAB is not able to play ETI files directly, but you could use ODR-DabMod (https://github.com/Opendigitalradio/ODR-DabMod) for that. 
+
+First create a fifo-file (I recommend your home directory)
+
+	mkfifo stdin.raw
+	
+Then you can load an EIT file into ODR-DabMod, modulate it and send it to that fifo file
+
+	odr-dabmod file.eti -f stdin.raw -F u8
+	
+Open a new terminal and open Qt-DAB and open the `stdin.raw` file. Note, that the file reader progress bar won't work.
+
+
 # Copyright
 
-
-	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018
+	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018, 2019
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
