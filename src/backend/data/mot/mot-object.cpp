@@ -150,8 +150,16 @@ QByteArray result;
 
 	if (contentType == 7) {		// epg data
 #ifdef	TRY_EPG
+	   if (name == QString (""))
+	      name = "epg file";
+	   QString realName = picturePath;
+	   realName. append (name);
+	   realName  = QDir::toNativeSeparators (realName);
+	   fprintf (stderr, "going to write file %s\n",
+	                         realName. toUtf8 (). data ());
+	   checkDir (realName);
 	   std::vector<uint8_t> epgData (result. begin (), result. end ());
-	   epgHandler. decode (epgData, name);
+	   epgHandler. decode (epgData, realName);
 #endif
 	   return;
 	}
@@ -165,12 +173,12 @@ QByteArray result;
 	   realName. append (name);
 	   realName  = QDir::toNativeSeparators (realName);
 	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toLatin1 (). data ());
+	                         realName. toUtf8 (). data ());
 	   checkDir (realName);
 	   FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                           realName. toLatin1 (). data ());
+	                           realName. toUtf8 (). data ());
 	   else {
 	      (void)fwrite (result. data (), 1, bodySize, x);
 	      fclose (x);

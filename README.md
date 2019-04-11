@@ -6,6 +6,10 @@ Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terres
 NEW FEATURES
 ----------------------------------------------------------------------------
 
+If configured, the epg data will be written to a file. The
+pathname to the directory in which the file will be written
+is set in the "picturePath"
+
 If available, the frequency in the FM band on which the service
 can be heard, is given in the TechnicalData widget.
 

@@ -52,7 +52,7 @@ FILE	*tableFile;
 	this	-> carriers	= params. get_carriers ();
 
 	refTable.		resize (T_u);
-	phaseDifferences.	resize (diff_length);
+	phaseDifferences.       resize (diff_length);
 	fft_buffer		= my_fftHandler. getVector ();
 
 	framesperSecond		= 2048000 / params. get_T_F ();
@@ -68,12 +68,13 @@ FILE	*tableFile;
 	}
 
 //
-//	prepare a table for the coarse frequency synchronization
-//	can be a static one, actually, we are only interested in
-//	the ones with a null
-	for (i = 1; i <= diff_length; i ++) 
+//      prepare a table for the coarse frequency synchronization
+//      can be a static one, actually, we are only interested in
+//      the ones with a null
+	for (i = 1; i <= diff_length; i ++)
 	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
-                                 conj (refTable [(T_u + i + 1) % T_u])));
+	                         conj (refTable [(T_u + i + 1) % T_u])));
+
 	connect (this, SIGNAL (showImpulse (int)),
 	         mr,   SLOT   (showImpulse (int)));
 	connect (this, SIGNAL (showIndex   (int)),
@@ -163,21 +164,39 @@ std::vector<int> resultVector;
 	return resultVector. at (0);
 }
 
-//	We investigate a sequence of phasedifferences that
-//	are known starting at real carrier 0.
-//	Phase of the carriers of the "real" block 0 may be
-//	quite different than the phase of the carriers of the "reference"
-//	block, plain correlation (i.e. sum (x, y, i) does not work well.
-//	What is a good measure though is looking at the phase differences
-//	between successive carriers in both the "real" block and the
-//	reference block. These should be more or less the same.
-//	So we just compute the phasedifference between phasedifferences
-//	as measured and as they should be.
-//	To keep things simple, we just look at the locations where
-//	the phasedifference with the successor should be 0
-//	In previous versions we looked
-//	at the "weight" of the positive and negative carriers in the
-//	fft, but that did not work too well.
+//
+//	The intuitive approach (at least mine) was to correlate the
+//	incoming data with the reference table. It did not work
+//	which is actually logical, since (a) the amplitudes are not
+//	discriminating and (b) the phases might be really off
+//#define	SEARCH_RANGE	(2 * 35)
+//int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
+//int16_t	i, j;
+//std::complex<float> temp;
+//float	maxCorr	= 0;
+//int	maxIndex = -1;
+//
+//	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
+//	my_fftHandler. do_FFT ();
+//
+//	for (i = T_u - SEARCH_RANGE / 2;
+//	     i < T_u + SEARCH_RANGE / 2; i ++) {
+//	   temp = std::complex<float> (0, 0);
+//	   for (j = 0; j < diff_length; j ++)
+//	      temp += fft_buffer [(i + j) % T_u] *
+//	                         conj (refTable [(T_u - SEARCH_RANGE / 2 + j) % T_u]);
+//	   if (abs (temp) > maxCorr) {
+//	      maxIndex = i - (T_u - SEARCH_RANGE / 2);
+//	      maxCorr  = abs (temp);
+//	   }
+//	}
+//
+//	return maxIndex;
+//}
+
+//
+//	an approach that works fine is to correlate the phasedifferences
+//	between subsequent carriers
 #define	SEARCH_RANGE	(2 * 35)
 int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
 int16_t	i, j, index = 100;
@@ -209,8 +228,6 @@ int	index_1	= 0;
 	
 	return index - T_u; 
 }
-//
-
 //	NOT USED, just for some tests
 //	An alternative way to compute the small frequency offset
 //	is to look at the phase offset of subsequent carriers
