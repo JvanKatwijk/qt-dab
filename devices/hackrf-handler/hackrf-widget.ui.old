@@ -45,7 +45,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>40</y>
+      <y>30</y>
       <width>20</width>
       <height>161</height>
      </rect>
@@ -61,7 +61,7 @@
     <property name="geometry">
      <rect>
       <x>200</x>
-      <y>10</y>
+      <y>0</y>
       <width>41</width>
       <height>23</height>
      </rect>
@@ -90,7 +90,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>40</y>
+      <y>30</y>
       <width>24</width>
       <height>161</height>
      </rect>
@@ -105,9 +105,9 @@
    <widget class="QLCDNumber" name="vgagainDisplay">
     <property name="geometry">
      <rect>
-      <x>133</x>
-      <y>10</y>
-      <width>61</width>
+      <x>130</x>
+      <y>0</y>
+      <width>64</width>
       <height>23</height>
      </rect>
     </property>
@@ -119,7 +119,7 @@
     <property name="geometry">
      <rect>
       <x>150</x>
-      <y>210</y>
+      <y>200</y>
       <width>31</width>
       <height>16</height>
      </rect>
@@ -132,7 +132,7 @@
     <property name="geometry">
      <rect>
       <x>210</x>
-      <y>210</y>
+      <y>200</y>
       <width>31</width>
       <height>20</height>
      </rect>
@@ -145,15 +145,10 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>250</y>
+      <y>220</y>
       <width>231</width>
       <height>16</height>
      </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>11</pointsize>
-     </font>
     </property>
     <property name="text">
      <string/>
@@ -172,75 +167,30 @@
      <string/>
     </property>
    </widget>
-   <widget class="QCheckBox" name="AntEnableButton">
+   <widget class="QRadioButton" name="AntennaEnableButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
-      <width>91</width>
+      <y>40</y>
+      <width>121</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Ant Enable</string>
     </property>
-    <property name="checked">
-     <bool>false</bool>
-    </property>
    </widget>
-   <widget class="QCheckBox" name="AmpEnableButton">
+   <widget class="QRadioButton" name="AmpEnableButton">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>60</y>
-      <width>101</width>
+      <y>80</y>
+      <width>97</width>
       <height>20</height>
      </rect>
     </property>
     <property name="text">
      <string>Amp Enable</string>
-    </property>
-   </widget>
-   <widget class="QSpinBox" name="ppm_correction">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>120</y>
-      <width>91</width>
-      <height>22</height>
-     </rect>
-    </property>
-    <property name="minimum">
-     <number>-100</number>
-    </property>
-    <property name="maximum">
-     <number>100</number>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>100</y>
-      <width>111</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>ppm Correction</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>230</y>
-      <width>91</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Serial Number</string>
     </property>
    </widget>
   </widget>

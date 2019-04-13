@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -28,6 +28,7 @@
 #include        <QApplication>
 #include        <QSettings>
 #include	<QTranslator>
+#include	<QString>
 #include        <QDir>
 #include	<QDebug>
 #include        <unistd.h>
@@ -49,11 +50,19 @@ QString fileName;
 	if (v. at (0) == QChar ('/'))           // full path specified
 	   return v;
 
+#ifdef	OSX_INIT_FILE
+	char *PathFile;
+	PathFile = getenv("HOME");
+	fileName = PathFile;
+	fileName.append("/.qt-dab.ini");
+	qDebug() << fileName;
+#else
+
 	fileName = QDir::homePath ();
 	fileName. append ("/");
 	fileName. append (v);
 	fileName = QDir::toNativeSeparators (fileName);
-
+#endif
 	if (!fileName. endsWith (".ini"))
 	   fileName. append (".ini");
 

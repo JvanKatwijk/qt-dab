@@ -4,6 +4,9 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
+ *    Copyright (C) 2019 amplifier, antenna and ppm corectors
+ *    Fabio Capozzi
+ *
  *    This file is part of the Qt-DAB program
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -61,6 +64,17 @@ typedef	int	(*pfn_hackrf_set_sample_rate) (hackrf_device *,
 typedef	int	(*pfn_hackrf_is_streaming) (hackrf_device *);
 typedef	const char	*(*pfn_hackrf_error_name) (enum hackrf_error errcode);
 typedef	const char	*(*pfn_hackrf_usb_board_id_name) (enum hackrf_usb_board_id);
+// contributes by Fabio
+typedef int	(*pfn_hackrf_set_antenna_enable)
+	                         (hackrf_device *, const uint8_t);
+typedef int	(*pfn_hackrf_set_amp_enable) (hackrf_device *, const uint8_t);
+typedef int	(*pfn_hackrf_si5351c_read)
+	                         (hackrf_device *, const uint16_t, uint16_t *);
+typedef int	(*pfn_hackrf_si5351c_write)
+	                    (hackrf_device *, const uint16_t, const uint16_t);
+// fine aggiunta
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -105,6 +119,13 @@ private:
 	pfn_hackrf_usb_board_id_name
 	                        hackrf_usb_board_id_name;
 
+//	aggiunta Fabio
+	pfn_hackrf_set_antenna_enable hackrf_set_antenna_enable;
+	pfn_hackrf_set_amp_enable hackrf_set_amp_enable;
+	pfn_hackrf_si5351c_read hackrf_si5351c_read;
+	pfn_hackrf_si5351c_write hackrf_si5351c_write;
+//	Fine aggiunta
+
 	QSettings	*hackrfSettings;
 	QFrame		*myFrame;
 	int32_t		inputRate;
@@ -115,6 +136,11 @@ private:
 private slots:
 	void		setLNAGain	(int);
 	void		setVGAGain	(int);
+// contributed by Fabio
+	void		EnableAntenna	(int);
+	void		EnableAmpli	(int);
+	void		set_ppmCorrection (int);
+// Fine aggiunta
 };
 #endif
 
