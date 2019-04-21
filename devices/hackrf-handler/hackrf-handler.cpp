@@ -343,13 +343,14 @@ hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
 int	i;
 uint8_t *p	= transfer -> buffer;
 RingBuffer<std::complex<float> > * q = ctx -> _I_Buffer;
+int	bufferIndex	= 0;
 
-	for (i = 0; i < transfer -> valid_length / 2; i ++) {
+	for (i = 0; i < transfer -> valid_length / 2; i += 1) {
 	   float re	= (((int8_t *)p) [2 * i]) / 128.0;
 	   float im	= (((int8_t *)p) [2 * i + 1]) / 128.0;
-	   buffer [i]	= std::complex<float> (re, im);
+	   buffer [bufferIndex ++]	= std::complex<float> (re, im);
 	}
-	q -> putDataIntoBuffer (buffer, transfer -> valid_length / 2);
+	q -> putDataIntoBuffer (buffer, bufferIndex);
 	return 0;
 }
 

@@ -75,8 +75,6 @@ typedef int	(*pfn_hackrf_si5351c_write)
 // fine aggiunta
 
 
-
-
 ///////////////////////////////////////////////////////////////////////////
 class	hackrfHandler: public virtualInput, public Ui_hackrfWidget {
 Q_OBJECT
