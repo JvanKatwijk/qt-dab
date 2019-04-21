@@ -36,7 +36,7 @@
 #include	<unistd.h>
 
 #ifndef	__FREEBSD__
-#include	<malloc.h>
+//#include	<malloc.h>
 #endif
 
 #ifdef	__MINGW32__
@@ -44,7 +44,7 @@
 #include	"windows.h"
 #else
 #ifndef	__FREEBSD__
-#include	"alloca.h"
+//#include	"alloca.h"
 #endif
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
