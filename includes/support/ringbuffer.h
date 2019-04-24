@@ -79,7 +79,7 @@
  */
 #ifdef __APPLE__
 #include <libkern/OSAtomic.h>
-#ifdef LEVELDB_ATOMIC_PRESENT
+#ifdef OSATOMIC_DEPRECATED`
 #include <atomic>
 #endif
 #
@@ -88,11 +88,11 @@
        however, these barriers are superior to compiler-based ones. */
 
 inline void Apple_MemoryBarrier() {
-#if defined(LEVELDB_ATOMIC_PRESENT)
+#ifdef OSATOMIC_DEPRECATED
   std::atomic_thread_fence(std::memory_order_seq_cst);
 #else
   OSMemoryBarrier();
-#endif  // defined(LEVELDB_ATOMIC_PRESENT)
+#endif  
 #   define PaUtil_FullMemoryBarrier()  Apple_MemoryBarrier()
 #   define PaUtil_ReadMemoryBarrier()  Apple_MemoryBarrier()
 #   define PaUtil_WriteMemoryBarrier() Apple_MemoryBarrier()

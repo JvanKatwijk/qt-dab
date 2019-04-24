@@ -1,0 +1,7 @@
+
+Na het uitvoeren van de "deploy" fase werkt de apprun niet,
+kennelijk zijn de patches, aangebracht op libQt5Core fout
+Toto dat gerepareerd is doen we
+cp /usr/lib/arm-linux-gnueabihf/libQt5Core.so.5 qt-dab/appdir/usr/lib
+
+
