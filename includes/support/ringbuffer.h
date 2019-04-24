@@ -65,7 +65,6 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #ifndef __RINGBUFFER__
 #define	__RINGBUFFER__
 #include	<stdlib.h>
@@ -93,6 +92,7 @@ inline void Apple_MemoryBarrier() {
 #else
   OSMemoryBarrier();
 #endif  
+}
 #   define PaUtil_FullMemoryBarrier()  Apple_MemoryBarrier()
 #   define PaUtil_ReadMemoryBarrier()  Apple_MemoryBarrier()
 #   define PaUtil_WriteMemoryBarrier() Apple_MemoryBarrier()
