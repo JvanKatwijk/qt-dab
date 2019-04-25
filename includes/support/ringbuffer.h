@@ -78,7 +78,7 @@
  */
 #ifdef __APPLE__
 #include <libkern/OSAtomic.h>
-#ifdef OSATOMIC_DEPRECATED`
+#ifdef OSATOMIC_DEPRECATED
 #include <atomic>
 #endif
 #
