@@ -84,10 +84,12 @@ Introduction
 
 ![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
-**Qt-DAB-2.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.5* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
-server version. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
+server version **dab-server**. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
+The **dab-server** will run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on
+an Android tablet.
 
 **dabradio**, **sdrplayDab**, the Qt-free version, **dab-cmdline** the "command-line only", and the **dab-server** version have their own repository on Github.
 
@@ -209,34 +211,7 @@ Ubuntu 16.04 (and on) have good support for Qt5 and qwt (compiled for Qt5). For 
 
 4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on the cores of the processor. 
 
-4.c. If you are compiling on/for a Linux x64 based PC, you might want to select to uncomment
-   ````
-   CONFIG += SSE
-   ````
-This will cause the SSE instructions to be used in some parts of the implementation.
-If you are compiling on/for an RPI2 with Stretch (or comparable system), you might want to uncomment
-   ````
-   CONFIG += NEON_RPI2
-   ````
- and if you are compiling on/for an RPI3 with Stretch (or comparable system), you might want to uncomment
-   ````
-   CONFIG+= NEON_RPI3.
-   ````
-
-If unsure, uncomment only 
-   ````
-   CONFIG+=NO_SSE.
-   ````
-BE SURE TO UNCOMMENT PRECISELY ONE OF
-
-   ````
-  #CONFIG += NEON_RPI2
-  #CONFIG += NEON_RPI3
-  #CONFIG  += SSE
-  CONFIG += NO_SSE
-  ``````
-
-6. Build and make
+5. Build and make
   ```
   qmake qt-dab.pro
   make
@@ -267,6 +242,7 @@ CONFIG          += dabstick
 CONFIG          += sdrplay
 #CONFIG          += rtl_tcp
 CONFIG          += airspy
+CONFIG		+= hackrf
 ```
 
 In the Windows configuration one may also choose
@@ -304,38 +280,6 @@ CONFIG		+= try_epg
 
 If `try_epg` is configured then EPG (Electronic Program Guide) data will be written to `*.xml` files. Please select the service carrying EPG data.
 
-
-If you are compiling/running for an x64 based PC with SSE, then you could set
-```
-#CONFIG          += NEON_RPI2
-#CONFIG          += NEON_RPI3
-CONFIG          += SSE
-#CONFIG          += NO_SSE
-```
-
-If you are compiling/running for an RPI2, and want to check whether or not NEON instructions can be used, you could set
-```
-CONFIG          += NEON_RPI2
-#CONFIG          += NEON_RPI3
-#CONFIG          += SSE
-#CONFIG          += NO_SSE
-```
-
-If you are compiling/running for an RPI3, and want to check whether or not NEON instructions can be used, you could set
-```
-#CONFIG          += NEON_RPI2
-CONFIG          += NEON_RPI3
-#CONFIG          += SSE
-#CONFIG          += NO_SSE
-```
-
-The safest way is - always - to set
-```
-#CONFIG          += NEON_RPI2
-#CONFIG          += NEON_RPI3
-#CONFIG          += SSE
-CONFIG          += NO_SSE
-```
 
 ------------------------------------------------------------------
 Configuring using CMake
@@ -495,7 +439,7 @@ On my RPI 2 - with Stretch - `latency=2` works best.
 # Copyright
 
 
-	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018
+	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018, 2019
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
