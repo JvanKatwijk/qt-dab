@@ -214,6 +214,8 @@ uint32_t samplerateCount;
 	         this, SLOT (show_tab (int)));
 	displaySerial	-> setText (getSerial ());
 	running. store (false);
+	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
+
 	show_tab (0);			// will set currentTab
 }
 

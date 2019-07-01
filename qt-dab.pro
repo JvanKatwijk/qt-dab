@@ -268,6 +268,7 @@ CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
+CONFIG		+= lime
 #CONFIG		+= elad_s1	# does not work yet
 
 #very experimental, simple server for connecting to a tdc handler
@@ -448,6 +449,31 @@ rtl_tcp {
 	FORMS		+= ./devices/rtl_tcp/rtl_tcp-widget.ui
 }
 
+soapy {
+	DEFINES		+= HAVE_SOAPY
+	INCLUDEPATH     += ./devices/soapy
+        HEADERS         += ./devices/soapy/soapy-handler.h \
+	                   ./devices/soapy/soapy-worker.h \
+	                   ./devices/soapy/soapy_CS16.h \
+	                   ./devices/soapy/soapy_CF32.h
+        SOURCES         += ./devices/soapy/soapy-handler.cpp \
+	                   ./devices/soapy/soapy-worker.cpp \
+	                   ./devices/soapy/soapy_CS16.cpp \
+	                   ./devices/soapy/soapy_CF32.cpp
+        FORMS           += ./devices/soapy/soapy-widget.ui
+	LIBS		+= -lSoapySDR -lm
+}
+
+lime  {
+	DEFINES		+= HAVE_LIME
+	INCLUDEPATH	+= ./devices/lime-handler
+        HEADERS         += ./devices/lime-handler/lime-handler.h \
+	                   ./devices/lime-handler/lime-reader.h 
+        SOURCES         += ./devices/lime-handler/lime-handler.cpp \
+	                   ./devices/lime-handler/lime-reader.cpp 
+        FORMS           += ./devices/lime-handler/lime-widget.ui
+}
+	
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network

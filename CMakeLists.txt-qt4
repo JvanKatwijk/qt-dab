@@ -63,6 +63,10 @@ if(DEFINED RTLTCP)
    set(RTLTCP true)
 endif ()
 
+if(DEFINED LIMESDR)
+   set(LIMESDR true)
+endif ()
+
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
 endif ()
@@ -483,6 +487,38 @@ add_definitions (-DPRESET_NAME)
 
 	   add_definitions (-DHAVE_HACKRF)
 	endif (HACKRF)
+#
+	if (LIMESDR)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/lime-handler/lime-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/lime-handler/lime-handler.h
+	        ./devices/lime-handler/lime-reader.h
+	   )
+
+	   include_directories (
+	     ./devices/lime-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/lime-handler/lime-handler.h
+	        ./devices/lime-handler/lime-reader.h
+	        ./devices/lime-handler/LimeSuite.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/lime-handler/lime-handler.cpp
+	        ./devices/lime-reader/lime-reader.cpp
+	   )
+
+	   add_definitions (-DHAVE_LIME)
+	endif (LIMESDR)
 #
 	if (DABSTICK)
 #           find_package(LibRTLSDR)

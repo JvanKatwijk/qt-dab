@@ -73,6 +73,12 @@
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
 #endif
+#ifdef	HAVE_SOAPY
+#include	"soapy-handler.h"
+#endif
+#ifdef	HAVE_LIME
+#include	"lime-handler.h"
+#endif
 #include	"ui_technical_data.h"
 #include	"spectrum-viewer.h"
 #include	"impulse-viewer.h"
@@ -293,6 +299,12 @@ QString h;
 #endif
 #ifdef	HAVE_HACKRF
 	deviceSelector	-> addItem ("hackrf");
+#endif
+#ifdef	HAVE_SOAPY
+	deviceSelector	-> addItem ("soapy");
+#endif
+#ifdef	HAVE_LIME
+	deviceSelector	-> addItem ("limeSDR");
 #endif
 #ifdef  HAVE_EXTIO
 	deviceSelector	-> addItem ("extio");
@@ -1034,6 +1046,34 @@ virtualInput	*inputDevice	= nullptr;
 	   }
 	}
 	else
+#endif
+#ifdef	HAVE_SOAPY
+	if (s == "soapy") {
+	   try {
+	      inputDevice	= new soapyHandler (dabSettings);
+	      showButtons ();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no soapy device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_LIME
+	if (s == "limeSDR") {
+	   try {
+	      inputDevice = new limeHandler (dabSettings);
+	      showButtons ();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+                                          tr ("no lime device found\n"));
+              return nullptr;
+           }
+        }
+        else
 #endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a

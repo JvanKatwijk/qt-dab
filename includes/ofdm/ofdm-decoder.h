@@ -70,6 +70,7 @@ private:
 	int16_t		snrCount;
 	int16_t		snr;
 	int16_t		maxSignal;
+
 signals:
 	void		show_snr	(int);
 	void		showIQ		(int);

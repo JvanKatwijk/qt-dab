@@ -145,16 +145,17 @@ static	int	cnt	= 0;
 void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
-	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
-	                               T_u * sizeof (std::complex<float>));
 std::complex<float> conjVector [T_u];
 std::complex<float> freqOff	= std::complex<float> (0, 0);
+	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
+	                               T_u * sizeof (std::complex<float>));
 
 fftlabel:
 /**
   *	first step: do the FFT
   */
 	my_fftHandler. do_FFT ();
+	 
 /**
   *	a little optimization: we do not interchange the
   *	positive/negative frequencies to their right positions.
@@ -177,13 +178,13 @@ toBitsLabel:
   */
 	   std::complex<float>	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
-	   conjVector [index] = r1;
 	   float ab1	= jan_abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - real (r1) / ab1 * 127.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
+
 	memcpy (phaseReference. data (), fft_buffer,
 	                            T_u * sizeof (std::complex<float>));
 //	From time to time we show the constellation of symbol 2.
