@@ -25,7 +25,7 @@
 
 #include	<QThread>
 #include	"ringbuffer.h"
-#include	<lime/LimeSuite.h>
+#include	<LimeSuite.h>
 #include	<complex>
 #include	<atomic>
 

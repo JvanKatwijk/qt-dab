@@ -21,6 +21,7 @@
  */
 
 #include	"lime-handler.h"
+#include	"lime-reader.h"
 
 lms_info_str_t limedevices [10];
 	limeHandler::limeHandler (QSettings *s) {

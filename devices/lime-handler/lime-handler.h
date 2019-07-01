@@ -29,10 +29,9 @@
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	<lime/LimeSuite.h>
+#include	<LimeSuite.h>
 #include	"virtual-input.h"
 #include	"ui_lime-widget.h"
-#include	"lime-reader.h"
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
