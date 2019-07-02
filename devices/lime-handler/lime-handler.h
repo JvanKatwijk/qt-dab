@@ -27,6 +27,7 @@
 #include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
+#include	<vector>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	<LimeSuite.h>
@@ -114,6 +115,7 @@ private:
 	bool		running;
 	limeReader	*worker;
 	lms_device_t	*theDevice;
+	lms_name_t	antennas [10];
 	RingBuffer<std::complex<float>> *theBuffer;
 	bool		load_limeFunctions	(void);
 	HINSTANCE	Handle;

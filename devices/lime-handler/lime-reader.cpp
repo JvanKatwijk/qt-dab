@@ -24,6 +24,7 @@
 #include	"lime-handler.h"
 #include	<stdint.h>
 
+#define	FIFO_SIZE	(2 * 8192)
 	limeReader::limeReader (lms_device_t *device, 
 	                        RingBuffer<std::complex<float>> *buffer,
 	                        limeHandler	*theBoss) {
@@ -34,8 +35,8 @@ int	res;
 	this	-> theBoss	= theBoss;
 	stream. isTx		= false;
 	stream. channel		= 0;
-	stream. fifoSize	= 4096;
-	stream. throughputVsLatency	= 0.5;	// ???
+	stream. fifoSize	= FIFO_SIZE;
+	stream. throughputVsLatency	= 0.1;	// ???
 	stream. dataFmt		= lms_stream_t::LMS_FMT_I12;	// 12 bit ints
 	
 	running. store (false);
@@ -49,7 +50,6 @@ int	res;
 	}
 }
 
-#define	FIFO_SIZE	4096
 static
 int16_t localBuffer [4 * FIFO_SIZE];
 static

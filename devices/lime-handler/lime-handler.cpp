@@ -106,16 +106,25 @@ lms_info_str_t limedevices [10];
 	   throw (25);
 	}
 
-	lms_name_t list [20];
-	res		= LMS_GetAntennaList (theDevice, LMS_CH_RX, 0, list);
+	res		= LMS_GetAntennaList (theDevice, LMS_CH_RX, 0, antennas);
 	for (int i = 0; i < res; i ++) 	
-	   antennaList	-> addItem (QString (list [i]));
+	   antennaList	-> addItem (QString (antennas [i]));
 
+	limeSettings -> beginGroup ("limeSettings");
+	QString antenne	= limeSettings -> value ("antenna", "default"). toString ();
+	limeSettings	-> endGroup ();
+
+	int k       = antennaList -> findText (antenne);
+        if (k != -1) 
+           antennaList -> setCurrentIndex (k);
+	
 	connect (antennaList, SIGNAL (activated (int)),
 	         this, SLOT (setAntenna (int)));
-//
+
+
 //	default antenna setting
-	res		= LMS_SetAntenna (theDevice, LMS_CH_RX, 0, 0);
+	res		= LMS_SetAntenna (theDevice, LMS_CH_RX, 0, 
+	                           antennaList -> currentIndex ());
 
 //	default frequency
 	res		= LMS_SetLOFrequency (theDevice, LMS_CH_RX,
@@ -140,6 +149,12 @@ lms_info_str_t limedevices [10];
 	
 	theBuffer	= new RingBuffer<std::complex<float>> (32 * 32768);
 	worker		= nullptr;
+	
+	limeSettings	-> beginGroup ("limeSettings");
+	k	= limeSettings	-> value ("gain", 50). toInt ();
+	limeSettings	-> endGroup ();
+	gainSelector -> setValue (k);
+	setGain (k);
 	connect (gainSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (setGain (int)));
 }
@@ -147,6 +162,10 @@ lms_info_str_t limedevices [10];
 	limeHandler::~limeHandler	(void) {
 	if (worker != nullptr)
 	   delete worker;
+	limeSettings	-> beginGroup ("limeSettings");
+	limeSettings	-> setValue ("antenna", antennaList -> currentText ());
+	limeSettings	-> setValue ("gain", gainSelector -> value ());
+	limeSettings	-> endGroup ();
 	LMS_Close (theDevice);
 	delete theBuffer;
 	delete myFrame;
