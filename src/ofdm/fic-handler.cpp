@@ -159,6 +159,7 @@ int32_t	i;
   *	In the next coding step, we will combine this function with the
   *	one above
   */
+static	int	ficFailer	= 0;
 void	ficHandler::process_ficInput (int16_t ficno) {
 int16_t	i;
 int16_t	viterbiBlock [3072 + 24] = {0};
@@ -196,12 +197,18 @@ int16_t	inputCount	= 0;
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
 	   if (!check_CRC_bits (p, 256)) {
 	      show_ficSuccess (false);
+	      ficFailer	++;
 	      continue;
 	   }
 
 	   show_ficSuccess (true);
+	   ficFailer = 0;
 	   fibDecoder::process_FIB (p, ficno);
 	}
+}
+
+bool	ficHandler::failedFic (void) {
+	return ficFailer > 12;
 }
 
 void	ficHandler::stop (void) {

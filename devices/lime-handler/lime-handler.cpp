@@ -21,9 +21,12 @@
  */
 
 #include	"lime-handler.h"
-#include	"lime-reader.h"
 
+#define	FIFO_SIZE	32768
+static
+float localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
+
 	limeHandler::limeHandler (QSettings *s) {
 	this	-> limeSettings	= s;
 
@@ -106,6 +109,12 @@ lms_info_str_t limedevices [10];
 	   throw (25);
 	}
 
+	float_type host_Hz, rf_Hz;
+	res	= LMS_GetSampleRate (theDevice, LMS_CH_RX, 0,
+	                               &host_Hz, &rf_Hz);
+
+	fprintf (stderr, "samplerate = %f %f\n", (float)host_Hz, (float)rf_Hz);
+	
 	res		= LMS_GetAntennaList (theDevice, LMS_CH_RX, 0, antennas);
 	for (int i = 0; i < res; i ++) 	
 	   antennaList	-> addItem (QString (antennas [i]));
@@ -148,7 +157,6 @@ lms_info_str_t limedevices [10];
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
 	theBuffer	= new RingBuffer<std::complex<float>> (64 * 32768);
-	worker		= nullptr;
 	
 	limeSettings	-> beginGroup ("limeSettings");
 	k	= limeSettings	-> value ("gain", 50). toInt ();
@@ -157,11 +165,13 @@ lms_info_str_t limedevices [10];
 	setGain (k);
 	connect (gainSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (setGain (int)));
+	running. store (false);
 }
 
 	limeHandler::~limeHandler	(void) {
-	if (worker != nullptr)
-	   delete worker;
+	running. store (false);
+	while (isRunning ())
+	   usleep (100);
 	limeSettings	-> beginGroup ("limeSettings");
 	limeSettings	-> setValue ("antenna", antennaList -> currentText ());
 	limeSettings	-> setValue ("gain", gainSelector -> value ());
@@ -193,38 +203,42 @@ void	limeHandler::setAntenna		(int ind) {
 }
 
 bool	limeHandler::restartReader	(void) {
-	if (worker != nullptr)
+int	res;
+
+	if (isRunning ())
 	   return true;
-	try {
-	   worker	= new limeReader (theDevice, theBuffer, this);
-	   connect (worker, SIGNAL (showErrors (int, int)),
-	            this, SLOT (showErrors (int, int)));
-	
-	} catch (int e) {
-	   return false;
-	}
+	stream. isTx            = false;
+        stream. channel         = 0;
+        stream. fifoSize        = FIFO_SIZE;
+        stream. throughputVsLatency     = 0.1;  // ???
+        stream. dataFmt         = lms_stream_t::LMS_FMT_F32;    // 12 bit ints
+	res     = LMS_SetupStream (theDevice, &stream);
+        if (res < 0)
+           return false;
+        res     = LMS_StartStream (&stream);
+        if (res < 0)
+           return false;
+
+	start ();
 	return true;
 }
 	
 void	limeHandler::stopReader		(void) {
-	if (worker == nullptr)
+	if (!isRunning ())
 	   return;
-	delete worker;
-	worker	= nullptr;
+	running. store (false);
+	while (isRunning ())
+	   usleep (200);
+	(void)LMS_StopStream	(&stream);	
+	(void)LMS_DestroyStream	(theDevice, &stream);
 }
 
 int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
-	if (worker != nullptr)
-	   return theBuffer -> getDataFromBuffer (v, a);
-	else
-	   return 0;
+	return theBuffer -> getDataFromBuffer (v, a);
 }
 
 int	limeHandler::Samples		(void) {
-	if (worker != nullptr)
-	   return theBuffer -> GetRingBufferReadAvailable ();
-	else
-	   return 0;
+	return theBuffer -> GetRingBufferReadAvailable ();
 }
 
 void	limeHandler::resetBuffer	(void) {
@@ -238,6 +252,35 @@ int16_t	limeHandler::bitDepth		(void) {
 void	limeHandler::showErrors		(int underrun, int overrun) {
 	underrunDisplay	-> display (underrun);
 	overrunDisplay	-> display (overrun);
+}
+
+
+void	limeHandler::run	(void) {
+int	res;
+lms_stream_status_t streamStatus;
+int	underruns	= 0;
+int	overruns	= 0;
+int	dropped		= 0;
+int	amountRead	= 0;
+
+	running. store (true);
+	while (running. load ()) {
+	   res = LMS_RecvStream (&stream, localBuffer,
+	                                     FIFO_SIZE,  &meta, 1000);
+	   if (res > 0) {
+	      theBuffer -> putDataIntoBuffer (localBuffer, res);
+	      amountRead	+= res;
+	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
+	      underruns	+= streamStatus. underrun;
+	      overruns	+= streamStatus. overrun;
+	   }
+	   if (amountRead > 4 * 2048000) {
+	      amountRead = 0;
+	      showErrors (underruns, overruns);
+	      underruns	= 0;
+	      overruns	= 0;
+	   }
+	}
 }
 
 bool	limeHandler::load_limeFunctions	(void) {

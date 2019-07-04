@@ -92,8 +92,6 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
 
-class	limeReader;
-
 class	limeHandler: public virtualInput, public Ui_limeWidget {
 Q_OBJECT
 public:
@@ -112,15 +110,17 @@ public:
 private:
 	QSettings	*limeSettings;
 	QFrame		*myFrame;
-	bool		running;
-	limeReader	*worker;
+	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	RingBuffer<std::complex<float>> *theBuffer;
 	bool		load_limeFunctions	(void);
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
-//
+	lms_stream_meta_t meta;
+        lms_stream_t    stream;
+        void		run			(void);
+
 //	imported functions
 public:
 	pfn_LMS_GetDeviceList	LMS_GetDeviceList;

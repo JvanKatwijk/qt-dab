@@ -178,6 +178,7 @@ toBitsLabel:
   */
 	   std::complex<float>	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
+	   conjVector [index] = r1;
 	   float ab1	= jan_abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127

@@ -467,10 +467,8 @@ soapy {
 lime  {
 	DEFINES		+= HAVE_LIME
 	INCLUDEPATH	+= ./devices/lime-handler
-        HEADERS         += ./devices/lime-handler/lime-handler.h \
-	                   ./devices/lime-handler/lime-reader.h 
-        SOURCES         += ./devices/lime-handler/lime-handler.cpp \
-	                   ./devices/lime-handler/lime-reader.cpp 
+        HEADERS         += ./devices/lime-handler/lime-handler.h 
+        SOURCES         += ./devices/lime-handler/lime-handler.cpp 
         FORMS           += ./devices/lime-handler/lime-widget.ui
 }
 	

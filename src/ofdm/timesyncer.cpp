@@ -2,7 +2,7 @@
 #include	"timesyncer.h"
 #include	"sample-reader.h"
 
-#define C_LEVEL_SIZE    50
+#define C_LEVEL_SIZE    100
 
 	timeSyncer::timeSyncer (sampleReader *mr) {
 	myReader	= mr;
@@ -27,7 +27,7 @@ int	i;
 	}
 //SyncOnNull:
 	counter      = 0;
-	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel ()) {
+	while (cLevel / C_LEVEL_SIZE  > 0.50 * myReader -> get_sLevel ()) {
 	   std::complex<float> sample        =
 	         myReader -> getSample (0);
 //	         myReader. getSample (coarseOffset + fineCorrector);
@@ -47,7 +47,7 @@ int	i;
   */
 	counter      = 0;
 //SyncOnEndNull:
-	 while (cLevel / C_LEVEL_SIZE < 0.70 * myReader -> get_sLevel ()) {
+	 while (cLevel / C_LEVEL_SIZE < 0.80 * myReader -> get_sLevel ()) {
 	   std::complex<float> sample =
 	           myReader -> getSample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);

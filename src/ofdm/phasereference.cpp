@@ -50,7 +50,7 @@ FILE	*tableFile;
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u ();
 	this	-> carriers	= params. get_carriers ();
-
+	
 	refTable.		resize (T_u);
 	phaseDifferences.       resize (diff_length);
 	fft_buffer		= my_fftHandler. getVector ();
@@ -125,13 +125,13 @@ std::vector<int> resultVector;
 	   }
 	}
 
-	if (Max < threshold * sum / T_u) 
+	if (Max < 2.5 * sum / T_u) 
 	   return (- abs (Max * T_u / sum) - 1);
 	else 
 	   resultVector. push_back (maxIndex);	
 
+	float MMax = 0;
 	for (int k = 0; k < depth; k ++) {
-	   float MMax = 4 * threshold * sum / T_u;
 	   int	lIndex = -1;
 	   for (i = 0; i < T_u / 2; i ++) {
 	      if (lbuf [i] > MMax) {

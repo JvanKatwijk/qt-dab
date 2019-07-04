@@ -29,8 +29,9 @@
 #include	<stdint.h>
 #include	"dab-constants.h"
 #include	<QObject>
+#include	<QThread>
 
-class	virtualInput: public QObject {
+class	virtualInput: public QThread {
 public:
 			virtualInput 	(void);
 virtual			~virtualInput 	(void);

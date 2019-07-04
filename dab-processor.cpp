@@ -138,6 +138,7 @@ int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
+int		sampleCount;
 
         fineOffset		= 0;
         correctionNeeded	= true;
@@ -149,12 +150,12 @@ int		attempts;
 	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
+notSynced:
 	try {
 	   for (i = 0; i < T_F / 5; i ++) {
 	      myReader. getSample (0);
 	   }
 //Initing:
-notSynced:
 	   setSynced (false);
 	   my_TII_Detector. reset();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
@@ -190,6 +191,7 @@ SyncOnPhase:
   */
 	myReader. getSamples (ofdmBuffer. data (),
 	                        T_u, coarseOffset + fineOffset);
+	sampleCount += T_u;
 //
 //	and then, call upon the phase synchronizer to verify/compute
 //	the real "first" sample
@@ -197,10 +199,14 @@ SyncOnPhase:
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost ();
+	         fprintf (stderr, "x = %d\n", startIndex);
 	      }
+	      sampleCount	= 0;
 	      goto notSynced;
 	   }
 
+	   sampleCount	= sampleCount - T_u + startIndex;
+	   sampleCount	= T_u - startIndex;;
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -219,6 +225,7 @@ Block_0:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
+	   sampleCount += T_u - ofdmBufferIndex;
 	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
@@ -251,13 +258,14 @@ Data_blocks:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
+	   std::vector<int16_t> ibits;
+	   ibits. resize (2 * params. get_carriers ());
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	      std::vector<int16_t> ibits;
-	      ibits. resize (2 * params. get_carriers ());
 	      myReader. getSamples (ofdmBuffer. data (),
 	                              T_s, coarseOffset + fineOffset);
+	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -266,6 +274,7 @@ Data_blocks:
 	                                ofdmSymbolCount, ibits. data ());
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      }
+
 	      my_mscHandler. process_Msc  (&((ofdmBuffer. data ()) [T_g]),
 	                                                    ofdmSymbolCount);
 	   }
@@ -273,8 +282,15 @@ Data_blocks:
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
+	   if (!correctionNeeded && my_ficHandler. failedFic ()) {
+	      fprintf (stderr, "sync lost, resyncing\n");
+	      correctionNeeded	= true;
+	      goto notSynced;
+	   }
+
 	   myReader. getSamples (ofdmBuffer. data (),
 	                         T_null, coarseOffset + fineOffset);
+	   sampleCount	+= T_null;
 	   float sum	= 0;
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);
@@ -321,7 +337,7 @@ Data_blocks:
 //NewOffset:
 ///     we integrate the newly found frequency error with the
 ///     existing frequency error.
-           fineOffset += 0.1 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
+           fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
