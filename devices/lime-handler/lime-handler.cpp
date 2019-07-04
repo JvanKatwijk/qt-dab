@@ -145,9 +145,9 @@ lms_info_str_t limedevices [10];
 
 	LMS_SetGaindB (theDevice, LMS_CH_RX, 0, 50);
 
-	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 1536000.0, 0);
+	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	theBuffer	= new RingBuffer<std::complex<float>> (32 * 32768);
+	theBuffer	= new RingBuffer<std::complex<float>> (64 * 32768);
 	worker		= nullptr;
 	
 	limeSettings	-> beginGroup ("limeSettings");
