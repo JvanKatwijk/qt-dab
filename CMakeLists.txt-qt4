@@ -497,7 +497,6 @@ add_definitions (-DPRESET_NAME)
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./devices/lime-handler/lime-handler.h
-	        ./devices/lime-handler/lime-reader.h
 	   )
 
 	   include_directories (
@@ -507,7 +506,6 @@ add_definitions (-DPRESET_NAME)
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/lime-handler/lime-handler.h
-	        ./devices/lime-handler/lime-reader.h
 	        ./devices/lime-handler/LimeSuite.h
 	        ./devices/lime-handler/LMS7002M_parameters.h
 	   )
