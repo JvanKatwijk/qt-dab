@@ -513,7 +513,6 @@ add_definitions (-DPRESET_NAME)
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./devices/lime-handler/lime-handler.cpp
-	        ./devices/lime-handler/lime-reader.cpp
 	   )
 
 	   add_definitions (-DHAVE_LIME)
