@@ -132,7 +132,7 @@ QString h;
   *	3 is a reasonable value
   */
 	threshold	=
-	           dabSettings -> value ("threshold", 2). toInt ();
+	           dabSettings -> value ("threshold", 4). toInt ();
 //
 //	latency is used to allow different settings for different
 //	situations wrt the output buffering. For windows and the RPI
@@ -312,7 +312,8 @@ QString h;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
-	
+
+	ensembleAvailable	= false;
 	inputDevice	= nullptr;
 	h               =
                    dabSettings -> value ("device", "no device"). toString ();
@@ -566,6 +567,7 @@ void	RadioInterface::clearEnsemble	(void) {
 //	it obviously means: stop processing
 	my_dabProcessor	-> clearEnsemble ();
 	my_dabProcessor	-> reset ();
+	ensembleAvailable	= false;
 }
 
 //
@@ -587,13 +589,14 @@ QString s;
 	if (!running. load ())
 	   return;
 
-	(void)v;
 	ensembleId	-> display (id);
 	ensembleLabel	= v;
         ensembleName	-> setAlignment(Qt::AlignCenter);
 	ensembleName	-> setText (v);
 	my_dabProcessor	-> coarseCorrectorOff ();
 	Yes_Signal_Found ();
+//
+	ensembleAvailable	= true;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -616,12 +619,22 @@ void	RadioInterface::show_aacErrors (int s) {
 	if (running. load ())
 	   techData. aacError_display	-> setValue (100 - 4 * s);
 }
-	
+
+static	int	ficFailures	= 0;
 void	RadioInterface::show_ficSuccess (bool b) {
 	if (!running. load ())	
 	   return;
-	if (b)
+	if (b) {
 	   ficSuccess ++;
+	   ficFailures = 0;
+	}
+	else
+	   ficFailures	++;
+
+	if (ensembleAvailable && (ficFailures > 100 * 4)) {
+//	   fprintf (stderr, "time for a reset?\n");
+	   ficFailures	= 0;
+	}
 	if (++ficBlocks >= 100) {
 	   techData. ficError_display	-> setValue (ficSuccess);
 	   ficSuccess	= 0;
@@ -859,6 +872,7 @@ void	RadioInterface::clear_showElements (void) {
 	   delete pictureLabel;
 	pictureLabel = nullptr;
 	my_tiiViewer	-> clear ();
+	ensembleAvailable	= false;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

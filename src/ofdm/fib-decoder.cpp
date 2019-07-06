@@ -1013,15 +1013,18 @@ int16_t	bitOffset		= used * 8;
 	   bitOffset	+= 16;
 	   uint8_t Rfa		= getBits (d, bitOffset,  5);
 	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
-	   bitOffset	+= 8;
-	   bitOffset	+= nrClusters * 8;
 	   int16_t serviceIndex = findServiceIndex (SId);
 	   if (serviceIndex != -1) {
 	      if (ensemble -> services [serviceIndex]. hasName) {
-//	         fprintf (stderr, "announcement for %s (%x)\n",
-//	             ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), asuFlags);
+//	         fprintf (stderr, "announcement for %s (%x) with %d clusters\n",
+//	             ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), asuFlags, nrClusters);
 	      }
+//	      fprintf (stderr, "type of announcement %x\n", asuFlags);
 	   }
+	   bitOffset	+= 8;
+//	   for (int i = 0; i < nrClusters; i ++)
+//	      fprintf (stderr, "cluster %d %x\n", i, getBits (d, bitOffset + 8 * i, 9));
+	   bitOffset	+= nrClusters * 8;
 	}
 }
 //

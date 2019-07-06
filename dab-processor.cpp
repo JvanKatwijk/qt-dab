@@ -144,18 +144,17 @@ int		sampleCount;
         correctionNeeded	= true;
 	attempts		= 0;
         theRig  -> resetBuffer ();
-	coarseOffset		= theRig -> getOffset ();
-	fineOffset		= 0;
+	coarseOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
 	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
-notSynced:
 	try {
 	   for (i = 0; i < T_F / 5; i ++) {
 	      myReader. getSample (0);
 	   }
 //Initing:
+notSynced:
 	   setSynced (false);
 	   my_TII_Detector. reset();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
@@ -282,12 +281,6 @@ Data_blocks:
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	   if (!correctionNeeded && my_ficHandler. failedFic ()) {
-	      fprintf (stderr, "sync lost, resyncing\n");
-	      correctionNeeded	= true;
-	      goto notSynced;
-	   }
-
 	   myReader. getSamples (ofdmBuffer. data (),
 	                         T_null, coarseOffset + fineOffset);
 	   sampleCount	+= T_null;
@@ -337,7 +330,12 @@ Data_blocks:
 //NewOffset:
 ///     we integrate the newly found frequency error with the
 ///     existing frequency error.
+	   if (abs (arg (FreqCorr)) > 1.6) {
+	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
+	      goto notSynced;
+	   }
            fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
+
 
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;

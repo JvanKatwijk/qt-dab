@@ -58,6 +58,7 @@ private:
 	int16_t		diff_length;
 	int16_t		depth;
 	int32_t		T_u;
+	int32_t		T_g;
 	int16_t		carriers;
 
 	std::complex<float>	*fft_buffer;

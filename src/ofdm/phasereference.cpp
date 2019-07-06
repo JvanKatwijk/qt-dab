@@ -49,6 +49,7 @@ FILE	*tableFile;
 	this	-> diff_length	= diff_length;
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u ();
+	this	-> T_g		= params. get_T_g ();
 	this	-> carriers	= params. get_carriers ();
 	
 	refTable.		resize (T_u);
@@ -115,18 +116,22 @@ std::vector<int> resultVector;
 /**
   *	We compute the average and the max signal values
   */
-	for (i = 0; i < T_u; i ++) {
+	for (i = 0; i < T_u / 2; i ++) 
+	   sum += jan_abs (fft_buffer [i]);
+
+	sum /= T_u / 2;
+
+	for (i = T_g - 40; i < T_g + 40; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
 	   mbuf [i] = lbuf [i];
-	   sum	+= lbuf [i];
 	   if (lbuf [i] > Max) {
 	      maxIndex = i;
 	      Max = lbuf [i];
 	   }
 	}
 
-	if (Max < 2.5 * sum / T_u) 
-	   return (- abs (Max * T_u / sum) - 1);
+	if (Max < threshold * sum) 
+	   return (- abs (Max / sum) - 1);
 	else 
 	   resultVector. push_back (maxIndex);	
 
