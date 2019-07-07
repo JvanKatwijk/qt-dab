@@ -47,8 +47,8 @@ public:
 	void	stop			(void);
 	void	reset			(void);
 private:
-	viterbiHandler	myViterbi;
 	dabParams	params;
+	viterbiHandler	myViterbi;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];

@@ -132,7 +132,7 @@ QString h;
   *	3 is a reasonable value
   */
 	threshold	=
-	           dabSettings -> value ("threshold", 4). toInt ();
+	           dabSettings -> value ("threshold", 3). toInt ();
 //
 //	latency is used to allow different settings for different
 //	situations wrt the output buffering. For windows and the RPI

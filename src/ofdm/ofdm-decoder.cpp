@@ -47,7 +47,6 @@
 	                                    params (dabMode),
 	                                    my_fftHandler (dabMode),
 	                                    myMapper (dabMode) {
-int16_t	i;
 	this	-> myRadioInterface	= mr;
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
@@ -146,11 +145,10 @@ void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
-std::complex<float> freqOff	= std::complex<float> (0, 0);
 	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
-fftlabel:
+//fftlabel:
 /**
   *	first step: do the FFT
   */
@@ -161,7 +159,7 @@ fftlabel:
   *	positive/negative frequencies to their right positions.
   *	The de-interleaving understands this
   */
-toBitsLabel:
+//toBitsLabel:
 /**
   *	Note that from here on, we are only interested in the
   *	"carriers", the useful carriers of the FFT output

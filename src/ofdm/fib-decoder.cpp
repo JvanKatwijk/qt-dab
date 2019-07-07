@@ -441,6 +441,8 @@ uint8_t		alarmFlag;
 	highpart                = getBits_5 (d, 16 + 19) % 20;
 	(void)highpart;
 	lowpart                 = getBits_8 (d, 16 + 24) % 250;
+	(void)changeFlag;
+	(void)alarmFlag;
 	(void)lowpart;
 	occurrenceChange        = getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
@@ -959,6 +961,8 @@ uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 int16_t	used	= 2;			// in Bytes
 dataBase	*localBase	= CN_bit == 0 ? currentBase : nextBase;
 
+	(void)OE_bit;
+	(void)PD_bit;
 	while (used < Length) {
 	   int16_t subChId	= getBits_6 (d, used * 8);
 	   uint8_t FEC_scheme	= getBits_2 (d, used * 8 + 6);
@@ -1006,12 +1010,16 @@ uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 int16_t	used	= 2;			// in Bytes
 int16_t	bitOffset		= used * 8;
 
+	(void)CN_bit;
+	(void)OE_bit;
 	while (bitOffset < Length * 8) {
 	   uint16_t SId	= getBits (d, bitOffset, 16);
 	   bitOffset	+= 16;
 	   uint16_t asuFlags	= getBits (d, bitOffset, 16);
+	   (void)asuFlags;
 	   bitOffset	+= 16;
 	   uint8_t Rfa		= getBits (d, bitOffset,  5);
+	   (void)Rfa;
 	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
 	   int16_t serviceIndex = findServiceIndex (SId);
 	   if (serviceIndex != -1) {
@@ -1047,6 +1055,9 @@ uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
 uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
 uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 
+	(void)CN_bit;
+	(void)OE_bit;
+	(void)PD_bit;
 	while (used < Length) 
 	   used = HandleFIG0Extension21 (d, used);
 }
@@ -1062,6 +1073,7 @@ int16_t		base		= l_offset + 16;
 	   uint16_t idField	= getBits (d, base, 16);
 	   uint8_t  RandM	= getBits_4 (d, base + 16);
 	   uint8_t  continuity	= getBits_1 (d, base + 20);
+	   (void)continuity;
 	   uint8_t  length	= getBits_3 (d, base + 21);
 	   if (RandM == 0x08) {
 	      uint16_t fmFrequency_key	= getBits (d, base + 24, 8);
@@ -1384,6 +1396,7 @@ int	i;
 	      return i;
 	   }
 	}
+	return -1;
 }
 
 int	fibDecoder::findServiceIndex	(uint32_t SId) {

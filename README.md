@@ -2,29 +2,6 @@
 
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
-----------------------------------------------------------------------------
-NEW FEATURES
-----------------------------------------------------------------------------
-
-As known, DAB transmissions are brought to you by more than one transmitter,
-a so-called Single Frequency Network.
-Since I am always curious which transmitters "contribute" to the
-received signals, there are two extensions:
-a. The tii window shows - if detectable - the ids of the strongest transmitters
-b. the impulse window whows - if detectable - the relative delay - in micro seconds - of the data, relative to th strongest transmitter.
-
-Of course, all these computations cost a little additional CPU time,
-therefore they are optional and can be set in the ".qt-dab.ini" file.
-
-a. if "tii_depth=xxx" is set (xxx being 3 or 4) the tii search is done for a maximum of xxx tii values,
-b. if "echo_depth=xxx" is set (xxx being 3 or 4) the delays of the secondary for a maximum of xxx 
-transmitters are computed.
-
-The picture shows that (at least) two transmitters are being received,
-identified as (1, 4) and (1, 3) and that it seems that signals are
-being picked up from transmitters, other than the "main" one, with signals
-that arrive resp 19 msec and 8 msec earlier.
-
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
@@ -65,7 +42,8 @@ Features
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), and
-	- HACKRF One, and
+	- HACKRF One, 
+	- limeSDR, and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not  (Not yet or partly) implemented:
@@ -84,7 +62,7 @@ Introduction
 
 ![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
-**Qt-DAB-2.5* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.6* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
 server version **dab-server**. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.

@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-2.5)
+set (objectName qt-dab-2.6)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -62,13 +62,18 @@ if(DEFINED RTLSDR)
    set(RTLSDR true)
 endif ()
 
+if(DEFINED HACKRF)
+	set(HACKRF true)
+endif ()
+
 if(DEFINED RTLTCP)
    set(RTLTCP true)
 endif ()
 
-if(DEFINED HACKRF)
-	set(HACKRF true)
+if(DEFINED LIMESDR)
+   set(LIMESDR true)
 endif ()
+
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
@@ -486,6 +491,36 @@ add_definitions (-DPRESET_NAME)
 	   add_definitions (-DHAVE_HACKRF)
 	endif (HACKRF)
 #
+	if (LIMESDR)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/lime-handler/lime-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/lime-handler/lime-handler.h
+	   )
+
+	   include_directories (
+	     ./devices/lime-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/lime-handler/lime-handler.h
+	        ./devices/lime-handler/LimeSuite.h
+	        ./devices/lime-handler/LMS7002M_parameters.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/lime-handler/lime-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_LIME)
+	endif (LIMESDR)
+
 	if (RTLSDR)
            find_package(LibRTLSDR)
            if (NOT LIBRTLSDR_FOUND)

@@ -76,7 +76,6 @@ QString initFileName = fullPathfor (QString (DEFAULT_INI));
 RadioInterface  *MyRadioInterface;
 
 // Default values
-int16_t         tii_delay       = 20;
 QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 int     opt;

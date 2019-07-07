@@ -109,9 +109,7 @@ uint8_t table [] = {
 		TII_Detector::TII_Detector (uint8_t dabMode, int16_t depth):
 	                                    params (dabMode),
 	                                    my_fftHandler (dabMode) {
-int16_t	p, c, k;
 int16_t	i;
-float	Phi_k;
 
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u ();
@@ -136,7 +134,8 @@ float	Phi_k;
 
 
 void	TII_Detector::reset (void) {
-	memset (theBuffer. data (), 0, T_u * sizeof (std::complex<float>));
+	for (int i = 0; i < T_u; i ++)
+	   theBuffer [i] = std::complex<float> (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might

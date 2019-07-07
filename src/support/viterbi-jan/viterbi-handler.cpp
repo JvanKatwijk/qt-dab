@@ -79,10 +79,10 @@ int	i, j;
 //      to an index, used in computing the costs
 	for (i = 0; i < 2 * numofStates; i ++)
 	   indexTable [i] = (int16_t) (
-                    ((poly1_table [i] != 0) ? 8 : 0) +
-                    ((poly2_table [i] != 0) ? 4 : 0) +
-                    ((poly3_table [i] != 0) ? 2 : 0) +
-                    ((poly4_table [i] != 0) ? 1 : 0));
+	            ((poly1_table [i] != 0) ? 8 : 0) +
+	            ((poly2_table [i] != 0) ? 4 : 0) +
+	            ((poly3_table [i] != 0) ? 2 : 0) +
+	            ((poly4_table [i] != 0) ? 1 : 0));
 
 	for (i = 0; i < numofStates; i ++) {
 	   predecessor_for_0 [i] = ((i << 1) + 00) & (numofStates - 1);
@@ -91,7 +91,6 @@ int	i, j;
 }
 
 	viterbiHandler::~viterbiHandler (void) {
-int	i;
 //
 	for (int i = 0; i < blockLength + 6; i++) {
 	   delete [] transCosts [i];
@@ -105,24 +104,24 @@ int	i;
 //	Note that the soft bits are such that
 //	they are int16_t -255 -> (bit)1, +255 -> (bit)0
 void	viterbiHandler::computeCostTable (int16_t sym_0,
-                                          int16_t sym_1,
+	                                  int16_t sym_1,
 	                                  int16_t sym_2, int16_t sym_3) {
-        costTable [0]  = - sym_0 - sym_1 - sym_2 - sym_3;
-        costTable [1]  = - sym_0 - sym_1 - sym_2 + sym_3;
-        costTable [2]  = - sym_0 - sym_1 + sym_2 - sym_3;
-        costTable [3]  = - sym_0 - sym_1 + sym_2 + sym_3;
-        costTable [4]  = - sym_0 + sym_1 - sym_2 - sym_3;
-        costTable [5]  = - sym_0 + sym_1 - sym_2 + sym_3;
-        costTable [6]  = - sym_0 + sym_1 + sym_2 - sym_3;
-        costTable [7]  = - sym_0 + sym_1 + sym_2 + sym_3;
-        costTable [8]  = + sym_0 - sym_1 - sym_2 - sym_3;
-        costTable [9]  = + sym_0 - sym_1 - sym_2 + sym_3;
-        costTable [10] = + sym_0 - sym_1 + sym_2 - sym_3;
-        costTable [11] = + sym_0 - sym_1 + sym_2 + sym_3;
-        costTable [12] = + sym_0 + sym_1 - sym_2 - sym_3;
-        costTable [13] = + sym_0 + sym_1 - sym_2 + sym_3;
-        costTable [14] = + sym_0 + sym_1 + sym_2 - sym_3;
-        costTable [15] = + sym_0 + sym_1 + sym_2 + sym_3;
+	costTable [0]  = - sym_0 - sym_1 - sym_2 - sym_3;
+	costTable [1]  = - sym_0 - sym_1 - sym_2 + sym_3;
+	costTable [2]  = - sym_0 - sym_1 + sym_2 - sym_3;
+	costTable [3]  = - sym_0 - sym_1 + sym_2 + sym_3;
+	costTable [4]  = - sym_0 + sym_1 - sym_2 - sym_3;
+	costTable [5]  = - sym_0 + sym_1 - sym_2 + sym_3;
+	costTable [6]  = - sym_0 + sym_1 + sym_2 - sym_3;
+	costTable [7]  = - sym_0 + sym_1 + sym_2 + sym_3;
+	costTable [8]  = + sym_0 - sym_1 - sym_2 - sym_3;
+	costTable [9]  = + sym_0 - sym_1 - sym_2 + sym_3;
+	costTable [10] = + sym_0 - sym_1 + sym_2 - sym_3;
+	costTable [11] = + sym_0 - sym_1 + sym_2 + sym_3;
+	costTable [12] = + sym_0 + sym_1 - sym_2 - sym_3;
+	costTable [13] = + sym_0 + sym_1 - sym_2 + sym_3;
+	costTable [14] = + sym_0 + sym_1 + sym_2 - sym_3;
+	costTable [15] = + sym_0 + sym_1 + sym_2 + sym_3;
 }
 
 //      block is the sequence of soft bits
@@ -138,18 +137,18 @@ int	i;
 //      and remain zero
 
 	for (i = 1; i < blockLength + 6; i ++) {
-           int16_t	sym_0 = (int16_t)(- sym [4 * (i - 1) + 0]);
-           int16_t	sym_1 = (int16_t)(- sym [4 * (i - 1) + 1]);
-           int16_t	sym_2 = (int16_t)(- sym [4 * (i - 1) + 2]);
-           int16_t	sym_3 = (int16_t)(- sym [4 * (i - 1) + 3]);
+	   int16_t	sym_0 = (int16_t)(- sym [4 * (i - 1) + 0]);
+	   int16_t	sym_1 = (int16_t)(- sym [4 * (i - 1) + 1]);
+	   int16_t	sym_2 = (int16_t)(- sym [4 * (i - 1) + 2]);
+	   int16_t	sym_3 = (int16_t)(- sym [4 * (i - 1) + 3]);
 	   int	*transCosts_i	= transCosts [i];
 	   int	*history_i	= history [i];
 
 	   computeCostTable (sym_0, sym_1, sym_2, sym_3);
-           for (int cState = 0; cState < numofStates / 2; cState ++) {
-              uint8_t entrybit =  0;
-              prev_0    = predecessor_for_0 [cState];
-              prev_1    = predecessor_for_1 [cState];
+	   for (int cState = 0; cState < numofStates / 2; cState ++) {
+//	      uint8_t entrybit =  0;
+	      prev_0    = predecessor_for_0 [cState];
+	      prev_1    = predecessor_for_1 [cState];
 //      we compute the minimal costs, based on the costs of the
 //      prev states, and the additional costs of arriving from
 //      the previous state to the current state with the symbol "sym"
@@ -170,7 +169,7 @@ int	i;
 
 	   for (int cState = numofStates / 2;
 	                                cState < numofStates; cState ++) {
-              uint8_t entrybit = 1;
+//            uint8_t entrybit = 1;
 	      prev_0    = predecessor_for_0 [cState];
 	      prev_1    = predecessor_for_1 [cState];
 
@@ -183,15 +182,15 @@ int	i;
 	      costs_0 = transCosts [i - 1] [prev_0] +
 	                      costTable [indexTable [prev_0 + numofStates]];
 	      costs_1 = transCosts [i - 1] [prev_1] +
-                              costTable [indexTable [prev_1 + numofStates]];
+	                      costTable [indexTable [prev_1 + numofStates]];
 	      if (costs_0 < costs_1) {
 	         transCosts_i [cState] = costs_0;
 	         history_i    [cState] = prev_0;
 	      } else {
 	         transCosts_i [cState] = costs_1;
 	         history_i    [cState] = prev_1;
-              }
-           }
+	      }
+	   }
 	}
 
 //      Once all costs are computed, we can look for the minimal cost
@@ -227,7 +226,6 @@ int	i;
 uint8_t	viterbiHandler::bitFor (int state, int poly, int bit) {
 int  theRegister;
 uint8_t resBit = 0;
-int	i;
 //
 //      the register after shifting "bit" in would be:
 	theRegister = bit == 0 ? state : (state + numofStates);

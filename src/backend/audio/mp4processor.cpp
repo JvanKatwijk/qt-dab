@@ -181,6 +181,7 @@ int32_t		tmp;
 	sbrFlag		= (outVector [2] >> 5) & 01;	// bit 18
 	aacChannelMode	= (outVector [2] >> 4) & 01;	// bit 19
 	psFlag		= (outVector [2] >> 3) & 01;	// bit 20
+	(void)psFlag;
 	mpegSurround	= (outVector [2] & 07);		// bits 21 .. 23
 
 	switch (2 * dacRate + sbrFlag) {
@@ -269,7 +270,7 @@ int32_t		tmp;
 	                 &outVector [au_start [i]], aac_frame_length);
 	      memset (&theAudioUnit [aac_frame_length], 0, 10);
 
-	      int tmp = aacDecoder. MP42PCM (dacRate,
+	      tmp = aacDecoder. MP42PCM (dacRate,
 	                                     sbrFlag,
 	                                     mpegSurround,
 	                                     aacChannelMode,

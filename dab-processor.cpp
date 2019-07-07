@@ -198,8 +198,8 @@ SyncOnPhase:
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost ();
-	         fprintf (stderr, "x = %d\n", startIndex);
 	      }
+//	      fprintf (stderr, "x = %d\n", startIndex);
 	      sampleCount	= 0;
 	      goto notSynced;
 	   }
@@ -215,7 +215,7 @@ SyncOnPhase:
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   int ofdmBufferIndex	= T_u - startIndex;
 
-Block_0:
+//Block_0:
 /**
   *	Block 0 is special in that it is used for fine time synchronization,
   *	for coarse frequency synchronization
@@ -246,7 +246,7 @@ Block_0:
 /**
   *	after block 0, we will just read in the other (params -> L - 1) blocks
   */
-Data_blocks:
+//Data_blocks:
 /**
   *	The first ones are the FIC blocks these are handled within
   *	the thread executing this "task", the other blocks
@@ -311,7 +311,7 @@ Data_blocks:
 	            showSecondaries (-1);
 	            if (secondaries. size () > 0) {
 	              showCoordinates (secondaries. at (0));
-	              for (i = 0; i < secondaries. size (); i ++)
+	              for (i = 0; i < (int)(secondaries. size ()); i ++)
 	                 showSecondaries (secondaries. at (i));
 	            }
 
@@ -328,10 +328,15 @@ Data_blocks:
   *	we just check the fineCorrector
   */
 //NewOffset:
-///     we integrate the newly found frequency error with the
-///     existing frequency error.
-	   if (abs (arg (FreqCorr)) > 1.6) {
-	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
+//     we integrate the newly found frequency error with the
+//     existing frequency error.
+//
+//	It might happen that the computation of the "startIndex"
+//	is - more or less - ambiguous, in which case the computation
+//	of the frequency correction hopelessly fails
+
+	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.6)) {
+//	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
 	      goto notSynced;
 	   }
            fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
@@ -347,7 +352,7 @@ Data_blocks:
 	      fineOffset += carrierDiff;
 	   }
 
-ReadyForNewFrame:
+//ReadyForNewFrame:
 ///	and off we go, up to the next frame
 	   goto SyncOnPhase;
 	}

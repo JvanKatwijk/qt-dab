@@ -148,7 +148,6 @@ std::vector<int16_t> ibits;
 //	services
 //	It might be called several times, so ...
 void	mscHandler::reset	(void) {
-int i;
 	running. store (false);
 	while (isRunning ())
 	   usleep (100);
@@ -201,7 +200,6 @@ void	mscHandler::set_Channel (descriptorType *d,
 void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
-int16_t	i;
 
 	currentblk	= (blkno - 4) % numberofblocksperCIF;
 //	and the normal operation is:
