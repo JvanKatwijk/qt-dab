@@ -4,7 +4,7 @@
 
 
 	dataDescriptor::dataDescriptor (packetdata *pd):
-	                                       myFrame (NULL) {
+	                                       myFrame (nullptr) {
         setupUi (&myFrame);
         myFrame. show ();
 	serviceName  -> setText (pd -> serviceName);

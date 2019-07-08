@@ -103,14 +103,14 @@ NEWS_SVC_DEC_decoder_t NEWS_SVC_DEC_createDec(
 )
 {
     NEWS_SVC_DEC_IMPL_t *dec=new NEWS_SVC_DEC_IMPL_t;
-    if(dec==0)
+    if(dec==nullptr)
     {
         if(showDdNewsSvcDecErr)
         {
             log_err << "out of memory requesting "
                     << sizeof(*dec) << " bytes" << endmsg;
         }
-        return 0;
+        return nullptr;
     }
 
     dec->d_magicId=NEWS_SVC_MAGIC_ID;
@@ -219,7 +219,7 @@ unsigned long NEWS_SVC_DEC_putData(
 
     // do not throw an exception when out of memory
     NewsObject *obj=new(std::nothrow)NewsObject(len, buf, &reception_time);
-    if(obj==0)
+    if(obj==nullptr)
     {
         if(showDdNewsSvcDecErr)
         {

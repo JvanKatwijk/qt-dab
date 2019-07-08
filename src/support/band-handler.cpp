@@ -68,7 +68,7 @@ struct dabFrequencies bandIII_frequencies [] = {
 {"13D",	235776},
 {"13E",	237488},
 {"13F",	239200},
-{NULL, 0}
+{nullptr, 0}
 };
 
 static
@@ -89,7 +89,7 @@ struct dabFrequencies Lband_frequencies [] = {
 {"LN", 1475216},
 {"LO", 1476928},
 {"LP", 1478640},
-{NULL, 0}
+{nullptr, 0}
 };
 
 	bandHandler::bandHandler (void) {}
@@ -109,7 +109,7 @@ int16_t	c	= s -> count ();
 	else
 	   t = Lband_frequencies;
 
-	for (i = 0; t [i]. key != NULL; i ++) 
+	for (i = 0; t [i]. key != nullptr; i ++) 
 	   s -> insertItem (i, t [i]. key, QVariant (i));
 }
 
@@ -125,7 +125,7 @@ int	i;
 	else
 	   finger = Lband_frequencies;
 
-	for (i = 0; finger [i]. key != NULL; i ++) {
+	for (i = 0; finger [i]. key != nullptr; i ++) {
 	   if (finger [i]. key == Channel) {
 	      tunedFrequency	= KHz (finger [i]. fKHz);
 	      break;

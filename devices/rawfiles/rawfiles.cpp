@@ -44,7 +44,7 @@
 	myFrame		-> show ();
 	_I_Buffer	= new RingBuffer<uint8_t>(INPUT_FRAMEBUFFERSIZE);
 	filePointer	= fopen (f. toUtf8 (). data (), "rb");
-	if (filePointer == NULL) {
+	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
 	                                   f. toUtf8 (). data ());
 	   perror ("file ?");
@@ -70,7 +70,7 @@
 	      usleep (100);
 	   delete readerTask;
 	}
-	if (filePointer != NULL)
+	if (filePointer != nullptr)
 	   fclose (filePointer);
 
 	delete _I_Buffer;
@@ -100,7 +100,7 @@ int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
 uint8_t	temp [2 * size];
 
-	if (filePointer == NULL)
+	if (filePointer == nullptr)
 	   return 0;
 
 	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable ()) < 2 * size)

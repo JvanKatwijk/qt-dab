@@ -30,7 +30,7 @@ static inline
 int64_t         getMyTime       (void) {
 struct timeval  tv;
 
-        gettimeofday (&tv, NULL);
+        gettimeofday (&tv, nullptr);
         return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 

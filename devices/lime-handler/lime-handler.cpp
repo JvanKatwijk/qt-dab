@@ -30,7 +30,7 @@ lms_info_str_t limedevices [10];
 	limeHandler::limeHandler (QSettings *s) {
 	this	-> limeSettings	= s;
 
-	this	-> myFrame	= new QFrame (NULL);
+	this	-> myFrame	= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show ();
 
@@ -73,7 +73,7 @@ lms_info_str_t limedevices [10];
 	for (int i = 0; i < ndevs; i ++)
 	   fprintf (stderr, "device %s\n", limedevices [i]);
 
-	int res		= LMS_Open (&theDevice, NULL, NULL);
+	int res		= LMS_Open (&theDevice, nullptr, nullptr);
 	if (res < 0) {	// some error
 	   delete myFrame;
 	   throw (22);

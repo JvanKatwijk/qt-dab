@@ -1808,14 +1808,14 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data ().toString ();
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad, 0);
               if (ad. defined) {
-	         if (currentService != NULL)
+	         if (currentService != nullptr)
 	            delete currentService;
 	         currentService	= new audioDescriptor (&ad);
 	         return true;
 	      }
 	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
               if (pd. defined) {
-	         if (currentService != NULL)
+	         if (currentService != nullptr)
 	            delete currentService;
 	         currentService	= new dataDescriptor (&pd);
 	         return true;

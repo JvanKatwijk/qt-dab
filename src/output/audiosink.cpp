@@ -53,11 +53,11 @@ int32_t	i;
 	outTable	= new int16_t [numofDevices + 1];
 	for (i = 0; i < numofDevices; i ++)
 	   outTable [i] = -1;
-	ostream		= NULL;
+	ostream		= nullptr;
 }
 
 	audioSink::~audioSink	(void) {
-	if ((ostream != NULL) && !Pa_IsStreamStopped (ostream)) {
+	if ((ostream != nullptr) && !Pa_IsStreamStopped (ostream)) {
 	   paCallbackReturn = paAbort;
 	   (void) Pa_AbortStream (ostream);
 	   while (!Pa_IsStreamStopped (ostream))
@@ -65,7 +65,7 @@ int32_t	i;
 	   writerRunning = false;
 	}
 
-	if (ostream != NULL)
+	if (ostream != nullptr)
 	   Pa_CloseStream (ostream);
 
 	if (portAudio)
@@ -88,7 +88,7 @@ int16_t	outputDevice;
 	   return false;
 	}
 
-	if ((ostream != NULL) && !Pa_IsStreamStopped (ostream)) {
+	if ((ostream != nullptr) && !Pa_IsStreamStopped (ostream)) {
 	   paCallbackReturn = paAbort;
 	   (void) Pa_AbortStream (ostream);
 	   while (!Pa_IsStreamStopped (ostream))
@@ -96,7 +96,7 @@ int16_t	outputDevice;
 	   writerRunning = false;
 	}
 
-	if (ostream != NULL)
+	if (ostream != nullptr)
 	   Pa_CloseStream (ostream);
 
 	outputParameters. device		= outputDevice;
@@ -113,11 +113,11 @@ int16_t	outputDevice;
 	
 //	bufSize	= latency * 512;
 
-	outputParameters. hostApiSpecificStreamInfo = NULL;
+	outputParameters. hostApiSpecificStreamInfo = nullptr;
 //
 	fprintf (stderr, "Suggested size for outputbuffer = %d\n", bufSize);
 	err = Pa_OpenStream (&ostream,
-	                     NULL,
+	                     nullptr,
 	                     &outputParameters,
 	                     CardRate,
 	                     bufSize,
@@ -175,9 +175,9 @@ PaStreamParameters *outputParameters =
 	outputParameters -> channelCount	= 2;	/* I and Q	*/
 	outputParameters -> sampleFormat	= paFloat32;
 	outputParameters -> suggestedLatency	= 0;
-	outputParameters -> hostApiSpecificStreamInfo = NULL;
+	outputParameters -> hostApiSpecificStreamInfo = nullptr;
 
-	return Pa_IsFormatSupported (NULL, outputParameters, Rate) ==
+	return Pa_IsFormatSupported (nullptr, outputParameters, Rate) ==
 	                                          paFormatIsSupported;
 }
 /*
@@ -229,7 +229,7 @@ QString name = QString ("");
 	   return name;
 
 	deviceInfo = Pa_GetDeviceInfo (ch);
-	if (deviceInfo == NULL)
+	if (deviceInfo == nullptr)
 	   return name;
 	if (deviceInfo -> maxOutputChannels <= 0)
 	   return name;

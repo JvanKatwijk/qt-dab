@@ -41,7 +41,7 @@ QColor	curveColor;
 	curveColor			= QColor (colorString);
 
 	displaySize			= 1024;
-	this	-> myFrame		= new QFrame (NULL);
+	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 
 	this	-> myFrame	-> hide ();

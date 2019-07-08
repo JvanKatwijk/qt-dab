@@ -43,7 +43,7 @@ SF_INFO *sf_info;
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
 	filePointer	= sf_open (f. toUtf8 (). data (), SFM_READ, sf_info);
-	if (filePointer == NULL) {
+	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s no legitimate sound file\n", 
 	                                f. toUtf8 ().data ());
 	   delete myFrame;
@@ -73,7 +73,7 @@ SF_INFO *sf_info;
 	      usleep (500);
 	   delete readerTask;
 	}
-	if (filePointer != NULL)
+	if (filePointer != nullptr)
 	   sf_close (filePointer);
 	delete _I_Buffer;
 	delete	myFrame;
@@ -101,7 +101,7 @@ void	wavFiles::stopReader	(void) {
 int32_t	wavFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
 	
-	if (filePointer == NULL)
+	if (filePointer == nullptr)
 	   return 0;
 
 	while (_I_Buffer -> GetRingBufferReadAvailable () < size)

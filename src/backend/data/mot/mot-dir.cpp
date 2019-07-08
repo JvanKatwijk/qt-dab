@@ -67,7 +67,7 @@ int i;
 	             (motComponents [i]. transportId == transportId))
 	      return motComponents [i]. motSlide;
 
-	return NULL;
+	return nullptr;
 }
 
 void	motDirectory::setHandle (motObject *h, uint16_t transportId) {

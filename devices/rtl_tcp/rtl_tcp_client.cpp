@@ -56,7 +56,7 @@
 	vfoFrequency	= DEFAULT_FREQUENCY;
 	theBuffer	= new RingBuffer<uint8_t>(32 * 32768);
 	connected	= false;
-	hostLineEdit 	= new QLineEdit (NULL);
+	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 
 	connect (tcp_connect, SIGNAL (clicked (void)),

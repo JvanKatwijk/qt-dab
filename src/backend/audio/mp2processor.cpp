@@ -300,7 +300,7 @@ struct quantizer_spec*
 	mp2Processor::read_allocation (int sb, int b2_table) {
 int table_idx = quant_lut_step3 [b2_table][sb];
     table_idx = quant_lut_step4 [table_idx & 15] [get_bits(table_idx >> 4)];
-    return table_idx ? (&quantizer_table[table_idx - 1]) : 0;
+    return table_idx ? (&quantizer_table[table_idx - 1]) : nullptr;
 }
 
 

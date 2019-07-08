@@ -34,7 +34,7 @@
 	                              converter_16 (16000, 48000, 2 * 1600),
 	                              converter_24 (24000, 48000, 2 * 2400),
 	                              converter_32 (32000, 48000, 2 * 3200) {
-	dumpFile		= NULL;
+	dumpFile		= nullptr;
 }
 
 	audioBase::~audioBase	(void) {
@@ -88,7 +88,7 @@ int32_t	result;
 	      }
 	   
 	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
 	      myLocker. unlock ();
 
@@ -115,7 +115,7 @@ int32_t	result;
 	      }
 	   
 	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
 	      myLocker. unlock ();
 
@@ -142,7 +142,7 @@ int32_t	result;
 	      }
 	   
 	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
 	      myLocker. unlock ();
 //	      fprintf (stderr, "result %d\n", result);
@@ -161,7 +161,7 @@ int32_t	i;
 	}
 
 	myLocker. lock ();
-	if (dumpFile != NULL)
+	if (dumpFile != nullptr)
 	   sf_writef_float (dumpFile, (float *)buffer, amount);
 	myLocker. unlock ();
 	audioOutput (buffer, amount);
@@ -177,7 +177,7 @@ void	audioBase::startDumping	(SNDFILE *f) {
 
 void	audioBase::stopDumping	(void) {
 	myLocker. lock ();
-	dumpFile	= NULL;
+	dumpFile	= nullptr;
 	myLocker. unlock ();
 }
 

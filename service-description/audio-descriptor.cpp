@@ -4,7 +4,7 @@
 
 
 	audioDescriptor::audioDescriptor (audiodata *ad):
-	                                       myFrame (NULL) {
+	                                       myFrame (nullptr) {
         setupUi (&myFrame);
         myFrame. show ();
 	serviceLabel    -> setText

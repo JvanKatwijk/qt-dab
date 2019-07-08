@@ -25,7 +25,7 @@
 /*
  *	iq circle plotter
  */
-SpectrogramData	*IQData	= NULL;
+SpectrogramData	*IQData	= nullptr;
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
 	                                QwtPlotSpectrogram () {

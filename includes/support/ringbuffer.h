@@ -230,7 +230,7 @@ uint32_t   available = GetRingBufferWriteAvailable ();
 	else {		// fits
 	   *dataPtr1	= &buffer [index * sizeof(elementtype)];
 	   *sizePtr1	= elementCount;
-	   *dataPtr2	= NULL;
+	   *dataPtr2	= nullptr;
 	   *sizePtr2	= 0;
 	}
 
@@ -268,7 +268,7 @@ uint32_t   available = GetRingBufferReadAvailable (); /* doesn't use memory barr
 	else {
 	   *dataPtr1 = &buffer [index * sizeof(elementtype)];
 	   *sizePtr1 = elementCount;
-	   *dataPtr2 = NULL;
+	   *dataPtr2 = nullptr;
 	   *sizePtr2 = 0;
 	}
     

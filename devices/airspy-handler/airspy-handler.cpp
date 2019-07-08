@@ -36,11 +36,11 @@ std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
-	this	-> myFrame		= new QFrame (NULL);
+	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show ();
 
-	filter			= NULL;
+	filter			= nullptr;
 	airspySettings	-> beginGroup ("airspyHandler");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
 	                                                          toInt ();
@@ -67,9 +67,9 @@ uint32_t samplerateCount;
 	coarseOffset		= airspySettings -> value ("airspyOffset", 0). toInt ();
 	airspySettings	-> endGroup ();
 
-	device			= 0;
+	device			= nullptr;
 	serialNumber		= 0;
-	theBuffer		= NULL;
+	theBuffer		= nullptr;
 #ifdef	__MINGW32__
 	const char *libraryString = "airspy.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
@@ -78,7 +78,7 @@ uint32_t samplerateCount;
 	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
 #endif
 
-	if (Handle == NULL) {
+	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 #ifndef	__MINGW32__
 	   fprintf (stderr, "Error = %s\n", dlerror ());
@@ -228,7 +228,7 @@ uint32_t samplerateCount;
 	airspySettings -> setValue ("lna", lnaGain);
 	airspySettings	-> setValue ("airspyOffset", coarseOffset);
 	airspySettings	-> endGroup ();
-	if (device != NULL) {
+	if (device != nullptr) {
 	   int result = my_airspy_stop_rx (device);
 	   if (result != AIRSPY_SUCCESS) {
 	      printf ("my_airspy_stop_rx () failed: %s (%d)\n",

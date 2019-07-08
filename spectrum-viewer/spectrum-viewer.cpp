@@ -50,7 +50,7 @@ QColor	curveColor;
 	displaySize			= dabSettings -> value ("displaySize", 1024).toInt ();
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
-	this	-> myFrame		= new QFrame (NULL);
+	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 
 	this	-> myFrame	-> hide ();

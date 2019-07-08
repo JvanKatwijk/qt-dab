@@ -155,7 +155,7 @@ std::vector<int> resultVector;
 	      break;
 	}
 
-	if (response != NULL) {
+	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 4) {
 	      response	-> putDataIntoBuffer (mbuf, T_u);
 	      showImpulse (T_u);
