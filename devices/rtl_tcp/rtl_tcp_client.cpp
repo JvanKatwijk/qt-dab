@@ -72,7 +72,7 @@
 	state	-> setText ("waiting to start");
 }
 
-	rtl_tcp_client::~rtl_tcp_client	(void) {
+	rtl_tcp_client::~rtl_tcp_client() {
 	remoteSettings ->  beginGroup ("rtl_tcp_client");
 	if (connected) {		// close previous connection
 	   stopReader();
@@ -91,7 +91,7 @@
 	delete	theFrame;
 }
 //
-void	rtl_tcp_client::wantConnect (void) {
+void	rtl_tcp_client::wantConnect() {
 QString ipAddress;
 int16_t	i;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
@@ -127,7 +127,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	a signal appears and we are able to collect the
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
-void	rtl_tcp_client::setConnection (void) {
+void	rtl_tcp_client::setConnection() {
 QString s	= hostLineEdit -> text();
 QHostAddress theAddress	= QHostAddress (s);
 
@@ -149,11 +149,11 @@ QHostAddress theAddress	= QHostAddress (s);
 	connected	= true;
 }
 
-int32_t	rtl_tcp_client::getRate	(void) {
+int32_t	rtl_tcp_client::getRate() {
 	return theRate;
 }
 
-int32_t	rtl_tcp_client::defaultFrequency (void) {
+int32_t	rtl_tcp_client::defaultFrequency() {
 	return DEFAULT_FREQUENCY;	// choose any legal frequency here
 }
 
@@ -165,11 +165,11 @@ void	rtl_tcp_client::setVFOFrequency	(int32_t newFrequency) {
 	sendVFO (newFrequency);
 }
 
-int32_t	rtl_tcp_client::getVFOFrequency	(void) {
+int32_t	rtl_tcp_client::getVFOFrequency() {
 	return vfoFrequency;
 }
 
-bool	rtl_tcp_client::restartReader	(void) {
+bool	rtl_tcp_client::restartReader() {
 	if (!connected)
 	   return true;
 	connect (&toServer, SIGNAL (readyRead (void)),
@@ -177,7 +177,7 @@ bool	rtl_tcp_client::restartReader	(void) {
 	return true;
 }
 
-void	rtl_tcp_client::stopReader	(void) {
+void	rtl_tcp_client::stopReader() {
 	if (!connected)
 	   return;
 	disconnect (&toServer, SIGNAL (readyRead (void)),
@@ -203,16 +203,16 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 	return amount / 2;
 }
 
-int32_t	rtl_tcp_client::Samples	(void) {
+int32_t	rtl_tcp_client::Samples() {
 	return  theBuffer	-> GetRingBufferReadAvailable() / 2;
 }
 //
-int16_t	rtl_tcp_client::bitDepth	(void) {
+int16_t	rtl_tcp_client::bitDepth() {
 	return 8;
 }
 
 //	These functions are typical for network use
-void	rtl_tcp_client::readData	(void) {
+void	rtl_tcp_client::readData() {
 uint8_t	buffer [8192];
 	while (toServer. bytesAvailable() > 8192) {
 	   toServer. read ((char *)buffer, 8192);
@@ -265,7 +265,7 @@ void	rtl_tcp_client::set_fCorrection	(int32_t ppm) {
 	thePpm		= ppm;
 }
 
-void	rtl_tcp_client::setDisconnect (void) {
+void	rtl_tcp_client::setDisconnect() {
 	if (connected) {		// close previous connection
 	   stopReader();
 	   remoteSettings -> beginGroup ("rtl_tcp_client");

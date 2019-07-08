@@ -179,7 +179,7 @@ public:
 	   clear();
 	}
 	~serviceComponentDescriptor() {}
-	void		clear	() {
+	void		clear() {
 	   inUse		= false;
 	   is_madePublic	= false;
 	   SCIds		= -1;
@@ -1452,7 +1452,7 @@ void	fibDecoder::clearEnsemble() {
 	fibLocker. unlock();
 }
 
-bool	fibDecoder::syncReached	() {
+bool	fibDecoder::syncReached() {
 	return  ensemble -> isSynced;
 }
 

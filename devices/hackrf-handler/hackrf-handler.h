@@ -80,17 +80,17 @@ class	hackrfHandler: public virtualInput, public Ui_hackrfWidget {
 Q_OBJECT
 public:
 			hackrfHandler		(QSettings *);
-            ~hackrfHandler	();
+            ~hackrfHandler();
 	void		setVFOFrequency		(int32_t);
-    int32_t		getVFOFrequency	();
+    int32_t		getVFOFrequency();
 
-    bool		restartReader	();
-    void		stopReader	();
+    bool		restartReader();
+    void		stopReader();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
-	int32_t		Samples			(void);
-    void		resetBuffer	();
-    int16_t		bitDepth	();
+	int32_t		Samples		();
+    void		resetBuffer();
+    int16_t		bitDepth();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;

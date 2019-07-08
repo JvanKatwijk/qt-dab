@@ -44,13 +44,13 @@ class	tii_table : public QObject {
 Q_OBJECT
 public:
 			tii_table		(RadioInterface *);
-			~tii_table	();
-	void		cleanUp		();
+			~tii_table();
+	void		cleanUp	();
 	void		add_element		(tii_element *);
 	void		add_main		(int16_t, float, float);
 	std::complex<float> get_coordinates (int16_t, int16_t, bool *);
 	void		print_coordinates();
-	int16_t		get_mainId	();
+	int16_t		get_mainId();
 private:
 	RadioInterface	*myRadio;
 	QMutex		tiiLocker;

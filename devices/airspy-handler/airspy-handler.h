@@ -85,17 +85,17 @@ class airspyHandler: public virtualInput, public Ui_airspyWidget {
 Q_OBJECT
 public:
 			airspyHandler		(QSettings *);
-			~airspyHandler	();
+			~airspyHandler();
 	void		setVFOFrequency		(int32_t nf);
-	int32_t		getVFOFrequency	();
+	int32_t		getVFOFrequency();
 	int32_t		defaultFrequency();
-	bool		restartReader	();
-	void		stopReader	();
+	bool		restartReader();
+	void		stopReader();
 	int32_t		getSamples		(std::complex<float> *v,
 	                                                 int32_t size);
-	int32_t		Samples		();
-	void		resetBuffer	();
-	int16_t		bitDepth	();
+	int32_t		Samples	();
+	void		resetBuffer();
+	int16_t		bitDepth();
 	int16_t		currentTab;
 private slots:
 	void		set_linearity		(int value);
@@ -103,9 +103,9 @@ private slots:
 	void		set_lna_gain		(int value);
 	void		set_mixer_gain		(int value);
 	void		set_vga_gain		(int value);
-	void		set_lna_agc	();
-	void		set_mixer_agc	();
-	void		set_rf_bias	();
+	void		set_lna_agc();
+	void		set_mixer_agc();
+	void		set_rf_bias();
 	void		show_tab		(int);
 private:
 	bool		load_airspyFunctions();

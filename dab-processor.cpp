@@ -435,7 +435,7 @@ void    dabProcessor::set_dataChannel (packetdata *d,
 }
 
 
-uint8_t	dabProcessor::get_ecc	() {
+uint8_t	dabProcessor::get_ecc() {
     return my_ficHandler. get_ecc();
 }
 
@@ -443,7 +443,7 @@ int32_t dabProcessor::get_ensembleId() {
     return my_ficHandler. get_ensembleId();
 }
 
-QString dabProcessor::get_ensembleName	(void) {
+QString dabProcessor::get_ensembleName() {
     return my_ficHandler. get_ensembleName();
 }
 

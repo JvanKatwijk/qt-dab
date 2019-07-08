@@ -306,7 +306,7 @@ ULONG APIkeyValue_length = 255;
 	running. store (false);
 }
 
-	sdrplayHandler::~sdrplayHandler	(void) {
+	sdrplayHandler::~sdrplayHandler() {
 	if (!libraryLoaded)
 	   return;
 	stopReader();
@@ -355,7 +355,7 @@ int16_t	bankFor_sdr (int32_t freq) {
 	return -1;
 }
 
-int32_t	sdrplayHandler::defaultFrequency	(void) {
+int32_t	sdrplayHandler::defaultFrequency() {
 	return Mhz (220);
 }
 
@@ -395,7 +395,7 @@ int	lnaState	= lnaGainSetting -> value();
 	   vfoFrequency = newFrequency;
 }
 
-int32_t	sdrplayHandler::getVFOFrequency	(void) {
+int32_t	sdrplayHandler::getVFOFrequency() {
 	return vfoFrequency;
 }
 
@@ -469,7 +469,7 @@ sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 //	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
-bool	sdrplayHandler::restartReader	(void) {
+bool	sdrplayHandler::restartReader() {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
@@ -520,7 +520,7 @@ int	lnaState	= lnaGainSetting -> value();
 	return true;
 }
 
-void	sdrplayHandler::stopReader	(void) {
+void	sdrplayHandler::stopReader() {
 mir_sdr_ErrT err;
 
 	if (!running. load())
@@ -540,19 +540,19 @@ int32_t	sdrplayHandler::getSamples (std::complex<float> *V, int32_t size) {
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 
-int32_t	sdrplayHandler::Samples	(void) {
+int32_t	sdrplayHandler::Samples() {
 	return _I_Buffer	-> GetRingBufferReadAvailable();
 }
 
-void	sdrplayHandler::resetBuffer	(void) {
+void	sdrplayHandler::resetBuffer() {
 	_I_Buffer	-> FlushRingBuffer();
 }
 
-int16_t	sdrplayHandler::bitDepth	(void) {
+int16_t	sdrplayHandler::bitDepth() {
 	return nrBits;
 }
 
-bool	sdrplayHandler::loadFunctions	(void) {
+bool	sdrplayHandler::loadFunctions() {
 	my_mir_sdr_StreamInit	= (pfn_mir_sdr_StreamInit)
 	                    GETPROCADDRESS (this -> Handle,
 	                                    "mir_sdr_StreamInit");

@@ -39,7 +39,7 @@ void	virtualInput::setVFOFrequency (int32_t f) {
 	lastFrequency = f;
 }
 
-int32_t	virtualInput::getVFOFrequency	(void) {
+int32_t	virtualInput::getVFOFrequency() {
 	return lastFrequency;
 }
 
@@ -56,7 +56,7 @@ int32_t	virtualInput::getSamples	(std::complex<float> *v, int32_t amount) {
 	return amount;
 }
 
-int32_t	virtualInput::Samples	() {
+int32_t	virtualInput::Samples() {
 	return 1024;
 }
 
@@ -71,7 +71,7 @@ void	virtualInput::setOffset		(int32_t o) {
 	coarseOffset = o;
 }
 
-int32_t	virtualInput::getOffset	() {
+int32_t	virtualInput::getOffset() {
 	return coarseOffset;
 }
 

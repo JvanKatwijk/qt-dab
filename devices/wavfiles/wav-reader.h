@@ -35,11 +35,11 @@ public:
 			wavReader	(wavFiles *,
 	                                 SNDFILE *,
 	                                 RingBuffer<std::complex<float>> *); 
-			~wavReader	(void);
-	void		startReader	(void);
-	void		stopReader	(void);
+			~wavReader();
+	void		startReader();
+	void		stopReader();
 private:
-virtual void		run		(void);
+virtual void		run	();
 	SNDFILE		*filePointer;
 	RingBuffer<std::complex<float> >	*theBuffer;
 	uint64_t	period;

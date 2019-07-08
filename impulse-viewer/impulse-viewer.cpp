@@ -114,7 +114,7 @@ void	impulseViewer::hide() {
 	myFrame		-> hide();
 }
 
-bool	impulseViewer::isHidden	(void) {
+bool	impulseViewer::isHidden() {
 	return myFrame	-> isHidden();
 }
 

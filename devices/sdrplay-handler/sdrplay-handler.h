@@ -91,18 +91,18 @@ class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
 			sdrplayHandler		(QSettings *);
-			~sdrplayHandler	();
+			~sdrplayHandler();
 	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency	();
+	int32_t		getVFOFrequency();
 	int32_t		defaultFrequency();
 
-	bool		restartReader	();
-	void		stopReader	();
+	bool		restartReader();
+	void		stopReader();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
-	int32_t		Samples			(void);
-	void		resetBuffer	();
-	int16_t		bitDepth	();
+	int32_t		Samples		();
+	void		resetBuffer();
+	int16_t		bitDepth();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;

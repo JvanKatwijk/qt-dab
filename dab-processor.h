@@ -63,13 +63,13 @@ public:
 	                         RingBuffer<std::complex<float>>	*
 	                        );
 		~dabProcessor();
-	void		reset			(void);
+    void		reset		();
 	void		stop			(void);
 	void		setOffset		(int32_t);
 	void		coarseCorrectorOn();
 	void		coarseCorrectorOff();
 	void		startDumping		(SNDFILE *);
-	void		stopDumping		(void);
+    void		stopDumping	();
 	void		set_scanMode		(bool);
 //
 //	inheriting from our delegates
@@ -81,7 +81,7 @@ public:
 	                                             audiodata *, int16_t);
         void		dataforPacketService	(QString &,
 	                                             packetdata *, int16_t);
-	void		reset_msc	();
+    void		reset_msc();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
@@ -89,7 +89,7 @@ public:
         uint8_t		get_ecc();
         int32_t		get_ensembleId();
         QString		get_ensembleName();
-	void		clearEnsemble	();
+    void		clearEnsemble();
 private:
 	bool		tiiSwitch;
 	int16_t		tii_depth;
@@ -124,11 +124,11 @@ private:
 	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
-virtual	void		run		();
+virtual	void		run	();
 signals:
 	void		setSynced		(char);
-	void		No_Signal_Found	();
-	void		setSyncLost	();
+    void		No_Signal_Found();
+    void		setSyncLost();
 	void		showCoordinates		(int);
 	void		showSecondaries		(int);
 	void		show_Spectrum		(int);

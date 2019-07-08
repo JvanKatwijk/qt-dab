@@ -219,7 +219,7 @@ uint32_t samplerateCount;
 	show_tab (0);			// will set currentTab
 }
 
-	airspyHandler::~airspyHandler (void) {
+	airspyHandler::~airspyHandler() {
 	airspySettings	-> beginGroup ("airspyHandler");
 	airspySettings -> setValue ("linearity", linearitySlider -> value());
 	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());
@@ -267,15 +267,15 @@ int result = my_airspy_set_freq (device, lastFrequency = nf);
 	}
 }
 
-int32_t	airspyHandler::getVFOFrequency (void) {
+int32_t	airspyHandler::getVFOFrequency() {
 	return lastFrequency;
 }
 
-int32_t	airspyHandler::defaultFrequency (void) {
+int32_t	airspyHandler::defaultFrequency() {
 	return Khz (94700);
 }
 
-bool	airspyHandler::restartReader	(void) {
+bool	airspyHandler::restartReader() {
 int	result;
 int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	if (running. load())
@@ -313,7 +313,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	return true;
 }
 
-void	airspyHandler::stopReader (void) {
+void	airspyHandler::stopReader() {
 int	result;
 
 	if (!running. load())
@@ -398,7 +398,7 @@ int32_t  i, j;
 	return 0;
 }
 //
-const char *airspyHandler::getSerial (void) {
+const char *airspyHandler::getSerial() {
 airspy_read_partid_serialno_t read_partid_serialno;
 int result = my_airspy_board_partid_serialno_read (device,
 	                                          &read_partid_serialno);
@@ -415,7 +415,7 @@ int result = my_airspy_board_partid_serialno_read (device,
 }
 //
 //	not used here
-int	airspyHandler::open (void) {
+int	airspyHandler::open() {
 int result = my_airspy_open (&device);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -429,11 +429,11 @@ int result = my_airspy_open (&device);
 
 //
 //	These functions are added for the SDR-J interface
-void	airspyHandler::resetBuffer (void) {
+void	airspyHandler::resetBuffer() {
 	theBuffer	-> FlushRingBuffer();
 }
 
-int16_t	airspyHandler::bitDepth (void) {
+int16_t	airspyHandler::bitDepth() {
 	return 13;
 }
 
@@ -442,7 +442,7 @@ int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 	return theBuffer	-> getDataFromBuffer (v, size);
 }
 
-int32_t	airspyHandler::Samples	(void) {
+int32_t	airspyHandler::Samples() {
 	return theBuffer	-> GetRingBufferReadAvailable();
 }
 //
@@ -533,7 +533,7 @@ int result = my_airspy_set_vga_gain (device, vgaGain = value);
 	0=Disable LNA Automatic Gain Control
 	1=Enable LNA Automatic Gain Control
 */
-void	airspyHandler::set_lna_agc (void) {
+void	airspyHandler::set_lna_agc() {
 	lna_agc	= !lna_agc;
 int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 
@@ -551,7 +551,7 @@ int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 	0=Disable MIXER Automatic Gain Control
 	1=Enable MIXER Automatic Gain Control
 */
-void	airspyHandler::set_mixer_agc (void) {
+void	airspyHandler::set_mixer_agc() {
 	mixer_agc	= !mixer_agc;
 
 int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
@@ -568,7 +568,7 @@ int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 
 
 /* Parameter value shall be 0=Disable BiasT or 1=Enable BiasT */
-void	airspyHandler::set_rf_bias (void) {
+void	airspyHandler::set_rf_bias() {
 	rf_bias	= !rf_bias;
 int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
@@ -579,7 +579,7 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 }
 
 
-const char* airspyHandler::board_id_name (void) {
+const char* airspyHandler::board_id_name() {
 uint8_t bid;
 
 	if (my_airspy_board_id_read (device, &bid) == AIRSPY_SUCCESS)
@@ -589,7 +589,7 @@ uint8_t bid;
 }
 //
 //
-bool	airspyHandler::load_airspyFunctions (void) {
+bool	airspyHandler::load_airspyFunctions() {
 //
 //	link the required procedures
 	my_airspy_init	= (pfn_airspy_init)

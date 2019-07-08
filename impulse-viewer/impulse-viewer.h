@@ -44,12 +44,12 @@ Q_OBJECT
 public:
 			impulseViewer		(RadioInterface *,
 	                                         RingBuffer<float> *);
-			~impulseViewer	();
+			~impulseViewer();
 	void		showImpulse		(int32_t);
 	void		showIndex		(int32_t);
-	void		show		();
-	void		hide		();
-	bool		isHidden	();
+	void		show	();
+	void		hide	();
+	bool		isHidden();
 
 private:
 	std::vector<int> indexVector;

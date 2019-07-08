@@ -65,7 +65,7 @@ void	rawReader::stopReader() {
 	}
 }
 
-void	rawReader::run	() {
+void	rawReader::run() {
 int64_t	nextStop;
 int	i;
 int	teller	= 0;

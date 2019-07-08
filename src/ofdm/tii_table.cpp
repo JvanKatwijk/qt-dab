@@ -40,7 +40,7 @@
 	tii_table::~tii_table() {
 }
 
-void	tii_table::cleanUp (void) {
+void	tii_table::cleanUp() {
 	tiiLocker. lock();
 	offsets. clear();
 	mainId		= -1;

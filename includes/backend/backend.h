@@ -54,7 +54,7 @@ void	stopRunning();
 	int		Length;
 private:
 #ifdef	__THREADED_BACKEND
-void	run	();
+void	run();
 	atomic<bool>	running;
 	QSemaphore	freeSlots;
 	QSemaphore	usedSlots;

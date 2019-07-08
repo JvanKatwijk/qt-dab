@@ -48,7 +48,7 @@ public:
                                         bool    lastSegment);
 	uint16_t	get_transportId();
 private:
-	void		analyse_theDirectory (void);
+	void		analyse_theDirectory();
 	uint16_t	transportId;
 
 	RadioInterface	*myRadioInterface;

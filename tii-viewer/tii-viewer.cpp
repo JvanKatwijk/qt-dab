@@ -94,7 +94,7 @@ QColor	curveColor;
 	setBitDepth	(12);
 }
 
-	tiiViewer::~tiiViewer	(void) {
+    tiiViewer::~tiiViewer() {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
 	myFrame		-> hide();
@@ -105,7 +105,7 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
-void	tiiViewer::clear		(void) {
+void	tiiViewer::clear	() {
 	secondariesDisplay	-> setText (" ");
 }
 
@@ -231,15 +231,15 @@ void	tiiViewer::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	tiiViewer::show		(void) {
+void	tiiViewer::show	() {
 	myFrame	-> show();
 }
 
-void	tiiViewer::hide		(void) {
+void	tiiViewer::hide	() {
 	myFrame	-> hide();
 }
 
-bool	tiiViewer::isHidden	(void) {
+bool	tiiViewer::isHidden() {
 	return myFrame -> isHidden();
 }
 

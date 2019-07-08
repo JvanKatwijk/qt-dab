@@ -40,10 +40,10 @@
 	audioBase::~audioBase() {
 }
 
-void	audioBase::restart	(void) {
+void	audioBase::restart() {
 }
 
-void	audioBase::stop	(void) {
+void	audioBase::stop() {
 }
 //
 //	This one is a hack for handling different baudrates coming from

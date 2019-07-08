@@ -63,7 +63,7 @@ public:
 		RadioInterface		(QSettings	*,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
-		~RadioInterface	();
+		~RadioInterface();
 
 protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
@@ -78,15 +78,15 @@ private:
 	bool		show_data;
 	serviceDescriptor	*currentService;
 	void		clear_showElements();
-	void		set_picturePath	();
+	void		set_picturePath();
 //const	char		*get_programm_type_string (int16_t);
 //const	char		*get_programm_language_string (int16_t);
 	void		dumpControlState	(QSettings *);
 	void		Yes_Signal_Found();
 	void		Increment_Channel();
 	uint8_t		convert			(QString);
-	void		hideButtons	();
-	void		showButtons		(void);
+	void		hideButtons();
+	void		showButtons	();
 	virtualInput	*setDevice		(QString);
 
 	std::vector<int> secondariesVector;
@@ -138,8 +138,8 @@ private:
 	int32_t		numberofSeconds;
 	int16_t		ficBlocks;
 	int16_t		ficSuccess;
-	void		connectGUI	();
-	void		disconnectGUI	();
+	void		connectGUI();
+	void		disconnectGUI();
         spectrumViewer         *my_spectrumViewer;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
@@ -150,9 +150,9 @@ private:
 
 	QString		picturesPath;
 public slots:
-	void		set_Scanning	();
+	void		set_Scanning();
 	void		set_CorrectorDisplay	(int);
-	void		clearEnsemble	();
+	void		clearEnsemble();
 	void		addtoEnsemble		(const QString &);
 	void		nameofEnsemble		(int, const QString &);
 	void		show_frameErrors	(int);
@@ -175,9 +175,9 @@ public slots:
 
 	void		setStereo		(bool);
 	void		set_streamSelector	(int);
-	void		No_Signal_Found	();
+	void		No_Signal_Found();
 	void		show_motHandling	(bool);
-	void		setSyncLost	();
+	void		setSyncLost();
 	void		showCoordinates		(int);
 	void		showSecondaries		(int);
 	void		showImpulse		(int);
@@ -191,14 +191,14 @@ public slots:
 
 //	Somehow, these must be connected to the GUI
 private slots:
-	void		set_nextChannel	();
+	void		set_nextChannel();
 	void		toggle_show_data();
 	void		doStart			(QString);
-	void		doStart		();
+	void		doStart	();
 	void		TerminateProcess();
 	void		selectChannel		(QString);
 	void		updateTimeDisplay();
-	void		signalTimer_out		(void);
+	void		signalTimer_out	();
 	void		autoCorrector_on();
 
 	void		newDevice		(QString);
@@ -206,13 +206,13 @@ private slots:
 
 	void		selectService		(QModelIndex);
 	void		selectService		(QString);
-	void		set_audioDump	();
-	void		set_sourceDump	();
-	void		showEnsembleData	(void);
+	void		set_audioDump();
+	void		set_sourceDump();
+	void		showEnsembleData();
 	void		setPresetStation();
-	void		set_tiiSwitch	();
-	void		set_irSwitch	();
-	void		set_spectrumSwitch	(void);
+	void		set_tiiSwitch();
+	void		set_irSwitch();
+	void		set_spectrumSwitch();
 };
 #endif
 

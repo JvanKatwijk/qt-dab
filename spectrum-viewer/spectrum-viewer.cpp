@@ -105,7 +105,7 @@ QColor	curveColor;
 	myIQDisplay	= new IQDisplay (iqDisplay, 256);
 }
 
-	spectrumViewer::~spectrumViewer	(void) {
+	spectrumViewer::~spectrumViewer() {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
 	myFrame		-> hide();
@@ -221,15 +221,15 @@ void	spectrumViewer::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	spectrumViewer::show		(void) {
+void	spectrumViewer::show	() {
 	myFrame	-> show();
 }
 
-void	spectrumViewer::hide		(void) {
+void	spectrumViewer::hide	() {
 	myFrame	-> hide();
 }
 
-bool	spectrumViewer::isHidden	(void) {
+bool	spectrumViewer::isHidden() {
 	return myFrame -> isHidden();
 }
 

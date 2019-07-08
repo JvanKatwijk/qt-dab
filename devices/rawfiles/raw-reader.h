@@ -33,11 +33,11 @@ Q_OBJECT
 public:
 			rawReader	(rawFiles *,
 	                                 FILE *, RingBuffer<uint8_t> *); 
-			~rawReader	(void);
-	void		startReader	(void);
-	void		stopReader	(void);
+			~rawReader();
+	void		startReader();
+	void		stopReader();
 private:
-virtual void		run		(void);
+virtual void		run	();
 	FILE		*filePointer;
 	RingBuffer<uint8_t>	*theBuffer;
 	uint64_t	period;

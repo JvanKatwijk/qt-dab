@@ -95,7 +95,7 @@ int16_t	dabParams::get_carriers() {
 }
 
 
-int16_t	dabParams::get_T_null (void) {
+int16_t	dabParams::get_T_null() {
 	return T_null;
 }
 

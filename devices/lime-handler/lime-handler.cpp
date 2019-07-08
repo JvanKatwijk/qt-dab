@@ -168,7 +168,7 @@ lms_info_str_t limedevices [10];
 	running. store (false);
 }
 
-	limeHandler::~limeHandler	(void) {
+	limeHandler::~limeHandler() {
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -185,7 +185,7 @@ void	limeHandler::setVFOFrequency	(int32_t f) {
 	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, f);
 }
 
-int32_t	limeHandler::getVFOFrequency	(void) {
+int32_t	limeHandler::getVFOFrequency() {
 float_type freq;
 	int res = LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &freq);
 	return (int)freq;
@@ -202,7 +202,7 @@ void	limeHandler::setAntenna		(int ind) {
 	(void)LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
 }
 
-bool	limeHandler::restartReader	(void) {
+bool	limeHandler::restartReader() {
 int	res;
 
 	if (isRunning())
@@ -223,7 +223,7 @@ int	res;
 	return true;
 }
 	
-void	limeHandler::stopReader		(void) {
+void	limeHandler::stopReader	() {
 	if (!isRunning())
 	   return;
 	running. store (false);
@@ -237,15 +237,15 @@ int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
 	return theBuffer -> getDataFromBuffer (v, a);
 }
 
-int	limeHandler::Samples		(void) {
+int	limeHandler::Samples	() {
 	return theBuffer -> GetRingBufferReadAvailable();
 }
 
-void	limeHandler::resetBuffer	(void) {
+void	limeHandler::resetBuffer() {
 	theBuffer	-> FlushRingBuffer();
 }
 
-int16_t	limeHandler::bitDepth		(void) {
+int16_t	limeHandler::bitDepth	() {
 	return 12;
 }
 
@@ -255,7 +255,7 @@ void	limeHandler::showErrors		(int underrun, int overrun) {
 }
 
 
-void	limeHandler::run	(void) {
+void	limeHandler::run() {
 int	res;
 lms_stream_status_t streamStatus;
 int	underruns	= 0;
@@ -283,7 +283,7 @@ int	amountRead	= 0;
 	}
 }
 
-bool	limeHandler::load_limeFunctions	(void) {
+bool	limeHandler::load_limeFunctions() {
 
 	this	-> LMS_GetDeviceList = (pfn_LMS_GetDeviceList)
 	                    GETPROCADDRESS (Handle, "LMS_GetDeviceList");

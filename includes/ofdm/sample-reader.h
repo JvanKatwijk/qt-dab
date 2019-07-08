@@ -48,7 +48,7 @@ public:
 	                         	virtualInput *theRig,
 	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
 
-			~sampleReader	();
+			~sampleReader();
 		void	setRunning	(bool b);
 		float	get_sLevel();
 		std::complex<float> getSample	(int32_t);

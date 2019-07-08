@@ -61,7 +61,7 @@ typedef	int (*  pfnrtlsdr_read_async) (rtlsdr_dev_t *,
 	                               uint32_t);
 typedef int (*  pfnrtlsdr_cancel_async) (rtlsdr_dev_t *);
 typedef int (*  pfnrtlsdr_set_direct_sampling) (rtlsdr_dev_t *, int);
-typedef uint32_t (*  pfnrtlsdr_get_device_count) (void);
+typedef uint32_t (*  pfnrtlsdr_get_device_count)();
 typedef	int (* pfnrtlsdr_set_freq_correction)(rtlsdr_dev_t *, int);
 typedef	char *(* pfnrtlsdr_get_device_name)(int);
 }
@@ -72,17 +72,17 @@ class	rtlsdrHandler: public virtualInput, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *);
-			~rtlsdrHandler	(void);
+			~rtlsdrHandler();
 	void		setVFOFrequency	(int32_t);
-	int32_t		getVFOFrequency	(void);
+	int32_t		getVFOFrequency();
 //	interface to the reader
-	bool		restartReader	(void);
-	void		stopReader	(void);
+	bool		restartReader();
+	void		stopReader();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		(void);
-	void		resetBuffer	(void);
-	int16_t		maxGain		(void);
-	int16_t		bitDepth	(void);
+	int32_t		Samples	();
+	void		resetBuffer();
+	int16_t		maxGain	();
+	int16_t		bitDepth();
 //
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<uint8_t>	*_I_Buffer;
@@ -103,7 +103,7 @@ private:
 	bool		dumping;
 	FILE		*dumpfilePointer;
 //	here we need to load functions from the dll
-	bool		load_rtlFunctions	(void);
+	bool		load_rtlFunctions();
 	pfnrtlsdr_open	rtlsdr_open;
 	pfnrtlsdr_close	rtlsdr_close;
 	pfnrtlsdr_get_usb_strings rtlsdr_get_usb_strings;
@@ -127,7 +127,7 @@ private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
-	void		dumpButton_pressed	(void);
+	void		dumpButton_pressed();
 };
 #endif
 

@@ -34,7 +34,7 @@
 class	textMapper {
 public:
 	textMapper();
-	~textMapper	(void);
+	~textMapper();
 const
 char	*get_programm_type_string (int16_t type);
 const

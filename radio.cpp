@@ -1607,7 +1607,7 @@ QString defaultPath	= QDir::tempPath();
 	   testdir. mkdir (picturesPath);
 }
 
-void	RadioInterface::set_sourceDump	() {
+void	RadioInterface::set_sourceDump() {
 	if (sourceDumping)
 	   stop_sourceDumping();
 	else

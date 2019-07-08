@@ -34,7 +34,7 @@ class	dabProcessor;
 
 class	ensemblePrinter {
 public:
-		ensemblePrinter	();
+		ensemblePrinter();
 		~ensemblePrinter();
 	void	showEnsembleData	(QString, int32_t, QStringList,
 	                                 dabProcessor *, FILE *);

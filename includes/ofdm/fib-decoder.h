@@ -40,20 +40,20 @@ class	fibDecoder: public QObject {
 Q_OBJECT
 public:
 		fibDecoder		(RadioInterface *);
-		~fibDecoder	();
+		~fibDecoder();
 
-	void	clearEnsemble		(void);
-	bool	syncReached	();
+	void	clearEnsemble	();
+	bool	syncReached();
 	void	dataforAudioService	(const QString &,
 	                                      audiodata *, int16_t);
 	void	dataforPacketService	(const QString &,
 	                                      packetdata *, int16_t);
         uint8_t get_ecc();
-	int32_t	get_ensembleId	();
+	int32_t	get_ensembleId();
 	QString get_ensembleName();
-	int32_t	get_CIFcount		(void);
+	int32_t	get_CIFcount	();
 protected:
-	void	newFrame	();
+	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;

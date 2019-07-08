@@ -47,7 +47,7 @@ public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
 	                                         QString);
-			~mscHandler	();
+			~mscHandler();
 	void		processBlock_0		(std::complex<float> *);
 	void		process_Msc		(std::complex<float> *, int);
 	void		set_Channel		(descriptorType *,
@@ -56,10 +56,10 @@ public:
 //
 //	This function should be called beore issuing a request
 //	to handle a service
-	void		reset		();
+	void		reset	();
 //
 //	This function will kill
-	void		stop		();
+	void		stop	();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
 

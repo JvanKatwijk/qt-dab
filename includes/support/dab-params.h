@@ -31,13 +31,13 @@ public:
 			dabParams	(uint8_t);
 			~dabParams();
 	int16_t		get_dabMode();
-	int16_t		get_L	();
+	int16_t		get_L();
 	int16_t		get_carriers();
 	int16_t		get_T_null();
-	int16_t		get_T_s		(void);
-	int16_t		get_T_u		(void);
-	int16_t		get_T_g	();
-	int32_t		get_T_F	();
+	int16_t		get_T_s	();
+	int16_t		get_T_u	();
+	int16_t		get_T_g();
+	int32_t		get_T_F();
 	int32_t		get_carrierDiff();
 	int16_t		get_CIFs();
 private:

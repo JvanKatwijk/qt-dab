@@ -38,11 +38,11 @@ virtual			~virtualInput();
 virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency();
 virtual		int32_t	defaultFrequency();
-virtual		bool	restartReader	(void);
+virtual		bool	restartReader();
 virtual		void	stopReader();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
-virtual		int32_t	Samples	();
-virtual		void	resetBuffer	(void);
+virtual		int32_t	Samples();
+virtual		void	resetBuffer();
 virtual		int16_t	bitDepth() { return 10;}
 virtual		int32_t	getOffset();
 virtual		void	setOffset	(int32_t);

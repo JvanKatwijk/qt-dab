@@ -50,7 +50,7 @@ class IQDisplay: public QObject, public QwtPlotSpectrogram {
 Q_OBJECT
 public:
 	IQDisplay		(QwtPlot *, int16_t);
-	~IQDisplay		(void);
+	~IQDisplay	();
 void	DisplayIQ		(std::complex<float> *, float);
 private:
 	int32_t			x_amount;

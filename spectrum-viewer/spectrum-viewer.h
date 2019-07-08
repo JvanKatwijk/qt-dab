@@ -56,8 +56,8 @@ public:
 	void		showIQ		(int32_t);
 	void		showQuality	(float);
 	void		setBitDepth	(int16_t);
-	void		show	();
-	void		hide	();
+	void		show();
+	void		hide();
 	bool		isHidden();
 private:
 	RadioInterface	*myRadioInterface;

@@ -57,7 +57,7 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
 	                                 QString);
-			~mp2Processor	(void);
+			~mp2Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 	void		setFile		(FILE *);
 
