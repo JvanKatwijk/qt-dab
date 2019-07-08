@@ -44,7 +44,7 @@ int32_t pointer = 7;
 
 	headerSize     =
              ((segment [3] & 0x0F) << 9) |
-	               (segment [4] << 1) | ((segment [5] >> 7) && 0x01);
+                   (segment [4] << 1) | ((segment [5] >> 7));
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);

@@ -109,7 +109,7 @@ static const char *classificationScheme [] = {
     "ContentalertCS",
     "MediaTypeCS",
     "AtmosphereCS",
-    nullptr, nullptr, nullptr, nullptr, 0, nullptr, nullptr
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 };
 
 
@@ -177,8 +177,8 @@ static dectab attribute_tags_name[] = {
 };
 
 static dectab attribute_tags10[] = {
-    {"mimeValue", 0, string_attr},
-    {"xml:lang", 0, string_attr},
+    {"mimeValue", nullptr, string_attr},
+    {"xml:lang", nullptr, string_attr},
     {"url", nullptr, string_attr},
     {"type", enums10, enum_attr},
     {"width", nullptr, u16_attr},
@@ -206,20 +206,20 @@ static dectab attribute_tags13[] = {
 static dectab attribute_tags14[] = {
     {"url", nullptr, string_attr},
     {"mimeValue", nullptr, string_attr},
-    {"xml:lang", 0, string_attr},
+    {"xml:lang", nullptr, string_attr},
     {"description", nullptr, string_attr},
-    {"expiryTime", 0, datetime_attr}
+    {"expiryTime", nullptr, datetime_attr}
 };
 
 static dectab attribute_tags15[] = {
-    {"id", 0, string_attr},
+    {"id", nullptr, string_attr},
     {"shortId", nullptr, u24_attr},
-    {"version", 0, u16_attr},
+    {"version", nullptr, u16_attr},
     {"recommendation", enums9, enum_attr},
     {"broadcast", enums8, enum_attr},
     {"Not used", nullptr, nu_attr},
     {"xml:lang", nullptr, string_attr},
-    {"bitrate", 0, string_attr}
+    {"bitrate", nullptr, string_attr}
 };
 
 static dectab attribute_tags_genre[] = {

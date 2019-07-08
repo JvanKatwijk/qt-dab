@@ -20,6 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"dab-processor.h"
+
+#include <utility>
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
@@ -58,7 +60,7 @@
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
-	                                                picturesPath),
+	                                                std::move(picturesPath)),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
                                                             threshold,

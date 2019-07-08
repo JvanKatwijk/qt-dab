@@ -50,8 +50,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	                                       2 * Radius,
 	                                       50.0);
 	this		-> setData (IQData);
-	plot		-> enableAxis (QwtPlot::xBottom, 0);
-	plot		-> enableAxis (QwtPlot::yLeft, 0);
+	plot		-> enableAxis (QwtPlot::xBottom, false);
+	plot		-> enableAxis (QwtPlot::yLeft, false);
 	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	plotgrid	-> replot();
 }

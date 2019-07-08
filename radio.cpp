@@ -351,7 +351,7 @@ void	RadioInterface::doStart (QString dev) {
 //
 //	when doStart is called, a device is available and selected
 void	RadioInterface::doStart() {
-bool	r = 0;
+bool	r = false;
 int32_t	frequency;
 
 	QString h       = dabSettings -> value ("channel", "12C"). toString();

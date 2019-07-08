@@ -252,7 +252,7 @@ char	manufac [256], product [256], serial [256];
 }
 
 	rtlsdrHandler::~rtlsdrHandler() {
-	if (Handle == NULL) {	// nothing achieved earlier on
+	if (Handle == nullptr) {	// nothing achieved earlier on
 	   delete myFrame;
 	   return;
 	}
