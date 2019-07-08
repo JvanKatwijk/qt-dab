@@ -71,7 +71,7 @@
 #endif
 
 #include <algorithm>
-#include <time.h>
+#include <ctime>
 #ifdef _WIN32
 # include <windows.h> // for GetTickCount
 #endif

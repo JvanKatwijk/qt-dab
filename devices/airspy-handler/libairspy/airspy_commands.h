@@ -22,7 +22,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #ifndef __AIRSPY_COMMANDS_H__
 #define __AIRSPY_COMMANDS_H__
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C"

@@ -2,7 +2,7 @@
 #ifndef	__COUNTRY_CODES__
 #define	__COUNTRY_CODES__
 
-#include	<stdint.h>
+#include	<cstdint>
 
 struct country_codes {
 	uint8_t ecc;

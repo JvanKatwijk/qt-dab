@@ -24,7 +24,7 @@
 extern "C" {
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 #include <rtl-sdr_export.h>
 
 typedef struct rtlsdr_dev rtlsdr_dev_t;

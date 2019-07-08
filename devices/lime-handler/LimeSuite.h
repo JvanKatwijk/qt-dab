@@ -21,8 +21,8 @@
 #ifndef LMS7_API_H
 #define LMS7_API_H
 
-#include <stdint.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 #include "LMS7002M_parameters.h"
 
 #ifdef __cplusplus
