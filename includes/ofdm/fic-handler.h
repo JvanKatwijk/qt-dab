@@ -42,9 +42,9 @@ class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
-		~ficHandler		(void);
+		~ficHandler	();
 	void	process_ficBlock	(std::vector<int16_t>, int16_t);
-	void	stop			(void);
+	void	stop		();
 	void	reset			(void);
 private:
 	dabParams	params;

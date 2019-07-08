@@ -13,7 +13,7 @@
 class	dataDescriptor : public serviceDescriptor, public Ui_dataDescription {
 public:
 		dataDescriptor		(packetdata *ad);
-		~dataDescriptor	(void);
+		~dataDescriptor();
 private:
 	QFrame	myFrame;
 	textMapper      the_textMapper;

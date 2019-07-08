@@ -33,7 +33,7 @@ class	motDirectory;
 class	motHandler:public virtual_dataHandler {
 public:
 		motHandler	(RadioInterface *, QString );
-		~motHandler	(void);
+		~motHandler();
 	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;

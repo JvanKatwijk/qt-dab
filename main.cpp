@@ -58,7 +58,7 @@ QString fileName;
 	qDebug() << fileName;
 #else
 
-	fileName = QDir::homePath ();
+	fileName = QDir::homePath();
 	fileName. append ("/");
 	fileName. append (v);
 	fileName = QDir::toNativeSeparators (fileName);
@@ -108,7 +108,7 @@ int     opt;
  */
 	QApplication a (argc, argv);
 //	setting the language
-	QString locale = QLocale::system (). name ();
+	QString locale = QLocale::system(). name();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (locale);
 
@@ -121,8 +121,8 @@ int     opt;
 #if QT_VERSION >= 0x050600
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
-	MyRadioInterface -> show ();
-        a. exec ();
+	MyRadioInterface -> show();
+        a. exec();
 /*
  *      done:
  */

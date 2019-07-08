@@ -38,19 +38,19 @@
 
 	theFrame		= new QFrame;
 	setupUi (theFrame);
-	this	-> theFrame	-> show ();
+	this	-> theFrame	-> show();
 
     //	setting the defaults and constants
 	theRate		= 2048000;
 	remoteSettings	-> beginGroup ("rtl_tcp_client");
 	theGain		= remoteSettings ->
-	                          value ("rtl_tcp_client-gain", 20). toInt ();
+	                          value ("rtl_tcp_client-gain", 20). toInt();
 	thePpm		= remoteSettings ->
-	                          value ("rtl_tcp_client-ppm", 0). toInt ();
+	                          value ("rtl_tcp_client-ppm", 0). toInt();
 	vfoOffset	= remoteSettings ->
-	                          value ("rtl_tcp_client-offset", 0). toInt ();
+	                          value ("rtl_tcp_client-offset", 0). toInt();
 	basePort = remoteSettings -> value ("rtl_tcp_port", 1234).toInt();
-	remoteSettings	-> endGroup ();
+	remoteSettings	-> endGroup();
 	tcp_gain	-> setValue (theGain);
 	tcp_ppm		-> setValue (thePpm);
 	vfoFrequency	= DEFAULT_FREQUENCY;
@@ -75,17 +75,17 @@
 	rtl_tcp_client::~rtl_tcp_client	(void) {
 	remoteSettings ->  beginGroup ("rtl_tcp_client");
 	if (connected) {		// close previous connection
-	   stopReader	();
-//	   streamer. close ();
+	   stopReader();
+//	   streamer. close();
 	   remoteSettings -> setValue ("remote-server",
-	                               toServer. peerAddress (). toString ());
+	                               toServer. peerAddress(). toString());
 	   QByteArray datagram;
 	}
 	remoteSettings -> setValue ("rtl_tcp_client-gain",   theGain);
 	remoteSettings -> setValue ("rtl_tcp_client-ppm",    thePpm);
 	remoteSettings -> setValue ("rtl_tcp_client-offset", vfoOffset);
-	remoteSettings -> endGroup ();
-	toServer. close ();
+	remoteSettings -> endGroup();
+	toServer. close();
 	delete	theBuffer;
 	delete	hostLineEdit;
 	delete	theFrame;
@@ -101,23 +101,23 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	// use the first non-localhost IPv4 address
 	for (i = 0; i < ipAddressesList.size(); ++i) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
-	      ipAddressesList. at (i). toIPv4Address ()) {
+	      ipAddressesList. at (i). toIPv4Address()) {
 	      ipAddress = ipAddressesList. at(i). toString();
 	      break;
 	   }
 	}
 	// if we did not find one, use IPv4 localhost
 	if (ipAddress. isEmpty())
-	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString ();
+	   ipAddress = QHostAddress (QHostAddress::LocalHost).toString();
 	remoteSettings -> beginGroup ("rtl_tcp_client");
 	ipAddress = remoteSettings ->
-	                value ("remote-server", ipAddress). toString ();
-	remoteSettings -> endGroup ();
+	                value ("remote-server", ipAddress). toString();
+	remoteSettings -> endGroup();
 	hostLineEdit -> setText (ipAddress);
 
 	hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
-	hostLineEdit	-> show ();
+	hostLineEdit	-> show();
 	state	-> setText ("Enter IP address, \nthen press return");
 	connect (hostLineEdit, SIGNAL (returnPressed (void)),
 	         this, SLOT (setConnection (void)));
@@ -128,7 +128,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
 void	rtl_tcp_client::setConnection (void) {
-QString s	= hostLineEdit -> text ();
+QString s	= hostLineEdit -> text();
 QHostAddress theAddress	= QHostAddress (s);
 
 	serverAddress	= QHostAddress (s);
@@ -144,7 +144,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	sendGain (theGain);
 	sendRate (theRate);
 	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
-	toServer. waitForBytesWritten ();
+	toServer. waitForBytesWritten();
 	state -> setText ("Connected");
 	connected	= true;
 }
@@ -204,7 +204,7 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 }
 
 int32_t	rtl_tcp_client::Samples	(void) {
-	return  theBuffer	-> GetRingBufferReadAvailable () / 2;
+	return  theBuffer	-> GetRingBufferReadAvailable() / 2;
 }
 //
 int16_t	rtl_tcp_client::bitDepth	(void) {
@@ -214,7 +214,7 @@ int16_t	rtl_tcp_client::bitDepth	(void) {
 //	These functions are typical for network use
 void	rtl_tcp_client::readData	(void) {
 uint8_t	buffer [8192];
-	while (toServer. bytesAvailable () > 8192) {
+	while (toServer. bytesAvailable() > 8192) {
 	   toServer. read ((char *)buffer, 8192);
 	   theBuffer -> putDataIntoBuffer (buffer, 8192);
 	}
@@ -239,7 +239,7 @@ QByteArray datagram;
 	datagram [3] = (param >> ONE_BYTE) & 0xFF;
 	datagram [2] = (param >> (2 * ONE_BYTE)) & 0xFF;
 	datagram [1] = (param >> (3 * ONE_BYTE)) & 0xFF;
-	toServer. write (datagram. data (), datagram. size ());
+	toServer. write (datagram. data(), datagram. size());
 }
 
 void rtl_tcp_client::sendVFO (int32_t frequency) {
@@ -267,14 +267,14 @@ void	rtl_tcp_client::set_fCorrection	(int32_t ppm) {
 
 void	rtl_tcp_client::setDisconnect (void) {
 	if (connected) {		// close previous connection
-	   stopReader	();
+	   stopReader();
 	   remoteSettings -> beginGroup ("rtl_tcp_client");
 	   remoteSettings -> setValue ("remote-server",
-	                               toServer. peerAddress (). toString ());
+	                               toServer. peerAddress(). toString());
 	   remoteSettings -> setValue ("rtl_tcp_client-gain", theGain);
 	   remoteSettings -> setValue ("rtl_tcp_client-ppm", thePpm);
-	   remoteSettings -> endGroup ();
-	   toServer. close ();
+	   remoteSettings -> endGroup();
+	   toServer. close();
 	}
 	connected	= false;
 	connectedLabel	-> setText (" ");

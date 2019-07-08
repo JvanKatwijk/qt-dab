@@ -41,8 +41,8 @@ class rscodec {
 public:
 	// GF(2^m), error correction capability t,
 	// start_j is the starting exponent in the generator polynomial
-	rscodec (void);
-	 ~rscodec ();
+	rscodec();
+	 ~rscodec();
 // decode shortened code
 	int16_t dec (const uint8_t *r, uint8_t *d, int16_t cutlen = 135);
 //	encode shortened code, cutlen bytes were shortened

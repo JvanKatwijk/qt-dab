@@ -79,18 +79,18 @@
 	}
 }
 
-	dabParams::~dabParams (void) {
+	dabParams::~dabParams() {
 }
 
-int16_t	dabParams::get_dabMode (void) {
+int16_t	dabParams::get_dabMode() {
 	return dabMode;
 }
 
-int16_t dabParams::get_L (void) {
+int16_t dabParams::get_L() {
 	return L;
 }
 
-int16_t	dabParams::get_carriers (void) {
+int16_t	dabParams::get_carriers() {
 	return K;
 }
 
@@ -99,27 +99,27 @@ int16_t	dabParams::get_T_null (void) {
 	return T_null;
 }
 
-int16_t	dabParams::get_T_s (void) {
+int16_t	dabParams::get_T_s() {
 	return T_s;
 }
 
-int16_t	dabParams::get_T_u (void) {
+int16_t	dabParams::get_T_u() {
 	return T_u;
 }
 
-int16_t	dabParams::get_T_g (void) {
+int16_t	dabParams::get_T_g() {
 	return T_g;
 }
 
-int32_t	dabParams::get_T_F (void) {
+int32_t	dabParams::get_T_F() {
 	return T_F;
 }
 
-int32_t	dabParams::get_carrierDiff (void) {
+int32_t	dabParams::get_carrierDiff() {
 	return carrierDiff;
 }
 
-int16_t	dabParams::get_CIFs	(void) {
+int16_t	dabParams::get_CIFs() {
 	return CIFs;
 }
 

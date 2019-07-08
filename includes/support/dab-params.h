@@ -29,17 +29,17 @@
 class	dabParams {
 public:
 			dabParams	(uint8_t);
-			~dabParams	(void);
-	int16_t		get_dabMode	(void);
-	int16_t		get_L		(void);
-	int16_t		get_carriers	(void);
-	int16_t		get_T_null	(void);
+			~dabParams();
+	int16_t		get_dabMode();
+	int16_t		get_L	();
+	int16_t		get_carriers();
+	int16_t		get_T_null();
 	int16_t		get_T_s		(void);
 	int16_t		get_T_u		(void);
-	int16_t		get_T_g		(void);
-	int32_t		get_T_F		(void);
-	int32_t		get_carrierDiff (void);
-	int16_t		get_CIFs	(void);
+	int16_t		get_T_g	();
+	int32_t		get_T_F	();
+	int32_t		get_carrierDiff();
+	int16_t		get_CIFs();
 private:
 	uint8_t		dabMode;
 	int16_t		L;

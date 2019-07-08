@@ -260,7 +260,7 @@ int16_t *nPtr = &N [0][0];
 	errorFrames	= 0;
 }
 
-	mp2Processor::~mp2Processor (void) {
+	mp2Processor::~mp2Processor() {
 	delete[] MP2frame;
 }
 //
@@ -608,7 +608,7 @@ int16_t	vLength	= 24 * bitRate / 8;
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
 	            buffer -> putDataIntoBuffer (sample_buf, 
 	                                 2 * (int32_t)KJMP2_SAMPLES_PER_FRAME);
-	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
+	            if (buffer -> GetRingBufferReadAvailable() > baudRate / 8)
 	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate);
 	         }

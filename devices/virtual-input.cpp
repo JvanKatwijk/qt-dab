@@ -25,14 +25,14 @@
  */
 #include	"virtual-input.h"
 
-	virtualInput::virtualInput (void) {
+	virtualInput::virtualInput() {
 	lastFrequency	= 100000;
 	vfoOffset	= 0;
 	theGain		= 50;
 	coarseOffset	= 0;
 }
 
-	virtualInput::~virtualInput (void) {
+	virtualInput::~virtualInput() {
 }
 
 void	virtualInput::setVFOFrequency (int32_t f) {
@@ -43,11 +43,11 @@ int32_t	virtualInput::getVFOFrequency	(void) {
 	return lastFrequency;
 }
 
-bool	virtualInput::restartReader	(void) {
+bool	virtualInput::restartReader() {
 	return true;
 }
 
-void	virtualInput::stopReader	(void) {
+void	virtualInput::stopReader() {
 }
 
 int32_t	virtualInput::getSamples	(std::complex<float> *v, int32_t amount) {
@@ -56,22 +56,22 @@ int32_t	virtualInput::getSamples	(std::complex<float> *v, int32_t amount) {
 	return amount;
 }
 
-int32_t	virtualInput::Samples		(void) {
+int32_t	virtualInput::Samples	() {
 	return 1024;
 }
 
-int32_t	virtualInput::defaultFrequency	(void) {
+int32_t	virtualInput::defaultFrequency() {
 	return Khz (220000);
 }
 
-void	virtualInput::resetBuffer	(void) {
+void	virtualInput::resetBuffer() {
 }
 
 void	virtualInput::setOffset		(int32_t o) {
 	coarseOffset = o;
 }
 
-int32_t	virtualInput::getOffset		(void) {
+int32_t	virtualInput::getOffset	() {
 	return coarseOffset;
 }
 

@@ -53,7 +53,7 @@ int32_t i, j;
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
-	   memset (interleaveData [i]. data (), 0,
+	   memset (interleaveData [i]. data(), 0,
 	                               fragmentSize * sizeof (int16_t));
 	}
 
@@ -79,14 +79,14 @@ int32_t i, j;
 	for (i = 0; i < 20; i ++)
 	   theData [i]. resize (fragmentSize);
 	running. store (true);
-	start ();
+	start();
 #endif
 }
 
-	Backend::~Backend (void) {
+	Backend::~Backend() {
 #ifdef	__THREADED_BACKEND
 	running. store (false);
-	while (this -> isRunning ())
+	while (this -> isRunning())
 	   usleep (1000);
 #endif
 }
@@ -97,9 +97,9 @@ int32_t	Backend::process	(int16_t *v, int16_t cnt) {
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
-	memcpy (theData [nextIn]. data (), v, fragmentSize * sizeof (int16_t));
+	memcpy (theData [nextIn]. data(), v, fragmentSize * sizeof (int16_t));
 	nextIn = (nextIn + 1) % 20;
-	usedSlots. release ();
+	usedSlots. release();
 #else
 	processSegment (v);
 #endif
@@ -119,7 +119,7 @@ int16_t	i;
 	interleaverIndex = (interleaverIndex + 1) & 0x0F;
 #ifdef	__THREADED_BACKEND
 	nextOut = (nextOut + 1) % 20;
-	freeSlots. release ();
+	freeSlots. release();
 #endif
 
 //	only continue when de-interleaver is filled
@@ -128,7 +128,7 @@ int16_t	i;
 	   return;
 	}
 
-	deconvolver. deconvolve (tempX. data (), fragmentSize, outV. data ());
+	deconvolver. deconvolve (tempX. data(), fragmentSize, outV. data());
 //	and the energy dispersal
 	for (i = 0; i < bitRate * 24; i ++)
 	   outV [i] ^= disperseVector [i];
@@ -137,24 +137,24 @@ int16_t	i;
 }
 
 #ifdef	__THREADED_BACKEND
-void	Backend::run	(void) {
+void	Backend::run() {
 
-	while (running. load ()) {
+	while (running. load()) {
 	   while (!usedSlots. tryAcquire (1, 200)) 
 	      if (!running)
 	         return;
-	   processSegment (theData [nextOut]. data ());
+	   processSegment (theData [nextOut]. data());
 	}
 }
 #endif
 
 //	It might take a msec for the task to stop
-void	Backend::stopRunning (void) {
+void	Backend::stopRunning() {
 #ifdef	__THREADED_BACKEND
 	running = false;
-	while (this -> isRunning ())
+	while (this -> isRunning())
 	   usleep (1);
-//	myAudioSink	-> stop ();
+//	myAudioSink	-> stop();
 #endif
 }
 

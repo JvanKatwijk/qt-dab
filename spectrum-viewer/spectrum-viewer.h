@@ -51,14 +51,14 @@ public:
 	                                 QSettings	*,
 	                                 RingBuffer<std::complex<float>> *,
 	                                 RingBuffer<std::complex<float>> *);
-			~spectrumViewer	(void);
+			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
 	void		showIQ		(int32_t);
 	void		showQuality	(float);
 	void		setBitDepth	(int16_t);
-	void		show		(void);
-	void		hide		(void);
-	bool		isHidden	(void);
+	void		show	();
+	void		hide	();
+	bool		isHidden();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;

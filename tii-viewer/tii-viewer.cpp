@@ -44,9 +44,9 @@ QColor	curveColor;
 	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 
-	this	-> myFrame	-> hide ();
+	this	-> myFrame	-> hide();
 	displayBuffer. resize (displaySize);
-	memset (displayBuffer. data (), 0, displaySize * sizeof (double));
+	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 4 * displaySize;
 	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
@@ -80,7 +80,7 @@ QColor	curveColor;
 	spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);
 	
-	Marker		= new QwtPlotMarker ();
+	Marker		= new QwtPlotMarker();
 	Marker		-> setLineStyle (QwtPlotMarker::VLine);
 	Marker		-> setLinePen (QPen (Qt::red));
 	Marker		-> attach (plotgrid);
@@ -97,7 +97,7 @@ QColor	curveColor;
 	tiiViewer::~tiiViewer	(void) {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
-	myFrame		-> hide ();
+	myFrame		-> hide();
 	delete		Marker;
 	delete		ourBrush;
 	delete		spectrumCurve;
@@ -110,16 +110,16 @@ void	tiiViewer::clear		(void) {
 }
 
 void	tiiViewer::showSecondaries	(std::vector<int> data) {
-	if (myFrame	-> isHidden ())
+	if (myFrame	-> isHidden())
 	   return;
 
-	if (data. size () == 0) {
+	if (data. size() == 0) {
 	   secondariesDisplay	-> setText (" ");
 	   return;
 	}
 
 	QString t	= "transmitter IDs ";
-	for (int i = 0; i < data. size (); i ++) {
+	for (int i = 0; i < data. size(); i ++) {
 	   int mainId	= data. at (i) >> 8;
 	   int subId	= data. at (i) & 0xFF;
 	   char temp [255];
@@ -138,12 +138,12 @@ int16_t	averageCount	= 3;
 
 	   
 	(void)amount;
-	if (tiiBuffer -> GetRingBufferReadAvailable () < spectrumSize)
+	if (tiiBuffer -> GetRingBufferReadAvailable() < spectrumSize)
 	   return;
 
 	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
-	tiiBuffer	-> FlushRingBuffer ();
-	if (myFrame	-> isHidden ())
+	tiiBuffer	-> FlushRingBuffer();
+	if (myFrame	-> isHidden())
 	   return;
 //	and window it
 //	first X axis labels
@@ -183,9 +183,9 @@ int16_t	averageCount	= 3;
 	}
 
 	memcpy (Y_values,
-	        displayBuffer. data (), displaySize * sizeof (double));
+	        displayBuffer. data(), displaySize * sizeof (double));
 	ViewSpectrum (X_axis, Y_values,
-	              AmplificationSlider -> value (),
+	              AmplificationSlider -> value(),
 	              0 / 1000);
 }
 
@@ -232,15 +232,15 @@ void	tiiViewer::setBitDepth	(int16_t d) {
 }
 
 void	tiiViewer::show		(void) {
-	myFrame	-> show ();
+	myFrame	-> show();
 }
 
 void	tiiViewer::hide		(void) {
-	myFrame	-> hide ();
+	myFrame	-> hide();
 }
 
 bool	tiiViewer::isHidden	(void) {
-	return myFrame -> isHidden ();
+	return myFrame -> isHidden();
 }
 
 

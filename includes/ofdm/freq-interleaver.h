@@ -35,7 +35,7 @@
 class	interLeaver {
 public:
 		interLeaver	(uint8_t);
-		~interLeaver	(void);
+		~interLeaver();
 	int16_t	mapIn		(int16_t);
 private:
 	dabParams	p;

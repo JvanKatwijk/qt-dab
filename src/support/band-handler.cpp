@@ -92,13 +92,13 @@ struct dabFrequencies Lband_frequencies [] = {
 {nullptr, 0}
 };
 
-	bandHandler::bandHandler (void) {}
-	bandHandler::~bandHandler (void) {}
+	bandHandler::bandHandler() {}
+	bandHandler::~bandHandler() {}
 
 void	bandHandler::setupChannels (QComboBox *s, uint8_t band) {
 struct dabFrequencies *t;
 int16_t	i;
-int16_t	c	= s -> count ();
+int16_t	c	= s -> count();
 
 //	clear the fields in the comboBox
 	for (i = 0; i < c; i ++) 

@@ -42,7 +42,7 @@ int	rc;
 	fprintf (stderr, "going to load %s\n", hwLibname);
 	hwHandle	= dlopen (hwLibname, RTLD_NOW);
 	if (hwHandle == NULL) {
-	   fprintf (stderr, "error report %s\n", dlerror ());
+	   fprintf (stderr, "error report %s\n", dlerror());
 	   libusb_close (dev_handle);
 	   return;
 	}
@@ -60,7 +60,7 @@ int	rc;
 	fprintf (stderr, "going to load %s\n", cwLibname);
 	cwHandle	= dlopen (cwLibname, RTLD_NOW);
 	if (cwHandle == NULL) {
-	   fprintf (stderr, "error report %s\n", dlerror ());
+	   fprintf (stderr, "error report %s\n", dlerror());
 	   dlclose (hwHandle);
 	   return;
 	}
@@ -92,7 +92,7 @@ int	rc;
 //
 //	We first open the USB lib
 	usb_OK		= false;
-	dev_handle	= startUSB ();
+	dev_handle	= startUSB();
 	if (dev_handle == NULL)  {
 	   *success = -2;
 	   return;
@@ -125,8 +125,8 @@ int	rc;
 
 	eladLoader::~eladLoader	(void) {
 	if (hardware_OK) {
-	   StopHW	();
-	   CloseHW ();
+	   StopHW();
+	   CloseHW();
 	}
 	if (usb_OK)
 	   libusb_close (dev_handle);

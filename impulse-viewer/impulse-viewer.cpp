@@ -70,8 +70,8 @@ QColor	curveColor;
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 }
 
-	impulseViewer::~impulseViewer	(void) {
-	myFrame		-> hide ();
+	impulseViewer::~impulseViewer() {
+	myFrame		-> hide();
 	delete		ourBrush;
 	delete		spectrumCurve;
 	delete		grid;
@@ -92,11 +92,11 @@ QString theText;
 	   return;
 	}
 
-	if (indexVector. size () < 2)
+	if (indexVector. size() < 2)
 	   theText	= QString (" ");
 	else {
 	   theText	= QString (" trans ");
-	   for (int i = 1; i < indexVector. size (); i ++) {
+	   for (int i = 1; i < indexVector. size(); i ++) {
 	      char t [255];
 	      sprintf (t, " (%d -> %d msec) ", i,
 	                      (indexVector. at (i) - indexVector. at (0)) / 2);
@@ -106,16 +106,16 @@ QString theText;
 	indexDisplay -> setText (theText);
 }
 
-void	impulseViewer::show	(void) {
-	myFrame		-> show ();
+void	impulseViewer::show() {
+	myFrame		-> show();
 }
 
-void	impulseViewer::hide	(void) {
-	myFrame		-> hide ();
+void	impulseViewer::hide() {
+	myFrame		-> hide();
 }
 
 bool	impulseViewer::isHidden	(void) {
-	return myFrame	-> isHidden ();
+	return myFrame	-> isHidden();
 }
 
 
@@ -128,7 +128,7 @@ double Y_values [dots];
 float	mmax	= 0;
 
 	responseBuffer	-> getDataFromBuffer (data, dots);
-	if (myFrame -> isHidden ())
+	if (myFrame -> isHidden())
 	   return;
 
 	for (i = 0; i < dots; i ++) 

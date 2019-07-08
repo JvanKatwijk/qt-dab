@@ -26,7 +26,7 @@
 //	Whenever there are two or more RT2832 based sticks connected
 //	to the computer, the user is asked to make a choice.
 
-	rtl_dongleSelect::rtl_dongleSelect (void) {
+	rtl_dongleSelect::rtl_dongleSelect() {
 	toptext		= new QLabel (this);
 	toptext		-> setText ("Select a dongle");
 	selectorDisplay	= new QListView (this);
@@ -37,7 +37,7 @@
 	setLayout (layOut);
 
 	dongleList. setStringList (Dongles);
-	Dongles = QStringList ();
+	Dongles = QStringList();
 	dongleList. setStringList (Dongles);
 	selectorDisplay	-> setModel (&dongleList);
 	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),
@@ -45,7 +45,7 @@
 	selectedItem	= -1;
 }
 
-	rtl_dongleSelect::~rtl_dongleSelect (void) {
+	rtl_dongleSelect::~rtl_dongleSelect() {
 }
 
 void	rtl_dongleSelect::addtoDongleList (const char *v) {
@@ -54,11 +54,11 @@ QString s (v);
 	Dongles << s;
 	dongleList. setStringList (Dongles);
 	selectorDisplay	-> setModel (&dongleList);
-	selectorDisplay	-> adjustSize ();
-	adjustSize ();
+	selectorDisplay	-> adjustSize();
+	adjustSize();
 }
 
 void	rtl_dongleSelect::selectDongle (QModelIndex s) {
-	QDialog::done (s. row ());
+	QDialog::done (s. row());
 }
 

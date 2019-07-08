@@ -30,7 +30,7 @@ class	viterbiHandler {
 
 public:
 		viterbiHandler	(int, bool);
-		~viterbiHandler	(void);
+		~viterbiHandler();
 	void	deconvolve	(int16_t *, uint8_t *);
 private:
 	int     costTable [16];

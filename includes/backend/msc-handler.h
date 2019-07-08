@@ -47,7 +47,7 @@ public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
 	                                         QString);
-			~mscHandler		(void);
+			~mscHandler	();
 	void		processBlock_0		(std::complex<float> *);
 	void		process_Msc		(std::complex<float> *, int);
 	void		set_Channel		(descriptorType *,
@@ -56,10 +56,10 @@ public:
 //
 //	This function should be called beore issuing a request
 //	to handle a service
-	void		reset			(void);
+	void		reset		();
 //
 //	This function will kill
-	void		stop			(void);
+	void		stop		();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
 
@@ -82,12 +82,12 @@ private:
 	int16_t		BitsperBlock;
 	int16_t		numberofblocksperCIF;
 	int16_t		blockCount;
-	void            run             (void);
+	void            run();
         std::atomic<bool>       running;
         std::vector<std::vector<std::complex<float> > > command;
         int16_t         amount;
         int16_t         currentBlock;
-        void            processBlock_0	(void);
+        void            processBlock_0();
         void            processMsc	(int32_t n);
         QSemaphore      bufferSpace;
         QWaitCondition  commandHandler;

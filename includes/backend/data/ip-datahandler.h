@@ -34,7 +34,7 @@ Q_OBJECT
 public:
 		ip_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *);
-		~ip_dataHandler		(void);
+		~ip_dataHandler	();
 	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 	void	process_ipVector	(std::vector<uint8_t>);

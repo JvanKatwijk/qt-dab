@@ -38,7 +38,7 @@ public:
 	                                 int32_t,
 	                                 int16_t,
 	                                 uint8_t *);
-			~motDirectory	(void);
+			~motDirectory();
 	motObject	*getHandle	(uint16_t);
 	void		setHandle	(motObject *, uint16_t);
 	void		directorySegment (uint16_t transportId,
@@ -46,7 +46,7 @@ public:
                                         int16_t segmentNumber,
                                         int32_t segmentSize,
                                         bool    lastSegment);
-	uint16_t	get_transportId	(void);
+	uint16_t	get_transportId();
 private:
 	void		analyse_theDirectory (void);
 	uint16_t	transportId;

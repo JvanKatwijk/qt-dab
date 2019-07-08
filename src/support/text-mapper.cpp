@@ -24,10 +24,10 @@
 #include	"text-mapper.h"
 
 
-	textMapper :: textMapper (void) {
+	textMapper :: textMapper() {
 }
 
-	textMapper :: ~textMapper (void) {
+	textMapper :: ~textMapper() {
 }
 
 static 

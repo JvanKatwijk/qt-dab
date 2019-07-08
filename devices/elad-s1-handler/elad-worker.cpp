@@ -70,17 +70,17 @@ int	i;
 	fprintf (stderr, "mapTables initialized\n");
 //
 	fprintf (stderr, "testing functions\n");
-	if (!functions	-> OK ())
+	if (!functions	-> OK())
 	   return;
 	lastFrequency		= defaultFreq;	// the parameter!!!!
 	runnable		= true;
 	fprintf (stderr, "functions are OK\n");
-	functions	-> StartFIFO (functions -> getHandle ());
+	functions	-> StartFIFO (functions -> getHandle());
 	connect (this, SIGNAL (show_eladFrequeny (int)),
 	         h, SLOT (show_eladFrequency (int)));
 	connect (this, SIGNAL (show_iqSwitch (bool)),
 	         h, SLOT (show_iqSwitch (bool)));
-	start ();
+	start();
 	*OK			= true;
 }
 
@@ -88,13 +88,13 @@ int	i;
 //	be done carefully.
 void	eladWorker::stop	(void) {
 	if (runnable)
-	   functions	-> StopFIFO (functions -> getHandle ());
+	   functions	-> StopFIFO (functions -> getHandle());
 	runnable	= false;
 }
 
 	eladWorker::~eladWorker	(void) {
-	stop ();
-	while (isRunning ())
+	stop();
+	while (isRunning())
 	   msleep (1);
 	delete _I_Buffer;
 	delete [] convBuffer;
@@ -204,12 +204,12 @@ int32_t	amount;
 int	rc, i;
 
 //	when (re)starting, clean up first
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer	-> FlushRingBuffer();
 
 	fprintf (stderr, "worker thread started\n");
 
 	while (runnable) {
-	   rc = libusb_bulk_transfer (functions -> getHandle (),
+	   rc = libusb_bulk_transfer (functions -> getHandle(),
 	                              (6 | LIBUSB_ENDPOINT_IN),
 	                              (uint8_t *)buffer,
 	                              BUFFER_SIZE * sizeof (uint8_t),
@@ -227,7 +227,7 @@ int	rc, i;
 //	Since we do not know whether the amount read is a multiple
 //	of iqSize, we use an intermediate buffer
 	   _I_Buffer	-> putDataIntoBuffer (buffer, amount);
-	   while (_I_Buffer -> GetRingBufferReadAvailable () >= iqSize * 1024) {
+	   while (_I_Buffer -> GetRingBufferReadAvailable() >= iqSize * 1024) {
 	      uint8_t myBuffer [iqSize * 1024];
 	      _I_Buffer -> getDataFromBuffer (myBuffer, iqSize * 1024);
 //
@@ -272,7 +272,7 @@ int	realFreq;
 	realFreq	= f % Khz (3072);
 	iqSwitch	= ((f / Khz (3072)) & 01) == 01;
 	lastFrequency	= f;
-	result = functions -> SetHWLO (functions -> getHandle (),
+	result = functions -> SetHWLO (functions -> getHandle(),
 	                                                 &lastFrequency);
 	if (result == 1)
 	   fprintf (stderr, "setting frequency to %d succeeded\n",

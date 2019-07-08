@@ -14,14 +14,14 @@
 	std::vector<size_t> xxx;
 	stream		= device -> setupStream (SOAPY_SDR_RX,
 	                                         "CS16", xxx,
-	                                         SoapySDR::Kwargs ());
+	                                         SoapySDR::Kwargs());
         theDevice  -> activateStream (stream);
-	start ();
+	start();
 }
 
 	soapy_CS16::~soapy_CS16	(void) {
 	running	= false;
-	while (isRunning ()) {
+	while (isRunning()) {
 	   usleep (1000);
 	}
 	theDevice	-> deactivateStream (stream);
@@ -29,7 +29,7 @@
 }
 
 int	soapy_CS16::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable () / 2;
+	return theBuffer	-> GetRingBufferReadAvailable() / 2;
 }
 
 int	soapy_CS16::getSamples	(std::complex<float> *v, int amount) {

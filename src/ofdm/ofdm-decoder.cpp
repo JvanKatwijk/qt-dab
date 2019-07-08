@@ -54,13 +54,13 @@
 	connect (this, SIGNAL (showQuality (float)),
 	         myRadioInterface, SLOT (showQuality (float)));
 //
-	this	-> T_s			= params. get_T_s ();
-	this	-> T_u			= params. get_T_u ();
-	this	-> nrBlocks		= params. get_L ();
-	this	-> carriers		= params. get_carriers ();
+	this	-> T_s			= params. get_T_s();
+	this	-> T_u			= params. get_T_u();
+	this	-> nrBlocks		= params. get_L();
+	this	-> carriers		= params. get_carriers();
 
 	this	-> T_g			= T_s - T_u;
-	fft_buffer			= my_fftHandler. getVector ();
+	fft_buffer			= my_fftHandler. getVector();
 	phaseReference			.resize (T_u);
 
 	connect (this, SIGNAL (show_snr (int)),
@@ -69,22 +69,22 @@
 	snr			= 0;	
 }
 
-	ofdmDecoder::~ofdmDecoder	(void) {
+	ofdmDecoder::~ofdmDecoder() {
 }
 //
-void	ofdmDecoder::stop	(void) {
+void	ofdmDecoder::stop() {
 }
 
-void	ofdmDecoder::reset	(void) {
+void	ofdmDecoder::reset() {
 }
 
 /**
   */
 void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
-	memcpy (fft_buffer, buffer. data (),
+	memcpy (fft_buffer, buffer. data(),
 	                             T_u * sizeof (std::complex<float>));
 
-	my_fftHandler. do_FFT ();
+	my_fftHandler. do_FFT();
 /**
   *	The SNR is determined by looking at a segment of bins
   *	within the signal region and bits outside.
@@ -100,7 +100,7 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
-	memcpy (phaseReference. data (), fft_buffer,
+	memcpy (phaseReference. data(), fft_buffer,
 	                   T_u * sizeof (std::complex<float>));
 }
 //
@@ -145,14 +145,14 @@ void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
-	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
+	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
 //fftlabel:
 /**
   *	first step: do the FFT
   */
-	my_fftHandler. do_FFT ();
+	my_fftHandler. do_FFT();
 	 
 /**
   *	a little optimization: we do not interchange the
@@ -184,7 +184,7 @@ std::complex<float> conjVector [T_u];
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
 
-	memcpy (phaseReference. data (), fft_buffer,
+	memcpy (phaseReference. data(), fft_buffer,
 	                            T_u * sizeof (std::complex<float>));
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {

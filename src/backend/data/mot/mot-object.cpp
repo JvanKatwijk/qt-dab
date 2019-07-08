@@ -89,10 +89,10 @@ int32_t pointer = 7;
 	}
 }
 
-	motObject::~motObject	(void) {
+	motObject::~motObject() {
 }
 
-uint16_t	motObject::get_transportId (void) {
+uint16_t	motObject::get_transportId() {
 	return transportId;
 }
 
@@ -111,7 +111,7 @@ int32_t i;
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 
-	if (motMap. find (segmentNumber) != motMap. end ())
+	if (motMap. find (segmentNumber) != motMap. end())
 	   return;
 
 //      Note that the last segment may have a different size
@@ -133,16 +133,16 @@ int32_t i;
 //	once we know how many segments there are/should be,
 //	we check for completeness
 	for (i = 0; i < numofSegments; i ++) {
-	   if (motMap. find (i) == motMap. end ())
+	   if (motMap. find (i) == motMap. end())
 	      return;
 	}
 
 //	The motObject is (seems to be) complete
-	handleComplete ();
+	handleComplete();
 }
 
 
-void	motObject::handleComplete (void) {
+void	motObject::handleComplete() {
 QByteArray result;
 
 	for (const auto &it : motMap)
@@ -156,9 +156,9 @@ QByteArray result;
 	   realName. append (name);
 	   realName  = QDir::toNativeSeparators (realName);
 	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8 (). data ());
+	                         realName. toUtf8(). data());
 	   checkDir (realName);
-	   std::vector<uint8_t> epgData (result. begin (), result. end ());
+	   std::vector<uint8_t> epgData (result. begin(), result. end());
 	   epgHandler. decode (epgData, realName);
 #endif
 	   return;
@@ -173,14 +173,14 @@ QByteArray result;
 	   realName. append (name);
 	   realName  = QDir::toNativeSeparators (realName);
 	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8 (). data ());
+	                         realName. toUtf8(). data());
 	   checkDir (realName);
-	   FILE *x = fopen (realName. toLatin1 (). data (), "w+b");
+	   FILE *x = fopen (realName. toLatin1(). data(), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                           realName. toUtf8 (). data ());
+	                           realName. toUtf8(). data());
 	   else {
-	      (void)fwrite (result. data (), 1, bodySize, x);
+	      (void)fwrite (result. data(), 1, bodySize, x);
 	      fclose (x);
 	   }
 	   return;
@@ -207,12 +207,12 @@ QString	dir;
 	for (i = 0; i < ind; i ++)
 	   dir. append (s [i]);
 
-	if (QDir (dir). exists ())
+	if (QDir (dir). exists())
 	   return;
-	QDir (). mkpath (dir);
+	QDir(). mkpath (dir);
 }
 
-int	motObject::get_headerSize	(void) {
+int	motObject::get_headerSize() {
 	return headerSize;
 }
 

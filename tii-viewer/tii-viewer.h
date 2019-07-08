@@ -44,14 +44,14 @@ Q_OBJECT
 public:
 			tiiViewer		(RadioInterface *,
 	                                         RingBuffer<std::complex<float>> *);
-			~tiiViewer		(void);
+			~tiiViewer	();
 	void		showSpectrum		(int32_t);
 	void		showSecondaries		(std::vector<int>);
 	void		setBitDepth		(int16_t);
-	void		show			(void);
-	void		hide			(void);
-	bool		isHidden		(void);
-	void		clear			(void);
+	void		show		();
+	void		hide		();
+	bool		isHidden	();
+	void		clear		();
 private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<std::complex<float>>	*tiiBuffer;

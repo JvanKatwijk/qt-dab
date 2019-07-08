@@ -48,14 +48,14 @@ public:
 	                         	virtualInput *theRig,
 	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
 
-			~sampleReader		(void);
+			~sampleReader	();
 		void	setRunning	(bool b);
-		float	get_sLevel	(void);
+		float	get_sLevel();
 		std::complex<float> getSample	(int32_t);
 	        void	getSamples	(std::complex<float> *v,
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
-	        void	stopDumping	(void);
+	        void	stopDumping();
 private:
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;

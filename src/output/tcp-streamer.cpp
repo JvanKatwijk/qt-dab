@@ -47,9 +47,9 @@ void	tcpStreamer::acceptConnection (void) {
 	   return;
 	}
 
-	streamerAddress = streamer. nextPendingConnection ();
-	QHostAddress s = streamerAddress -> peerAddress ();
-	fprintf (stderr, "Accepted a client %s\n", s.toString (). toLatin1 (). data ());
+	streamerAddress = streamer. nextPendingConnection();
+	QHostAddress s = streamerAddress -> peerAddress();
+	fprintf (stderr, "Accepted a client %s\n", s.toString(). toLatin1(). data());
 	connected	= true;
 }
 
@@ -64,8 +64,8 @@ void	tcpStreamer::audioOutput (float *b, int32_t amount) {
 	if (!connected)
 	   return;
 	buffer -> putDataIntoBuffer (b, 2 * amount);
-	if (buffer -> GetRingBufferReadAvailable () > bufferSize)
-	   emit handleSamples ();
+	if (buffer -> GetRingBufferReadAvailable() > bufferSize)
+	   emit handleSamples();
 }
 
 
@@ -75,13 +75,13 @@ float		localBuffer [bufferSize];
 int16_t	i;
 int32_t		amount;
 	if (!connected) {
-	   buffer -> FlushRingBuffer ();
+	   buffer -> FlushRingBuffer();
 	   return;
 	}
 //	an encoded sample takes 2 input values and delivers 4 bytes
 //	It is assumed that the "sound values" do not exceed 16 bits
 	datagram. resize (2 * bufferSize);
-	while (buffer -> GetRingBufferReadAvailable () > bufferSize) {
+	while (buffer -> GetRingBufferReadAvailable() > bufferSize) {
 	   amount = buffer -> getDataFromBuffer (localBuffer, bufferSize);
 	   for (i = 0; i < amount / 2; i ++) {
 	      int16_t re = localBuffer [2 * i] * largeValue;
@@ -93,16 +93,16 @@ int32_t		amount;
 	      datagram [4 * i + 3] =  (im & 0x00FF) & 0xFF;
 	   }
 
-	   if (streamerAddress -> state () ==
+	   if (streamerAddress -> state() ==
 	                   QAbstractSocket::UnconnectedState) {
 	      fprintf (stderr, "unconnected state\n");
-	      streamer. close ();
+	      streamer. close();
 	      streamer. listen (QHostAddress::Any, port);
 	      connected	= false;
 	      return;
 	   }
 
-	   streamerAddress -> write (datagram. data (), datagram. size ());
+	   streamerAddress -> write (datagram. data(), datagram. size());
 	}
 }
 

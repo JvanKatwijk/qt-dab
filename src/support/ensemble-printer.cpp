@@ -35,10 +35,10 @@ static
 const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
 
 
-		ensemblePrinter:: ensemblePrinter	(void) {
+		ensemblePrinter:: ensemblePrinter() {
 }
 
-		ensemblePrinter::~ensemblePrinter	(void) {
+		ensemblePrinter::~ensemblePrinter() {
 }
 
 QString		ensemblePrinter::code_to_string (uint8_t ecc,
@@ -62,9 +62,9 @@ void	ensemblePrinter::showEnsembleData (QString channel,
 uint8_t	countryId;
 int16_t	i;
 textMapper	theMapper;
-uint8_t ecc_byte	= my_dabProcessor -> get_ecc ();
-QString	ensembleLabel	= my_dabProcessor -> get_ensembleName ();
-int32_t	ensembleId	= my_dabProcessor -> get_ensembleId ();
+uint8_t ecc_byte	= my_dabProcessor -> get_ecc();
+QString	ensembleLabel	= my_dabProcessor -> get_ensembleName();
+int32_t	ensembleId	= my_dabProcessor -> get_ensembleId();
 QString currentChannel	= channel;
 int32_t	frequency	= freq;
 bool	firstData;
@@ -73,9 +73,9 @@ bool	firstData;
 	   return;
 
 	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
-	                  ensembleLabel. toUtf8 (). data (),
+	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,
-	                  currentChannel. toUtf8 (). data (),
+	                  currentChannel. toUtf8(). data(),
 	                  frequency / 1000);
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
@@ -91,16 +91,16 @@ bool	firstData;
 	                                       d. protLevel);
 	      countryId = (d. serviceId >> 12) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
-	                            audioService. toUtf8(). data (),
-	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
+	                            audioService. toUtf8(). data(),
+	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
 	                     d. serviceId,
 	                     d. subchId,
 	                     d. startAddr,
 	                     d. length,
 	                     d. bitRate,
 	                     d. ASCTy == 077 ? "DAB+" : "DAB",
-	                     protL. toUtf8 (). data (),
-	                     codeRate. toUtf8 (). data (),
+	                     protL. toUtf8(). data(),
+	                     codeRate. toUtf8(). data(),
 	                     theMapper. get_programm_language_string (d. language),
 	                     theMapper. get_programm_type_string (d. programType) );
 	   }
@@ -142,15 +142,15 @@ bool	firstData;
 	      }
 	      countryId = (d. serviceId >> (5 * 4)) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
-	                        dataService. toUtf8 (). data (),
-	                     code_to_string (ecc_byte, countryId). toUtf8 (). data (),
+	                        dataService. toUtf8(). data(),
+	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
 	                     d. serviceId,
 	                     d. subchId,
 	                     d. startAddr,
 	                     d. length,
 	                     d. bitRate,
 	                     d. FEC_scheme,
-	                     protL. toUtf8 (). data (),
+	                     protL. toUtf8(). data(),
 	                     d. appType,
 	                     d. compnr == 0 ? "no": "yes");
 	   }

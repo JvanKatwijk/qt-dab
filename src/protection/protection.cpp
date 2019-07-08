@@ -32,7 +32,7 @@
                                         viterbiBlock (outSize * 4 + 24){
 	this	-> bitRate	= bitRate;
 }
-	protection::~protection	(void) {}
+	protection::~protection() {}
 bool	protection::deconvolve	(int16_t *a,
 	                         int32_t b, uint8_t *c) {
 	   (void)a; (void)b; (void)c;

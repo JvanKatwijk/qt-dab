@@ -57,32 +57,32 @@ int16_t	i;
 
 	interLeaver::interLeaver (uint8_t mode): p (mode) {
 
-	int32_t T_u		= p. get_T_u ();
-	int32_t	carriers	= p. get_carriers ();
+	int32_t T_u		= p. get_T_u();
+	int32_t	carriers	= p. get_carriers();
 	permTable. resize (T_u);
 
 	switch (mode) {
 	   case 1:
 	   default:		// shouldn't happen
-	      createMapper (T_u, 511, 256, 256 + carriers, permTable. data ());
+	      createMapper (T_u, 511, 256, 256 + carriers, permTable. data());
 	      break;
 
 	   case 2:
-	      createMapper (T_u, 127, 64, 64 + carriers, permTable. data ());
+	      createMapper (T_u, 127, 64, 64 + carriers, permTable. data());
 	      break;
 
 	   case 3:
-	      createMapper (T_u, 63, 32, 32 + carriers, permTable. data ());
+	      createMapper (T_u, 63, 32, 32 + carriers, permTable. data());
 	      break;
 
 	   case 4:
-	      createMapper (T_u, 255, 128, 128 + carriers, permTable. data ());
+	      createMapper (T_u, 255, 128, 128 + carriers, permTable. data());
 	      break;
 	}
 }
 //
 //
-	interLeaver::~interLeaver (void) {
+	interLeaver::~interLeaver() {
 }
 //
 //	according to the standard, the map is a function from

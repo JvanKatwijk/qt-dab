@@ -96,16 +96,16 @@ class	limeHandler: public virtualInput, public Ui_limeWidget {
 Q_OBJECT
 public:
 			limeHandler		(QSettings *);
-			~limeHandler		(void);
+			~limeHandler	();
 	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency		(void);
-	bool		restartReader		(void);
-	void		stopReader		(void);
+	int32_t		getVFOFrequency	();
+	bool		restartReader	();
+	void		stopReader	();
 	int32_t         getSamples              (std::complex<float> *,
                                                                   int32_t);
-        int32_t         Samples                 (void);
-        void            resetBuffer             (void);
-        int16_t         bitDepth                (void);
+        int32_t         Samples();
+        void            resetBuffer();
+        int16_t         bitDepth();
 
 private:
 	QSettings	*limeSettings;
@@ -114,12 +114,12 @@ private:
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	RingBuffer<std::complex<float>> *theBuffer;
-	bool		load_limeFunctions	(void);
+	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;
-        void		run			(void);
+        void		run		();
 
 //	imported functions
 public:

@@ -90,7 +90,7 @@ int	i, j;
 	}
 }
 
-	viterbiHandler::~viterbiHandler (void) {
+	viterbiHandler::~viterbiHandler() {
 //
 	for (int i = 0; i < blockLength + 6; i++) {
 	   delete [] transCosts [i];

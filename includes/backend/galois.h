@@ -37,7 +37,7 @@ private:
 	std::vector<uint16_t> index_of;	/* Antilog lookup table */
 public:
 		galois		(uint16_t mm, uint16_t poly);
-		~galois		(void);
+		~galois	();
 	int	modnn	(int);
  	uint16_t add_poly	(uint16_t a, uint16_t b);
 	uint16_t add_power	(uint16_t a, uint16_t b);

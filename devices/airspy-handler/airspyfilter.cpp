@@ -60,7 +60,7 @@ int16_t	i;
 	   kernel [i] = tmp [i] / sum;
 }
 
-	airspyFilter::~airspyFilter (void) {
+	airspyFilter::~airspyFilter() {
 	delete [] kernel;
 	delete [] buffer_re;
 	delete [] buffer_im;

@@ -35,8 +35,8 @@
 class	airspyFilter;
 
 extern "C"  {
-typedef	int (*pfn_airspy_init) (void);
-typedef int (*pfn_airspy_exit) (void);
+typedef	int (*pfn_airspy_init)();
+typedef int (*pfn_airspy_exit)();
 typedef int (*pfn_airspy_open) (struct airspy_device**);
 typedef int (*pfn_airspy_close) (struct airspy_device*);
 typedef int (*pfn_airspy_get_samplerates) (struct airspy_device* device,
@@ -85,17 +85,17 @@ class airspyHandler: public virtualInput, public Ui_airspyWidget {
 Q_OBJECT
 public:
 			airspyHandler		(QSettings *);
-			~airspyHandler		(void);
+			~airspyHandler	();
 	void		setVFOFrequency		(int32_t nf);
-	int32_t		getVFOFrequency		(void);
-	int32_t		defaultFrequency	(void);
-	bool		restartReader		(void);
-	void		stopReader		(void);
+	int32_t		getVFOFrequency	();
+	int32_t		defaultFrequency();
+	bool		restartReader	();
+	void		stopReader	();
 	int32_t		getSamples		(std::complex<float> *v,
 	                                                 int32_t size);
-	int32_t		Samples			(void);
-	void		resetBuffer		(void);
-	int16_t		bitDepth		(void);
+	int32_t		Samples		();
+	void		resetBuffer	();
+	int16_t		bitDepth	();
 	int16_t		currentTab;
 private slots:
 	void		set_linearity		(int value);
@@ -103,12 +103,12 @@ private slots:
 	void		set_lna_gain		(int value);
 	void		set_mixer_gain		(int value);
 	void		set_vga_gain		(int value);
-	void		set_lna_agc		(void);
-	void		set_mixer_agc		(void);
-	void		set_rf_bias		(void);
+	void		set_lna_agc	();
+	void		set_mixer_agc	();
+	void		set_rf_bias	();
 	void		show_tab		(int);
 private:
-	bool		load_airspyFunctions	(void);
+	bool		load_airspyFunctions();
 //	The functions to be extracted from the dll/.so file
 	pfn_airspy_init		   my_airspy_init;
 	pfn_airspy_exit		   my_airspy_exit;
@@ -143,7 +143,7 @@ private:
 	bool		lna_agc;
 	bool		mixer_agc;
 	bool		rf_bias;
-const	char*		board_id_name (void);
+const	char*		board_id_name();
 
 	int16_t		vgaGain;
 	int16_t		mixerGain;
@@ -165,8 +165,8 @@ const	char*		board_id_name (void);
 static
 	int		callback(airspy_transfer_t *);
 	int		data_available (void *buf, int buf_size);
-const	char *		getSerial (void);
-	int		open (void);
+const	char *		getSerial();
+	int		open();
 };
 
 #endif

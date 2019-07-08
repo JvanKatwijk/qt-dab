@@ -71,7 +71,7 @@
 	rsErrors	= 0;
 }
 
-	mp4Processor::~mp4Processor (void) {
+	mp4Processor::~mp4Processor() {
 }
 
 /**
@@ -116,7 +116,7 @@ int16_t	nbits	= 24 * bitRate;
   *	and adjust the buffer here for the next round
   */
 	   if (fc. check (&frameBytes [blockFillIndex * nbits / 8]) &&
-	       (processSuperframe (frameBytes. data (),
+	       (processSuperframe (frameBytes. data(),
 	                           blockFillIndex * nbits / 8))) {
 //	since we processed a full cycle of 5 blocks, we just start a
 //	new sequence, beginning with block blockFillIndex

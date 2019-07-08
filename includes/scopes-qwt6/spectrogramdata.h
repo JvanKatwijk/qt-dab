@@ -44,7 +44,7 @@ public:
 
 	SpectrogramData (double *data, int left, int width, int height,
 	                 int datawidth, double max):
-        QwtRasterData () {
+        QwtRasterData() {
 	this	-> data		= data;
 	this	-> left		= left;
 	this	-> width	= width;
@@ -69,7 +69,7 @@ QwtInterval Interval (Qt::Axis x)const {
 	return QwtInterval (0, max);
 }
 
-	~SpectrogramData () {
+	~SpectrogramData() {
 }
 
 double value (double x, double y) const {

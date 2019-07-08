@@ -26,8 +26,8 @@
         faadDecoder::faadDecoder        (RadioInterface *mr,
                                          RingBuffer<int16_t> *buffer) {
         this    -> audioBuffer  = buffer;
-        aacCap          = NeAACDecGetCapabilities       ();
-        aacHandle       = NeAACDecOpen                  ();
+        aacCap          = NeAACDecGetCapabilities();
+        aacHandle       = NeAACDecOpen();
         aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
         aacInitialized  = false;
         baudRate        = 48000;
@@ -35,7 +35,7 @@
                  mr, SLOT (newAudio (int, int)));
 }
 
-        faadDecoder::~faadDecoder       (void) {
+        faadDecoder::~faadDecoder() {
         NeAACDecClose   (aacHandle);
 }
 
@@ -150,7 +150,7 @@ uint8_t channels;
 
         if (channels == 2) {
            audioBuffer  -> putDataIntoBuffer (outBuffer, samples);
-	   if (audioBuffer -> GetRingBufferReadAvailable () > (int)sampleRate / 8)
+	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
               newAudio (samples, sampleRate);
         }
         else
@@ -162,7 +162,7 @@ uint8_t channels;
               buffer [2 * i + 1] = buffer [2 * i];
            }
            audioBuffer  -> putDataIntoBuffer (buffer, samples);
-	   if (audioBuffer -> GetRingBufferReadAvailable () > (int)sampleRate / 8)
+	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
               newAudio (samples, sampleRate);
         }
         else

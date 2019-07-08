@@ -32,8 +32,8 @@
 
 class	frameProcessor {
 public:
-		frameProcessor	(void);
-virtual		~frameProcessor	(void);
+		frameProcessor();
+virtual		~frameProcessor();
 virtual	void	addtoFrame	(std::vector<uint8_t>);
 };
 #endif

@@ -65,14 +65,14 @@ public:
 
 	dll_driver (rtlsdrHandler *d) {
 	theStick	= d;
-	start ();
+	start();
 	}
 
-	~dll_driver (void) {
+	~dll_driver() {
 	}
 
 private:
-virtual void	run (void) {
+virtual void	run() {
 	(theStick -> rtlsdr_read_async) (theStick -> device,
 	                          (rtlsdr_read_async_cb_t)&RTLSDRCallBack,
 	                          (void *)theStick,
@@ -94,7 +94,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings		= s;
 	this	-> myFrame	= new QFrame (nullptr);
 	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	this	-> myFrame	-> show();
 	inputRate		= 2048000;
 	libraryLoaded		= false;
 	open			= false;
@@ -107,7 +107,7 @@ char	manufac [256], product [256], serial [256];
 	const char *libraryString = "rtlsdr.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == NULL) {
-	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError ());
+	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
 	   delete myFrame;
 	   throw (20);
 	}
@@ -116,13 +116,13 @@ char	manufac [256], product [256], serial [256];
 	Handle		= dlopen ("librtlsdr.so", RTLD_NOW);
 
 	if (Handle == nullptr) {
-	   fprintf (stderr, "failed to open %s (%s)\n", libraryString, dlerror ());
+	   fprintf (stderr, "failed to open %s (%s)\n", libraryString, dlerror());
 	   delete myFrame;
 	   throw (20);
 	}
 #endif
 	libraryLoaded	= true;
-	if (!load_rtlFunctions ()) {
+	if (!load_rtlFunctions()) {
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
 #else
@@ -133,7 +133,7 @@ char	manufac [256], product [256], serial [256];
 	}
 //
 //	Ok, from here we have the library functions accessible
-	deviceCount 		= this -> rtlsdr_get_device_count ();
+	deviceCount 		= this -> rtlsdr_get_device_count();
 	if (deviceCount == 0) {
 	   fprintf (stderr, "No devices found\n");
 #ifdef __MINGW32__
@@ -152,7 +152,7 @@ char	manufac [256], product [256], serial [256];
 	      dongleSelector.
 	           addtoDongleList (rtlsdr_get_device_name (deviceIndex));
 	   }
-	   deviceIndex = dongleSelector. QDialog::exec ();
+	   deviceIndex = dongleSelector. QDialog::exec();
 	}
 //
 //	OK, now open the hardware
@@ -208,36 +208,36 @@ char	manufac [256], product [256], serial [256];
 //
 //	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	coarseOffset	= rtlsdrSettings -> value ("rtlsdrOffset", 0). toInt ();
-	temp = rtlsdrSettings -> value ("externalGain", "10"). toString ();
+	coarseOffset	= rtlsdrSettings -> value ("rtlsdrOffset", 0). toInt();
+	temp = rtlsdrSettings -> value ("externalGain", "10"). toString();
 	k	= combo_gain -> findText (temp);
 	if (k != -1) {
 	   combo_gain	-> setCurrentIndex (k);
-	   theGain	= temp. toInt ();
+	   theGain	= temp. toInt();
 	}
 
 	temp	= rtlsdrSettings -> value ("autogain",
-	                                      "autogain_on"). toString ();
+	                                      "autogain_on"). toString();
 	k	= combo_autogain -> findText (temp);
 	if (k != -1) 
 	   combo_autogain	-> setCurrentIndex (k);
 	
 	
-	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt ());
-	rtlsdrSettings	-> endGroup ();
+	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
+	rtlsdrSettings	-> endGroup();
 
 	rtlsdr_get_usb_strings (device, manufac, product, serial);
 
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
 	rtlsdr_set_tuner_gain_mode (device,
-	                   combo_autogain -> currentText () == "autogain_on");
-	if (combo_autogain -> currentText () == "autogain_on")
+	                   combo_autogain -> currentText() == "autogain_on");
+	if (combo_autogain -> currentText() == "autogain_on")
 	   rtlsdr_set_agc_mode (device, 1);
 	else
 	   rtlsdr_set_agc_mode (device, 0);
 	rtlsdr_set_tuner_gain	(device, theGain);
-	set_ppmCorrection	(ppm_correction -> value ());
+	set_ppmCorrection	(ppm_correction -> value());
 
 	dumping			= false;
 //	and attach the buttons/sliders to the actions
@@ -251,7 +251,7 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (dumpButton_pressed (void)));
 }
 
-	rtlsdrHandler::~rtlsdrHandler	(void) {
+	rtlsdrHandler::~rtlsdrHandler() {
 	if (Handle == NULL) {	// nothing achieved earlier on
 	   delete myFrame;
 	   return;
@@ -266,17 +266,17 @@ char	manufac [256], product [256], serial [256];
 	   return;
 	}
 
-	stopReader ();
+	stopReader();
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	rtlsdrSettings	-> setValue ("rtlsdrOffset", coarseOffset);
 	rtlsdrSettings	-> setValue ("externalGain",
-	                                      combo_gain -> currentText ());
+	                                      combo_gain -> currentText());
 	rtlsdrSettings	-> setValue ("autogain",
-	                                      combo_autogain -> currentText ());
+	                                      combo_autogain -> currentText());
 	rtlsdrSettings	-> setValue ("ppm_correction",
-	                                      ppm_correction -> value ());
-	rtlsdrSettings	-> sync ();
-	rtlsdrSettings	-> endGroup ();
+	                                      ppm_correction -> value());
+	rtlsdrSettings	-> sync();
+	rtlsdrSettings	-> endGroup();
 	
 	this -> rtlsdr_close (device);
 #ifdef __MINGW32__
@@ -296,18 +296,18 @@ void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
 	(void)(this -> rtlsdr_set_center_freq (device, f));
 }
 
-int32_t	rtlsdrHandler::getVFOFrequency	(void) {
+int32_t	rtlsdrHandler::getVFOFrequency() {
 	return (int32_t)(this -> rtlsdr_get_center_freq (device));
 }
 //
 //
-bool	rtlsdrHandler::restartReader	(void) {
+bool	rtlsdrHandler::restartReader() {
 int32_t	r;
 
 	if (workerHandle != nullptr)
 	   return true;
 
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer	-> FlushRingBuffer();
 	r = this -> rtlsdr_reset_buffer (device);
 	if (r < 0)
 	   return false;
@@ -315,18 +315,18 @@ int32_t	r;
 	this -> rtlsdr_set_center_freq (device, lastFrequency);
 	workerHandle	= new dll_driver (this);
 	rtlsdr_set_agc_mode (device,
-                combo_autogain -> currentText () == "autogain_on" ? 1 : 0);
+                combo_autogain -> currentText() == "autogain_on" ? 1 : 0);
 	rtlsdr_set_tuner_gain (device, theGain);
 	return true;
 }
 
-void	rtlsdrHandler::stopReader	(void) {
+void	rtlsdrHandler::stopReader() {
 	if (workerHandle == nullptr)
 	   return;
 	if (workerHandle != nullptr) { // we are running
 	   this -> rtlsdr_cancel_async (device);
 	   if (workerHandle != nullptr) {
-	      while (!workerHandle -> isFinished ()) 
+	      while (!workerHandle -> isFinished()) 
 	         usleep (100);
 	      delete	workerHandle;
 	   }
@@ -336,8 +336,8 @@ void	rtlsdrHandler::stopReader	(void) {
 //
 //	when selecting  the gain from a table, use the table value
 void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
-	theGain		= gain. toInt ();
-	rtlsdr_set_tuner_gain (device, gain. toInt ());
+	theGain		= gain. toInt();
+	rtlsdr_set_tuner_gain (device, gain. toInt());
 }
 //
 void	rtlsdrHandler::set_autogain	(const QString &autogain) {
@@ -369,12 +369,12 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 	return amount / 2;
 }
 
-int32_t	rtlsdrHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable () / 2;
+int32_t	rtlsdrHandler::Samples() {
+	return _I_Buffer	-> GetRingBufferReadAvailable() / 2;
 }
 //
 
-bool	rtlsdrHandler::load_rtlFunctions (void) {
+bool	rtlsdrHandler::load_rtlFunctions() {
 //
 //	link the required procedures
 	rtlsdr_open	= (pfnrtlsdr_open)
@@ -515,30 +515,30 @@ bool	rtlsdrHandler::load_rtlFunctions (void) {
 	return true;
 }
 
-void	rtlsdrHandler::resetBuffer (void) {
-	_I_Buffer -> FlushRingBuffer ();
+void	rtlsdrHandler::resetBuffer() {
+	_I_Buffer -> FlushRingBuffer();
 }
 
-int16_t	rtlsdrHandler::maxGain	(void) {
+int16_t	rtlsdrHandler::maxGain() {
 	return gainsCount;
 }
 
-int16_t	rtlsdrHandler::bitDepth	(void) {
+int16_t	rtlsdrHandler::bitDepth() {
 	return 8;
 }
 
-void	rtlsdrHandler::dumpButton_pressed (void) {
+void	rtlsdrHandler::dumpButton_pressed() {
 	if (!dumping) {
 	   QString file = QFileDialog::getSaveFileName (nullptr,
 	                                                tr ("Save file ..."),
-	                                                QDir::homePath (),
+	                                                QDir::homePath(),
 	                                                tr ("iq file (*.iq)"));
 	   if (file == QString (""))
 	      return;
 	   file		= QDir::toNativeSeparators (file);
 	   if (!file.endsWith (".iq", Qt::CaseInsensitive))
 	      file.append (".iq");
-	   dumpfilePointer = fopen (file. toLatin1 (). data (), "w+b");
+	   dumpfilePointer = fopen (file. toLatin1(). data(), "w+b");
 	   if (dumpfilePointer == nullptr)
 	      return;
 	   dumpButton -> setText ("WRITING");

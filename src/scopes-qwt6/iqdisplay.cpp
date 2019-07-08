@@ -28,7 +28,7 @@
 SpectrogramData	*IQData	= nullptr;
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
-	                                QwtPlotSpectrogram () {
+	                                QwtPlotSpectrogram() {
 QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 
 	setRenderThreadCount	(1);
@@ -37,13 +37,13 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	x_amount	= x;
 	CycleCount	= 0;
 	Points. resize (x_amount);
-	memset (Points. data (), 0, x_amount * sizeof (std::complex<float>));
+	memset (Points. data(), 0, x_amount * sizeof (std::complex<float>));
 	this		-> setColorMap (colorMap);
 	plotData. resize (2 * Radius * 2 * Radius);
 	plot2.	  resize (2 * Radius * 2 * Radius);
-	memset (plotData. data (), 0,
+	memset (plotData. data(), 0,
 	                  2 * 2 * Radius * Radius * sizeof (double));
-	IQData		= new SpectrogramData (plot2. data (),
+	IQData		= new SpectrogramData (plot2. data(),
 	                                       0,
 	                                       2 * Radius,
 	                                       2 * Radius,
@@ -56,8 +56,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	plotgrid	-> replot();
 }
 
-	IQDisplay::~IQDisplay () {
-	this		-> detach ();
+	IQDisplay::~IQDisplay() {
+	this		-> detach();
 //	delete		IQData;
 }
 
@@ -87,9 +87,9 @@ int16_t	i;
 	   plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 100;
 	}
 
-	memcpy (plot2. data (), plotData. data (),
+	memcpy (plot2. data(), plotData. data(),
 	        2 * 2 * Radius * Radius * sizeof (double));
-	this		-> detach	();
+	this		-> detach();
 	this		-> setData	(IQData);
 	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	this		-> attach     (plotgrid);

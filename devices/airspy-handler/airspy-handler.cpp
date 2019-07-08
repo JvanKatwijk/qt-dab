@@ -38,34 +38,34 @@ uint32_t samplerateCount;
 	this	-> airspySettings	= s;
 	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	this	-> myFrame	-> show();
 
 	filter			= nullptr;
 	airspySettings	-> beginGroup ("airspyHandler");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
-	                                                          toInt ();
+	                                                          toInt();
 	linearitySlider		-> setValue (temp);
 	linearityDisplay	-> display  (temp);
 	temp			= airspySettings -> value ("sensitivity", 10).
-	                                                          toInt ();
+	                                                          toInt();
 	sensitivitySlider	-> setValue (temp);
 	sensitivityDisplay	-> display (temp);
 
-	vgaGain			= airspySettings -> value ("vga", 5).toInt ();
+	vgaGain			= airspySettings -> value ("vga", 5).toInt();
 	vgaSlider		-> setValue (vgaGain);
 	vgaDisplay		-> display (vgaGain);
-	mixerGain		= airspySettings -> value ("mixer", 10). toInt ();
+	mixerGain		= airspySettings -> value ("mixer", 10). toInt();
 	mixerSlider		-> setValue (mixerGain);
 	mixerDisplay		-> display (mixerGain);
 	mixer_agc		= false;
-	lnaGain			= airspySettings -> value ("lna", 5). toInt ();
+	lnaGain			= airspySettings -> value ("lna", 5). toInt();
 	lnaSlider		-> setValue (lnaGain);
 	lnaDisplay		-> display  (lnaGain);
 	mixer_agc		= false;
 	lna_agc			= false;
 	rf_bias			= false;
-	coarseOffset		= airspySettings -> value ("airspyOffset", 0). toInt ();
-	airspySettings	-> endGroup ();
+	coarseOffset		= airspySettings -> value ("airspyOffset", 0). toInt();
+	airspySettings	-> endGroup();
 
 	device			= nullptr;
 	serialNumber		= 0;
@@ -81,7 +81,7 @@ uint32_t samplerateCount;
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 #ifndef	__MINGW32__
-	   fprintf (stderr, "Error = %s\n", dlerror ());
+	   fprintf (stderr, "Error = %s\n", dlerror());
 #endif
 	   delete myFrame;
 	   throw (20);
@@ -89,7 +89,7 @@ uint32_t samplerateCount;
 
 	libraryLoaded	= true;
 
-	if (!load_airspyFunctions ()) {
+	if (!load_airspyFunctions()) {
 	   fprintf (stderr, "problem in loading functions\n");
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
@@ -101,9 +101,9 @@ uint32_t samplerateCount;
 	}
 //
 	strcpy (serial,"");
-	result = this -> my_airspy_init ();
+	result = this -> my_airspy_init();
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_init () failed: %s (%d)\n",
+	   printf ("my_airspy_init() failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
@@ -116,7 +116,7 @@ uint32_t samplerateCount;
 
 	result = my_airspy_open (&device);
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airpsy_open () failed: %s (%d)\n",
+	   printf ("my_airpsy_open() failed: %s (%d)\n",
 	             my_airspy_error_name ((airspy_error)result), result);
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);
@@ -132,7 +132,7 @@ uint32_t samplerateCount;
 	fprintf (stderr, "%d samplerates are supported\n", samplerateCount); 
 	sampleRates. resize (samplerateCount);
 	my_airspy_get_samplerates (device,
-	                            sampleRates. data (), samplerateCount);
+	                            sampleRates. data(), samplerateCount);
 
 	selectedRate	= 0;
 	for (i = 0; i < (int)samplerateCount; i ++) {
@@ -170,14 +170,14 @@ uint32_t samplerateCount;
 	}
 
 	airspySettings	-> beginGroup ("airspyHandler");
-	filtering 	= airspySettings -> value ("filtering", 0). toInt ();
-	int filterDegree = airspySettings -> value ("filterdegree", 9). toInt ();
+	filtering 	= airspySettings -> value ("filtering", 0). toInt();
+	int filterDegree = airspySettings -> value ("filterdegree", 9). toInt();
 	filterDegree	= (filterDegree & ~01) + 1;
 //
 //	if we apply filtering it is using a symmetric lowpass filter
 	filter		= new airspyFilter (filterDegree,
 	                                        1024000, selectedRate);
-	airspySettings	-> endGroup ();
+	airspySettings	-> endGroup();
 
 //	The sizes of the mapTables follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
@@ -212,7 +212,7 @@ uint32_t samplerateCount;
 	         this, SLOT (set_rf_bias (void)));
 	connect (tabWidget, SIGNAL (currentChanged (int)),
 	         this, SLOT (show_tab (int)));
-	displaySerial	-> setText (getSerial ());
+	displaySerial	-> setText (getSerial());
 	running. store (false);
 	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
@@ -221,23 +221,23 @@ uint32_t samplerateCount;
 
 	airspyHandler::~airspyHandler (void) {
 	airspySettings	-> beginGroup ("airspyHandler");
-	airspySettings -> setValue ("linearity", linearitySlider -> value ());
-	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value ());
+	airspySettings -> setValue ("linearity", linearitySlider -> value());
+	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());
 	airspySettings -> setValue ("vga", vgaGain);
 	airspySettings -> setValue ("mixer", mixerGain);
 	airspySettings -> setValue ("lna", lnaGain);
 	airspySettings	-> setValue ("airspyOffset", coarseOffset);
-	airspySettings	-> endGroup ();
+	airspySettings	-> endGroup();
 	if (device != nullptr) {
 	   int result = my_airspy_stop_rx (device);
 	   if (result != AIRSPY_SUCCESS) {
-	      printf ("my_airspy_stop_rx () failed: %s (%d)\n",
+	      printf ("my_airspy_stop_rx() failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 
 	   result = my_airspy_close (device);
 	   if (result != AIRSPY_SUCCESS) {
-	      printf ("airspy_close () failed: %s (%d)\n",
+	      printf ("airspy_close() failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
@@ -247,7 +247,7 @@ uint32_t samplerateCount;
 	if (Handle == NULL) {
 	   return;	// nothing achieved earlier
 	}
-	my_airspy_exit ();
+	my_airspy_exit();
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
 #else
@@ -278,23 +278,23 @@ int32_t	airspyHandler::defaultFrequency (void) {
 bool	airspyHandler::restartReader	(void) {
 int	result;
 int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
-	if (running. load ())
+	if (running. load())
 	   return true;
 
-	theBuffer	-> FlushRingBuffer ();
+	theBuffer	-> FlushRingBuffer();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_set_sample_type () failed: %s (%d)\n",
+	   printf ("my_airspy_set_sample_type() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	   return false;
 	}
 
 	if (currentTab == 0)
-	   set_sensitivity	(sensitivitySlider -> value ());
+	   set_sensitivity	(sensitivitySlider -> value());
 	else 
 	if (currentTab	== 1)
-	   set_linearity	(linearitySlider -> value ());
+	   set_linearity	(linearitySlider -> value());
 	else {
 	   set_vga_gain		(vgaGain);
 	   set_mixer_gain	(mixerGain);
@@ -304,7 +304,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	result = my_airspy_start_rx (device,
 	            (airspy_sample_block_cb_fn)callback, this);
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_start_rx () failed: %s (%d)\n",
+	   printf ("my_airspy_start_rx() failed: %s (%d)\n",
 	         my_airspy_error_name((airspy_error)result), result);
 	   return false;
 	}
@@ -316,7 +316,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 void	airspyHandler::stopReader (void) {
 int	result;
 
-	if (!running. load ())
+	if (!running. load())
 	   return;
 	result = my_airspy_stop_rx (device);
 
@@ -430,7 +430,7 @@ int result = my_airspy_open (&device);
 //
 //	These functions are added for the SDR-J interface
 void	airspyHandler::resetBuffer (void) {
-	theBuffer	-> FlushRingBuffer ();
+	theBuffer	-> FlushRingBuffer();
 }
 
 int16_t	airspyHandler::bitDepth (void) {
@@ -443,7 +443,7 @@ int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 }
 
 int32_t	airspyHandler::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable ();
+	return theBuffer	-> GetRingBufferReadAvailable();
 }
 //
 #define GAIN_COUNT (22)
@@ -459,7 +459,7 @@ void	airspyHandler::set_linearity (int value) {
 int	result = my_airspy_set_linearity_gain (device, value);
 int	temp;
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_set_lna_gain () failed: %s (%d)\n",
+	   printf ("airspy_set_lna_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	   return;
 	}
@@ -497,7 +497,7 @@ void	airspyHandler::set_lna_gain (int value) {
 int result = my_airspy_set_lna_gain (device, lnaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_set_lna_gain () failed: %s (%d)\n",
+	   printf ("airspy_set_lna_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 	else
@@ -521,7 +521,7 @@ void	airspyHandler::set_vga_gain (int value) {
 int result = my_airspy_set_vga_gain (device, vgaGain = value);
 
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_set_vga_gain () failed: %s (%d)\n",
+	   printf ("airspy_set_vga_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 	else
@@ -557,7 +557,7 @@ void	airspyHandler::set_mixer_agc (void) {
 int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_set_mixer_agc () failed: %s (%d)\n",
+	   printf ("airspy_set_mixer_agc() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 	if (mixer_agc)
@@ -754,10 +754,10 @@ bool	airspyHandler::load_airspyFunctions (void) {
 
 void	airspyHandler::show_tab (int t) {
 	if (t == 0)		// sensitivity
-	   set_sensitivity	(sensitivitySlider -> value ());
+	   set_sensitivity	(sensitivitySlider -> value());
 	else
 	if (t == 1)		// linearity
-	   set_linearity	(linearitySlider -> value ());
+	   set_linearity	(linearitySlider -> value());
 	else {			// classic view
 	   set_vga_gain		(vgaGain);
 	   set_mixer_gain	(mixerGain);

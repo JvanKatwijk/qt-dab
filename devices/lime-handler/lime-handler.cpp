@@ -32,7 +32,7 @@ lms_info_str_t limedevices [10];
 
 	this	-> myFrame	= new QFrame (nullptr);
 	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	this	-> myFrame	-> show();
 
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
@@ -52,7 +52,7 @@ lms_info_str_t limedevices [10];
         }
 
         libraryLoaded   = true;
-	if (!load_limeFunctions ()) {
+	if (!load_limeFunctions()) {
 #ifdef __MINGW32__
            FreeLibrary (Handle);
 #else
@@ -120,8 +120,8 @@ lms_info_str_t limedevices [10];
 	   antennaList	-> addItem (QString (antennas [i]));
 
 	limeSettings -> beginGroup ("limeSettings");
-	QString antenne	= limeSettings -> value ("antenna", "default"). toString ();
-	limeSettings	-> endGroup ();
+	QString antenne	= limeSettings -> value ("antenna", "default"). toString();
+	limeSettings	-> endGroup();
 
 	int k       = antennaList -> findText (antenne);
         if (k != -1) 
@@ -133,7 +133,7 @@ lms_info_str_t limedevices [10];
 
 //	default antenna setting
 	res		= LMS_SetAntenna (theDevice, LMS_CH_RX, 0, 
-	                           antennaList -> currentIndex ());
+	                           antennaList -> currentIndex());
 
 //	default frequency
 	res		= LMS_SetLOFrequency (theDevice, LMS_CH_RX,
@@ -159,8 +159,8 @@ lms_info_str_t limedevices [10];
 	theBuffer	= new RingBuffer<std::complex<float>> (64 * 32768);
 	
 	limeSettings	-> beginGroup ("limeSettings");
-	k	= limeSettings	-> value ("gain", 50). toInt ();
-	limeSettings	-> endGroup ();
+	k	= limeSettings	-> value ("gain", 50). toInt();
+	limeSettings	-> endGroup();
 	gainSelector -> setValue (k);
 	setGain (k);
 	connect (gainSelector, SIGNAL (valueChanged (int)),
@@ -170,12 +170,12 @@ lms_info_str_t limedevices [10];
 
 	limeHandler::~limeHandler	(void) {
 	running. store (false);
-	while (isRunning ())
+	while (isRunning())
 	   usleep (100);
 	limeSettings	-> beginGroup ("limeSettings");
-	limeSettings	-> setValue ("antenna", antennaList -> currentText ());
-	limeSettings	-> setValue ("gain", gainSelector -> value ());
-	limeSettings	-> endGroup ();
+	limeSettings	-> setValue ("antenna", antennaList -> currentText());
+	limeSettings	-> setValue ("gain", gainSelector -> value());
+	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
 	delete theBuffer;
 	delete myFrame;
@@ -205,7 +205,7 @@ void	limeHandler::setAntenna		(int ind) {
 bool	limeHandler::restartReader	(void) {
 int	res;
 
-	if (isRunning ())
+	if (isRunning())
 	   return true;
 	stream. isTx            = false;
         stream. channel         = 0;
@@ -219,15 +219,15 @@ int	res;
         if (res < 0)
            return false;
 
-	start ();
+	start();
 	return true;
 }
 	
 void	limeHandler::stopReader		(void) {
-	if (!isRunning ())
+	if (!isRunning())
 	   return;
 	running. store (false);
-	while (isRunning ())
+	while (isRunning())
 	   usleep (200);
 	(void)LMS_StopStream	(&stream);	
 	(void)LMS_DestroyStream	(theDevice, &stream);
@@ -238,11 +238,11 @@ int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
 }
 
 int	limeHandler::Samples		(void) {
-	return theBuffer -> GetRingBufferReadAvailable ();
+	return theBuffer -> GetRingBufferReadAvailable();
 }
 
 void	limeHandler::resetBuffer	(void) {
-	theBuffer	-> FlushRingBuffer ();
+	theBuffer	-> FlushRingBuffer();
 }
 
 int16_t	limeHandler::bitDepth		(void) {
@@ -264,7 +264,7 @@ int	dropped		= 0;
 int	amountRead	= 0;
 
 	running. store (true);
-	while (running. load ()) {
+	while (running. load()) {
 	   res = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (res > 0) {

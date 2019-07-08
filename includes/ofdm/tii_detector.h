@@ -31,10 +31,10 @@
 class	TII_Detector {
 public:
 		TII_Detector	(uint8_t dabMode, int16_t);
-		~TII_Detector	(void);
-	void	reset		(void);
+		~TII_Detector();
+	void	reset	();
 	void	addBuffer	(std::vector<std::complex<float>>);
-	std::vector<int>	processNULL	(void);
+	std::vector<int>	processNULL();
 
 private:
 	void			collapse	(std::complex<float> *,

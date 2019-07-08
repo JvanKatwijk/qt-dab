@@ -41,13 +41,13 @@ public:
 	                                 uint8_t,
 	                                 int16_t,
 	                                 RingBuffer<std::complex<float>> * iqBuffer = nullptr);
-		~ofdmDecoder		(void);
+		~ofdmDecoder	();
 	void	processBlock_0		(std::vector<std::complex<float> >);
 	void	decode			(std::vector<std::complex<float> >,
 	                                 int32_t n, int16_t *);
 	int16_t	get_snr			(std::complex<float> *);
 	void	stop			(void);
-	void	reset			(void);
+	void	reset		();
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
@@ -61,7 +61,7 @@ private:
 	int32_t		T_g;
 	int32_t		nrBlocks;
 	int32_t		carriers;
-	int16_t		getMiddle	(void);
+	int16_t		getMiddle();
 	std::vector<complex<float>>	phaseReference;
 	std::vector<int16_t>		ibits;
 	std::complex<float>	*fft_buffer;

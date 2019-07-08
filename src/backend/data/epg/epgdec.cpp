@@ -41,17 +41,17 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData, const QString &name) {
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
 	tag_length_value tlv (&vecData [0]);
-	if (tlv. is_epg ()) {
+	if (tlv. is_epg()) {
 	   doc. appendChild (element (doc, tlv));
-	   QString test = doc. toString ();
-	   FILE *epgFile = fopen (name. toUtf8 (). data (), "w");
+	   QString test = doc. toString();
+	   FILE *epgFile = fopen (name. toUtf8(). data(), "w");
 	   if (epgFile != nullptr) {
-	      fprintf (stderr, "filename = %s\n", name. toUtf8 (). data ());
-	      fprintf (epgFile, test. toLatin1 (). data ());
+	      fprintf (stderr, "filename = %s\n", name. toUtf8(). data());
+	      fprintf (epgFile, test. toLatin1(). data());
 	      fclose (epgFile);
 	   }
 	   else
-	      fprintf (stderr, "cannot open %s\n", name. toUtf8 (). data ());
+	      fprintf (stderr, "cannot open %s\n", name. toUtf8(). data());
 	}
 }
 
@@ -351,7 +351,7 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	}
 
 	tag_length_value a (tlv. value);
-	while (a. is_attribute ()) {
+	while (a. is_attribute()) {
 	   attribute (attr, tlv. tag, a);
 	   _BYTE* p = a. value + a. length;
 	   if (p >= end)
@@ -360,28 +360,28 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	   a = b;
 	}
 
-	for (map <string, string>::iterator i = attr. begin ();
-	                                      i != attr. end (); i++) {
-	   e. setAttribute (QString (i -> first. c_str ()),
-	                    QString (i -> second. c_str ()));
+	for (map <string, string>::iterator i = attr. begin();
+	                                      i != attr. end(); i++) {
+	   e. setAttribute (QString (i -> first. c_str()),
+	                    QString (i -> second. c_str()));
 	}
 	_BYTE* p = a. value;
 	while (p < end) {
-	   if (a. is_string_token_table () && !tlv. is_child_element ())
+	   if (a. is_string_token_table() && !tlv. is_child_element())
 	      string_token_table (a);
 	   else
-	   if (a. is_default_id () && !tlv.is_child_element ()) {
+	   if (a. is_default_id() && !tlv.is_child_element()) {
 	      default_content_id = get_uint24 (p);
 	      p += 3;
 	   }
 	   else
-	   if (a. is_child_element ()) {
+	   if (a. is_child_element()) {
 	      e. appendChild (element(doc, a));
 	   }
 	   else
-	   if (a. is_cdata ()) {
+	   if (a. is_cdata()) {
 	      string value = decode_string (a. value, a. length);
-	      QDomText t = doc. createTextNode (QString (). fromUtf8 (value. c_str ()));
+	      QDomText t = doc. createTextNode (QString(). fromUtf8 (value. c_str()));
 	      e. appendChild (t);
 	   }
 	   p = a. value + a. length;
@@ -439,7 +439,7 @@ string	decode_uint16 (const _BYTE* p) {
 stringstream out;
 
 	out << get_uint16(p);
-	return out. str ();
+	return out. str();
 }
 
 static
@@ -447,7 +447,7 @@ string	decode_uint24 (const _BYTE* p) {
 stringstream out;
 
 	out << int (get_uint24(p));
-	return out. str ();
+	return out. str();
 }
 
 static
@@ -519,9 +519,9 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 	   mjd ++;
 	}
 	CModJulDate ModJulDate (mjd);
-	year	= ModJulDate. GetYear ();
-	month	= ModJulDate .GetMonth ();
-	day	= ModJulDate. GetDay ();
+	year	= ModJulDate. GetYear();
+	month	= ModJulDate .GetMonth();
+	day	= ModJulDate. GetDay();
 	out << year << '-';
 	if (month < 10) out << '0';
 	out << int (month) << '-';
@@ -533,7 +533,7 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 	out << minutes << ':';
 	if (seconds < 10) out << '0';
 	out << seconds << tz;
-	return out. str ();
+	return out. str();
 }
 
 static

@@ -43,10 +43,10 @@
 class   fftHandler {
 public:
 		fftHandler	(uint8_t);
-        	~fftHandler	(void);
-        std::complex<float>  *getVector (void);
-        void		do_FFT (void);
-        void		do_IFFT (void);
+        	~fftHandler();
+        std::complex<float>  *getVector();
+        void		do_FFT();
+        void		do_IFFT();
     private:
 	dabParams	p;
         int32_t		fftSize;
@@ -57,9 +57,9 @@ public:
 class   common_ifft {
 public:
 		common_ifft (int32_t);
-        	~common_ifft(void);
-        std::complex<float>  *getVector(void);
-        void	do_IFFT(void);
+        	~common_ifft();
+        std::complex<float>  *getVector();
+        void	do_IFFT();
     private:
         int32_t	fft_size;
         std::complex<float>  *vector;

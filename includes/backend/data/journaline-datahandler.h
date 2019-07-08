@@ -30,8 +30,8 @@
 
 class	journaline_dataHandler:public virtual_dataHandler {
 public:
-	journaline_dataHandler	(void);
-	~journaline_dataHandler	(void);
+	journaline_dataHandler();
+	~journaline_dataHandler();
 void	add_mscDatagroup	(QByteArray &);
 private:
 	DAB_DATAGROUP_DECODER_t theDecoder;

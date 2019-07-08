@@ -32,7 +32,7 @@ Q_OBJECT
 public:
 		tdc_dataHandler		(RadioInterface *,
 	                                 RingBuffer<uint8_t> *, int16_t);
-		~tdc_dataHandler	(void);
+		~tdc_dataHandler();
 	void	add_mscDatagroup	(std::vector<uint8_t>);
 private:
 	int32_t	handleFrame_type_0	(uint8_t *data,

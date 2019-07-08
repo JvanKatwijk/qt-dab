@@ -13,7 +13,7 @@
 class	audioDescriptor : public serviceDescriptor, public Ui_audioDescription {
 public:
 		audioDescriptor		(audiodata *ad);
-		~audioDescriptor	(void);
+		~audioDescriptor();
 private:
 	QFrame	myFrame;
 	textMapper      the_textMapper;

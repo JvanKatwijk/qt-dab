@@ -31,7 +31,7 @@
 	class uep_protection: public protection {
 public:
 		uep_protection (int16_t, int16_t);
-		~uep_protection	(void);
+		~uep_protection();
 bool		deconvolve	(int16_t *, int32_t, uint8_t *);
 };
 

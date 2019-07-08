@@ -110,7 +110,7 @@ int16_t	i;
 	}
 //
 //	yes we have all data to build up the directory
-	analyse_theDirectory ();
+	analyse_theDirectory();
 }
 //
 //	This is the tough one, we collected the bits, and now
@@ -139,7 +139,7 @@ int16_t	i;
 	                                         -1,
 	                                         false);
 
-	   currentBase		+= 2 + handle -> get_headerSize ();
+	   currentBase		+= 2 + handle -> get_headerSize();
 	   setHandle (handle, transportId);
 	}
 }

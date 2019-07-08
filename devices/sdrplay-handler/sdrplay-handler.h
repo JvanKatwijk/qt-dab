@@ -60,7 +60,7 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_Reinit) (int *gRdB, double fsMHz,
 double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType,
 mir_sdr_LoModeT, int, int*, int, int*, mir_sdr_ReasonForReinitT);
 
-typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamUninit)(void);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamUninit)();
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetRf)(double drfHz, int abs, int syncUpdate);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetFs)(double dfsHz, int abs, int syncUpdate, int reCal);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetGr)(int gRdB, int abs, int syncUpdate);
@@ -91,18 +91,18 @@ class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
 			sdrplayHandler		(QSettings *);
-			~sdrplayHandler		(void);
+			~sdrplayHandler	();
 	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency		(void);
-	int32_t		defaultFrequency	(void);
+	int32_t		getVFOFrequency	();
+	int32_t		defaultFrequency();
 
-	bool		restartReader		(void);
-	void		stopReader		(void);
+	bool		restartReader	();
+	void		stopReader	();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
 	int32_t		Samples			(void);
-	void		resetBuffer		(void);
-	int16_t		bitDepth		(void);
+	void		resetBuffer	();
+	int16_t		bitDepth	();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;
@@ -142,7 +142,7 @@ private:
 	int16_t		hwVersion;
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
-	bool		loadFunctions	(void);
+	bool		loadFunctions();
 	QSettings	*sdrplaySettings;
 	QFrame		*myFrame;
 	int32_t		inputRate;

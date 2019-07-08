@@ -30,8 +30,8 @@
 class	virtual_dataHandler:public QObject {
 Q_OBJECT
 public:
-		virtual_dataHandler	(void);
-virtual		~virtual_dataHandler	(void);
+		virtual_dataHandler();
+virtual		~virtual_dataHandler();
 virtual
 	void	add_mscDatagroup	(std::vector<uint8_t>);
 };

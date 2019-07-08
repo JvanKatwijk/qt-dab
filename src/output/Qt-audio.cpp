@@ -65,7 +65,7 @@ void	Qt_Audio::setParams (int outputRate) {
 	AudioFormat. setByteOrder	(QAudioFormat::LittleEndian);
 	AudioFormat. setSampleType	(QAudioFormat::Float);
 
-	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice ());
+	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
 	if (!info. isFormatSupported(AudioFormat)) {
 	   fprintf (stderr, "Audio: Sorry, format cannot be handled");
 	   return;
@@ -75,21 +75,21 @@ void	Qt_Audio::setParams (int outputRate) {
 	connect (theAudioOutput, SIGNAL (stateChanged (QAudio::State)),
 	         this, SLOT (handleStateChanged (QAudio::State)));
 
-	restart ();
-	currentState = theAudioOutput -> state ();
+	restart();
+	currentState = theAudioOutput -> state();
 }
 
 void	Qt_Audio::stop (void) {
 	if (theAudioDevice == NULL)
 	   return;
-	theAudioDevice	-> stop ();
+	theAudioDevice	-> stop();
 	theAudioOutput	-> stop();
 }
 
 void	Qt_Audio::restart	(void) {
 	if (theAudioDevice == NULL)
 	   return;
-	theAudioDevice	-> start ();
+	theAudioDevice	-> start();
 	theAudioOutput	-> start (theAudioDevice);
 }
 

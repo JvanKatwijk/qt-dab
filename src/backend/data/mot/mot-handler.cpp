@@ -45,7 +45,7 @@ struct {
 	   motTable [i]. orderNumber = -1;
 }
 
-	motHandler::~motHandler (void) {
+	motHandler::~motHandler() {
 int	i;
 
 	for (i = 0; i < 15; i ++)
@@ -56,7 +56,7 @@ int	i;
 }
 
 void	motHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
-uint8_t *data		= (uint8_t *)(msc. data ());
+uint8_t *data		= (uint8_t *)(msc. data());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
 bool	segmentFlag	= getBits_1 (data, 2) != 0;
@@ -72,11 +72,11 @@ uint8_t	lengthInd;
 int32_t	i;
 
 	(void)CI;
-	if (msc. size () <= 0) {
+	if (msc. size() <= 0) {
 	   return;
 	}
 
-	if (crcFlag && !check_CRC_bits (data, msc.size ())) 
+	if (crcFlag && !check_CRC_bits (data, msc.size())) 
 	   return;
 
 	if (extensionFlag)
@@ -99,7 +99,7 @@ int32_t	i;
 	}
 
 	int32_t		sizeinBits	=
-	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
+	              msc. size() - next - (crcFlag != 0 ? 16 : 0);
 
 	if (!transportIdFlag)
 	   return;
@@ -143,7 +143,7 @@ int32_t	i;
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
 	         if (theDirectory != nullptr)
-	            if (theDirectory -> get_transportId () == transportId)
+	            if (theDirectory -> get_transportId() == transportId)
 	               break;	// already existing
 
 	         if (theDirectory != nullptr)	// an old one, replace it
@@ -172,7 +172,7 @@ int32_t	i;
 	      }
 	      else {
 	         if ((theDirectory == nullptr) || 
-	                (theDirectory -> get_transportId () != transportId))
+	                (theDirectory -> get_transportId() != transportId))
 	            break;
 	         theDirectory -> directorySegment (transportId,
 	                                           &motVector [2],

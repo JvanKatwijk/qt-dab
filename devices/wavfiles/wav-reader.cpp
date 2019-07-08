@@ -27,7 +27,7 @@
 
 #define	BUFFERSIZE	32768
 static inline
-int64_t         getMyTime       (void) {
+int64_t         getMyTime() {
 struct timeval  tv;
 
         gettimeofday (&tv, nullptr);
@@ -46,22 +46,22 @@ struct timeval  tv;
 	period          = (32768 * 1000) / (2048);  // full IQś read
         fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
-	start ();
+	start();
 }
 
-	wavReader::~wavReader	(void) {
-	stopReader ();
+	wavReader::~wavReader() {
+	stopReader();
 }
 
-void	wavReader::stopReader	(void) {
-	if (running. load ()) {
+void	wavReader::stopReader() {
+	if (running. load()) {
 	   running. store (false);
-	   while (isRunning ())
+	   while (isRunning())
 	      usleep (200);
 	}
 }
 
-void	wavReader::run (void) {
+void	wavReader::run() {
 int32_t	t, i;
 std::complex<float>	*bi;
 int32_t	bufferSize	= 32768;
@@ -75,11 +75,11 @@ int	teller		= 0;
 	running. store (true);
 
 	bi		= new std::complex<float> [bufferSize];
-	nextStop	= getMyTime ();
+	nextStop	= getMyTime();
 	try {
-	   while (running. load ()) {
-	      while (theBuffer -> WriteSpace () < bufferSize) {
-	         if (!running. load ())
+	   while (running. load()) {
+	      while (theBuffer -> WriteSpace() < bufferSize) {
+	         if (!running. load())
 	            throw (33);
 	         usleep (100);
 	      }
@@ -100,8 +100,8 @@ int	teller		= 0;
 	            bi [i] = std::complex <float> (0, 0);
 	      }
 	      theBuffer -> putDataIntoBuffer (bi, bufferSize);
-	      if (nextStop - getMyTime () > 0)
-	         usleep (nextStop - getMyTime ());
+	      if (nextStop - getMyTime() > 0)
+	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
 	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);

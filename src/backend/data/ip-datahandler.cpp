@@ -31,11 +31,11 @@
 	         mr, SLOT (sendDatagram (int)));
 }
 
-	ip_dataHandler::~ip_dataHandler (void) {
+	ip_dataHandler::~ip_dataHandler() {
 }
 
 void	ip_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
-uint8_t *data		= (uint8_t *)(msc. data ());
+uint8_t *data		= (uint8_t *)(msc. data());
 bool	extensionFlag	= getBits_1 (data, 0) != 0;
 bool	crcFlag		= getBits_1 (data, 1) != 0;
 bool	segmentFlag	= getBits_1 (data, 2) != 0;
@@ -48,7 +48,7 @@ uint16_t transportId	= 0;
 uint8_t	lengthInd;
 int16_t	i;
 
-	if (crcFlag && !check_CRC_bits (data, msc.size ())) 
+	if (crcFlag && !check_CRC_bits (data, msc.size())) 
 	   return;
 
 	if (extensionFlag)
@@ -72,9 +72,9 @@ int16_t	i;
 
 	uint16_t	ipLength	= 0;
 	int16_t		sizeinBits	=
-	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
+	              msc. size() - next - (crcFlag != 0 ? 16 : 0);
 	ipLength = getBits (data, next + 16, 16);
-	if (ipLength < msc. size () / 8) {	// just to be sure
+	if (ipLength < msc. size() / 8) {	// just to be sure
 	   std::vector<uint8_t> ipVector;
 	   ipVector. resize (ipLength);
 	   for (i = 0; i < ipLength; i ++)
@@ -86,7 +86,7 @@ int16_t	i;
 }
 
 void	ip_dataHandler::process_ipVector (std::vector<uint8_t> v) {
-uint8_t	*data		= (uint8_t *)(v. data ());
+uint8_t	*data		= (uint8_t *)(v. data());
 int16_t	headerSize	= data [0] & 0x0F;	// in 32 bits words
 int16_t ipSize		= (data [2] << 8) | data [3];
 uint8_t	protocol	= data [9];

@@ -33,7 +33,7 @@
                                                       d -> protLevel);
 }
 
-	backendDeconvolver::~backendDeconvolver	(void) {
+	backendDeconvolver::~backendDeconvolver() {
 	delete protectionHandler;
 }
 

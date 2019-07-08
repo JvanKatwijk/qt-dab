@@ -63,7 +63,7 @@ int	galois::modnn (int x){
 	return x;
 }
 
-		galois::~galois	(void) {
+		galois::~galois() {
 }
 
 static inline

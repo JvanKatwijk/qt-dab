@@ -39,13 +39,13 @@ class tag_length_value {
 public:
 	uint8_t tag;
 		tag_length_value	(const _BYTE* p);
-	bool	is_cdata		(void) const { return tag == 1; }
-	bool	is_epg			(void) const { return tag == 2; }
-	bool	is_service_information	(void) const { return tag == 3; }
+	bool	is_cdata	() const { return tag == 1; }
+	bool	is_epg		() const { return tag == 2; }
+	bool	is_service_information() const { return tag == 3; }
 	bool	is_string_token_table	(void) const { return tag == 4; }
-	bool	is_default_id		(void) const { return tag == 5; }
-	bool	is_child_element	(void) const { return (5<tag) && (tag<0x80); }
-	bool	is_attribute		(void) const { return tag>=0x80; }
+	bool	is_default_id	() const { return tag == 5; }
+	bool	is_child_element() const { return (5<tag) && (tag<0x80); }
+	bool	is_attribute	() const { return tag>=0x80; }
 
 	size_t length;
 	_BYTE* value;
@@ -53,7 +53,7 @@ public:
 
 class CEPGDecoder {
 public:
-		CEPGDecoder		(void) {
+		CEPGDecoder	() {
 	        }
 	void	decode			(const vector<_BYTE>&,
 	                                 const QString &);
