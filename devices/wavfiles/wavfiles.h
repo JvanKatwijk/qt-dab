@@ -38,11 +38,11 @@ class	wavFiles: public virtualInput,
 Q_OBJECT
 public:
 			wavFiles	(QString);
-	       		~wavFiles	(void);
+	       		~wavFiles();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		(void);
-	bool		restartReader	(void);
-	void		stopReader	(void);
+	int32_t		Samples();
+	bool		restartReader();
+	void		stopReader();
 private:
 	QString		fileName;
 	QFrame		*myFrame;

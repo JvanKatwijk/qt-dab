@@ -44,8 +44,8 @@ public:
 		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler();
 	void	process_ficBlock	(std::vector<int16_t>, int16_t);
-	void	stop	();
-	void	reset		();
+	void	stop();
+	void	reset();
 private:
 	dabParams	params;
 	viterbiHandler	myViterbi;

@@ -93,7 +93,7 @@ public:
 	void		stopReader();
 	int32_t		getSamples		(std::complex<float> *v,
 	                                                 int32_t size);
-	int32_t		Samples	();
+	int32_t		Samples();
 	void		resetBuffer();
 	int16_t		bitDepth();
 	int16_t		currentTab;

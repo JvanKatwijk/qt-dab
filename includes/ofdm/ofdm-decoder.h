@@ -46,8 +46,8 @@ public:
 	void	decode			(std::vector<std::complex<float> >,
 	                                 int32_t n, int16_t *);
 	int16_t	get_snr			(std::complex<float> *);
-	void	stop		();
-	void	reset	();
+	void	stop();
+	void	reset();
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;

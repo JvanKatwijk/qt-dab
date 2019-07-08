@@ -119,7 +119,7 @@ private:
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;
-        void		run	();
+        void		run();
 
 //	imported functions
 public:

@@ -63,13 +63,13 @@ public:
 	                         RingBuffer<std::complex<float>>	*
 	                        );
 		~dabProcessor();
-    void		reset		();
-	void		stop			(void);
+    void		reset();
+	void		stop();
 	void		setOffset		(int32_t);
 	void		coarseCorrectorOn();
 	void		coarseCorrectorOff();
 	void		startDumping		(SNDFILE *);
-    void		stopDumping	();
+    void		stopDumping();
 	void		set_scanMode		(bool);
 //
 //	inheriting from our delegates
@@ -124,7 +124,7 @@ private:
 	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
-virtual	void		run	();
+virtual	void		run();
 signals:
 	void		setSynced		(char);
     void		No_Signal_Found();

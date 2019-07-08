@@ -105,7 +105,7 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
-void	tiiViewer::clear	() {
+void	tiiViewer::clear() {
 	secondariesDisplay	-> setText (" ");
 }
 
@@ -231,11 +231,11 @@ void	tiiViewer::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	tiiViewer::show	() {
+void	tiiViewer::show() {
 	myFrame	-> show();
 }
 
-void	tiiViewer::hide	() {
+void	tiiViewer::hide() {
 	myFrame	-> hide();
 }
 

@@ -221,11 +221,11 @@ void	spectrumViewer::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	spectrumViewer::show	() {
+void	spectrumViewer::show() {
 	myFrame	-> show();
 }
 
-void	spectrumViewer::hide	() {
+void	spectrumViewer::hide() {
 	myFrame	-> hide();
 }
 

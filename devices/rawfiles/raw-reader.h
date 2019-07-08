@@ -37,7 +37,7 @@ public:
 	void		startReader();
 	void		stopReader();
 private:
-virtual void		run	();
+virtual void		run();
 	FILE		*filePointer;
 	RingBuffer<uint8_t>	*theBuffer;
 	uint64_t	period;

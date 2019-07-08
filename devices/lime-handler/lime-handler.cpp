@@ -223,7 +223,7 @@ int	res;
 	return true;
 }
 	
-void	limeHandler::stopReader	() {
+void	limeHandler::stopReader() {
 	if (!isRunning())
 	   return;
 	running. store (false);
@@ -237,7 +237,7 @@ int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
 	return theBuffer -> getDataFromBuffer (v, a);
 }
 
-int	limeHandler::Samples	() {
+int	limeHandler::Samples() {
 	return theBuffer -> GetRingBufferReadAvailable();
 }
 
@@ -245,7 +245,7 @@ void	limeHandler::resetBuffer() {
 	theBuffer	-> FlushRingBuffer();
 }
 
-int16_t	limeHandler::bitDepth	() {
+int16_t	limeHandler::bitDepth() {
 	return 12;
 }
 

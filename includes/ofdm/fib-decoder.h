@@ -42,7 +42,7 @@ public:
 		fibDecoder		(RadioInterface *);
 		~fibDecoder();
 
-	void	clearEnsemble	();
+	void	clearEnsemble();
 	bool	syncReached();
 	void	dataforAudioService	(const QString &,
 	                                      audiodata *, int16_t);
@@ -51,7 +51,7 @@ public:
         uint8_t get_ecc();
 	int32_t	get_ensembleId();
 	QString get_ensembleName();
-	int32_t	get_CIFcount	();
+	int32_t	get_CIFcount();
 protected:
 	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);

@@ -39,7 +39,7 @@ public:
 	void		startReader();
 	void		stopReader();
 private:
-virtual void		run	();
+virtual void		run();
 	SNDFILE		*filePointer;
 	RingBuffer<std::complex<float> >	*theBuffer;
 	uint64_t	period;

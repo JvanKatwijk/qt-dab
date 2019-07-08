@@ -47,8 +47,8 @@ public:
 			~impulseViewer();
 	void		showImpulse		(int32_t);
 	void		showIndex		(int32_t);
-	void		show	();
-	void		hide	();
+	void		show();
+	void		hide();
 	bool		isHidden();
 
 private:

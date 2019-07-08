@@ -35,14 +35,14 @@
 class	audioBase: public QObject {
 Q_OBJECT
 public:
-			audioBase		(void);
-virtual			~audioBase		(void);
+			audioBase();
+virtual			~audioBase();
 virtual	void		stop			(void);
-virtual	void		restart			(void);
+virtual	void		restart();
 //
 	void		audioOut		(int16_t *, int32_t, int);
 	void		startDumping		(SNDFILE *);
-	void		stopDumping		(void);
+	void		stopDumping();
 private:
 	void		audioOut_16000		(int16_t *, int32_t);
 	void		audioOut_24000		(int16_t *, int32_t);

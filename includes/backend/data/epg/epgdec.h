@@ -40,7 +40,7 @@ public:
 	uint8_t tag;
 		tag_length_value	(const _BYTE* p);
 	bool	is_cdata() const { return tag == 1; }
-	bool	is_epg	() const { return tag == 2; }
+	bool	is_epg() const { return tag == 2; }
 	bool	is_service_information() const { return tag == 3; }
 	bool	is_string_token_table() const { return tag == 4; }
 	bool	is_default_id() const { return tag == 5; }

@@ -86,7 +86,7 @@ private:
 	void		Increment_Channel();
 	uint8_t		convert			(QString);
 	void		hideButtons();
-	void		showButtons	();
+	void		showButtons();
 	virtualInput	*setDevice		(QString);
 
 	std::vector<int> secondariesVector;
@@ -194,11 +194,11 @@ private slots:
 	void		set_nextChannel();
 	void		toggle_show_data();
 	void		doStart			(QString);
-	void		doStart	();
+	void		doStart();
 	void		TerminateProcess();
 	void		selectChannel		(QString);
 	void		updateTimeDisplay();
-	void		signalTimer_out	();
+	void		signalTimer_out();
 	void		autoCorrector_on();
 
 	void		newDevice		(QString);

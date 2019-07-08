@@ -45,7 +45,7 @@ Q_OBJECT
 public:
 			tii_table		(RadioInterface *);
 			~tii_table();
-	void		cleanUp	();
+	void		cleanUp();
 	void		add_element		(tii_element *);
 	void		add_main		(int16_t, float, float);
 	std::complex<float> get_coordinates (int16_t, int16_t, bool *);

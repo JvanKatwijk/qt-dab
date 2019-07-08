@@ -56,10 +56,10 @@ public:
 //
 //	This function should be called beore issuing a request
 //	to handle a service
-	void		reset	();
+	void		reset();
 //
 //	This function will kill
-	void		stop	();
+	void		stop();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
 
