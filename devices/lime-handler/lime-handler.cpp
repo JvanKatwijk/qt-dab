@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -35,11 +35,11 @@ lms_info_str_t limedevices [10];
 	this	-> myFrame	-> show ();
 
 #ifdef  __MINGW32__
-        const char *libraryString = "libLimeSuite.dll";
-        Handle          = LoadLibrary ((wchar_t *)L"libhackrf.dll");
+        const char *libraryString = "LimeSuite.dll";
+        Handle          = LoadLibrary ((wchar_t *)L"LimeSuite.dll");
 #elif  __clang__
         const char *libraryString = "/opt/local/lib/libLimeSuite.dylib";
-        Handle = dlopen (libraryString, RTLD_NOW);
+        Handle		= dlopen (libraryString, RTLD_NOW);
 #else
         const char *libraryString = "libLimeSuite.so";
         Handle          = dlopen (libraryString, RTLD_NOW);

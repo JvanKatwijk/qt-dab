@@ -121,7 +121,7 @@ std::vector<int> resultVector;
 	sum /= T_u / 2;
 //
 //	
-	for (i = T_g - 40; i < T_g + 20; i ++) {
+	for (i = T_g - 40; i < T_g + 10; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
 	   mbuf [i] = lbuf [i];
 	   if (lbuf [i] > Max) {

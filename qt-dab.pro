@@ -268,6 +268,7 @@ CONFIG		+= sdrplay
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
+#CONFIG		+= soapy
 CONFIG		+= lime
 #CONFIG		+= elad_s1	# does not work yet
 
@@ -349,7 +350,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
-
+CONFIG		+= lime
 #CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler

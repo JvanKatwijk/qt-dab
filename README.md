@@ -3,6 +3,26 @@
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
+NEW in 2.6
+------------------------------------------------------------------
+
+New devices:
+a. the LimeSDR is now supported (due to missing a decent "dll" file
+for the library, for now in Linux only)
+b. as an experimental feature, a Soapy interface is implemented. Tested
+with the SDRplay and the LimeSDR it works.
+In the appImage the Soapy support is NOT included.
+
+Issue adddressed:
+One of the issues to be resolved was resycnhronization. It could
+happen that - due to some faulty input - the synchronization
+got lost. 
+The chain of events leading to such a loss of synchronization is
+identified and chance that - due to some faulty input - synchronization
+will be lost is - at least - much smaller.
+
+
+------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 
@@ -43,7 +63,8 @@ Features
   	- Airspy, including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), and
 	- HACKRF One, 
-	- limeSDR, and
+	- limeSDR, 
+	- Soapy (experimental, Linux only),
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not  (Not yet or partly) implemented:
