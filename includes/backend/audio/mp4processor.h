@@ -28,8 +28,8 @@
  */
 //
 #include	"dab-constants.h"
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"audio-base.h"
 #include	"frame-processor.h"

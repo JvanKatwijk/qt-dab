@@ -25,8 +25,8 @@
 
 #include	<vector>
 #include	"frame-processor.h"
-#include	<stdio.h>
-#include	<string.h>
+#include	<cstdio>
+#include	<cstring>
 #include	<QObject>
 #include	"ringbuffer.h"
 

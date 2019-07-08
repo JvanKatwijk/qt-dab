@@ -22,7 +22,7 @@
  */
 
 #include	"audio-base.h"
-#include	<stdio.h>
+#include	<cstdio>
 
 /*
  *	The class is the abstract sink for the data generated

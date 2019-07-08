@@ -33,7 +33,7 @@
 #include	<QTcpSocket>
 #include	<QTimer>
 #include	<QComboBox>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"

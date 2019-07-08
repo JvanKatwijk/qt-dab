@@ -29,7 +29,7 @@
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<sndfile.h>
-#include	<stdint.h>
+#include	<cstdint>
 #include	<atomic>
 #include	<vector>
 #include	"virtual-input.h"

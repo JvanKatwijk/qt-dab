@@ -23,7 +23,7 @@
 #ifndef __AUDIO_BASE__
 #define	__AUDIO_BASE__
 #include	"dab-constants.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<samplerate.h>
 #include	<sndfile.h>
 #include	<QMutex>

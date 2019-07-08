@@ -24,7 +24,7 @@
 #ifndef	__VITERBI_HANDLER__
 #define	__VITERBI_HANDLER__
 
-#include	<stdint.h>
+#include	<cstdint>
 
 class	viterbiHandler {
 

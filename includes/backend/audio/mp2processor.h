@@ -29,12 +29,12 @@
 #ifndef __MP2PROCESSOR__
 #define	__MP2PROCESSOR__
 
-#include	<stdio.h>
-#include	<stdint.h>
-#include	<math.h>
+#include	<cstdio>
+#include	<cstdint>
+#include	<cmath>
 #include	"frame-processor.h"
 #include	<QObject>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"ringbuffer.h"
 #include	"pad-handler.h"
 

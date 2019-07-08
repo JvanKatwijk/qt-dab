@@ -24,7 +24,7 @@
 #ifndef	__GALOIS
 #define	__GALOIS
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	<vector>
 
 class	galois {

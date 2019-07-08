@@ -23,8 +23,8 @@
 #ifndef	__PHASEREFERENCE__
 #define	__PHASEREFERENCE__
 #include	<QObject>
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"fft-handler.h"
 #include	"phasetable.h"

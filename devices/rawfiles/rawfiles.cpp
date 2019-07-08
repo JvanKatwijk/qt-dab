@@ -24,13 +24,13 @@
  *	dabsticks 
  */
 #include	"rawfiles.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<unistd.h>
-#include	<stdlib.h>
+#include	<cstdlib>
 #include	<fcntl.h>
 //
 #include	<sys/time.h>
-#include	<time.h>
+#include	<ctime>
 
 #include	"raw-reader.h"
 

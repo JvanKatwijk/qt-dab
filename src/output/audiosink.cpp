@@ -22,7 +22,7 @@
  */
 
 #include	"audiosink.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<QDebug>
 #include	<QMessageBox>
 #include	<QComboBox>

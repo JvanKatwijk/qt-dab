@@ -30,7 +30,7 @@
 #include	<QThread>
 #include	<QObject>
 #include	<vector>
-#include	"stdint.h"
+#include	<cstdint>
 #include	<sndfile.h>
 #include	"sample-reader.h"
 #include	"phasereference.h"

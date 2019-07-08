@@ -28,7 +28,7 @@
 #include	<QListView>
 #include	<QStringListModel>
 #include	<QStringList>
-#include	<stdint.h>
+#include	<cstdint>
 
 class	rtl_dongleSelect: public QDialog {
 Q_OBJECT

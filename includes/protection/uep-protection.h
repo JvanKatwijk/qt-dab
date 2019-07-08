@@ -24,8 +24,8 @@
 #define	__UEP_PROTECTION__
 
 #include	<vector>
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	"protection.h"
 
 	class uep_protection: public protection {

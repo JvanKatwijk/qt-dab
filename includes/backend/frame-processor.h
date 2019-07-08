@@ -23,8 +23,8 @@
 #ifndef	__FRAME_PROCESSOR__
 #define	__FRAME_PROCESSOR__
 #include	<vector>
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdint>
+#include	<cstdio>
 
 //
 //	virtual class, just for providing a common base

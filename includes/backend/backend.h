@@ -30,7 +30,7 @@
 #include	<atomic>
 #endif
 #include	"ringbuffer.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include        "backend-driver.h"
 #include        "backend-deconvolver.h"
 

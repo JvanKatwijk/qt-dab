@@ -27,8 +27,8 @@
 #ifndef	__SPECTROGRAM
 #define	__SPECTROGRAM
 
-#include	<stdio.h>
-#include	<stdlib.h>
+#include	<cstdio>
+#include	<cstdlib>
 #include	<qwt_interval.h>
 #include	<qwt_raster_data.h>
 

@@ -23,9 +23,9 @@
 #ifndef	__NEW_CONVERTER__
 #define	__NEW_CONVERTER__
 
-#include	<math.h>
+#include	<cmath>
 #include	<complex>
-#include	<stdint.h>
+#include	<cstdint>
 #include	<unistd.h>
 #include	<vector>
 #include	<limits>

@@ -25,7 +25,7 @@
 
 #include	<QObject>
 #include	<cstring>
-#include	<stdint.h>
+#include	<cstdint>
 #include	<vector>
 
 class	RadioInterface;

@@ -30,7 +30,7 @@
 
 #include	<QObject>
 #include	<QSettings>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"

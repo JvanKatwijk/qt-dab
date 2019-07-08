@@ -28,9 +28,9 @@
 \******************************************************************************/
 
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <map>
-#include	<stdio.h>
+#include	<cstdio>
 #include <iostream>
 #include <sstream>
 #include "epgdec.h"

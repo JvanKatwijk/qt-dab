@@ -24,8 +24,8 @@
 #ifndef __AIRSPY_FILTER__
 #define __AIRSPY_FILTER__
 
-#include	<stdlib.h>
-#include	<math.h>
+#include	<cstdlib>
+#include	<cmath>
 #include	<complex>
 
 class	airspyFilter {

@@ -28,9 +28,9 @@
 #include	<QMutex>
 #include	<QSemaphore>
 #include	<atomic>
-#include	<stdio.h>
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdio>
+#include	<cstdint>
+#include	<cstdio>
 #include	<vector>
 #include	"dab-constants.h"
 #include	"dab-params.h"

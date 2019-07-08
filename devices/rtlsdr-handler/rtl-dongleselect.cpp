@@ -20,7 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"rtl-dongleselect.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<QVBoxLayout>
 //
 //	Whenever there are two or more RT2832 based sticks connected

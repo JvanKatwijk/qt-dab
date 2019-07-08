@@ -7,7 +7,7 @@
 #ifndef	__REED_SOLOMON
 #define	__REED_SOLOMON
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	"galois.h"
 #include	<vector>
 

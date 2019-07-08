@@ -22,7 +22,7 @@
  */
 
 #include	"newconverter.h"
-#include	<stdio.h>
+#include	<cstdio>
 
 	newConverter::newConverter (int32_t inRate, int32_t outRate, 
 	                            int32_t inSize) {

@@ -24,7 +24,7 @@
 #ifndef	__DAB_PARAMS__
 #define	__DAB_PARAMS__
 
-#include	<stdint.h>
+#include	<cstdint>
 
 class	dabParams {
 public:

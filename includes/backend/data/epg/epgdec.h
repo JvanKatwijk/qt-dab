@@ -29,7 +29,7 @@
 
 #ifndef _EPGDEC_H
 #define _EPGDEC_H
-#include	<stdint.h>
+#include	<cstdint>
 #include	<vector>
 #include	<qdom.h>
 using namespace std;

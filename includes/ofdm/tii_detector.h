@@ -23,7 +23,7 @@
 #ifndef	__TII_DETECTOR__
 #define	__TII_DETECTOR__
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	"dab-params.h"
 #include	"fft-handler.h"
 #include	<vector>

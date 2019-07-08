@@ -26,8 +26,8 @@
 #ifndef	__FIC_HANDLER__
 #define	__FIC_HANDLER__
 
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"viterbi-handler.h"
 #include	<QObject>

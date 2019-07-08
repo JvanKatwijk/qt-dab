@@ -30,7 +30,7 @@
 #include	<QString>
 #include	"dab-constants.h"
 #include	<portaudio.h>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"audio-base.h"
 #include	"ringbuffer.h"
 

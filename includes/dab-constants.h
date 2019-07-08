@@ -26,10 +26,10 @@
 #ifndef	__DAB_CONSTANTS__
 #define	__DAB_CONSTANTS__
 #include	<QString>
-#include	<math.h>
-#include	<stdint.h>
-#include	<stdlib.h>
-#include	<stdio.h>
+#include	<cmath>
+#include	<cstdint>
+#include	<cstdlib>
+#include	<cstdio>
 #include	<complex>
 #include	<limits>
 #include	<cstring>

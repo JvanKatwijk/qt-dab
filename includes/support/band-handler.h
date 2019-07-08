@@ -22,7 +22,7 @@
 
 #ifndef	__BANDHANDLER__
 #define	__BANDHANDLER__
-#include	<stdint.h>
+#include	<cstdint>
 #include	<QComboBox>
 #include	<QString>
 //

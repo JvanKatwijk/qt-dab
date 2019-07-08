@@ -27,8 +27,8 @@
 //	The output can be viewed (a.o) in LibreOfficeCalc
 #include	<QString>
 #include	"dab-constants.h"
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdint>
+#include	<cstdio>
 
 class	dabProcessor;
 

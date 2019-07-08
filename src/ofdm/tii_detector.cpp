@@ -21,8 +21,8 @@
  */
 
 #include	"tii_detector.h"
-#include	<stdio.h>
-#include	<inttypes.h>
+#include	<cstdio>
+#include	<cinttypes>
 //
 
 static

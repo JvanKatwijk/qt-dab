@@ -26,7 +26,7 @@
 #ifndef	__VIRTUAL_INPUT__
 #define	__VIRTUAL_INPUT__
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<QThread>

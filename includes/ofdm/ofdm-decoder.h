@@ -25,7 +25,7 @@
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<vector>
-#include	<stdint.h>
+#include	<cstdint>
 #include	"fft-handler.h"
 #include	"ringbuffer.h"
 #include	"phasetable.h"

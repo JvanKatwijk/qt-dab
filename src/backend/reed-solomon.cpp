@@ -4,9 +4,9 @@
  * Copyright 2002 Phil Karn, KA9Q
  * May be used under the terms of the GNU General Public License (GPL)
  */
-#include	<stdio.h>
+#include	<cstdio>
 #include	"reed-solomon.h"
-#include	<string.h>
+#include	<cstring>
 
 /*
  *	Reed-Solomon decoder

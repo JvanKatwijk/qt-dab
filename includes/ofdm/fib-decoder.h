@@ -25,8 +25,8 @@
 #define	__FIB_DECODER__
 #
 //
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdint>
+#include	<cstdio>
 #include	<QObject>
 #include	"msc-handler.h"
 #include	<QMutex>

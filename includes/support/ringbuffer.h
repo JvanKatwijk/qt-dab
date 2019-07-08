@@ -67,10 +67,10 @@
 
 #ifndef __RINGBUFFER__
 #define	__RINGBUFFER__
-#include	<stdlib.h>
-#include	<stdio.h>
-#include	<string.h>
-#include	<stdint.h>
+#include	<cstdlib>
+#include	<cstdio>
+#include	<cstring>
+#include	<cstdint>
 /*
  *	a simple ringbuffer, lockfree, however only for a
  *	single reader and a single writer.

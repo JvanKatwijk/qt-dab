@@ -28,8 +28,8 @@
 #ifndef	RSCODEC
 #define	RSCODEC
 
-#include	<stdint.h>
-#include	<stdint.h>
+#include	<cstdint>
+#include	<cstdint>
 #include	<cstring>
 
 

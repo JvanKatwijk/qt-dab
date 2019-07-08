@@ -24,7 +24,7 @@
 #ifndef	__PROTECTION__
 #define	__PROTECTION__
 
-#include	<stdint.h>
+#include	<cstdint>
 #include        <vector>
 #include        "viterbi-handler.h"
 
