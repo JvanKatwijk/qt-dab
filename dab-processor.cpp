@@ -178,6 +178,9 @@ notSynced:
 	      case NO_END_OF_DIP_FOUND:
 	         goto notSynced;
 	   }
+	   myReader. getSamples (ofdmBuffer. data(),
+	                        T_u, coarseOffset + fineOffset);
+	   sampleCount += T_u;
 	   goto SyncOnPhase;
 
 //
@@ -203,11 +206,11 @@ notSynced:
 Check_endofNULL:
 
 	   avgValue_testPeriod	= 0;
-	   for (i = 0; i < testLength; i ++) {
-	      std::complex<float> sample;
-	      myReader. getSamples (&sample, 1, coarseOffset + fineOffset);
-	      avgValue_testPeriod += abs (sample);
-	   }
+	   myReader. getSamples (ofdmBuffer. data(),
+	                        T_u, coarseOffset + fineOffset);
+	   sampleCount += T_u;
+	   for (i = 0; i < testLength; i ++)
+	      avgValue_testPeriod += abs (ofdmBuffer [i]);
 	   avgValue_testPeriod	/= testLength;
 //
 //	It seems reasonable to expect that the avg value of a segment
@@ -226,23 +229,12 @@ SyncOnPhase:
   *	We now have to find the exact first sample of the non-null period.
   *	We use a correlation that will find the first sample after the
   *	cyclic prefix.
-  *	When in "sync", i.e. pretty sure that we know were we are,
-  *	we skip the "dip" identification and come here right away.
-  *
-  *	now read in Tu samples. The precise number is not really important
-  *	as long as we can be sure that the first sample to be identified
-  *	is part of the samples read.
   */
-    myReader. getSamples (ofdmBuffer. data(),
-	                        T_u, coarseOffset + fineOffset);
-	sampleCount += T_u;
-//
-//	and then, call upon the phase synchronizer to verify/compute
-//	the real "first" sample
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, testLength);
+
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
-             setSyncLost();
+	         setSyncLost();
 	      }
 //	      fprintf (stderr, "x = %d\n", startIndex);
 	      sampleCount	= 0;

@@ -33,12 +33,12 @@
 	Buffer		= new RingBuffer<float> (8 * 32768);
 	outputRate	= 48000;	// default
 	theAudioDevice	= new Qt_AudioDevice (Buffer, this);
-	theAudioOutput	= NULL;
+	theAudioOutput	= nullptr;
 	setParams (outputRate);
 }
 
 	Qt_Audio::~Qt_Audio(void) {
-	if (theAudioOutput != NULL)
+	if (theAudioOutput != nullptr)
 	   delete	theAudioOutput;
 	delete	theAudioDevice;
 	delete	Buffer;
@@ -47,15 +47,15 @@
 //	Note that audioBase functions have - if needed - the rate
 //	converted.  This functions overrides the one in audioBase
 void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
-	if (theAudioDevice != NULL) {
+	if (theAudioDevice != nullptr) {
 	   Buffer -> putDataIntoBuffer (fragment, 2 * size);
 	}
 }
 
 void	Qt_Audio::setParams (int outputRate) {
-	if (theAudioOutput != NULL) {
+	if (theAudioOutput != nullptr) {
 	   delete theAudioOutput;
-	   theAudioOutput = NULL;
+	   theAudioOutput = nullptr;
 	}
 
 	AudioFormat. setSampleRate	(outputRate);
@@ -80,14 +80,14 @@ void	Qt_Audio::setParams (int outputRate) {
 }
 
 void	Qt_Audio::stop (void) {
-	if (theAudioDevice == NULL)
+	if (theAudioDevice == nullptr)
 	   return;
 	theAudioDevice	-> stop();
 	theAudioOutput	-> stop();
 }
 
 void	Qt_Audio::restart	(void) {
-	if (theAudioDevice == NULL)
+	if (theAudioDevice == nullptr)
 	   return;
 	theAudioDevice	-> start();
 	theAudioOutput	-> start (theAudioDevice);

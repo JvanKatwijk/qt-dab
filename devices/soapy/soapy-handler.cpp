@@ -9,10 +9,10 @@
 
 	soapyHandler::soapyHandler (QSettings *soapySettings) {
 	this	-> soapySettings	= soapySettings;
-        this    -> myFrame              = new QFrame (NULL);
+        this    -> myFrame              = new QFrame (nullptr);
         setupUi (this -> myFrame);
         this    -> myFrame      -> show();
-	deviceLineEdit		= new QLineEdit (NULL);
+	deviceLineEdit		= new QLineEdit (nullptr);
 	deviceLineEdit		-> show();
 	connect (deviceLineEdit, SIGNAL (returnPressed (void)),
 	         this, SLOT (createDevice (void)));
@@ -49,7 +49,7 @@ QString	handlerName	= "driver=";
 
 	device  = SoapySDR::Device::make (handlerName. toLatin1(). data());
 
-        if (device == NULL)
+        if (device == nullptr)
            return;
 
 	deviceNameLabel	-> setText (device -> getHardwareKey(). c_str());

@@ -79,7 +79,7 @@ ULONG APIkeyValue_length = 255;
 
 	wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
 	Handle	= LoadLibrary (libname);
-	if (Handle == NULL) {
+	if (Handle == nullptr) {
 	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
 	                   TEXT("Software\\MiricsSDR\\API"),
 	                   &APIkey) != ERROR_SUCCESS) {
@@ -92,8 +92,8 @@ ULONG APIkeyValue_length = 255;
 
 	   RegQueryValueEx (APIkey,
 	                    (wchar_t *)L"Install_Dir",
-	                    NULL,
-	                    NULL,
+	                    nullptr,
+	                    nullptr,
 	                    (LPBYTE)&APIkeyValue,
 	                    (LPDWORD)&APIkeyValue_length);
 //	Ok, make explicit it is in the 32 bits section
@@ -102,7 +102,7 @@ ULONG APIkeyValue_length = 255;
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);
-	   if (Handle == NULL) {
+	   if (Handle == nullptr) {
 	      fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
 	      delete myFrame;
 	      throw (22);

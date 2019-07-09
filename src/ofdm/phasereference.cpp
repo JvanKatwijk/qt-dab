@@ -95,7 +95,7 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v, int offset) {
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
@@ -122,10 +122,10 @@ std::vector<int> resultVector;
 //
 //	
 	for (i = 0; i < 50; i ++) {
-	   lbuf [i] = jan_abs (fft_buffer [T_g - offset - 25 + i]);
+	   lbuf [i] = jan_abs (fft_buffer [T_g - 40 + i]);
 	   mbuf [i] = lbuf [i];
 	   if (lbuf [i] > Max) {
-	      maxIndex = T_g - offset - 25 + i;
+	      maxIndex = T_g - 40 + i;
 	      Max = lbuf [i];
 	   }
 	}
