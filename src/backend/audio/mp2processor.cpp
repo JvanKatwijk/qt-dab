@@ -260,7 +260,7 @@ int16_t *nPtr = &N [0][0];
 	errorFrames	= 0;
 }
 
-	mp2Processor::~mp2Processor (void) {
+	mp2Processor::~mp2Processor() {
 	delete[] MP2frame;
 }
 //
@@ -300,7 +300,7 @@ struct quantizer_spec*
 	mp2Processor::read_allocation (int sb, int b2_table) {
 int table_idx = quant_lut_step3 [b2_table][sb];
     table_idx = quant_lut_step4 [table_idx & 15] [get_bits(table_idx >> 4)];
-    return table_idx ? (&quantizer_table[table_idx - 1]) : 0;
+    return table_idx ? (&quantizer_table[table_idx - 1]) : nullptr;
 }
 
 
@@ -608,7 +608,7 @@ int16_t	vLength	= 24 * bitRate / 8;
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
 	            buffer -> putDataIntoBuffer (sample_buf, 
 	                                 2 * (int32_t)KJMP2_SAMPLES_PER_FRAME);
-	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
+	            if (buffer -> GetRingBufferReadAvailable() > baudRate / 8)
 	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate);
 	         }

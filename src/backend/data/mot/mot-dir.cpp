@@ -50,7 +50,7 @@ int16_t	i;
 	   marked [0] = true;
 	}
 
-	motDirectory::~motDirectory (void) {
+	motDirectory::~motDirectory() {
 int	i;
 	delete []	dir_segments;
 
@@ -67,7 +67,7 @@ int i;
 	             (motComponents [i]. transportId == transportId))
 	      return motComponents [i]. motSlide;
 
-	return NULL;
+	return nullptr;
 }
 
 void	motDirectory::setHandle (motObject *h, uint16_t transportId) {
@@ -110,13 +110,13 @@ int16_t	i;
 	}
 //
 //	yes we have all data to build up the directory
-	analyse_theDirectory ();
+	analyse_theDirectory();
 }
 //
 //	This is the tough one, we collected the bits, and now
 //	we need to extract the "motObject"s from it
 
-void	motDirectory::analyse_theDirectory (void) {
+void	motDirectory::analyse_theDirectory() {
 uint32_t	currentBase	= 11;	// in bytes
 uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
@@ -139,12 +139,12 @@ int16_t	i;
 	                                         -1,
 	                                         false);
 
-	   currentBase		+= 2 + handle -> get_headerSize ();
+	   currentBase		+= 2 + handle -> get_headerSize();
 	   setHandle (handle, transportId);
 	}
 }
 
-uint16_t	motDirectory::get_transportId	(void) {
+uint16_t	motDirectory::get_transportId() {
 	return transportId;
 }
 

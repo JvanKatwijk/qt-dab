@@ -27,13 +27,13 @@
 //
 #ifndef	FIRECODE_CHECKER
 #define	FIRECODE_CHECKER
-#include	<stdint.h>
+#include	<cstdint>
 
 
 class firecode_checker {
 public:
-		firecode_checker	(void);
-		~firecode_checker	(void);
+		firecode_checker();
+		~firecode_checker();
 // error detection. x[0-1] contains parity, x[2-10] contains data
 	bool	check (const uint8_t *x); // return true if firecode check is passed
 private:

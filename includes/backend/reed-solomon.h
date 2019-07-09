@@ -7,7 +7,7 @@
 #ifndef	__REED_SOLOMON
 #define	__REED_SOLOMON
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	"galois.h"
 #include	<vector>
 
@@ -36,7 +36,7 @@ public:
 	                     uint16_t fcr	= 0,
 	                     uint16_t prim	= 1,
 	                     uint16_t nroots	= 10);
-		~reedSolomon (void);
+		~reedSolomon();
 int16_t		dec	  (const uint8_t *data_in, uint8_t *data_out, int16_t cutlen);
 void		enc	  (const uint8_t *data_in, uint8_t *data_out, int16_t cutlen);
 };

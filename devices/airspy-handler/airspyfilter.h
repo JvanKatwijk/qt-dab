@@ -24,14 +24,14 @@
 #ifndef __AIRSPY_FILTER__
 #define __AIRSPY_FILTER__
 
-#include	<stdlib.h>
-#include	<math.h>
+#include	<cstdlib>
+#include	<cmath>
 #include	<complex>
 
 class	airspyFilter {
 public:
 			airspyFilter	(int16_t, int32_t, int32_t);
-	                ~airspyFilter	(void);
+	                ~airspyFilter();
 	std::complex<float> Pass	(float re, float im);
 	int16_t		firSize;
 	float		*kernel;

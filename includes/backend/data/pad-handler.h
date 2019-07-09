@@ -25,7 +25,7 @@
 
 #include	<QObject>
 #include	<cstring>
-#include	<stdint.h>
+#include	<cstdint>
 #include	<vector>
 
 class	RadioInterface;
@@ -35,7 +35,7 @@ class	padHandler: public QObject {
 Q_OBJECT
 public:
 		padHandler		(RadioInterface *, QString);
-		~padHandler		(void);
+		~padHandler();
 	void	processPAD		(uint8_t *, int16_t, uint8_t, uint8_t);
 private:
 		RadioInterface	*myRadioInterface;

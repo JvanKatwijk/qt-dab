@@ -41,12 +41,12 @@ int16_t	success;
 	this	-> eladSettings	= s;
 	this	-> myFrame	= new QFrame (NULL);
 	setupUi (myFrame);
-	myFrame	-> show ();
+	myFrame	-> show();
 	_I_Buffer		= NULL;
 	theLoader		= NULL;
 	theWorker		= NULL;
 	vfoOffset			=
-	             eladSettings -> value ("elad-offset", 0). toInt ();
+	             eladSettings -> value ("elad-offset", 0). toInt();
 
 //
 //	sometimes problems with dynamic linkage of libusb, it is
@@ -108,7 +108,7 @@ int16_t	success;
 //
 	eladHandler::~eladHandler	(void) {
 	eladSettings -> setValue ("elad-offset", vfoOffset);
-	stopReader ();
+	stopReader();
 	if (_I_Buffer != NULL)
 	   delete _I_Buffer;
 	if (theLoader != NULL)
@@ -130,7 +130,7 @@ int32_t	realFreq = newFrequency - vfoOffset;
 	}
 
 	theWorker -> setVFOFrequency (realFreq);
-	vfoFrequency = theWorker -> getVFOFrequency ();
+	vfoFrequency = theWorker -> getVFOFrequency();
 }
 
 int32_t	eladHandler::getVFOFrequency	(void) {
@@ -143,7 +143,7 @@ bool	success;
 	if (theWorker != NULL) 
 	   return true;
 
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer	-> FlushRingBuffer();
 	theWorker	= new eladWorker (vfoFrequency,
 	                                  theLoader,
 	                                  this,
@@ -157,8 +157,8 @@ void	eladHandler::stopReader	(void) {
 	if (theWorker == NULL) 
 	   return;
 
-	theWorker	-> stop ();
-	while (theWorker -> isRunning ())
+	theWorker	-> stop();
+	while (theWorker -> isRunning())
 	   usleep (100);
 	delete theWorker;
 	theWorker = NULL;
@@ -171,11 +171,11 @@ int32_t	eladHandler::getSamples (std::complex<float> *V, int32_t size) {
 }
 
 int32_t	eladHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable () / 2;
+	return _I_Buffer	-> GetRingBufferReadAvailable() / 2;
 }
 
 void	eladHandler::resetBuffer	(void) {
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer	-> FlushRingBuffer();
 }
 
 //
@@ -194,14 +194,14 @@ void	eladHandler::setOffset	(int k) {
 
 void	eladHandler::setGainReduction	(void) {
 	gainReduced = gainReduced == 1 ? 0 : 1;
-	theLoader -> set_en_ext_io_ATT20 (theLoader -> getHandle (),
+	theLoader -> set_en_ext_io_ATT20 (theLoader -> getHandle(),
 	                                     &gainReduced);
 	gainLabel -> setText (gainReduced == 1 ? "-20" : "0");
 }
 
 void	eladHandler::setFilter	(void) {
 	localFilter = localFilter == 1 ? 0 : 1;
-	theLoader -> set_en_ext_io_LP30 (theLoader -> getHandle (),
+	theLoader -> set_en_ext_io_LP30 (theLoader -> getHandle(),
 	                                     &localFilter);
 	filterText	-> setText (localFilter == 1 ? "30 Mhz" : "no filter");
 }

@@ -37,41 +37,41 @@
 //	            mr,   SLOT   (show_tiiLabel (int)));
 }
 
-	tii_table::~tii_table (void) {
+	tii_table::~tii_table() {
 }
 
-void	tii_table::cleanUp (void) {
-	tiiLocker. lock ();
-	offsets. clear ();
+void	tii_table::cleanUp() {
+	tiiLocker. lock();
+	offsets. clear();
 	mainId		= -1;
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 //	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_main	(int16_t mainId,
 	                         float latitude, float longitude) {
-	tiiLocker. lock ();
+	tiiLocker. lock();
 	if (this -> mainId > 0) {
-	   tiiLocker. unlock ();
+	   tiiLocker. unlock();
 	   return;
 	}
 	this	-> mainId	= mainId;
 	this	-> latitude	= latitude;
 	this	-> longitude	= longitude;
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 //	show_tiiLabel (mainId);
 }
 
 void	tii_table::add_element (tii_element *t) {
 int16_t i;
-	tiiLocker. lock ();
+	tiiLocker. lock();
 	if (this -> mainId < 0) {
-	   tiiLocker. unlock ();
+	   tiiLocker. unlock();
 	   return;
 	}
-	for (i = 0; i < (int16_t) offsets. size (); i ++)
+	for (i = 0; i < (int16_t) offsets. size(); i ++)
 	   if (offsets [i]. subId == t -> subId) {
-	      tiiLocker. unlock ();
+	      tiiLocker. unlock();
 	      return;
 	   }
 	fprintf (stderr, "transmitter  %d at\t(%f %f)\n",
@@ -79,7 +79,7 @@ int16_t i;
 	                        latitude + t -> latitudeOffset,
 	                        longitude + t -> longitudeOffset);
 	offsets. push_back (*t);
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 	
 }
 
@@ -89,53 +89,53 @@ std::complex<float>
 int16_t i;
 float x, y;
 
-	tiiLocker. lock ();
+	tiiLocker. lock();
 	*success	= false;
 	if (this -> mainId != mainId) {
-	   tiiLocker. unlock ();
+	   tiiLocker. unlock();
 	   return std::complex<float> (0, 0);
 	}
 
-//	print_coordinates ();
-	for (i = 0; i < (int16_t) offsets. size (); i ++) {
+//	print_coordinates();
+	for (i = 0; i < (int16_t) offsets. size(); i ++) {
 	   if (offsets [i]. subId != subId)
 	      continue;
 	   x	= latitude + offsets [i]. latitudeOffset;
 	   y	= longitude + offsets [i]. longitudeOffset;
 	
 	   *success = true;
-	   tiiLocker. unlock ();
+	   tiiLocker. unlock();
 	   return std::complex<float> (x, y);
 	}
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 	return std::complex<float> (0, 0);
 }
 
-void	tii_table::print_coordinates	(void) {
+void	tii_table::print_coordinates() {
 int16_t	i;
 
-	tiiLocker. lock ();
+	tiiLocker. lock();
 	if (mainId < 0) {
-	   tiiLocker. unlock ();
+	   tiiLocker. unlock();
 	   return;
 	}
 
 	fprintf (stderr, "mainId = %d\n", mainId);
 	fprintf (stderr, "Transmitter coordinates (%f %f)\n",
 	                              latitude, longitude);
-	for (i = 0; i <  (int16_t)offsets. size (); i ++) {
+	for (i = 0; i <  (int16_t)offsets. size(); i ++) {
 	   float x	= latitude + offsets [i]. latitudeOffset;
 	   float y	= longitude + offsets [i]. longitudeOffset;
 	   fprintf (stderr, "%d\t-> %f\t%f\n", offsets [i]. subId, x, y);
 	}
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 }
 
-int16_t	tii_table::get_mainId	(void) {
+int16_t	tii_table::get_mainId() {
 int16_t m;
-	tiiLocker. lock ();
+	tiiLocker. lock();
 	m	= mainId;
-	tiiLocker. unlock ();
+	tiiLocker. unlock();
 	return m;
 }
 

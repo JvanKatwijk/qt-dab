@@ -25,8 +25,8 @@
 
 #include	<vector>
 #include	"frame-processor.h"
-#include	<stdio.h>
-#include	<string.h>
+#include	<cstdio>
+#include	<cstring>
 #include	<QObject>
 #include	"ringbuffer.h"
 
@@ -43,7 +43,7 @@ public:
 	                 packetdata	*pd,
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 QString	picturesPath);
-	~dataProcessor	(void);
+	~dataProcessor();
 void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;

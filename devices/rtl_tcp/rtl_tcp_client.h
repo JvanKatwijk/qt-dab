@@ -33,7 +33,7 @@
 #include	<QTcpSocket>
 #include	<QTimer>
 #include	<QComboBox>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
@@ -43,24 +43,24 @@ class	rtl_tcp_client: public virtualInput, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
 			rtl_tcp_client (QSettings *);
-			~rtl_tcp_client	(void);
-	int32_t		getRate		(void);
-	int32_t		defaultFrequency	(void);
+			~rtl_tcp_client();
+	int32_t		getRate();
+	int32_t		defaultFrequency();
 	void		setVFOFrequency	(int32_t);
-	int32_t		getVFOFrequency	(void);
-	bool		restartReader	(void);
-	void		stopReader	(void);
+	int32_t		getVFOFrequency();
+	bool		restartReader();
+	void		stopReader();
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
-	int32_t		Samples		(void);
-	int16_t		bitDepth	(void);
+	int32_t		Samples();
+	int16_t		bitDepth();
 private slots:
 	void		sendGain	(int);
 	void		set_Offset	(int);
 	void		set_fCorrection	(int);
-	void		readData	(void);
-	void		setConnection	(void);
-	void		wantConnect	(void);
-	void		setDisconnect	(void);
+	void		readData();
+	void		setConnection();
+	void		wantConnect();
+	void		setDisconnect();
 private:
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);

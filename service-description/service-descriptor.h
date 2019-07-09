@@ -5,8 +5,8 @@
 
 class	serviceDescriptor {
 public:
-		serviceDescriptor	(void) {}
-virtual		~serviceDescriptor	(void) {}
+		serviceDescriptor() {}
+virtual		~serviceDescriptor() {}
 };
 
 #endif

@@ -22,7 +22,7 @@
  */
 
 #include	"newconverter.h"
-#include	<stdio.h>
+#include	<cstdio>
 
 	newConverter::newConverter (int32_t inRate, int32_t outRate, 
 	                            int32_t inSize) {
@@ -38,14 +38,14 @@ int	err;
 //	converter		= src_new (SRC_SINC_MEDIUM_QUALITY, 2, &err);
 	inBuffer.  resize (2 * inputLimit + 20);
 	outBuffer. resize (2 * outputLimit + 20);
-	src_data.  data_in	= inBuffer. data ();
-	src_data.  data_out	= outBuffer. data ();
+	src_data.  data_in	= inBuffer. data();
+	src_data.  data_out	= outBuffer. data();
 	src_data.  src_ratio	= ratio;
 	src_data.  end_of_input	= 0;
 	inp			= 0;
 }
 
-	newConverter::~newConverter (void) {
+	newConverter::~newConverter() {
 	src_delete	(converter);
 }
 
@@ -77,7 +77,7 @@ int	res;
 	return true;
 }
 
-int32_t		newConverter::getOutputsize (void) {
+int32_t		newConverter::getOutputsize() {
 	return outputLimit;
 }
 

@@ -28,13 +28,13 @@
 #include	<QListView>
 #include	<QStringListModel>
 #include	<QStringList>
-#include	<stdint.h>
+#include	<cstdint>
 
 class	rtl_dongleSelect: public QDialog {
 Q_OBJECT
 public:
-			rtl_dongleSelect	(void);
-			~rtl_dongleSelect	(void);
+			rtl_dongleSelect();
+			~rtl_dongleSelect();
 	void		addtoDongleList		(const char *);
 private:
 	QLabel		*toptext;

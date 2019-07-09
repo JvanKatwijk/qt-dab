@@ -1,6 +1,6 @@
 #pragma once
 
-#include <inttypes.h>
+#include <cinttypes>
 
 const char * getASCTy (int16_t ASCTy);
 const char * getDSCTy (int16_t DSCTy);

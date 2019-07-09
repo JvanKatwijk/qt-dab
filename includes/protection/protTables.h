@@ -23,7 +23,7 @@
 #
 #ifndef	PROTTABLES
 #define	PROTTABLES
-#include	<stdint.h>
+#include	<cstdint>
 
 int8_t	*get_PCodes (int16_t);
 

@@ -22,7 +22,7 @@
  */
 
 #include	"audiosink.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<QDebug>
 #include	<QMessageBox>
 #include	<QComboBox>
@@ -37,27 +37,27 @@ int32_t	i;
 	_O_Buffer		= new RingBuffer<float>(4 * 32768);
 	portAudio		= false;
 	writerRunning		= false;
-	if (Pa_Initialize () != paNoError) {
+	if (Pa_Initialize() != paNoError) {
 	   fprintf (stderr, "Initializing Pa for output failed\n");
 	   return;
 	}
 
 	portAudio	= true;
 
-	qDebug ("Hostapis: %d\n", Pa_GetHostApiCount ());
+	qDebug ("Hostapis: %d\n", Pa_GetHostApiCount());
 
-	for (i = 0; i < Pa_GetHostApiCount (); i ++)
+	for (i = 0; i < Pa_GetHostApiCount(); i ++)
 	   qDebug ("Api %d is %s\n", i, Pa_GetHostApiInfo (i) -> name);
 
-	numofDevices	= Pa_GetDeviceCount ();
+	numofDevices	= Pa_GetDeviceCount();
 	outTable	= new int16_t [numofDevices + 1];
 	for (i = 0; i < numofDevices; i ++)
 	   outTable [i] = -1;
-	ostream		= NULL;
+	ostream		= nullptr;
 }
 
-	audioSink::~audioSink	(void) {
-	if ((ostream != NULL) && !Pa_IsStreamStopped (ostream)) {
+	audioSink::~audioSink() {
+	if ((ostream != nullptr) && !Pa_IsStreamStopped (ostream)) {
 	   paCallbackReturn = paAbort;
 	   (void) Pa_AbortStream (ostream);
 	   while (!Pa_IsStreamStopped (ostream))
@@ -65,11 +65,11 @@ int32_t	i;
 	   writerRunning = false;
 	}
 
-	if (ostream != NULL)
+	if (ostream != nullptr)
 	   Pa_CloseStream (ostream);
 
 	if (portAudio)
-	   Pa_Terminate ();
+	   Pa_Terminate();
 
 	delete	_O_Buffer;
 	delete[] outTable;
@@ -88,7 +88,7 @@ int16_t	outputDevice;
 	   return false;
 	}
 
-	if ((ostream != NULL) && !Pa_IsStreamStopped (ostream)) {
+	if ((ostream != nullptr) && !Pa_IsStreamStopped (ostream)) {
 	   paCallbackReturn = paAbort;
 	   (void) Pa_AbortStream (ostream);
 	   while (!Pa_IsStreamStopped (ostream))
@@ -96,7 +96,7 @@ int16_t	outputDevice;
 	   writerRunning = false;
 	}
 
-	if (ostream != NULL)
+	if (ostream != nullptr)
 	   Pa_CloseStream (ostream);
 
 	outputParameters. device		= outputDevice;
@@ -113,11 +113,11 @@ int16_t	outputDevice;
 	
 //	bufSize	= latency * 512;
 
-	outputParameters. hostApiSpecificStreamInfo = NULL;
+	outputParameters. hostApiSpecificStreamInfo = nullptr;
 //
 	fprintf (stderr, "Suggested size for outputbuffer = %d\n", bufSize);
 	err = Pa_OpenStream (&ostream,
-	                     NULL,
+	                     nullptr,
 	                     &outputParameters,
 	                     CardRate,
 	                     bufSize,
@@ -142,20 +142,20 @@ int16_t	outputDevice;
 	return true;
 }
 
-void	audioSink::restart	(void) {
+void	audioSink::restart() {
 PaError err;
 
 	if (!Pa_IsStreamStopped (ostream))
 	   return;
 
-	_O_Buffer	-> FlushRingBuffer ();
+	_O_Buffer	-> FlushRingBuffer();
 	paCallbackReturn = paContinue;
 	err = Pa_StartStream (ostream);
 	if (err == paNoError)
 	   writerRunning	= true;
 }
 
-void	audioSink::stop	(void) {
+void	audioSink::stop() {
 	if (Pa_IsStreamStopped (ostream))
 	   return;
 
@@ -175,9 +175,9 @@ PaStreamParameters *outputParameters =
 	outputParameters -> channelCount	= 2;	/* I and Q	*/
 	outputParameters -> sampleFormat	= paFloat32;
 	outputParameters -> suggestedLatency	= 0;
-	outputParameters -> hostApiSpecificStreamInfo = NULL;
+	outputParameters -> hostApiSpecificStreamInfo = nullptr;
 
-	return Pa_IsFormatSupported (NULL, outputParameters, Rate) ==
+	return Pa_IsFormatSupported (nullptr, outputParameters, Rate) ==
 	                                          paFormatIsSupported;
 }
 /*
@@ -211,7 +211,7 @@ uint32_t	i;
 	return ud -> paCallbackReturn;
 }
 
-int32_t	audioSink::missed	(void) {
+int32_t	audioSink::missed() {
 int32_t	h	= theMissed;
 	theMissed = 0;
 	return h / 2;
@@ -229,7 +229,7 @@ QString name = QString ("");
 	   return name;
 
 	deviceInfo = Pa_GetDeviceInfo (ch);
-	if (deviceInfo == NULL)
+	if (deviceInfo == nullptr)
 	   return name;
 	if (deviceInfo -> maxOutputChannels <= 0)
 	   return name;
@@ -239,7 +239,7 @@ QString name = QString ("");
 	return name;
 }
 
-int16_t	audioSink::invalidDevice	(void) {
+int16_t	audioSink::invalidDevice() {
 	return numofDevices + 128;
 }
 
@@ -247,11 +247,11 @@ bool	audioSink::isValidDevice (int16_t dev) {
 	return 0 <= dev && dev < numofDevices;
 }
 
-bool	audioSink::selectDefaultDevice (void) {
-	return selectDevice (Pa_GetDefaultOutputDevice ());
+bool	audioSink::selectDefaultDevice() {
+	return selectDevice (Pa_GetDefaultOutputDevice());
 }
 
-int32_t	audioSink::cardRate	(void) {
+int32_t	audioSink::cardRate() {
 	return 48000;
 }
 
@@ -268,17 +268,17 @@ uint16_t	i;
 	      streamOutSelector -> insertItem (ocnt, so, QVariant (i));
 	      outTable [ocnt] = i;
 	      qDebug (" (output):item %d wordt stream %d (%s)\n", ocnt , i,
-	                      so. toLatin1 ().data ());
+	                      so. toLatin1().data());
 	      ocnt ++;
 	   }
 	}
 
-	qDebug () << "added items to combobox";
+	qDebug() << "added items to combobox";
 	return ocnt > 1;
 }
 
 //
-int16_t	audioSink::numberofDevices	(void) {
+int16_t	audioSink::numberofDevices() {
 	return numofDevices;
 }
 

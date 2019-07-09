@@ -37,20 +37,20 @@ public:
 	float	longitudeOffset;
 	tii_element (int16_t subId,
 	             float latitudeOffset, float longitudeOffset);
-	~tii_element (void) {}
+	~tii_element() {}
 };
 
 class	tii_table : public QObject {
 Q_OBJECT
 public:
 			tii_table		(RadioInterface *);
-			~tii_table		(void);
-	void		cleanUp			(void);
+			~tii_table();
+	void		cleanUp();
 	void		add_element		(tii_element *);
 	void		add_main		(int16_t, float, float);
 	std::complex<float> get_coordinates (int16_t, int16_t, bool *);
-	void		print_coordinates	(void);
-	int16_t		get_mainId		(void);
+	void		print_coordinates();
+	int16_t		get_mainId();
 private:
 	RadioInterface	*myRadio;
 	QMutex		tiiLocker;

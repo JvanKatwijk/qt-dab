@@ -35,14 +35,14 @@
 }
 
 	tcpServer::~tcpServer (void) {
-	if (running. load ()) {
+	if (running. load()) {
            running. store (false);
 	   if (socketDesc != -1) {
 	      shutdown (socketDesc, SHUT_RDWR);
 	      socketDesc = -1;
 	   }
            usleep (1000);
-           threadHandle. join ();
+           threadHandle. join();
         }
 	delete buffer;
 }
@@ -109,9 +109,9 @@ void	tcpServer::run (int port) {
 	      uint8_t	localBuffer [BUF_SIZE];
 	      int16_t	amount;
 	      int status;
-	      while (running. load ()) {
-	         while (running. load () &&
-	                 (buffer -> GetRingBufferReadAvailable () < BUF_SIZE)) 
+	      while (running. load()) {
+	         while (running. load() &&
+	                 (buffer -> GetRingBufferReadAvailable() < BUF_SIZE)) 
 	            usleep (1000);
 	         amount = buffer -> getDataFromBuffer (localBuffer, BUF_SIZE);
 	         status = send (client_sock, localBuffer, amount ,0);

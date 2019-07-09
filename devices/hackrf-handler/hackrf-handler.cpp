@@ -37,7 +37,7 @@ int	res;
 	hackrfSettings			= s;
 	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	this	-> myFrame	-> show();
 	this	-> inputRate		= Khz (2048);
 	_I_Buffer			= nullptr;
 
@@ -59,7 +59,7 @@ int	res;
 	}
 
         libraryLoaded   = true;
-        if (!load_hackrfFunctions ()) {
+        if (!load_hackrfFunctions()) {
 #ifdef __MINGW32__
            FreeLibrary (Handle);
 #else
@@ -77,12 +77,12 @@ int	res;
 //	See if there are settings from previous incarnations
 	hackrfSettings		-> beginGroup ("hackrfSettings");
 	lnagainSlider 		-> setValue (
-	            hackrfSettings -> value ("hack_lnaGain", DEFAULT_GAIN). toInt ());
+	            hackrfSettings -> value ("hack_lnaGain", DEFAULT_GAIN). toInt());
 	vgagainSlider 		-> setValue (
-	            hackrfSettings -> value ("hack_vgaGain", DEFAULT_GAIN). toInt ());
+	            hackrfSettings -> value ("hack_vgaGain", DEFAULT_GAIN). toInt());
 //	contributed by Fabio
 	bool isChecked =
-	    hackrfSettings -> value ("hack_AntEnable", false). toBool ();
+	    hackrfSettings -> value ("hack_AntEnable", false). toBool();
 	AntEnableButton -> setCheckState (isChecked ? Qt::Checked :
 	                                              Qt::Unchecked);
 	isChecked	=
@@ -90,13 +90,13 @@ int	res;
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
                                                       Qt::Unchecked);
 	ppm_correction      -> setValue (
-	          hackrfSettings -> value ("hack_ppmCorrection", 0). toInt ());
+	          hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
 //	end
 
-	hackrfSettings	-> endGroup ();
+	hackrfSettings	-> endGroup();
 
 //
-	res	= this -> hackrf_init ();
+	res	= this -> hackrf_init();
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_init:");
 	   fprintf (stderr, "%s \n",
@@ -180,11 +180,11 @@ int	res;
 	   throw (29);
 	}
 
-	setLNAGain	(lnagainSlider		-> value ());
-	setVGAGain	(vgagainSlider		-> value ());
+	setLNAGain	(lnagainSlider		-> value());
+	setVGAGain	(vgagainSlider		-> value());
 	EnableAntenna	(1);		// value is a dummy really
 	EnableAmpli	(1);		// value is a dummy, really
-	set_ppmCorrection (ppm_correction	-> value ());
+	set_ppmCorrection (ppm_correction	-> value());
 
 //	and be prepared for future changes in the settings
 	connect (lnagainSlider, SIGNAL (valueChanged (int)),
@@ -198,7 +198,7 @@ int	res;
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
 
-	hackrf_device_list_t *deviceList = this -> hackrf_device_list ();
+	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
 	   serial_number_display -> setText (serial);
@@ -211,24 +211,24 @@ int	res;
 	running. store (false);
 }
 
-	hackrfHandler::~hackrfHandler	(void) {
-	stopReader ();
+	hackrfHandler::~hackrfHandler() {
+	stopReader();
 	if (_I_Buffer != nullptr)
 	   delete _I_Buffer;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
-	                                 lnagainSlider -> value ());
+	                                 lnagainSlider -> value());
 	hackrfSettings -> setValue ("hack_vgaGain",
-	                                 vgagainSlider	-> value ());
+	                                 vgagainSlider	-> value());
 	hackrfSettings -> setValue ("hack_AntEnable",
-	                              AntEnableButton -> checkState () == Qt::Checked);
+	                              AntEnableButton -> checkState() == Qt::Checked);
 	hackrfSettings -> setValue ("hack_AmpEnable",
-	                              AmpEnableButton -> checkState () == Qt::Checked);
+	                              AmpEnableButton -> checkState() == Qt::Checked);
 	hackrfSettings	-> setValue ("hack_ppmCorrection",
-	                              ppm_correction -> value ());
-	hackrfSettings	-> endGroup ();
+	                              ppm_correction -> value());
+	hackrfSettings	-> endGroup();
 	this	-> hackrf_close (theDevice);
-	this	-> hackrf_exit ();
+	this	-> hackrf_exit();
 	delete myFrame;
 }
 //
@@ -245,12 +245,12 @@ int	res;
 
 //
 //	It seems that after changing the frequency, the preamp is switched off
-	if (AmpEnableButton -> checkState () == Qt::Checked) 
+	if (AmpEnableButton -> checkState() == Qt::Checked) 
 	   EnableAmpli (1);
 	vfoFrequency = newFrequency;
 }
 
-int32_t	hackrfHandler::getVFOFrequency	(void) {
+int32_t	hackrfHandler::getVFOFrequency() {
 	return vfoFrequency;
 }
 
@@ -287,7 +287,7 @@ int res;
 bool	b;
 
 	(void)d;
-	b = AntEnableButton	-> checkState () == Qt::Checked;
+	b = AntEnableButton	-> checkState() == Qt::Checked;
 	res = this -> hackrf_set_antenna_enable (theDevice, b);
 //	fprintf(stderr,"Passed %d\n",(int)b);
 	if (res != HACKRF_SUCCESS) {
@@ -304,7 +304,7 @@ int res;
 bool	b;
 
 	(void)a;
-	b = AmpEnableButton	-> checkState () == Qt::Checked;
+	b = AmpEnableButton	-> checkState() == Qt::Checked;
 	res = this -> hackrf_set_amp_enable (theDevice, b);
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_set_amp_enable :\n");
@@ -354,10 +354,10 @@ int	bufferIndex	= 0;
 	return 0;
 }
 
-bool	hackrfHandler::restartReader	(void) {
+bool	hackrfHandler::restartReader() {
 int	res;
 
-	if (running. load ())
+	if (running. load())
 	   return true;
 
 	res	= this -> hackrf_start_rx (theDevice, callback, this);	
@@ -368,13 +368,13 @@ int	res;
 	   return false;
 	}
 	running. store (this -> hackrf_is_streaming (theDevice));
-	return running. load ();
+	return running. load();
 }
 
-void	hackrfHandler::stopReader	(void) {
+void	hackrfHandler::stopReader() {
 int	res;
 
-	if (!running. load ())
+	if (!running. load())
 	   return;
 
 	res	= this -> hackrf_stop_rx (theDevice);
@@ -394,19 +394,19 @@ int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) {
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 
-int32_t	hackrfHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable ();
+int32_t	hackrfHandler::Samples() {
+	return _I_Buffer	-> GetRingBufferReadAvailable();
 }
 
-void	hackrfHandler::resetBuffer	(void) {
-	_I_Buffer	-> FlushRingBuffer ();
+void	hackrfHandler::resetBuffer() {
+	_I_Buffer	-> FlushRingBuffer();
 }
 
-int16_t	hackrfHandler::bitDepth	(void) {
+int16_t	hackrfHandler::bitDepth() {
 	return 8;
 }
 
-bool	hackrfHandler::load_hackrfFunctions (void) {
+bool	hackrfHandler::load_hackrfFunctions() {
 //
 //	link the required procedures
 	this -> hackrf_init	= (pfn_hackrf_init)

@@ -56,7 +56,7 @@
 }
 
 
-	backendDriver::~backendDriver	(void) {
+    backendDriver::~backendDriver() {
 	delete theProcessor;
 }
 

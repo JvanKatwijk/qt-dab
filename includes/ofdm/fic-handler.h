@@ -26,8 +26,8 @@
 #ifndef	__FIC_HANDLER__
 #define	__FIC_HANDLER__
 
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"viterbi-handler.h"
 #include	<QObject>
@@ -42,10 +42,10 @@ class ficHandler: public fibDecoder {
 Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
-		~ficHandler		(void);
+		~ficHandler();
 	void	process_ficBlock	(std::vector<int16_t>, int16_t);
-	void	stop			(void);
-	void	reset			(void);
+	void	stop();
+	void	reset();
 private:
 	dabParams	params;
 	viterbiHandler	myViterbi;

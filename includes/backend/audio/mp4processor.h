@@ -28,8 +28,8 @@
  */
 //
 #include	"dab-constants.h"
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"audio-base.h"
 #include	"frame-processor.h"
@@ -48,7 +48,7 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
 	                                 QString);
-			~mp4Processor	(void);
+			~mp4Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;

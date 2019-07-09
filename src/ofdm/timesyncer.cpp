@@ -8,7 +8,7 @@
 	myReader	= mr;
 }
 
-	timeSyncer::~timeSyncer	(void) {}
+	timeSyncer::~timeSyncer() {}
 
 int	timeSyncer::sync (int T_null, int T_F) {
 float	cLevel		= 0;
@@ -27,7 +27,7 @@ int	i;
 	}
 //SyncOnNull:
 	counter      = 0;
-	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel ()) {
+	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel()) {
 	   std::complex<float> sample        =
 	         myReader -> getSample (0);
 //	         myReader. getSample (coarseOffset + fineCorrector);
@@ -47,7 +47,7 @@ int	i;
   */
 	counter      = 0;
 //SyncOnEndNull:
-	 while (cLevel / C_LEVEL_SIZE < 0.75 * myReader -> get_sLevel ()) {
+	 while (cLevel / C_LEVEL_SIZE < 0.75 * myReader -> get_sLevel()) {
 	   std::complex<float> sample =
 	           myReader -> getSample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);

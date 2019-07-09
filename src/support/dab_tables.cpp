@@ -19,8 +19,8 @@
  */
 #include "dab_tables.h"
 
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <cstdlib>
 
 
 //	ETSI TS 101 756 V2.2.1: Registered Tables

@@ -32,17 +32,17 @@ void my_callBack (
     void *arg) {
 }
 
-	journaline_dataHandler::journaline_dataHandler (void) {
+	journaline_dataHandler::journaline_dataHandler() {
 	theDecoder	= DAB_DATAGROUP_DECODER_createDec (my_callBack, this);
 }
 
-	journaline_dataHandler::~journaline_dataHandler (void) {
+	journaline_dataHandler::~journaline_dataHandler() {
 	DAB_DATAGROUP_DECODER_deleteDec (theDecoder);
 }
 
 void	journaline_dataHandler::add_mscDatagroup (QByteArray &msc) {
-int16_t	len	= msc. length ();
-uint8_t	*data	= (uint8_t *)(msc. data ());
+int16_t	len	= msc. length();
+uint8_t	*data	= (uint8_t *)(msc. data());
 uint8_t buffer [len / 8];
 int16_t	i;
 int32_t	res;

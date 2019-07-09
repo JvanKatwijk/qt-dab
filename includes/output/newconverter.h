@@ -23,9 +23,9 @@
 #ifndef	__NEW_CONVERTER__
 #define	__NEW_CONVERTER__
 
-#include	<math.h>
+#include	<cmath>
 #include	<complex>
-#include	<stdint.h>
+#include	<cstdint>
 #include	<unistd.h>
 #include	<vector>
 #include	<limits>
@@ -48,12 +48,12 @@ public:
 		newConverter (int32_t inRate, int32_t outRate, 
 	                      int32_t inSize);
 
-		~newConverter (void);
+		~newConverter();
 
 	bool	convert (std::complex<float> v,
 	                       std::complex<float> *out, int32_t *amount);
 
-int32_t	getOutputsize (void);
+int32_t	getOutputsize();
 };
 
 #endif

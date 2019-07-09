@@ -23,8 +23,8 @@
 #ifndef	__PHASEREFERENCE__
 #define	__PHASEREFERENCE__
 #include	<QObject>
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	<vector>
 #include	"fft-handler.h"
 #include	"phasetable.h"
@@ -41,8 +41,8 @@ public:
 	                                         int16_t,
 	                                         int16_t,
 	                                         int16_t,
-						 RingBuffer<float> *b = NULL);
-			~phaseReference		(void);
+						 RingBuffer<float> *b = nullptr);
+			~phaseReference();
 	int32_t		findIndex		(std::vector<std::complex<float>>);
 	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
 	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);

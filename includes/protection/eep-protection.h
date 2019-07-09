@@ -24,14 +24,14 @@
 #define	__EEP_PROTECTION__
 
 #include	<vector>
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	"protection.h"
 
         class eep_protection: public protection {
 public:
                 eep_protection          (int16_t, int16_t);
-                ~eep_protection         (void);
+                ~eep_protection();
 bool            deconvolve              (int16_t *,
 	                                 int32_t,
 	                                 uint8_t *);

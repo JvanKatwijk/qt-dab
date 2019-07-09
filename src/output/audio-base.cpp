@@ -22,7 +22,7 @@
  */
 
 #include	"audio-base.h"
-#include	<stdio.h>
+#include	<cstdio>
 
 /*
  *	The class is the abstract sink for the data generated
@@ -30,20 +30,20 @@
  *	someone else will handle the PCM samples, all made
  *	on a rate of 48000
  */
-	audioBase::audioBase	(void):
+	audioBase::audioBase():
 	                              converter_16 (16000, 48000, 2 * 1600),
 	                              converter_24 (24000, 48000, 2 * 2400),
 	                              converter_32 (32000, 48000, 2 * 3200) {
-	dumpFile		= NULL;
+	dumpFile		= nullptr;
 }
 
-	audioBase::~audioBase	(void) {
+	audioBase::~audioBase() {
 }
 
-void	audioBase::restart	(void) {
+void	audioBase::restart() {
 }
 
-void	audioBase::stop	(void) {
+void	audioBase::stop() {
 }
 //
 //	This one is a hack for handling different baudrates coming from
@@ -72,8 +72,8 @@ void	audioBase::audioOut	(int16_t *V, int32_t amount, int32_t rate) {
 //	scale up from 16 -> 48
 //	amount gives number of pairs
 void	audioBase::audioOut_16000	(int16_t *V, int32_t amount) {
-std::complex<float> outputBuffer [converter_16. getOutputsize ()];
-float      buffer       [2 * converter_16. getOutputsize ()];
+std::complex<float> outputBuffer [converter_16. getOutputsize()];
+float      buffer       [2 * converter_16. getOutputsize()];
 int16_t	i, j;
 int32_t	result;
 
@@ -87,10 +87,10 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      myLocker. lock();
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock ();
+	      myLocker. unlock();
 
 	      audioOutput (buffer, result);
 	   }
@@ -99,8 +99,8 @@ int32_t	result;
 //	scale up from 24000 -> 48000
 //	amount gives number of pairs
 void	audioBase::audioOut_24000	(int16_t *V, int32_t amount) {
-std::complex<float> outputBuffer [converter_24. getOutputsize ()];
-float      buffer       [2 * converter_24. getOutputsize ()];
+std::complex<float> outputBuffer [converter_24. getOutputsize()];
+float      buffer       [2 * converter_24. getOutputsize()];
 int16_t	i, j;
 int32_t	result;
 
@@ -114,10 +114,10 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      myLocker. lock();
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock ();
+	      myLocker. unlock();
 
 	      audioOutput (buffer, result);
 	   }
@@ -126,8 +126,8 @@ int32_t	result;
 //	scale up from 32000 -> 48000
 //	amount is number of pairs
 void	audioBase::audioOut_32000	(int16_t *V, int32_t amount) {
-std::complex<float> outputBuffer [converter_32. getOutputsize ()];
-float      buffer       [2 * converter_32. getOutputsize ()];
+std::complex<float> outputBuffer [converter_32. getOutputsize()];
+float      buffer       [2 * converter_32. getOutputsize()];
 int32_t	i, j;
 int32_t	result;
 
@@ -141,10 +141,10 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock ();
-	      if (dumpFile != NULL)
+	      myLocker. lock();
+	      if (dumpFile != nullptr)
 	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock ();
+	      myLocker. unlock();
 //	      fprintf (stderr, "result %d\n", result);
 	      audioOutput (buffer, result);
 	   }
@@ -160,25 +160,25 @@ int32_t	i;
 	   buffer [2 * i + 1]	= V [2 * i + 1] / 32767.0;
 	}
 
-	myLocker. lock ();
-	if (dumpFile != NULL)
+	myLocker. lock();
+	if (dumpFile != nullptr)
 	   sf_writef_float (dumpFile, (float *)buffer, amount);
-	myLocker. unlock ();
+	myLocker. unlock();
 	audioOutput (buffer, amount);
 }
 //
 //	we ensure that no one is fiddling with the dumpfile
 //	while we are writing
 void	audioBase::startDumping	(SNDFILE *f) {
-	myLocker. lock ();
+	myLocker. lock();
 	dumpFile	= f;
-	myLocker. unlock ();
+	myLocker. unlock();
 }
 
-void	audioBase::stopDumping	(void) {
-	myLocker. lock ();
-	dumpFile	= NULL;
-	myLocker. unlock ();
+void	audioBase::stopDumping() {
+	myLocker. lock();
+	dumpFile	= nullptr;
+	myLocker. unlock();
 }
 
 //

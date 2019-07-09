@@ -22,7 +22,7 @@
 #
 #ifndef	__FREQ_INTERLEAVER__
 #define	__FREQ_INTERLEAVER__
-#include	<stdint.h>
+#include	<cstdint>
 #include	<vector>
 #include	"dab-constants.h"
 #include	"dab-params.h"
@@ -35,7 +35,7 @@
 class	interLeaver {
 public:
 		interLeaver	(uint8_t);
-		~interLeaver	(void);
+		~interLeaver();
 	int16_t	mapIn		(int16_t);
 private:
 	dabParams	p;

@@ -29,7 +29,7 @@
 #include	"rscodec.h"
 #include	<cassert>
 #include	<cstring>
-#include	<stdio.h>
+#include	<cstdio>
 //
 //	we know that the size of the codeword is 255,
 //	while the size of the parity bytes is 10
@@ -43,7 +43,7 @@
 //	We combine a simple implementation of the galois fields
 //	with the rs decoder "borrowed" from Gnu radio
 //
-	rscodec::rscodec (void) {
+	rscodec::rscodec() {
 int16_t i, pm;
 int16_t pinit, p1, p2, p3, p4, p5, p6, p7, p8;
 
@@ -163,8 +163,8 @@ int16_t i,j;
 // index to 'top', index to 'bottom' is !top
 	int16_t top	 = 0;
 	int16_t deg [2] = {NUM_PARITY, NUM_PARITY - 1}; // top and bottom relaxed degree
-//	d_euc [top]. clear ();
-//	d_euc [!top].clear ();
+//	d_euc [top]. clear();
+//	d_euc [!top].clear();
 	memset (d_euc [top], 0, (NUM_PARITY + 2) * sizeof (d_euc [0][0]));
 	memset (d_euc[!top], 0, (NUM_PARITY + 2) * sizeof (d_euc [0][0]));
 	d_euc [top][0] = 1;

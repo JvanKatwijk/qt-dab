@@ -23,8 +23,8 @@
 #ifndef	__FRAME_PROCESSOR__
 #define	__FRAME_PROCESSOR__
 #include	<vector>
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdint>
+#include	<cstdio>
 
 //
 //	virtual class, just for providing a common base
@@ -32,8 +32,8 @@
 
 class	frameProcessor {
 public:
-		frameProcessor	(void);
-virtual		~frameProcessor	(void);
+		frameProcessor();
+virtual		~frameProcessor();
 virtual	void	addtoFrame	(std::vector<uint8_t>);
 };
 #endif

@@ -30,7 +30,7 @@
 //	it seems some locking there is inevitable
 //
 	fftHandler::fftHandler (uint8_t mode): p (mode) {
-	this	-> fftSize = p. get_T_u ();
+	this	-> fftSize = p. get_T_u();
 	vector	= (std::complex<float> *)
 	          FFTW_MALLOC (sizeof (std::complex<float>) * fftSize);
 	plan	= FFTW_PLAN_DFT_1D (fftSize,
@@ -39,22 +39,22 @@
 	                            FFTW_FORWARD, FFTW_ESTIMATE);
 }
 
-	fftHandler::~fftHandler (void) {
+	fftHandler::~fftHandler() {
 	   FFTW_DESTROY_PLAN (plan);
 	   FFTW_FREE (vector);
 }
 
-std::complex<float>	*fftHandler::getVector (void) {
+std::complex<float>	*fftHandler::getVector() {
 	return vector;
 }
 
-void	fftHandler::do_FFT (void) {
+void	fftHandler::do_FFT() {
 	FFTW_EXECUTE (plan);
 }
 //
 //	Note that we do not scale here, not needed
 //	for the purpose we are using it for
-void	fftHandler::do_IFFT (void) {
+void	fftHandler::do_IFFT() {
 int16_t i;
 
 	for (i = 0; i < fftSize; i ++)
@@ -78,16 +78,16 @@ int32_t	i;
 	                            FFTW_BACKWARD, FFTW_ESTIMATE);
 }
 
-	common_ifft::~common_ifft (void) {
+	common_ifft::~common_ifft() {
 	   FFTW_DESTROY_PLAN (plan);
 	   FFTW_FREE (vector);
 }
 
-std::complex<float>	*common_ifft::getVector () {
+std::complex<float>	*common_ifft::getVector() {
 	return vector;
 }
 
-void	common_ifft::do_IFFT (void) {
+void	common_ifft::do_IFFT() {
 	FFTW_EXECUTE	(plan);
 }
 

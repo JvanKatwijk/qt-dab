@@ -20,7 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"phasereference.h" 
-#include	"string.h"
+#include	<cstring>
 #include	"radio.h"
 #include	<vector>
 /**
@@ -47,21 +47,21 @@ float	Phi_k;
 	this	-> threshold	= threshold;
 	this	-> diff_length	= diff_length;
 	this	-> depth	= depth;
-	this	-> T_u		= params. get_T_u ();
-	this	-> T_g		= params. get_T_g ();
-	this	-> carriers	= params. get_carriers ();
+	this	-> T_u		= params. get_T_u();
+	this	-> T_g		= params. get_T_g();
+	this	-> carriers	= params. get_carriers();
 	
 	refTable.		resize (T_u);
 	phaseDifferences.       resize (diff_length);
-	fft_buffer		= my_fftHandler. getVector ();
+	fft_buffer		= my_fftHandler. getVector();
 
-	framesperSecond		= 2048000 / params. get_T_F ();
+	framesperSecond		= 2048000 / params. get_T_F();
 	displayCounter		= 0;
 	
 	for (i = 0; i < T_u; i ++)
 	   refTable [i] = std::complex<float> (0, 0);
 
-	for (i = 1; i <= params. get_carriers () / 2; i ++) {
+	for (i = 1; i <= params. get_carriers() / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   refTable [i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
@@ -82,7 +82,7 @@ float	Phi_k;
 	         mr,   SLOT   (showIndex   (int)));
 }
 
-	phaseReference::~phaseReference (void) {
+	phaseReference::~phaseReference() {
 }
 
 /**
@@ -104,14 +104,14 @@ float	lbuf [T_u];
 float	mbuf [T_u];
 std::vector<int> resultVector;
 
-	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
-	my_fftHandler. do_FFT ();
+	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
+	my_fftHandler. do_FFT();
 //
 //	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
 	   fft_buffer [i] *= conj (refTable [i]);
 //	and, again, back into the time domain
-	my_fftHandler. do_IFFT ();
+	my_fftHandler. do_IFFT();
 /**
   *	We compute the average and the max signal values
   */
@@ -155,14 +155,14 @@ std::vector<int> resultVector;
 	      break;
 	}
 
-	if (response != NULL) {
+	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 4) {
 	      response	-> putDataIntoBuffer (mbuf, T_u);
 	      showImpulse (T_u);
 	      displayCounter	= 0;
 	      if (resultVector. at (0) > 0) {
 	         showIndex (-1);
-	         for (i = 1; i < (int)(resultVector. size ()); i ++)
+	         for (i = 1; i < (int)(resultVector. size()); i ++)
 	            showIndex (resultVector. at (i));
 	         showIndex (0);
 	      }
@@ -179,8 +179,8 @@ int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>>
 int16_t	i, j, index = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
-	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
-	my_fftHandler. do_FFT ();
+	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
+	my_fftHandler. do_FFT();
 
 	for (i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) 

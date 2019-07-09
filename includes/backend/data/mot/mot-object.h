@@ -47,13 +47,13 @@ public:
 	                   uint8_t	*segment,
 	                   int32_t	segmentSize,
 	                   bool		lastFlag);
-		~motObject (void);
+		~motObject();
 	void	addBodySegment (uint8_t	*bodySegment,
                                 int16_t	segmentNumber,
                                 int32_t	segmentSize,
 	                        bool	lastFlag);
-	uint16_t	get_transportId (void);
-	int		get_headerSize	(void);
+	uint16_t	get_transportId();
+	int		get_headerSize();
 private:
 	bool		dirElement;
 	void		checkDir	(QString&);
@@ -66,7 +66,7 @@ private:
 	int		contentType;
 	int		contentsubType;
 	QString		name;
-	void		handleComplete	(void);
+	void		handleComplete();
 #ifdef	TRY_EPG
 	CEPGDecoder     epgHandler;
 #endif

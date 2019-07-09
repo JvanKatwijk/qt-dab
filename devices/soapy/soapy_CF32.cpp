@@ -14,13 +14,13 @@
 	std::vector<size_t> xxx;
 	stream		= device -> setupStream (SOAPY_SDR_RX,
 	                                         "CF32", xxx,
-	                                         SoapySDR::Kwargs ());
-	start ();
+	                                         SoapySDR::Kwargs());
+	start();
 }
 
 	soapy_CF32::~soapy_CF32	(void) {
 	running	= false;
-	while (isRunning ()) {
+	while (isRunning()) {
 	   usleep (1000);
 	}
 	theDevice	-> deactivateStream (stream);
@@ -28,7 +28,7 @@
 }
 
 int	soapy_CF32::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable ();
+	return theBuffer	-> GetRingBufferReadAvailable();
 }
 
 int	soapy_CF32::getSamples	(std::complex<float> *v, int amount) {

@@ -48,7 +48,7 @@
 	this	-> expectedIndex	= 0;
 	switch (DSCTy) {
 	   default:
-	      my_dataHandler	= new virtual_dataHandler ();
+	      my_dataHandler	= new virtual_dataHandler();
 	      break;
 
 	   case 5:			
@@ -56,7 +56,7 @@
 	      break;
 
 	   case 44:
-	      my_dataHandler	= new journaline_dataHandler ();
+	      my_dataHandler	= new journaline_dataHandler();
 	      break;
 
 	   case 59:
@@ -71,7 +71,7 @@
 	packetState	= 0;
 }
 
-	dataProcessor::~dataProcessor	(void) {
+	dataProcessor::~dataProcessor() {
 	delete		my_dataHandler;
 }
 
@@ -81,9 +81,9 @@ void	dataProcessor::addtoFrame (std::vector<uint8_t> outV) {
 //	when the DG flag is on and there are no datagroups for DSCTy5
 	   if ((this -> DSCTy == 5) &&
 	       (this -> DGflag))	// no datagroups
-	      handleTDCAsyncstream (outV. data (), 24 * bitRate);
+	      handleTDCAsyncstream (outV. data(), 24 * bitRate);
 	   else
-	      handlePackets (outV. data (), 24 * bitRate);
+	      handlePackets (outV. data(), 24 * bitRate);
 }
 //
 //	While for a full mix data and audio there will be a single packet in a
@@ -142,13 +142,13 @@ int32_t	i;
 	   if (firstLast == 02) {	// first packet
 	      packetState = 1;
 	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
+	      for (i = 0; i < series. size(); i ++)
 	         series [i] = data [24 + i];
 	   }
 	   else
 	   if (firstLast == 03) {	// single packet, mostly padding
 	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
+	      for (i = 0; i < series. size(); i ++)
 	         series [i] = data [24 + i];
 	      my_dataHandler	-> add_mscDatagroup (series);
 	   }
@@ -158,14 +158,14 @@ int32_t	i;
 	else
 	if (packetState == 01) {	// within a series
 	   if (firstLast == 0) {	// intermediate packet
-	      int32_t currentLength = series. size ();
+	      int32_t currentLength = series. size();
 	      series. resize (currentLength + 8 * usefulLength);
 	      for (i = 0; i < 8 * usefulLength; i ++)
 	         series [currentLength + i] = data [24 + i];
 	   }
 	   else
 	   if (firstLast == 01) {	// last packet
-	      int32_t currentLength = series. size ();
+	      int32_t currentLength = series. size();
 	      series. resize (currentLength + 8 * usefulLength);
 	      for (i = 0; i < 8 * usefulLength; i ++)
 	         series [currentLength + i] = data [24 + i];
@@ -177,7 +177,7 @@ int32_t	i;
 	   if (firstLast == 02) {	// first packet, previous one erroneous
 	      packetState = 1;
 	      series. resize (usefulLength * 8);
-	      for (i = 0; i < series. size (); i ++)
+	      for (i = 0; i < series. size(); i ++)
 	         series [i] = data [24 + i];
 	   }
 	   else {

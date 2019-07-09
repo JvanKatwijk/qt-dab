@@ -19,12 +19,12 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	<stdio.h>
+#include	<cstdio>
 #include	<unistd.h>
-#include	<stdlib.h>
+#include	<cstdlib>
 #include	<fcntl.h>
 #include	<sys/time.h>
-#include	<time.h>
+#include	<ctime>
 #include	<QString>
 #include	"wavfiles.h"
 
@@ -36,16 +36,16 @@ SF_INFO *sf_info;
 	fileName	= f;
 	myFrame		= new QFrame;
 	setupUi (myFrame);
-	myFrame		-> show ();
+	myFrame		-> show();
 
 	_I_Buffer	= new RingBuffer<std::complex<float>> (__BUFFERSIZE);
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
-	filePointer	= sf_open (f. toUtf8 (). data (), SFM_READ, sf_info);
-	if (filePointer == NULL) {
+	filePointer	= sf_open (f. toUtf8(). data(), SFM_READ, sf_info);
+	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s no legitimate sound file\n", 
-	                                f. toUtf8 ().data ());
+	                                f. toUtf8().data());
 	   delete myFrame;
 	   throw (24);
 	}
@@ -66,31 +66,31 @@ SF_INFO *sf_info;
 //
 //	Note that running == true <==> readerTask has value assigned
 
-	wavFiles::~wavFiles (void) {
-	if (running. load ()) {
-	   readerTask	-> stopReader ();
-	   while (readerTask -> isRunning ())
+	wavFiles::~wavFiles() {
+	if (running. load()) {
+	   readerTask	-> stopReader();
+	   while (readerTask -> isRunning())
 	      usleep (500);
 	   delete readerTask;
 	}
-	if (filePointer != NULL)
+	if (filePointer != nullptr)
 	   sf_close (filePointer);
 	delete _I_Buffer;
 	delete	myFrame;
 }
 
-bool	wavFiles::restartReader	(void) {
-	if (running. load ())
+bool	wavFiles::restartReader() {
+	if (running. load())
            return true;
         readerTask      = new wavReader (this, filePointer, _I_Buffer);
         running. store (true);
         return true;
 }
 
-void	wavFiles::stopReader	(void) {
-       if (running. load ()) {
-           readerTask   -> stopReader ();
-           while (readerTask -> isRunning ())
+void	wavFiles::stopReader() {
+       if (running. load()) {
+           readerTask   -> stopReader();
+           while (readerTask -> isRunning())
               usleep (100);
 	   delete readerTask;
         }
@@ -101,10 +101,10 @@ void	wavFiles::stopReader	(void) {
 int32_t	wavFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
 	
-	if (filePointer == NULL)
+	if (filePointer == nullptr)
 	   return 0;
 
-	while (_I_Buffer -> GetRingBufferReadAvailable () < size)
+	while (_I_Buffer -> GetRingBufferReadAvailable() < size)
 	      usleep (100);
 
 	amount = _I_Buffer	-> getDataFromBuffer (V, size);
@@ -112,8 +112,8 @@ int32_t	amount;
 	return amount;
 }
 
-int32_t	wavFiles::Samples (void) {
-	return _I_Buffer -> GetRingBufferReadAvailable ();
+int32_t	wavFiles::Samples() {
+	return _I_Buffer -> GetRingBufferReadAvailable();
 }
 
 void    wavFiles::setProgress (int progress, float timelength) {

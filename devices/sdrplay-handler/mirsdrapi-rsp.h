@@ -189,7 +189,7 @@ typedef void (*mir_sdr_StreamCallback_t)(short *xi, short *xq, unsigned int firs
 typedef void (*mir_sdr_GainChangeCallback_t)(unsigned int gRdB, unsigned int lnaGRdB, void *cbContext); 
 
 typedef mir_sdr_ErrT (*mir_sdr_Init_t)(int gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int *samplesPerPacket);
-typedef mir_sdr_ErrT (*mir_sdr_Uninit_t)(void);
+typedef mir_sdr_ErrT (*mir_sdr_Uninit_t)();
 typedef mir_sdr_ErrT (*mir_sdr_ReadPacket_t)(short *xi, short *xq, unsigned int *firstSampleNum, int *grChanged, int *rfChanged, int *fsChanged);
 typedef mir_sdr_ErrT (*mir_sdr_SetRf_t)(double drfHz, int abs, int syncUpdate);
 typedef mir_sdr_ErrT (*mir_sdr_SetFs_t)(double dfsHz, int abs, int syncUpdate, int reCal);
@@ -214,16 +214,16 @@ typedef mir_sdr_ErrT (*mir_sdr_DCoffsetIQimbalanceControl_t)(unsigned int DCenab
 typedef mir_sdr_ErrT (*mir_sdr_DecimateControl_t)(unsigned int enable, unsigned int decimationFactor, unsigned int wideBandSignal); 
 typedef mir_sdr_ErrT (*mir_sdr_AgcControl_t)(mir_sdr_AgcControlT enable, int setPoint_dBfs, int knee_dBfs, unsigned int decay_ms, unsigned int hang_ms, int syncUpdate, int LNAstate); 
 typedef mir_sdr_ErrT (*mir_sdr_StreamInit_t)(int *gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext); 
-typedef mir_sdr_ErrT (*mir_sdr_StreamUninit_t)(void); 
+typedef mir_sdr_ErrT (*mir_sdr_StreamUninit_t)(); 
 typedef mir_sdr_ErrT (*mir_sdr_Reinit_t)(int *gRdB, double fsMHz, double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, mir_sdr_LoModeT loMode, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode, int *samplesPerPacket, mir_sdr_ReasonForReinitT reasonForReinit);
 typedef mir_sdr_ErrT (*mir_sdr_GetGrByFreq_t)(double rfMHz, mir_sdr_BandT *band, int *gRdB, int LNAstate, int *gRdBsystem, mir_sdr_SetGrModeT setGrMode); 
 typedef mir_sdr_ErrT (*mir_sdr_DebugEnable_t)(unsigned int enable);    
 typedef mir_sdr_ErrT (*mir_sdr_GetCurrentGain_t)(mir_sdr_GainValuesT *gainVals);    
-typedef mir_sdr_ErrT (*mir_sdr_GainChangeCallbackMessageReceived_t)(void); 
+typedef mir_sdr_ErrT (*mir_sdr_GainChangeCallbackMessageReceived_t)(); 
 
 typedef mir_sdr_ErrT (*mir_sdr_GetDevices_t)(mir_sdr_DeviceT *devices, unsigned int *numDevs, unsigned int maxDevs);    
 typedef mir_sdr_ErrT (*mir_sdr_SetDeviceIdx_t)(unsigned int idx);    
-typedef mir_sdr_ErrT (*mir_sdr_ReleaseDeviceIdx_t)(void);    
+typedef mir_sdr_ErrT (*mir_sdr_ReleaseDeviceIdx_t)();    
 typedef mir_sdr_ErrT (*mir_sdr_GetHwVersion_t)(unsigned char *ver);    
 typedef mir_sdr_ErrT (*mir_sdr_RSPII_AntennaControl_t)(mir_sdr_RSPII_AntennaSelectT select); 
 typedef mir_sdr_ErrT (*mir_sdr_RSPII_ExternalReferenceControl_t)(unsigned int output_enable); 

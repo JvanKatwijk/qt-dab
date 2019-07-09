@@ -23,8 +23,8 @@
 #ifndef	__PHASE_TABLE__
 #define	__PHASE_TABLE__
 
-#include	<stdio.h>
-#include	<stdint.h>
+#include	<cstdio>
+#include	<cstdint>
 #include	"dab-constants.h"
 
 struct phasetableElement {
@@ -37,7 +37,7 @@ struct phasetableElement {
 class phaseTable {
 public:
 		phaseTable 	(int16_t);
-		~phaseTable	(void);
+		~phaseTable();
 	float	get_Phi		(int32_t);
 private:
 

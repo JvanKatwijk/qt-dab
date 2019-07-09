@@ -20,6 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"dab-processor.h"
+
+#include <utility>
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
@@ -58,7 +60,7 @@
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
-	                                                picturesPath),
+	                                                std::move(picturesPath)),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
                                                             threshold,
@@ -68,20 +70,20 @@
 	                                 my_TII_Detector (dabMode, tii_depth), 
 	                                 my_ofdmDecoder (mr,
 	                                                 dabMode,
-	                                                 theRig -> bitDepth (), 
+                                                     theRig -> bitDepth(),
 	                                                 iqBuffer) {
 
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
 	this	-> tiiBuffer		= tiiBuffer;
-	this	-> T_null		= params. get_T_null ();
-	this	-> T_s			= params. get_T_s ();
-	this	-> T_u			= params. get_T_u ();
+    this	-> T_null		= params. get_T_null();
+    this	-> T_s			= params. get_T_s();
+    this	-> T_u			= params. get_T_u();
 	this	-> T_g			= T_s - T_u;
-	this	-> T_F			= params. get_T_F ();
-	this	-> nrBlocks		= params. get_L ();
-	this	-> carriers		= params. get_carriers ();
-	this	-> carrierDiff		= params. get_carrierDiff ();
+    this	-> T_F			= params. get_T_F();
+    this	-> nrBlocks		= params. get_L();
+    this	-> carriers		= params. get_carriers();
+    this	-> carrierDiff		= params. get_carrierDiff();
 
 	this	-> tii_delay		= tii_delay;
 	this	-> tii_counter		= 0;
@@ -108,17 +110,17 @@
 	         myRadioInterface, SLOT (show_tii (int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
-	my_TII_Detector. reset ();
+    my_TII_Detector. reset();
 //	the thread will be started from somewhere else
 }
 
-	dabProcessor::~dabProcessor	(void) {
-	if (isRunning ()) {
+    dabProcessor::~dabProcessor() {
+    if (isRunning()) {
 	   myReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	   msleep (100);
-	   while (isRunning ()) {
+       while (isRunning()) {
 	      usleep (100);
 	   }
 	}
@@ -132,7 +134,7 @@
    *	and sending them to the ofdmDecoder who will transfer the results
    *	Finally, estimating the small freqency error
    */
-void	dabProcessor::run	(void) {
+void	dabProcessor::run() {
 int32_t startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
@@ -147,10 +149,10 @@ int		testLength		= 100;
         fineOffset		= 0;
         correctionNeeded	= true;
 	attempts		= 0;
-        theRig  -> resetBuffer ();
+        theRig  -> resetBuffer();
 	coarseOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
-	my_mscHandler. start ();
+    my_mscHandler. start();
 //
 //	to get some idea of the signal strength
 	try {
@@ -167,7 +169,7 @@ notSynced:
 
 	      case NO_DIP_FOUND:
 	         if (scanMode && (++ attempts >= 5)) {
-	            emit (No_Signal_Found ());
+                emit (No_Signal_Found());
                     attempts = 0;
                  }
 	         goto notSynced;
@@ -231,7 +233,7 @@ SyncOnPhase:
   *	as long as we can be sure that the first sample to be identified
   *	is part of the samples read.
   */
-	myReader. getSamples (ofdmBuffer. data (),
+    myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
 	sampleCount += T_u;
 //
@@ -240,7 +242,7 @@ SyncOnPhase:
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, testLength);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
-	         setSyncLost ();
+             setSyncLost();
 	      }
 //	      fprintf (stderr, "x = %d\n", startIndex);
 	      sampleCount	= 0;
@@ -253,8 +255,8 @@ SyncOnPhase:
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
   */
-	   memmove (ofdmBuffer. data (),
-	            &((ofdmBuffer. data ()) [startIndex]),
+       memmove (ofdmBuffer. data(),
+                &((ofdmBuffer. data()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   int ofdmBufferIndex	= T_u - startIndex;
 
@@ -268,15 +270,15 @@ SyncOnPhase:
   */
 	   setSynced (true);
 	   sampleCount += T_u - ofdmBufferIndex;
-	   myReader. getSamples (&((ofdmBuffer. data ()) [ofdmBufferIndex]),
+       myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
-	   my_mscHandler.  processBlock_0 (ofdmBuffer. data ());
+       my_mscHandler.  processBlock_0 (ofdmBuffer. data());
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-	   correctionNeeded	= !my_ficHandler. syncReached ();
+       correctionNeeded	= !my_ficHandler. syncReached();
 	   if (correctionNeeded) {
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
@@ -301,11 +303,11 @@ SyncOnPhase:
   *	corresponding samples in the datapart.
   */
 	   std::vector<int16_t> ibits;
-	   ibits. resize (2 * params. get_carriers ());
+       ibits. resize (2 * params. get_carriers());
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer. data (),
+          myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
 	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
@@ -313,18 +315,18 @@ SyncOnPhase:
 
 	      if (ofdmSymbolCount < 4) {
 	         my_ofdmDecoder. decode (ofdmBuffer,
-	                                ofdmSymbolCount, ibits. data ());
+                                    ofdmSymbolCount, ibits. data());
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      }
 
-	      my_mscHandler. process_Msc  (&((ofdmBuffer. data ()) [T_g]),
+          my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
 	   }
 /**
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	   myReader. getSamples (ofdmBuffer. data (),
+       myReader. getSamples (ofdmBuffer. data(),
 	                         T_null, coarseOffset + fineOffset);
 	   sampleCount	+= T_null;
 	   float sum	= 0;
@@ -334,7 +336,7 @@ SyncOnPhase:
 	   avgValue_nullPeriod	= sum;
 	   static	float snr	= 0;
 	   snr = 0.9 * snr +
-	         0.1 * 20 * log10 ((myReader. get_sLevel () + 0.005) / sum);
+             0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
 	   static int ccc	= 0;
 	   if (++ccc > 10) {
 	      ccc = 0;
@@ -344,25 +346,25 @@ SyncOnPhase:
  *	The TII data is encoded in the null period of the
  *	odd frames 
  */
-	   if (params. get_dabMode () == 1) {
-	      if (wasSecond (my_ficHandler. get_CIFcount (), &params)) {
+       if (params. get_dabMode() == 1) {
+          if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
 	            std::vector<int> secondaries;
 	            secondaries =
-	                my_TII_Detector. processNULL ();
+                    my_TII_Detector. processNULL();
 	            showSecondaries (-1);
-	            if (secondaries. size () > 0) {
+                if (secondaries. size() > 0) {
 	              showCoordinates (secondaries. at (0));
-	              for (i = 0; i < (int)(secondaries. size ()); i ++)
+                  for (i = 0; i < (int)(secondaries. size()); i ++)
 	                 showSecondaries (secondaries. at (i));
 	            }
 
 	            show_tii (1);
 	            tii_counter = 0;
-	            my_TII_Detector. reset ();
+                my_TII_Detector. reset();
 	         }
-	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
+             tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	      }
 	   }
 /**
@@ -404,33 +406,33 @@ SyncOnPhase:
 	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
-	my_mscHandler.  stop ();
-	my_ficHandler.  stop ();
+    my_mscHandler.  stop();
+    my_ficHandler.  stop();
 }
 
-void	dabProcessor:: reset	(void) {
+void	dabProcessor:: reset() {
 	myReader. setRunning (false);
-	while (isRunning ())
-	   wait ();
+    while (isRunning())
+       wait();
 	usleep (10000);
-	my_ficHandler.  reset ();
-	start ();
+    my_ficHandler.  reset();
+    start();
 }
 
-void	dabProcessor::stop	(void) {
+void	dabProcessor::stop() {
 	myReader. setRunning (false);
-	while (isRunning ())
-	   wait ();
+    while (isRunning())
+       wait();
 	usleep (10000);
-	my_ficHandler.  reset ();
+    my_ficHandler.  reset();
 }
 
-void	dabProcessor::coarseCorrectorOn (void) {
+void	dabProcessor::coarseCorrectorOn() {
 	correctionNeeded 	= true;
 	coarseOffset	= 0;
 }
 
-void	dabProcessor::coarseCorrectorOff (void) {
+void	dabProcessor::coarseCorrectorOff() {
 	correctionNeeded	= false;
 	theRig	-> setOffset (coarseOffset);
 }
@@ -464,8 +466,8 @@ void	dabProcessor::dataforPacketService	(QString &s,
 }
 
 
-void	dabProcessor::reset_msc (void) {
-	my_mscHandler. reset ();
+void	dabProcessor::reset_msc() {
+    my_mscHandler. reset();
 }
 
 void    dabProcessor::set_audioChannel (audiodata *d,
@@ -479,32 +481,32 @@ void    dabProcessor::set_dataChannel (packetdata *d,
 }
 
 
-uint8_t	dabProcessor::get_ecc		(void) {
-	return my_ficHandler. get_ecc ();
+uint8_t	dabProcessor::get_ecc() {
+    return my_ficHandler. get_ecc();
 }
 
-int32_t dabProcessor::get_ensembleId	(void) {
-	return my_ficHandler. get_ensembleId ();
+int32_t dabProcessor::get_ensembleId() {
+    return my_ficHandler. get_ensembleId();
 }
 
-QString dabProcessor::get_ensembleName	(void) {
-	return my_ficHandler. get_ensembleName ();
+QString dabProcessor::get_ensembleName() {
+    return my_ficHandler. get_ensembleName();
 }
 
-void	dabProcessor::clearEnsemble	(void) {
-	my_ficHandler. clearEnsemble ();
+void	dabProcessor::clearEnsemble() {
+    my_ficHandler. clearEnsemble();
 }
 
 void	dabProcessor::startDumping	(SNDFILE *f) {
 	myReader. startDumping (f);
 }
 
-void	dabProcessor::stopDumping	(void) {
-	myReader. stopDumping ();
+void	dabProcessor::stopDumping() {
+    myReader. stopDumping();
 }
 
 bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
-	switch (p -> get_dabMode ()) {
+    switch (p -> get_dabMode()) {
 	   default:
 	   case 1:
 	      return (cf & 07) >= 4;

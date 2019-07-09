@@ -4,13 +4,13 @@
 
 
 	dataDescriptor::dataDescriptor (packetdata *pd):
-	                                       myFrame (NULL) {
+	                                       myFrame (nullptr) {
         setupUi (&myFrame);
-        myFrame. show ();
+        myFrame. show();
 	serviceName  -> setText (pd -> serviceName);
 	serviceLabel    -> setText
-                      (QString ().number (pd -> serviceId, 16). toUpper ());
-        QFont font      = serviceLabel -> font ();
+                      (QString().number (pd -> serviceId, 16). toUpper());
+        QFont font      = serviceLabel -> font();
         font. setBold (true);
 	subChannelId -> setText (QString::number (pd -> subchId));
 	startAddress -> setText (QString::number (pd -> startAddr));
@@ -24,6 +24,6 @@
 	FECscheme    -> setText (getFECscheme (pd -> FEC_scheme));
 }
 
-	dataDescriptor::~dataDescriptor (void) {
+	dataDescriptor::~dataDescriptor() {
 }
 

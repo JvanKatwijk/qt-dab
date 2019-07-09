@@ -26,25 +26,25 @@
 #ifndef	__VIRTUAL_INPUT__
 #define	__VIRTUAL_INPUT__
 
-#include	<stdint.h>
+#include	<cstdint>
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<QThread>
 
 class	virtualInput: public QThread {
 public:
-			virtualInput 	(void);
-virtual			~virtualInput 	(void);
+			virtualInput();
+virtual			~virtualInput();
 virtual		void	setVFOFrequency	(int32_t);
-virtual		int32_t	getVFOFrequency	(void);
-virtual		int32_t	defaultFrequency(void);
-virtual		bool	restartReader	(void);
-virtual		void	stopReader	(void);
+virtual		int32_t	getVFOFrequency();
+virtual		int32_t	defaultFrequency();
+virtual		bool	restartReader();
+virtual		void	stopReader();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
-virtual		int32_t	Samples		(void);
-virtual		void	resetBuffer	(void);
-virtual		int16_t	bitDepth	(void) { return 10;}
-virtual		int32_t	getOffset	(void);
+virtual		int32_t	Samples();
+virtual		void	resetBuffer();
+virtual		int16_t	bitDepth() { return 10;}
+virtual		int32_t	getOffset();
 virtual		void	setOffset	(int32_t);
 //
 protected:

@@ -110,9 +110,9 @@ int32_t	inputRate	= 0;
 
 	inputRate	= 2048000;	// default
 	lastFrequency	= Khz (25000);
-	base_16		= s -> value ("base_16", 128). toInt ();
-	base_24		= s -> value ("base_24", 32767 * 256). toInt ();
-	base_32		= s -> value ("base_32", 32767 * 32768). toInt ();
+	base_16		= s -> value ("base_16", 128). toInt();
+	base_24		= s -> value ("base_24", 32767 * 256). toInt();
+	base_32		= s -> value ("base_32", 32767 * 32768). toInt();
 	isStarted	= false;
 	theReader	= NULL;
 	dll_open	= false;
@@ -121,7 +121,7 @@ int32_t	inputRate	= 0;
 	dll_file = QFileDialog::
 	           getOpenFileName (NULL,
 	                            tr ("load file .."),
-	                            QDir::currentPath (),
+	                            QDir::currentPath(),
 #ifdef	__MINGW32__
 	                            tr ("libs (Extio*.dll)"));
 #else
@@ -136,17 +136,17 @@ int32_t	inputRate	= 0;
 
 #ifdef	__MINGW32__
 	wchars_num = MultiByteToWideChar (CP_UTF8, 0,
-	                              dll_file. toLatin1 (). data (),
+	                              dll_file. toLatin1(). data(),
 	                              -1, NULL, 0);
 	windowsName = new wchar_t [wchars_num];
 	MultiByteToWideChar (CP_UTF8, 0,
-	                     dll_file. toLatin1 (). data (),
+	                     dll_file. toLatin1(). data(),
 	                     -1, windowsName, wchars_num);
 	wcstombs (temp, windowsName, 128);
 	Handle		= LoadLibrary (windowsName);
-	fprintf (stderr, "Last error = %ld\n", GetLastError ());
+	fprintf (stderr, "Last error = %ld\n", GetLastError());
 #else
-	Handle		= dlopen (dll_file. toLatin1 (). data (), RTLD_NOW);
+	Handle		= dlopen (dll_file. toLatin1(). data(), RTLD_NOW);
 #endif
 	if (Handle == NULL) {
 	   QMessageBox::warning (NULL, tr ("sdr"),
@@ -154,7 +154,7 @@ int32_t	inputRate	= 0;
 	   throw (21);
 	}
 
-	if (!loadFunctions ()) {
+	if (!loadFunctions()) {
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("loading functions failed\n"));
 	   FREELIBRARY (Handle);
@@ -184,7 +184,7 @@ int32_t	inputRate	= 0;
 
 	bool	OK = false;
 	while (!OK) {
-	   inputRate	= GetHWSR	();
+	   inputRate	= GetHWSR();
 	   fprintf (stderr, "inputRate = %d\n", inputRate);
 	   if (inputRate < Khz (2000) ||
 	       (1000 * (inputRate / 1000) != inputRate)) 
@@ -221,15 +221,15 @@ int32_t	inputRate	= 0;
 	      break;
 	}
 
-	ShowGUI ();
+	ShowGUI();
 	fprintf (stderr, "Hw open successful\n");
 }
 
 	extioHandler::~extioHandler (void) {
 	if (dll_open) {
-	   HideGUI ();
-	   StopHW ();
-	   CloseHW ();
+	   HideGUI();
+	   StopHW();
+	   CloseHW();
 	}
 
 	if (Handle != NULL)
@@ -309,7 +309,7 @@ bool	extioHandler::loadFunctions (void) {
 }
 
 int32_t	extioHandler::getRate	(void) {
-	return GetHWSR ();
+	return GetHWSR();
 }
 
 void	extioHandler::setVFOFrequency (int32_t f) {
@@ -328,16 +328,16 @@ int32_t	extioHandler::getVFOFrequency (void) {
 //	be available
 void	extioHandler::ShowGUI		(void) {
 	if (L_ShowGUI != NULL)
-	   (*L_ShowGUI) ();
+	   (*L_ShowGUI)();
 }
 
 void	extioHandler::HideGUI		(void) {
 	if (L_HideGUI != NULL)
-	   (*L_HideGUI) ();
+	   (*L_HideGUI)();
 }
 
 long	extioHandler::GetHWSR		(void) {
-	return L_GetHWSR != NULL ? (*L_GetHWSR) () : 192000;
+	return L_GetHWSR != NULL ? (*L_GetHWSR)() : 192000;
 }
 
 long	extioHandler::GetHWLO		(void) {
@@ -360,13 +360,13 @@ int32_t	size	= (*StartHW)(lastFrequency);
 void	extioHandler::stopReader	(void) {
 	if (isStarted) {
 	   (*StopHW)();
-	   theReader	-> stopReader ();
+	   theReader	-> stopReader();
 	   isStarted = false;
 	}
 }
 
 int32_t	extioHandler::Samples		(void) {
-int32_t	x = theBuffer -> GetRingBufferReadAvailable ();
+int32_t	x = theBuffer -> GetRingBufferReadAvailable();
 	if (x < 0)
 	   fprintf (stderr, "toch een fout in ringbuffer\n");
 	return x;
@@ -378,7 +378,7 @@ int32_t	extioHandler::getSamples	(std::complex<float> *buffer,
 }
 
 int16_t	extioHandler::bitDepth		(void) {
-	return	theReader	-> bitDepth ();
+	return	theReader	-> bitDepth();
 }
 
 int32_t	extioHandler::defaultFrequency (void) {

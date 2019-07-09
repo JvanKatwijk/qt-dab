@@ -30,7 +30,7 @@
 #include	<QString>
 #include	"dab-constants.h"
 #include	<portaudio.h>
-#include	<stdio.h>
+#include	<cstdio>
 #include	"audio-base.h"
 #include	"ringbuffer.h"
 
@@ -40,19 +40,19 @@ class	audioSink  : public audioBase {
 Q_OBJECT
 public:
 	                audioSink		(int16_t);
-			~audioSink		(void);
+			~audioSink();
 	bool		setupChannels		(QComboBox *);
-	void		stop			(void);
+	void		stop();
 	void		restart			(void);
 	bool		selectDevice		(int16_t);
-	bool		selectDefaultDevice	(void);
-	int32_t		missed			(void);
+	bool		selectDefaultDevice();
+	int32_t		missed();
 private:
-	int16_t		numberofDevices		(void);
+	int16_t		numberofDevices();
 	QString		outputChannelwithRate	(int16_t, int32_t);
 	int16_t		invalidDevice		(void);
 	bool		isValidDevice		(int16_t);
-	int32_t		cardRate		(void);
+	int32_t		cardRate();
 
 	bool		OutputrateIsSupported	(int16_t, int32_t);
 	void		audioOutput		(float *, int32_t);

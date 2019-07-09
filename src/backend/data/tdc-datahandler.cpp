@@ -33,7 +33,7 @@
 	         myRadioInterface, SLOT (handle_tdcdata (int, int)));
 }
 
-	tdc_dataHandler::~tdc_dataHandler (void) {
+	tdc_dataHandler::~tdc_dataHandler() {
 }
 
 #define	swap(a)	(((a) << 8) | ((a) >> 8))
@@ -54,8 +54,8 @@ uint	count;
 
 void	tdc_dataHandler::add_mscDatagroup (std::vector<uint8_t> m) {
 int32_t	offset	= 0;
-uint8_t	*data	= (uint8_t *)(m. data ());
-int32_t	size	= m. size ();
+uint8_t	*data	= (uint8_t *)(m. data());
+int32_t	size	= m. size();
 int16_t	i;
 uint16_t	crc;
 

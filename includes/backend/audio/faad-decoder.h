@@ -33,7 +33,7 @@ Q_OBJECT
 public:
         faadDecoder     (RadioInterface *mr,
                          RingBuffer<int16_t> *buffer);
-        ~faadDecoder    (void);
+        ~faadDecoder();
 int16_t MP42PCM         (uint8_t dacRate,
                          uint8_t sbrFlag,
                          int16_t mpegSurround,

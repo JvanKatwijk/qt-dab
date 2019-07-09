@@ -22,10 +22,10 @@
  */
 #include	"frame-processor.h"
 
-	frameProcessor::frameProcessor (void) {
+	frameProcessor::frameProcessor() {
 }
 
-	frameProcessor::~frameProcessor	(void) {
+	frameProcessor::~frameProcessor() {
 }
 
 void	frameProcessor::addtoFrame	(std::vector<uint8_t> v) {

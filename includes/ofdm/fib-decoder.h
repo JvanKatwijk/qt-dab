@@ -25,8 +25,8 @@
 #define	__FIB_DECODER__
 #
 //
-#include	<stdint.h>
-#include	<stdio.h>
+#include	<cstdint>
+#include	<cstdio>
 #include	<QObject>
 #include	"msc-handler.h"
 #include	<QMutex>
@@ -40,20 +40,20 @@ class	fibDecoder: public QObject {
 Q_OBJECT
 public:
 		fibDecoder		(RadioInterface *);
-		~fibDecoder		(void);
+		~fibDecoder();
 
-	void	clearEnsemble		(void);
-	bool	syncReached		(void);
+	void	clearEnsemble();
+	bool	syncReached();
 	void	dataforAudioService	(const QString &,
 	                                      audiodata *, int16_t);
 	void	dataforPacketService	(const QString &,
 	                                      packetdata *, int16_t);
-        uint8_t get_ecc                 (void);
-	int32_t	get_ensembleId		(void);
-	QString get_ensembleName	(void);
-	int32_t	get_CIFcount		(void);
+        uint8_t get_ecc();
+	int32_t	get_ensembleId();
+	QString get_ensembleName();
+	int32_t	get_CIFcount();
 protected:
-	void	newFrame		(void);
+	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;
@@ -142,7 +142,7 @@ signals:
 	void		addtoEnsemble	(const QString &);
 	void		nameofEnsemble  (int, const QString &);
 	void		setTime		(const QString &);
-	void		changeinConfiguration (void);
+	void		changeinConfiguration();
 };
 
 #endif

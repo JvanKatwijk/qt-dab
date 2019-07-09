@@ -100,13 +100,13 @@
 //
 class	service {
 public:
-	service	(void) {
-	   clear ();
+	service() {
+	   clear();
 	}
-	~service	(void) {
-		clear ();
+	~service() {
+		clear();
 	}
-	void		clear	(void) {
+	void		clear() {
 	   inUse	= false;
 	   hasName	= false;
 	   language	= 0;
@@ -127,13 +127,13 @@ public:
 
 class ensembleDescriptor {
 public:
-	ensembleDescriptor (void) {
-	   clear ();
+	ensembleDescriptor() {
+	   clear();
 	   for (int i = 0; i < 64; i ++)
-	   services [i]. clear ();
+	   services [i]. clear();
 	}
-	~ensembleDescriptor	(void) {}
-	void		clear (void) {
+	~ensembleDescriptor() {}
+	void		clear() {
 	   namePresent	= false;
 	   ecc_Present	= false;
 	   isSynced	= false;
@@ -149,11 +149,11 @@ public:
 
 class	subChannelDescriptor {
 public:
-	subChannelDescriptor	(void) {
-	   clear ();
+	subChannelDescriptor() {
+	   clear();
 	}
-	~subChannelDescriptor	(void) {}
-	void		clear (void) {
+	~subChannelDescriptor() {}
+	void		clear() {
 	   inUse	= false;
 	   language	= 0;
 	   FEC_scheme	= 0;
@@ -175,11 +175,11 @@ public:
 //      audio and data are quite different
 class	serviceComponentDescriptor {
 public:
-	serviceComponentDescriptor	(void) {
-	   clear	();
+	serviceComponentDescriptor() {
+	   clear();
 	}
-	~serviceComponentDescriptor	(void) {}
-	void		clear		(void) {
+	~serviceComponentDescriptor() {}
+	void		clear() {
 	   inUse		= false;
 	   is_madePublic	= false;
 	   SCIds		= -1;
@@ -212,17 +212,17 @@ public:
 //	that the transmitter changes the configuration while running
 class	dataBase {
 public:
-	dataBase	(void) {
-	   clear ();
+	dataBase() {
+	   clear();
 	}
-	~dataBase	(void) {
-	   clear ();
+	~dataBase() {
+	   clear();
 	}
-	void	clear	(void) {
+	void	clear() {
 	int i;
 	   for (i = 0; i < 64; i ++) {
-	      subChannels  [i]. clear ();
-	      serviceComps [i]. clear ();
+	      subChannels  [i]. clear();
+	      serviceComps [i]. clear();
 	   }
 	}
 	subChannelDescriptor    subChannels [64];
@@ -243,19 +243,19 @@ public:
 	         myRadioInterface, SLOT (showTime (const QString &)));
 	connect (this, SIGNAL (changeinConfiguration (void)),
 	         myRadioInterface, SLOT (changeinConfiguration (void)));
-	currentBase	= new dataBase ();
-	nextBase	= new dataBase ();
-	ensemble	= new ensembleDescriptor ();
+	currentBase	= new dataBase();
+	nextBase	= new dataBase();
+	ensemble	= new ensembleDescriptor();
 	CIFcount	= 0;
 }
 	
-	fibDecoder::~fibDecoder (void) {
+	fibDecoder::~fibDecoder() {
 	delete	nextBase;
 	delete	currentBase;
 	delete	ensemble;
 }
 
-void	fibDecoder::newFrame (void) {
+void	fibDecoder::newFrame() {
 }
 
 //
@@ -266,7 +266,7 @@ void	fibDecoder::process_FIB (uint8_t *p, uint16_t fib) {
 int8_t	processedBytes	= 0;
 uint8_t	*d		= p;
 
-	fibLocker. lock ();
+	fibLocker. lock();
 	(void)fib;
 	while (processedBytes  < 30) {
 	   uint8_t FIGtype	= getBits_3 (d, 0);
@@ -299,7 +299,7 @@ uint8_t	*d		= p;
 //	      processedBytes += getBits (p, 3, 5) + 1;
 	      d = p + processedBytes * 8;
 	}
-	fibLocker. unlock ();
+	fibLocker. unlock();
 }
 //
 //
@@ -1025,7 +1025,7 @@ int16_t	bitOffset		= used * 8;
 	   if (serviceIndex != -1) {
 	      if (ensemble -> services [serviceIndex]. hasName) {
 //	         fprintf (stderr, "announcement for %s (%x) with %d clusters\n",
-//	             ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), asuFlags, nrClusters);
+//	             ensemble -> services [serviceIndex]. serviceLabel. toLatin1(). data(), asuFlags, nrClusters);
 	      }
 //	      fprintf (stderr, "type of announcement %x\n", asuFlags);
 	   }
@@ -1441,18 +1441,18 @@ int	i;
 //	
 //	Implementation of API functions
 //
-void	fibDecoder::clearEnsemble	(void) {
-	fibLocker. lock ();
+void	fibDecoder::clearEnsemble() {
+	fibLocker. lock();
 	delete currentBase;
-	currentBase	= new dataBase ();
+	currentBase	= new dataBase();
 	delete nextBase;
-	nextBase	= new dataBase ();
+	nextBase	= new dataBase();
 	delete ensemble;
-	ensemble	= new ensembleDescriptor ();
-	fibLocker. unlock ();
+	ensemble	= new ensembleDescriptor();
+	fibLocker. unlock();
 }
 
-bool	fibDecoder::syncReached		(void) {
+bool	fibDecoder::syncReached() {
 	return  ensemble -> isSynced;
 }
 
@@ -1480,11 +1480,11 @@ int	j;
 int	serviceIndex;
 
 	ad       -> defined      = false;
-	fibLocker. lock ();
+	fibLocker. lock();
 	
 	serviceIndex	= findService (s);
 	if (serviceIndex == -1) {
-	   fibLocker. unlock ();
+	   fibLocker. unlock();
 	   return;
 	}
 
@@ -1530,7 +1530,7 @@ int	serviceIndex;
 	   ad	-> defined	= true;
 	   break;
 	}
-	fibLocker. unlock ();
+	fibLocker. unlock();
 }
 
 void	fibDecoder::dataforPacketService (const QString &s,
@@ -1539,11 +1539,11 @@ int     j;
 int     serviceIndex;
 
 	pd       -> defined      = false;
-	fibLocker. lock ();
+	fibLocker. lock();
 
 	serviceIndex    = findService (s);
 	if (serviceIndex == -1) {
-	   fibLocker. unlock ();
+	   fibLocker. unlock();
 	   return;
 	}
 
@@ -1592,28 +1592,28 @@ int     serviceIndex;
 	   break;
 	}
 
-	fibLocker. unlock ();
+	fibLocker. unlock();
 }
 
-int32_t	fibDecoder::get_ensembleId	(void) {
+int32_t	fibDecoder::get_ensembleId() {
 	if (ensemble -> namePresent)
 	   return ensemble -> ensembleId;
 	else
 	   return 0;
 }
 
-QString	fibDecoder::get_ensembleName	(void) {
+QString	fibDecoder::get_ensembleName() {
 	if (ensemble -> namePresent)
 	   return ensemble -> ensembleName;
 	else
 	   return " ";
 }
 
-int32_t fibDecoder::get_CIFcount	(void) {
+int32_t fibDecoder::get_CIFcount() {
 	return CIFcount;
 }
 
-uint8_t	fibDecoder::get_ecc (void) {
+uint8_t	fibDecoder::get_ecc() {
 	if (ensemble -> ecc_Present)
 	   return ensemble -> ecc_byte;
 	return 0;

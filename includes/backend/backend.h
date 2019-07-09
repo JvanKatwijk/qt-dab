@@ -30,7 +30,7 @@
 #include	<atomic>
 #endif
 #include	"ringbuffer.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include        "backend-driver.h"
 #include        "backend-deconvolver.h"
 
@@ -47,14 +47,14 @@ public:
 	         RingBuffer<int16_t> *,
 	         RingBuffer<uint8_t> *,
 	         QString	picturesPath);
-	~Backend	(void);
+	~Backend();
 int32_t	process		(int16_t *, int16_t);
-void	stopRunning	(void);
+void	stopRunning();
 	int		startAddr;
 	int		Length;
 private:
 #ifdef	__THREADED_BACKEND
-void	run		(void);
+void	run();
 	atomic<bool>	running;
 	QSemaphore	freeSlots;
 	QSemaphore	usedSlots;

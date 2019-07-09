@@ -111,7 +111,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	}
 	PI_X	= get_PCodes (8 - 1);
 
-	memset (indexTable. data (), 0,
+	memset (indexTable. data(), 0,
 	                 (outSize * 4 + 24) * sizeof (uint8_t)); 
 //
 //	according to the standard we process the logical frame
@@ -142,7 +142,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	}
 }
 
-	eep_protection::~eep_protection (void) {
+	eep_protection::~eep_protection() {
 }
 
 bool	eep_protection::deconvolve (int16_t *v,
@@ -153,13 +153,13 @@ int16_t	i;
 int16_t	inputCounter	= 0;
 	(void)size;			// size was known already
 
-	memset (viterbiBlock. data (), 0,
+	memset (viterbiBlock. data(), 0,
 	                 (outSize * 4 + 24) * sizeof (int16_t)); 
 	for (i = 0; i < outSize * 4 + 24; i ++) 
 	   if (indexTable [i])
 	      viterbiBlock [i] = v [inputCounter ++];
 	
-	viterbiHandler::deconvolve (viterbiBlock. data (), outBuffer);
+	viterbiHandler::deconvolve (viterbiBlock. data(), outBuffer);
 	return true;
 }
 

@@ -25,7 +25,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 #ifndef __AIRSPY_H__
 #define __AIRSPY_H__
 
-#include <stdint.h>
+#include <cstdint>
 #include "airspy_commands.h"
 
 #define AIRSPY_VERSION "1.0.9"

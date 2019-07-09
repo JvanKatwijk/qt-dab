@@ -24,7 +24,7 @@
 #ifndef	__PROTECTION__
 #define	__PROTECTION__
 
-#include	<stdint.h>
+#include	<cstdint>
 #include        <vector>
 #include        "viterbi-handler.h"
 
@@ -33,7 +33,7 @@ extern uint8_t	PI_X [];
 class   protection: public viterbiHandler {
 public:
                 protection      (int16_t, int16_t);
-virtual         ~protection     (void);
+virtual         ~protection();
 virtual bool    deconvolve      (int16_t *, int32_t, uint8_t *);
 protected:
         int16_t         bitRate;

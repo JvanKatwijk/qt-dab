@@ -24,13 +24,13 @@
  *	dabsticks 
  */
 #include	"rawfiles.h"
-#include	<stdio.h>
+#include	<cstdio>
 #include	<unistd.h>
-#include	<stdlib.h>
+#include	<cstdlib>
 #include	<fcntl.h>
 //
 #include	<sys/time.h>
-#include	<time.h>
+#include	<ctime>
 
 #include	"raw-reader.h"
 
@@ -41,12 +41,12 @@
 	fileName	= f;
 	myFrame		= new QFrame;
 	setupUi	(myFrame);
-	myFrame		-> show ();
+	myFrame		-> show();
 	_I_Buffer	= new RingBuffer<uint8_t>(INPUT_FRAMEBUFFERSIZE);
-	filePointer	= fopen (f. toUtf8 (). data (), "rb");
-	if (filePointer == NULL) {
+	filePointer	= fopen (f. toUtf8(). data(), "rb");
+	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
-	                                   f. toUtf8 (). data ());
+	                                   f. toUtf8(). data());
 	   perror ("file ?");
 	   delete myFrame;
 	   delete _I_Buffer;
@@ -63,32 +63,32 @@
 	running. store (false);
 }
 
-	rawFiles::~rawFiles (void) {
-	if (running. load ()) {
-	   readerTask	-> stopReader ();
-	   while (readerTask -> isRunning ())
+	rawFiles::~rawFiles() {
+	if (running. load()) {
+	   readerTask	-> stopReader();
+	   while (readerTask -> isRunning())
 	      usleep (100);
 	   delete readerTask;
 	}
-	if (filePointer != NULL)
+	if (filePointer != nullptr)
 	   fclose (filePointer);
 
 	delete _I_Buffer;
 	delete	myFrame;
 }
 
-bool	rawFiles::restartReader	(void) {
-	if (running. load ())
+bool	rawFiles::restartReader() {
+	if (running. load())
 	   return true;
 	readerTask	= new rawReader (this, filePointer, _I_Buffer);
 	running. store (true);
 	return true;
 }
 
-void	rawFiles::stopReader	(void) {
-	if (running. load ()) {
-	   readerTask	-> stopReader ();
-	   while (readerTask -> isRunning ())
+void	rawFiles::stopReader() {
+	if (running. load()) {
+	   readerTask	-> stopReader();
+	   while (readerTask -> isRunning())
 	      usleep (100);
 	   delete readerTask;
 	}
@@ -100,10 +100,10 @@ int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
 uint8_t	temp [2 * size];
 
-	if (filePointer == NULL)
+	if (filePointer == nullptr)
 	   return 0;
 
-	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable ()) < 2 * size)
+	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable()) < 2 * size)
 	   usleep (500);
 
 	amount = _I_Buffer	-> getDataFromBuffer (temp, 2 * size);
@@ -113,8 +113,8 @@ uint8_t	temp [2 * size];
 	return amount / 2;
 }
 
-int32_t	rawFiles::Samples (void) {
-	return _I_Buffer -> GetRingBufferReadAvailable () / 2;
+int32_t	rawFiles::Samples() {
+	return _I_Buffer -> GetRingBufferReadAvailable() / 2;
 }
 
 void	rawFiles::setProgress (int progress, float timelength) {

@@ -36,8 +36,8 @@ void	Qt_AudioDevice::start (void) {
 }
 
 void	Qt_AudioDevice::stop (void) {
-	Buffer -> FlushRingBuffer ();
-	close ();
+	Buffer -> FlushRingBuffer();
+	close();
 }
 //
 //	we always return "len" bytes

@@ -138,7 +138,7 @@ struct phasetableElement modeIV_table [] = {
 	}
 }
 
-	phaseTable::~phaseTable (void) {
+	phaseTable::~phaseTable() {
 }
 
 static

@@ -26,10 +26,10 @@
 #ifndef	__DAB_CONSTANTS__
 #define	__DAB_CONSTANTS__
 #include	<QString>
-#include	<math.h>
-#include	<stdint.h>
-#include	<stdlib.h>
-#include	<stdio.h>
+#include	<cmath>
+#include	<cstdint>
+#include	<cstdlib>
+#include	<cstdio>
 #include	<complex>
 #include	<limits>
 #include	<cstring>
@@ -88,7 +88,7 @@ bool	isIndeterminate (float x) {
 
 static inline
 bool	isInfinite (float x) {
-	return x == numeric_limits<float>::infinity ();
+	return x == numeric_limits<float>::infinity();
 }
 
 static inline
@@ -135,11 +135,11 @@ public:
 	int16_t	length;
 	int16_t	bitRate;
 public:
-		descriptorType	(void) {
+		descriptorType() {
 	defined		= false;
 	serviceName	= "";
 	}
-virtual		~descriptorType	(void) {}
+virtual		~descriptorType() {}
 };
 
 //	for service handling we define
@@ -151,7 +151,7 @@ public:
 	int16_t	appType;
 	int16_t	compnr;
 	int16_t	packetAddress;
-	packetdata (void) {
+	packetdata() {
 	   type	= PACKET_SERVICE;
 	}
 };
@@ -163,7 +163,7 @@ public:
 	int16_t	programType;
 	int16_t	compnr;
 	int32_t	fmFrequency;
-	audiodata (void) {
+	audiodata() {
 	   type	= AUDIO_SERVICE;
 	}
 	

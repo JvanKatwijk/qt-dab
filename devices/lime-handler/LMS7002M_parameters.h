@@ -6,7 +6,7 @@
 
 #ifndef LMS7002M_PARAMETERS_H
 #define LMS7002M_PARAMETERS_H
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __cplusplus
 extern "C" {

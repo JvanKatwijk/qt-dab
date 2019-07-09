@@ -58,11 +58,11 @@ int	i;
 	corrector	= 0;
 	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
-	dumpScale	= valueFor (theRig -> bitDepth ());
+	dumpScale	= valueFor (theRig -> bitDepth());
 	running. store (true);
 }
 
-	sampleReader::~sampleReader (void) {
+	sampleReader::~sampleReader() {
 	delete[] oscillatorTable;
 }
 
@@ -70,7 +70,7 @@ void	sampleReader::setRunning (bool b) {
 	running. store (b);
 }
 
-float	sampleReader::get_sLevel (void) {
+float	sampleReader::get_sLevel() {
 	return sLevel;
 }
 
@@ -78,29 +78,29 @@ std::complex<float> sampleReader::getSample (int32_t phaseOffset) {
 std::complex<float> temp;
 
 	corrector	= phaseOffset;
-	if (!running. load ())
+	if (!running. load())
 	   throw 21;
 
-///	bufferContent is an indicator for the value of ... -> Samples ()
+///	bufferContent is an indicator for the value of ... -> Samples()
 	if (bufferContent == 0) {
-	   bufferContent = theRig -> Samples ();
-	   while ((bufferContent <= 2048) && running. load ()) {
+	   bufferContent = theRig -> Samples();
+	   while ((bufferContent <= 2048) && running. load()) {
 	      usleep (10);
-	      bufferContent = theRig -> Samples (); 
+	      bufferContent = theRig -> Samples(); 
 	   }
 	}
 
-	if (!running. load ())	
+	if (!running. load())	
 	   throw 20;
 //
 //	so here, bufferContent > 0
 	theRig -> getSamples (&temp, 1);
 	bufferContent --;
-	if (dumpfilePointer. load () != nullptr) {
+	if (dumpfilePointer. load() != nullptr) {
 	   dumpBuffer [2 * dumpIndex    ] = real (temp) * dumpScale;
 	   dumpBuffer [2 * dumpIndex + 1] = imag (temp) * dumpScale;
 	   if ( ++dumpIndex >= DUMPSIZE / 2) {
-	      sf_writef_short (dumpfilePointer. load (),
+	      sf_writef_short (dumpfilePointer. load(),
 	                       dumpBuffer, dumpIndex);
 	      dumpIndex = 0;
 	   }
@@ -121,7 +121,7 @@ std::complex<float> temp;
 	   show_Corrector	(corrector);
 	   sampleCount = 0;
 	   if (spectrumBuffer != nullptr) {
-              spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+              spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),
 	                                                       localCounter);
               emit show_Spectrum (bufferSize);
 	   }
@@ -135,28 +135,28 @@ void	sampleReader::getSamples (std::complex<float>  *v,
 int32_t		i;
 
 	corrector	= phaseOffset;
-	if (!running. load ())
+	if (!running. load())
 	   throw 21;
 	if (n > bufferContent) {
-	   bufferContent = theRig -> Samples ();
-	   while ((bufferContent < n) && running. load ()) {
+	   bufferContent = theRig -> Samples();
+	   while ((bufferContent < n) && running. load()) {
 	      usleep (10);
-	      bufferContent = theRig -> Samples ();
+	      bufferContent = theRig -> Samples();
 	   }
 	}
 
-	if (!running. load ())	
+	if (!running. load())	
 	   throw 20;
 //
 //	so here, bufferContent >= n
 	n	= theRig -> getSamples (v, n);
 	bufferContent -= n;
-	if (dumpfilePointer. load () != nullptr) {
+	if (dumpfilePointer. load() != nullptr) {
 	   for (i = 0; i < n; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
 	      if (++dumpIndex >= DUMPSIZE / 2) {
-	         sf_writef_short (dumpfilePointer. load (),
+	         sf_writef_short (dumpfilePointer. load(),
 	                          dumpBuffer, dumpIndex);
 	         dumpIndex = 0;
 	      }
@@ -180,7 +180,7 @@ int32_t		i;
 	if (sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
 	   if (spectrumBuffer != nullptr) {
-	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),
 	                                                       bufferSize);
 	      emit show_Spectrum (bufferSize);
 	   }
@@ -193,7 +193,7 @@ void	sampleReader::startDumping (SNDFILE *f) {
 	dumpfilePointer. store (f);
 }
 
-void	sampleReader::stopDumping (void) {
+void	sampleReader::stopDumping() {
 	dumpfilePointer. store (nullptr);
 }
 

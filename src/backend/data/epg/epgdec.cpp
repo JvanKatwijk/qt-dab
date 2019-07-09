@@ -28,9 +28,9 @@
 \******************************************************************************/
 
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <map>
-#include	<stdio.h>
+#include	<cstdio>
 #include <iostream>
 #include <sstream>
 #include "epgdec.h"
@@ -41,17 +41,17 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData, const QString &name) {
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
 	tag_length_value tlv (&vecData [0]);
-	if (tlv. is_epg ()) {
+	if (tlv. is_epg()) {
 	   doc. appendChild (element (doc, tlv));
-	   QString test = doc. toString ();
-	   FILE *epgFile = fopen (name. toUtf8 (). data (), "w");
+	   QString test = doc. toString();
+	   FILE *epgFile = fopen (name. toUtf8(). data(), "w");
 	   if (epgFile != nullptr) {
-	      fprintf (stderr, "filename = %s\n", name. toUtf8 (). data ());
-	      fprintf (epgFile, test. toLatin1 (). data ());
+	      fprintf (stderr, "filename = %s\n", name. toUtf8(). data());
+	      fprintf (epgFile, test. toLatin1(). data());
 	      fclose (epgFile);
 	   }
 	   else
-	      fprintf (stderr, "cannot open %s\n", name. toUtf8 (). data ());
+	      fprintf (stderr, "cannot open %s\n", name. toUtf8(). data());
 	}
 }
 
@@ -71,7 +71,7 @@ static char token_list[20][255];
 static uint32_t default_content_id;
 
 static const char *enums0[] = { (char*)2, "DAB", "DRM" };
-static const char *enums1[] = { (char*)9, 0, "series",
+static const char *enums1[] = { (char*)9, nullptr, "series",
 	"show",
 	"programConcept",
 	"magazine",
@@ -91,7 +91,7 @@ static const char *enums6[] = { (char*)2, "primary", "secondary" };
 static const char *enums7[] = { (char*)2, "none", "unspecified" };
 static const char *enums8[] = { (char*)2, "on-air", "off-air" };
 static const char *enums9[] = { (char*)2, "no", "yes" };
-static const char *enums10[] = { (char*)4, 0, "logo_unrestricted",
+static const char *enums10[] = { (char*)4, nullptr, "logo_unrestricted",
 	                         "logo_mono_square",
 	                         "logo_colour_square",
 	                         "logo_mono_rectangle"
@@ -100,7 +100,7 @@ static const char *enums10[] = { (char*)4, 0, "logo_unrestricted",
 static const char *enums11 [] = { (char*)3, "main", "secondary", "other"};
 
 static const char *classificationScheme [] = {
-    0,
+    nullptr,
     "IntentionCS",
     "FormatCS",
     "ContentCS",
@@ -109,45 +109,45 @@ static const char *classificationScheme [] = {
     "ContentalertCS",
     "MediaTypeCS",
     "AtmosphereCS",
-    0, 0, 0, 0, 0, 0, 0
+    nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr
 };
 
 
 static dectab attribute_tags_epg[] = {
 	{"system", enums0, enum_attr},
-	{"id", 0, string_attr}
+	{"id", nullptr, string_attr}
 };
 
 static dectab attribute_tags_sch[] = {
-	{"version", 0, u16_attr},
-	{"creationTime", 0, datetime_attr},
-	{"originator", 0, string_attr}
+	{"version", nullptr, u16_attr},
+	{"creationTime", nullptr, datetime_attr},
+	{"originator", nullptr, string_attr}
 };
 
 static dectab attribute_tags_si[] = {
-    {"version", 0, u16_attr},
-    {"creationTime", 0, datetime_attr},
-    {"originator", 0, string_attr},
-    {"serviceProvider", 0, string_attr},
+    {"version", nullptr, u16_attr},
+    {"creationTime", nullptr, datetime_attr},
+    {"originator", nullptr, string_attr},
+    {"serviceProvider", nullptr, string_attr},
     {"system", enums0, enum_attr}
 };
 
 static dectab attribute_tags2[] = {
-    {"shortId", 0, u24_attr},
-    {"version", 0, u16_attr},
+    {"shortId", nullptr, u24_attr},
+    {"version", nullptr, u16_attr},
     {"type", enums1, enum_attr},
-    {"numOfItems", 0, u16_attr},
+    {"numOfItems", nullptr, u16_attr},
 };
 
 static dectab attribute_tags_scope[] = {
-    {"startTime", 0, datetime_attr},
-    {"stopTime", 0, datetime_attr}
+    {"startTime", nullptr, datetime_attr},
+    {"stopTime", nullptr, datetime_attr}
 };
 
 static dectab attribute_tags4[] = {
     {"protocol", enums2, enum_attr},
     {"type", enums3, enum_attr},
-    {"url", 0, string_attr},
+    {"url", nullptr, string_attr},
 };
 
 //static dectab attribute_tags5[] = {
@@ -157,73 +157,73 @@ static dectab attribute_tags4[] = {
 
 static dectab attribute_tags6[] = {
     {"type", enums4, enum_attr},
-    {"kHz", 0, u24_attr}
+    {"kHz", nullptr, u24_attr}
 };
 
 static dectab attribute_tags7[] = {
-    {"version", 0, u16_attr},
+    {"version", nullptr, u16_attr},
     {"format", enums5, enum_attr},
-    {"Not used", 0, nu_attr},
-    {"bitrate", 0, bitrate_attr}
+    {"Not used", nullptr, nu_attr},
+    {"bitrate", nullptr, bitrate_attr}
 };
 
 static dectab attribute_tags8[] = {
-    {"id", 0, string_attr},
+    {"id", nullptr, string_attr},
     {"type", enums6, enum_attr}
 };
 
 static dectab attribute_tags_name[] = {
-    {"xml:lang", 0, string_attr}
+    {"xml:lang", nullptr, string_attr}
 };
 
 static dectab attribute_tags10[] = {
-    {"mimeValue", 0, string_attr},
-    {"xml:lang", 0, string_attr},
-    {"url", 0, string_attr},
+    {"mimeValue", nullptr, string_attr},
+    {"xml:lang", nullptr, string_attr},
+    {"url", nullptr, string_attr},
     {"type", enums10, enum_attr},
-    {"width", 0, u16_attr},
-    {"height", 0, u16_attr}
+    {"width", nullptr, u16_attr},
+    {"height", nullptr, u16_attr}
 };
 
 static dectab attribute_tags11[] = {
-    {"time", 0, datetime_attr},
-    {"duration", 0, duration_attr},
-    {"actualTime", 0, datetime_attr},
-    {"actualDuration", 0, duration_attr}
+    {"time", nullptr, datetime_attr},
+    {"duration", nullptr, duration_attr},
+    {"actualTime", nullptr, datetime_attr},
+    {"actualDuration", nullptr, duration_attr}
 };
 
 static dectab attribute_tags12[] = {
-    {"id", 0, sid_attr},
-    {"trigger", 0, u16_attr}
+    {"id", nullptr, sid_attr},
+    {"trigger", nullptr, u16_attr}
 };
 
 static dectab attribute_tags13[] = {
-    {"id", 0, string_attr},
-    {"shortId", 0, u24_attr},
-    {"index", 0, u16_attr}
+    {"id", nullptr, string_attr},
+    {"shortId", nullptr, u24_attr},
+    {"index", nullptr, u16_attr}
 };
 
 static dectab attribute_tags14[] = {
-    {"url", 0, string_attr},
-    {"mimeValue", 0, string_attr},
-    {"xml:lang", 0, string_attr},
-    {"description", 0, string_attr},
-    {"expiryTime", 0, datetime_attr}
+    {"url", nullptr, string_attr},
+    {"mimeValue", nullptr, string_attr},
+    {"xml:lang", nullptr, string_attr},
+    {"description", nullptr, string_attr},
+    {"expiryTime", nullptr, datetime_attr}
 };
 
 static dectab attribute_tags15[] = {
-    {"id", 0, string_attr},
-    {"shortId", 0, u24_attr},
-    {"version", 0, u16_attr},
+    {"id", nullptr, string_attr},
+    {"shortId", nullptr, u24_attr},
+    {"version", nullptr, u16_attr},
     {"recommendation", enums9, enum_attr},
     {"broadcast", enums8, enum_attr},
-    {"Not used", 0, nu_attr},
-    {"xml:lang", 0, string_attr},
-    {"bitrate", 0, string_attr}
+    {"Not used", nullptr, nu_attr},
+    {"xml:lang", nullptr, string_attr},
+    {"bitrate", nullptr, string_attr}
 };
 
 static dectab attribute_tags_genre[] = {
-    {"href", 0, genre_href_attr},
+    {"href", nullptr, genre_href_attr},
     {"type", enums11, enum_attr}
 };
 
@@ -238,38 +238,38 @@ struct eltab_t {
 };
 
 static eltab_t element_tables[] = {
-    { "", 0, 0 },
-    { "", 0, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
     { "epg", attribute_tags_epg, sizeof (attribute_tags_epg) / sizeof (dectab) },
     { "serviceInformation", attribute_tags_si, sizeof (attribute_tags_si) / sizeof (dectab) },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
     { "shortName", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
     { "mediumName", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
     { "longName", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
-    { "mediaDescription", 0, 0 },
+    { "mediaDescription", nullptr, 0 },
     { "genre", attribute_tags_genre, sizeof (attribute_tags_genre) / sizeof (dectab) },
     { "CA", attribute_tags18, sizeof (attribute_tags18) / sizeof (dectab) },
     { "keywords", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
     { "memberOf", attribute_tags13, sizeof (attribute_tags13) / sizeof (dectab) },
     { "link", attribute_tags14, sizeof (attribute_tags14) / sizeof (dectab) },
-    { "location", 0, 0 },
+    { "location", nullptr, 0 },
     { "shortDescription", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
     { "longDescription", attribute_tags_name, sizeof (attribute_tags_name) / sizeof (dectab) },
     { "programme", attribute_tags15, sizeof (attribute_tags15) / sizeof (dectab) },
-    { "", 0, 0 },
-    { "", 0, 0 },
-    { "", 0, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
+    { "", nullptr, 0 },
     { "programmeGroups", attribute_tags_sch, sizeof (attribute_tags_sch) / sizeof (dectab) },
     { "schedule", attribute_tags_sch, sizeof (attribute_tags_sch) / sizeof (dectab) },
     { "alternateSource", attribute_tags4, sizeof (attribute_tags4) / sizeof (dectab) },
@@ -351,7 +351,7 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	}
 
 	tag_length_value a (tlv. value);
-	while (a. is_attribute ()) {
+	while (a. is_attribute()) {
 	   attribute (attr, tlv. tag, a);
 	   _BYTE* p = a. value + a. length;
 	   if (p >= end)
@@ -360,28 +360,28 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	   a = b;
 	}
 
-	for (map <string, string>::iterator i = attr. begin ();
-	                                      i != attr. end (); i++) {
-	   e. setAttribute (QString (i -> first. c_str ()),
-	                    QString (i -> second. c_str ()));
+	for (map <string, string>::iterator i = attr. begin();
+	                                      i != attr. end(); i++) {
+	   e. setAttribute (QString (i -> first. c_str()),
+	                    QString (i -> second. c_str()));
 	}
 	_BYTE* p = a. value;
 	while (p < end) {
-	   if (a. is_string_token_table () && !tlv. is_child_element ())
+	   if (a. is_string_token_table() && !tlv. is_child_element())
 	      string_token_table (a);
 	   else
-	   if (a. is_default_id () && !tlv.is_child_element ()) {
+	   if (a. is_default_id() && !tlv.is_child_element()) {
 	      default_content_id = get_uint24 (p);
 	      p += 3;
 	   }
 	   else
-	   if (a. is_child_element ()) {
+	   if (a. is_child_element()) {
 	      e. appendChild (element(doc, a));
 	   }
 	   else
-	   if (a. is_cdata ()) {
+	   if (a. is_cdata()) {
 	      string value = decode_string (a. value, a. length);
-	      QDomText t = doc. createTextNode (QString (). fromUtf8 (value. c_str ()));
+	      QDomText t = doc. createTextNode (QString(). fromUtf8 (value. c_str()));
 	      e. appendChild (t);
 	   }
 	   p = a. value + a. length;
@@ -439,7 +439,7 @@ string	decode_uint16 (const _BYTE* p) {
 stringstream out;
 
 	out << get_uint16(p);
-	return out. str ();
+	return out. str();
 }
 
 static
@@ -447,7 +447,7 @@ string	decode_uint24 (const _BYTE* p) {
 stringstream out;
 
 	out << int (get_uint24(p));
-	return out. str ();
+	return out. str();
 }
 
 static
@@ -519,9 +519,9 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 	   mjd ++;
 	}
 	CModJulDate ModJulDate (mjd);
-	year	= ModJulDate. GetYear ();
-	month	= ModJulDate .GetMonth ();
-	day	= ModJulDate. GetDay ();
+	year	= ModJulDate. GetYear();
+	month	= ModJulDate .GetMonth();
+	day	= ModJulDate. GetDay();
 	out << year << '-';
 	if (month < 10) out << '0';
 	out << int (month) << '-';
@@ -533,7 +533,7 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 	out << minutes << ':';
 	if (seconds < 10) out << '0';
 	out << seconds << tz;
-	return out. str ();
+	return out. str();
 }
 
 static
@@ -642,7 +642,7 @@ size_t e	= sizeof (element_tables) / sizeof (eltab_t);
 	   if (tab.decode == enum_attr) {
 //	needed for 64 bit compatibility 
 	      ptrdiff_t index	= tlv. value [0];
-	      ptrdiff_t num_vals = (tab. vals [0] - (const char*)0);
+	      ptrdiff_t num_vals = (tab. vals [0] - (const char*)nullptr);
 	      if (index <= num_vals && index > 0)
 	         value = tab. vals [index];
 	      else

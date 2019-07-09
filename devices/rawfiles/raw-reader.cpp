@@ -27,10 +27,10 @@
 
 #define	BUFFERSIZE	32768
 static inline
-int64_t         getMyTime       (void) {
+int64_t         getMyTime() {
 struct timeval  tv;
 
-        gettimeofday (&tv, NULL);
+        gettimeofday (&tv, nullptr);
         return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 
@@ -49,23 +49,23 @@ struct timeval  tv;
         fprintf (stderr, "Period = %ld\n", period);
         bi              = new uint8_t [BUFFERSIZE];
 	running. store (false);
-	start ();
+	start();
 }
 
-		rawReader::~rawReader	(void) {
-	stopReader ();
+		rawReader::~rawReader() {
+	stopReader();
 	delete[] bi;
 }
 
-void	rawReader::stopReader	(void) {
+void	rawReader::stopReader() {
 	if (running) {
 	   running = false;
-	   while (isRunning ())
+	   while (isRunning())
 	      usleep (200);
 	}
 }
 
-void	rawReader::run		(void) {
+void	rawReader::run() {
 int64_t	nextStop;
 int	i;
 int	teller	= 0;
@@ -74,11 +74,11 @@ int	teller	= 0;
 	         parent,   SLOT   (setProgress (int, float)));
 	fseek (filePointer, 0, SEEK_SET);
 	running. store (true);
-	nextStop        = getMyTime ();
+	nextStop        = getMyTime();
 	try {
-	   while (running. load ()) {
-	      while (theBuffer -> WriteSpace () < BUFFERSIZE + 10) {
-	         if (!running. load ())
+	   while (running. load()) {
+	      while (theBuffer -> WriteSpace() < BUFFERSIZE + 10) {
+	         if (!running. load())
 	            throw (32);
 	         usleep (100);
               }
@@ -100,8 +100,8 @@ int	teller	= 0;
               }
 
               theBuffer -> putDataIntoBuffer (bi, BUFFERSIZE);
-              if (nextStop - getMyTime () > 0)
-                 usleep (nextStop - getMyTime ());
+              if (nextStop - getMyTime() > 0)
+                 usleep (nextStop - getMyTime());
            }
 	} catch (int e) {}
         fprintf (stderr, "taak voor replay eindigt hier\n");
