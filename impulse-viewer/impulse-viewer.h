@@ -53,7 +53,7 @@ public:
 
 private:
 	std::vector<int> indexVector;
-	float		get_db (float);
+	float		get_db			(float);
 	RadioInterface	*myRadioInterface;
 	RingBuffer<float> *responseBuffer;
 	int16_t		displaySize;

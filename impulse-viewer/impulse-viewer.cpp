@@ -154,7 +154,6 @@ float	mmax	= 0;
 
 	Y_values [0]		= get_db (0);
 	Y_values [dots - 1] 	= get_db (0);
-
 	spectrumCurve	-> setSamples (X_axis, Y_values, dots);
 	plotgrid	-> replot(); 
 }

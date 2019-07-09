@@ -100,8 +100,8 @@ int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
-float	lbuf [T_u];
-float	mbuf [T_u];
+float	lbuf [T_u / 2];
+float	mbuf [T_u / 2];
 std::vector<int> resultVector;
 
 	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
@@ -115,18 +115,18 @@ std::vector<int> resultVector;
 /**
   *	We compute the average and the max signal values
   */
-	for (i = 0; i < T_u / 2; i ++) 
-	   sum += jan_abs (fft_buffer [i]);
+	for (i = 0; i < T_u / 2; i ++) {
+	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   mbuf [i] = lbuf [i];
+	   sum	+= lbuf [i];
+	}
 
 	sum /= T_u / 2;
-//
 //	
 	for (i = 0; i < 50; i ++) {
-	   lbuf [i] = jan_abs (fft_buffer [T_g - 40 + i]);
-	   mbuf [i] = lbuf [i];
-	   if (lbuf [i] > Max) {
+	   if (lbuf [T_g - 40 + i] > Max) {
 	      maxIndex = T_g - 40 + i;
-	      Max = lbuf [i];
+	      Max = lbuf [T_g - 40 + i];
 	   }
 	}
 
@@ -157,8 +157,8 @@ std::vector<int> resultVector;
 
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 4) {
-	      response	-> putDataIntoBuffer (mbuf, T_u);
-	      showImpulse (T_u);
+	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
+	      showImpulse (T_u / 2);
 	      displayCounter	= 0;
 	      if (resultVector. at (0) > 0) {
 	         showIndex (-1);
