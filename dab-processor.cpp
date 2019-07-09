@@ -140,6 +140,10 @@ timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
 int		sampleCount;
 
+float		avgValue_nullPeriod	= 0;
+float		avgValue_testPeriod	= 0;
+int		testLength		= 100;
+
         fineOffset		= 0;
         correctionNeeded	= true;
 	attempts		= 0;
@@ -172,10 +176,49 @@ notSynced:
 	      case NO_END_OF_DIP_FOUND:
 	         goto notSynced;
 	   }
-/**
-  *	The end of the null period is identified, the actual end
-  *	is probably about 40 samples earlier.
-  */
+	   goto SyncOnPhase;
+
+//
+//	Note: Optimization Kills
+//	An old saying is that "optimization kills", and indeed, here
+//	is another example.
+//	Spoiled by excellent devices such as the SDRplay, I noticed that
+//	at the end of recognizing a DAB frame, the only thing that has to 
+//	be done is to skip T_null examples to get the start of the
+//	next frame. The findIndex function then would identify the
+//	precise start of the T_u part of the zero-th block.
+//	However, it turns out that with devices that give more noisy
+//	samples the findIndex function might give wrong results, leading
+//	to loosing synchronization.
+//	Therefore, a simple test is added to just verify that the "dip"
+//	of the null period ends within a reasonable distance of the 
+//	estimated begin, and if no such end of dip could be identified
+//	within a reasonable distance, just resync.
+//	we make it into a simple test, just compare the avg value of the
+//	samples that are (should be) in the non-null period after the
+//	null period with the avg value of the samples in the null period
+//	
+Check_endofNULL:
+
+	   avgValue_testPeriod	= 0;
+	   for (i = 0; i < testLength; i ++) {
+	      std::complex<float> sample;
+	      myReader. getSamples (&sample, 1, coarseOffset + fineOffset);
+	      avgValue_testPeriod += abs (sample);
+	   }
+	   avgValue_testPeriod	/= testLength;
+//
+//	It seems reasonable to expect that the avg value of a segment
+//	of samples belonging to the T_g part of the first block of the
+//	DAB frame is at least twice the avg value of the samples in he
+//	null period
+	   if (avgValue_testPeriod < 1.75 * avgValue_nullPeriod) {
+//	      fprintf (stderr, "failing %f\n",
+//	                     avgValue_testPeriod / avgValue_nullPeriod);
+	      goto notSynced;
+	   }
+//	   fprintf (stderr, "%f \n", avgValue_testPeriod / avgValue_nullPeriod);
+
 SyncOnPhase:
 /**
   *	We now have to find the exact first sample of the non-null period.
@@ -194,7 +237,7 @@ SyncOnPhase:
 //
 //	and then, call upon the phase synchronizer to verify/compute
 //	the real "first" sample
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, testLength);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost ();
@@ -203,7 +246,7 @@ SyncOnPhase:
 	      sampleCount	= 0;
 	      goto notSynced;
 	   }
-
+//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   sampleCount	= sampleCount - T_u + startIndex;
 	   sampleCount	= T_u - startIndex;;
 /**
@@ -288,7 +331,7 @@ SyncOnPhase:
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);
 	   sum /= T_null;
-
+	   avgValue_nullPeriod	= sum;
 	   static	float snr	= 0;
 	   snr = 0.9 * snr +
 	         0.1 * 20 * log10 ((myReader. get_sLevel () + 0.005) / sum);
@@ -335,10 +378,11 @@ SyncOnPhase:
 //	is - more or less - ambiguous, in which case the computation
 //	of the frequency correction hopelessly fails
 
-	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.6)) {
+	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
 //	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
 	      goto notSynced;
 	   }
+
            fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 
 
@@ -354,7 +398,7 @@ SyncOnPhase:
 
 //ReadyForNewFrame:
 ///	and off we go, up to the next frame
-	   goto SyncOnPhase;
+	   goto Check_endofNULL;
 	}
 	catch (int e) {
 	   fprintf (stderr, "dabProcessor is stopping\n");

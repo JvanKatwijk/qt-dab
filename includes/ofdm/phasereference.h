@@ -43,7 +43,7 @@ public:
 	                                         int16_t,
 						 RingBuffer<float> *b = NULL);
 			~phaseReference		(void);
-	int32_t		findIndex		(std::vector<std::complex<float>>);
+	int32_t		findIndex		(std::vector<std::complex<float>>, int);
 	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
 	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);
 //
