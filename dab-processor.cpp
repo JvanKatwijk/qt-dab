@@ -371,10 +371,10 @@ SyncOnPhase:
 //	is - more or less - ambiguous, in which case the computation
 //	of the frequency correction hopelessly fails
 
-	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
+//	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
 //	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
-	      goto notSynced;
-	   }
+//	      goto notSynced;
+//	   }
 
 	   fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 

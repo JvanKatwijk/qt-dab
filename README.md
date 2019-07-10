@@ -3,23 +3,48 @@
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
-NEW in 2.6
+NEW in 2.7
 ------------------------------------------------------------------
 
 New devices:
-a. the LimeSDR is now supported (due to missing a decent "dll" file
-for the library, for now in Linux only)
-b. as an experimental feature, a Soapy interface is implemented. Tested
-with the SDRplay and the LimeSDR it works.
-In the appImage the Soapy support is NOT included.
 
-Issue adddressed:
-One of the issues to be resolved was resycnhronization. It could
+ a) the LimeSDR is now supported (due to missing a decent "dll" file
+for the library, for now in Linux only);
+
+ b) as an experimental feature, a Soapy interface is implemented. Tested
+with the SDRplay and the LimeSDR it works.
+Soapy support is included in neither the appImage nor the Windows version.
+
+Synchronization reconsidered
+
+One of the issues to be resolved was resynchronization. It could
 happen that - due to some faulty input - the synchronization
-got lost. 
+got lost and could not be regained without a reset.
+
 The chain of events leading to such a loss of synchronization is
 identified and chance that - due to some faulty input - synchronization
 will be lost is - at least - much smaller.
+
+Obsolete properties
+
+The DAB standard eliminated the support for Modes other than Mode 1 and
+Bands other than VHF Band III. The implementation still supports these
+features, however, since they are obsolete, there are no controls on the
+GUI anymore (the control for the Mode was already removed from earlier
+versions). 
+Explicitly setting the Mode and/or the Band is possible by 
+including some command lines in the ".qt-dab.ini" file.
+
+For the Mode, one will add/set a line
+
+	dabMode=Mode x, where x is either 1, 2 or 4
+
+For the Band, one will add/set a line
+
+	dabBand=band, where band is either VHF Band III or L_Band
+
+Since the control for the dab band is now removed from the GUI, this GUI
+could be made slightly smaller.
 
 
 ------------------------------------------------------------------
@@ -83,7 +108,7 @@ Introduction
 
 ![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
 
-**Qt-DAB-2.6* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.7* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
 server version **dab-server**. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
@@ -128,8 +153,6 @@ Windows
 
 For windows there is an installer, to be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.
-
-Furthermore, the releases section contains a "zipped" folder, with executables for this and other programs.
 
 If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
@@ -433,7 +456,8 @@ First of all the incoming signal is weak and audio packages do not pass the many
 
 A second reason has to do with system parameters. Too small a buffersize in the audio driver causes too high a frequency of calls to a callback function. In Linux this shows by an underrun reported by the alsa sound system. The buffer size can be set (in multiples of 256 audio samples) by the value of "latency" in the `.ini` file. The default value is 1.
 
-On my RPI 2 - with Stretch - `latency=2` works best.
+On my RPI 2 - with Stretch - `latency=2` works best, on my RPI 3 there is
+no problem whatsoever.
 
 # Copyright
 

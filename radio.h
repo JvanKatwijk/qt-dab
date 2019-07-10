@@ -202,7 +202,6 @@ private slots:
 	void		autoCorrector_on();
 
 	void		newDevice		(QString);
-	void		set_bandSelect		(QString s);
 
 	void		selectService		(QModelIndex);
 	void		selectService		(QString);

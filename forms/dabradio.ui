@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>622</width>
-    <height>411</height>
+    <width>547</width>
+    <height>348</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>20</x>
      <y>90</y>
-     <width>181</width>
-     <height>301</height>
+     <width>171</width>
+     <height>251</height>
     </rect>
    </property>
    <property name="font">
@@ -190,8 +190,8 @@
   <widget class="QLabel" name="versionName">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>0</y>
+     <x>30</x>
+     <y>10</y>
      <width>181</width>
      <height>31</height>
     </rect>
@@ -214,8 +214,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>580</x>
-     <y>30</y>
+     <x>10</x>
+     <y>10</y>
      <width>21</width>
      <height>20</height>
     </rect>
@@ -238,9 +238,9 @@
   <widget class="QLabel" name="timeDisplay">
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>360</x>
      <y>110</y>
-     <width>201</width>
+     <width>161</width>
      <height>20</height>
     </rect>
    </property>
@@ -257,7 +257,7 @@
   <widget class="QLCDNumber" name="ensembleId">
    <property name="geometry">
     <rect>
-     <x>310</x>
+     <x>290</x>
      <y>70</y>
      <width>81</width>
      <height>23</height>
@@ -287,7 +287,7 @@
   <widget class="QLabel" name="label_5">
    <property name="geometry">
     <rect>
-     <x>220</x>
+     <x>200</x>
      <y>70</y>
      <width>100</width>
      <height>23</height>
@@ -323,7 +323,7 @@
   <widget class="QLCDNumber" name="correctorDisplay">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>280</x>
      <y>40</y>
      <width>90</width>
      <height>23</height>
@@ -368,7 +368,7 @@
   <widget class="QLCDNumber" name="snrDisplay">
    <property name="geometry">
     <rect>
-     <x>300</x>
+     <x>280</x>
      <y>10</y>
      <width>90</width>
      <height>23</height>
@@ -399,7 +399,7 @@
      <x>210</x>
      <y>170</y>
      <width>381</width>
-     <height>91</height>
+     <height>61</height>
     </rect>
    </property>
    <property name="font">
@@ -474,10 +474,10 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>430</x>
-     <y>280</y>
+     <x>350</x>
+     <y>232</y>
      <width>184</width>
-     <height>113</height>
+     <height>101</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_2">
@@ -579,14 +579,32 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>280</y>
-     <width>201</width>
-     <height>111</height>
+     <x>200</x>
+     <y>235</y>
+     <width>141</width>
+     <height>101</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_3">
-    <item row="2" column="0" colspan="2">
+    <item row="1" column="0">
+     <widget class="QComboBox" name="streamoutSelector">
+      <property name="font">
+       <font>
+        <family>DejaVu Sans</family>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <item>
+       <property name="text">
+        <string>Audio Device</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="2" column="0">
      <widget class="QComboBox" name="deviceSelector">
       <property name="font">
        <font>
@@ -620,29 +638,6 @@
      </widget>
     </item>
     <item row="3" column="0">
-     <widget class="QComboBox" name="bandSelector">
-      <property name="font">
-       <font>
-        <family>DejaVu Sans</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a DAB band.&lt;/p&gt;&lt;p&gt;The default is VHF Band III (174–230 MHz).&lt;/p&gt;&lt;p&gt;Alternatively, the L Band may be selected (1452 bis 1492 MHz, but only used in very few countries like Czech Republic).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>VHF Band III</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>L Band</string>
-       </property>
-      </item>
-     </widget>
-    </item>
-    <item row="3" column="1">
      <widget class="QComboBox" name="channelSelector">
       <property name="font">
        <font>
@@ -654,33 +649,15 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
-     <widget class="QComboBox" name="streamoutSelector">
-      <property name="font">
-       <font>
-        <family>DejaVu Sans</family>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <item>
-       <property name="text">
-        <string>Audio Device</string>
-       </property>
-      </item>
-     </widget>
-    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>390</x>
-     <y>0</y>
-     <width>184</width>
-     <height>74</height>
+     <x>363</x>
+     <y>3</y>
+     <width>171</width>
+     <height>71</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout_4">
@@ -753,7 +730,7 @@
   <widget class="QLabel" name="localTimeDisplay">
    <property name="geometry">
     <rect>
-     <x>420</x>
+     <x>370</x>
      <y>80</y>
      <width>191</width>
      <height>21</height>
