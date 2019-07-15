@@ -36,6 +36,7 @@
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
+static	int goodFrames	= 0;
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
@@ -140,11 +141,10 @@ int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
-int		sampleCount;
 
 float		avgValue_nullPeriod	= 0;
 float		avgValue_testPeriod	= 0;
-int		testLength		= 100;
+int		testLength		= 200;
 
 	fineOffset		= 0;
 	correctionNeeded	= true;
@@ -180,7 +180,23 @@ notSynced:
 	   }
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
-	   sampleCount += T_u;
+/**
+  *	Looking for the first sample of the T_u part of the sync block.
+  *	Note that we probably already had 30 to 40 samples of the T_g
+  *	part
+  */
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 3);
+	   if (startIndex < 0) { // no sync, try again
+	      if (!correctionNeeded) {
+	         setSyncLost();
+	      }
+//	      fprintf (stderr, "x = %d after %d good frames\n",
+//	                         startIndex, goodFrames);
+//	      goodFrames	= 0;
+	      goto notSynced;
+	   }
+	   goodFrames ++;
+//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   goto SyncOnPhase;
 
 //
@@ -208,40 +224,43 @@ Check_endofNULL:
 	   avgValue_testPeriod	= 0;
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
-	   sampleCount += T_u;
-	   for (i = 0; i < testLength; i ++)
-	      avgValue_testPeriod += abs (ofdmBuffer [i]);
-	   avgValue_testPeriod	/= testLength;
+//	   for (i = 100; i < 100 + testLength; i ++)
+//	      avgValue_testPeriod += abs (ofdmBuffer [i]);
+//	   avgValue_testPeriod	/= testLength;
 //
 //	It seems reasonable to expect that the avg value of a segment
 //	of samples belonging to the T_g part of the first block of the
 //	DAB frame is at least twice the avg value of the samples in he
 //	null period
-	   if (avgValue_testPeriod < 1.75 * avgValue_nullPeriod) {
-//	      fprintf (stderr, "failing %f\n",
-//	                     avgValue_testPeriod / avgValue_nullPeriod);
-	      goto notSynced;
-	   }
+//	   if (avgValue_testPeriod < 1.7 * avgValue_nullPeriod) {
+//	      fprintf (stderr, "failing %f after %d good frames\n",
+//	                     avgValue_testPeriod / avgValue_nullPeriod,
+//	                     goodFrames);
+//	      goodFrames	= 0;
+//	      goto notSynced;
+//	   }
 //	   fprintf (stderr, "%f \n", avgValue_testPeriod / avgValue_nullPeriod);
 
-SyncOnPhase:
 /**
   *	We now have to find the exact first sample of the non-null period.
   *	We use a correlation that will find the first sample after the
   *	cyclic prefix.
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 10);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//	      fprintf (stderr, "x = %d\n", startIndex);
-	      sampleCount	= 0;
+//	      fprintf (stderr, "x = %d after %d good frames\n",
+//	                         startIndex, goodFrames);
+//	      goodFrames	= 0;
 	      goto notSynced;
 	   }
+//	   goodFrames ++;
 //	   fprintf (stderr, "startIndex = %d\n", startIndex);
-	   sampleCount	= sampleCount - T_u + startIndex;
-	   sampleCount	= T_u - startIndex;;
+
+SyncOnPhase:
+
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -260,7 +279,6 @@ SyncOnPhase:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
-	   sampleCount += T_u - ofdmBufferIndex;
 	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
@@ -274,7 +292,7 @@ SyncOnPhase:
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
 	      if (correction != 100) {
-	         coarseOffset	+= correction * carrierDiff;
+	         coarseOffset	+= 0.4 * correction * carrierDiff;
 	         if (abs (coarseOffset) > Khz (35))
 	            coarseOffset = 0;
 	      }
@@ -300,7 +318,6 @@ SyncOnPhase:
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
-	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -319,7 +336,6 @@ SyncOnPhase:
   */
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_null, coarseOffset + fineOffset);
-	   sampleCount	+= T_null;
 	   float sum	= 0;
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);
@@ -372,7 +388,9 @@ SyncOnPhase:
 //	of the frequency correction hopelessly fails
 
 //	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
-//	      fprintf (stderr, "resyncing %d %f\n", startIndex, arg (FreqCorr));
+//	      fprintf (stderr, "resyncing %d %f after %d good frames\n",
+//	                  startIndex, arg (FreqCorr), goodFrames);
+//	      goodFrames = 0;
 //	      goto notSynced;
 //	   }
 
@@ -481,11 +499,15 @@ int32_t dabProcessor::get_ensembleId() {
 }
 
 QString dabProcessor::get_ensembleName() {
-    return my_ficHandler. get_ensembleName();
+	return my_ficHandler. get_ensembleName();
 }
 
 void	dabProcessor::clearEnsemble() {
-    my_ficHandler. clearEnsemble();
+	my_ficHandler. clearEnsemble();
+}
+
+void	dabProcessor::print_Overview () {
+	my_ficHandler. print_Overview ();
 }
 
 void	dabProcessor::startDumping	(SNDFILE *f) {
@@ -493,7 +515,7 @@ void	dabProcessor::startDumping	(SNDFILE *f) {
 }
 
 void	dabProcessor::stopDumping() {
-    myReader. stopDumping();
+	myReader. stopDumping();
 }
 
 bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {

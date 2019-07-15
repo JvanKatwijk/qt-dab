@@ -95,7 +95,8 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v) {
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v,
+	                           int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
@@ -120,27 +121,29 @@ std::vector<int> resultVector;
 	   mbuf [i] = lbuf [i];
 	   sum	+= lbuf [i];
 	}
+	
 
 	sum /= T_u / 2;
 //	
-	for (i = 0; i < 50; i ++) {
-	   if (lbuf [T_g - 40 + i] > Max) {
-	      maxIndex = T_g - 40 + i;
-	      Max = lbuf [T_g - 40 + i];
+	for (i = 0; i < 100; i ++) {
+	   if (lbuf [T_g - 80 + i] > Max) {
+	      maxIndex = T_g - 80 + i;
+	      Max = lbuf [T_g - 80 + i];
 	   }
 	}
 
-//	fprintf (stderr, "%f (%d)\n", Max / sum, maxIndex);
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);
 	}
 	else 
+	   return maxIndex;
 	   resultVector. push_back (maxIndex);	
 
+//	fprintf (stderr, "%f (%d)\n", Max / sum, maxIndex);
 	float MMax = 0;
 	for (int k = 0; k < depth; k ++) {
 	   int	lIndex = -1;
-	   for (i = 0; i < T_u / 2; i ++) {
+	   for (i = T_g - 50; i < T_u / 2; i ++) {
 	      if (lbuf [i] > MMax) {
 	         MMax = lbuf [i];
 	         lIndex = i;

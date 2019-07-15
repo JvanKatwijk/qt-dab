@@ -81,7 +81,7 @@ public:
 	                                             audiodata *, int16_t);
         void		dataforPacketService	(QString &,
 	                                             packetdata *, int16_t);
-    void		reset_msc();
+	void		reset_msc();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
@@ -89,7 +89,8 @@ public:
         uint8_t		get_ecc();
         int32_t		get_ensembleId();
         QString		get_ensembleName();
-    void		clearEnsemble();
+	void		print_Overview();
+	void		clearEnsemble();
 private:
 	bool		tiiSwitch;
 	int16_t		tii_depth;

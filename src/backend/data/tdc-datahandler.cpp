@@ -101,7 +101,7 @@ uint16_t	crc;
 	      return;
 	   }
 
-	   fprintf (stderr, "handling tdc frametype %d\n", frametypeIndicator);
+//	   fprintf (stderr, "handling tdc frametype %d\n", frametypeIndicator);
 	   if (frametypeIndicator == 0)
 	      offset = handleFrame_type_0 (data, offset + 7 * 8, length);
 	   else
@@ -118,10 +118,10 @@ int16_t i;
 int16_t noS	= getBits (data, offset, 8);
 uint8_t buffer [length];
 
-        for (i = 0; i < length; i ++)
-           buffer [i] = getBits (data, offset + i * 8, 8);
+	for (i = 0; i < length; i ++)
+	   buffer [i] = getBits (data, offset + i * 8, 8);
 	dataBuffer -> putDataIntoBuffer (buffer, length);
-        bytesOut (0, length);
+	bytesOut (0, length);
 	return offset + length * 8;
 }
 
@@ -131,17 +131,17 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 int16_t i;
 uint8_t buffer [length];
 
-	fprintf (stderr, " frametype 1 met %o %o %o\n",
-                                     getBits (data, offset,      8),
-                                     getBits (data, offset + 8,  8),
-                                     getBits (data, offset + 16, 8));
+//	fprintf (stderr, " frametype 1 met %o %o %o\n",
+//                                     getBits (data, offset,      8),
+//                                     getBits (data, offset + 8,  8),
+//                                     getBits (data, offset + 16, 8));
 
-        fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
+//	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
 
-        for (i = 0; i < length; i ++)
-           buffer [i] = getBits (data, offset + i * 8, 8);
+	for (i = 0; i < length; i ++)
+	   buffer [i] = getBits (data, offset + i * 8, 8);
 	dataBuffer	-> putDataIntoBuffer (buffer, length);
-        bytesOut (1, length);
+	bytesOut (1, length);
 	return offset + length * 8;
 }
 //	The component header CRC is two bytes long,

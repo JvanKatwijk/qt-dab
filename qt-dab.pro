@@ -9,11 +9,11 @@ TARGET		= qt-dab-2.7
 QT		+= widgets 
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -O3 -ffast-math
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc

@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013
@@ -51,7 +50,8 @@ public:
         uint8_t get_ecc();
 	int32_t	get_ensembleId();
 	QString get_ensembleName();
-	int32_t	get_CIFcount();
+	int32_t	get_CIFcount();	
+	void	print_Overview ();
 protected:
 	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);
@@ -135,6 +135,9 @@ private:
 //	void		bind_SCIds_to_SubChannel	(uint16_t, uint16_t);
 //	void		bindServiceComponenttoService	(uint32_t, uint16_t, uint8_t);
 //	void		bind_xpadComponent		(uint32_t, uin16_t, uint8_t);
+	void		setCluster (int clusterId,
+                                int16_t serviceIndex, uint16_t asuFlags);
+	QString		announcements (uint16_t a);
 	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
@@ -143,6 +146,8 @@ signals:
 	void		nameofEnsemble  (int, const QString &);
 	void		setTime		(const QString &);
 	void		changeinConfiguration();
+	void		startAnnouncement (const QString &, int);
+	void		stopAnnouncement  (const QString &, int);
 };
 
 #endif

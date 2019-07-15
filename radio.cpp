@@ -1270,6 +1270,7 @@ void	RadioInterface::selectService (QString s) {
 	if (!my_dabProcessor -> is_audioService (s) &&
 	    !my_dabProcessor -> is_packetService (s))
 	   return;
+//	my_dabProcessor -> print_Overview ();
 	my_dabProcessor -> reset_msc();
 	currentName = s;
 	setStereo (false);
@@ -1789,5 +1790,15 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 
 void	RadioInterface::showTime	(const QString &s) {
 	localTimeDisplay	-> setText (s);
+}
+
+void	RadioInterface::startAnnouncement (const QString &s, int subChId) {
+//	fprintf (stderr, "announcement for %s (%d) starts\n",
+//	                             s. toLatin1 (). data (), subChId);
+}
+
+void	RadioInterface::stopAnnouncement (const QString &s, int subChId) {
+//	fprintf (stderr, "announcement for %s (%d) ends\n",
+//	                             s. toLatin1 (). data (), subChId);
 }
 

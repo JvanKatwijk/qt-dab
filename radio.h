@@ -188,7 +188,8 @@ public slots:
 	void		show_tii		(int);
 	void		closeEvent		(QCloseEvent *event);
 	void		showTime		(const QString &);
-
+	void		startAnnouncement	(const QString &, int);
+	void		stopAnnouncement	(const QString &, int);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void		set_nextChannel();

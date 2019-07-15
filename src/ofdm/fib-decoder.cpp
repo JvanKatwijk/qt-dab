@@ -210,6 +210,26 @@ public:
 //	The implementation of the services is in service components
 //	and subchannels. We prepare - a little - for the possibility
 //	that the transmitter changes the configuration while running
+class	Cluster {
+	public:
+	   uint16_t flags;
+	   std::vector<uint16_t> services;
+	   bool	inUse;
+	   int	announcing;
+	Cluster () {
+	   flags	= 0;
+	   services. resize (0);
+	   inUse	= false;
+	   announcing	= 0;
+	}
+	~Cluster () {
+	   flags	= 0;
+	   services. resize (0);
+	   inUse	= false;
+	   announcing	= 0;
+	}
+};
+
 class	dataBase {
 public:
 	dataBase() {
@@ -225,8 +245,16 @@ public:
 	      serviceComps [i]. clear();
 	   }
 	}
+	Cluster	*getCluster (int16_t clusterId) {
+	   if (clusterTable [clusterId]. inUse)
+	      return &(clusterTable [clusterId]);
+
+	   clusterTable [clusterId]. inUse	= true;
+	   return &(clusterTable [clusterId]);
+	}
 	subChannelDescriptor    subChannels [64];
 	serviceComponentDescriptor      serviceComps [64];
+	Cluster			clusterTable [64];
 };
 
 //
@@ -243,6 +271,11 @@ public:
 	         myRadioInterface, SLOT (showTime (const QString &)));
 	connect (this, SIGNAL (changeinConfiguration (void)),
 	         myRadioInterface, SLOT (changeinConfiguration (void)));
+	connect (this, SIGNAL (startAnnouncement (const QString &, int)),
+	         myRadioInterface, SLOT (startAnnouncement (const QString &, int)));
+	connect (this, SIGNAL (stopAnnouncement (const QString &, int)),
+	         myRadioInterface, SLOT (stopAnnouncement (const QString &, int)));
+
 	currentBase	= new dataBase();
 	nextBase	= new dataBase();
 	ensemble	= new ensembleDescriptor();
@@ -376,11 +409,11 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 18:		// announcement support (8.1.6.1)
-	      FIG0Extension18 (d);
+//	      FIG0Extension18 (d);
 	      break;
 
 	   case 19:		// announcement switching (8.1.6.2)
-	      FIG0Extension19 (d);
+//	      FIG0Extension19 (d);
 	      break;
 
 	   case 20:		// service component information (8.1.4)
@@ -1022,23 +1055,70 @@ int16_t	bitOffset		= used * 8;
 	   (void)Rfa;
 	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
 	   int16_t serviceIndex = findServiceIndex (SId);
-	   if (serviceIndex != -1) {
-	      if (ensemble -> services [serviceIndex]. hasName) {
-//	         fprintf (stderr, "announcement for %s (%x) with %d clusters\n",
-//	             ensemble -> services [serviceIndex]. serviceLabel. toLatin1(). data(), asuFlags, nrClusters);
-	      }
-//	      fprintf (stderr, "type of announcement %x\n", asuFlags);
-	   }
 	   bitOffset	+= 8;
-//	   for (int i = 0; i < nrClusters; i ++)
-//	      fprintf (stderr, "cluster %d %x\n", i, getBits (d, bitOffset + 8 * i, 9));
+	   bool flag = false;
+	   for (int i = 0; i < nrClusters; i ++) {
+	      if (getBits (d, bitOffset + 8 * i, 8) != 1)
+	         continue;
+	      if ((serviceIndex != -1) &&
+	          (ensemble -> services [serviceIndex]. hasName))
+	         setCluster (getBits (d, bitOffset + 8 * i, 8), serviceIndex, asuFlags);
+	   }
 	   bitOffset	+= nrClusters * 8;
 	}
 }
 //
 //	Announcement switching 8.1.6.2
 void	fibDecoder::FIG0Extension19 (uint8_t *d) {	
-	(void)d;
+int16_t	Length		= getBits_5 (d, 3);	// in Bytes
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+int16_t	used		= 2;			// in Bytes
+int16_t	bitOffset	= used * 8;
+
+	while (bitOffset < Length * 8) {
+	   uint8_t clusterId	= getBits (d, bitOffset, 8);
+	   bitOffset += 8;
+	   uint16_t AswFlags	= getBits (d, bitOffset, 16);
+	   bitOffset		+= 16;
+
+	   uint8_t newFlag	= getBits (d, bitOffset, 1);
+	   bitOffset	+= 1;
+	   uint8_t regionFlag	= getBits (d, bitOffset, 1);
+	   bitOffset	+= 1;
+	   uint8_t subChId	= getBits (d, bitOffset, 6);
+	   bitOffset	+= 6;
+	   if (regionFlag == 1) {
+	      bitOffset		+= 2;	// skip Rfa
+	      uint8_t regionId	= getBits (d, bitOffset, 6);
+	      bitOffset 	+= 6;
+	   }
+
+	   if (!syncReached ())
+	      return;
+	   Cluster *myCluster = currentBase -> getCluster (clusterId);
+	   if ((myCluster -> flags & AswFlags) != 0) {
+	      myCluster -> announcing ++;
+	      if (myCluster -> announcing == 5) {
+	         for (int i = 0; i < myCluster -> services. size (); i ++) {
+	            const QString name =
+	              ensemble	-> services [myCluster -> services [i]]. serviceLabel;
+	              emit startAnnouncement (name, subChId);
+	         }
+	      }
+	   }
+	   else {	// end of announcement
+	      if (myCluster -> announcing > 0) {
+	         myCluster -> announcing = 0;
+	         for (int i = 0; i < myCluster -> services. size (); i ++) {
+	            const QString name =
+	               ensemble  -> services [myCluster -> services [i]]. serviceLabel;
+                     emit stopAnnouncement (name, subChId);
+                 }
+	      }
+	   }
+	}
 }
 
 //	Service component information 8.1.4
@@ -1617,5 +1697,76 @@ uint8_t	fibDecoder::get_ecc() {
 	if (ensemble -> ecc_Present)
 	   return ensemble -> ecc_byte;
 	return 0;
+}
+
+void	fibDecoder::print_Overview () {
+
+	for (int i = 0; i < 64; i ++)
+	   if (currentBase -> serviceComps [i]. inUse) {
+	      int serviceIndex = currentBase -> serviceComps [i]. serviceIndex;
+	      if (ensemble -> services [serviceIndex]. hasName) {
+	         std::string name =
+	        ensemble -> services [serviceIndex]. serviceLabel. toLatin1 () .data ();
+	         fprintf (stderr, "serviceIndex %s, subchannelId %d\n",
+	                   name. c_str (),
+	                    currentBase -> serviceComps [i]. subchannelId);
+	      }
+	   }
+}
+
+QString	fibDecoder::announcements (uint16_t a) {
+
+	switch (a) {
+	   case 0:
+	   default:
+	      return QString ("Alarm");
+
+	   case 1:
+	      return QString ("Road Traffic Flash");
+
+	   case 2:
+	      return QString ("Traffic Flash");
+
+	   case 4:
+	      return QString ("Warning/Service");
+	
+	   case 8:
+	      return QString ("News Flash");
+
+	   case 16:
+	      return QString ("Area Weather flash");
+
+	   case 32:
+	      return QString ("Event announcement");
+
+	   case 64:
+	      return QString ("Special Event");
+
+	   case 128:
+	      return QString ("Programme Information");
+	}
+}
+
+void	fibDecoder::setCluster (int clusterId,
+	                        int16_t serviceIndex, uint16_t asuFlags) {
+
+	if (!syncReached ())
+	   return;
+	Cluster *myCluster = currentBase -> getCluster (clusterId);
+	if (myCluster -> flags != asuFlags) {
+	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
+	                       clusterId, myCluster -> flags, asuFlags);
+	   myCluster -> flags = asuFlags;
+	}
+
+	for (int i = 0; i < myCluster -> services. size (); i ++)
+	   if (myCluster -> services [i] == serviceIndex)
+	      return;
+	myCluster -> services. push_back (serviceIndex);
+	if (ensemble -> services [serviceIndex]. hasName)
+	   fprintf (stderr, "added for cluster %d service %s for announcement type %s\n",
+	                     clusterId,
+	                     ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), 
+	                     announcements (asuFlags). toLatin1 (). data ());
 }
 

@@ -436,7 +436,7 @@ int32_t table_idx;
 // compute the frame size
 	frame_size = (144000 * bitrates[bit_rate_index_minus1]
 	   / sample_rates [sampling_frequency]) + padding_bit;
-	
+
 	if (!pcm)
 	   return frame_size;  // no decoding
 
@@ -460,7 +460,7 @@ int32_t table_idx;
 	// read the allocation information
 	for (sb = 0; sb < bound; ++sb)
 	   for (ch = 0; ch < 2; ++ch)
-	      allocation[ch][sb] = read_allocation(sb, table_idx);
+	      allocation [ch][sb] = read_allocation(sb, table_idx);
 
 	for (sb = bound;  sb < sblimit;  ++sb)
 	   allocation[0][sb] =
@@ -587,6 +587,9 @@ int16_t	amount	= MP2framesize;
 uint8_t	help [24 * bitRate / 8];
 int16_t	vLength	= 24 * bitRate / 8;
 
+//fprintf (stderr, "baudrate = %d, inputsize = %d\n",
+//	          baudRate, v. size ());
+//	fprintf (stderr, "\n");
 	for (i = 0; i < 24 * bitRate / 8; i ++) {
 	   help [i] = 0;
 	   for (j = 0; j < 8; j ++) {
@@ -608,7 +611,7 @@ int16_t	vLength	= 24 * bitRate / 8;
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
 	            buffer -> putDataIntoBuffer (sample_buf, 
 	                                 2 * (int32_t)KJMP2_SAMPLES_PER_FRAME);
-	            if (buffer -> GetRingBufferReadAvailable() > baudRate / 8)
+	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
 	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate);
 	         }
