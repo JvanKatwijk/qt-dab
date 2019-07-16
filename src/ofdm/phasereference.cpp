@@ -136,14 +136,13 @@ std::vector<int> resultVector;
 	   return (- abs (Max / sum) - 1);
 	}
 	else 
-	   return maxIndex;
 	   resultVector. push_back (maxIndex);	
 
 //	fprintf (stderr, "%f (%d)\n", Max / sum, maxIndex);
 	float MMax = 0;
 	for (int k = 0; k < depth; k ++) {
 	   int	lIndex = -1;
-	   for (i = T_g - 50; i < T_u / 2; i ++) {
+	   for (i = T_g - 100; i < T_u / 2; i ++) {
 	      if (lbuf [i] > MMax) {
 	         MMax = lbuf [i];
 	         lIndex = i;

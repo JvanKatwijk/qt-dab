@@ -106,6 +106,10 @@ int     opt;
  *      Before we connect control to the gui, we have to
  *      instantiate
  */
+#if QT_VERSION >= 0x050600
+        QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
+#endif
+
 	QApplication a (argc, argv);
 //	setting the language
 	QString locale = QLocale::system(). name();
@@ -117,10 +121,6 @@ int     opt;
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       dataPort
                                                );
-
-#if QT_VERSION >= 0x050600
-	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
-#endif
 	MyRadioInterface -> show();
         a. exec();
 /*

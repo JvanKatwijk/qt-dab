@@ -2,6 +2,12 @@
 
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
+-----------------------------------------------------------------
+NEW in 2.7.1
+-----------------------------------------------------------------
+
+2.7.1 is merely a "bug-fix" version.
+
 ------------------------------------------------------------------
 NEW in 2.7
 ------------------------------------------------------------------
