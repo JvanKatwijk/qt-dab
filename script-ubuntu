@@ -20,7 +20,7 @@
    sudo ldconfig
    cd ..	#back to airspyone_host-master
    rm -rf build
-
+   cd ..
    git clone git://git.osmocom.org/rtl-sdr.git
    cd rtl-sdr/
    mkdir build

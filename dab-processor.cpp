@@ -111,7 +111,7 @@ static	int goodFrames	= 0;
 	         myRadioInterface, SLOT (show_tii (int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
-    my_TII_Detector. reset();
+	my_TII_Detector. reset();
 //	the thread will be started from somewhere else
 }
 
@@ -361,10 +361,10 @@ SyncOnPhase:
 	            secondaries =
 	            my_TII_Detector. processNULL();
 	            showSecondaries (-1);
-	        if (secondaries. size() > 0) {
-	              showCoordinates (secondaries. at (0));
-	          for (i = 0; i < (int)(secondaries. size()); i ++)
-	                 showSecondaries (secondaries. at (i));
+	            if (secondaries. size() > 0) {
+	               showCoordinates (secondaries. at (0));
+	               for (i = 0; i < (int)(secondaries. size()); i ++)
+	                  showSecondaries (secondaries. at (i));
 	            }
 
 	            show_tii (1);

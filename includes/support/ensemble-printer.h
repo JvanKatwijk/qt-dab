@@ -36,8 +36,12 @@ class	ensemblePrinter {
 public:
 		ensemblePrinter();
 		~ensemblePrinter();
-	void	showEnsembleData	(QString, int32_t, QStringList,
-	                                 dabProcessor *, FILE *);
+	void	showEnsembleData	(QString,
+	                                 int32_t,
+	                                 QString,	// time
+	                                 QStringList,
+	                                 dabProcessor *,
+	                                 FILE *);
 private:
 	QString	code_to_string		(uint8_t, uint8_t);
 };

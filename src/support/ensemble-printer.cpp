@@ -54,11 +54,12 @@ int16_t	i = 0;
 	return QString ("          ");
 }
 
-void	ensemblePrinter::showEnsembleData (QString channel,
-	                                   int32_t freq,
-	                                   QStringList Services,
+void	ensemblePrinter::showEnsembleData (QString	channel,
+	                                   int32_t	freq,
+	                                   QString	theTime,
+	                                   QStringList	Services,
 	                                   dabProcessor *my_dabProcessor,
-	                                   FILE *file_P) {
+	                                   FILE		*file_P) {
 uint8_t	countryId;
 int16_t	i;
 textMapper	theMapper;
@@ -72,11 +73,12 @@ bool	firstData;
 	if (ensembleLabel == QString (""))
 	   return;
 
-	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; \n\n",
+	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; time of recording  %s\n\n",
 	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,
 	                  currentChannel. toUtf8(). data(),
-	                  frequency / 1000);
+	                  frequency / 1000,
+	                  theTime. toUtf8(). data ());
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 	for (QString& audioService: Services) {

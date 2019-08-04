@@ -409,11 +409,11 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 18:		// announcement support (8.1.6.1)
-//	      FIG0Extension18 (d);
+	      FIG0Extension18 (d);
 	      break;
 
 	   case 19:		// announcement switching (8.1.6.2)
-//	      FIG0Extension19 (d);
+	      FIG0Extension19 (d);
 	      break;
 
 	   case 20:		// service component information (8.1.4)
@@ -1046,19 +1046,19 @@ int16_t	bitOffset		= used * 8;
 	(void)CN_bit;
 	(void)OE_bit;
 	while (bitOffset < Length * 8) {
-	   uint16_t SId	= getBits (d, bitOffset, 16);
-	   bitOffset	+= 16;
+	   uint16_t SId		= getBits (d, bitOffset, 16);
+	   int16_t serviceIndex = findServiceIndex (SId);
+	   bitOffset		+= 16;
 	   uint16_t asuFlags	= getBits (d, bitOffset, 16);
 	   (void)asuFlags;
-	   bitOffset	+= 16;
+	   bitOffset		+= 16;
 	   uint8_t Rfa		= getBits (d, bitOffset,  5);
 	   (void)Rfa;
 	   uint8_t nrClusters	= getBits (d, bitOffset + 5, 3);
-	   int16_t serviceIndex = findServiceIndex (SId);
-	   bitOffset	+= 8;
+	   bitOffset		+= 8;
 	   bool flag = false;
 	   for (int i = 0; i < nrClusters; i ++) {
-	      if (getBits (d, bitOffset + 8 * i, 8) != 1)
+	      if (getBits (d, bitOffset + 8 * i, 8) == 0)
 	         continue;
 	      if ((serviceIndex != -1) &&
 	          (ensemble -> services [serviceIndex]. hasName))
@@ -1754,8 +1754,8 @@ void	fibDecoder::setCluster (int clusterId,
 	   return;
 	Cluster *myCluster = currentBase -> getCluster (clusterId);
 	if (myCluster -> flags != asuFlags) {
-	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
-	                       clusterId, myCluster -> flags, asuFlags);
+//	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
+//	                       clusterId, myCluster -> flags, asuFlags);
 	   myCluster -> flags = asuFlags;
 	}
 
@@ -1763,10 +1763,10 @@ void	fibDecoder::setCluster (int clusterId,
 	   if (myCluster -> services [i] == serviceIndex)
 	      return;
 	myCluster -> services. push_back (serviceIndex);
-	if (ensemble -> services [serviceIndex]. hasName)
-	   fprintf (stderr, "added for cluster %d service %s for announcement type %s\n",
-	                     clusterId,
-	                     ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), 
-	                     announcements (asuFlags). toLatin1 (). data ());
+//	if (ensemble -> services [serviceIndex]. hasName)
+//	   fprintf (stderr, "added for cluster %d service %s for announcement type %s\n",
+//	                     clusterId,
+//	                     ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), 
+//	                     announcements (asuFlags). toLatin1 (). data ());
 }
 

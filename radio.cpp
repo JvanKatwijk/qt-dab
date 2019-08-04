@@ -1270,7 +1270,6 @@ void	RadioInterface::selectService (QString s) {
 	if (!my_dabProcessor -> is_audioService (s) &&
 	    !my_dabProcessor -> is_packetService (s))
 	   return;
-//	my_dabProcessor -> print_Overview ();
 	my_dabProcessor -> reset_msc();
 	currentName = s;
 	setStereo (false);
@@ -1521,9 +1520,18 @@ ensemblePrinter	my_Printer;
 
 	if (!running. load() || (ensembleLabel == QString ("")))
 	   return;
+
+	QString theTime		= localTimeDisplay -> text ();
+	QString suggestedFileName = QDir::homePath ();
+	suggestedFileName. append ("/Qt-DAB-");
+	suggestedFileName. append (theTime);
+	suggestedFileName. append (".txt");
+fprintf (stderr, "suggested filename = %s\n",
+	          suggestedFileName. toLatin1 (). data ());
 	QString fileName = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
-	                                        QDir::homePath(),
+	                                        suggestedFileName,
+//	                                        QDir::homePath(),
 	                                        tr ("Text (*.txt)"));
 	fileName	= QDir::toNativeSeparators (fileName);
 	FILE *file_P	= fopen (fileName. toUtf8(). data(), "w");
@@ -1533,7 +1541,7 @@ ensemblePrinter	my_Printer;
 	                              fileName. toUtf8(). data());
 	   return;
 	}
-	my_Printer. showEnsembleData (currentChannel, frequency,
+	my_Printer. showEnsembleData (currentChannel, frequency, theTime,
                                       Services, my_dabProcessor, file_P);
 
 	fclose (file_P);
@@ -1792,13 +1800,26 @@ void	RadioInterface::showTime	(const QString &s) {
 	localTimeDisplay	-> setText (s);
 }
 
-void	RadioInterface::startAnnouncement (const QString &s, int subChId) {
-//	fprintf (stderr, "announcement for %s (%d) starts\n",
-//	                             s. toLatin1 (). data (), subChId);
+void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
+//	fprintf (stderr, "announcement for %s\n", name. toLatin1 (). data ());
+	if (name == currentName) {
+	   warningLabel -> setAutoFillBackground (true);
+	   QPalette pal	= warningLabel -> palette ();
+	   pal. setColor (QPalette::Highlight, Qt::red);
+	   warningLabel -> setPalette (pal);
+	   fprintf (stderr, "announcement for %s (%d) starts\n",
+	                             name. toLatin1 (). data (), subChId);
+	}
 }
 
-void	RadioInterface::stopAnnouncement (const QString &s, int subChId) {
-//	fprintf (stderr, "announcement for %s (%d) ends\n",
-//	                             s. toLatin1 (). data (), subChId);
+void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
+	if (name == currentName) {
+	   warningLabel -> setAutoFillBackground (true);
+	   QPalette pal	= warningLabel -> palette ();
+	   pal. setColor (QPalette::Highlight, Qt::white);
+	   warningLabel -> setPalette (pal);
+	   fprintf (stderr, "end for announcement service %s\n",
+	                              name. toLatin1 (). data ());
+	}
 }
 
