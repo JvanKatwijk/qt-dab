@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>546</width>
-    <height>376</height>
+    <width>547</width>
+    <height>369</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QListView" name="ensembleDisplay">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>20</x>
      <y>90</y>
      <width>171</width>
-     <height>271</height>
+     <height>261</height>
     </rect>
    </property>
    <property name="font">
@@ -123,6 +123,7 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
@@ -151,6 +152,7 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
@@ -179,6 +181,7 @@
            </color>
           </brush>
          </colorrole>
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
@@ -262,9 +265,9 @@
   <widget class="QLabel" name="timeDisplay">
    <property name="geometry">
     <rect>
-     <x>360</x>
+     <x>340</x>
      <y>110</y>
-     <width>161</width>
+     <width>111</width>
      <height>20</height>
     </rect>
    </property>
@@ -420,9 +423,9 @@
   <widget class="QLabel" name="dynamicLabel">
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>210</x>
      <y>170</y>
-     <width>341</width>
+     <width>381</width>
      <height>61</height>
     </rect>
    </property>
@@ -591,7 +594,7 @@
        </font>
       </property>
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;p&gt;Please send your DAB ensemble to Gunther Lorenz glorenz@gmlist.org. He maintains a large database with FM stations and DAB ensembles&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>Content</string>
@@ -692,8 +695,8 @@
   <widget class="QLabel" name="warningLabel">
    <property name="geometry">
     <rect>
-     <x>450</x>
-     <y>140</y>
+     <x>460</x>
+     <y>110</y>
      <width>67</width>
      <height>19</height>
     </rect>
@@ -702,13 +705,37 @@
     <string/>
    </property>
   </widget>
+  <widget class="QComboBox" name="streamoutSelector">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>230</y>
+     <width>141</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <family>DejaVu Sans</family>
+     <pointsize>10</pointsize>
+    </font>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <item>
+    <property name="text">
+     <string>Audio Device</string>
+    </property>
+   </item>
+  </widget>
   <widget class="QComboBox" name="deviceSelector">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>280</y>
-     <width>151</width>
-     <height>31</height>
+     <x>200</x>
+     <y>270</y>
+     <width>141</width>
+     <height>36</height>
     </rect>
    </property>
    <property name="font">
@@ -744,10 +771,10 @@
   <widget class="QComboBox" name="channelSelector">
    <property name="geometry">
     <rect>
-     <x>190</x>
-     <y>320</y>
-     <width>151</width>
-     <height>31</height>
+     <x>200</x>
+     <y>310</y>
+     <width>141</width>
+     <height>38</height>
     </rect>
    </property>
    <property name="font">
@@ -758,30 +785,6 @@
    <property name="toolTip">
     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the DAB channel.&lt;/p&gt;&lt;p&gt;This depends on the band chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
    </property>
-  </widget>
-  <widget class="QComboBox" name="streamoutSelector">
-   <property name="geometry">
-    <rect>
-     <x>190</x>
-     <y>240</y>
-     <width>151</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="font">
-    <font>
-     <family>DejaVu Sans</family>
-     <pointsize>10</pointsize>
-    </font>
-   </property>
-   <property name="toolTip">
-    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-   </property>
-   <item>
-    <property name="text">
-     <string>Audio Device</string>
-    </property>
-   </item>
   </widget>
  </widget>
  <resources/>
