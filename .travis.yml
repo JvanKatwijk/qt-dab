@@ -4,12 +4,12 @@ sudo: require
 dist: xenial
 
 before_install:
-    - sudo add-apt-repository ppa:beineri/opt-qt-12.2-xenial -y
+    - sudo add-apt-repository ppa:beineri/opt-qt-5.12.2-xenial -y
     - sudo apt-get update -qq
     
 install: 
-    - sudo apt-get -y install qt12.2svg qt12.2base qt12.2tools qt12.2declarative libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt5-opengl-dev libsamplerate-dev 
-    - source /opt/qt12.2/bin/qt12.2-env.sh
+    - sudo apt-get -y install qt5.12svg qt.12base qt5.12tools qt5.12declarative libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libqt5-opengl-dev libsamplerate-dev 
+    - source /opt/qt5.12/bin/qt5.12-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
     - # cd qwt
