@@ -106,8 +106,8 @@
        <palette>
         <active>
          <colorrole role="WindowText">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
             <red>255</red>
             <green>255</green>
             <blue>255</blue>
@@ -115,15 +115,15 @@
           </brush>
          </colorrole>
          <colorrole role="Text">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
             <red>255</red>
             <green>255</green>
             <blue>255</blue>
            </color>
           </brush>
          </colorrole>
-         <colorrole role="WindowText">
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
@@ -135,8 +135,8 @@
         </active>
         <inactive>
          <colorrole role="WindowText">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
             <red>255</red>
             <green>255</green>
             <blue>255</blue>
@@ -144,15 +144,15 @@
           </brush>
          </colorrole>
          <colorrole role="Text">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
             <red>255</red>
             <green>255</green>
             <blue>255</blue>
            </color>
           </brush>
          </colorrole>
-         <colorrole role="WindowText">
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
@@ -164,24 +164,24 @@
         </inactive>
         <disabled>
          <colorrole role="WindowText">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
-            <red>255</red>
-            <green>255</green>
-            <blue>255</blue>
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>190</red>
+            <green>190</green>
+            <blue>190</blue>
            </color>
           </brush>
          </colorrole>
          <colorrole role="Text">
-          <brush brushstyle="NoBrush">
-           <color alpha="128">
-            <red>255</red>
-            <green>255</green>
-            <blue>255</blue>
+          <brush brushstyle="SolidPattern">
+           <color alpha="255">
+            <red>190</red>
+            <green>190</green>
+            <blue>190</blue>
            </color>
           </brush>
          </colorrole>
-         <colorrole role="WindowText">
+         <colorrole role="PlaceholderText">
           <brush brushstyle="NoBrush">
            <color alpha="128">
             <red>255</red>
