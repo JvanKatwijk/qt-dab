@@ -360,7 +360,7 @@ The `CMakeLists.txt` assumes Qt5. If you want to use Qt4, and you want to have t
 Raspberry PI
 ------------------------------------------------------------------
 
-The Qt-DAB software runs pretty well on the author's RPI-2. The average load on the 4 cores is somewhere between 50 and 60 percent.
+The Qt-DAB software runs pretty well on the author's RPI-2 and 3. The average load on the 4 cores is somewhere between 50 and 60 percent.
 
 One remark: getting "sound" is not always easy. Be certain that you have installed the alsa-utils, and that you are - as non-root user - able to see devices with `aplay -L`
 
@@ -368,11 +368,8 @@ In arch, it was essential to add the username to the group "audio".
 
 The most recent distribution of Raspbian Stretch (i.e. August 2017) supports both Qt5 and a qwt compiled against Qt5.
 
-A (slightly experimental) AppImage is available (see the releases section) developed under and to be used for Raspbian Stretch. Note that the repositories for Raspbian Stretch contain libraries for the rtlsdr Dabsticks and the Airspy, while the API library for the SDRplay can be downloaded from sdrplay.com. So, Qt-DAB can be used without the need for compiling anything.
-
-The AppImage version does not contain the spectrum - I am using it in a headless environment.
-
-Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies.
+Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies, a script to download all required packages, compile
+and build a full executable for qt-dab is part of the releases section.
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
