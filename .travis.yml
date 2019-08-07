@@ -9,7 +9,7 @@ before_install:
     
 install: 
     - sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
-    - source /opt/qt5/bin/qt5-env.sh
+    - # source /opt/qt5/bin/qt5-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
     - # cd qwt
