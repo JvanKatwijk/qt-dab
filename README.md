@@ -10,7 +10,8 @@ NEW in 2.7.1
 
 Added a "default" filename when touching the "content" button to
 save the description of an ensemble.
-You could consider sending the DAB ensemble description to Gunther Lorenz glorenz@gmlist.org. He maintains a large database with FM stations and DAB ensembles.
+You could consider sending the DAB ensemble description to Gunther Lorenz glorenz@fmlist.org. He maintains a large database with FM stations and DAB ensembles.
+
 ------------------------------------------------------------------
 NEW in 2.7
 ------------------------------------------------------------------
