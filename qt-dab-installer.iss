@@ -62,7 +62,7 @@ var
     if not found 
     then
        begin
-          MsgBox ('Software\MiricsSDR\API not found', mbInformation, MB_OK);
+          MsgBox ('Software\MiricsSDR\API not found, installing', mbInformation, MB_OK);
           Exec (ExpandConstant('{app}\SDRplay_RSP_API-Windows-2.13.1.exe'), '', '', SW_SHOWNORMAL,
           ewWaitUntilTerminated, ResultCode);
        end

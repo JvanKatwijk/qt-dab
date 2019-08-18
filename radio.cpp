@@ -1522,11 +1522,12 @@ ensemblePrinter	my_Printer;
 	   return;
 
 	QString theTime		= localTimeDisplay -> text ();
+	theTime. replace (":", "-");
 	QString suggestedFileName = QDir::homePath ();
 	suggestedFileName. append ("/Qt-DAB-");
 	suggestedFileName. append (theTime);
 	suggestedFileName. append (".txt");
-fprintf (stderr, "suggested filename = %s\n",
+	fprintf (stderr, "suggested filename = %s\n",
 	          suggestedFileName. toLatin1 (). data ());
 	QString fileName = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
