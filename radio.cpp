@@ -161,7 +161,7 @@ QString h;
 	currentName		= QString ("");
 
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
-	showSlides	= dabSettings -> value ("showPictures", 1). toInt();
+	showSlides	= dabSettings -> value ("showSlides", 1). toInt();
 	if (saveSlides != 0)
 	   set_picturePath();
 
