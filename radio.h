@@ -57,7 +57,7 @@ class	tiiViewer;
  *	GThe main gui object. It inherits from
  *	QDialog and the generated form
  */
-class RadioInterface: public QMainWindow, private Ui_dabradio {
+class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
