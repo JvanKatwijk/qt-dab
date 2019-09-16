@@ -573,6 +573,7 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 
 	Services << s;
 	Services. removeDuplicates();
+	Services. sort();
 	ensemble. setStringList (Services);
 	ensembleDisplay	-> setModel (&ensemble);
 }
