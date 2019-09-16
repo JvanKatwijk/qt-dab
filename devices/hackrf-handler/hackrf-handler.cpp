@@ -48,7 +48,7 @@ int	res;
         const char *libraryString = "/opt/local/lib/libhackrf.dylib";
         Handle = dlopen(libraryString,RTLD_NOW);
 #else
-        const char *libraryString = "libhackrf.so";
+        const char *libraryString = "libhackrf.so.0";
         Handle          = dlopen (libraryString, RTLD_NOW);
 #endif
 
