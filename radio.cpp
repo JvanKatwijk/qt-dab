@@ -110,7 +110,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
-	                                        QMainWindow (parent) {
+	                                        QWidget (parent) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1794,7 +1794,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      }
 	   }
 	}
-	return QMainWindow::eventFilter (obj, event);
+	return QWidget::eventFilter (obj, event);
 }
 
 void	RadioInterface::showTime	(const QString &s) {
