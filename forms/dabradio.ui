@@ -384,7 +384,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="Text">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -413,7 +413,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="Text">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -442,7 +442,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="Text">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
