@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-2.7.1)
+set (objectName qt-dab-2.7.2)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -105,8 +105,10 @@ add_definitions (-DPRESET_NAME)
 	find_package (Qt5Core REQUIRED)
 	find_package (Qt5Widgets REQUIRED)
 	find_package (Qt5Network REQUIRED)
+	find_package (Qt5Xml REQUIRED)
 	include_directories (
 	  ${Qt5Network_INCLUDE_DIRS}
+	  ${Qt5Xml_INCLUDE_DIRS}
 	)
 
 	find_package(Qwt)
@@ -331,6 +333,7 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_MOCS
 	     ./dab-processor.h
+	     ./preset-handler.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
@@ -713,6 +716,7 @@ add_definitions (-DPRESET_NAME)
 	target_link_libraries (${objectName}
 	                       Qt5::Widgets
 	                       Qt5::Network
+	                       Qt5::Xml
 	                       ${RTLTCP_lib}
 	                       ${FFTW3F_LIBRARIES}
 	                       ${extraLibs}
