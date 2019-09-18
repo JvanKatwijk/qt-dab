@@ -43,6 +43,7 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
+#include	"preset-handler.h"
 class	QSettings;
 class	virtualInput;
 class	audioBase;
@@ -61,6 +62,7 @@ class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
+	                                 QString	,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface();
@@ -68,6 +70,7 @@ public:
 protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
 private:
+	presetHandler	my_presetHandler;
 	QSettings	*dabSettings;
 	int16_t		tii_delay;
 	int32_t         dataPort;
@@ -213,6 +216,7 @@ private slots:
 	void		set_tiiSwitch();
 	void		set_irSwitch();
 	void		set_spectrumSwitch();
+	void		select_presetService 	(QString, QString);
 };
 #endif
 

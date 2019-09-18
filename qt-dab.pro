@@ -5,8 +5,8 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-2.7.1
-QT		+= widgets 
+TARGET		= qt-dab-2.7.2
+QT		+= widgets xml
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -82,6 +82,7 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
+	   ./preset-handler.h \
 	   ./service-description/service-descriptor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
@@ -168,6 +169,7 @@ FORMS	+= ./devices/filereader-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
+	   ./preset-handler.cpp \
 	   ./service-description/audio-descriptor.cpp \
 	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \

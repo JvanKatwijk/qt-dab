@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>655</width>
-    <height>206</height>
+    <width>612</width>
+    <height>284</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -29,12 +29,6 @@
    </item>
    <item>
     <widget class="QwtPlot" name="dabScope">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum display, shows the frequency spectrum from the channel currently being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -44,12 +38,6 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <widget class="QwtPlot" name="iqDisplay">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram, obtained from the first data block in a DAB frame. What is shown are the constellations of the carriers in the decoded OFDM symbol. &lt;/p&gt;&lt;p&gt;In DAB the bits are encoded as (1, 1), (1, -1), (-1, -1) and (1,1), so ideally there are 4 points, one in each corner. The quality of the signal is inverse to the clouds that are visible. The number indicated below this &amp;quot;cloud picture&amp;quot; shows the standard deviation of the dots on the cloud(s).&lt;/p&gt;&lt;p&gt;Hint: Lots of clouds mean poor signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>

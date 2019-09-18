@@ -186,6 +186,7 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
+	     ./preset-handler.h
 	     ./service-description/service-descriptor.h 
 	     ./service-description/audio-descriptor.h 
 	     ./service-description/data-descriptor.h 
@@ -261,6 +262,7 @@ add_definitions (-DPRESET_NAME)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./dab-processor.cpp
+	     ./preset-handler.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp

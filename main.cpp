@@ -36,7 +36,7 @@
 #include        "radio.h"
 
 #define DEFAULT_INI     ".qt-dab.ini"
-
+#define	PRESETS		".dab-presets.xml"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
@@ -52,7 +52,7 @@ QString fileName;
 
 #ifdef	OSX_INIT_FILE
 	char *PathFile;
-	PathFile = getenv("HOME");
+	PathFile = getenv ("HOME");
 	fileName = PathFile;
 	fileName.append("/.qt-dab.ini");
 	qDebug() << fileName;
@@ -102,6 +102,11 @@ int     opt;
 
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
 
+	QString presets = QDir::homePath();
+	presets. append ("/");
+	presets. append (".dab-presets.xml");
+	presets = QDir::toNativeSeparators (presets);
+
 /*
  *      Before we connect control to the gui, we have to
  *      instantiate
@@ -119,6 +124,7 @@ int     opt;
 	a. setWindowIcon (QIcon (":/qt-dab.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
+	                                       presets,
 	                                       dataPort
                                                );
 	MyRadioInterface -> show();

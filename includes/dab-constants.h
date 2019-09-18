@@ -64,7 +64,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"2.7.1"
+#define	CURRENT_VERSION	"2.7.2"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -134,6 +134,7 @@ public:
 	int16_t	protLevel;
 	int16_t	length;
 	int16_t	bitRate;
+	QString	channel;	// just for presets
 public:
 		descriptorType() {
 	defined		= false;
@@ -166,7 +167,6 @@ public:
 	audiodata() {
 	   type	= AUDIO_SERVICE;
 	}
-	
 };
 
 
