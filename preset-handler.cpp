@@ -22,7 +22,7 @@
 
 #include	"preset-handler.h"
 #include	"radio.h"
-
+#include	<QHeaderView>
 	presetHandler::presetHandler	(RadioInterface *radio,
 	                                 QString fileName) {
 	this	-> radio	= radio;
@@ -34,6 +34,8 @@
 
         tableWidget		= new QTableWidget (0, 2);
         myWidget        -> setWidget (tableWidget);
+	tableWidget	-> horizontalHeader () -> setSectionResizeMode (0, QHeaderView::Stretch);
+	tableWidget	-> horizontalHeader () -> setSectionResizeMode (1, QHeaderView::Stretch);
         tableWidget     -> setHorizontalHeaderLabels (
                     QStringList () << tr ("channel") << tr ("service"));
         connect (tableWidget, SIGNAL (cellClicked (int, int)),
@@ -43,7 +45,6 @@
         connect (this, SIGNAL (select_presetService (QString, QString)),
                  radio, SLOT (select_presetService (QString, QString)));
         loadTable ();
-	show ();
 }
 
         presetHandler::~presetHandler   () {
@@ -122,6 +123,8 @@ bool	presetHandler::item		(QString s, presetData *pd) {
 }
 
 void	presetHandler::update		(presetData *pd) {
+	if (myWidget -> isHidden ())
+	   return;
 	if (inPresets (pd))
 	   return;
 

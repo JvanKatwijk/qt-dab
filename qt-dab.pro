@@ -377,6 +377,17 @@ DEFINES		+= PRESET_NAME
 #	devices
 #
 #	dabstick
+dabstick-new {
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ./devices/rtlsdr-handler
+	INCLUDEPATH	+= ./devices/rtlsdr-handler
+	HEADERS		+= ./devices/rtlsdr-handler/rtlsdr-handler.h \
+	                   ./devices/rtlsdr-handler/rtlsdr-widget.h \
+	                   ./devices/rtlsdr-handler/rtl-dongleselect.h
+	SOURCES		+= ./devices/rtlsdr-handler/rtlsdr-handler.cpp \
+	                   ./devices/rtlsdr-handler/rtl-dongleselect.cpp
+}
+
 dabstick {
 	DEFINES		+= HAVE_RTLSDR
 	DEPENDPATH	+= ./devices/rtlsdr-handler
@@ -390,6 +401,17 @@ dabstick {
 #
 #	the SDRplay
 #
+sdrplay-new {
+	DEFINES		+= HAVE_SDRPLAY
+	DEPENDPATH	+= ./devices/sdrplay-handler 
+	INCLUDEPATH	+= ./devices/sdrplay-handler 
+	HEADERS		+= ./devices/sdrplay-handler/sdrplay-widget.h \
+	                   ./devices/sdrplay-handler/sdrplay-handler.h \
+	                   ./devices/sdrplay-handler/sdrplayselect.h
+	SOURCES		+= ./devices/sdrplay-handler/sdrplay-widget.cpp \
+	                   ./devices/sdrplay-handler/sdrplay-handler.cpp \
+	                   ./devices/sdrplay-handler/sdrplayselect.cpp
+}
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
 	DEPENDPATH	+= ./devices/sdrplay-handler 
@@ -465,6 +487,14 @@ soapy {
 	                   ./devices/soapy/soapy_CF32.cpp
         FORMS           += ./devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
+}
+
+lime-new  {
+	DEFINES		+= HAVE_LIME
+	INCLUDEPATH	+= ./devices/lime-handler
+        HEADERS         += ./devices/lime-handler/lime-handler.h \	
+	                   ./devices/lime-handler/lime-widget.h
+        SOURCES         += ./devices/lime-handler/lime-handler.cpp 
 }
 
 lime  {

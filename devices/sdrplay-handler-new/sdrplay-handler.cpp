@@ -62,13 +62,12 @@ mir_sdr_GainValuesT gainDesc;
 sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
-	this	-> myFrame		= new QFrame (nullptr);
-	this	-> myFrame -> setSizePolicy (QSizePolicy::Expanding,
-	                                     QSizePolicy::Expanding);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+
+	myFrame			= new QWidget (NULL);
+	setupUI 		(myFrame);
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
+	myFrame			-> show ();
 	this	-> inputRate		= Khz (2048);
 	_I_Buffer			= nullptr;
 	libraryLoaded			= false;
@@ -185,7 +184,7 @@ ULONG APIkeyValue_length = 255;
 	if (agcMode) {
 	   agcControl -> setChecked (true);
 	   GRdBSelector         -> hide();
-	   gainsliderLabel      -> hide();
+	   GRdBSelectorLabel      -> hide();
 	}
 	sdrplaySettings	-> endGroup();
 
@@ -324,8 +323,8 @@ ULONG APIkeyValue_length = 255;
 	                                  agcControl -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> endGroup();
 	sdrplaySettings	-> sync();
-	delete	myFrame;
 
+	delete myFrame;
 	if (numofDevs > 0)
 	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	if (_I_Buffer != nullptr)
@@ -747,12 +746,12 @@ bool agcMode	= agcControl -> isChecked();
 	                       0, 0, 0, 0, lnaGainSetting -> value());
 	if (!agcMode) {
 	   GRdBSelector		-> show();
-	   gainsliderLabel	-> show();	// old name actually
+	   GRdBSelectorLabel	-> show();	
 	   set_ifgainReduction (0);
 	}
 	else {
 	   GRdBSelector		-> hide();
-	   gainsliderLabel	-> hide();
+	   GRdBSelectorLabel	-> hide();
 	}
 }
 

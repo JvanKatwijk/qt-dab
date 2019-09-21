@@ -1043,6 +1043,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new airspyHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1057,6 +1058,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new hackrfHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1071,6 +1073,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new soapyHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1085,6 +1088,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new limeHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1101,6 +1105,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new extioHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1116,6 +1121,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new rtl_tcp_client (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1130,6 +1136,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1158,6 +1165,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rtlsdrHandler (dabSettings);
 	      showButtons();
+	      my_presetHandler. show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1179,6 +1187,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
+	      my_presetHandler. hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1197,6 +1206,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
+	      my_presetHandler. hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1216,7 +1226,8 @@ virtualInput	*inputDevice	= nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new wavFiles (file);
-	      hideButtons();
+	      hideButtons();	
+	      my_presetHandler. hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
