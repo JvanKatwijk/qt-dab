@@ -26,7 +26,7 @@
 	presetHandler::presetHandler	(RadioInterface *radio,
 	                                 QString fileName) {
 	this	-> radio	= radio;
-	this    -> fileName     = fileName;
+	this	 -> fileName     = fileName;
         presets. resize (0);
 	myWidget		= new QScrollArea (NULL);
         myWidget        -> resize (240, 200);
@@ -34,7 +34,7 @@
 
         tableWidget		= new QTableWidget (0, 2);
         myWidget        -> setWidget (tableWidget);
-	tableWidget	-> horizontalHeader () -> setSectionResizeMode (0, QHeaderView::Stretch);
+//	tableWidget	-> horizontalHeader () -> setSectionResizeMode (0, QHeaderView::Stretch);
 	tableWidget	-> horizontalHeader () -> setSectionResizeMode (1, QHeaderView::Stretch);
         tableWidget     -> setHorizontalHeaderLabels (
                     QStringList () << tr ("channel") << tr ("service"));
@@ -110,12 +110,10 @@ void	presetHandler::item		(int nr, presetData *pd) {
 }
 
 bool	presetHandler::item		(QString s, presetData *pd) {
-	fprintf (stderr, "Looking for %s\n", s. toLatin1 (). data ());
 	for (uint i = 0; i < presets. size (); i ++) {
 	   if (presets. at (i). serviceName == s) {
 	      pd -> serviceName = s;
 	      pd -> channel     = presets. at (i). channel;
-	      fprintf (stderr, "found\n");
 	      return true;
 	   }
 	}
@@ -147,6 +145,7 @@ QDomElement root = the_presets. createElement ("preset_db");
 	                                 presets. at (i). channel);
 	   root. appendChild (presetService);
 	}
+
 	QFile file (this -> fileName);
 	if (!file. open (QIODevice::WriteOnly | QIODevice::Text))
 	   return;

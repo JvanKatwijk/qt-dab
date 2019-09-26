@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2013 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,31 +19,40 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#ifndef	__SDRPLAY_SELECT__
-#define	__SDRPLAY_SELECT__
-#
-#include	<QDialog>
-#include	<QLabel>
-#include	<QListView>
-#include	<QStringListModel>
-#include	<QStringList>
-#include	<cstdint>
+#ifndef	__WAV_FILES__
+#define	__WAV_FILES__
 
-class	sdrplaySelect: public QDialog {
+#include	<QString>
+#include	<QFrame>
+#include	<sndfile.h>
+#include	<atomic>
+#include	"dab-constants.h"
+#include	"virtual-input.h"
+#include	"ringbuffer.h"
+
+#include	"filereader-widget.h"
+#include		"wav-reader.h"
+
+class	wavFiles: public virtualInput,
+	          public filereaderWidget {
 Q_OBJECT
 public:
-			sdrplaySelect();
-			~sdrplaySelect();
-	void		addtoList	(const char *);
+			wavFiles	(QString);
+	       		~wavFiles();
+	int32_t		getSamples	(std::complex<float> *, int32_t);
+	int32_t		Samples();
+	bool		restartReader();
+	void		stopReader();
 private:
-	QLabel		*toptext;
-	QListView	*selectorDisplay;
-	QStringListModel deviceList;
-	QStringList	Devices;
-	int16_t		selectedItem;
-private slots:
-void	select_rsp	(QModelIndex);
+	QString		fileName;
+	QWidget		*myFrame;
+	RingBuffer<std::complex<float>>	*_I_Buffer;
+	int32_t		bufferSize;
+	SNDFILE		*filePointer;
+	wavReader	*readerTask;
+	std::atomic<bool>	running;
+public slots:
+	void		setProgress	(int, float);
 };
 
 #endif

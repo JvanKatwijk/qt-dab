@@ -208,7 +208,6 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 	
 	return index - T_u; 
 }
-//	NOT USED, just for some tests
 //	An alternative way to compute the small frequency offset
 //	is to look at the phase offset of subsequent carriers
 //	in block 0, compared to the values as computed from the

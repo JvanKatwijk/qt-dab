@@ -497,14 +497,10 @@ add_definitions (-DPRESET_NAME)
 	endif (HACKRF)
 #
 	if (LIMESDR)
-	   set (${objectName}_UIS
-	        ${${objectName}_UIS}
-	        ./devices/lime-handler/lime-widget.ui
-	   )
-
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./devices/lime-handler/lime-handler.h
+	        ./devices/lime-handler/lime-widget.h
 	   )
 
 	   include_directories (
@@ -514,6 +510,7 @@ add_definitions (-DPRESET_NAME)
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/lime-handler/lime-handler.h
+	        ./devices/lime-handler/lime-widget.h
 	        ./devices/lime-handler/LimeSuite.h
 	        ./devices/lime-handler/LMS7002M_parameters.h
 	   )
@@ -533,15 +530,11 @@ add_definitions (-DPRESET_NAME)
            endif ()
 	   ###include_directories (${RTLSDR_INCLUDE_DIR})
 
-	   set (${objectName}_UIS
-	        ${${objectName}_UIS}
-	        ./devices/rtlsdr-handler/rtlsdr-widget.ui
-	   )
-
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./devices/rtlsdr-handler/rtl-dongleselect.h
 	        ./devices/rtlsdr-handler/rtlsdr-handler.h
+	        ./devices/rtlsdr-handler/rtlsdr-widget.h
 	   )
 
 	   include_directories (
@@ -552,6 +545,7 @@ add_definitions (-DPRESET_NAME)
 	        ${${objectName}_HDRS}
 	        ./devices/rtlsdr-handler/rtlsdr-handler.h
 	        ./devices/rtlsdr-handler/rtl-dongleselect.h
+	        ./devices/rtlsdr-handler/rtlsdr-widget.h
 	   )
 
 	   set (${objectName}_SRCS

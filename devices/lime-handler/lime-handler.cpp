@@ -30,7 +30,7 @@ lms_info_str_t limedevices [10];
 	limeHandler::limeHandler (QSettings *s) {
 	this	-> limeSettings	= s;
 
-	this	-> myFrame	= new QFrame (nullptr);
+	this	-> myFrame	= new QWidget (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
 

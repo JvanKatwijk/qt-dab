@@ -35,9 +35,6 @@ DEPENDPATH += . \
 	      ./src/support \
 	      ./src/support/viterbi-jan \
 #	      ./src/support/viterbi-handler \
-	      ./devices \
-	      ./devices/rawfiles \
-	      ./devices/wavfiles \
 	      ./includes/ofdm \
 	      ./includes/protection \
 	      ./includes/backend \
@@ -48,8 +45,8 @@ DEPENDPATH += . \
 	      ./includes/output \
 	      ./includes/support \
 	      ./devices \
-	      ./devices/rawfiles \
-	      ./devices/wavfiles \
+	      ./devices/rawfiles-new \
+	      ./devices/wavfiles-new\
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
 	      ./impulse-viewer \
@@ -72,8 +69,8 @@ INCLUDEPATH += . \
 	      ./includes/support/viterbi-jan \
 #	      ./includes/support/viterbi-handler \
 	      ./devices \
-	      ./devices/rawfiles \
-	      ./devices/wavfiles \
+	      ./devices/rawfiles-new \
+	      ./devices/wavfiles-new \
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
 	      ./impulse-viewer \
@@ -149,10 +146,11 @@ HEADERS += ./radio.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
-	   ./devices/rawfiles/rawfiles.h \
-	   ./devices/rawfiles/raw-reader.h \
-           ./devices/wavfiles/wavfiles.h \
-           ./devices/wavfiles/wav-reader.h \
+	   ./devices/filereader-widget.h \
+	   ./devices/rawfiles-new/rawfiles.h \
+	   ./devices/rawfiles-new/raw-reader.h \
+           ./devices/wavfiles-new/wavfiles.h \
+           ./devices/wavfiles-new/wav-reader.h \
 	   ./spectrum-viewer/spectrum-viewer.h \
 	   ./impulse-viewer/impulse-viewer.h \
 	   ./tii-viewer/tii-viewer.h
@@ -164,7 +162,7 @@ FORMS	+= ./forms/data-description.ui
 FORMS	+= ./spectrum-viewer/scopewidget.ui
 FORMS	+= ./impulse-viewer/impulse-widget.ui
 FORMS	+= ./tii-viewer/tii-widget.ui
-FORMS	+= ./devices/filereader-widget.ui 
+#FORMS	+= ./devices/filereader-widget.ui 
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -229,10 +227,10 @@ SOURCES += ./main.cpp \
 	   ./src/support/ensemble-printer.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
-	   ./devices/rawfiles/rawfiles.cpp \
-	   ./devices/rawfiles/raw-reader.cpp \
-           ./devices/wavfiles/wavfiles.cpp \
-           ./devices/wavfiles/wav-reader.cpp \
+	   ./devices/rawfiles-new/rawfiles.cpp \
+	   ./devices/rawfiles-new/raw-reader.cpp \
+           ./devices/wavfiles-new/wavfiles.cpp \
+           ./devices/wavfiles-new/wav-reader.cpp \
 	   ./spectrum-viewer/spectrum-viewer.cpp \
 	   ./impulse-viewer/impulse-viewer.cpp \
 	   ./tii-viewer/tii-viewer.cpp
@@ -267,11 +265,11 @@ LIBS		+= -lqwt-qt5
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
+CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 #CONFIG		+= soapy
-CONFIG		+= lime
 #CONFIG		+= elad_s1	# does not work yet
 
 #very experimental, simple server for connecting to a tdc handler
@@ -373,11 +371,10 @@ DEFINES		+= MSC_DATA__		# use at your own risk
 #and this one is experimental
 DEFINES		+= PRESET_NAME
 }
-
 #	devices
 #
 #	dabstick
-dabstick-new {
+dabstick {
 	DEFINES		+= HAVE_RTLSDR
 	DEPENDPATH	+= ./devices/rtlsdr-handler
 	INCLUDEPATH	+= ./devices/rtlsdr-handler
@@ -388,34 +385,13 @@ dabstick-new {
 	                   ./devices/rtlsdr-handler/rtl-dongleselect.cpp
 }
 
-dabstick {
-	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ./devices/rtlsdr-handler
-	INCLUDEPATH	+= ./devices/rtlsdr-handler
-	HEADERS		+= ./devices/rtlsdr-handler/rtlsdr-handler.h \
-	                   ./devices/rtlsdr-handler/rtl-dongleselect.h
-	SOURCES		+= ./devices/rtlsdr-handler/rtlsdr-handler.cpp \
-	                   ./devices/rtlsdr-handler/rtl-dongleselect.cpp
-	FORMS		+= ./devices/rtlsdr-handler/rtlsdr-widget.ui
-}
 #
 #	the SDRplay
 #
-sdrplay-new {
-	DEFINES		+= HAVE_SDRPLAY
-	DEPENDPATH	+= ./devices/sdrplay-handler 
-	INCLUDEPATH	+= ./devices/sdrplay-handler 
-	HEADERS		+= ./devices/sdrplay-handler/sdrplay-widget.h \
-	                   ./devices/sdrplay-handler/sdrplay-handler.h \
-	                   ./devices/sdrplay-handler/sdrplayselect.h
-	SOURCES		+= ./devices/sdrplay-handler/sdrplay-widget.cpp \
-	                   ./devices/sdrplay-handler/sdrplay-handler.cpp \
-	                   ./devices/sdrplay-handler/sdrplayselect.cpp
-}
 sdrplay {
 	DEFINES		+= HAVE_SDRPLAY
-	DEPENDPATH	+= ./devices/sdrplay-handler 
-	INCLUDEPATH	+= ./devices/sdrplay-handler 
+	DEPENDPATH	+= ./devices/sdrplay-handler
+	INCLUDEPATH	+= ./devices/sdrplay-handler
 	HEADERS		+= ./devices/sdrplay-handler/sdrplay-handler.h \
 	                   ./devices/sdrplay-handler/sdrplayselect.h
 	SOURCES		+= ./devices/sdrplay-handler/sdrplay-handler.cpp \
@@ -423,8 +399,19 @@ sdrplay {
 	FORMS		+= ./devices/sdrplay-handler/sdrplay-widget.ui
 }
 #
+#	limeSDR
 #
-#	the SDRplay
+lime  {
+	DEFINES		+= HAVE_LIME
+	INCLUDEPATH	+= ./devices/lime-handler
+	DEPENDPATH	+= ./devices/lime-handler
+        HEADERS         += ./devices/lime-handler/lime-handler.h \	
+	                   ./devices/lime-handler/lime-widget.h
+        SOURCES         += ./devices/lime-handler/lime-handler.cpp 
+}
+
+#
+#	the hackrf
 #
 hackrf {
 	DEFINES		+= HAVE_HACKRF
@@ -487,22 +474,6 @@ soapy {
 	                   ./devices/soapy/soapy_CF32.cpp
         FORMS           += ./devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
-}
-
-lime-new  {
-	DEFINES		+= HAVE_LIME
-	INCLUDEPATH	+= ./devices/lime-handler
-        HEADERS         += ./devices/lime-handler/lime-handler.h \	
-	                   ./devices/lime-handler/lime-widget.h
-        SOURCES         += ./devices/lime-handler/lime-handler.cpp 
-}
-
-lime  {
-	DEFINES		+= HAVE_LIME
-	INCLUDEPATH	+= ./devices/lime-handler
-        HEADERS         += ./devices/lime-handler/lime-handler.h 
-        SOURCES         += ./devices/lime-handler/lime-handler.cpp 
-        FORMS           += ./devices/lime-handler/lime-widget.ui
 }
 	
 send_datagram {

@@ -198,6 +198,9 @@ std::complex<float> conjVector [T_u];
 	}
 }
 /**
+  *	Obsolete: we now compute the snr by looking at the 
+  *	ratio between the power of the data in the signal and the power
+  *	of the signal in the null period.
   *	for the snr we have a full T_u wide vector, with in the middle
   *	K carriers.
   *	Just get the strength from the selected carriers compared

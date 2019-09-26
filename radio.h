@@ -56,7 +56,7 @@ class	impulseViewer;
 class	tiiViewer;
 /*
  *	GThe main gui object. It inherits from
- *	QDialog and the generated form
+ *	QWidget and the generated form
  */
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT

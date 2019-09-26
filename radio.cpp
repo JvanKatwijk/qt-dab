@@ -503,6 +503,8 @@ void	RadioInterface::set_Scanning() {
 	if (!running. load())
 	   return;
 	presetTimer. stop();
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 	setStereo (false);
 	if (!running. load())
 	   return;
@@ -947,10 +949,11 @@ void	RadioInterface::selectChannel (QString s) {
 int32_t	tunedFrequency;
 bool	localRunning	= running. load();
 
-	fprintf (stderr, "select channel is er nu\n");
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 	presetTimer. stop();
 	setStereo (false);
 	if (scanning)
@@ -1252,6 +1255,8 @@ void	RadioInterface::newDevice (QString deviceName) {
 
 	disconnectGUI();
 	presetTimer. stop();
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 	running. store (false);
 	inputDevice	-> stopReader();
 
@@ -1282,6 +1287,8 @@ void	RadioInterface::newDevice (QString deviceName) {
 void	RadioInterface::selectService (QModelIndex s) {
 QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString();
 	presetTimer. stop();
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 	selectService (currentProgram);
 }
 //
@@ -1568,17 +1575,26 @@ ensemblePrinter	my_Printer;
 }
 
 void	RadioInterface::setPresetStation() {
-	if (ensembleLabel == QString (""))
+	disconnect (&presetTimer, SIGNAL (timeout (void)),
+	            this, SLOT (setPresetStation (void)));
+
+	if (ensembleLabel == QString ("")) {
+	   QMessageBox::warning (this, tr ("Warning"),
+                                  tr ("Oops, emsemble not yet recorgnized\nselect service manually\n"));
 	   return;
+	}
+
 
 	if (presetName == QString (""))		// should not happen
 	   return;
 
 	for (const auto& service: Services)
 	   if (service. contains (presetName)) {
+	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
 	      selectService (presetName);
 	      return;
 	   }
+	fprintf (stderr, "presetName %s not found\n", presetName. toLatin1 (). data ());
 }
 
 void	RadioInterface::set_picturePath() {
@@ -1829,10 +1845,10 @@ void	RadioInterface::showTime	(const QString &s) {
 void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 //	fprintf (stderr, "announcement for %s\n", name. toLatin1 (). data ());
 	if (name == currentName) {
-	   warningLabel -> setAutoFillBackground (true);
-	   QPalette pal	= warningLabel -> palette ();
-	   pal. setColor (QPalette::Highlight, Qt::red);
-	   warningLabel -> setPalette (pal);
+//	   warningLabel -> setAutoFillBackground (true);
+//	   QPalette pal	= warningLabel -> palette ();
+//	   pal. setColor (QPalette::Highlight, Qt::red);
+//	   warningLabel -> setPalette (pal);
 	   fprintf (stderr, "announcement for %s (%d) starts\n",
 	                             name. toLatin1 (). data (), subChId);
 	}
@@ -1841,10 +1857,10 @@ void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 	(void)subChId;
 	if (name == currentName) {
-	   warningLabel -> setAutoFillBackground (true);
-	   QPalette pal	= warningLabel -> palette ();
-	   pal. setColor (QPalette::Highlight, Qt::white);
-	   warningLabel -> setPalette (pal);
+//	   warningLabel -> setAutoFillBackground (true);
+//	   QPalette pal	= warningLabel -> palette ();
+//	   pal. setColor (QPalette::Highlight, Qt::white);
+//	   warningLabel -> setPalette (pal);
 	   fprintf (stderr, "end for announcement service %s\n",
 	                              name. toLatin1 (). data ());
 	}
@@ -1854,10 +1870,16 @@ void	RadioInterface::select_presetService (QString  channel,
 	                                      QString serviceName) {
 presetData pd;
 bool	res;
+//
+//	just to be certain that we are the only one
+	presetTimer. stop ();
+	disconnect (&presetTimer, SIGNAL (timeout (void)),
+	            this, SLOT (setPresetStation (void)));
 
 	res	= my_presetHandler. item (serviceName, &pd);
 	if (!res)
 	   return;
+
 	if (channel == channelSelector -> currentText ()) {
 	   emit selectService (serviceName);
 	   return;
@@ -1873,7 +1895,7 @@ bool	res;
 	}
 	else {
 	   QMessageBox::warning (this, tr ("Warning"),
-                                       tr ("Incorrect preset\n"));
+	                               tr ("Incorrect preset\n"));
 
 	   return;
 	}
@@ -1882,6 +1904,8 @@ bool	res;
 	dynamicLabel	-> setText ("");
 	presetName	= serviceName;
 	presetTimer. setSingleShot (true);
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	            this, SLOT (setPresetStation (void)));
 	presetTimer. start (8000);
 }
 

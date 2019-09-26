@@ -32,7 +32,7 @@
 #include	"ringbuffer.h"
 #include	<LimeSuite.h>
 #include	"virtual-input.h"
-#include	"ui_lime-widget.h"
+#include	"lime-widget.h"
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -92,7 +92,7 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
 
-class	limeHandler: public virtualInput, public Ui_limeWidget {
+class	limeHandler: public virtualInput, public limeWidget {
 Q_OBJECT
 public:
 			limeHandler		(QSettings *);
@@ -109,7 +109,7 @@ public:
 
 private:
 	QSettings	*limeSettings;
-	QFrame		*myFrame;
+	QWidget		*myFrame;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
