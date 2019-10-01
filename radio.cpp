@@ -112,8 +112,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
-	                                        my_presetHandler (this,
-	                                                           presetFile) {
+	                                        my_presetHandler (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -261,6 +260,7 @@ QString h;
 //
 	connect (streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
+	my_presetHandler. loadPresets (presetFile, presetSelector);
 //	
 //	display the version
 	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
@@ -377,8 +377,10 @@ int32_t	frequency;
 //	we avoided up till now connecting the channel selector
 //	to the slot since that function does a lot more that we
 //	do not want here
+	connect (presetSelector, SIGNAL (activated (QString)),
+	         this, SLOT (handle_presetSelector (QString)));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel (const QString &)));
+	         this, SLOT (selectChannel_usingSelector (const QString &)));
 //	and we connect the deviceSelector to a handler
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (doStart (QString)));
@@ -539,14 +541,14 @@ int	cc	= channelSelector -> currentIndex();
 //
 //	To avoid reaction of the system on setting a different value
 	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	              this, SLOT (selectChannel (const QString &)));
+	              this, SLOT (selectChannel_usingSelector (const QString &)));
 	channelSelector -> setCurrentIndex (cc);
 	tunedFrequency	=
 	         theBand. Frequency (dabBand, channelSelector -> currentText());
 	inputDevice	-> setVFOFrequency (tunedFrequency);
 
 	connect    (channelSelector, SIGNAL (activated (const QString &)),
-	              this, SLOT (selectChannel (const QString &)));
+	             this, SLOT (selectChannel_usingSelector (const QString &)));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -891,7 +893,6 @@ void	RadioInterface::clear_showElements() {
   */
 void	RadioInterface::TerminateProcess() {
 	running. store (false);
-	my_presetHandler. hide ();
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");
 	delete		dataStreamer;
@@ -945,22 +946,26 @@ void	RadioInterface::TerminateProcess() {
   *	Depending on the GUI the user might select a channel
   *	or some magic will cause a channel to be selected
   */
+void	RadioInterface::selectChannel_usingSelector (QString s) {
+	presetSelector -> setCurrentIndex (0);
+	selectChannel (s);
+}
+
 void	RadioInterface::selectChannel (QString s) {
 int32_t	tunedFrequency;
 bool	localRunning	= running. load();
+	presetTimer. stop();
+	disconnect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
-	connect (&presetTimer, SIGNAL (timeout (void)),
-	         this, SLOT (setPresetStation (void)));
-	presetTimer. stop();
 	setStereo (false);
 	if (scanning)
 	   set_Scanning();	// switch it off
 	if (tiiSwitch)
 	   set_tiiSwitch();	// switch it off
-
 	if (localRunning) {
 	   soundOut		-> stop();
 	   inputDevice		-> stopReader();
@@ -1046,7 +1051,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new airspyHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1061,7 +1066,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new hackrfHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1076,7 +1081,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new soapyHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1091,7 +1096,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new limeHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1108,7 +1113,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new extioHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1124,7 +1129,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new rtl_tcp_client (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1139,7 +1144,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1168,7 +1173,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rtlsdrHandler (dabSettings);
 	      showButtons();
-	      my_presetHandler. show ();
+	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1190,7 +1195,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
-	      my_presetHandler. hide ();
+	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1209,7 +1214,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
-	      my_presetHandler. hide ();
+	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1230,7 +1235,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new wavFiles (file);
 	      hideButtons();	
-	      my_presetHandler. hide ();
+	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1289,6 +1294,7 @@ QString	currentProgram = ensemble. data (s, Qt::DisplayRole). toString();
 	presetTimer. stop();
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	         this, SLOT (setPresetStation (void)));
+	presetSelector -> setCurrentIndex (0);
 	selectService (currentProgram);
 }
 //
@@ -1298,6 +1304,7 @@ void	RadioInterface::selectService (QString s) {
 	if (!my_dabProcessor -> is_audioService (s) &&
 	    !my_dabProcessor -> is_packetService (s))
 	   return;
+
 	my_dabProcessor -> reset_msc();
 	currentName = s;
 	setStereo (false);
@@ -1580,7 +1587,7 @@ void	RadioInterface::setPresetStation() {
 
 	if (ensembleLabel == QString ("")) {
 	   QMessageBox::warning (this, tr ("Warning"),
-                                  tr ("Oops, emsemble not yet recorgnized\nselect service manually\n"));
+                                  tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
 	   return;
 	}
 
@@ -1816,13 +1823,15 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
 	         pd. channel		= channelSelector -> currentText ();
-	         my_presetHandler. update (&pd);
+	         my_presetHandler. update (&pd, presetSelector);
 	         return true;
 	      }
 	      
-	      if (currentService != nullptr) {
-	         delete currentService;
+	      if (ad. defined) {
+	         if (currentService != nullptr) 
+	            delete currentService;
 	         currentService	= new audioDescriptor (&ad);
+	         fprintf (stderr, "new audioDescriptor\n");
 	         return true;
 	      }
 
@@ -1876,10 +1885,6 @@ bool	res;
 	disconnect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
 
-	res	= my_presetHandler. item (serviceName, &pd);
-	if (!res)
-	   return;
-
 	if (channel == channelSelector -> currentText ()) {
 	   emit selectService (serviceName);
 	   return;
@@ -1907,5 +1912,14 @@ bool	res;
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
 	presetTimer. start (8000);
+}
+
+void	RadioInterface::handle_presetSelector (QString s) {
+	QStringList list = s.split (":", QString::SkipEmptyParts);
+	if (list. length () != 2)
+	   return;
+	QString channel = list. at (0);
+	QString service	= list. at (1);
+	select_presetService (channel, service);
 }
 

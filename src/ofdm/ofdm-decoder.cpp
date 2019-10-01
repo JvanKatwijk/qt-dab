@@ -187,6 +187,7 @@ std::complex<float> conjVector [T_u];
 	memcpy (phaseReference. data(), fft_buffer,
 	                            T_u * sizeof (std::complex<float>));
 //	From time to time we show the constellation of symbol 2.
+	
 	if (blkno == 2) {
 	   if (++cnt > 7) {
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],

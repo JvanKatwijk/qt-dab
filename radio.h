@@ -200,6 +200,7 @@ private slots:
 	void		doStart			(QString);
 	void		doStart();
 	void		TerminateProcess();
+	void		selectChannel_usingSelector	(QString);
 	void		selectChannel		(QString);
 	void		updateTimeDisplay();
 	void		signalTimer_out();
@@ -217,6 +218,7 @@ private slots:
 	void		set_irSwitch();
 	void		set_spectrumSwitch();
 	void		select_presetService 	(QString, QString);
+	void		handle_presetSelector	(QString);
 };
 #endif
 

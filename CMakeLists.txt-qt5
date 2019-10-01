@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-2.7.2)
+set (objectName qt-dab-2.7.3)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -189,6 +189,7 @@ add_definitions (-DPRESET_NAME)
 	set (${objectName}_HDRS
 	     ./dab-processor.h
 	     ./preset-handler.h
+	     ./presetcombobox.h
 	     ./service-description/service-descriptor.h 
 	     ./service-description/audio-descriptor.h 
 	     ./service-description/data-descriptor.h 
@@ -265,6 +266,7 @@ add_definitions (-DPRESET_NAME)
 	     ./main.cpp
 	     ./dab-processor.cpp
 	     ./preset-handler.cpp
+	     ./presetcombobox.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp
@@ -334,6 +336,7 @@ add_definitions (-DPRESET_NAME)
 	set (${objectName}_MOCS
 	     ./dab-processor.h
 	     ./preset-handler.h
+	     ./presetcombobox.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h

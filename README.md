@@ -3,6 +3,28 @@
 Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ----------------------------------------------------------------
+New in 2.7.3
+-----------------------------------------------------------------
+
+I was not very satisfied with the presets being shown in a separate
+list. In 2.7.3 the GUI is extended with a combobox - at the bottom
+of the service list - that will contain the presets.
+
+The encoding of the presets is as channel::service, it sometimes
+happens that different channels have (diferently encoded) versions
+of the same service.
+
+Adding a service to the *presets* is by *clicking with the right mouse
+button on the name of the service that is currently selected in the
+servicelist*.
+
+Note that clicking with the right mouse button on any other service
+will show some technical data of that service.
+
+
+![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
+
+----------------------------------------------------------------
 NEW in 2.7.2
 -----------------------------------------------------------------
 

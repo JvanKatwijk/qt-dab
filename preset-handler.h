@@ -26,15 +26,12 @@
 #include	<QtXml>
 #include	<QFile>
 #include	<vector>
-#include        <QWidget>
-#include        <QScrollArea>
-#include        <QTableWidget>
 #include        <QStringList>
-#include        <QTableWidgetItem>
 #include        <QObject>
 #include        <QString>
 
 class   RadioInterface;
+class	QComboBox;
 
 typedef struct {
 	QString serviceName;
@@ -44,29 +41,15 @@ typedef struct {
 class	presetHandler: public QObject {
 Q_OBJECT
 public:
-		presetHandler	(RadioInterface *, QString);
+		presetHandler	(RadioInterface *);
 		~presetHandler	();
 	int	nrItems		();
-	void	item		(int, presetData *);
-	bool	item		(QString, presetData *);
-	void	update		(presetData *);
-	void	show		();	
-	void	hide		();
-private slots:
-	void	tableSelect	(int, int);
-	void	removeRow	(int, int);
-signals:
-	void	select_presetService	(QString, QString);
+	void	update		(presetData *, QComboBox *);
+	void	loadPresets	(QString, QComboBox *);
 private:
-	void		loadTable	();
-	void		addRow		(const QString &name,
-	                                 const QString &channel);
 	bool		inPresets	(presetData *);
 	void		writeFile	();
 	RadioInterface	*radio;
-	QScrollArea	*myWidget;
-        QTableWidget    *tableWidget;
-
 	QString	fileName;
 	std::vector<presetData> presets;
 };

@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-2.7.2
+TARGET		= qt-dab-2.7.3
 QT		+= widgets xml
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
@@ -80,6 +80,7 @@ INCLUDEPATH += . \
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
 	   ./preset-handler.h \
+	   ./presetcombobox.h \
 	   ./service-description/service-descriptor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
@@ -168,6 +169,7 @@ SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
 	   ./preset-handler.cpp \
+	   ./presetcombobox.cpp \
 	   ./service-description/audio-descriptor.cpp \
 	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \

@@ -22,53 +22,22 @@
 
 #include	"preset-handler.h"
 #include	"radio.h"
-#include	<QHeaderView>
-	presetHandler::presetHandler	(RadioInterface *radio,
-	                                 QString fileName) {
-	this	-> radio	= radio;
-	this	 -> fileName     = fileName;
-        presets. resize (0);
-	myWidget		= new QScrollArea (NULL);
-        myWidget        -> resize (240, 200);
-        myWidget        -> setWidgetResizable(true);
+#include	<QComboBox>
 
-        tableWidget		= new QTableWidget (0, 2);
-        myWidget        -> setWidget (tableWidget);
-//	tableWidget	-> horizontalHeader () -> setSectionResizeMode (0, QHeaderView::Stretch);
-	tableWidget	-> horizontalHeader () -> setSectionResizeMode (1, QHeaderView::Stretch);
-        tableWidget     -> setHorizontalHeaderLabels (
-                    QStringList () << tr ("channel") << tr ("service"));
-        connect (tableWidget, SIGNAL (cellClicked (int, int)),
-                 this, SLOT (tableSelect (int, int)));
-        connect (tableWidget, SIGNAL (cellDoubleClicked (int, int)),
-                 this, SLOT (removeRow (int, int)));
-        connect (this, SIGNAL (select_presetService (QString, QString)),
-                 radio, SLOT (select_presetService (QString, QString)));
-        loadTable ();
+	presetHandler::presetHandler	(RadioInterface *radio) {
+	this	-> radio	= radio;
+	this	-> fileName	= "";
+        presets. resize (0);
 }
 
         presetHandler::~presetHandler   () {
-int16_t i;
-int16_t rows    = tableWidget -> rowCount ();
-
-        for (i = rows; i > 0; i --)
-           tableWidget -> removeRow (i);
-        delete  tableWidget;
-        delete  myWidget;
 }
 
-void    presetHandler::show        (void) {
-	myWidget        -> show ();
-}
-
-void    presetHandler::hide        (void) {
-	myWidget        -> hide ();
-}
-
-void	presetHandler::loadTable () {
+void	presetHandler::loadPresets (QString fileName, QComboBox *cb) {
 QDomDocument xmlBOM;
 QFile f (fileName);
 
+	this	-> fileName = fileName;
 	if (!f. open (QIODevice::ReadOnly)) 
 	   return;
 
@@ -82,7 +51,7 @@ QFile f (fileName);
 	      pd. serviceName = component. attribute ("SERVICE_NAME", "???");
 	      pd. channel     = component. attribute ("CHANNEL", "5A");
 	      if (!inPresets (&pd)) {
-	         addRow (pd. channel, pd. serviceName);
+	         cb -> addItem (pd. channel + ":" + pd. serviceName);
 	         presets. push_back (pd);
 	      }
 	   }
@@ -102,31 +71,12 @@ int	presetHandler::nrItems		() {
 	return presets. size ();
 }
 
-void	presetHandler::item		(int nr, presetData *pd) {
-	if ((uint)nr < presets. size ()) {
-	   pd -> serviceName	= presets. at (nr). serviceName;
-	   pd -> channel	= presets. at (nr). channel;
-	}
-}
-
-bool	presetHandler::item		(QString s, presetData *pd) {
-	for (uint i = 0; i < presets. size (); i ++) {
-	   if (presets. at (i). serviceName == s) {
-	      pd -> serviceName = s;
-	      pd -> channel     = presets. at (i). channel;
-	      return true;
-	   }
-	}
-	return false;
-}
-
-void	presetHandler::update		(presetData *pd) {
-	if (myWidget -> isHidden ())
-	   return;
+void	presetHandler::update		(presetData *pd, QComboBox *cb) {
 	if (inPresets (pd))
 	   return;
 
-	addRow (pd -> channel, pd -> serviceName);
+	QString entry = pd -> channel + QString (":") + pd -> serviceName;
+	cb -> addItem (entry);
 	presets. push_back (*pd);
 	writeFile ();
 }
@@ -154,55 +104,4 @@ QDomElement root = the_presets. createElement ("preset_db");
 	stream << the_presets. toString ();
 	file. close ();
 }
-
-void	presetHandler::removeRow (int row, int column) {
-QTableWidgetItem* theItem_1 = tableWidget -> item (row, 0);
-QTableWidgetItem* theItem_2 = tableWidget -> item (row, 1);
-
-	(void)column;
-	QString service = theItem_2 -> text ();
-
-	for (std::vector<presetData>::iterator iter = presets. begin ();
-	     iter != presets. end (); iter ++) {
-	   if (iter -> serviceName == service) {
-	      presets. erase (iter);
-	      tableWidget	-> removeRow (row);
-	      break;
-	   }
-	}
-	writeFile ();
-}
-
-void	presetHandler::addRow (const QString &channel, const QString &name) {
-int16_t	row	= tableWidget -> rowCount ();
-
-	tableWidget	-> insertRow (row);
-	QTableWidgetItem *item0	= new QTableWidgetItem;
-	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
-	tableWidget	-> setItem (row, 0, item0);
-
-	QTableWidgetItem *item1 = new QTableWidgetItem;
-	item1		-> setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-	tableWidget	-> setItem (row, 1, item1);
-	tableWidget	-> resizeColumnToContents (1);
-
-	tableWidget	-> setCurrentItem (item0);
-	tableWidget	-> item (row, 0) -> setText (channel);
-	tableWidget	-> item (row, 1) -> setText (name);
-}
-//
-//	Locally we dispatch the "click" and "translate"
-//	it into a frequency and a call to the main gui to change
-//	the frequency
-
-void	presetHandler::tableSelect (int row, int column) {
-QTableWidgetItem* theItem_1 = tableWidget -> item (row, 0);
-QTableWidgetItem* theItem_2 = tableWidget -> item (row, 1);
-
-	(void)column;
-	QString channel	= theItem_1 -> text ();
-	QString service = theItem_2 -> text ();
-	emit select_presetService (channel, service);
-}
-
 
