@@ -29,9 +29,11 @@ bool KHBoxEventFilter::eventFilter (QObject *obj, QEvent *event) {
 	   auto keyEvent = static_cast<QKeyEvent *>(event);
 	   if ((keyEvent->modifiers() == Qt::ShiftModifier) &&
 	       (keyEvent->key() == Qt::Key::Key_Delete)) {
-	      auto box = dynamic_cast<QComboBox *>(obj);
+//	      auto box = dynamic_cast<QComboBox *>(obj);
+	      auto box = dynamic_cast<presetComboBox *>(obj);
 	      if (box != nullptr) {
 //	Delete the current item
+	         QString content = box -> currentText ();
 	         box->removeItem(box->currentIndex());
 	         return true;
 	      }

@@ -26,10 +26,11 @@
 class KHBoxEventFilter : public QObject {
 Q_OBJECT
 public:
-    explicit KHBoxEventFilter(QObject *parent = nullptr) : QObject(parent) {}
+	explicit KHBoxEventFilter(QObject *parent = nullptr):
+	                                            QObject(parent) {}
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
+	bool eventFilter(QObject *obj, QEvent *event) override;
 };
 
 //! An event filter for the popup list of a presetComboBox, e.g.

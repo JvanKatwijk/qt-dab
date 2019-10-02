@@ -27,7 +27,6 @@
 	presetHandler::presetHandler	(RadioInterface *radio) {
 	this	-> radio	= radio;
 	this	-> fileName	= "";
-        presets. resize (0);
 }
 
         presetHandler::~presetHandler   () {
@@ -50,49 +49,29 @@ QFile f (fileName);
 	      presetData pd;
 	      pd. serviceName = component. attribute ("SERVICE_NAME", "???");
 	      pd. channel     = component. attribute ("CHANNEL", "5A");
-	      if (!inPresets (&pd)) {
-	         cb -> addItem (pd. channel + ":" + pd. serviceName);
-	         presets. push_back (pd);
-	      }
+	      cb -> addItem (pd. channel + ":" + pd. serviceName);
 	   }
 	   component = component. nextSibling (). toElement ();
 	}
 }
 
-bool	presetHandler::inPresets	(presetData *pd) {
-	for (uint i = 0; i < presets. size (); i ++)
-	   if ((presets. at (i). serviceName == pd -> serviceName) &&	
-	       (presets. at (i). channel     == pd -> channel))
-	      return true;
-	return false;
-}
-
-int	presetHandler::nrItems		() {
-	return presets. size ();
-}
-
-void	presetHandler::update		(presetData *pd, QComboBox *cb) {
-	if (inPresets (pd))
-	   return;
-
-	QString entry = pd -> channel + QString (":") + pd -> serviceName;
-	cb -> addItem (entry);
-	presets. push_back (*pd);
-	writeFile ();
-}
-
-void	presetHandler::writeFile	() {
+void	presetHandler::savePresets (QComboBox *cb) {
 QDomDocument the_presets;
 QDomElement root = the_presets. createElement ("preset_db");
 
 	the_presets. appendChild (root);
 
-	for (uint i = 0; i < presets. size (); i ++) {
-	   QDomElement presetService = the_presets. createElement ("PRESET_ELEMENT");
-	   presetService. setAttribute ("SERVICE_NAME", 
-	                                 presets. at (i). serviceName);
-	   presetService. setAttribute ("CHANNEL",
-	                                 presets. at (i). channel);
+	for (uint i = 1; i < cb -> count (); i ++) {
+	   QStringList list = cb -> itemText (i).
+	                        split (":", QString::SkipEmptyParts);
+           if (list. length () != 2)
+	      continue;
+           QString channel = list. at (0);
+           QString serviceName = list. at (1);
+	   QDomElement presetService = the_presets.
+	                            createElement ("PRESET_ELEMENT");
+	   presetService. setAttribute ("SERVICE_NAME", serviceName);
+	   presetService. setAttribute ("CHANNEL", channel);
 	   root. appendChild (presetService);
 	}
 

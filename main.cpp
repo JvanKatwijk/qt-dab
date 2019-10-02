@@ -36,7 +36,7 @@
 #include        "radio.h"
 
 #define DEFAULT_INI     ".qt-dab.ini"
-#define	PRESETS		".dab-presets.xml"
+#define	PRESETS		".qt-dab-presets.xml"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
@@ -77,6 +77,7 @@ RadioInterface  *MyRadioInterface;
 
 // Default values
 QSettings       *dabSettings;           // ini file
+QString		presetName	= PRESETS;
 int32_t		dataPort	= 8888;
 int     opt;
 
@@ -104,7 +105,7 @@ int     opt;
 
 	QString presets = QDir::homePath();
 	presets. append ("/");
-	presets. append (".dab-presets.xml");
+	presets. append (presetName);
 	presets = QDir::toNativeSeparators (presets);
 
 /*

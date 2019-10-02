@@ -43,15 +43,11 @@ Q_OBJECT
 public:
 		presetHandler	(RadioInterface *);
 		~presetHandler	();
-	int	nrItems		();
-	void	update		(presetData *, QComboBox *);
 	void	loadPresets	(QString, QComboBox *);
+	void	savePresets	(QComboBox *);
 private:
-	bool		inPresets	(presetData *);
-	void		writeFile	();
 	RadioInterface	*radio;
 	QString	fileName;
-	std::vector<presetData> presets;
 };
 
 #endif

@@ -10,7 +10,7 @@ I was not very satisfied with the presets being shown in a separate
 list. In 2.7.3 the GUI is extended with a combobox - at the bottom
 of the service list - that will contain the presets.
 
-The encoding of the presets is as channel::service, it sometimes
+The encoding of the presets is as *channel:service*, it sometimes
 happens that different channels have (diferently encoded) versions
 of the same service.
 
@@ -18,39 +18,21 @@ Adding a service to the *presets* is by *clicking with the right mouse
 button on the name of the service that is currently selected in the
 servicelist*.
 
-Note that clicking with the right mouse button on any other service
+Note that clicking with the right mouse button on any other service name
 will show some technical data of that service.
 
 
 ![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
-----------------------------------------------------------------
-NEW in 2.7.2
------------------------------------------------------------------
+Of course, one is also able to *remove* an entry from the presets.
+To do this, select the entry (by putting the curson on it without
+clicking any of the mouse buttons) and press the *shift* and the *delete*
+button on the keyboard simultaneously.
 
-In 2.7.2 two significant changes hace taken place
-
-First of all, a start is made in allowing resizing of the main widget
-and some of the support widgets (Thanks to "sjlongland")
-
-Second, presets have been implemented. Selecting a preset station
-will instruct the software to select a channel, may be a different
-one from the currently selected one, and select in the ensemble carrier
-by that channel a program, the name and channel are maintained
-in a preset list.
-
-The preset list will be maintained between program invocations
-
-A currently selected service can be *added* to the presetlist by
-simply clicking with the *right* mouse button on the selected service.
-
-*Selecting* a service from the preset list is by clicking on the
-row in the list containing the name and channel number of the service
-to be started.
-
-*Removing* a service from the preset list is by *double clicking* on
-the row in the preset list containing the name and channel number
-of that service.
+The presets are stored in xml format in a file ".qt-dab-presets.xml"
+which is kept in the home directory (folder) of the user.
+On program start this file will be read (note that if some *file input*
+is selected, the preset selector will not be shown).
 
 -----------------------------------------------------------------
 NEW in 2.7.1

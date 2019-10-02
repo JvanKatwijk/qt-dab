@@ -901,6 +901,7 @@ void	RadioInterface::TerminateProcess() {
 	signalTimer.  stop();
 	presetTimer.  stop();
 
+	my_presetHandler. savePresets (presetSelector);
 	if (audioDumping) {
 	   soundOut	-> stopDumping();
 	   sf_close (audiofilePointer);
@@ -947,7 +948,8 @@ void	RadioInterface::TerminateProcess() {
   *	or some magic will cause a channel to be selected
   */
 void	RadioInterface::selectChannel_usingSelector (QString s) {
-	presetSelector -> setCurrentIndex (0);
+	presetSelector	-> setCurrentIndex (0);
+	serviceLabel	-> setText ("");
 	selectChannel (s);
 }
 
@@ -1823,7 +1825,11 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
 	         pd. channel		= channelSelector -> currentText ();
-	         my_presetHandler. update (&pd, presetSelector);
+	         QString itemText	= pd. channel + ":" + pd. serviceName;
+	         for (int i = 0; i < presetSelector -> count (); i ++)
+	            if (presetSelector -> itemText (i) == itemText)
+	               return true;
+	         presetSelector -> addItem (itemText);
 	         return true;
 	      }
 	      
@@ -1922,4 +1928,5 @@ void	RadioInterface::handle_presetSelector (QString s) {
 	QString service	= list. at (1);
 	select_presetService (channel, service);
 }
+
 
