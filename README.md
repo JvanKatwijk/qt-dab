@@ -14,25 +14,29 @@ The encoding of the presets is as *channel:service*, it sometimes
 happens that different channels have (diferently encoded) versions
 of the same service.
 
+![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
+
 Adding a service to the *presets* is by *clicking with the right mouse
 button on the name of the service that is currently selected in the
 servicelist*.
-
-Note that clicking with the right mouse button on any other service name
-will show some technical data of that service.
-
-
-![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
 Of course, one is also able to *remove* an entry from the presets.
 To do this, select the entry (by putting the curson on it without
 clicking any of the mouse buttons) and press the *shift* and the *delete*
 button on the keyboard simultaneously.
 
+*Note that clicking with the right mouse button on any other service name
+than the currently selected one will show some technical data of that service as shown in the picture below.
+
+![Qt-DAB with sdrplay input](/qt-dab-servicedata.png?raw=true)
+
 The presets are stored in xml format in a file ".qt-dab-presets.xml"
 which is kept in the home directory (folder) of the user.
 On program start this file will be read (note that if some *file input*
 is selected, the preset selector will not be shown).
+
+In 2.7.2 - thanks to stuart Longland - (most) widgets became resizable
+and a first version of the "presets" was made.
 
 -----------------------------------------------------------------
 NEW in 2.7.1
