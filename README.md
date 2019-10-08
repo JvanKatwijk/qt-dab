@@ -7,36 +7,41 @@ New in 2.7.3
 -----------------------------------------------------------------
 
 I was not very satisfied with the presets being shown in a separate
-list. In 2.7.3 the GUI is extended with a combobox - at the bottom
+list as was done in the 2.7.2 version.
+In 2.7.3 the GUI is extended with a combobox - at the bottom
 of the service list - that will contain the presets.
 
+The presets are stored in xml format in a file ".qt-dab-presets.xml"
+which is kept in the home directory (folder) of the user.
+On program start this file will be read (note that if some *file input*
+is selected, the preset selector will not be shown). On *regular*
+program termination, the preset file is rewritten.
+
 The encoding of the presets is as *channel:service*, it sometimes
-happens that different channels have (diferently encoded) versions
-of the same service.
+happens that different channels have (differently encoded) versions
+of the same service (here, channel 5B and channel 8A
+both carry a service "Omroep West").
 
 ![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
-Adding a service to the *presets* is by *clicking with the right mouse
+Adding a service to the *presets* is simply by *clicking with the right mouse
 button on the name of the service that is currently selected in the
-servicelist*.
+servicelist* (recall that clicking with the *left* mouse button
+well select the service with that name).
 
 Of course, one is also able to *remove* an entry from the presets.
 To do this, select the entry (by putting the curson on it without
 clicking any of the mouse buttons) and press the *shift* and the *delete*
 button on the keyboard simultaneously.
 
-*Note that clicking with the right mouse button on any other service name
+Note that clicking with the *right* mouse button on any other service name
 than the currently selected one will show some technical data of that service as shown in the picture below.
 
 ![Qt-DAB with sdrplay input](/qt-dab-servicedata.png?raw=true)
 
-The presets are stored in xml format in a file ".qt-dab-presets.xml"
-which is kept in the home directory (folder) of the user.
-On program start this file will be read (note that if some *file input*
-is selected, the preset selector will not be shown).
-
-In 2.7.2 - thanks to stuart Longland - (most) widgets became resizable
-and a first version of the "presets" was made.
+In 2.7.2 - thanks to Stuart Longland - (most) widgets became resizable
+and he suggested to create presets, so in 2.7.2 a first version
+of the "presets" was made.
 
 -----------------------------------------------------------------
 NEW in 2.7.1

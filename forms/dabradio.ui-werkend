@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB</string>
+   <string>qt-dab</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_7">
    <item>
@@ -72,7 +72,7 @@
       <item>
        <widget class="QLabel" name="ensembleName">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -97,7 +97,7 @@
       <item>
        <widget class="QListView" name="ensembleDisplay">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+         <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
           <horstretch>2</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
@@ -115,12 +115,6 @@
       </item>
       <item>
        <widget class="presetComboBox" name="presetSelector">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Presets are short cuts to services - possibly in ensembles in different channels - that are obtained by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;right &lt;/span&gt;mouse button on the name of the service &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;in the list of services when selected&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Removing a name from the presets is by selecting the service in this combobox and pressing the shift+delete combination.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
@@ -405,7 +399,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -434,7 +428,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -463,7 +457,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -587,7 +581,7 @@
           <item>
            <widget class="QComboBox" name="streamoutSelector">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -611,7 +605,7 @@
           <item>
            <widget class="QComboBox" name="deviceSelector">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+             <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -650,7 +644,7 @@
           <item>
            <widget class="QComboBox" name="channelSelector">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>

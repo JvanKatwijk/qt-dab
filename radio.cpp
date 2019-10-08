@@ -250,7 +250,7 @@ QString h;
 	ficSuccess		= 0;
 	pictureLabel		= nullptr;
 	syncedLabel		->
-	               setStyleSheet ("QLabel {background-color : red}");
+	               setStyleSheet ("QLabel {background-color : red; color: white}");
 
 	ensemble.setStringList (Services);
 	ensembleDisplay	-> setModel (&ensemble);
@@ -650,11 +650,11 @@ void	RadioInterface::show_motHandling (bool b) {
 	   return;
 	if (b) {
 	   techData. motAvailable -> 
-	               setStyleSheet ("QLabel {background-color : green}");
+	               setStyleSheet ("QLabel {background-color : green; color: white}");
 	}
 	else {
 	   techData. motAvailable ->
-	               setStyleSheet ("QLabel {background-color : red}");
+	               setStyleSheet ("QLabel {background-color : red; color : white}");
 	}
 }
 	
@@ -676,7 +676,7 @@ void	RadioInterface::setSynced	(char b) {
 	switch (isSynced) {
 	   case SYNCED:
 	      syncedLabel -> 
-	               setStyleSheet ("QLabel {background-color : green}");
+	               setStyleSheet ("QLabel {background-color : green; color: white}");
 	      break;
 
 	   default:
@@ -698,7 +698,7 @@ void	RadioInterface::setStereo	(bool s) {
 	   return;
 	if (s) { 
 	   stereoLabel -> 
-	               setStyleSheet ("QLabel {background-color : green}");
+	               setStyleSheet ("QLabel {background-color : green; color: white}");
 	   stereoLabel -> setText ("stereo");
 	}
 	else {
