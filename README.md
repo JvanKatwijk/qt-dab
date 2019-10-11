@@ -43,6 +43,16 @@ In 2.7.2 - thanks to Stuart Longland - (most) widgets became resizable
 and he suggested to create presets, so in 2.7.2 a first version
 of the "presets" was made.
 
+----------------------------------------------------------------------------------------------------
+Note on using dabsticks
+----------------------------------------------------------------------------------------------------
+
+Note that the appImage may complain with some Linux distros with a "librtlsdr.so" pre-installed 
+that the kernel module has to be blacklisted. Depending on the distribution, blacklisting is in
+/etc/modprobe.d/local-blaclist
+
+In my Fedora distro I added the line blacklist dvb_usb_rtl28xxu
+
 -----------------------------------------------------------------
 NEW in 2.7.1
 -----------------------------------------------------------------
