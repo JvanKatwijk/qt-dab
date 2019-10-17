@@ -114,9 +114,12 @@ std::complex<float>	avgPoint	= std::complex<float> (0, 0);
 std::complex<float>	x [T_u];
 float	avg	= 0;
 float	S	= 0;
-
+//
+//	extract the carriers and compute the average error
 	for (i = 0; i < carriers; i ++) {
-	   x [i]	= std::complex<float> (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
+	   int index = T_u / 2 - carriers / 2 + i;
+	   x [i]	= std::complex<float> (abs (real (v [index])),
+	                                       abs (imag (v [index])));
 	   avgPoint	+= x [i];
 	}
 
@@ -177,11 +180,14 @@ std::complex<float> conjVector [T_u];
 	   std::complex<float>	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
 	   conjVector [index] = r1;
-	   float ab1	= jan_abs (r1);
+	   float ab1	= abs (r1);
+//	   float ab1	= jan_abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
-	   ibits [i]		=  - real (r1) / ab1 * 127.0;
-	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
+//	   ibits [i]		=  - real (r1) / ab1 * 127.0;
+//	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
+	   ibits [i]		=  - real (r1) / ab1 * 1024.0;
+	   ibits [carriers + i] =  - imag (r1) / ab1 * 1024.0;
 	}
 
 	memcpy (phaseReference. data(), fft_buffer,

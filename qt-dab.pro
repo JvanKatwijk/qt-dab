@@ -7,6 +7,7 @@
 TEMPLATE	= app
 TARGET		= qt-dab-2.7.3
 QT		+= widgets xml
+#CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
@@ -381,10 +382,10 @@ dabstick {
 	DEPENDPATH	+= ./devices/rtlsdr-handler
 	INCLUDEPATH	+= ./devices/rtlsdr-handler
 	HEADERS		+= ./devices/rtlsdr-handler/rtlsdr-handler.h \
-	                   ./devices/rtlsdr-handler/rtlsdr-widget.h \
 	                   ./devices/rtlsdr-handler/rtl-dongleselect.h
 	SOURCES		+= ./devices/rtlsdr-handler/rtlsdr-handler.cpp \
 	                   ./devices/rtlsdr-handler/rtl-dongleselect.cpp
+	FORMS		+= ./devices/rtlsdr-handler/rtlsdr-widget.ui
 }
 
 #

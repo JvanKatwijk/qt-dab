@@ -313,10 +313,10 @@ int32_t	r;
 	   return false;
 
 	this -> rtlsdr_set_center_freq (device, lastFrequency);
-	workerHandle	= new dll_driver (this);
 	rtlsdr_set_agc_mode (device,
                 combo_autogain -> currentText() == "autogain_on" ? 1 : 0);
 	rtlsdr_set_tuner_gain (device, theGain);
+	workerHandle	= new dll_driver (this);
 	return true;
 }
 

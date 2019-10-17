@@ -31,7 +31,7 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
 	airspyHandler::airspyHandler (QSettings *s) {
 int	result, i;
-int	distance	= 10000000;
+int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 

@@ -10,6 +10,7 @@
 
 #include	<QVBoxLayout>
 #include	<QHBoxLayout>
+#include	<QFormLayout>
 
 class	rtlsdrWidget {
 public:
@@ -37,9 +38,10 @@ void	setupUi		(QWidget *qw) {
 	combo_autogain	-> addItem ("autogain_off");
 	combo_autogain	-> addItem ("autogain_on");
 
-	QHBoxLayout *line1	= new QHBoxLayout ();
-	line1		-> addWidget (ppm_correction);
+	QFormLayout *line1	= new QFormLayout ();
+//	QHBoxLayout *line1	= new QHBoxLayout ();
 	line1		-> addWidget (ppmCorrectionLabel);
+	line1		-> addWidget (ppm_correction);
 
 	QVBoxLayout *base	= new QVBoxLayout ();
 	base		-> addWidget (versionLabel);

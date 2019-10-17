@@ -77,6 +77,7 @@ static	int goodFrames	= 0;
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
 	this	-> tiiBuffer		= tiiBuffer;
+	this	-> threshold		= threshold;
 	this	-> T_null		= params. get_T_null();
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -178,14 +179,16 @@ notSynced:
 	      case NO_END_OF_DIP_FOUND:
 	         goto notSynced;
 	   }
+
 	   myReader. getSamples (ofdmBuffer. data(),
-	                        T_u, coarseOffset + fineOffset);
+	                         T_u, coarseOffset + fineOffset);
 /**
   *	Looking for the first sample of the T_u part of the sync block.
   *	Note that we probably already had 30 to 40 samples of the T_g
   *	part
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 3);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 2);
+//	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
@@ -210,43 +213,17 @@ notSynced:
 //	precise start of the T_u part of the zero-th block.
 //	However, it turns out that with devices that give more noisy
 //	samples the findIndex function might give wrong results, leading
-//	to loosing synchronization.
-//	Therefore, a simple test is added to just verify that the "dip"
-//	of the null period ends within a reasonable distance of the 
-//	estimated begin, and if no such end of dip could be identified
-//	within a reasonable distance, just resync.
-//	we make it into a simple test, just compare the avg value of the
-//	samples that are (should be) in the non-null period after the
-//	null period with the avg value of the samples in the null period
+//	to loosing synchronization. That is why we call the findIndex
+//	function - once sync is established - with a much  higher
+//	threshold value
 //	
 Check_endofNULL:
 
 	   avgValue_testPeriod	= 0;
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
-//	   for (i = 100; i < 100 + testLength; i ++)
-//	      avgValue_testPeriod += abs (ofdmBuffer [i]);
-//	   avgValue_testPeriod	/= testLength;
-//
-//	It seems reasonable to expect that the avg value of a segment
-//	of samples belonging to the T_g part of the first block of the
-//	DAB frame is at least twice the avg value of the samples in he
-//	null period
-//	   if (avgValue_testPeriod < 1.7 * avgValue_nullPeriod) {
-//	      fprintf (stderr, "failing %f after %d good frames\n",
-//	                     avgValue_testPeriod / avgValue_nullPeriod,
-//	                     goodFrames);
-//	      goodFrames	= 0;
-//	      goto notSynced;
-//	   }
-//	   fprintf (stderr, "%f \n", avgValue_testPeriod / avgValue_nullPeriod);
-
-/**
-  *	We now have to find the exact first sample of the non-null period.
-  *	We use a correlation that will find the first sample after the
-  *	cyclic prefix.
-  */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 10);
+	   startIndex = phaseSynchronizer.
+	                           findIndex (ofdmBuffer, 4 * threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
@@ -283,6 +260,9 @@ SyncOnPhase:
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
+//
+//	this is not really necessary, it makes things
+//	simpler in the msc decoder
 	   my_mscHandler.  processBlock_0 (ofdmBuffer. data());
 
 //	Here we look only at the block_0 when we need a coarse

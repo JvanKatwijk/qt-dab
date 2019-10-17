@@ -48,7 +48,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	   case 2:
 	      return RSP2_Table [lnaState];
 
-	   default:
+	   default: // both for DUO and RSP1a
 	      return RSP1A_Table [lnaState];
 	}
 }
@@ -520,6 +520,10 @@ int	lnaState	= lnaGainSetting -> value();
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
 	                errorCodes (err). toLatin1(). data());
+	err		= my_mir_sdr_DCoffsetIQimbalanceControl (1, 0);
+	if (err != mir_sdr_Success)
+           fprintf (stderr, "error = %s\n",
+                        errorCodes (err). toLatin1(). data());
 	running. store (true);
 	return true;
 }

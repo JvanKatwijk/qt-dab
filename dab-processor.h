@@ -92,6 +92,7 @@ public:
 	void		print_Overview();
 	void		clearEnsemble();
 private:
+	int		threshold;
 	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;

@@ -1,112 +1,6 @@
-# Qt-DAB [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-2.7 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
-
-----------------------------------------------------------------
-New in 2.7.3
------------------------------------------------------------------
-
-I was not very satisfied with the presets being shown in a separate
-list as was done in the 2.7.2 version.
-In 2.7.3 the GUI is extended with a combobox - at the bottom
-of the service list - that will contain the presets.
-
-The presets are stored in xml format in a file ".qt-dab-presets.xml"
-which is kept in the home directory (folder) of the user.
-On program start this file will be read (note that if some *file input*
-is selected, the preset selector will not be shown). On *regular*
-program termination, the preset file is rewritten.
-
-The encoding of the presets is as *channel:service*, it sometimes
-happens that different channels have (differently encoded) versions
-of the same service (here, channel 5B and channel 8A
-both carry a service "Omroep West").
-
-![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
-
-Adding a service to the *presets* is simply by *clicking with the right mouse
-button on the name of the service that is currently selected in the
-servicelist* (recall that clicking with the *left* mouse button
-well select the service with that name).
-
-Of course, one is also able to *remove* an entry from the presets.
-To do this, select the entry (by putting the curson on it without
-clicking any of the mouse buttons) and press the *shift* and the *delete*
-button on the keyboard simultaneously.
-
-Note that clicking with the *right* mouse button on any other service name
-than the currently selected one will show some technical data of that service as shown in the picture below.
-
-![Qt-DAB with sdrplay input](/qt-dab-servicedata.png?raw=true)
-
-In 2.7.2 - thanks to Stuart Longland - (most) widgets became resizable
-and he suggested to create presets, so in 2.7.2 a first version
-of the "presets" was made.
-
-----------------------------------------------------------------------------------------------------
-Note on using dabsticks
-----------------------------------------------------------------------------------------------------
-
-Note that the appImage may complain with some Linux distros with a "librtlsdr.so" pre-installed 
-that the kernel module has to be blacklisted. Depending on the distribution, blacklisting is in
-/etc/modprobe.d/local-blaclist
-
-In my Fedora distro I added the line blacklist dvb_usb_rtl28xxu
-
------------------------------------------------------------------
-NEW in 2.7.1
------------------------------------------------------------------
-
-2.7.1 is merely a "bug-fix" version.
-
-Added a "default" filename when touching the "content" button to
-save the description of an ensemble.
-You could consider sending the DAB ensemble description to Gunther Lorenz glorenz@fmlist.org. He maintains a large database with FM stations and DAB ensembles.
-
-------------------------------------------------------------------
-NEW in 2.7
-------------------------------------------------------------------
-
-New devices:
-
- a) the LimeSDR is now supported (due to missing a decent "dll" file
-for the library, for now in Linux only);
-
- b) as an experimental feature, a Soapy interface is implemented. Tested
-with the SDRplay and the LimeSDR it works.
-Soapy support is included in neither the appImage nor the Windows version.
-
-Synchronization reconsidered
-
-One of the issues to be resolved was resynchronization. It could
-happen that - due to some faulty input - the synchronization
-got lost and could not be regained without a reset.
-
-The chain of events leading to such a loss of synchronization is
-identified and chance that - due to some faulty input - synchronization
-will be lost is - at least - much smaller.
-
-Obsolete properties
-
-The DAB standard eliminated the support for Modes other than Mode 1 and
-Bands other than VHF Band III. The implementation still supports these
-features, however, since they are obsolete, there are no controls on the
-GUI anymore (the control for the Mode was already removed from earlier
-versions). 
-Explicitly setting the Mode and/or the Band is possible by 
-including some command lines in the ".qt-dab.ini" file.
-
-For the Mode, one will add/set a line
-
-	dabMode=Mode x, where x is either 1, 2 or 4
-
-For the Band, one will add/set a line
-
-	dabBand=band, where band is either VHF Band III or L_Band
-
-Since the control for the dab band is now removed from the GUI, this GUI
-could be made slightly smaller.
-
+Qt-DAB-2.7 is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -115,6 +9,9 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
+* [Presets](#Presets)
+* [Comment on some settings](#comment-on-some-settings)
+* [Obsolete properties](#Obsolete-properties)
 * [Installation](#features)
   * [Windows](#windows)
   * [Ubuntu Linux](#ubuntu-linux)
@@ -123,8 +20,6 @@ Table of Contents
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
   * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
-  * [Comment on some settings](#comment-on-some-settings)
-  * [A note on intermittent sound](#a-note-on-intermittent-sound)
 * [Copyright](#copyright)
  
 ------------------------------------------------------------------
@@ -136,21 +31,23 @@ Features
   * Dynamic Label (DLS) 
   * Both DAB bands supported: 
   	* VHF Band III
-   	* L-Band (only used in Czech Republic and Vatican)
-  * Spectrum view (incl. constellation diagram, impulse response, NULL symbol)
+   	* L-Band (only used in Czech Republic and Vatican) (see "obsolete properties")
+  * Spectrum view (incl. constellation diagram, impulse response, TII spectrum)
   * Scanning function (scan the subsequent channels in the selected band until a channel is encountered where a DAB signal is detected)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
+  * Detailed information for other services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type)
   * Automatic display of TII (Transmitter Identification Information) data when transmitted
+  * Presets for easy switching of programs in different ensembles (see *Presets*)
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
   * Saving audio as uncompressed wave files
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
-   	- SDR DAB sticks (RTL2838U or similar), and
+   	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
 	- limeSDR, 
-	- Soapy (experimental, Linux only),
+	- Soapy (experimental, Linux only), and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
  
 Not  (Not yet or partly) implemented:
@@ -167,30 +64,29 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-![Qt-DAB with sdrplay input](/qt-dab-1.png?raw=true)
+![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
-**Qt-DAB-2.7* is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-2.7** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Beside to Qt-DAB, there exists a "light" version, **dabradio**, an SDRPlay-specific version **sdrplayDab** , a command-line based version and a stand-alone
-server version **dab-server**. All these versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
+Some other programs are derived from Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone
+server version **dab-server**. The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
 The **dab-server** will run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on
 an Android tablet.
 
-**dabradio**, **sdrplayDab**, the Qt-free version, **dab-cmdline** the "command-line only", and the **dab-server** version have their own repository on Github.
+Furthermore, for DX purposes, a *dab-scanner* is implemented that allows
+for a continuous scanning of selected channels in a given band. Results are 
+written in a txt file, formatted for use with *LibreOffice Calc* and
+comparable programs.
 
-The Qt-DAB, the dab-cmdline version, and the dab-server version support decoding of terrestrial DAB and DAB+ reception from either an AIRSPY, an SDRplay, the HACK RF, or a dabstick (rtl_sdr). The sdrplayDab version is tightly couples to the SDRplay device.
+**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the "command-line only", the **dab-server** version and the dab-scanner have their own repository on Github.
 
-Beside to these C++ based versions,  (slightly limited) versions are implemented in Java and Ada, both with their own repository on Github. 
-
-The Qt-DAB version also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-2.7 also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
-Since the Qt-DAB version has to run on a headless RPI 2/3, using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
+Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
 
 For further information please visit http://www.sdr-j.tk
-
-Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory. See [Comment on some settings](#comment-on-some-settings) for more details.
 
 ------------------------------------------------------------------
 Widgets and scopes
@@ -206,16 +102,96 @@ The picture below shows Qt-DAB's main window, with the (few) control buttons, an
 
 While the main window and the widget for the device control are always shown, each of the others is only shown when pushing a button on the main window. In case a widget is invisible (i.e. not selected), the software to generate a spectrum is bypassed, so not to waste CPU power.
 
-![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
+![Qt-DAB with SDRplay input](/qt-dab-x.png?raw=true)
+
+------------------------------------------------------------------
+Presets
+-----------------------------------------------------------------
+
+Presets are a feature, introduced in version 2.7.2 (following a suggestion of Stuart Longland (who added code to make (most) widgets resizable).
+
+**Presets** make an easy switching between services in different ensembles
+(different channels) possible.
+
+Presets are seen in a combobox at the bottom of the services list on the GUI. Touching a name in this combobox will instruct the software to select the right channel and switch to the named service. 
+ 
+**Adding** a service to the list of presets is simply by **clicking with the right mouse button on the name of the service that is currently selected in the servicelist** (note that clicking with the *left* mouse button well select the service with that name).
+
+**Removing** a service from the presets is by selecting the service name (by putting the curson on it without clicking any of the mouse buttons) in the combobox and pressing the *shift* and the *delete* button on the keyboard simultaneously.
+
+Between program invocations, presets are kept in a file in xml format. The file - .qt-dab-presets.xml - is stored in the user's home directory. This file is read on program start and rewritten on program termination.
+
+The encoding of the presets is as **channel:service**, it sometimes happens that different channels have (differently encoded) versions of the same service (in the pictures channel 5B and channel 8A both carry a service "Omroep West").
+
+(Note that clicking with the **right** mouse button on any other service name
+than the currently selected one will show some technical data of that service as shown in the picture below.)
+
+![Qt-DAB with sdrplay input](/qt-dab-servicedata.png?raw=true)
+
+--------------------------------------------------------------------------------
+Comment on some settings
+-------------------------------------------------------------------------------
+
+Some settings are preserved between program invocations, they are stored in a file `.qt-dab.ini`, to be found in the home directory.
+Settings maintained between program invocations are typically the name 
+of the device used, the channel that was used, the name of the service
+last used etc.
+
+The presets are stored
+in an xml file, `.qt-dab-presets.xml'.
+
+Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the .ini file.
+
+Typical examples are
+
+`saveSlides=1` 
+when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
+
+`picturesPath` 
+defines the directory where the slides (MOT slideshow) should be stored. Default is the home directory.
+
+`showSlides=1` 
+when set to 0 the slides will not be shown.
+
+`has-presetName=1` 
+when set the name of the selected service - that is selected when closing down the program - is kept and at the next invocation of the program, an attempt is made to start that particular service. The name of the service is kept as `presetname=xxxx`
+
+The background colors of the spectrum can be changed by setting 
+```
+displaycolor=blue
+gridcolor=red
+```
+If one uses the rtl_tcp handler, the default value for the "port" is 1234,
+a port can de set in the "ini" file by setting
+
+```
+rtl_tcp_port=xxx
+```
+
+-------------------------------------------------------------------------
+Obsolete properties
+-------------------------------------------------------------------------
+
+The recent DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. The Qt-DAB implementation still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
+
+Explicitly setting the Mode and/or the Band is possible by including some command lines in the ".qt-dab.ini" file.
+
+For the Mode, one will add/set a line
+
+	dabMode=Mode x, where x is either 1, 2 or 4
+
+For the Band, one will add/set a line
+
+	dabBand=band, where band is either VHF Band III or L_Band
+
+Since the control for the dab band is now removed from the GUI, this GUI could be made slightly smaller.
 
 ------------------------------------------------------------------
 Windows
 ------------------------------------------------------------------
 
-For windows there is an installer, to be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
+For windows an  **installer** is to be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.
-
-If you want to compile it by yourself, please install Qt through its online installer, see https://www.qt.io/ 
 
 ------------------------------------------------------------------
 Ubuntu Linux
@@ -285,14 +261,15 @@ Ubuntu 16.04 (and on) have good support for Qt5 and qwt (compiled for Qt5). For 
   cd qt-dab
   ```
 	
-4. Edit the `qt-dab.pro` file for configuring the supported devices and other options. Comment the respective lines out if you don't own an Airspy (mini) or an SDRplay.
+4. Edit the `qt-dab.pro` file for configuring the supported devices and other options. Comment the respective lines for devices that you do not have or do not
+want to support out.
 
 4.a. Check the installation path to qwt. If you were downloading it from http://qwt.sourceforge.net/qwtinstall.html please mention the correct path in `qt-dab.pro` file (for other installation change it accordingly): 
   ```
   INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
   ````
 
-4.b. If you are compiling on/for an RPI2 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on the cores of the processor. 
+4.b. If you are compiling on/for an RPI2/3 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on the cores of the processor. 
 
 5. Build and make
   ```
@@ -315,20 +292,21 @@ Options in the configuration are:
 
   b) select the output: soundcard or TCP connection
 
-  c) select or unselect basic MSC data handling
-
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
 Comment the lines out by prefixing the line with a `#` in the `qt-dab.pro` file (section "unix") for the device(s) you want to exclude in the configuration. In the example below, rtl_tcp (i.e. the connection to the rtlsdr server) won't be used.
 ```
 CONFIG          += dabstick
 CONFIG          += sdrplay
-#CONFIG          += rtl_tcp
+CONFIG          += lime
+CONFIG          += rtl_tcp
 CONFIG          += airspy
-CONFIG		+= hackrf
+CONFIG          += hackrf
+#CONFIG         += soapy
+
 ```
 
-In the Windows configuration one may also choose
+In the Windows configuration one may also choose, however *soapy* is not supported.
 ````
 CONFIG		+= extio
 ````
@@ -351,19 +329,6 @@ For selecting the output to be handled by the Qt system (default device only) un
 #CONFIG		+= qt-audio
 ````
 
-For basic MSC data handling, i.e. MOT handling etc, uncomment
-```
-DEFINES         += MSC_DATA__           # use at your own risk
-```
-
-An experimental configuration parameter is
-```
-CONFIG		+= try_epg
-```
-
-If `try_epg` is configured then EPG (Electronic Program Guide) data will be written to `*.xml` files. Please select the service carrying EPG data.
-
-
 ------------------------------------------------------------------
 Configuring using CMake
 ------------------------------------------------------------------
@@ -372,7 +337,7 @@ The `CMakeLists.txt` file has all devices and the spectrum switched off per defa
 
 An example:
 ```
-cmake .. -DRTLSDR=ON -DRTLTCP=ON -DSPECTRUM=ON
+cmake .. -DRTLSDR=ON -DRTLTCP=ON 
 ```
 	
 will generate a makefile with support for 
@@ -381,8 +346,6 @@ will generate a makefile with support for
  
  b) for the remote dabstick (using the rtl_tcp connection) and 
  
- c) for the spectrum in the configuration.
-
 Other devices that can be selected (beside dabstick and rtl_tcp) are sdrplay, HackRF and airspy. Use `-DHACKRF=ON`, `-DSDRPLAY=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
 
 The default location for installation depends on your system, mostly `/usr/local/bin` or something like that. Set your own location by adding
@@ -398,7 +361,7 @@ Important: Note that `CMakeLists.txt` file expects the appropriate Qt version (a
 SDRplay
 -----------------------------------------------------------------
 
-The current set of sources provides support for both the RSP-I and the RSP-II. Due to an incompatibility between libraries 2.13 and older versions, be certain to have at least 1.13 installed.
+The current set of sources provides support for both the RSP-I and the RSP-II. Due to an incompatibility between libraries 2.13 and older versions, be certain to have at least 2.13 installed.
 
 ------------------------------------------------------------------
 Qt
@@ -418,7 +381,7 @@ One remark: getting "sound" is not always easy. Be certain that you have install
 
 In arch, it was essential to add the username to the group "audio".
 
-The most recent distribution of Raspbian Stretch (i.e. August 2017) supports both Qt5 and a qwt compiled against Qt5.
+The most recent distributions, Raspbian Stretch and Raspbian Buster supports both Qt5 and a qwt compiled against Qt5.
 
 Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies, a script to download all required packages, compile
 and build a full executable for qt-dab is part of the releases section.
@@ -427,97 +390,31 @@ and build a full executable for qt-dab is part of the releases section.
 appImage for x64 Linux systems
 ---------------------------------------------------------------------------
 
-https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, **Qt-DAB-x64.Appimage**, which is created on Ubuntu 14.04 (Trusty), and uses Qt4 (so it basically should run on any x-64 based linux system that isn't too old.).
+https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, **Qt-DAB-x64.Appimage**, which is created on Ubuntu 16.04 (Xenial).
 
-It assumes that you have installed an appropriate usb library, libraries to support either a dabstick (i.e. rtlsdr) or an Airspy are included in the appImage (the appropriate udev rules, i.e. rules to allow a non-root user to use the device through USB, will be installed by the execution of the appImage, that is why it will ask for your password. If you have installed the device of your choice on your system, you can just cancel this request).
+Different from previous versions, this version assumes you have installed
+the support library for the devices you want to use.
 
 If you want to run with an SDRplay, follow the installation instructions for the library from http://www.sdrplay.com . All further dependencies are included.
 
-The appImage is just a self-contained single file which you have to make executable in order to run.
+If you want to run an RTLSDR based dabstick, please note that
+the appImage may complain with some Linux distros with a "librtlsdr.so" pre-installed
+that the kernel module has to be blacklisted. Depending on the distribution, blacklisting is in
+/etc/modprobe.d/local-blaclist
 
-It furthermore contains an (experimental) appImage for use under Stretch on an RPI2/3, **Qt-DAB-ARM.AppImage**.
+For compiling and installing a support library for an RTLSDR device, 
+follow the instruction on https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr.
 
-All further dependencies are included
+For compiling and installing a support library for an AIRspy device,
+find the sources on https://github.com/airspy/airspyone_host/tree/master/libairspy
+
+The appImage itself is just a self-contained single file which you have to make executable in order to run.
 
 For more information see http://appimage.org/
 
---------------------------------------------------------------------------------
-Comment on some settings
--------------------------------------------------------------------------------
-
-Some values of settings are maintained between program invocations. This is done in the (hidden) file `.qt-dab.ini` in the user's home directory.
-
-Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the .ini file.
-
-Typical examples are
-
-`saveSlides=1` 
-when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).
-
-`picturesPath` 
-defines the directory where the slides (MOT slideshow) should be stored. Default is the home directory.
-
-`showSlides=1` 
-when set to 0 the slides will not be shown.
-
-`has-presetName=1` 
-when set the name of the selected service - that is selected when closing down the program - is kept and at the next invocation of the program, an attempt is made to start that particular service. The name of the service is kept as `presetname=xxxx`
-
-The background colors of the spectrum can be changed by setting 
-```
-displaycolor=blue
-gridcolor=red
-```
-
-The Qt-DAB program searches - if available - for TII (transmitter identification information) data in the FIC. If TII data is available, the small label at the bottom of the Technical Details widget will color green, and the main ID if the transmitters is shown. Also the list of geographical positions of the transmitters of the SFN is printed on the terminal. If the identification of the transmitter received can be decoded, it will be shown at the bottom line of the Technical Data Widget.
-
-The periodicity of the search for the data defining the position of the transmitter received can be set by adding a line to the `.qt-dab.ini` file
-
-```
-tii_delay=xxx
-```
-where `xxx` is the number of seconds. Default of the delay is 20 seconds.
-
-The Qt-DAB program will search for additional transmitter identification
-if
-
-```
-tii_depth=xx
-```
-
-is set. A reasonable value is 3, default the value will be set to 1.
-
-
-Similarly, if 
-
-```
-echo_depth=xxx
-```
-is set, a guess will be made about the relative delays of the incoming
-data of other transmitters in the SFN.
-
-
-If one uses the rtl_tcp handler, the default value for the "port" is 1234,
-a port can de set in the "ini" file by setting
-
-```
-rtl_tcp_port=xxx
-```
-
---------------------------------------------------------------------------------
-A note on intermittent sound 
--------------------------------------------------------------------------------
-
-In some cases, in some periods of listening, the sound is (or at least seems) interrupted. There are two different causes for this:
-
-First of all the incoming signal is weak and audio packages do not pass the many controls that are executed. This shows in the widget "technical data", not all the colored bars at the bottom are 100 percent green. An audio package represents 24 milliseconds of audio, loss of a few packages leads to an interruption of the sound.
-
-A second reason has to do with system parameters. Too small a buffersize in the audio driver causes too high a frequency of calls to a callback function. In Linux this shows by an underrun reported by the alsa sound system. The buffer size can be set (in multiples of 256 audio samples) by the value of "latency" in the `.ini` file. The default value is 1.
-
-On my RPI 2 - with Stretch - `latency=2` works best, on my RPI 3 there is
-no problem whatsoever.
-
+-----------------------------------------------------------------------
 # Copyright
+------------------------------------------------------------------------
 
 
 	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018, 2019

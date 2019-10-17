@@ -34,7 +34,7 @@
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-#include	"rtlsdr-widget.h"
+#include	"ui_rtlsdr-widget.h"
 class	dll_driver;
 //
 //	create typedefs for the library functions
@@ -68,7 +68,7 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler: public virtualInput, public  rtlsdrWidget {
+class	rtlsdrHandler: public virtualInput, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *);
@@ -89,7 +89,7 @@ public:
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
 private:
-	QWidget		*myFrame;
+	QFrame		*myFrame;
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
