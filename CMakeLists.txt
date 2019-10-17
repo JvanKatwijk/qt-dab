@@ -527,17 +527,15 @@ add_definitions (-DPRESET_NAME)
 	endif (LIMESDR)
 
 	if (RTLSDR)
-           find_package(LibRTLSDR)
-           if (NOT LIBRTLSDR_FOUND)
-               message(FATAL_ERROR "please install librtlsdr")
-           endif ()
-	   ###include_directories (${RTLSDR_INCLUDE_DIR})
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./devices/rtlsdr-handler/rtlsdr-widget.ui
+           )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./devices/rtlsdr-handler/rtl-dongleselect.h
 	        ./devices/rtlsdr-handler/rtlsdr-handler.h
-	        ./devices/rtlsdr-handler/rtlsdr-widget.h
 	   )
 
 	   include_directories (
@@ -548,7 +546,8 @@ add_definitions (-DPRESET_NAME)
 	        ${${objectName}_HDRS}
 	        ./devices/rtlsdr-handler/rtlsdr-handler.h
 	        ./devices/rtlsdr-handler/rtl-dongleselect.h
-	        ./devices/rtlsdr-handler/rtlsdr-widget.h
+	        ./devices/rtlsdr-handler/rtl-sdr.h
+	        ./devices/rtlsdr-handler/rtl-sdr_export.h
 	   )
 
 	   set (${objectName}_SRCS
