@@ -46,25 +46,25 @@ Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
 	                         	virtualInput *theRig,
-	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
+	                         	RingBuffer<DSPCOMPLEX> *spectrumBuffer = nullptr);
 
-			~sampleReader();
-		void	setRunning	(bool b);
-		float	get_sLevel();
-		std::complex<float> getSample	(int32_t);
-	        void	getSamples	(std::complex<float> *v,
+				~sampleReader();
+		void		setRunning	(bool b);
+		float		get_sLevel	();
+		DSPCOMPLEX	getSample	(int32_t);
+	        void		getSamples	(DSPCOMPLEX *v,
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping();
 private:
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;
-		RingBuffer<std::complex<float>> *spectrumBuffer;
-		std::vector<std::complex<float>> localBuffer;
+		RingBuffer<DSPCOMPLEX> *spectrumBuffer;
+		std::vector<DSPCOMPLEX> localBuffer;
 		int32_t		localCounter;
 		int32_t		bufferSize;
 		int32_t		currentPhase;
-		std::complex<float>	*oscillatorTable;
+		DSPCOMPLEX	*oscillatorTable;
 		std::atomic<bool>	running;
 		int32_t		bufferContent;
 		float		sLevel;

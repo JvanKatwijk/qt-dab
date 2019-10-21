@@ -58,9 +58,9 @@ public:
 	                         int16_t,	// echo_depth
 	                         QString,
 	                         RingBuffer<float> *,
+	                         RingBuffer<DSPCOMPLEX>	*,
 	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<std::complex<float>>	*
+	                         RingBuffer<DSPCOMPLEX>	*
 	                        );
 		~dabProcessor();
     void		reset();
@@ -98,7 +98,7 @@ private:
 	int16_t		echo_depth;
 	virtualInput	*theRig;
 	dabParams	params;
-	RingBuffer<std::complex<float> > *tiiBuffer;
+	RingBuffer<DSPCOMPLEX> *tiiBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 
@@ -124,7 +124,7 @@ private:
 	int32_t		coarseOffset;
 
 	bool		correctionNeeded;
-	std::vector<std::complex<float>	>ofdmBuffer;
+	std::vector<DSPCOMPLEX>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
 virtual	void		run();
 signals:

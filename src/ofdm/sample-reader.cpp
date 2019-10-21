@@ -32,8 +32,8 @@ int16_t res     = 1;
 }
 
 	sampleReader::sampleReader (RadioInterface *mr,
-	                            virtualInput	*theRig
-	                            ,RingBuffer<std::complex<float>> *spectrumBuffer
+	                            virtualInput	*theRig,
+	                            RingBuffer<DSPCOMPLEX> *spectrumBuffer
 	                           ) {
 int	i;
 	this	-> theRig	= theRig;
@@ -48,9 +48,9 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	oscillatorTable = new std::complex<float> [INPUT_RATE];
+	oscillatorTable = new DSPCOMPLEX [INPUT_RATE];
         for (i = 0; i < INPUT_RATE; i ++)
-           oscillatorTable [i] = std::complex<float>
+           oscillatorTable [i] = DSPCOMPLEX
 	                            (cos (2.0 * M_PI * i / INPUT_RATE),
                                      sin (2.0 * M_PI * i / INPUT_RATE));
 
@@ -74,7 +74,7 @@ float	sampleReader::get_sLevel() {
 	return sLevel;
 }
 
-std::complex<float> sampleReader::getSample (int32_t phaseOffset) {
+DSPCOMPLEX sampleReader::getSample (int32_t phaseOffset) {
 std::complex<float> temp;
 
 	corrector	= phaseOffset;
@@ -115,7 +115,7 @@ std::complex<float> temp;
 	currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 
 	temp		*= oscillatorTable [currentPhase];
-	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
+	sLevel		= 0.00001 * abs (temp) + (1 - 0.00001) * sLevel;
 #define	N	5
 	if (++ sampleCount > INPUT_RATE / N) {
 	   show_Corrector	(corrector);
@@ -129,11 +129,15 @@ std::complex<float> temp;
 	}
 	return temp;
 }
-
-void	sampleReader::getSamples (std::complex<float>  *v,
+//
+//	Since the devices present their data as floats
+//	in case of doubles, we have to convert
+void	sampleReader::getSamples (DSPCOMPLEX  *v,
 	                          int32_t n, int32_t phaseOffset) {
 int32_t		i;
-
+#ifdef	__HIGH_PRECISION__
+std::complex<float> buf [n];
+#endif
 	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;
@@ -149,7 +153,13 @@ int32_t		i;
 	   throw 20;
 //
 //	so here, bufferContent >= n
+#ifdef	__HIGH_PRECISION__
+	n	= theRig -> getSamples (buf, n);
+	for (i = 0; i < n; i ++)
+	   v [i] = DSPCOMPLEX (real (buf [i]), imag (buf [i]));
+#else
 	n	= theRig -> getSamples (v, n);
+#endif
 	bufferContent -= n;
 	if (dumpfilePointer. load() != nullptr) {
 	   for (i = 0; i < n; i ++) {
@@ -173,7 +183,7 @@ int32_t		i;
 	   if (localCounter < bufferSize)
 	      localBuffer [localCounter ++]     = v [i];
 	   v [i]	*= oscillatorTable [currentPhase];
-	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
+	   sLevel	= 0.00001 * abs (v [i]) + (1 - 0.00001) * sLevel;
 	}
 
 	sampleCount	+= n;

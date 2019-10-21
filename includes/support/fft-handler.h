@@ -28,12 +28,6 @@
 #include	"dab-constants.h"
 #include	"dab-params.h"
 
-#define FFTW_MALLOC		fftwf_malloc
-#define FFTW_PLAN_DFT_1D	fftwf_plan_dft_1d
-#define FFTW_DESTROY_PLAN	fftwf_destroy_plan
-#define FFTW_FREE		fftwf_free
-#define FFTW_PLAN		fftwf_plan
-#define FFTW_EXECUTE		fftwf_execute
 #include    <fftw3.h>
 
 /*
@@ -44,27 +38,15 @@ class   fftHandler {
 public:
 		fftHandler	(uint8_t);
         	~fftHandler();
-        std::complex<float>  *getVector();
+        DSPCOMPLEX	*getVector();
         void		do_FFT();
         void		do_IFFT();
     private:
 	dabParams	p;
         int32_t		fftSize;
-        std::complex<float>  *vector;
+        DSPCOMPLEX  *vector;
         FFTW_PLAN   plan;
 };
 
-class   common_ifft {
-public:
-		common_ifft (int32_t);
-        	~common_ifft();
-        std::complex<float>  *getVector();
-        void	do_IFFT();
-    private:
-        int32_t	fft_size;
-        std::complex<float>  *vector;
-        FFTW_PLAN   plan;
-        void        Scale(std::complex<float> *);
-};
 #endif
 

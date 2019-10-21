@@ -123,10 +123,10 @@ QString h;
 	tiiSwitch		= false;
 	isSynced		= UNSYNCED;
 	dabBand			= BAND_III;
-	spectrumBuffer          = new RingBuffer<std::complex<float>> (2 * 32768);
+	spectrumBuffer          = new RingBuffer<DSPCOMPLEX> (2 * 32768);
 	iqBuffer		= new RingBuffer<std::complex<float>> (2 * 1536);
 	responseBuffer		= new RingBuffer<float> (32768);
-	tiiBuffer		= new RingBuffer<std::complex<float>> (32768);
+	tiiBuffer		= new RingBuffer<DSPCOMPLEX> (32768);
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
 
 /**	threshold is used in the phaseReference class 
@@ -150,6 +150,8 @@ QString h;
 	if (tii_delay < 5)
 	   tii_delay = 5;
 
+	switchTime	=
+	           dabSettings -> value ("switch_time", 10000). toInt ();
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 ///	The default, most likely to be overruled
 #ifdef	_SEND_DATAGRAM_
@@ -1197,6 +1199,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
+	      presetName	= "";
 	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
@@ -1216,6 +1219,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
+	      presetName	= "";
 	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
@@ -1237,6 +1241,7 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new wavFiles (file);
 	      hideButtons();	
+	      presetName	= "";
 	      presetSelector -> hide ();
 	   }
 	   catch (int e) {
@@ -1917,7 +1922,7 @@ bool	res;
 	presetTimer. setSingleShot (true);
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
-	presetTimer. start (8000);
+	presetTimer. start (switchTime);
 }
 
 void	RadioInterface::handle_presetSelector (QString s) {

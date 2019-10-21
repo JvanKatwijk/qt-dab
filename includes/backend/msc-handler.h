@@ -48,8 +48,8 @@ public:
 	                                         uint8_t,
 	                                         QString);
 			~mscHandler();
-	void		processBlock_0		(std::complex<float> *);
-	void		process_Msc		(std::complex<float> *, int);
+	void		processBlock_0		(DSPCOMPLEX *);
+	void		process_Msc		(DSPCOMPLEX *, int);
 	void		set_Channel		(descriptorType *,
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
@@ -68,8 +68,8 @@ private:
 	QString		picturesPath;
 	dabParams	params;
 	fftHandler      my_fftHandler;
-	std::complex<float>     *fft_buffer;
-	std::vector<complex<float>>     phaseReference;
+	DSPCOMPLEX	*fft_buffer;
+	std::vector<DSPCOMPLEX>     phaseReference;
 
         interLeaver     myMapper;
 	QMutex		locker;
@@ -84,7 +84,7 @@ private:
 	int16_t		blockCount;
 	void            run();
         std::atomic<bool>       running;
-        std::vector<std::vector<std::complex<float> > > command;
+        std::vector<std::vector<DSPCOMPLEX> > command;
         int16_t         amount;
         int16_t         currentBlock;
         void            processBlock_0();

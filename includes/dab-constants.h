@@ -49,7 +49,25 @@
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 #endif
-
+#ifdef	__HIGH_PRECISION__
+typedef	std::complex<double> DSPCOMPLEX;
+#define FFTW_MALLOC		fftw_malloc
+#define FFTW_PLAN_DFT_1D	fftw_plan_dft_1d
+#define FFTW_DESTROY_PLAN	fftw_destroy_plan
+#define FFTW_FREE		fftw_free
+#define FFTW_PLAN		fftw_plan
+#define FFTW_EXECUTE		fftw_execute
+#define	FFT_COMPLEX		fftw_complex
+#else
+typedef	std::complex<float> DSPCOMPLEX;
+#define FFTW_MALLOC		fftwf_malloc
+#define FFTW_PLAN_DFT_1D	fftwf_plan_dft_1d
+#define FFTW_DESTROY_PLAN	fftwf_destroy_plan
+#define FFTW_FREE		fftwf_free
+#define FFTW_PLAN		fftwf_plan
+#define FFTW_EXECUTE		fftwf_execute
+#define	FFT_COMPLEX		fftwf_complex
+#endif
 
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -90,15 +108,14 @@ static inline
 bool	isInfinite (float x) {
 	return x == numeric_limits<float>::infinity();
 }
-
 static inline
-std::complex<float> cmul (std::complex<float> x, float y) {
-	return std::complex<float> (real (x) * y, imag (x) * y);
+DSPCOMPLEX cmul (DSPCOMPLEX x, float y) {
+	return DSPCOMPLEX (real (x) * y, imag (x) * y);
 }
 
 static inline
-std::complex<float> cdiv (std::complex<float> x, float y) {
-	return std::complex<float> (real (x) / y, imag (x) / y);
+DSPCOMPLEX cdiv (DSPCOMPLEX x, float y) {
+	return DSPCOMPLEX (real (x) / y, imag (x) / y);
 }
 
 static inline

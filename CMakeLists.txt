@@ -188,8 +188,6 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
-	     ./preset-handler.h
-	     ./presetcombobox.h
 	     ./service-description/service-descriptor.h 
 	     ./service-description/audio-descriptor.h 
 	     ./service-description/data-descriptor.h 
@@ -255,6 +253,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/dab_tables.h
 	     ./includes/support/ensemble-printer.h
 	     ./includes/support/viterbi-jan/viterbi-handler.h
+	     ./includes/support/preset-handler.h
+	     ./includes/support/presetcombobox.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./impulse-viewer/impulse-viewer.h 
@@ -265,8 +265,6 @@ add_definitions (-DPRESET_NAME)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./dab-processor.cpp
-	     ./preset-handler.cpp
-	     ./presetcombobox.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp
@@ -326,6 +324,8 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/text-mapper.cpp
 	     ./src/support/dab_tables.cpp
 	     ./src/support/ensemble-printer.cpp
+	     ./src/support/preset-handler.cpp
+	     ./src/support/presetcombobox.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 

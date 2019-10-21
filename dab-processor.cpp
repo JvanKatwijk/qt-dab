@@ -47,11 +47,11 @@ static	int goodFrames	= 0;
 	                                 int16_t	echo_depth,
 	                                 QString	picturesPath,
 	                                 RingBuffer<float> *responseBuffer,
-		                         RingBuffer<std::complex<float>> *
+		                         RingBuffer<DSPCOMPLEX> *
 	                                                         spectrumBuffer,
 	                                 RingBuffer<std::complex<float>> *
 	                                                         iqBuffer,
-	                                 RingBuffer<std::complex<float>> *
+	                                 RingBuffer<DSPCOMPLEX> *
 	                                                         tiiBuffer
 	                                 ):
 	                                 params (dabMode),
@@ -139,7 +139,7 @@ static	int goodFrames	= 0;
 void	dabProcessor::run() {
 int32_t startIndex;
 int32_t		i;
-std::complex<float>	FreqCorr;
+DSPCOMPLEX	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
 
@@ -244,7 +244,7 @@ SyncOnPhase:
   */
 	   memmove (ofdmBuffer. data(),
 	        &((ofdmBuffer. data()) [startIndex]),
-	                  (T_u - startIndex) * sizeof (std::complex<float>));
+	                  (T_u - startIndex) * sizeof (DSPCOMPLEX));
 	   int ofdmBufferIndex	= T_u - startIndex;
 
 //Block_0:
@@ -293,7 +293,7 @@ SyncOnPhase:
   */
 	   std::vector<int16_t> ibits;
 	   ibits. resize (2 * params. get_carriers());
-	   FreqCorr	= std::complex<float> (0, 0);
+	   FreqCorr	= DSPCOMPLEX (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),

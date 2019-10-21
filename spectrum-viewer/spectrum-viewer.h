@@ -49,7 +49,7 @@ Q_OBJECT
 public:
 			spectrumViewer	(RadioInterface *,
 	                                 QSettings	*,
-	                                 RingBuffer<std::complex<float>> *,
+	                                 RingBuffer<DSPCOMPLEX> *,
 	                                 RingBuffer<std::complex<float>> *);
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
@@ -62,14 +62,14 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	RingBuffer<std::complex<float>>	*spectrumBuffer;
+	RingBuffer<DSPCOMPLEX>	*spectrumBuffer;
 	RingBuffer<std::complex<float>>	*iqBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	std::complex<float>	*spectrum;
+	DSPCOMPLEX	*spectrum;
 	std::vector<double>	displayBuffer;
 	std::vector<float>	Window;
-	fftwf_plan	plan;
+	FFTW_PLAN	plan;
 	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;

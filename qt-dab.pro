@@ -80,8 +80,6 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
-	   ./preset-handler.h \
-	   ./presetcombobox.h \
 	   ./service-description/service-descriptor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
@@ -93,7 +91,7 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/phasereference.h \
 	   ./includes/ofdm/phasetable.h \
 	   ./includes/ofdm/freq-interleaver.h \
-	   ./includes/ofdm/tii_table.h \
+#	   ./includes/ofdm/tii_table.h \
 	   ./includes/ofdm/tii_detector.h \
 	   ./includes/ofdm/fic-handler.h \
 	   ./includes/ofdm/fib-decoder.h  \
@@ -145,6 +143,8 @@ HEADERS += ./radio.h \
 	   ./includes/support/text-mapper.h \
 	   ./includes/support/dab_tables.h \
 	   ./includes/support/ensemble-printer.h \
+	   ./includes/support/preset-handler.h \
+	   ./includes/support/presetcombobox.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
@@ -169,8 +169,6 @@ FORMS	+= ./tii-viewer/tii-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
-	   ./preset-handler.cpp \
-	   ./presetcombobox.cpp \
 	   ./service-description/audio-descriptor.cpp \
 	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \
@@ -179,7 +177,7 @@ SOURCES += ./main.cpp \
 	   ./src/ofdm/phasereference.cpp \
 	   ./src/ofdm/phasetable.cpp \
 	   ./src/ofdm/freq-interleaver.cpp \
-	   ./src/ofdm/tii_table.cpp \
+#	   ./src/ofdm/tii_table.cpp \
 	   ./src/ofdm/tii_detector.cpp \
 	   ./src/ofdm/fic-handler.cpp \
 	   ./src/ofdm/fib-decoder.cpp  \
@@ -228,6 +226,8 @@ SOURCES += ./main.cpp \
 	   ./src/support/text-mapper.cpp \
 	   ./src/support/dab_tables.cpp \
 	   ./src/support/ensemble-printer.cpp \
+	   ./src/support/preset-handler.cpp \
+	   ./src/support/presetcombobox.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles-new/rawfiles.cpp \
@@ -254,7 +254,7 @@ isEmpty(GITHASHSTRING) {
 
 INCLUDEPATH	+= /usr/local/include
 INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-LIBS		+= -lfftw3f  -lusb-1.0 -ldl  #
+LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
 LIBS		+= -lz
 LIBS		+= -lsndfile
@@ -288,9 +288,9 @@ CONFIG		+= send_datagram
 #comment both out if you just want to use the "normal" way
 
 CONFIG		+= try-epg		# do not use
-DEFINES		+= MSC_DATA__		# use at your own risk
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
+DEFINES		+= __HIGH_PRECISION__
 #DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support
@@ -365,14 +365,9 @@ CONFIG		+= lime
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-#and certainly, you do not want this
 CONFIG		+= try-epg		# do not use
-
-#you do not want this
-DEFINES		+= MSC_DATA__		# use at your own risk
-
-#and this one is experimental
 DEFINES		+= PRESET_NAME
+DEFINES		+= __HIGH_PRECISION__
 }
 #	devices
 #

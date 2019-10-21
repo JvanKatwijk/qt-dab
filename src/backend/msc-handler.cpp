@@ -79,20 +79,20 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 //	Input is put into a buffer, a the code in a separate thread
 //	will handle the data from the buffer
-void	mscHandler::processBlock_0 (std::complex<float> *b) {
+void	mscHandler::processBlock_0 (DSPCOMPLEX *b) {
 	bufferSpace. acquire (1);
-	memcpy (command [0]. data(), b,
-	            params. get_T_u() * sizeof (std::complex<float>));
+	for (int i = 0; i < params. get_T_u (); i ++)
+	   command [0][i] = b [i];
 	helper. lock();
 	amount ++;
         commandHandler. wakeOne();
         helper. unlock();
 }
 
-void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
+void	mscHandler::process_Msc	(DSPCOMPLEX *b, int blkno) {
 	bufferSpace. acquire (1);
-        memcpy (command [blkno]. data(), b,
-	            params. get_T_u() * sizeof (std::complex<float>));
+	for (int i = 0; i < params. get_T_u (); i ++)
+	   command [blkno][i] = b [i];
         helper. lock();
         amount ++;
         commandHandler. wakeOne();
@@ -102,6 +102,7 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 void    mscHandler::run() {
 int	currentBlock	= 0;
 std::vector<int16_t> ibits;
+int	T_u		= params. get_T_u ();
 
 	running. store (true);
 	ibits. resize (BitsperBlock);
@@ -110,8 +111,8 @@ std::vector<int16_t> ibits;
            commandHandler. wait (&helper, 100);
            helper. unlock();
            while ((amount > 0) && running. load()) {
-	      memcpy (fft_buffer, command [currentBlock]. data(),
-	                 params. get_T_u() * sizeof (std::complex<float>));
+	      for (int i = 0; i < T_u; i ++)
+	         fft_buffer [i] = command [currentBlock] [i];
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
@@ -122,20 +123,20 @@ std::vector<int16_t> ibits;
                     if (index < 0)
                        index += params. get_T_u();
 
-                    std::complex<float>  r1 = fft_buffer [index] *
+                    DSPCOMPLEX  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
-                    float ab1    = jan_abs (r1);
+                    float ab1    = abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //      we make the bits into softbits in the range -127 .. 127
-                    ibits [i]            =  - real (r1) / ab1 * 127.0;
+                    ibits [i]            =  - real (r1) / ab1 * 255.0;
                     ibits [params. get_carriers() + i]
-	                                 =  - imag (r1) / ab1 * 127.0;
+	                                 =  - imag (r1) / ab1 * 255.0;
                  }
 
 	         process_mscBlock (ibits, currentBlock);
 	      }
-	      memcpy (phaseReference. data(), fft_buffer,
-	                 params. get_T_u() * sizeof (std::complex<float>));
+	      for (int i = 0; i < T_u; i ++)
+	         phaseReference [i] = fft_buffer [i];
               bufferSpace. release (1);
               helper. lock();
               currentBlock = (currentBlock + 1) % (nrBlocks);

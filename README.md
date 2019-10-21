@@ -20,6 +20,7 @@ Table of Contents
    	- [Qt](#qt)
   * [Raspberry PI](#raspberry-pi)
   * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
+* [Interfacing to another device](#interfacing-to-another-device)
 * [Copyright](#copyright)
  
 ------------------------------------------------------------------
@@ -49,7 +50,8 @@ Features
 	- limeSDR, 
 	- Soapy (experimental, Linux only), and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
- 
+  * Clean interface to add other devices, see below.
+
 Not  (Not yet or partly) implemented:
 
   * DMB (Audio and Video)
@@ -68,19 +70,19 @@ Introduction
 
 **Qt-DAB-2.7** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Some other programs are derived from Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone
-server version **dab-server**. The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
-The **dab-server** will run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on
-an Android tablet.
+Some other programs are derived from Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
+The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
 
-Furthermore, for DX purposes, a *dab-scanner* is implemented that allows
+The **dab-server** will run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
+
+Furthermore, for DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a txt file, formatted for use with *LibreOffice Calc* and
 comparable programs.
 
-**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the "command-line only", the **dab-server** version and the dab-scanner have their own repository on Github.
+**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** version and the **dab-scanner** have their own repository on Github.
 
-Qt-DAB-2.7 also supports input from an rtl-tcp server (see osmocom software) and pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-2.7 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -104,24 +106,26 @@ While the main window and the widget for the device control are always shown, ea
 
 ![Qt-DAB with SDRplay input](/qt-dab-x.png?raw=true)
 
+The buttons and other controls on the main widget are equipped with
+*tool tips* briefly explaining the (in most cases obvious) function
+of the element.
+
 ------------------------------------------------------------------
 Presets
 -----------------------------------------------------------------
 
-Presets are a feature, introduced in version 2.7.2 (following a suggestion of Stuart Longland (who added code to make (most) widgets resizable).
+**Presets** are a feature, introduced in version 2.7.2
+(following a suggestion of Stuart Longland (who added code to make (most) widgets resizable)).
 
-**Presets** make an easy switching between services in different ensembles
-(different channels) possible.
-
-Presets are seen in a combobox at the bottom of the services list on the GUI. Touching a name in this combobox will instruct the software to select the right channel and switch to the named service. 
+**Presets** make it possible to switch easily between services in different ensembles (different channels). The service names in the presets are seen in a combobox at the bottom of the services list on the GUI. Touching a name in this combobox will instruct the software to select the right channel and switch to the named service. 
  
-**Adding** a service to the list of presets is simply by **clicking with the right mouse button on the name of the service that is currently selected in the servicelist** (note that clicking with the *left* mouse button well select the service with that name).
+**Adding** a service to the list of presets is simply by *clicking with the right mouse button on the name of the service that is currently selected in the servicelist* (note that clicking with the *left* mouse button well select the service with that name).
 
 **Removing** a service from the presets is by selecting the service name (by putting the curson on it without clicking any of the mouse buttons) in the combobox and pressing the *shift* and the *delete* button on the keyboard simultaneously.
 
-Between program invocations, presets are kept in a file in xml format. The file - .qt-dab-presets.xml - is stored in the user's home directory. This file is read on program start and rewritten on program termination.
+Service names in the presets are kept in a file in xml format. The file - .qt-dab-presets.xml - is stored in the user's home directory. This file is read on program start and rewritten on program termination.
 
-The encoding of the presets is as **channel:service**, it sometimes happens that different channels have (differently encoded) versions of the same service (in the pictures channel 5B and channel 8A both carry a service "Omroep West").
+Encoding of the presets is as **channel:service**, it sometimes happens that different channels have (differently encoded) versions of the same service (in the pictures channel 5B and channel 8A both carry a service "Omroep West").
 
 (Note that clicking with the **right** mouse button on any other service name
 than the currently selected one will show some technical data of that service as shown in the picture below.)
@@ -137,8 +141,7 @@ Settings maintained between program invocations are typically the name
 of the device used, the channel that was used, the name of the service
 last used etc.
 
-The presets are stored
-in an xml file, `.qt-dab-presets.xml'.
+The presets are stored in an xml file, `.qt-dab-presets.xml'.
 
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the .ini file.
 
@@ -269,7 +272,7 @@ want to support out.
   INCLUDEPATH += /usr/local/include  /usr/local/qwt-6.1.3
   ````
 
-4.b. If you are compiling on/for an RPI2/3 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND__. This will cause a better load balance on the cores of the processor. 
+4.b. If you are compiling on/for an RPI2/3 device, you might want to uncomment the line DEFINE+=__THREADED_BACKEND. This will cause a better load balance on the cores of the processor. 
 
 5. Build and make
   ```
@@ -291,6 +294,8 @@ Options in the configuration are:
   a) select or unselect devices
 
   b) select the output: soundcard or TCP connection
+
+  c) select defines related to performance
 
 Adding or removing from the configuration is in all cases by commenting or uncommenting a line in the configuration file.
 
@@ -322,12 +327,31 @@ For selecting the output to be sent to a TCP port, uncomment
 #CONFIG         += tcp-streamer         # use for remote listening
 ```
 
+Note that on default audio output is handled
+by the portaudio library. Other options are using Qt audio or
+audio through an TCP port.
+
 The source tree contains a directory `sound-client`, that contains sources to generate a simple "listener" for remote listening.
 
 For selecting the output to be handled by the Qt system (default device only) uncomment
 ````
 #CONFIG		+= qt-audio
 ````
+
+The CPU load of running the Qt-DAB program can be divided over more
+CPU cores by uncommenting
+````
+DEFINES		+= __THREADED_BACKEND
+````
+
+This causes the backend to run in a separate thread.
+
+For choosing between single and double precision floats
+one can comment out or uncomment the line
+````
+DEFINES		+= __HIGH_PRECISION__
+````
+
 
 ------------------------------------------------------------------
 Configuring using CMake
@@ -381,10 +405,11 @@ One remark: getting "sound" is not always easy. Be certain that you have install
 
 In arch, it was essential to add the username to the group "audio".
 
-The most recent distributions, Raspbian Stretch and Raspbian Buster supports both Qt5 and a qwt compiled against Qt5.
+The most recent distributions, Raspbian Stretch and Raspbian Buster
+supports both Qt5 and a qwt compiled against Qt5.
 
 Since Raspbian Stretch is a Debian derivate, the description for creating a version under Ubuntu applies, a script to download all required packages, compile
-and build a full executable for qt-dab is part of the releases section.
+and build a full executable for qt-dab is part of the source tree.
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
@@ -411,6 +436,26 @@ find the sources on https://github.com/airspy/airspyone_host/tree/master/libairs
 The appImage itself is just a self-contained single file which you have to make executable in order to run.
 
 For more information see http://appimage.org/
+
+-----------------------------------------------------------------------
+Interfacing to another device
+-----------------------------------------------------------------------
+
+There are - obviously - more different devices than supported
+here. Interfacing another device is not very complicated,
+it might be done using the "Soapy" interface, or one might
+write a new interface class.
+
+The device handlers are implemented as a class, derived from
+the class *virtualInput*. Only a few functions have to
+be implemented, to *set* and *get* the VFO frequency, 
+to inspect the number of samples available and to get a number
+of samples, to start and stop operating the device
+and to report on the number of bits per sample. This last
+function, is used to scale the various spectrum scopes.
+
+A complete description is given in the file "interfacing.txt",
+in the sourcetree
 
 -----------------------------------------------------------------------
 # Copyright

@@ -75,3 +75,4 @@ int32_t	virtualInput::getOffset() {
 	return coarseOffset;
 }
 
+

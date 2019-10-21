@@ -80,9 +80,9 @@ void	ofdmDecoder::reset() {
 
 /**
   */
-void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
-	memcpy (fft_buffer, buffer. data(),
-	                             T_u * sizeof (std::complex<float>));
+void	ofdmDecoder::processBlock_0 (std::vector <DSPCOMPLEX> buffer) {
+	for (int i = 0; i < T_u; i ++)
+	   fft_buffer [i] = buffer [i];
 
 	my_fftHandler. do_FFT();
 /**
@@ -100,8 +100,8 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
-	memcpy (phaseReference. data(), fft_buffer,
-	                   T_u * sizeof (std::complex<float>));
+	for (int i = 0; i < T_u; i ++)
+	   phaseReference [i] = fft_buffer [i];
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -144,12 +144,13 @@ float	S	= 0;
   */
 
 static	int	cnt	= 0;
-void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
+void	ofdmDecoder::decode (std::vector <DSPCOMPLEX> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
-	memcpy (fft_buffer, &((buffer. data()) [T_g]),
-	                               T_u * sizeof (std::complex<float>));
+
+	for (i = 0; i < T_u; i ++)
+	   fft_buffer [i] = buffer [T_g + i];
 
 //fftlabel:
 /**
@@ -177,21 +178,18 @@ std::complex<float> conjVector [T_u];
   *	The carrier of a block is the reference for the carrier
   *	on the same position in the next block
   */
-	   std::complex<float>	r1 = fft_buffer [index] *
+	   DSPCOMPLEX r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
-	   conjVector [index] = r1;
-	   float ab1	= abs (r1);
-//	   float ab1	= jan_abs (r1);
+	   conjVector [index] = std::complex<float> (real (r1), imag (r1));
+	   double ab1	= abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
-//	   ibits [i]		=  - real (r1) / ab1 * 127.0;
-//	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	   ibits [i]		=  - real (r1) / ab1 * 1024.0;
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 1024.0;
 	}
 
-	memcpy (phaseReference. data(), fft_buffer,
-	                            T_u * sizeof (std::complex<float>));
+	for (i = 0; i < T_u; i ++)
+	   phaseReference [i] = fft_buffer [i];
 //	From time to time we show the constellation of symbol 2.
 	
 	if (blkno == 2) {
@@ -213,7 +211,7 @@ std::complex<float> conjVector [T_u];
   *	Just get the strength from the selected carriers compared
   *	to the strength of the carriers outside that region
   */
-int16_t	ofdmDecoder::get_snr (std::complex<float>  *v) {
+int16_t	ofdmDecoder::get_snr (DSPCOMPLEX  *v) {
 int16_t	i;
 float	noise 	= 0;
 float	signal	= 0;

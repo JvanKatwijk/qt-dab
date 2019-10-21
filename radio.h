@@ -71,6 +71,7 @@ protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
 private:
 	presetHandler	my_presetHandler;
+	int		switchTime;
 	QSettings	*dabSettings;
 	int16_t		tii_delay;
 	int32_t         dataPort;
@@ -144,12 +145,12 @@ private:
 	void		connectGUI();
 	void		disconnectGUI();
         spectrumViewer         *my_spectrumViewer;
-	RingBuffer<std::complex<float>>  *spectrumBuffer;
+	RingBuffer<DSPCOMPLEX>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
 	impulseViewer		*my_impulseViewer;
 	RingBuffer<float>	*responseBuffer;
 	tiiViewer		*my_tiiViewer;
-	RingBuffer<std::complex<float>>  *tiiBuffer;
+	RingBuffer<DSPCOMPLEX>  *tiiBuffer;
 
 	QString		picturesPath;
 public slots:

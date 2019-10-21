@@ -135,12 +135,12 @@ int16_t	i;
 
 void	TII_Detector::reset() {
 	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] = std::complex<float> (0, 0);
+	   theBuffer [i] = DSPCOMPLEX (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
+void	TII_Detector::addBuffer (std::vector<DSPCOMPLEX> v) {
 int	i;
 
 	for (i = 0; i < T_u; i ++)
@@ -152,7 +152,7 @@ int	i;
 	                    cmul (fft_buffer [i], 0.1);
 }
 
-void	TII_Detector::collapse (std::complex<float> *inVec, float *outVec) {
+void	TII_Detector::collapse (DSPCOMPLEX *inVec, float *outVec) {
 int	i;
 
 	for (i = 0; i < carriers / 8; i ++) {

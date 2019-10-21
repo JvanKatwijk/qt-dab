@@ -25,7 +25,7 @@
 #include	<QColor>
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
-	                                         RingBuffer<std::complex<float>> *sbuffer) {
+	                                     RingBuffer<DSPCOMPLEX> *sbuffer) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -48,12 +48,11 @@ QColor	curveColor;
 	displayBuffer. resize (displaySize);
 	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 4 * displaySize;
-	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
-        plan    = fftwf_plan_dft_1d (spectrumSize,
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
+	spectrum		= (DSPCOMPLEX *)FFTW_MALLOC (sizeof (FFT_COMPLEX) * spectrumSize);
+        plan    = fftw_plan_dft_1d (spectrumSize,
+                                    reinterpret_cast <FFT_COMPLEX*>(spectrum),
+                                    reinterpret_cast <FFT_COMPLEX *>(spectrum),
                                     FFTW_FORWARD, FFTW_ESTIMATE);
-	
 	plotgrid		= tiiGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
@@ -95,8 +94,8 @@ QColor	curveColor;
 }
 
     tiiViewer::~tiiViewer() {
-	fftwf_destroy_plan (plan);
-	fftwf_free	(spectrum);
+	FFTW_DESTROY_PLAN (plan);
+	FFTW_FREE	(spectrum);
 	myFrame		-> hide();
 	delete		Marker;
 	delete		ourBrush;
@@ -155,8 +154,7 @@ int16_t	averageCount	= 3;
 //	get the buffer data
 	for (i = 0; i < spectrumSize; i ++)
 	   spectrum [i] = cmul (spectrum [i], Window [i]);
-
-	fftwf_execute (plan);
+	FFTW_EXECUTE (plan);
 //
 //	and map the spectrumSize values onto displaySize elements
 	for (i = 0; i < displaySize / 2; i ++) {

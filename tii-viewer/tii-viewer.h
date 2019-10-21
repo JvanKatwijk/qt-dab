@@ -43,7 +43,7 @@ class	tiiViewer: public QObject, Ui_tiiWidget {
 Q_OBJECT
 public:
 			tiiViewer		(RadioInterface *,
-	                                         RingBuffer<std::complex<float>> *);
+	                                         RingBuffer<DSPCOMPLEX> *);
 			~tiiViewer();
 	void		showSpectrum		(int32_t);
 	void		showSecondaries		(std::vector<int>);
@@ -54,13 +54,13 @@ public:
 	void		clear();
 private:
 	RadioInterface	*myRadioInterface;
-	RingBuffer<std::complex<float>>	*tiiBuffer;
+	RingBuffer<DSPCOMPLEX>	*tiiBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	std::complex<float>	*spectrum;
+	DSPCOMPLEX	*spectrum;
 	std::vector<double>	displayBuffer;
 	std::vector<float>	Window;
-	fftwf_plan	plan;
+	FFTW_PLAN	plan;
 	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
