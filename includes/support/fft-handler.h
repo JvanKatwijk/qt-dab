@@ -41,7 +41,7 @@ public:
         DSPCOMPLEX	*getVector();
         void		do_FFT();
         void		do_IFFT();
-    private:
+private:
 	dabParams	p;
         int32_t		fftSize;
         DSPCOMPLEX  *vector;

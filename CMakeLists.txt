@@ -200,7 +200,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/freq-interleaver.h
 	     ./includes/ofdm/fib-decoder.h
 	     ./includes/ofdm/fic-handler.h
-	     ./includes/ofdm/tii_table.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h
 	     ./includes/protection/protTables.h
@@ -274,7 +273,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/ofdm/freq-interleaver.cpp
 	     ./src/ofdm/fib-decoder.cpp
 	     ./src/ofdm/fic-handler.cpp
-	     ./src/ofdm/tii_table.cpp
 	     ./src/ofdm/tii_detector.cpp
 	     ./src/ofdm/timesyncer.cpp
 	     ./src/protection/protTables.cpp
@@ -335,8 +333,6 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_MOCS
 	     ./dab-processor.h
-	     ./preset-handler.h
-	     ./presetcombobox.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
@@ -345,7 +341,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/fib-decoder.h
 	     ./includes/ofdm/fic-handler.h
 	     ./includes/ofdm/tii_detector.h
-	     ./includes/ofdm/tii_table.h
 	     ./includes/backend/backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp2processor.h
@@ -363,6 +358,8 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/rawfiles/raw-reader.h
 	     ./devices/wavfiles/wavfiles.h
 	     ./devices/wavfiles/wav-reader.h
+	     ./includes/support/preset-handler.h
+	     ./includes/support/presetcombobox.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./impulse-viewer/impulse-viewer.h 
