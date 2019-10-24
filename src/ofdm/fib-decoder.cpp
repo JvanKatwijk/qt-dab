@@ -216,17 +216,20 @@ class	Cluster {
 	   std::vector<uint16_t> services;
 	   bool	inUse;
 	   int	announcing;
+	   int	clusterId;
 	Cluster () {
 	   flags	= 0;
 	   services. resize (0);
 	   inUse	= false;
 	   announcing	= 0;
+	   clusterId	= -1;
 	}
 	~Cluster () {
 	   flags	= 0;
 	   services. resize (0);
 	   inUse	= false;
 	   announcing	= 0;
+	   clusterId	= -1;
 	}
 };
 
@@ -245,16 +248,25 @@ public:
 	      serviceComps [i]. clear();
 	   }
 	}
-	Cluster	*getCluster (int16_t clusterId) {
-	   if (clusterTable [clusterId]. inUse)
-	      return &(clusterTable [clusterId]);
 
-	   clusterTable [clusterId]. inUse	= true;
-	   return &(clusterTable [clusterId]);
+	Cluster	*getCluster (int16_t clusterId) {
+	   for (int i = 0; i < 64; i ++)
+	      if ((clusterTable [i]. inUse) &&
+	          (clusterTable [i]. clusterId == clusterId))
+	         return &(clusterTable [i]);
+
+	   for (int i = 0; i < 64; i ++) {
+	      if (!clusterTable [i]. inUse) {
+	         clusterTable [i]. inUse = true;
+	         clusterTable [i]. clusterId = clusterId;
+	         return &(clusterTable [i]);
+	      }
+	   }
 	}
+
 	subChannelDescriptor    subChannels [64];
 	serviceComponentDescriptor      serviceComps [64];
-	Cluster			clusterTable [64];
+	Cluster			clusterTable [128];
 };
 
 //
@@ -1098,6 +1110,11 @@ int16_t	bitOffset	= used * 8;
 	   if (!syncReached ())
 	      return;
 	   Cluster *myCluster = currentBase -> getCluster (clusterId);
+	   if (myCluster == NULL) {	// should not happen
+//	      fprintf (stderr, "cluster fout\n");
+	      return;
+	   }
+	      
 	   if ((myCluster -> flags & AswFlags) != 0) {
 	      myCluster -> announcing ++;
 	      if (myCluster -> announcing == 5) {
@@ -1753,6 +1770,8 @@ void	fibDecoder::setCluster (int clusterId,
 	if (!syncReached ())
 	   return;
 	Cluster *myCluster = currentBase -> getCluster (clusterId);
+	if (myCluster == NULL)
+	   return;
 	if (myCluster -> flags != asuFlags) {
 //	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
 //	                       clusterId, myCluster -> flags, asuFlags);

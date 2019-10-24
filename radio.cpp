@@ -1869,7 +1869,7 @@ void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 //	   QPalette pal	= warningLabel -> palette ();
 //	   pal. setColor (QPalette::Highlight, Qt::red);
 //	   warningLabel -> setPalette (pal);
-	   fprintf (stderr, "announcement for %s (%d) starts\n",
+	   fprintf (stderr, "announcement for %s ( on subchannel %d) starts\n",
 	                             name. toLatin1 (). data (), subChId);
 	}
 }
