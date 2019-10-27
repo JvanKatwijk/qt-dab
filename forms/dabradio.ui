@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>563</width>
-    <height>368</height>
+    <width>523</width>
+    <height>388</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -499,24 +499,14 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="localTimeDisplay">
-            <property name="text">
-             <string>localTime</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QLabel" name="timeDisplay">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
+             <widget class="QPushButton" name="saveEnsembleData">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>run-time</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
+               <string>Content</string>
               </property>
              </widget>
             </item>
@@ -534,20 +524,39 @@
        </layout>
       </item>
       <item>
-       <widget class="QLabel" name="serviceLabel">
-        <property name="font">
-         <font>
-          <family>DejaVu Sans</family>
-          <pointsize>14</pointsize>
-         </font>
-        </property>
-        <property name="text">
-         <string>please select a service</string>
-        </property>
-        <property name="textInteractionFlags">
-         <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-        </property>
-       </widget>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QLabel" name="timeDisplay">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="text">
+           <string>run-time</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="localTimeDisplay">
+          <property name="text">
+           <string>localTime</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QLabel" name="serviceLabel">
+          <property name="text">
+           <string>TextLabel</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
       <item>
        <widget class="QLabel" name="dynamicLabel">
@@ -697,7 +706,7 @@
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Audio REC</string>
+             <string>audio dump</string>
             </property>
            </widget>
           </item>
@@ -747,7 +756,7 @@
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QPushButton" name="saveEnsembleData">
+           <widget class="QPushButton" name="frameDumpButton">
             <property name="font">
              <font>
               <family>DejaVu Sans</family>
@@ -755,10 +764,10 @@
              </font>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Content</string>
+             <string>frame dump</string>
             </property>
            </widget>
           </item>

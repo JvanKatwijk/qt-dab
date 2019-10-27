@@ -60,7 +60,8 @@ public:
 	                         RingBuffer<float> *,
 	                         RingBuffer<DSPCOMPLEX>	*,
 	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<DSPCOMPLEX>	*
+	                         RingBuffer<DSPCOMPLEX>	*,
+	                         RingBuffer<uint8_t> *
 	                        );
 		~dabProcessor();
     void		reset();

@@ -32,13 +32,15 @@
 	Backend::Backend	(RadioInterface *mr,
 	                         descriptorType	*d,
 	                         RingBuffer<int16_t> *audiobuffer,
-	                         RingBuffer<uint8_t> *databuffer,
+	                         RingBuffer<uint8_t> *databuffer,	
+	                         RingBuffer<uint8_t> *frameBuffer,
 	                         QString	picturesPath):
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,
 	                                            audiobuffer,
 	                                            databuffer,
+	                                            frameBuffer,
 	                                            picturesPath),
 	                                    deconvolver (d)
 #ifdef	__THREADED_BACKEND

@@ -128,6 +128,7 @@ QString h;
 	responseBuffer		= new RingBuffer<float> (32768);
 	tiiBuffer		= new RingBuffer<DSPCOMPLEX> (32768);
 	audioBuffer		= new RingBuffer<int16_t>(16 * 32768);
+	frameBuffer		= new RingBuffer<uint8_t> (32768);
 
 /**	threshold is used in the phaseReference class 
   *	as threshold for checking the validity of the correlation result
@@ -246,6 +247,7 @@ QString h;
 //
 	sourceDumping		= false;
 	dumpfilePointer		= nullptr;
+	frameDumper		= nullptr;
 	audioDumping		= false;
 	audiofilePointer	= nullptr;
 	ficBlocks		= 0;
@@ -410,7 +412,8 @@ int32_t	frequency;
 	                                      responseBuffer,
 	                                      spectrumBuffer,
 	                                      iqBuffer,
-	                                      tiiBuffer
+	                                      tiiBuffer,
+	                                      frameBuffer
 	                                      );
 
 	if (has_presetName && (presetName != QString (""))) {
@@ -1447,7 +1450,12 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   soundOut	-> stopDumping();
 	   sf_close (audiofilePointer);
 	   audioDumping = false;
-	   audioDumpButton	-> setText ("Save audio");
+	   QPalette pal = frameDumpButton -> palette ();
+	   pal. setColor (QPalette::Button, QColor (Qt::white));
+	   frameDumpButton         -> setAutoFillBackground (true);
+	   audioDumpButton         -> setPalette (pal);
+	   audioDumpButton         -> setText ("audio dump");
+	   audioDumpButton         -> update ();
 	   return;
 	}
 
@@ -1471,7 +1479,12 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
-	audioDumpButton		-> setText ("WRITING");
+	QPalette pal = frameDumpButton -> palette ();
+	pal. setColor (QPalette::Button, QColor (Qt::red));
+	audioDumpButton         -> setAutoFillBackground (true);
+	audioDumpButton         -> setPalette (pal);
+	audioDumpButton         -> setText ("WRITING");
+	audioDumpButton         -> update ();
 	audioDumping		= true;
 	soundOut		-> startDumping (audiofilePointer);
 }
@@ -1520,6 +1533,8 @@ void	RadioInterface::hideButtons() {
 	scanButton	-> hide();
 	channelSelector	-> hide();
 	dumpButton	-> hide();
+	frameDumpButton	-> hide ();
+	
 	nextChannelButton	-> hide();
 	techData. frequency	-> hide();
 }
@@ -1643,7 +1658,12 @@ void	RadioInterface::stop_sourceDumping() {
 	my_dabProcessor	-> stopDumping();
 	sf_close (dumpfilePointer);
 	sourceDumping = false;
+	QPalette pal = dumpButton -> palette ();
+        pal. setColor (QPalette::Button, QColor (Qt::white));
+        dumpButton      -> setAutoFillBackground (true);
+        dumpButton      -> setPalette (pal);
 	dumpButton	-> setText ("Dump to raw file");
+        dumpButton      -> update ();
 }
 
 void	RadioInterface::start_sourceDumping() {
@@ -1672,7 +1692,12 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
+	QPalette pal = dumpButton -> palette ();
+        pal. setColor (QPalette::Button, QColor (Qt::red));
+        dumpButton      -> setAutoFillBackground (true);
+        dumpButton      -> setPalette (pal);
 	dumpButton      -> setText ("writing");
+        dumpButton      -> update ();
 	sourceDumping           = true;
 	my_dabProcessor -> startDumping (dumpfilePointer);
 }
@@ -1730,6 +1755,8 @@ void	RadioInterface::connectGUI() {
 	         this, SLOT (set_nextChannel (void)));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_sourceDump (void)));
+	connect (frameDumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_frameDump (void)));
 	connect (audioDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_audioDump (void)));
 	connect (tiiButton, SIGNAL (clicked (void)),
@@ -1755,6 +1782,8 @@ void	RadioInterface::disconnectGUI() {
 	               this, SLOT (set_nextChannel (void)));
 	   disconnect (dumpButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_sourceDump (void)));
+	   disconnect (frameDumpButton, SIGNAL (clicked (void)),
+	               this, SLOT (set_frameDump (void)));
 	   disconnect (audioDumpButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_audioDump (void)));
 	   disconnect (tiiButton, SIGNAL (clicked (void)),
@@ -1934,4 +1963,46 @@ void	RadioInterface::handle_presetSelector (QString s) {
 	select_presetService (channel, service);
 }
 
+
+void	RadioInterface::set_frameDump () {
+	if (frameDumper != NULL) {
+	   fclose (frameDumper);
+	   QPalette pal = frameDumpButton -> palette ();
+	   pal. setColor (QPalette::Button, QColor (Qt::white));
+	   frameDumpButton	-> setAutoFillBackground (true);
+	   frameDumpButton	-> setPalette (pal);
+	   frameDumpButton	-> setText ("frame dump");
+	   frameDumpButton	-> update ();
+	   frameDumper = NULL;
+	   return;
+	}
+        QString file = QFileDialog::getSaveFileName (this,
+                                             tr ("Save file ..."),
+                                             QDir::homePath(),
+                                             tr ("aac data (*.aac)"));
+        if (file == QString (""))       // apparently cancelled
+           return;
+        file    = QDir::toNativeSeparators (file);
+	frameDumper = fopen (file. toLatin1 (). data (), "w+b");
+        if (frameDumper == nullptr) {
+	   QString s = QString ("cannot open ") + file;
+	   QMessageBox::warning (this, tr ("Warning"),
+                                       tr (s. toLatin1 (). data ()));
+           return;
+        }
+	QPalette pal = frameDumpButton -> palette ();
+        pal. setColor (QPalette::Button, QColor (Qt::red));
+        frameDumpButton		-> setAutoFillBackground (true);
+        frameDumpButton		-> setPalette (pal);
+        frameDumpButton		-> setText ("recording");
+        frameDumpButton		-> update ();
+}
+
+void	RadioInterface::newFrame	(int amount) {
+uint8_t	buffer [amount];
+
+	frameBuffer	-> getDataFromBuffer (buffer, amount);
+	if (frameDumper != NULL)
+	   fwrite (buffer, amount, 1, frameDumper);
+}
 

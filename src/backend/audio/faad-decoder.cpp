@@ -54,10 +54,7 @@ int get_aac_channel_configuration (int16_t m_mpeg_surround_config,
         }
 }
 
-bool    faadDecoder::initialize (uint8_t        dacRate,
-                                 uint8_t        sbrFlag,
-                                 int16_t        mpegSurround,
-                                 uint8_t        aacChannelMode) {
+bool    faadDecoder::initialize (stream_parms	*sp) {
 long unsigned int sample_rate;
 uint8_t channels;
 /* AudioSpecificConfig structure (the only way to select 960 transform here!)
@@ -78,13 +75,14 @@ uint8_t channels;
  */
 
         int core_sr_index =
-                     dacRate ? (sbrFlag ? 6 : 3) :
-                               (sbrFlag ? 8 : 5);   // 24/48/16/32 kHz
-        int core_ch_config = get_aac_channel_configuration (mpegSurround,
-                                                            aacChannelMode);
+               sp -> dacRate ? (sp -> sbrFlag ? 6 : 3) :
+                               (sp -> sbrFlag ? 8 : 5);   // 24/48/16/32 kHz
+        int core_ch_config =
+	           get_aac_channel_configuration (sp -> mpegSurround,
+                                                  sp ->aacChannelMode);
         if (core_ch_config == -1) {
            printf ("Unrecognized mpeg surround config (ignored): %d\n",
-                                               mpegSurround);
+                                               sp -> mpegSurround);
            return false;
         }
 
@@ -106,10 +104,7 @@ uint8_t channels;
         return true;
 }
 
-int16_t faadDecoder::MP42PCM (uint8_t   dacRate,
-                              uint8_t   sbrFlag,
-                              int16_t   mpegSurround,
-                              uint8_t   aacChannelMode,
+int16_t faadDecoder::MP42PCM (stream_parms *sp,
                               uint8_t   buffer [],
                               int16_t   bufferLength) {
 int16_t samples;
@@ -119,7 +114,7 @@ NeAACDecFrameInfo       hInfo;
 uint8_t channels;
 
         if (!aacInitialized) {
-           if (!initialize (dacRate, sbrFlag, mpegSurround, aacChannelMode))
+           if (!initialize (sp))
               return 0;
            aacInitialized = true;
         }

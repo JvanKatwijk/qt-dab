@@ -28,23 +28,27 @@
 
 class   RadioInterface;
 
+typedef struct {
+        int rfa;
+        int dacRate;
+        int sbrFlag;
+        int psFlag;
+        int aacChannelMode;
+        int mpegSurround;
+} stream_parms;
+
+
 class	faadDecoder: public QObject{
 Q_OBJECT
 public:
         faadDecoder     (RadioInterface *mr,
                          RingBuffer<int16_t> *buffer);
         ~faadDecoder();
-int16_t MP42PCM         (uint8_t dacRate,
-                         uint8_t sbrFlag,
-                         int16_t mpegSurround,
-                         uint8_t aacChannelMode,
+int16_t MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],
                          int16_t bufferLength);
 private:
-bool    initialize      (uint8_t        dacRate,
-                         uint8_t        sbrFlag,
-                         int16_t        mpegSurround,
-                         uint8_t        aacChannelMode);
+bool    initialize      (stream_parms *);
 
         bool            processorOK;
         bool            aacInitialized;

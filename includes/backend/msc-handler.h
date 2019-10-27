@@ -46,7 +46,8 @@ class mscHandler: public QThread  {
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
-	                                         QString);
+	                                         QString,
+	                                         RingBuffer<uint8_t> *);
 			~mscHandler();
 	void		processBlock_0		(DSPCOMPLEX *);
 	void		process_Msc		(DSPCOMPLEX *, int);
@@ -65,6 +66,7 @@ private:
 
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
+	RingBuffer<uint8_t>	*frameBuffer;
 	QString		picturesPath;
 	dabParams	params;
 	fftHandler      my_fftHandler;

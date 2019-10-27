@@ -35,6 +35,7 @@ public:
 	                 descriptorType *,
 	                 RingBuffer<int16_t> *,
 	                 RingBuffer<uint8_t> *,
+	                 RingBuffer<uint8_t> *,
 	                 QString);
     ~backendDriver();
 void	addtoFrame	(std::vector<uint8_t> outData);

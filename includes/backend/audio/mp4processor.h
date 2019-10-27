@@ -47,6 +47,7 @@ public:
 			mp4Processor	(RadioInterface *,
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
+	                                 RingBuffer<uint8_t> *,
 	                                 QString);
 			~mp4Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
@@ -54,11 +55,16 @@ private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
 	bool		processSuperframe (uint8_t [], int16_t);
+	void		buildHeader (int16_t framelen,
+                                   stream_parms *sp,
+                                   uint8_t *header);
+
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;
 	int16_t		blocksInBuffer;
 	int16_t		blockCount;
 	int16_t		bitRate;
+	RingBuffer<uint8_t>	*frameBuffer;
 	std::vector<uint8_t> frameBytes;
 	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
@@ -84,6 +90,7 @@ signals:
 	void		show_rsErrors			(int);
 	void		show_aacErrors			(int);
 	void		isStereo			(bool);
+	void		newFrame			(int);
 };
 
 #endif

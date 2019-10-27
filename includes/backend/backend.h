@@ -46,6 +46,7 @@ public:
 	         descriptorType	*d,
 	         RingBuffer<int16_t> *,
 	         RingBuffer<uint8_t> *,
+	         RingBuffer<uint8_t> *,
 	         QString	picturesPath);
 	~Backend();
 int32_t	process		(int16_t *, int16_t);
@@ -72,7 +73,6 @@ void	processSegment	(int16_t *Data);
 	int16_t		countforInterleaver;
 	int16_t		interleaverIndex;
 	std::vector<uint8_t> disperseVector;
-
 	backendDriver		driver;
 	backendDeconvolver	deconvolver;
 };

@@ -93,6 +93,7 @@ private:
 	void		showButtons();
 	virtualInput	*setDevice		(QString);
 
+	RingBuffer<uint8_t>	*frameBuffer;
 	std::vector<int> secondariesVector;
 	QString		dabMode;
 	uint8_t		dabBand;
@@ -126,6 +127,7 @@ private:
 	void		stop_sourceDumping();
 	bool		sourceDumping;
 	SNDFILE		*dumpfilePointer;
+	FILE		*frameDumper;
 	bool		audioDumping;
 	SNDFILE		*audiofilePointer;
 	QStringList	soundChannels;
@@ -194,6 +196,7 @@ public slots:
 	void		showTime		(const QString &);
 	void		startAnnouncement	(const QString &, int);
 	void		stopAnnouncement	(const QString &, int);
+	void		newFrame		(int);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void		set_nextChannel();
@@ -220,6 +223,7 @@ private slots:
 	void		set_spectrumSwitch();
 	void		select_presetService 	(QString, QString);
 	void		handle_presetSelector	(QString);
+	void		set_frameDump	();
 };
 #endif
 

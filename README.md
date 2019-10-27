@@ -41,6 +41,7 @@ Features
   * Presets for easy switching of programs in different ensembles (see *Presets*)
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
   * Saving audio as uncompressed wave files
+  * Saving aac frames from DAB+ services
   * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
   * Supports various inputs from 
   	- SDRplay (both RSP I and RSP II),

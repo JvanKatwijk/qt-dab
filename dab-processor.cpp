@@ -52,7 +52,8 @@ static	int goodFrames	= 0;
 	                                 RingBuffer<std::complex<float>> *
 	                                                         iqBuffer,
 	                                 RingBuffer<DSPCOMPLEX> *
-	                                                         tiiBuffer
+	                                                         tiiBuffer,
+	                                 RingBuffer<uint8_t> * frameBuffer
 	                                 ):
 	                                 params (dabMode),
 	                                 myReader (mr,
@@ -61,7 +62,8 @@ static	int goodFrames	= 0;
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
-	                                                std::move(picturesPath)),
+	                                                std::move(picturesPath),
+	                                                frameBuffer),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
 	                                                    threshold,
