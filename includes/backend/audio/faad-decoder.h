@@ -29,12 +29,15 @@
 class   RadioInterface;
 
 typedef struct {
-        int rfa;
-        int dacRate;
-        int sbrFlag;
-        int psFlag;
-        int aacChannelMode;
-        int mpegSurround;
+        int	rfa;
+        int	dacRate;
+        int	sbrFlag;
+        int	psFlag;
+        int	aacChannelMode;
+        int	mpegSurround;
+	int	CoreChConfig;
+	int	CoreSrIndex;
+	int	ExtensionSrIndex;
 } stream_parms;
 
 

@@ -111,6 +111,7 @@ HEADERS += ./radio.h \
 	   ./includes/backend/backend-deconvolver.h \
 	   ./includes/backend/audio/mp2processor.h \
 	   ./includes/backend/audio/mp4processor.h \
+	   ./includes/backend/audio/bitWriter.h \
 	   ./includes/backend/audio/faad-decoder.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
@@ -197,6 +198,7 @@ SOURCES += ./main.cpp \
            ./src/backend/backend-deconvolver.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
+	   ./src/backend/audio/bitWriter.cpp \
 	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
 	   ./src/backend/data/data-processor.cpp \

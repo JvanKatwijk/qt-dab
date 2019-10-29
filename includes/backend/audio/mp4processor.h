@@ -55,9 +55,11 @@ private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;
 	bool		processSuperframe (uint8_t [], int16_t);
-	void		buildHeader (int16_t framelen,
-                                   stream_parms *sp,
-                                   uint8_t *header);
+	int		build_aacFile (int16_t aac_frame_len,
+                                     stream_parms *sp,
+                                     uint8_t	*data,
+                                     uint8_t	*fileBuffer);
+
 
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;

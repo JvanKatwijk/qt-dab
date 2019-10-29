@@ -1315,6 +1315,7 @@ void	RadioInterface::selectService (QString s) {
 	    !my_dabProcessor -> is_packetService (s))
 	   return;
 
+	serviceLabel -> setStyleSheet ("QLabel {color : black}");
 	my_dabProcessor -> reset_msc();
 	currentName = s;
 	setStereo (false);
@@ -1894,6 +1895,8 @@ void	RadioInterface::showTime	(const QString &s) {
 void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 //	fprintf (stderr, "announcement for %s\n", name. toLatin1 (). data ());
 	if (name == currentName) {
+	   serviceLabel ->
+	              setStyleSheet ("QLabel {color : red}");
 //	   warningLabel -> setAutoFillBackground (true);
 //	   QPalette pal	= warningLabel -> palette ();
 //	   pal. setColor (QPalette::Highlight, Qt::red);
@@ -1906,6 +1909,8 @@ void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 	(void)subChId;
 	if (name == currentName) {
+	   serviceLabel ->
+	              setStyleSheet ("QLabel {color : black}");
 //	   warningLabel -> setAutoFillBackground (true);
 //	   QPalette pal	= warningLabel -> palette ();
 //	   pal. setColor (QPalette::Highlight, Qt::white);

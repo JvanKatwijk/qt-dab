@@ -4,23 +4,21 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J (JSDR).
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    This file is part of the Qt-DAB program
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * 	superframer for the SDR-J DAB+ receiver
- * 	This processor handles the whole DAB+ specific part
  ************************************************************************
  *	may 15 2015. A real improvement on the code
  *	is the addition from Stefan Poeschel to create a
@@ -28,77 +26,57 @@
  ************************************************************************
  */
 #include	"mp4processor.h"
+#include	"radio.h"
+//
 #include	<cstring>
-#include	"gui.h"
-//
 #include	"charsets.h"
-#include	"faad-decoder.h"
 #include	"pad-handler.h"
-/**
-  *	\brief simple, inline coded, crc checker
-  */
-bool	dabPlus_crc (uint8_t *msg, int16_t len) {
-int i, j;
-uint16_t	accumulator	= 0xFFFF;
-uint16_t	crc;
-uint16_t	genpoly		= 0x1021;
 
-	for (i = 0; i < len; i ++) {
-	   int16_t data = msg [i] << 8;
-	   for (j = 8; j > 0; j--) {
-	      if ((data ^ accumulator) & 0x8000)
-	         accumulator = ((accumulator << 1) ^ genpoly) & 0xFFFF;
-	      else
-	         accumulator = (accumulator << 1) & 0xFFFF;
-	      data = (data << 1) & 0xFFFF;
-	   }
-	}
 //
-//	ok, now check with the crc that is contained
-//	in the au
-	crc	= ~((msg [len] << 8) | msg [len + 1]) & 0xFFFF;
-	return (crc ^ accumulator) == 0;
-}
-
 /**
   *	\class mp4Processor is the main handler for the aac frames
   *	the class proper processes input and extracts the aac frames
   *	that are processed by the "faadDecoder" class
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
-	                            audioSink	*as,
-	                            FILE	*errorLog,
-	                            int16_t	bitRate):my_padhandler (mr) {
+	                            int16_t	bitRate,
+	                            RingBuffer<int16_t> *b,
+	                            RingBuffer<uint8_t> *frameBuffer,
+	                            QString	picturesPath)
+	                            :my_padhandler (mr, picturesPath),
+ 	                             my_rsDecoder (8, 0435, 0, 1, 10),
+	                             aacDecoder (mr, b) {
 
 	myRadioInterface	= mr;
-	connect (this, SIGNAL (show_successRate (int)),
-	         mr, SLOT (show_successRate (int)));
-	connect (this, SIGNAL (showLabel (QString)),
-	         mr, SLOT (showLabel (QString)));
-	ourSink			= as;
+	this	-> frameBuffer	= frameBuffer;
+	connect (this, SIGNAL (show_frameErrors (int)),
+	         mr, SLOT (show_frameErrors (int)));
+	connect (this, SIGNAL (show_rsErrors (int)),
+	         mr, SLOT (show_rsErrors (int)));
+	connect (this, SIGNAL (show_aacErrors (int)),
+	         mr, SLOT (show_aacErrors (int)));
+	connect (this, SIGNAL (isStereo (bool)),
+	         mr, SLOT (setStereo (bool)));
+	connect (this, SIGNAL (newFrame (int)),
+	         mr, SLOT (newFrame (int)));
+
 	this	-> bitRate	= bitRate;	// input rate
 
 	superFramesize		= 110 * (bitRate / 8);
 	RSDims			= bitRate / 8;
-	frameBytes		= new uint8_t [RSDims * 120];	// input
-	outVector		= new uint8_t [RSDims * 110];
+	frameBytes. resize (RSDims * 120);	// input
+	outVector . resize (RSDims * 110);
 	blockFillIndex	= 0;
 	blocksInBuffer	= 0;
-//
-	aacDecoder		= new faadDecoder (ourSink);
 	frameCount	= 0;
 	frameErrors	= 0;
-//
-//	error display
-	au_count	= 0;
-	au_errors	= 0;
-	this	-> errorLog	= errorLog;
+	aacErrors	= 0;
+	aacFrames	= 0;
+	successFrames	= 0;
+	rsErrors	= 0;
 }
 
-	mp4Processor::~mp4Processor (void) {
-	delete		aacDecoder;
-	delete[]	frameBytes;
-	delete[]	outVector;
+	mp4Processor::~mp4Processor() {
 }
 
 /**
@@ -111,9 +89,10 @@ uint16_t	genpoly		= 0x1021;
   *	per Byte, nbits is the number of Bits (i.e. containing bytes)
   *	the function adds nbits bits, packed in bytes, to the frame
   */
-void	mp4Processor::addtoFrame (uint8_t *V, int16_t nbits) {
+void	mp4Processor::addtoFrame (std::vector<uint8_t> V) {
 int16_t	i, j;
 uint8_t	temp	= 0;
+int16_t	nbits	= 24 * bitRate;
 
 	for (i = 0; i < nbits / 8; i ++) {	// in bytes
 	   temp = 0;
@@ -132,7 +111,7 @@ uint8_t	temp	= 0;
 ///	first, we show the "successrate"
 	   if (++frameCount >= 25) {
 	      frameCount = 0;
-	      show_successRate (4 * (25 - frameErrors));
+	      show_frameErrors (frameErrors);
 	      frameErrors = 0;
 	   }
 
@@ -142,11 +121,16 @@ uint8_t	temp	= 0;
   *	and adjust the buffer here for the next round
   */
 	   if (fc. check (&frameBytes [blockFillIndex * nbits / 8]) &&
-	       (processSuperframe (frameBytes,
+	       (processSuperframe (frameBytes. data(),
 	                           blockFillIndex * nbits / 8))) {
 //	since we processed a full cycle of 5 blocks, we just start a
 //	new sequence, beginning with block blockFillIndex
 	      blocksInBuffer	= 0;
+	      if (++successFrames > 25) {
+	         show_rsErrors (rsErrors);
+	         successFrames	= 0;
+	         rsErrors	= 0;
+	      }
 	   }
 	   else {
 /**
@@ -161,136 +145,17 @@ uint8_t	temp	= 0;
 /**
   *	\brief processSuperframe
   *
-  *	First, we we that the firecode checker gace green light
-  *	However, that does not mean that the values defining the
-  *	the sizes and positions of the aac frames are correct
-  *	When we see an obvious incorrect value, we let the
-  *	function fail and report that in the errorLog file
-  *	(which is usually /dev/null).
+  *	First, we know the firecode checker gave green light
+  *	We correct the errors using RS
   */
-bool	mp4Processor::processSuperframe (uint8_t frameBytes [], int16_t bo) {
+bool	mp4Processor::processSuperframe (uint8_t frameBytes [], int16_t base) {
 uint8_t		num_aus;
 int16_t		i, j, k;
-int16_t		nErrors	= 0;
 uint8_t		rsIn	[120];
 uint8_t		rsOut	[110];
-uint8_t		dacRate;
-uint8_t		sbrFlag;
-uint8_t		aacChannelMode;
-uint8_t		psFlag;
-uint16_t	mpegSurround;
-int32_t		outSamples	= 0;
 int32_t		tmp;
+stream_parms    streamParameters;
 
-//	bits 0 .. 15 is firecode
-//	bit 16 is unused
-	dacRate		= (frameBytes [bo + 2] >> 6) & 01;	// bit 17
-	sbrFlag		= (frameBytes [bo + 2] >> 5) & 01;	// bit 18
-	aacChannelMode	= (frameBytes [bo + 2] >> 4) & 01;	// bit 19
-	psFlag		= (frameBytes [bo + 2] >> 3) & 01;	// bit 20
-	mpegSurround	= (frameBytes [bo + 2] & 07);		// bits 21 .. 23
-
-	switch (2 * dacRate + sbrFlag) {
-	   default:		// cannot happen
-	      fprintf (errorLog, "serious error in frame 1 (%d) (%d)\n",
-	                                          ++au_errors, au_count);
-	      return false;
-
-	   case 0:
-	      num_aus = 4;
-	      au_start [0] = 8;
-	      au_start [1] = frameBytes [bo + 3] * 16 +
-	                     (frameBytes [bo + 4] >> 4);
-	      au_start [2] = (frameBytes [bo + 4] & 0xf) * 256 +
-	                      frameBytes [bo + 5];
-	      au_start [3] = frameBytes [bo + 6] * 16 +
-	                     (frameBytes [bo + 7] >> 4);
-	      au_start [4] = 110 *  (bitRate / 8);
-	      if ((au_start [3] >= au_start [4]) ||
-                  (au_start [2] >= au_start [3]) ||
-                  (au_start [1] >= au_start [2])) {
-                 fprintf (errorLog, "serious error in frame 2 (%d) (%d) %d %d %d %d %d\n",
-	                                         ++au_errors, au_count,
-	                               au_start [0],
-	                               au_start [1],
-	                               au_start [2],
-	                               au_start [3],
-	                               au_start [4]);
-                 return false;
-              }
-	      break;
-//
-	   case 1:
-	      num_aus = 2;
-	      au_start [0] = 5;
-	      au_start [1] = frameBytes [bo + 3] * 16 +
-	                     (frameBytes [bo + 4] >> 4);
-	      au_start [2] = 110 *  (bitRate / 8);
-	      if ((au_start [1] < au_start [0]) ||
-	          (au_start [1] >= au_start [2])) {
-	         fprintf (errorLog, "serious error in frame 3 (%d) (%d) %d %d %d\n",
-	                                         ++au_errors, au_count,
-	                              au_start [0],
-	                              au_start [1],
-	                              au_start [2]);
-;
-	         return false;
-	      }
-	      break;
-//
-	   case 2:
-	      num_aus = 6;
-	      au_start [0] = 11;
-	      au_start [1] = frameBytes [bo + 3] * 16 +
-	                     (frameBytes [bo + 4] >> 4);
-	      au_start [2] = (frameBytes [bo + 4] & 0xf) * 256 +
-	                     frameBytes [bo + 5];
-	      au_start [3] = frameBytes [bo + 6] * 16 +
-	                     (frameBytes [bo + 7] >> 4);
-	      au_start [4] = (frameBytes [bo + 7] & 0xf) * 256 +
-	                     frameBytes [bo + 8];
-	      au_start [5] = frameBytes [bo + 9] * 16 +
-	                     (frameBytes [bo + 10] >> 4);
-	      au_start [6] = 110 *  (bitRate / 8);
-
-	      if ((au_start [5] >= au_start [6]) ||
-                  (au_start [4] >= au_start [5]) ||
-                  (au_start [3] >= au_start [4]) ||
-                  (au_start [2] >= au_start [3]) ||
-                  (au_start [1] >= au_start [2])) {
-                 fprintf (errorLog, "serious error in frame 4 (%d) (%d) %d %d %d %d %d %d %d\n",
-	                                          ++au_errors, au_count,
-	                          au_start [0],
-	                          au_start [1],
-	                          au_start [2],
-	                          au_start [3],
-	                          au_start [4],
-	                          au_start [5],
-	                          au_start [6]);
-                 return false;
-              }
-	      break;
-//
-	   case 3:
-	      num_aus = 3;
-	      au_start [0] = 6;
-	      au_start [1] = frameBytes [bo + 3] * 16 +
-	                     (frameBytes [bo + 4] >> 4);
-	      au_start [2] = (frameBytes [bo + 4] & 0xf) * 256 +
-	                     frameBytes [bo + 5];
-	      au_start [3] = 110 * (bitRate / 8);
-	      if ((au_start [2] >= au_start [3]) ||
-                  (au_start [1] >= au_start [2])) {
-                 fprintf (errorLog, "serious error in frame 5 (%d) (%d) %d %d %d %d\n",
-	                                         ++au_errors, au_count,
-	                          au_start [0],
-	                          au_start [1],
-	                          au_start [2],
-	                          au_start [3]);
-                 return false;
-              }
-	      break;
-	}
 /**
   *	apply reed-solomon error repar
   *	OK, what we now have is a vector with RSDims * 120 uint8_t's
@@ -298,11 +163,66 @@ int32_t		tmp;
   *	take into account the interleaving that is applied.
   */
 	for (j = 0; j < RSDims; j ++) {
+	   int16_t ler	= 0;
 	   for (k = 0; k < 120; k ++) 
-	      rsIn [k] = frameBytes [(bo + j + k * RSDims) % (RSDims * 120)];
-	   nErrors += rsDecoder. dec (rsIn, rsOut);
-	   for (k = 0; k < 110; k ++)
+	      rsIn [k] = frameBytes [(base + j + k * RSDims) % (RSDims * 120)];
+	   ler = my_rsDecoder. dec (rsIn, rsOut, 135);
+	   if (ler < 0) {
+	      rsErrors ++;
+//	      fprintf (stderr, "RS failure\n");
+	      return false;
+	   }
+	   for (k = 0; k < 110; k ++) 
 	      outVector [j + k * RSDims] = rsOut [k];
+	}
+
+//	bits 0 .. 15 is firecode
+//	bit 16 is unused
+	streamParameters. dacRate = (outVector [2] >> 6) & 01;	// bit 17
+	streamParameters. sbrFlag = (outVector [2] >> 5) & 01;	// bit 18
+	streamParameters. aacChannelMode = (outVector [2] >> 4) & 01;	// bit 19
+	streamParameters. psFlag  = (outVector [2] >> 3) & 01;	// bit 20
+	streamParameters. mpegSurround	= (outVector [2] & 07);	// bits 21 .. 23
+
+	switch (2 * streamParameters. dacRate + streamParameters. sbrFlag) {
+	  default:		// cannot happen
+	   case 0:
+	      num_aus = 4;
+	      au_start [0] = 8;
+	      au_start [1] = outVector [3] * 16 + (outVector [4] >> 4);
+	      au_start [2] = (outVector [4] & 0xf) * 256 +
+	                      outVector [5];
+	      au_start [3] = outVector [6] * 16 +
+	                     (outVector [7] >> 4);
+	      au_start [4] = 110 *  (bitRate / 8);
+	      break;
+//
+	   case 1:
+	      num_aus = 2;
+	      au_start [0] = 5;
+	      au_start [1] = outVector [3] * 16 +
+	                     (outVector [4] >> 4);
+	      au_start [2] = 110 *  (bitRate / 8);
+	      break;
+//
+	   case 2:
+	      num_aus = 6;
+	      au_start [0] = 11;
+	      au_start [1] = outVector [3] * 16 + (outVector [4] >> 4);
+	      au_start [2] = (outVector [4] & 0xf) * 256 + outVector [ 5];
+	      au_start [3] = outVector [6] * 16 + (outVector [7] >> 4);
+	      au_start [4] = (outVector [7] & 0xf) * 256 + outVector [8];
+	      au_start [5] = outVector [9] * 16 + (outVector [10] >> 4);
+	      au_start [6] = 110 *  (bitRate / 8);
+	      break;
+//
+	   case 3:
+	      num_aus = 3;
+	      au_start [0] = 6;
+	      au_start [1] = outVector [3] * 16 + (outVector [4] >> 4);
+	      au_start [2] = (outVector [4] & 0xf) * 256 + outVector [5];
+	      au_start [3] = 110 * (bitRate / 8);
+	      break;
 	}
 /**
   *	OK, the result is N * 110 * 8 bits (still single bit per byte!!!)
@@ -311,69 +231,155 @@ int32_t		tmp;
   */
 	for (i = 0; i < num_aus; i ++) {
 	   int16_t	aac_frame_length;
-	   au_count ++;
-	   uint8_t theAU [2 * 960 + 10];	// sure, large enough
-	   memset (theAU, 0, sizeof (theAU));
 
 ///	sanity check 1
 	   if (au_start [i + 1] < au_start [i]) {
-	      fprintf (errorLog, "%d %d\n", au_start [i + 1], au_start [i]);
+//	      fprintf (stderr, "%d %d (%d)\n", au_start [i], au_start [i + 1], i);
+//	should not happen, all errors were corrected
 	      return false;
 	   }
 
-/**
-  *	Note that the length can be erroneous, so we check
-  *	its sanity
-  */
 	   aac_frame_length = au_start [i + 1] - au_start [i] - 2;
-	   if ((aac_frame_length >= 2 * 960) || (aac_frame_length < 0)) {
-	      fprintf (errorLog, "serious error in frame 6 (%d) (%d) frame_length = %d\n",
-	                                        ++au_errors,
-	                                        au_count, aac_frame_length);
-	      return false;
+//	just a sanity check
+	   if ((aac_frame_length >=  960) || (aac_frame_length < 0)) {
+//	      fprintf (stderr, "aac_frame_length = %d\n", aac_frame_length);
+//	      return false;
 	   }
-///	but first the crc check
-	   if (dabPlus_crc (&outVector [au_start [i]],
-	                    aac_frame_length)) {
-/**
-  *	create a real aac vector, starting with the newly created
-  *	header
-  */
-	      memcpy (theAU,
+
+//	but first the crc check
+	   if (check_crc_bytes (&outVector [au_start [i]],
+	                                aac_frame_length)) {
+	      bool err;
+//
+//	first handle the pad data if any
+	      if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
+	                                      
+	         int16_t count = outVector [au_start [i] + 1];
+	         uint8_t buffer [count];
+	         memcpy (buffer, &outVector [au_start [i] + 2], count);
+	         uint8_t L0	= buffer [count - 1];
+	         uint8_t L1	= buffer [count - 2];
+	         my_padhandler. processPAD (buffer, count - 3, L1, L0);
+	      }
+
+	      uint8_t fileBuffer [1024];
+	      buildHeader (aac_frame_length, &streamParameters, fileBuffer);
+	      memcpy (&fileBuffer [7],
 	              &outVector [au_start [i]],
-	              aac_frame_length * sizeof (uint8_t));
-/**
-  *	see if we have a PAD
-  */
-	      if (((theAU [0] >> 5) & 07) == 4)
-	         my_padhandler. processPAD (theAU);
-/**
-  *	just a few bytes extra, such that the decoder can look
-  *	beyond the last byte
-  */
-	      for (j = aac_frame_length;
-	           j < aac_frame_length + 10; j ++)
-	         theAU [j] = 0;
-	      tmp = aacDecoder -> MP42PCM (dacRate,
-	                                   sbrFlag,
-	                                   mpegSurround,
-	                                   aacChannelMode,
-	                                   theAU,
-	                                   aac_frame_length);
-	      if (tmp == 0)
-	         frameErrors ++;
-	      else
-	         outSamples += tmp;
+                      aac_frame_length);
+	      frameBuffer -> putDataIntoBuffer (fileBuffer, 
+	                                        aac_frame_length + 7);
+	      newFrame (aac_frame_length + 7);
+//	      if (soundOut != nullptr)
+//	         (soundOut)((int16_t *)(&fileBuffer [0]),
+//	                    aac_frame_length + 7, 0, false, nullptr);
+
+//
+//	then handle the audio
+
+	      uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
+
+	      memcpy (theAudioUnit,
+	                 &outVector [au_start [i]], aac_frame_length);
+	      memset (&theAudioUnit [aac_frame_length], 0, 10);
+
+	      tmp = aacDecoder. MP42PCM (&streamParameters,
+	                                 theAudioUnit,
+	                                 aac_frame_length);
+	      err	= tmp == 0;
+	      emit isStereo (streamParameters. aacChannelMode);
+	      if (err) 
+	         aacErrors ++;
+	      if (++aacFrames > 25) {
+	         show_aacErrors (aacErrors);
+	         aacErrors	= 0;
+	         aacFrames	= 0;
+	      }
 	   }
 	   else {
-	      au_errors ++;
-	      fprintf (errorLog, "CRC failure with dab+ frame (error %d)\n",
-	                                          au_errors);
+	      fprintf (stderr, "CRC failure with dab+ frame %d (%d)\n",
+	                                          i, num_aus);
 	   }
 	}
-//	fprintf (stderr, "%d samples good for %d nsec of music\n",
-//	                 outSamples, outSamples * 1000 / 48);
-//
 	return true;
 }
 
+void	mp4Processor::buildHeader (int16_t framelen,
+	                           stream_parms *sp,
+	                           uint8_t *header) {
+	struct adts_fixed_header {
+		unsigned                     : 4;
+		unsigned home                : 1;
+		unsigned orig                : 1;
+		unsigned channel_config      : 3;
+		unsigned private_bit         : 1;
+		unsigned sampling_freq_index : 4;
+		unsigned profile             : 2;
+		unsigned protection_absent   : 1;
+		unsigned layer               : 2;
+		unsigned id                  : 1;
+		unsigned syncword            : 12;
+	} fh;
+	struct adts_variable_header {
+		unsigned                            : 4;
+		unsigned num_raw_data_blks_in_frame : 2;
+		unsigned adts_buffer_fullness       : 11;
+		unsigned frame_length               : 13;
+		unsigned copyright_id_start         : 1;
+		unsigned copyright_id_bit           : 1;
+	} vh;
+	/* 32k 16k 48k 24k */
+	const unsigned short samptab[] = {0x5, 0x8, 0x3, 0x6};
+
+	fh. syncword = 0xfff;
+	fh. id = 0;
+	fh. layer = 0;
+	fh. protection_absent = 1;
+	fh. profile = 0;
+	fh. sampling_freq_index = samptab [sp -> dacRate << 1 | sp -> sbrFlag];
+
+	fh. private_bit = 0;
+	switch (sp -> mpegSurround) {
+	   default:
+	      fprintf (stderr, "Unrecognized mpeg_surround_config ignored\n");
+//	not nice, but deliberate: fall through
+	   case 0:
+	      if (sp -> sbrFlag && !sp -> aacChannelMode && sp -> psFlag)
+	         fh. channel_config = 2; /* Parametric stereo */
+	      else
+	         fh. channel_config = 1 << sp -> aacChannelMode ;
+	      break;
+
+	   case 1:
+	      fh. channel_config = 6;
+	      break;
+	}
+
+	fh. orig = 0;
+	fh. home = 0;
+	vh. copyright_id_bit = 0;
+	vh. copyright_id_start = 0;
+	vh. frame_length = framelen + 7;  /* Includes header length */
+	vh. adts_buffer_fullness = 1999;
+	vh. num_raw_data_blks_in_frame = 0;
+	header [0]	= fh. syncword >> 4;
+	header [1]	= (fh. syncword & 0xf) << 4;
+	header [1]	|= fh. id << 3;
+	header [1]	|= fh. layer << 1;
+	header [1]	|= fh. protection_absent;
+        header [2]	= fh. profile << 6;
+	header [2]	|= fh. sampling_freq_index << 2;
+	header [2]	|= fh. private_bit << 1;
+	header [2]	|= (fh. channel_config & 0x4);
+	header [3]	= (fh. channel_config & 0x3) << 6;
+	header [3]	|= fh. orig << 5;
+	header [3]	|= fh. home << 4;
+	header [3]	|= vh. copyright_id_bit << 3;
+	header [3]	|= vh. copyright_id_start << 2;
+	header [3]	|= (vh. frame_length >> 11) & 0x3;
+	header [4]	= (vh. frame_length >> 3) & 0xff;
+	header [5]	= (vh. frame_length & 0x7) << 5;
+	header [5]	|= vh. adts_buffer_fullness >> 6;
+	header [6]	= (vh. adts_buffer_fullness & 0x3f) << 2;
+	header [6]	|= vh. num_raw_data_blks_in_frame;
+}
