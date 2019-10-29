@@ -217,6 +217,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/backend-driver.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp4processor.h
+	     ./includes/backend/bitWriter.h
 	     ./includes/backend/audio/mp2processor.h
 	     ./includes/backend/data/ip-datahandler.h
 	     ./includes/backend/data/tdc-datahandler.h
@@ -290,6 +291,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/backend-driver.cpp
 	     ./src/backend/audio/faad-decoder.cpp
 	     ./src/backend/audio/mp4processor.cpp
+	     ./src/backend/audio/bitWriter.spp
 	     ./src/backend/audio/mp2processor.cpp
 	     ./src/backend/data/ip-datahandler.cpp
 	     ./src/backend/data/journaline-datahandler.cpp
