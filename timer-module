@@ -1,0 +1,35 @@
+
+
+Request:
+	Create a timer module that at a specified time (or specified times)
+	start to decode the service with a predefined name at a predefined
+	channel, and write the output - either the AAC output or the PCM
+	output, whichever is specified - onto a file. The name of the
+	file should be the name of the service, augmented with the
+	time (and date) of the recording.
+
+	Specification is in a specified format, probably using some form.
+
+Questions
+
+a.	whatever should be done whenever the specification is modified
+	before or during the processing of a request
+b.	whatever should be done when a request cannot be honoured (for
+	whatever reason the requested service will not start
+c.	What is the range of the specification (12 hours?)
+d.	do the specification survive closing the application for some
+	time, i.e. assume that for some reason the app was stopped
+	and restarted, is a specification done in a previous
+	now still valid?
+
+Specification or format
+	time-in duration channel:servicename pcm/aac
+
+	time-in is specified as "hour:minutes" to be set in a spinbox
+	duration is specified as "minutes" to be set in a spinbox
+	pcm/aac is specified as "pcm" or "aac" in a combobox
+
+The resulting filename has the form
+	serviceName-date-time.aac or serviceName-date-time.pcm
+
+

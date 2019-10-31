@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
+    <width>558</width>
     <height>388</height>
    </rect>
   </property>
@@ -91,6 +91,21 @@
         </property>
         <property name="text">
          <string>Ensemble Label</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="ensembleId">
+        <property name="font">
+         <font>
+          <pointsize>12</pointsize>
+         </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ensembleId. Each ensemble is characterized by its name, but also by a unique ensembleId,&lt;/p&gt;&lt;p&gt;consisting of 4 hexadecimal digits.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string/>
         </property>
        </widget>
       </item>
@@ -214,42 +229,6 @@
             </property>
            </widget>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="font">
-             <font>
-              <pointsize>11</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>Ensemble-ID:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLCDNumber" name="ensembleId">
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble ID&lt;/p&gt;&lt;p&gt;The hecadecimal number shows the ensemble ID.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::NoFrame</enum>
-            </property>
-            <property name="digitCount">
-             <number>6</number>
-            </property>
-            <property name="mode">
-             <enum>QLCDNumber::Hex</enum>
-            </property>
-            <property name="segmentStyle">
-             <enum>QLCDNumber::Flat</enum>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>
@@ -287,7 +266,7 @@
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QPushButton" name="resetButton">
+           <widget class="QPushButton" name="prevChannelButton">
             <property name="font">
              <font>
               <family>DejaVu Sans</family>
@@ -295,10 +274,10 @@
              </font>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reset player&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select previous channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Reset</string>
+             <string>Previous</string>
             </property>
            </widget>
           </item>
@@ -311,7 +290,7 @@
              </font>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for selecting the next channel in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select next chaannel in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Next</string>
@@ -503,7 +482,7 @@
             <item>
              <widget class="QPushButton" name="saveEnsembleData">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>Content</string>
@@ -511,9 +490,12 @@
              </widget>
             </item>
             <item>
-             <widget class="QLabel" name="warningLabel">
+             <widget class="QPushButton" name="resetButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
-               <string/>
+               <string>reset</string>
               </property>
              </widget>
             </item>
@@ -540,6 +522,10 @@
         </item>
         <item>
          <widget class="QLabel" name="localTimeDisplay">
+          <property name="toolTip">
+           <string>Local time is the time as received from the transmission. If you are running recordings, then
+it is definitely not the time on your clock.</string>
+          </property>
           <property name="text">
            <string>localTime</string>
           </property>
@@ -551,8 +537,13 @@
        <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
          <widget class="QLabel" name="serviceLabel">
+          <property name="font">
+           <font>
+            <pointsize>13</pointsize>
+           </font>
+          </property>
           <property name="text">
-           <string>TextLabel</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -717,6 +708,12 @@
               <family>DejaVu Sans</family>
               <pointsize>10</pointsize>
              </font>
+            </property>
+            <property name="toolTip">
+             <string>Touching this button will show (or hide) the resulting correlation of the first datablock of the DAB
+ensemble with the values as they should be. The &quot;peaks&quot; (if any) show the samples where
+the correlation is strongest. More than one peak shows more than one transmitter within
+the reach of this receiver.</string>
             </property>
             <property name="text">
              <string>Impulse R.</string>

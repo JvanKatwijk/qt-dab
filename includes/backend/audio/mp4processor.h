@@ -58,7 +58,8 @@ private:
 	int		build_aacFile (int16_t aac_frame_len,
                                      stream_parms *sp,
                                      uint8_t	*data,
-                                     uint8_t	*fileBuffer);
+//	                             uint8_t	*fileBuffer);
+                                     std::vector<uint8_t> &fileBuffer);
 
 
 	int16_t		superFramesize;

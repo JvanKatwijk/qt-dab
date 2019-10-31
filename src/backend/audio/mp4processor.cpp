@@ -183,10 +183,12 @@ stream_parms    streamParameters;
 //	bit 16 is unused
 	streamParameters. dacRate = (outVector [2] >> 6) & 01;	// bit 17
 	streamParameters. sbrFlag = (outVector [2] >> 5) & 01;	// bit 18
-	streamParameters. aacChannelMode = (outVector [2] >> 4) & 01;	// bit 19
+	streamParameters. aacChannelMode
+	                          = (outVector [2] >> 4) & 01;	// bit 19
 	streamParameters. psFlag  = (outVector [2] >> 3) & 01;	// bit 20
 	streamParameters. mpegSurround	= (outVector [2] & 07);	// bits 21 .. 23
-
+//
+//	added for the aac file writer
 	streamParameters. CoreSrIndex	=
 	              streamParameters. dacRate ?
 	                            (streamParameters. sbrFlag ? 6 : 3) :
@@ -196,7 +198,6 @@ stream_parms    streamParameters;
 
 	streamParameters. ExtensionSrIndex =
 	              streamParameters. dacRate ? 3 : 5;
-
 
 	switch (2 * streamParameters. dacRate + streamParameters. sbrFlag) {
 	  default:		// cannot happen
@@ -276,14 +277,13 @@ stream_parms    streamParameters;
 	         my_padhandler. processPAD (buffer, count - 3, L1, L0);
 	      }
 
-	      uint8_t fileBuffer [1024];
-	      memset (fileBuffer, 0, 1024);
+	      std::vector<uint8_t> fileBuffer;
 	      int segmentSize =
 	              build_aacFile (aac_frame_length,
 	                             &streamParameters,
 	                             &(outVector. data () [au_start [i]]),
 	                             fileBuffer);
-	      frameBuffer -> putDataIntoBuffer (fileBuffer, 
+	      frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
 	                                        segmentSize);
 	      newFrame (segmentSize);
 //
@@ -311,6 +311,9 @@ stream_parms    streamParameters;
 	   else {
 	      fprintf (stderr, "CRC failure with dab+ frame %d (%d)\n",
 	                                          i, num_aus);
+//
+//	what would happen if the errors were in the 10 parity bytes
+//	rather than in the 110 payload bytes?
 	   }
 	}
 	return true;
@@ -319,21 +322,21 @@ stream_parms    streamParameters;
 int	mp4Processor::build_aacFile (int16_t aac_frame_len,
 	                             stream_parms *sp,
 	                             uint8_t *data,
-	                             uint8_t *fileBuffer) {
+	                             std::vector<uint8_t> &fileBuffer) {
 BitWriter	au_bw;
 
 	au_bw. AddBits (0x2B7, 11);	// syncword
 	au_bw. AddBits (    0, 13);	// audioMuxLengthBytes - written later
-// AudioMuxElement(1)
+//	AudioMuxElement(1)
 
-	au_bw. AddBits (    0, 1); // useSameStreamMux
-// StreamMuxConfig()
+	au_bw. AddBits (    0, 1);	// useSameStreamMux
+//	StreamMuxConfig()
 
-	au_bw. AddBits (    0, 1); // audioMuxVersion
-	au_bw. AddBits (    1, 1); // allStreamsSameTimeFraming
-	au_bw. AddBits (    0, 6); // numSubFrames
-	au_bw. AddBits (    0, 4); // numProgram
-	au_bw. AddBits (    0, 3); // numLayer
+	au_bw. AddBits (    0, 1);	// audioMuxVersion
+	au_bw. AddBits (    1, 1);	// allStreamsSameTimeFraming
+	au_bw. AddBits (    0, 6);	// numSubFrames
+	au_bw. AddBits (    0, 4);	// numProgram
+	au_bw. AddBits (    0, 3);	// numLayer
 
 	if (sp  -> sbrFlag) {
 	   au_bw. AddBits (0b00101, 5); // SBR
@@ -344,27 +347,23 @@ BitWriter	au_bw;
 	   au_bw. AddBits (0b100, 3);							// GASpecificConfig() with 960 transform
 	} else {
 	   au_bw. AddBits (0b00010, 5); // AAC LC
-	   au_bw. AddBits (sp -> CoreSrIndex, 4);	// samplingFrequencyIndex
-	   au_bw. AddBits (sp -> CoreChConfig, 4);	// channelConfiguration
+	   au_bw. AddBits (sp -> CoreSrIndex, 4); // samplingFrequencyIndex
+	   au_bw. AddBits (sp -> CoreChConfig, 4); // channelConfiguration
 	   au_bw. AddBits (0b100, 3);							// GASpecificConfig() with 960 transform
 	}
 
-	au_bw. AddBits (0b000, 3); // frameLengthType
-	au_bw. AddBits (0xFF, 8); // latmBufferFullness
-	au_bw. AddBits (   0, 1); // otherDataPresent
-	au_bw. AddBits (   0, 1); // crcCheckPresent
+	au_bw. AddBits (0b000, 3);	// frameLengthType
+	au_bw. AddBits (0xFF, 8);	// latmBufferFullness
+	au_bw. AddBits (   0, 1);	// otherDataPresent
+	au_bw. AddBits (   0, 1);	// crcCheckPresent
 
-	// PayloadLengthInfo()
+//	PayloadLengthInfo()
 	for (size_t i = 0; i < aac_frame_len / 255; i++)
 	   au_bw. AddBits (0xFF, 8);
 	au_bw. AddBits (aac_frame_len % 255, 8);
+
 	au_bw. AddBytes (data, aac_frame_len);
 	au_bw. WriteAudioMuxLengthBytes ();
-//	const std::vector<uint8_t> latm_data = au_bw. GetData ();
-//	for (int i = 0; i < latm_data. size (); i ++)
-//	   fileBuffer [i] = latm_data. at (i);
-	for (int i = 0; i < au_bw. GetData (). size (); i ++)
-	   fileBuffer [i] = au_bw. GetData (). at (i);
-//	return latm_data. size ();
-	return au_bw. GetData (). size ();
+	fileBuffer	= au_bw. GetData ();
+	return fileBuffer. size ();
 }

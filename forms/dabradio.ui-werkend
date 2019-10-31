@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>549</width>
-    <height>400</height>
+    <width>523</width>
+    <height>388</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -39,7 +39,7 @@
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB copyright:&lt;/p&gt;&lt;p&gt;J van Katwijk, Lazy Chair Computing. J.vanKatwijk@gmail.com&lt;/p&gt;&lt;p&gt;Copyright of the Qt toolkit used: the Qt Company&lt;/p&gt;&lt;p&gt;Copyright of the libraries used for SDRplay, rtl-sdr based sticks, AIRspy, portaudio, libsndfile and libsamplerate and libfftw3 to their developers&lt;/p&gt;&lt;p&gt;Copyright of the MP2 library used Martin J Fiedler&lt;/p&gt;&lt;p&gt;Copyright of the firecode checker: Gnu Radio&lt;/p&gt;&lt;p&gt;Copyright of the Reed Solomon Decoder software: Phil Karns&lt;/p&gt;&lt;p&gt;All copyrights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The current layout of the GUI is based on a design of Luo Zhang, Thanks&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB (an SDR-J program) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Qt-DAB copyright:&lt;/p&gt;&lt;p&gt;J van Katwijk, Lazy Chair Computing. J.vanKatwijk@gmail.com&lt;/p&gt;&lt;p&gt;Copyright of the Qt toolkit used: the Qt Company&lt;/p&gt;&lt;p&gt;Copyright of the libraries used for SDRplay, rtl-sdr based sticks, AIRspy, portaudio, libsndfile and libsamplerate and libfftw3 to their developers&lt;/p&gt;&lt;p&gt;Copyright of the MP2 library used Martin J Fiedler&lt;/p&gt;&lt;p&gt;Copyright of the firecode checker: Gnu Radio&lt;/p&gt;&lt;p&gt;Copyright of the Reed Solomon Decoder software: Phil Karns&lt;/p&gt;&lt;p&gt;Copyright of the code to create a correct header for the AAC files: Stefan Poeschel&lt;/p&gt;&lt;p&gt;All copyrights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;The current layout of the GUI is based on a design of Luo Zhang, Thanks&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Qt-DAB (an SDR-J program) is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>©</string>
@@ -405,7 +405,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -434,7 +434,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -463,7 +463,7 @@
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="PlaceholderText">
+               <colorrole role="WindowText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -499,24 +499,14 @@
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QLabel" name="localTimeDisplay">
-            <property name="text">
-             <string>localTime</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QLabel" name="timeDisplay">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
+             <widget class="QPushButton" name="saveEnsembleData">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>run-time</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
+               <string>Content</string>
               </property>
              </widget>
             </item>
@@ -534,21 +524,35 @@
        </layout>
       </item>
       <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_9">
+        <item>
+         <widget class="QLabel" name="timeDisplay">
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="text">
+           <string>run-time</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="localTimeDisplay">
+          <property name="text">
+           <string>localTime</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
          <widget class="QLabel" name="serviceLabel">
           <property name="text">
            <string>TextLabel</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="saveEnsembleData">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can store the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Content</string>
           </property>
          </widget>
         </item>
@@ -760,7 +764,7 @@
              </font>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;Code for converting the aac headers to ones that can be understood by e.g. VLC is from Stefan Poeschel. All rights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>frame dump</string>

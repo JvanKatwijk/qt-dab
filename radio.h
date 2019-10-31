@@ -87,7 +87,8 @@ private:
 //const	char		*get_programm_language_string (int16_t);
 	void		dumpControlState	(QSettings *);
 	void		Yes_Signal_Found();
-	void		Increment_Channel();
+	void		increment_Channel();
+	void		decrement_Channel();
 	uint8_t		convert			(QString);
 	void		hideButtons();
 	void		showButtons();
@@ -200,6 +201,7 @@ public slots:
 //	Somehow, these must be connected to the GUI
 private slots:
 	void		set_nextChannel();
+	void		set_prevChannel();
 	void		toggle_show_data();
 	void		doStart			(QString);
 	void		doStart();

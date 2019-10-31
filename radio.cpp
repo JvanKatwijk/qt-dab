@@ -488,7 +488,7 @@ void	RadioInterface::No_Signal_Found() {
 	my_dabProcessor -> stop();
 	while (!my_dabProcessor -> isFinished())
 	   usleep (10000);
-	Increment_Channel();
+	increment_Channel();
 	clearEnsemble();
 	my_dabProcessor	-> start();
 	signalTimer. start (10000);
@@ -520,7 +520,7 @@ void	RadioInterface::set_Scanning() {
 	my_dabProcessor -> set_scanMode (scanning);
 	if (scanning) {
 	   scanButton -> setText ("scanning");
-	   Increment_Channel();
+	   increment_Channel();
 	   signalTimer. start (10000);
 	}
 	else
@@ -533,7 +533,7 @@ void	RadioInterface::set_Scanning() {
 //	To avoid disturbance, we disconnect the combobox
 //	temporarily, since otherwise changing the channel would
 //	generate a signal
-void	RadioInterface::Increment_Channel() {
+void	RadioInterface::increment_Channel() {
 int32_t	tunedFrequency;
 	if (!running. load())
 	   return;
@@ -543,6 +543,31 @@ int	cc	= channelSelector -> currentIndex();
 	cc	+= 1;
 	if (cc >= channelSelector -> count())
 	   cc = 0;
+//
+//	To avoid reaction of the system on setting a different value
+	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	              this, SLOT (selectChannel_usingSelector (const QString &)));
+	channelSelector -> setCurrentIndex (cc);
+	tunedFrequency	=
+	         theBand. Frequency (dabBand, channelSelector -> currentText());
+	inputDevice	-> setVFOFrequency (tunedFrequency);
+
+	connect    (channelSelector, SIGNAL (activated (const QString &)),
+	             this, SLOT (selectChannel_usingSelector (const QString &)));
+}
+
+void	RadioInterface::decrement_Channel() {
+int32_t	tunedFrequency;
+	if (!running. load())
+	   return;
+
+int	cc	= channelSelector -> currentIndex();
+
+	fprintf (stderr, "cc = %d\n", cc);
+	cc	-= 1;
+	if (cc < 0)
+	   cc = channelSelector -> count() - 1;
+	fprintf (stderr, "en nu cc = %d\n", cc);
 //
 //	To avoid reaction of the system on setting a different value
 	disconnect (channelSelector, SIGNAL (activated (const QString &)),
@@ -590,6 +615,21 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 	ensembleDisplay	-> setModel (&ensemble);
 }
 
+QString hextoString (int v) {
+char t [4];
+QString res;
+int	i;
+	for (i = 0; i < 4; i ++) {
+	   t [3 - i] = v & 0xF;
+	   v >>= 4;
+	}
+	for (i = 0; i < 4; i ++) {
+	   QChar c = t [i] <= 9 ? (char) ('0' + t [i]) : (char)('A'+ t [i] - 10);
+	   res. append (c);
+	}
+	return res;
+}
+	   
 //
 ///	a slot, called by the fib processor
 void	RadioInterface::nameofEnsemble (int id, const QString &v) {
@@ -597,7 +637,8 @@ QString s;
 	if (!running. load())
 	   return;
 
-	ensembleId	-> display (id);
+	ensembleId	-> setText ("ensembleId: " + hextoString (id));
+//	ensembleId	-> display (id);
 	ensembleLabel	= v;
 	ensembleName	-> setAlignment(Qt::AlignCenter);
 	ensembleName	-> setText (v);
@@ -1058,7 +1099,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new airspyHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1073,7 +1113,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new hackrfHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1088,7 +1127,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new soapyHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1103,7 +1141,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new limeHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1120,7 +1157,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice = new extioHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1151,7 +1187,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1180,7 +1215,6 @@ virtualInput	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rtlsdrHandler (dabSettings);
 	      showButtons();
-	      presetSelector -> show ();
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1521,23 +1555,27 @@ void	RadioInterface::showButtons() {
 //	if (!running. load())
 //	   return;
 //
-	scanButton	-> show();
-	channelSelector	-> show();
-	nextChannelButton	-> show();
-	techData. frequency	-> show();
-
+	scanButton		-> show ();
+	channelSelector		-> show ();
+	dumpButton		-> show ();
+	nextChannelButton	-> show ();
+	prevChannelButton	-> show ();
+	techData. frequency	-> show ();
+	presetSelector		-> show ();
+	frameDumpButton		-> show ();
 }
 
 void	RadioInterface::hideButtons() {
 //	if (!running. load())
 //	   return;
-	scanButton	-> hide();
-	channelSelector	-> hide();
-	dumpButton	-> hide();
-	frameDumpButton	-> hide ();
-	
-	nextChannelButton	-> hide();
-	techData. frequency	-> hide();
+	scanButton		-> hide ();
+	channelSelector		-> hide ();
+	dumpButton		-> hide ();
+	nextChannelButton	-> hide ();
+	prevChannelButton	-> hide ();
+	techData. frequency	-> hide ();
+	presetSelector		-> hide ();
+	frameDumpButton		-> hide ();
 }
 
 void	RadioInterface::setSyncLost() {
@@ -1710,9 +1748,25 @@ void	RadioInterface::set_nextChannel() {
 	my_dabProcessor -> stop();
 	while (!my_dabProcessor -> isFinished())
 	   usleep (10000);
-	Increment_Channel();
+	increment_Channel();
 	clearEnsemble();
 	my_dabProcessor	-> start();
+}
+
+void	RadioInterface::set_prevChannel () {
+//	we stop the thread from running,
+//	Increment the frequency
+//	and restart
+	disconnect (prevChannelButton, SIGNAL (clicked ()),
+	            this, SLOT (set_prevChannel ()));
+	my_dabProcessor -> stop();
+	while (!my_dabProcessor -> isFinished())
+	   usleep (10000);
+	decrement_Channel();
+	clearEnsemble();
+	my_dabProcessor	-> start ();
+	connect (prevChannelButton, SIGNAL (clicked ()),
+	         this, SLOT (set_prevChannel ()));
 }
 
 void	RadioInterface::set_tiiSwitch() {
@@ -1754,6 +1808,8 @@ void	RadioInterface::connectGUI() {
 	         this, SLOT (set_Scanning (void)));
 	connect (nextChannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_nextChannel (void)));
+	connect (prevChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (set_prevChannel (void)));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_sourceDump (void)));
 	connect (frameDumpButton, SIGNAL (clicked (void)),
