@@ -22,7 +22,12 @@ Table of Contents
   * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
 * [Interfacing to another device](#interfacing-to-another-device)
 * [Copyright](#copyright)
- 
+
+-------------------------------------------------------------------
+------------------------------------------------------------------
+
+![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
+
 ------------------------------------------------------------------
 Features
 ------------------------------------------------------------------
@@ -40,10 +45,10 @@ Features
   * Automatic display of TII (Transmitter Identification Information) data when transmitted
   * Presets for easy switching of programs in different ensembles (see *Presets*)
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
+  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
   * Saving audio as uncompressed wave files
-  * Saving aac frames from DAB+ services
-  * Saving the ensemble content (audio and data streams, including almost all technical data) into a text file
-  * Supports various inputs from 
+  * Saving aac frames from DAB+ services for processing by e.g. VLC
+  * Supports inputs from 
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
    	- SDR DAB sticks (RTL2838U or similar), 
@@ -56,8 +61,7 @@ Features
 Not  (Not yet or partly) implemented:
 
   * DMB (Audio and Video)
-  * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client
-    are part of the source distribution.
+  * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client are part of the source distribution.
   * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources).
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888).
@@ -67,21 +71,19 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
-
 **Qt-DAB-2.7** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Some other programs are derived from Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
-The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version is implemented using C++, and does not depend on Qt.
+The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
 
-The **dab-server** will run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
+The **dab-server** can be installed to run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
 
 Furthermore, for DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a txt file, formatted for use with *LibreOffice Calc* and
 comparable programs.
 
-**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** version and the **dab-scanner** have their own repository on Github.
+**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
 
 Qt-DAB-2.7 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
@@ -98,12 +100,14 @@ Widgets and scopes
 The picture below shows Qt-DAB's main window, with the (few) control buttons, and 5 other widgets
 
 * a widget with controls for the attached device,
-* a widget showing the technical information of the selected service, 
+* a widget showing the technical information of the selected service as well
+as some information on the quality of the decoding, 
 * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
 * a widget showing the spectrum of the NULL period between successive DAB frames,
 * and a widget showing the response(s) from different transmitters in the SFN.
 
-While the main window and the widget for the device control are always shown, each of the others is only shown when pushing a button on the main window. In case a widget is invisible (i.e. not selected), the software to generate a spectrum is bypassed, so not to waste CPU power.
+While the main window and the widget for the device control are always shown, the others are only shown when pushing a button on the main window (touching the
+button again will cause the widget to disappear from the screen).
 
 ![Qt-DAB with SDRplay input](/qt-dab-x.png?raw=true)
 
