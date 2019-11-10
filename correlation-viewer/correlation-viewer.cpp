@@ -20,12 +20,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"impulse-viewer.h"
+#include	"correlation-viewer.h"
 #include	<QSettings>
 #include	<QColor>
 
-	impulseViewer::impulseViewer	(RadioInterface	*mr,
-	                                 RingBuffer<float> *b) {
+	correlationViewer::correlationViewer	(RadioInterface	*mr,
+	                                         RingBuffer<float> *b) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -70,7 +70,7 @@ QColor	curveColor;
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 }
 
-	impulseViewer::~impulseViewer() {
+	correlationViewer::~correlationViewer() {
 	myFrame		-> hide();
 	delete		ourBrush;
 	delete		spectrumCurve;
@@ -78,7 +78,7 @@ QColor	curveColor;
 	delete		myFrame;
 }
 
-void	impulseViewer::showIndex	(int32_t v) {
+void	correlationViewer::showIndex	(int32_t v) {
 int32_t	i;
 
 QString theText;
@@ -106,21 +106,20 @@ QString theText;
 	indexDisplay -> setText (theText);
 }
 
-void	impulseViewer::show() {
+void	correlationViewer::show () {
 	myFrame		-> show();
 }
 
-void	impulseViewer::hide() {
+void	correlationViewer::hide() {
 	myFrame		-> hide();
 }
 
-bool	impulseViewer::isHidden() {
+bool	correlationViewer::isHidden() {
 	return myFrame	-> isHidden();
 }
 
-
 static int lcount = 0;
-void	impulseViewer::showImpulse (int32_t dots) {
+void	correlationViewer::showCorrelation (int32_t dots) {
 uint16_t	i;
 double X_axis [dots];
 float data [dots];
@@ -158,7 +157,7 @@ float	mmax	= 0;
 	plotgrid	-> replot(); 
 }
 
-float	impulseViewer::get_db (float x) {
+float	correlationViewer::get_db (float x) {
 	return 20 * log10 ((x + 1) / (float)(512));
 }
 

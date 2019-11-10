@@ -30,9 +30,11 @@
 	vfoOffset	= 0;
 	theGain		= 50;
 	coarseOffset	= 0;
+	myFrame		= nullptr;
 }
 
 	virtualInput::~virtualInput() {
+	myFrame		= nullptr;
 }
 
 void	virtualInput::setVFOFrequency (int32_t f) {
@@ -75,4 +77,18 @@ int32_t	virtualInput::getOffset() {
 	return coarseOffset;
 }
 
+void	virtualInput::hide	() {
+	if (myFrame != nullptr)
+	   myFrame	-> hide ();
+}
 
+void	virtualInput::show	() {
+	if (myFrame != nullptr)
+	   myFrame -> show ();
+}
+
+bool	virtualInput::isHidden	() { 
+	if (myFrame != nullptr)
+	   return myFrame -> isHidden ();
+	return false;
+}

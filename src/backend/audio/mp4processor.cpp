@@ -25,7 +25,7 @@
  *	header for the aac that matches, really a big help!!!!
  *
  *	Furthermore, the code in the "build_aacFile" function is
- *	his.
+ *	his as well. Chapeau!
  ************************************************************************
  */
 #include	"mp4processor.h"
@@ -46,9 +46,9 @@
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            QString	picturesPath)
-	                            :my_padhandler (mr, picturesPath),
- 	                             my_rsDecoder (8, 0435, 0, 1, 10),
-	                             aacDecoder (mr, b) {
+	                               :my_padhandler (mr, picturesPath),
+ 	                                my_rsDecoder (8, 0435, 0, 1, 10),
+	                                aacDecoder (mr, b) {
 
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;

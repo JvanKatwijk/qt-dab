@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-2.7.4
+TARGET		= qt-dab-3.0
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -50,7 +50,7 @@ DEPENDPATH += . \
 	      ./devices/wavfiles-new\
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
-	      ./impulse-viewer \
+	      ./correlation-viewer \
 	      ./tii-viewer
 
 INCLUDEPATH += . \
@@ -74,7 +74,7 @@ INCLUDEPATH += . \
 	      ./devices/wavfiles-new \
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
-	      ./impulse-viewer \
+	      ./correlation-viewer \
 	      ./tii-viewer
 
 # Input
@@ -146,6 +146,9 @@ HEADERS += ./radio.h \
 	   ./includes/support/ensemble-printer.h \
 	   ./includes/support/preset-handler.h \
 	   ./includes/support/presetcombobox.h \
+	   ./includes/support/smallcombobox.h \
+	   ./includes/support/smallpushbutton.h \
+	   ./includes/support/smallqlistview.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
@@ -155,7 +158,7 @@ HEADERS += ./radio.h \
            ./devices/wavfiles-new/wavfiles.h \
            ./devices/wavfiles-new/wav-reader.h \
 	   ./spectrum-viewer/spectrum-viewer.h \
-	   ./impulse-viewer/impulse-viewer.h \
+	   ./correlation-viewer/correlation-viewer.h \
 	   ./tii-viewer/tii-viewer.h
 
 FORMS	+= ./forms/technical_data.ui
@@ -163,7 +166,7 @@ FORMS	+= ./forms/dabradio.ui
 FORMS	+= ./forms/audio-description.ui
 FORMS	+= ./forms/data-description.ui
 FORMS	+= ./spectrum-viewer/scopewidget.ui
-FORMS	+= ./impulse-viewer/impulse-widget.ui
+FORMS	+= ./correlation-viewer/correlation-widget.ui
 FORMS	+= ./tii-viewer/tii-widget.ui
 #FORMS	+= ./devices/filereader-widget.ui 
 
@@ -230,6 +233,9 @@ SOURCES += ./main.cpp \
 	   ./src/support/ensemble-printer.cpp \
 	   ./src/support/preset-handler.cpp \
 	   ./src/support/presetcombobox.cpp \
+	   ./src/support/smallcombobox.cpp \
+	   ./src/support/smallpushbutton.cpp \
+	   ./src/support/smallqlistview.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles-new/rawfiles.cpp \
@@ -237,7 +243,7 @@ SOURCES += ./main.cpp \
            ./devices/wavfiles-new/wavfiles.cpp \
            ./devices/wavfiles-new/wav-reader.cpp \
 	   ./spectrum-viewer/spectrum-viewer.cpp \
-	   ./impulse-viewer/impulse-viewer.cpp \
+	   ./correlation-viewer/correlation-viewer.cpp \
 	   ./tii-viewer/tii-viewer.cpp
 #
 #

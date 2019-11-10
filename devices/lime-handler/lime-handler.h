@@ -106,10 +106,8 @@ public:
         int32_t         Samples();
         void            resetBuffer();
         int16_t         bitDepth();
-
 private:
 	QSettings	*limeSettings;
-	QWidget		*myFrame;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];

@@ -340,7 +340,7 @@ const char * getDSCTy (int16_t DSCTy) {
 //	from Table 9 and 10
 const char * getLanguage (int16_t language) {
 	switch (language) {
-	   case 0x00:  return "Unknown/not applicable";
+	   case 0x00:  return "Unknown/na";
 	   case 0x01:  return "Albanian";
 	   case 0x02:  return "Breton";
 	   case 0x03:  return "Catalan";

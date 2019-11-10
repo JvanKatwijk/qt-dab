@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -130,9 +130,9 @@ int	T_u		= params. get_T_u ();
                     float ab1    = abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //      we make the bits into softbits in the range -127 .. 127
-                    ibits [i]            =  - real (r1) / ab1 * 255.0;
+                    ibits [i]            =  - real (r1) / ab1 * 1024.0;
                     ibits [params. get_carriers() + i]
-	                                 =  - imag (r1) / ab1 * 255.0;
+	                                 =  - imag (r1) / ab1 * 1024.0;
                  }
 
 	         process_mscBlock (ibits, currentBlock);
@@ -150,7 +150,7 @@ int	T_u		= params. get_T_u ();
 //	This function is to be called between invocations of
 //	services
 //	It might be called several times, so ...
-void	mscHandler::reset() {
+void	mscHandler::reset () {
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -192,6 +192,16 @@ void	mscHandler::set_Channel (descriptorType *d,
 	locker. unlock();
 }
 
+void	mscHandler::unset_Channel (const QString &s) {
+	for (int i = 0; i < theBackends. size (); i ++) {
+	   if (s == theBackends. at (i) -> theDescriptor. serviceName) {
+	      theBackends. at (i) -> stopRunning ();
+	      delete theBackends. at (i);
+	      theBackends. erase (theBackends. begin () + i);
+	   }
+	}
+}
+	                       
 //
 //	add blocks. First is (should be) block 4, last is (should be) 
 //	nrBlocks -1.
@@ -231,5 +241,4 @@ int16_t	currentblk;
 	}
 	locker. unlock();
 }
-//
 

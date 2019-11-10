@@ -53,6 +53,7 @@ int32_t	process		(int16_t *, int16_t);
 void	stopRunning();
 	int		startAddr;
 	int		Length;
+	descriptorType	theDescriptor;
 private:
 #ifdef	__THREADED_BACKEND
 void	run();

@@ -57,7 +57,6 @@ private:
 	SoapySDR::Device	*device;
 	SoapySDR::Stream	*stream;
 	QSettings		*soapySettings;
-	QFrame			*myFrame;
 	QLineEdit		*deviceLineEdit;
 	std::vector<std::string> gains;
 	soapyWorker		*worker;

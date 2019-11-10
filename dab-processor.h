@@ -76,12 +76,13 @@ public:
 //	inheriting from our delegates
 	void		set_tiiCoordinates();
 	void		setSelectedService      (QString &);
-	bool		is_audioService		(QString &s);
-	bool		is_packetService	(QString &s);
-        void		dataforAudioService     (QString &,
+	bool		is_audioService		(const QString &s);
+	bool		is_packetService	(const QString &s);
+        void		dataforAudioService     (const QString &,
 	                                             audiodata *, int16_t);
-        void		dataforPacketService	(QString &,
+        void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
+	void		unset_Channel		(const QString &);
 	void		reset_msc();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);

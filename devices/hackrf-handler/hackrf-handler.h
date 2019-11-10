@@ -125,7 +125,6 @@ private:
 //	Fine aggiunta
 
 	QSettings	*hackrfSettings;
-	QFrame		*myFrame;
 	int32_t		inputRate;
 	int32_t		vfoFrequency;
 	std::atomic<bool>	running;

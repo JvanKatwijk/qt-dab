@@ -100,6 +100,7 @@ struct dabFrequencies *t;
 int16_t	i;
 int16_t	c	= s -> count();
 
+	theBand	= band;
 //	clear the fields in the comboBox
 	for (i = 0; i < c; i ++) 
 	   s	-> removeItem (c - (i + 1));
@@ -113,14 +114,13 @@ int16_t	c	= s -> count();
 	   s -> insertItem (i, t [i]. key, QVariant (i));
 }
 
-
 //	find the frequency for a given channel in a given band
-int32_t	bandHandler::Frequency (uint8_t dabBand, QString Channel) {
+int32_t	bandHandler::Frequency (QString Channel) {
 int32_t	tunedFrequency		= 0;
 struct dabFrequencies	*finger;
 int	i;
 
-	if (dabBand == BAND_III)
+	if (theBand == BAND_III)
 	   finger = bandIII_frequencies;
 	else
 	   finger = Lband_frequencies;

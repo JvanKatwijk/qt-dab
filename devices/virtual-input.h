@@ -30,6 +30,7 @@
 #include	"dab-constants.h"
 #include	<QObject>
 #include	<QThread>
+#include	<QFrame>
 
 class	virtualInput: public QThread {
 public:
@@ -46,12 +47,16 @@ virtual		void	resetBuffer();
 virtual		int16_t	bitDepth() { return 10;}
 virtual		int32_t	getOffset();
 virtual		void	setOffset	(int32_t);
+virtual		void	hide		();
+virtual		void	show		();
+virtual		bool	isHidden	();
 //
 protected:
 		int32_t	lastFrequency;
 	        int32_t	vfoOffset;
 	        int	theGain;
 		int32_t	coarseOffset;
+		QFrame	*myFrame;
 };
 #endif
 

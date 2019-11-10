@@ -41,7 +41,7 @@
 	fileName	= f;
 	myFrame		= new QFrame;
 	setupUi	(myFrame);
-	myFrame		-> show();
+//	myFrame		-> show();
 	_I_Buffer	= new RingBuffer<uint8_t>(INPUT_FRAMEBUFFERSIZE);
 	filePointer	= fopen (f. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {

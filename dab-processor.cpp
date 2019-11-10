@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,7 +21,7 @@
  */
 #include	"dab-processor.h"
 
-#include <utility>
+#include	<utility>
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
@@ -36,7 +36,6 @@
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
-static	int goodFrames	= 0;
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
@@ -66,7 +65,6 @@ static	int goodFrames	= 0;
 	                                                frameBuffer),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 
-	                                                    threshold,
 	                                                    diff_length,
 	                                                    echo_depth,
 	                                                    responseBuffer),
@@ -190,17 +188,12 @@ notSynced:
   *	part
   */
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 2);
-//	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//	      fprintf (stderr, "x = %d after %d good frames\n",
-//	                         startIndex, goodFrames);
-//	      goodFrames	= 0;
 	      goto notSynced;
 	   }
-	   goodFrames ++;
 //	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   goto SyncOnPhase;
 
@@ -221,25 +214,37 @@ notSynced:
 //	
 Check_endofNULL:
 
+static	int old_startIndex	= 0;
+static  int startGoodies	= 0;
+//
+//
 	   avgValue_testPeriod	= 0;
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
 	   startIndex = phaseSynchronizer.
-	                           findIndex (ofdmBuffer, 4 * threshold);
-	   if (startIndex < 0) { // no sync, try again
+	                           findIndex (ofdmBuffer, 3 * threshold);
+	   if (startIndex < 0) { // no sync, single failure?
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//	      fprintf (stderr, "x = %d after %d good frames\n",
-//	                         startIndex, goodFrames);
-//	      goodFrames	= 0;
-	      goto notSynced;
+//
+//	startIndex now shows (innegative form), the correlation index
+	      if ((startIndex >= threshold) && (startGoodies >= 4)) 
+	         startIndex = old_startIndex;
+	      else {		// hopeless
+	         startGoodies = 0;
+	         goto notSynced;
+	      }
+	      startGoodies = 0;
 	   }
-//	   goodFrames ++;
+	   else {
+	      old_startIndex = startIndex;
+	      startGoodies ++;
+	   }
+	   
 //	   fprintf (stderr, "startIndex = %d\n", startIndex);
-
+	   
 SyncOnPhase:
-
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -252,9 +257,8 @@ SyncOnPhase:
 //Block_0:
 /**
   *	Block 0 is special in that it is used for fine time synchronization,
-  *	for coarse frequency synchronization
-  *	and its content is used as a reference for decoding the
-  *	first datablock.
+  *	for coarse frequency synchronization and its content is used
+  *	as a reference for decoding the	first datablock.
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
@@ -365,20 +369,7 @@ SyncOnPhase:
 //     we integrate the newly found frequency error with the
 //     existing frequency error.
 //
-//	It might happen that the computation of the "startIndex"
-//	is - more or less - ambiguous, in which case the computation
-//	of the frequency correction hopelessly fails
-
-//	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
-//	      fprintf (stderr, "resyncing %d %f after %d good frames\n",
-//	                  startIndex, arg (FreqCorr), goodFrames);
-//	      goodFrames = 0;
-//	      goto notSynced;
-//	   }
-
 	   fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
-
-
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
 	      fineOffset -= carrierDiff;
@@ -434,28 +425,27 @@ void	dabProcessor::set_scanMode	(bool b) {
 }
 //
 //	just a convenience function
-bool	dabProcessor::is_audioService	(QString &s) {
+bool	dabProcessor::is_audioService	(const QString &s) {
 audiodata ad;
 	my_ficHandler. dataforAudioService (s, &ad, 0);
 	return ad. defined;
 }
 
-bool	dabProcessor::is_packetService	(QString &s) {
+bool	dabProcessor::is_packetService	(const QString &s) {
 packetdata pd;
 	my_ficHandler. dataforPacketService (s, &pd, 0);
 	return pd. defined;
 }
 
-void	dabProcessor::dataforAudioService	(QString &s,
+void	dabProcessor::dataforAudioService	(const  QString &s,
 	                                          audiodata *d, int16_t c) {
 	my_ficHandler. dataforAudioService (s, d, c);
 }
 
-void	dabProcessor::dataforPacketService	(QString &s,
+void	dabProcessor::dataforPacketService	(const QString &s,
 	                                         packetdata *d, int16_t c) {
 	my_ficHandler. dataforPacketService (s, d, c);
 }
-
 
 void	dabProcessor::reset_msc() {
 	my_mscHandler. reset();
@@ -471,8 +461,11 @@ void    dabProcessor::set_dataChannel (packetdata *d,
 	my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
 }
 
+void	dabProcessor::unset_Channel (const QString &s) {
+	my_mscHandler. unset_Channel (s);
+}
 
-uint8_t	dabProcessor::get_ecc() {
+uint8_t	dabProcessor::get_ecc () {
 	return my_ficHandler. get_ecc();
 }
 

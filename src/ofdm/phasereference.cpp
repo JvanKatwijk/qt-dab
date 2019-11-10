@@ -34,7 +34,6 @@
 
 	phaseReference::phaseReference (RadioInterface *mr,
 	                                uint8_t		dabMode,
-	                                int16_t		threshold,
 	                                int16_t		diff_length,
 	                                int16_t		depth,
 	                                RingBuffer<float> *b):
@@ -45,7 +44,6 @@ int32_t	i;
 float	Phi_k;
 
 	this	-> response	= b;
-	this	-> threshold	= threshold;
 	this	-> diff_length	= (diff_length + 1) & ~01;
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u();
@@ -80,8 +78,8 @@ float	Phi_k;
 	   phaseDifferences [i] *= phaseDifferences [i];
 	}
 
-	connect (this, SIGNAL (showImpulse (int)),
-	         mr,   SLOT   (showImpulse (int)));
+	connect (this, SIGNAL (showCorrelation (int)),
+	         mr,   SLOT   (showCorrelation (int)));
 	connect (this, SIGNAL (showIndex   (int)),
 	         mr,   SLOT   (showIndex   (int)));
 }
@@ -167,7 +165,7 @@ std::vector<int> resultVector;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 4) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
-	      showImpulse (T_u / 2);
+	      showCorrelation (T_u / 2);
 	      displayCounter	= 0;
 	      if (resultVector. at (0) > 0) {
 	         showIndex (-1);

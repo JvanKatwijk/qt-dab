@@ -33,7 +33,9 @@ public:
 	bandHandler();
 	~bandHandler();
 void	setupChannels	(QComboBox *s, uint8_t band);
-int32_t Frequency	(uint8_t band, QString Channel);
+int32_t Frequency	(QString Channel);
+private:
+	uint8_t		theBand;
 };
 #endif
 

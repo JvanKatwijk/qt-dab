@@ -21,16 +21,16 @@
  */
 
 //
-//	Simple viewer for impulse responses
+//	Simple viewer for correlation
 //
-#ifndef		__IMPULSE_VIEWER__
-#define		__IMPULSE_VIEWER__
+#ifndef		__CORRELATION_VIEWER__
+#define		__CORRELATION_VIEWER__
 
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	"ringbuffer.h"
 #include	<QObject>
-#include	"ui_impulse-widget.h"
+#include	"ui_correlation-widget.h"
 #include	<qwt.h>
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
@@ -39,17 +39,17 @@
 #include	<qwt_plot_marker.h>
 
 class	RadioInterface;
-class	impulseViewer: public QObject, Ui_impulseWidget {
+class	correlationViewer: public QObject, Ui_correlationWidget {
 Q_OBJECT
 public:
-			impulseViewer		(RadioInterface *,
+			correlationViewer	(RadioInterface *,
 	                                         RingBuffer<float> *);
-			~impulseViewer();
-	void		showImpulse		(int32_t);
+			~correlationViewer	();
+	void		showCorrelation		(int32_t);
 	void		showIndex		(int32_t);
-	void		show();
-	void		hide();
-	bool		isHidden();
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
 
 private:
 	std::vector<int> indexVector;

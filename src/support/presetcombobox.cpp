@@ -68,3 +68,9 @@ presetComboBox::presetComboBox (QWidget *parent):
 	   iv -> installEventFilter (&listEF);
 }
 
+QSize   presetComboBox:: sizeHint ()const {
+QSize   temp = QComboBox::sizeHint ();
+        return QSize (temp. rwidth () / 3, temp. rheight ());
+}
+
+

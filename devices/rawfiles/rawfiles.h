@@ -51,7 +51,6 @@ public:
 	void		stopReader	(void);
 private:
 	QString		fileName;
-	QFrame		*myFrame;
 	RingBuffer<uint8_t>	*_I_Buffer;
 	FILE		*filePointer;
 	rawReader	*readerTask;

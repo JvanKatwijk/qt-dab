@@ -22,13 +22,13 @@
 #define	__PRESET_COMBOBOX__
 
 #include	<QComboBox>
+#include	<QSize>
 
 class KHBoxEventFilter : public QObject {
 Q_OBJECT
 public:
 	explicit KHBoxEventFilter(QObject *parent = nullptr):
 	                                            QObject(parent) {}
-
 protected:
 	bool eventFilter(QObject *obj, QEvent *event) override;
 };
@@ -52,6 +52,7 @@ Q_OBJECT
 public:
 	explicit presetComboBox(QWidget *parent = nullptr);
 
+	QSize	sizeHint	()const;
 protected:
 	KHBoxEventFilter boxEF;
 	KHBoxListEventFilter listEF;

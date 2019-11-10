@@ -62,8 +62,8 @@ mir_sdr_GainValuesT gainDesc;
 sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
-	this	-> myFrame		= new QFrame (nullptr);
-	this	-> myFrame -> setSizePolicy (QSizePolicy::Expanding,
+	myFrame				= new QFrame (nullptr);
+	myFrame -> setSizePolicy (QSizePolicy::Expanding,
 	                                     QSizePolicy::Expanding);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();

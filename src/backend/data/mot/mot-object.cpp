@@ -155,8 +155,6 @@ QByteArray result;
 	   QString realName = picturePath;
 	   realName. append (name);
 	   realName  = QDir::toNativeSeparators (realName);
-	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8(). data());
 	   checkDir (realName);
 	   std::vector<uint8_t> epgData (result. begin(), result. end());
 	   epgHandler. decode (epgData, realName);

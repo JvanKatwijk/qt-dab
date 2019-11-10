@@ -1,6 +1,6 @@
-# Qt-DAB-2.7 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.0 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-2.7 is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
+Qt-DAB-3.0 is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -45,9 +45,9 @@ Features
   * Automatic display of TII (Transmitter Identification Information) data when transmitted
   * Presets for easy switching of programs in different ensembles (see *Presets*)
   * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
-  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
   * Saving audio as uncompressed wave files
   * Saving aac frames from DAB+ services for processing by e.g. VLC
+  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
   * Supports inputs from 
   	- SDRplay (both RSP I and RSP II),
   	- Airspy, including Airspy mini,
@@ -56,6 +56,7 @@ Features
 	- limeSDR, 
 	- Soapy (experimental, Linux only), and
    	- prerecorded dump (*.raw, *.iq and *.sdr) 
+	- rtl_tcp servers
   * Clean interface to add other devices, see below.
 
 Not  (Not yet or partly) implemented:
@@ -71,9 +72,9 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-2.7** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Some other programs are derived from Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
+Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
 The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
 
 The **dab-server** can be installed to run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
@@ -85,7 +86,7 @@ comparable programs.
 
 **dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
 
-Qt-DAB-2.7 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-3.0 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -97,45 +98,56 @@ For further information please visit http://www.sdr-j.tk
 Widgets and scopes
 ------------------------------------------------------------------
 
-The picture below shows Qt-DAB's main window, with the (few) control buttons, and 5 other widgets
+The picture below shows Qt-DAB's main window and the other 5 **optional**
+widgets
 
 * a widget with controls for the attached device,
-* a widget showing the technical information of the selected service as well
+* a widget showing the technical information of the *selected service* as well
 as some information on the quality of the decoding, 
 * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
 * a widget showing the spectrum of the NULL period between successive DAB frames,
 * and a widget showing the response(s) from different transmitters in the SFN.
 
-While the main window and the widget for the device control are always shown, the others are only shown when pushing a button on the main window (touching the
+While the main window is always shown, the others are only shown when pushing a button on the main window (touching the
 button again will cause the widget to disappear from the screen).
 
-![Qt-DAB with SDRplay input](/qt-dab-x.png?raw=true)
+![Qt-DAB with SDRplay input](/qt-dab-3.0-d.png?raw=true)
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
 of the element.
 
-------------------------------------------------------------------
-Presets
------------------------------------------------------------------
+The elements in the **left part** of the widget are concerned with
+selecting a channel and a service. 
 
-**Presets** are a feature, introduced in version 2.7.2
-(following a suggestion of Stuart Longland (who added code to make (most) widgets resizable)).
+To ease operation the channel selector is augmented with a "-" and a "+"
+button for selecting the previous resp. next channel.
 
-**Presets** make it possible to switch easily between services in different ensembles (different channels). The service names in the presets are seen in a combobox at the bottom of the services list on the GUI. Touching a name in this combobox will instruct the software to select the right channel and switch to the named service. 
- 
-**Adding** a service to the list of presets is simply by *clicking with the right mouse button on the name of the service that is currently selected in the servicelist* (note that clicking with the *left* mouse button well select the service with that name).
+To ease selection of a service, a second pair of "-" and "+" buttons
+is available, now for selecting the previous resp. the next service 
+on the list.
 
-**Removing** a service from the presets is by selecting the service name (by putting the curson on it without clicking any of the mouse buttons) in the combobox and pressing the *shift* and the *delete* button on the keyboard simultaneously.
+A *preset* selector is available to store and retrieve "favorit" services,
+note that the services are encoded as "channel:serviceName" pair,
+it sometimes happens that a service appears in more than one ensemble
+(see as example the "Omroep West" service, appearing in channels 5B and 8A.
 
-Service names in the presets are kept in a file in xml format. The file - .qt-dab-presets.xml - is stored in the user's home directory. This file is read on program start and rewritten on program termination.
+Different from previous versions is that now some information, previously
+shown on the "technical data" widger is now shown on the main widget.
 
-Encoding of the presets is as **channel:service**, it sometimes happens that different channels have (differently encoded) versions of the same service (in the pictures channel 5B and channel 8A both carry a service "Omroep West").
+![Qt-DAB with sdrplay input](/qt-dab-serviceinfo.png?raw=true)
 
-(Note that clicking with the **right** mouse button on any other service name
-than the currently selected one will show some technical data of that service as shown in the picture below.)
+Some data on the selected service - if any - is to be found on
+a separate widget. This widget will show where the data for the
+service is to be found in the DAB frames, and how it is encoded.
 
-![Qt-DAB with sdrplay input](/qt-dab-servicedata.png?raw=true)
+Furthermore, if the service is accompanied by a logo, that logo will
+be shown here.
+
+The further selectors are concentrated on the bottom part of the right side
+of the widget. Buttons to make scopes visible, to store input and or
+output into a file, to select input device and the audio and to
+scan and store a description of the ensemble are in that section.
 
 --------------------------------------------------------------------------------
 Comment on some settings
@@ -150,7 +162,29 @@ The presets are stored in an xml file, `.qt-dab-presets.xml'.
 
 Some settings are not influenced by buttons or sliders of the GUI, they will only change by editing the .ini file.
 
-Typical examples are
+Two settings have an impact on the speed and accuracy of the synchronization,
+
+`threshold=x'
+
+Detecting whether a channel might contain a DAB signal is essentially
+by looking at the amplitude of the signal and by correlating the signal
+with the signal as it should be. Of course detecting the existence
+of a signal is important, however, a speedy detection that no signal
+is available is also important, especially when stepping though the
+channels.
+
+The `threshold=x' setting (if not given a value 3 is ised as default)
+is a value used in determining whether or not the correlation is 
+sufficiently strong to assume the existence of DAB data in the channel.
+
+`diff_length=x'
+
+Once the existence of DAB data is established, an attempt is made
+to estimate the frequency offset of the incoming signal. Again, this
+is done by correlating a fragment of the (processed) incoming signal
+with a predefined signal. The length of the segment (length interms
+of samples) used is defined by the settings for `diff_length'.
+If no value is given, the default value of 40 is used 
 
 `saveSlides=1` 
 when set to 0 the slides that are attached to audio programs will not be saved. If set to 1 the slides will be saved in a directory `/tmp/qt-pictures` (Linux) or in `%tmp%\qt-pictures` (Windows).

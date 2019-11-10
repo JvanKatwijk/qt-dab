@@ -1,5 +1,4 @@
 
-
 #include	"soapy-handler.h"
 #include <stdio.h> //printf
 #include <stdlib.h> //free
@@ -11,7 +10,6 @@
 	this	-> soapySettings	= soapySettings;
         this    -> myFrame              = new QFrame (nullptr);
         setupUi (this -> myFrame);
-        this    -> myFrame      -> show();
 	deviceLineEdit		= new QLineEdit (nullptr);
 	deviceLineEdit		-> show();
 	connect (deviceLineEdit, SIGNAL (returnPressed (void)),

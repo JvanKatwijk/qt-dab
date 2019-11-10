@@ -144,7 +144,6 @@ private:
 	int16_t		deviceIndex;
 	bool		loadFunctions();
 	QSettings	*sdrplaySettings;
-	QFrame		*myFrame;
 	int32_t		inputRate;
 	int32_t		vfoFrequency;
 	bool		libraryLoaded;

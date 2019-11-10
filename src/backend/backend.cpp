@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -44,10 +44,11 @@
 	                                            picturesPath),
 	                                    deconvolver (d)
 #ifdef	__THREADED_BACKEND
-	                             ,freeSlots (20) 
+	                                    ,freeSlots (20) 
 #endif 
 	                                          {
 int32_t i, j;
+	theDescriptor			= *d;
 	this	-> startAddr		= d -> startAddr;
 	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;

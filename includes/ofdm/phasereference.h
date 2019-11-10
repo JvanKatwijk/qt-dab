@@ -40,7 +40,6 @@ public:
 	                                         uint8_t,
 	                                         int16_t,
 	                                         int16_t,
-	                                         int16_t,
 						 RingBuffer<float> *b = nullptr);
 			~phaseReference();
 	int32_t		findIndex		(std::vector<DSPCOMPLEX>, int);
@@ -54,7 +53,6 @@ private:
 	fftHandler	my_fftHandler;
 	RingBuffer<float> *response;
 	std::vector<float> phaseDifferences;
-	int16_t		threshold;
 	int16_t		diff_length;
 	int16_t		depth;
 	int32_t		T_u;
@@ -66,7 +64,7 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 signals:
-	void		showImpulse	(int);
+	void		showCorrelation	(int);
 	void		showIndex	(int);
 };
 #endif

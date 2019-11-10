@@ -28,6 +28,7 @@
 #include	<QMainWindow>
 #include	<QStringList>
 #include	<QStringListModel>
+#include	<QStandardItemModel>
 #ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
 #endif
@@ -52,7 +53,7 @@ class	serviceDescriptor;
 #include	"ui_technical_data.h"
 
 class	spectrumViewer;
-class	impulseViewer;
+class	correlationViewer;
 class	tiiViewer;
 /*
  *	GThe main gui object. It inherits from
@@ -73,37 +74,25 @@ private:
 	presetHandler	my_presetHandler;
 	int		switchTime;
 	QSettings	*dabSettings;
-	int16_t		tii_delay;
-	int32_t         dataPort;
-	bool		ensembleAvailable;
-	QString         deviceName;
 	Ui_technical_data	techData;
 	QFrame		*dataDisplay;
-	bool		show_data;
 	serviceDescriptor	*currentService;
-	void		clear_showElements();
-	void		set_picturePath();
-//const	char		*get_programm_type_string (int16_t);
-//const	char		*get_programm_language_string (int16_t);
+	void		clear_showElements	();
+	void		set_picturePath		();
 	void		dumpControlState	(QSettings *);
-	void		Yes_Signal_Found();
-	void		increment_Channel();
-	void		decrement_Channel();
-	uint8_t		convert			(QString);
-	void		hideButtons();
-	void		showButtons();
+	void		Yes_Signal_Found	();
+	void		increment_Channel	();
+	void		decrement_Channel	();
+	void		hideButtons		();
+	void		showButtons		();
 	virtualInput	*setDevice		(QString);
 
-	RingBuffer<uint8_t>	*frameBuffer;
+	std::vector<QString>	activeServices;
 	std::vector<int> secondariesVector;
-	QString		dabMode;
-	uint8_t		dabBand;
 	uint8_t		isSynced;
-	int16_t		threshold;
-	int16_t		diff_length;
 	bandHandler     theBand;
 	std::atomic<bool>	running;
-	bool		scanning;
+	std::atomic<bool>	scanning;
 	bool		tiiSwitch;
 	virtualInput	*inputDevice;
 	textMapper	the_textMapper;
@@ -112,52 +101,46 @@ private:
 #ifdef	DATA_STREAMER
 	tcpServer	*dataStreamer;
 #endif
-	RingBuffer<int16_t>	*audioBuffer;
-	RingBuffer<uint8_t>	*dataBuffer;
-	bool		autoCorrector;
-	QLabel		*pictureLabel;
 	bool		saveSlides;
-	bool		showSlides;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket	dataOut_socket;
 	QString		ipAddress;
 	int32_t		port;
 #endif
-
-	void		start_sourceDumping();
-	void		stop_sourceDumping();
-	bool		sourceDumping;
-	SNDFILE		*dumpfilePointer;
+	SNDFILE		*rawDumper;
 	FILE		*frameDumper;
-	bool		audioDumping;
-	SNDFILE		*audiofilePointer;
+	SNDFILE		*audioDumper;
+
 	QStringList	soundChannels;
-	QStringListModel	ensemble;
+	QStandardItemModel	model;
 	QStringList	Services;
-	QString		ensembleLabel;
 	QTimer		displayTimer;
 	QTimer		signalTimer;
 	QTimer		presetTimer;
 	QTimer		startTimer;
 	QString		presetName;
-	QString		currentName;
 	bool		has_presetName;
 	int32_t		numberofSeconds;
 	int16_t		ficBlocks;
 	int16_t		ficSuccess;
-	void		connectGUI();
-	void		disconnectGUI();
+	void		connectGUI		();
+	void		disconnectGUI		();
+	RingBuffer<uint8_t>	*frameBuffer;
+	RingBuffer<int16_t>	*audioBuffer;
+	RingBuffer<uint8_t>	*dataBuffer;
         spectrumViewer         *my_spectrumViewer;
 	RingBuffer<DSPCOMPLEX>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
-	impulseViewer		*my_impulseViewer;
+	correlationViewer	*my_correlationViewer;
 	RingBuffer<float>	*responseBuffer;
 	tiiViewer		*my_tiiViewer;
 	RingBuffer<DSPCOMPLEX>  *tiiBuffer;
 
 	QString		picturesPath;
 public slots:
-	void		set_Scanning();
+	void		set_Scanning		();
+	void		startScanning		();
+	void		stopScanning		();
 	void		set_CorrectorDisplay	(int);
 	void		clearEnsemble();
 	void		addtoEnsemble		(const QString &);
@@ -176,7 +159,6 @@ public slots:
 	void		newAudio		(int, int);
 //
 	void		show_techData		(QString,
-	                                         QString,
 	                                         float,
 	                                         audiodata *);
 
@@ -187,7 +169,7 @@ public slots:
 	void		setSyncLost();
 	void		showCoordinates		(int);
 	void		showSecondaries		(int);
-	void		showImpulse		(int);
+	void		showCorrelation		(int);
 	void		showIndex		(int);
 	void		showSpectrum		(int);
 	void		showIQ			(int);
@@ -200,32 +182,36 @@ public slots:
 	void		newFrame		(int);
 //	Somehow, these must be connected to the GUI
 private slots:
-	void		set_nextChannel();
-	void		set_prevChannel();
-	void		toggle_show_data();
+	void		set_nextChannel		();
+	void		set_prevChannel		();
+	void		toggle_show_data	();
 	void		doStart			(QString);
-	void		doStart();
-	void		TerminateProcess();
+	void		doStart			();
+	void		TerminateProcess	();
 	void		selectChannel_usingSelector	(QString);
 	void		selectChannel		(QString);
-	void		updateTimeDisplay();
-	void		signalTimer_out();
-	void		autoCorrector_on();
+	void		updateTimeDisplay	();
+	void		signalTimer_out		();
+	void		autoCorrector_on	();
 
 	void		newDevice		(QString);
 
+	void		stopServices		();
 	void		selectService		(QModelIndex);
 	void		selectService		(QString);
-	void		set_audioDump();
-	void		set_sourceDump();
-	void		showEnsembleData();
-	void		setPresetStation();
-	void		set_tiiSwitch();
-	void		set_irSwitch();
-	void		set_spectrumSwitch();
+	void		set_audioDump		();
+	void		set_sourceDump		();
+	void		set_frameDump		();
+	void		showEnsembleData	();
+	void		setPresetStation	();
+	void		set_tiiSwitch		();
+	void		set_correlationSwitch	();
+	void		set_spectrumSwitch	();
 	void		select_presetService 	(QString, QString);
 	void		handle_presetSelector	(QString);
-	void		set_frameDump	();
+	void		handle_setprevious	();
+	void		handle_setnext		();
+	void		handle_showDeviceWidget	();
 };
 #endif
 

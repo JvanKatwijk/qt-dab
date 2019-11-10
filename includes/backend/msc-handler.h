@@ -54,6 +54,7 @@ public:
 	void		set_Channel		(descriptorType *,
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
+	void		unset_Channel		(const QString &);
 //
 //	This function should be called beore issuing a request
 //	to handle a service

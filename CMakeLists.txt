@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-2.7.4)
+set (objectName qt-dab-2.8)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -181,7 +181,7 @@ add_definitions (-DPRESET_NAME)
 	           ./devices/rawfiles
 	           ./devices/wavfiles
 	           ./spectrum-viewer
-	           ./impulse-viewer
+	           ./correlation-viewer
 	           ./tii-viewer
 	           /usr/include/
 	)
@@ -255,9 +255,12 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/viterbi-jan/viterbi-handler.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
+	     ./includes/support/smallqlistview.h
+	     ./includes/support/smallpushbutton.h
+	     ./includes/support/smallcombobox.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
-	     ./impulse-viewer/impulse-viewer.h 
+	     ./correlation-viewer/correlation-viewer.h 
 	     ./tii-viewer/tii-viewer.h
 	)
 
@@ -326,10 +329,13 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/ensemble-printer.cpp
 	     ./src/support/preset-handler.cpp
 	     ./src/support/presetcombobox.cpp
+	     ./src/support/smallqlistview.cpp
+	     ./src/support/smallpushbutton.cpp
+	     ./src/support/smallcombobox.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 
-	     ./impulse-viewer/impulse-viewer.cpp 
+	     ./correlation-viewer/correlation-viewer.cpp 
 	     ./tii-viewer/tii-viewer.cpp
 	)
 
@@ -362,9 +368,12 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/wavfiles/wav-reader.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
+	     ./includes/support/smallqlistview.h
+	     ./includes/support/smallpushbutton.h
+	     ./includes/support/smallcombobox.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
-	     ./impulse-viewer/impulse-viewer.h 
+	     ./correlation-viewer/correlation-viewer.h 
  	     ./tii-viewer/tii-viewer.h
 	)
 
@@ -375,7 +384,7 @@ add_definitions (-DPRESET_NAME)
 	     ./forms/audio-description.ui
 	     ./forms/data-description.ui
 	     ./spectrum-viewer/scopewidget.ui
-	     ./impulse-viewer/impulse-widget.ui
+	     ./correlation-viewer/correlation-widget.ui
 	     ./tii-viewer/tii-widget.ui
 	   )
 

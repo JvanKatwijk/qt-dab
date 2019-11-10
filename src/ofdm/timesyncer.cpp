@@ -27,7 +27,7 @@ int	i;
 	}
 //SyncOnNull:
 	counter      = 0;
-	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel()) {
+	while (cLevel / C_LEVEL_SIZE  > 0.40 * myReader -> get_sLevel()) {
 	   DSPCOMPLEX sample        =
 	         myReader -> getSample (0);
 	   envBuffer [syncBufferIndex] = abs (sample);
@@ -46,7 +46,7 @@ int	i;
   */
 	counter      = 0;
 //SyncOnEndNull:
-	 while (cLevel / C_LEVEL_SIZE < 0.75 * myReader -> get_sLevel()) {
+	 while (cLevel / C_LEVEL_SIZE < 0.80 * myReader -> get_sLevel()) {
 	   DSPCOMPLEX sample =
 	           myReader -> getSample (0);
 	   envBuffer [syncBufferIndex] = abs (sample);

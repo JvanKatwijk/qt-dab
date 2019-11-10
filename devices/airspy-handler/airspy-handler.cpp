@@ -766,4 +766,3 @@ void	airspyHandler::show_tab (int t) {
 	currentTab	= t;
 }
 
-

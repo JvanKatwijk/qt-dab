@@ -137,7 +137,6 @@ private:
 	HINSTANCE	Handle_usb;
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
-	QFrame		*myFrame;
 	bool		success;
 	std::atomic<bool>	running;
 	bool		lna_agc;
