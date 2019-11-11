@@ -33,6 +33,9 @@ virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples		(void);
 virtual		void	resetBuffer	(void);
 virtual		int16_t	bitDepth	(void) { return 10;}
+virtual		void	show		();
+virtual		void	hide		();
+virtual		bool	isHidden	();
 };
 
 The constructor of the class for the new device driver

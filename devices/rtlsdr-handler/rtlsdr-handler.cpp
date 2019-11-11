@@ -92,7 +92,7 @@ int	k;
 char	manufac [256], product [256], serial [256];
 
 	rtlsdrSettings		= s;
-	this	-> myFrame	= new QFrame (nullptr);
+	myFrame			= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
 	inputRate		= 2048000;

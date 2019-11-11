@@ -36,7 +36,7 @@ std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
-	this	-> myFrame		= new QFrame (nullptr);
+	myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
 

@@ -45,7 +45,6 @@ public:
 	void		stopReader();
 private:
 	QString		fileName;
-	QWidget		*myFrame;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 	int32_t		bufferSize;
 	SNDFILE		*filePointer;

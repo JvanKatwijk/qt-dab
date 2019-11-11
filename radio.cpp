@@ -182,6 +182,9 @@ QString h;
 	cpuMonitor	-> hide();
 #endif
 	
+	bool showWidget		= dabSettings -> value ("showDeviceWidget", 0).
+	                                                      toInt () != 0;
+	showDeviceWidget	-> setText (showWidget ? "show" : "hide");
 //
 #ifdef	DATA_STREAMER
 	dataStreamer		= new tcpServer (dataPort);
@@ -362,9 +365,6 @@ int32_t	frequency;
 	   channelSelector -> setCurrentIndex (k);
 	}
 	
-	showDeviceWidget -> setText (inputDevice -> isHidden () ?
-                                                 "show" : "hide");
-
 	frequency	= theBand. Frequency (
 	                                      channelSelector -> currentText());
 	inputDevice     -> setVFOFrequency (frequency);
@@ -471,7 +471,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                      streamoutSelector -> currentText());
 	if (inputDevice != nullptr)
 	   s	-> setValue ("showDeviceWidget",
-	                          inputDevice -> isHidden () == 0);
+	                          inputDevice -> isHidden () != 0);
 	                     
 	s	-> sync();
 }
@@ -654,8 +654,13 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 	Services. removeDuplicates();
 	Services. sort();
 	model. clear ();
-	for (const auto serv : Services)
+	for (const auto serv : Services) 
 	   model. appendRow (new QStandardItem (serv));
+	int row	= model. rowCount ();
+	for (int i = 0; i < row; i ++) {
+	   model. setData (model. index (i, 0),
+	              QFont ("Cantarell", 11), Qt::FontRole);
+	}
 	ensembleDisplay	-> setModel (&model);
 }
 
@@ -1307,14 +1312,10 @@ virtualInput	*inputDevice	= nullptr;
 	}
 
 	my_spectrumViewer	-> setBitDepth (inputDevice -> bitDepth());
-	bool deviceWidget =
-	           dabSettings -> value ("showDeviceWidget", 1). toInt();
-	if (deviceWidget) {
-	   showDeviceWidget	-> setText ("hide");
+	if (showDeviceWidget -> text () == "hide") {
 	   inputDevice	-> show ();
 	}
 	else {
-	   showDeviceWidget	-> setText ("show");
 	   inputDevice -> hide ();
 	}
 	return inputDevice;
@@ -1393,8 +1394,10 @@ QString serviceName;
 	int row	= model. rowCount ();
 	for (int i = 0; i < row; i ++) {
 	   QMap <int, QVariant> vMap = model. itemData (model. index (i, 0));
-	    vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::black)));
-	    model. setItemData (model . index (i, 0), vMap);
+	   vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::black)));
+	   model. setItemData (model . index (i, 0), vMap);
+	   model. setData (model. index (i, 0),
+	                     QFont ("Cantarell", 11), Qt::FontRole);
 	}
 
 //	then highlight the selected item
@@ -1402,6 +1405,7 @@ QString serviceName;
 	QMap<int, QVariant> vMap = model. itemData (ind);
 	vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::red)));
 	model. setItemData (ind, vMap);
+	model. setData (ind, QFont ("Cantarell", 13), Qt::FontRole);
 
 //	here it really starts
 	serviceLabel -> setText (" ");
@@ -1981,6 +1985,17 @@ void	RadioInterface::handle_presetSelector (QString s) {
 	select_presetService (channel, service);
 }
 
+static
+void	colorButton (QPushButton *pb, QColor c, int p) {
+QPalette pal = pb	-> palette ();
+	pal. setColor (QPalette::Button, c);
+	pb		-> setAutoFillBackground (true);
+	pb		-> setPalette (pal);
+	QFont font	= pb -> font ();
+	font. setPointSize (p);
+	pb		-> setFont (font);
+}
+
 void	RadioInterface::set_sourceDump () {
 SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 
@@ -1988,11 +2003,8 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	   my_dabProcessor	-> stopDumping();
 	   sf_close (rawDumper);
 	   rawDumper	= nullptr;
-	   QPalette pal = dumpButton -> palette ();
-           pal. setColor (QPalette::Button, QColor (Qt::white));
-           dumpButton	-> setAutoFillBackground (true);
-           dumpButton	-> setPalette (pal);
-	   dumpButton	-> setText ("Dump to raw file");
+	   colorButton (dumpButton, Qt::white, 10);
+	   dumpButton	-> setText ("Raw dump");
            dumpButton	-> update ();
 	   return;
 	}
@@ -2016,10 +2028,7 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
-	QPalette pal = dumpButton -> palette ();
-        pal. setColor (QPalette::Button, QColor (Qt::red));
-        dumpButton	-> setAutoFillBackground (true);
-        dumpButton	-> setPalette (pal);
+	colorButton (dumpButton, Qt::red, 12);
 	dumpButton	-> setText ("writing");
         dumpButton	-> update ();
 	my_dabProcessor -> startDumping (rawDumper);
@@ -2032,10 +2041,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   soundOut	-> stopDumping();
 	   sf_close (audioDumper);
 	   audioDumper = nullptr;
-	   QPalette pal = audioDumpButton -> palette ();
-	   pal. setColor (QPalette::Button, QColor (Qt::white));
-	   audioDumpButton	-> setAutoFillBackground (true);
-	   audioDumpButton	-> setPalette (pal);
+	   colorButton (audioDumpButton, Qt::white, 10);
 	   audioDumpButton	-> setText ("audio dump");
 	   audioDumpButton	-> update ();
 	   return;
@@ -2061,10 +2067,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
-	QPalette pal = audioDumpButton -> palette ();
-	pal. setColor (QPalette::Button, QColor (Qt::red));
-	audioDumpButton		-> setAutoFillBackground (true);
-	audioDumpButton		-> setPalette (pal);
+	colorButton (audioDumpButton, Qt::red, 12);
 	audioDumpButton		-> setText ("WRITING");
 	audioDumpButton		-> update ();
 	soundOut		-> startDumping (audioDumper);
@@ -2073,10 +2076,7 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 void	RadioInterface::set_frameDump () {
 	if (frameDumper != nullptr) {
 	   fclose (frameDumper);
-	   QPalette pal = frameDumpButton -> palette ();
-	   pal. setColor (QPalette::Button, QColor (Qt::white));
-	   frameDumpButton	-> setAutoFillBackground (true);
-	   frameDumpButton	-> setPalette (pal);
+	   colorButton (frameDumpButton, Qt::white, 10);
 	   frameDumpButton	-> setText ("frame dump");
 	   frameDumpButton	-> update ();
 	   frameDumper	= nullptr;
@@ -2096,10 +2096,7 @@ void	RadioInterface::set_frameDump () {
                                        tr (s. toLatin1 (). data ()));
            return;
         }
-	QPalette pal = frameDumpButton -> palette ();
-        pal. setColor (QPalette::Button, QColor (Qt::red));
-        frameDumpButton		-> setAutoFillBackground (true);
-        frameDumpButton		-> setPalette (pal);
+	colorButton (frameDumpButton, Qt::red, 12);
         frameDumpButton		-> setText ("recording");
         frameDumpButton		-> update ();
 }
@@ -2113,7 +2110,6 @@ uint8_t	buffer [amount];
 	if (frameDumper != nullptr)
 	   fwrite (buffer, amount, 1, frameDumper);
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -2158,6 +2154,8 @@ void	RadioInterface::handle_setnext		() {
 void    RadioInterface::handle_showDeviceWidget () {
         if (inputDevice == nullptr)
            return;
+	disconnect (showDeviceWidget, SIGNAL (clicked ()),
+	            this, SLOT (handle_showDeviceWidget ()));
 
         if (inputDevice -> isHidden ()) {
            inputDevice -> show ();
@@ -2168,6 +2166,8 @@ void    RadioInterface::handle_showDeviceWidget () {
            inputDevice -> hide ();
            showDeviceWidget -> setText ("show");
 	   dabSettings -> setValue ("showDeviceWidget", 0);
-        }
+	}
+	connect (showDeviceWidget, SIGNAL (clicked ()),
+	         this, SLOT (handle_showDeviceWidget ()));
 }
 
