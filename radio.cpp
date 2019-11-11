@@ -1023,6 +1023,7 @@ bool	localRunning	= running. load();
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
+	stopServices ();	// or reset_msc?
 	setStereo (false);
 	if (tiiSwitch)
 	   set_tiiSwitch ();	// switch it off
@@ -1352,7 +1353,9 @@ void	RadioInterface::newDevice (QString deviceName) {
 	}
 	doStart();		// will set running
 }
-
+//
+//	aiming at a future where we will be selective in
+//	stopping services
 void    RadioInterface::stopServices () {
         while (activeServices. size () > 0) {
            int top = activeServices. size () - 1;
@@ -1393,6 +1396,7 @@ QString serviceName;
 	    vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::black)));
 	    model. setItemData (model . index (i, 0), vMap);
 	}
+
 //	then highlight the selected item
 	serviceName = ind. data (Qt::DisplayRole). toString ();
 	QMap<int, QVariant> vMap = model. itemData (ind);
@@ -1407,7 +1411,7 @@ QString serviceName;
 
 	serviceLabel -> setStyleSheet ("QLabel {color : black}");
 	serviceLabel	-> setText (serviceName);
-	my_dabProcessor -> reset_msc();
+	stopServices ();
 	setStereo (false);
 
 	techData. rsError_display	-> hide();
