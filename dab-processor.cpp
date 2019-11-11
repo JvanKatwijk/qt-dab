@@ -187,7 +187,7 @@ notSynced:
   *	Note that we probably already had 30 to 40 samples of the T_g
   *	part
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 2);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
@@ -227,21 +227,8 @@ static  int startGoodies	= 0;
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//
-//	startIndex now shows (innegative form), the correlation index
-	      if ((startIndex >= threshold) && (startGoodies >= 4)) 
-	         startIndex = old_startIndex;
-	      else {		// hopeless
-	         startGoodies = 0;
-	         goto notSynced;
-	      }
-	      startGoodies = 0;
+	      goto notSynced;
 	   }
-	   else {
-	      old_startIndex = startIndex;
-	      startGoodies ++;
-	   }
-	   
 //	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   
 SyncOnPhase:
