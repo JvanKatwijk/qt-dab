@@ -39,7 +39,8 @@
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
-	                                 int16_t	threshold,
+	                                 int16_t	threshold_1,
+	                                 int16_t	threshold_2,
 	                                 int16_t	diff_length,
 	                                 int16_t	tii_delay,
 	                                 int16_t	tii_depth,
@@ -77,7 +78,8 @@
 	this	-> myRadioInterface	= mr;
 	this	-> theRig		= theRig;
 	this	-> tiiBuffer		= tiiBuffer;
-	this	-> threshold		= threshold;
+	this	-> threshold_1		= threshold_1;
+	this	-> threshold_2		= threshold_2;
 	this	-> T_null		= params. get_T_null();
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -187,7 +189,7 @@ notSynced:
   *	Note that we probably already had 30 to 40 samples of the T_g
   *	part
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold_1);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
@@ -197,32 +199,13 @@ notSynced:
 //	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   goto SyncOnPhase;
 
-//
-//	Note: Optimization Kills
-//	An old saying is that "optimization kills", and indeed, here
-//	is another example.
-//	Spoiled by excellent devices such as the SDRplay, I noticed that
-//	at the end of recognizing a DAB frame, the only thing that has to 
-//	be done is to skip T_null examples to get the start of the
-//	next frame. The findIndex function then would identify the
-//	precise start of the T_u part of the zero-th block.
-//	However, it turns out that with devices that give more noisy
-//	samples the findIndex function might give wrong results, leading
-//	to loosing synchronization. That is why we call the findIndex
-//	function - once sync is established - with a much  higher
-//	threshold value
 //	
 Check_endofNULL:
 
-static	int old_startIndex	= 0;
-static  int startGoodies	= 0;
-//
-//
-	   avgValue_testPeriod	= 0;
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
 	   startIndex = phaseSynchronizer.
-	                           findIndex (ofdmBuffer, 3 * threshold);
+	                           findIndex (ofdmBuffer, threshold_2);
 	   if (startIndex < 0) { // no sync, single failure?
 	      if (!correctionNeeded) {
 	         setSyncLost();

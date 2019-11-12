@@ -164,7 +164,8 @@ Some settings are not influenced by buttons or sliders of the GUI, they will onl
 
 Two settings have an impact on the speed and accuracy of the synchronization,
 
-`threshold=x'
+`threshold_1=x'
+`threshold_2=x'
 
 Detecting whether a channel might contain a DAB signal is essentially
 by looking at the amplitude of the signal and by correlating the signal
@@ -173,10 +174,13 @@ of a signal is important, however, a speedy detection that no signal
 is available is also important, especially when stepping though the
 channels.
 
-The `threshold=x' setting (if not given a value 3 is ised as default)
-is a value used in determining whether or not the correlation is 
-sufficiently strong to assume the existence of DAB data in the channel.
-
+The `threshold_x=y' setting is a value used in determining whether
+or not the correlation is sufficiently strong to assume the existence
+of DAB data in the channel.
+'threshold_1=x" is used on start up of the channel, `threshold_2=x' is
+used when running. To avoid false positives, `threshold_2' ususally
+holds a higher value.
+Default values are 3 and 5.
 `diff_length=x'
 
 Once the existence of DAB data is established, an attempt is made

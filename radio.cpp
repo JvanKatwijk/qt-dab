@@ -391,8 +391,10 @@ int32_t	frequency;
 	QString dabMode		=
 	               dabSettings   -> value ("dabMode", "Mode 1"). toString();
 //	Performance parameters: read the README
-	uint16_t threshold	=
-	           dabSettings -> value ("threshold", 3). toInt();
+	uint16_t threshold_1	=
+	           dabSettings -> value ("threshold_1", 3). toInt();
+	uint16_t threshold_2	=
+	           dabSettings -> value ("threshold_2", 5). toInt();
 	uint16_t diff_length	=
 	           dabSettings	-> value ("diff_length", 40). toInt();
 	
@@ -421,7 +423,8 @@ int32_t	frequency;
 	my_dabProcessor = new dabProcessor   (this,
 	                                      inputDevice,
 	                                      convert (dabMode),
-	                                      threshold,
+	                                      threshold_1,
+	                                      threshold_2,
 	                                      diff_length,
 	                                      tii_delay,
 	                                      tii_depth,
