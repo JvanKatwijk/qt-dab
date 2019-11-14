@@ -30,6 +30,7 @@
 #include	<QThread>
 #include	<QObject>
 #include	<vector>
+#include	<atomic>
 #include	<cstdint>
 #include	<sndfile.h>
 #include	"sample-reader.h"
@@ -114,8 +115,10 @@ private:
 	TII_Detector	my_TII_Detector;
 	ofdmDecoder	my_ofdmDecoder;
 
-	int16_t		attempts;
 	bool		scanMode;
+	int		false_dipStarts;
+	int		false_dipEnds;
+	int		false_frameStarts;
 	int32_t		T_null;
 	int32_t		T_u;
 	int32_t		T_s;
@@ -126,15 +129,15 @@ private:
 	int32_t		carrierDiff;
 	int16_t		fineOffset;
 	int32_t		coarseOffset;
-
+	std::atomic<bool>	running;
 	bool		correctionNeeded;
 	std::vector<DSPCOMPLEX>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
 virtual	void		run();
 signals:
-	void		setSynced		(char);
-    void		No_Signal_Found();
-    void		setSyncLost();
+	void		setSynced		(bool);
+	void		No_Signal_Found();
+	void		setSyncLost();
 	void		showCoordinates		(int);
 	void		showSecondaries		(int);
 	void		show_Spectrum		(int);

@@ -89,6 +89,7 @@
 	this	-> carriers		= params. get_carriers();
 	this	-> carrierDiff		= params. get_carrierDiff();
 
+	running. store (false);
 	this	-> tii_delay		= tii_delay;
 	this	-> tii_counter		= 0;
 
@@ -96,14 +97,13 @@
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
 	correctionNeeded		= true;
-	attempts			= 0;
 	scanMode			= false;
 	connect (this, SIGNAL (showCoordinates (int)),
 	         mr,   SLOT   (showCoordinates (int)));
 	connect (this, SIGNAL (showSecondaries (int)),
 	         mr,   SLOT   (showSecondaries (int)));
-	connect (this, SIGNAL (setSynced (char)),
-	         myRadioInterface, SLOT (setSynced (char)));
+	connect (this, SIGNAL (setSynced (bool)),
+	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
 	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
@@ -142,19 +142,21 @@ void	dabProcessor::run() {
 int32_t startIndex;
 int32_t		i;
 DSPCOMPLEX	FreqCorr;
+myReader. setRunning (true);	// useful after a restart
 timeSyncer	myTimeSyncer (&myReader);
-int		attempts;
 
 float		avgValue_nullPeriod	= 0;
-float		avgValue_testPeriod	= 0;
-int		testLength		= 200;
+//float		avgValue_testPeriod	= 0;
+std::vector<int16_t> ibits (2 * params. get_carriers ());;
 
+	running. store (true);
+	false_dipStarts		= 0;
+	false_dipEnds		= 0;
+	false_frameStarts	= 0;
 	fineOffset		= 0;
 	correctionNeeded	= true;
-	attempts		= 0;
 	theRig  -> resetBuffer();
 	coarseOffset		= 0;
-	myReader. setRunning (true);	// useful after a restart
 	my_mscHandler. start();
 //
 //	to get some idea of the signal strength
@@ -171,14 +173,18 @@ notSynced:
 	         break;			// yes, we are ready
 
 	      case NO_DIP_FOUND:
-	         if (scanMode && (++ attempts >= 5)) {
-	        emit (No_Signal_Found());
-	            attempts = 0;
+	         if (scanMode && (++ false_dipStarts >= 25)) {
+	            emit (No_Signal_Found ());
+	            set_scanMode (false);
 	         }
 	         goto notSynced;
 
 	      default:			// does not happen
 	      case NO_END_OF_DIP_FOUND:
+	         if (scanMode && (++false_dipEnds >= 25)) {
+	            emit (No_Signal_Found ());
+	            set_scanMode (false);
+	         }
 	         goto notSynced;
 	   }
 
@@ -191,12 +197,15 @@ notSynced:
   */
 	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold_1);
 	   if (startIndex < 0) { // no sync, try again
+	      if (scanMode && (++false_frameStarts >= 25)) {
+	         emit (No_Signal_Found ());
+	         set_scanMode (false);
+	      }
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
 	      goto notSynced;
 	   }
-//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   goto SyncOnPhase;
 
 //	
@@ -212,7 +221,6 @@ Check_endofNULL:
 	      }
 	      goto notSynced;
 	   }
-//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   
 SyncOnPhase:
 /**
@@ -232,6 +240,9 @@ SyncOnPhase:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
+	   false_dipStarts	= 0;
+	   false_dipEnds	= 0;
+	   false_frameStarts	= 0;
 	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
@@ -243,7 +254,7 @@ SyncOnPhase:
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-       correctionNeeded	= !my_ficHandler. syncReached();
+	   correctionNeeded	= !my_ficHandler. syncReached();
 	   if (correctionNeeded) {
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
@@ -267,8 +278,6 @@ SyncOnPhase:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
-	   std::vector<int16_t> ibits;
-	   ibits. resize (2 * params. get_carriers());
 	   FreqCorr	= DSPCOMPLEX (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
@@ -309,8 +318,8 @@ SyncOnPhase:
  *	The TII data is encoded in the null period of the
  *	odd frames 
  */
-       if (params. get_dabMode() == 1) {
-	  if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
+	   if (params. get_dabMode() == 1) {
+	      if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
 	            std::vector<int> secondaries;
@@ -339,7 +348,7 @@ SyncOnPhase:
 //     we integrate the newly found frequency error with the
 //     existing frequency error.
 //
-	   fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
+	   fineOffset += 0.2 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
 	      fineOffset -= carrierDiff;
@@ -355,28 +364,34 @@ SyncOnPhase:
 	   goto Check_endofNULL;
 	}
 	catch (int e) {
-	   fprintf (stderr, "dabProcessor is stopping\n");
+//	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
+	running. store (false);
 	my_mscHandler.  stop();
 	my_ficHandler.  stop();
 }
 
 void	dabProcessor:: reset() {
-	myReader. setRunning (false);
-	while (isRunning())
-	   wait();
-	usleep (10000);
-	my_ficHandler.  reset();
-	start();
+	if (running. load ()) {
+	   myReader. setRunning (false);
+	   while (isRunning())
+	      wait();
+	   usleep (10000);
+	   my_ficHandler.  reset();
+	}
+
+	start();	
 }
 
 void	dabProcessor::stop() {
-	myReader. setRunning (false);
-	while (isRunning())
-	   wait();
-	usleep (10000);
-	my_ficHandler.  reset();
+	if (running. load ()) {
+	   myReader. setRunning (false);
+	   while (isRunning())
+	      wait();
+	   usleep (10000);
+	   my_ficHandler.  reset();
+	}
 }
 
 void	dabProcessor::coarseCorrectorOn() {
@@ -390,8 +405,10 @@ void	dabProcessor::coarseCorrectorOff() {
 }
 
 void	dabProcessor::set_scanMode	(bool b) {
-	scanMode	= b;
-	attempts	= 0;
+	scanMode		= b;
+	false_dipStarts		= 0;
+	false_dipEnds		= 0;
+	false_frameStarts	= 0;
 }
 //
 //	just a convenience function

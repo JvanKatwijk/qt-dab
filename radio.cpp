@@ -134,8 +134,7 @@ QString h;
 	dabSettings		= Si;
 	running. store (false);
 	scanning. store (false);
-	tiiSwitch		= false;
-	isSynced		= UNSYNCED;
+	isSynced		= false;
 	spectrumBuffer          = new RingBuffer<DSPCOMPLEX> (2 * 32768);
 	iqBuffer		= new RingBuffer<std::complex<float>> (2 * 1536);
 	responseBuffer		= new RingBuffer<float> (32768);
@@ -175,9 +174,13 @@ QString h;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
-	dataDisplay	= new QFrame (nullptr);
+	dataDisplay		= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
 	dataDisplay		->  hide();
+	Services		= QStringList ();
+	model . clear ();
+	ensembleDisplay		-> setModel (&model);
+
 #ifdef	__MINGW32__
 	cpuMonitor	-> hide();
 #endif
@@ -192,7 +195,7 @@ QString h;
 	(void)dataPort;
 #endif
 
-//	Where do we leave the audio out?
+//	Where does the sound go ?
 	streamoutSelector	-> hide();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
@@ -216,6 +219,7 @@ QString h;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
+//	The additional widgets
 	my_spectrumViewer	= new spectrumViewer (this, dabSettings,
 	                                              spectrumBuffer,
 	                                              iqBuffer);
@@ -226,10 +230,9 @@ QString h;
 	my_tiiViewer		= new tiiViewer (this, tiiBuffer);
 //
 	QString t       =
-	        dabSettings     -> value ("dabBand", "VHF Band III"). toString();
-	uint8_t dabBand		= t == "VHF Band III" ?  BAND_III : L_BAND;
-
-	theBand. setupChannels  (channelSelector, dabBand);
+	        dabSettings     -> value ("dabBand", "VHF Band III").toString();
+	theBand. setupChannels  (channelSelector, 
+		                 t == "VHF Band III" ?  BAND_III : L_BAND);
 
 //
 	QPalette p	= techData. ficError_display -> palette();
@@ -248,38 +251,23 @@ QString h;
 	                   setStyleSheet ("QLabel {background-color : red}");
 	techData. fmLabel		-> hide();
 //
-//
+//	filePointers
 	rawDumper               = nullptr;
 	frameDumper             = nullptr;
 	audioDumper             = nullptr;
 
-	ficBlocks		= 0;
-	ficSuccess		= 0;
-	syncedLabel		->
-	               setStyleSheet ("QLabel {background-color : red; color: white}");
-
-	Services		= QStringList ();
-	model . clear ();
-	ensembleDisplay	-> setModel (&model);
-//
 	connect (streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 	my_presetHandler. loadPresets (presetFile, presetSelector);
-//	
+
 //	display the version
-	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
-	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
-	versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
-	versionText += "Rights of Qt, fftw, portaudio, libsamplerate and libsndfile gratefully acknowledged";
-	versionText += "Rights of other contribuants gratefully acknowledged\n";
-	versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
-	copyrightLabel	-> setToolTip (versionText);
+	copyrightLabel	-> setToolTip (footText ());
 
 	copyrightLabel	-> setAlignment (Qt::AlignRight);
 	techData. programName -> setAlignment (Qt::AlignCenter);
+
 //	and start the timer(s)
-//	The displaytimer is there to show the number of
-//	seconds running and handle - if available - the tii data
+//	The displaytimer is there to show the number of seconds running 
 	displayTimer. setInterval (1000);
 	connect (&displayTimer, SIGNAL (timeout (void)),
 	         this, SLOT (updateTimeDisplay (void)));
@@ -291,6 +279,12 @@ QString h;
 	signalTimer. setInterval (10000);
 	connect (&signalTimer, SIGNAL (timeout (void)),
 	         this, SLOT (No_Signal_Found (void)));
+//
+//	timer for presets
+	presetTimer. setSingleShot (true);
+	presetTimer. setInterval (switchTime);
+	connect (&presetTimer, SIGNAL (timeout (void)),
+	         this, SLOT (setPresetStation (void)));
 
 #ifdef	HAVE_SDRPLAY
 	deviceSelector	-> addItem ("sdrplay");
@@ -334,13 +328,31 @@ QString h;
 //	we wait until one is selected
 	if (inputDevice != nullptr) 
 	   emit doStart ();
-	else 
+	else 	// one time connection
 	   connect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (doStart (QString)));
+//
+//	some remaining stuff
 	qApp	-> installEventFilter (this);
 	currentService	= nullptr;
+	ficBlocks		= 0;
+	ficSuccess		= 0;
+	syncedLabel		->
+	               setStyleSheet ("QLabel {background-color : red; color: white}");
+
 }
 
+QString	RadioInterface::footText () {
+	QString v = "Qt-DAB -" + QString (CURRENT_VERSION);
+	QString versionText = "qt-dab version: " + QString(CURRENT_VERSION);
+	versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
+	versionText += "Rights of Qt, fftw, portaudio, libsamplerate and libsndfile gratefully acknowledged";
+	versionText += "Rights of other contribuants gratefully acknowledged\n";
+	versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
+	return versionText;
+}
+
+//	This one is called after selecting a (different) device
 void	RadioInterface::doStart (QString dev) {
 	(void)dev;
 	inputDevice = setDevice	(deviceSelector -> currentText());
@@ -401,10 +413,10 @@ int32_t	frequency;
 //	we avoided up till now connecting the channel selector
 //	to the slot since that function does a lot more that we
 //	do not want here
-	connect (presetSelector, SIGNAL (activated (QString)),
-	         this, SLOT (handle_presetSelector (QString)));
+	connect (presetSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (handle_PresetSelector (const QString &)));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel_usingSelector (const QString &)));
+	         this, SLOT (selectChannel (const QString &)));
 //	and we connect the deviceSelector to a handler
 	disconnect (deviceSelector, SIGNAL (activated (QString)),
 	            this,  SLOT (doStart (QString)));
@@ -438,16 +450,11 @@ int32_t	frequency;
 	                                      );
 
 	if (has_presetName && (presetName != QString (""))) {
-	   presetTimer. setSingleShot (true);
-	   presetTimer. setInterval (switchTime);
-	   connect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
 	   presetTimer. start (switchTime);
 	}
 
-	clearEnsemble();		// the display
 	secondariesVector. resize (0);
-	my_dabProcessor	-> start();
+	startChannel (channelSelector -> currentText ());
 	running. store (true);
 }
 
@@ -496,156 +503,35 @@ void	RadioInterface::set_CorrectorDisplay (int v) {
 //	If "scanning" is "on" we hop to the next frequency on
 //	the list
 
-void	RadioInterface::signalTimer_out() {
-	No_Signal_Found();
-}
+void	RadioInterface::No_Signal_Found () {
+	if (running. load () && scanning. load ()) {
+	   int	cc	= channelSelector -> currentIndex ();
+	   stopChannel ();
+	   cc ++;
+	   if (cc >= channelSelector -> count ())
+	      cc = 0;
+//	To avoid reaction of the system on setting a different value:
+	   disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	               this, SLOT (selectChannel (const QString &)));
+	   channelSelector -> setCurrentIndex (cc);
+	   connect (channelSelector, SIGNAL (activated (const QString &)),
+	            this, SLOT (selectChannel (const QString &)));
 
-void	RadioInterface::No_Signal_Found() {
-	signalTimer. stop();
-	if (!running. load ())
-	   return;
-	disconnect (&presetTimer, SIGNAL (timeout ()),
-	            this, SLOT (No_Signal_Found ()));
-	disconnect (&signalTimer, SIGNAL (timeout ()),
-	            this, SLOT (No_Signal_Found ()));
-//	so, apparently we are scanning
-//	Increment the frequency
-//	and restart
-	my_dabProcessor -> stop();
-	while (!my_dabProcessor -> isFinished())
-	   usleep (10000);
-	if (!scanning. load ())
-	   return;
-
-	increment_Channel();
-	clearEnsemble();
-	my_dabProcessor	-> start();
-	connect (&signalTimer, SIGNAL (timeout ()),
-	         this, SLOT (No_Signal_Found ()));
-	signalTimer. start (switchTime);
+	   my_dabProcessor	-> set_scanMode (true);
+	   startChannel (channelSelector -> currentText ());
+	   signalTimer. start (switchTime);
+	}
+	else
+	   stopScanning ();
 }
 //
 //	In case the scanning button was pressed, we
 //	set it off as soon as we have a signal found
-void	RadioInterface::Yes_Signal_Found() {
-	if (!running. load())
-	   return;
-	disconnect (&signalTimer, SIGNAL (timeout ()),
-	            this, SLOT (No_Signal_Found ()));
-	signalTimer. stop();
-	stopScanning();
-}
-
-void	RadioInterface::set_Scanning () {
-	disconnect (scanButton, SIGNAL (clicked ()),
-	            this, SLOT (set_Scanning ()));
-	if (!running. load ())
-	   return;
-	if (scanning. load ())
-	   stopScanning ();
-	else
-	   startScanning ();
-	connect (scanButton, SIGNAL (clicked ()),
-	         this, SLOT (set_Scanning ()));
-}
-
-void	RadioInterface::startScanning () {
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
-	disconnect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-	disconnect (&signalTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-	setStereo (false);
-	scanning. store (true);
-	fprintf (stderr, "scanning is op %d gezet\n", scanning. load ());
-	my_dabProcessor -> set_scanMode (scanning);
-//	scanButton -> setText ("scanning");
-	increment_Channel();
-	fprintf (stderr, "en nu is scanning %d\n", scanning. load ());
-	connect (&signalTimer, SIGNAL (timeout (void)),
-	         this, SLOT (No_Signal_Found ()));
-	signalTimer. start (10000);
-}
-
-void	RadioInterface::stopScanning() {
-	if (!running. load())
-	   return;
-	disconnect (&signalTimer, SIGNAL (timeout ()),
-	            this, SLOT (No_Signal_Found ()));
-	scanning. store (false);
-	my_dabProcessor -> set_scanMode (!scanning. load ());
-	scanButton -> setText ("scan");
-}
-//
-void	RadioInterface::increment_Channel() {
-int32_t	tunedFrequency;
-	if (!running. load())
-	   return;
-
-int	cc	= channelSelector -> currentIndex();
-
-	cc	+= 1;
-	if (cc >= channelSelector -> count())
-	   cc = 0;
-//
-//	To avoid reaction of the system on setting a different value
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	              this, SLOT (selectChannel_usingSelector (const QString &)));
-	channelSelector -> setCurrentIndex (cc);
-	tunedFrequency	=
-	         theBand. Frequency (channelSelector -> currentText());
-	inputDevice	-> setVFOFrequency (tunedFrequency);
-	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-	connect    (channelSelector, SIGNAL (activated (const QString &)),
-	             this, SLOT (selectChannel_usingSelector (const QString &)));
-}
-
-void	RadioInterface::decrement_Channel() {
-int32_t	tunedFrequency;
-	if (!running. load())
-	   return;
-
-int	cc	= channelSelector -> currentIndex();
-
-	cc	-= 1;
-	if (cc < 0)
-	   cc = channelSelector -> count() - 1;
-//
-//	To avoid reaction of the system on setting a different value
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	              this, SLOT (selectChannel_usingSelector (const QString &)));
-	channelSelector -> setCurrentIndex (cc);
-	tunedFrequency	=
-	         theBand. Frequency (channelSelector -> currentText());
-	inputDevice	-> setVFOFrequency (tunedFrequency);
-	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-
-	connect    (channelSelector, SIGNAL (activated (const QString &)),
-	             this, SLOT (selectChannel_usingSelector (const QString &)));
+void	RadioInterface::Yes_Signal_Found () {
+	stopScanning ();
 }
 
 ///////////////////////////////////////////////////////////////////////////
-/**
-  *	clearEnsemble
-  *	on changing settings, we clear all things in the gui
-  *	related to the ensemble.
-  *	The function is called from "deep" within the handling code
-  *	Potentially a dangerous approach, since the fic handler
-  *	might run in a separate thread and generate data to be displayed
-  */
-void	RadioInterface::clearEnsemble() {
-
-	clear_showElements();
-	if (!running. load())
-	   return;
-
-//	it obviously means: stop processing
-	my_dabProcessor	-> clearEnsemble();
-	my_dabProcessor	-> reset();
-}
 
 //
 //	a slot, called by the fic/fib handlers
@@ -749,24 +635,19 @@ void	RadioInterface::show_snr (int s) {
 
 ///	just switch a color, obviously GUI dependent, but called
 //	from the ofdmprocessor
-void	RadioInterface::setSynced	(char b) {
+void	RadioInterface::setSynced	(bool b) {
 	if (!running. load())
 	   return;
 	if (isSynced == b)
 	   return;
 
 	isSynced = b;
-	switch (isSynced) {
-	   case SYNCED:
+	if (isSynced)
 	      syncedLabel -> 
 	               setStyleSheet ("QLabel {background-color : green; color: white}");
-	      break;
-
-	   default:
+	else
 	      syncedLabel ->
 	               setStyleSheet ("QLabel {background-color : red}");
-	      break;
-	}
 }
 
 //	showLabel is triggered by the message handler
@@ -901,8 +782,10 @@ void	RadioInterface::changeinConfiguration() {
 	   soundOut		-> stop();
 	   inputDevice		-> stopReader();
 	   inputDevice		-> resetBuffer();
-	   my_dabProcessor	-> reset();
-	   clear_showElements();
+	   stopScanning ();
+	   presetTimer. stop ();
+	   stopChannel ();
+	   startChannel (channelSelector -> currentText ());
 	}
 }
 //
@@ -919,40 +802,6 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	}
 }
 //
-//	This function is only used in the Gui to clear
-//	the details of a selection
-void	RadioInterface::clear_showElements() {
-//	if (!running. load())
-//	   return;
-	Services		= QStringList();
-	model.	clear ();
-
-	my_dabProcessor		-> clearEnsemble();
-	ensembleId		-> setText ("");
-	dynamicLabel		-> setText ("");
-	serviceLabel		-> setText ("");
-	
-//	Then the various displayed items
-	techData. frameError_display	-> setValue (0);
-	techData. rsError_display	-> setValue (0);
-	techData. aacError_display	-> setValue (0);
-	techData. ficError_display	-> setValue (0);
-	techData. programName		-> setText (QString (""));
-	techData. bitrateDisplay	-> display (0);
-	techData. startAddressDisplay	-> display (0);
-	techData. lengthDisplay		-> display (0);
-	techData. subChIdDisplay	-> display (0);
-//	techData. protectionlevelDisplay -> display (0);
-	techData. uepField		-> setText (QString (""));
-	techData. ASCTy			-> setText (QString (""));
-	techData. language		-> setText (QString (""));
-	techData. programType		-> setText (QString (""));
-	techData. motAvailable		-> 
-	               setStyleSheet ("QLabel {background-color : red}");
-	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
-	transmitter_coordinates -> setText ("");
-	my_tiiViewer	-> clear();
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
@@ -1010,56 +859,8 @@ void	RadioInterface::TerminateProcess() {
 	fprintf (stderr, ".. end the radio silences\n");
 }
 
-//
-/**
-  *	\brief selectChannel
-  *	Depending on the GUI the user might select a channel
-  *	or some magic will cause a channel to be selected
-  */
-void	RadioInterface::selectChannel_usingSelector (QString s) {
-	presetSelector	-> setCurrentIndex (0);
-	presetTimer. stop ();
-	disconnect (&presetTimer, SIGNAL (timeout ()),
-	            this, SLOT (setPresetStation (void)));
-	serviceLabel	-> setText ("");
-	selectChannel (s);
-}
-
-void	RadioInterface::selectChannel (QString s) {
-int32_t	tunedFrequency;
-bool	localRunning	= running. load();
-	if (currentService != nullptr)
-	   delete currentService;
-	currentService	= nullptr;
-	stopServices ();	// or reset_msc?
-	setStereo (false);
-	if (tiiSwitch)
-	   set_tiiSwitch ();	// switch it off
-	if (localRunning) {
-	   soundOut		-> stop();
-	   inputDevice		-> stopReader();
-	}
-
-	clear_showElements	();
-	secondariesVector. resize (0);
-	tunedFrequency	= theBand. Frequency (s);
-	inputDevice	-> setVFOFrequency (tunedFrequency);
-	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-
-	if (localRunning) {
-	   if (!inputDevice	-> restartReader()) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("Device will not restart\n"));
-	      return;
-	   }
-	   my_dabProcessor	-> reset();
-	   running. store (true);
-	}
-	dabSettings	-> setValue ("channel", s);
-}
-
-static size_t previous_idle_time	= 0;
-static size_t previous_total_time	= 0;
+static size_t previous_idle_time        = 0;
+static size_t previous_total_time       = 0;
 
 void	RadioInterface::updateTimeDisplay() {
 	if (!running. load())
@@ -1094,15 +895,14 @@ void	RadioInterface::updateTimeDisplay() {
 #endif
 }
 
-void	RadioInterface::autoCorrector_on() {
+void	RadioInterface::handleReset  () {
 //	first the real stuff
 	if (!running. load())
 	   return;
-
-	clear_showElements();
-	my_dabProcessor		-> clearEnsemble();
-	my_dabProcessor		-> coarseCorrectorOn();
-	my_dabProcessor		-> reset();
+	stopScanning ();
+	presetTimer. stop ();
+	stopChannel ();
+	startChannel (channelSelector -> currentText ());
 }
 
 /**
@@ -1332,177 +1132,22 @@ void	RadioInterface::newDevice (QString deviceName) {
 
 	disconnectGUI();
 	presetTimer. stop();
-//	connect (&presetTimer, SIGNAL (timeout (void)),
-//	         this, SLOT (setPresetStation (void)));
 	running. store (false);
 	inputDevice	-> stopReader();
-
-	scanning. store (false);
-	tiiSwitch		= false;
-	isSynced		= UNSYNCED;
+	stopScanning	();
+	stopChannel	();
 	if (my_dabProcessor == nullptr)
 	   fprintf (stderr, "SCREAM\n");
 	else {
-	   my_dabProcessor	-> stop();
 	   delete my_dabProcessor;
 	}
 	delete inputDevice;
-	my_dabProcessor		= nullptr;
-	inputDevice		= nullptr;
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
 	   inputDevice = new virtualInput();
 //	Note that the device handler itself will do the complaining
-	   return;
 	}
 	doStart();		// will set running
-}
-//
-//	aiming at a future where we will be selective in
-//	stopping services
-void    RadioInterface::stopServices () {
-        while (activeServices. size () > 0) {
-           int top = activeServices. size () - 1;
-           const QString s = activeServices. at (top);
-           my_dabProcessor -> unset_Channel (s);
-//         fprintf (stderr, "removing %s\n", s. toLatin1 (). data ());
-           activeServices. pop_back ();
-        }
-//      my_dabProcessor -> reset_msc();
-}
-
-//
-//      a service might be called from the GUI as well as from an
-//	internal call, in the latter case we first compute the index
-void    RadioInterface::selectService (QString s) {
-int row = model. rowCount ();
-	for (int i = 0; i < row; i ++) {
-	   QString itemText =
-	          model. index (i, 0). data (Qt::DisplayRole). toString ();
-	   if (itemText == s) {
-	      selectService (model. index (i, 0));
-	      return;
-	   }
-	}
-}
-
-void	RadioInterface::selectService (QModelIndex ind) {
-QString serviceName;
-	presetTimer. stop();
-	disconnect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-	presetSelector -> setCurrentIndex (0);
-
-//	first ensure that the text of the elements is black
-	int row	= model. rowCount ();
-	for (int i = 0; i < row; i ++) {
-	   QMap <int, QVariant> vMap = model. itemData (model. index (i, 0));
-	   vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::black)));
-	   model. setItemData (model . index (i, 0), vMap);
-	   model. setData (model. index (i, 0),
-	                     QFont ("Cantarell", 11), Qt::FontRole);
-	}
-
-//	then highlight the selected item
-	serviceName = ind. data (Qt::DisplayRole). toString ();
-	QMap<int, QVariant> vMap = model. itemData (ind);
-	vMap. insert (Qt::ForegroundRole, QVariant (QBrush (Qt::red)));
-	model. setItemData (ind, vMap);
-	model. setData (ind, QFont ("Cantarell", 13), Qt::FontRole);
-
-//	here it really starts
-	serviceLabel -> setText (" ");
-	if (!my_dabProcessor -> is_audioService (serviceName) &&
-	    !my_dabProcessor -> is_packetService (serviceName))
-	   return;
-
-	serviceLabel -> setStyleSheet ("QLabel {color : black}");
-	serviceLabel	-> setText (serviceName);
-	stopServices ();
-	setStereo (false);
-
-	techData. rsError_display	-> hide();
-	techData. aacError_display	-> hide();
-	techData. motAvailable		-> 
-	               setStyleSheet ("QLabel {background-color : red}");
-
-	if (my_dabProcessor -> is_audioService (serviceName)) {
-	   audiodata d;
-	   my_dabProcessor -> dataforAudioService (serviceName, &d, 0);
-	   if (!d. defined) {
-	      QMessageBox::warning (this, tr ("Warning"),
- 	                            tr ("unknown bitrate for this program\n"));
- 	      return;
- 	    }
-
-	   activeServices. push_back (serviceName);
-	   show_techData (serviceName,
-	                   inputDevice -> getVFOFrequency() / 1000000.0,
-	                   &d);
-	    my_dabProcessor -> set_audioChannel (&d, audioBuffer);
-	    for (int i = 1; i < 10; i ++) {
-	       packetdata pd;
-	       my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
-	       if (pd. defined) {
-	          QString s = QString::number (i) + "%%" + serviceName;
-	          pd. serviceName = s;
-	          my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
-	          activeServices. push_back (s);
-	          break;
-	       }
-	    }
-
-	    soundOut	-> restart();
-	    showLabel (QString (" "));
-	}
-	else
-	if (my_dabProcessor -> is_packetService (serviceName)) {
-	   packetdata pd;
-	   my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-	   if ((!pd. defined) ||
-	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
-	      fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
-	                               pd. DSCTy, pd. bitRate);
-	      QMessageBox::warning (this, tr ("sdr"),
- 	                            tr ("still insufficient data for this service\n"));
-	      return;
-	   }
-
-	   activeServices. push_back (serviceName);
-	   my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
-	   switch (pd. DSCTy) {
-	      default:
-	         showLabel (QString ("unimplemented Data"));
-	         break;
-	      case 5:
-	         fprintf (stderr, "selected apptype %d\n", pd. appType);
-	         showLabel (QString ("Transp. Channel not implemented"));
-	         break;
-	      case 60:
-	         showLabel (QString ("MOT partially implemented"));
-	         break;
-	      case 59: {
-#ifdef	_SEND_DATAGRAM_
-	         QString text = QString ("Embedded IP: UDP data to ");
-	         text. append (ipAddress);
-	         text. append (" ");
-	         QString n = QString::number (port);
-	         text. append (n);
-	         showLabel (text);
-#else
-	         showLabel ("Embedded IP not supported ");
-#endif
-	         }
-	         break;
-	      case 44:
-	         showLabel (QString ("Journaline"));
-	         break;
-	   }
-	}
-	else
-	   return;		// should not happen
-
-	techData. pictureLabel -> setText ("");
 }
 //
 
@@ -1561,45 +1206,22 @@ void	RadioInterface::toggle_show_data() {
 
 
 void	RadioInterface::showButtons() {
-//	if (!running. load())
-//	   return;
-	connect (scanButton, SIGNAL (clicked (void)),
-                 this, SLOT (set_Scanning (void)));
-	scanButton	-> setText ("scan");
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-                 this, SLOT (selectChannel_usingSelector (const QString &)));
-	channelSelector	-> show ();
-	connect (dumpButton, SIGNAL (clicked (void)),
-                 this, SLOT (set_sourceDump (void)));
-	dumpButton	-> setText ("raw dump");
-	connect (nextChannelButton, SIGNAL (clicked ()),
-                 this, SLOT (set_nextChannel ()));
-	nextChannelButton	-> setText ("+");
-        connect (prevChannelButton, SIGNAL (clicked ()),
-                 this, SLOT (set_prevChannel ()));
-	prevChannelButton	-> setText ("-");
-	presetSelector	-> show ();
+	scanButton		-> setText ("scan");
+	scanButton		-> show ();
+	channelSelector		-> show ();
+	dumpButton		-> show ();
+	nextChannelButton	-> show ();
+	prevChannelButton	-> show ();
+	presetSelector		-> show ();
 }
 
 void	RadioInterface::hideButtons() {
-//	if (!running. load())
-//	   return;
-	disconnect (scanButton, SIGNAL (clicked (void)),
-                    this, SLOT (set_Scanning (void)));
-	scanButton	-> setText ("X");
-	channelSelector	-> hide ();
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-                    this, SLOT (selectChannel_usingSelector (const QString &)));
-	disconnect (dumpButton, SIGNAL (clicked (void)),
-                    this, SLOT (set_sourceDump (void)));
-	dumpButton	-> setText ("X");
-	disconnect (nextChannelButton, SIGNAL (clicked ()),
-                    this, SLOT (set_nextChannel ()));
-	nextChannelButton	-> setText ("X");
-        disconnect (prevChannelButton, SIGNAL (clicked ()),
-                    this, SLOT (set_prevChannel ()));
-	prevChannelButton	-> setText ("X");
-	presetSelector	-> hide ();
+	scanButton		-> hide ();
+	channelSelector		-> hide ();
+	dumpButton		-> hide ();
+	nextChannelButton	-> hide ();
+	prevChannelButton	-> hide ();
+	presetSelector		-> hide ();
 }
 
 void	RadioInterface::setSyncLost() {
@@ -1667,26 +1289,6 @@ ensemblePrinter	my_Printer;
 	fclose (file_P);
 }
 
-void	RadioInterface::setPresetStation() {
-	disconnect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-	if (ensembleId -> text () == QString ("")) {
-	   QMessageBox::warning (this, tr ("Warning"),
-                                  tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
-	   return;
-	}
-
-	if (presetName == QString (""))		// should not happen
-	   return;
-
-	for (const auto& service: Services)
-	   if (service. contains (presetName)) {
-	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
-	      selectService (presetName);
-	      return;
-	   }
-	fprintf (stderr, "presetName %s not found\n", presetName. toLatin1 (). data ());
-}
 
 void	RadioInterface::set_picturePath() {
 QString defaultPath	= QDir::tempPath();
@@ -1707,35 +1309,6 @@ QString defaultPath	= QDir::tempPath();
 	   testdir. mkdir (picturesPath);
 }
 
-void	RadioInterface::set_nextChannel() {
-	disconnect (nextChannelButton, SIGNAL (clicked ()),
-	            this, SLOT (set_nextChannel ()));
-	if (scanning. load ())
-	   stopScanning ();
-	my_dabProcessor -> stop();
-	while (!my_dabProcessor -> isFinished())
-	   usleep (10000);
-	increment_Channel();
-	clearEnsemble();
-	my_dabProcessor	-> start();
-	connect (nextChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (set_nextChannel ()));
-}
-
-void	RadioInterface::set_prevChannel () {
-	disconnect (prevChannelButton, SIGNAL (clicked ()),
-	            this, SLOT (set_prevChannel ()));
-	if (scanning. load ())
-	   stopScanning ();
-	my_dabProcessor -> stop();
-	while (!my_dabProcessor -> isFinished())
-	   usleep (10000);
-	decrement_Channel();
-	clearEnsemble();
-	my_dabProcessor	-> start ();
-	connect (prevChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (set_prevChannel ()));
-}
 
 void	RadioInterface::set_tiiSwitch() {
 	if (my_tiiViewer -> isHidden())
@@ -1767,17 +1340,17 @@ void	RadioInterface::connectGUI() {
 	connect (showProgramData, SIGNAL (clicked (void)),
 	         this, SLOT (toggle_show_data (void)));
 	connect (previousService, SIGNAL (clicked ()),
-                 this, SLOT (handle_setprevious ()));
-        connect (nextService, SIGNAL (clicked ()),
-                 this, SLOT (handle_setnext ()));
+	         this, SLOT (handle_setprevious ()));
+	connect (nextService, SIGNAL (clicked ()),
+	         this, SLOT (handle_setnext ()));
 	connect (showDeviceWidget, SIGNAL (clicked ()),
-                 this, SLOT (handle_showDeviceWidget ()));
+	         this, SLOT (handle_showDeviceWidget ()));
 	connect (saveEnsembleData, SIGNAL (clicked (void)),
 	         this, SLOT (showEnsembleData (void)));
 	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
 	connect (resetButton, SIGNAL (clicked (void)),
-	         this, SLOT (autoCorrector_on (void)));
+	         this, SLOT (handleReset (void)));
 	connect	(scanButton, SIGNAL (clicked (void)),
 	         this, SLOT (set_Scanning (void)));
 	connect (nextChannelButton, SIGNAL (clicked (void)),
@@ -1828,7 +1401,6 @@ void	RadioInterface::disconnectGUI() {
 }
 
 void	RadioInterface::show_techData (QString 		serviceName, 
-	                               float 		Frequency,
 	                               audiodata	*d) {
 	techData. programName	-> setText (serviceName);
 	techData. bitrateDisplay -> display (d -> bitRate);
@@ -1876,8 +1448,23 @@ void RadioInterface::closeEvent (QCloseEvent *event) {
 	   event -> accept();
 	}
 }
-
+//
+//	Catching a " press enter" event to select an element from
+//	the list and a "right mouse click" event to generate
+//	some visible data for the selected service.
 bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
+	if (event -> type () == QEvent::KeyPress) {
+	   QKeyEvent *ke = static_cast <QKeyEvent *> (event);
+	   if (ke -> key () == Qt::Key_Return) {
+	      QString serviceName =
+	          ensembleDisplay -> currentIndex ().data (Qt::DisplayRole). toString ();
+	      if ((activeServices. size () > 0) &&
+	          (serviceName != serviceLabel -> text ())) {
+	         selectService (ensembleDisplay -> currentIndex ());
+	      }
+	   }
+	}
+	else
 	if ((obj == this -> ensembleDisplay -> viewport()) &&
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
@@ -1939,55 +1526,6 @@ void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 	}
 }
 
-void	RadioInterface::select_presetService (QString  channel,
-	                                      QString serviceName) {
-presetData pd;
-bool	res;
-//
-//	just to be certain that we are the only one
-	presetTimer. stop ();
-	disconnect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-
-	if (channel == channelSelector -> currentText ()) {
-	   emit selectService (serviceName);
-	   return;
-	}
-//
-//	The hard part is stopping the current service,
-//	selecting a new channel,
-//	waiting a while
-//	trying to start the selected service
-	int k           = channelSelector -> findText (channel);
-	if (k != -1) {
-	   channelSelector -> setCurrentIndex (k);
-	}
-	else {
-	   QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("Incorrect preset\n"));
-
-	   return;
-	}
-	emit selectChannel (channel);
-	serviceLabel	-> setText ("");
-	dynamicLabel	-> setText ("");
-	presetName	= serviceName;
-	presetTimer. setSingleShot (true);
-	connect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
-	presetTimer. start (switchTime);
-}
-
-void	RadioInterface::handle_presetSelector (QString s) {
-	stopScanning ();
-	QStringList list = s.split (":", QString::SkipEmptyParts);
-	if (list. length () != 2)
-	   return;
-	QString channel = list. at (0);
-	QString service	= list. at (1);
-	select_presetService (channel, service);
-}
-
 static
 void	colorButton (QPushButton *pb, QColor c, int p) {
 QPalette pal = pb	-> palette ();
@@ -1999,19 +1537,19 @@ QPalette pal = pb	-> palette ();
 	pb		-> setFont (font);
 }
 
-void	RadioInterface::set_sourceDump () {
-SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
-
-	if (rawDumper != nullptr) {
-	   my_dabProcessor	-> stopDumping();
-	   sf_close (rawDumper);
-	   rawDumper	= nullptr;
-	   colorButton (dumpButton, Qt::white, 10);
-	   dumpButton	-> setText ("Raw dump");
-           dumpButton	-> update ();
+void	RadioInterface::stop_sourceDumping	() {
+	if (rawDumper == nullptr) 
 	   return;
-	}
+	my_dabProcessor	-> stopDumping();
+	sf_close (rawDumper);
+	rawDumper	= nullptr;
+	colorButton (dumpButton, Qt::white, 10);
+	dumpButton	-> setText ("Raw dump");
+	dumpButton	-> update ();
+}
 
+void	RadioInterface::start_sourceDumping () {
+SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     QDir::homePath(),
@@ -2033,23 +1571,31 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 
 	colorButton (dumpButton, Qt::red, 12);
 	dumpButton	-> setText ("writing");
-        dumpButton	-> update ();
+	dumpButton	-> update ();
 	my_dabProcessor -> startDumping (rawDumper);
 }
 
-void	RadioInterface::set_audioDump() {
-SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
+void	RadioInterface::set_sourceDump () {
 
-	if (audioDumper != nullptr) {
-	   soundOut	-> stopDumping();
-	   sf_close (audioDumper);
-	   audioDumper = nullptr;
-	   colorButton (audioDumpButton, Qt::white, 10);
-	   audioDumpButton	-> setText ("audio dump");
-	   audioDumpButton	-> update ();
+	if (rawDumper != nullptr)
+	   stop_sourceDumping ();
+	else
+	   start_sourceDumping ();
+}
+
+void	RadioInterface::stop_audioDumping	() {
+	if (audioDumper == nullptr)
 	   return;
-	}
+	soundOut	-> stopDumping();
+	sf_close (audioDumper);
+	audioDumper = nullptr;
+	colorButton (audioDumpButton, Qt::white, 10);
+	audioDumpButton	-> setText ("audio dump");
+	audioDumpButton	-> update ();
+}
 
+void	RadioInterface::start_audioDumping () {
+SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	QString file = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
 	                                        QDir::homePath(),
@@ -2076,32 +1622,49 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	soundOut		-> startDumping (audioDumper);
 }
 
-void	RadioInterface::set_frameDump () {
-	if (frameDumper != nullptr) {
-	   fclose (frameDumper);
-	   colorButton (frameDumpButton, Qt::white, 10);
-	   frameDumpButton	-> setText ("frame dump");
-	   frameDumpButton	-> update ();
-	   frameDumper	= nullptr;
+void	RadioInterface::set_audioDump () {
+
+	if (audioDumper != nullptr) 
+	   stop_audioDumping ();	
+	else
+	   start_audioDumping ();
+}
+
+void	RadioInterface::stop_frameDumping () {
+	if (frameDumper == nullptr)
 	   return;
-	}
-        QString file = QFileDialog::getSaveFileName (this,
-                                             tr ("Save file ..."),
-                                             QDir::homePath(),
-                                             tr ("aac data (*.aac)"));
-        if (file == QString (""))       // apparently cancelled
-           return;
-        file    = QDir::toNativeSeparators (file);
+	fclose (frameDumper);
+	colorButton (frameDumpButton, Qt::white, 10);
+	frameDumpButton	-> setText ("frame dump");
+	frameDumpButton	-> update ();
+	frameDumper	= nullptr;
+}
+
+void	RadioInterface::start_frameDumping () {
+	QString file = QFileDialog::getSaveFileName (this,
+	                                     tr ("Save file ..."),
+	                                     QDir::homePath(),
+	                                     tr ("aac data (*.aac)"));
+	if (file == QString (""))       // apparently cancelled
+	   return;
+	file    = QDir::toNativeSeparators (file);
 	frameDumper = fopen (file. toLatin1 (). data (), "w+b");
-        if (frameDumper == nullptr) {
+	if (frameDumper == nullptr) {
 	   QString s = QString ("cannot open ") + file;
 	   QMessageBox::warning (this, tr ("Warning"),
-                                       tr (s. toLatin1 (). data ()));
-           return;
-        }
+	                               tr (s. toLatin1 (). data ()));
+	   return;
+	}
 	colorButton (frameDumpButton, Qt::red, 12);
-        frameDumpButton		-> setText ("recording");
-        frameDumpButton		-> update ();
+	frameDumpButton		-> setText ("recording");
+	frameDumpButton		-> update ();
+}
+
+void	RadioInterface::set_frameDump () {
+	if (frameDumper != nullptr) 
+	   stop_frameDumping ();
+	else
+	   start_frameDumping ();
 }
 //
 //	newFrame is called from somewhere in the mp4processor,
@@ -2114,20 +1677,224 @@ uint8_t	buffer [amount];
 	   fwrite (buffer, amount, 1, frameDumper);
 }
 
-////////////////////////////////////////////////////////////////////////////
+void    RadioInterface::handle_showDeviceWidget () {
+	if (inputDevice == nullptr)
+	   return;
+	disconnect (showDeviceWidget, SIGNAL (clicked ()),
+	            this, SLOT (handle_showDeviceWidget ()));
 
+	if (inputDevice -> isHidden ()) {
+	   inputDevice -> show ();
+	   showDeviceWidget -> setText ("hide");
+	   dabSettings -> setValue ("showDeviceWidget", 1);
+	}
+	else {
+	   inputDevice -> hide ();
+	   showDeviceWidget -> setText ("show");
+	   dabSettings -> setValue ("showDeviceWidget", 0);
+	}
+	connect (showDeviceWidget, SIGNAL (clicked ()),
+	         this, SLOT (handle_showDeviceWidget ()));
+}
+
+////////////////////////////////////////////////////////////////////////////
+//
+//	called from a signal/slot
+void	RadioInterface::selectService (QModelIndex ind) {
+QString serviceName = ind. data (Qt::DisplayRole). toString ();
+	presetTimer. stop ();
+	presetSelector -> setCurrentIndex (0);
+	if (activeServices. size () > 0)
+	   stopService ();
+	startService (serviceName);
+}
+
+void	RadioInterface::startService (const QString &serviceName) {
+	if (!my_dabProcessor -> is_audioService (serviceName) &&
+	    !my_dabProcessor -> is_packetService (serviceName))
+	   return;
+//
+	techData. pictureLabel -> setText ("");
+	int row = model. rowCount ();
+	serviceLabel	-> setText (serviceName);
+	for (int i = 0; i < row; i ++) {
+	   QString itemText =
+	          model. index (i, 0). data (Qt::DisplayRole). toString ();
+	   if (itemText == serviceName) {
+	      colorService (model. index (i, 0), Qt::red, 15);
+	      serviceLabel -> setStyleSheet ("QLabel {color : black}");
+	      serviceLabel	-> setText (serviceName);
+	      setStereo (false);
+	      techData. rsError_display		-> hide();
+	      techData. aacError_display	-> hide();
+	      techData. motAvailable		-> 
+	               setStyleSheet ("QLabel {background-color : red}");
+
+	      if (my_dabProcessor -> is_audioService (serviceName)) 
+	         start_audioService (serviceName);
+	      else
+	      if (my_dabProcessor -> is_packetService (serviceName)) 
+	         start_packetService (serviceName);
+	      else
+	         return;		// should not happen
+	      return;
+	   }
+	}
+}
+
+void	RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
+	QMap <int, QVariant> vMap = model. itemData (ind);
+	vMap. insert (Qt::ForegroundRole, QVariant (QBrush (c)));
+	model. setItemData (ind, vMap);
+	model. setData (ind, QFont ("Cantarell", pt), Qt::FontRole);
+}
+
+void	RadioInterface::start_audioService (const QString &serviceName) {
+audiodata d;
+
+	my_dabProcessor -> dataforAudioService (serviceName, &d, 0);
+	if (!d. defined) {
+	   QMessageBox::warning (this, tr ("Warning"),
+ 	                         tr ("unknown bitrate for this program\n"));
+	   return;
+	}
+
+	activeServices. push_back (serviceName);
+	show_techData (serviceName, &d);
+	my_dabProcessor -> set_audioChannel (&d, audioBuffer);
+	for (int i = 1; i < 10; i ++) {
+	   packetdata pd;
+	   my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
+	   if (pd. defined) {
+	      QString s = QString::number (i) + "%%" + serviceName;
+	      pd. serviceName = s;
+	      my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	      break;
+	   }
+	}
+
+	soundOut	-> restart();
+	showLabel (QString (" "));
+}
+
+void	RadioInterface::start_packetService (const QString &serviceName) {
+packetdata pd;
+
+	my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
+	if ((!pd. defined) ||
+	    (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
+	   fprintf (stderr, "d. DSCTy = %d, d. bitRate = %d\n",
+	                                         pd. DSCTy, pd. bitRate);
+	   QMessageBox::warning (this, tr ("sdr"),
+ 	                         tr ("still insufficient data for service\n"));
+	   return;
+	}
+
+	activeServices. push_back (serviceName);
+	my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	switch (pd. DSCTy) {
+	   default:
+	      showLabel (QString ("unimplemented Data"));
+	      break;
+	   case 5:
+	      fprintf (stderr, "selected apptype %d\n", pd. appType);
+	      showLabel (QString ("Transp. Channel not implemented"));
+	      break;
+	   case 60:
+	      showLabel (QString ("MOT partially implemented"));
+	      break;
+	   case 59: {
+#ifdef	_SEND_DATAGRAM_
+	      QString text = QString ("Embedded IP: UDP data to ");
+	      text. append (ipAddress);
+	      text. append (" " + QString::number (port));
+	      showLabel (text);
+#else
+	      showLabel ("Embedded IP not supported ");
+#endif
+	      }
+	      break;
+	   case 44:
+	      showLabel (QString ("Journaline"));
+	      break;
+	}
+}
+
+void	RadioInterface::cleanScreen () {
+	setStereo (false);
+	serviceLabel	-> setText ("");
+	dynamicLabel	-> setText ("");
+	techData. frameError_display	-> setValue (0);
+	techData. rsError_display	-> setValue (0);
+	techData. aacError_display	-> setValue (0);
+	techData. ficError_display	-> setValue (0);
+	techData. programName		-> setText (QString (""));
+	techData. bitrateDisplay	-> display (0);
+	techData. startAddressDisplay	-> display (0);
+	techData. lengthDisplay		-> display (0);
+	techData. subChIdDisplay	-> display (0);
+//	techData. protectionlevelDisplay -> display (0);
+	techData. uepField		-> setText (QString (""));
+	techData. ASCTy			-> setText (QString (""));
+	techData. language		-> setText (QString (""));
+	techData. programType		-> setText (QString (""));
+	techData. motAvailable		-> 
+	               setStyleSheet ("QLabel {background-color : red}");
+}
+
+void	RadioInterface::stop_subServices (const QString &serviceName) {
+	if (my_dabProcessor -> is_audioService (serviceName)) {
+	   for (int j = 0; j < 10; j ++) {
+	      packetdata pd;
+	      my_dabProcessor ->
+	                dataforPacketService (serviceName, &pd, j);
+	      if (pd. defined) {
+	         QString s = QString::number (j) + "%%" + serviceName;
+	         pd. serviceName = s;
+	         my_dabProcessor -> unset_Channel (s);
+	         return;
+	      }
+	   }
+	}
+}
+
+void    RadioInterface::stopService () {
+int row	= model. rowCount ();
+
+	while (activeServices. size () > 0) {
+	   int top = activeServices. size () - 1;
+	   const QString serviceName = activeServices. at (top);
+	   activeServices. pop_back ();
+
+	   for (int i = 0; i < row; i ++) {
+	      QString itemText =
+	            model. index (i, 0). data (Qt::DisplayRole). toString ();
+	      if (itemText == serviceName) {
+	         my_dabProcessor -> unset_Channel (serviceName);
+	         cleanScreen	();
+	         colorService (model. index (i, 0), Qt::black, 11);
+	         stop_subServices (serviceName);
+	      }
+	   }
+	}
+}
+//
+//
 void	RadioInterface::handle_setprevious	() {
 	disconnect (previousService, SIGNAL (clicked ()),
 	         this, SLOT (handle_setprevious ()));
 	QString currentService = serviceLabel -> text ();
-	if ((Services. length () != 0) &&
-	          (serviceLabel -> text () != "")) {
+	stopScanning ();
+	presetTimer. stop ();
+	stopService  ();
+	stop_frameDumping ();		// if any
+	if ((Services. length () != 0) && (currentService != "")) {
 	   for (int i = 0; i < Services. length (); i ++) {
 	      if (Services. at (i) == currentService) {
 	         i = i - 1;
 	         if (i < 0) i =
 	            Services. length () - 1;
-	         selectService (Services. at (i));
+	         startService (Services. at (i));
 	         break;
 	      }
 	   }
@@ -2137,40 +1904,229 @@ void	RadioInterface::handle_setprevious	() {
 }
 
 void	RadioInterface::handle_setnext		() {
-	connect (previousService, SIGNAL (clicked ()),
-	         this, SLOT (handle_setprevious ()));
+	disconnect (nextService, SIGNAL (clicked ()),
+	            this, SLOT (handle_setnext ()));
 	QString currentService = serviceLabel -> text ();
-	if ((Services. length () != 0) &&
-	          (serviceLabel -> text () != "")) {
+	stopScanning ();
+	presetTimer. stop ();
+	stop_frameDumping ();		// if any
+	stopService ();
+	if ((Services. length () != 0) && (currentService != "")) {
 	   for (int i = 0; i < Services. length (); i ++) {
 	      if (Services. at (i) == currentService) {
 	         i = i + 1;
 	         if (i >= Services. length ())
 	            i = 0;
-	         selectService (Services. at (i));
+	         startService (Services. at (i));
 	         break;
 	      }
 	   }
 	}
+	connect (nextService, SIGNAL (clicked ()),
+	         this, SLOT (handle_setnext ()));
 }
 
-void    RadioInterface::handle_showDeviceWidget () {
-        if (inputDevice == nullptr)
-           return;
-	disconnect (showDeviceWidget, SIGNAL (clicked ()),
-	            this, SLOT (handle_showDeviceWidget ()));
+//////////////////////////////////////////////////////////////////////////
+//
+//	Handling channels
+//	Changing and setting a channel are sometimes done
+//	implicitly and require quite some work
+//
+////////////////////////////////////////////////////////////////////////////
+//
+//	selectChannel as triggered by the comboBox
+void	RadioInterface::selectChannel (const QString &channel) {
+	if (activeServices. size () > 0)
+	   stopService ();
+	presetTimer. stop ();
+	stopScanning ();
+	stopChannel ();
+	startChannel (channel);
+}
 
-        if (inputDevice -> isHidden ()) {
-           inputDevice -> show ();
-           showDeviceWidget -> setText ("hide");
-	   dabSettings -> setValue ("showDeviceWidget", 1);
-        }
-        else {
-           inputDevice -> hide ();
-           showDeviceWidget -> setText ("show");
-	   dabSettings -> setValue ("showDeviceWidget", 0);
+void	RadioInterface::startChannel (const QString &channel) {
+int	tunedFrequency	=
+	         theBand. Frequency (channel);
+	inputDevice		-> setVFOFrequency (tunedFrequency);
+	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
+	my_dabProcessor		-> start ();
+	inputDevice		-> restartReader ();
+}
+//
+//	welke timers ?
+void	RadioInterface::stopChannel	() {
+	if (!my_dabProcessor -> isRunning ())
+	   return;
+	stopService ();
+	my_tiiViewer	-> clear();
+	my_dabProcessor	-> stop ();
+	inputDevice	-> stopReader ();
+	ensembleId	-> setText ("");
+	snrDisplay	-> display (0);
+	setSynced (false);
+	transmitter_coordinates	-> setText (" ");
+	Services		= QStringList();
+	model.	clear ();
+	ensembleDisplay	-> setModel (&model);
+	stop_sourceDumping	();
+	stop_audioDumping	();
+//	note framedumping - if any - was already stopped
+}
+
+bool	RadioInterface::channelActive	() {
+	return (my_dabProcessor != nullptr) && my_dabProcessor -> isRunning ();
+}
+
+void	RadioInterface::set_nextChannel () {
+int	currentChannel	= channelSelector -> currentIndex ();
+	stopScanning ();
+	presetTimer. stop ();
+	stopChannel ();
+	currentChannel ++;
+	if (currentChannel >= channelSelector -> count ())
+	   currentChannel = 0;
+	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	            this, SLOT (selectChannel (const QString &)));
+	channelSelector	-> setCurrentIndex (currentChannel);
+	connect (channelSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (selectChannel (const QString &)));
+	startChannel (channelSelector -> currentText ());
+}
+
+void	RadioInterface::set_prevChannel () {
+int	currentChannel	= channelSelector -> currentIndex ();
+	stopScanning ();
+	presetTimer. stop ();
+	stopChannel ();
+	currentChannel --;
+	if (currentChannel < 0)
+	   currentChannel =  channelSelector -> count () - 1;
+	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	            this, SLOT (selectChannel (const QString &)));
+	channelSelector	-> setCurrentIndex (currentChannel);
+	connect (channelSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (selectChannel (const QString &)));
+	startChannel (channelSelector -> currentText ());
+}
+
+///////////////////////////////////////////////////////////////////////////
+//	Handling presets is related to both channel handling
+//	and service handling.
+///////////////////////////////////////////////////////////////////////////
+
+void	RadioInterface::handle_PresetSelector (const QString &s) {
+	presetTimer. stop ();
+	if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
+	   return;
+
+	stopScanning ();
+	QStringList list = s.split (":", QString::SkipEmptyParts);
+	if (list. length () != 2)
+	   return;
+	QString channel = list. at (0);
+	QString service = list. at (1);
+
+	if (channel == channelSelector -> currentText ()) {
+	   stopService ();
+	   startService (service);
+	   return;
 	}
-	connect (showDeviceWidget, SIGNAL (clicked ()),
-	         this, SLOT (handle_showDeviceWidget ()));
+
+//	The hard part is stopping the current service,
+//      selecting a new channel,
+//      waiting a while
+//      trying to start the selected service
+	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	            this, SLOT (selectChannel (const QString &)));
+	int k           = channelSelector -> findText (channel);
+	if (k != -1) {
+	   channelSelector -> setCurrentIndex (k);
+	}
+	else {
+	   QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("Incorrect preset\n"));
+
+	}
+	connect (channelSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (selectChannel (const QString &)));
+	if (k == -1)
+	   return;
+
+	if (activeServices. size () > 0)
+	   stopService ();
+	stopChannel ();
+	presetName      = service;
+	presetTimer. setSingleShot (true);
+	presetTimer. start (switchTime);
+	startChannel (channelSelector -> currentText ());
 }
+//
+//	This one is called at the timeOut
+void	RadioInterface::setPresetStation () {
+	if (ensembleId -> text () == QString ("")) {
+	   QMessageBox::warning (this, tr ("Warning"),
+	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
+	   return;
+	}
+
+	stopService ();		// just in case
+	if (presetName == QString (""))         // should not happen
+	   return;
+	for (const auto& service: Services) {
+	   if (service. contains (presetName)) {
+	      startService (presetName);
+	      return;
+	   }
+	}
+	fprintf (stderr, "presetName %s not found\n", presetName. toLatin1 (). data ());
+}
+
+////////////////////////////////////////////////////////////////////////////
+//
+//	Handling scanning
+////////////////////////////////////////////////////////////////////////////
+
+
+void	RadioInterface::set_Scanning () {
+	if (!running. load ())
+	   return;
+	if (scanning. load ())
+	   stopScanning ();
+	else
+	   startScanning ();
+}
+
+void	RadioInterface::startScanning () {
+	if (!running. load ())
+	   return;
+
+	presetTimer. stop ();
+	stopService	();
+	stopChannel	();	
+	int  cc      = channelSelector -> currentIndex ();
+	cc ++;
+	if (cc >= channelSelector -> count ())
+	   cc = 0;
+	scanning. store (true);
+//      To avoid reaction of the system on setting a different value:
+	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	            this, SLOT (selectChannel (const QString &)));
+	channelSelector -> setCurrentIndex (cc);
+	connect (channelSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (selectChannel (const QString &)));
+	my_dabProcessor -> set_scanMode (scanning. load ());
+	scanButton	-> setText ("scanning");
+	startChannel	(channelSelector -> currentText ());
+	signalTimer. start (10000);
+}
+
+void	RadioInterface::stopScanning() {
+	if (!running. load())
+	   return;
+	signalTimer. stop ();
+	scanning. store (false);
+	my_dabProcessor	-> set_scanMode (scanning. load ());
+	scanButton	-> setText ("scan");
+}
+
 

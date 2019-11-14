@@ -494,7 +494,7 @@ int	lnaState	= lnaGainSetting -> value();
 	                                 (mir_sdr_StreamCallback_t)myStreamCallback,
 	                                 (mir_sdr_GainChangeCallback_t)myGainChangeCallback,
 	                                 this);
-	fprintf (stderr, "overall gain reduction %d\n", gRdBSystem);
+//	fprintf (stderr, "overall gain reduction %d\n", gRdBSystem);
 	if (err != mir_sdr_Success) {
 	   fprintf (stderr, "error = %s\n",
 	                errorCodes (err). toLatin1(). data());

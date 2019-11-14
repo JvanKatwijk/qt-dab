@@ -61,7 +61,7 @@
         </property>
         <item>
          <property name="text">
-          <string>presets</string>
+          <string>Presets</string>
          </property>
         </item>
        </widget>
@@ -419,7 +419,7 @@ it is definitely not the time on your clock.</string>
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="WindowText">
+               <colorrole role="PlaceholderText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -448,7 +448,7 @@ it is definitely not the time on your clock.</string>
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="WindowText">
+               <colorrole role="PlaceholderText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
@@ -477,7 +477,7 @@ it is definitely not the time on your clock.</string>
                  </color>
                 </brush>
                </colorrole>
-               <colorrole role="WindowText">
+               <colorrole role="PlaceholderText">
                 <brush brushstyle="NoBrush">
                  <color alpha="128">
                   <red>255</red>
