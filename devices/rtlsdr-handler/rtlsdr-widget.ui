@@ -26,10 +26,10 @@
      <item>
       <widget class="QSpinBox" name="ppm_correction">
        <property name="minimum">
-        <number>-100</number>
+        <number>-500</number>
        </property>
        <property name="maximum">
-        <number>100</number>
+        <number>500</number>
        </property>
       </widget>
      </item>

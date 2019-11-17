@@ -35,6 +35,7 @@
 #include	<QComboBox>
 #include	<QLabel>
 #include	<QTimer>
+#include	<QByteArray>
 #include	<sndfile.h>
 #include	"ui_dabradio.h"
 #include	"dab-processor.h"
@@ -163,7 +164,8 @@ public slots:
 	void			show_motHandling	(bool);
 	void			setSyncLost();
 	void			showCoordinates		(int);
-	void			showSecondaries		(int);
+//	void			showSecondaries		(int);
+	void			showSecondaries		(QByteArray);
 	void			showCorrelation		(int);
 	void			showIndex		(int);
 	void			showSpectrum		(int);

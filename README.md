@@ -394,6 +394,9 @@ one can comment out or uncomment the line
 ````
 DEFINES		+= __HIGH_PRECISION__
 ````
+Note that with __HIGH_PRECISION__ defined, the load on an RPI3 will rise
+to app 60 %, while with __HIGH_PRECISION__ not defined, the load will
+remain app 42 %.
 
 
 ------------------------------------------------------------------

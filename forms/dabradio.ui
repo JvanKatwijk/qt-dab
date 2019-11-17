@@ -530,6 +530,11 @@ it is definitely not the time on your clock.</string>
           </item>
           <item>
            <widget class="QLabel" name="transmitter_coordinates">
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+             </font>
+            </property>
             <property name="toolTip">
              <string>Tranmitter Identification Information (tii) is shown here.</string>
             </property>

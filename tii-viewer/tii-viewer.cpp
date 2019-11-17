@@ -93,7 +93,7 @@ QColor	curveColor;
 	setBitDepth	(12);
 }
 
-    tiiViewer::~tiiViewer() {
+	tiiViewer::~tiiViewer() {
 	FFTW_DESTROY_PLAN (plan);
 	FFTW_FREE	(spectrum);
 	myFrame		-> hide();
@@ -108,7 +108,7 @@ void	tiiViewer::clear() {
 	secondariesDisplay	-> setText (" ");
 }
 
-void	tiiViewer::showSecondaries	(std::vector<int> data) {
+void	tiiViewer::showSecondaries	(QByteArray data) {
 	if (myFrame	-> isHidden())
 	   return;
 
@@ -118,12 +118,11 @@ void	tiiViewer::showSecondaries	(std::vector<int> data) {
 	}
 
 	QString t	= "transmitter IDs ";
-	for (int i = 0; i < data. size(); i ++) {
-	   int mainId	= data. at (i) >> 8;
-	   int subId	= data. at (i) & 0xFF;
-	   char temp [255];
-	   sprintf (temp, " (%d, %d)", mainId, subId);
-	   t. append (QString (temp));
+	for (int i = 0; i < data. size () / 2; i ++) {
+	   int mainId	= data. at (2 * i);
+	   int subId	= data. at (2 * i + 1);
+	   t . append (QString::number (mainId) +
+	                           " " + QString::number (subId) + " ");
 	}
 	secondariesDisplay	-> setText (t);
 }

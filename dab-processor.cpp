@@ -100,8 +100,8 @@
 	scanMode			= false;
 	connect (this, SIGNAL (showCoordinates (int)),
 	         mr,   SLOT   (showCoordinates (int)));
-	connect (this, SIGNAL (showSecondaries (int)),
-	         mr,   SLOT   (showSecondaries (int)));
+	connect (this, SIGNAL (showSecondaries (QByteArray)),
+	         mr,   SLOT   (showSecondaries (QByteArray)));
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -118,15 +118,15 @@
 //	the thread will be started from somewhere else
 }
 
-    dabProcessor::~dabProcessor() {
-    if (isRunning()) {
-	   myReader. setRunning (false);
+	dabProcessor::~dabProcessor() {
+	   if (isRunning()) {
+	      myReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
-	   msleep (100);
-       while (isRunning()) {
-	      usleep (100);
-	   }
+	      msleep (100);
+	      while (isRunning()) {
+	         usleep (100);
+	      }
 	}
 }
 
@@ -138,7 +138,7 @@
    *	and sending them to the ofdmDecoder who will transfer the results
    *	Finally, estimating the small freqency error
    */
-void	dabProcessor::run() {
+void	dabProcessor::run () {
 int32_t startIndex;
 int32_t		i;
 DSPCOMPLEX	FreqCorr;
@@ -228,7 +228,7 @@ SyncOnPhase:
   *	used for synchronization for block 0
   */
 	   memmove (ofdmBuffer. data(),
-	        &((ofdmBuffer. data()) [startIndex]),
+	            &((ofdmBuffer. data()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (DSPCOMPLEX));
 	   int ofdmBufferIndex	= T_u - startIndex;
 
@@ -249,7 +249,7 @@ SyncOnPhase:
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 //
 //	this is not really necessary, it makes things
-//	simpler in the msc decoder
+//	simpler in the mscHandler
 	   my_mscHandler.  processBlock_0 (ofdmBuffer. data());
 
 //	Here we look only at the block_0 when we need a coarse
@@ -273,7 +273,7 @@ SyncOnPhase:
   *	the thread executing this "task", the other blocks
   *	are passed on to be handled in the mscHandler, running
   *	in a different thread.
-  *	 We immediately
+  *	We immediately
   *	start with building up an average of the phase difference
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
@@ -322,21 +322,19 @@ SyncOnPhase:
 	      if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
-	            std::vector<int> secondaries;
-	            secondaries =
-	            my_TII_Detector. processNULL();
-	            showSecondaries (-1);
-	            if (secondaries. size() > 0) {
-	               showCoordinates (secondaries. at (0));
-	               for (i = 0; i < (int)(secondaries. size()); i ++)
-	                  showSecondaries (secondaries. at (i));
+	            QByteArray secondaries =
+	                            my_TII_Detector. processNULL ();
+	            if (secondaries. size () > 0) {
+	               showCoordinates ((secondaries. at (0) << 8) |
+		                                  secondaries. at (1));
+	               showSecondaries (secondaries);
 	            }
 
 	            show_tii (1);
 	            tii_counter = 0;
 	            my_TII_Detector. reset();
 	         }
-	        tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
+	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
 	      }
 	   }
 /**
@@ -364,7 +362,7 @@ SyncOnPhase:
 	   goto Check_endofNULL;
 	}
 	catch (int e) {
-//	   fprintf (stderr, "dabProcessor is stopping\n");
+	   fprintf (stderr, "dabProcessor is stopping, reason %d\n", e);
 	   ;
 	}
 	running. store (false);

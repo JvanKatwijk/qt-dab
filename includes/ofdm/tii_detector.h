@@ -27,6 +27,7 @@
 #include	"dab-params.h"
 #include	"fft-handler.h"
 #include	<vector>
+#include	<QByteArray>
 
 class	TII_Detector {
 public:
@@ -34,7 +35,7 @@ public:
 		~TII_Detector();
 	void	reset();
 	void	addBuffer	(std::vector<DSPCOMPLEX>);
-	std::vector<int>	processNULL();
+	QByteArray	processNULL();
 
 private:
 	void			collapse	(DSPCOMPLEX *,

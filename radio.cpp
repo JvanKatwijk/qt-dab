@@ -85,7 +85,32 @@
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
 
-std::vector<size_t> get_cpu_times() {
+#ifdef	__MINGW32__
+#include <windows.h>
+
+__int64 FileTimeToInt64 (FILETIME & ft) {
+	ULARGE_INTEGER foo;
+
+	foo.LowPart	= ft.dwLowDateTime;
+	foo.HighPart	= ft.dwHighDateTime;
+	return (foo.QuadPart);
+}
+
+bool get_cpu_times (size_t &idle_time, size_t &total_time) {
+FILETIME IdleTime, KernelTime, UserTime;
+size_t	thisIdle, thisKernel, thisUser;
+
+	GetSystemTimes (&IdleTime, &KernelTime, &UserTime);
+	
+	thisIdle	= FileTimeToInt64 (IdleTime);
+	thisKernel	= FileTimeToInt64 (KernelTime);
+	thisUser	= FileTimeToInt64 (UserTime);
+	idle_time	= (size_t) thisIdle;
+	total_time	= (size_t)(thisKernel + thisUser);
+	return true;
+}
+#else
+std::vector<size_t> get_cpu_times () {
 	std::ifstream proc_stat ("/proc/stat");
 	proc_stat. ignore (5, ' ');    // Skip the 'cpu' prefix.
 	std::vector<size_t> times;
@@ -101,7 +126,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	total_time = std::accumulate (cpu_times. begin(), cpu_times. end(), 0);
 	return true;
 }
-
+#endif
 static
 uint8_t	convert (QString s) {
 	if (s == "Mode 1")
@@ -180,10 +205,6 @@ QString h;
 	Services		= QStringList ();
 	model . clear ();
 	ensembleDisplay		-> setModel (&model);
-
-#ifdef	__MINGW32__
-	cpuMonitor	-> hide();
-#endif
 	
 	bool showWidget		= dabSettings -> value ("showDeviceWidget", 0).
 	                                                      toInt () != 0;
@@ -504,6 +525,7 @@ void	RadioInterface::set_CorrectorDisplay (int v) {
 //	the list
 
 void	RadioInterface::No_Signal_Found () {
+	signalTimer. stop ();
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
 	   stopChannel ();
@@ -522,6 +544,7 @@ void	RadioInterface::No_Signal_Found () {
 	   signalTimer. start (switchTime);
 	}
 	else
+	if (scanning. load ())
 	   stopScanning ();
 }
 //
@@ -875,18 +898,16 @@ void	RadioInterface::updateTimeDisplay() {
 	text. append (QString::number (numberMinutes));
 	text. append (" min");
 	timeDisplay	-> setText (text);
-#ifndef	__MINGW32__
 	if ((numberofSeconds % 2) == 0) {
 	   size_t idle_time, total_time;
 	   get_cpu_times (idle_time, total_time);
 	   const float idle_time_delta = idle_time - previous_idle_time;
 	   const float total_time_delta = total_time - previous_total_time;
 	   const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
-	   cpuMonitor -> display (utilization);
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
+	   cpuMonitor -> display (utilization);
 	}
-#endif
 #ifdef	SHOW_MISSING
 	if ((numberofSeconds % 10) == 0) {
 	   int xxx = ((audioSink *)soundOut)	-> missed();
@@ -902,7 +923,10 @@ void	RadioInterface::handleReset  () {
 	stopScanning ();
 	presetTimer. stop ();
 	stopChannel ();
+	fprintf (stderr, "bij reset: channel gestopt\n");
 	startChannel (channelSelector -> currentText ());
+	fprintf (stderr, "en channel %s is gestart\n",
+	                channelSelector -> currentText (). toLatin1 (). data ());
 }
 
 /**
@@ -1186,7 +1210,6 @@ void	RadioInterface::show_tii (int amount) {
 	if (!running. load())
 	   return;
 	my_tiiViewer	-> showSpectrum (amount);
-	my_tiiViewer	-> showSecondaries (secondariesVector);
 }
 //
 void	RadioInterface:: set_streamSelector (int k) {
@@ -1244,14 +1267,10 @@ QString c = "  ";
 	transmitter_coordinates -> setText (a);
 }
 
-void	RadioInterface::showSecondaries (int data) {
+void	RadioInterface::showSecondaries (QByteArray data) {
 	if (!running. load())
 	   return;
-
-	if (data == -1)
-	   secondariesVector. resize (0);
-	else
-	   secondariesVector. push_back (data);
+	my_tiiViewer	-> showSecondaries (data);
 }
 	
 void	RadioInterface::showEnsembleData() {
@@ -1383,7 +1402,7 @@ void	RadioInterface::disconnectGUI() {
 	   disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	               this, SLOT (selectService (QModelIndex)));
 	   disconnect (resetButton, SIGNAL (clicked (void)),
-	               this, SLOT (autoCorrector_on (void)));
+	               this, SLOT (handleReset (void)));
 	   disconnect (scanButton, SIGNAL (clicked (void)),
 	               this, SLOT (set_Scanning (void)));
 	   disconnect (nextChannelButton, SIGNAL (clicked (void)),
@@ -1490,7 +1509,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         if (currentService != nullptr) 
 	            delete currentService;
 	         currentService	= new audioDescriptor (&ad);
-	         fprintf (stderr, "new audioDescriptor\n");
 	         return true;
 	      }
 
@@ -2102,12 +2120,14 @@ void	RadioInterface::startScanning () {
 
 	presetTimer. stop ();
 	stopService	();
+	presetSelector -> setCurrentIndex (0);
 	stopChannel	();	
 	int  cc      = channelSelector -> currentIndex ();
 	cc ++;
 	if (cc >= channelSelector -> count ())
 	   cc = 0;
 	scanning. store (true);
+
 //      To avoid reaction of the system on setting a different value:
 	disconnect (channelSelector, SIGNAL (activated (const QString &)),
 	            this, SLOT (selectChannel (const QString &)));
@@ -2117,11 +2137,13 @@ void	RadioInterface::startScanning () {
 	my_dabProcessor -> set_scanMode (scanning. load ());
 	scanButton	-> setText ("scanning");
 	startChannel	(channelSelector -> currentText ());
-	signalTimer. start (10000);
+	signalTimer. start (switchTime);
 }
 
 void	RadioInterface::stopScanning() {
 	if (!running. load())
+	   return;
+	if (!scanning. load ())
 	   return;
 	signalTimer. stop ();
 	scanning. store (false);

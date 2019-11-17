@@ -208,7 +208,7 @@ void	ficHandler::stop() {
 }
 
 void	ficHandler::reset() {
-	clearEnsemble();
+	clearEnsemble ();
 }
 
 

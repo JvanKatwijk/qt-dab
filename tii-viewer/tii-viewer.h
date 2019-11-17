@@ -46,7 +46,7 @@ public:
 	                                         RingBuffer<DSPCOMPLEX> *);
 			~tiiViewer();
 	void		showSpectrum		(int32_t);
-	void		showSecondaries		(std::vector<int>);
+	void		showSecondaries		(QByteArray);
 	void		setBitDepth		(int16_t);
 	void		show();
 	void		hide();
