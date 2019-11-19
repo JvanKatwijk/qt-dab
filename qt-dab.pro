@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -pg
+QMAKE_CXXFLAGS	+=  -pg
+QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -35,7 +35,7 @@ DEPENDPATH += . \
 	      ./src/output \
 	      ./src/support \
 	      ./src/support/viterbi-jan \
-#	      ./src/support/viterbi-handler \
+	      ./src/support/viterbi-spiral \
 	      ./includes/ofdm \
 	      ./includes/protection \
 	      ./includes/backend \
@@ -68,7 +68,7 @@ INCLUDEPATH += . \
 	      ./includes/output \
 	      ./includes/support \
 	      ./includes/support/viterbi-jan \
-#	      ./includes/support/viterbi-handler \
+	      ./includes/support/viterbi-spiral \
 	      ./devices \
 	      ./devices/rawfiles-new \
 	      ./devices/wavfiles-new \
@@ -135,7 +135,7 @@ HEADERS += ./radio.h \
 	   ./includes/output/newconverter.h \
 	   ./includes/output/audiosink.h \
 	   ./includes/support/viterbi-jan/viterbi-handler.h \
-#	   ./includes/support/viterbi-handler/viterbi-handler.h \
+	   ./includes/support/viterbi-spiral/viterbi-spiral.h \
            ./includes/support/fft-handler.h \
 	   ./includes/support/ringbuffer.h \
 #	   ./includes/support/Xtan2.h \
@@ -223,7 +223,7 @@ SOURCES += ./main.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
 	   ./src/support/viterbi-jan/viterbi-handler.cpp \
-#	   ./src/support/viterbi-handler/viterbi-handler.cpp \
+	   ./src/support/viterbi-handler/viterbi-spiral.cpp \
            ./src/support/fft-handler.cpp \
 #	   ./src/support/Xtan2.cpp \
 	   ./src/support/dab-params.cpp \
@@ -298,7 +298,7 @@ CONFIG		+= send_datagram
 CONFIG		+= try-epg		# do not use
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
-DEFINES		+= __HIGH_PRECISION__
+#DEFINES	+= __HIGH_PRECISION__
 #DEFINES	+= SHOW_MISSING
 
 # you might select SSE if you are compiling on a x64 with SSE support
@@ -312,7 +312,7 @@ DEFINES		+= __HIGH_PRECISION__
 
 #CONFIG	+= NEON_RPI2
 #CONFIG	+= NEON_RPI3
-#CONFIG	+= SSE
+CONFIG	+= SSE
 #CONFIG	+= NO_SSE
 }
 #
@@ -362,7 +362,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= NO_SSE
+CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer

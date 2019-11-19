@@ -192,7 +192,7 @@ uint32_t samplerateCount;
 	convBuffer. resize (convBufferSize + 1);
 
 	theBuffer	= new RingBuffer<std::complex<float>>
-	                                                    (256 * 1024);
+	                                                    (1024 * 1024 * 8);
 	tabWidget	-> setCurrentIndex (0);
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_linearity (int)));
@@ -764,5 +764,9 @@ void	airspyHandler::show_tab (int t) {
 	   set_lna_gain		(lnaGain);
 	}
 	currentTab	= t;
+}
+
+int	airspyHandler::getBufferSpace	() {
+	return theBuffer -> GetRingBufferWriteAvailable ();
 }
 

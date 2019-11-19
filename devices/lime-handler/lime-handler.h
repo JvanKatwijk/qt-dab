@@ -106,6 +106,8 @@ public:
         int32_t         Samples();
         void            resetBuffer();
         int16_t         bitDepth();
+	int		getBufferSpace		();
+
 private:
 	QSettings	*limeSettings;
 	std::atomic<bool>	running;

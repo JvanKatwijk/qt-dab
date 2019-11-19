@@ -20,7 +20,6 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"dab-processor.h"
-
 #include	<utility>
 #include	"fic-handler.h"
 #include	"msc-handler.h"
@@ -98,10 +97,8 @@
 	coarseOffset			= 0;	
 	correctionNeeded		= true;
 	scanMode			= false;
-	connect (this, SIGNAL (showCoordinates (int)),
-	         mr,   SLOT   (showCoordinates (int)));
-	connect (this, SIGNAL (showSecondaries (QByteArray)),
-	         mr,   SLOT   (showSecondaries (QByteArray)));
+	connect (this, SIGNAL (show_tii (QByteArray)),
+	         mr,   SLOT   (show_tii (QByteArray)));
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -110,8 +107,6 @@
 	         myRadioInterface, SLOT (setSyncLost (void)));
 	connect (this, SIGNAL (show_Spectrum (int)),
 	         myRadioInterface, SLOT (showSpectrum (int)));
-	connect (this, SIGNAL (show_tii (int)),
-	         myRadioInterface, SLOT (show_tii (int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	my_TII_Detector. reset();
@@ -149,6 +144,7 @@ float		avgValue_nullPeriod	= 0;
 //float		avgValue_testPeriod	= 0;
 std::vector<int16_t> ibits (2 * params. get_carriers ());;
 
+	setPriority (QThread::HighestPriority);
 	running. store (true);
 	false_dipStarts		= 0;
 	false_dipEnds		= 0;
@@ -161,8 +157,9 @@ std::vector<int16_t> ibits (2 * params. get_carriers ());;
 //
 //	to get some idea of the signal strength
 	try {
-	   for (i = 0; i < T_F / 5; i ++) {
-	      myReader. getSample (0);
+	   for (i = 0; i < nrBlocks / 2; i ++) {
+	      myReader. getSamples (ofdmBuffer. data (),
+	                            T_s, coarseOffset + fineOffset);
 	   }
 //Initing:
 notSynced:
@@ -210,14 +207,24 @@ notSynced:
 
 //	
 Check_endofNULL:
-
+//
+//	We double check the consistency of the incoming data by
+//	applying a higher threshold here, since the positioning
+//	of the frame is almost right, we expect a higher value
 	   myReader. getSamples (ofdmBuffer. data(),
 	                        T_u, coarseOffset + fineOffset);
 	   startIndex = phaseSynchronizer.
 	                           findIndex (ofdmBuffer, threshold_2);
 	   if (startIndex < 0) { // no sync, single failure?
+//	I never understood windows, but it turns out that it
+//	causes the inputbuffer to overrun, so we take a
+//	drastic measure
 	      if (!correctionNeeded) {
-	         setSyncLost();
+	         if (theRig -> getBufferSpace () < T_F) {
+	            fprintf (stderr, "reset required\n");
+	            theRig -> resetBuffer ();
+	         }
+	         setSyncLost ();
 	      }
 	      goto notSynced;
 	   }
@@ -288,7 +295,7 @@ SyncOnPhase:
 
 	      if (ofdmSymbolCount < 4) {
 	         my_ofdmDecoder. decode (ofdmBuffer,
-	                            ofdmSymbolCount, ibits. data());
+	                                 ofdmSymbolCount, ibits. data());
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      }
 
@@ -324,13 +331,7 @@ SyncOnPhase:
 	         if (++tii_counter >= tii_delay) {
 	            QByteArray secondaries =
 	                            my_TII_Detector. processNULL ();
-	            if (secondaries. size () > 0) {
-	               showCoordinates ((secondaries. at (0) << 8) |
-		                                  secondaries. at (1));
-	               showSecondaries (secondaries);
-	            }
-
-	            show_tii (1);
+	            show_tii (secondaries);
 	            tii_counter = 0;
 	            my_TII_Detector. reset();
 	         }

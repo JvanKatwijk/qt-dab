@@ -96,6 +96,8 @@ public:
 	int32_t		Samples();
 	void		resetBuffer();
 	int16_t		bitDepth();
+	int		getBufferSpace		();
+
 	int16_t		currentTab;
 private slots:
 	void		set_linearity		(int value);

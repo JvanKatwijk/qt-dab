@@ -53,6 +53,8 @@ public:
 	int32_t		Samples			(void);
 	void		resetBuffer		(void);
 	int16_t		bitDepth		(void);
+
+	int		getBufferSpace		();
 private:
 	SoapySDR::Device	*device;
 	SoapySDR::Stream	*stream;

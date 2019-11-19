@@ -88,13 +88,14 @@ private:
 	void            run();
         std::atomic<bool>       running;
         std::vector<std::vector<DSPCOMPLEX> > command;
-        int16_t         amount;
+        std::atomic<int16_t>	amount;
         int16_t         currentBlock;
         void            processBlock_0();
         void            processMsc	(int32_t n);
         QSemaphore      bufferSpace;
         QWaitCondition  commandHandler;
         QMutex          helper;
+        QMutex		serverLock;
 	int		nrBlocks;
 };
 

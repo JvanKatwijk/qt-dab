@@ -92,3 +92,8 @@ bool	virtualInput::isHidden	() {
 	   return myFrame -> isHidden ();
 	return false;
 }
+
+int	virtualInput::getBufferSpace	() {
+	return -200;
+}
+

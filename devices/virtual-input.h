@@ -50,6 +50,7 @@ virtual		void	setOffset	(int32_t);
 virtual		void	hide		();
 virtual		void	show		();
 virtual		bool	isHidden	();
+virtual		int	getBufferSpace	();
 //
 protected:
 		int32_t	lastFrequency;

@@ -552,3 +552,7 @@ void	rtlsdrHandler::dumpButton_pressed() {
 	}
 }
 
+int	rtlsdrHandler::getBufferSpace	() {
+	return _I_Buffer -> GetRingBufferWriteAvailable ();
+}
+

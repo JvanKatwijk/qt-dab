@@ -923,10 +923,7 @@ void	RadioInterface::handleReset  () {
 	stopScanning ();
 	presetTimer. stop ();
 	stopChannel ();
-	fprintf (stderr, "bij reset: channel gestopt\n");
 	startChannel (channelSelector -> currentText ());
-	fprintf (stderr, "en channel %s is gestart\n",
-	                channelSelector -> currentText (). toLatin1 (). data ());
 }
 
 /**
@@ -1206,12 +1203,6 @@ void	RadioInterface::showIndex (int ind) {
 }
 
 //
-void	RadioInterface::show_tii (int amount) {
-	if (!running. load())
-	   return;
-	my_tiiViewer	-> showSpectrum (amount);
-}
-//
 void	RadioInterface:: set_streamSelector (int k) {
 #if	not defined (TCP_STREAMER) &&  not defined (QT_AUDIO)
 	((audioSink *)(soundOut)) -> selectDevice (k);
@@ -1250,29 +1241,24 @@ void	RadioInterface::hideButtons() {
 void	RadioInterface::setSyncLost() {
 }
 
-void	RadioInterface::showCoordinates (int data) {
-int	mainId	= data >> 8;
-int	subId	= data & 0xFF;
+void	RadioInterface::show_tii (QByteArray data) {
+int8_t	mainId, subId;
 QString a = "Estimate: ";
-QString b = "  ";
-QString c = "  ";
 
 	if (!running. load())
 	   return;
 
-	a	.append (QString::number (mainId));
-	b	.append (QString::number (subId));
-	a. append (b);
-	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
-	transmitter_coordinates -> setText (a);
+	if (data. size () > 1) {
+	   mainId	= data. at (0);
+	   subId	= data. at (1);
+	   a	.append (QString::number (mainId) + " " + QString::number (subId));
+	   transmitter_coordinates	-> setAlignment (Qt::AlignRight);
+	   transmitter_coordinates -> setText (a);
+	   my_tiiViewer -> showSecondaries (data);
+	}
+	my_tiiViewer	-> showSpectrum (1);
 }
 
-void	RadioInterface::showSecondaries (QByteArray data) {
-	if (!running. load())
-	   return;
-	my_tiiViewer	-> showSecondaries (data);
-}
-	
 void	RadioInterface::showEnsembleData() {
 QString currentChannel	= channelSelector -> currentText();
 int32_t	frequency	= inputDevice -> getVFOFrequency();
@@ -1967,7 +1953,7 @@ int	tunedFrequency	=
 	         theBand. Frequency (channel);
 	inputDevice		-> setVFOFrequency (tunedFrequency);
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-	my_dabProcessor		-> start ();
+	my_dabProcessor		-> start (QThread::HighestPriority);
 	inputDevice		-> restartReader ();
 }
 //

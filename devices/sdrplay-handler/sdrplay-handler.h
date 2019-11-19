@@ -103,6 +103,7 @@ public:
 	int32_t		Samples();
 	void		resetBuffer();
 	int16_t		bitDepth();
+	int		getBufferSpace		();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;

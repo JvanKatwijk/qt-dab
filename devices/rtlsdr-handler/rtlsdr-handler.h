@@ -83,6 +83,7 @@ public:
 	void		resetBuffer();
 	int16_t		maxGain();
 	int16_t		bitDepth();
+	int		getBufferSpace	();
 //
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<uint8_t>	*_I_Buffer;

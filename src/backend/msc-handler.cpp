@@ -55,7 +55,7 @@ static int cifTable [] = {18, 72, 0, 36};
 	for (int i = 0; i < nrBlocks; i ++)
 	   command [i]. resize (params. get_T_u());
 
-	amount          = 0;
+	amount. store (0);
 	fft_buffer                      = my_fftHandler. getVector();
 	phaseReference                  .resize (params. get_T_u());
 
@@ -77,7 +77,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	locker. unlock();
 	theBackends. resize (0);
 }
-
 //
 //	Input is put into a buffer, a the code in a separate thread
 //	will handle the data from the buffer
@@ -85,27 +84,30 @@ void	mscHandler::processBlock_0 (DSPCOMPLEX *b) {
 	bufferSpace. acquire (1);
 	for (int i = 0; i < params. get_T_u (); i ++)
 	   command [0][i] = b [i];
-	helper. lock();
-	amount ++;
+	amount. store (amount. load () + 1);
+//	helper. lock();
         commandHandler. wakeOne();
-        helper. unlock();
+//	helper. unlock();
 }
 
 void	mscHandler::process_Msc	(DSPCOMPLEX *b, int blkno) {
+	if (amount. load () >= nrBlocks - 1)
+	   fprintf (stderr, "volle bak\n");
 	bufferSpace. acquire (1);
 	for (int i = 0; i < params. get_T_u (); i ++)
 	   command [blkno][i] = b [i];
-        helper. lock();
-        amount ++;
+        amount. store (amount. load () + 1);
+//	helper. lock();
         commandHandler. wakeOne();
-        helper. unlock();
+//	helper. unlock();
 }
 
 void    mscHandler::run() {
-int	currentBlock	= 0;
+std::atomic<int>	currentBlock;
 std::vector<int16_t> ibits;
 int	T_u		= params. get_T_u ();
 
+	currentBlock. store (0);
 	running. store (true);
 	ibits. resize (BitsperBlock);
         while (running. load()) {
@@ -113,13 +115,14 @@ int	T_u		= params. get_T_u ();
            commandHandler. wait (&helper, 100);
            helper. unlock();
            while ((amount > 0) && running. load()) {
-	      for (int i = 0; i < T_u; i ++)
-	         fft_buffer [i] = command [currentBlock] [i];
+	      memcpy (fft_buffer,
+	              command [currentBlock. load ()]. data (),
+	                               T_u * sizeof (DSPCOMPLEX));
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
 	      my_fftHandler. do_FFT();
-              if (currentBlock >= 4) {
+              if (currentBlock. load () >= 4) {
                  for (int i = 0; i < params. get_carriers(); i ++) {
                     int16_t      index   = myMapper. mapIn (i);
                     if (index < 0)
@@ -135,15 +138,13 @@ int	T_u		= params. get_T_u ();
 	                                 =  - imag (r1) / ab1 * 1024.0;
                  }
 
-	         process_mscBlock (ibits, currentBlock);
+	         process_mscBlock (ibits, currentBlock. load ());
 	      }
-	      for (int i = 0; i < T_u; i ++)
-	         phaseReference [i] = fft_buffer [i];
+	      memcpy (phaseReference. data (),
+	              fft_buffer, T_u * sizeof (DSPCOMPLEX));
               bufferSpace. release (1);
-              helper. lock();
-              currentBlock = (currentBlock + 1) % (nrBlocks);
-              amount -= 1;
-              helper. unlock();
+              currentBlock. store ((currentBlock. load () + 1) % (nrBlocks));
+              amount. store (amount. load () - 1);
            }
         }
 }

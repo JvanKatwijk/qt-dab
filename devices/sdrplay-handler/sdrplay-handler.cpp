@@ -160,7 +160,7 @@ ULONG APIkeyValue_length = 255;
 	}
 
 	api_version	-> display (ver);
-	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<float>>(8 *1024 * 1024);
 	vfoFrequency	= Khz (220000);		// default
 
 //	See if there are settings from previous incarnations
@@ -336,7 +336,14 @@ ULONG APIkeyValue_length = 255;
         dlclose (Handle);
 #endif
 }
-//
+
+int	sdrplayHandler::getBufferSpace () {
+	if (_I_Buffer == nullptr)
+	   return -100;
+	else
+	   return _I_Buffer -> GetRingBufferWriteAvailable ();
+}
+
 static inline
 int16_t	bankFor_sdr (int32_t freq) {
 	if (freq < 12 * MHz (1))
@@ -457,7 +464,10 @@ std::complex<float> localBuf [numSamples];
 	for (i = 0; i <  (int)numSamples; i ++)
 	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
 	                                       float (xq [i]) / denominator);
-	p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	int n = p -> _I_Buffer -> GetRingBufferWriteAvailable ();
+	if (n >= numSamples) {
+	   p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	}
 	(void)	firstSampleNum;
 	(void)	grChanged;
 	(void)	rfChanged;

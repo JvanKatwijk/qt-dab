@@ -206,3 +206,7 @@ void	soapyHandler::handleAntenna (const QString &s) {
 	device	-> setAntenna (SOAPY_SDR_RX, 0, s. toLatin1(). data());
 }
 
+int	soapyhandler::getBufferSpace	() {
+	return 1000000;		// fake
+}
+

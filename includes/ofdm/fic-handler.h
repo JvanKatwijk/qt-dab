@@ -29,7 +29,7 @@
 #include	<cstdio>
 #include	<cstdint>
 #include	<vector>
-#include	"viterbi-handler.h"
+#include	"viterbi-spiral.h"
 #include	<QObject>
 #include	"dab-params.h"
 #include	"fib-decoder.h"
@@ -48,7 +48,7 @@ public:
 	void	reset();
 private:
 	dabParams	params;
-	viterbiHandler	myViterbi;
+	viterbiSpiral	myViterbi;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];

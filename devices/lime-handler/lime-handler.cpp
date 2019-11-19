@@ -156,7 +156,7 @@ lms_info_str_t limedevices [10];
 
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	theBuffer	= new RingBuffer<std::complex<float>> (64 * 32768);
+	theBuffer	= new RingBuffer<std::complex<float>> (8 * 1024 * 1024);
 	
 	limeSettings	-> beginGroup ("limeSettings");
 	k	= limeSettings	-> value ("gain", 50). toInt();
@@ -449,5 +449,9 @@ bool	limeHandler::load_limeFunctions() {
 	}
 
 	return true;
+}
+
+int	limeHandler::getBufferSpace	() {
+	return theBuffer	-> GetRingBufferWriteAvailable ();
 }
 

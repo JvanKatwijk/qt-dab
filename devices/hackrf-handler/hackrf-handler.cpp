@@ -548,3 +548,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 	return true;
 }
 
+int	hackrfHandler::getBufferSpace	() {
+	return _I_Buffer -> GetRingBufferWriteAvailable	();
+}
+
