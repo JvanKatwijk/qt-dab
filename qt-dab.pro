@@ -7,14 +7,14 @@
 TEMPLATE	= app
 TARGET		= qt-dab-3.0
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -pg
-QMAKE_CXXFLAGS	+=  -pg
-QMAKE_LFLAGS	+=  -pg
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -pg
+#QMAKE_CXXFLAGS	+=  -pg
+#QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -223,7 +223,7 @@ SOURCES += ./main.cpp \
 	   ./src/output/newconverter.cpp \
 	   ./src/output/audiosink.cpp \
 	   ./src/support/viterbi-jan/viterbi-handler.cpp \
-	   ./src/support/viterbi-handler/viterbi-spiral.cpp \
+	   ./src/support/viterbi-spiral/viterbi-spiral.cpp \
            ./src/support/fft-handler.cpp \
 #	   ./src/support/Xtan2.cpp \
 	   ./src/support/dab-params.cpp \
@@ -301,25 +301,16 @@ DEFINES		+= __THREADED_BACKEND
 #DEFINES	+= __HIGH_PRECISION__
 #DEFINES	+= SHOW_MISSING
 
-# you might select SSE if you are compiling on a x64 with SSE support
-# and you might select NEON if you are compiling for an arm (however
-# have a look at the config section for neon then)
-# By default we are using an alternative implementation for the
-# deconvolution, it outperforms the "NO_SSE" version, so it is
-# usable for both windows and linux.
-# If you want it changed, make sure to adapt the specification
-# of the header and the source files.
-
-#CONFIG	+= NEON_RPI2
-#CONFIG	+= NEON_RPI3
-CONFIG	+= SSE
-#CONFIG	+= NO_SSE
+#For x64 linux system uncomment SSE
+#For any other system comment SSE out and uncomment NO_SSE
+#CONFIG	+= SSE
+CONFIG	+= NO_SSE
 }
 #
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= ../../windows-qt-dab
+DESTDIR		= ../windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
@@ -541,8 +532,8 @@ NEON_RPI2	{
 	DEFINES		+= NEON_AVAILABLE
 	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
 	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
-	HEADERS		+= ./src/support/viterbi-handler/spiral-neon.h
-	SOURCES		+= ./src/support/viterbi-handler/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi-spiral/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi-spiral/spiral-neon.c
 }
 
 # for RPI3 use:
@@ -550,19 +541,19 @@ NEON_RPI3	{
 	DEFINES		+= NEON_AVAILABLE
 #	QMAKE_CFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
 #	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a53 -mfloat-abi=hard -mfpu=neon-fp-armv8 -mneon-for-64bits
-	HEADERS		+= ./src/support/viterbi-handler/spiral-neon.h
-	SOURCES		+= ./src/support/viterbi-handler/spiral-neon.c
+	HEADERS		+= ./src/support/viterbi-spiral/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi-spiral/spiral-neon.c
 }
 
 SSE	{
 	DEFINES		+= SSE_AVAILABLE
-	HEADERS		+= ./src/support/viterbi-handler/spiral-sse.h
-	SOURCES		+= ./src/support/viterbi-handler/spiral-sse.c
+	HEADERS		+= ./src/support/viterbi-spiral/spiral-sse.h
+	SOURCES		+= ./src/support/viterbi-spiral/spiral-sse.c
 }
 
 NO_SSE	{
-	HEADERS		+= ./src/support/viterbi-handler/spiral-no-sse.h
-	SOURCES		+= ./src/support/viterbi-handler/spiral-no-sse.c
+	HEADERS		+= ./src/support/viterbi-spiral/spiral-no-sse.h
+	SOURCES		+= ./src/support/viterbi-spiral/spiral-no-sse.c
 }
 
 

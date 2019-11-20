@@ -11,8 +11,11 @@ endif()
 
 #	modify if you want
 
+
 if(MINGW)
     add_definitions ( -municode)
+else (MINGW)
+	add_definitions (-DSSE_AVAILABLE)
 endif()
 
 IF(EXISTS (".git") AND IS_DIRECTORY (".git"))
@@ -175,6 +178,7 @@ add_definitions (-DPRESET_NAME)
 	           ./includes/backend/data/mot
 	           ./includes/support
 	           ./includes/support/viterbi-jan
+	           ./includes/support/viterbi-spiral
 	           ./includes/output
 	           ./includes/scopes-qwt6
 	           ./devices
@@ -253,6 +257,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/dab_tables.h
 	     ./includes/support/ensemble-printer.h
 	     ./includes/support/viterbi-jan/viterbi-handler.h
+	     ./includes/support/viterbi-spiral/viterbi-spiral.h
+              ./src/support/viterbi-spiral/spiral-sse.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
@@ -333,6 +339,8 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/smallpushbutton.cpp
 	     ./src/support/smallcombobox.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
+	     ./src/support/viterbi-spiral/viterbi-spiral.cpp
+	     ./src/support/viterbi-spiral/spiral-sse.c
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 
 	     ./correlation-viewer/correlation-viewer.cpp 
