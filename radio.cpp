@@ -1914,15 +1914,14 @@ int row	= model. rowCount ();
 	      QString itemText =
 	            model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-//	         my_dabProcessor -> unset_Channel (serviceName);
+	         my_dabProcessor -> unset_Channel (serviceName);
 	         cleanScreen	();
 	         colorService (model. index (i, 0), Qt::black, 11);
-//	         stop_subServices (serviceName);
-	         break;
+	         stop_subServices (serviceName);
 	      }
 	   }
 	}
-	my_dabProcessor	-> reset_msc ();
+//	my_dabProcessor	-> reset_msc ();
 }
 //
 //
@@ -2004,9 +2003,12 @@ void	RadioInterface::stopChannel	() {
 	if (!my_dabProcessor -> isRunning ())
 	   return;
 	stopService ();
+	fprintf (stderr, "services zijn gestopt\n");
 	my_tiiViewer	-> clear();
 	my_dabProcessor	-> stop ();
+	fprintf (stderr, "dabProcessor gestopt\n");
 	inputDevice	-> stopReader ();
+	fprintf (stderr, "reader gestopt\n");
 	ensembleId	-> setText ("");
 	snrDisplay	-> display (0);
 	setSynced (false);
@@ -2027,6 +2029,8 @@ void	RadioInterface::set_nextChannel () {
 int	currentChannel	= channelSelector -> currentIndex ();
 	stopScanning ();
 	presetTimer. stop ();
+	presetSelector -> setCurrentIndex (0);
+	stopService ();
 	stopChannel ();
 	currentChannel ++;
 	if (currentChannel >= channelSelector -> count ())
