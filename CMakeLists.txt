@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.0)
+set (objectName qt-dab-3.1)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -263,7 +263,9 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
 	     ./includes/support/smallpushbutton.h
+	     ./includes/support/verysmallpushbutton.h
 	     ./includes/support/smallcombobox.h
+	     ./includes/support/history-handler.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./correlation-viewer/correlation-viewer.h 
@@ -335,9 +337,10 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/ensemble-printer.cpp
 	     ./src/support/preset-handler.cpp
 	     ./src/support/presetcombobox.cpp
-	     ./src/support/smallqlistview.cpp
+	     ./src/support/verysmallqlistview.cpp
 	     ./src/support/smallpushbutton.cpp
 	     ./src/support/smallcombobox.cpp
+	     ./src/support/history-handler.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/support/viterbi-spiral/viterbi-spiral.cpp
 	     ./src/support/viterbi-spiral/spiral-sse.c
@@ -378,7 +381,9 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
 	     ./includes/support/smallpushbutton.h
+	     ./includes/support/verysmallpushbutton.h
 	     ./includes/support/smallcombobox.h
+	     ./includes/support/history-handler.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./correlation-viewer/correlation-viewer.h 

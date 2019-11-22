@@ -84,6 +84,7 @@
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
+#include	"history-handler.h"
 
 #ifdef	__MINGW32__
 #include <windows.h>
@@ -249,7 +250,16 @@ QString h;
 	                                                 responseBuffer);
 
 	my_tiiViewer		= new tiiViewer (this, tiiBuffer);
-//
+
+	QString historyFile	= QDir::homePath () + "/.qt-history";
+	historyFile		= dabSettings -> value ("history",
+	                                            historyFile). toString ();
+	historyFile		= QDir::toNativeSeparators (historyFile);
+	my_history		= new historyHandler (this, historyFile);
+	connect (my_history, SIGNAL (handle_selectElement (const QString &)),
+	         this, SLOT (handle_PresetSelector (const QString &)));
+	connect (historyButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_historyButton ()));
 	QString t       =
 	        dabSettings     -> value ("dabBand", "VHF Band III").toString();
 	theBand. setupChannels  (channelSelector, 
@@ -574,6 +584,17 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 	              QFont ("Cantarell", 11), Qt::FontRole);
 	}
 	ensembleDisplay	-> setModel (&model);
+	if (my_dabProcessor -> is_audioService (s)) {
+	   audiodata ad;
+	   my_dabProcessor -> dataforAudioService (s, &ad, 0);
+	   my_history -> addElement (channelSelector -> currentText (), &ad);
+	}
+	else
+	if (my_dabProcessor -> is_packetService (s)) {
+	   packetdata pd;
+	   my_dabProcessor -> dataforPacketService (s, &pd, 0);
+	   my_history -> addElement (channelSelector -> currentText (), &pd);
+	}
 }
 
 QString hextoString (int v) {
@@ -857,6 +878,7 @@ void	RadioInterface::TerminateProcess() {
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor	-> stop();		// definitely concurrent
 
+	delete my_history;
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
@@ -1227,6 +1249,7 @@ void	RadioInterface::showButtons() {
 	nextChannelButton	-> show ();
 	prevChannelButton	-> show ();
 	presetSelector		-> show ();
+	historyButton		-> show ();
 }
 
 void	RadioInterface::hideButtons() {
@@ -1236,6 +1259,7 @@ void	RadioInterface::hideButtons() {
 	nextChannelButton	-> hide ();
 	prevChannelButton	-> hide ();
 	presetSelector		-> hide ();
+	historyButton		-> hide ();
 }
 
 void	RadioInterface::setSyncLost() {
@@ -1467,6 +1491,14 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	          (serviceName != serviceLabel -> text ())) {
 	         selectService (ensembleDisplay -> currentIndex ());
 	      }
+	   }
+	}
+	else
+	if ((obj == this -> my_history -> viewport ()) &&
+	    (event -> type () == QEvent::MouseButtonPress)) {
+	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
+	   if (ev -> buttons () & Qt::RightButton) {
+	      my_history -> clearHistory ();
 	   }
 	}
 	else
@@ -1704,6 +1736,14 @@ void    RadioInterface::handle_showDeviceWidget () {
 ////////////////////////////////////////////////////////////////////////////
 //
 //	called from a signal/slot
+
+void	RadioInterface::handle_historyButton	() {
+	if (my_history	-> isHidden ())
+	   my_history	-> show ();
+	else
+	   my_history	-> hide ();
+}
+
 void	RadioInterface::selectService (QModelIndex ind) {
 QString serviceName = ind. data (Qt::DisplayRole). toString ();
 	presetTimer. stop ();
@@ -1874,13 +1914,15 @@ int row	= model. rowCount ();
 	      QString itemText =
 	            model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-	         my_dabProcessor -> unset_Channel (serviceName);
+//	         my_dabProcessor -> unset_Channel (serviceName);
 	         cleanScreen	();
 	         colorService (model. index (i, 0), Qt::black, 11);
-	         stop_subServices (serviceName);
+//	         stop_subServices (serviceName);
+	         break;
 	      }
 	   }
 	}
+	my_dabProcessor	-> reset_msc ();
 }
 //
 //
@@ -2136,5 +2178,4 @@ void	RadioInterface::stopScanning() {
 	my_dabProcessor	-> set_scanMode (scanning. load ());
 	scanButton	-> setText ("scan");
 }
-
 

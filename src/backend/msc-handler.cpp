@@ -61,7 +61,7 @@ static int cifTable [] = {18, 72, 0, 36};
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 	work_to_be_done. store (false);
-	start();
+	running. store (false);
 }
 
 		mscHandler::~mscHandler() {
@@ -85,31 +85,34 @@ void	mscHandler::processBlock_0 (DSPCOMPLEX *b) {
 	for (int i = 0; i < params. get_T_u (); i ++)
 	   command [0][i] = b [i];
 	amount. store (amount. load () + 1);
-//	helper. lock();
-        commandHandler. wakeOne();
-//	helper. unlock();
+	helper. lock ();
+        commandHandler. wakeOne ();
+	helper. unlock();
 }
 
 void	mscHandler::process_Msc	(DSPCOMPLEX *b, int blkno) {
-	if (amount. load () >= nrBlocks - 1)
-	   fprintf (stderr, "volle bak\n");
+//	if (amount. load () >= nrBlocks - 1)
+//	   fprintf (stderr, "volle bak\n");
 	bufferSpace. acquire (1);
 	for (int i = 0; i < params. get_T_u (); i ++)
 	   command [blkno][i] = b [i];
         amount. store (amount. load () + 1);
-//	helper. lock();
-        commandHandler. wakeOne();
-//	helper. unlock();
+	helper. lock ();
+        commandHandler. wakeOne ();
+	helper. unlock ();
 }
 
-void    mscHandler::run() {
+void    mscHandler::run () {
 std::atomic<int>	currentBlock;
-std::vector<int16_t> ibits;
+std::vector<int16_t> ibits (BitsperBlock);
 int	T_u		= params. get_T_u ();
 
+	if (running. load ()) {
+	   fprintf (stderr, "we draaien al!!!\n");
+	   return;
+	}
 	currentBlock. store (0);
 	running. store (true);
-	ibits. resize (BitsperBlock);
         while (running. load()) {
            helper. lock();
            commandHandler. wait (&helper, 100);
@@ -151,7 +154,7 @@ int	T_u		= params. get_T_u ();
 //	This function is to be called between invocations of
 //	services
 //	It might be called several times, so ...
-void	mscHandler::reset () {
+void	mscHandler::stop () {
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -162,16 +165,16 @@ void	mscHandler::reset () {
 	   delete b;
 	}
 	theBackends. resize (0);
-
 	bufferSpace. release (nrBlocks - bufferSpace. available());
-	amount	= 0;
+	amount. store (0);
 	locker. unlock();
-	start();
 }
 
-void	mscHandler::stop() {
-	reset();
+void	mscHandler::reset	() {
+	stop ();
+	start ();
 }
+
 //
 //	Note, the set_Channel function is called from within a
 //	different thread than the process_mscBlock method is,
@@ -196,13 +199,15 @@ void	mscHandler::set_Channel (descriptorType *d,
 void	mscHandler::unset_Channel (const QString &s) {
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   if (s == theBackends. at (i) -> theDescriptor. serviceName) {
+	      locker. lock ();
 	      theBackends. at (i) -> stopRunning ();
 	      delete theBackends. at (i);
 	      theBackends. erase (theBackends. begin () + i);
+	      locker. unlock ();
+	      return;
 	   }
 	}
 }
-	                       
 //
 //	add blocks. First is (should be) block 4, last is (should be) 
 //	nrBlocks -1.

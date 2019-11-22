@@ -45,7 +45,6 @@ public:
 		~ficHandler();
 	void	process_ficBlock	(std::vector<int16_t>, int16_t);
 	void	stop();
-	void	reset();
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;

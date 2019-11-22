@@ -46,11 +46,14 @@
 #include	"tcp-server.h"
 #endif
 #include	"preset-handler.h"
+
 class	QSettings;
 class	virtualInput;
 class	audioBase;
 class	common_fft;
 class	serviceDescriptor;
+class	historyHandler;
+
 #include	"ui_technical_data.h"
 
 class	spectrumViewer;
@@ -86,6 +89,7 @@ private:
 	void			showButtons		();
 	virtualInput		*setDevice		(QString);
 
+	historyHandler		*my_history;
 	void			connectGUI		();
 	void			disconnectGUI		();
 	RingBuffer<uint8_t>	*frameBuffer;
@@ -176,6 +180,7 @@ public slots:
 	void			newFrame		(int);
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			handle_historyButton	();
 	void			toggle_show_data	();
 	void			doStart			(QString);
 	void			doStart			();

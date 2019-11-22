@@ -44,7 +44,7 @@
 	                                            picturesPath),
 	                                    deconvolver (d)
 #ifdef	__THREADED_BACKEND
-	                                    ,freeSlots (20) 
+	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 
 	                                          {
 int32_t i, j;
@@ -79,7 +79,7 @@ int32_t i, j;
 //	for local buffering the input, we have
 	nextIn				= 0;
 	nextOut				= 0;
-	for (i = 0; i < 20; i ++)
+	for (i = 0; i < NUMBER_SLOTS; i ++)
 	   theData [i]. resize (fragmentSize);
 	running. store (true);
 	start();
@@ -101,8 +101,8 @@ int32_t	Backend::process	(int16_t *v, int16_t cnt) {
 	   if (!running)
 	      return 0;
 	memcpy (theData [nextIn]. data(), v, fragmentSize * sizeof (int16_t));
-	nextIn = (nextIn + 1) % 20;
-	usedSlots. release();
+	nextIn = (nextIn + 1) % NUMBER_SLOTS;
+	usedSlots. release (1);
 #else
 	processSegment (v);
 #endif
@@ -121,8 +121,8 @@ int16_t	i;
 
 	interleaverIndex = (interleaverIndex + 1) & 0x0F;
 #ifdef	__THREADED_BACKEND
-	nextOut = (nextOut + 1) % 20;
-	freeSlots. release();
+	nextOut = (nextOut + 1) % NUMBER_SLOTS;
+	freeSlots. release (1);
 #endif
 
 //	only continue when de-interleaver is filled

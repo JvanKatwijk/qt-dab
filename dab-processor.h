@@ -66,13 +66,12 @@ public:
 	                         RingBuffer<uint8_t> *
 	                        );
 		~dabProcessor();
-    void		reset();
 	void		stop();
 	void		setOffset		(int32_t);
 	void		coarseCorrectorOn();
 	void		coarseCorrectorOff();
 	void		startDumping		(SNDFILE *);
-    void		stopDumping();
+	void		stopDumping();
 	void		set_scanMode		(bool);
 //
 //	inheriting from our delegates
@@ -85,7 +84,7 @@ public:
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
 	void		unset_Channel		(const QString &);
-	void		reset_msc();
+	void		reset_msc		();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,

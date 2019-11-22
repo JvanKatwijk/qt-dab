@@ -1,6 +1,6 @@
-# Qt-DAB-3.0 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.x [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.0 is a Software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
+Qt-DAB-3.x is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -10,6 +10,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
 * [Presets](#Presets)
+* [History](#History)
 * [Comment on some settings](#comment-on-some-settings)
 * [Obsolete properties](#Obsolete-properties)
 * [Installation](#features)
@@ -72,7 +73,7 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.0** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.x** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
 The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
@@ -86,7 +87,7 @@ comparable programs.
 
 **dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
 
-Qt-DAB-3.0 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-3.x also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -127,6 +128,10 @@ To ease selection of a service, a second pair of "-" and "+" buttons
 is available, now for selecting the previous resp. the next service 
 on the list.
 
+----------------------------------------------------------------------
+Presets
+----------------------------------------------------------------------
+
 A *preset* selector is available to store and retrieve "favorit" services,
 note that the services are encoded as "channel:serviceName" pair,
 it sometimes happens that a service appears in more than one ensemble
@@ -149,7 +154,16 @@ of the widget. Buttons to make scopes visible, to store input and or
 output into a file, to select input device and the audio and to
 scan and store a description of the ensemble are in that section.
 
---------------------------------------------------------------------------------
+---------------------------------------------------------------------------
+History 
+---------------------------------------------------------------------------
+
+Qt-DAB-3.x saves data on all services found. Pairs Channel:serviceName
+will be made (in)visible when touching the appropriate button.
+
+The data in stored in a file in xml format.
+
+---------------------------------------------------------------------------
 Comment on some settings
 -------------------------------------------------------------------------------
 

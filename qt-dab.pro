@@ -5,10 +5,10 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.0
+TARGET		= qt-dab-3.1
 QT		+= widgets xml
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -148,7 +148,9 @@ HEADERS += ./radio.h \
 	   ./includes/support/presetcombobox.h \
 	   ./includes/support/smallcombobox.h \
 	   ./includes/support/smallpushbutton.h \
+	   ./includes/support/verysmallpushbutton.h \
 	   ./includes/support/smallqlistview.h \
+	   ./includes/support/history-handler.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
@@ -235,7 +237,9 @@ SOURCES += ./main.cpp \
 	   ./src/support/presetcombobox.cpp \
 	   ./src/support/smallcombobox.cpp \
 	   ./src/support/smallpushbutton.cpp \
+	   ./src/support/verysmallpushbutton.cpp \
 	   ./src/support/smallqlistview.cpp \
+	   ./src/support/history-handler.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/rawfiles-new/rawfiles.cpp \

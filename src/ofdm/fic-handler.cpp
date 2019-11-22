@@ -205,9 +205,6 @@ int16_t	inputCount	= 0;
 }
 
 void	ficHandler::stop() {
-}
-
-void	ficHandler::reset() {
 	clearEnsemble ();
 }
 

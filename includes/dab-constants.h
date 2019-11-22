@@ -156,6 +156,7 @@ public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
+	type		= UNKNOWN_SERVICE;
 	}
 virtual		~descriptorType() {}
 };

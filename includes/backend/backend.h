@@ -34,6 +34,7 @@
 #include        "backend-driver.h"
 #include        "backend-deconvolver.h"
 
+#define	NUMBER_SLOTS	40
 class	RadioInterface;
 
 #ifdef	__THREADED_BACKEND
@@ -60,7 +61,7 @@ void	run();
 	atomic<bool>	running;
 	QSemaphore	freeSlots;
 	QSemaphore	usedSlots;
-	std::vector<int16_t>	theData [20];
+	std::vector<int16_t>	theData [NUMBER_SLOTS];
 	int16_t		nextIn;
 	int16_t		nextOut;
 #endif

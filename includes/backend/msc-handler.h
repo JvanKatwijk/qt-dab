@@ -56,15 +56,12 @@ public:
 	                                           RingBuffer<uint8_t> *);
 	void		unset_Channel		(const QString &);
 //
-//	This function should be called beore issuing a request
-//	to handle a service
-	void		reset();
-//
-//	This function will kill
-	void		stop();
+	void		stop			();
+	void		reset			();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
 
+#define	SLOTS	100
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
@@ -87,8 +84,8 @@ private:
 	int16_t		blockCount;
 	void            run();
         std::atomic<bool>       running;
+	std::atomic<int16_t>	amount;
         std::vector<std::vector<DSPCOMPLEX> > command;
-        std::atomic<int16_t>	amount;
         int16_t         currentBlock;
         void            processBlock_0();
         void            processMsc	(int32_t n);

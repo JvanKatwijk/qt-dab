@@ -363,24 +363,12 @@ SyncOnPhase:
 	   goto Check_endofNULL;
 	}
 	catch (int e) {
-	   fprintf (stderr, "dabProcessor is stopping, reason %d\n", e);
+	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
 	running. store (false);
 	my_mscHandler.  stop();
 	my_ficHandler.  stop();
-}
-
-void	dabProcessor:: reset() {
-	if (running. load ()) {
-	   myReader. setRunning (false);
-	   while (isRunning())
-	      wait();
-	   usleep (10000);
-	   my_ficHandler.  reset();
-	}
-
-	start();	
 }
 
 void	dabProcessor::stop() {
@@ -389,7 +377,6 @@ void	dabProcessor::stop() {
 	   while (isRunning())
 	      wait();
 	   usleep (10000);
-	   my_ficHandler.  reset();
 	}
 }
 
