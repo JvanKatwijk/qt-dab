@@ -337,8 +337,9 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/ensemble-printer.cpp
 	     ./src/support/preset-handler.cpp
 	     ./src/support/presetcombobox.cpp
-	     ./src/support/verysmallqlistview.cpp
+	     ./src/support/smallqlistview.cpp
 	     ./src/support/smallpushbutton.cpp
+	     ./src/support/verysmallpushbutton.cpp
 	     ./src/support/smallcombobox.cpp
 	     ./src/support/history-handler.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
