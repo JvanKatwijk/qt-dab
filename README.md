@@ -1,6 +1,6 @@
-# Qt-DAB-3.x [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.1-Beta [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.x is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
+Qt-DAB-3.1-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -27,7 +27,7 @@ Table of Contents
 -------------------------------------------------------------------
 ------------------------------------------------------------------
 
-![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
+![Qt-DAB with sdrplay input](/qt-dab-3.0-a.png?raw=true)
 
 ------------------------------------------------------------------
 Features
@@ -99,7 +99,7 @@ For further information please visit http://www.sdr-j.tk
 Widgets and scopes
 ------------------------------------------------------------------
 
-The picture below shows Qt-DAB's main window and the other 5 **optional**
+The picture below shows Qt-DAB's main window and the other 6 **optional**
 widgets
 
 * a widget with controls for the attached device,
@@ -112,7 +112,7 @@ as some information on the quality of the decoding,
 While the main window is always shown, the others are only shown when pushing a button on the main window (touching the
 button again will cause the widget to disappear from the screen).
 
-![Qt-DAB with SDRplay input](/qt-dab-3.0-d.png?raw=true)
+![Qt-DAB with SDRplay input](/qt-dab-3.0-c.png?raw=true)
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
@@ -128,19 +128,8 @@ To ease selection of a service, a second pair of "-" and "+" buttons
 is available, now for selecting the previous resp. the next service 
 on the list.
 
-----------------------------------------------------------------------
-Presets
-----------------------------------------------------------------------
-
-A *preset* selector is available to store and retrieve "favorit" services,
-note that the services are encoded as "channel:serviceName" pair,
-it sometimes happens that a service appears in more than one ensemble
-(see as example the "Omroep West" service, appearing in channels 5B and 8A.
-
 Different from previous versions is that now some information, previously
 shown on the "technical data" widger is now shown on the main widget.
-
-![Qt-DAB with sdrplay input](/qt-dab-serviceinfo.png?raw=true)
 
 Some data on the selected service - if any - is to be found on
 a separate widget. This widget will show where the data for the
@@ -154,14 +143,30 @@ of the widget. Buttons to make scopes visible, to store input and or
 output into a file, to select input device and the audio and to
 scan and store a description of the ensemble are in that section.
 
+----------------------------------------------------------------------
+Presets
+----------------------------------------------------------------------
+
+A *preset* selector is available to store and retrieve "favorit" services,
+note that the services are encoded as "channel:serviceName" pair,
+it sometimes happens that a service appears in more than one ensemble
+(see as example the "Omroep West" service, appearing in channels 5B and 8A.
+
+![Qt-DAB with sdrplay input](/qt-dab-3.0-d.png?raw=true)
+
 ---------------------------------------------------------------------------
 History 
 ---------------------------------------------------------------------------
 
 Qt-DAB-3.x saves data on all services found. Pairs Channel:serviceName
-will be made (in)visible when touching the appropriate button.
+will be made (in)visible when touching the appropriate button (the
+one labeled with "xx").
 
 The data in stored in a file in xml format.
+The history can be cleared by a click of the right mouse button,
+clicking on a channel:servicename combination with the left
+mouse button will cause the software to attempt to set the channel and
+select the name.
 
 ---------------------------------------------------------------------------
 Comment on some settings

@@ -96,8 +96,8 @@ QDomElement root = the_history. createElement ("history_db");
 }
 
 void	historyHandler::addElement (const QString &channel,
-	                            descriptorType *desc) {
-const QString listElement = channel + ":" + desc -> serviceName;
+	                            const QString &serviceName) {
+const QString listElement = channel + ":" + serviceName;
 
 	for (int i = 0; i < historyList. size (); i ++)
 	   if (historyList. at (i) == listElement)
@@ -118,6 +118,6 @@ void	historyHandler::clearHistory () {
 //
 void	historyHandler::selectElement (QModelIndex ind) {
 QString currentProgram = displayList. data (ind, Qt::DisplayRole). toString ();
-	emit handle_selectElement (currentProgram);
+	emit handle_historySelect (currentProgram);
 }
 

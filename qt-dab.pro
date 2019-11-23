@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.1
+TARGET		= qt-dab-3.1-Beta
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -314,7 +314,7 @@ CONFIG	+= NO_SSE
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= ../windows-qt-dab
+DESTDIR		= ../../windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {

@@ -256,8 +256,8 @@ QString h;
 	                                            historyFile). toString ();
 	historyFile		= QDir::toNativeSeparators (historyFile);
 	my_history		= new historyHandler (this, historyFile);
-	connect (my_history, SIGNAL (handle_selectElement (const QString &)),
-	         this, SLOT (handle_PresetSelector (const QString &)));
+	connect (my_history, SIGNAL (handle_historySelect (const QString &)),
+	         this, SLOT (handle_historySelect (const QString &)));
 	connect (historyButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_historyButton ()));
 	QString t       =
@@ -584,17 +584,7 @@ void	RadioInterface::addtoEnsemble (const QString &s) {
 	              QFont ("Cantarell", 11), Qt::FontRole);
 	}
 	ensembleDisplay	-> setModel (&model);
-	if (my_dabProcessor -> is_audioService (s)) {
-	   audiodata ad;
-	   my_dabProcessor -> dataforAudioService (s, &ad, 0);
-	   my_history -> addElement (channelSelector -> currentText (), &ad);
-	}
-	else
-	if (my_dabProcessor -> is_packetService (s)) {
-	   packetdata pd;
-	   my_dabProcessor -> dataforPacketService (s, &pd, 0);
-	   my_history -> addElement (channelSelector -> currentText (), &pd);
-	}
+	my_history -> addElement (channelSelector -> currentText (), s);
 }
 
 QString hextoString (int v) {
@@ -1263,6 +1253,7 @@ void	RadioInterface::hideButtons() {
 }
 
 void	RadioInterface::setSyncLost() {
+	fprintf (stderr, "sync lost\n");
 }
 
 void	RadioInterface::show_tii (QByteArray data) {
@@ -1743,7 +1734,10 @@ void	RadioInterface::handle_historyButton	() {
 	else
 	   my_history	-> hide ();
 }
-
+//
+////////////////////////////////////////////////////////////////////////////
+//
+//	
 void	RadioInterface::selectService (QModelIndex ind) {
 QString serviceName = ind. data (Qt::DisplayRole). toString ();
 	presetTimer. stop ();
@@ -1917,11 +1911,12 @@ int row	= model. rowCount ();
 	         my_dabProcessor -> unset_Channel (serviceName);
 	         cleanScreen	();
 	         colorService (model. index (i, 0), Qt::black, 11);
+	         stop_frameDumping ();		// if any
 	         stop_subServices (serviceName);
 	      }
 	   }
 	}
-//	my_dabProcessor	-> reset_msc ();
+	setSynced (false);
 }
 //
 //
@@ -1932,7 +1927,6 @@ void	RadioInterface::handle_setprevious	() {
 	stopScanning ();
 	presetTimer. stop ();
 	stopService  ();
-	stop_frameDumping ();		// if any
 	if ((Services. length () != 0) && (currentService != "")) {
 	   for (int i = 0; i < Services. length (); i ++) {
 	      if (Services. at (i) == currentService) {
@@ -1954,7 +1948,6 @@ void	RadioInterface::handle_setnext		() {
 	QString currentService = serviceLabel -> text ();
 	stopScanning ();
 	presetTimer. stop ();
-	stop_frameDumping ();		// if any
 	stopService ();
 	if ((Services. length () != 0) && (currentService != "")) {
 	   for (int i = 0; i < Services. length (); i ++) {
@@ -1998,20 +1991,16 @@ int	tunedFrequency	=
 	inputDevice		-> restartReader ();
 }
 //
-//	welke timers ?
 void	RadioInterface::stopChannel	() {
 	if (!my_dabProcessor -> isRunning ())
-	   return;
+	   return;		// do not stop twice
 	stopService ();
-	fprintf (stderr, "services zijn gestopt\n");
 	my_tiiViewer	-> clear();
 	my_dabProcessor	-> stop ();
-	fprintf (stderr, "dabProcessor gestopt\n");
 	inputDevice	-> stopReader ();
-	fprintf (stderr, "reader gestopt\n");
 	ensembleId	-> setText ("");
 	snrDisplay	-> display (0);
-	setSynced (false);
+	cleanScreen	();
 	transmitter_coordinates	-> setText (" ");
 	Services		= QStringList();
 	model.	clear ();
@@ -2064,11 +2053,19 @@ int	currentChannel	= channelSelector -> currentIndex ();
 //	and service handling.
 ///////////////////////////////////////////////////////////////////////////
 
+void	RadioInterface::handle_historySelect (const QString &s) {
+	presetTimer. stop ();
+	localSelect (s);
+}
+
 void	RadioInterface::handle_PresetSelector (const QString &s) {
 	presetTimer. stop ();
 	if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
 	   return;
+	localSelect (s);
+}
 
+void	RadioInterface::localSelect (const QString &s) {
 	stopScanning ();
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 	if (list. length () != 2)

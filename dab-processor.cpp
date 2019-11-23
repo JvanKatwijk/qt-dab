@@ -199,7 +199,7 @@ notSynced:
 	         set_scanMode (false);
 	      }
 	      if (!correctionNeeded) {
-	         setSyncLost();
+//	         setSyncLost();
 	      }
 	      goto notSynced;
 	   }
@@ -221,10 +221,10 @@ Check_endofNULL:
 //	drastic measure
 	      if (!correctionNeeded) {
 	         if (theRig -> getBufferSpace () < T_F) {
-	            fprintf (stderr, "reset required\n");
-	            theRig -> resetBuffer ();
+//	            fprintf (stderr, "reset required\n");
+//	            theRig -> resetBuffer ();
 	         }
-	         setSyncLost ();
+//	         setSyncLost ();
 	      }
 	      goto notSynced;
 	   }
@@ -315,7 +315,7 @@ SyncOnPhase:
 	   avgValue_nullPeriod	= sum;
 	   static	float snr	= 0;
 	   snr = 0.9 * snr +
-	     0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
+	     0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / (sum + 0.005));
 	   static int ccc	= 0;
 	   if (++ccc > 10) {
 	      ccc = 0;

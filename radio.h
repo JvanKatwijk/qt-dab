@@ -140,6 +140,7 @@ private:
 	int16_t			ficSuccess;
 	QString			picturesPath;
 	bool			channelActive		();
+	void			localSelect		(const QString &);
 public slots:
 	void			set_Scanning		();
 	void			startScanning		();
@@ -204,6 +205,7 @@ private slots:
 	void			set_spectrumSwitch	();
 	void			handle_showDeviceWidget	();
 	void			handle_PresetSelector	(const QString &);
+	void			handle_historySelect	(const QString &);
 
 	void			selectService		(QModelIndex);
 //	void			selectService		(QString);

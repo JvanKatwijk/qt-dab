@@ -38,12 +38,12 @@ public:
 		historyHandler	(RadioInterface *radio,
 	                                 QString fileName);
 		~historyHandler	();
-	void	addElement	(const QString &, descriptorType *);
+	void	addElement	(const QString &, const QString &);
 	void	clearHistory	();
 public slots:
 	void	selectElement	(QModelIndex);
 signals:
-	void	handle_selectElement (const QString &);
+	void	handle_historySelect (const QString &);
 private:
 	QStringList	historyList;
 	QStringListModel	displayList;
