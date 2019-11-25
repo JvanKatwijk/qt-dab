@@ -65,29 +65,24 @@ private:
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;
 	int16_t		blocksInBuffer;
-	int16_t		blockCount;
+	int16_t         frameCount;
+        int16_t         frameErrors;
+        int16_t         rsErrors;
+        int16_t         aacErrors;
+        int16_t         aacFrames;
+        int16_t         successFrames;
+        int16_t         charSet;
+
 	int16_t		bitRate;
 	RingBuffer<uint8_t>	*frameBuffer;
 	std::vector<uint8_t> frameBytes;
 	std::vector<uint8_t> outVector;
 	int16_t		RSDims;
 	int16_t		au_start	[10];
-	int32_t		baudRate;
-
-	int32_t		au_count;
-	int16_t		au_errors;
-	int16_t		errorRate;
 	firecode_checker	fc;
 	reedSolomon	my_rsDecoder;
 //	and for the aac decoder
 	faadDecoder	aacDecoder;
-	int16_t		frameCount;
-	int16_t		successFrames;
-	int16_t		frameErrors;
-	int16_t		rsErrors;
-	int16_t		aacErrors;
-	int16_t		aacFrames;
-	int16_t		charSet;
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);

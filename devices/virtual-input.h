@@ -44,13 +44,14 @@ virtual		void	stopReader();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples();
 virtual		void	resetBuffer();
-virtual		int16_t	bitDepth() { return 10;}
+virtual		int16_t	bitDepth	() { return 10;}
 virtual		int32_t	getOffset();
 virtual		void	setOffset	(int32_t);
 virtual		void	hide		();
 virtual		void	show		();
 virtual		bool	isHidden	();
 virtual		int	getBufferSpace	();
+virtual		int	getOverflows	() { return -1; }
 //
 protected:
 		int32_t	lastFrequency;

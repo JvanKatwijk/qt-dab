@@ -60,10 +60,9 @@ public:
 	void		reset			();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-
-#define	SLOTS	100
+	std::vector<int>	blockTable;
+	int		T_u;
 	RadioInterface	*myRadioInterface;
-	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
 	QString		picturesPath;
 	dabParams	params;
@@ -73,26 +72,18 @@ private:
 
         interLeaver     myMapper;
 	QMutex		locker;
-	bool		audioService;
 	std::vector<Backend *>theBackends;
 	std::vector<int16_t> cifVector;
-	int16_t		cifCount;
-	int16_t		blkCount;
 	std::atomic<bool> work_to_be_done;
 	int16_t		BitsperBlock;
 	int16_t		numberofblocksperCIF;
-	int16_t		blockCount;
-	void            run();
+	void            run		();
         std::atomic<bool>       running;
-	std::atomic<int16_t>	amount;
         std::vector<std::vector<DSPCOMPLEX> > command;
-        int16_t         currentBlock;
-        void            processBlock_0();
-        void            processMsc	(int32_t n);
-        QSemaphore      bufferSpace;
-        QWaitCondition  commandHandler;
-        QMutex          helper;
-        QMutex		serverLock;
+	QSemaphore	freeSlots;
+	QSemaphore	usedSlots;
+	int		nextIn;
+	int		nextOut;
 	int		nrBlocks;
 };
 

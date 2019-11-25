@@ -34,7 +34,7 @@ int32_t	i;
 	   latency = 1;
 
 	this	-> CardRate	= 48000;
-	_O_Buffer		= new RingBuffer<float>(4 * 32768);
+	_O_Buffer		= new RingBuffer<float>(8 * 32768);
 	portAudio		= false;
 	writerRunning		= false;
 	if (Pa_Initialize() != paNoError) {

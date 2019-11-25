@@ -7,14 +7,14 @@
 TEMPLATE	= app
 TARGET		= qt-dab-3.1-Beta
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_CFLAGS	+=  -pg
-#QMAKE_CXXFLAGS	+=  -pg
-#QMAKE_LFLAGS	+=  -pg
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -314,7 +314,7 @@ CONFIG	+= NO_SSE
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= ../../windows-qt-dab
+DESTDIR		= ../windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {

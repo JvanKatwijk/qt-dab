@@ -202,7 +202,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode (device, 0);
 
-	_I_Buffer		= new RingBuffer<uint8_t>(8 * 1024 * 1024);
+	_I_Buffer		= new RingBuffer<uint8_t>(4 * 1024 * 1024);
 
 	theGain		= gains [gainsCount / 2];	// default
 //

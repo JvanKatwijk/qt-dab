@@ -42,27 +42,31 @@ static int cifTable [] = {18, 72, 0, 36};
 	                                       params (dabMode),
 	                                       my_fftHandler (dabMode),
 	                                       myMapper (dabMode),
-	                                       bufferSpace (params. get_L()){
+	                                       freeSlots (params. get_L ()){
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
 	this	-> picturesPath	= picturesPath;
 	cifVector. resize (55296);
 
-	fprintf (stderr, "begin met resource %d\n",
-	                           bufferSpace. available ());
+	this	-> T_u		= params. get_T_u ();
 	BitsperBlock		= 2 * params. get_carriers();
 	nrBlocks		= params. get_L();
 
 	command. resize (nrBlocks);
 	for (int i = 0; i < nrBlocks; i ++)
-	   command [i]. resize (params. get_T_u());
+	   command [i]. resize (T_u);
+	blockTable. resize (nrBlocks);
+	for (int i = 0; i < nrBlocks; i ++)
+	   blockTable [i] = -1;
 
 	fft_buffer                      = my_fftHandler. getVector();
-	phaseReference                  .resize (params. get_T_u());
+	phaseReference                  .resize (T_u);
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 	work_to_be_done. store (false);
 	running. store (false);
+	nextIn		= 0;
+	nextOut		= 0;
 }
 
 		mscHandler::~mscHandler() {
@@ -78,41 +82,50 @@ static int cifTable [] = {18, 72, 0, 36};
 	theBackends. resize (0);
 	locker. unlock();
 }
+
 //
 //	We know that the dabProcessor hands over the
 //	blocks one by one, in order 0 .. nrBlocks - 1
 
 
 void	mscHandler::processBlock_0 (DSPCOMPLEX *b) {
-	bufferSpace. acquire (1);
-	for (int i = 0; i < params. get_T_u (); i ++)
-	   command [0][i] = b [i];
-	helper. lock ();
-        commandHandler. wakeOne ();
-	helper. unlock();
+	if (!running. load ())
+	   return;
+	while (!freeSlots. tryAcquire (1, 200))
+	   if (!running. load ())
+	      return;
+	for (int i = 0; i < T_u; i ++)
+	   command [nextIn][i] = b [i];
+	blockTable [nextIn]	= 0;
+	nextIn = (nextIn + 1) % nrBlocks;
+	usedSlots. release (1);
 }
 
 void	mscHandler::process_Msc	(DSPCOMPLEX *b, int blkno) {
-	bufferSpace. acquire (1);
-	for (int i = 0; i < params. get_T_u (); i ++)
-	   command [blkno][i] = b [i];
-	helper. lock ();
-        commandHandler. wakeOne ();
-	helper. unlock ();
+	if (!running. load ())
+	   return;
+	while (!freeSlots. tryAcquire (1, 200))
+	   if (!running)
+	      return;
+	for (int i = 0; i < T_u; i ++)
+	   command [nextIn][i] = b [i];
+	blockTable [nextIn] = blkno;
+	nextIn = (nextIn + 1) % nrBlocks;
+	usedSlots. release (1);
 }
-//
+
 //	The thread will be started - and stopped - by its owner,
 //	the dabProcessor. 
 //	Reasons to stop are switch of channel (or related, switch
 //	of device)
 //	Changing a service is done while processing continues
+//	Changing a device will cause the delete of the mscHandler
+//	object and a re-create
 //
 void    mscHandler::run () {
 std::atomic<int>	currentBlock;
 std::vector<int16_t> ibits (BitsperBlock);
-int	T_u		= params. get_T_u ();
 
-	fprintf (stderr, "mscHandler starts\n");
 	if (running. load ()) {		// should not happen
 	   fprintf (stderr, "we draaien al!!!\n");
 	   return;
@@ -121,29 +134,37 @@ int	T_u		= params. get_T_u ();
 	currentBlock. store (0);
 	running. store (true);
         while (running. load()) {
-	   int amount = nrBlocks - bufferSpace. available ();
-	   while ((amount == 0) && running. load ()) {
-              helper. lock();
-              commandHandler. wait (&helper, 100);
-	      amount = nrBlocks - bufferSpace. available ();
-              helper. unlock();
-	   }
-
-	   if (!running. load ())
-	      break;
+	   while (!usedSlots. tryAcquire (1))
+	      if (!running. load ())
+	         return;
 //
-//	now we know that amount > 0
+//	waiting for blockNumber "currentBlock" to arrive
+//	If the block to be handled does NOT
+//	have the number we want, we just skip the whole
+//	frame and start with the next one
+	   if (blockTable [nextOut] != currentBlock. load ()) {
+	      fprintf (stderr, "s");
+	      currentBlock. store (0);
+	      blockTable [nextOut] = -1;
+	      nextOut = (nextOut + 1) % nrBlocks;
+	      freeSlots. release (1);
+	      continue;
+	   }
+	      
+//	now we know that amount > 0 and we have block "currentBlock"
 	   memcpy (fft_buffer,
-	              command [currentBlock. load ()]. data (),
+	              command [nextOut]. data (),
 	                               T_u * sizeof (DSPCOMPLEX));
+	   blockTable [nextOut] = -1;
+	   nextOut = (nextOut + 1) % nrBlocks;
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
-	   my_fftHandler. do_FFT();
+	   my_fftHandler. do_FFT ();
            if (currentBlock. load () >= 4) {
               for (int i = 0; i < params. get_carriers(); i ++) {
                  int16_t      index   = myMapper. mapIn (i);
                  if (index < 0)
-                    index += params. get_T_u();
+                    index += T_u;
 
                  DSPCOMPLEX  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
@@ -159,7 +180,7 @@ int	T_u		= params. get_T_u ();
 	   }
 	   memcpy (phaseReference. data (),
 	           fft_buffer, T_u * sizeof (DSPCOMPLEX));
-           bufferSpace. release (1);
+	   freeSlots. release (1);
            currentBlock. store ((currentBlock. load () + 1) % (nrBlocks));
         }
 }
@@ -169,7 +190,6 @@ int	T_u		= params. get_T_u ();
 //	channel. stopChannel will stop the mscHandler, startChannel
 //	will restart it.
 void	mscHandler::stop () {
-	fprintf (stderr, "mscHandler stopt\n");
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -180,9 +200,18 @@ void	mscHandler::stop () {
 	   delete b;
 	}
 	theBackends. resize (0);
-	fprintf (stderr, "resource available %d\n",
-	                     bufferSpace. available ());
-	bufferSpace. release (nrBlocks - bufferSpace. available ());
+//
+//	Note that at this point, whatever the dabProcessor is
+//	doing (nothing if everything is OK), no activity
+//	around the buffr takes place, and basically we "reset"
+//	the buffer state
+	usedSlots. acquire (usedSlots. available ());
+	freeSlots. acquire (freeSlots. available ());
+	freeSlots. release (nrBlocks);
+	fprintf (stderr, "resource available %d %d\n",
+	                     freeSlots. available (), usedSlots. available ());
+	nextIn		= 0;
+	nextOut		= 0;
 	locker. unlock();
 }
 //

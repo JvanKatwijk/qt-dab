@@ -34,7 +34,7 @@
 #include        "backend-driver.h"
 #include        "backend-deconvolver.h"
 
-#define	NUMBER_SLOTS	40
+#define	NUMBER_SLOTS	25
 class	RadioInterface;
 
 #ifdef	__THREADED_BACKEND

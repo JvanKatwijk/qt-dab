@@ -2,6 +2,37 @@
 
 Qt-DAB-3.1-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
+---------------------------------------------------------------------
+Summary of new features in Qt-DAB-3.1-Beta
+---------------------------------------------------------------------
+
+* system related data is now displayed on the main widget
+* the "picture(s)" transmitted with the various services are now
+shown on the "technicl details" widget
+* easy channel scrolling by a "+" and a "-" button, below the
+channel selector (not not visible when playing from file input)
+* easy scrolling though the list of services by a "+" and a "-"
+button, just below the preset selector, or - if the servicelist
+has the focus - with the up- or down-arrow moving through the list,
+acknowledging by pressing the "enter"
+* maintaining a "history" list, a list containing the channel:name
+combinations of all services encountered. Selecting from this list
+is by selecting an element and touching the *left* mouse button.
+Clicking with the *right* mouse button will clear the history list.
+The list can be made (in)visible by touching the "xx" button.
+
+----------------------------------------------------------------------
+Why a Beta version
+----------------------------------------------------------------------
+
+In order to support the new features, such as  + and - buttons for
+both services and channels, as well handling the presets,
+significant parts of the control software were rewritten
+(and somewhat "modernized").
+In spite of extensive testing on RPI, x64 Linux and Windows,
+the software still may contain some errors.
+Error reports are appreciated.
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
@@ -73,7 +104,7 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.x** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.1-Beta** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
 The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
@@ -87,7 +118,7 @@ comparable programs.
 
 **dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
 
-Qt-DAB-3.x also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-3.1-Beta also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -158,7 +189,7 @@ it sometimes happens that a service appears in more than one ensemble
 History 
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.x saves data on all services found. Pairs Channel:serviceName
+Qt-DAB-3.1-Beta saves data on all services found. Pairs Channel:serviceName
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 
@@ -167,6 +198,8 @@ The history can be cleared by a click of the right mouse button,
 clicking on a channel:servicename combination with the left
 mouse button will cause the software to attempt to set the channel and
 select the name.
+
+This feature is experimental
 
 ---------------------------------------------------------------------------
 Comment on some settings
@@ -196,10 +229,11 @@ channels.
 The `threshold_x=y' setting is a value used in determining whether
 or not the correlation is sufficiently strong to assume the existence
 of DAB data in the channel.
-'threshold_1=x" is used on start up of the channel, `threshold_2=x' is
+'threshold_1=x' is used on start up of the channel, `threshold_2=x' is
 used when running. To avoid false positives, `threshold_2' ususally
 holds a higher value.
 Default values are 3 and 5.
+
 `diff_length=x'
 
 Once the existence of DAB data is established, an attempt is made

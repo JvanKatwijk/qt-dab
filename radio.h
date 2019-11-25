@@ -142,7 +142,6 @@ private:
 	bool			channelActive		();
 	void			localSelect		(const QString &);
 public slots:
-	void			set_Scanning		();
 	void			startScanning		();
 	void			stopScanning		();
 	void			set_CorrectorDisplay	(int);
@@ -181,34 +180,34 @@ public slots:
 	void			newFrame		(int);
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			handle_scanButton	();
 	void			handle_historyButton	();
 	void			toggle_show_data	();
 	void			doStart			(QString);
 	void			doStart			();
-	void			newDevice		(QString);
+	void			handle_deviceSelector	(QString);
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			handleReset		();
 
-	void			set_audioDump		();
+	void			handle_audiodumpButton	();
 	void			start_audioDumping	();
 	void			stop_audioDumping	();
-	void			set_sourceDump		();
+	void			handle_sourcedumpButton	();
 	void			start_sourceDumping	();
 	void			stop_sourceDumping	();
-	void			set_frameDump		();
+	void			handle_framedumpButton	();
 	void			start_frameDumping	();
 	void			stop_frameDumping	();
 	void			showEnsembleData	();
-	void			set_tiiSwitch		();
-	void			set_correlationSwitch	();
-	void			set_spectrumSwitch	();
+	void			handle_tiiButton	();
+	void			handle_correlationButton	();
+	void			handle_spectrumButton	();
 	void			handle_showDeviceWidget	();
 	void			handle_PresetSelector	(const QString &);
 	void			handle_historySelect	(const QString &);
 
 	void			selectService		(QModelIndex);
-//	void			selectService		(QString);
 	void			handle_setprevious	();
 	void			handle_setnext		();
 	void			startService		(const QString &);
@@ -219,8 +218,8 @@ private slots:
 	void			stopService		();
 	void			stop_subServices	(const QString &);
 	void			setPresetStation	();
-	void			set_nextChannel		();
-	void			set_prevChannel		();
+	void			handle_nextChannelButton	();
+	void			handle_prevChannelButton	();
 	void			selectChannel		(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();

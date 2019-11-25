@@ -1,4 +1,5 @@
-# /*
+#
+/*
  *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
@@ -104,10 +105,12 @@ public:
 	void		resetBuffer();
 	int16_t		bitDepth();
 	int		getBufferSpace		();
+	int		getOverflows		();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 	float		denominator;
+	int		bufferOverflows;
 private:
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;

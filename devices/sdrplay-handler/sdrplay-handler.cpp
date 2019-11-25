@@ -69,9 +69,9 @@ sdrplaySelect	*sdrplaySelector;
 	this	-> myFrame	-> show();
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
-	this	-> inputRate		= Khz (2048);
-	_I_Buffer			= nullptr;
-	libraryLoaded			= false;
+	this	-> inputRate	= Khz (2048);
+	_I_Buffer		= nullptr;
+	libraryLoaded		= false;
 
 #ifdef	__MINGW32__
 HKEY APIkey;
@@ -307,6 +307,7 @@ ULONG APIkeyValue_length = 255;
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
 	running. store (false);
+	bufferOverflows	= 0;
 }
 
 	sdrplayHandler::~sdrplayHandler() {
@@ -341,7 +342,7 @@ int	sdrplayHandler::getBufferSpace () {
 	if (_I_Buffer == nullptr)
 	   return -100;
 	else
-	   return _I_Buffer -> GetRingBufferWriteAvailable ();
+	   return _I_Buffer -> GetRingBufferReadAvailable ();
 }
 
 static inline
@@ -465,8 +466,11 @@ std::complex<float> localBuf [numSamples];
 	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
 	                                       float (xq [i]) / denominator);
 	int n = p -> _I_Buffer -> GetRingBufferWriteAvailable ();
-	if (n >= numSamples) {
+	if (n >= numSamples) 
 	   p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	else {
+	   p -> _I_Buffer -> skipDataInBuffer (2048000 / 2);
+	   p -> bufferOverflows ++;
 	}
 	(void)	firstSampleNum;
 	(void)	grChanged;
@@ -843,5 +847,11 @@ QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	   default:
 	      return "???";
 	}
+}
+
+int	sdrplayHandler::getOverflows	() {
+int	temp	= bufferOverflows;
+	bufferOverflows		= 0;
+	return temp;
 }
 

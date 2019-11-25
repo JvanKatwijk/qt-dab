@@ -23,7 +23,7 @@
 //
 //	The qt-dab software will save some data of all services,
 //	ever seen.
-//	The list can be deleted by a simple mouseclick
+//	The list can be deleted by a simple mouseclick (right button)
 //
 #include	"history-handler.h"
 #include	"radio.h"

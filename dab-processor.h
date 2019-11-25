@@ -97,7 +97,6 @@ public:
 private:
 	int		threshold_1;
 	int		threshold_2;
-	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;
 	virtualInput	*theRig;
