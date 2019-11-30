@@ -134,7 +134,7 @@ std::vector<int16_t> ibits (BitsperBlock);
 	currentBlock. store (0);
 	running. store (true);
         while (running. load()) {
-	   while (!usedSlots. tryAcquire (1))
+	   while (!usedSlots. tryAcquire (1, 200))
 	      if (!running. load ())
 	         return;
 //
