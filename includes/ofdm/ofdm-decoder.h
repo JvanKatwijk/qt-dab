@@ -40,12 +40,12 @@ public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
 	                                 int16_t,
-	                                 RingBuffer<std::complex<float>> *iqBuffer = nullptr);
+	                                 RingBuffer<std::complex<float>> * iqBuffer = nullptr);
 		~ofdmDecoder();
-	void	processBlock_0		(std::vector<DSPCOMPLEX>);
-	void	decode			(std::vector<DSPCOMPLEX>,
+	void	processBlock_0		(std::vector<std::complex<float> >);
+	void	decode			(std::vector<std::complex<float> >,
 	                                 int32_t n, int16_t *);
-	int16_t	get_snr			(DSPCOMPLEX *);
+	int16_t	get_snr			(std::complex<float> *);
 	void	stop();
 	void	reset();
 private:
@@ -62,9 +62,9 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int16_t		getMiddle();
-	std::vector<DSPCOMPLEX>	phaseReference;
+	std::vector<complex<float>>	phaseReference;
 	std::vector<int16_t>		ibits;
-	DSPCOMPLEX	*fft_buffer;
+	std::complex<float>	*fft_buffer;
 	phaseTable	*phasetable;
 	int32_t		blockIndex;
 	int16_t		snrCount;

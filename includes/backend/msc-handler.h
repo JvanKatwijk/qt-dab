@@ -49,41 +49,51 @@ public:
 	                                         QString,
 	                                         RingBuffer<uint8_t> *);
 			~mscHandler();
-	void		processBlock_0		(DSPCOMPLEX *);
-	void		process_Msc		(DSPCOMPLEX *, int);
+	void		processBlock_0		(std::complex<float> *);
+	void		process_Msc		(std::complex<float> *, int);
 	void		set_Channel		(descriptorType *,
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
-	void		unset_Channel		(const QString &);
 //
-	void		stop			();
-	void		reset			();
+//	This function should be called beore issuing a request
+//	to handle a service
+	void		reset();
+//
+//	This function will kill
+	void		stop();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-	std::vector<int>	blockTable;
-	int		T_u;
+
 	RadioInterface	*myRadioInterface;
+	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
 	QString		picturesPath;
 	dabParams	params;
 	fftHandler      my_fftHandler;
-	DSPCOMPLEX	*fft_buffer;
-	std::vector<DSPCOMPLEX>     phaseReference;
+	std::complex<float>     *fft_buffer;
+	std::vector<complex<float>>     phaseReference;
 
         interLeaver     myMapper;
 	QMutex		locker;
+	bool		audioService;
 	std::vector<Backend *>theBackends;
 	std::vector<int16_t> cifVector;
+	int16_t		cifCount;
+	int16_t		blkCount;
 	std::atomic<bool> work_to_be_done;
 	int16_t		BitsperBlock;
 	int16_t		numberofblocksperCIF;
-	void            run		();
+	int16_t		blockCount;
+	void            run();
         std::atomic<bool>       running;
-        std::vector<std::vector<DSPCOMPLEX> > command;
-	QSemaphore	freeSlots;
-	QSemaphore	usedSlots;
-	int		nextIn;
-	int		nextOut;
+        std::vector<std::vector<std::complex<float> > > command;
+        int16_t         amount;
+        int16_t         currentBlock;
+        void            processBlock_0();
+        void            processMsc	(int32_t n);
+        QSemaphore      bufferSpace;
+        QWaitCondition  commandHandler;
+        QMutex          helper;
 	int		nrBlocks;
 };
 

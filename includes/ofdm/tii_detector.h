@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2014 .. 2017
@@ -27,18 +28,17 @@
 #include	"dab-params.h"
 #include	"fft-handler.h"
 #include	<vector>
-#include	<QByteArray>
 
 class	TII_Detector {
 public:
 		TII_Detector	(uint8_t dabMode, int16_t);
 		~TII_Detector();
 	void	reset();
-	void	addBuffer	(std::vector<DSPCOMPLEX>);
-	QByteArray	processNULL();
+	void	addBuffer	(std::vector<std::complex<float>>);
+	std::vector<int>	processNULL();
 
 private:
-	void			collapse	(DSPCOMPLEX *,
+	void			collapse	(std::complex<float> *,
 	                                         float *);
 	int16_t			depth;
 	uint8_t			invTable [256];
@@ -47,8 +47,8 @@ private:
 	int16_t			T_u;
 	int16_t			carriers;
 	bool			ind;
-	DSPCOMPLEX		*fft_buffer;
-	std::vector<DSPCOMPLEX>	theBuffer;
+	std::complex<float>	*fft_buffer;
+	std::vector<complex<float> >	theBuffer;
 	std::vector<float>	window;
 	int16_t		fillCount;
 };

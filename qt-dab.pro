@@ -5,16 +5,16 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.1-Beta
+TARGET		= qt-dab-3.11-Beta
 QT		+= widgets xml
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -302,7 +302,6 @@ CONFIG		+= send_datagram
 CONFIG		+= try-epg		# do not use
 DEFINES		+= PRESET_NAME
 DEFINES		+= __THREADED_BACKEND
-#DEFINES	+= __HIGH_PRECISION__
 #DEFINES	+= SHOW_MISSING
 
 #For x64 linux system uncomment SSE
@@ -314,7 +313,7 @@ CONFIG	+= NO_SSE
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= ../windows-qt-dab
+DESTDIR		= /usr/shared/sdr-j-development/windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {

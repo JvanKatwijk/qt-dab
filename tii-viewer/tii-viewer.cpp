@@ -25,7 +25,7 @@
 #include	<QColor>
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
-	                                     RingBuffer<DSPCOMPLEX> *sbuffer) {
+	                                         RingBuffer<std::complex<float>> *sbuffer) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -48,11 +48,12 @@ QColor	curveColor;
 	displayBuffer. resize (displaySize);
 	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 4 * displaySize;
-	spectrum		= (DSPCOMPLEX *)FFTW_MALLOC (sizeof (FFT_COMPLEX) * spectrumSize);
-        plan    = FFTW_PLAN_DFT_1D (spectrumSize,
-                                    reinterpret_cast <FFT_COMPLEX*>(spectrum),
-                                    reinterpret_cast <FFT_COMPLEX *>(spectrum),
+	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
+        plan    = fftwf_plan_dft_1d (spectrumSize,
+                                    reinterpret_cast <fftwf_complex *>(spectrum),
+                                    reinterpret_cast <fftwf_complex *>(spectrum),
                                     FFTW_FORWARD, FFTW_ESTIMATE);
+	
 	plotgrid		= tiiGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
@@ -93,9 +94,9 @@ QColor	curveColor;
 	setBitDepth	(12);
 }
 
-	tiiViewer::~tiiViewer() {
-	FFTW_DESTROY_PLAN (plan);
-	FFTW_FREE	(spectrum);
+    tiiViewer::~tiiViewer() {
+	fftwf_destroy_plan (plan);
+	fftwf_free	(spectrum);
 	myFrame		-> hide();
 	delete		Marker;
 	delete		ourBrush;
@@ -108,7 +109,7 @@ void	tiiViewer::clear() {
 	secondariesDisplay	-> setText (" ");
 }
 
-void	tiiViewer::showSecondaries	(QByteArray data) {
+void	tiiViewer::showSecondaries	(std::vector<int> data) {
 	if (myFrame	-> isHidden())
 	   return;
 
@@ -118,11 +119,12 @@ void	tiiViewer::showSecondaries	(QByteArray data) {
 	}
 
 	QString t	= "transmitter IDs ";
-	for (int i = 0; i < data. size () / 2; i ++) {
-	   int mainId	= data. at (2 * i);
-	   int subId	= data. at (2 * i + 1);
-	   t . append (QString::number (mainId) +
-	                           " " + QString::number (subId) + " ");
+	for (int i = 0; i < data. size(); i ++) {
+	   int mainId	= data. at (i) >> 8;
+	   int subId	= data. at (i) & 0xFF;
+	   char temp [255];
+	   sprintf (temp, " (%d, %d)", mainId, subId);
+	   t. append (QString (temp));
 	}
 	secondariesDisplay	-> setText (t);
 }
@@ -153,7 +155,8 @@ int16_t	averageCount	= 3;
 //	get the buffer data
 	for (i = 0; i < spectrumSize; i ++)
 	   spectrum [i] = cmul (spectrum [i], Window [i]);
-	FFTW_EXECUTE (plan);
+
+	fftwf_execute (plan);
 //
 //	and map the spectrumSize values onto displaySize elements
 	for (i = 0; i < displaySize / 2; i ++) {

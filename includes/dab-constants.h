@@ -49,25 +49,7 @@
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 #endif
-#ifdef	__HIGH_PRECISION__
-typedef	std::complex<double> DSPCOMPLEX;
-#define FFTW_MALLOC		fftw_malloc
-#define FFTW_PLAN_DFT_1D	fftw_plan_dft_1d
-#define FFTW_DESTROY_PLAN	fftw_destroy_plan
-#define FFTW_FREE		fftw_free
-#define FFTW_PLAN		fftw_plan
-#define FFTW_EXECUTE		fftw_execute
-#define	FFT_COMPLEX		fftw_complex
-#else
-typedef	std::complex<float> DSPCOMPLEX;
-#define FFTW_MALLOC		fftwf_malloc
-#define FFTW_PLAN_DFT_1D	fftwf_plan_dft_1d
-#define FFTW_DESTROY_PLAN	fftwf_destroy_plan
-#define FFTW_FREE		fftwf_free
-#define FFTW_PLAN		fftwf_plan
-#define FFTW_EXECUTE		fftwf_execute
-#define	FFT_COMPLEX		fftwf_complex
-#endif
+
 
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
@@ -82,7 +64,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"3.1-Beta"
+#define	CURRENT_VERSION	"3,11-Beta"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -93,12 +75,9 @@ using namespace std;
 
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
-
-#define		SYNCED		01
-#define		UNSYNCED	04
 //
 //	40 up shows good results
-#define		DIFF_LENGTH	60
+#define		DIFF_LENGTH	40
 static inline
 bool	isIndeterminate (float x) {
 	return x != x;
@@ -108,14 +87,15 @@ static inline
 bool	isInfinite (float x) {
 	return x == numeric_limits<float>::infinity();
 }
+
 static inline
-DSPCOMPLEX cmul (DSPCOMPLEX x, float y) {
-	return DSPCOMPLEX (real (x) * y, imag (x) * y);
+std::complex<float> cmul (std::complex<float> x, float y) {
+	return std::complex<float> (real (x) * y, imag (x) * y);
 }
 
 static inline
-DSPCOMPLEX cdiv (DSPCOMPLEX x, float y) {
-	return DSPCOMPLEX (real (x) / y, imag (x) / y);
+std::complex<float> cdiv (std::complex<float> x, float y) {
+	return std::complex<float> (real (x) / y, imag (x) / y);
 }
 
 static inline
@@ -156,7 +136,6 @@ public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
-	type		= UNKNOWN_SERVICE;
 	}
 virtual		~descriptorType() {}
 };

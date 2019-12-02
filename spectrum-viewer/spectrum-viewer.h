@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -49,7 +49,7 @@ Q_OBJECT
 public:
 			spectrumViewer	(RadioInterface *,
 	                                 QSettings	*,
-	                                 RingBuffer<DSPCOMPLEX> *,
+	                                 RingBuffer<std::complex<float>> *,
 	                                 RingBuffer<std::complex<float>> *);
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
@@ -62,14 +62,14 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	RingBuffer<DSPCOMPLEX>	*spectrumBuffer;
+	RingBuffer<std::complex<float>>	*spectrumBuffer;
 	RingBuffer<std::complex<float>>	*iqBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	DSPCOMPLEX	*spectrum;
+	std::complex<float>	*spectrum;
 	std::vector<double>	displayBuffer;
 	std::vector<float>	Window;
-	FFTW_PLAN	plan;
+	fftwf_plan	plan;
 	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;

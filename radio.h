@@ -27,7 +27,6 @@
 #include	"dab-constants.h"
 #include	<QMainWindow>
 #include	<QStringList>
-#include	<QStringListModel>
 #include	<QStandardItemModel>
 #ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
@@ -35,7 +34,6 @@
 #include	<QComboBox>
 #include	<QLabel>
 #include	<QTimer>
-#include	<QByteArray>
 #include	<sndfile.h>
 #include	"ui_dabradio.h"
 #include	"dab-processor.h"
@@ -53,57 +51,45 @@ class	audioBase;
 class	common_fft;
 class	serviceDescriptor;
 class	historyHandler;
-
-#include	"ui_technical_data.h"
-
 class	spectrumViewer;
 class	correlationViewer;
 class	tiiViewer;
+
+#include	"ui_technical_data.h"
+
 /*
- *	GThe main gui object. It inherits from
+ *	The main gui object. It inherits from
  *	QWidget and the generated form
  */
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
-	                                 QString	,
+	                                 const QString	&,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface();
 
 protected:
-	bool			eventFilter (QObject *obj, QEvent *event);
+	bool	eventFilter (QObject *obj, QEvent *event);
 private:
-	presetHandler		my_presetHandler;
-	QString			footText		();
-	int			switchTime;
-	QSettings		*dabSettings;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
-	serviceDescriptor	*currentService;
-	void			set_picturePath		();
-	void			dumpControlState	(QSettings *);
-	void			Yes_Signal_Found	();
-	void			hideButtons		();
-	void			showButtons		();
-	virtualInput		*setDevice		(QString);
-
-	historyHandler		*my_history;
-	void			connectGUI		();
-	void			disconnectGUI		();
-	RingBuffer<uint8_t>	*frameBuffer;
-	RingBuffer<int16_t>	*audioBuffer;
-	RingBuffer<uint8_t>	*dataBuffer;
-        spectrumViewer		*my_spectrumViewer;
-	RingBuffer<DSPCOMPLEX>  *spectrumBuffer;
+	QSettings	*dabSettings;
+	std::vector<QString>	serviceList;
+        spectrumViewer         *my_spectrumViewer;
+	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
 	correlationViewer	*my_correlationViewer;
 	RingBuffer<float>	*responseBuffer;
 	tiiViewer		*my_tiiViewer;
-	RingBuffer<DSPCOMPLEX>  *tiiBuffer;
+	RingBuffer<std::complex<float>>  *tiiBuffer;
 
-	std::vector<QString>	activeServices;
+	presetHandler		my_presetHandler;
+	int16_t			tii_delay;
+	int32_t			dataPort;
+	serviceDescriptor	*currentService;
+
 	std::vector<int>	secondariesVector;
 	bool			isSynced;
 	bandHandler		theBand;
@@ -116,34 +102,63 @@ private:
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;
 #endif
+	RingBuffer<int16_t>	*audioBuffer;
+	RingBuffer<uint8_t>	*dataBuffer;
+	RingBuffer<uint8_t>	*frameBuffer;
 	bool			saveSlides;
+	QString			picturesPath;
+	int			switchTime;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	SNDFILE			*rawDumper;
-	FILE			*frameDumper;
-	SNDFILE			*audioDumper;
+	SNDFILE                 *rawDumper;
+        FILE                    *frameDumper;
+        SNDFILE                 *audioDumper;
 
-	QStringList		soundChannels;
 	QStandardItemModel	model;
 	QStringList		Services;
+	QStringList		soundChannels;
 	QTimer			displayTimer;
 	QTimer			signalTimer;
 	QTimer			presetTimer;
-//	QTimer			startTimer;
-	QString			presetName;
-	bool			has_presetName;
+	QTimer			startTimer;
 	int32_t			numberofSeconds;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
-	QString			picturesPath;
-	bool			channelActive		();
-	void			localSelect		(const QString &);
-public slots:
+	void			connectGUI		();
+	void			disconnectGUI		();
+
+	QString			footText		();
+	void			cleanScreen		();
+	void			set_picturePath		();
+	void			dumpControlState	(QSettings *);
+	void			hideButtons		();
+	void			showButtons		();
+	virtualInput		*setDevice		(const QString &);
+	historyHandler		*my_history;
+//
+	void			start_audioService	(const QString &);
+	void			start_packetService	(const QString &);
 	void			startScanning		();
 	void			stopScanning		();
+        void			start_audioDumping      ();
+        void			stop_audioDumping       ();
+        void			start_sourceDumping     ();
+        void			stop_sourceDumping      ();
+        void			start_frameDumping      ();
+        void			stop_frameDumping       ();
+	void			startChannel		(const QString &);
+	void			stopChannel		();
+	void			stopService		();
+	void			startService		(const QString &);
+	void			colorService		(QModelIndex ind,
+	                                                   QColor c, int pt);
+	void			localSelect		(const QString &s);
+	QString			filenameSuggestion 	(QString);
+
+public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &);
 	void			nameofEnsemble		(int, const QString &);
@@ -154,25 +169,26 @@ public slots:
 	void			show_snr		(int);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
-	void			showMOT			(QByteArray,
-	                                                 int, QString);
+	void			showMOT			(QByteArray, int,
+	                                                          QString);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
-	void			changeinConfiguration();
+	void			changeinConfiguration	();
 	void			newAudio		(int, int);
 //
-	void			show_techData		(QString, audiodata *);
 	void			setStereo		(bool);
 	void			set_streamSelector	(int);
-	void			No_Signal_Found();
+	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
-	void			setSyncLost();
-	void			show_tii		(QByteArray);
-	void			showCorrelation		(int);
+	void			setSyncLost		();
+	void			showCoordinates		(int);
+	void			showSecondaries		(int);
+	void			showImpulse		(int);
 	void			showIndex		(int);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);
+	void			show_tii		(int);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);
@@ -181,48 +197,33 @@ public slots:
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_scanButton	();
-	void			handle_historyButton	();
-	void			toggle_show_data	();
-	void			doStart			(QString);
-	void			doStart			();
-	void			handle_deviceSelector	(QString);
-	void			TerminateProcess	();
-	void			updateTimeDisplay	();
-	void			handleReset		();
-
-	void			handle_audiodumpButton	();
-	void			start_audioDumping	();
-	void			stop_audioDumping	();
-	void			handle_sourcedumpButton	();
-	void			start_sourceDumping	();
-	void			stop_sourceDumping	();
-	void			handle_framedumpButton	();
-	void			start_frameDumping	();
-	void			stop_frameDumping	();
-	void			showEnsembleData	();
+	void			handle_audiodumpButton 	();
+        void			handle_sourcedumpButton	();
+        void			handle_framedumpButton	();
+	void			handle_nextChannelButton();
+	void			handle_prevChannelButton();
+	void			handle_prevServiceButton	();
+        void			handle_nextServiceButton	();
 	void			handle_tiiButton	();
 	void			handle_correlationButton	();
 	void			handle_spectrumButton	();
-	void			handle_showDeviceWidget	();
-	void			handle_PresetSelector	(const QString &);
+	void			handle_presetSelector	(const QString &);
 	void			handle_historySelect	(const QString &);
+	void			handle_contentButton	();
+	void			handle_detailButton	();
+	void			handle_devicewidgetButton	();
+	void			handle_resetButton	();
+	void			handle_historyButton	();
+	void			doStart			(const QString &);
+	void			doStart			();
+	void			TerminateProcess	();
+	void			updateTimeDisplay	();
+	void			signalTimer_out		();
+	void			newDevice		(const QString &);
 
-	void			selectService		(QModelIndex);
-	void			handle_setprevious	();
-	void			handle_setnext		();
-	void			startService		(const QString &);
-	void			colorService		(QModelIndex, QColor, int);
-	void			start_audioService	(const QString &);
-	void			start_packetService	(const QString &);
-	void			cleanScreen		();
-	void			stopService		();
-	void			stop_subServices	(const QString &);
-	void			setPresetStation	();
-	void			handle_nextChannelButton	();
-	void			handle_prevChannelButton	();
 	void			selectChannel		(const QString &);
-	void			startChannel		(const QString &);
-	void			stopChannel		();
+	void			selectService		(QModelIndex);
+	void			setPresetStation	();
 };
 #endif
 

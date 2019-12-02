@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -43,10 +43,10 @@ class	tiiViewer: public QObject, Ui_tiiWidget {
 Q_OBJECT
 public:
 			tiiViewer		(RadioInterface *,
-	                                         RingBuffer<DSPCOMPLEX> *);
+	                                         RingBuffer<std::complex<float>> *);
 			~tiiViewer();
 	void		showSpectrum		(int32_t);
-	void		showSecondaries		(QByteArray);
+	void		showSecondaries		(std::vector<int>);
 	void		setBitDepth		(int16_t);
 	void		show();
 	void		hide();
@@ -54,13 +54,13 @@ public:
 	void		clear();
 private:
 	RadioInterface	*myRadioInterface;
-	RingBuffer<DSPCOMPLEX>	*tiiBuffer;
+	RingBuffer<std::complex<float>>	*tiiBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
-	DSPCOMPLEX	*spectrum;
+	std::complex<float>	*spectrum;
 	std::vector<double>	displayBuffer;
 	std::vector<float>	Window;
-	FFTW_PLAN	plan;
+	fftwf_plan	plan;
 	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;

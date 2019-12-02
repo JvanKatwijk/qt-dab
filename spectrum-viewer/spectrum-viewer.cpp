@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C)  2014 .. 2017
@@ -27,7 +28,7 @@
 
 	spectrumViewer::spectrumViewer	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings,
-	                                 RingBuffer<DSPCOMPLEX> *sbuffer,
+	                                 RingBuffer<std::complex<float>> *sbuffer,
 	                                 RingBuffer<std::complex<float>>* ibuffer) {
 int16_t	i;
 QString	colorString	= "black";
@@ -57,11 +58,12 @@ QColor	curveColor;
 	displayBuffer. resize (displaySize);
 	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 4 * displaySize;
-	spectrum		= (DSPCOMPLEX *)FFTW_MALLOC (sizeof (FFT_COMPLEX) * spectrumSize);
-        plan    = FFTW_PLAN_DFT_1D (spectrumSize,
-                                    reinterpret_cast <FFT_COMPLEX *>(spectrum),
-                                    reinterpret_cast <FFT_COMPLEX *>(spectrum),
+	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
+        plan    = fftwf_plan_dft_1d (spectrumSize,
+                                    reinterpret_cast <fftwf_complex *>(spectrum),
+                                    reinterpret_cast <fftwf_complex *>(spectrum),
                                     FFTW_FORWARD, FFTW_ESTIMATE);
+	
 	plotgrid		= dabScope;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
@@ -105,8 +107,8 @@ QColor	curveColor;
 }
 
 	spectrumViewer::~spectrumViewer() {
-	FFTW_DESTROY_PLAN (plan);
-	FFTW_FREE	(spectrum);
+	fftwf_destroy_plan (plan);
+	fftwf_free	(spectrum);
 	myFrame		-> hide();
 	delete		Marker;
 	delete		ourBrush;
@@ -144,7 +146,8 @@ int16_t	averageCount	= 5;
 //	get the buffer data
 	for (i = 0; i < spectrumSize; i ++)
 	   spectrum [i] = cmul (spectrum [i], Window [i]);
-	FFTW_EXECUTE (plan);
+
+	fftwf_execute (plan);
 //
 //	and map the spectrumSize values onto displaySize elements
 	for (i = 0; i < displaySize / 2; i ++) {

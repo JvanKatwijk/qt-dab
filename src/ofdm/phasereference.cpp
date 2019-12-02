@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2014 .. 2017
@@ -31,9 +32,9 @@
   *	The class inherits from the phaseTable.
   */
 
-
 	phaseReference::phaseReference (RadioInterface *mr,
 	                                uint8_t		dabMode,
+	                                int16_t		threshold,
 	                                int16_t		diff_length,
 	                                int16_t		depth,
 	                                RingBuffer<float> *b):
@@ -44,42 +45,40 @@ int32_t	i;
 float	Phi_k;
 
 	this	-> response	= b;
-	this	-> diff_length	= (diff_length + 1) & ~01;
+	this	-> threshold	= threshold;
+	this	-> diff_length	= diff_length;
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 	
 	refTable.		resize (T_u);
-	phaseDifferences.       resize (this -> diff_length);
+	phaseDifferences.       resize (diff_length);
 	fft_buffer		= my_fftHandler. getVector();
 
 	framesperSecond		= 2048000 / params. get_T_F();
 	displayCounter		= 0;
 	
 	for (i = 0; i < T_u; i ++)
-	   refTable [i] = DSPCOMPLEX (0, 0);
+	   refTable [i] = std::complex<float> (0, 0);
 
 	for (i = 1; i <= params. get_carriers() / 2; i ++) {
 	   Phi_k =  get_Phi (i);
-	   refTable [i] = DSPCOMPLEX (cos (Phi_k), sin (Phi_k));
+	   refTable [i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
-	   refTable [T_u - i] = DSPCOMPLEX (cos (Phi_k), sin (Phi_k));
+	   refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 
 //
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
 //      the ones with a null
-	shiftFactor	= this -> diff_length / 4;
-	for (i = 0; i < this -> diff_length; i ++) {
-	   phaseDifferences [i] = abs (arg (refTable [(T_u - shiftFactor + i) % T_u] *
-	                         conj (refTable [(T_u - shiftFactor + i + 1) % T_u])));
-	   phaseDifferences [i] *= phaseDifferences [i];
-	}
+	for (i = 1; i <= diff_length; i ++)
+	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
+	                         conj (refTable [(T_u + i + 1) % T_u])));
 
-	connect (this, SIGNAL (showCorrelation (int)),
-	         mr,   SLOT   (showCorrelation (int)));
+	connect (this, SIGNAL (showImpulse (int)),
+	         mr,   SLOT   (showImpulse (int)));
 	connect (this, SIGNAL (showIndex   (int)),
 	         mr,   SLOT   (showIndex   (int)));
 }
@@ -97,7 +96,7 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::vector <DSPCOMPLEX> v,
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v,
 	                           int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
@@ -107,8 +106,7 @@ float	lbuf [T_u / 2];
 float	mbuf [T_u / 2];
 std::vector<int> resultVector;
 
-	for (i = 0; i < T_u; i ++)
-	   fft_buffer [i] = v [i];
+	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT();
 //
 //	into the frequency domain, now correlate
@@ -120,11 +118,12 @@ std::vector<int> resultVector;
   *	We compute the average and the max signal values
   */
 	for (i = 0; i < T_u / 2; i ++) {
-	   lbuf [i]	= abs (fft_buffer [i]);
-	   mbuf [i]	= lbuf [i];
-	   sum		+= lbuf [i];
+	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   mbuf [i] = lbuf [i];
+	   sum	+= lbuf [i];
 	}
 	
+
 	sum /= T_u / 2;
 //	
 	for (i = 0; i < 100; i ++) {
@@ -140,7 +139,7 @@ std::vector<int> resultVector;
 	else 
 	   resultVector. push_back (maxIndex);	
 
-	if (threshold <= 4)	//	
+	if (threshold <= 5)	//	
 	   return maxIndex;
 	for (int k = 0; k < depth; k ++) {
 	   float MMax = 0;
@@ -165,7 +164,7 @@ std::vector<int> resultVector;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 4) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
-	      showCorrelation (T_u / 2);
+	      showImpulse (T_u / 2);
 	      displayCounter	= 0;
 	      if (resultVector. at (0) > 0) {
 	         showIndex (-1);
@@ -178,51 +177,38 @@ std::vector<int> resultVector;
 	return resultVector. at (0);
 }
 //
-//	we look at the phasediferences of subsequent carriers,
-//	these should match with those in the reference tablw
+//
+//	an approach that works fine is to correlate the phasedifferences
+//	between subsequent carriers
 #define	SEARCH_RANGE	(2 * 35)
-int16_t	phaseReference::estimate_CarrierOffset (std::vector<DSPCOMPLEX> v) {
-int16_t	i, j, index_1 = 100, index_2 = 100;
+int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
+int16_t	i, j, index = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
-	for (i = 0; i < T_u; i ++)
-	   fft_buffer [i] = v [i];
+	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT();
 
 	for (i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) 
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
-	      arg (fft_buffer [(i - shiftFactor) % T_u] *
-	                  conj (fft_buffer [(i - shiftFactor + 1) % T_u]));
+	      abs (arg (fft_buffer [i % T_u] * conj (fft_buffer [(i + 1) % T_u])));
 
-	for (i = 0; i < SEARCH_RANGE + diff_length; i ++)
-	   computedDiffs [i] *= computedDiffs [i];
-
-	float	Mmin_1 = 10000;
-	float	Mmin_2 = 10000;
-	for (i = T_u - SEARCH_RANGE / 2;
+	float	Mmin = 1000;
+	for (i = T_u - SEARCH_RANGE /2;
 	     i < T_u + SEARCH_RANGE / 2; i ++) {
-	   int sum_1 = 0;
-	   int sum_2 = 0;
-	   for (j = 0; j < diff_length; j ++) {
-	      if (phaseDifferences [j] < 0.05)
-	         sum_1 += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
-	      sum_2 += abs (computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j] -
-	                                           phaseDifferences [j]); 
-	   }                            
-	   if (sum_1 < Mmin_1) {
-	      Mmin_1 = sum_1;
-	      index_1 = i;
-	   }
-	   if (sum_2 < Mmin_2) {
-	      Mmin_2 = sum_2;
-	      index_2 = i;
+	   float sum = 0;
+
+	   for (j = 1; j < diff_length; j ++)
+	      if (phaseDifferences [j - 1] < 0.1)
+	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
+	   if (sum < Mmin) {
+	      Mmin = sum;
+	      index = i;
 	   }
 	}
-
-	return index_1 == index_2 ? index_1 - T_u : 100;
+	
+	return index - T_u; 
 }
-
 //	An alternative way to compute the small frequency offset
 //	is to look at the phase offset of subsequent carriers
 //	in block 0, compared to the values as computed from the
@@ -230,13 +216,13 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 //	The values are reasonably close to the values computed
 //	on the fly
 #define	LLENGTH	100
-float	phaseReference::estimate_FrequencyOffset (std::vector <DSPCOMPLEX> v) {
+float	phaseReference::estimate_FrequencyOffset (std::vector <std::complex<float>> v) {
 int16_t	i;
 float pd	= 0;
 
 	for (i = - LLENGTH / 2 ; i < LLENGTH / 2; i ++) {
-	   DSPCOMPLEX a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
-	   DSPCOMPLEX a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
+	   std::complex<float> a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
+	   std::complex<float> a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
 	   pd += arg (a2) - arg (a1);
 	}
 	return pd / LLENGTH;

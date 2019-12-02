@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2014 .. 2017
@@ -135,12 +136,12 @@ int16_t	i;
 
 void	TII_Detector::reset() {
 	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] = DSPCOMPLEX (0, 0);
+	   theBuffer [i] = std::complex<float> (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<DSPCOMPLEX> v) {
+void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
 int	i;
 
 	for (i = 0; i < T_u; i ++)
@@ -152,7 +153,7 @@ int	i;
 	                    cmul (fft_buffer [i], 0.1);
 }
 
-void	TII_Detector::collapse (DSPCOMPLEX *inVec, float *outVec) {
+void	TII_Detector::collapse (std::complex<float> *inVec, float *outVec) {
 int	i;
 
 	for (i = 0; i < carriers / 8; i ++) {
@@ -179,15 +180,16 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
-QByteArray	TII_Detector::processNULL () {
+std::vector<int>	TII_Detector::processNULL() {
 int i, j;
 float	hulpTable	[NUM_GROUPS * GROUPSIZE];
 float	C_table		[GROUPSIZE];	// contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 float	minTable	[NUM_GROUPS];
-QByteArray results;
+std::vector<int> results;
 
+	results. resize (0);
 //	we map the "carriers" carriers (complex values) onto
 //	a collapsed vector of "carriers / 8" length, 
 //	considered to consist of 8 segments of 24 values
@@ -292,8 +294,7 @@ QByteArray results;
 	         pattern [j] |= bits [ind];
 	      }
 	   }
-	   results. append (invTable [pattern [j]]);
-	   results. append (maxIndex [j]);
+	   results. push_back ((invTable [pattern [j]] << 8) | maxIndex [j]);
 	}
 	return results;
 }

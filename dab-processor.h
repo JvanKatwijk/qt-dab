@@ -30,7 +30,6 @@
 #include	<QThread>
 #include	<QObject>
 #include	<vector>
-#include	<atomic>
 #include	<cstdint>
 #include	<sndfile.h>
 #include	"sample-reader.h"
@@ -55,23 +54,23 @@ public:
 	                         int16_t,
 	                         int16_t,
 	                         int16_t,
-	                         int16_t,
 	                         int16_t,	// tii_depth
 	                         int16_t,	// echo_depth
 	                         QString,
 	                         RingBuffer<float> *,
-	                         RingBuffer<DSPCOMPLEX>	*,
 	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<DSPCOMPLEX>	*,
+	                         RingBuffer<std::complex<float>>	*,
+	                         RingBuffer<std::complex<float>>	*,
 	                         RingBuffer<uint8_t> *
 	                        );
 		~dabProcessor();
+    void		reset();
 	void		stop();
 	void		setOffset		(int32_t);
 	void		coarseCorrectorOn();
 	void		coarseCorrectorOff();
 	void		startDumping		(SNDFILE *);
-	void		stopDumping();
+    void		stopDumping();
 	void		set_scanMode		(bool);
 //
 //	inheriting from our delegates
@@ -83,8 +82,7 @@ public:
 	                                             audiodata *, int16_t);
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
-	void		unset_Channel		(const QString &);
-	void		reset_msc		();
+	void		reset_msc();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
@@ -95,13 +93,12 @@ public:
 	void		print_Overview();
 	void		clearEnsemble();
 private:
-	int		threshold_1;
-	int		threshold_2;
+	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;
 	virtualInput	*theRig;
 	dabParams	params;
-	RingBuffer<DSPCOMPLEX> *tiiBuffer;
+	RingBuffer<std::complex<float> > *tiiBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 
@@ -113,10 +110,8 @@ private:
 	TII_Detector	my_TII_Detector;
 	ofdmDecoder	my_ofdmDecoder;
 
+	int16_t		attempts;
 	bool		scanMode;
-	int		false_dipStarts;
-	int		false_dipEnds;
-	int		false_frameStarts;
 	int32_t		T_null;
 	int32_t		T_u;
 	int32_t		T_s;
@@ -127,17 +122,19 @@ private:
 	int32_t		carrierDiff;
 	int16_t		fineOffset;
 	int32_t		coarseOffset;
-	std::atomic<bool>	running;
+
 	bool		correctionNeeded;
-	std::vector<DSPCOMPLEX>ofdmBuffer;
+	std::vector<std::complex<float>	>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
 virtual	void		run();
 signals:
 	void		setSynced		(bool);
-	void		No_Signal_Found();
-	void		setSyncLost();
-	void		show_tii		(QByteArray);
+	void		No_Signal_Found		();
+	void		setSyncLost		();
+	void		showCoordinates		(int);
+	void		showSecondaries		(int);
 	void		show_Spectrum		(int);
+	void		show_tii		(int);
 	void		show_snr		(int);
 };
 #endif

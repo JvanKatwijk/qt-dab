@@ -31,11 +31,11 @@
 //
 	fftHandler::fftHandler (uint8_t mode): p (mode) {
 	this	-> fftSize = p. get_T_u();
-	vector	= (DSPCOMPLEX *)
-	          FFTW_MALLOC (sizeof (DSPCOMPLEX) * fftSize);
+	vector	= (std::complex<float> *)
+	          FFTW_MALLOC (sizeof (std::complex<float>) * fftSize);
 	plan	= FFTW_PLAN_DFT_1D (fftSize,
-	                            reinterpret_cast <FFT_COMPLEX *>(vector),
-	                            reinterpret_cast <FFT_COMPLEX *>(vector),
+	                            reinterpret_cast <fftwf_complex *>(vector),
+	                            reinterpret_cast <fftwf_complex *>(vector),
 	                            FFTW_FORWARD, FFTW_ESTIMATE);
 }
 
@@ -44,7 +44,7 @@
 	   FFTW_FREE (vector);
 }
 
-DSPCOMPLEX	*fftHandler::getVector() {
+std::complex<float>	*fftHandler::getVector() {
 	return vector;
 }
 
@@ -62,5 +62,32 @@ int16_t i;
 	FFTW_EXECUTE (plan);
 	for (i = 0; i < fftSize; i ++)
 	   vector [i] = conj (vector [i]);
+}
+
+//	Obsolete
+	common_ifft::common_ifft (int32_t fft_size) {
+int32_t	i;
+
+	this	-> fft_size = fft_size;
+	vector	= (std::complex<float> *)FFTW_MALLOC (sizeof (std::complex<float>) * fft_size);
+	for (i = 0; i < fft_size; i ++)
+	   vector [i] = 0;
+	plan	= FFTW_PLAN_DFT_1D (fft_size,
+	                            reinterpret_cast <fftwf_complex *>(vector),
+	                            reinterpret_cast <fftwf_complex *>(vector),
+	                            FFTW_BACKWARD, FFTW_ESTIMATE);
+}
+
+	common_ifft::~common_ifft() {
+	   FFTW_DESTROY_PLAN (plan);
+	   FFTW_FREE (vector);
+}
+
+std::complex<float>	*common_ifft::getVector() {
+	return vector;
+}
+
+void	common_ifft::do_IFFT() {
+	FFTW_EXECUTE	(plan);
 }
 

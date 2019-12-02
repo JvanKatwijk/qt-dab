@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -42,31 +42,25 @@ static int cifTable [] = {18, 72, 0, 36};
 	                                       params (dabMode),
 	                                       my_fftHandler (dabMode),
 	                                       myMapper (dabMode),
-	                                       freeSlots (params. get_L ()){
+	                                       bufferSpace (params. get_L()){
 	myRadioInterface	= mr;
-	this	-> frameBuffer	= frameBuffer;
 	this	-> picturesPath	= picturesPath;
+	this	-> frameBuffer	= frameBuffer;
 	cifVector. resize (55296);
-
-	this	-> T_u		= params. get_T_u ();
 	BitsperBlock		= 2 * params. get_carriers();
 	nrBlocks		= params. get_L();
 
 	command. resize (nrBlocks);
 	for (int i = 0; i < nrBlocks; i ++)
-	   command [i]. resize (T_u);
-	blockTable. resize (nrBlocks);
-	for (int i = 0; i < nrBlocks; i ++)
-	   blockTable [i] = -1;
+	   command [i]. resize (params. get_T_u());
 
+	amount          = 0;
 	fft_buffer                      = my_fftHandler. getVector();
-	phaseReference                  .resize (T_u);
+	phaseReference                  .resize (params. get_T_u());
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 	work_to_be_done. store (false);
 	running. store (false);
-	nextIn		= 0;
-	nextOut		= 0;
 }
 
 		mscHandler::~mscHandler() {
@@ -79,117 +73,84 @@ static int cifTable [] = {18, 72, 0, 36};
 	   b -> stopRunning();
 	   delete b;
 	}
-	theBackends. resize (0);
 	locker. unlock();
+	theBackends. resize (0);
 }
 
 //
-//	We know that the dabProcessor hands over the
-//	blocks one by one, in order 0 .. nrBlocks - 1
-
-
-void	mscHandler::processBlock_0 (DSPCOMPLEX *b) {
-	if (!running. load ())
-	   return;
-	while (!freeSlots. tryAcquire (1, 200))
-	   if (!running. load ())
-	      return;
-	for (int i = 0; i < T_u; i ++)
-	   command [nextIn][i] = b [i];
-	blockTable [nextIn]	= 0;
-	nextIn = (nextIn + 1) % nrBlocks;
-	usedSlots. release (1);
+//	Input is put into a buffer, a the code in a separate thread
+//	will handle the data from the buffer
+void	mscHandler::processBlock_0 (std::complex<float> *b) {
+	bufferSpace. acquire (1);
+	memcpy (command [0]. data(), b,
+	            params. get_T_u() * sizeof (std::complex<float>));
+	helper. lock();
+	amount ++;
+        commandHandler. wakeOne();
+        helper. unlock();
 }
 
-void	mscHandler::process_Msc	(DSPCOMPLEX *b, int blkno) {
-	if (!running. load ())
-	   return;
-	while (!freeSlots. tryAcquire (1, 200))
-	   if (!running)
-	      return;
-	for (int i = 0; i < T_u; i ++)
-	   command [nextIn][i] = b [i];
-	blockTable [nextIn] = blkno;
-	nextIn = (nextIn + 1) % nrBlocks;
-	usedSlots. release (1);
+void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
+	bufferSpace. acquire (1);
+        memcpy (command [blkno]. data(), b,
+	            params. get_T_u() * sizeof (std::complex<float>));
+        helper. lock();
+        amount ++;
+        commandHandler. wakeOne();
+        helper. unlock();
 }
 
-//	The thread will be started - and stopped - by its owner,
-//	the dabProcessor. 
-//	Reasons to stop are switch of channel (or related, switch
-//	of device)
-//	Changing a service is done while processing continues
-//	Changing a device will cause the delete of the mscHandler
-//	object and a re-create
-//
-void    mscHandler::run () {
-std::atomic<int>	currentBlock;
-std::vector<int16_t> ibits (BitsperBlock);
+void    mscHandler::run() {
+int	currentBlock	= 0;
+std::vector<int16_t> ibits;
 
-	if (running. load ()) {		// should not happen
-	   fprintf (stderr, "we draaien al!!!\n");
-	   return;
-	}
-
-	currentBlock. store (0);
+	if (running. load ())
+	   fprintf (stderr, "already running\n");
 	running. store (true);
+	ibits. resize (BitsperBlock);
         while (running. load()) {
-	   while (!usedSlots. tryAcquire (1, 200))
-	      if (!running. load ())
-	         return;
+           helper. lock();
+           commandHandler. wait (&helper, 100);
+           helper. unlock();
+           while ((amount > 0) && running. load()) {
+	      memcpy (fft_buffer, command [currentBlock]. data(),
+	                 params. get_T_u() * sizeof (std::complex<float>));
 //
-//	waiting for blockNumber "currentBlock" to arrive
-//	If the block to be handled does NOT
-//	have the number we want, we just skip the whole
-//	frame and start with the next one
-	   if (blockTable [nextOut] != currentBlock. load ()) {
-	      fprintf (stderr, "s");
-	      currentBlock. store (0);
-	      blockTable [nextOut] = -1;
-	      nextOut = (nextOut + 1) % nrBlocks;
-	      freeSlots. release (1);
-	      continue;
-	   }
-	      
-//	now we know that amount > 0 and we have block "currentBlock"
-	   memcpy (fft_buffer,
-	              command [nextOut]. data (),
-	                               T_u * sizeof (DSPCOMPLEX));
-	   blockTable [nextOut] = -1;
-	   nextOut = (nextOut + 1) % nrBlocks;
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
-	   my_fftHandler. do_FFT ();
-           if (currentBlock. load () >= 4) {
-              for (int i = 0; i < params. get_carriers(); i ++) {
-                 int16_t      index   = myMapper. mapIn (i);
-                 if (index < 0)
-                    index += T_u;
+	      my_fftHandler. do_FFT();
+              if (currentBlock >= 4) {
+                 for (int i = 0; i < params. get_carriers(); i ++) {
+                    int16_t      index   = myMapper. mapIn (i);
+                    if (index < 0)
+                       index += params. get_T_u();
 
-                 DSPCOMPLEX  r1 = fft_buffer [index] *
+                    std::complex<float>  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
-                 float ab1    = abs (r1);
+                    float ab1    = jan_abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //      we make the bits into softbits in the range -127 .. 127
-                 ibits [i]            =  - real (r1) / ab1 * 1024.0;
-                 ibits [params. get_carriers() + i]
-	                                 =  - imag (r1) / ab1 * 1024.0;
-              }
+                    ibits [i]            =  - real (r1) / ab1 * 127.0;
+                    ibits [params. get_carriers() + i]
+	                                 =  - imag (r1) / ab1 * 127.0;
+                 }
 
-	      process_mscBlock (ibits, currentBlock. load ());
-	   }
-	   memcpy (phaseReference. data (),
-	           fft_buffer, T_u * sizeof (DSPCOMPLEX));
-	   freeSlots. release (1);
-           currentBlock. store ((currentBlock. load () + 1) % (nrBlocks));
+	         process_mscBlock (ibits, currentBlock);
+	      }
+	      memcpy (phaseReference. data(), fft_buffer,
+	                 params. get_T_u() * sizeof (std::complex<float>));
+              bufferSpace. release (1);
+              helper. lock();
+              currentBlock = (currentBlock + 1) % (nrBlocks);
+              amount -= 1;
+              helper. unlock();
+           }
         }
 }
-
-//
-//	This function is called whenever the radio selects a different
-//	channel. stopChannel will stop the mscHandler, startChannel
-//	will restart it.
-void	mscHandler::stop () {
+//	This function is to be called between invocations of
+//	services
+//	It might be called several times, so ...
+void	mscHandler::reset() {
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -200,40 +161,27 @@ void	mscHandler::stop () {
 	   delete b;
 	}
 	theBackends. resize (0);
-//
-//	Note that at this point, whatever the dabProcessor is
-//	doing (nothing if everything is OK), no activity
-//	around the buffr takes place, and basically we "reset"
-//	the buffer state
-	usedSlots. acquire (usedSlots. available ());
-	freeSlots. acquire (freeSlots. available ());
-	freeSlots. release (nrBlocks);
-	fprintf (stderr, "resource available %d %d\n",
-	                     freeSlots. available (), usedSlots. available ());
-	nextIn		= 0;
-	nextOut		= 0;
+
+	bufferSpace. release (nrBlocks - bufferSpace. available());
+	amount	= 0;
 	locker. unlock();
-}
-//
-//	new service arrives
-//	
-//	This function is not used
-void	mscHandler::reset	() {
-	stop ();
-	start ();
+	start();
 }
 
+void	mscHandler::stop() {
+	reset();
+}
 //
-//	Note, the set_Channel and unset_Channel functions 
-//	are  called from within the thread executing the
-//	"radio" program, a thread from the process_mscBlock method is in.
-//	So, a little bit of locking seems wise while
+//	Note, the set_Channel function is called from within a
+//	different thread than the process_mscBlock method is,
+//	so, a little bit of locking seems wise while
 //	the actual changing of the settings is done in the
 //	thread executing process_mscBlock
 void	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock();
+//
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     d,
 	                                     audioBuffer,
@@ -244,18 +192,6 @@ void	mscHandler::set_Channel (descriptorType *d,
 	locker. unlock();
 }
 
-void	mscHandler::unset_Channel (const QString &s) {
-	for (int i = 0; i < theBackends. size (); i ++) {
-	   if (s == theBackends. at (i) -> theDescriptor. serviceName) {
-	      locker. lock ();
-	      theBackends. at (i) -> stopRunning ();
-	      delete theBackends. at (i);
-	      theBackends. erase (theBackends. begin () + i);
-	      locker. unlock ();
-	      return;
-	   }
-	}
-}
 //
 //	add blocks. First is (should be) block 4, last is (should be) 
 //	nrBlocks -1.
@@ -282,7 +218,6 @@ int16_t	currentblk;
 //	OK, now we have a full CIF and it seems there is some work to
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
-//	Note that there is no garantee that there is work
 	locker. lock();
 	for (auto const& b: theBackends) {
 	   int16_t startAddr	= b -> startAddr;
@@ -296,4 +231,5 @@ int16_t	currentblk;
 	}
 	locker. unlock();
 }
+//
 

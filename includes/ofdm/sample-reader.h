@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -46,25 +46,25 @@ Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
 	                         	virtualInput *theRig,
-	                         	RingBuffer<DSPCOMPLEX> *spectrumBuffer = nullptr);
+	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
 
-				~sampleReader();
-		void		setRunning	(bool b);
-		float		get_sLevel	();
-		DSPCOMPLEX	getSample	(int32_t);
-	        void		getSamples	(DSPCOMPLEX *v,
+			~sampleReader();
+		void	setRunning	(bool b);
+		float	get_sLevel();
+		std::complex<float> getSample	(int32_t);
+	        void	getSamples	(std::complex<float> *v,
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping();
 private:
 		RadioInterface	*myRadioInterface;
 		virtualInput	*theRig;
-		RingBuffer<DSPCOMPLEX> *spectrumBuffer;
-		std::vector<DSPCOMPLEX> localBuffer;
+		RingBuffer<std::complex<float>> *spectrumBuffer;
+		std::vector<std::complex<float>> localBuffer;
 		int32_t		localCounter;
 		int32_t		bufferSize;
 		int32_t		currentPhase;
-		DSPCOMPLEX	*oscillatorTable;
+		std::complex<float>	*oscillatorTable;
 		std::atomic<bool>	running;
 		int32_t		bufferContent;
 		float		sLevel;
