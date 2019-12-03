@@ -28,7 +28,7 @@
 
 class   RadioInterface;
 
-typedef struct {
+typedef struct stream_parms_{
         int	rfa;
         int	dacRate;
         int	sbrFlag;

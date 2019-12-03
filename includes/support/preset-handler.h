@@ -33,7 +33,7 @@
 class   RadioInterface;
 class	QComboBox;
 
-typedef struct {
+typedef struct presetData_ {
 	QString serviceName;
 	QString channel;
 } presetData;

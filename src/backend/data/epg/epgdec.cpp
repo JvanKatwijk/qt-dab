@@ -60,7 +60,7 @@ typedef enum {nu_attr, enum_attr, string_attr,
 	      duration_attr, sid_attr,
 	      genre_href_attr, bitrate_attr} enum_attr_t;
 
-typedef struct {
+typedef struct dectab_{
 	const char *name;
 	const char **vals;
 	enum_attr_t decode;

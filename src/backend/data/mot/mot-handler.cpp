@@ -28,7 +28,7 @@
 //
 //	we "cache" the most recent single motSlides (not those in a directory)
 //
-struct {
+struct motTable_ {
 	uint16_t	transportId;
 	int32_t		orderNumber;
 	motObject	*motSlide;

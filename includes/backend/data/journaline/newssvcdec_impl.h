@@ -92,7 +92,7 @@ typedef std::map<unsigned long, NewsObject*> NEWS_SVC_DEC_IMPL_map_t;
 typedef std::list<unsigned short> NEWS_SVC_DEC_IMPL_watch_list_t;
 typedef std::list<unsigned short> NEWS_SVC_DEC_IMPL_keep_in_cache_list_t;
 
-typedef struct
+typedef struct NEWS_SVC_DEC_IMPL_
 {
     unsigned long   d_magicId;
     NEWS_SVC_DEC_cb *d_update;

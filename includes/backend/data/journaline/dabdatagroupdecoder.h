@@ -102,7 +102,7 @@ typedef const void*  DAB_DATAGROUP_DECODER_t;
   @brief MSC data group header
   @sa ETSI EN 300 401 V1.3.3 (2001-05) section 5.3.3.1
 */
-typedef struct
+typedef struct DAB_DATAGROUP_DECODER_msc_datagroup_header_
 {
     unsigned char  extension_flag;    /*!< extension flag (1 bit) */
     unsigned char  crc_flag;          /*!< CRC flag (1 bit) */

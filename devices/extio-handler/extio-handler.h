@@ -87,7 +87,7 @@ typedef enum {
 } extHWtypeT;
 
 // status codes for pfnExtIOCallback; used when cnt < 0
-typedef enum {
+typedef enum extHWstatusT_ {
 //	only processed/understood for SDR14
     extHw_Disconnected        = 0     // SDR-14/IQ not connected or powered off
   , extHw_READY               = 1     // IDLE / Ready

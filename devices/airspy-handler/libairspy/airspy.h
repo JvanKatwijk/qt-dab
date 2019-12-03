@@ -95,7 +95,7 @@ enum airspy_sample_type
 
 struct airspy_device;
 
-typedef struct {
+typedef struct airspy_transfer_ {
 	struct airspy_device* device;
 	void* ctx;
 	void* samples;
@@ -109,7 +109,7 @@ typedef struct {
 	uint32_t serial_no[4];
 } airspy_read_partid_serialno_t;
 
-typedef struct {
+typedef struct airspy_lib_version_{
 	uint32_t major_version;
 	uint32_t minor_version;
 	uint32_t revision;

@@ -71,7 +71,7 @@ extern int showDdDabDgDecErr;
 
 #define DAB_DGDEC_MAGIC_ID  0x49871
 
-typedef struct
+typedef struct DAB_DGDEC_IMPL_
 {
     unsigned long               magicId;
     DAB_DATAGROUP_DECODER_data  *cb;
