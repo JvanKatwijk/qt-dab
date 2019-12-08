@@ -24,7 +24,7 @@
 #include	<QSettings>
 #include	<QHBoxLayout>
 #include	<QLabel>
-#include	"sdrplay-handler.h"
+#include	"sdrplay-handler-v2.h"
 #include	"sdrplayselect.h"
 
 static
@@ -486,13 +486,14 @@ sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 //	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
-bool	sdrplayHandler::restartReader() {
+bool	sdrplayHandler::restartReader	(int32_t freq) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
 int	GRdB		= GRdBSelector	-> value();
 int	lnaState	= lnaGainSetting -> value();
 
+	vfoFrequency	= freq;
 	if (running. load())
 	   return true;
 

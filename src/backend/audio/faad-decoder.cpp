@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013
+ *    Copyright (C) 2013 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -87,8 +87,8 @@ uint8_t channels;
         }
 
         uint8_t asc[2];
-        asc[0] = 0b00010 << 3 | core_sr_index >> 1;
-        asc[1] = (core_sr_index & 0x01) << 7 | core_ch_config << 3 | 0b100;
+        asc [0] = 0b00010 << 3 | core_sr_index >> 1;
+	asc [1] = (core_sr_index & 0x01) << 7 | core_ch_config << 3 | 0b100;
 	long int init_result = NeAACDecInit2 (aacHandle,
                                               asc,
                                               sizeof (asc),
@@ -140,8 +140,8 @@ uint8_t channels;
         if (hInfo. error != 0) {
            fprintf (stderr, "Warning: %s\n",
                        faacDecGetErrorMessage (hInfo. error));
-           return 0;
-    }
+           return -1;
+	}
 
         if (channels == 2) {
            audioBuffer  -> putDataIntoBuffer (outBuffer, samples);
@@ -163,6 +163,6 @@ uint8_t channels;
         else
            fprintf (stderr, "Cannot handle these channels\n");
 
-        return samples;
+        return channels; 
 }
 

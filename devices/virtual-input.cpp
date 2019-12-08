@@ -45,7 +45,8 @@ int32_t	virtualInput::getVFOFrequency() {
 	return lastFrequency;
 }
 
-bool	virtualInput::restartReader() {
+bool	virtualInput::restartReader	(int32_t freq) {
+	(void)freq;
 	return true;
 }
 

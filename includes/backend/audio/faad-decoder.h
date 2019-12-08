@@ -47,7 +47,7 @@ public:
         faadDecoder     (RadioInterface *mr,
                          RingBuffer<int16_t> *buffer);
         ~faadDecoder();
-int16_t MP42PCM         (stream_parms *sp,
+int16_t	 MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],
                          int16_t bufferLength);
 private:

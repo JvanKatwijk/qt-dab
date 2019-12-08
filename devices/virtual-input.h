@@ -39,7 +39,7 @@ virtual			~virtualInput();
 virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency();
 virtual		int32_t	defaultFrequency();
-virtual		bool	restartReader();
+virtual		bool	restartReader	(int32_t);
 virtual		void	stopReader();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples();

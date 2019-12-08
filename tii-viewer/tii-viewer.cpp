@@ -109,23 +109,22 @@ void	tiiViewer::clear() {
 	secondariesDisplay	-> setText (" ");
 }
 
-void	tiiViewer::showSecondaries	(std::vector<int> data) {
+void	tiiViewer::showSecondaries	(QByteArray data) {
 	if (myFrame	-> isHidden())
 	   return;
 
-	if (data. size() == 0) {
+	if (data. size () == 0) {
 	   secondariesDisplay	-> setText (" ");
 	   return;
 	}
 
 	QString t	= "transmitter IDs ";
-	for (int i = 0; i < data. size(); i ++) {
-	   int mainId	= data. at (i) >> 8;
-	   int subId	= data. at (i) & 0xFF;
-	   char temp [255];
-	   sprintf (temp, " (%d, %d)", mainId, subId);
-	   t. append (QString (temp));
-	}
+	for (int i = 0; i < data. size () / 2; i ++) {
+	   int mainId	= data. at (2 * i);
+	   int subId	= data. at (2 * i + 1);
+	   t . append (QString::number (mainId) +
+                                " " + QString::number (subId) + " ");
+        }
 	secondariesDisplay	-> setText (t);
 }
 
@@ -142,8 +141,8 @@ int16_t	averageCount	= 3;
 	   return;
 
 	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
-	tiiBuffer	-> FlushRingBuffer();
-	if (myFrame	-> isHidden())
+	tiiBuffer	-> FlushRingBuffer ();
+	if (myFrame	-> isHidden ())
 	   return;
 //	and window it
 //	first X axis labels

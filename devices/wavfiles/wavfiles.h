@@ -40,8 +40,8 @@ public:
 			wavFiles	(QString);
 	       		~wavFiles();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples();
-	bool		restartReader();
+	int32_t		Samples		();
+	bool		restartReader	(int32_t);
 	void		stopReader();
 private:
 	QString		fileName;

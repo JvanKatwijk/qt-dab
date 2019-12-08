@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,8 +19,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__RAW_FILES__
-#define	__RAW_FILES__
+#ifndef	__XMLFILE_HANDLER__
+#define	__XMLFILE_HANDLER__
 
 #include	<QThread>
 #include	<QString>
@@ -29,34 +29,36 @@
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-
 #include	"filereader-widget.h"
 
 class	QLabel;
 class	QSettings;
-class	rawReader;
+class	xmlDescriptor;
+class	xmlfileReader;
 /*
  */
-class	rawFiles: public virtualInput,
-	          public filereaderWidget {
+class	xmlfileHandler: public virtualInput,
+	                public filereaderWidget {
 Q_OBJECT
 public:
-
-			rawFiles	(QString);
-                ~rawFiles();
-	int32_t		getSamples	(std::complex<float> *, int32_t);
-	uint8_t		myIdentity	();
-	int32_t		Samples		();
-	bool		restartReader	(int32_t);
-	void		stopReader	(void);
+				xmlfileHandler	(QString);
+                		~xmlfileHandler	();
+	int32_t			getSamples	(std::complex<float> *,
+	                                                         int32_t);
+	uint8_t			myIdentity	();
+	int32_t			Samples		();
+	bool			restartReader	(int32_t);
+	void			stopReader	(void);
 private:
-	QString		fileName;
-	RingBuffer<uint8_t>	*_I_Buffer;
-	FILE		*filePointer;
-	rawReader	*readerTask;
+	QString			fileName;
+	RingBuffer<std::complex<float>>	*_I_Buffer;
+	FILE			*theFile;
+	uint32_t		filePointer;
+	xmlDescriptor		*theDescriptor;
+	xmlfileReader		*theReader;
 	std::atomic<bool>	running;
 public slots:
-	void		setProgress	(int, float);
+	void			setProgress	(int, int);
 };
 
 #endif

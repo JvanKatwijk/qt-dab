@@ -30,7 +30,7 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"virtual-input.h"
-#include	"ui_sdrplay-widget.h"
+#include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
 
 typedef void (*mir_sdr_StreamCallback_t)(int16_t	*xi,
@@ -97,7 +97,7 @@ public:
 	int32_t		getVFOFrequency();
 	int32_t		defaultFrequency();
 
-	bool		restartReader();
+	bool		restartReader		(int32_t);
 	void		stopReader();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);

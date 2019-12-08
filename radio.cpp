@@ -53,8 +53,11 @@
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
-#ifdef	HAVE_SDRPLAY
-#include	"sdrplay-handler.h"
+#ifdef	HAVE_SDRPLAY_V2
+#include	"sdrplay-handler-v2.h"
+#endif
+#ifdef	HAVE_SDRPLAY_V3
+#include	"sdrplay-handler-v3.h"
 #endif
 #ifdef	HAVE_ELAD_S1
 #include	"elad-handler.h"
@@ -63,6 +66,9 @@
 #ifdef	HAVE_EXTIO
 #include	"extio-handler.h"
 #endif
+#endif
+#ifdef	HAVE_XMLFILES
+#include	"xmlfile-handler.h"
 #endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl_tcp_client.h"
@@ -322,8 +328,11 @@ uint8_t	dabBand;
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
 
-#ifdef	HAVE_SDRPLAY
+#ifdef	HAVE_SDRPLAY_V2
 	deviceSelector	-> addItem ("sdrplay");
+#endif
+#ifdef	HAVE_SDRPLAY_V3
+	deviceSelector	-> addItem ("sdrplay-v3");
 #endif
 #ifdef	HAVE_RTLSDR
 	deviceSelector	-> addItem ("dabstick");
@@ -349,7 +358,9 @@ uint8_t	dabBand;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
-
+#ifdef	HAVE_XMLFILES
+	deviceSelector	-> addItem ("xml-files");
+#endif
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -409,14 +420,14 @@ int32_t	frequency;
 
 	frequency	= theBand. Frequency (
 	                                 channelSelector -> currentText());
-	inputDevice     -> setVFOFrequency (frequency);
-	r = inputDevice		-> restartReader();
+	r = inputDevice		-> restartReader (frequency);
 	qDebug ("Starting %d\n", r);
 	if (!r) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Opening  input stream failed\n"));
 	   return;	// give it another try
 	}
+	frequencyDisplay	-> display (frequency / 1000000.0);
 //	Some buttons should not be touched before we have a device
 	connectGUI();
 
@@ -909,10 +920,24 @@ virtualInput	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_SDRPLAY
+#ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("SDRplay: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_SDRPLAY_V3
+	if (s == "sdrplay-v3") {
+	   try {
+	      inputDevice	= new sdrplayHandler_v3 (dabSettings);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -947,6 +972,27 @@ virtualInput	*inputDevice	= nullptr;
 	      QMessageBox::warning (this, tr ("Warning"),
 	                           tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      fprintf (stderr, "error = %d\n", e);
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_XMLFILES
+	if (s == "xml-files") {
+	   file		= QFileDialog::getOpenFileName (this,
+	                                                tr ("Open file ..."),
+	                                                QDir::homePath(),
+	                                                tr ("xml data (*.xml)"));
+	   if (file == QString (""))
+	      return nullptr;
+	   file		= QDir::toNativeSeparators (file);
+	   try {
+	      inputDevice	= new xmlfileHandler (file);
+	      hideButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("file not found"));
 	      return nullptr;
 	   }
 	}
@@ -1031,16 +1077,18 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
 	running. store (false);
 	if (inputDevice != nullptr) {
+	   stopScanning	();
 	   stopService ();
 	   stopChannel ();	// will also stop the reader
 	   disconnectGUI();
-	   stopScanning	();
 	   if (my_dabProcessor != nullptr)
 	      delete my_dabProcessor;
 	   delete inputDevice;
+	   fprintf (stderr, "device is deleted\n");
 	}
 	my_dabProcessor		= nullptr;
 	inputDevice		= nullptr;
+	fprintf (stderr, "going for a device %s\n", deviceName. toLatin1 (). data ());
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
 	   inputDevice = new virtualInput();
@@ -1159,36 +1207,29 @@ void	RadioInterface::setStereo	(bool s) {
 	}
 }
 
-void	RadioInterface::showCoordinates (int data) {
-int	mainId	= data >> 8;
-int	subId	= data & 0xFF;
+void	RadioInterface::show_tii (QByteArray data) {
+int8_t  mainId, subId;
 QString a = "Estimate: ";
-QString b = "  ";
-QString c = "  ";
 
-	if (!running. load())
-	   return;
+        if (!running. load())
+           return;
 
-	a	.append (QString::number (mainId));
-	b	.append (QString::number (subId));
-	a. append (b);
-	transmitter_coordinates -> setText (a);
-}
+        if (data. size () > 1) {
+           mainId       = data. at (0);
+           subId        = data. at (1);
+           a. append (QString::number (mainId) + " " + QString::number (subId));
+           transmitter_coordinates      -> setAlignment (Qt::AlignRight);
+           transmitter_coordinates	-> setText (a);
+           my_tiiViewer -> showSecondaries (data);
+        }
+        my_tiiViewer    -> showSpectrum (1);
 
-void	RadioInterface::showSecondaries (int data) {
-	if (!running. load())
-	   return;
-
-	if (data == -1)
-	   secondariesVector. resize (0);
-	else
-	   secondariesVector. push_back (data);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (running. load())
 	   my_spectrumViewer -> showSpectrum (amount,
-				            inputDevice -> getVFOFrequency());
+				              inputDevice -> getVFOFrequency());
 }
 
 void	RadioInterface::showIQ	(int amount) {
@@ -1213,13 +1254,6 @@ void	RadioInterface::showIndex (int ind) {
 	my_correlationViewer -> showIndex (ind);
 }
 
-//
-void	RadioInterface::show_tii (int amount) {
-	if (!running. load())
-	   return;
-	my_tiiViewer	-> showSpectrum (amount);
-	my_tiiViewer	-> showSecondaries (secondariesVector);
-}
 //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -1991,10 +2025,9 @@ void	RadioInterface::setPresetStation() {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
-	inputDevice		-> setVFOFrequency (tunedFrequency);
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
+	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start ();
-	inputDevice		-> restartReader ();
 }
 //
 //	apart from stopping the reader, a lot of administration
@@ -2002,11 +2035,13 @@ int	tunedFrequency	=
 //	The "stopService" (if any) clears the service related
 //	elements on the screen(s)
 void	RadioInterface::stopChannel	() {
+	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
+	   return;
+	inputDevice			-> stopReader ();
+	stopService ();
 	if (!my_dabProcessor -> isRunning ())
 	   return;		// do not stop twice
-	stopService ();
-	my_dabProcessor			-> stop ();
-	inputDevice			-> stopReader ();
+	my_dabProcessor	-> stop ();
 	techData. ficError_display	-> setValue (0);
 	stop_sourceDumping	();
 	stop_audioDumping	();

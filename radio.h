@@ -32,6 +32,7 @@
 #include	<QUdpSocket>
 #endif
 #include	<QComboBox>
+#include	<QByteArray>
 #include	<QLabel>
 #include	<QTimer>
 #include	<sndfile.h>
@@ -181,14 +182,12 @@ public slots:
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
 	void			setSyncLost		();
-	void			showCoordinates		(int);
-	void			showSecondaries		(int);
 	void			showImpulse		(int);
 	void			showIndex		(int);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);
-	void			show_tii		(int);
+	void			show_tii		(QByteArray);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);

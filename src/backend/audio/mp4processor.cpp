@@ -156,7 +156,7 @@ uint8_t		num_aus;
 int16_t		i, j, k;
 uint8_t		rsIn	[120];
 uint8_t		rsOut	[110];
-int32_t		tmp;
+int		tmp;
 stream_parms    streamParameters;
 
 /**
@@ -298,9 +298,10 @@ stream_parms    streamParameters;
 	      tmp = aacDecoder. MP42PCM (&streamParameters,
 	                                 theAudioUnit,
 	                                 aac_frame_length);
-	      err	= tmp == 0;
-	      emit isStereo (streamParameters. aacChannelMode);
-	      if (err) 
+//	      emit isStereo (streamParameters. aacChannelMode);
+	      emit isStereo (tmp == 2);
+	
+	      if (tmp <= 0) 
 	         aacErrors ++;
 	      if (++aacFrames > 25) {
 	         show_aacErrors (aacErrors);

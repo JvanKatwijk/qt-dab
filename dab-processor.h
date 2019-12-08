@@ -29,6 +29,7 @@
 #include	"dab-constants.h"
 #include	<QThread>
 #include	<QObject>
+#include	<QByteArray>
 #include	<vector>
 #include	<cstdint>
 #include	<sndfile.h>
@@ -131,10 +132,8 @@ signals:
 	void		setSynced		(bool);
 	void		No_Signal_Found		();
 	void		setSyncLost		();
-	void		showCoordinates		(int);
-	void		showSecondaries		(int);
+	void		show_tii		(QByteArray);
 	void		show_Spectrum		(int);
-	void		show_tii		(int);
 	void		show_snr		(int);
 };
 #endif

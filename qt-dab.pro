@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.11-Beta
+TARGET		= qt-dab-3.2-Beta
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -279,12 +279,14 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
-CONFIG		+= sdrplay
+CONFIG		+= sdrplay-v2
+#CONFIG		+= sdrplay-v3		# pretty experimental
+#CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
-#CONFIG		+= soapy
+CONFIG		+= soapy
 #CONFIG		+= elad_s1	# does not work yet
 
 #very experimental, simple server for connecting to a tdc handler
@@ -313,7 +315,8 @@ CONFIG	+= NO_SSE
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		= /usr/shared/sdr-j-development/windows-qt-dab
+DESTDIR		=  ../../windows-qt-dab
+#DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
@@ -332,6 +335,9 @@ INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+#INCLUDEPATH	+= /mingw/include
+#INCLUDEPATH	+= /mingw64/include/qwt
+#INCLUDEPATH	+= C:/msys64/mingw64/include/qwt
 LIBS		+= -lfaad
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
@@ -346,6 +352,7 @@ LIBS		+= -lfaad
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
 #correct this for the correct path to the qwt6 library on your system
+#mingw64 wants the first one, cross compiling mingw64-32 the second one
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
 
@@ -353,7 +360,8 @@ CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
-CONFIG		+= sdrplay
+CONFIG		+= sdrplay-v2
+#CONFIG		+= sdrplay-v3
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= NO_SSE
@@ -388,15 +396,28 @@ dabstick {
 #
 #	the SDRplay
 #
-sdrplay {
-	DEFINES		+= HAVE_SDRPLAY
-	DEPENDPATH	+= ./devices/sdrplay-handler
-	INCLUDEPATH	+= ./devices/sdrplay-handler
-	HEADERS		+= ./devices/sdrplay-handler/sdrplay-handler.h \
-	                   ./devices/sdrplay-handler/sdrplayselect.h
-	SOURCES		+= ./devices/sdrplay-handler/sdrplay-handler.cpp \
-	                   ./devices/sdrplay-handler/sdrplayselect.cpp
-	FORMS		+= ./devices/sdrplay-handler/sdrplay-widget.ui
+sdrplay-v2 {
+	DEFINES		+= HAVE_SDRPLAY_V2
+	DEPENDPATH	+= ./devices/sdrplay-handler-v2
+	INCLUDEPATH	+= ./devices/sdrplay-handler-v2
+	HEADERS		+= ./devices/sdrplay-handler-v2/sdrplay-handler-v2.h \
+	                   ./devices/sdrplay-handler-v2/sdrplayselect.h
+	SOURCES		+= ./devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \
+	                   ./devices/sdrplay-handler-v2/sdrplayselect.cpp
+	FORMS		+= ./devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
+}
+#
+#	the SDRplay
+#
+sdrplay-v3 {
+	DEFINES		+= HAVE_SDRPLAY_V3
+	DEPENDPATH	+= ./devices/sdrplay-handler-v3
+	INCLUDEPATH	+= ./devices/sdrplay-handler-v3
+	HEADERS		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
+	                   ./devices/sdrplay-handler-v3/control-queue.h 
+	SOURCES		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ./devices/sdrplay-handler-v3/control-queue.cpp 
+	FORMS		+= ./devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
 }
 #
 #	limeSDR
@@ -474,6 +495,18 @@ soapy {
 	                   ./devices/soapy/soapy_CF32.cpp
         FORMS           += ./devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
+}
+
+xmlfiles {
+	DEFINES		+= HAVE_XMLFILES
+	INCLUDEPATH	+= devices/xmlfile-handler
+	DEPENDPATH	+= devices/xmlfile-handler 
+	HEADERS		+= devices/xmlfile-handler/xmlfile-handler.h \
+	                   devices/xmlfile-handler/xmlfile-reader.h \
+	                   devices/xmlfile-handler/xml-descriptor.h
+	SOURCES		+= devices/xmlfile-handler/xmlfile-handler.cpp \
+	                   devices/xmlfile-handler/xmlfile-reader.cpp \
+	                   devices/xmlfile-handler/xml-descriptor.cpp
 }
 	
 send_datagram {

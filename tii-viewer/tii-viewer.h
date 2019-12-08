@@ -27,6 +27,7 @@
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<QObject>
+#include	<QByteArray>
 #include	<fftw3.h>
 #include	"ui_tii-widget.h"
 #include	"ringbuffer.h"
@@ -44,9 +45,9 @@ Q_OBJECT
 public:
 			tiiViewer		(RadioInterface *,
 	                                         RingBuffer<std::complex<float>> *);
-			~tiiViewer();
+			~tiiViewer		();
 	void		showSpectrum		(int32_t);
-	void		showSecondaries		(std::vector<int>);
+	void		showSecondaries		(QByteArray);
 	void		setBitDepth		(int16_t);
 	void		show();
 	void		hide();

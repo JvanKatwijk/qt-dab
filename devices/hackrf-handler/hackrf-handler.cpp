@@ -354,12 +354,19 @@ int	bufferIndex	= 0;
 	return 0;
 }
 
-bool	hackrfHandler::restartReader() {
+bool	hackrfHandler::restartReader	(int32_t freq) {
 int	res;
 
 	if (running. load())
 	   return true;
 
+	res	= this -> hackrf_set_freq (theDevice, freq);
+	if (res != HACKRF_SUCCESS) {
+	   fprintf (stderr, "Problem with hackrf_set_freq: \n");
+	   fprintf (stderr, "%s \n",
+	                 this -> hackrf_error_name (hackrf_error (res)));
+	   return false;
+	}
 	res	= this -> hackrf_start_rx (theDevice, callback, this);	
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_start_rx :\n");

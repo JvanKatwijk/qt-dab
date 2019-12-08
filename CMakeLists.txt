@@ -424,30 +424,30 @@ add_definitions (-DPRESET_NAME)
 #	   include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./devices/sdrplay-handler/sdrplay-widget.ui
+	        ./devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./devices/sdrplay-handler/sdrplay-handler.h
-	        ./devices/sdrplay-handler/sdrplayselect.h
+	        ./devices/sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ./devices/sdrplay-handler-v2/sdrplayselect.h
 	   )
 
 	   include_directories (
-	     ./devices/sdrplay-handler
+	     ./devices/sdrplay-handler-v2
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./devices/sdrplay-handler/sdrplay-handler.h
-	        ./devices/sdrplay-handler/sdrplayselect.h
-	        ./devices/sdrplay-handler/mirsdrapi-rsp.h
+	        ./devices/sdrplay-handler-v2/sdrplay-handler-v2.h
+	        ./devices/sdrplay-handler-v2/sdrplayselect.h
+	        ./devices/sdrplay-handler-v2/mirsdrapi-rsp.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./devices/sdrplay-handler/sdrplay-handler.cpp
-	        ./devices/sdrplay-handler/sdrplayselect.cpp
+	        ./devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp
+	        ./devices/sdrplay-handler-v2/sdrplayselect.cpp
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY)

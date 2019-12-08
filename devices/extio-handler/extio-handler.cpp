@@ -347,7 +347,10 @@ long	extioHandler::GetHWLO		(void) {
 //
 //
 //	Handling the data
-bool	extioHandler::restartReader	(void) {
+bool	extioHandler::restartReader	(int32_t freq) {
+	fprintf (stderr, "setting freq to %d\n", freq);
+int	h =  (*SetHWLO) ((int)freq);
+	lastFrequency = freq;
 	fprintf (stderr, "restart reader entered (%d)\n", lastFrequency);
 int32_t	size	= (*StartHW)(lastFrequency);
 	fprintf (stderr, "restart reader returned with %d\n", size);

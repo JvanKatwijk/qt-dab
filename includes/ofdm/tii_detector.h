@@ -28,14 +28,15 @@
 #include	"dab-params.h"
 #include	"fft-handler.h"
 #include	<vector>
+#include	<QByteArray>
 
 class	TII_Detector {
 public:
-		TII_Detector	(uint8_t dabMode, int16_t);
-		~TII_Detector();
-	void	reset();
-	void	addBuffer	(std::vector<std::complex<float>>);
-	std::vector<int>	processNULL();
+			TII_Detector	(uint8_t dabMode, int16_t);
+			~TII_Detector();
+	void		reset();
+	void		addBuffer	(std::vector<std::complex<float>>);
+	QByteArray	processNULL	();
 
 private:
 	void			collapse	(std::complex<float> *,
@@ -50,7 +51,6 @@ private:
 	std::complex<float>	*fft_buffer;
 	std::vector<complex<float> >	theBuffer;
 	std::vector<float>	window;
-	int16_t		fillCount;
 };
 
 #endif

@@ -79,7 +79,8 @@ SF_INFO *sf_info;
 	delete	myFrame;
 }
 
-bool	wavFiles::restartReader() {
+bool	wavFiles::restartReader		(int32_t freq) {
+	(void)freq;
 	if (running. load())
            return true;
         readerTask      = new wavReader (this, filePointer, _I_Buffer);

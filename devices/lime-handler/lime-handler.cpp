@@ -202,11 +202,12 @@ void	limeHandler::setAntenna		(int ind) {
 	(void)LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
 }
 
-bool	limeHandler::restartReader() {
+bool	limeHandler::restartReader	(int32_t freq) {
 int	res;
 
 	if (isRunning())
 	   return true;
+	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
 	stream. isTx            = false;
         stream. channel         = 0;
         stream. fifoSize        = FIFO_SIZE;

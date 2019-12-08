@@ -77,7 +77,8 @@
 	delete	myFrame;
 }
 
-bool	rawFiles::restartReader() {
+bool	rawFiles::restartReader	(int32_t freq) {
+	(void)freq;
 	if (running. load())
 	   return true;
 	readerTask	= new rawReader (this, filePointer, _I_Buffer);

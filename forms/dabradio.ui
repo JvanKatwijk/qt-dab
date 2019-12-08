@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-3.11-Beta</string>
+   <string>Qt-DAB-3.2-Beta</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>

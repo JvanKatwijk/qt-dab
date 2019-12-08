@@ -301,8 +301,11 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 }
 //
 //
-bool	rtlsdrHandler::restartReader() {
+bool	rtlsdrHandler::restartReader	(int32_t freq) {
 int32_t	r;
+
+	lastFrequency	= freq;
+	(void)(this -> rtlsdr_set_center_freq (device, freq));
 
 	if (workerHandle != nullptr)
 	   return true;

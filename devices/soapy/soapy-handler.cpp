@@ -167,7 +167,11 @@ int32_t	soapyHandler::getVFOFrequency		(void) {
 	
 int32_t	soapyHandler::defaultFrequency		(void) {return 220000000;}
 
-bool	soapyHandler::restartReader		(void) {return true;}
+bool	soapyHandler::restartReader		(int32_t freq) {
+	setVFOFrequency (freq);
+	return true;
+}
+
 void	soapyHandler::stopReader		(void) {}
 int32_t	soapyHandler::getSamples		(std::complex<float> *v,
                                                              int32_t a) {
@@ -204,9 +208,5 @@ void	soapyHandler::handleAntenna (const QString &s) {
 	if (worker == nullptr)
 	   return;
 	device	-> setAntenna (SOAPY_SDR_RX, 0, s. toLatin1(). data());
-}
-
-int	soapyhandler::getBufferSpace	() {
-	return 1000000;		// fake
 }
 

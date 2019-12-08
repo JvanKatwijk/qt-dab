@@ -46,15 +46,13 @@ public:
 	int32_t		getVFOFrequency		(void);
 	int32_t		defaultFrequency	(void);
 
-	bool		restartReader		(void);
+	bool		restartReader		(int32_t);
 	void		stopReader		(void);
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
 	int32_t		Samples			(void);
 	void		resetBuffer		(void);
 	int16_t		bitDepth		(void);
-
-	int		getBufferSpace		();
 private:
 	SoapySDR::Device	*device;
 	SoapySDR::Stream	*stream;

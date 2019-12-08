@@ -97,10 +97,6 @@ static	int goodFrames	= 0;
 	correctionNeeded		= true;
 	attempts			= 0;
 	scanMode			= false;
-	connect (this, SIGNAL (showCoordinates (int)),
-	         mr,   SLOT   (showCoordinates (int)));
-	connect (this, SIGNAL (showSecondaries (int)),
-	         mr,   SLOT   (showSecondaries (int)));
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
@@ -109,21 +105,21 @@ static	int goodFrames	= 0;
 	         myRadioInterface, SLOT (setSyncLost (void)));
 	connect (this, SIGNAL (show_Spectrum (int)),
 	         myRadioInterface, SLOT (showSpectrum (int)));
-	connect (this, SIGNAL (show_tii (int)),
-	         myRadioInterface, SLOT (show_tii (int)));
+	connect (this, SIGNAL (show_tii (QByteArray)),
+	         myRadioInterface, SLOT (show_tii (QByteArray)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	my_TII_Detector. reset();
 //	the thread will be started from somewhere else
 }
 
-    dabProcessor::~dabProcessor() {
-    if (isRunning()) {
+	dabProcessor::~dabProcessor() {
+	   if (isRunning()) {
 	   myReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	   msleep (100);
-       while (isRunning()) {
+	   while (isRunning()) {
 	      usleep (100);
 	   }
 	}
@@ -143,13 +139,16 @@ int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
+std::vector<int16_t> ibits;
+
+	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	correctionNeeded	= true;
 	attempts		= 0;
 	theRig  -> resetBuffer();
 	coarseOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
-	my_mscHandler. start();
+	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
 	try {
@@ -187,13 +186,9 @@ notSynced:
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//	      fprintf (stderr, "x = %d after %d good frames\n",
-//	                         startIndex, goodFrames);
-//	      goodFrames	= 0;
 	      goto notSynced;
 	   }
 	   goodFrames ++;
-//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 	   goto SyncOnPhase;
 //
 Check_endofNULL:
@@ -209,13 +204,8 @@ Check_endofNULL:
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
-//	      fprintf (stderr, "x = %d after %d good frames\n",
-//	                         startIndex, goodFrames);
-//	      goodFrames	= 0;
 	      goto notSynced;
 	   }
-//	   goodFrames ++;
-//	   fprintf (stderr, "startIndex = %d\n", startIndex);
 
 SyncOnPhase:
 
@@ -269,8 +259,6 @@ SyncOnPhase:
   *	between the samples in the cyclic prefix and the
   *	corresponding samples in the datapart.
   */
-	   std::vector<int16_t> ibits;
-	   ibits. resize (2 * params. get_carriers());
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
@@ -314,17 +302,9 @@ SyncOnPhase:
 	  if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
-	            std::vector<int> secondaries;
-	            secondaries =
-	            my_TII_Detector. processNULL();
-	            showSecondaries (-1);
-	            if (secondaries. size() > 0) {
-	               showCoordinates (secondaries. at (0));
-	               for (i = 0; i < (int)(secondaries. size()); i ++)
-	                  showSecondaries (secondaries. at (i));
-	            }
-
-	            show_tii (1);
+	            QByteArray secondaries =
+	                              my_TII_Detector. processNULL ();
+	            show_tii (secondaries);
 	            tii_counter = 0;
 	            my_TII_Detector. reset();
 	         }

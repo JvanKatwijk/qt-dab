@@ -275,12 +275,19 @@ int32_t	airspyHandler::defaultFrequency() {
 	return Khz (94700);
 }
 
-bool	airspyHandler::restartReader() {
+bool	airspyHandler::restartReader	(int32_t freq) {
 int	result;
 int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
+
 	if (running. load())
 	   return true;
 
+	result = my_airspy_set_freq (device, lastFrequency = freq);
+
+	if (result != AIRSPY_SUCCESS) {
+	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
+	            my_airspy_error_name((airspy_error)result), result);
+	}
 	theBuffer	-> FlushRingBuffer();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
