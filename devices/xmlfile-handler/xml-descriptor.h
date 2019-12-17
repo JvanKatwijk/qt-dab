@@ -22,6 +22,11 @@ public:
 
 class xmlDescriptor {
 public:
+	QString		deviceName;
+	QString		deviceModel;
+	QString		recorderName;
+	QString		recorderVersion;
+	QString		recordingTime;
 	int		sampleRate;
 	int		nrChannels;
 	int		bitsperChannel;

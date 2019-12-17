@@ -7,8 +7,8 @@
 TEMPLATE	= app
 TARGET		= qt-dab-3.2-Beta
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -279,9 +279,9 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3		# pretty experimental
-#CONFIG		+= xmlfiles		# pretty experimental
+CONFIG		+= sdrplay-v2-xml
+CONFIG		+= sdrplay-v3		# pretty experimental
+CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -334,6 +334,7 @@ INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /mingw32/include/qwt
+INCLUDEPATH	+= /usr/local/include
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 #INCLUDEPATH	+= /mingw/include
 #INCLUDEPATH	+= /mingw64/include/qwt
@@ -360,8 +361,9 @@ CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay-v2-xml
+CONFIG		+= sdrplay-v3
+CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= NO_SSE
@@ -407,6 +409,20 @@ sdrplay-v2 {
 	FORMS		+= ./devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
 }
 #
+sdrplay-v2-xml {
+	DEFINES		+= HAVE_SDRPLAY_V2
+	DEPENDPATH	+= ./devices/sdrplay-handler-v2-xml
+	INCLUDEPATH	+= ./devices/sdrplay-handler-v2-xml
+	HEADERS		+= ./devices/sdrplay-handler-v2-xml/sdrplay-handler-v2.h \
+	                   ./devices/sdrplay-handler-v2-xml/sdrplayselect.h \
+	                   ./devices/sdrplay-handler-v2-xml/xml-handler.h
+	SOURCES		+= ./devices/sdrplay-handler-v2-xml/sdrplay-handler-v2.cpp \
+	                   ./devices/sdrplay-handler-v2-xml/sdrplayselect.cpp \
+	                   ./devices/sdrplay-handler-v2-xml/xml-handler.cpp
+	
+	FORMS		+= ./devices/sdrplay-handler-v2-xml/sdrplay-widget-v2.ui
+}
+#
 #	the SDRplay
 #
 sdrplay-v3 {
@@ -414,9 +430,11 @@ sdrplay-v3 {
 	DEPENDPATH	+= ./devices/sdrplay-handler-v3
 	INCLUDEPATH	+= ./devices/sdrplay-handler-v3
 	HEADERS		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
-	                   ./devices/sdrplay-handler-v3/control-queue.h 
+	                   ./devices/sdrplay-handler-v3/control-queue.h \
+	                   ./devices/sdrplay-handler-v3/sdrplay-controller.h 
 	SOURCES		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
-	                   ./devices/sdrplay-handler-v3/control-queue.cpp 
+	                   ./devices/sdrplay-handler-v3/control-queue.cpp \
+	                   ./devices/sdrplay-handler-v3/sdrplay-controller.cpp 
 	FORMS		+= ./devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
 }
 #
@@ -507,6 +525,7 @@ xmlfiles {
 	SOURCES		+= devices/xmlfile-handler/xmlfile-handler.cpp \
 	                   devices/xmlfile-handler/xmlfile-reader.cpp \
 	                   devices/xmlfile-handler/xml-descriptor.cpp
+	FORMS		+= ./devices/xmlfile-handler/xmlfiles.ui
 }
 	
 send_datagram {

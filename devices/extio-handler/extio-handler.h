@@ -195,7 +195,7 @@ private:
 	int32_t		base_32;
 	int32_t		inputRate;
 	bool		loadFunctions	(void);
-	RingBuffer<std::complex<float>>	*theBuffer;
+	RingBuffer<std::complex<float>>	*_I_Buffer;
 //	functions to be extracted from the dll
 	pfnInitHW	InitHW;		// should be available
 	pfnOpenHW	OpenHW;		// should be available

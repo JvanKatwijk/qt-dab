@@ -56,11 +56,10 @@ void	xmlDescriptor::addChannelOrder (int channelOrder, QString Value) {
 void	xmlDescriptor::add_dataBlock (int currBlock,  int Count,
                                       int  blockNumber, QString Unit) {
 Blocks	b;
-	if (currBlock > nrBlocks) {
-	   fprintf (stderr, "erroneous specification\n");
-	   return;
-	}
-
+//	if (currBlock > nrBlocks) {
+//	   fprintf (stderr, "erroneous specification\n");
+//	   return;
+//	}
 	b. blockNumber	= blockNumber;
 	b. nrElements	= Count;
 	b. typeofUnit	= Unit;
@@ -115,6 +114,16 @@ int	zeroCount = 0;
 	      continue;
 	   }
 	   QDomElement component = nodes. at (i). toElement ();
+	   if (component. tagName () == "Recorder") {
+	      this -> recorderName = component. attribute ("Name", "??");
+	      this -> recorderVersion = component. attribute ("Version", "??");
+	   }
+	   if (component. tagName () == "Device") {
+	      this -> deviceName = component. attribute ("Name", "unknown");
+	      this ->  deviceModel = component. attribute ("Model", "???");
+	   }
+	   if (component. tagName () == "Time") 
+	      this -> recordingTime = component. attribute ("Value", "???");
 	   if (component. tagName () == "Sample") {
 	      QDomNodeList childNodes = component. childNodes ();
 	      for (int k = 0; k < childNodes. count (); k ++) {
@@ -152,8 +161,8 @@ int	zeroCount = 0;
 	      }
 	   }
 	   if (component. tagName () == "Datablocks") {
-	      QString Count = component.attribute ("Count", "3");
-	      this ->  nrBlocks = Count. toInt ();
+//	      QString Count = component.attribute ("Count", "3");
+	      this ->  nrBlocks = 0;
 	      int currBlock	= 0;
 	      QDomNodeList nodes = component. childNodes ();
 	      for (int j = 0; j < nodes. count (); j ++) {
@@ -163,6 +172,7 @@ int	zeroCount = 0;
 
 	         QDomElement Child = nodes. at (j). toElement ();
 	         if (Child. tagName () == "Datablock") {
+	            fprintf (stderr, "weer een block\n");
 	            int Count = (Child. attribute ("Count", "100")). toInt ();
 	            int Number = (Child. attribute ("Number", "10")). toInt ();
 	            QString Unit = Child.  attribute ("Channel", "Channel");
@@ -194,8 +204,10 @@ int	zeroCount = 0;
 	            currBlock ++;
 	         }
 	      }
+	      nrBlocks = currBlock;
 	   }
 	}
 	*ok	= nrBlocks > 0;
+	printDescriptor ();
 }
 

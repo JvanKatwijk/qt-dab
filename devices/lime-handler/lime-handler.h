@@ -113,7 +113,7 @@ private:
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
-	RingBuffer<std::complex<float>> *theBuffer;
+	RingBuffer<std::complex<float>> *_I_Buffer;
 	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;

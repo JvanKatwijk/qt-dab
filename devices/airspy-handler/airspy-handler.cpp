@@ -69,7 +69,7 @@ uint32_t samplerateCount;
 
 	device			= nullptr;
 	serialNumber		= 0;
-	theBuffer		= nullptr;
+	_I_Buffer		= nullptr;
 #ifdef	__MINGW32__
 	const char *libraryString = "airspy.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
@@ -191,7 +191,7 @@ uint32_t samplerateCount;
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
 
-	theBuffer	= new RingBuffer<std::complex<float>>
+	_I_Buffer	= new RingBuffer<std::complex<float>>
 	                                                    (1024 * 1024 * 8);
 	tabWidget	-> setCurrentIndex (0);
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
@@ -254,8 +254,8 @@ uint32_t samplerateCount;
 	dlclose (Handle);
 #endif
 err:
-	if (theBuffer != nullptr)
-	   delete theBuffer;
+	if (_I_Buffer != nullptr)
+	   delete _I_Buffer;
 }
 
 void	airspyHandler::setVFOFrequency (int32_t nf) {
@@ -288,7 +288,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
 	}
-	theBuffer	-> FlushRingBuffer();
+	_I_Buffer	-> FlushRingBuffer();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
 	if (result != AIRSPY_SUCCESS) {
@@ -394,7 +394,7 @@ int32_t  i, j;
 	                          cmul (convBuffer [inpBase], 1 - inpRatio);
 	      }
 
-	      theBuffer	-> putDataIntoBuffer (temp, 2048);
+	      _I_Buffer	-> putDataIntoBuffer (temp, 2048);
 //
 //	shift the sample at the end to the beginning, it is needed
 //	as the starting sample for the next time
@@ -437,7 +437,7 @@ int result = my_airspy_open (&device);
 //
 //	These functions are added for the SDR-J interface
 void	airspyHandler::resetBuffer() {
-	theBuffer	-> FlushRingBuffer();
+	_I_Buffer	-> FlushRingBuffer();
 }
 
 int16_t	airspyHandler::bitDepth() {
@@ -446,11 +446,11 @@ int16_t	airspyHandler::bitDepth() {
 
 int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 
-	return theBuffer	-> getDataFromBuffer (v, size);
+	return _I_Buffer	-> getDataFromBuffer (v, size);
 }
 
 int32_t	airspyHandler::Samples() {
-	return theBuffer	-> GetRingBufferReadAvailable();
+	return _I_Buffer	-> GetRingBufferReadAvailable();
 }
 //
 #define GAIN_COUNT (22)
@@ -774,6 +774,6 @@ void	airspyHandler::show_tab (int t) {
 }
 
 int	airspyHandler::getBufferSpace	() {
-	return theBuffer -> GetRingBufferWriteAvailable ();
+	return _I_Buffer -> GetRingBufferWriteAvailable ();
 }
 

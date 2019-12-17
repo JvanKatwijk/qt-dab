@@ -8,9 +8,8 @@
 
 static	int shift (int a) {
 int r	= 1;
-	while (a > 0) {
+	while (-- a > 0) {
 	   r <<= 1;
-	   a --;
 	}
 	return r;
 }
@@ -49,10 +48,13 @@ struct timeval tv;
 
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
+	fprintf (stderr, "nu hier naar toe\n");
 	nrElements	= fd -> blockList [0]. nrElements;
 
 	connect (this, SIGNAL (setProgress (int, int)),
 	         parent, SLOT (setProgress (int, int)));
+
+	fprintf (stderr, "reader task wordt gestart\n");
 	start ();
 }
 
@@ -110,6 +112,9 @@ int	samplesToRead	= 0;
 	}
 	else	// typeofUnit = "sample"
 	   samplesToRead = nrElements;
+
+	fprintf (stderr, "%d samples have to be read, order is %s\n",
+	                 samplesToRead, fd -> iqOrder. toLatin1 (). data ());
 	return samplesToRead;
 }
 
@@ -175,32 +180,38 @@ float mapTable [] = {
 , 96 / 128.0 , 97 / 128.0 , 98 / 128.0 , 99 / 128.0 , 100 / 128.0 , 101 / 128.0 , 102 / 128.0 , 103 / 128.0 , 104 / 128.0 , 105 / 128.0 , 106 / 128.0 , 107 / 128.0 , 108 / 128.0 , 109 / 128.0 , 110 / 128.0 , 111 / 128.0 
 , 112 / 128.0 , 113 / 128.0 , 114 / 128.0 , 115 / 128.0 , 116 / 128.0 , 117 / 128.0 , 118 / 128.0 , 119 / 128.0 , 120 / 128.0 , 121 / 128.0 , 122 / 128.0 , 123 / 128.0 , 124 / 128.0 , 125 / 128.0 , 126 / 128.0 , 127 / 128.0 };
 
-float	xmlfileReader::readElement	(FILE *theFile) {
+float	xmlfileReader::readElement (FILE *theFile) {
 uint8_t s1;
 uint8_t bytes_16 [2];
 uint8_t	bytes_24 [3];
 uint8_t bytes_32 [4];
 int	nrBits	= fd -> bitsperChannel;
-float	scaler	= float (shift (nrBits - 1));
-uint16_t temp_16;
+float	scaler	= float (shift (nrBits));
+int16_t temp_16;
 uint32_t temp_32;
 
 	if (fd -> container == "int8") {
 	   fread (&s1, 1, 1, theFile);
 	   return (float)s1 / 128.0;
 	}
+
 	if (fd -> container == "uint8") {
 	   fread (&s1, 1, 1, theFile);
 	   return mapTable [s1];
 	}
+
 	if (fd -> container == "int16") {
-	   fread (bytes_16, 2, 1, theFile);
-	   if (fd -> byteOrder == "MSB")
-	      temp_16 = (bytes_16 [0]<< 8) | bytes_16 [1];
-	   else
-	      temp_16 = (bytes_16 [1] << 8) | bytes_16[0];
-	   return (float)temp_16 / scaler;
+	   if (fd -> byteOrder == "MSB") {
+	      fread (bytes_16, 2, 1, theFile);
+	      temp_16 = (bytes_16 [0] << 8) | bytes_16 [1];
+	      return ((float)temp_16) / scaler;
+	   }
+	   else {
+	      fread (&temp_16, 2, 1, theFile);
+	      return ((float)temp_16) / scaler;
+	   }
 	}
+
 	if (fd -> container == "int24") {
 	   fread (bytes_24, 3, 1, theFile);
 	   if (fd -> byteOrder == "MSB")
@@ -213,8 +224,9 @@ uint32_t temp_32;
 	      temp_32 |= 0xFF000000;
 	   return (float)temp_32 / scaler;
 	}
+
 	if (fd -> container == "int32") {
-	   fread (bytes_32, 4, 1, theFile);
+	   fread (bytes_32, sizeof (int32_t), 1, theFile);
 	   if (fd -> byteOrder == "MSB")
 	      temp_32 = (bytes_32 [0]<< 24) | (bytes_32 [1] << 16) |
 	                   (bytes_32 [2] << 8) | bytes_32 [3];
@@ -223,8 +235,9 @@ uint32_t temp_32;
 	                   (bytes_32 [1] << 8) | bytes_32 [0];
 	   return (float)temp_32 / scaler;
 	}
+
 	if (fd -> container == "float32") {
-	   fread (bytes_32, 4, 1, theFile);
+	   fread (bytes_32, sizeof (float), 1, theFile);
 	   if (fd -> byteOrder == "MSB")
 	      temp_32 = (bytes_32 [0]<< 24) | (bytes_32 [1] << 16) |
 	                   (bytes_32 [2] << 8) | bytes_32 [3];

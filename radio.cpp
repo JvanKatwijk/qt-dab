@@ -275,9 +275,11 @@ uint8_t	dabBand;
 
 	theBand. setupChannels  (channelSelector, dabBand);
 
-	QPalette p	= techData. ficError_display -> palette();
+//	QPalette p	= techData. ficError_display -> palette();
+	QPalette p	= ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::green);
-	techData. ficError_display	-> setPalette (p);
+	ficError_display		-> setPalette (p);
+//	techData. ficError_display	-> setPalette (p);
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
 	techData. aacError_display	-> setPalette (p);
@@ -296,8 +298,8 @@ uint8_t	dabBand;
 	ficSuccess		= 0;
 	syncedLabel		->
 	               setStyleSheet ("QLabel {background-color : red; color: white}");
-	stereoLabel		->
-	               setStyleSheet ("QLabel {background-color : red}");
+//	stereoLabel		->
+//	               setStyleSheet ("QLabel {background-color : red}");
 
 //
 	connect (streamoutSelector, SIGNAL (activated (int)),
@@ -982,7 +984,7 @@ virtualInput	*inputDevice	= nullptr;
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath(),
-	                                                tr ("xml data (*.xml)"));
+	                                                tr ("xml data (*.*)"));
 	   if (file == QString (""))
 	      return nullptr;
 	   file		= QDir::toNativeSeparators (file);
@@ -1150,7 +1152,8 @@ void	RadioInterface::show_ficSuccess (bool b) {
 	   ficSuccess ++;
 
 	if (++ficBlocks >= 100) {
-	   techData. ficError_display	-> setValue (ficSuccess);
+	   ficError_display	-> setValue (ficSuccess);
+//	   techData. ficError_display	-> setValue (ficSuccess);
 	   ficSuccess	= 0;
 	   ficBlocks	= 0;
 	}
@@ -1193,18 +1196,18 @@ void	RadioInterface::showLabel	(QString s) {
 }
 
 void	RadioInterface::setStereo	(bool s) {
-	if (!running. load())
-	   return;
-	if (s) { 
-	   stereoLabel -> 
-	               setStyleSheet ("QLabel {background-color : green; color: white}");
-	   stereoLabel -> setText ("stereo");
-	}
-	else {
-	   stereoLabel ->
-	               setStyleSheet ("QLabel {background-color : red}");
-	   stereoLabel -> setText ("");
-	}
+//	if (!running. load())
+//	   return;
+//	if (s) { 
+//	   stereoLabel -> 
+//	               setStyleSheet ("QLabel {background-color : green; color: white}");
+//	   stereoLabel -> setText ("stereo");
+//	}
+//	else {
+//	   stereoLabel ->
+//	               setStyleSheet ("QLabel {background-color : red}");
+//	   stereoLabel -> setText ("");
+//	}
 }
 
 void	RadioInterface::show_tii (QByteArray data) {
@@ -2041,8 +2044,9 @@ void	RadioInterface::stopChannel	() {
 	stopService ();
 	if (!my_dabProcessor -> isRunning ())
 	   return;		// do not stop twice
-	my_dabProcessor	-> stop ();
-	techData. ficError_display	-> setValue (0);
+	my_dabProcessor			-> stop ();
+	ficError_display		-> setValue (0);
+//	techData. ficError_display	-> setValue (0);
 	stop_sourceDumping	();
 	stop_audioDumping	();
 //	note framedumping - if any - was already stopped

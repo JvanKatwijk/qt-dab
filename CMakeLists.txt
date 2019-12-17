@@ -11,7 +11,6 @@ endif()
 
 #	modify if you want
 
-
 if(MINGW)
     add_definitions ( -municode)
 else (MINGW)
@@ -59,6 +58,10 @@ endif ()
 
 if(DEFINED SDRPLAY)
    set(SDRPLAY true)
+endif ()
+
+if(DEFINED SDRPLAY_V3)
+   set(SDRPLAY_V3 true)
 endif ()
 
 if(DEFINED RTLSDR)
@@ -416,12 +419,6 @@ add_definitions (-DPRESET_NAME)
 #	The devices
 #
 	if (SDRPLAY)
-#	   find_path (SDRPLAYLIB_INCLUDE_DIR
-#                      NAMES mirsdrapi-rsp.h
-#                      PATHS
-#                      /usr/local/include/
-#	   )
-#	   include_directories (${SDRPLAYLIB_INCLUDE_DIR})
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
@@ -450,8 +447,42 @@ add_definitions (-DPRESET_NAME)
 	        ./devices/sdrplay-handler-v2/sdrplayselect.cpp
 	   )
 
-	 add_definitions (-DHAVE_SDRPLAY)
+	 add_definitions (-DHAVE_SDRPLAY_V2)
 	endif (SDRPLAY)
+
+	if (SDRPLAY_V3)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./devices/sdrplay-handler-v3/sdrplay-controller.h
+	   )
+
+	   include_directories (
+	     ./devices/sdrplay-handler-v3
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ./devices/sdrplay-handler-v3/sdrplay-controller.h
+	        ./devices/sdrplay-handler-v3/control-queue.h
+	        ./devices/sdrplay-handler-v3/sdrplay_api.h
+           )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
+	        ./devices/sdrplay-handler-v3/sdrplay-controller.cpp
+	        ./devices/sdrplay-handler-v3/control-queue.cpp
+	   )
+
+	 add_definitions (-DHAVE_SDRPLAY_V3)
+	endif (SDRPLAY_V3)
 
 	if (AIRSPY)
 #           find_package(LibAIRSPY)

@@ -64,7 +64,7 @@ private slots:
 private:
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
-	void		setGainMode (int32_t gainMode);
+	void		setGainMode	(int32_t gainMode);
 	void		sendCommand	(uint8_t, int32_t);
 	QLineEdit	*hostLineEdit;
 	bool		isvalidRate	(int32_t);
@@ -72,7 +72,7 @@ private:
 	QFrame		*theFrame;
 	int32_t		theRate;
 	int32_t		vfoFrequency;
-	RingBuffer<uint8_t>	*theBuffer;
+	RingBuffer<std::complex<float>>	*_I_Buffer;
 	bool		connected;
 	int16_t		theGain;
 	int16_t		thePpm;

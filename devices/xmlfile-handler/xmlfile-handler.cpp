@@ -52,7 +52,7 @@
 	}
 	
 	bool	ok	= false;
-	nameofFile	-> setText (f);
+	filenameLabel	-> setText (f);
 	theDescriptor	= new xmlDescriptor (theFile, &filePointer, &ok);
 	if (!ok) {
 	   fprintf (stderr, "%s probably not an xml file\n",
@@ -64,6 +64,24 @@
 
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);
+	samplerateDisplay	-> display (theDescriptor -> sampleRate);
+	nrBitsDisplay		-> display (theDescriptor -> bitsperChannel);
+	containerLabel		-> setText (theDescriptor -> container);
+	iqOrderLabel	-> setText (theDescriptor -> iqOrder);
+	byteOrderLabel	-> setText (theDescriptor -> byteOrder);
+	frequencyDisplay	-> display (theDescriptor -> blockList [0]. frequency / 1000.0);
+	typeofUnitLabel	-> setText (theDescriptor -> blockList [0]. typeofUnit);
+	modulationtypeLabel	-> setText (theDescriptor -> blockList [0]. modType);
+
+	deviceName	-> setText (theDescriptor -> deviceName);
+	deviceModel	-> setText (theDescriptor -> deviceModel);
+	recorderName	-> setText (theDescriptor -> recorderName);
+	recorderVersion	-> setText (theDescriptor -> recorderVersion);
+	recordingTime	-> setText (theDescriptor -> recordingTime);
+
+	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
+	fprintf (stderr, "nrElements = %d\n",
+	             theDescriptor -> blockList [0].nrElements);
 	running. store (false);
 }
 
@@ -89,7 +107,7 @@ bool	xmlfileHandler::restartReader (int32_t freq) {
 	theReader	= new xmlfileReader (this,
 	                                     theFile,
 	                                     theDescriptor,
-	                                     filePointer,
+	                                     5000,
 	                                     _I_Buffer);
 	running. store (true);
 	return true;
@@ -130,5 +148,9 @@ void	xmlfileHandler::setProgress (int samplesRead, int samplesToRead) {
 	fileProgress	-> setValue ((float)samplesRead / samplesToRead * 100);
 	currentTime	-> display (samplesRead / 2048000.0);
 	totalTime	-> display (samplesToRead / 2048000.0);
+}
+
+int	xmlfileHandler::getVFOFrequency	() {
+	return theDescriptor -> blockList [0]. frequency;
 }
 

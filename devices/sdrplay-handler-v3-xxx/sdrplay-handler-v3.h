@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -31,10 +31,9 @@
 #include	"ringbuffer.h"
 #include	"virtual-input.h"
 #include	"ui_sdrplay-widget-v3.h"
+#include	"sdrplay_api.h"
 
 class	controlQueue;
-class	sdrplayController;
-
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
 #else
@@ -46,23 +45,58 @@ Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *);
 			~sdrplayHandler_v3	();
-	int32_t		getVFOFrequency		();
-	int32_t		defaultFrequency	();
+	void		setVFOFrequency		(int32_t);
+	int32_t		getVFOFrequency();
+	int32_t		defaultFrequency();
 
 	bool		restartReader		(int32_t);
-	void		stopReader		();
+	void		stopReader();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 
-private:
+	int				denominator;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
-	sdrplayController	*theController;
+	void				setTotalGain		(int);
+	bool				receiverRuns;
+	void			update_PowerOverload (
+	                             sdrplay_api_EventParamsT *params);
+
+private:
+	sdrplay_api_Open_t		sdrplay_api_Open;
+	sdrplay_api_Close_t		sdrplay_api_Close;
+	sdrplay_api_ApiVersion_t	sdrplay_api_ApiVersion;
+	sdrplay_api_LockDeviceApi_t	sdrplay_api_LockDeviceApi;
+	sdrplay_api_UnlockDeviceApi_t	sdrplay_api_UnlockDeviceApi;
+	sdrplay_api_GetDevices_t	sdrplay_api_GetDevices;
+	sdrplay_api_SelectDevice_t	sdrplay_api_SelectDevice;
+	sdrplay_api_ReleaseDevice_t	sdrplay_api_ReleaseDevice;
+	sdrplay_api_GetErrorString_t	sdrplay_api_GetErrorString;
+//	sdrplay_api_GetLastError_t	sdrplay_api_GetlastError;
+	sdrplay_api_DebugEnable_t	sdrplay_api_DebugEnable;
+	sdrplay_api_GetDeviceParams_t	sdrplay_api_GetDeviceParams;
+	sdrplay_api_Init_t		sdrplay_api_Init;
+	sdrplay_api_Uninit_t		sdrplay_api_Uninit;
+	sdrplay_api_Update_t		sdrplay_api_Update;
+
+	sdrplay_api_DeviceParamsT 	*deviceParams;
+	sdrplay_api_CallbackFnsT 	cbFns;
+	sdrplay_api_RxChannelParamsT 	*chParams;
+	sdrplay_api_DeviceT		*chosenDevice;
+
 	controlQueue		*theQueue;
+	uint32_t		numofDevs;
+	int16_t			deviceIndex;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
+	std::atomic<bool>	threadRuns;
+	HINSTANCE		Handle;
+
+	void			run			();
+	HINSTANCE		fetchLibrary		();
+	bool			loadFunctions		();
 	int16_t			hwVersion;
 	QSettings		*sdrplaySettings;
 	bool			agcMode;
@@ -74,16 +108,16 @@ private slots:
 	void			set_ppmControl		(int);
 	void			set_antennaSelect	(const QString &);
 public slots:
-	void			show_TotalGain		(int);
-	void			show_DeviceData		(const QString &,
+	void			show_error		(int);
+	void			showDeviceData		(const QString &,
 	                                                     int, float);
-	void			show_Error		(int);
-	void			show_runFlag		(bool);
-	void			show_lnaGain		(int);
-	void			set_lnaRange		(int, int);
-	void			show_deviceLabel	(const QString &, int);
-	void			show_antennaSelector	(bool);
-	void			show_tunerSelector	(bool);
+	void			displayGain		(int);
+signals:
+        void                    setDeviceData   (const QString &, int, float);
+        void                    error           (int);
+        void                    actualGain      (int);
+	void			showTotalGain	(int);
+
 };
 #endif
 

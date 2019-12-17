@@ -156,7 +156,7 @@ lms_info_str_t limedevices [10];
 
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	theBuffer	= new RingBuffer<std::complex<float>> (8 * 1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<float>> (8 * 1024 * 1024);
 	
 	limeSettings	-> beginGroup ("limeSettings");
 	k	= limeSettings	-> value ("gain", 50). toInt();
@@ -177,7 +177,7 @@ lms_info_str_t limedevices [10];
 	limeSettings	-> setValue ("gain", gainSelector -> value());
 	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
-	delete theBuffer;
+	delete _I_Buffer;
 	delete myFrame;
 }
 
@@ -235,15 +235,15 @@ void	limeHandler::stopReader() {
 }
 
 int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
-	return theBuffer -> getDataFromBuffer (v, a);
+	return _I_Buffer -> getDataFromBuffer (v, a);
 }
 
 int	limeHandler::Samples() {
-	return theBuffer -> GetRingBufferReadAvailable();
+	return _I_Buffer -> GetRingBufferReadAvailable();
 }
 
 void	limeHandler::resetBuffer() {
-	theBuffer	-> FlushRingBuffer();
+	_I_Buffer	-> FlushRingBuffer();
 }
 
 int16_t	limeHandler::bitDepth() {
@@ -269,7 +269,7 @@ int	amountRead	= 0;
 	   res = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (res > 0) {
-	      theBuffer -> putDataIntoBuffer (localBuffer, res);
+	      _I_Buffer -> putDataIntoBuffer (localBuffer, res);
 	      amountRead	+= res;
 	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
 	      underruns	+= streamStatus. underrun;
@@ -453,6 +453,6 @@ bool	limeHandler::load_limeFunctions() {
 }
 
 int	limeHandler::getBufferSpace	() {
-	return theBuffer	-> GetRingBufferWriteAvailable ();
+	return _I_Buffer	-> GetRingBufferWriteAvailable ();
 }
 

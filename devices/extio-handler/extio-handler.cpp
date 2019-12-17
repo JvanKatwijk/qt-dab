@@ -194,7 +194,7 @@ int32_t	inputRate	= 0;
 	      OK = true;
 	}
 
-	theBuffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 	fprintf (stderr, "hardware type = %d\n", hardwareType);
 	switch (hardwareType) {
 	   case exthwNone:
@@ -208,16 +208,16 @@ int32_t	inputRate	= 0;
 	      return;
 
 	   case exthwUSBdata16:
-	      theReader	= new reader_16 (theBuffer, base_16, inputRate);
+	      theReader	= new reader_16 (_I_Buffer, base_16, inputRate);
 	      break;
 	   case exthwUSBdata24:
-	      theReader	= new reader_24 (theBuffer, base_24, inputRate);
+	      theReader	= new reader_24 (_I_Buffer, base_24, inputRate);
 	      break;
 	   case exthwUSBdata32:
-	      theReader	= new reader_32 (theBuffer, base_32, inputRate);
+	      theReader	= new reader_32 (_I_Buffer, base_32, inputRate);
 	      break;
 	   case exthwUSBfloat32:
-	      theReader	= new reader_float (theBuffer, inputRate);
+	      theReader	= new reader_float (_I_Buffer, inputRate);
 	      break;
 	}
 
@@ -369,7 +369,7 @@ void	extioHandler::stopReader	(void) {
 }
 
 int32_t	extioHandler::Samples		(void) {
-int32_t	x = theBuffer -> GetRingBufferReadAvailable();
+int32_t	x = _I_Buffer -> GetRingBufferReadAvailable();
 	if (x < 0)
 	   fprintf (stderr, "toch een fout in ringbuffer\n");
 	return x;
@@ -377,7 +377,7 @@ int32_t	x = theBuffer -> GetRingBufferReadAvailable();
 
 int32_t	extioHandler::getSamples	(std::complex<float> *buffer,
 	                                 int32_t number) {
-	return theBuffer -> getDataFromBuffer (buffer, number);
+	return _I_Buffer -> getDataFromBuffer (buffer, number);
 }
 
 int16_t	extioHandler::bitDepth		(void) {

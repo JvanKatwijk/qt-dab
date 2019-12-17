@@ -41,8 +41,8 @@
 	fileName	= f;
 	myFrame		= new QFrame;
 	setupUi	(myFrame);
-	myFrame		-> show();
-	_I_Buffer	= new RingBuffer<uint8_t>(INPUT_FRAMEBUFFERSIZE);
+	myFrame		-> show ();
+	_I_Buffer	= new RingBuffer<std::complex<float>>(INPUT_FRAMEBUFFERSIZE);
 	filePointer	= fopen (f. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
@@ -99,23 +99,19 @@ void	rawFiles::stopReader() {
 //	size is in I/Q pairs, file contains 8 bits values
 int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
-uint8_t	temp [2 * size];
 
 	if (filePointer == nullptr)
 	   return 0;
 
-	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable()) < 2 * size)
+	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable ()) < size)
 	   usleep (500);
 
-	amount = _I_Buffer	-> getDataFromBuffer (temp, 2 * size);
-	for (i = 0; i < amount / 2; i ++)
-	   V [i] = std::complex<float> (float (temp [2 * i] - 128) / 128.0,
-	                                float (temp [2 * i + 1] - 128) / 128.0);
-	return amount / 2;
+	amount = _I_Buffer	-> getDataFromBuffer (V,  size);
+	return amount;
 }
 
 int32_t	rawFiles::Samples() {
-	return _I_Buffer -> GetRingBufferReadAvailable() / 2;
+	return _I_Buffer -> GetRingBufferReadAvailable ();
 }
 
 void	rawFiles::setProgress (int progress, float timelength) {

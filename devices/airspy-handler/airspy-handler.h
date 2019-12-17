@@ -156,7 +156,7 @@ const	char*		board_id_name();
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;
-	RingBuffer<std::complex<float>> *theBuffer;
+	RingBuffer<std::complex<float>> *_I_Buffer;
 	int32_t		inputRate;
 	airspyFilter	*filter;
 	bool		filtering;

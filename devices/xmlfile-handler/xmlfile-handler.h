@@ -29,7 +29,7 @@
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
-#include	"filereader-widget.h"
+#include	"ui_xmlfiles.h"
 
 class	QLabel;
 class	QSettings;
@@ -38,7 +38,7 @@ class	xmlfileReader;
 /*
  */
 class	xmlfileHandler: public virtualInput,
-	                public filereaderWidget {
+	                public Ui_xmlfile_widget {
 Q_OBJECT
 public:
 				xmlfileHandler	(QString);
@@ -49,6 +49,7 @@ public:
 	int32_t			Samples		();
 	bool			restartReader	(int32_t);
 	void			stopReader	(void);
+	int			getVFOFrequency	();
 private:
 	QString			fileName;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
