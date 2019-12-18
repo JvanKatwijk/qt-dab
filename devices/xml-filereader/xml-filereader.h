@@ -51,13 +51,13 @@ public:
 	void			stopReader	(void);
 	int			getVFOFrequency	();
 private:
+	std::atomic<bool>	running;
 	QString			fileName;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 	FILE			*theFile;
 	uint32_t		filePointer;
 	xmlDescriptor		*theDescriptor;
 	xml_Reader		*theReader;
-	std::atomic<bool>	running;
 public slots:
 	void			setProgress	(int, int);
 };

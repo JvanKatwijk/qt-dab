@@ -73,7 +73,7 @@ std::complex<float> localBuffer [READLEN_DEFAULT / 2];
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
 
-	for (int i = 0; i < len / 2; i ++)
+	for (uint32_t i = 0; i < len / 2; i ++)
 	   localBuffer [i] = std::complex <float> (
 	                         mapTable [buf [2 * i]],
 	                         mapTable [buf [2 * i + 1]]);

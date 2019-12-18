@@ -321,7 +321,7 @@ void	*data2;
 int32_t	skipDataInBuffer (uint32_t n_values) {
 //	ensure that we have the correct read and write indices
     PaUtil_FullMemoryBarrier();
-    if (n_values > GetRingBufferReadAvailable())
+    if (int)(n_values > GetRingBufferReadAvailable())
        n_values = GetRingBufferReadAvailable();
 	AdvanceRingBufferReadIndex (n_values);
 	return n_values;

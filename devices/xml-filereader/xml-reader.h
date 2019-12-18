@@ -9,6 +9,7 @@
 #include	<stdint.h>
 #include	<complex>
 #include	<vector>
+#include	<atomic>
 
 class	xml_fileReader;
 class	xmlDescriptor;
