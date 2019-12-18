@@ -80,6 +80,9 @@ if(DEFINED LIMESDR)
    set(LIMESDR true)
 endif ()
 
+if(DEFINED XML_FILES)
+   set(XML_FILES true)
+endif ()
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
@@ -244,6 +247,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/mot/mot-dir.h
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
+	     ./devices/xml-filewriter.h
 	     ./devices/rawfiles/rawfiles.h
 	     ./devices/rawfiles/raw-reader.h
 	     ./devices/wavfiles/wavfiles.h
@@ -324,6 +328,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/mot/mot-dir.cpp
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
+	     ./devices/xml-filewriter.cpp
 	     ./devices/rawfiles/rawfiles.cpp
 	     ./devices/rawfiles/raw-reader.cpp
 	     ./devices/wavfiles/wavfiles.cpp
@@ -610,6 +615,39 @@ add_definitions (-DPRESET_NAME)
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)
+	endif()
+
+	if (XML_FILES)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./devices/xml-filereader/xmlfiles.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices/xml-filereader/xml-filereader.h
+	        ./devices/xml-filereader/xml-reader.h
+	   )
+
+	   include_directories (
+	        ./devices/xml-filereader/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices/xml-filereader/xml-filereader.h
+	        ./devices/xml-filereader/xml-reader.h
+	        ./devices/xml-filereader/xml-descriptor.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices/xml-filereader/xml-filereader.cpp
+	        ./devices/xml-filereader/xml-reader.cpp
+	        ./devices/xml-filereader/xml-descriptor.cpp
+	   )
+
+	   add_definitions (-DHAVE_XMLFILES)
 	endif()
 #
 	if (TCP_STREAMER)

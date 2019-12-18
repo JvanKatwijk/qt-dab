@@ -887,7 +887,7 @@ QString result	= QString::number (dateTime [0]);
 	result. append ("-");
 	QString day	= QString ("%1"). arg (dateTime [2], 2, 10, QChar ('0'));
 	result. append (day);
-	result. append (":");
+	result. append (" ");
 	int hours	= dateTime [3] + dateTime [6];
 	if (hours < 0)
 	   hours += 24;

@@ -21,22 +21,25 @@
 #define	GETPROCADDRESS	dlsym
 #endif
 
+#include	<QFileDialog>
 #include	"airspy-handler.h"
 #include	"airspyfilter.h"
+#include	"xml-filewriter.h"
 
 static
 const	int	EXTIO_NS	=  8192;
 static
 const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
-	airspyHandler::airspyHandler (QSettings *s) {
+	airspyHandler::airspyHandler (QSettings *s, QString recorderVersion) {
 int	result, i;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
 uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
-	myFrame		= new QFrame (nullptr);
+	this	-> recorderVersion	= recorderVersion;
+	myFrame				= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
 
@@ -212,14 +215,20 @@ uint32_t samplerateCount;
 	         this, SLOT (set_rf_bias (void)));
 	connect (tabWidget, SIGNAL (currentChanged (int)),
 	         this, SLOT (show_tab (int)));
+	connect (dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
+
 	displaySerial	-> setText (getSerial());
 	running. store (false);
 //	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	show_tab (0);			// will set currentTab
+	dumping. store (false);
+	xmlDumper	= nullptr;
 }
 
 	airspyHandler::~airspyHandler() {
+	stopReader ();
 	airspySettings	-> beginGroup ("airspyHandler");
 	airspySettings -> setValue ("linearity", linearitySlider -> value());
 	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());
@@ -325,6 +334,8 @@ int	result;
 
 	if (!running. load())
 	   return;
+
+	close_xmlDump ();
 	result = my_airspy_stop_rx (device);
 
 	if (result != AIRSPY_SUCCESS ) 
@@ -359,29 +370,8 @@ int nSamples	= buf_size / (sizeof (int16_t) * 2);
 std::complex<float> temp [2048];
 int32_t  i, j;
 
-//	if (filtering) {
-//	   for (i = 0; i < nSamples; i ++) {
-//	      convBuffer [convIndex ++] = filter -> Pass (
-//	                                        sbuf [2 * i] / (float)2048,
-//	                                        sbuf [2 * i + 1] / (float)2048);
-//	      if (convIndex > convBufferSize) {
-//	         for (j = 0; j < 2048; j ++) {
-//	            int16_t  inpBase	= mapTable_int [j];
-//	            float    inpRatio	= mapTable_float [j];
-//	            temp [j]	= cmul (convBuffer [inpBase + 1], inpRatio) + 
-//	                             cmul (convBuffer [inpBase], 1 - inpRatio);
-//	         }
-//
-//	         theBuffer	-> putDataIntoBuffer (temp, 2048);
-////
-////	shift the sample at the end to the beginning, it is needed
-////	as the starting sample for the next time
-//	         convBuffer [0] = convBuffer [convBufferSize];
-//	         convIndex = 1;
-//	      }
-//	   }
-//	}
-//	else
+	if (dumping. load ())
+	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
 	for (i = 0; i < nSamples; i ++) {
 	   convBuffer [convIndex ++] = std::complex<float> (
 	                                     sbuf [2 * i] / (float)2048,
@@ -775,5 +765,49 @@ void	airspyHandler::show_tab (int t) {
 
 int	airspyHandler::getBufferSpace	() {
 	return _I_Buffer -> GetRingBufferWriteAvailable ();
+}
+
+void	airspyHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
+	}
+}
+
+bool	airspyHandler::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.*)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      12,
+	                                      "int16",
+	                                      selectedRate,
+	                                      getVFOFrequency (),
+	                                      "AIRspy",
+	                                      "I",
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	airspyHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

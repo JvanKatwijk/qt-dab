@@ -1,6 +1,6 @@
 
 
-#include	"xml-handler.h"
+#include	"xml-filewriter.h"
 #include	<stdio.h>
 #include	<time.h>
 
@@ -9,11 +9,24 @@ struct kort_woord {
 	uint8_t byte_2;
 };
 
-	xmlHandler::xmlHandler (FILE *f, int denominator, int frequency) {
+	xml_fileWriter::xml_fileWriter (FILE *f,
+	                                int	nrBits,
+	                                QString	container,
+	                                int	sampleRate,
+	                                int	frequency,	
+	                                QString	deviceName,
+	                                QString	deviceModel,
+	                                QString	recorderVersion) {
 uint8_t t	= 0;
 	xmlFile		= f;
-	this	-> denominator	= denominator;
+	this	-> nrBits	= nrBits;
+	this	-> container	= container;
+	this	-> sampleRate	= sampleRate;
 	this	-> frequency	= frequency;
+	this	-> deviceName	= deviceName;
+	this	-> deviceModel	= deviceModel;
+	this	-> recorderVersion	= recorderVersion;
+
 	for (int i = 0; i < 5000; i ++)
 	   fwrite (&t, 1, 1, f);
 	int16_t testWord	= 0xFF;
@@ -26,10 +39,10 @@ uint8_t t	= 0;
 	nrElements	= 0;
 }
 
-	xmlHandler::~xmlHandler	() {
+	xml_fileWriter::~xml_fileWriter	() {
 }
 
-void	xmlHandler::computeHeader	() {
+void	xml_fileWriter::computeHeader	() {
 QString s;
 QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 	if (xmlFile == nullptr)
@@ -45,7 +58,7 @@ QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 #define	BLOCK_SIZE	8192
 static int16_t buffer [BLOCK_SIZE];
 static int bufferP	= 0;
-void	xmlHandler::add		(std::complex<int16_t> * data, int count) {
+void	xml_fileWriter::add	(std::complex<int16_t> * data, int count) {
 	nrElements	+= 2 * count;
 	for (int i = 0; i < count; i ++) {
 	   buffer [bufferP ++] = real (data [i]);
@@ -57,7 +70,7 @@ void	xmlHandler::add		(std::complex<int16_t> * data, int count) {
 	}
 }
 
-QString	xmlHandler::create_xmltree () {
+QString	xml_fileWriter::create_xmltree () {
 QDomDocument theTree;
 QDomElement root	= theTree. createElement ("SDR");
 
@@ -69,11 +82,11 @@ QDomElement root	= theTree. createElement ("SDR");
 	theTree. appendChild (root);
 	QDomElement theRecorder = theTree. createElement ("Recorder");
 	theRecorder. setAttribute ("Name", "Qt-DAB");
-	theRecorder. setAttribute ("Version", "3.2");
+	theRecorder. setAttribute ("Version", recorderVersion);
 	root. appendChild (theRecorder);
 	QDomElement theDevice = theTree. createElement ("Device");
-	theDevice. setAttribute ("Name", "SDRplay");
-	theDevice. setAttribute ("Model", "RSP1A");
+	theDevice. setAttribute ("Name", deviceName);
+	theDevice. setAttribute ("Model", deviceModel);
 	root. appendChild (theDevice);
 	QDomElement theTime = theTree. createElement ("Time");
 	theTime. setAttribute ("Unit", "UTC");
@@ -85,11 +98,11 @@ QDomElement root	= theTree. createElement ("SDR");
 	QDomElement theSample = theTree. createElement ("Sample");
 	QDomElement theRate   = theTree. createElement ("Samplerate");
 	theRate. setAttribute ("Unit", "Hz");
-	theRate. setAttribute ("Value", "2048000");
+	theRate. setAttribute ("Value", QString::number (sampleRate));
 	theSample. appendChild (theRate);
 	QDomElement theChannels = theTree. createElement ("Channels");
-	theChannels. setAttribute ("Bits", "14");
-	theChannels. setAttribute ("Container", "int16");
+	theChannels. setAttribute ("Bits", QString::number (nrBits));
+	theChannels. setAttribute ("Container", container);
 	theChannels. setAttribute ("Ordering", byteOrder);
 	QDomElement I_Channel = theTree. createElement ("Channel");
 	I_Channel. setAttribute ("Value", "I");

@@ -68,7 +68,7 @@
 #endif
 #endif
 #ifdef	HAVE_XMLFILES
-#include	"xmlfile-handler.h"
+#include	"xml-filereader.h"
 #endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl_tcp_client.h"
@@ -386,6 +386,7 @@ uint8_t	dabBand;
 }
 
 QString RadioInterface::footText () {
+	version			= QString (CURRENT_VERSION);
         QString versionText = "Qt-DAB- version: " + QString(CURRENT_VERSION);
         versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
         versionText += "Rights of Qt, fftw, portaudio, libsamplerate and libsndfile gratefully acknowledged";
@@ -601,6 +602,7 @@ QString	RadioInterface::filenameSuggestion (QString theTime) {
 QString	name	= QDir::homePath () + "/Qt-DAB-";
 
 	theTime. replace (":", "-");
+	theTime. replace (" ", "-");
 	name. append (theTime);
 	name. append (".txt");
 	return name;
@@ -838,7 +840,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_AIRSPY
 	if (s == "airspy") {
 	   try {
-	      inputDevice	= new airspyHandler (dabSettings);
+	      inputDevice	= new airspyHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -925,7 +927,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
-	      inputDevice	= new sdrplayHandler (dabSettings);
+	      inputDevice	= new sdrplayHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -989,7 +991,7 @@ virtualInput	*inputDevice	= nullptr;
 	      return nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
-	      inputDevice	= new xmlfileHandler (file);
+	      inputDevice	= new xml_fileReader (file);
 	      hideButtons();
 	   }
 	   catch (int e) {

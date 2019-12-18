@@ -33,7 +33,7 @@
 #endif
 
 class	airspyFilter;
-
+class	xml_fileWriter;
 extern "C"  {
 typedef	int (*pfn_airspy_init)();
 typedef int (*pfn_airspy_exit)();
@@ -84,33 +84,43 @@ typedef int (*pfn_airspy_set_sensitivity_gain)(struct airspy_device* device, uin
 class airspyHandler: public virtualInput, public Ui_airspyWidget {
 Q_OBJECT
 public:
-			airspyHandler		(QSettings *);
-			~airspyHandler();
+			airspyHandler		(QSettings *, QString);
+			~airspyHandler		();
 	void		setVFOFrequency		(int32_t nf);
-	int32_t		getVFOFrequency();
-	int32_t		defaultFrequency();
+	int32_t		getVFOFrequency		();
+	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t);
-	void		stopReader();
+	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *v,
 	                                                 int32_t size);
-	int32_t		Samples();
-	void		resetBuffer();
-	int16_t		bitDepth();
+	int32_t		Samples			();
+	void		resetBuffer		();
+	int16_t		bitDepth		();
 	int		getBufferSpace		();
 
 	int16_t		currentTab;
+
+private:
+	QString		recorderVersion;
+	FILE            *xmlDumper;
+        xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
+        std::atomic<bool> dumping;
+
 private slots:
 	void		set_linearity		(int value);
 	void		set_sensitivity		(int value);
 	void		set_lna_gain		(int value);
 	void		set_mixer_gain		(int value);
 	void		set_vga_gain		(int value);
-	void		set_lna_agc();
-	void		set_mixer_agc();
-	void		set_rf_bias();
+	void		set_lna_agc		();
+	void		set_mixer_agc		();
+	void		set_rf_bias		();
 	void		show_tab		(int);
+	void		set_xmlDump		();
 private:
-	bool		load_airspyFunctions();
+	bool		load_airspyFunctions	();
 //	The functions to be extracted from the dll/.so file
 	pfn_airspy_init		   my_airspy_init;
 	pfn_airspy_exit		   my_airspy_exit;

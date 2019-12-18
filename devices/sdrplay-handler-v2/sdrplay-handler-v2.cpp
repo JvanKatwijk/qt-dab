@@ -8,7 +8,7 @@
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation version 2 of the License.
+ *    the Free Software Foundation recorder 2 of the License.
  *
  *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,9 +24,10 @@
 #include	<QSettings>
 #include	<QHBoxLayout>
 #include	<QLabel>
+#include	<QFileDialog>
 #include	"sdrplay-handler-v2.h"
 #include	"sdrplayselect.h"
-
+#include	"xml-filewriter.h"
 static
 int     RSP1_Table [] = {0, 24, 19, 43};
 
@@ -54,14 +55,16 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 }
 //
 //	here we start
-	sdrplayHandler::sdrplayHandler  (QSettings *s) {
+	sdrplayHandler::sdrplayHandler  (QSettings *s,
+	                                 QString &recorderVersion) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
-mir_sdr_GainValuesT gainDesc;
+//mir_sdr_GainValuesT gainDesc;
 sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
+	this	-> recorderVersion	= recorderVersion;
 	myFrame				= new QFrame (nullptr);
 	myFrame -> setSizePolicy (QSizePolicy::Expanding,
 	                                     QSizePolicy::Expanding);
@@ -71,66 +74,14 @@ sdrplaySelect	*sdrplaySelector;
 	tunerSelector		-> hide();
 	this	-> inputRate	= Khz (2048);
 	_I_Buffer		= nullptr;
-	libraryLoaded		= false;
-
-#ifdef	__MINGW32__
-HKEY APIkey;
-wchar_t APIkeyValue [256];
-ULONG APIkeyValue_length = 255;
-
-
-	wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
-	Handle	= LoadLibrary (libname);
-	if (Handle == nullptr) {
-	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
-	                   TEXT("Software\\MiricsSDR\\API"),
-	                   &APIkey) != ERROR_SUCCESS) {
-              fprintf (stderr,
-	           "failed to locate API registry entry, error = %d\n",
-	           (int)GetLastError());
-	      delete myFrame;
-	      throw (21);
-	   }
-
-	   RegQueryValueEx (APIkey,
-	                    (wchar_t *)L"Install_Dir",
-	                    nullptr,
-	                    nullptr,
-	                    (LPBYTE)&APIkeyValue,
-	                    (LPDWORD)&APIkeyValue_length);
-//	Ok, make explicit it is in the 32 bits section
-	   wchar_t *x =
-	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
-	   RegCloseKey(APIkey);
-
-	   Handle	= LoadLibrary (x);
-	   if (Handle == nullptr) {
-	      fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
-	      delete myFrame;
-	      throw (22);
-	   }
-	}
-#else
-	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
-	Handle		= dlopen ("libmirsdrapi-rsp.so", RTLD_NOW);
-	if (Handle == nullptr)
-	   Handle	= dlopen ("libmir_sdr.so", RTLD_NOW);
-
-	if (Handle == nullptr) {
-	   fprintf (stderr, "error report %s\n", dlerror());
+	bool success		= fetchLibrary ();
+	if (!success) {
 	   delete myFrame;
 	   throw (23);
 	}
-#endif
-	libraryLoaded	= true;
-
-	bool success = loadFunctions();
+	success = loadFunctions();
 	if (!success) {
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (23);
 	}
@@ -139,28 +90,20 @@ ULONG APIkeyValue_length = 255;
 	if (err != mir_sdr_Success) {
 	   fprintf (stderr, "error at ApiVersion %s\n",
 	                 errorCodes (err). toLatin1(). data());
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (24);
 	}
 	
 	if (ver < 2.13) {
 	   fprintf (stderr, "sorry, library too old\n");
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (24);
 	}
 
 	api_version	-> display (ver);
-	_I_Buffer	= new RingBuffer<std::complex<float>>(8 *1024 * 1024);
+	_I_Buffer	= new RingBuffer<complex<int16_t>>(8 *1024 * 1024);
 	vfoFrequency	= Khz (220000);		// default
 
 //	See if there are settings from previous incarnations
@@ -194,29 +137,21 @@ ULONG APIkeyValue_length = 255;
 	   fprintf (stderr, "error at GetDevices %s \n",
 	                   errorCodes (err). toLatin1(). data());
 
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (25);
 	}
 
 	if (numofDevs == 0) {
 	   fprintf (stderr, "Sorry, no device found\n");
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (25);
 	}
 
 	if (numofDevs > 1) {
            sdrplaySelector       = new sdrplaySelect();
-           for (deviceIndex = 0; deviceIndex < numofDevs; deviceIndex ++) {
+           for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
 #ifndef	__MINGW32__
               sdrplaySelector ->
                    addtoList (devDesc [deviceIndex]. DevNm);
@@ -242,11 +177,7 @@ ULONG APIkeyValue_length = 255;
 	                   errorCodes (err). toLatin1(). data());
 	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+	   releaseLibrary	();
 	   delete myFrame;
 	   throw (25);
 	}
@@ -256,15 +187,15 @@ ULONG APIkeyValue_length = 255;
 	switch (hwVersion) {
 	   case 1:		// old RSP
 	      lnaGainSetting	-> setRange (0, 3);
-	      deviceLabel	-> setText ("RSP-I");
+	      deviceModel	= "RSP-I";
 	      nrBits		= 12;
 	      denominator	= 2048;
 	      break;
 	   case 2:
 	      lnaGainSetting	-> setRange (0, 8);
-	      deviceLabel	-> setText ("RSP-II");
-	      nrBits		= 12;
-	      denominator	= 2048;
+	      deviceModel	= "RSP-II";
+	      nrBits		= 14;
+	      denominator	= 8192;
 	      antennaSelector -> show();
 	      err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
 	      if (err != mir_sdr_Success) 
@@ -274,7 +205,7 @@ ULONG APIkeyValue_length = 255;
 	      break;
 	   case 3:	
 	      lnaGainSetting	-> setRange (0, 9);
-	      deviceLabel	-> setText ("RSP-DUO");
+	      deviceModel	= "RSP-DUO";
 	      nrBits		= 14;
 	      denominator	= 8192;
 	      tunerSelector	-> show();
@@ -286,12 +217,13 @@ ULONG APIkeyValue_length = 255;
 	      break;
 	   default:
 	      lnaGainSetting	-> setRange (0, 9);
-	      deviceLabel	-> setText ("RSP-1A");
+	      deviceModel	= "RSP-Ia";
 	      nrBits		= 14;
 	      denominator	= 8192;
 	      break;
 	}
 
+	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ifgainReduction (int)));
@@ -303,16 +235,17 @@ ULONG APIkeyValue_length = 255;
 	         this, SLOT (set_debugControl (int)));
 	connect (ppmControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmControl (int)));
+	connect (dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
 
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
+	xmlDumper	= nullptr;
+	dumping. store (false);
 	running. store (false);
-	bufferOverflows	= 0;
 }
 
 	sdrplayHandler::~sdrplayHandler() {
-	if (!libraryLoaded)
-	   return;
 	stopReader();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
@@ -331,18 +264,7 @@ ULONG APIkeyValue_length = 255;
 	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	if (_I_Buffer != nullptr)
 	   delete _I_Buffer;
-#ifdef __MINGW32__
-        FreeLibrary (Handle);
-#else
-        dlclose (Handle);
-#endif
-}
-
-int	sdrplayHandler::getBufferSpace () {
-	if (_I_Buffer == nullptr)
-	   return -100;
-	else
-	   return _I_Buffer -> GetRingBufferReadAvailable ();
+	releaseLibrary	();
 }
 
 static inline
@@ -368,42 +290,6 @@ int16_t	bankFor_sdr (int32_t freq) {
 
 int32_t	sdrplayHandler::defaultFrequency() {
 	return Mhz (220);
-}
-
-void	sdrplayHandler::setVFOFrequency		(int32_t newFrequency) {
-int	gRdBSystem;
-int	samplesPerPacket;
-mir_sdr_ErrT	err;
-int	localGred	= GRdBSelector	-> value();
-int	lnaState	= lnaGainSetting -> value();
-
-	if (bankFor_sdr (newFrequency) == -1)
-	   return;
-
-	if (!running. load()) {
-	   vfoFrequency = newFrequency;
-	   return;
-	}
-
-	if (bankFor_sdr (newFrequency) == bankFor_sdr (vfoFrequency)) 
-	   err = my_mir_sdr_SetRf (double (newFrequency), 1, 0);
-	else
-	   err = my_mir_sdr_Reinit (&localGred,
-	                             double (inputRate) / Mhz (1),
-	                             double (newFrequency) / Mhz (1),
-	                             mir_sdr_BW_1_536,
-	                             mir_sdr_IF_Zero,
-	                             mir_sdr_LO_Undefined,	// LOMode
-	                             lnaState,	// LNA enable
-	                             &gRdBSystem,
-	                             mir_sdr_USE_RSP_SET_GR,
-	                             &samplesPerPacket,
-	                             mir_sdr_CHANGE_RF_FREQ);
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "Error at setVFO %s\n",
-	                    errorCodes (err). toLatin1(). data());
-	else
-	   vfoFrequency = newFrequency;
 }
 
 int32_t	sdrplayHandler::getVFOFrequency() {
@@ -458,19 +344,17 @@ void myStreamCallback (int16_t		*xi,
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 float	denominator	= (float)(p -> denominator);
-std::complex<float> localBuf [numSamples];
+std::complex<int16_t> localBuf [numSamples];
 
 	if (reset || hwRemoved)
 	   return;
 	for (i = 0; i <  (int)numSamples; i ++)
-	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
-	                                       float (xq [i]) / denominator);
+	   localBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
 	int n = p -> _I_Buffer -> GetRingBufferWriteAvailable ();
-	if (n >= numSamples) 
+	if (n >= (int)numSamples) 
 	   p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
 	else {
 	   p -> _I_Buffer -> skipDataInBuffer (2048000 / 2);
-	   p -> bufferOverflows ++;
 	}
 	(void)	firstSampleNum;
 	(void)	grChanged;
@@ -481,8 +365,10 @@ std::complex<float> localBuf [numSamples];
 void	myGainChangeCallback (uint32_t	GRdB,
 	                      uint32_t	lnaGRdB,
 	                      void	*cbContext) {
-sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
+//sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
+	(void)GRdB;
 	(void)lnaGRdB;
+	(void)cbContext;
 //	p -> lnaGRdBDisplay	-> display ((int)lnaGRdB);
 }
 
@@ -549,6 +435,7 @@ mir_sdr_ErrT err;
 	if (!running. load())
 	   return;
 
+	close_xmlDump ();		// just to be sure
 	err	= my_mir_sdr_StreamUninit();
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
@@ -560,22 +447,88 @@ mir_sdr_ErrT err;
 //	The brave old getSamples. For the sdrplay, we get
 //	size still in I/Q pairs
 int32_t	sdrplayHandler::getSamples (std::complex<float> *V, int32_t size) { 
-	return _I_Buffer	-> getDataFromBuffer (V, size);
+std::complex<int16_t> temp [size];
+int i;
+	int amount	= _I_Buffer	-> getDataFromBuffer (temp, size);
+	for (i = 0; i < amount; i ++) 
+	   V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
+	                                imag (temp [i]) / (float) denominator);
+	if (dumping. load ()) 
+	   xmlWriter -> add (temp, amount);
+	return amount;
 }
 
-int32_t	sdrplayHandler::Samples() {
+int32_t	sdrplayHandler::Samples () {
 	return _I_Buffer	-> GetRingBufferReadAvailable();
 }
 
-void	sdrplayHandler::resetBuffer() {
+void	sdrplayHandler::resetBuffer () {
 	_I_Buffer	-> FlushRingBuffer();
 }
 
-int16_t	sdrplayHandler::bitDepth() {
+int16_t	sdrplayHandler::bitDepth () {
 	return nrBits;
 }
 
-bool	sdrplayHandler::loadFunctions() {
+
+void	sdrplayHandler::set_agcControl (int dummy) {
+bool agcMode	= agcControl -> isChecked();
+	(void)dummy;
+	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
+	                                 mir_sdr_AGC_DISABLE,
+	                       -30,
+	                       0, 0, 0, 0, lnaGainSetting -> value());
+	if (!agcMode) {
+	   GRdBSelector		-> show();
+	   gainsliderLabel	-> show();	// old name actually
+	   set_ifgainReduction (0);
+	}
+	else {
+	   GRdBSelector		-> hide();
+	   gainsliderLabel	-> hide();
+	}
+}
+
+void	sdrplayHandler::set_debugControl (int debugMode) {
+	(void)debugMode;
+	my_mir_sdr_DebugEnable (debugControl -> isChecked() ? 1 : 0);
+}
+
+void	sdrplayHandler::set_ppmControl (int ppm) {
+	if (running. load()) {
+	   my_mir_sdr_SetPpm	((float)ppm);
+	   my_mir_sdr_SetRf	((float)vfoFrequency, 1, 0);
+	}
+}
+
+void	sdrplayHandler::set_antennaSelect (const QString &s) {
+mir_sdr_ErrT err;
+
+	if (hwVersion != 2)	// should not happen
+	   return;
+
+	if (s == "Antenna A")
+	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
+	else
+	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_B);
+	(void)err;
+}
+
+void	sdrplayHandler::set_tunerSelect (const QString &s) {
+mir_sdr_ErrT err;
+
+	if (hwVersion != 3)	// should not happen
+	   return;
+	if (s == "Tuner 1") 
+	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_1);
+	else
+	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_2);
+
+	if (err != mir_sdr_Success) 
+	   fprintf (stderr, "error %d in selecting  rspDuo\n", err);
+}
+
+bool	sdrplayHandler::loadFunctions () {
 	my_mir_sdr_StreamInit	= (pfn_mir_sdr_StreamInit)
 	                    GETPROCADDRESS (this -> Handle,
 	                                    "mir_sdr_StreamInit");
@@ -758,60 +711,64 @@ bool	sdrplayHandler::loadFunctions() {
 	return true;
 }
 
-void	sdrplayHandler::set_agcControl (int dummy) {
-bool agcMode	= agcControl -> isChecked();
-	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
-	                                 mir_sdr_AGC_DISABLE,
-	                       -30,
-	                       0, 0, 0, 0, lnaGainSetting -> value());
-	if (!agcMode) {
-	   GRdBSelector		-> show();
-	   gainsliderLabel	-> show();	// old name actually
-	   set_ifgainReduction (0);
+bool	sdrplayHandler::fetchLibrary	() {
+#ifdef	__MINGW32__
+HKEY APIkey;
+wchar_t APIkeyValue [256];
+ULONG APIkeyValue_length = 255;
+
+
+	wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
+	Handle	= LoadLibrary (libname);
+	if (Handle == nullptr) {
+	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
+	                   TEXT("Software\\MiricsSDR\\API"),
+	                   &APIkey) != ERROR_SUCCESS) {
+              fprintf (stderr,
+	           "failed to locate API registry entry, error = %d\n",
+	           (int)GetLastError());
+	      return false;
+	   }
+
+	   RegQueryValueEx (APIkey,
+	                    (wchar_t *)L"Install_Dir",
+	                    nullptr,
+	                    nullptr,
+	                    (LPBYTE)&APIkeyValue,
+	                    (LPDWORD)&APIkeyValue_length);
+//	Ok, make explicit it is in the 32 bits section
+	   wchar_t *x =
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+	   RegCloseKey(APIkey);
+
+	   Handle	= LoadLibrary (x);
+	   if (Handle == nullptr) {
+	      fprintf (stderr, "Failed to open mir_sdr_api.dll\n");
+	      return false;
+	   }
 	}
-	else {
-	   GRdBSelector		-> hide();
-	   gainsliderLabel	-> hide();
+#else
+	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
+	Handle		= dlopen ("libmirsdrapi-rsp.so", RTLD_NOW);
+	if (Handle == nullptr)
+	   Handle	= dlopen ("libmir_sdr.so", RTLD_NOW);
+
+	if (Handle == nullptr) {
+	   fprintf (stderr, "error report %s\n", dlerror());
+	   return false;
 	}
+#endif
+	return true;
 }
 
-void	sdrplayHandler::set_debugControl (int debugMode) {
-	(void)debugMode;
-	my_mir_sdr_DebugEnable (debugControl -> isChecked() ? 1 : 0);
+void	sdrplayHandler::releaseLibrary	() {
+#ifdef __MINGW32__
+           FreeLibrary (Handle);
+#else
+           dlclose (Handle);
+#endif
 }
 
-void	sdrplayHandler::set_ppmControl (int ppm) {
-	if (running. load()) {
-	   my_mir_sdr_SetPpm	((float)ppm);
-	   my_mir_sdr_SetRf	((float)vfoFrequency, 1, 0);
-	}
-}
-
-void	sdrplayHandler::set_antennaSelect (const QString &s) {
-mir_sdr_ErrT err;
-
-	if (hwVersion != 2)	// should not happen
-	   return;
-
-	if (s == "Antenna A")
-	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
-	else
-	   err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_B);
-}
-
-void	sdrplayHandler::set_tunerSelect (const QString &s) {
-mir_sdr_ErrT err;
-
-	if (hwVersion != 3)	// should not happen
-	   return;
-	if (s == "Tuner 1") 
-	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_1);
-	else
-	   err	= my_mir_sdr_rspDuo_TunerSel (mir_sdr_rspDuo_Tuner_2);
-
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "error %d in selecting  rspDuo\n", err);
-}
 
 QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	switch (err) {
@@ -850,9 +807,47 @@ QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	}
 }
 
-int	sdrplayHandler::getOverflows	() {
-int	temp	= bufferOverflows;
-	bufferOverflows		= 0;
-	return temp;
+void	sdrplayHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
+	}
+}
+
+bool	sdrplayHandler::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.xml)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      nrBits,
+	                                      "int16",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "SDRplay",
+	                                      deviceModel,
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	sdrplayHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

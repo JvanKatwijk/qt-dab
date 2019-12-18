@@ -1,6 +1,6 @@
 
-#ifndef	__XMLFILE_READER__
-#define	__XMLFILE_READER__
+#ifndef	__XML_READER__
+#define	__XML_READER__
 
 #include	<QThread>
 #include	<QMessageBox>
@@ -10,24 +10,24 @@
 #include	<complex>
 #include	<vector>
 
-class	xmlfileHandler;
+class	xml_fileReader;
 class	xmlDescriptor;
 
-class	xmlfileReader:public QThread {
+class	xml_Reader:public QThread {
 Q_OBJECT
 public:
-			xmlfileReader (xmlfileHandler	*mr,
-	                               FILE		*f,
-	                               xmlDescriptor	*fd,
-	                               uint32_t		filePointer,
-	                               RingBuffer<std::complex<float>> *b);
-			~xmlfileReader	();
+			xml_Reader (xml_fileReader	*mr,
+	                            FILE		*f,
+	                            xmlDescriptor	*fd,
+	                            uint32_t		filePointer,
+	                            RingBuffer<std::complex<float>> *b);
+			~xml_Reader	();
 	void		stopReader	();
 	FILE		*file;
 	xmlDescriptor	*fd;
 	uint32_t	filePointer;
 	RingBuffer<std::complex<float>> *sampleBuffer;
-	xmlfileHandler	*parent;
+	xml_fileReader	*parent;
 	int		nrElements;
 	int		samplesToRead;
 	std::atomic<bool> running;

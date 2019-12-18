@@ -19,8 +19,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__XMLFILE_HANDLER__
-#define	__XMLFILE_HANDLER__
+#ifndef	__XML_FILEREADER__
+#define	__XML_FILEREADER__
 
 #include	<QThread>
 #include	<QString>
@@ -34,15 +34,15 @@
 class	QLabel;
 class	QSettings;
 class	xmlDescriptor;
-class	xmlfileReader;
+class	xml_Reader;
 /*
  */
-class	xmlfileHandler: public virtualInput,
+class	xml_fileReader: public virtualInput,
 	                public Ui_xmlfile_widget {
 Q_OBJECT
 public:
-				xmlfileHandler	(QString);
-                		~xmlfileHandler	();
+				xml_fileReader	(QString);
+                		~xml_fileReader	();
 	int32_t			getSamples	(std::complex<float> *,
 	                                                         int32_t);
 	uint8_t			myIdentity	();
@@ -56,7 +56,7 @@ private:
 	FILE			*theFile;
 	uint32_t		filePointer;
 	xmlDescriptor		*theDescriptor;
-	xmlfileReader		*theReader;
+	xml_Reader		*theReader;
 	std::atomic<bool>	running;
 public slots:
 	void			setProgress	(int, int);

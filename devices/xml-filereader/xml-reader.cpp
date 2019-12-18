@@ -1,7 +1,7 @@
 
-#include	"xmlfile-reader.h"
+#include	"xml-reader.h"
 #include	"xml-descriptor.h"
-#include	"xmlfile-handler.h"
+#include	"xml-filereader.h"
 #include	<sys/time.h>
 #include	<stdio.h>
 #include	"rawfiles.h"
@@ -28,11 +28,11 @@ struct timeval tv;
 	                  (uint64_t)tv. tv_usec);
 }
 
-	xmlfileReader::xmlfileReader (xmlfileHandler *mr,
-	                              FILE	*f,
-	                              xmlDescriptor *fd,
-	                              uint32_t	filePointer,
-	                              RingBuffer<std::complex<float>> *b) {
+	xml_Reader::xml_Reader (xml_fileReader *mr,
+	                        FILE	*f,
+	                        xmlDescriptor *fd,
+	                        uint32_t	filePointer,
+	                        RingBuffer<std::complex<float>> *b) {
 	this	-> parent	= mr;
 	this	-> file		= f;
 	this	-> fd		= fd;
@@ -58,13 +58,13 @@ struct timeval tv;
 	start ();
 }
 
-	xmlfileReader::~xmlfileReader () {
+	xml_Reader::~xml_Reader () {
 	running. store (false);
 	while (this -> isRunning ())
 	   usleep (1000);
 }
 
-void	xmlfileReader::stopReader	() {
+void	xml_Reader::stopReader	() {
 	if (!running. load ())
 	   return;
 	running. store (false);
@@ -73,7 +73,7 @@ void	xmlfileReader::stopReader	() {
 }
 
 static	int cycleCount = 0;
-void	xmlfileReader::run () {
+void	xml_Reader::run () {
 int	samplesRead	= 0;
 int	blockSize	= 2048;
 uint64_t	nextStop;
@@ -99,7 +99,7 @@ uint64_t	nextStop;
 	}
 }
 
-int	xmlfileReader::compute_nrSamples (FILE *f, int blockNumber) {
+int	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
 int	nrElements	= fd -> blockList. at (blockNumber). nrElements;
 int	samplesToRead	= 0;
 
@@ -118,7 +118,7 @@ int	samplesToRead	= 0;
 	return samplesToRead;
 }
 
-int	xmlfileReader::readSamples (FILE *f, int amount) {
+int	xml_Reader::readSamples (FILE *f, int amount) {
 float I_element, Q_element;
 int	sampleCount	= 0;
 
@@ -180,7 +180,7 @@ float mapTable [] = {
 , 96 / 128.0 , 97 / 128.0 , 98 / 128.0 , 99 / 128.0 , 100 / 128.0 , 101 / 128.0 , 102 / 128.0 , 103 / 128.0 , 104 / 128.0 , 105 / 128.0 , 106 / 128.0 , 107 / 128.0 , 108 / 128.0 , 109 / 128.0 , 110 / 128.0 , 111 / 128.0 
 , 112 / 128.0 , 113 / 128.0 , 114 / 128.0 , 115 / 128.0 , 116 / 128.0 , 117 / 128.0 , 118 / 128.0 , 119 / 128.0 , 120 / 128.0 , 121 / 128.0 , 122 / 128.0 , 123 / 128.0 , 124 / 128.0 , 125 / 128.0 , 126 / 128.0 , 127 / 128.0 };
 
-float	xmlfileReader::readElement (FILE *theFile) {
+float	xml_Reader::readElement (FILE *theFile) {
 uint8_t s1;
 uint8_t bytes_16 [2];
 uint8_t	bytes_24 [3];

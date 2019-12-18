@@ -26,11 +26,11 @@ public:
 		xmlHandler	(FILE *, int, int);
 		~xmlHandler	();
 	void	add		(std::complex<int16_t> *, int);
-	void	computeHeader	();
+	void	computeHeader	(QString &, QString &);
 private:
 	int		denominator;
 	int		frequency;
-	QString		create_xmltree		();
+	QString		create_xmltree		(QString &, QString &);
 	FILE		*xmlFile;
 	QString		byteOrder;
 	int		nrElements;

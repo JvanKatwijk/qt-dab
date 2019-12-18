@@ -154,6 +154,7 @@ HEADERS += ./radio.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
+	   ./devices/xml-filewriter.h \
 	   ./devices/filereader-widget.h \
 	   ./devices/rawfiles-new/rawfiles.h \
 	   ./devices/rawfiles-new/raw-reader.h \
@@ -242,6 +243,7 @@ SOURCES += ./main.cpp \
 	   ./src/support/history-handler.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
+	   ./devices/xml-filewriter.cpp \
 	   ./devices/rawfiles-new/rawfiles.cpp \
 	   ./devices/rawfiles-new/raw-reader.cpp \
            ./devices/wavfiles-new/wavfiles.cpp \
@@ -279,7 +281,7 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2-xml
+CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
 CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= lime
@@ -361,7 +363,7 @@ CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2-xml
+CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= hackrf
@@ -403,24 +405,10 @@ sdrplay-v2 {
 	DEPENDPATH	+= ./devices/sdrplay-handler-v2
 	INCLUDEPATH	+= ./devices/sdrplay-handler-v2
 	HEADERS		+= ./devices/sdrplay-handler-v2/sdrplay-handler-v2.h \
-	                   ./devices/sdrplay-handler-v2/sdrplayselect.h
+	                   ./devices/sdrplay-handler-v2/sdrplayselect.h 
 	SOURCES		+= ./devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp \
-	                   ./devices/sdrplay-handler-v2/sdrplayselect.cpp
+	                   ./devices/sdrplay-handler-v2/sdrplayselect.cpp 
 	FORMS		+= ./devices/sdrplay-handler-v2/sdrplay-widget-v2.ui
-}
-#
-sdrplay-v2-xml {
-	DEFINES		+= HAVE_SDRPLAY_V2
-	DEPENDPATH	+= ./devices/sdrplay-handler-v2-xml
-	INCLUDEPATH	+= ./devices/sdrplay-handler-v2-xml
-	HEADERS		+= ./devices/sdrplay-handler-v2-xml/sdrplay-handler-v2.h \
-	                   ./devices/sdrplay-handler-v2-xml/sdrplayselect.h \
-	                   ./devices/sdrplay-handler-v2-xml/xml-handler.h
-	SOURCES		+= ./devices/sdrplay-handler-v2-xml/sdrplay-handler-v2.cpp \
-	                   ./devices/sdrplay-handler-v2-xml/sdrplayselect.cpp \
-	                   ./devices/sdrplay-handler-v2-xml/xml-handler.cpp
-	
-	FORMS		+= ./devices/sdrplay-handler-v2-xml/sdrplay-widget-v2.ui
 }
 #
 #	the SDRplay
@@ -517,15 +505,15 @@ soapy {
 
 xmlfiles {
 	DEFINES		+= HAVE_XMLFILES
-	INCLUDEPATH	+= devices/xmlfile-handler
-	DEPENDPATH	+= devices/xmlfile-handler 
-	HEADERS		+= devices/xmlfile-handler/xmlfile-handler.h \
-	                   devices/xmlfile-handler/xmlfile-reader.h \
-	                   devices/xmlfile-handler/xml-descriptor.h
-	SOURCES		+= devices/xmlfile-handler/xmlfile-handler.cpp \
-	                   devices/xmlfile-handler/xmlfile-reader.cpp \
-	                   devices/xmlfile-handler/xml-descriptor.cpp
-	FORMS		+= ./devices/xmlfile-handler/xmlfiles.ui
+	INCLUDEPATH	+= devices/xml-filereader
+	DEPENDPATH	+= devices/xml-filereader
+	HEADERS		+= devices/xml-filereader/xml-filereader.h \
+	                   devices/xml-filereader/xml-reader.h \
+	                   devices/xml-filereader/xml-descriptor.h
+	SOURCES		+= devices/xml-filereader/xml-filereader.cpp \
+	                   devices/xml-filereader/xml-reader.cpp \
+	                   devices/xml-filereader/xml-descriptor.cpp
+	FORMS		+= ./devices/xml-filereader/xmlfiles.ui
 }
 	
 send_datagram {

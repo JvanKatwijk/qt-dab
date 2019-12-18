@@ -53,6 +53,8 @@ typedef	void	(*mir_sdr_GainChangeCallback_t)(uint32_t	gRdB,
 #define	GETPROCADDRESS	dlsym
 #endif
 
+class	xml_fileWriter;
+
 // Dll and ".so" function prototypes
 typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamInit) (int *gRdB, double fsMHz,
 double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAEnable, int *gRdBsystem, int useGrAltMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext); 
@@ -91,26 +93,22 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
-			sdrplayHandler		(QSettings *);
-			~sdrplayHandler();
-	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency();
-	int32_t		defaultFrequency();
+			sdrplayHandler		(QSettings *, QString &);
+			~sdrplayHandler		();
+	int32_t		getVFOFrequency		();
+	int32_t		defaultFrequency	();
 
 	bool		restartReader		(int32_t);
-	void		stopReader();
+	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
-	int32_t		Samples();
-	void		resetBuffer();
-	int16_t		bitDepth();
-	int		getBufferSpace		();
-	int		getOverflows		();
+	int32_t		Samples			();
+	void		resetBuffer		();
+	int16_t		bitDepth		();
 //
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<int16_t>>	*_I_Buffer;
 	float		denominator;
-	int		bufferOverflows;
 private:
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;
@@ -142,11 +140,15 @@ private:
 	pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
 	pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
 
+	QString		recorderVersion;
+	QString		deviceModel;
+	bool		fetchLibrary	();
+	void		releaseLibrary	();
 	QString		errorCodes	(mir_sdr_ErrT);
 	int16_t		hwVersion;
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
-	bool		loadFunctions();
+	bool		loadFunctions	();
 	QSettings	*sdrplaySettings;
 	int32_t		inputRate;
 	int32_t		vfoFrequency;
@@ -156,6 +158,12 @@ private:
 	bool		agcMode;
 	int16_t		nrBits;
 
+	FILE		*xmlDumper;
+        xml_fileWriter	*xmlWriter;
+        bool		setup_xmlDump		();
+        void		close_xmlDump		();
+	std::atomic<bool> dumping;
+
 private slots:
 	void		set_ifgainReduction	(int);
 	void		set_lnagainReduction	(int);
@@ -164,6 +172,7 @@ private slots:
 	void		set_ppmControl		(int);
 	void		set_antennaSelect	(const QString &);
 	void		set_tunerSelect		(const QString &);
+	void		set_xmlDump		();
 };
 #endif
 

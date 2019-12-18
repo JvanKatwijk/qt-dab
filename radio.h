@@ -74,6 +74,7 @@ public:
 protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
 private:
+	QString			version;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	QSettings	*dabSettings;
