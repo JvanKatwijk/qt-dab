@@ -359,7 +359,7 @@ BitWriter	au_bw;
 	au_bw. AddBits (   0, 1);	// crcCheckPresent
 
 //	PayloadLengthInfo()
-	for (size_t i = 0; i < aac_frame_len / 255; i++)
+	for (size_t i = 0; i < (size_t)(aac_frame_len / 255); i++)
 	   au_bw. AddBits (0xFF, 8);
 	au_bw. AddBits (aac_frame_len % 255, 8);
 

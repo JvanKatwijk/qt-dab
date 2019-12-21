@@ -60,6 +60,8 @@ int16_t	i;
 	   next += 16;
 	}
 
+	(void)lastSegment;
+	(void)segmentNumber;
 	if (userAccessFlag) {
 	   transportIdFlag	= getBits_1 (data, next + 3);
 	   lengthInd		= getBits_4 (data, next + 4);
@@ -69,10 +71,12 @@ int16_t	i;
 	   }
 	   next	+= lengthInd * 8;
 	}
-
+	(void)transportId;
 	uint16_t	ipLength	= 0;
 	int16_t		sizeinBits	=
 	              msc. size() - next - (crcFlag != 0 ? 16 : 0);
+
+	(void)sizeinBits;
 	ipLength = getBits (data, next + 16, 16);
 	if (ipLength < msc. size() / 8) {	// just to be sure
 	   std::vector<uint8_t> ipVector;
