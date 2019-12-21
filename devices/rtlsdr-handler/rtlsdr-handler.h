@@ -32,6 +32,7 @@
 #include	<QSettings>
 #include	<QString>
 #include	<cstdio>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
