@@ -329,10 +329,10 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/data-processor.cpp
 	     ./devices/virtual-input.cpp
 	     ./devices/xml-filewriter.cpp
-	     ./devices/rawfiles/rawfiles.cpp
-	     ./devices/rawfiles/raw-reader.cpp
-	     ./devices/wavfiles/wavfiles.cpp
-	     ./devices/wavfiles/wav-reader.cpp
+	     ./devices/rawfiles-new/rawfiles.cpp
+	     ./devices/rawfiles-new/raw-reader.cpp
+	     ./devices/wavfiles-new/wavfiles.cpp
+	     ./devices/wavfiles-new/wav-reader.cpp
 	     ./src/output/audio-base.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
@@ -382,10 +382,10 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/tdc-datahandler.h
 	     ./includes/backend/data/journaline-datahandler.h
 	     ./includes/backend/data/data-processor.h
-	     ./devices/rawfiles/rawfiles.h
-	     ./devices/rawfiles/raw-reader.h
-	     ./devices/wavfiles/wavfiles.h
-	     ./devices/wavfiles/wav-reader.h
+	     ./devices/rawfiles-new/rawfiles.h
+	     ./devices/rawfiles-new/raw-reader.h
+	     ./devices/wavfiles-new/wavfiles.h
+	     ./devices/wavfiles-new/wav-reader.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
