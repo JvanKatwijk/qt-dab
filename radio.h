@@ -77,15 +77,15 @@ private:
 	QString			version;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
-	QSettings	*dabSettings;
+	QSettings		*dabSettings;
 	std::vector<QString>	serviceList;
-        spectrumViewer         *my_spectrumViewer;
+        spectrumViewer		*my_spectrumViewer;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
+	RingBuffer<std::complex<float>>  *tiiBuffer;
 	correlationViewer	*my_correlationViewer;
 	RingBuffer<float>	*responseBuffer;
 	tiiViewer		*my_tiiViewer;
-	RingBuffer<std::complex<float>>  *tiiBuffer;
 
 	presetHandler		my_presetHandler;
 	int16_t			tii_delay;

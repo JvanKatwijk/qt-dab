@@ -262,6 +262,7 @@ public:
 	         return &(clusterTable [i]);
 	      }
 	   }
+	   return &(clusterTable [0]);	// cannot happen
 	}
 
 	subChannelDescriptor    subChannels [64];
@@ -1778,7 +1779,7 @@ void	fibDecoder::setCluster (int clusterId,
 	   myCluster -> flags = asuFlags;
 	}
 
-	for (int i = 0; i < myCluster -> services. size (); i ++)
+	for (uint16_t i = 0; i < myCluster -> services. size (); i ++)
 	   if (myCluster -> services [i] == serviceIndex)
 	      return;
 	myCluster -> services. push_back (serviceIndex);
