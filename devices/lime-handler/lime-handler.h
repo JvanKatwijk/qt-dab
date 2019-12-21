@@ -40,6 +40,8 @@
 #define GETPROCADDRESS  dlsym
 #endif
 
+class	xml_fileWriter;
+
 //	DLL and ".so" function prototypes
 typedef int	(*pfn_LMS_GetDeviceList)(lms_info_str_t *dev_list);
 typedef	int	(*pfn_LMS_Open)(lms_device_t **device,
@@ -95,31 +97,38 @@ typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 class	limeHandler: public virtualInput, public limeWidget {
 Q_OBJECT
 public:
-			limeHandler		(QSettings *);
-			~limeHandler();
+			limeHandler		(QSettings *, QString &);
+			~limeHandler		();
 	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency();
+	int32_t		getVFOFrequency		();
 	bool		restartReader		(int32_t);
-	void		stopReader();
+	void		stopReader		();
 	int32_t         getSamples              (std::complex<float> *,
                                                                   int32_t);
-        int32_t         Samples();
-        void            resetBuffer();
-        int16_t         bitDepth();
-	int		getBufferSpace		();
+        int32_t         Samples			();
+        void            resetBuffer		();
+        int16_t         bitDepth		();
 
 private:
+	QString		recorderVersion;
+	QString		deviceModel;
 	QSettings	*limeSettings;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
-	RingBuffer<std::complex<float>> *_I_Buffer;
+	RingBuffer<std::complex<int16_t>> *_I_Buffer;
 	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
 	lms_stream_meta_t meta;
         lms_stream_t    stream;
-        void		run();
+        void		run			();
+
+	FILE            *xmlDumper;
+        xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
+        std::atomic<bool> dumping;
 
 //	imported functions
 public:
@@ -154,6 +163,7 @@ public:
 private slots:
 	void		setGain		(int);
 	void		setAntenna	(int);
+	void		set_xmlDump	();
 
 public slots:
 	void		showErrors	(int, int);

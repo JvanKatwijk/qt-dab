@@ -882,7 +882,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_LIME
 	if (s == "limeSDR") {
 	   try {
-	      inputDevice = new limeHandler (dabSettings);
+	      inputDevice = new limeHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -969,7 +969,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_RTLSDR
 	if (s == "dabstick") {
 	   try {
-	      inputDevice	= new rtlsdrHandler (dabSettings);
+	      inputDevice	= new rtlsdrHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {

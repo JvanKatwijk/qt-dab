@@ -1,7 +1,30 @@
-
-
+#
+/*
+ *    Copyright (C) 2014 .. 2019
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    Many of the ideas as implemented in Qt-DAB are derived from
+ *    other work, made available through the GNU general Public License.
+ *    All copyrights of the original authors are acknowledged.
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ */
 #include	"xml-descriptor.h"
-
 
 	xmlDescriptor::~xmlDescriptor	() {
 }
@@ -56,10 +79,6 @@ void	xmlDescriptor::addChannelOrder (int channelOrder, QString Value) {
 void	xmlDescriptor::add_dataBlock (int currBlock,  int Count,
                                       int  blockNumber, QString Unit) {
 Blocks	b;
-//	if (currBlock > nrBlocks) {
-//	   fprintf (stderr, "erroneous specification\n");
-//	   return;
-//	}
 	b. blockNumber	= blockNumber;
 	b. nrElements	= Count;
 	b. typeofUnit	= Unit;
@@ -77,7 +96,7 @@ void	xmlDescriptor::add_modtoBlock (int blockno, QString modType) {
 //	precondition: file exists and is readable.
 //	Note that after the object is filled, the
 //	file pointer points to where the contents starts
-	xmlDescriptor::xmlDescriptor (FILE *f, uint32_t *fp, bool *ok) {
+	xmlDescriptor::xmlDescriptor (FILE *f, bool *ok) {
 QDomDocument xmlDoc;
 QByteArray xmlText;
 int	zeroCount = 0;
@@ -100,10 +119,6 @@ int	zeroCount = 0;
 	   xmlText. append (theChar);
 	}
 
-	while (theChar = fgetc (f));
-	ungetc (theChar, f);
-	   
-	*fp	= ftell (f);
 	xmlDoc. setContent (xmlText);
 	QDomElement root        = xmlDoc. documentElement ();
 	QDomNodeList nodes = root. childNodes ();

@@ -1,34 +1,37 @@
-# Qt-DAB-3.1-Beta [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.2-Beta [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.1-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
+Qt-DAB-3.2-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ---------------------------------------------------------------------
-Summary of new features in Qt-DAB-3.1-Beta
+Summary of new features in Qt-DAB-3.2-Beta
 ---------------------------------------------------------------------
 
-* system related data is now displayed on the main widget
-* the "picture(s)" transmitted with the various services are now
-shown on the "technicl details" widget
-* easy channel scrolling by a "+" and a "-" button, below the
-channel selector (not not visible when playing from file input)
-* easy scrolling though the list of services by a "+" and a "-"
-button, just below the preset selector, or - if the servicelist
-has the focus - with the up- or down-arrow moving through the list,
-acknowledging by pressing the "enter"
-* maintaining a "history" list, a list containing the channel:name
-combinations of all services encountered. Selecting from this list
-is by selecting an element and touching the *left* mouse button.
-Clicking with the *right* mouse button will clear the history list.
-The list can be made (in)visible by touching the "xx" button.
+Qt-DAB 3.2 distinguishes itself from the previous version by 
+the following visible changes
+
+ * stereo indicator disappeared on the main GUI, and its place is taken
+by the progress bar showing the quality of the FIC decoding. Since this
+indicator is independent on the selected service its place is the main
+widget rather than the technical details widget, describing the selected
+service
+
+ * support is added for the V3 version of the SDRplay library. As known (at 
+least with the SDRplay users), SDRplay ltd developed the Duo and the new RSPdx,
+and future support will be through the V3 library (currently 3.06).
+
+ * **experimental** support is added for **self describing** "uff" files for
+dumping and reading back raw data.  These files contain a description
+of the encoding and format of the contents.
+Currently, the support drivers for the SDRplay (interfacing to the
+2.13 SDRPlay library), the AIRspy, the "dabsticks" and the limeSDR device
+handlers are equipped with a "dump" button to create such a file.
+A "reader", called "xml-files" is also part of the distribution,
+the reader is able to handle these xml files.
 
 ----------------------------------------------------------------------
 Why a Beta version
 ----------------------------------------------------------------------
 
-In order to support the new features, such as  + and - buttons for
-both services and channels, as well handling the presets,
-significant parts of the control software were rewritten
-(and somewhat "modernized").
 In spite of extensive testing on RPI, x64 Linux and Windows,
 the software still may contain some errors.
 Error reports are appreciated.

@@ -38,13 +38,6 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>gain</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QComboBox" name="combo_gain">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
@@ -55,6 +48,13 @@
       </widget>
      </item>
     </layout>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>gain</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QComboBox" name="combo_autogain">
@@ -79,7 +79,7 @@
    <item>
     <widget class="QPushButton" name="dumpButton">
      <property name="text">
-      <string>write raw bytes</string>
+      <string>dump</string>
      </property>
     </widget>
    </item>

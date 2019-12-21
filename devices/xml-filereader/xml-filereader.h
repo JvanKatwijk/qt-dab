@@ -31,7 +31,6 @@
 #include	"ringbuffer.h"
 #include	"ui_xmlfiles.h"
 
-class	QLabel;
 class	QSettings;
 class	xmlDescriptor;
 class	xml_Reader;

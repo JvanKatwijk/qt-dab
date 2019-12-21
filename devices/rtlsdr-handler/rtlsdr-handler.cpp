@@ -31,6 +31,7 @@
 #include	"rtlsdr-handler.h"
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
+#include	"xml-filewriter.h"
 
 #ifdef	__MINGW32__
 #define	GETPROCADDRESS	GetProcAddress
@@ -73,11 +74,8 @@ std::complex<float> localBuffer [READLEN_DEFAULT / 2];
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
 
-	for (uint32_t i = 0; i < len / 2; i ++)
-	   localBuffer [i] = std::complex <float> (
-	                         mapTable [buf [2 * i]],
-	                         mapTable [buf [2 * i + 1]]);
-	(void)theStick -> _I_Buffer -> putDataIntoBuffer (localBuffer, len / 2);
+	(void)theStick -> _I_Buffer ->
+	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -107,7 +105,7 @@ virtual void	run() {
 };
 //
 //	Our wrapper is a simple classs
-	rtlsdrHandler::rtlsdrHandler (QSettings *s) {
+	rtlsdrHandler::rtlsdrHandler (QSettings *s, QString &recorderVersion) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -116,12 +114,13 @@ QString	temp;
 int	k;
 char	manufac [256], product [256], serial [256];
 
-	rtlsdrSettings		= s;
-	myFrame			= new QFrame (nullptr);
+	rtlsdrSettings			= s;
+	this	-> recorderVersion	= recorderVersion;
+	myFrame				= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
-	inputRate		= 2048000;
-	libraryLoaded		= false;
+	inputRate			= 2048000;
+	libraryLoaded			= false;
 	open			= false;
 	_I_Buffer		= nullptr;
 	workerHandle		= nullptr;
@@ -192,8 +191,8 @@ char	manufac [256], product [256], serial [256];
 	   delete myFrame;
 	   throw (23);
 	}
-
-	deviceName      -> setText (rtlsdr_get_device_name (deviceIndex));
+	deviceModel	= rtlsdr_get_device_name (deviceIndex);
+	deviceName      -> setText (deviceModel);
 
 	open			= true;
 	r			= this -> rtlsdr_set_sample_rate (device,
@@ -227,7 +226,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode (device, 0);
 
-	_I_Buffer		= new RingBuffer<std::complex<float>>(4 * 1024 * 1024);
+	_I_Buffer		= new RingBuffer<std::complex<uint8_t>>(4 * 1024 * 1024);
 
 	theGain		= gains [gainsCount / 2];	// default
 //
@@ -252,6 +251,8 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings	-> endGroup();
 
 	rtlsdr_get_usb_strings (device, manufac, product, serial);
+	fprintf (stderr, "%s %s %s\n",
+	            manufac, product, serial);
 
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
@@ -264,7 +265,6 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain	(device, theGain);
 	set_ppmCorrection	(ppm_correction -> value());
 
-	dumping			= false;
 //	and attach the buttons/sliders to the actions
 	connect (combo_gain, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_ExternalGain (const QString &)));
@@ -272,8 +272,11 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (set_autogain (const QString &)));
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
-	connect (dumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (dumpButton_pressed (void)));
+	connect (dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
+	xmlDumper       = nullptr;
+	dumping. store (false);
+
 }
 
 	rtlsdrHandler::~rtlsdrHandler() {
@@ -351,6 +354,8 @@ int32_t	r;
 void	rtlsdrHandler::stopReader() {
 	if (workerHandle == nullptr)
 	   return;
+
+	close_xmlDump ();
 	if (workerHandle != nullptr) { // we are running
 	   this -> rtlsdr_cancel_async (device);
 	   if (workerHandle != nullptr) {
@@ -379,7 +384,15 @@ void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
 }
 
 int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) { 
-int	amount = _I_Buffer	-> getDataFromBuffer (V, size);
+std::complex<uint8_t> temp [size];
+int	amount;
+
+	amount = _I_Buffer	-> getDataFromBuffer (temp, size);
+	for (int i = 0; i < amount; i ++) 
+	   V [i] = std::complex<float> (mapTable [real (temp [i])],
+	                                mapTable [imag (temp [i])]);
+	if (dumping. load ())
+	   xmlWriter -> add (temp, amount);
 	return amount;
 }
 
@@ -541,32 +554,47 @@ int16_t	rtlsdrHandler::bitDepth() {
 	return 8;
 }
 
-void	rtlsdrHandler::dumpButton_pressed() {
-	if (!dumping) {
-	   QString file = QFileDialog::getSaveFileName (nullptr,
-	                                                tr ("Save file ..."),
-	                                                QDir::homePath(),
-	                                                tr ("iq file (*.iq)"));
-	   if (file == QString (""))
-	      return;
-	   file		= QDir::toNativeSeparators (file);
-	   if (!file.endsWith (".iq", Qt::CaseInsensitive))
-	      file.append (".iq");
-	   dumpfilePointer = fopen (file. toLatin1(). data(), "w+b");
-	   if (dumpfilePointer == nullptr)
-	      return;
-	   dumpButton -> setText ("WRITING");
-	   dumping = true;
+void	rtlsdrHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
 	}
 	else {
-	   dumping = false;
-	   fclose (dumpfilePointer);
-	   dumpfilePointer = nullptr;
-	   dumpButton -> setText ("write raw bytes");
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
 	}
 }
 
-int	rtlsdrHandler::getBufferSpace	() {
-	return _I_Buffer -> GetRingBufferWriteAvailable ();
+bool	rtlsdrHandler::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      8,
+	                                      "uint8",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "rtlsdr",
+	                                      deviceModel,
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	rtlsdrHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

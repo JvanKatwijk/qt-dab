@@ -822,7 +822,7 @@ bool	sdrplayHandler::setup_xmlDump () {
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
 	                                         QDir::homePath(),
-	                                         tr ("Xml (*.xml)"));
+	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
 	if (xmlDumper == nullptr)

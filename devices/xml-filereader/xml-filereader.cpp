@@ -50,7 +50,7 @@
 	
 	bool	ok	= false;
 	filenameLabel	-> setText (f);
-	theDescriptor	= new xmlDescriptor (theFile, &filePointer, &ok);
+	theDescriptor	= new xmlDescriptor (theFile, &ok);
 	if (!ok) {
 	   fprintf (stderr, "%s probably not an xml file\n",
 	                               f. toUtf8 (). data ());
@@ -59,22 +59,22 @@
 	   throw (32);
 	}
 
-	fileProgress    -> setValue (0);
-        currentTime     -> display (0);
+	fileProgress		-> setValue (0);
+        currentTime		-> display (0);
 	samplerateDisplay	-> display (theDescriptor -> sampleRate);
 	nrBitsDisplay		-> display (theDescriptor -> bitsperChannel);
 	containerLabel		-> setText (theDescriptor -> container);
-	iqOrderLabel	-> setText (theDescriptor -> iqOrder);
-	byteOrderLabel	-> setText (theDescriptor -> byteOrder);
+	iqOrderLabel		-> setText (theDescriptor -> iqOrder);
+	byteOrderLabel		-> setText (theDescriptor -> byteOrder);
 	frequencyDisplay	-> display (theDescriptor -> blockList [0]. frequency / 1000.0);
-	typeofUnitLabel	-> setText (theDescriptor -> blockList [0]. typeofUnit);
+	typeofUnitLabel		-> setText (theDescriptor -> blockList [0]. typeofUnit);
 	modulationtypeLabel	-> setText (theDescriptor -> blockList [0]. modType);
 
-	deviceName	-> setText (theDescriptor -> deviceName);
-	deviceModel	-> setText (theDescriptor -> deviceModel);
-	recorderName	-> setText (theDescriptor -> recorderName);
-	recorderVersion	-> setText (theDescriptor -> recorderVersion);
-	recordingTime	-> setText (theDescriptor -> recordingTime);
+	deviceName		-> setText (theDescriptor -> deviceName);
+	deviceModel		-> setText (theDescriptor -> deviceModel);
+	recorderName		-> setText (theDescriptor -> recorderName);
+	recorderVersion		-> setText (theDescriptor -> recorderVersion);
+	recordingTime		-> setText (theDescriptor -> recordingTime);
 
 	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
 	fprintf (stderr, "nrElements = %d\n",

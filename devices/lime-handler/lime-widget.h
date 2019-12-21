@@ -5,6 +5,7 @@
 #include	<QSpinBox>
 #include	<QLCDNumber>
 #include	<QComboBox>
+#include	<QPushButton>
 #include	<QHBoxLayout>
 #include	<QVBoxLayout>
 
@@ -20,6 +21,7 @@ public:
 	QLabel		*underrunLabel;
 	QLCDNumber	*overrunDisplay;
 	QLabel		*overrunLabel;
+	QPushButton	*dumpButton;
 
 	limeWidget	() {}
 	~limeWidget	() {}
@@ -35,6 +37,8 @@ void	setupUi		(QWidget *qw) {
 	underrunLabel	= new QLabel	("underruns");
 	overrunDisplay	= new QLCDNumber ();
 	overrunLabel	= new QLabel	("overruns");
+	dumpButton	= new QPushButton	();
+	dumpButton	-> setText ("Dump");
 	actualGain	->  setFrameShape (QFrame::NoFrame);
         actualGain	->  setSegmentStyle (QLCDNumber::Flat);
 	underrunDisplay	->  setFrameShape (QFrame::NoFrame);
@@ -60,8 +64,12 @@ void	setupUi		(QWidget *qw) {
 	line5		-> addWidget (overrunDisplay);
 	line5		-> addWidget (overrunLabel);
 
+	QHBoxLayout *line1	= new QHBoxLayout ();
+	line1		-> addWidget (titleLabel);
+	line1		-> addWidget (dumpButton);
+	
 	QVBoxLayout *base	= new QVBoxLayout ();
-	base		-> addWidget	(titleLabel);
+	base		-> addItem	(line1);
 	base		-> addItem	(line2);
 	base		-> addItem	(line3);
 	base		-> addItem	(line4);

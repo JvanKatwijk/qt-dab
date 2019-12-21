@@ -122,7 +122,6 @@ std::vector<int> resultVector;
 	   mbuf [i] = lbuf [i];
 	   sum	+= lbuf [i];
 	}
-	
 
 	sum /= T_u / 2;
 //	

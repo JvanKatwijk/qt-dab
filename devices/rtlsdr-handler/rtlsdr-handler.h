@@ -30,12 +30,14 @@
 
 #include	<QObject>
 #include	<QSettings>
+#include	<QString>
 #include	<cstdio>
 #include	"dab-constants.h"
 #include	"virtual-input.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
 class	dll_driver;
+class	xml_fileWriter;
 //
 //	create typedefs for the library functions
 typedef	struct rtlsdr_dev rtlsdr_dev_t;
@@ -71,22 +73,21 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 class	rtlsdrHandler: public virtualInput, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *);
+			rtlsdrHandler	(QSettings *, QString &);
 			~rtlsdrHandler();
 	void		setVFOFrequency	(int32_t);
 	int32_t		getVFOFrequency	();
 //	interface to the reader
 	bool		restartReader	(int32_t);
-	void		stopReader();
+	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples();
-	void		resetBuffer();
-	int16_t		maxGain();
-	int16_t		bitDepth();
-	int		getBufferSpace	();
+	int32_t		Samples		();
+	void		resetBuffer	();
+	int16_t		maxGain		();
+	int16_t		bitDepth	();
 //
 //	These need to be visible for the separate usb handling thread
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<uint8_t>>	*_I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
 private:
@@ -100,10 +101,16 @@ private:
 	bool		open;
 	int		*gains;
 	int16_t		gainsCount;
-	bool		dumping;
-	FILE		*dumpfilePointer;
+	QString		deviceModel;
+	QString		recorderVersion;
+	FILE            *xmlDumper;
+        xml_fileWriter  *xmlWriter;
+        bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
+        std::atomic<bool> dumping;
+
 //	here we need to load functions from the dll
-	bool		load_rtlFunctions();
+	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;
 	pfnrtlsdr_close	rtlsdr_close;
 	pfnrtlsdr_get_usb_strings rtlsdr_get_usb_strings;
@@ -127,7 +134,7 @@ private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
-	void		dumpButton_pressed();
+	void		set_xmlDump		();
 };
 #endif
 

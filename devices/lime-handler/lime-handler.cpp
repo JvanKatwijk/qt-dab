@@ -20,16 +20,18 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include	<QFileDialog>
 #include	"lime-handler.h"
+#include	"xml-filewriter.h"
 
 #define	FIFO_SIZE	32768
 static
-float localBuffer [4 * FIFO_SIZE];
+int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
-	limeHandler::limeHandler (QSettings *s) {
-	this	-> limeSettings	= s;
-
+	limeHandler::limeHandler (QSettings *s, QString &recorderVersion) {
+	this	-> limeSettings		= s;
+	this	-> recorderVersion	= recorderVersion;
 	this	-> myFrame	= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show();
@@ -111,7 +113,7 @@ lms_info_str_t limedevices [10];
 
 	float_type host_Hz, rf_Hz;
 	res	= LMS_GetSampleRate (theDevice, LMS_CH_RX, 0,
-	                               &host_Hz, &rf_Hz);
+	                                            &host_Hz, &rf_Hz);
 
 	fprintf (stderr, "samplerate = %f %f\n", (float)host_Hz, (float)rf_Hz);
 	
@@ -129,7 +131,6 @@ lms_info_str_t limedevices [10];
 	
 	connect (antennaList, SIGNAL (activated (int)),
 	         this, SLOT (setAntenna (int)));
-
 
 //	default antenna setting
 	res		= LMS_SetAntenna (theDevice, LMS_CH_RX, 0, 
@@ -156,7 +157,7 @@ lms_info_str_t limedevices [10];
 
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	_I_Buffer	= new RingBuffer<std::complex<float>> (8 * 1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<int16_t>> (8 * 1024 * 1024);
 	
 	limeSettings	-> beginGroup ("limeSettings");
 	k	= limeSettings	-> value ("gain", 50). toInt();
@@ -165,10 +166,15 @@ lms_info_str_t limedevices [10];
 	setGain (k);
 	connect (gainSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (setGain (int)));
+	connect (dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
+	xmlDumper	= nullptr;
+	dumping. store (false);
 	running. store (false);
 }
 
 	limeHandler::~limeHandler() {
+	stopReader ();
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
@@ -212,7 +218,7 @@ int	res;
         stream. channel         = 0;
         stream. fifoSize        = FIFO_SIZE;
         stream. throughputVsLatency     = 0.1;  // ???
-        stream. dataFmt         = lms_stream_t::LMS_FMT_F32;    // 12 bit ints
+        stream. dataFmt         = lms_stream_t::LMS_FMT_I12;    // 12 bit ints
 	res     = LMS_SetupStream (theDevice, &stream);
         if (res < 0)
            return false;
@@ -225,6 +231,7 @@ int	res;
 }
 	
 void	limeHandler::stopReader() {
+	close_xmlDump ();
 	if (!isRunning())
 	   return;
 	running. store (false);
@@ -234,8 +241,16 @@ void	limeHandler::stopReader() {
 	(void)LMS_DestroyStream	(theDevice, &stream);
 }
 
-int	limeHandler::getSamples		(std::complex<float> *v, int32_t a) {
-	return _I_Buffer -> getDataFromBuffer (v, a);
+int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
+std::complex<int16_t> temp [size];
+int i;
+        int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+        for (i = 0; i < amount; i ++)
+           V [i] = std::complex<float> (real (temp [i]) / 2048.0,
+                                        imag (temp [i]) / 2048.0);
+        if (dumping. load ())
+           xmlWriter -> add (temp, amount);
+        return amount;
 }
 
 int	limeHandler::Samples() {
@@ -452,7 +467,47 @@ bool	limeHandler::load_limeFunctions() {
 	return true;
 }
 
-int	limeHandler::getBufferSpace	() {
-	return _I_Buffer	-> GetRingBufferWriteAvailable ();
+void	limeHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
+	}
+}
+
+bool	limeHandler::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      bitDepth	(),
+	                                      "int16",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "lime",
+	                                      "1",
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	limeHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 
