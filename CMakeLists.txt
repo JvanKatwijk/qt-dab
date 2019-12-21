@@ -188,8 +188,8 @@ add_definitions (-DPRESET_NAME)
 	           ./includes/output
 	           ./includes/scopes-qwt6
 	           ./devices
-	           ./devices/rawfiles
-	           ./devices/wavfiles
+	           ./devices/rawfiles-new
+	           ./devices/wavfiles-new
 	           ./spectrum-viewer
 	           ./correlation-viewer
 	           ./tii-viewer
@@ -248,10 +248,10 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/data-processor.h
 	     ./devices/virtual-input.h
 	     ./devices/xml-filewriter.h
-	     ./devices/rawfiles/rawfiles.h
-	     ./devices/rawfiles/raw-reader.h
-	     ./devices/wavfiles/wavfiles.h
-	     ./devices/wavfiles/wav-reader.h
+	     ./devices/rawfiles-new/rawfiles.h
+	     ./devices/rawfiles-new/raw-reader.h
+	     ./devices/wavfiles-new/wavfiles.h
+	     ./devices/wavfiles-new/wav-reader.h
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/newconverter.h
