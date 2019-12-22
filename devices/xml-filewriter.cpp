@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2014 .. 2019
@@ -104,6 +103,20 @@ void	xml_fileWriter::add	(std::complex<uint8_t> * data, int count) {
 	   if (bufferP_uint8 >= BLOCK_SIZE) {
 	      fwrite (buffer_uint8, sizeof (uint8_t), BLOCK_SIZE, xmlFile);
 	      bufferP_uint8 = 0;
+	   }
+	}
+}
+
+static int8_t buffer_int8 [BLOCK_SIZE];
+static int bufferP_int8	= 0;
+void	xml_fileWriter::add	(std::complex<int8_t> * data, int count) {
+	nrElements	+= 2 * count;
+	for (int i = 0; i < count; i ++) {
+	   buffer_int8 [bufferP_int8 ++] = real (data [i]);
+	   buffer_int8 [bufferP_int8 ++] = imag (data [i]);
+	   if (bufferP_int8 >= BLOCK_SIZE) {
+	      fwrite (buffer_int8, sizeof (int8_t), BLOCK_SIZE, xmlFile);
+	      bufferP_int8 = 0;
 	   }
 	}
 }

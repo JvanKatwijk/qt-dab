@@ -854,7 +854,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_HACKRF
 	if (s == "hackrf") {
 	   try {
-	      inputDevice	= new hackrfHandler (dabSettings);
+	      inputDevice	= new hackrfHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {

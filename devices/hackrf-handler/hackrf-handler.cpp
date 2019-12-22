@@ -28,16 +28,19 @@
 #include	<QHBoxLayout>
 #include	<QLabel>
 #include	<QDebug>
+#include	<QFileDialog>
 #include	"hackrf-handler.h"
+#include	"xml-filewriter.h"
 
 #define	DEFAULT_GAIN	30
 
-	hackrfHandler::hackrfHandler  (QSettings *s) {
+	hackrfHandler::hackrfHandler  (QSettings *s, QString &recorderVersion) {
 int	res;
 	hackrfSettings			= s;
+	this	-> recorderVersion	= recorderVersion;
 	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	this	-> myFrame	-> show ();
 	this	-> inputRate		= Khz (2048);
 	_I_Buffer			= nullptr;
 
@@ -71,7 +74,7 @@ int	res;
 //
 //	From here we have a library available
 
-	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
+	_I_Buffer	= new RingBuffer<std::complex<int8_t>>(1024 * 1024);
 	vfoFrequency	= Khz (220000);
 //
 //	See if there are settings from previous incarnations
@@ -197,7 +200,8 @@ int	res;
 	         this, SLOT (EnableAmpli (int)));
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
-
+	connect (dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
@@ -207,7 +211,8 @@ int	res;
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
 	}
-
+	xmlDumper	= nullptr;
+	dumping. store (false);
 	running. store (false);
 }
 
@@ -336,19 +341,19 @@ uint16_t value;
 //
 //	we use a static large buffer, rather than trying to allocate
 //	a buffer on the stack
-static std::complex<float>buffer [32 * 32768];
+static std::complex<int8_t>buffer [32 * 32768];
 static
 int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
 int	i;
 uint8_t *p	= transfer -> buffer;
-RingBuffer<std::complex<float> > * q = ctx -> _I_Buffer;
+RingBuffer<std::complex<int8_t> > * q = ctx -> _I_Buffer;
 int	bufferIndex	= 0;
 
 	for (i = 0; i < transfer -> valid_length / 2; i += 1) {
-	   float re	= (((int8_t *)p) [2 * i]) / 128.0;
-	   float im	= (((int8_t *)p) [2 * i + 1]) / 128.0;
-	   buffer [bufferIndex ++]	= std::complex<float> (re, im);
+	   int8_t re	= ((int8_t *)p) [2 * i];
+	   int8_t im	= ((int8_t *)p) [2 * i + 1];
+	   buffer [bufferIndex ++]	= std::complex<int8_t> (re, im);
 	}
 	q -> putDataIntoBuffer (buffer, bufferIndex);
 	return 0;
@@ -398,10 +403,18 @@ int	res;
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-	return _I_Buffer	-> getDataFromBuffer (V, size);
+std::complex<int8_t> temp [size];
+	int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+        for (int i = 0; i < amount; i ++)
+           V [i] = std::complex<float> (real (temp [i]) / 127.0,
+                                        imag (temp [i]) / 127.0);
+        if (dumping. load ())
+           xmlWriter -> add (temp, amount);
+        return amount;
+
 }
 
-int32_t	hackrfHandler::Samples() {
+int32_t	hackrfHandler::Samples () {
 	return _I_Buffer	-> GetRingBufferReadAvailable();
 }
 
@@ -555,7 +568,48 @@ bool	hackrfHandler::load_hackrfFunctions() {
 	return true;
 }
 
-int	hackrfHandler::getBufferSpace	() {
-	return _I_Buffer -> GetRingBufferWriteAvailable	();
+
+void	hackrfHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
+	}
+}
+
+bool	hackrfHandler::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      8,
+	                                      "int8",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "Hackrf",
+	                                      "--",
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	hackrfHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

@@ -43,6 +43,8 @@ typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 #else
 #define GETPROCADDRESS  dlsym
 #endif
+
+class	xml_fileWriter;
 //
 //	Dll and ".so" function prototypes
 
@@ -64,7 +66,7 @@ typedef	int	(*pfn_hackrf_set_sample_rate) (hackrf_device *,
 typedef	int	(*pfn_hackrf_is_streaming) (hackrf_device *);
 typedef	const char	*(*pfn_hackrf_error_name) (enum hackrf_error errcode);
 typedef	const char	*(*pfn_hackrf_usb_board_id_name) (enum hackrf_usb_board_id);
-// contributes by Fabio
+// contributed by Fabio
 typedef int	(*pfn_hackrf_set_antenna_enable)
 	                         (hackrf_device *, const uint8_t);
 typedef int	(*pfn_hackrf_set_amp_enable) (hackrf_device *, const uint8_t);
@@ -79,26 +81,24 @@ typedef int	(*pfn_hackrf_si5351c_write)
 class	hackrfHandler: public virtualInput, public Ui_hackrfWidget {
 Q_OBJECT
 public:
-			hackrfHandler		(QSettings *);
-            ~hackrfHandler();
+			hackrfHandler		(QSettings *, QString &);
+            ~hackrfHandler			();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
 
 	bool		restartReader		(int32_t);
-	void		stopReader();
+	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
-	int32_t		Samples();
-	void		resetBuffer();
-	int16_t		bitDepth();
-	int		getBufferSpace		();
+	int32_t		Samples			();
+	void		resetBuffer		();
+	int16_t		bitDepth		();
 //
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<int8_t>>	*_I_Buffer;
 	hackrf_device	*theDevice;
 private:
-
-    bool			load_hackrfFunctions();
+	bool			load_hackrfFunctions	();
 	pfn_hackrf_init		hackrf_init;
 	pfn_hackrf_open		hackrf_open;
 	pfn_hackrf_close	hackrf_close;
@@ -125,12 +125,20 @@ private:
 	pfn_hackrf_si5351c_write hackrf_si5351c_write;
 //	Fine aggiunta
 
-	QSettings	*hackrfSettings;
-	int32_t		inputRate;
-	int32_t		vfoFrequency;
+	QSettings		*hackrfSettings;
+	QString			recorderVersion;
+	int32_t			inputRate;
+	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
-	HINSTANCE	Handle;
-	bool		libraryLoaded;
+	HINSTANCE		Handle;
+	bool			libraryLoaded;
+
+	FILE			*xmlDumper;
+        xml_fileWriter		*xmlWriter;
+        bool			setup_xmlDump           ();
+        void			close_xmlDump           ();
+        std::atomic<bool>	dumping;
+
 private slots:
 	void		setLNAGain	(int);
 	void		setVGAGain	(int);
@@ -139,6 +147,7 @@ private slots:
 	void		EnableAmpli	(int);
 	void		set_ppmCorrection (int);
 // Fine aggiunta
+	void		set_xmlDump	();
 };
 #endif
 

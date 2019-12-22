@@ -20,13 +20,13 @@ least with the SDRplay users), SDRplay ltd developed the Duo and the new RSPdx,
 and future support will be through the V3 library (currently 3.06).
 
  * **experimental** support is added for **self describing** "uff" files for
-dumping and reading back raw data.  These files contain a description
-of the encoding and format of the contents.
+dumping and reading back raw data. These files are self-describing, i.e.
+they contain a description of the encoding and format of the contents
+and a single reader (xml-files) is available to interpret the contents.
 Currently, the support drivers for the SDRplay (interfacing to the
-2.13 SDRPlay library), the AIRspy, the "dabsticks" and the limeSDR device
-handlers are equipped with a "dump" button to create such a file.
-A "reader", called "xml-files" is also part of the distribution,
-the reader is able to handle these xml files.
+2.13 SDRPlay library), the AIRspy, the "dabsticks", the hackrf and
+the limeSDR device handlers are equipped with a "dump" button
+to create such a file.
 
 ----------------------------------------------------------------------
 Why a Beta version

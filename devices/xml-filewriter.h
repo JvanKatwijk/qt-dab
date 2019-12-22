@@ -59,6 +59,7 @@ public:
 			~xml_fileWriter		();
 	void		add			(std::complex<int16_t> *, int);
 	void		add			(std::complex<uint8_t> *, int);
+	void		add			(std::complex<int8_t> *, int);
 	void		computeHeader		();
 private:
 	int		nrBits;

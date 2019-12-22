@@ -216,7 +216,7 @@ uint32_t temp_32;
 
 	if (fd -> container == "int8") {
 	   fread (&s1, 1, 1, theFile);
-	   return (float)s1 / 128.0;
+	   return (float)((int8_t)s1) / 127.0;
 	}
 
 	if (fd -> container == "uint8") {
