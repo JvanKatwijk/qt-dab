@@ -864,12 +864,17 @@ dataBase	*localBase	= CN_bit == 0 ? currentBase : nextBase;
 void fibDecoder::FIG0Extension9 (uint8_t *d) {
 int16_t	offset	= 16;
 uint8_t ecc;
-
-	dateTime [6] = (getBits_1 (d, offset + 2) == 1)?
+//
+//	6 indicates the number of hours
+	int	signbit = getBits_1 (d, offset + 2);
+	dateTime [6] = (signbit == 1)?
 	                -1 * getBits_4 (d, offset + 3):
 	                     getBits_4 (d, offset + 3);
+//
+//	7 indicates a possible remaining half our
 	dateTime [7] = (getBits_1 (d, offset + 7) == 1) ? 30 : 0;
-
+	if (signbit == 1)
+	   dateTime [7] = -dateTime [7];
 	ecc	     = getBits (d, offset + 8, 8);
 	if (!ensemble -> ecc_Present) {
 	   ensemble -> ecc_byte = ecc;
@@ -881,6 +886,58 @@ QString monthTable [] = {
 "jan", "feb", "mar", "apr", "may", "jun",
 "jul", "aug", "sep", "oct", "nov", "dec"};
 
+int	monthLength [] {
+31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+//
+//	Time in 10 is given in UTC, for other time zones
+//	we add (or subtract) a number of Hours (half hours)
+void	adjustTime (int32_t *dateTime) {
+//
+//	first adjust the half hour  in the amount of minutes
+	dateTime [4] += (dateTime [7] == 1) ? 30 : 0;
+	if (dateTime [4] >= 60) {
+	   dateTime [4] -= 60;
+	   dateTime [3] ++;
+	}
+	if (dateTime [4] < 0) {
+	   dateTime [4] += 60;
+	   dateTime [3] --;
+	}
+	dateTime [3] += dateTime [6];
+	if ((0 <= dateTime [3]) && (dateTime [3] <= 23))
+	   return;
+
+	if (dateTime [3] > 23) {
+	   dateTime [3] -= 24;
+	   dateTime [2] ++;
+	}
+	if (dateTime [3] < 0) {
+	   dateTime [3] += 24;
+	   dateTime [2] --;
+	}
+
+	if (dateTime [2] > monthLength [dateTime [1] - 1]) {
+	   dateTime [2] = 1;
+	   dateTime [1] ++;
+	   if (dateTime [1] > 12) {
+	      dateTime [1] = 1;
+	      dateTime [0] ++;
+	   }
+	}
+
+	if (dateTime [2] < 0) {
+	   if (dateTime [1] > 1) {
+	      dateTime [2] = monthLength [dateTime [1] - 1 - 1];
+	      dateTime [1] --;
+	   }
+	   else {
+	      dateTime [2] = monthLength [11];
+	      dateTime [1] = 12;
+	      dateTime [0] --;
+	   }
+	}
+}
+
 QString	mapTime (int32_t *dateTime) {
 QString result	= QString::number (dateTime [0]);
 	result. append ("-");
@@ -889,7 +946,7 @@ QString result	= QString::number (dateTime [0]);
 	QString day	= QString ("%1"). arg (dateTime [2], 2, 10, QChar ('0'));
 	result. append (day);
 	result. append (" ");
-	int hours	= dateTime [3] + dateTime [6];
+	int hours	= dateTime [3];
 	if (hours < 0)
 	   hours += 24;
 	if (hours >= 24)
@@ -933,14 +990,18 @@ int32_t	theTime	[6];
 	theTime [0] = Y;	// Year
 	theTime [1] = M;	// Month
 	theTime [2] = D;	// Day
-	theTime [3] = getBits_5 (dd, offset + 21);	// Hours
-	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
-	   theTime [5] =  0;	// Seconds (Uebergang abfangen)
-
+	theTime [3] = getBits_5 (dd, offset + 21); // Hours
 	theTime [4] = getBits_6 (dd, offset + 26);	// Minutes
+
+	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
+	   theTime [5] =  0;	// Seconds (Ubergang abfangen)
+
+	
 	if (dd [offset + 20] == 1)
 	   theTime [5] = getBits_6 (dd, offset + 32);	// Seconds
-
+//
+//	take care of different time zones
+	adjustTime (dateTime);
 	bool	change = false;
 	for (int i = 0; i < 5; i ++) {
 	   if (theTime [i] != dateTime [i])
