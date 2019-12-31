@@ -892,17 +892,18 @@ int	monthLength [] {
 //	Time in 10 is given in UTC, for other time zones
 //	we add (or subtract) a number of Hours (half hours)
 void	adjustTime (int32_t *dateTime) {
-//
 //	first adjust the half hour  in the amount of minutes
 	dateTime [4] += (dateTime [7] == 1) ? 30 : 0;
 	if (dateTime [4] >= 60) {
 	   dateTime [4] -= 60;
 	   dateTime [3] ++;
 	}
+
 	if (dateTime [4] < 0) {
 	   dateTime [4] += 60;
 	   dateTime [3] --;
 	}
+
 	dateTime [3] += dateTime [6];
 	if ((0 <= dateTime [3]) && (dateTime [3] <= 23))
 	   return;
@@ -911,6 +912,7 @@ void	adjustTime (int32_t *dateTime) {
 	   dateTime [3] -= 24;
 	   dateTime [2] ++;
 	}
+
 	if (dateTime [3] < 0) {
 	   dateTime [3] += 24;
 	   dateTime [2] --;
@@ -991,17 +993,15 @@ int32_t	theTime	[6];
 	theTime [1] = M;	// Month
 	theTime [2] = D;	// Day
 	theTime [3] = getBits_5 (dd, offset + 21); // Hours
-	theTime [4] = getBits_6 (dd, offset + 26);	// Minutes
+	theTime [4] = getBits_6 (dd, offset + 26); // Minutes
 
 	if (getBits_6 (dd, offset + 26) != dateTime [4]) 
 	   theTime [5] =  0;	// Seconds (Ubergang abfangen)
 
-	
 	if (dd [offset + 20] == 1)
 	   theTime [5] = getBits_6 (dd, offset + 32);	// Seconds
 //
 //	take care of different time zones
-	adjustTime (dateTime);
 	bool	change = false;
 	for (int i = 0; i < 5; i ++) {
 	   if (theTime [i] != dateTime [i])
@@ -1010,6 +1010,7 @@ int32_t	theTime	[6];
 	}
 
 	if (change) {
+	   adjustTime (dateTime);
 	   const QString timeString = mapTime (dateTime);
 	   emit  setTime (timeString);
 	}

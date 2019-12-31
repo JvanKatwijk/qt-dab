@@ -34,6 +34,9 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>Spectrum of the incoming signal.</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -48,12 +51,23 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
+       <property name="toolTip">
+        <string>Constellation as measured from the decoded symbols in the DAB frames</string>
+       </property>
       </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLCDNumber" name="quality_display"/>
+        <widget class="QLCDNumber" name="quality_display">
+         <property name="toolTip">
+          <string>Quality indicator, defined as 
+10 * log10 ((sum (I^2 + Q^2) / sum (dI^2 + dQ^2))
+
+where I and Q are the &quot;ideal&quot; values for I and Q and dI and dQ the delta's from the
+these ideal values by the actual values.</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QSlider" name="scopeSlider">

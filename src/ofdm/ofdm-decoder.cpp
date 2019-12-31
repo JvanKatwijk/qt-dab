@@ -108,31 +108,50 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
 //	decoded symbols is precisely in the four points 
 //	k * (1, 1), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	To ease computation, we map all incoming values onto quadrant 1
+static inline
+float square (float v) {
+	return v * v;
+}
+
 float	ofdmDecoder::computeQuality (std::complex<float> *v) {
 int16_t i;
 std::complex<float>	avgPoint	= std::complex<float> (0, 0);
+float		absVal			= 0;
 std::complex<float>	x [T_u];
-float	avg	= 0;
-float	S	= 0;
-
+//float	avg	= 0;
+//float	S	= 0;
+float	nominator	= 0;
+float	denominator	= 0;
+//
+//	since we do not equalize, we have a kind of "fake"
+//	reference point. We know that the ideal point 
+//	is (x, x)
 	for (i = 0; i < carriers; i ++) {
 	   x [i]	= std::complex<float> (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
 	   avgPoint	+= x [i];
 	}
 
-	avg	= arg (avgPoint * conj (std::complex<float> (1, 1)));
+	avgPoint	= cdiv (avgPoint, carriers);
+	absVal		= abs (avgPoint) / sqrt (2);
 
 	for (i = 0; i < carriers; i ++) {
-	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;
-	   f = f / M_PI * 360;
-	   S += f * f;
+	   nominator	+= square (absVal) + square (absVal);
+	   denominator	+= square (absVal - abs (real (x [i]))) +
+	                   square (absVal - abs (imag (x [i])));
 	}
 
-	S /= (carriers - 1);
-	
-	return sqrt (S);
+	return 10 * log10 (nominator / denominator);
+//	avg	= arg (avgPoint * conj (std::complex<float> (absVal, absVal)));
+//	for (i = 0; i < carriers; i ++) {
+//	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;
+//	   f = f / M_PI * 360;
+//	   S += f * f;
+//	}
+//
+//	S /= (carriers - 1);
+//	
+//	return sqrt (S);
 }
-
 /**
   *	for the other blocks of data, the first step is to go from
   *	time to frequency domain, to get the carriers.
@@ -145,6 +164,8 @@ void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
+float	phases	= 0;
+
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
@@ -184,8 +205,6 @@ std::complex<float> conjVector [T_u];
 	   ibits [carriers + i] =  - imag (r1) / ab1 * 127.0;
 	}
 
-	memcpy (phaseReference. data(), fft_buffer,
-	                            T_u * sizeof (std::complex<float>));
 //	From time to time we show the constellation of symbol 2.
 	
 	if (blkno == 2) {
@@ -193,11 +212,89 @@ std::complex<float> conjVector [T_u];
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
 	                                      carriers);
 	      showIQ	(carriers);
-	      showQuality (computeQuality (conjVector));
+	      showQuality		(computeQuality (conjVector));
+//	      compute_timeOffset	(fft_buffer, phaseReference. data ());
+//	      compute_clockOffset	(fft_buffer, phaseReference. data ());
+//	      compute_frequencyOffset	(fft_buffer, phaseReference. data ());
 	      cnt = 0;
 	   }
 	}
+
+	memcpy (phaseReference. data(), fft_buffer,
+	                            T_u * sizeof (std::complex<float>));
 }
+
+//
+//	While DAB symbols do not carry pilots, it is known that
+//	arg (carrier [i, j] * conj (carrier [i + 1, j])
+//	should be K * M_PI / 4,  (k in {1, 3, 5, 7}) so basically
+//	carriers in decoded symbols can be used as if they were pilots
+//
+//	so, with that in mind we experiment with formula 5.39
+//	and 5.40 from "OFDM Baseband Receiver Design for Wireless
+//	Communications (Chiueh and Tsai)"
+void	ofdmDecoder::compute_timeOffset (std::complex<float> *r,
+	                                      std::complex<float> *v) {
+float timeOffset = 0;
+std::complex<float> leftTerm;
+std::complex<float> rightTerm;
+std::complex<float> sum	= std::complex<float> (0, 0);
+
+	for (int i = -carriers / 2; i < carriers / 2; i += 6) {
+	   int index_1 = i < 0 ? i + T_u : i;
+	   int index_2 = (i + 1) < 0 ? (i + 1) + T_u : (i + 1);
+	   std::complex<float> s = r [index_1] * conj (v [index_2]);
+	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
+	   leftTerm	= s * conj (std::complex<float> (abs (s) / sqrt (2),
+	                                                 abs (s) / sqrt (2)));
+	   s = r [index_2] * conj (v [index_2]);
+	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
+	   rightTerm	= s * conj (std::complex<float> (abs (s) / sqrt (2),
+	                                                 abs (s) / sqrt (2)));
+	   sum += conj (leftTerm) * rightTerm;
+	}
+
+	fprintf (stderr, "timeOffset = %f\n", arg (sum));
+}
+
+void	ofdmDecoder::compute_frequencyOffset (std::complex<float> *r,
+	                                      std::complex<float> *c) {
+
+std::complex<float> theta = std::complex<float> (0, 0);
+
+	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
+	   int index = i < 0 ? i + T_u : i;
+	   std::complex<float> val = r [index] * conj (c [index]);
+	   val		= std::complex<float> (abs (real (val)),
+	                                       abs (imag (val)));
+	   theta	+= val * std::complex<float> (1, -1);
+	}
+
+	fprintf (stderr, "frequency offset %f Hz \n",
+	                    arg (theta) / (2 * M_PI) * 2048000 / T_u);
+}
+
+void	ofdmDecoder::compute_clockOffset (std::complex<float> *r,
+	                                 std::complex<float> *v) {
+float	offsa	= 0;
+int	offsb	= 0;
+
+	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
+	   int index = i < 0 ? (i + T_u) : i;
+	   int index_2 = i + carriers / 2;
+	   std::complex<float> s = r [index] * conj (v [index]);
+	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
+	   offsa += index_2 * arg (s * std::complex<float> (1, -1));
+	   offsb += index_2 * index_2;
+	}
+	
+	float sampleClockOffset = 
+	           offsa / (2 * M_PI * (float)T_s/ T_u * offsb);
+
+	fprintf (stderr, "clockOffset = %f\n", sampleClockOffset);
+}
+
+
 /**
   *	Obsolete: we now compute the snr by looking at the 
   *	ratio between the power of the data in the signal and the power

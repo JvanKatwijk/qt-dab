@@ -46,8 +46,8 @@ public:
 	void	decode			(std::vector<std::complex<float> >,
 	                                 int32_t n, int16_t *);
 	int16_t	get_snr			(std::complex<float> *);
-	void	stop();
-	void	reset();
+	void	stop			();
+	void	reset			();
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
@@ -56,6 +56,12 @@ private:
 
 	RingBuffer<std::complex<float>> *iqBuffer;
 	float		computeQuality	(std::complex<float> *);
+        void            compute_timeOffset      (std::complex<float> *,
+                                                 std::complex<float> *);
+        void            compute_clockOffset     (std::complex<float> *,
+                                                 std::complex<float> *);
+        void            compute_frequencyOffset (std::complex<float> *,
+                                                 std::complex<float> *);
 	int32_t		T_s;
 	int32_t		T_u;
 	int32_t		T_g;
@@ -66,10 +72,8 @@ private:
 	std::vector<int16_t>		ibits;
 	std::complex<float>	*fft_buffer;
 	phaseTable	*phasetable;
-	int32_t		blockIndex;
 	int16_t		snrCount;
 	int16_t		snr;
-	int16_t		maxSignal;
 
 signals:
 	void		show_snr	(int);
