@@ -19,14 +19,27 @@ service
 least with the SDRplay users), SDRplay ltd developed the Duo and the new RSPdx,
 and future support will be through the V3 library (currently 3.06).
 
- * **experimental** support is added for **self describing** "uff" files for
+ * **experimental** support is added for **self describing** xml-files for
 dumping and reading back raw data. These files are self-describing, i.e.
 they contain a description of the encoding and format of the contents
 and a single reader (xml-files) is available to interpret the contents.
+
 Currently, the support drivers for the SDRplay (interfacing to the
 2.13 SDRPlay library), the AIRspy, the "dabsticks", the hackrf and
 the limeSDR device handlers are equipped with a "dump" button
 to create such a file.
+
+In order to find the parameters out, you just have to check the first
+5000 bytes and display the xml output it in a console:
+
+	head -c 5000 foo.xml
+	
+Assuming this is an 8bit raw file (for instance made by an RTLSDR dongle), 
+you could generate a valid `*.raw` file by with
+
+	tail -c +5001 foo.xml > foo.raw
+
+and reload this as raw file in Qt-DAB.
 
 ----------------------------------------------------------------------
 Why a Beta version
@@ -107,7 +120,7 @@ Not  (Not yet or partly) implemented:
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.1-Beta** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.2-Beta** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
 The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
@@ -121,7 +134,7 @@ comparable programs.
 
 **dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
 
-Qt-DAB-3.1-Beta also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-3.2-Beta also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
 
 Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -192,7 +205,7 @@ it sometimes happens that a service appears in more than one ensemble
 History 
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.1-Beta saves data on all services found. Pairs Channel:serviceName
+Qt-DAB-3.2-Beta saves data on all services found. Pairs Channel:serviceName
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 
