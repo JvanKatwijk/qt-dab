@@ -35,7 +35,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Spectrum of the incoming signal.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -52,25 +52,20 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>Constellation as measured from the decoded symbols in the DAB frames</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLCDNumber" name="quality_display">
-         <property name="toolTip">
-          <string>Quality indicator, defined as 
-10 * log10 ((sum (I^2 + Q^2) / sum (dI^2 + dQ^2))
-
-where I and Q are the &quot;ideal&quot; values for I and Q and dI and dQ the delta's from the
-these ideal values by the actual values.</string>
-         </property>
-        </widget>
+        <widget class="QLCDNumber" name="quality_display"/>
        </item>
        <item>
         <widget class="QSlider" name="scopeSlider">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom in/out&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="value">
           <number>50</number>
          </property>
@@ -90,6 +85,7 @@ these ideal values by the actual values.</string>
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

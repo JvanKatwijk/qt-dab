@@ -270,12 +270,11 @@ select service manually
     </message>
     <message>
         <location filename="../devices/airspy-handler/airspy-widget.ui" line="525"/>
-        <source>Dump the raw input from the airspy into a self describing file (with header in xml format)
-Very experimental. The resulting file can be read-in by using the xml file handler (if configured)</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the airspy into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a &apos;Save as ...&apos; dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speichert die Eingangsrohdaten vom Airspy in eine selbsterklärende Datei (mit Header im xml-Format, der die Aufnahmezeit, Containerformat, Frequenz, Empfänger, Qt-DAB-Version anzeigt)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Öffnet einen &quot;Speichern unter ...&quot; dialog. Noch einmal klicken, um die Aufnahme zu beenden.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Sehr experimentell! Die erzeugte Datei kann über die xml file Eingangsfunktion geladen werden (falls konfiguriert)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warnung: Erstellt große Dateien!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/airspy-handler/airspy-widget.ui" line="529"/>
+        <location filename="../devices/airspy-handler/airspy-widget.ui" line="528"/>
         <source>dump</source>
         <translation type="unfinished"></translation>
     </message>
@@ -370,13 +369,21 @@ Very experimental. The resulting file can be read-in by using the xml file handl
     </message>
     <message>
         <location filename="../correlation-viewer/correlation-widget.ui" line="26"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum display, shows the frequency spectrum from the channel currently being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spektrumsanzeige, zeigt das Frequenzspektrum des derzeit empfangenen Kanals an.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Impulse sync display (CIR)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Impulsanzeige (CIR)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../correlation-viewer/correlation-widget.ui" line="33"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter is detected, the relative distance - in msec - is shown between&lt;/p&gt;&lt;p&gt;the arrival time of the data of the transmitter that is used, and the arrival time of the data of&lt;/p&gt;&lt;p&gt;the other transmitter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter is detected, the relative distance - in msec - is shown between the arrival time of the data of the transmitter that is used, and the arrival time of the data of the other transmitter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Falls mehr als eine Sendeanlage erkannt wird, wird die relative Entfernung - in msec - zwischen &lt;/p&gt;&lt;p&gt;des Empfangs der Daten zwischen der verwendeten und der übrigen Sendeanlage angezeigt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum display, shows the frequency spectrum from the channel currently being received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spektrumsanzeige, zeigt das Frequenzspektrum des derzeit empfangenen Kanals an.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter is detected, the relative distance - in msec - is shown between&lt;/p&gt;&lt;p&gt;the arrival time of the data of the transmitter that is used, and the arrival time of the data of&lt;/p&gt;&lt;p&gt;the other transmitter.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Falls mehr als eine Sendeanlage erkannt wird, wird die relative Entfernung - in msec - zwischen &lt;/p&gt;&lt;p&gt;des Empfangs der Daten zwischen der verwendeten und der übrigen Sendeanlage angezeigt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -429,52 +436,52 @@ Very experimental. The resulting file can be read-in by using the xml file handl
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ein Signal-Rausch-Abstand (SNR) Indikator&lt;/p&gt;&lt;p&gt;Allgemein gilt: Je größer, desto besser. Bitte die Werte nicht als echte SNR-Werte verstehen, sie hängen stark vom Empfänger und der Anzahl der Filter im Gerät ab!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="580"/>
+        <location filename="../forms/dabradio.ui" line="595"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Falls es konfiguriert wurde, springt bei Drücken dieser Schaltfläche die Spektrumanzeige zwischen der &amp;quot;regulären&amp;quot; und des &amp;quot;Nullsymbols&amp;quot; hin und her. Auf der Konsole wird das Muster (Pattern), die main ID und die sub ID des TII ausgegeben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="583"/>
+        <location filename="../forms/dabradio.ui" line="598"/>
         <source>TII</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="710"/>
+        <location filename="../forms/dabradio.ui" line="725"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Historiefunktion. Die Software speichert eine Liste aller bisher verwendeten Services. Ein Klick auf diesen Button zeigt (versteckt) die Liste. Bei einem Linksklick versucht die Software das ausgewählte Service abzuspielen, bei einem Rechtsklick wird der Eintrag gelöscht.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="713"/>
+        <location filename="../forms/dabradio.ui" line="728"/>
         <source>xx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="731"/>
+        <location filename="../forms/dabradio.ui" line="746"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a &apos;save as ... dialog&apos; where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Das führt zu einem &quot;Speichern unter ...&quot; Dialog, wo Sie einen Dateinamen auswählen können, um den Inhalt des gerade empfangenen DAB Pakets (Audio und Daten) in eine Textdatei zu schreiben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="753"/>
+        <location filename="../forms/dabradio.ui" line="768"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um das Audio in eine Datei zu speichern. Es erscheint ein Fenster, um einen Dateinamen auszuwählen. Erneut drücken, um den Speichervorgang zu beenden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="797"/>
+        <location filename="../forms/dabradio.ui" line="812"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um die Rohdaten in eine Datei zu speichern. Es erscheint ein Fenster, um einen Dateinamen auszuwählen. Bitte beachten Sie, das sehr große Dateien entstehen werden! Erneut drücken, um den Speichervorgang zu beenden. Sie können später die erstellte *.sdr-Datei wieder laden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="800"/>
+        <location filename="../forms/dabradio.ui" line="815"/>
         <source>Raw dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="627"/>
+        <location filename="../forms/dabradio.ui" line="642"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. Pressing it&lt;/p&gt;&lt;p&gt;again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um das Spektrum und das Konstellationsdiagramm anzuzeigen. Nochmals drücken, um das Fenster wieder zu schließen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="630"/>
+        <location filename="../forms/dabradio.ui" line="645"/>
         <source>Spectrum</source>
         <translation type="unfinished"></translation>
     </message>
@@ -483,17 +490,17 @@ Very experimental. The resulting file can be read-in by using the xml file handl
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um einen &apos;Speichern unter ...&apos; Dialog anzuzeigen, bei dem der Inhalt (Informationen über Audio und Daten) des aktuellen DAB Ensembels in eine Textdatei geschrieben wird.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="734"/>
+        <location filename="../forms/dabradio.ui" line="749"/>
         <source>Content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="659"/>
+        <location filename="../forms/dabradio.ui" line="674"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wählen Sie ein Gerät für die Audioausgabe. Bei Programmstart wird die Standardeinstellung verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="663"/>
+        <location filename="../forms/dabradio.ui" line="678"/>
         <source>Audio Device</source>
         <translation type="unfinished"></translation>
     </message>
@@ -506,7 +513,7 @@ Very experimental. The resulting file can be read-in by using the xml file handl
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB Kanal auswählen.&lt;/p&gt;&lt;p&gt;Hängt vom verwendeten DAB Frequenzband ab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="683"/>
+        <location filename="../forms/dabradio.ui" line="698"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gerät wählen. Nur die angezeigten Geräte wurden konfiguriert. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -528,7 +535,7 @@ Very experimental. The resulting file can be read-in by using the xml file handl
     <message>
         <location filename="../forms/dabradio.ui" line="78"/>
         <source>Select the previous service on the list of services (the previous one of the first element is the last element of the list).</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählt das vorige Service aus der Liste aus (das vorige des ersten ist das letzte in der Liste).</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="81"/>
@@ -539,7 +546,7 @@ Very experimental. The resulting file can be read-in by using the xml file handl
     <message>
         <location filename="../forms/dabradio.ui" line="88"/>
         <source>Select the next service on the list of services (the next of the last element is the first element).</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählt das nächste Service aus der Liste aus (das nächste des letzten ist das erste in der Liste).</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="91"/>
@@ -560,18 +567,18 @@ Very experimental. The resulting file can be read-in by using the xml file handl
     <message>
         <location filename="../forms/dabradio.ui" line="114"/>
         <source>Select the previous channel.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählt den vorigen DAB-Kanal.</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="124"/>
         <source>Select the next channel of the list maintained in the channel selector.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wählt den nachfolgenden DAB-Kanal.</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="170"/>
         <source>Local time is the time as received from the transmission. If you are running recordings, then
 it is definitely not the time on your clock.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokale Zeit laut DAB-Datenstrom. Falls eine Aufzeichnung abgespielt wird, dann ist es nicht die aktuelle Uhrzeit.</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="194"/>
@@ -589,14 +596,9 @@ it is definitely not the time on your clock.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="302"/>
-        <source>The selected Frequency in MHz.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../forms/dabradio.ui" line="321"/>
         <source>The total load on the processor, not just from running this application.</source>
-        <translation type="unfinished"></translation>
+        <translation>Die CPU Last des gesamten Systems, nicht nur von diesem Programm.</translation>
     </message>
     <message>
         <location filename="../forms/dabradio.ui" line="340"/>
@@ -609,85 +611,75 @@ it is definitely not the time on your clock.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="445"/>
-        <source>Tranmitter Identification Information (tii) is shown here.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../forms/dabradio.ui" line="448"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../forms/dabradio.ui" line="536"/>
+        <location filename="../forms/dabradio.ui" line="551"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Für einen Reset drücken, zB um neu zu synchronisieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="539"/>
+        <location filename="../forms/dabradio.ui" line="554"/>
         <source>reset</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="602"/>
+        <location filename="../forms/dabradio.ui" line="617"/>
         <source>Touching this button will show (or hide) the resulting correlation of the first datablock of the DAB
 ensemble with the values as they should be. The &quot;peaks&quot; (if any) show the samples where
 the correlation is strongest. More than one peak shows more than one transmitter within
 the reach of this receiver.</source>
-        <translation type="unfinished"></translation>
+        <translation>Drücken Sie, um das Korrelationsdiagramm anzuzeigen. Die Spitzen (falls verfügbar) zeigen die Samples mit der stärksten Korrelation. Mehrere Spitzen bedeuten, dass mehrere Sendeanlagen empfangen werden.</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="608"/>
+        <location filename="../forms/dabradio.ui" line="623"/>
         <source>corr-result</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="637"/>
+        <location filename="../forms/dabradio.ui" line="652"/>
         <source>Hide or show the widget for device control.</source>
-        <translation type="unfinished"></translation>
+        <translation>Anzeigen oder Verstecken des Gerätekontrollfensters.</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="640"/>
+        <location filename="../forms/dabradio.ui" line="655"/>
         <source>show</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="687"/>
+        <location filename="../forms/dabradio.ui" line="702"/>
         <source>Input Device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="692"/>
+        <location filename="../forms/dabradio.ui" line="707"/>
         <source>file input (.raw)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="697"/>
+        <location filename="../forms/dabradio.ui" line="712"/>
         <source>file input (.iq)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="702"/>
+        <location filename="../forms/dabradio.ui" line="717"/>
         <source>file input (.sdr)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="756"/>
+        <location filename="../forms/dabradio.ui" line="771"/>
         <source>audio dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="775"/>
+        <location filename="../forms/dabradio.ui" line="790"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;Code for converting the aac headers to ones that can be understood by e.g. VLC is from Stefan Poeschel. All rights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Eine Dekodierung von DAB+ Audioservices geschieht zuerst mit der Auswertung von AAC frames aus der Eingabe, dann Konvertierung der AAC Frames in PCM Frames und dann werden diese PCM Frames an die Soundkarte weitergegeben. Seit einiger Zeit ist es möglich, die PCM Frames in eine &amp;quot;.wav&amp;quot; Datei zu speichern.&lt;/p&gt;&lt;p&gt;Nun ist es auch möglich, die AAC Frames in eine Datei mit Hilfe dieser Schaltfläche zu speichern. Ein Klick frage nach einem Dateinamen, dann werden die AAC Frames geschrieben, bis die Schaltfläche erneut gedrückt wird.&lt;/p&gt;&lt;p&gt;Der Code, um die AAC Headers in jene, die zB VLC versteht, umzuwandeln wurde von Stefan Pöschel dankeswerterweise zur Verfügung gestellt.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="778"/>
+        <location filename="../forms/dabradio.ui" line="793"/>
         <source>frame dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="558"/>
+        <location filename="../forms/dabradio.ui" line="573"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current selected band (default VHF Band III or optionally L-Band)&lt;/p&gt;&lt;p&gt;Scanning will continue until an active DAB or DAB+ signal is found.&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um einen Suchlauf über das gewählte DAB Frequenzband (standardmäßig VHF Band III bzw. optional das L-Band) zu starten.&lt;/p&gt;&lt;p&gt;Der Suchlauf wird, solange ein aktives DAB or DAB+ Signal gefunden wurde, fortgesetzt.&lt;/p&gt;&lt;p&gt;Erneut drücken, um den Suchlauf abzubrechen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -702,17 +694,42 @@ the reach of this receiver.</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Favoriten sind Services aus verschiedenen Ensembles - auch auf unterschiedlichen Kanälen - und werden durch einen &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Rechtsklick &lt;/span&gt;auf den Name des Services erstellt, &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;sofern er vorher markiert wurde.&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Einen Favoriten zu entfernen geschieht durch die Auswahl in dieser Combobox und durch die Tastenkombination Umschalt + Entfernen (Shift + Del).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="561"/>
+        <location filename="../forms/dabradio.ui" line="302"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz (only available from live sources)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequenz in MHz (nur bei Livequellen verfügbar)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../forms/dabradio.ui" line="439"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Label and Ensemble ID are shown here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Label und Ensemble ID werden hier gezeigt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../forms/dabradio.ui" line="454"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transmitter Identification Information (tii) is shown here. If more than one transmitter are being received, only the strongest will be shown.&lt;/p&gt;&lt;p&gt;Note that not all transmitters might have its own code.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transmitter Identification Information (tii) wird hier angezeigt. Falls mehr als eine Sendeanlage empfangen wird, wird nur die stärkste angezeigt.&lt;/p&gt;&lt;p&gt;Beachten Sie, dass nicht alle Sendeanlagen ihren eigenen Code haben könnten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../forms/dabradio.ui" line="476"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Long label of the selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Long label des ausgewählten Services&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../forms/dabradio.ui" line="499"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic Labels (DLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic Labels (DLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../forms/dabradio.ui" line="576"/>
         <source>Scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="520"/>
+        <location filename="../forms/dabradio.ui" line="535"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um technische Information über das gewählte Programm anzuzeigen.&lt;/p&gt;&lt;p&gt;Erneut drücken, um das Fenster zu schließen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../forms/dabradio.ui" line="523"/>
+        <location filename="../forms/dabradio.ui" line="538"/>
         <source>Detail</source>
         <translation type="unfinished"></translation>
     </message>
@@ -733,12 +750,17 @@ the reach of this receiver.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="82"/>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="85"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the rtlsdr dongle into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a &apos;Save as ...&apos; dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speichert die Eingangsrohdaten vom rtlsdr Dongle in eine selbsterklärende Datei (mit Header im xml-Format, der die Aufnahmezeit, Containerformat, Frequenz, Empfänger, Qt-DAB-Version anzeigt)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Öffnet einen &quot;Speichern unter ...&quot; dialog. Noch einmal klicken, um die Aufnahme zu beenden.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Sehr experimentell! Die erzeugte Datei kann über die xml file Eingangsfunktion geladen werden (falls konfiguriert)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warnung: Erstellt große Dateien!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="88"/>
         <source>dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="89"/>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="95"/>
         <source>dabstick</source>
         <translation type="unfinished"></translation>
     </message>
@@ -748,19 +770,29 @@ the reach of this receiver.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="55"/>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="49"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set gain in dB, only possible values are displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Verstärkung in dB auswählen, nur mögliche Werte werden angezeigt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="58"/>
         <source>gain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="69"/>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="72"/>
         <source>autogain_off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="74"/>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="77"/>
         <source>autogain_on</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../devices/rtlsdr-handler/rtlsdr-widget.ui" line="112"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gerätename&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 <context>
@@ -949,16 +981,21 @@ the reach of this receiver.</source>
     </message>
     <message>
         <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="89"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the HackRF into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a &apos;Save as ...&apos; dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speichert die Eingangsrohdaten vom HackRF in eine selbsterklärende Datei (mit Header im xml-Format, der die Aufnahmezeit, Containerformat, Frequenz, Empfänger, Qt-DAB-Version anzeigt)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Öffnet einen &quot;Speichern unter ...&quot; dialog. Noch einmal klicken, um die Aufnahme zu beenden.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Sehr experimentell! Die erzeugte Datei kann über die xml file Eingangsfunktion geladen werden (falls konfiguriert)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warnung: Erstellt große Dateien!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="92"/>
         <source>Dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="123"/>
+        <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="126"/>
         <source>vga</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="163"/>
+        <location filename="../devices/hackrf-handler/hackrf-widget.ui" line="166"/>
         <source>lna</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1063,8 +1100,19 @@ the reach of this receiver.</source>
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spektrumanzeige, zeigt das Frequenzspektrum des aktuell empfangenen Kanals an.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
+        <location filename="../spectrum-viewer/scopewidget.ui" line="38"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spektrumanzeige&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../spectrum-viewer/scopewidget.ui" line="55"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Konstellationsdiagramm&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../spectrum-viewer/scopewidget.ui" line="67"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom in/out&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hinein-/Herauszoomen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hinein-/Herauszoomen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram, obtained from the first data block in a DAB frame. What is shown are the constellations of the carriers in the decoded OFDM symbol. &lt;/p&gt;&lt;p&gt;In DAB the bits are encoded as (1, 1), (1, -1), (-1, -1) and (1,1), so ideally there are 4 points, one in each corner. The quality of the signal is inverse to the clouds that are visible. The number indicated below this &amp;quot;cloud picture&amp;quot; shows the standard deviation of the dots on the cloud(s).&lt;/p&gt;&lt;p&gt;Hint: Lots of clouds mean poor signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1114,93 +1162,92 @@ the reach of this receiver.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="35"/>
-        <source>Dumping in a specialized format, the xml format, very experimental.
-The recording can be read in by the xml file handler</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="39"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="38"/>
         <source>dump</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="59"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="58"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version of the SDRplay library detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version der erkannten SDRplay Bibliothek.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="198"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="197"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to switch on automatic gain control - based on the setting of the lnastate and the ifgain.&lt;/p&gt;&lt;p&gt;If switched on, the lnastate switch and the ifgain slider are switched off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Klicken, um die automatische Verstärkungskontrolle (AGC) einzuschalten anhand der Angaben des LNA Status und der IF Verstärkung.&lt;/p&gt;&lt;p&gt;Falls eingeschaltet, ändert sich der LNA Status und die Schieberegler für die IF Verstärkung werden abgeschaltet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="201"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="200"/>
         <source>agc</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="95"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="94"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;ppm control. Tells the device the offset (in ppm) of the observed oscillator offset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PPM Kontrolle. Übermittelt dem Gerät den Offset (in ppm) des festgestellten Oszillatoroffset.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="341"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="340"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select an antenna (RSP-II)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle die Antenne aus (RSP-II)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="345"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="344"/>
         <source>Antenna A</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="350"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="349"/>
         <source>Antenna B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="240"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="239"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting the lna state, determining the gain reduction applied in the lna.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wählen Sie die LNA Einstellung, bestimmt durch die Verstärkungsabnahme im LNA.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="247"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="35"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the SDRplay into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a &apos;Save as ...&apos; dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speichert die Eingangsrohdaten vom SDRplay in eine selbsterklärende Datei (mit Header im xml-Format, der die Aufnahmezeit, Containerformat, Frequenz, Empfänger, Qt-DAB-Version anzeigt)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Öffnet einen &quot;Speichern unter ...&quot; dialog. Noch einmal klicken, um die Aufnahme zu beenden.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Sehr experimentell! Die erzeugte Datei kann über die xml file Eingangsfunktion geladen werden (falls konfiguriert)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warnung: Erstellt große Dateien!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="246"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The display shows the gain reduction in the lna of the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Die Anzeige zeigt die Verstärungsabnahme im LNA des Geräts.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="297"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="296"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the device is an rspduo, select the tuner with this combobox&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Falls der Empfänger ein rspduo ist, wählen Sie den Tuner anhand dieser Auswahlbox.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="301"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="300"/>
         <source>Tuner 1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="306"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="305"/>
         <source>Tuner 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="221"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="220"/>
         <source>debug</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="149"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="148"/>
         <source>ppm control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="177"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="176"/>
         <source>if gain reduction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="270"/>
+        <location filename="../devices/sdrplay-handler-v2/sdrplay-widget-v2.ui" line="269"/>
         <source>lna state selector</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1371,6 +1418,11 @@ The recording can be read in by the xml file handler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../forms/technical_data.ui" line="25"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service long label&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
         <location filename="../forms/technical_data.ui" line="71"/>
         <source>Subchannel ID</source>
         <translation type="unfinished"></translation>
@@ -1388,6 +1440,11 @@ The recording can be read in by the xml file handler</source>
     <message>
         <location filename="../forms/technical_data.ui" line="151"/>
         <source>ASCTy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../forms/technical_data.ui" line="303"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slideshow (SLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1439,14 +1496,12 @@ The recording can be read in by the xml file handler</source>
     </message>
     <message>
         <location filename="../forms/technical_data.ui" line="209"/>
-        <location filename="../forms/technical_data.ui" line="303"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../forms/technical_data.ui" line="25"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Service name&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Servicename&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt;&quot;&gt;Servicename&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../forms/technical_data.ui" line="28"/>
@@ -1520,51 +1575,101 @@ The recording can be read in by the xml file handler</source>
     </message>
     <message>
         <location filename="../devices/xml-filereader/xmlfiles.ui" line="22"/>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="65"/>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="79"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path and filename to xml-file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Pfad und Dateiname zur xml-Datei&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="25"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="80"/>
         <location filename="../devices/xml-filereader/xmlfiles.ui" line="97"/>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="110"/>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="117"/>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="124"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="118"/>
         <location filename="../devices/xml-filereader/xmlfiles.ui" line="131"/>
         <location filename="../devices/xml-filereader/xmlfiles.ui" line="138"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="145"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="152"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="159"/>
         <source>TextLabel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="58"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="32"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;File progress&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fortschritt in der Datei&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="46"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Current time in the file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktuelle Zeit in der Datei&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="56"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Total recorded time of the file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gesamtdauer der Datei (in Sekunden)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="70"/>
         <source>recorder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="72"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="77"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows recording software and version.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeigt Aufnahmesoftware und Version an.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="87"/>
         <source>deviceName</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="90"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="94"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows recording device&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeigt ursprüngliches Aufnahmegerät an&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="108"/>
         <source>recorded at </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="149"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="115"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Shows recording time (it&apos;s not the current time)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeigt Aufnahmezeit (nicht die akutelle Zeit)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="170"/>
         <source>nrBits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="156"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="177"/>
         <source>nrElements</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="163"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="184"/>
         <source>samplerate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../devices/xml-filereader/xmlfiles.ui" line="170"/>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="191"/>
         <source>frequency</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="202"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of bits recorded&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anzahl der aufgezeichneten Bits&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="222"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sampling rate in Hz (normally 2048000 Hz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Samplingrate in Hz (für gewöhnlich 2048000 Hz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../devices/xml-filereader/xmlfiles.ui" line="235"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Initial frequency of the recorded ensemble (in kHz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ursprüngliche Frequenz des aufgezeichneten Ensembles (in kHz)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
 </context>
 </TS>
