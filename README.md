@@ -35,7 +35,7 @@ In order to find the parameters out, you just have to check the first
 	head -c 5000 foo.xml
 	
 Assuming this is an 8bit raw file (for instance made by an RTLSDR dongle), 
-you could generate a valid `*.raw` file by with
+you could generate a valid `*.raw` file with
 
 	tail -c +5001 foo.xml > foo.raw
 
