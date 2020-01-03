@@ -30,7 +30,7 @@ the limeSDR device handlers are equipped with a "dump" button
 to create such a file.
 
 In order to find the parameters out, you just have to check the first
-5000 bytes and display the xml output it in a console:
+5000 bytes and display the xml output in a console:
 
 	head -c 5000 foo.xml
 	
