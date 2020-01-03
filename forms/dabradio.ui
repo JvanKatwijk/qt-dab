@@ -299,7 +299,7 @@ it is definitely not the time on your clock.</string>
                </font>
               </property>
               <property name="toolTip">
-               <string>The selected Frequency in MHz.</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz (only available from live sources)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
@@ -409,6 +409,12 @@ it is definitely not the time on your clock.</string>
           </item>
           <item>
            <widget class="QProgressBar" name="ficError_display">
+            <property name="maximumSize">
+             <size>
+              <width>309</width>
+              <height>16777215</height>
+             </size>
+            </property>
             <property name="value">
              <number>24</number>
             </property>
@@ -429,6 +435,9 @@ it is definitely not the time on your clock.</string>
               <bold>false</bold>
              </font>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Label and Ensemble ID are shown here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string/>
             </property>
@@ -442,10 +451,10 @@ it is definitely not the time on your clock.</string>
              </font>
             </property>
             <property name="toolTip">
-             <string>Tranmitter Identification Information (tii) is shown here.</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transmitter Identification Information (tii) is shown here. If more than one transmitter are being received, only the strongest will be shown.&lt;/p&gt;&lt;p&gt;Note that not all transmitters might have its own code.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>TextLabel</string>
+             <string/>
             </property>
            </widget>
           </item>
@@ -462,6 +471,9 @@ it is definitely not the time on your clock.</string>
           <weight>75</weight>
           <bold>true</bold>
          </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Long label of the selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string/>
@@ -482,6 +494,9 @@ it is definitely not the time on your clock.</string>
           <pointsize>12</pointsize>
           <italic>true</italic>
          </font>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic Labels (DLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string/>
