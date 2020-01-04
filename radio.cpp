@@ -421,7 +421,7 @@ int32_t	frequency;
 	if (k != -1) 
 	   channelSelector -> setCurrentIndex (k);
 
-	frequency	= theBand. Frequency (
+	frequency		= theBand. Frequency (
 	                                 channelSelector -> currentText());
 	r = inputDevice		-> restartReader (frequency);
 	qDebug ("Starting %d\n", r);

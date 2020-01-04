@@ -359,7 +359,7 @@ LIBS		+= -lz
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
 
-CONFIG		+= extio
+#CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
@@ -367,7 +367,7 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= hackrf
-CONFIG		+= lime
+#CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler

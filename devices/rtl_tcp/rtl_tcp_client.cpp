@@ -169,9 +169,12 @@ int32_t	rtl_tcp_client::getVFOFrequency() {
 	return vfoFrequency;
 }
 
-bool	rtl_tcp_client::restartReader() {
+bool	rtl_tcp_client::restartReader	(int32_t freq) {
 	if (!connected)
 	   return true;
+	vfoFrequency	= freq;
+//	here the command to set the frequency
+	sendVFO (freq);
 	connect (&toServer, SIGNAL (readyRead (void)),
 	         this, SLOT (readData (void)));
 	return true;
