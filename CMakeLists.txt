@@ -249,6 +249,7 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/rawfiles-new/raw-reader.h
 	     ./devices/wavfiles-new/wavfiles.h
 	     ./devices/wavfiles-new/wav-reader.h
+	     ./devices/xml-filereader/element-reader.h
 	     ./devices/xml-filereader/xml-filereader.h
 	     ./devices/xml-filereader/xml-reader.h
 	     ./devices/xml-filereader/xml-descriptor.h
