@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.2-Beta)
+set (objectName qt-dab-3.21-Beta)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -78,10 +78,6 @@ endif ()
 
 if(DEFINED LIMESDR)
    set(LIMESDR true)
-endif ()
-
-if(DEFINED XML_FILES)
-   set(XML_FILES true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
@@ -190,6 +186,7 @@ add_definitions (-DPRESET_NAME)
 	           ./devices
 	           ./devices/rawfiles-new
 	           ./devices/wavfiles-new
+	           ./devices/xml-filereader
 	           ./spectrum-viewer
 	           ./correlation-viewer
 	           ./tii-viewer
@@ -252,6 +249,9 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/rawfiles-new/raw-reader.h
 	     ./devices/wavfiles-new/wavfiles.h
 	     ./devices/wavfiles-new/wav-reader.h
+	     ./devices/xml-filereader/xml-filereader.h
+	     ./devices/xml-filereader/xml-reader.h
+	     ./devices/xml-filereader/xml-descriptor.h
 	     ./includes/output/fir-filters.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/newconverter.h
@@ -333,6 +333,9 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/rawfiles-new/raw-reader.cpp
 	     ./devices/wavfiles-new/wavfiles.cpp
 	     ./devices/wavfiles-new/wav-reader.cpp
+	     ./devices/xml-filereader/xml-filereader.cpp
+	     ./devices/xml-filereader/xml-reader.cpp
+	     ./devices/xml-filereader/xml-descriptor.cpp
 	     ./src/output/audio-base.cpp
 	     ./src/output/newconverter.cpp
 	     ./src/output/fir-filters.cpp
@@ -386,6 +389,8 @@ add_definitions (-DPRESET_NAME)
 	     ./devices/rawfiles-new/raw-reader.h
 	     ./devices/wavfiles-new/wavfiles.h
 	     ./devices/wavfiles-new/wav-reader.h
+	     ./devices/xml-filereader/xml-filereader.h
+	     ./devices/xml-filereader/xml-reader.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
@@ -408,6 +413,7 @@ add_definitions (-DPRESET_NAME)
 	     ./spectrum-viewer/scopewidget.ui
 	     ./correlation-viewer/correlation-widget.ui
 	     ./tii-viewer/tii-widget.ui
+	     ./devices/xml-filereader/xmlfiles.ui
 	   )
 
 	set (${objectName}_MOCS
@@ -617,38 +623,6 @@ add_definitions (-DPRESET_NAME)
 	   add_definitions (-DHAVE_RTLSDR)
 	endif()
 
-	if (XML_FILES)
-	   set (${objectName}_UIS
-                ${${objectName}_UIS}
-                ./devices/xml-filereader/xmlfiles.ui
-           )
-
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ./devices/xml-filereader/xml-filereader.h
-	        ./devices/xml-filereader/xml-reader.h
-	   )
-
-	   include_directories (
-	        ./devices/xml-filereader/
-	   )
-
-	   set (${objectName}_HDRS
-	        ${${objectName}_HDRS}
-	        ./devices/xml-filereader/xml-filereader.h
-	        ./devices/xml-filereader/xml-reader.h
-	        ./devices/xml-filereader/xml-descriptor.h
-	   )
-
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ./devices/xml-filereader/xml-filereader.cpp
-	        ./devices/xml-filereader/xml-reader.cpp
-	        ./devices/xml-filereader/xml-descriptor.cpp
-	   )
-
-	   add_definitions (-DHAVE_XMLFILES)
-	endif()
 #
 	if (TCP_STREAMER)
 	   add_definitions (-DTCP_STREAMER)

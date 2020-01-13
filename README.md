@@ -3,11 +3,17 @@
 Qt-DAB-3.2-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ---------------------------------------------------------------------
-Summary of new features in Qt-DAB-3.2-Beta
+Summary of new features in Qt-DAB-3.21-Beta
 ---------------------------------------------------------------------
 
-Qt-DAB 3.2 distinguishes itself from the previous version by 
+Qt-DAB 3.21 distinguishes itself from the previous version by 
 the following visible changes
+
+ * based on user requests, the *scanning* function is slightly changed. While
+in previous versions scanning stopped as soon as a channel with valid
+DAB data is encountered. In this version, default behaviour is to
+continu scanning (well, until the scan button is touched again, a
+service is selected, a channel is changed), while one needs to add a line (shortScan=1) to the configuration file to select the "old" behaviour.
 
  * stereo indicator disappeared on the main GUI, and its place is taken
 by the progress bar showing the quality of the FIC decoding. Since this
@@ -19,27 +25,55 @@ service
 least with the SDRplay users), SDRplay ltd developed the Duo and the new RSPdx,
 and future support will be through the V3 library (currently 3.06).
 
- * **experimental** support is added for **self describing** xml-files for
-dumping and reading back raw data. These files are self-describing, i.e.
-they contain a description of the encoding and format of the contents
-and a single reader (xml-files) is available to interpret the contents.
+-------------------------------------------------------------------------
+xml-files and support
+-------------------------------------------------------------------------
 
-Currently, the support drivers for the SDRplay (interfacing to the
-2.13 SDRPlay library), the AIRspy, the "dabsticks", the hackrf and
-the limeSDR device handlers are equipped with a "dump" button
-to create such a file.
+Clemens Schmidt, author of the QIRX program and me defined a format
+for storing and exchanging "raw" data: xml-files.
+Such a file contains in the first bytes - up to 5000 - a description
+in xml - as source - of the data contents. This xml description
+describes in detail  the coding of the elements.
+As an example, a description of data obtained by dumping AIRspy
+input. 
 
-In order to find the parameters out, you just have to check the first
-5000 bytes and display the xml output in a console:
+ ```
+	<?xml version="1.0" encoding="utf-8"?>
+	<SDR>
+	  <Recorder Name="Qt-DAB" Version="3.2-Beta"/>
+	  <Device Name="AIRspy" Model="I"/>
+	  <Time Value="Wed Dec 18 12:39:34 2019" Unit="UTC"/>
+	  <!--The Sample information holds for the whole recording-->
+	  <Sample>
+	    <Samplerate Value="2500000" Unit="Hz"/>
+	    <Channels Bits="12" Container="int16" Ordering="LSB">
+	      <Channel Value="I"/>
+	      <Channel Value="Q"/>
+	    </Channels>
+	  </Sample>
+	  <!--Here follow one or more data blocks-->
+	  <Datablocks>
+	    <Datablock Number="1" Count="375783424" Unit="Channel">
+	      <Frequency Value="227360" Unit="KHz"/>
+	      <Modulation Value="DAB"/>
+	    </Datablock>
+	  </Datablocks>
+	</SDR>
 
-	head -c 5000 foo.xml
-	
-Assuming this is an 8bit raw file (for instance made by an RTLSDR dongle), 
-you could generate a valid `*.raw` file with
+ ```
 
-	tail -c +5001 foo.xml > foo.raw
+The device handlers in Qt-DAB-3.21 support generating a raw file encoded
+in such an xml file.
 
-and reload this as raw file in Qt-DAB.
+While the current implementation for reading such files is limited to
+a single data block, the reader contains a *cont* button that, when
+touched while playing the data, will cause continuous playing of the
+data in the data block.
+
+![Qt-DAB with xml input](/qt-dab-xml.png?raw=true)
+
+The picture shows the reader when reading a file, generated from raw
+data emitted by the Hackrf device.
 
 ----------------------------------------------------------------------
 Why a Beta version

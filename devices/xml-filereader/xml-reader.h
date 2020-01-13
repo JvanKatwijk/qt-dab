@@ -49,6 +49,9 @@ public:
 	                            RingBuffer<std::complex<float>> *b);
 			~xml_Reader	();
 	void		stopReader	();
+	void		handle_continuousButton	();
+private:
+	std::atomic<bool>	continuous;
 	FILE		*file;
 	xmlDescriptor	*fd;
 	uint32_t	filePointer;
@@ -59,7 +62,10 @@ public:
 	std::atomic<bool> running;
 	void		run ();
 	int		compute_nrSamples 	(FILE *f, int blockNumber);
-	int		readSamples		(FILE *f, int amount);
+	int		readSamples_IQ		(FILE *f, int amount);
+	int		readSamples_QI		(FILE *f, int amount);
+	int		readSamples_I		(FILE *f, int amount);
+	int		readSamples_Q		(FILE *f, int amount);
 	float		readElement		(FILE *f);
 //
 //	for the conversion - if any

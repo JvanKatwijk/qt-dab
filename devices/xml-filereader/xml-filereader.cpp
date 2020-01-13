@@ -79,6 +79,8 @@
 	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
 	fprintf (stderr, "nrElements = %d\n",
 	             theDescriptor -> blockList [0].nrElements);
+	connect (continuousButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_continuousButton ()));
 	running. store (false);
 }
 
@@ -116,6 +118,7 @@ void	xml_fileReader::stopReader () {
 	   while (theReader -> isRunning())
 	      usleep (100);
 	   delete theReader;
+	   theReader = nullptr;
 	}
 	running. store (false);
 }
@@ -149,5 +152,11 @@ void	xml_fileReader::setProgress (int samplesRead, int samplesToRead) {
 
 int	xml_fileReader::getVFOFrequency	() {
 	return theDescriptor -> blockList [0]. frequency;
+}
+
+void	xml_fileReader::handle_continuousButton () {
+	if (theReader == nullptr)
+	   return;
+	theReader -> handle_continuousButton ();
 }
 

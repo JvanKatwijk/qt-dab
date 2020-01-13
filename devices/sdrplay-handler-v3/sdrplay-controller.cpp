@@ -58,7 +58,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 //	here we start
 	sdrplayController::sdrplayController (sdrplayHandler_v3 *parent,
-	                                      RingBuffer<std::complex<float>> *b,
+	                                      RingBuffer<std::complex<int16_t>> *b,
 	                                      controlQueue *theQueue) {
 	this	-> parent	= parent;
 	this	-> _I_Buffer	= b;
@@ -107,8 +107,7 @@ std::complex<float> localBuf [numSamples];
 	   return;
 
 	for (int i = 0; i <  (int)numSamples; i ++)
-	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
-	                                       float (xq [i]) / denominator);
+	   localBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
 	int n = (int)(p -> _I_Buffer -> GetRingBufferWriteAvailable ());
 	if (n >= (int)numSamples) 
 	   p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);

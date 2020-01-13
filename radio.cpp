@@ -42,6 +42,7 @@
 #include	"data-descriptor.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
+#include	"xml-filereader.h"
 #include	"dab_tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -66,9 +67,6 @@
 #ifdef	HAVE_EXTIO
 #include	"extio-handler.h"
 #endif
-#endif
-#ifdef	HAVE_XMLFILES
-#include	"xml-filereader.h"
 #endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl_tcp_client.h"
@@ -199,9 +197,13 @@ uint8_t	dabBand;
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 	if (saveSlides != 0)
 	   set_picturePath ();
+/*
+ * Experimental:
+ *	lots of people seem to want the scan to continue, rather than
+ *	stop whever a channel with data is found.
+ */
 
-///////////////////////////////////////////////////////////////////////////
-
+	shortScan		= dabSettings -> value ("shortScan", 0). toInt () == 1;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
@@ -360,9 +362,7 @@ uint8_t	dabBand;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
-#ifdef	HAVE_XMLFILES
 	deviceSelector	-> addItem ("xml-files");
-#endif
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -592,7 +592,8 @@ QString s;
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	my_dabProcessor	-> coarseCorrectorOff();
-	stopScanning ();	// if scanning, we are done
+	if (shortScan)
+	   stopScanning ();	// if scanning, we are done
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -941,7 +942,7 @@ virtualInput	*inputDevice	= nullptr;
 #ifdef	HAVE_SDRPLAY_V3
 	if (s == "sdrplay-v3") {
 	   try {
-	      inputDevice	= new sdrplayHandler_v3 (dabSettings);
+	      inputDevice	= new sdrplayHandler_v3 (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -981,7 +982,6 @@ virtualInput	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_XMLFILES
 	if (s == "xml-files") {
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
@@ -1001,7 +1001,6 @@ virtualInput	*inputDevice	= nullptr;
 	   }
 	}
 	else
-#endif
 	if (s == "file input (.iq)") {
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),

@@ -59,6 +59,7 @@ private:
 	xml_Reader		*theReader;
 public slots:
 	void			setProgress	(int, int);
+	void			handle_continuousButton ();
 };
 
 #endif

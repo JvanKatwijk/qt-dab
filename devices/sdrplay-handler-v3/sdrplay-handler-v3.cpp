@@ -24,22 +24,29 @@
 #include	<QSettings>
 #include	<QHBoxLayout>
 #include	<QLabel>
+#include	<QFileDialog>
 #include	"sdrplay-handler-v3.h"
 #include	"control-queue.h"
 #include	"sdrplay-controller.h"
+#include	"xml-filewriter.h"
 
-	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s) {
-	sdrplaySettings		= s;
-	myFrame			= new QFrame (nullptr);
+
+	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
+	                                       QString &recorderVersion) {
+	sdrplaySettings			= s;
+	this	-> recorderVersion	= recorderVersion;
+	myFrame				= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 	this	-> myFrame	-> show	();
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	_I_Buffer		= new RingBuffer<
-	                              std::complex<float>>(8 *1024 * 1024);
+	                              std::complex<int16_t>>(8 *1024 * 1024);
 	theQueue		= new controlQueue ();
 	nrBits			= 12;	// default
 
+	xmlDumper		= nullptr;
+	dumping. store	(false);
 //	See if there are settings from previous incarnations
 //	and config stuff
 
@@ -81,8 +88,12 @@
 	         this, SLOT (set_ppmControl (int)));
 	connect (antennaSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_antennaSelect (const QString &)));
+	connect (dumpButton, SIGNAL (clicked ()),
+                 this, SLOT (set_xmlDump ()));
+
 //
 	theController	= new sdrplayController (this, _I_Buffer, theQueue);
+	denominator	= 2048;
 	usleep (1000);
 }
 
@@ -212,6 +223,8 @@ bool	sdrplayHandler_v3::restartReader	(int32_t freq) {
 }
 
 void	sdrplayHandler_v3::stopReader	() {
+
+	close_xmlDump ();
 	if (!theController -> is_threadRunning () ||
 	    !theController -> is_receiverRunning ())
 	   return;
@@ -224,6 +237,17 @@ void	sdrplayHandler_v3::stopReader	() {
 //	In a next version we just share the _I_Buffer with the
 //	dabProcessor
 int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) { 
+std::complex<int16_t> temp [size];
+int	i;
+
+	int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+        for (i = 0; i < amount; i ++)
+           V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
+                                        imag (temp [i]) / (float) denominator);
+        if (dumping. load ())
+           xmlWriter -> add (temp, amount);
+        return amount;
+
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 
@@ -237,5 +261,49 @@ void	sdrplayHandler_v3::resetBuffer	() {
 
 int16_t	sdrplayHandler_v3::bitDepth	() {
 	return nrBits;
+}
+
+void	sdrplayHandler_v3::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   dumpButton	-> setText ("Dump");
+	}
+}
+
+bool	sdrplayHandler_v3::setup_xmlDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      nrBits,
+	                                      "int16",
+	                                      2048000,
+	                                      vfoFrequency,
+	                                      "SDRplay",
+	                                      "????",
+	                                      recorderVersion);
+	dumping. store (true);
+	return true;
+}
+
+void	sdrplayHandler_v3::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	dumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

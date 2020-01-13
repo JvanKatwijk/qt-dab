@@ -87,6 +87,7 @@ private:
 	RingBuffer<float>	*responseBuffer;
 	tiiViewer		*my_tiiViewer;
 
+	bool			shortScan;
 	presetHandler		my_presetHandler;
 	int16_t			tii_delay;
 	int32_t			dataPort;

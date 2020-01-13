@@ -35,12 +35,12 @@ class	sdrplayController:public QThread {
 Q_OBJECT
 public:
 		sdrplayController (sdrplayHandler_v3 *,
-	                           RingBuffer<std::complex<float>> *,
+	                           RingBuffer<std::complex<int16_t>> *,
 	                           controlQueue *);
 		~sdrplayController	();
 	bool	is_threadRunning	();
 	bool	is_receiverRunning	();
-	RingBuffer<std::complex<float>> *_I_Buffer;
+	RingBuffer<std::complex<int16_t>> *_I_Buffer;
 	int	denominator;
 	void	update_PowerOverload (sdrplay_api_EventParamsT *params);
 	std::atomic<bool>	receiverRuns;

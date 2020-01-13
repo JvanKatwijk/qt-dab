@@ -27,6 +27,7 @@
 #include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
+#include	<stdio.h>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"virtual-input.h"
@@ -34,6 +35,7 @@
 
 class	controlQueue;
 class	sdrplayController;
+class	xml_fileWriter;
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -44,7 +46,7 @@ class	sdrplayController;
 class	sdrplayHandler_v3: public virtualInput, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
-			sdrplayHandler_v3	(QSettings *);
+			sdrplayHandler_v3	(QSettings *, QString &);
 			~sdrplayHandler_v3	();
 	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();
@@ -58,7 +60,8 @@ public:
 	int16_t		bitDepth		();
 
 private:
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	QString			recorderVersion;
+	RingBuffer<std::complex<int16_t>>	*_I_Buffer;
 	sdrplayController	*theController;
 	controlQueue		*theQueue;
 	int32_t			vfoFrequency;
@@ -67,6 +70,13 @@ private:
 	QSettings		*sdrplaySettings;
 	bool			agcMode;
 	int16_t			nrBits;
+	int16_t			denominator;
+        FILE			*xmlDumper;
+        xml_fileWriter		*xmlWriter;
+        bool			setup_xmlDump		();
+        void			close_xmlDump		();
+        std::atomic<bool>	dumping;
+
 private slots:
 	void			set_ifgainReduction	(int);
 	void			set_lnagainReduction	(int);
@@ -84,6 +94,8 @@ public slots:
 	void			show_deviceLabel	(const QString &, int);
 	void			show_antennaSelector	(bool);
 	void			show_tunerSelector	(bool);
+	void			set_xmlDump		();
+
 };
 #endif
 

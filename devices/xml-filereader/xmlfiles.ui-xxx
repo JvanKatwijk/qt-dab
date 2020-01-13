@@ -6,26 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
+    <width>285</width>
     <height>305</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>xmlfiles</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QLabel" name="filenameLabel">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path and filename to xml-file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>TextLabel</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="filenameLabel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path and filename to xml-file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QProgressBar" name="fileProgress">
        <property name="toolTip">
@@ -33,13 +33,6 @@
        </property>
        <property name="value">
         <number>24</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="continuousButton">
-       <property name="text">
-        <string>cont</string>
        </property>
       </widget>
      </item>

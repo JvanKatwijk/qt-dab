@@ -30,6 +30,8 @@
 #include	<stdio.h>
 #include	"rawfiles.h"
 
+#include	"element-reader.h"
+
 static	int shift (int a) {
 int r	= 1;
 	while (-- a > 0) {
@@ -63,6 +65,7 @@ struct timeval tv;
 	this	-> filePointer	= filePointer;
 	sampleBuffer		= b;
 	convBufferSize		= fd -> sampleRate / 1000;
+	continuous. store (false);
 
 	for (int i = 0; i < 2048; i ++) {
 	   float inVal = float (fd -> sampleRate / 1000);
@@ -101,26 +104,47 @@ void	xml_Reader::run () {
 int	samplesRead	= 0;
 int	blockSize	= 2048;
 uint64_t	nextStop;
+int	startPoint	= filePointer;
 
 	fseek (file, filePointer, SEEK_SET);
-
 	nextStop = currentTime ();
 	running. store (true);
 	for (int blocks = 0; blocks < fd -> nrBlocks; blocks ++) {
 	   samplesToRead	= compute_nrSamples (file, blocks);
 	   fprintf (stderr, "samples to read %d\n", samplesToRead);
 	   samplesRead		= 0;
-	   while ((samplesRead <= samplesToRead) && running. load ()) {
-	      samplesRead += readSamples (file, blockSize);
-	      if (++cycleCount >= 200) {
-	         setProgress (samplesRead, samplesToRead);
-	         cycleCount = 0;
+	   do {
+	      while ((samplesRead <= samplesToRead) && running. load ()) {
+	         if (fd -> iqOrder == "IQ") 
+	            samplesRead += readSamples_IQ (file, blockSize);
+	         else
+	          if (fd -> iqOrder == "QI")
+	            samplesRead += readSamples_QI (file, blockSize);
+	         else
+	         if (fd -> iqOrder == "I_Only")
+	            samplesRead += readSamples_I (file, blockSize);
+	         else
+	            samplesRead += readSamples_Q (file, blockSize);
+	         if (++cycleCount >= 200) {
+	            setProgress (samplesRead, samplesToRead);
+	            cycleCount = 0;
+	         }
+	         nextStop = nextStop + ((uint64_t)blockSize * 1000) / 2048;
+	         if (nextStop > currentTime ())
+	            usleep ( nextStop - currentTime ());
 	      }
-	      nextStop	= nextStop + ((uint64_t)blockSize * 1000) / 2048;
-	      if (nextStop > currentTime ())
-	         usleep ( nextStop - currentTime ());
-	   }
+	      setProgress (0, samplesToRead);
+	      filePointer = startPoint;
+	      fseek (file, filePointer, SEEK_SET);
+	      samplesRead		= 0;
+	   } while (running.load () && continuous. load ());
 	}
+}
+
+void	xml_Reader::handle_continuousButton  () {
+	continuous. store (!continuous. load ());
+	fprintf (stderr, "continuous is %s\n",
+	              continuous.load () ? "on" : "off");
 }
 
 int	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
@@ -142,32 +166,88 @@ int	samplesToRead	= 0;
 	return samplesToRead;
 }
 
-int	xml_Reader::readSamples (FILE *f, int amount) {
+int	xml_Reader::readSamples_IQ (FILE *f, int amount) {
 float I_element, Q_element;
 int	sampleCount	= 0;
 
 	while (sampleCount < amount) {
-	   std::complex<float> sample;
+	   I_element = readElement (f);
+	   Q_element = readElement (f);
 
-	   if (fd -> iqOrder == "IQ") {
-	      I_element = readElement (f);
-	      Q_element = readElement (f);
-	      sample = std::complex<float> (I_element, Q_element);
+	   convBuffer [convIndex ++] = std::complex<float>(I_element, Q_element);
+	   if (convIndex >= convBufferSize + 1) {
+	      std::complex<float> temp [2048];
+	      for (int i = 0; i < 2048; i ++) {
+	         int16_t inpBase = mapTable_int [i];
+	         float   inpRatio = mapTable_float [i];
+	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
+	                    compmul (convBuffer [inpBase], 1 - inpRatio);
+	      }
+	      convBuffer [0] = convBuffer [convBufferSize];
+	      convIndex	= 1;
+	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
+	      return 2048;
 	   }
-	   else
-	   if (fd -> iqOrder == "QI") {
-	      Q_element = readElement (f);
-	      I_element = readElement (f);
-	      sample = std::complex<float> (I_element, Q_element);
-	   }
-	   else
-	   if (fd -> iqOrder == "I_Only") 
-	      sample = std::complex<float> (readElement (f), 0);
-	   else
-	   if (fd -> iqOrder == "Q_Only") 
-	      sample = std::complex<float> (0, readElement (f));
+	}
+	return sampleCount;
+}
 
-	   convBuffer [convIndex ++] = sample;
+int	xml_Reader::readSamples_QI (FILE *f, int amount) {
+float I_element, Q_element;
+int	sampleCount	= 0;
+
+	while (sampleCount < amount) {
+	   Q_element = readElement (f);
+	   I_element = readElement (f);
+	   convBuffer [convIndex ++] = std::complex<float>(I_element,
+	                                                   Q_element);
+	   if (convIndex >= convBufferSize + 1) {
+	      std::complex<float> temp [2048];
+	      for (int i = 0; i < 2048; i ++) {
+	         int16_t inpBase = mapTable_int [i];
+	         float   inpRatio = mapTable_float [i];
+	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
+	                    compmul (convBuffer [inpBase], 1 - inpRatio);
+	      }
+	      convBuffer [0] = convBuffer [convBufferSize];
+	      convIndex	= 1;
+	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
+	      return 2048;
+	   }
+	}
+	return sampleCount;
+}
+int	xml_Reader::readSamples_I (FILE *f, int amount) {
+float I_element, Q_element;
+int	sampleCount	= 0;
+
+	while (sampleCount < amount) {
+	   convBuffer [convIndex ++] = 
+	                     std::complex<float> (readElement (f), 0);
+	   if (convIndex >= convBufferSize + 1) {
+	      std::complex<float> temp [2048];
+	      for (int i = 0; i < 2048; i ++) {
+	         int16_t inpBase = mapTable_int [i];
+	         float   inpRatio = mapTable_float [i];
+	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
+	                    compmul (convBuffer [inpBase], 1 - inpRatio);
+	      }
+	      convBuffer [0] = convBuffer [convBufferSize];
+	      convIndex	= 1;
+	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
+	      return 2048;
+	   }
+	}
+	return sampleCount;
+}
+int	xml_Reader::readSamples_Q (FILE *f, int amount) {
+float I_element, Q_element;
+int	sampleCount	= 0;
+
+	while (sampleCount < amount) {
+	   convBuffer [convIndex ++] = 
+	                       std::complex<float> (0, readElement (f));
+
 	   if (convIndex >= convBufferSize + 1) {
 	      std::complex<float> temp [2048];
 	      for (int i = 0; i < 2048; i ++) {

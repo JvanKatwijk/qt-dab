@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.2-Beta
+TARGET		= qt-dab-3.21-Beta
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -48,6 +48,7 @@ DEPENDPATH += . \
 	      ./devices \
 	      ./devices/rawfiles-new \
 	      ./devices/wavfiles-new\
+	      ./devices/xml-filereader \
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
 	      ./correlation-viewer \
@@ -72,6 +73,7 @@ INCLUDEPATH += . \
 	      ./devices \
 	      ./devices/rawfiles-new \
 	      ./devices/wavfiles-new \
+	      ./devices/xml-filereader \
 	      ./includes/scopes-qwt6 \
               ./spectrum-viewer \
 	      ./correlation-viewer \
@@ -160,6 +162,9 @@ HEADERS += ./radio.h \
 	   ./devices/rawfiles-new/raw-reader.h \
            ./devices/wavfiles-new/wavfiles.h \
            ./devices/wavfiles-new/wav-reader.h \
+	   ./devices/xml-filereader/xml-filereader.h \
+	   ./devices/xml-filereader/xml-reader.h \
+	   ./devices/xml-filereader/xml-descriptor.h \
 	   ./spectrum-viewer/spectrum-viewer.h \
 	   ./correlation-viewer/correlation-viewer.h \
 	   ./tii-viewer/tii-viewer.h
@@ -172,6 +177,7 @@ FORMS	+= ./spectrum-viewer/scopewidget.ui
 FORMS	+= ./correlation-viewer/correlation-widget.ui
 FORMS	+= ./tii-viewer/tii-widget.ui
 #FORMS	+= ./devices/filereader-widget.ui 
+FORMS	+= ./devices/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -248,6 +254,9 @@ SOURCES += ./main.cpp \
 	   ./devices/rawfiles-new/raw-reader.cpp \
            ./devices/wavfiles-new/wavfiles.cpp \
            ./devices/wavfiles-new/wav-reader.cpp \
+	   ./devices/xml-filereader/xml-filereader.cpp \
+	   ./devices/xml-filereader/xml-reader.cpp \
+	   ./devices/xml-filereader/xml-descriptor.cpp \
 	   ./spectrum-viewer/spectrum-viewer.cpp \
 	   ./correlation-viewer/correlation-viewer.cpp \
 	   ./tii-viewer/tii-viewer.cpp
@@ -283,7 +292,6 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
-CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -365,7 +373,6 @@ CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= xmlfiles		# pretty experimental
 CONFIG		+= hackrf
 #CONFIG		+= lime
 CONFIG		+= NO_SSE
@@ -502,19 +509,6 @@ soapy {
 	LIBS		+= -lSoapySDR -lm
 }
 
-xmlfiles {
-	DEFINES		+= HAVE_XMLFILES
-	INCLUDEPATH	+= devices/xml-filereader
-	DEPENDPATH	+= devices/xml-filereader
-	HEADERS		+= devices/xml-filereader/xml-filereader.h \
-	                   devices/xml-filereader/xml-reader.h \
-	                   devices/xml-filereader/xml-descriptor.h
-	SOURCES		+= devices/xml-filereader/xml-filereader.cpp \
-	                   devices/xml-filereader/xml-reader.cpp \
-	                   devices/xml-filereader/xml-descriptor.cpp
-	FORMS		+= ./devices/xml-filereader/xmlfiles.ui
-}
-	
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network
