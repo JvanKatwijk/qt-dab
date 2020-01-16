@@ -6,14 +6,21 @@ Qt-DAB-3.2-Beta is software for Windows, Linux and Raspberry Pi for listening to
 Summary of new features in Qt-DAB-3.21-Beta
 ---------------------------------------------------------------------
 
-Qt-DAB 3.21 distinguishes itself from the previous version by 
-the following visible changes
+Note that the installer for Windows for version 3.21 Beta is
+not yet available.
 
- * based on user requests, the *scanning* function is slightly changed. While
-in previous versions scanning stopped as soon as a channel with valid
-DAB data is encountered. In this version, default behaviour is to
-continu scanning (well, until the scan button is touched again, a
-service is selected, a channel is changed), while one needs to add a line (shortScan=1) to the configuration file to select the "old" behaviour.
+![Qt-DAB scan result](/qt-dab-scanresult.png?raw=true)
+
+Qt-DAB 3.21 distinguishes itself from the previous version by 
+a number of visible changes:
+
+ * based on user requests, the *scanning* function is changed.
+While in previous versions scanning stopped as soon as a channel with valid
+DAB data is encountered, in this version touching the scanning button will
+instruct the software to perform a *single scan* over all channels
+in the selected band.
+During the scan, a separate window will be shown with the results
+of the scan as shown in the picture.
 
  * stereo indicator disappeared on the main GUI, and its place is taken
 by the progress bar showing the quality of the FIC decoding. Since this

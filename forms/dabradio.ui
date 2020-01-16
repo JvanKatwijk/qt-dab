@@ -570,7 +570,10 @@ it is definitely not the time on your clock.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for starting a scan over the channels in the current selected band (default VHF Band III or optionally L-Band)&lt;/p&gt;&lt;p&gt;Scanning will continue until an active DAB or DAB+ signal is found.&lt;/p&gt;&lt;p&gt;Push again to stop scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>Touching the scan button will cause the software to make a single scan over all channels in the selected band. Ensembles (and their services) found will be displayed in a separate window.
+The windows will be visible as long as the scanning mode is on (note that after completing the
+scan, i.e. the cycle from (in Mode I) channel 5A to 13F, the software will wait until the scanner
+is officlally stopped).</string>
           </property>
           <property name="text">
            <string>Scan</string>

@@ -45,6 +45,7 @@
 #include	"tcp-server.h"
 #endif
 #include	"preset-handler.h"
+#include	"scanner-table.h"
 
 class	QSettings;
 class	virtualInput;
@@ -89,6 +90,7 @@ private:
 
 	bool			shortScan;
 	presetHandler		my_presetHandler;
+	scannerTable		theTable;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentService;
@@ -160,7 +162,7 @@ private:
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
 	QString			filenameSuggestion 	(QString);
-
+	void			showServices		();
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &);

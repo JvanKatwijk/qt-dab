@@ -4,7 +4,8 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB 
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -150,7 +151,8 @@ uint8_t convert (QString s) {
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
-	                                        my_presetHandler (this) {
+	                                        my_presetHandler (this),
+	                                        theTable (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -592,8 +594,8 @@ QString s;
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	my_dabProcessor	-> coarseCorrectorOff();
-	if (shortScan)
-	   stopScanning ();	// if scanning, we are done
+//	if (shortScan)
+//	   stopScanning ();	// if scanning, we are done
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -760,6 +762,7 @@ void	RadioInterface::TerminateProcess() {
 	signalTimer.  stop();
 	presetTimer.  stop();
 
+	theTable. hide ();
 	my_presetHandler. savePresets (presetSelector);
 	if (audioDumper != nullptr) {
 	   soundOut	-> stopDumping();
@@ -1213,7 +1216,7 @@ void	RadioInterface::setStereo	(bool s) {
 
 void	RadioInterface::show_tii (QByteArray data) {
 int8_t  mainId, subId;
-QString a = "Estimate: ";
+QString a = "Est: ";
 
         if (!running. load())
            return;
@@ -2118,7 +2121,7 @@ int     currentChannel  = channelSelector -> currentIndex ();
 void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
-	if (scanning. load ())
+	if (scanning. load ()) 
 	   stopScanning ();
 	else
 	   startScanning ();
@@ -2129,9 +2132,9 @@ void	RadioInterface::startScanning	() {
         presetSelector -> setCurrentIndex (0);
         stopService     ();
         stopChannel     ();
-        int  cc      = channelSelector -> currentIndex ();
-        cc ++;
-        if (cc >= channelSelector -> count ())
+	int  cc      = channelSelector -> currentIndex ();
+//	cc ++;
+//	if (cc >= channelSelector -> count ())
            cc = 0;
         scanning. store (true);
 
@@ -2145,6 +2148,8 @@ void	RadioInterface::startScanning	() {
         scanButton      -> setText ("scanning");
         startChannel    (channelSelector -> currentText ());
         signalTimer. start (switchTime);
+	theTable. clear ();
+	theTable. show ();
 }
 
 void	RadioInterface::stopScanning	() {
@@ -2153,6 +2158,7 @@ void	RadioInterface::stopScanning	() {
         if (!scanning. load ())
            return;
         signalTimer. stop ();
+	theTable. hide ();
         scanning. store (false);
         my_dabProcessor -> set_scanMode (scanning. load ());
         scanButton      -> setText ("scan");
@@ -2168,20 +2174,28 @@ void	RadioInterface::No_Signal_Found () {
 	signalTimer. stop ();
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
+	   if (Services != QStringList ())
+	      showServices ();
 	   stopChannel ();
 	   cc ++;
-	   if (cc >= channelSelector -> count ())
-	      cc = 0;
+	   if (cc >= channelSelector -> count ()) { // end reached?
+//	if at the end we can't use "stopScanning", since that
+//	hides the table, and we want to stay visible until ...
+              signalTimer. stop ();
+//	      my_dabProcessor -> set_scanMode (scanning. load ());
+	   }
+	   else {
 //	To avoid reaction of the system on setting a different value:
-	   disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	      disconnect (channelSelector, SIGNAL (activated (const QString &)),
+	                  this, SLOT (selectChannel (const QString &)));
+	      channelSelector -> setCurrentIndex (cc);
+	      connect (channelSelector, SIGNAL (activated (const QString &)),
 	               this, SLOT (selectChannel (const QString &)));
-	   channelSelector -> setCurrentIndex (cc);
-	   connect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (selectChannel (const QString &)));
 
-	   my_dabProcessor	-> set_scanMode (true);
-	   startChannel (channelSelector -> currentText ());
-	   signalTimer. start (switchTime);
+	      my_dabProcessor	-> set_scanMode (true);
+	      startChannel (channelSelector -> currentText ());
+	      signalTimer. start (switchTime);
+	   }
 	}
 	else
 	if (scanning. load ()) 
@@ -2190,6 +2204,30 @@ void	RadioInterface::No_Signal_Found () {
 
 ////////////////////////////////////////////////////////////////////////////
 //
-//
+// showServices
 ////////////////////////////////////////////////////////////////////////////
+
+void	RadioInterface::showServices () {
+QString SNR = "SNR " + QString::number (snrDisplay -> value ());
+	theTable. newEnsemble (" ",
+	                       channelSelector -> currentText (),
+	                       my_dabProcessor	-> get_ensembleName (),
+	                       SNR,
+	                       transmitter_coordinates -> text ());
+	for (QString& audioService: Services) {
+	   audiodata d;
+	   my_dabProcessor -> dataforAudioService (audioService, &d, 0);
+	   if (!d. defined)
+	      continue;
+	   QString bitRate   = QString::number (d. bitRate);
+	   QString protL     = getProtectionLevel (d. shortForm,
+                                                   d. protLevel);
+	   QString codeRate  = getCodeRate (d. shortForm,
+                                            d. protLevel);
+	   theTable.
+                  add_to_Ensemble (audioService,
+                                   d. ASCTy == 077 ? "DAB+" : "DAB",
+                                   bitRate, protL, codeRate);
+	}
+}
 
