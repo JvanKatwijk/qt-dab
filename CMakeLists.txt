@@ -195,6 +195,7 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
+	     ./scanner-table.h
 	     ./service-description/service-descriptor.h 
 	     ./service-description/audio-descriptor.h 
 	     ./service-description/data-descriptor.h 
@@ -284,6 +285,7 @@ add_definitions (-DPRESET_NAME)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./dab-processor.cpp
+	     ./scanner-table.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp
@@ -365,6 +367,7 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_MOCS
 	     ./dab-processor.h
+	     ./scanner-table.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
