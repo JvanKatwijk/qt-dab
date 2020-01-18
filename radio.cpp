@@ -205,7 +205,7 @@ uint8_t	dabBand;
  *	stop whever a channel with data is found.
  */
 
-	shortScan		= dabSettings -> value ("shortScan", 0). toInt () == 1;
+	normalScan	= dabSettings -> value ("normalScan", 0). toInt () == 1;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
@@ -594,8 +594,8 @@ QString s;
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	my_dabProcessor	-> coarseCorrectorOff();
-//	if (shortScan)
-//	   stopScanning ();	// if scanning, we are done
+	if (normalScan)
+	   stopScanning ();	// if scanning, we are done
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -2133,9 +2133,14 @@ void	RadioInterface::startScanning	() {
         stopService     ();
         stopChannel     ();
 	int  cc      = channelSelector -> currentIndex ();
-//	cc ++;
-//	if (cc >= channelSelector -> count ())
-           cc = 0;
+	if (normalScan) {
+	   cc ++;
+	   if (cc >= channelSelector -> count ())
+              cc = 0;
+	}
+	else {
+	   cc = 0;
+	}
         scanning. store (true);
 
 //      To avoid reaction of the system on setting a different value:
@@ -2148,8 +2153,10 @@ void	RadioInterface::startScanning	() {
         scanButton      -> setText ("scanning");
         startChannel    (channelSelector -> currentText ());
         signalTimer. start (switchTime);
-	theTable. clear ();
-	theTable. show ();
+	if (!normalScan) {
+	   theTable. clear ();
+	   theTable. show ();
+	}
 }
 
 void	RadioInterface::stopScanning	() {
@@ -2174,17 +2181,19 @@ void	RadioInterface::No_Signal_Found () {
 	signalTimer. stop ();
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
-	   if (Services != QStringList ())
+	   if ((!normalScan) && (Services != QStringList ()))
 	      showServices ();
 	   stopChannel ();
 	   cc ++;
-	   if (cc >= channelSelector -> count ()) { // end reached?
+	   if ((cc >= channelSelector -> count ()) && !normalScan) {
 //	if at the end we can't use "stopScanning", since that
 //	hides the table, and we want to stay visible until ...
-              signalTimer. stop ();
+                 signalTimer. stop ();
 //	      my_dabProcessor -> set_scanMode (scanning. load ());
 	   }
-	   else {
+	   else {  // we just continue
+	      if (cc >= channelSelector -> count ())
+	         cc = 0;
 //	To avoid reaction of the system on setting a different value:
 	      disconnect (channelSelector, SIGNAL (activated (const QString &)),
 	                  this, SLOT (selectChannel (const QString &)));

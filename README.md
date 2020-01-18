@@ -22,6 +22,10 @@ in the selected band.
 During the scan, a separate window will be shown with the results
 of the scan as shown in the picture.
 
+Since for me the *scan* button is used as a "search for next channel with data"
+button, the "old" behaviour is still available as option. Add "normalScan=1"
+to the .qt-dab.ini file and behaviour is as it used to be.
+
  * stereo indicator disappeared on the main GUI, and its place is taken
 by the progress bar showing the quality of the FIC decoding. Since this
 indicator is independent on the selected service its place is the main
