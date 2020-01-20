@@ -13,8 +13,8 @@ endif()
 
 if(MINGW)
     add_definitions ( -municode)
-else (MINGW)
-	add_definitions (-DSSE_AVAILABLE)
+#else (MINGW)
+#	add_definitions (-DSSE_AVAILABLE)
 endif()
 
 IF(EXISTS (".git") AND IS_DIRECTORY (".git"))
@@ -82,6 +82,14 @@ endif ()
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
+endif ()
+
+if (DEFINED VITERBI_SSE)
+   set(VITERBI_SSE true)
+endif ()
+
+if (DEFINED VITERBI_NEON)
+   set(VITERBI_NEON true)
 endif ()
 
 #	If you want a tcp stream of the audio rather than
@@ -267,7 +275,6 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/ensemble-printer.h
 	     ./includes/support/viterbi-jan/viterbi-handler.h
 	     ./includes/support/viterbi-spiral/viterbi-spiral.h
-              ./src/support/viterbi-spiral/spiral-sse.h
 	     ./includes/support/preset-handler.h
 	     ./includes/support/presetcombobox.h
 	     ./includes/support/smallqlistview.h
@@ -358,7 +365,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/history-handler.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/support/viterbi-spiral/viterbi-spiral.cpp
-	     ./src/support/viterbi-spiral/spiral-sse.c
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 
 	     ./correlation-viewer/correlation-viewer.cpp 
@@ -429,6 +435,42 @@ add_definitions (-DPRESET_NAME)
 	set (${objectName}_SRCS
 	        ${${objectName}_SRCS} ./radio.cpp)
 
+
+#########################################################################
+#	the viterbi decoder
+#
+	if (VITERBI_NEON)
+	   set(VITERBI_SSE false)
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./src/support/viterbi-spiral/spiral-neon.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./src/support/viterbi-spiral/spiral-neon.c
+	   )
+	   
+	   add_definitions (-DNEON_AVAILABLE)
+	elseif(VITERBI_SSE)
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./src/support/viterbi-spiral/spiral-sse.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./src/support/viterbi-spiral/spiral-sse.c
+	   )
+	   add_definitions (-DSSE_AVAILABLE)
+	else (VITERBI_SSE)
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./src/support/viterbi-spiral/spiral-no-sse.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./src/support/viterbi-spiral/spiral-no-sse.c
+	   )
+	endif (VITERBI_NEON)
 
 ##########################################################################
 #	The devices
