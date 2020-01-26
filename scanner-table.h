@@ -48,6 +48,7 @@ private:
 	QScrollArea	*myWidget;
 	QTableWidget	*outputWidget;
 	int16_t		addRow	();
+	bool		is_clear;
 };
 
 #endif

@@ -33,24 +33,29 @@
 	outputWidget	-> setColumnWidth (0, 150);
 	outputWidget	-> setColumnWidth (4, 150);
         myWidget        -> setWidget (outputWidget);
-        outputWidget     -> setHorizontalHeaderLabels (
+        outputWidget	-> setHorizontalHeaderLabels (
 	                          QStringList () << tr ("scan result"));
+	is_clear	= true;
 }
 
 	scannerTable::~scannerTable () {
 int16_t i;
 int16_t rows    = outputWidget -> rowCount ();
 
-        for (i = rows; i > 0; i --)
-           outputWidget -> removeRow (i);
+	if (!is_clear)
+           for (i = rows; i > 0; i --)
+              outputWidget -> removeRow (i - 1);
         delete  outputWidget;
         delete  myWidget;
 }
 
 void	scannerTable::clear	() {
 int	rows	= outputWidget -> rowCount ();
-	for (int i = rows; i > 0; i ++) 
-	   outputWidget -> removeRow (i);
+	if (is_clear)
+	   return;
+	for (int i = rows; i > 0; i --) 
+	   outputWidget -> removeRow (i - 1);
+	is_clear	= true;
 }
 
 void	scannerTable::show	() {
@@ -64,6 +69,7 @@ void	scannerTable::hide	() {
 int16_t	scannerTable::addRow () {
 int16_t row     = outputWidget -> rowCount ();
 
+	is_clear	= false;
         outputWidget     -> insertRow (row);
         QTableWidgetItem *item0 = new QTableWidgetItem;
         item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
