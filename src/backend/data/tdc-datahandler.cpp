@@ -94,10 +94,10 @@ int16_t	i;
 	   int size = length < 11 ? length : 11;
 	   for (i = 0; i < size; i ++)
 	      checkVector [5 + i] = getBits (data,  offset + 7 * 8 + i * 8, 8);
-	   checkVector [5 + length] = getBits (data, offset + 4 * 8, 8);
-	   checkVector [5 + length + 1] =
+	   checkVector [5 + size] = getBits (data, offset + 4 * 8, 8);
+	   checkVector [5 + size + 1] =
 	                                 getBits (data, offset + 5 * 8, 8);
-	   if (check_crc_bytes (checkVector, 5 + length + 2) != 0) {
+	   if (!check_crc_bytes (checkVector, 5 + length + 2)) {
 	      fprintf (stderr, "crc failed\n");
 	      return;
 	   }
