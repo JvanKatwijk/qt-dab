@@ -6,8 +6,10 @@ Qt-DAB-3.2-Beta is software for Windows, Linux and Raspberry Pi for listening to
 Summary of new features in Qt-DAB-3.21-Beta
 ---------------------------------------------------------------------
 
-Note that the installer for Windows for version 3.21 Beta is
-not yet available.
+Note that while there is a continuous build more recent than the 3.21 build,
+the windows installer - residing in the releases section of the 3.21 release -
+is based on more recent sources
+
 
 ![Qt-DAB scan result](/qt-dab-scanresult.png?raw=true)
 
