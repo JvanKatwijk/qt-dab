@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -115,7 +115,6 @@ HEADERS += ./radio.h \
 	   ./includes/backend/audio/mp2processor.h \
 	   ./includes/backend/audio/mp4processor.h \
 	   ./includes/backend/audio/bitWriter.h \
-	   ./includes/backend/audio/faad-decoder.h \
 	   ./includes/backend/data/data-processor.h \
 	   ./includes/backend/data/pad-handler.h \
 	   ./includes/backend/data/virtual-datahandler.h \
@@ -214,7 +213,6 @@ SOURCES += ./main.cpp \
 	   ./src/backend/audio/mp2processor.cpp \
 	   ./src/backend/audio/mp4processor.cpp \
 	   ./src/backend/audio/bitWriter.cpp \
-	   ./src/backend/audio/faad-decoder.cpp \
 	   ./src/backend/data/pad-handler.cpp \
 	   ./src/backend/data/data-processor.cpp \
 	   ./src/backend/data/virtual-datahandler.cpp \
@@ -285,7 +283,6 @@ LIBS		+= -lportaudio
 LIBS		+= -lz
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
-LIBS		+= -lfaad
 #correct this for the correct path to the qwt6 library on your system
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
@@ -302,6 +299,8 @@ CONFIG		+= hackrf
 CONFIG		+= soapy
 #CONFIG		+= elad_s1	# does not work yet
 
+CONFIG		+= faad
+#CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 
@@ -352,7 +351,6 @@ LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 #INCLUDEPATH	+= /mingw/include
 #INCLUDEPATH	+= /mingw64/include/qwt
 #INCLUDEPATH	+= C:/msys64/mingw64/include/qwt
-LIBS		+= -lfaad
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -362,14 +360,13 @@ LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
 LIBS		+= -lws2_32
-LIBS		+= -lfaad
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
 #correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
-
+CONFIG		+= faad
 #CONFIG		+= extio
 CONFIG		+= airspy
 CONFIG		+= rtl_tcp
@@ -595,4 +592,18 @@ NO_SSE	{
 	SOURCES		+= ./src/support/viterbi-spiral/spiral-no-sse.c
 }
 
+faad	{
+	DEFINES		+= __WITH_FAAD__
+	HEADERS		+= ./includes/backend/audio/faad-decoder.h 
+	SOURCES		+= ./src/backend/audio/faad-decoder.cpp 
+	LIBS		+= -lfaad
+}
+
+fdk-aac	{
+	DEFINES		+= __WITH_FDK_AAC__
+	INCLUDEPATH	+= /usr/local/include/fdk-aac
+	HEADERS		+= ./includes/backend/audio/fdk-aac.h 
+	SOURCES		+= ./src/backend/audio/fdk-aac.cpp 
+	LIBS		+= -lfdk-aac
+}
 

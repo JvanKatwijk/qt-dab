@@ -24,7 +24,7 @@
  *	is the addition from Stefan Poeschel to create a
  *	header for the aac that matches, really a big help!!!!
  *
- *	Furthermore, the code in the "build_aacFile" function is
+ *	(2019:)Furthermore, the code in the "build_aacFile" function is
  *	his as well. Chapeau!
  ************************************************************************
  */
@@ -35,6 +35,7 @@
 #include	"charsets.h"
 #include	"pad-handler.h"
 #include	"bitWriter.h"
+
 //
 /**
   *	\class mp4Processor is the main handler for the aac frames
@@ -42,13 +43,12 @@
   *	that are processed by the "faadDecoder" class
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
-	                            int16_t	bitRate,
+	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            QString	picturesPath)
 	                               :my_padhandler (mr, picturesPath),
- 	                                my_rsDecoder (8, 0435, 0, 1, 10),
-	                                aacDecoder (mr, b) {
+ 	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
@@ -62,7 +62,11 @@
 	         mr, SLOT (setStereo (bool)));
 	connect (this, SIGNAL (newFrame (int)),
 	         mr, SLOT (newFrame (int)));
-
+#ifdef	__WITH_FDK_AAC__
+	aacDecoder		= new fdkAAC (mr, b);
+#else
+	aacDecoder		= new faadDecoder (mr, b);
+#endif
 	this	-> bitRate	= bitRate;	// input rate
 
 	superFramesize		= 110 * (bitRate / 8);
@@ -80,6 +84,7 @@
 }
 
 	mp4Processor::~mp4Processor() {
+	delete aacDecoder;
 }
 
 /**
@@ -288,16 +293,21 @@ stream_parms    streamParameters;
 	      newFrame (segmentSize);
 //
 //	then handle the audio
-
+#ifdef	__WITH_FDK_AAC__
+	      tmp = aacDecoder -> MP42PCM (&streamParameters, 
+	                                   fileBuffer. data (), 
+	                                   segmentSize);
+#else
 	      uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
 
 	      memcpy (theAudioUnit,
 	                 &outVector [au_start [i]], aac_frame_length);
 	      memset (&theAudioUnit [aac_frame_length], 0, 10);
 
-	      tmp = aacDecoder. MP42PCM (&streamParameters,
-	                                 theAudioUnit,
-	                                 aac_frame_length);
+	      tmp = aacDecoder -> MP42PCM (&streamParameters,
+	                                   theAudioUnit,
+	                                   aac_frame_length);
+#endif
 //	      emit isStereo (streamParameters. aacChannelMode);
 	      emit isStereo (tmp == 2);
 	

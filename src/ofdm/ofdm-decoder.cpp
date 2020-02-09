@@ -125,7 +125,8 @@ float	denominator	= 0;
 //
 //	since we do not equalize, we have a kind of "fake"
 //	reference point. We know that the ideal point 
-//	is (x, x)
+//	is (x, x, where x = abs (I, Q) / sqrt (2);
+
 	for (i = 0; i < carriers; i ++) {
 	   x [i]	= std::complex<float> (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
 	   avgPoint	+= x [i];

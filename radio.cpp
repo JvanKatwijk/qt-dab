@@ -1316,10 +1316,12 @@ QString defaultPath	= QDir::tempPath();
 
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
-	QDir testdir (picturesPath);
+	if (picturesPath != "") {
+	   QDir testdir (picturesPath);
 
-	if (!testdir. exists())
-	   testdir. mkdir (picturesPath);
+	   if (!testdir. exists())
+	      testdir. mkdir (picturesPath);
+	}
 }
 
 void	RadioInterface::handle_resetButton	() {

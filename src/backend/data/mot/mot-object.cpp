@@ -173,7 +173,7 @@ QByteArray result;
 	   fprintf (stderr, "going to write file %s\n",
 	                         realName. toUtf8(). data());
 	   checkDir (realName);
-	   FILE *x = fopen (realName. toLatin1(). data(), "w+b");
+	   FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
 	                           realName. toUtf8(). data());

@@ -33,11 +33,16 @@
 #include	<vector>
 #include	"audio-base.h"
 #include	"frame-processor.h"
-#include	"faad-decoder.h"
 #include	"firecode-checker.h"
 #include	"reed-solomon.h"
 #include	<QObject>
 #include	"pad-handler.h"
+
+#ifdef	__WITH_FDK_AAC__
+#include	"fdk-aac.h"
+#else
+#include	"faad-decoder.h"
+#endif
 
 class	RadioInterface;
 
@@ -58,7 +63,6 @@ private:
 	int		build_aacFile (int16_t aac_frame_len,
                                      stream_parms *sp,
                                      uint8_t	*data,
-//	                             uint8_t	*fileBuffer);
                                      std::vector<uint8_t> &fileBuffer);
 
 
@@ -82,7 +86,11 @@ private:
 	firecode_checker	fc;
 	reedSolomon	my_rsDecoder;
 //	and for the aac decoder
-	faadDecoder	aacDecoder;
+#ifdef	__WITH_FDK_AAC__
+	fdkAAC		*aacDecoder;
+#else
+	faadDecoder	*aacDecoder;
+#endif
 signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);

@@ -18,6 +18,8 @@
  */
 
 #include	"bitWriter.h"
+#include	<stdio.h>
+
 
 // --- BitWriter -------------------------------------------------------------
 void BitWriter::Reset() {
@@ -49,8 +51,12 @@ void BitWriter::AddBytes (const uint8_t *data, size_t len) {
 }
 
 void BitWriter::WriteAudioMuxLengthBytes() {
-	size_t len = data.size() - 3;
+	size_t len = data.size () - 3;
 	data [1] |= (len >> 8) & 0x1F;
 	data [2] = len & 0xFF;
+#if 0
+	fprintf (stderr, "%x %x  %x  %d(lengte)zijn de eerste bytes\n",
+	                 data [0], data [1] >> 5, data [2], len);
+#endif
 }
 

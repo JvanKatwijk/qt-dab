@@ -3,6 +3,37 @@
 Qt-DAB-3.2-Beta is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
 
 ---------------------------------------------------------------------
+Replacing libfaad by fdk-aac
+---------------------------------------------------------------------
+
+DRM+, for which I am writing a decoder in another project, supports,
+next to the "classic" AAC encoding of audio, the xHE-AAC encoding.
+Decoding of xHE-AAC encoded audio frames is not supported by the "faad"
+library, and it is not clear whether or not support will ever turn up.
+
+The fdk-aac (from Fraunhofer instiute) turned out to be an excellent
+alternative, it supports decoding both the AAC and xHE-AAC segments
+from DRM30 and DRM+.
+
+As an experiment, I added support for fdk-aac to Qt-DAB using the
+same code that creates the aac output files whenever selected
+(Thanks to Stefan Poeschel for that).
+
+The ".pro" file now contains - in the section for Unix - two lines with which
+either fdk-aac or faad can be selected.
+
+	CONFIG	+= fdk-aac
+	#CONFIG	+= faad
+
+As far as I can see, the fdk-aac library can be installed from the repositories
+of the Linux distribution,  of course, you should have the library and
+the include files installed when using it.
+
+Note that - due to possible copyright restrictions - the AppImage
+as well as the Windows installer (both carry the libraries that they need)
+are using the faad decoder.
+
+---------------------------------------------------------------------
 Summary of new features in Qt-DAB-3.21-Beta
 ---------------------------------------------------------------------
 
