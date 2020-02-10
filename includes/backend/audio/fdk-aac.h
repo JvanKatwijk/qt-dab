@@ -22,6 +22,7 @@
  *
  *	Use the fdk-aac library.
  */
+#ifdef	__WITH_FDK_AAC__
 #ifndef	__FDK_AAC__
 #define	__FDK_AAC__
 
@@ -67,4 +68,5 @@ signals:
 	void			newAudio	(int, int);
 };
 
+#endif
 #endif

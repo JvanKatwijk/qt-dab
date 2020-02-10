@@ -248,7 +248,7 @@ int	i;
            xmlWriter -> add (temp, amount);
         return amount;
 
-	return _I_Buffer	-> getDataFromBuffer (V, size);
+	return _I_Buffer	-> getDataFromBuffer (V, amount);
 }
 
 int32_t	sdrplayHandler_v3::Samples	() {

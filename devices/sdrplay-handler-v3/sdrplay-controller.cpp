@@ -98,7 +98,7 @@ void    StreamACallback (short *xi, short *xq,
                          void *cbContext) {
 sdrplayController *p	= static_cast<sdrplayController *> (cbContext);
 float	denominator	= (float)(p -> denominator);
-std::complex<float> localBuf [numSamples];
+std::complex<int16_t> localBuf [numSamples];
 
 	(void)params;
 	if (reset)
@@ -342,6 +342,7 @@ uint32_t                ndev;
 	                              sdrplay_api_GetErrorString (err));
 	            emit error (FREQUENCY_UPDATE_ERROR);
 	         }
+	         fprintf (stderr, "New frequency %d\n", newFrequency);
 	         _I_Buffer	-> FlushRingBuffer ();
 	         receiverRuns. store (true);
 	         break;
