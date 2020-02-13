@@ -148,10 +148,12 @@ uint8_t convert (QString s) {
 
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
+	                                const QString	&freqExtension,
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        my_presetHandler (this),
+	                                        theBand (freqExtension),
 	                                        theTable (this) {
 int16_t	latency;
 int16_t k;

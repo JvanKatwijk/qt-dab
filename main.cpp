@@ -80,13 +80,14 @@ QSettings       *dabSettings;           // ini file
 QString		presetName	= PRESETS;
 int32_t		dataPort	= 8888;
 int     opt;
-
+QString freqExtension		= "";
+	
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "i:P:Q:")) != -1) {
+	while ((opt = getopt (argc, argv, "i:P:Q:A:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -96,7 +97,11 @@ int     opt;
 	         dataPort	= atoi (optarg);
 	         break;
 
-	     default:
+	      case 'A':
+	         freqExtension	= optarg;
+	         break;
+
+	      default:
 	         break;
 	   }
 	}
@@ -126,6 +131,7 @@ int     opt;
 
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       presets,
+	                                       freqExtension,
 	                                       dataPort
                                                );
 	MyRadioInterface -> show();

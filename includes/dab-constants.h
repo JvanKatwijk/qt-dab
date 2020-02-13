@@ -118,6 +118,7 @@ float	im	= imag (z);
 
 #define		BAND_III	0100
 #define		L_BAND		0101
+#define		A_BAND		0102
 
 class	descriptorType {
 public:

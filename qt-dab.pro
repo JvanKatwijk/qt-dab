@@ -296,11 +296,11 @@ CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
-CONFIG		+= soapy
+#CONFIG		+= soapy
 #CONFIG		+= elad_s1	# does not work yet
 
-#CONFIG		+= faad
-CONFIG		+= fdk-aac
+CONFIG		+= faad
+#CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 

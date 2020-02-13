@@ -68,6 +68,7 @@ Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface();

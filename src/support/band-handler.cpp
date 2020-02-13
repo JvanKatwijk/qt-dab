@@ -19,17 +19,24 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+//
+//
+//	The issue:
+//	suppose that someone wants to add some -non official -
+//	frequencies, e.g. fin amateur bands.
+//	we therefore use the "frequencies_1" and "frequencies_2"
+//	tables for initializing the "bandIII" and "LBand" tables
+//	Tables that can be extended easily
+//
 #include	"band-handler.h"
 #include	"dab-constants.h"
-
-struct dabFrequencies {
-	const char	*key;
-	int	fKHz;
-};
+#include	<stdio.h>
 
 static
-struct dabFrequencies bandIII_frequencies [] = {
+struct {
+	const char *key;
+	int	fKHz;
+} frequencies_1 [] = {
 {"5A",	174928},
 {"5B",	176640},
 {"5C",	178352},
@@ -72,7 +79,10 @@ struct dabFrequencies bandIII_frequencies [] = {
 };
 
 static
-struct dabFrequencies Lband_frequencies [] = {
+struct  {
+	const char *key;
+	int	fKHz;
+} frequencies_2 [] = {
 {"LA", 1452960},
 {"LB", 1454672},
 {"LC", 1456384},
@@ -92,11 +102,69 @@ struct dabFrequencies Lband_frequencies [] = {
 {nullptr, 0}
 };
 
-	bandHandler::bandHandler() {}
+typedef struct {
+	QString key;
+	int fKHz;
+}dab_frequencies;
+
+dab_frequencies bandIII_frequencies [100];
+dab_frequencies Lband_frequencies   [100];
+
+	bandHandler::bandHandler	(const QString &a_band) {
+	int filler;
+	for (filler = 0; frequencies_2 [filler]. fKHz != 0; filler ++) {
+	   Lband_frequencies [filler]. key =
+	                        QString (frequencies_2 [filler]. key);
+	   Lband_frequencies [filler]. fKHz =
+	                        frequencies_2 [filler]. fKHz;
+	}
+	Lband_frequencies [filler]. fKHz = 0;
+//
+	FILE *f	= nullptr;
+	if (a_band != "")
+	   f = fopen (a_band. toLatin1 (). data (), "r");
+	if (f == nullptr) {
+	   for (filler = 0; frequencies_1 [filler]. fKHz != 0; filler ++) {
+	      bandIII_frequencies [filler]. key =
+	                               QString (frequencies_1 [filler]. key);
+	      bandIII_frequencies [filler]. fKHz =
+	                               frequencies_1 [filler]. fKHz;
+	   }
+	   bandIII_frequencies [filler]. fKHz = 0;
+	   return;
+	}
+
+	int	cnt	= 0;
+	size_t	amount	= 128;
+	filler		= 0;
+	char *line	= (char *) malloc (256);
+	while ((cnt < 100) && (amount > 0)) {
+	   amount = getline (&line, &amount, f);
+	   fprintf (stderr, "%s (%d)\n", line, amount);
+	   if ((int)amount < 0) {
+	      break;
+	   }
+	   line [amount] = 0;
+	   char channelName [128];
+	   int freq;
+	   cnt ++;
+	   int res = sscanf (line, "%s %d", channelName, &freq);
+	   if (res != 2)
+	      continue;
+	   bandIII_frequencies [filler]. fKHz	= freq;
+	   bandIII_frequencies [filler]. key	= QString (channelName);
+	   filler ++;
+	}
+
+	bandIII_frequencies [filler]. fKHz	= 0;
+	free (line);
+	fclose (f);
+}
+
 	bandHandler::~bandHandler() {}
 
 void	bandHandler::setupChannels (QComboBox *s, uint8_t band) {
-struct dabFrequencies *t;
+dab_frequencies *t;
 int16_t	i;
 int16_t	c	= s -> count();
 
@@ -117,7 +185,7 @@ int16_t	c	= s -> count();
 //	find the frequency for a given channel in a given band
 int32_t	bandHandler::Frequency (QString Channel) {
 int32_t	tunedFrequency		= 0;
-struct dabFrequencies	*finger;
+dab_frequencies	*finger;
 int	i;
 
 	if (theBand == BAND_III)
