@@ -29,7 +29,7 @@
         myWidget        -> resize (200, 200);
         myWidget        -> setWidgetResizable(true);
 	
-        outputWidget     = new QTableWidget (0, 5);
+        outputWidget     = new QTableWidget (0, 6);
 	outputWidget	-> setColumnWidth (0, 150);
 	outputWidget	-> setColumnWidth (4, 150);
         myWidget        -> setWidget (outputWidget);
@@ -90,11 +90,16 @@ int16_t row     = outputWidget -> rowCount ();
         QTableWidgetItem *item4 = new QTableWidgetItem;
         item4           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
         outputWidget    -> setItem (row, 4, item4);
+
+        QTableWidgetItem *item5 = new QTableWidgetItem;
+        item4           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+        outputWidget    -> setItem (row, 5, item5);
 	return row;
 }
 
 void	scannerTable::newEnsemble	(QString currentChannel,
 	                                 QString ensembleName,
+	                                 QString ensembleId,
 	                                 QString freq,
 	                                 QString snr,
 	                                 QString transmitters) {
@@ -102,19 +107,22 @@ int16_t row	= addRow ();
 
 	outputWidget	-> item (row, 0) -> setText (currentChannel);
 	outputWidget	-> item (row, 1) -> setText (ensembleName);
-	outputWidget	-> item (row, 2) -> setText (freq);
-	outputWidget	-> item (row, 3) -> setText (snr);
-	outputWidget	-> item (row, 4) -> setText (transmitters);
+	outputWidget	-> item (row, 2) -> setText (ensembleId);
+	outputWidget	-> item (row, 3) -> setText (freq);
+	outputWidget	-> item (row, 4) -> setText (snr);
+	outputWidget	-> item (row, 5) -> setText (transmitters);
 
 	row	= addRow ();
 	outputWidget	-> item (row, 0) -> setText ("serviceName");
-	outputWidget	-> item (row, 1) -> setText ("type ");
-	outputWidget	-> item (row, 2) -> setText ("bit rate");
-	outputWidget	-> item (row, 3) -> setText ("protection level");
-	outputWidget	-> item (row, 4) -> setText ("code rate");
+	outputWidget	-> item (row, 1) -> setText ("serviceId");
+	outputWidget	-> item (row, 2) -> setText ("type ");
+	outputWidget	-> item (row, 3) -> setText ("bit rate");
+	outputWidget	-> item (row, 4) -> setText ("protection level");
+	outputWidget	-> item (row, 5) -> setText ("code rate");
 }
 
 void	scannerTable::add_to_Ensemble	(QString serviceName,
+	                                 QString serviceId,
 	                                 QString dabType,
 	                                 QString bitRate,
 	                                 QString protLevel,
@@ -122,10 +130,11 @@ void	scannerTable::add_to_Ensemble	(QString serviceName,
 int16_t	row = addRow ();
 
 	outputWidget	-> item (row, 0) -> setText (serviceName);
-	outputWidget	-> item (row, 1) -> setText (dabType);
-	outputWidget	-> item (row, 2) -> setText (bitRate);
-	outputWidget	-> item (row, 3) -> setText (protLevel);
-	outputWidget	-> item (row, 4) -> setText (codeRate);
+	outputWidget	-> item (row, 1) -> setText (serviceId);
+	outputWidget	-> item (row, 2) -> setText (dabType);
+	outputWidget	-> item (row, 3) -> setText (bitRate);
+	outputWidget	-> item (row, 4) -> setText (protLevel);
+	outputWidget	-> item (row, 5) -> setText (codeRate);
 }
 
 

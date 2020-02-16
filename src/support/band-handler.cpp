@@ -23,10 +23,11 @@
 //
 //	The issue:
 //	suppose that someone wants to add some -non official -
-//	frequencies, e.g. fin amateur bands.
+//	frequencies, e.g. amateur bands.
 //	we therefore use the "frequencies_1" and "frequencies_2"
 //	tables for initializing the "bandIII" and "LBand" tables
-//	Tables that can be extended easily
+//	and allow the BandIII table to be overwritten by a
+//	supplied table.
 //
 #include	"band-handler.h"
 #include	"dab-constants.h"
@@ -110,8 +111,8 @@ typedef struct {
 dab_frequencies bandIII_frequencies [100];
 dab_frequencies Lband_frequencies   [100];
 
-	bandHandler::bandHandler	(const QString &a_band) {
-	int filler;
+	bandHandler::bandHandler (const QString &a_band) {
+int filler;
 	for (filler = 0; frequencies_2 [filler]. fKHz != 0; filler ++) {
 	   Lband_frequencies [filler]. key =
 	                        QString (frequencies_2 [filler]. key);
@@ -133,7 +134,8 @@ dab_frequencies Lband_frequencies   [100];
 	   bandIII_frequencies [filler]. fKHz = 0;
 	   return;
 	}
-
+//
+//	OK we have a file with - hopefully - some input
 	int	cnt	= 0;
 	size_t	amount	= 128;
 	filler		= 0;

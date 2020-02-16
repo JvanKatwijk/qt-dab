@@ -11,7 +11,7 @@ next to the "classic" AAC encoding of audio, the xHE-AAC encoding.
 Decoding of xHE-AAC encoded audio frames is not supported by the "faad"
 library, and it is not clear whether or not support will ever turn up.
 
-The fdk-aac (from Fraunhofer instiute) turned out to be an excellent
+The fdk-aac (from Fraunhofer institute) turned out to be an excellent
 alternative, it supports decoding both the AAC and xHE-AAC segments
 from DRM30 and DRM+.
 

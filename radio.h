@@ -77,6 +77,10 @@ protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
 private:
 	QString			version;
+	bool			noSort;
+	presetHandler		my_presetHandler;
+	bandHandler		theBand;
+	scannerTable		theTable;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	QSettings		*dabSettings;
@@ -90,15 +94,12 @@ private:
 	tiiViewer		*my_tiiViewer;
 
 	bool			normalScan;
-	presetHandler		my_presetHandler;
-	scannerTable		theTable;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentService;
 
 	std::vector<int>	secondariesVector;
 	bool			isSynced;
-	bandHandler		theBand;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
 	virtualInput		*inputDevice;
@@ -166,7 +167,7 @@ private:
 	void			showServices		();
 public slots:
 	void			set_CorrectorDisplay	(int);
-	void			addtoEnsemble		(const QString &);
+	void			addtoEnsemble		(const QString &, int);
 	void			nameofEnsemble		(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);

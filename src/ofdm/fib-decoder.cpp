@@ -275,8 +275,8 @@ public:
 	myRadioInterface	= mr;
 	memset (dateTime, 0, sizeof (dateTime));
 
-	connect (this, SIGNAL (addtoEnsemble (const QString &)),
-	         myRadioInterface, SLOT (addtoEnsemble (const QString &)));
+	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
+	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
@@ -739,7 +739,8 @@ dataBase	*localBase;
 	    ensemble -> services [serviceIndex]. serviceLabel;
 
 	if (!ensemble -> services [serviceIndex]. is_shown)
-	   addtoEnsemble (serviceName);
+	   addtoEnsemble (serviceName,
+	                  ensemble -> services [serviceIndex]. serviceId);
 
 	ensemble -> services [serviceIndex]. is_shown			= true;
 
@@ -1494,7 +1495,8 @@ int16_t	firstFree	= -1;
 
 	QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
 	if (!ensemble -> services [serviceIndex]. is_shown)
-	   addtoEnsemble (dataName);
+	   addtoEnsemble (dataName,
+	                  ensemble -> services [serviceIndex]. serviceId);
 
 	ensemble -> services [serviceIndex]. is_shown	= true;
 

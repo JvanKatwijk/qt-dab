@@ -142,7 +142,7 @@ private:
 	QMutex		fibLocker;
 	int		CIFcount;
 signals:
-	void		addtoEnsemble	(const QString &);
+	void		addtoEnsemble	(const QString &, int);
 	void		nameofEnsemble  (int, const QString &);
 	void		setTime		(const QString &);
 	void		changeinConfiguration();

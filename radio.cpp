@@ -207,6 +207,7 @@ uint8_t	dabBand;
  *	stop whever a channel with data is found.
  */
 
+	noSort		= dabSettings -> value ("noSort", 0). toInt () == 1;
 	normalScan	= dabSettings -> value ("normalScan", 0). toInt () == 1;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
@@ -547,7 +548,8 @@ void	RadioInterface::signalTimer_out() {
 ///////////////////////////////////////////////////////////////////////////
 //
 //	a slot, called by the fic/fib handlers
-void	RadioInterface::addtoEnsemble (const QString &serviceName) {
+void	RadioInterface::addtoEnsemble (const QString &serviceName,
+	                                 int32_t serviceId) {
 	if (!running. load())
 	   return;
 
@@ -555,7 +557,8 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName) {
 	   return;
 
 	Services << serviceName;
-	Services. sort ();
+	if (!noSort)
+	   Services. sort ();
 	model. clear ();
         for (const auto serv : Services)
            model. appendRow (new QStandardItem (serv));
@@ -2222,9 +2225,11 @@ void	RadioInterface::No_Signal_Found () {
 
 void	RadioInterface::showServices () {
 QString SNR = "SNR " + QString::number (snrDisplay -> value ());
+QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	theTable. newEnsemble (" ",
 	                       channelSelector -> currentText (),
 	                       my_dabProcessor	-> get_ensembleName (),
+	                       ensembleId,
 	                       SNR,
 	                       transmitter_coordinates -> text ());
 	for (QString& audioService: Services) {
@@ -2232,13 +2237,15 @@ QString SNR = "SNR " + QString::number (snrDisplay -> value ());
 	   my_dabProcessor -> dataforAudioService (audioService, &d, 0);
 	   if (!d. defined)
 	      continue;
+
+	   QString serviceId = hextoString (d. serviceId);
 	   QString bitRate   = QString::number (d. bitRate);
 	   QString protL     = getProtectionLevel (d. shortForm,
                                                    d. protLevel);
 	   QString codeRate  = getCodeRate (d. shortForm,
                                             d. protLevel);
 	   theTable.
-                  add_to_Ensemble (audioService,
+                  add_to_Ensemble (audioService, serviceId,
                                    d. ASCTy == 077 ? "DAB+" : "DAB",
                                    bitRate, protL, codeRate);
 	}
