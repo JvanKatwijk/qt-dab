@@ -19,10 +19,9 @@ disappear.
 In this region I never saw it happening but it seems to happen
 with BBC transmissions.
 
-In Qt-DAB 3.3 a mechanism is included to handle such changes.
-
-*Audio sub-channels - if any - will be visible in the services list - their name is the name of the service preceded by a one digit number. This feauture
-is experimental.*
+In Qt-DAB 3.3 a mechanism is included to handle such a change,
+the change will apear as a minor disruption in the signal of the
+selected service.
 
 ---------------------------------------------------------------------
 Replacing libfaad by fdk-aac

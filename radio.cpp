@@ -565,6 +565,7 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 #endif
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
+#if 0
 	for (int i = 1; i < 5; i ++) {
 	   audiodata ad;
 	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
@@ -572,6 +573,7 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	      Services << s;
 	   }
 	}
+#endif
 
 	if (!noSort)
 	   Services. sort ();
@@ -747,8 +749,7 @@ uint8_t localBuffer [length + 8];
   */
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
-	fprintf (stderr, "change detected\n");
-	for (int i = 0; i < 64; i ++)
+	   fprintf (stderr, "change detected\n");
 	   QString serviceName = serviceLabel -> text ();
 	   if (serviceName != "")
 	      restartService (serviceName);
