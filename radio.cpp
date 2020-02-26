@@ -563,6 +563,8 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	                          serviceName. toLatin1 (). data (),
 	                          serviceId, subChId);
 #endif
+	my_history -> addElement (channelSelector -> currentText (),
+	                                                        serviceName);
 	for (int i = 1; i < 5; i ++) {
 	   audiodata ad;
 	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
@@ -583,8 +585,6 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
         }
 
         ensembleDisplay -> setModel (&model);
-	my_history -> addElement (channelSelector -> currentText (),
-	                                                        serviceName);
 }
 //
 //	The ensembleId is written as hexadecimal, however, the 
@@ -748,6 +748,7 @@ uint8_t localBuffer [length + 8];
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
 	fprintf (stderr, "change detected\n");
+	for (int i = 0; i < 64; i ++)
 	   QString serviceName = serviceLabel -> text ();
 	   if (serviceName != "")
 	      restartService (serviceName);
