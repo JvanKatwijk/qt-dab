@@ -201,8 +201,7 @@ void	mscHandler::set_Channel (descriptorType *d,
 //	while the set_xxx methods are called from within the 
 //	gui thread, so some locking is added
 //
-//	Any change in the selected service will only be active
-//	during te next process_mscBlock call.
+
 void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
@@ -232,25 +231,4 @@ int16_t	currentblk;
 	   }
 	}
 	locker. unlock();
-}
-
-//
-
-bool	mscHandler::validParameters	(Backend *b) {
-descriptorType dt;
-
-	myRadioInterface	-> dataforService (b -> serviceName, &dt);
-	if (!dt. defined)
-	   return false;
-	if (b -> startAddr	!= dt. startAddr)
-	   return false;
-	if (b -> Length	!= dt. length)
-	   return false;
-	if (b -> bitRate	!= dt. bitRate)
-	   return false;
-	if (b -> shortForm	!= dt. shortForm)
-	   return false;
-        if (b -> protLevel	!= dt. protLevel)	
-	   return false;
-	return true;
 }

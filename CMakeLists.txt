@@ -381,6 +381,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/fib-decoder.h
 	     ./includes/ofdm/fic-handler.h
 	     ./includes/ofdm/tii_detector.h
+	     ./includes/backend/msc-handler.h
 	     ./includes/backend/backend.h
 	     ./includes/backend/audio/faad-decoder.h
 	     ./includes/backend/audio/mp2processor.h

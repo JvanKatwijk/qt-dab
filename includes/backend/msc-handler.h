@@ -56,7 +56,7 @@ public:
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
 //
-//	This function should be called beore issuing a request
+//	This function should be called before issuing a request
 //	to handle a service
 	void		reset();
 //
@@ -64,7 +64,6 @@ public:
 	void		stop();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-	bool		validParameters		(Backend *);
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
@@ -96,8 +95,6 @@ private:
         QWaitCondition  commandHandler;
         QMutex          helper;
 	int		nrBlocks;
-signals:
-	void		restartService	(const QString &);
 };
 
 #endif
