@@ -373,7 +373,6 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_MOCS
 	     ./dab-processor.h
-	     ./scanner-table.h
 	     ./includes/output/audio-base.h
 	     ./includes/output/audiosink.h
 	     ./includes/ofdm/sample-reader.h
@@ -408,6 +407,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/verysmallpushbutton.h
 	     ./includes/support/smallcombobox.h
 	     ./includes/support/history-handler.h
+	     ./includes/support/scanner-table.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./correlation-viewer/correlation-viewer.h 

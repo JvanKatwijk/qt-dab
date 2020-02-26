@@ -558,10 +558,12 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	   return;
 
 	Services << serviceName;
+#if 0
 	fprintf (stderr, "adding %s serviceId %x subchId %d\n",
 	                          serviceName. toLatin1 (). data (),
 	                          serviceId, subChId);
-	for (int i = 1; i < 10; i ++) {
+#endif
+	for (int i = 1; i < 5; i ++) {
 	   audiodata ad;
 	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
 	      QString s = QString::number (i) + " " + serviceName;
@@ -740,24 +742,15 @@ uint8_t localBuffer [length + 8];
 }
 
 /**
-  *	called from fic/fib
+  *	If a change is detected, we have to restart the selected
+  *	service - if any
   */
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
 	fprintf (stderr, "change detected\n");
 	   QString serviceName = serviceLabel -> text ();
-//	   stopChannel	();
-//	   if (serviceName != "") {
-//	      serviceList. push_back (serviceName);
-//	      presetTimer. setSingleShot (true);
-//	      presetTimer. setInterval (switchTime);
-//	      presetTimer. start (switchTime);
-//	   }
-//	   startChannel  (channelSelector -> currentText ());
 	   if (serviceName != "")
 	      restartService (serviceName);
-//	   theTable. show ();
-//	   showServices ();
 	}
 }
 //
