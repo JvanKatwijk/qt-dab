@@ -389,6 +389,11 @@ void	dabProcessor::set_scanMode	(bool b) {
 }
 //
 //	just a convenience functions
+
+QString	dabProcessor::getService	(int n) {
+	return my_ficHandler. getService (n);
+}
+
 void	dabProcessor::dataforService	(const QString &s,
 	                                             descriptorType *dt) {
 	my_ficHandler. dataforService (s, dt);

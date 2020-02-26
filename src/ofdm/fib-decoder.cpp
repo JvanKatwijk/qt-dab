@@ -1706,6 +1706,24 @@ int	serviceIndex;
 	fibLocker. unlock();
 }
 
+QString	fibDecoder::getService		(int n) {
+	if (!ensemble -> services [n]. inUse)
+	   return "";
+
+	if (!ensemble -> services [n]. hasName)
+	   return "";
+
+	QString s = ensemble -> services [n]. serviceLabel;
+	if (is_audioService (s, 0))
+	   return s;
+	packetdata pd;
+	dataforPacketService (s, &pd, 0);
+	if (pd. defined)
+	   return s;
+	ensemble -> services [n]. inUse = false;
+	return "";
+}
+	
 void	fibDecoder::dataforAudioService	(const QString &s,
 	                                 audiodata *ad, int16_t compnr) {
 	get_audioData (s, ad, compnr);

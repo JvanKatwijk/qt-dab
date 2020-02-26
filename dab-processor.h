@@ -76,6 +76,7 @@ public:
 //
 //	inheriting from our delegates
 	void		set_tiiCoordinates();
+	QString		getService		(int);
 	void		setSelectedService      (QString &);
 	void		dataforService		(const QString &, 
 	                                                  descriptorType *);

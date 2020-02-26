@@ -61,8 +61,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 	work_to_be_done. store (false);
 	running. store (false);
-	connect (this, SIGNAL (restartService (const QString &)),
-	         mr, SLOT (restartService (const QString &)));
 }
 
 		mscHandler::~mscHandler() {

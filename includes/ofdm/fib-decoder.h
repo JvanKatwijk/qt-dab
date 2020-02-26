@@ -43,6 +43,7 @@ public:
 
 	void	clearEnsemble();
 	bool	syncReached();
+	QString	getService		(int);
 	void	dataforService		(const QString &,
 	                                      descriptorType *);
 	bool	is_audioService		(const QString &, int16_t);
@@ -122,6 +123,7 @@ private:
 
 	int		findServiceIndex	(uint32_t);
 	int		setServiceIndex		(uint32_t);
+
 	int		findServiceComponent	(dataBase *, int16_t);
 	int		findServiceComponentinService	(dataBase *,
 	                                                 uint32_t, int16_t);

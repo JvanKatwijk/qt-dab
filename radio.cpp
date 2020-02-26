@@ -565,7 +565,7 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 #endif
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
-#if 0
+#if 1
 	for (int i = 1; i < 5; i ++) {
 	   audiodata ad;
 	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
@@ -749,8 +749,41 @@ uint8_t localBuffer [length + 8];
   */
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
-	   fprintf (stderr, "change detected\n");
 	   QString serviceName = serviceLabel -> text ();
+	   fprintf (stderr, "change detected\n");
+//
+//	we rebuild the services list from the fib and
+//	then we (try to) restart the service
+	   Services. clear ();
+	   model. clear ();
+	   ensembleDisplay                 -> setModel (&model);
+//
+//	this is to be improved, but for now working
+	   for (int i = 0; i < 64; i ++) {
+	      QString s = my_dabProcessor -> getService (i);
+	      if (s == "")
+	         continue;
+	      if (Services. contains (s)) 
+	         continue;
+	      Services << s;
+	      if (my_dabProcessor -> is_audioService (s, 0)) {
+	         for (int j = 1; j < 5; j ++)
+	            if (my_dabProcessor -> is_audioService (s, j))
+	               Services << (QString::number (j) + " " + s);
+	      }
+	   }
+	   if (!noSort)
+	      Services. sort ();
+           for (const auto serv : Services)
+              model. appendRow (new QStandardItem (serv));
+           int row = model. rowCount ();
+           for (int i = 0; i < row; i ++) {
+              model. setData (model. index (i, 0),
+                      QFont ("Cantarell", 11), Qt::FontRole);
+           }
+           ensembleDisplay -> setModel (&model);
+//
+//	and restart the one that was running
 	   if (serviceName != "")
 	      restartService (serviceName);
 	}
@@ -1795,7 +1828,6 @@ void	RadioInterface::stopService	() {
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
                  my_dabProcessor -> reset_msc ();
-	fprintf (stderr, "msc is reset\n");
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         break;
 	      }
@@ -1847,7 +1879,7 @@ int	subNumber	= 0;
 	for (int i = 0; i < rowCount; i ++) {
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
-	   if (itemText == serviceName) {
+	   if ((itemText == serviceName) || (itemText == workingName)) {
 	      colorService (model. index (i, 0), Qt::red, 15);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
