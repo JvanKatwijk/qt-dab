@@ -182,7 +182,7 @@ uint8_t	dabBand;
 	dataBuffer		= new RingBuffer<uint8_t>(32768);
 	
 	switchTime		=
-	                  dabSettings -> value ("switchTime", 8000). toInt ();
+	                  dabSettings -> value ("switchTime", 6000). toInt ();
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -549,7 +549,8 @@ void	RadioInterface::signalTimer_out() {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &serviceName,
-	                                 int32_t serviceId) {
+	                                 int32_t serviceId,
+	                                 int	subChId) {
 	if (!running. load())
 	   return;
 
@@ -557,6 +558,17 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	   return;
 
 	Services << serviceName;
+	fprintf (stderr, "adding %s serviceId %x subchId %d\n",
+	                          serviceName. toLatin1 (). data (),
+	                          serviceId, subChId);
+	for (int i = 1; i < 10; i ++) {
+	   audiodata ad;
+	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
+	      QString s = QString::number (i) + " " + serviceName;
+	      Services << s;
+	   }
+	}
+
 	if (!noSort)
 	   Services. sort ();
 	model. clear ();
@@ -567,6 +579,7 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
            model. setData (model. index (i, 0),
                       QFont ("Cantarell", 11), Qt::FontRole);
         }
+
         ensembleDisplay -> setModel (&model);
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
@@ -730,9 +743,21 @@ uint8_t localBuffer [length + 8];
   *	called from fic/fib
   */
 void	RadioInterface::changeinConfiguration() {
-	if (running. load()) {
-	   stopChannel	();
-	   startChannel	(channelSelector -> currentText ());
+	if (running. load ()) {
+	fprintf (stderr, "change detected\n");
+	   QString serviceName = serviceLabel -> text ();
+//	   stopChannel	();
+//	   if (serviceName != "") {
+//	      serviceList. push_back (serviceName);
+//	      presetTimer. setSingleShot (true);
+//	      presetTimer. setInterval (switchTime);
+//	      presetTimer. start (switchTime);
+//	   }
+//	   startChannel  (channelSelector -> currentText ());
+	   if (serviceName != "")
+	      restartService (serviceName);
+//	   theTable. show ();
+//	   showServices ();
 	}
 }
 //
@@ -1645,6 +1670,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      packetdata pd;
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+	      if (serviceName. at (1) == ' ')
+	         return true;
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad, 0);
 	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
 	         presetData pd;
@@ -1773,6 +1800,7 @@ void	RadioInterface::stopService	() {
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
                  my_dabProcessor -> reset_msc ();
+	fprintf (stderr, "msc is reset\n");
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         break;
 	      }
@@ -1788,19 +1816,38 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	signalTimer.	stop ();
 	stopScanning	();
 	stopService 	();		// if any
+//
 	serviceList. push_back (currentProgram);
 	startService (currentProgram);
 }
 //
+void	RadioInterface::restartService (const QString &serviceName) {
+	stopScanning	();
+	stopService	();
+	serviceList. push_back (serviceName);
+	startService (serviceName);
+}
+
 void	RadioInterface::startService (const QString &serviceName) {
+QString workingName	= serviceName;
+int	subNumber	= 0;
 
 	if (serviceList. size () < 1) 
 	   fprintf (stderr, "Sorry, no service planned\n");
 
-	if (!my_dabProcessor -> is_audioService (serviceName) &&
-            !my_dabProcessor -> is_packetService (serviceName))
-           return;
+	if (serviceName. at (0). isDigit () && (serviceName. at (1) == ' '))  {
+	   subNumber = serviceName. at (0). digitValue ();
+	   workingName = workingName. remove (0, 2);
+	}
 
+	fprintf (stderr, "restarting %s %d\n",
+	                       workingName. toLatin1 (). data (), subNumber);
+	if (!my_dabProcessor -> is_audioService (workingName, 0) &&
+            !my_dabProcessor -> is_packetService (workingName)) {
+	   fprintf (stderr, "restart %s failed\n", workingName. toLatin1 (). data ());
+           return;
+	}
+//
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
 	   QString itemText =
@@ -1809,10 +1856,10 @@ void	RadioInterface::startService (const QString &serviceName) {
 	      colorService (model. index (i, 0), Qt::red, 15);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
-	      if (my_dabProcessor -> is_audioService (serviceName))
-	         start_audioService (serviceName);
+	      if (my_dabProcessor -> is_audioService (workingName, 0))
+	         start_audioService (workingName, subNumber);
 	      else
-	         start_packetService (serviceName);
+	         start_packetService (workingName);
 	      return;
 	   }
 	}
@@ -1848,32 +1895,50 @@ void	RadioInterface::cleanScreen	() {
 	setStereo	(false);
 }
 
-void	RadioInterface::start_audioService (const QString &serviceName){
+void	RadioInterface::start_audioService (const QString &serviceName,
+	                                                   int16_t subNumber){
 audiodata ad;
 
-	my_dabProcessor -> dataforAudioService (serviceName, &ad, 0);
-	if (!ad. defined) {
+	fprintf (stderr, "trying to start %s (%d)\n",
+	                      serviceName. toLatin1 (). data (), subNumber);
+	my_dabProcessor -> dataforAudioService (serviceName, &ad, subNumber);
+	if (!ad. defined && (subNumber == 0)) {
 	   QMessageBox::warning (this, tr ("Warning"),
- 	                            tr ("unknown bitrate for this program\n"));
+ 	                            tr ("insufficient data for this program\n"));
 	   return;
 	}
 
-	serviceLabel -> setAlignment(Qt::AlignCenter);
-	serviceLabel -> setText (serviceName);
-	my_dabProcessor -> set_audioChannel (&ad, audioBuffer);
-	for (int i = 1; i < 10; i ++) {
-	   packetdata pd;
-	   my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
-	   if (pd. defined) {
-	      my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
-	      break;
+	if (!ad. defined) {
+	   fprintf (stderr, "running main service rather than subservice\n");
+	   subNumber = 0;
+	   my_dabProcessor -> dataforAudioService (serviceName, &ad, subNumber);
+	   if (!ad. defined) {
+	      QMessageBox::warning (this, tr ("Warning"),
+ 	                            tr ("insufficient data for this service\n"));
+	      return;
 	   }
 	}
-//
+
+	serviceLabel -> setAlignment(Qt::AlignCenter);
+	QString s = subNumber == 0 ? serviceName :
+	                  QString::number (subNumber) + " " + serviceName;
+	serviceLabel -> setText (s);
+
+	my_dabProcessor -> set_audioChannel (&ad, audioBuffer);
+	if (subNumber != 0) {
+	   for (int i = 1; i < 10; i ++) {
+	      packetdata pd;
+	      my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
+	      if (pd. defined) {
+	         my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	         break;
+	      }
+	   }
+	}
 //	activate sound
 	soundOut -> restart ();
 //	show service related data
-	techData. programName		-> setText (serviceName);
+	techData. programName		-> setText (s);
 	techData. bitrateDisplay 	-> display (ad. bitRate);
 	techData. startAddressDisplay 	-> display (ad. startAddr);
 	techData. lengthDisplay		-> display (ad. length);
@@ -2218,6 +2283,14 @@ void	RadioInterface::No_Signal_Found () {
 	   stopScanning ();
 }
 
+///////////////////////////////////////////////////////////////////////////
+//	check parameters: not used right now
+///////////////////////////////////////////////////////////////////////////
+void	RadioInterface::dataforService (const QString &s,
+	                                         descriptorType *dt) {
+	my_dabProcessor -> dataforService (s, dt);
+}
+
 ////////////////////////////////////////////////////////////////////////////
 //
 // showServices
@@ -2235,8 +2308,8 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	for (QString& audioService: Services) {
 	   audiodata d;
 	   my_dabProcessor -> dataforAudioService (audioService, &d, 0);
-	   if (!d. defined)
-	      continue;
+//	   if (!d. defined)
+//	      continue;
 
 	   QString serviceId = hextoString (d. serviceId);
 	   QString bitRate   = QString::number (d. bitRate);

@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.21-Beta
+TARGET		= qt-dab-3.3
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -82,7 +82,6 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./dab-processor.h \
-	   ./scanner-table.h \
 	   ./service-description/service-descriptor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
@@ -153,6 +152,7 @@ HEADERS += ./radio.h \
 	   ./includes/support/verysmallpushbutton.h \
 	   ./includes/support/smallqlistview.h \
 	   ./includes/support/history-handler.h \
+	   ./includes/support/scanner-table.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
 	   ./devices/virtual-input.h \
@@ -183,7 +183,6 @@ FORMS	+= ./devices/xml-filereader/xmlfiles.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./dab-processor.cpp \
-	   ./scanner-table.cpp \
 	   ./service-description/audio-descriptor.cpp \
 	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \
@@ -248,6 +247,7 @@ SOURCES += ./main.cpp \
 	   ./src/support/verysmallpushbutton.cpp \
 	   ./src/support/smallqlistview.cpp \
 	   ./src/support/history-handler.cpp \
+	   ./src/support/scanner-table.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
 	   ./devices/virtual-input.cpp \
 	   ./devices/xml-filewriter.cpp \
@@ -309,7 +309,7 @@ CONFIG		+= send_datagram
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
-#otherwise, if you want to use the default qt way of soud out
+#otherwise, if you want to use the default qt way of sound out
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 

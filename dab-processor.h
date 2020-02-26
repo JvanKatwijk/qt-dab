@@ -77,7 +77,9 @@ public:
 //	inheriting from our delegates
 	void		set_tiiCoordinates();
 	void		setSelectedService      (QString &);
-	bool		is_audioService		(const QString &s);
+	void		dataforService		(const QString &, 
+	                                                  descriptorType *);
+	bool		is_audioService		(const QString &s, int16_t);
 	bool		is_packetService	(const QString &s);
         void		dataforAudioService     (const QString &,
 	                                             audiodata *, int16_t);

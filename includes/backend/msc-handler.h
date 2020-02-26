@@ -43,6 +43,7 @@ class	RadioInterface;
 class	Backend;
 
 class mscHandler: public QThread  {
+Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
@@ -63,7 +64,7 @@ public:
 	void		stop();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
-
+	bool		validParameters		(Backend *);
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
@@ -95,6 +96,8 @@ private:
         QWaitCondition  commandHandler;
         QMutex          helper;
 	int		nrBlocks;
+signals:
+	void		restartService	(const QString &);
 };
 
 #endif

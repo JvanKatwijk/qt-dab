@@ -61,6 +61,8 @@ static int cifTable [] = {18, 72, 0, 36};
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 	work_to_be_done. store (false);
 	running. store (false);
+	connect (this, SIGNAL (restartService (const QString &)),
+	         mr, SLOT (restartService (const QString &)));
 }
 
 		mscHandler::~mscHandler() {
@@ -100,7 +102,7 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
         helper. unlock();
 }
 
-void    mscHandler::run() {
+void    mscHandler::run () {
 int	currentBlock	= 0;
 std::vector<int16_t> ibits;
 
@@ -218,7 +220,7 @@ int16_t	currentblk;
 //	OK, now we have a full CIF and it seems there is some work to
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
-	locker. lock();
+	locker. lock ();
 	for (auto const& b: theBackends) {
 	   int16_t startAddr	= b -> startAddr;
 	   int16_t Length	= b -> Length; 
@@ -231,5 +233,24 @@ int16_t	currentblk;
 	}
 	locker. unlock();
 }
+
 //
 
+bool	mscHandler::validParameters	(Backend *b) {
+descriptorType dt;
+
+	myRadioInterface	-> dataforService (b -> serviceName, &dt);
+	if (!dt. defined)
+	   return false;
+	if (b -> startAddr	!= dt. startAddr)
+	   return false;
+	if (b -> Length	!= dt. length)
+	   return false;
+	if (b -> bitRate	!= dt. bitRate)
+	   return false;
+	if (b -> shortForm	!= dt. shortForm)
+	   return false;
+        if (b -> protLevel	!= dt. protLevel)	
+	   return false;
+	return true;
+}

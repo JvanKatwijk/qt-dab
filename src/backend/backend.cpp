@@ -48,11 +48,15 @@
 #endif 
 	                                          {
 int32_t i, j;
-	theDescriptor			= *d;
+	this	-> radioInterface	= mr;
 	this	-> startAddr		= d -> startAddr;
 	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
+	this	-> serviceId		= d -> serviceId;
+	this	-> serviceName		= d -> serviceName;
+	this	-> shortForm		= d -> shortForm;
+	this	-> protLevel		= d -> protLevel;
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
@@ -160,4 +164,6 @@ void	Backend::stopRunning() {
 //	myAudioSink	-> stop();
 #endif
 }
+
+
 

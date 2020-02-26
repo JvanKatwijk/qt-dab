@@ -122,8 +122,10 @@ int filler;
 	Lband_frequencies [filler]. fKHz = 0;
 //
 	FILE *f	= nullptr;
+#ifndef	__MINGW32__
 	if (a_band != "")
 	   f = fopen (a_band. toLatin1 (). data (), "r");
+#endif
 	if (f == nullptr) {
 	   for (filler = 0; frequencies_1 [filler]. fKHz != 0; filler ++) {
 	      bandIII_frequencies [filler]. key =
@@ -134,7 +136,8 @@ int filler;
 	   bandIII_frequencies [filler]. fKHz = 0;
 	   return;
 	}
-//
+
+#ifndef	__MINGW32__
 //	OK we have a file with - hopefully - some input
 	int	cnt	= 0;
 	size_t	amount	= 128;
@@ -161,6 +164,7 @@ int filler;
 	bandIII_frequencies [filler]. fKHz	= 0;
 	free (line);
 	fclose (f);
+#endif
 }
 
 	bandHandler::~bandHandler() {}

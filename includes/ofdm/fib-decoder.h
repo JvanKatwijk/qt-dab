@@ -43,15 +43,19 @@ public:
 
 	void	clearEnsemble();
 	bool	syncReached();
+	void	dataforService		(const QString &,
+	                                      descriptorType *);
+	bool	is_audioService		(const QString &, int16_t);
 	void	dataforAudioService	(const QString &,
 	                                      audiodata *, int16_t);
 	void	dataforPacketService	(const QString &,
 	                                      packetdata *, int16_t);
-        uint8_t get_ecc();
-	int32_t	get_ensembleId();
-	QString get_ensembleName();
-	int32_t	get_CIFcount();	
-	void	print_Overview ();
+        uint8_t get_ecc			();
+	int32_t	get_ensembleId		();
+	QString get_ensembleName	();
+	int32_t	get_CIFcount		();	
+	void	print_Overview		();
+	void	print_subChannels	();
 protected:
 	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);
@@ -131,6 +135,8 @@ private:
                                             uint32_t, int16_t,
                                             int16_t, int16_t, int16_t);
 	int		findService	(const QString &);
+	void		get_audioData	(const QString &s,
+	                                       audiodata *ad, int16_t compnr);
 //	void		bind_SCIds_to_ServiceComponent (uint16_t, uint16_t);
 //	void		bind_SCIds_to_SubChannel	(uint16_t, uint16_t);
 //	void		bindServiceComponenttoService	(uint32_t, uint16_t, uint8_t);
@@ -142,7 +148,7 @@ private:
 	QMutex		fibLocker;
 	int		CIFcount;
 signals:
-	void		addtoEnsemble	(const QString &, int);
+	void		addtoEnsemble	(const QString &, int, int);
 	void		nameofEnsemble  (int, const QString &);
 	void		setTime		(const QString &);
 	void		changeinConfiguration();

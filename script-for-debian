@@ -33,7 +33,7 @@
    cd ..
    rm -rf build
    cd ..
-   git clone https://github.com/JvanKatwijk/qt-dab.git
+#   git clone https://github.com/JvanKatwijk/qt-dab.git
    cd qt-dab
    qmake qt-dab.pro
    make

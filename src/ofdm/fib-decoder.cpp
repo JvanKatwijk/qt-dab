@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -275,15 +276,15 @@ public:
 	myRadioInterface	= mr;
 	memset (dateTime, 0, sizeof (dateTime));
 
-	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
-	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
+	connect (this, SIGNAL (addtoEnsemble (const QString &, int, int)),
+	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int, int)));
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
 	connect (this, SIGNAL (setTime (const QString &)),
 	         myRadioInterface, SLOT (showTime (const QString &)));
-	connect (this, SIGNAL (changeinConfiguration (void)),
-	         myRadioInterface, SLOT (changeinConfiguration (void)));
+	connect (this, SIGNAL (changeinConfiguration ()),
+	         myRadioInterface, SLOT (changeinConfiguration ()));
 	connect (this, SIGNAL (startAnnouncement (const QString &, int)),
 	         myRadioInterface, SLOT (startAnnouncement (const QString &, int)));
 	connect (this, SIGNAL (stopAnnouncement (const QString &, int)),
@@ -477,25 +478,31 @@ uint16_t        highpart, lowpart;
 int16_t         occurrenceChange;
 uint8_t CN      = getBits_1 (d, 8 + 0);
 uint8_t		alarmFlag;
+static	uint8_t prevChangeFlag	= 0;
 
 	(void)CN;
-
 	EId                     = getBits   (d, 16, 16);
 	(void)EId;
 	changeFlag              = getBits_2 (d, 16 + 16);
 	alarmFlag		= getBits_1 (d, 16 + 16 + 2);
-	highpart                = getBits_5 (d, 16 + 19) % 20;
+	highpart                = getBits_5 (d, 16 + 19);
 	(void)highpart;
-	lowpart                 = getBits_8 (d, 16 + 24) % 250;
+	lowpart                 = getBits_8 (d, 16 + 24);
 	(void)changeFlag;
 	(void)alarmFlag;
 	(void)lowpart;
 	occurrenceChange        = getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
 	CIFcount 		= highpart * 250 + lowpart;
+	
+	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
+	   dataBase	*temp	= currentBase;
+	   currentBase		= nextBase;
+	   nextBase		= temp;
+	   emit changeinConfiguration ();
+	}
 
-//	if (changeFlag == 3)
-//	   fprintf (stderr, "MCI change in %d CIFs\n");
+	prevChangeFlag	= changeFlag;
 //	if (alarmFlag)
 //	   fprintf (stderr, "serious problem\n");
 }
@@ -584,6 +591,7 @@ dataBase	*localBase = CN_bit == 0 ? currentBase : nextBase;
 	   return bitOffset / 8;
 //
 //	and here we fill in the structure
+	localBase -> subChannels [subChId]. SubChId	= subChId;
 	localBase -> subChannels [subChId]. inUse       = true;
 	localBase -> subChannels [subChId]. startAddr   =
 	                                    subChannel. startAddr;
@@ -702,10 +710,7 @@ int	serviceCompIndex;
 int	serviceIndex;
 dataBase	*localBase;
 
-	if (CN_bit == 0)
-	   localBase	= currentBase;
-	else
-	   localBase	= nextBase;
+	localBase = CN_bit == 0 ? currentBase : nextBase;
 	(void)OE_bit; (void)PD_bit;
 
 	if (CAOrgflag == 1) {
@@ -740,7 +745,8 @@ dataBase	*localBase;
 
 	if (!ensemble -> services [serviceIndex]. is_shown)
 	   addtoEnsemble (serviceName,
-	                  ensemble -> services [serviceIndex]. serviceId);
+	                  ensemble -> services [serviceIndex]. serviceId,
+	                  SubChId);
 
 	ensemble -> services [serviceIndex]. is_shown			= true;
 
@@ -803,10 +809,19 @@ void	fibDecoder::FIG0Extension6 (uint8_t *d) {
 //	CN_bit determines the SIV
 }
 //
-// FIG0/7: Configuration linking information 6.4.2, not implemented
-//	does not seem to appear in the input so far
+// FIG0/7: Configuration linking information 6.4.2, 
 void	fibDecoder::FIG0Extension7 (uint8_t *d) {
-	(void)d;
+int16_t	used	= 2;		// offset in bytes
+int16_t	Length		= getBits_5 (d, 3);
+uint8_t	CN_bit		= getBits_1 (d, 8 + 0);
+uint8_t	OE_bit		= getBits_1 (d, 8 + 1);
+uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
+
+int	nrServices	= getBits_6 (d, used * 8);
+int	counter		= getBits   (d, used * 8 + 6, 10);
+
+	fprintf (stderr, "nrServices %d, count %d\n",
+	                  nrServices, counter);
 }
 
 // FIG8/8:  Service Component Global Definition (6.3.5)
@@ -1474,6 +1489,7 @@ void	fibDecoder::bind_audioService (dataBase *base,
 int serviceIndex	= setServiceIndex	(SId);
 int16_t	i;
 int16_t	firstFree	= -1;
+bool	showFlag	= true;
 
 	if (!ensemble -> services [serviceIndex]. hasName)
 	   return;
@@ -1494,11 +1510,8 @@ int16_t	firstFree	= -1;
 	}
 
 	QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
-	if (!ensemble -> services [serviceIndex]. is_shown)
-	   addtoEnsemble (dataName,
-	                  ensemble -> services [serviceIndex]. serviceId);
-
-	ensemble -> services [serviceIndex]. is_shown	= true;
+	if (ensemble -> services [serviceIndex]. is_shown)
+	   showFlag = false;
 
 	base -> serviceComps [firstFree]. inUse		= true;
 	base -> serviceComps [firstFree]. TMid		= TMid;
@@ -1507,6 +1520,11 @@ int16_t	firstFree	= -1;
 	base -> serviceComps [firstFree]. subchannelId	= subChId;
 	base -> serviceComps [firstFree]. PS_flag	= ps_flag;
 	base -> serviceComps [firstFree]. ASCTy		= ASCTy;
+	ensemble -> services [serviceIndex]. is_shown	= true;
+	if (showFlag)
+	   addtoEnsemble (dataName,
+	                  ensemble -> services [serviceIndex]. serviceId,
+	                  subChId);
 }
 
 //      bind_packetService is the main processor for - what the name suggests -
@@ -1635,9 +1653,72 @@ int	i;
 	}
 	return -1;
 }
+//
+//
+//	General version
+void	fibDecoder::dataforService	(const QString &s, descriptorType *dt) {
+int	j;
+int	serviceIndex;
+
+	dt       -> defined      = false;
+	fibLocker. lock();
+	
+	serviceIndex	= findService (s);
+	if (serviceIndex == -1) {
+	   fibLocker. unlock();
+	   return;
+	}
+
+	for (j = 0; j < 64; j ++) {
+	   int16_t subChId;
+	   
+	   if (!currentBase -> serviceComps [j]. inUse)
+	      break;
+
+	   if (currentBase -> serviceComps [j]. TMid != 0)
+	      continue;
+
+	   if (serviceIndex != currentBase -> serviceComps [j]. serviceIndex)
+	      continue;
+
+	   subChId	= currentBase -> serviceComps [j]. subchannelId;
+
+	   if (currentBase -> subChannels [subChId]. SCIds != 0)
+	      continue;
+	                                     
+	   dt	-> serviceId    =
+	                 ensemble -> services [serviceIndex]. serviceId;
+	   dt	-> serviceName  = s;
+	   dt	-> subchId      = subChId;
+	   dt	-> startAddr    =
+	                 currentBase -> subChannels [subChId]. startAddr;
+	   dt	-> shortForm    =
+	                 currentBase -> subChannels [subChId]. shortForm;
+	   dt	-> protLevel    =
+	                 currentBase -> subChannels [subChId]. protLevel;
+	   dt	-> length       =
+	                 currentBase -> subChannels [subChId]. Length;
+	   dt	-> bitRate      =
+	                 currentBase -> subChannels [subChId]. bitRate;
+	   dt	-> defined	= true;
+	   break;
+	}
+	fibLocker. unlock();
+}
 
 void	fibDecoder::dataforAudioService	(const QString &s,
 	                                 audiodata *ad, int16_t compnr) {
+	get_audioData (s, ad, compnr);
+}
+
+bool	fibDecoder::is_audioService (const QString &s, int16_t compnr) {
+audiodata ad;
+	get_audioData (s, &ad, compnr);
+	return ad. defined;
+}
+
+void	fibDecoder::get_audioData (const QString &s,
+	                           audiodata *ad, int16_t compnr) {
 int	j;
 int	serviceIndex;
 
@@ -1852,5 +1933,18 @@ void	fibDecoder::setCluster (int clusterId,
 //	                     clusterId,
 //	                     ensemble -> services [serviceIndex]. serviceLabel. toLatin1 (). data (), 
 //	                     announcements (asuFlags). toLatin1 (). data ());
+}
+
+void	fibDecoder::print_subChannels () {
+
+	for (int i = 0; i < 64; i ++)
+	   if (currentBase -> subChannels [i]. inUse) 
+	      fprintf (stderr, "subCh %d (pos %d) bitRate %d Length %d start %d shortForm %d protLevel %d\n",
+	             currentBase -> subChannels [i]. SubChId, i,
+	             currentBase -> subChannels [i]. bitRate,
+	             currentBase -> subChannels [i]. Length,
+	             currentBase -> subChannels [i]. startAddr,
+	             currentBase -> subChannels [i]. shortForm,
+	             currentBase -> subChannels [i]. protLevel);
 }
 

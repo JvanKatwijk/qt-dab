@@ -72,6 +72,8 @@ public:
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface();
+	void	dataforService          (const QString &s,
+                                                         descriptorType *dt);
 
 protected:
 	bool	eventFilter (QObject *obj, QEvent *event);
@@ -146,7 +148,8 @@ private:
 	virtualInput		*setDevice		(const QString &);
 	historyHandler		*my_history;
 //
-	void			start_audioService	(const QString &);
+	void			start_audioService	(const QString &,
+	                                                          int16_t);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
 	void			stopScanning		();
@@ -165,9 +168,11 @@ private:
 	void			localSelect		(const QString &s);
 	QString			filenameSuggestion 	(QString);
 	void			showServices		();
+
 public slots:
 	void			set_CorrectorDisplay	(int);
-	void			addtoEnsemble		(const QString &, int);
+	void			addtoEnsemble		(const QString &,
+	                                                    int, int);
 	void			nameofEnsemble		(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
@@ -228,6 +233,7 @@ private slots:
 
 	void			selectChannel		(const QString &);
 	void			selectService		(QModelIndex);
+	void			restartService		(const QString &);
 	void			setPresetStation	();
 };
 #endif

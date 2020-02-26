@@ -43,18 +43,23 @@ class	Backend:public QThread {
 class	Backend {
 #endif
 public:
-	Backend	(RadioInterface	*mr,
-	         descriptorType	*d,
-	         RingBuffer<int16_t> *,
-	         RingBuffer<uint8_t> *,
-	         RingBuffer<uint8_t> *,
-	         QString	picturesPath);
-	~Backend();
-int32_t	process		(int16_t *, int16_t);
-void	stopRunning();
+		Backend	(RadioInterface	*mr,
+	                 descriptorType	*d,
+	                 RingBuffer<int16_t> *,
+	                 RingBuffer<uint8_t> *,
+	                 RingBuffer<uint8_t> *,
+	                 QString	picturesPath);
+		~Backend();
+	int32_t	process		(int16_t *, int16_t);
+	void	stopRunning();
+//
+//	we need sometimes to access the key parameters for decoding
 	int		startAddr;
 	int		Length;
-	descriptorType	theDescriptor;
+	bool		shortForm;
+	int		protLevel;
+	int16_t		bitRate;
+	QString		serviceName;
 private:
 #ifdef	__THREADED_BACKEND
 void	run();
@@ -65,10 +70,11 @@ void	run();
 	int16_t		nextIn;
 	int16_t		nextOut;
 #endif
-void	processSegment	(int16_t *Data);
+	void		processSegment	(int16_t *Data);
+	RadioInterface	*radioInterface;
 
-	int16_t		bitRate;
 	int16_t		fragmentSize;
+	int		serviceId;
 	std::vector<uint8_t> outV;
 	std::vector<std::vector <int16_t>> interleaveData;
 	std::vector<int16_t> tempX;

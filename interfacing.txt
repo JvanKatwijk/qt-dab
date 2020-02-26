@@ -27,7 +27,7 @@ virtual			~virtualInput 	(void);
 virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency	(void);
 virtual		int32_t	defaultFrequency(void);
-virtual		bool	restartReader	(void);
+virtual		bool	restartReader	(int32_t);
 virtual		void	stopReader	(void);
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples		(void);
@@ -51,6 +51,7 @@ frequencies for the device.
 the function restartReader is supposed to start or restart the generation of 
 samples from the device. Note that while not specified explicitly
 the assumed samplerate is 2048000, with a bandwidth of 1536000 Hz.
+The parameter indicates the frequency to be selected
 
 the function stopReader will do the opposite,
 it will stop the generation of the samplestream.
@@ -59,20 +60,23 @@ The airspy is one of the devices where the samplerate cannot be set
 to 2048000, so in that driver the software takes care of translating the
 samplerate to 2048000.
 
-The function Samples will tell the amount of samples currently available, the qt-software
-will use that function to check whether or not sufficient samples are
-available to continue processing. 
+The function Samples will tell the amount of samples currently available,
+the qt-dab software will use that function to check whether or not
+sufficient samples are available to continue processing. 
+
 getSamples will try to extract the specified amount of samples - I/Q samples
 as complex float numbers - from the buffer from the device driver.
 It will return the amount actually read, in case the buffer in the
 device driver contains less than the requested amount, it will not wait.
+It assumes that the samplerate is just 2048000, i.e. rate conversions
+need to be done in the device handler.
 
 The function resetBuffer will clear the buffer in the device driver, it is
 used when switching channels.
 
 The function bitdepth returns - as the name suggests - the number of bits
 in the (elements of the) sample. E.g dabsticks provide 8 bits, SDRplay 12.
-The value is used to scale the scopes.
+The value is used to scale the Y-axis of the scopes.
 
 The device driver might have a small GUI, with probably a slider or spinbox
 for gain, and maybe other settings. See one of the existing device drivers
@@ -91,7 +95,6 @@ In the list of includes add
 #ifdef	__HAVE_NEWDEVICE__
 #include	"new-device.h"
 #endif
-
 
 step 2.
 The selectable devices are listed in a combobox on the main GUI. 

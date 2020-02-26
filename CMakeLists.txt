@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.21-Beta)
+set (objectName qt-dab-3.3)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -203,7 +203,6 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_HDRS
 	     ./dab-processor.h
-	     ./scanner-table.h
 	     ./service-description/service-descriptor.h 
 	     ./service-description/audio-descriptor.h 
 	     ./service-description/data-descriptor.h 
@@ -282,6 +281,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/support/verysmallpushbutton.h
 	     ./includes/support/smallcombobox.h
 	     ./includes/support/history-handler.h
+	     ./includes/support/scanner-table.h
 	     ./includes/scopes-qwt6/iqdisplay.h
 	     ./spectrum-viewer/spectrum-viewer.h 
 	     ./correlation-viewer/correlation-viewer.h 
@@ -292,7 +292,6 @@ add_definitions (-DPRESET_NAME)
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./dab-processor.cpp
-	     ./scanner-table.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
              ./src/ofdm/sample-reader.cpp
@@ -365,6 +364,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/support/history-handler.cpp
 	     ./src/support/viterbi-jan/viterbi-handler.cpp
 	     ./src/support/viterbi-spiral/viterbi-spiral.cpp
+	     ./src/support/scanner-table.cpp
 	     ./src/scopes-qwt6/iqdisplay.cpp 
 	     ./spectrum-viewer/spectrum-viewer.cpp 
 	     ./correlation-viewer/correlation-viewer.cpp 

@@ -59,7 +59,12 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
-        <widget class="QLCDNumber" name="quality_display"/>
+        <widget class="QLCDNumber" name="quality_display">
+         <property name="toolTip">
+          <string>Quality indicator: the &quot;quality&quot; of the decoded signal is measured as Modulation Error Rate, using  the formula from section 6.9.2 of TR 101 290 Measurement guidelines for DVB.
+An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor signals give values around 0</string>
+         </property>
+        </widget>
        </item>
        <item>
         <widget class="QSlider" name="scopeSlider">

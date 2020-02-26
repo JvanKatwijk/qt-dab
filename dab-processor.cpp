@@ -388,11 +388,15 @@ void	dabProcessor::set_scanMode	(bool b) {
 	attempts	= 0;
 }
 //
-//	just a convenience function
-bool	dabProcessor::is_audioService	(const QString &s) {
+//	just a convenience functions
+void	dabProcessor::dataforService	(const QString &s,
+	                                             descriptorType *dt) {
+	my_ficHandler. dataforService (s, dt);
+}
+
+bool	dabProcessor::is_audioService	(const QString &s, int16_t number) {
 audiodata ad;
-	my_ficHandler. dataforAudioService (s, &ad, 0);
-	return ad. defined;
+	return my_ficHandler. is_audioService (s, number);
 }
 
 bool	dabProcessor::is_packetService	(const QString &s) {
@@ -425,7 +429,6 @@ void    dabProcessor::set_dataChannel (packetdata *d,
 	                                      RingBuffer<uint8_t> *b) {
 	my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
 }
-
 
 uint8_t	dabProcessor::get_ecc() {
 	return my_ficHandler. get_ecc();
