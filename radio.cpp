@@ -551,12 +551,22 @@ void	RadioInterface::signalTimer_out() {
 void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	                                 int32_t serviceId,
 	                                 int	subChId) {
+QString subservice;
+
 	if (!running. load())
 	   return;
 
+//	if (my_dabProcessor -> is_audioService (serviceName, 0)) {
+//	   for (int i = 1; i < 5; i ++) {
+//	      audiodata ad;
+//	      if (my_dabProcessor -> is_audioService (serviceName, i)) {
+//	         subservice = QString::number (i) + " " + serviceName;
+//	      }
+//	   }
+//	}
+
 	if (Services. contains (serviceName))
 	   return;
-
 	Services << serviceName;
 #if 0
 	fprintf (stderr, "adding %s serviceId %x subchId %d\n",
@@ -565,15 +575,6 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 #endif
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
-#if 1
-	for (int i = 1; i < 5; i ++) {
-	   audiodata ad;
-	   if (my_dabProcessor -> is_audioService (serviceName, i)) {
-	      QString s = QString::number (i) + " " + serviceName;
-	      Services << s;
-	   }
-	}
-#endif
 
 	if (!noSort)
 	   Services. sort ();
@@ -750,6 +751,8 @@ uint8_t localBuffer [length + 8];
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
 	   QString serviceName = serviceLabel -> text ();
+	   stopScanning    ();
+	   stopService     ();
 	   fprintf (stderr, "change detected\n");
 //
 //	we rebuild the services list from the fib and
@@ -784,8 +787,10 @@ void	RadioInterface::changeinConfiguration() {
            ensembleDisplay -> setModel (&model);
 //
 //	and restart the one that was running
-	   if (serviceName != "")
-	      restartService (serviceName);
+	   if (serviceName != "") {
+	      serviceList. push_back (serviceName);
+	      startService (serviceName);
+	   }
 	}
 }
 //
@@ -1848,13 +1853,6 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	startService (currentProgram);
 }
 //
-void	RadioInterface::restartService (const QString &serviceName) {
-	stopScanning	();
-	stopService	();
-	serviceList. push_back (serviceName);
-	startService (serviceName);
-}
-
 void	RadioInterface::startService (const QString &serviceName) {
 QString workingName	= serviceName;
 int	subNumber	= 0;
@@ -1928,6 +1926,7 @@ audiodata ad;
 
 	fprintf (stderr, "trying to start %s (%d)\n",
 	                      serviceName. toLatin1 (). data (), subNumber);
+
 	my_dabProcessor -> dataforAudioService (serviceName, &ad, subNumber);
 	if (!ad. defined && (subNumber == 0)) {
 	   QMessageBox::warning (this, tr ("Warning"),
@@ -1935,6 +1934,13 @@ audiodata ad;
 	   return;
 	}
 
+	if (my_dabProcessor -> is_audioService (serviceName, subNumber))
+	   fprintf (stderr, "%s %d seems to be an audio service\n",
+	                        serviceName. toLatin1 (). data (), subNumber);
+	else
+	   fprintf (stderr, "%s %d (%d %s) does not seem to be audio\n",
+	                     serviceName. toLatin1 (). data (), subNumber,
+	                     subNumber, serviceName. toLatin1 (). data ());
 	if (!ad. defined) {
 	   fprintf (stderr, "running main service rather than subservice\n");
 	   subNumber = 0;

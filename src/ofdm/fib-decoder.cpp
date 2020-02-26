@@ -1513,18 +1513,22 @@ bool	showFlag	= true;
 	if (ensemble -> services [serviceIndex]. is_shown)
 	   showFlag = false;
 
-	base -> serviceComps [firstFree]. inUse		= true;
+	bool	useFlag	= base -> serviceComps [firstFree]. inUse;
 	base -> serviceComps [firstFree]. TMid		= TMid;
 	base -> serviceComps [firstFree]. componentNr	= compnr;
 	base -> serviceComps [firstFree]. serviceIndex	= serviceIndex;
 	base -> serviceComps [firstFree]. subchannelId	= subChId;
 	base -> serviceComps [firstFree]. PS_flag	= ps_flag;
 	base -> serviceComps [firstFree]. ASCTy		= ASCTy;
+	base -> serviceComps [firstFree]. inUse		= true;
 	ensemble -> services [serviceIndex]. is_shown	= true;
-	if (showFlag)
+	if (showFlag || !useFlag) {
+	   if (compnr != 0)
+	      dataName = QString::number (compnr) + " " + dataName;
 	   addtoEnsemble (dataName,
 	                  ensemble -> services [serviceIndex]. serviceId,
 	                  subChId);
+	}
 }
 
 //      bind_packetService is the main processor for - what the name suggests -
@@ -1721,6 +1725,7 @@ QString	fibDecoder::getService		(int n) {
 	if (pd. defined)
 	   return s;
 	ensemble -> services [n]. inUse = false;
+	ensemble -> services [n]. is_shown = false;
 	return "";
 }
 	
@@ -1751,7 +1756,7 @@ int	serviceIndex;
 
 	for (j = 0; j < 64; j ++) {
 	   int16_t subChId;
-	   
+
 	   if (!currentBase -> serviceComps [j]. inUse)
 	      break;
 
@@ -1762,10 +1767,12 @@ int	serviceIndex;
 	      continue;
 
 	   subChId	= currentBase -> serviceComps [j]. subchannelId;
-
-	   if (currentBase -> subChannels [subChId]. SCIds != compnr)
+	   if (!currentBase -> subChannels [subChId]. inUse)
 	      continue;
-	                                     
+
+	   if (currentBase -> serviceComps [j]. componentNr != compnr)
+	      continue;
+	 
 	   ad	-> serviceId    =
 	                 ensemble -> services [serviceIndex]. serviceId;
 	   ad	-> serviceName  = s;

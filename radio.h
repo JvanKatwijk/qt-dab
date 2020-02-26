@@ -233,7 +233,6 @@ private slots:
 
 	void			selectChannel		(const QString &);
 	void			selectService		(QModelIndex);
-	void			restartService		(const QString &);
 	void			setPresetStation	();
 };
 #endif
