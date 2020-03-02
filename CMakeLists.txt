@@ -214,6 +214,8 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/ofdm/phasetable.h
 	     ./includes/ofdm/freq-interleaver.h
 	     ./includes/ofdm/fib-decoder.h
+	     ./includes/ofdm/dab-config.h
+	     ./includes/ofdm/fib-table.h
 	     ./includes/ofdm/fic-handler.h
 	     ./includes/ofdm/tii_detector.h
 	     ./includes/ofdm/timesyncer.h

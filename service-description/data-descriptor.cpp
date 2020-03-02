@@ -9,7 +9,7 @@
         myFrame. show();
 	serviceName  -> setText (pd -> serviceName);
 	serviceLabel    -> setText
-                      (QString().number (pd -> serviceId, 16). toUpper());
+                      (QString().number (pd -> SId, 16). toUpper());
         QFont font      = serviceLabel -> font();
         font. setBold (true);
 	subChannelId -> setText (QString::number (pd -> subchId));

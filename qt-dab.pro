@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -97,6 +97,8 @@ HEADERS += ./radio.h \
 	   ./includes/ofdm/tii_detector.h \
 	   ./includes/ofdm/fic-handler.h \
 	   ./includes/ofdm/fib-decoder.h  \
+	   ./includes/ofdm/fib-table.h \
+	   ./includes/ofdm/dab-config.h \
 	   ./includes/protection/protTables.h \
 	   ./includes/protection/protection.h \
 	   ./includes/protection/eep-protection.h \

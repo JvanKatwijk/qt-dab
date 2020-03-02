@@ -82,30 +82,28 @@ bool	firstData;
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 	for (QString& audioService: Services) {
-	   for (i = 0; i < 5; i ++) {
-	      audiodata d;
-	      my_dabProcessor -> dataforAudioService (audioService, &d, i);
-	      if (!d. defined)
-	         continue;
-	      QString protL	= getProtectionLevel (d. shortForm, 
-	                                              d. protLevel);
-	      QString codeRate	= getCodeRate (d. shortForm, 
+	   audiodata d;
+	   my_dabProcessor -> dataforAudioService (audioService, &d);
+	   if (!d. defined)
+	      continue;
+	   QString protL	= getProtectionLevel (d. shortForm, 
+	                                           d. protLevel);
+	   QString codeRate	= getCodeRate (d. shortForm, 
 	                                       d. protLevel);
-	      countryId = (d. serviceId >> 12) & 0xF;
-	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
-	                            audioService. toUtf8(). data(),
-	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
-	                     d. serviceId,
-	                     d. subchId,
-	                     d. startAddr,
-	                     d. length,
-	                     d. bitRate,
-	                     d. ASCTy == 077 ? "DAB+" : "DAB",
-	                     protL. toUtf8(). data(),
-	                     codeRate. toUtf8(). data(),
-	                     theMapper. get_programm_language_string (d. language),
-	                     theMapper. get_programm_type_string (d. programType) );
-	   }
+	   countryId = (d. SId >> 12) & 0xF;
+	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
+	                 audioService. toUtf8(). data(),
+	                 code_to_string (ecc_byte, countryId). toUtf8(). data(),
+	                 d. SId,
+	                 d. subchId,
+	                 d. startAddr,
+	                 d. length,
+	                 d. bitRate,
+	                 d. ASCTy == 077 ? "DAB+" : "DAB",
+	                 protL. toUtf8(). data(),
+	                 codeRate. toUtf8(). data(),
+	                 theMapper. get_programm_language_string (d. language),
+	                 theMapper. get_programm_type_string (d. programType) );
 	}
 
 	firstData	= true;
@@ -142,11 +140,11 @@ bool	firstData;
 	         protL. append (QString::number (h));
 	         codeRate = uep_rates [h + 1];
 	      }
-	      countryId = (d. serviceId >> (5 * 4)) & 0xF;
+	      countryId = (d. SId >> (5 * 4)) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
 	                        dataService. toUtf8(). data(),
 	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
-	                     d. serviceId,
+	                     d. SId,
 	                     d. subchId,
 	                     d. startAddr,
 	                     d. length,

@@ -145,8 +145,8 @@ int filler;
 	char *line	= (char *) malloc (256);
 	while ((cnt < 100) && (amount > 0)) {
 	   amount = getline (&line, &amount, f);
-	   fprintf (stderr, "%s (%d)\n", line, amount);
-	   if ((int)amount < 0) {
+	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
+	   if ((int)amount == 0) {
 	      break;
 	   }
 	   line [amount] = 0;

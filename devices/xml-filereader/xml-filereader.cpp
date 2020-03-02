@@ -126,7 +126,6 @@ void	xml_fileReader::stopReader () {
 //	size is in "samples"
 int32_t	xml_fileReader::getSamples	(std::complex<float> *V,
 	                                 int32_t size) {
-int32_t	amount, i;
 
 	if (theFile == nullptr)		// should not happen
 	   return 0;
@@ -134,8 +133,7 @@ int32_t	amount, i;
 	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable()) < size)
 	   usleep (500);
 
-	amount = _I_Buffer	-> getDataFromBuffer (V, size);
-	return amount;
+	return _I_Buffer	-> getDataFromBuffer (V, size);
 }
 
 int32_t	xml_fileReader::Samples	() {

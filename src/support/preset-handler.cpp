@@ -61,7 +61,7 @@ QDomElement root = the_presets. createElement ("preset_db");
 
 	the_presets. appendChild (root);
 
-	for (uint i = 1; i < cb -> count (); i ++) {
+	for (int i = 1; i < cb -> count (); i ++) {
 	   QStringList list = cb -> itemText (i).
 	                        split (":", QString::SkipEmptyParts);
            if (list. length () != 2)

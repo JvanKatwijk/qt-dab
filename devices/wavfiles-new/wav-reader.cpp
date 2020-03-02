@@ -41,7 +41,7 @@ struct timeval  tv;
 	this	-> filePointer	= filePointer;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= sf_seek (filePointer, 0, SEEK_END);
-	fprintf (stderr, "fileLength = %d\n", fileLength);
+	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
         sf_seek (filePointer, 0, SEEK_SET);
 	period          = (32768 * 1000) / (2048);  // full IQś read
         fprintf (stderr, "Period = %ld\n", period);
@@ -62,7 +62,6 @@ void	wavReader::stopReader() {
 }
 
 void	wavReader::run() {
-int32_t	t, i;
 std::complex<float>	*bi;
 int32_t	bufferSize	= 32768;
 int64_t	nextStop;
@@ -96,7 +95,7 @@ int	teller		= 0;
 		                             (float *)bi, bufferSize);
 	      if (n < bufferSize) {
 	         sf_seek (filePointer, 0, SEEK_SET);
-	         for (i = n; i < bufferSize; i ++)
+	         for (int i = n; i < bufferSize; i ++)
 	            bi [i] = std::complex <float> (0, 0);
 	      }
 	      theBuffer -> putDataIntoBuffer (bi, bufferSize);

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -21,7 +21,7 @@
  */
 #include	"dab-processor.h"
 
-#include <utility>
+#include	<utility>
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
@@ -390,18 +390,23 @@ void	dabProcessor::set_scanMode	(bool b) {
 //
 //	just a convenience functions
 
-QString	dabProcessor::getService	(int n) {
-	return my_ficHandler. getService (n);
+QString	dabProcessor::findService		(uint32_t SId, int SCIds) {
+	return my_ficHandler. findService (SId, SCIds);
 }
 
-void	dabProcessor::dataforService	(const QString &s,
-	                                             descriptorType *dt) {
-	my_ficHandler. dataforService (s, dt);
+void	dabProcessor::getParameters		(const QString &s,
+	                                         uint32_t *p_SId, int*p_SCIds) {
+	my_ficHandler. getParameters (s, p_SId, p_SCIds);
 }
 
-bool	dabProcessor::is_audioService	(const QString &s, int16_t number) {
+QStringList	dabProcessor::getServices	() {
+	return my_ficHandler. getServices ();
+}
+
+bool	dabProcessor::is_audioService	(const QString &s) {
 audiodata ad;
-	return my_ficHandler. is_audioService (s, number);
+	my_ficHandler. dataforAudioService (s, &ad);
+	return ad. defined;
 }
 
 bool	dabProcessor::is_packetService	(const QString &s) {
@@ -411,15 +416,15 @@ packetdata pd;
 }
 
 void	dabProcessor::dataforAudioService	(const QString &s,
-	                                          audiodata *d, int16_t c) {
-	my_ficHandler. dataforAudioService (s, d, c);
+	                                         audiodata *d) {
+	my_ficHandler. dataforAudioService (s, d);
 }
 
 void	dabProcessor::dataforPacketService	(const QString &s,
-	                                         packetdata *d, int16_t c) {
-	my_ficHandler. dataforPacketService (s, d, c);
+	                                         packetdata *pd,
+	                                         int16_t compnr) {
+	my_ficHandler. dataforPacketService (s, pd, compnr);
 }
-
 
 void	dabProcessor::reset_msc() {
 	my_mscHandler. reset();

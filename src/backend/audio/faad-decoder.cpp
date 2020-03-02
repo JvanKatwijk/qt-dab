@@ -146,7 +146,7 @@ uint8_t channels;
         if (channels == 2) {
            audioBuffer  -> putDataIntoBuffer (outBuffer, samples);
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
-              newAudio (samples, sampleRate);
+              newAudio (sampleRate / 10, sampleRate);
         }
         else
         if (channels == 1) {

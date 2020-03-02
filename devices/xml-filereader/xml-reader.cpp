@@ -218,7 +218,6 @@ int	sampleCount	= 0;
 	return sampleCount;
 }
 int	xml_Reader::readSamples_I (FILE *f, int amount) {
-float I_element, Q_element;
 int	sampleCount	= 0;
 
 	while (sampleCount < amount) {
@@ -241,7 +240,6 @@ int	sampleCount	= 0;
 	return sampleCount;
 }
 int	xml_Reader::readSamples_Q (FILE *f, int amount) {
-float I_element, Q_element;
 int	sampleCount	= 0;
 
 	while (sampleCount < amount) {

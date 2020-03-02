@@ -8,7 +8,7 @@
         setupUi (&myFrame);
         myFrame. show();
 	serviceLabel    -> setText
-                      (QString().number (ad -> serviceId, 16). toUpper());
+                      (QString().number (ad -> SId, 16). toUpper());
         QFont font      = serviceLabel -> font();
         font. setBold (true);
         serviceLabel    -> setFont (font);

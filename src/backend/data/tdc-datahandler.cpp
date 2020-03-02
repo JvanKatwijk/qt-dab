@@ -41,9 +41,9 @@
 //---------------------------------------------------------------------------
 uint16_t usCalculCRC (uint8_t *buf, int lg) {
 uint16_t crc;
-uint	count;
+int	count;
 	crc = 0xFFFF;
-	for (count= 0; count < lg; count++) {
+	for (count = 0; count < lg; count++) {
 	   crc = (uint16_t) (swap (crc) ^ (uint16_t)buf [count]);
 	   crc ^= ((uint8_t)crc) >> 4;
 	   crc = (uint16_t)
@@ -71,7 +71,7 @@ int16_t	i;
 	      return;
 
 //	we have a syncword
-	   uint16_t syncword	= getBits (data, offset,      16);
+//	   uint16_t syncword	= getBits (data, offset,      16);
 	   int16_t length	= getBits (data, offset + 16, 16);
 	   uint16_t crc		= getBits (data, offset + 32, 16);
 
@@ -116,7 +116,7 @@ int16_t	i;
 int32_t	tdc_dataHandler::handleFrame_type_0 (uint8_t *data,
 	                                    int32_t offset, int32_t length) {
 int16_t i;
-int16_t noS	= getBits (data, offset, 8);
+//int16_t noS	= getBits (data, offset, 8);
 uint8_t buffer [length];
 
 	for (i = 0; i < length; i ++)

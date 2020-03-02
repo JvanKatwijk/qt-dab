@@ -37,7 +37,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	x_amount	= x;
 	CycleCount	= 0;
 	Points. resize (x_amount);
-	memset (Points. data(), 0, x_amount * sizeof (std::complex<float>));
+	for (int i = 0; i < x_amount; i ++)
+	   Points [i] = std::complex<float> (0, 0);
 	this		-> setColorMap (colorMap);
 	plotData. resize (2 * Radius * 2 * Radius);
 	plot2.	  resize (2 * Radius * 2 * Radius);

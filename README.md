@@ -9,46 +9,27 @@ Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terr
 New in Qt-DAB 3.3
 --------------------------------------------------------------------
 
-One of the (many) areas that needed addressing was handling the
-change in a configuration.
+Two of the (many) areas that still needed addressing in the handling of
+DAB+ contents were handling
+*secondary audio services* and reacting upon a
+*change in  configuration*.
 
-Changes in a configuration may be that bitrates of subchannels change,
-that protection changes, and even that sub channels appear or
-disappear.
+*Secondary audio services* are now visible as service and can be selected.
+
+A *change in configuration* may be that bitrates of channels change,
+that protection changes, and even that *secondary audio services*
+appear or disappear.
 
 In this region I never saw it happening but it seems to happen
-with BBC transmissions.
+with BBC transmissions. Especially interesting is of course what should happen
+when - after a *change in configuration* - the selected secondary
+audio service is gone.
 
-In Qt-DAB 3.3 a mechanism is included to handle such a change,
-the change will apear as a minor disruption in the signal of the
-selected service.
+In Qt-DAB 3.3 a mechanism is included to make secondary audio services
+visible and selelactabe and to handle a change in configuration.
+Such a change will manifest itself as a minor disruption (app 20 msec)
+in the signal of the selected service.
 
----------------------------------------------------------------------
-Replacing libfaad by fdk-aac
----------------------------------------------------------------------
-
-DRM+, for which I am writing a decoder in another project, supports,
-next to the "classic" AAC encoding of audio, the xHE-AAC encoding.
-Decoding of xHE-AAC encoded audio frames is not supported by the "faad"
-library, and it is not clear whether or not support will ever turn up.
-
-The fdk-aac (from Fraunhofer institute) turned out to be an excellent
-alternative, it supports decoding both the AAC and xHE-AAC segments
-from DRM30 and DRM+.
-
-As an experiment, I added support for fdk-aac to Qt-DAB using the
-same code that creates the aac output files whenever selected
-(Thanks to Stefan Poeschel for that).
-
-The ".pro" file now contains - in the section for Unix - two lines with which
-either fdk-aac or faad can be selected.
-
-	CONFIG	+= fdk-aac
-	#CONFIG	+= faad
-
-As far as I can see, the fdk-aac library can be installed from the repositories
-of the Linux distribution,  of course, you should have the library and
-the include files ("development package") installed when using it.
 
 Note that - due to possible copyright restrictions - the AppImage
 as well as the Windows installer (both carry the libraries that they need)
@@ -133,11 +114,11 @@ Features
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
   * MOT SlideShow (SLS)
   * Dynamic Label (DLS) 
-  * Both DAB bands supported (Band III default, the other can be set in the ".ini" file): 
-  	* VHF Band III
+  * Both DAB bands supported): 
+  	* VHF Band III (default),
    	* L-Band (only used in Czech Republic and Vatican) (see "obsolete properties")
   * Modes I, II and IV (Mode I default, oter modes can be set in the ".ini" file)
-  * Spectrum view (incl. constellation diagram, impulse response, TII spectrum)
+  * Spectrum view (incl. constellation diagram, correlation result, TII spectrum)
   * Scanning function (scan the band and show the results on the screen)
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
   * Detailed information for other services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type)
@@ -148,7 +129,8 @@ Features
   * Saving audio as uncompressed wave files
   * Saving aac frames from DAB+ services for processing by e.g. VLC
   * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
-  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888).
+  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888)
+  * TPEG output: when configured the data is sent to a specified ip address
   * Supports inputs from 
   	- SDRplay (both RSP I and RSP II), with separate entries for v2 and v3 library
   	- Airspy, including Airspy mini,
@@ -178,18 +160,18 @@ Introduction
 Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
 The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
 
-The **dab-server** can be installed to run as a "service" on an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
+The **dab-server** can be installed to run as a "service" on e.g. an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
 
 Furthermore, for DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a txt file, formatted for use with *LibreOffice Calc* and
 comparable programs.
 
-**dabradio**, **sdrplayDab**, the Qt-free version **dab-cmdline**, the **dab-server** and the **dab-scanner** have their own repository on Github.
+**dabradio**, **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
 
-Qt-DAB-3.3 also supports input from an rtl-tcp server (see osmocom software) and from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`). Obviously there is a provision for dumping the input into an (\*.sdr)-file. 
+Qt-DAB-3.3 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
 
-Note that if the rtl_tcp server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
+Finally, Qt-DAB supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
 Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi, the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
 
@@ -199,18 +181,20 @@ See also the section of configuring Qt-DAB
 Widgets and scopes
 ------------------------------------------------------------------
 
-The picture below shows Qt-DAB's main window and the other 5 **optional**
-widgets
+The picture on top shows Qt-DAB's main window and the other 5 **optional**
+widgets:
 
   * a widget with controls for the attached device,
   * a widget showing the technical information of the *selected service* as well
 as some information on the quality of the decoding, 
   * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
   * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
-  * and a widget showing the response(s) from different transmitters in the SFN,  * running a *scan* causes a widget to appear showing the contents of the ensembles found in the selected channel.
+  * and a widget showing the response(s) from different transmitters in the SFN,
 
-While the main window is always shown, the others are only shown when pushing a button on the main window (touching the
-button again will cause the widget to disappear from the screen).
+Another - a sixth - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel.
+
+While the main window is always shown, visibility of the others is
+under user control, the main widget contains a button for each of those.
 
 ![Qt-DAB with SDRplay input](/qt-dab-3.3-kaal.png?raw=true)
 
@@ -218,8 +202,8 @@ The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
 of the element. (The tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
-The elements in the **left part** of the widget are concerned with
-selecting a channel and a service. 
+The elements in the **left part** of the widget, below the list of services,
+ are concerned with selecting a channel and service. 
 
 To ease operation the channel selector is augmented with a "-" and a "+"
 button for selecting the previous resp. next channel.
@@ -245,12 +229,7 @@ scan and store a description of the ensemble are in that section.
 
 ![Qt-DAB scan result](/qt-dab-buttons.png?raw=true)
 
-Note that, the *scanning* function is changed.
-While in previous versions scanning stopped as soon as a channel with valid
-DAB data is encountered, in this version touching the scanning button will
-instruct the software to perform a *single scan* over all channels
-in the selected band.
-During the scan, a separate window will be shown with the results
+During **scanning**, a separate window will be shown with the results
 of the scan as shown in the picture.
 
 ![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
@@ -259,10 +238,10 @@ of the scan as shown in the picture.
 Presets
 ----------------------------------------------------------------------
 
-A *preset* selector is available to store and retrieve "favorit" services,
-note that the services are encoded as "channel:serviceName" pair:
+A *preset* selector is available to store and retrieve "favorit" services.
+Note that the services are encoded as "channel:serviceName" pair:
 it sometimes happens that a service appears in more than one ensemble
-(see as example the "Omroep West" service, appearing in channels 5B and 8A.)
+(as example the "Omroep West" service appears in channels 5B and 8A.)
 
 ![Qt-DAB with sdrplay input](/qt-dab-3.3-presets.png?raw=true)
 
@@ -277,14 +256,12 @@ will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 
 The data in stored in a file in xml format.
-The history can be cleared by a click of the right mouse button,
+The *history* can be cleared by a click of the right mouse button,
 clicking on a channel:servicename combination with the left
-mouse button will cause the software to attempt to set the channel and
+mouse button will cause the QT-DAB software to attempt to set the channel and
 select the name.
 
 ![Qt-DAB with sdrplay input](/qt-dab-3.3-history.png?raw=true)
-
-*This feature is experimental*
 
 ---------------------------------------------------------------------------
 Comment on some settings
@@ -308,12 +285,13 @@ when set to 0 the slides will not be shown.
 when set the name of the selected service - that is selected when closing down the program - is kept and at the next invocation of the program, an attempt is made to start that particular service. The name of the service is kept as `presetname=xxxx`
 
 The background colors of the spectrum can be changed by setting 
+
 ```
 displaycolor=blue
 gridcolor=red
 ```
 If one uses the rtl_tcp handler, the default value for the "port" is 1234,
-a port can de set in the "ini" file by setting
+a port can be set in the ".ini" file by setting
 
 ```
 rtl_tcp_port=xxx
@@ -323,7 +301,7 @@ rtl_tcp_port=xxx
 Obsolete properties
 -------------------------------------------------------------------------
 
-The recent DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. The Qt-DAB implementation still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
+The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. The Qt-DAB implementation still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
 
 Explicitly setting the Mode and/or the Band is possible by including some command lines in the ".qt-dab.ini" file.
 
@@ -449,7 +427,7 @@ Comment the lines out by prefixing the line with a `#` in the `qt-dab.pro` file 
 ```
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
-CONFIG		+= sdrplay-v3		# pretty experimental
+CONFIG		+= sdrplay-v3	
 CONFIG		+= lime
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -457,13 +435,30 @@ CONFIG		+= hackrf
 #CONFIG		+= soapy
 ```
 
-As stated above, while the default library to handle the AAC frames
-is the *faad* library, if installed one might use the *fdk-aac* library.
+DRM+, for which I am writing a decoder in another project, supports,
+next to the "classic" AAC encoding of audio, the xHE-AAC encoding.
+Decoding of xHE-AAC encoded audio frames is not supported by the "faad"
+library, and it is not clear whether or not support will ever turn up.
 
-```
-CONFIG		+= faad
-#CONFIG		+= fdk-aac
-```
+The *fdk-aac* (from Fraunhofer institute) turned out to be an excellent
+alternative, it supports decoding both the AAC and xHE-AAC segments
+from DRM30 and DRM+. Support for fdk-aac was therefore included in the
+aforementioned DRM+ decoder.
+
+As an experiment, support for fdk-aac to Qt-DAB is added using the
+same code that creates the aac output files whenever selected
+(Thanks to Stefan Poeschel for that).
+
+The ".pro" file now contains - in the section for Unix - two lines with which
+either fdk-aac or faad can be selected.
+
+	CONFIG	+= fdk-aac
+	#CONFIG	+= faad
+
+As far as I can see, the fdk-aac library can be installed from the repositories
+of the Linux distribution,  of course, you should have the library and
+the include files ("development package") installed when using it.
+
 
 The Qt-DAB software does not interpret the TPEG streams, however,
 the data of these streams can be output. If so configured, the
@@ -511,14 +506,14 @@ DEFINES		+= __THREADED_BACKEND
 configures the program to have the *backend* run in a separate thread.
 
 
-In the Windows configuration one may also choose, however *soapy* is not supported.
+In the Windows configuration one may also choose
 ````
 CONFIG		+= extio
 ````
 
 for use with (appropriate) extio handlers
 
-Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq` as well as 16-bit wav `*.sdr` files) is configured by default.
+Remark: Input from pre-recorded files (8 bit unsigned `*.raw` and `*.iq` as well as 16-bit wav `*.sdr` files, and the new xml-files) is configured by default.
 
 ------------------------------------------------------------------
 Configuring using CMake
@@ -528,16 +523,16 @@ The `CMakeLists.txt` file has all devices and the spectrum switched off per defa
 
 An example:
 ```
-cmake .. -DRTLSDR=ON -DRTLTCP=ON 
+cmake .. -DRTLSDR=ON -DSDRPLAY=ON 
 ```
 	
 will generate a makefile with support for 
 
  a) the RTLSDR (dabstick) device, 
  
- b) for the remote dabstick (using the rtl_tcp connection) and 
+ b) the SDRPlay device (with 2.13 library).
  
-Other devices that can be selected (beside dabstick and rtl_tcp) are sdrplay, HackRF and airspy. Use `-DHACKRF=ON`, `-DSDRPLAY=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
+Other devices that can be selected are sdrplay for library version 3.06, HackRF and airspy. Use `-DHACKRF=ON`, `-DSDRPLAY_V3=ON`, or `-DAIRSPY=ON` after the `cmake` command if you want to configure them.
 
 The default location for installation depends on your system, mostly `/usr/local/bin` or something like that. Set your own location by adding
 ```
@@ -577,7 +572,7 @@ be phased out.
 Raspberry PI
 ------------------------------------------------------------------
 
-The Qt-DAB software runs pretty well on the author's RPI-2 and 3. The average load on the 4 cores is somewhere between 50 and 60 percent.
+The Qt-DAB software runs pretty well on the author's RPI-2 and 3 when configured for running the backend in a separate thread. The average load on the 4 cores is somewhere between 50 and 60 percent.
 
 One remark: getting "sound" is not always easy. Be certain that you have installed the alsa-utils, and that you are - as non-root user - able to see devices with `aplay -L`
 
@@ -622,12 +617,12 @@ For more information see http://appimage.org/
 Interfacing to another device
 -----------------------------------------------------------------------
 
-There are - obviously - more different devices than supported
+There are - obviously - more devices than supported
 here. Interfacing another device is not very complicated,
 it might be done using the "Soapy" interface, or one might
 write a new interface class.
 
-The device handlers are implemented as a class, derived from
+Device handlers are implemented as a class, derived from
 the class *virtualInput*. Only a few functions have to
 be implemented, to *set* and *get* the VFO frequency, 
 to inspect the number of samples available and to get a number
@@ -642,7 +637,7 @@ in the sourcetree
 # Copyright
 ------------------------------------------------------------------------
 
-	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018, 2019
+	Copyright (C)  2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 

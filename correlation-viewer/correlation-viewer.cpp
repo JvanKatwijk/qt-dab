@@ -26,7 +26,6 @@
 
 	correlationViewer::correlationViewer	(RadioInterface	*mr,
 	                                         RingBuffer<float> *b) {
-int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
 QColor	gridColor;
@@ -79,8 +78,6 @@ QColor	curveColor;
 }
 
 void	correlationViewer::showIndex	(int32_t v) {
-int32_t	i;
-
 QString theText;
 
 	if (v == -1) {
@@ -96,7 +93,7 @@ QString theText;
 	   theText	= QString (" ");
 	else {
 	   theText	= QString (" trans ");
-	   for (int i = 1; i < indexVector. size(); i ++) {
+	   for (uint16_t i = 1; i < indexVector. size(); i ++) {
 	      char t [255];
 	      sprintf (t, " (%d -> %d msec) ", i,
 	                      (indexVector. at (i) - indexVector. at (0)) / 2);

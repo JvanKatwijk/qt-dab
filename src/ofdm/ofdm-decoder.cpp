@@ -165,7 +165,6 @@ void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
 	                     int32_t blkno, int16_t *ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
-float	phases	= 0;
 
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
@@ -236,7 +235,6 @@ float	phases	= 0;
 //	Communications (Chiueh and Tsai)"
 void	ofdmDecoder::compute_timeOffset (std::complex<float> *r,
 	                                      std::complex<float> *v) {
-float timeOffset = 0;
 std::complex<float> leftTerm;
 std::complex<float> rightTerm;
 std::complex<float> sum	= std::complex<float> (0, 0);

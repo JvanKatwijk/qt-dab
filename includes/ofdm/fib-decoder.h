@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013
+ *    Copyright (C) 2013 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,37 +33,35 @@
 class	RadioInterface;
 
 class	ensembleDescriptor;
-class	dataBase;
+class	dabConfig;
+class	Cluster;
 
 class	fibDecoder: public QObject {
 Q_OBJECT
 public:
-		fibDecoder		(RadioInterface *);
-		~fibDecoder();
+			fibDecoder	(RadioInterface *);
+			~fibDecoder	();
 
-	void	clearEnsemble();
-	bool	syncReached();
-	QString	getService		(int);
-	void	dataforService		(const QString &,
-	                                      descriptorType *);
-	bool	is_audioService		(const QString &, int16_t);
-	void	dataforAudioService	(const QString &,
-	                                      audiodata *, int16_t);
+	void		clearEnsemble	();
+	bool		syncReached	();
+	void	dataforAudioService	(const QString &, audiodata *);
 	void	dataforPacketService	(const QString &,
 	                                      packetdata *, int16_t);
-        uint8_t get_ecc			();
-	int32_t	get_ensembleId		();
-	QString get_ensembleName	();
-	int32_t	get_CIFcount		();	
-	void	print_Overview		();
-	void	print_subChannels	();
+
+	QStringList	getServices	();
+	QString		findService	(uint32_t, int);
+	void		getParameters	(const QString &, uint32_t *, int *);
+        uint8_t		get_ecc		();
+	int32_t		get_ensembleId	();
+	QString		get_ensembleName	();
+	int32_t		get_CIFcount	();	
+	void		print_Overview	();
 protected:
-	void	newFrame();
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
 	RadioInterface	*myRadioInterface;
-	dataBase	*currentBase;
-	dataBase	*nextBase;
+	dabConfig	*currentConfig;
+	dabConfig	*nextConfig;
 	ensembleDescriptor	*ensemble;
 	void		process_FIG0		(uint8_t *);
 	void		process_FIG1		(uint8_t *);
@@ -71,9 +69,9 @@ private:
 	void		FIG0Extension1		(uint8_t *);
 	void		FIG0Extension2		(uint8_t *);
 	void		FIG0Extension3		(uint8_t *);
-	void		FIG0Extension4		(uint8_t *);
+//	void		FIG0Extension4		(uint8_t *);
 	void		FIG0Extension5		(uint8_t *);
-	void		FIG0Extension6		(uint8_t *);
+//	void		FIG0Extension6		(uint8_t *);
 	void		FIG0Extension7		(uint8_t *);
 	void		FIG0Extension8		(uint8_t *);
 	void		FIG0Extension9		(uint8_t *);
@@ -87,13 +85,13 @@ private:
 	void		FIG0Extension17		(uint8_t *);
 	void		FIG0Extension18		(uint8_t *);
 	void		FIG0Extension19		(uint8_t *);
-	void		FIG0Extension20		(uint8_t *);
+//	void		FIG0Extension20		(uint8_t *);
 	void		FIG0Extension21		(uint8_t *);
 //	void		FIG0Extension22		(uint8_t *);
 //	void		FIG0Extension23		(uint8_t *);
-	void		FIG0Extension24		(uint8_t *);
-	void		FIG0Extension25		(uint8_t *);
-	void		FIG0Extension26		(uint8_t *);
+//	void		FIG0Extension24		(uint8_t *);
+//	void		FIG0Extension25		(uint8_t *);
+//	void		FIG0Extension26		(uint8_t *);
 
 	int16_t		HandleFIG0Extension1	(uint8_t *,
 	                                         int16_t,
@@ -104,14 +102,18 @@ private:
 	int16_t		HandleFIG0Extension3	(uint8_t *,
 	                                         int16_t,
 	                                         uint8_t, uint8_t, uint8_t);
-	int16_t		HandleFIG0Extension5	(uint8_t *, int16_t);
+	int16_t		HandleFIG0Extension5	(uint8_t *,
+	                                         uint8_t, uint8_t, uint8_t,
+	                                         int16_t);
 	int16_t		HandleFIG0Extension8	(uint8_t *,
 	                                         int16_t,
 	                                         uint8_t, uint8_t, uint8_t);
 	int16_t		HandleFIG0Extension13	(uint8_t *,
 	                                         int16_t,
 	                                         uint8_t, uint8_t, uint8_t);
-	int16_t		HandleFIG0Extension21	(uint8_t*, int16_t);
+	int16_t		HandleFIG0Extension21	(uint8_t*,
+	                                         uint8_t, uint8_t, uint8_t,
+	                                         int16_t);
 
 	void		FIG1Extension0		(uint8_t *);
 	void		FIG1Extension1		(uint8_t *);
@@ -121,41 +123,45 @@ private:
 	void		FIG1Extension5		(uint8_t *);
 	void		FIG1Extension6		(uint8_t *);
 
-	int		findServiceIndex	(uint32_t);
-	int		setServiceIndex		(uint32_t);
-
-	int		findServiceComponent	(dataBase *, int16_t);
-	int		findServiceComponentinService	(dataBase *,
-	                                                 uint32_t, int16_t);
-
-        void            bind_audioService (dataBase *,
-	                                   int8_t,
-                                           uint32_t, int16_t,
-                                           int16_t, int16_t, int16_t);
-        void            bind_packetService (dataBase *,
-	                                    int8_t,
-                                            uint32_t, int16_t,
-                                            int16_t, int16_t, int16_t);
-	int		findService	(const QString &);
-	void		get_audioData	(const QString &s,
-	                                       audiodata *ad, int16_t compnr);
-//	void		bind_SCIds_to_ServiceComponent (uint16_t, uint16_t);
-//	void		bind_SCIds_to_SubChannel	(uint16_t, uint16_t);
-//	void		bindServiceComponenttoService	(uint32_t, uint16_t, uint8_t);
-//	void		bind_xpadComponent		(uint32_t, uin16_t, uint8_t);
-	void		setCluster (int clusterId,
-                                int16_t serviceIndex, uint16_t asuFlags);
-	QString		announcements (uint16_t a);
+	int		findService		(const QString &);
+	int		findService		(uint32_t);
+	void		cleanupServiceList	();
+	void		createService		(QString name,
+	                                         uint32_t SId, int SCIds);
+	int		findComponent		(dabConfig *db,
+	                                         uint32_t SId,
+                                                 int16_t subChId);
+	int		findServiceComponent	(dabConfig *,
+	                                         uint32_t, uint8_t);
+	int		findServiceComponent	(dabConfig *, int16_t);
+	int		findDataComponent	(dabConfig *,
+	                                         uint32_t, int16_t);
+	int		findDataComponentinService (dabConfig *,
+                                                    uint32_t,
+                                                    int16_t);
+        void            bind_audioService	(dabConfig *,
+	                                         int8_t,
+                                                 uint32_t, int16_t,
+                                                 int16_t, int16_t, int16_t);
+	void		bind_packetService	(dabConfig *,
+                                                 int8_t,
+                                                 uint32_t, int16_t,
+                                                 int16_t, int16_t, int16_t);
+	QString		announcements		(uint16_t);
+	void		setCluster		(dabConfig *, 
+	                                         int, int16_t, uint16_t);
+	Cluster		*getCluster		(dabConfig *, int16_t);
 	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
+
 signals:
-	void		addtoEnsemble	(const QString &, int, int);
-	void		nameofEnsemble  (int, const QString &);
-	void		setTime		(const QString &);
-	void		changeinConfiguration();
-	void		startAnnouncement (const QString &, int);
-	void		stopAnnouncement  (const QString &, int);
+	void		addtoEnsemble		(const QString &, int);
+	void		nameofEnsemble		(int, const QString &);
+	void		setTime			(const QString &);
+	void		changeinConfiguration	();
+	void		startAnnouncement	(const QString &, int);
+	void		stopAnnouncement	(const QString &, int);
 };
 
 #endif

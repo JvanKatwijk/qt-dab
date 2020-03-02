@@ -30,6 +30,7 @@
 #include	<QThread>
 #include	<QObject>
 #include	<QByteArray>
+#include	<QStringList>
 #include	<vector>
 #include	<cstdint>
 #include	<sndfile.h>
@@ -76,14 +77,15 @@ public:
 //
 //	inheriting from our delegates
 	void		set_tiiCoordinates();
-	QString		getService		(int);
-	void		setSelectedService      (QString &);
-	void		dataforService		(const QString &, 
-	                                                  descriptorType *);
-	bool		is_audioService		(const QString &s, int16_t);
+
+	QString		findService		(uint32_t, int);
+	void		getParameters		(const QString &,
+	                                         uint32_t *, int *);
+	QStringList	getServices		();
+	bool		is_audioService		(const QString &s);
 	bool		is_packetService	(const QString &s);
         void		dataforAudioService     (const QString &,
-	                                             audiodata *, int16_t);
+	                                             audiodata *);
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
 	void		reset_msc();

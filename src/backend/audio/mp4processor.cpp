@@ -269,8 +269,6 @@ stream_parms    streamParameters;
 //	but first the crc check
 	   if (check_crc_bytes (&outVector [au_start [i]],
 	                                aac_frame_length)) {
-	      bool err;
-//
 //	first handle the pad data if any
 	      if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
 	                                      

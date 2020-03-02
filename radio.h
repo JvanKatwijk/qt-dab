@@ -63,6 +63,14 @@ class	tiiViewer;
  *	The main gui object. It inherits from
  *	QWidget and the generated form
  */
+
+class dabService {
+public:
+	QString		serviceName;
+	uint32_t	SId;
+	int		SCIds;
+};
+	
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
@@ -71,12 +79,10 @@ public:
 	                                 const QString	&,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
-		~RadioInterface();
-	void	dataforService          (const QString &s,
-                                                         descriptorType *dt);
+		~RadioInterface		();
 
 protected:
-	bool	eventFilter (QObject *obj, QEvent *event);
+	bool			eventFilter (QObject *obj, QEvent *event);
 private:
 	QString			version;
 	bool			noSort;
@@ -86,7 +92,7 @@ private:
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	QSettings		*dabSettings;
-	std::vector<QString>	serviceList;
+	std::vector<dabService>	runningServices;
         spectrumViewer		*my_spectrumViewer;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
@@ -148,8 +154,7 @@ private:
 	virtualInput		*setDevice		(const QString &);
 	historyHandler		*my_history;
 //
-	void			start_audioService	(const QString &,
-	                                                          int16_t);
+	void			start_audioService	(const QString &);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
 	void			stopScanning		();
@@ -162,7 +167,7 @@ private:
 	void			startChannel		(const QString &);
 	void			stopChannel		();
 	void			stopService		();
-	void			startService		(const QString &);
+	void			startService		(dabService *);
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
@@ -171,8 +176,7 @@ private:
 
 public slots:
 	void			set_CorrectorDisplay	(int);
-	void			addtoEnsemble		(const QString &,
-	                                                    int, int);
+	void			addtoEnsemble		(const QString &, int);
 	void			nameofEnsemble		(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);

@@ -125,7 +125,8 @@ public:
 	uint8_t	type;
 	bool	defined;
 	QString	serviceName;
-	int32_t	serviceId;
+	int32_t	SId;
+	int	SCIds;
 	int16_t subchId;
 	int16_t	startAddr;
 	bool	shortForm;

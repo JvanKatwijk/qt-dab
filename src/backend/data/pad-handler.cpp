@@ -269,7 +269,7 @@ std::vector<uint8_t> data;		// for the local addition
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
 void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
-static int16_t segmentno           = 0;
+static int16_t segmentno	   = 0;
 static int16_t remainDataLength    = 0;
 static bool    isLastSegment       = false;
 static bool    moreXPad            = false;
@@ -367,7 +367,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 //	   show_motHandling (true);
 //	}
 
-	if (data. size() >= dataGroupLength) {	// msc element is single item
+	if (data. size() >= (uint16_t)dataGroupLength) { // msc element is single item
 	   msc_dataGroupBuffer. clear();
 	   build_MSC_segment (data);
 	   mscGroupElement = false;
@@ -384,7 +384,6 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 
 //
 void	padHandler::add_MSC_element	(std::vector<uint8_t> data) {
-int16_t	i;
 int32_t	currentLength = msc_dataGroupBuffer. size();
 //
 //	just to ensure that, when a "12" appType is missing, the
@@ -395,7 +394,7 @@ int32_t	currentLength = msc_dataGroupBuffer. size();
 
 	msc_dataGroupBuffer. insert (std::end (msc_dataGroupBuffer),
 	                             std::begin (data), std::end (data));
-	if (msc_dataGroupBuffer. size() >= dataGroupLength) {
+	if (msc_dataGroupBuffer. size() >= (uint32_t)dataGroupLength) {
 	   build_MSC_segment (msc_dataGroupBuffer);
 	   msc_dataGroupBuffer. clear();
 //	   mscGroupElement	= false;
@@ -407,16 +406,16 @@ void	padHandler::build_MSC_segment (std::vector<uint8_t> data) {
 //	we have a MOT segment, let us look what is in it
 //	according to DAB 300 401 (page 37) the header (MSC data group)
 //	is
-int32_t	size	= data. size() < dataGroupLength ? data. size() :
+int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	                                            dataGroupLength;
 	   
-	uint8_t		groupType	=  data [0] & 0xF;
-	uint8_t		continuityIndex = (data [1] & 0xF0) >> 4;
-	uint8_t		repetitionIndex =  data [1] & 0xF;
-	int16_t		segmentNumber	= -1;		// default
-	uint16_t	transportId	= 0;	// default
-	bool		lastFlag	= false;	// default
-	uint16_t	index;
+uint8_t		groupType	=  data [0] & 0xF;
+//uint8_t	continuityIndex = (data [1] & 0xF0) >> 4;
+//uint8_t	repetitionIndex =  data [1] & 0xF;
+int16_t		segmentNumber	= -1;		// default
+uint16_t	transportId	= 0;	// default
+bool		lastFlag	= false;	// default
+uint16_t	index;
 
 	if ((data [0] & 0x40) != 0) {
 	   bool res	= check_crc_bytes (data. data(), size - 2);

@@ -52,7 +52,7 @@ int32_t pointer = 7;
 	contentsubType	= ((segment [5] & 0x01) << 8) | segment [6];
 
 //	we are actually only interested in the name, if any
-        while (pointer < headerSize) {
+        while ((uint16_t)pointer < headerSize) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
            uint16_t     length;
@@ -158,6 +158,7 @@ QByteArray result;
 	   checkDir (realName);
 	   std::vector<uint8_t> epgData (result. begin(), result. end());
 	   epgHandler. decode (epgData, realName);
+	   fprintf (stderr, "epg file %s\n", realName. toLatin1 (). data ());
 #endif
 	   return;
 	}

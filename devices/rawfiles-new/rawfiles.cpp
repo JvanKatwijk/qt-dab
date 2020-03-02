@@ -98,7 +98,7 @@ void	rawFiles::stopReader() {
 
 //	size is in I/Q pairs, file contains 8 bits values
 int32_t	rawFiles::getSamples	(std::complex<float> *V, int32_t size) {
-int32_t	amount, i;
+int32_t	amount;
 
 	if (filePointer == nullptr)
 	   return 0;

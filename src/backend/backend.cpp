@@ -53,7 +53,7 @@ int32_t i, j;
 	this	-> Length		= d -> length;
         this    -> fragmentSize         = d -> length * CUSize;
 	this	-> bitRate		= d -> bitRate;
-	this	-> serviceId		= d -> serviceId;
+	this	-> serviceId		= d -> SId;
 	this	-> serviceName		= d -> serviceName;
 	this	-> shortForm		= d -> shortForm;
 	this	-> protLevel		= d -> protLevel;

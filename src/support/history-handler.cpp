@@ -72,7 +72,7 @@ QDomElement root = the_history. createElement ("history_db");
 
 	the_history. appendChild (root);
 
-	for (uint i = 1; i < historyList. size (); i ++) {
+	for (int i = 1; i < historyList. size (); i ++) {
 	   QStringList list = historyList. at (i).
 	                        split (":", QString::SkipEmptyParts);
            if (list. length () != 2)

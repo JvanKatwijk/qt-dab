@@ -63,7 +63,7 @@ public:
 }
 
 virtual		~elementReader	() {}
-virtual	float	readElement	() {}
+virtual	float	readElement	() { return 0; }
 };
 
 	class	int8_reader: public elementReader {
