@@ -128,17 +128,13 @@ private:
 	void		cleanupServiceList	();
 	void		createService		(QString name,
 	                                         uint32_t SId, int SCIds);
+
+	int		findServiceComponent	(dabConfig *, int16_t);
 	int		findComponent		(dabConfig *db,
 	                                         uint32_t SId,
                                                  int16_t subChId);
 	int		findServiceComponent	(dabConfig *,
 	                                         uint32_t, uint8_t);
-	int		findServiceComponent	(dabConfig *, int16_t);
-	int		findDataComponent	(dabConfig *,
-	                                         uint32_t, int16_t);
-	int		findDataComponentinService (dabConfig *,
-                                                    uint32_t,
-                                                    int16_t);
         void            bind_audioService	(dabConfig *,
 	                                         int8_t,
                                                  uint32_t, int16_t,

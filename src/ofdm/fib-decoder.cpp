@@ -1209,6 +1209,7 @@ int	i;
 	return -1;
 }
 
+//	find data component using the SCId
 int	fibDecoder::findServiceComponent (dabConfig *db, int16_t SCId) {
 	for (int i = 0; i < 64; i ++)
 	   if (db -> serviceComps [i]. inUse &&
@@ -1216,36 +1217,8 @@ int	fibDecoder::findServiceComponent (dabConfig *db, int16_t SCId) {
 	      return i;
 	return -1;
 }
-
-int	fibDecoder::findDataComponent (dabConfig *db,
-	                               uint32_t SId, int16_t compnr) {
-	for (int i = 0; i < 64; i ++) {
-	   if (!db -> serviceComps [i]. inUse)
-	      return -1;
-	   if ((db -> serviceComps [i]. SId == SId) &&
-	       (db -> serviceComps [i]. componentNr == compnr))
-	      return i;
-	}
-	return -1;
-}
-
-int	fibDecoder::findDataComponentinService (dabConfig *localBase,
-	                                        uint32_t SId,
-	                                        int16_t SCId) {
-	for (int i = 0; i < 64; i ++) {
-	   if (!localBase -> serviceComps [i]. inUse)
-	      return -1;
-	   if (localBase -> serviceComps [i]. SCId == SCId) {
-	      if (localBase -> serviceComps [i]. SId == SId) {
-	         return i;
-	      }
-	      else
-	         fprintf (stderr, "HIER KLOPT IETS NIET\n");
-	   }
-	}
-	return -1;
-}
-
+//
+//	find serviceComponent using the SId and the SCIds
 int	fibDecoder::findServiceComponent (dabConfig *db, 
 	                                   uint32_t SId, uint8_t SCIds) {
 
@@ -1263,8 +1236,9 @@ int serviceIndex = findService (SId);
 	return -1;
 }
 
-int	fibDecoder::findComponent (dabConfig *db, uint32_t SId,
-	                                      int16_t subChId) {
+//	find serviceComponent using the SId and the subchannelId
+int	fibDecoder::findComponent	(dabConfig *db,
+	                                 uint32_t SId, int16_t subChId) {
 	for (int i = 0; i < 64; i ++) {
 	   if (!db -> serviceComps [i]. inUse)
 	      return -1;
@@ -1458,7 +1432,6 @@ int     serviceIndex;
 
 	int	SId	= ensemble -> services [serviceIndex]. SId;
 	
-//	int compIndex	= findDataComponent (currentConfig, SId, compnr);
 	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
 
 	if ((compIndex == -1) ||
