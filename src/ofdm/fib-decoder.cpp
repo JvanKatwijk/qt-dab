@@ -466,8 +466,8 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 //
 //	If the component exists, we first look whether is
 //	was already handled
-	if (localBase -> serviceComps [serviceCompIndex]. is_madePublic)
-	   return used;
+//	if (localBase -> serviceComps [serviceCompIndex]. is_madePublic)
+//	   return used;
 //
 //	if the Data Service Component Type == 0, we do not deal
 //	with it
@@ -607,7 +607,7 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset += 8;
 	}
 	else {			// long form
-	   int SCId	= getBits (d, bitOffset + 4, 13);
+	   int SCId	= getBits (d, bitOffset + 4, 12);
 	   int16_t compIndex = findServiceComponent (localBase, SCId);
 	   if (compIndex != -1) {
 	      localBase -> serviceComps [compIndex]. SCIds = SCIds;
@@ -663,7 +663,8 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {
 	      if (localBase -> serviceComps [compIndex]. TMid == 3)
-	           localBase -> serviceComps [compIndex]. appType = appType;
+	         localBase -> serviceComps [compIndex]. appType = appType;
+	          
 	   }
 	}
 	return bitOffset / 8;
@@ -1445,7 +1446,7 @@ int	serviceIndex;
 }
 
 void	fibDecoder::dataforPacketService (const QString &s,
-	                                  packetdata *pd, int16_t compnr) {
+	                                  packetdata *pd, int16_t SCIds) {
 int     serviceIndex;
 
 	pd       -> defined      = false;
@@ -1457,7 +1458,8 @@ int     serviceIndex;
 
 	int	SId	= ensemble -> services [serviceIndex]. SId;
 	
-	int compIndex	= findDataComponent (currentConfig, SId, compnr);
+//	int compIndex	= findDataComponent (currentConfig, SId, compnr);
+	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
 
 	if ((compIndex == -1) ||
 	            (currentConfig -> serviceComps [compIndex]. TMid != 3)) {
@@ -1474,6 +1476,7 @@ int     serviceIndex;
 
 	pd	-> serviceName	= s;
 	pd	-> SId		= SId;
+	pd	-> SCIds	= SCIds;
 	pd	-> subchId      = subchId;
 	pd	-> startAddr    =
 	                     currentConfig -> subChannels [subchId]. startAddr;
