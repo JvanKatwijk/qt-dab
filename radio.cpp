@@ -1905,6 +1905,9 @@ QString serviceName	= s -> serviceName;
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName))
 	         start_packetService (serviceName);
+	      else
+	         fprintf (stderr, "%s is not clear\n",
+	                            serviceName. toLatin1 (). data ());
 	      return;
 	   }
 	}

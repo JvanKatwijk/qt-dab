@@ -193,7 +193,7 @@ notSynced:
 //
 Check_endofNULL:
 	   myReader. getSamples (ofdmBuffer. data(),
-	                        T_u, coarseOffset + fineOffset);
+	                         T_u, coarseOffset + fineOffset);
 /**
   *	We now have to find the exact first sample of the non-null period.
   *	We use a correlation that will find the first sample after the
@@ -213,7 +213,7 @@ SyncOnPhase:
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
   */
-	   memmove (ofdmBuffer. data(),
+	   memmove (ofdmBuffer. data (),
 	        &((ofdmBuffer. data()) [startIndex]),
 	                  (T_u - startIndex) * sizeof (std::complex<float>));
 	   int ofdmBufferIndex	= T_u - startIndex;
@@ -235,7 +235,7 @@ SyncOnPhase:
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-       correctionNeeded	= !my_ficHandler. syncReached();
+	   correctionNeeded	= !my_ficHandler. syncReached();
 	   if (correctionNeeded) {
 	      int correction	=
 	            phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
@@ -254,10 +254,9 @@ SyncOnPhase:
   *	the thread executing this "task", the other blocks
   *	are passed on to be handled in the mscHandler, running
   *	in a different thread.
-  *	 We immediately
-  *	start with building up an average of the phase difference
-  *	between the samples in the cyclic prefix and the
-  *	corresponding samples in the datapart.
+  *	We immediately start with building up an average of
+  *	the phase difference between the samples in the cyclic prefix
+  *	and the	corresponding samples in the datapart.
   */
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
@@ -380,7 +379,6 @@ void	dabProcessor::coarseCorrectorOn() {
 
 void	dabProcessor::coarseCorrectorOff() {
 	correctionNeeded	= false;
-	theRig	-> setOffset (coarseOffset);
 }
 
 void	dabProcessor::set_scanMode	(bool b) {

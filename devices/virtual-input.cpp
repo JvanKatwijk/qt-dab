@@ -37,14 +37,6 @@
 	myFrame		= nullptr;
 }
 
-void	virtualInput::setVFOFrequency (int32_t f) {
-	lastFrequency = f;
-}
-
-int32_t	virtualInput::getVFOFrequency() {
-	return lastFrequency;
-}
-
 bool	virtualInput::restartReader	(int32_t freq) {
 	(void)freq;
 	return true;
@@ -63,19 +55,7 @@ int32_t	virtualInput::Samples() {
 	return 1024;
 }
 
-int32_t	virtualInput::defaultFrequency() {
-	return Khz (220000);
-}
-
 void	virtualInput::resetBuffer() {
-}
-
-void	virtualInput::setOffset		(int32_t o) {
-	coarseOffset = o;
-}
-
-int32_t	virtualInput::getOffset() {
-	return coarseOffset;
 }
 
 void	virtualInput::hide	() {
@@ -92,9 +72,5 @@ bool	virtualInput::isHidden	() {
 	if (myFrame != nullptr)
 	   return myFrame -> isHidden ();
 	return false;
-}
-
-int	virtualInput::getBufferSpace	() {
-	return -200;
 }
 

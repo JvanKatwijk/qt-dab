@@ -272,10 +272,14 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (set_autogain (const QString &)));
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
-	connect (dumpButton, SIGNAL (clicked ()),
+	connect (xml_dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
+	connect (iq_dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_iqDump ()));
 	xmlDumper       = nullptr;
-	dumping. store (false);
+	iqDumper	= nullptr;
+	iq_dumping. store (false);
+	xml_dumping. store (false);
 
 }
 
@@ -387,12 +391,26 @@ int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) {
 std::complex<uint8_t> temp [size];
 int	amount;
 
+static uint8_t dumpBuffer [4096];
+static int iqTeller	= 0;
 	amount = _I_Buffer	-> getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++) 
 	   V [i] = std::complex<float> (mapTable [real (temp [i])],
 	                                mapTable [imag (temp [i])]);
-	if (dumping. load ())
+	if (xml_dumping. load ())
 	   xmlWriter -> add (temp, amount);
+	else
+	if (iq_dumping. load ()) {
+	   for (int i = 0; i < size; i ++) {
+	      dumpBuffer [iqTeller]	= real (temp [i]);
+	      dumpBuffer [iqTeller + 1]	= imag (temp [i]);
+	      iqTeller += 2;
+	      if (iqTeller >= 4096) {
+	         fwrite (dumpBuffer, 1, 4096, iqDumper);
+	         iqTeller = 0;
+	      }
+	   }
+	}
 	return amount;
 }
 
@@ -554,14 +572,51 @@ int16_t	rtlsdrHandler::bitDepth() {
 	return 8;
 }
 
+void	rtlsdrHandler::set_iqDump	() {
+	if (iqDumper == nullptr) {
+	   if (setup_iqDump ())
+              iq_dumpButton	-> setText ("writing raw file");
+	      xml_dumpButton	-> hide ();
+        }
+        else {
+           close_iqDump ();
+           iq_dumpButton	-> setText ("Dump to raw");
+	   xml_dumpButton	-> show ();
+        }
+}
+
+bool	rtlsdrHandler::setup_iqDump () {
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         QDir::homePath(),
+	                                         tr ("raw (*.raw)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        iqDumper	= fopen (fileName. toUtf8 (). data (), "w");
+	if (iqDumper == nullptr)
+	   return false;
+	
+	iq_dumping. store (true);
+	return true;
+}
+
+void	rtlsdrHandler::close_iqDump () {
+	if (iqDumper == nullptr)	// this can happen !!
+	   return;
+	iq_dumping. store (false);
+	fclose (iqDumper);
+	iqDumper	= nullptr;
+}
+	   
 void	rtlsdrHandler::set_xmlDump () {
 	if (xmlDumper == nullptr) {
 	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
+	      xml_dumpButton	-> setText ("writing xml file");
+	      iq_dumpButton	-> hide	();
 	}
 	else {
 	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
+	   xml_dumpButton	-> setText ("Dump to xml");
+	   iq_dumpButton	-> show	();
 	}
 }
 
@@ -583,14 +638,14 @@ bool	rtlsdrHandler::setup_xmlDump () {
 	                                      "rtlsdr",
 	                                      deviceModel,
 	                                      recorderVersion);
-	dumping. store (true);
+	xml_dumping. store (true);
 	return true;
 }
 
 void	rtlsdrHandler::close_xmlDump () {
 	if (xmlDumper == nullptr)	// this can happen !!
 	   return;
-	dumping. store (false);
+	xml_dumping. store (false);
 	usleep (1000);
 	xmlWriter	-> computeHeader ();
 	delete xmlWriter;

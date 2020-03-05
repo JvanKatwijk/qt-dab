@@ -48,6 +48,7 @@
 	this	-> expectedIndex	= 0;
 	switch (DSCTy) {
 	   default:
+	      fprintf (stderr, "DSCTy %d not supported\n", DSCTy);
 	      my_dataHandler	= new virtual_dataHandler();
 	      break;
 
@@ -66,6 +67,7 @@
 	   case 60:
 	      my_dataHandler	= new motHandler (mr, picturesPath);
 	      break;
+	   
 	}
 
 	packetState	= 0;

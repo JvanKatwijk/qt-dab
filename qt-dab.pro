@@ -207,7 +207,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/rscodec.cpp \
 	   ./src/backend/charsets.cpp \
 	   ./src/backend/firecode-checker.cpp \
-	   ./src/backend/frame-processor.cpp \
+#	   ./src/backend/frame-processor.cpp \
 	   ./src/backend/backend.cpp \
            ./src/backend/backend-driver.cpp \
            ./src/backend/backend-deconvolver.cpp \
@@ -216,7 +216,7 @@ SOURCES += ./main.cpp \
 	   ./src/backend/audio/bitWriter.cpp \
 	   ./src/backend/data/pad-handler.cpp \
 	   ./src/backend/data/data-processor.cpp \
-	   ./src/backend/data/virtual-datahandler.cpp \
+#	   ./src/backend/data/virtual-datahandler.cpp \
 	   ./src/backend/data/tdc-datahandler.cpp \
 	   ./src/backend/data/ip-datahandler.cpp \
 	   ./src/backend/data/mot/mot-handler.cpp \
@@ -304,7 +304,7 @@ CONFIG		+= hackrf
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+CONFIG		+= datastreamer
 
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram

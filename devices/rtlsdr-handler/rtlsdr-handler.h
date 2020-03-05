@@ -106,9 +106,13 @@ private:
 	QString		recorderVersion;
 	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
-        bool            setup_xmlDump           ();
-        void            close_xmlDump           ();
-        std::atomic<bool> dumping;
+        bool            setup_xmlDump		();
+        void            close_xmlDump		();
+        std::atomic<bool> xml_dumping;
+	FILE		*iqDumper;
+        bool            setup_iqDump		();
+        void            close_iqDump		();
+        std::atomic<bool> iq_dumping;
 
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
@@ -136,6 +140,7 @@ private slots:
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
 	void		set_xmlDump		();
+	void		set_iqDump		();
 };
 #endif
 

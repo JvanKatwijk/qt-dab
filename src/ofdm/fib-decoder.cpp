@@ -186,7 +186,7 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
               break;
 
 	   case 20:		// service component information (8.1.4)
-	      break;
+	      break;		// to be implemented
 
 	   case 21:		// frequency information (8.1.8)
 	      FIG0Extension21 (d);
@@ -199,13 +199,13 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   case 24:		// OE services (8.1.10)
-	      break;
+	      break;		// not implemented
 
 	   case 25:		// OE announcement support (8.1.6.3)
-	      break;
+	      break;		// not implemented
 
 	   case 26:		// OE announcement switching (8.1.6.4)
-	      break;
+	      break;		// not implemented
 
 	   case 27:
 	   case 28:
@@ -213,7 +213,6 @@ uint8_t	extension	= getBits_5 (d, 8 + 3);
 	      break;
 
 	   default:
-//	      fprintf (stderr, "FIG0/%d passed by\n", extension);
 	      break;
 	}
 }
@@ -227,11 +226,11 @@ uint16_t        EId;
 uint8_t         changeFlag;
 uint16_t        highpart, lowpart;
 int16_t         occurrenceChange;
-uint8_t CN      = getBits_1 (d, 8 + 0);
+uint8_t CN_bit	= getBits_1 (d, 8 + 0);
 uint8_t		alarmFlag;
 static	uint8_t prevChangeFlag	= 0;
 
-	(void)CN;
+	(void)CN_bit;
 	EId                     = getBits   (d, 16, 16);
 	(void)EId;
 	changeFlag              = getBits_2 (d, 16 + 16);
@@ -242,7 +241,7 @@ static	uint8_t prevChangeFlag	= 0;
 	occurrenceChange        = getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
 	CIFcount 		= highpart * 250 + lowpart;
-	
+
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
 	   dabConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
@@ -466,8 +465,8 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 //
 //	If the component exists, we first look whether is
 //	was already handled
-//	if (localBase -> serviceComps [serviceCompIndex]. is_madePublic)
-//	   return used;
+	if (localBase -> serviceComps [serviceCompIndex]. is_madePublic)
+	   return used;
 //
 //	if the Data Service Component Type == 0, we do not deal
 //	with it
@@ -1173,7 +1172,10 @@ int	firstFree = -1;
 	if (!base -> serviceComps [firstFree]. inUse) {
 	   base -> serviceComps [firstFree]. inUse		= true;
 	   base -> serviceComps [firstFree]. SId		= SId;
-	   base -> serviceComps [firstFree]. SCIds		= -1;
+	   if (compnr == 0)
+	      base -> serviceComps [firstFree]. SCIds		= 0;
+	   else
+	      base -> serviceComps [firstFree]. SCIds		= -1;
 	   base -> serviceComps [firstFree]. SCId		= SCId;
 	   base -> serviceComps [firstFree]. TMid		= TMid;
 	   base -> serviceComps [firstFree]. componentNr	= compnr;
@@ -1251,8 +1253,9 @@ int	fibDecoder::findComponent	(dabConfig *db,
 
 void	fibDecoder::createService (QString name, uint32_t SId, int SCIds) {
 	for (int i = 0; i < 64; i ++) {
-	   if (ensemble -> services [i]. inUse)
+	   if (ensemble -> services [i]. inUse) {
 	      continue;
+	   }
 	   ensemble	-> services [i]. inUse		= true;
 	   ensemble	-> services [i]. hasName	= true;
 	   ensemble	-> services [i]. serviceLabel	= name;
@@ -1262,7 +1265,8 @@ void	fibDecoder::createService (QString name, uint32_t SId, int SCIds) {
 	}
 }
 //
-//	called after a change in configuration
+//	called after a change in configuration to verify
+//	the services health
 //
 void	fibDecoder::cleanupServiceList () {
 	for (int i = 0; i < 64; i ++) {

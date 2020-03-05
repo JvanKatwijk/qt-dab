@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>225</width>
-    <height>263</height>
+    <width>203</width>
+    <height>302</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,12 +80,19 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="dumpButton">
+    <widget class="QPushButton" name="xml_dumpButton">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the rtlsdr dongle into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a 'Save as ...' dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
-      <string>dump</string>
+      <string>dump to xml file</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="iq_dumpButton">
+     <property name="text">
+      <string>dump to raw file</string>
      </property>
     </widget>
    </item>

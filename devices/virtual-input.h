@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -34,24 +35,18 @@
 
 class	virtualInput: public QThread {
 public:
-			virtualInput();
-virtual			~virtualInput();
-virtual		void	setVFOFrequency	(int32_t);
-virtual		int32_t	getVFOFrequency();
-virtual		int32_t	defaultFrequency();
-virtual		bool	restartReader	(int32_t);
-virtual		void	stopReader();
+			virtualInput	();
+virtual			~virtualInput	();
+virtual		int32_t	getVFOFrequency() {return 0;}
+virtual		bool	restartReader	(int32_t freq);
+virtual		void	stopReader	();
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
-virtual		int32_t	Samples();
-virtual		void	resetBuffer();
+virtual		int32_t	Samples		();
+virtual		void	resetBuffer	();
 virtual		int16_t	bitDepth	() { return 10;}
-virtual		int32_t	getOffset();
-virtual		void	setOffset	(int32_t);
 virtual		void	hide		();
 virtual		void	show		();
 virtual		bool	isHidden	();
-virtual		int	getBufferSpace	();
-virtual		int	getOverflows	() { return -1; }
 //
 protected:
 		int32_t	lastFrequency;
