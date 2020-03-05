@@ -310,7 +310,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/protection/eep-protection.cpp
 	     ./src/protection/uep-protection.cpp
 	     ./src/backend/firecode-checker.cpp
-	     ./src/backend/frame-processor.cpp
 	     ./src/backend/charsets.cpp
 	     ./src/backend/galois.cpp
 	     ./src/backend/reed-solomon.cpp
@@ -331,7 +330,6 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/journaline/dabdgdec_impl.c
 	     ./src/backend/data/journaline/newsobject.cpp
 	     ./src/backend/data/journaline/NML.cpp
-	     ./src/backend/data/virtual-datahandler.cpp
 	     ./src/backend/data/tdc-datahandler.cpp
 	     ./src/backend/data/pad-handler.cpp
 	     ./src/backend/data/mot/mot-handler.cpp
