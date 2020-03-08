@@ -4,10 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are acknowledged.
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -62,11 +59,17 @@ private:
 	std::atomic<bool> running;
 	void		run ();
 	int		compute_nrSamples 	(FILE *f, int blockNumber);
-	int		readSamples_IQ		(FILE *f, int amount);
-	int		readSamples_QI		(FILE *f, int amount);
-	int		readSamples_I		(FILE *f, int amount);
-	int		readSamples_Q		(FILE *f, int amount);
-	float		readElement		(FILE *f);
+	int		readSamples		(FILE *f, 
+	                                       void(xml_Reader::*)(FILE *,
+	                                          std::complex<float> *, int));
+	void		readElements_IQ		(FILE *f,
+	                                         std::complex<float> *, int amount);
+	void		readElements_QI		(FILE *f, 
+	                                         std::complex<float> *, int amount);
+	void		readElements_I		(FILE *f, 
+	                                         std::complex<float> *, int amount);
+	void		readElements_Q		(FILE *f, 
+	                                         std::complex<float> *, int amount);
 //
 //	for the conversion - if any
 	int16_t         convBufferSize;

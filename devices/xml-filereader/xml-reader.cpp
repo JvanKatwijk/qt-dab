@@ -4,10 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are acknowledged.
+ *    This file is part of the Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -28,9 +25,6 @@
 #include	"xml-filereader.h"
 #include	<sys/time.h>
 #include	<stdio.h>
-#include	"rawfiles.h"
-
-#include	"element-reader.h"
 
 static	int shift (int a) {
 int r	= 1;
@@ -64,6 +58,9 @@ struct timeval tv;
 	this	-> fd		= fd;
 	this	-> filePointer	= filePointer;
 	sampleBuffer		= b;
+//
+//	convBufferSize is a little confusing since the actual 
+//	buffer is one larger
 	convBufferSize		= fd -> sampleRate / 1000;
 	continuous. store (false);
 
@@ -75,7 +72,6 @@ struct timeval tv;
 
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
-	fprintf (stderr, "nu hier naar toe\n");
 	nrElements	= fd -> blockList [0]. nrElements;
 
 	connect (this, SIGNAL (setProgress (int, int)),
@@ -115,21 +111,31 @@ int	startPoint	= filePointer;
 	   samplesRead		= 0;
 	   do {
 	      while ((samplesRead <= samplesToRead) && running. load ()) {
+
 	         if (fd -> iqOrder == "IQ") 
-	            samplesRead += readSamples_IQ (file, blockSize);
+	            samplesRead += readSamples (file,
+	                                        &xml_Reader::readElements_IQ);
 	         else
 	          if (fd -> iqOrder == "QI")
-	            samplesRead += readSamples_QI (file, blockSize);
+	            samplesRead += readSamples (file, 
+	                                        &xml_Reader::readElements_QI);
 	         else
 	         if (fd -> iqOrder == "I_Only")
-	            samplesRead += readSamples_I (file, blockSize);
+	            samplesRead += readSamples (file,
+	                                        &xml_Reader::readElements_I);
 	         else
-	            samplesRead += readSamples_Q (file, blockSize);
+	            samplesRead += readSamples (file,
+	                                        &xml_Reader::readElements_Q);
+
 	         if (++cycleCount >= 200) {
 	            setProgress (samplesRead, samplesToRead);
 	            cycleCount = 0;
 	         }
-	         nextStop = nextStop + ((uint64_t)blockSize * 1000) / 2048;
+//
+//	the readSamples function returns 1 msec of data,
+//	we assume taking this data does not take time
+//	         nextStop = nextStop + ((uint64_t)blockSize * 1000) / 2048;
+	         nextStop = nextStop + (uint64_t)1000;
 	         if (nextStop > currentTime ())
 	            usleep ( nextStop - currentTime ());
 	      }
@@ -151,6 +157,7 @@ int	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
 int	nrElements	= fd -> blockList. at (blockNumber). nrElements;
 int	samplesToRead	= 0;
 
+	(void)f;
 	if (fd -> blockList. at (blockNumber). typeofUnit == "Channel") {
 	   if ((fd -> iqOrder == "IQ") ||
 	       (fd -> iqOrder == "QI"))
@@ -166,103 +173,24 @@ int	samplesToRead	= 0;
 	return samplesToRead;
 }
 
-int	xml_Reader::readSamples_IQ (FILE *f, int amount) {
-float I_element, Q_element;
-int	sampleCount	= 0;
+int	xml_Reader::readSamples (FILE *theFile, 
+	                         void(xml_Reader::*r)(FILE *theFile,
+	                                    std::complex<float> *, int)) {
+std::complex<float> temp [2048];
 
-	while (sampleCount < amount) {
-	   I_element = readElement (f);
-	   Q_element = readElement (f);
-
-	   convBuffer [convIndex ++] = std::complex<float>(I_element, Q_element);
-	   if (convIndex >= convBufferSize + 1) {
-	      std::complex<float> temp [2048];
-	      for (int i = 0; i < 2048; i ++) {
-	         int16_t inpBase = mapTable_int [i];
-	         float   inpRatio = mapTable_float [i];
-	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
-	                    compmul (convBuffer [inpBase], 1 - inpRatio);
-	      }
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex	= 1;
-	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
-	      return 2048;
-	   }
+	(*this.*r) (theFile, &convBuffer [1], convBufferSize);
+	for (int i = 0; i < 2048; i ++) {
+	   int16_t inpBase	= mapTable_int [i];
+	   float   inpRatio	= mapTable_float [i];
+	   temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
+	                       compmul (convBuffer [inpBase], 1 - inpRatio);
 	}
-	return sampleCount;
+	convBuffer [0] = convBuffer [convBufferSize];
+	convIndex = 1;
+	sampleBuffer -> putDataIntoBuffer (temp, 2048);
+	return 2048;
 }
-
-int	xml_Reader::readSamples_QI (FILE *f, int amount) {
-float I_element, Q_element;
-int	sampleCount	= 0;
-
-	while (sampleCount < amount) {
-	   Q_element = readElement (f);
-	   I_element = readElement (f);
-	   convBuffer [convIndex ++] = std::complex<float>(I_element,
-	                                                   Q_element);
-	   if (convIndex >= convBufferSize + 1) {
-	      std::complex<float> temp [2048];
-	      for (int i = 0; i < 2048; i ++) {
-	         int16_t inpBase = mapTable_int [i];
-	         float   inpRatio = mapTable_float [i];
-	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
-	                    compmul (convBuffer [inpBase], 1 - inpRatio);
-	      }
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex	= 1;
-	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
-	      return 2048;
-	   }
-	}
-	return sampleCount;
-}
-int	xml_Reader::readSamples_I (FILE *f, int amount) {
-int	sampleCount	= 0;
-
-	while (sampleCount < amount) {
-	   convBuffer [convIndex ++] = 
-	                     std::complex<float> (readElement (f), 0);
-	   if (convIndex >= convBufferSize + 1) {
-	      std::complex<float> temp [2048];
-	      for (int i = 0; i < 2048; i ++) {
-	         int16_t inpBase = mapTable_int [i];
-	         float   inpRatio = mapTable_float [i];
-	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
-	                    compmul (convBuffer [inpBase], 1 - inpRatio);
-	      }
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex	= 1;
-	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
-	      return 2048;
-	   }
-	}
-	return sampleCount;
-}
-int	xml_Reader::readSamples_Q (FILE *f, int amount) {
-int	sampleCount	= 0;
-
-	while (sampleCount < amount) {
-	   convBuffer [convIndex ++] = 
-	                       std::complex<float> (0, readElement (f));
-
-	   if (convIndex >= convBufferSize + 1) {
-	      std::complex<float> temp [2048];
-	      for (int i = 0; i < 2048; i ++) {
-	         int16_t inpBase = mapTable_int [i];
-	         float   inpRatio = mapTable_float [i];
-	         temp [i] = compmul (convBuffer [inpBase + 1], inpRatio) +
-	                    compmul (convBuffer [inpBase], 1 - inpRatio);
-	      }
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex	= 1;
-	      sampleBuffer -> putDataIntoBuffer (temp, 2048);
-	      return 2048;
-	   }
-	}
-	return sampleCount;
-}
-
+	
 static 
 float mapTable [] = {
  -128 / 128.0 , -127 / 128.0 , -126 / 128.0 , -125 / 128.0 , -124 / 128.0 , -123 / 128.0 , -122 / 128.0 , -121 / 128.0 , -120 / 128.0 , -119 / 128.0 , -118 / 128.0 , -117 / 128.0 , -116 / 128.0 , -115 / 128.0 , -114 / 128.0 , -113 / 128.0 
@@ -282,72 +210,530 @@ float mapTable [] = {
 , 96 / 128.0 , 97 / 128.0 , 98 / 128.0 , 99 / 128.0 , 100 / 128.0 , 101 / 128.0 , 102 / 128.0 , 103 / 128.0 , 104 / 128.0 , 105 / 128.0 , 106 / 128.0 , 107 / 128.0 , 108 / 128.0 , 109 / 128.0 , 110 / 128.0 , 111 / 128.0 
 , 112 / 128.0 , 113 / 128.0 , 114 / 128.0 , 115 / 128.0 , 116 / 128.0 , 117 / 128.0 , 118 / 128.0 , 119 / 128.0 , 120 / 128.0 , 121 / 128.0 , 122 / 128.0 , 123 / 128.0 , 124 / 128.0 , 125 / 128.0 , 126 / 128.0 , 127 / 128.0 };
 
-float	xml_Reader::readElement (FILE *theFile) {
-uint8_t s1;
-uint8_t bytes_16 [2];
-uint8_t	bytes_24 [3];
-uint8_t bytes_32 [4];
+//
+//	the readers
+void	xml_Reader::readElements_IQ (FILE *theFile, 
+	                             std::complex<float> *buffer,
+	                             int amount) {
+
 int	nrBits	= fd -> bitsperChannel;
 float	scaler	= float (shift (nrBits));
-int16_t temp_16;
-uint32_t temp_32;
 
 	if (fd -> container == "int8") {
-	   fread (&s1, 1, 1, theFile);
-	   return (float)((int8_t)s1) / 127.0;
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 1, 2 * amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (((int8_t)lbuf [2 * i]) / 127.0,
+	                                        ((int8_t)lbuf [2 * i + 1]) / 127.0);
+	   return;
 	}
-
+	
 	if (fd -> container == "uint8") {
-	   fread (&s1, 1, 1, theFile);
-	   return mapTable [s1];
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 1, 2 * amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (mapTable [lbuf [2 * i]],
+	                                        mapTable [lbuf [2 * i + 1]]);
+	   return;
 	}
 
 	if (fd -> container == "int16") {
+	   uint8_t lbuf [4 * amount];
+	   fread (lbuf, 2, 2 * amount, theFile);
 	   if (fd -> byteOrder == "MSB") {
-	      fread (bytes_16, 2, 1, theFile);
-	      temp_16 = (bytes_16 [0] << 8) | bytes_16 [1];
-	      return ((float)temp_16) / scaler;
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [4 * i] << 8) | lbuf [4 * i + 1];
+	         int16_t temp_16_2 = (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         buffer [i] = std::complex<float> ((float)temp_16_1 / scaler,
+	                                           (float)temp_16_2 / scaler);
+	      }
 	   }
 	   else {
-	      fread (&temp_16, 2, 1, theFile);
-	      return ((float)temp_16) / scaler;
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         int16_t temp_16_2 = (lbuf [4 * i + 3] << 8) | lbuf [4 * i + 2];
+	         buffer [i] = std::complex<float> ((float)temp_16_1 / scaler,
+	                                           (float)temp_16_2 / scaler);
+	      }
 	   }
+	   return;
 	}
 
 	if (fd -> container == "int24") {
-	   fread (bytes_24, 3, 1, theFile);
-	   if (fd -> byteOrder == "MSB")
-	      temp_32 = (bytes_24 [0]<< 16) |
-	                    (bytes_24 [1] << 8) | bytes_24 [2];
-	   else
-	      temp_32 = (bytes_24 [2]<< 16) |
-	                   (bytes_24 [1] << 8) | bytes_24 [0];
-	   if (temp_32 & 0x800000) 
-	      temp_32 |= 0xFF000000;
-	   return (float)temp_32 / scaler;
+	   uint8_t lbuf [6 * amount];
+           fread (lbuf, 3, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [6 * i] << 16) |
+	                             (lbuf [6 * i + 1] << 8) | lbuf [6 * i + 2];
+                 int32_t temp_32_2 = (lbuf [6 * i + 3] << 16) |
+	                             (lbuf [4 * i + 4] << 8) | lbuf [6 * i + 5];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	   	 if (temp_32_2 & 0x800000) 
+	            temp_32_2 |= 0xFF000000;
+	         buffer [i] = std::complex<float> ((float)temp_32_1 / scaler,
+	                                           (float)temp_32_2 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [6 * i + 2] << 16) |
+	                             (lbuf [6 * i + 1] << 8) | lbuf [6 * i];
+                 int32_t temp_32_2 = (lbuf [6 * i + 5] << 16) |
+	                             (lbuf [6 * i + 4] << 8) | lbuf [6 * i + 3];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	   	 if (temp_32_2 & 0x800000) 
+	            temp_32_2 |= 0xFF000000;
+	         buffer [i] = std::complex<float> ((float)temp_32_1 / scaler,
+	                                           (float)temp_32_2 / scaler);
+	      }
+	   }
+	   return;
 	}
 
 	if (fd -> container == "int32") {
-	   fread (bytes_32, sizeof (int32_t), 1, theFile);
-	   if (fd -> byteOrder == "MSB")
-	      temp_32 = (bytes_32 [0]<< 24) | (bytes_32 [1] << 16) |
-	                   (bytes_32 [2] << 8) | bytes_32 [3];
-	   else
-	      temp_32 = (bytes_32 [3] << 24) | (bytes_32 [2] << 16) |
-	                   (bytes_32 [1] << 8) | bytes_32 [0];
-	   return (float)temp_32 / scaler;
+	   uint8_t lbuf [8 * amount];
+           fread (lbuf, 4, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+	                             (lbuf [8 * i + 1] << 16) |
+	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+	                             (lbuf [8 * i + 5] << 16) |
+	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+	         buffer [i] = std::complex<float> ((float)temp_32_1 / scaler,
+	                                           (float)temp_32_2 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+	                             (lbuf [8 * i + 2] << 16) |
+	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+	                             (lbuf [8 * i + 6] << 16) |
+	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+	         buffer [i] = std::complex<float> ((float)temp_32_1 / scaler,
+	                                           (float)temp_32_2 / scaler);
+	      }
+	   }
+	   return;
 	}
 
 	if (fd -> container == "float32") {
-	   fread (bytes_32, sizeof (float), 1, theFile);
-	   if (fd -> byteOrder == "MSB")
-	      temp_32 = (bytes_32 [0]<< 24) | (bytes_32 [1] << 16) |
-	                   (bytes_32 [2] << 8) | bytes_32 [3];
-	   else
-	      temp_32 = (bytes_32 [3] << 24) | (bytes_32 [2] << 16) |
-	                   (bytes_32 [1] << 8) | bytes_32 [0];
-	   return *(float*)(&temp_32);
+	   uint8_t lbuf [8 * amount];
+           fread (lbuf, 4, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+	                             (lbuf [8 * i + 1] << 16) |
+	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+	         float t1	=*(float *)(&temp_32_1);
+                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+	                             (lbuf [8 * i + 5] << 16) |
+	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+	         float t2	=*(float *)(&temp_32_2);
+	         buffer [i] = std::complex<float> (t1, t2);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+	                             (lbuf [8 * i + 2] << 16) |
+	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+	         float t1	=*(float *)(&temp_32_1);
+                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+	                             (lbuf [8 * i + 6] << 16) |
+	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+	         float t2	=*(float *)(&temp_32_2);
+	         buffer [i] = std::complex<float> (t1, t2);
+	      }
+	   }
+	   return;
 	}
-	return 0;
 }
+
+void	xml_Reader::readElements_QI (FILE *theFile, 
+	                             std::complex<float> *buffer,
+	                             int amount) {
+
+int	nrBits	= fd -> bitsperChannel;
+float	scaler	= float (shift (nrBits));
+
+	if (fd -> container == "int8") {
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 1, 2 * amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (((int8_t)lbuf [2 * i + 1]) / 127.0,
+	                                        ((int8_t)lbuf [2 * i]) / 127.0);
+	   return;
+	}
+	
+	if (fd -> container == "uint8") {
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 1, 2 * amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (mapTable [2 * i + 1],
+	                                        mapTable [2 * i]);
+	   return;
+	}
+
+	if (fd -> container == "int16") {
+	   uint8_t lbuf [4 * amount];
+	   fread (lbuf, 2, 2 * amount, theFile);
+	   if (fd -> byteOrder == "MSB") {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [4 * i] << 8) | lbuf [4 * i + 1];
+	         int16_t temp_16_2 = (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         buffer [i] = std::complex<float> ((float)temp_16_2 / scaler,
+	                                           (float)temp_16_1 / scaler);
+	      }
+	   }
+	   else {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         int16_t temp_16_2 = (lbuf [4 * i + 3] << 8) | lbuf [4 * i + 2];
+	         buffer [i] = std::complex<float> ((float)temp_16_2 / scaler,
+	                                           (float)temp_16_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int24") {
+	   uint8_t lbuf [6 * amount];
+           fread (lbuf, 3, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [6 * i] << 16) |
+	                             (lbuf [6 * i + 1] << 8) | lbuf [6 * i + 2];
+                 int32_t temp_32_2 = (lbuf [6 * i + 3] << 16) |
+	                             (lbuf [4 * i + 4] << 8) | lbuf [6 * i + 5];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	   	 if (temp_32_2 & 0x800000) 
+	            temp_32_2 |= 0xFF000000;
+	         buffer [i] = std::complex<float> ((float)temp_32_2 / scaler,
+	                                           (float)temp_32_1 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [6 * i + 2] << 16) |
+	                             (lbuf [6 * i + 1] << 8) | lbuf [6 * i];
+                 int32_t temp_32_2 = (lbuf [6 * i + 5] << 16) |
+	                             (lbuf [6 * i + 4] << 8) | lbuf [6 * i + 3];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	   	 if (temp_32_2 & 0x800000) 
+	            temp_32_2 |= 0xFF000000;
+	         buffer [i] = std::complex<float> ((float)temp_32_2 / scaler,
+	                                           (float)temp_32_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int32") {
+	   uint8_t lbuf [8 * amount];
+           fread (lbuf, 4, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+	                             (lbuf [8 * i + 1] << 16) |
+	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+	                             (lbuf [8 * i + 5] << 16) |
+	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+	         buffer [i] = std::complex<float> ((float)temp_32_2 / scaler,
+	                                           (float)temp_32_1 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+	                             (lbuf [8 * i + 2] << 16) |
+	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+	                             (lbuf [8 * i + 6] << 16) |
+	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+	         buffer [i] = std::complex<float> ((float)temp_32_2 / scaler,
+	                                           (float)temp_32_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "float32") {
+	   uint8_t lbuf [8 * amount];
+           fread (lbuf, 4, 2 * amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i] << 24) |
+	                             (lbuf [8 * i + 1] << 16) |
+	                             (lbuf [8 * i + 2] << 8) | lbuf [8 * i + 3];
+	         float t1	=*(float *)(&temp_32_1);
+                 int32_t temp_32_2 = (lbuf [8 * i + 4] << 24) |
+	                             (lbuf [8 * i + 5] << 16) |
+	                             (lbuf [8 * i + 6] << 8) | lbuf [8 * i + 7];
+	         float t2	=*(float *)(&temp_32_2);
+	         buffer [i] = std::complex<float> (t1, t2);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [8 * i + 3] << 24) |
+	                             (lbuf [8 * i + 2] << 16) |
+	                             (lbuf [8 * i + 1] << 8) | lbuf [8 * i];
+	         float t1	=*(float *)(&temp_32_1);
+                 int32_t temp_32_2 = (lbuf [8 * i + 7] << 24) |
+	                             (lbuf [8 * i + 6] << 16) |
+	                             (lbuf [8 * i + 5] << 8) | lbuf [8 * i + 4];
+	         float t2	=*(float *)(&temp_32_2);
+	         buffer [i] = std::complex<float> (t1, t2);
+	      }
+	   }
+	   return;
+	}
+}
+void	xml_Reader::readElements_I (FILE *theFile, 
+	                            std::complex<float> *buffer,
+	                            int amount) {
+
+int	nrBits	= fd -> bitsperChannel;
+float	scaler	= float (shift (nrBits));
+
+	if (fd -> container == "int8") {
+	   uint8_t lbuf [amount];
+	   fread (lbuf, 1, amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] =
+	           std::complex<float> ((int8_t)lbuf [i] / 127.0, 0);
+	   return;
+	}
+	
+	if (fd -> container == "uint8") {
+	   uint8_t lbuf [amount];
+	   fread (lbuf, 1, amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (mapTable [lbuf [i]], 0);
+	   return;
+	}
+
+	if (fd -> container == "int16") {
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 2, amount, theFile);
+	   if (fd -> byteOrder == "MSB") {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [2 * i] << 8) | lbuf [2 * i + 1];
+	         buffer [i] =
+	               std::complex<float> ((float)temp_16_1 / scaler, 0);
+	      }
+	   }
+	   else {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [2 * i + 1] << 8) | lbuf [2 * i];
+	         buffer [i] =
+	              std::complex<float> ((float)temp_16_1 / scaler, 0);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int24") {
+	   uint8_t lbuf [3 * amount];
+           fread (lbuf, 3, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [3 * i] << 16) |
+	                             (lbuf [3 * i + 1] << 8) | lbuf [3 * i + 2];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	         buffer [i] =
+	              std::complex<float> ((float)temp_32_1 / scaler, 0);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [3 * i + 2] << 16) |
+	                             (lbuf [3 * i + 1] << 8) | lbuf [3 * i];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	         buffer [i] =
+	              std::complex<float> ((float)temp_32_1 / scaler, 0);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int32") {
+	   uint8_t lbuf [4 * amount];
+           fread (lbuf, 4, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+	                             (lbuf [4 * i + 1] << 16) |
+	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         buffer [i] =
+	              std::complex<float> ((float)temp_32_1 / scaler, 0);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+	                             (lbuf [4 * i + 2] << 16) |
+	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         buffer [i] =
+	               std::complex<float> ((float)temp_32_1 / scaler, 0);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "float32") {
+	   uint8_t lbuf [4 * amount];
+           fread (lbuf, 4, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+	                             (lbuf [4 * i + 1] << 16) |
+	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         float t1	=*(float *)(&temp_32_1);
+	         buffer [i] = std::complex<float> (t1, 0);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+	                             (lbuf [4 * i + 2] << 16) |
+	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         float t1	=*(float *)(&temp_32_1);
+	         buffer [i] = std::complex<float> (t1, 0);
+	      }
+	   }
+	   return;
+	}
+}
+void	xml_Reader::readElements_Q (FILE *theFile, 
+	                            std::complex<float> *buffer,
+	                            int amount) {
+
+int	nrBits	= fd -> bitsperChannel;
+float	scaler	= float (shift (nrBits));
+
+	if (fd -> container == "int8") {
+	   uint8_t lbuf [amount];
+	   fread (lbuf, 1, amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] =
+	           std::complex<float> (127.0, ((int8_t)lbuf [i] / 127.0));
+	   return;
+	}
+	
+	if (fd -> container == "uint8") {
+	   uint8_t lbuf [amount];
+	   fread (lbuf, 1, amount, theFile);
+	   for (int i = 0; i < amount; i ++)
+	      buffer [i] = std::complex<float> (0, mapTable [lbuf [i]]);
+	   return;
+	}
+
+	if (fd -> container == "int16") {
+	   uint8_t lbuf [2 * amount];
+	   fread (lbuf, 2, amount, theFile);
+	   if (fd -> byteOrder == "MSB") {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [2 * i] << 8) | lbuf [2 * i + 1];
+	         buffer [i] =
+	               std::complex<float> (0, (float)temp_16_1 / scaler);
+	      }
+	   }
+	   else {
+	      for (int i = 0; i < amount; i ++) {
+	         int16_t temp_16_1 = (lbuf [2 * i + 1] << 8) | lbuf [2 * i];
+	         buffer [i] =
+	              std::complex<float> (0, (float)temp_16_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int24") {
+	   uint8_t lbuf [3 * amount];
+           fread (lbuf, 3, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [3 * i] << 16) |
+	                             (lbuf [3 * i + 1] << 8) | lbuf [3 * i + 2];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	         buffer [i] =
+	              std::complex<float> (0, (float)temp_32_1 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [3 * i + 2] << 16) |
+	                             (lbuf [3 * i + 1] << 8) | lbuf [3 * i];
+	   	 if (temp_32_1 & 0x800000) 
+	            temp_32_1 |= 0xFF000000;
+	         buffer [i] =
+	              std::complex<float> (0, (float)temp_32_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "int32") {
+	   uint8_t lbuf [4 * amount];
+           fread (lbuf, 4, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+	                             (lbuf [4 * i + 1] << 16) |
+	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         buffer [i] =
+	              std::complex<float> (0, (float)temp_32_1 / scaler);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+	                             (lbuf [4 * i + 2] << 16) |
+	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         buffer [i] =
+	               std::complex<float> (0, (float)temp_32_1 / scaler);
+	      }
+	   }
+	   return;
+	}
+
+	if (fd -> container == "float32") {
+	   uint8_t lbuf [4 * amount];
+           fread (lbuf, 4, amount, theFile);
+           if (fd -> byteOrder == "MSB") {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i] << 24) |
+	                             (lbuf [4 * i + 1] << 16) |
+	                             (lbuf [4 * i + 2] << 8) | lbuf [4 * i + 3];
+	         float t1	=*(float *)(&temp_32_1);
+	         buffer [i] = std::complex<float> (0, t1);
+	      }
+	   }
+	   else {
+              for (int i = 0; i < amount; i ++) {
+                 int32_t temp_32_1 = (lbuf [4 * i + 3] << 24) |
+	                             (lbuf [4 * i + 2] << 16) |
+	                             (lbuf [4 * i + 1] << 8) | lbuf [4 * i];
+	         float t1	=*(float *)(&temp_32_1);
+	         buffer [i] = std::complex<float> (0, t1);
+	      }
+	   }
+	   return;
+	}
+}
+
 

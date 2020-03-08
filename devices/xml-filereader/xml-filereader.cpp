@@ -131,7 +131,7 @@ int32_t	xml_fileReader::getSamples	(std::complex<float> *V,
 	   return 0;
 
 	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable()) < size)
-	   usleep (500);
+	   usleep (1000);
 
 	return _I_Buffer	-> getDataFromBuffer (V, size);
 }

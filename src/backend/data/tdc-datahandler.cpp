@@ -96,7 +96,6 @@ int16_t	i;
 	      checkVector [5 + i] = getBits (data,  offset + 7 * 8 + i * 8, 8);
 	   checkVector [5 + size]	= getBits (data, offset + 4 * 8, 8);
 	   checkVector [5 + size + 1]	= getBits (data, offset + 5 * 8, 8);
-//	   if (!check_crc_bytes (checkVector, 5 + size + 2)) {
 	   if (!check_crc_bytes (checkVector, 5 + size)) {
 	      fprintf (stderr, "crc failed\n");
 	      return;
@@ -117,12 +116,15 @@ int32_t	tdc_dataHandler::handleFrame_type_0 (uint8_t *data,
 int16_t i;
 int16_t noS	= getBits (data, offset, 8);
 uint8_t buffer [length];
-
+	
 	for (i = 0; i < length; i ++)
 	   buffer [i] = getBits (data, offset + i * 8, 8);
-//	if (!check_crc_bytes (buffer, length))
 	if (!check_crc_bytes (buffer, length - 2))
 	   fprintf (stderr, "crc ook hier fout\n");
+#if 0
+	fprintf (stderr, "nrServices %d, SID-A %d SID-B %d SID-C %d\n",
+	                  buffer [0], buffer [1], buffer [2], buffer [3]);
+#endif
 	dataBuffer -> putDataIntoBuffer (buffer, length);
 	bytesOut (0, length);
 	return offset + length * 8;
@@ -133,17 +135,35 @@ int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t length) {
 int16_t i;
 uint8_t buffer [length];
-
-//	fprintf (stderr, " frametype 1 met %o %o %o\n",
-//	                             getBits (data, offset,      8),
-//	                             getBits (data, offset + 8,  8),
-//	                             getBits (data, offset + 16, 8));
-//
-//	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
-
+int	lOffset;
+int	llengths = length - 4;
+#if 0
+	fprintf (stderr, " frametype 1  (length %d) met %d %d %d\n", length,
+	                             getBits (data, offset,      8),
+	                             getBits (data, offset + 8,  8),
+	                             getBits (data, offset + 16, 8));
+	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
+#endif
 	for (i = 0; i < length; i ++)
 	   buffer [i] = getBits (data, offset + i * 8, 8);
 	dataBuffer	-> putDataIntoBuffer (buffer, length);
+	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
+	   lOffset	= offset + 4 * 8;
+	   do {
+	      int compInd	= getBits (data, lOffset, 8);	
+	      int flength	= getBits (data, lOffset + 8, 16);
+	      int crc		= getBits (data, lOffset + 3 * 8, 8);
+#if 0
+	      fprintf (stderr, "segment %d, length %d\n",
+	                                 compInd, flength);
+	      for (i = 5; i < flength; i ++)
+	         fprintf (stderr, "%c", buffer [i]);
+	      fprintf (stderr, "\n");
+#endif
+	      lOffset	+= (flength + 5) * 8;
+	      llengths -= flength + 5;
+	   } while (llengths > 10);
+	}
 	bytesOut (1, length);
 	return offset + length * 8;
 }
