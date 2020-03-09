@@ -178,11 +178,10 @@ uint8_t	dabBand;
 	                  new RingBuffer<int16_t>(16 * 32768);
 	frameBuffer		=
 	                  new RingBuffer<uint8_t> (2 * 32768);
-
-	dataBuffer		= new RingBuffer<uint8_t>(32768);
-	
+	dataBuffer		=
+	                  new RingBuffer<uint8_t>(32768);
 	switchTime		=
-	                  dabSettings -> value ("switchTime", 6000). toInt ();
+	                  dabSettings -> value ("switchTime", 8000). toInt ();
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -264,6 +263,7 @@ uint8_t	dabBand;
 	                                       iqBuffer);
 
 	my_correlationViewer	= new correlationViewer (this,
+	                                                 dabSettings,
 	                                                 responseBuffer);
 
 	my_tiiViewer		= new tiiViewer (this, tiiBuffer);
@@ -1319,9 +1319,9 @@ void	RadioInterface::showQuality	(float q) {
 	   my_spectrumViewer	-> showQuality (q);
 }
 
-void	RadioInterface::showImpulse (int amount) {
+void	RadioInterface::showCorrelation	(int amount, int marker) {
 	if (running. load())
-	   my_correlationViewer -> showCorrelation (amount);
+	   my_correlationViewer -> showCorrelation (amount, marker);
 }
 
 void	RadioInterface::showIndex (int ind) {
@@ -1775,7 +1775,6 @@ void    RadioInterface::handle_historySelect (const QString &s) {
         localSelect (s);
 }
 
-//
 void    RadioInterface::handle_presetSelector (const QString &s) {
         presetTimer. stop ();
         if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
@@ -1827,12 +1826,12 @@ void	RadioInterface::localSelect (const QString &s) {
 	runningServices. resize (0);
 	dabService serv;
 	serv. serviceName = service;
-	my_dabProcessor -> getParameters (service, &serv. SId, &serv. SCIds);
-	if (serv. SId == 0) {
-	   QMessageBox::warning (this, tr ("Warning"),
-	                         tr ("insufficient data for this program\n"));
-           return;
-        }
+//	my_dabProcessor -> getParameters (service, &serv. SId, &serv. SCIds);
+//	if (serv. SId == 0) {
+//	   QMessageBox::warning (this, tr ("Warning"),
+//	                         tr ("insufficient data for this program\n"));
+//           return;
+//	}
 
 	runningServices. push_back (serv);
 	presetTimer. setSingleShot (true);

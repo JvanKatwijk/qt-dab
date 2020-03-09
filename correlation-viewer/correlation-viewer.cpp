@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -25,6 +26,7 @@
 #include	<QColor>
 
 	correlationViewer::correlationViewer	(RadioInterface	*mr,
+	                                         QSettings	*s,
 	                                         RingBuffer<float> *b) {
 QString	colorString	= "black";
 QColor	displayColor;
@@ -32,6 +34,7 @@ QColor	gridColor;
 QColor	curveColor;
 
 	this	-> myRadioInterface	= mr;
+	plotLength	= s -> value ("plotLength", 1000). toInt ();
 	this	-> responseBuffer	= b;
 	colorString			= "black";
 	displayColor			= QColor (colorString);
@@ -95,7 +98,7 @@ QString theText;
 	   theText	= QString (" trans ");
 	   for (uint16_t i = 1; i < indexVector. size(); i ++) {
 	      char t [255];
-	      sprintf (t, " (%d -> %d msec) ", i,
+	      sprintf (t, " (%d -> %d usec) ", i,
 	                      (indexVector. at (i) - indexVector. at (0)) / 2);
               theText. append (t);
 	   }
@@ -116,32 +119,32 @@ bool	correlationViewer::isHidden() {
 }
 
 static int lcount = 0;
-void	correlationViewer::showCorrelation (int32_t dots) {
+void	correlationViewer::showCorrelation (int32_t dots, int marker) {
 uint16_t	i;
-double X_axis [dots];
-float data [dots];
-double Y_values [dots];
+double X_axis	[plotLength];
+double Y_values [plotLength];
+float data	[dots];
 float	mmax	= 0;
 
 	responseBuffer	-> getDataFromBuffer (data, dots);
 	if (myFrame -> isHidden())
 	   return;
 
-	for (i = 0; i < dots; i ++) 
-	   X_axis [i] = i;
+	for (i = 0; i < plotLength; i ++) 
+	   X_axis [i] = marker - plotLength / 2 + i;
 
-	for (i = 0; i < dots; i ++) {
-	   Y_values [i] = get_db (data [i]);
+	for (i = 0; i < plotLength; i ++) {
+	   Y_values [i] = get_db (data [marker - plotLength / 2 + i]);
 	   if (Y_values [i] > mmax)
 	      mmax = Y_values [i];
 	}
 
-	if (++lcount < 3)
-	   return;
-	lcount = 0;
+//	if (++lcount < 3)
+//	   return;
+//	lcount = 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)0,
-				         (double)dots);
+				         (double)marker - plotLength / 2,
+				         (double)marker + plotLength / 2 - 1);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         get_db (0), mmax);
@@ -149,12 +152,12 @@ float	mmax	= 0;
 	spectrumCurve   -> setBaseline  (get_db (0));
 
 	Y_values [0]		= get_db (0);
-	Y_values [dots - 1] 	= get_db (0);
-	spectrumCurve	-> setSamples (X_axis, Y_values, dots);
+	Y_values [plotLength - 1] 	= get_db (0);
+	spectrumCurve	-> setSamples (X_axis, Y_values, plotLength);
 	plotgrid	-> replot(); 
 }
 
 float	correlationViewer::get_db (float x) {
-	return 20 * log10 ((x + 1) / (float)(512));
+	return 20 * log10 ((x + 1) / (float)(4 * 512));
 }
 

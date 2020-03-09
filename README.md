@@ -11,29 +11,45 @@ New in Qt-DAB 3.3
 
 Two of the (many) areas that still needed addressing in the handling of
 DAB+ contents were handling
-*secondary audio services* and reacting upon a
-*change in  configuration*.
 
-*Secondary audio services* are now visible as service and can be selected.
+  * secondary audio services* and reacting upon a
+  * change in  configuration*.
+
+While not encountered here (the Netherlands), *Secondary audio services*
+are seen in BBC transmissions. They are now visible as service
+and can be selected.
 
 A *change in configuration* may be that bitrates of channels change,
 that protection changes, and even that *secondary audio services*
 appear or disappear.
 
-In this region I never saw it happening but it seems to happen
-with BBC transmissions. Especially interesting is of course what should happen
+Especially interesting is of course  what the software should do
 when - after a *change in configuration* - the selected secondary
 audio service is gone.
 
 In Qt-DAB 3.3 a mechanism is included to make secondary audio services
-visible and selelactabe and to handle a change in configuration.
+visible and selectabe, and to handle a change in configuration.
 Such a change will manifest itself as a minor disruption (app 20 msec)
 in the signal of the selected service.
 
+------------------------------------------------------------------------
+Using other bands than Band III or L Band
+------------------------------------------------------------------------
 
-Note that - due to possible copyright restrictions - the AppImage
-as well as the Windows installer (both carry the libraries that they need)
-are using the faad decoder.
+While it is known that the DAB transmissions are in Band III, there are
+situations where it is desirable to use other frequencies.
+If you want to experiment with a modulator, connected to an SDR device
+on different frequencies than the default one (or you want just to
+have a restricted number of channels from Band III or L Band), Qt-DAB
+offers a possibility to specify a list of channels to be used.
+Specify in a file a list of channels, e.g.
+
+	jan	227360
+	twee	220352
+	drie	1294000
+	vier	252650
+
+and pass the file on with the "-A" command line switch.
 
 -------------------------------------------------------------------------
 xml-files and support
@@ -293,9 +309,30 @@ gridcolor=red
 If one uses the rtl_tcp handler, the default value for the "port" is 1234,
 a port can be set in the ".ini" file by setting
 
-```
-rtl_tcp_port=xxx
-```
+`rtl_tcp_port=xxx`
+
+In selecting a service from the presetlist that resides on another
+channel implies switching to that channel and waiting until the
+ensemble in that channel is recognized.
+The duration of the delay can be specified  by setting
+
+`switchTime=xxx`
+
+where xxx is the amount of milliseconds
+
+The result of the correlation is shown ny the correlation viewer. The
+correlation takes place on the first datablock of a DAB frame, and if
+the estimation of the end of the null period is correct, the maximum
+in the correlation is 504. Since for DAB a single frequency network is
+used, in general more than one transmitter is received and there are
+more "peaks" in the correlation.
+The distance between the peaks is in units of 1/2048000 seconds.
+While the correlationviewer by default shows the correltion result of
+the first 1000 samples, this may be reduced by setting
+
+`plotLength=xxx`
+
+where xxx is the number of samples taken into account.
 
 -------------------------------------------------------------------------
 Obsolete properties
@@ -303,7 +340,8 @@ Obsolete properties
 
 The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. The Qt-DAB implementation still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
 
-Explicitly setting the Mode and/or the Band is possible by including some command lines in the ".qt-dab.ini" file.
+Explicitly setting the Mode and/or the Band is possible by
+including some command lines in the ".qt-dab.ini" file.
 
 For the Mode, one will add/set a line
 

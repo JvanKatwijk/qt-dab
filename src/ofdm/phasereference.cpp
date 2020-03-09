@@ -77,8 +77,8 @@ float	Phi_k;
 	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
 	                         conj (refTable [(T_u + i + 1) % T_u])));
 
-	connect (this, SIGNAL (showImpulse (int)),
-	         mr,   SLOT   (showImpulse (int)));
+	connect (this, SIGNAL (showCorrelation (int, int)),
+	         mr,   SLOT   (showCorrelation (int, int)));
 	connect (this, SIGNAL (showIndex   (int)),
 	         mr,   SLOT   (showIndex   (int)));
 }
@@ -143,13 +143,13 @@ std::vector<int> resultVector;
 	for (int k = 0; k < depth; k ++) {
 	   float MMax = 0;
 	   int	lIndex = -1;
-	   for (i = T_g - 100; i < T_u / 2 - 200; i ++) {
+	   for (i = T_g - 100; i < T_g / 2 + 200; i ++) {
 	      if (lbuf [i] > MMax) {
 	         MMax = lbuf [i];
 	         lIndex = i;
 	      }
 	   }
-	   if (MMax < Max / 1.4)
+	   if (0.7 * MMax < Max)
 	      break;
 	   if (lIndex > 0) {
 	      resultVector . push_back (lIndex);
@@ -161,9 +161,9 @@ std::vector<int> resultVector;
 	}
 
 	if (response != nullptr) {
-	   if (++displayCounter > framesperSecond / 4) {
+	   if (++displayCounter > framesperSecond / 6) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
-	      showImpulse (T_u / 2);
+	      showCorrelation (T_u / 2, T_g);
 	      displayCounter	= 0;
 	      if (resultVector. at (0) > 0) {
 	         showIndex (-1);

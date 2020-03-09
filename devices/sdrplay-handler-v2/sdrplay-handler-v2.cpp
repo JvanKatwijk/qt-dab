@@ -349,6 +349,7 @@ std::complex<int16_t> localBuf [numSamples];
 	if (reset || hwRemoved)
 	   return;
 	for (i = 0; i <  (int)numSamples; i ++)
+//	   localBuf [i] = std::complex<int16_t> (xq [i], xi [i]);
 	   localBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
 	int n = p -> _I_Buffer -> GetRingBufferWriteAvailable ();
 	if (n >= (int)numSamples) 

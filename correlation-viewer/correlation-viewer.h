@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -28,6 +29,7 @@
 
 #include        "dab-constants.h"
 #include	<QFrame>
+#include	<QSettings>
 #include	"ringbuffer.h"
 #include	<QObject>
 #include	"ui_correlation-widget.h"
@@ -43,9 +45,10 @@ class	correlationViewer: public QObject, Ui_correlationWidget {
 Q_OBJECT
 public:
 			correlationViewer	(RadioInterface *,
+	                                         QSettings	*,
 	                                         RingBuffer<float> *);
 			~correlationViewer	();
-	void		showCorrelation		(int32_t);
+	void		showCorrelation		(int32_t, int32_t);
 	void		showIndex		(int32_t);
 	void		show			();
 	void		hide			();
@@ -62,6 +65,7 @@ private:
 	QwtPlotGrid	*grid;
 	QwtPlotCurve	*spectrumCurve;
 	QBrush		*ourBrush;
+	int		plotLength;
 };
 
 #endif

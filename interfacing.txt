@@ -82,6 +82,10 @@ The device driver might have a small GUI, with probably a slider or spinbox
 for gain, and maybe other settings. See one of the existing device drivers
 for examples.
 
+if the drives does contain its own GUI, the function "show" is called
+whenever it should be visible, the function "hide" when it should
+be hidden and the function "isHidden" to return the status, being hidden or not.
+
 --------------------------------------------------------------------------
 Modifications to the file radio.cpp
 --------------------------------------------------------------------------

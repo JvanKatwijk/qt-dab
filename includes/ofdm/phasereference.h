@@ -67,7 +67,7 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 signals:
-	void		showImpulse	(int);
+	void		showCorrelation	(int, int);
 	void		showIndex	(int);
 };
 #endif
