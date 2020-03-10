@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2014 .. 2017
@@ -106,7 +105,7 @@ float	lbuf [T_u / 2];
 float	mbuf [T_u / 2];
 std::vector<int> resultVector;
 
-	memcpy (fft_buffer, v. data(), T_u * sizeof (std::complex<float>));
+	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT();
 //
 //	into the frequency domain, now correlate
@@ -125,7 +124,7 @@ std::vector<int> resultVector;
 
 	sum /= T_u / 2;
 //	
-	for (i = 0; i < 100; i ++) {
+	for (i = 0; i < 200; i ++) {
 	   if (lbuf [T_g - 80 + i] > Max) {
 	      maxIndex = T_g - 80 + i;
 	      Max = lbuf [T_g - 80 + i];
@@ -161,7 +160,7 @@ std::vector<int> resultVector;
 	}
 
 	if (response != nullptr) {
-	   if (++displayCounter > framesperSecond / 6) {
+	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
 	      showCorrelation (T_u / 2, T_g);
 	      displayCounter	= 0;

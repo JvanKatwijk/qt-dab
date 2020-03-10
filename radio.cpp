@@ -1687,8 +1687,11 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      QString serviceName =
 	         ensembleDisplay -> currentIndex ().
 	                             data (Qt::DisplayRole). toString ();
-	      if ((runningServices. size () > 0) &&
-	             (runningServices. at (runningServices. size () - 1). serviceName !=
+//
+//	to avoid multiple events from a keystroke we
+//	test whether or not the current service is already selected
+	      if ((runningServices. size () > 0)  &&
+	             (runningServices. at (runningServices. size () - 1). serviceName ==
 	                          serviceLabel -> text ())) {
 	         selectService (ensembleDisplay -> currentIndex ());
               }
