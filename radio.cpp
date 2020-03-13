@@ -1681,6 +1681,8 @@ void RadioInterface::closeEvent (QCloseEvent *event) {
 }
 
 bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
+	if (!running. load ())
+	   return QWidget::eventFilter (obj, event);
 	if (event -> type () == QEvent::KeyPress) {
 	   QKeyEvent *ke = static_cast <QKeyEvent *> (event);
 	   if (ke -> key () == Qt::Key_Return) {
@@ -1733,7 +1735,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         if (currentService != nullptr) 
 	            delete currentService;
 	         currentService	= new audioDescriptor (&ad);
-	         fprintf (stderr, "new audioDescriptor\n");
 	         return true;
 	      }
 

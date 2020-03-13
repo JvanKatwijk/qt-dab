@@ -5,102 +5,6 @@ Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terr
 
 ![Qt-DAB with xml input](/qt-dab-3.3.png?raw=true)
 
---------------------------------------------------------------------
-New in Qt-DAB 3.3
---------------------------------------------------------------------
-
-Two of the (many) areas that still needed addressing in the handling of
-DAB+ contents were handling
-
-  * secondary audio services* and reacting upon a
-  * change in  configuration*.
-
-While not encountered here (the Netherlands), *Secondary audio services*
-are seen in BBC transmissions. They are now visible as service
-and can be selected.
-
-A *change in configuration* may be that bitrates of channels change,
-that protection changes, and even that *secondary audio services*
-appear or disappear.
-
-Especially interesting is of course  what the software should do
-when - after a *change in configuration* - the selected secondary
-audio service is gone.
-
-In Qt-DAB 3.3 a mechanism is included to make secondary audio services
-visible and selectabe, and to handle a change in configuration.
-Such a change will manifest itself as a minor disruption (app 20 msec)
-in the signal of the selected service.
-
-------------------------------------------------------------------------
-Using other bands than Band III or L Band
-------------------------------------------------------------------------
-
-While it is known that the DAB transmissions are in Band III, there are
-situations where it is desirable to use other frequencies.
-If you want to experiment with a modulator, connected to an SDR device
-on different frequencies than the default one (or you want just to
-have a restricted number of channels from Band III or L Band), Qt-DAB
-offers a possibility to specify a list of channels to be used.
-Specify in a file a list of channels, e.g.
-
-	jan	227360
-	twee	220352
-	drie	1294000
-	vier	252650
-
-and pass the file on with the "-A" command line switch.
-
--------------------------------------------------------------------------
-xml-files and support
--------------------------------------------------------------------------
-
-Clemens Schmidt, author of the QIRX program and me defined a format
-for storing and exchanging "raw" data: xml-files.
-Such a file contains in the first bytes - up to 5000 - a description
-in xml - as source - of the data contents. This xml description
-describes in detail  the coding of the elements.
-As an example, a description of data obtained by dumping AIRspy
-input. 
-
- ```
-	<?xml version="1.0" encoding="utf-8"?>
-	<SDR>
-	  <Recorder Name="Qt-DAB" Version="3.2-Beta"/>
-	  <Device Name="AIRspy" Model="I"/>
-	  <Time Value="Wed Dec 18 12:39:34 2019" Unit="UTC"/>
-	  <!--The Sample information holds for the whole recording-->
-	  <Sample>
-	    <Samplerate Value="2500000" Unit="Hz"/>
-	    <Channels Bits="12" Container="int16" Ordering="LSB">
-	      <Channel Value="I"/>
-	      <Channel Value="Q"/>
-	    </Channels>
-	  </Sample>
-	  <!--Here follow one or more data blocks-->
-	  <Datablocks>
-	    <Datablock Number="1" Count="375783424" Unit="Channel">
-	      <Frequency Value="227360" Unit="KHz"/>
-	      <Modulation Value="DAB"/>
-	    </Datablock>
-	  </Datablocks>
-	</SDR>
-
- ```
-
-The device handlers in Qt-DAB-3.3 support the generation of 
-such an xml file.
-
-While the current implementation for reading such files is limited to
-a single data block, the reader contains a *cont* button that, when
-touched while playing the data, will cause continuous playing of the
-data in the data block.
-
-![Qt-DAB with xml input](/qt-dab-xml.png?raw=true)
-
-The picture shows the reader when reading a file, generated from raw
-data emitted by the Hackrf device.
-
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
@@ -121,51 +25,11 @@ Table of Contents
   * [Raspberry PI](#raspberry-pi)
   * [appImage for x64 Linux systems](#appimage-for-x64-linux-systems)
 * [Interfacing to another device](#interfacing-to-another-device)
+* [New in Qt-DAB 3.3](#New-in-Qt-DAB-3.3)
+* [Using other bands than Band III or L Band](#other-bands)
+* [xml-files and support](#xml-files-and-support)
 * [Copyright](#copyright)
 
-------------------------------------------------------------------
-Features
-------------------------------------------------------------------
-
-  * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
-  * MOT SlideShow (SLS)
-  * Dynamic Label (DLS) 
-  * Both DAB bands supported): 
-  	* VHF Band III (default),
-   	* L-Band (only used in Czech Republic and Vatican) (see "obsolete properties")
-  * Modes I, II and IV (Mode I default, oter modes can be set in the ".ini" file)
-  * Spectrum view (incl. constellation diagram, correlation result, TII spectrum)
-  * Scanning function (scan the band and show the results on the screen)
-  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
-  * Detailed information for other services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type)
-  * Automatic display of TII (Transmitter Identification Information) data when transmitted
-  * Presets for easy switching of programs in different ensembles (see *Presets*)
-  * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
-  * Dumping the input in the aforementioned xml format
-  * Saving audio as uncompressed wave files
-  * Saving aac frames from DAB+ services for processing by e.g. VLC
-  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
-  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888)
-  * TPEG output: when configured the data is sent to a specified ip address
-  * Supports inputs from 
-  	- SDRplay (both RSP I and RSP II), with separate entries for v2 and v3 library
-  	- Airspy, including Airspy mini,
-   	- SDR DAB sticks (RTL2838U or similar), 
-	- HACKRF One, 
-	- limeSDR, 
-	- Soapy (experimental, Linux only), 
-   	- prerecorded dump (*.raw, *.iq and *.sdr),
-	- xml format files, and
-	- rtl_tcp servers
-  * Clean interface to add other devices, see below.
-
-Not yet or partly implemented:
-
-  * DMB (Audio and Video)
-  * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client are part of the source distribution.
-  * EPG: when configured, the EPG decoding will generate so called EHB files.
-  * Journaline (an untested Journaline implementation is part of the sources).
-  * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 ------------------------------------------------------------------
 Introduction
@@ -249,6 +113,50 @@ During **scanning**, a separate window will be shown with the results
 of the scan as shown in the picture.
 
 ![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
+
+------------------------------------------------------------------
+Features
+------------------------------------------------------------------
+
+  * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
+  * MOT SlideShow (SLS)
+  * Dynamic Label (DLS) 
+  * Both DAB bands supported): 
+  	* VHF Band III (default),
+   	* L-Band (only used in Czech Republic and Vatican) (see "obsolete properties")
+  * Modes I, II and IV (Mode I default, oter modes can be set in the ".ini" file)
+  * Spectrum view (incl. constellation diagram, correlation result, TII spectrum)
+  * Scanning function (scan the band and show the results on the screen)
+  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
+  * Detailed information for other services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type)
+  * Automatic display of TII (Transmitter Identification Information) data when transmitted
+  * Presets for easy switching of programs in different ensembles (see *Presets*)
+  * Dumping of the complete DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
+  * Dumping the input in the aforementioned xml format
+  * Saving audio as uncompressed wave files
+  * Saving aac frames from DAB+ services for processing by e.g. VLC
+  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
+  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888)
+  * TPEG output: when configured the data is sent to a specified ip address
+  * Supports inputs from 
+  	- SDRplay (both RSP I and RSP II), with separate entries for v2 and v3 library
+  	- Airspy, including Airspy mini,
+   	- SDR DAB sticks (RTL2838U or similar), 
+	- HACKRF One, 
+	- limeSDR, 
+	- Soapy (experimental, Linux only), 
+   	- prerecorded dump (*.raw, *.iq and *.sdr),
+	- xml format files, and
+	- rtl_tcp servers
+  * Clean interface to add other devices, see below.
+
+Not yet or partly implemented:
+
+  * DMB (Audio and Video)
+  * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client are part of the source distribution.
+  * EPG: when configured, the EPG decoding will generate so called EHB files.
+  * Journaline (an untested Journaline implementation is part of the sources).
+  * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 ----------------------------------------------------------------------
 Presets
@@ -670,6 +578,102 @@ function, is used to scale the various spectrum scopes.
 
 A complete description is given in the file "interfacing.txt",
 in the sourcetree
+
+--------------------------------------------------------------------
+New in Qt-DAB 3.3
+--------------------------------------------------------------------
+
+Two of the (many) areas that still needed addressing in the handling of
+DAB+ contents were handling
+
+  * secondary audio services* and reacting upon a
+  * change in  configuration*.
+
+While not encountered here (the Netherlands), *Secondary audio services*
+are seen in BBC transmissions. They are now visible as service
+and can be selected.
+
+A *change in configuration* may be that bitrates of channels change,
+that protection changes, and even that *secondary audio services*
+appear or disappear.
+
+Especially interesting is of course  what the software should do
+when - after a *change in configuration* - the selected secondary
+audio service is gone.
+
+In Qt-DAB 3.3 a mechanism is included to make secondary audio services
+visible and selectabe, and to handle a change in configuration.
+Such a change will manifest itself as a minor disruption (app 20 msec)
+in the signal of the selected service.
+
+------------------------------------------------------------------------
+Using other bands than Band III or L Band
+------------------------------------------------------------------------
+
+While it is known that the DAB transmissions are in Band III, there are
+situations where it is desirable to use other frequencies.
+If you want to experiment with a modulator, connected to an SDR device
+on different frequencies than the default one (or you want just to
+have a restricted number of channels from Band III or L Band), Qt-DAB
+offers a possibility to specify a list of channels to be used.
+Specify in a file a list of channels, e.g.
+
+	jan	227360
+	twee	220352
+	drie	1294000
+	vier	252650
+
+and pass the file on with the "-A" command line switch.
+
+-------------------------------------------------------------------------
+xml-files and support
+-------------------------------------------------------------------------
+
+Clemens Schmidt, author of the QIRX program and me defined a format
+for storing and exchanging "raw" data: xml-files.
+Such a file contains in the first bytes - up to 5000 - a description
+in xml - as source - of the data contents. This xml description
+describes in detail  the coding of the elements.
+As an example, a description of data obtained by dumping AIRspy
+input. 
+
+ ```
+	<?xml version="1.0" encoding="utf-8"?>
+	<SDR>
+	  <Recorder Name="Qt-DAB" Version="3.2-Beta"/>
+	  <Device Name="AIRspy" Model="I"/>
+	  <Time Value="Wed Dec 18 12:39:34 2019" Unit="UTC"/>
+	  <!--The Sample information holds for the whole recording-->
+	  <Sample>
+	    <Samplerate Value="2500000" Unit="Hz"/>
+	    <Channels Bits="12" Container="int16" Ordering="LSB">
+	      <Channel Value="I"/>
+	      <Channel Value="Q"/>
+	    </Channels>
+	  </Sample>
+	  <!--Here follow one or more data blocks-->
+	  <Datablocks>
+	    <Datablock Number="1" Count="375783424" Unit="Channel">
+	      <Frequency Value="227360" Unit="KHz"/>
+	      <Modulation Value="DAB"/>
+	    </Datablock>
+	  </Datablocks>
+	</SDR>
+
+ ```
+
+The device handlers in Qt-DAB-3.3 support the generation of 
+such an xml file.
+
+While the current implementation for reading such files is limited to
+a single data block, the reader contains a *cont* button that, when
+touched while playing the data, will cause continuous playing of the
+data in the data block.
+
+![Qt-DAB with xml input](/qt-dab-xml.png?raw=true)
+
+The picture shows the reader when reading a file, generated from raw
+data emitted by the Hackrf device.
 
 -----------------------------------------------------------------------
 # Copyright
