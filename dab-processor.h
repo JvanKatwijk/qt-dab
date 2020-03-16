@@ -93,12 +93,17 @@ public:
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
-        uint8_t		get_ecc();
-        int32_t		get_ensembleId();
-        QString		get_ensembleName();
-	void		print_Overview();
-	void		clearEnsemble();
+        uint8_t		get_ecc			();
+        int32_t		get_ensembleId		();
+        QString		get_ensembleName	();
+	void		print_Overview		();
+	void		clearEnsemble		();
+	void		getFrameQuality		(int *, int*, int *);
 private:
+
+	int		totalFrames;
+	int		goodFrames;
+	int		badFrames;
 	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;

@@ -149,6 +149,7 @@ uint8_t convert (QString s) {
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
+	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
@@ -162,6 +163,7 @@ QString	presetName;
 uint8_t	dabBand;
 
 	dabSettings		= Si;
+	this	-> error_report	= error_report;
 	running. 		store (false);
 	scanning. 		store (false);
 	isSynced		= false;
@@ -286,11 +288,9 @@ uint8_t	dabBand;
 
 	theBand. setupChannels  (channelSelector, dabBand);
 
-//	QPalette p	= techData. ficError_display -> palette();
 	QPalette p	= ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::green);
 	ficError_display		-> setPalette (p);
-//	techData. ficError_display	-> setPalette (p);
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
 	techData. aacError_display	-> setPalette (p);
@@ -307,6 +307,8 @@ uint8_t	dabBand;
 	frameDumper		= nullptr;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
+	total_ficError		= 0;
+	total_fics		= 0;
 	syncedLabel		->
 	               setStyleSheet ("QLabel {background-color : red; color: white}");
 //	stereoLabel		->
@@ -897,12 +899,24 @@ void	RadioInterface::updateTimeDisplay() {
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
 	}
-#ifdef	SHOW_MISSING
-	if ((numberofSeconds % 10) == 0) {
-	   int xxx = ((audioSink *)soundOut)	-> missed();
-	   fprintf (stderr, "missed %d\n", xxx);
+
+	if (error_report && (numberofSeconds % 10) == 0) {
+	   int	totalFrames;
+	   int	goodFrames;
+	   int	badFrames;
+	   my_dabProcessor	-> getFrameQuality (&totalFrames,
+	                                            &goodFrames,
+	                                            &badFrames);
+	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
+	                     totalFrames, goodFrames, badFrames,
+	                                            total_ficError * 100.0 / total_fics);
+	   total_ficError	= 0;
+	   total_fics		= 0;
+	   if (streamoutSelector -> isVisible ()) {
+	      int xxx = ((audioSink *)soundOut)	-> missed();
+	      fprintf (stderr, "missed %d\n", xxx);
+	   }
 	}
-#endif
 }
 //
 //	precondition: everything is quiet
@@ -1204,7 +1218,7 @@ void	RadioInterface::showTime	(const QString &s) {
 }
 
 void	RadioInterface::show_frameErrors (int s) {
-	if (running. load())
+	if (running. load()) 
 	   techData. frameError_display	-> setValue (100 - 4 * s);
 }
 
@@ -1219,14 +1233,15 @@ void	RadioInterface::show_aacErrors (int s) {
 }
 
 void	RadioInterface::show_ficSuccess (bool b) {
-	if (!running. load())	
+	if (!running. load ())	
 	   return;
 	if (b) 
 	   ficSuccess ++;
 
 	if (++ficBlocks >= 100) {
 	   ficError_display	-> setValue (ficSuccess);
-//	   techData. ficError_display	-> setValue (ficSuccess);
+	   total_ficError	+= 100 - ficSuccess;
+	   total_fics		+= 100;
 	   ficSuccess	= 0;
 	   ficBlocks	= 0;
 	}

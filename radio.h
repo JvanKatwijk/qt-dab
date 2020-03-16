@@ -77,6 +77,7 @@ public:
 		RadioInterface		(QSettings	*,
 	                                 const QString	&,
 	                                 const QString	&,
+	                                 bool,
 	                                 int32_t	 dataPort,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
@@ -86,6 +87,7 @@ protected:
 private:
 	QString			version;
 	bool			noSort;
+	bool			error_report;
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	scannerTable		theTable;
@@ -142,6 +144,8 @@ private:
 	int32_t			numberofSeconds;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
+	int			total_ficError;
+	int			total_fics;
 	void			connectGUI		();
 	void			disconnectGUI		();
 

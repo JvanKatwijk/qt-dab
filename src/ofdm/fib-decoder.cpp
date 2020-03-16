@@ -1006,8 +1006,10 @@ int16_t		offset;
 	            findServiceComponent (currentConfig, SId, SCIds);
 	if (compIndex > 0) {
 	   if (findService (dataName) == -1) {
-	      createService (dataName, SId, SCIds);
-	      addtoEnsemble (dataName, SId);
+	      if (currentConfig -> serviceComps [compIndex]. TMid == 0) {
+	         createService (dataName, SId, SCIds);
+	         addtoEnsemble (dataName, SId);
+	      }
 	   }
 	}
 }

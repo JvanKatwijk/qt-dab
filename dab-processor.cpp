@@ -36,7 +36,6 @@
   *	local are classes ofdmDecoder, ficHandler and mschandler.
   */
 
-static	int goodFrames	= 0;
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
 	                                 virtualInput	*theRig,
 	                                 uint8_t	dabMode,
@@ -96,6 +95,10 @@ static	int goodFrames	= 0;
 	coarseOffset			= 0;	
 	correctionNeeded		= true;
 	attempts			= 0;
+
+	goodFrames			= 0;
+	badFrames			= 0;
+	totalFrames			= 0;
 	scanMode			= false;
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
@@ -157,6 +160,7 @@ std::vector<int16_t> ibits;
 	   }
 //Initing:
 notSynced:
+	   totalFrames ++;
 	   setSynced (false);
 	   my_TII_Detector. reset();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
@@ -186,12 +190,13 @@ notSynced:
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
+	      badFrames ++;
 	      goto notSynced;
 	   }
-	   goodFrames ++;
 	   goto SyncOnPhase;
 //
 Check_endofNULL:
+	   totalFrames ++;
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_u, coarseOffset + fineOffset);
 /**
@@ -204,11 +209,12 @@ Check_endofNULL:
 	      if (!correctionNeeded) {
 	         setSyncLost();
 	      }
+	      badFrames	++;
 	      goto notSynced;
 	   }
 
 SyncOnPhase:
-
+	   goodFrames ++;
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -319,19 +325,7 @@ SyncOnPhase:
 //     we integrate the newly found frequency error with the
 //     existing frequency error.
 //
-//	It might happen that the computation of the "startIndex"
-//	is - more or less - ambiguous, in which case the computation
-//	of the frequency correction hopelessly fails
-
-//	   if (!correctionNeeded && (abs (arg (FreqCorr)) > 1.8)) {
-//	      fprintf (stderr, "resyncing %d %f after %d good frames\n",
-//	                  startIndex, arg (FreqCorr), goodFrames);
-//	      goodFrames = 0;
-//	      goto notSynced;
-//	   }
-
 	   fineOffset += 0.05 * arg (FreqCorr) / (2 * M_PI) * carrierDiff;
-
 
 	   if (fineOffset > carrierDiff / 2) {
 	      coarseOffset += carrierDiff;
@@ -477,5 +471,16 @@ bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
 	   case 4:
 	      return (cf & 03) >= 2;
 	}
+}
+
+void	dabProcessor::getFrameQuality	(int	*totalFrames,
+	                                 int	*goodFrames,
+	                                 int	*badFrames) {
+	*totalFrames	= this	-> totalFrames;
+	*goodFrames	= this	-> goodFrames;
+	*badFrames	= this	-> badFrames;
+	this	-> totalFrames	= 0;
+	this	-> goodFrames	= 0;
+	this	-> badFrames	= 0;
 }
 
