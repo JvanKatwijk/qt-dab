@@ -171,6 +171,16 @@ it sometimes happens that a service appears in more than one ensemble
 
 The presets are stored in an xml file, `.qt-dab-presets.xml'.
 
+*Adding* a service to the *presets* is simply by *clicking with the right mouse
+button on the name of the service that is currently selected in the
+servicelist* (recall that clicking with the *left* mouse button
+well select the service with that name).
+
+Of course, one is also able to *remove* an entry from the presets.
+To do this, select the entry (by putting the curson on it without
+clicking any of the mouse buttons) and press the *shift* and the *delete*
+button on the keyboard simultaneously.
+
 ---------------------------------------------------------------------------
 Maintaining History 
 ---------------------------------------------------------------------------

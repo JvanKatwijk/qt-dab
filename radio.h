@@ -178,6 +178,7 @@ private:
 	QString			filenameSuggestion 	(QString);
 	void			showServices		();
 
+	bool			doStart			();
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);
@@ -233,7 +234,6 @@ private slots:
 	void			handle_resetButton	();
 	void			handle_historyButton	();
 	void			doStart			(const QString &);
-	void			doStart			();
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			signalTimer_out		();

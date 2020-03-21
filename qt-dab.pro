@@ -291,20 +291,20 @@ LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
-CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2
+#CONFIG		+= dabstick
+#CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
-CONFIG		+= lime
-CONFIG		+= rtl_tcp
-CONFIG		+= airspy
-CONFIG		+= hackrf
+#CONFIG		+= lime
+#CONFIG		+= rtl_tcp
+#CONFIG		+= airspy
+#CONFIG		+= hackrf
 #CONFIG		+= soapy
 #CONFIG		+= elad_s1	# does not work yet
 
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
-CONFIG		+= datastreamer
+#CONFIG		+= datastreamer
 
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram
@@ -427,11 +427,8 @@ sdrplay-v3 {
 	INCLUDEPATH	+= ./devices/sdrplay-handler-v3 \
 	                   ./devices/sdrplay-handler-v3/include
 	HEADERS		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
-	                   ./devices/sdrplay-handler-v3/control-queue.h \
-	                   ./devices/sdrplay-handler-v3/sdrplay-controller.h 
-	SOURCES		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
-	                   ./devices/sdrplay-handler-v3/control-queue.cpp \
-	                   ./devices/sdrplay-handler-v3/sdrplay-controller.cpp 
+	                   ./devices/sdrplay-handler-v3/sdrplay-commands.h 
+	SOURCES		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp 
 	FORMS		+= ./devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
 }
 #

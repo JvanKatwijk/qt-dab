@@ -387,11 +387,20 @@ uint8_t	dabBand;
 	my_dabProcessor	= nullptr;
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
-	if (inputDevice != nullptr) 
-	   emit doStart();
-	else 
-	   connect (deviceSelector, SIGNAL (activated (const QString &)),
-	            this,  SLOT (doStart (const QString &)));
+	if (inputDevice != nullptr) {
+	   if (doStart()) {
+	      qApp	-> installEventFilter (this);
+	      currentService	= nullptr;
+	      return;
+	   }
+	   else {
+	      delete inputDevice;
+	      inputDevice	= nullptr;
+	   }
+	}
+
+	connect (deviceSelector, SIGNAL (activated (const QString &)),
+	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
 	currentService	= nullptr;
 }
@@ -419,11 +428,11 @@ void	RadioInterface::doStart (const QString &dev) {
 	   disconnectGUI();
 	   return;
 	}
-	emit doStart();
+	doStart();
 }
 //
 //	when doStart is called, a device is available and selected
-void	RadioInterface::doStart() {
+bool	RadioInterface::doStart() {
 bool	r = false;
 int32_t	frequency;
 
@@ -439,7 +448,7 @@ int32_t	frequency;
 	if (!r) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Opening  input stream failed\n"));
-	   return;	// give it another try
+	   return false;	// give it another try
 	}
 	frequencyDisplay	-> display (frequency / 1000000.0);
 //	Some buttons should not be touched before we have a device
@@ -507,6 +516,7 @@ int32_t	frequency;
 	secondariesVector. resize (0);
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
+	return true;
 }
 
 	RadioInterface::~RadioInterface() {
