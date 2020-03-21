@@ -517,7 +517,6 @@ add_definitions (-DPRESET_NAME)
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
-	        ./devices/sdrplay-handler-v3/sdrplay-controller.h
 	   )
 
 	   include_directories (
@@ -527,16 +526,13 @@ add_definitions (-DPRESET_NAME)
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
-	        ./devices/sdrplay-handler-v3/sdrplay-controller.h
-	        ./devices/sdrplay-handler-v3/control-queue.h
+	        ./devices/sdrplay-handler-v3/sdrplay-commands.h
 	        ./devices/sdrplay-handler-v3/sdrplay_api.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
-	        ./devices/sdrplay-handler-v3/sdrplay-controller.cpp
-	        ./devices/sdrplay-handler-v3/control-queue.cpp
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY_V3)
