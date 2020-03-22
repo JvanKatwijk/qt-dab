@@ -70,7 +70,7 @@ public:
 	uint32_t	SId;
 	int		SCIds;
 };
-	
+
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
@@ -86,7 +86,7 @@ protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
 	QString			version;
-	bool			noSort;
+	int			serviceOrder;
 	bool			error_report;
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
@@ -135,7 +135,12 @@ private:
         SNDFILE                 *audioDumper;
 
 	QStandardItemModel	model;
-	QStringList		Services;
+	std::vector<serviceId>	serviceList;
+	bool			isMember (std::vector<serviceId>,
+	                                       serviceId);
+	std::vector<serviceId>
+	  	                insert   (std::vector<serviceId>,
+	                                  serviceId, int);
 	QStringList		soundChannels;
 	QTimer			displayTimer;
 	QTimer			signalTimer;

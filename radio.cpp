@@ -212,8 +212,10 @@ uint8_t	dabBand;
  *	stop whever a channel with data is found.
  */
 
-	noSort		= dabSettings -> value ("noSort", 0). toInt () == 1;
-	normalScan	= dabSettings -> value ("normalScan", 0). toInt () == 1;
+	serviceOrder	=
+	           dabSettings -> value ("serviceOrder", 0). toInt ();
+	normalScan	=
+	           dabSettings -> value ("normalScan", 0). toInt () == 1;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
@@ -221,7 +223,7 @@ uint8_t	dabBand;
 	techData. setupUi (dataDisplay);
 
 	dataDisplay		->  hide();
-	Services                = QStringList ();
+	serviceList. clear ();
         model . clear ();
         ensembleDisplay         -> setModel (&model);
 
@@ -569,27 +571,28 @@ void	RadioInterface::signalTimer_out() {
 //
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &serviceName,
-	                                             int32_t serviceId) {
+	                                             int32_t SId) {
 	if (!running. load())
 	   return;
 
-	(void)serviceId;
-	if (Services. contains (serviceName))
+	(void)SId;
+	serviceId ed;
+	ed. name = serviceName;
+	ed. SId	= SId;
+	if (isMember (serviceList, ed))
 	   return;
-	Services << serviceName;
+	serviceList = insert (serviceList, ed, serviceOrder);
 #if 0
 	fprintf (stderr, "adding %s serviceId %x subchId %d\n",
 	                          serviceName. toLatin1 (). data (),
-	                          serviceId, subChId);
+	                          SId, subChId);
 #endif
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
 
-	if (!noSort)
-	   Services. sort ();
 	model. clear ();
-        for (const auto serv : Services)
-           model. appendRow (new QStandardItem (serv));
+	for (const auto serv : serviceList)
+	   model. appendRow (new QStandardItem (serv. name));
         int row = model. rowCount ();
         for (int i = 0; i < row; i ++) {
            model. setData (model. index (i, 0),
@@ -667,8 +670,10 @@ ensemblePrinter	my_Printer;
 	   return;
 	}
 
-	my_Printer. showEnsembleData (currentChannel, frequency, theTime,
-	                              Services, my_dabProcessor, file_P);
+	my_Printer. showEnsembleData (currentChannel,
+	                              frequency, theTime,
+	                              serviceList,
+	                              my_dabProcessor, file_P);
 
 	fclose (file_P);
 }
@@ -770,17 +775,14 @@ void	RadioInterface::changeinConfiguration() {
 //
 //	we rebuild the services list from the fib and
 //	then we (try to) restart the service
-	   Services	= my_dabProcessor -> getServices ();
-	   if (!noSort) {
-	      Services. sort	();
-	      model. clear	();
-	      for (const auto serv : Services)
-	         model. appendRow (new QStandardItem (serv));
-	      int row = model. rowCount ();
-	      for (int i = 0; i < row; i ++) {
-	         model. setData (model. index (i, 0),
-	         QFont ("Cantarell", 11), Qt::FontRole);
-	      }
+	   serviceList	= my_dabProcessor -> getServices (serviceOrder);
+	   model. clear	();
+	   for (const auto serv : serviceList)
+	      model. appendRow (new QStandardItem (serv. name));
+	   int row = model. rowCount ();
+	   for (int i = 0; i < row; i ++) {
+	      model. setData (model. index (i, 0),
+	      QFont ("Cantarell", 11), Qt::FontRole);
 	   }
 	   ensembleDisplay -> setModel (&model);
 //
@@ -2089,21 +2091,22 @@ void	RadioInterface::handle_prevServiceButton	() {
 	stopScanning ();
 	presetTimer. stop ();
 	stopService  ();
-	if ((Services. length () != 0) && (currentService != "")) {
-	   for (int i = 0; i < Services. length (); i ++) {
-	      if (Services. at (i) == currentService) {
+	if ((serviceList. size () != 0) && (currentService != "")) {
+	   for (int i = 0; i < serviceList. size (); i ++) {
+	      if (serviceList. at (i). name == currentService) {
 	         i = i - 1;
-	         if (i < 0) i =
-	            Services. length () - 1;
+	         if (i < 0)
+	            i = serviceList. size () - 1;
 	         dabService s;
-	         my_dabProcessor -> getParameters (Services. at (i),
+	         my_dabProcessor ->
+	                  getParameters (serviceList. at (i). name,
 	                                           &s. SId, &s. SCIds);
 	         if (s. SId == 0) {
                     QMessageBox::warning (this, tr ("Warning"),
                                  tr ("insufficient data for this program\n"));
 	            break;
                  }
-	         s. serviceName = Services. at (i);
+	         s. serviceName = serviceList. at (i). name;
 	         runningServices. push_back (s);
 	         startService (&s);
 	         break;
@@ -2121,14 +2124,14 @@ void	RadioInterface::handle_nextServiceButton	() {
 	stopScanning ();
 	presetTimer. stop ();
 	stopService ();
-	if ((Services. length () != 0) && (currentService != "")) {
-	   for (int i = 0; i < Services. length (); i ++) {
-	      if (Services. at (i) == currentService) {
+	if ((serviceList. size () != 0) && (currentService != "")) {
+	   for (int i = 0; i < serviceList. size (); i ++) {
+	      if (serviceList. at (i). name == currentService) {
 	         i = i + 1;
-	         if (i >= Services. length ())
+	         if (i >= serviceList. size ())
 	            i = 0;
 	         dabService s;
-	         s. serviceName = Services. at (i);
+	         s. serviceName = serviceList. at (i). name;
 	         my_dabProcessor -> getParameters (s. serviceName,
 	                                           &s. SId, &s. SCIds);
 	         if (s. SId == 0) {
@@ -2163,8 +2166,8 @@ void	RadioInterface::setPresetStation() {
 	   return;
 
 	QString presetName	= runningServices. back (). serviceName;
-	for (const auto& service: Services) {
-	   if (service. contains (presetName)) {
+	for (const auto& service: serviceList) {
+	   if (service. name. contains (presetName)) {
 	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
 	      dabService s;
 	      s. serviceName = presetName;
@@ -2225,7 +2228,7 @@ void	RadioInterface::stopChannel	() {
 	snrDisplay			-> display (0);
 	transmitter_coordinates		-> setText (" ");
 	frequencyDisplay		-> display (0);
-	Services 	= QStringList ();
+	serviceList. clear ();
 	model. clear ();
 	ensembleDisplay			-> setModel (&model);
 }
@@ -2345,7 +2348,7 @@ void	RadioInterface::No_Signal_Found () {
 	signalTimer. stop ();
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
-	   if ((!normalScan) && (Services != QStringList ()))
+	   if ((!normalScan) && (serviceList. size () > 0))
 	      showServices ();
 	   stopChannel ();
 	   cc ++;
@@ -2389,7 +2392,8 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	                       ensembleId,
 	                       SNR,
 	                       transmitter_coordinates -> text ());
-	for (QString& audioService: Services) {
+	for (serviceId serv: serviceList) {
+	   QString audioService = serv. name;
 	   audiodata d;
 	   my_dabProcessor -> dataforAudioService (audioService, &d);
 //	   if (!d. defined)
@@ -2406,5 +2410,43 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
                                    d. ASCTy == 077 ? "DAB+" : "DAB",
                                    bitRate, protL, codeRate);
 	}
+}
+
+/////////////////////////////////////////////////////////////////////
+//
+bool	RadioInterface::isMember (std::vector<serviceId> a,
+	                                     serviceId b) {
+	for (const auto serv : a)
+	   if (serv. name == b. name)
+	      return true;
+	return false;
+}
+
+std::vector<serviceId>
+	RadioInterface::insert (std::vector<serviceId> l,
+	                        serviceId n, int order) {
+std::vector<serviceId> k;
+	if (l . size () == 0) {
+	   k. push_back (n);
+	   return k;
+	}
+	int 	baseN		= 0;
+	QString baseS		= "";
+	bool	inserted	= false;
+	for (const auto serv : l) {
+	   if (!inserted &&
+	         (order == ID_BASED ?
+	             ((baseN < n. SId) && (n. SId <= serv. SId)):
+	             ((baseS < n. name) && (n. name < serv. name)))) {
+	      k. push_back (n);
+	      inserted = true;
+	   }
+	   baseS	= serv. name;
+	   baseN	= serv. SId;
+	   k. push_back (serv);
+	}
+	if (!inserted)
+	   k. push_back (n);
+	return k;
 }
 

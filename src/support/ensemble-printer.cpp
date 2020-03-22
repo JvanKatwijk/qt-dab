@@ -57,7 +57,7 @@ int16_t	i = 0;
 void	ensemblePrinter::showEnsembleData (QString	channel,
 	                                   int32_t	freq,
 	                                   QString	theTime,
-	                                   QStringList	Services,
+	                                   std::vector<serviceId>	Services,
 	                                   dabProcessor *my_dabProcessor,
 	                                   FILE		*file_P) {
 uint8_t	countryId;
@@ -81,7 +81,9 @@ bool	firstData;
 	                  theTime. toUtf8(). data ());
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
-	for (QString& audioService: Services) {
+
+	for (const auto serv : Services) {
+	   QString audioService = serv. name;
 	   audiodata d;
 	   my_dabProcessor -> dataforAudioService (audioService, &d);
 	   if (!d. defined)
@@ -107,10 +109,11 @@ bool	firstData;
 	}
 
 	firstData	= true;
-	for (QString& dataService: Services) {
+	for (serviceId dataService: Services) {
 	   for (i = 0; i < 5; i ++) {
 	      packetdata d;
-	      my_dabProcessor -> dataforPacketService (dataService, &d, i);
+	      my_dabProcessor -> dataforPacketService (dataService. name,
+                                                        &d, i);
 	      if (!d. defined)
 	         continue;
 
@@ -142,7 +145,7 @@ bool	firstData;
 	      }
 	      countryId = (d. SId >> (5 * 4)) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
-	                        dataService. toUtf8(). data(),
+	                        dataService. name. toUtf8(). data(),
 	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
 	                     d. SId,
 	                     d. subchId,

@@ -75,6 +75,16 @@ using namespace std;
 
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
+
+class serviceId {
+public:
+	QString		name;
+	uint32_t	SId;
+};
+//	order by id order by name
+#define ID_BASED        1
+#define ALPHA_BASED     0
+
 //
 //	40 up shows good results
 #define		DIFF_LENGTH	40

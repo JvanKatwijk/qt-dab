@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -48,7 +49,8 @@ public:
 	void	dataforPacketService	(const QString &,
 	                                      packetdata *, int16_t);
 
-	QStringList	getServices	();
+	std::vector<serviceId>	getServices	(int);
+
 	QString		findService	(uint32_t, int);
 	void		getParameters	(const QString &, uint32_t *, int *);
         uint8_t		get_ecc		();
@@ -59,6 +61,8 @@ public:
 protected:
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
+	std::vector<serviceId> insert (std::vector<serviceId> l,
+                                          serviceId n, int order);
 	RadioInterface	*myRadioInterface;
 	dabConfig	*currentConfig;
 	dabConfig	*nextConfig;

@@ -1484,14 +1484,47 @@ int     serviceIndex;
 	fibLocker. unlock();
 }
 
-QStringList fibDecoder::getServices () {
-QStringList services;
+std::vector<serviceId> fibDecoder::getServices (int order) {
+std::vector<serviceId> services;
 
 	for (int i = 0; i < 64; i ++)
 	   if (ensemble -> services [i]. inUse &&
-	       ensemble -> services [i]. hasName)
-	      services << ensemble -> services [i]. serviceLabel;
+	       ensemble -> services [i]. hasName) {
+	      serviceId ed;
+	      ed. name = ensemble -> services [i]. serviceLabel;
+	      ed. SId  = ensemble -> services [i]. SId;
+
+	      services = insert (services, ed, order);
+	   }
 	return services;
+}
+
+std::vector<serviceId>
+	fibDecoder::insert (std::vector<serviceId> l,
+	                        serviceId n, int order) {
+std::vector<serviceId> k;
+	if (l . size () == 0) {
+	   k. push_back (n);
+	   return k;
+	}
+	int 	baseN		= 0;
+	QString baseS		= "";
+	bool	inserted	= false;
+	for (const auto serv : l) {
+	   if (!inserted &&
+	         (order == ID_BASED ?
+	             ((baseN < n. SId) && (n. SId <= serv. SId)):
+	             ((baseS < n. name) && (n. name < serv. name)))) {
+	      k. push_back (n);
+	      inserted = true;
+	   }
+	   baseS	= serv. name;
+	   baseN	= serv. SId;
+	   k. push_back (serv);
+	}
+	if (!inserted)
+	   k. push_back (n);
+	return k;
 }
 
 QString	fibDecoder::findService (uint32_t SId, int SCIds) {

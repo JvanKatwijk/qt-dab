@@ -27,6 +27,7 @@
 //	The output can be viewed (a.o) in LibreOfficeCalc
 #include	<QString>
 #include	"dab-constants.h"
+#include	<vector>
 #include	<cstdint>
 #include	<cstdio>
 
@@ -39,7 +40,7 @@ public:
 	void	showEnsembleData	(QString,
 	                                 int32_t,
 	                                 QString,	// time
-	                                 QStringList,
+	                                 std::vector<serviceId>,
 	                                 dabProcessor *,
 	                                 FILE *);
 private:

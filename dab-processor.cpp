@@ -391,8 +391,8 @@ void	dabProcessor::getParameters		(const QString &s,
 	my_ficHandler. getParameters (s, p_SId, p_SCIds);
 }
 
-QStringList	dabProcessor::getServices	() {
-	return my_ficHandler. getServices ();
+std::vector<serviceId>	dabProcessor::getServices	(int n) {
+	return my_ficHandler. getServices (n);
 }
 
 bool	dabProcessor::is_audioService	(const QString &s) {
