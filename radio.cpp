@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -409,12 +409,12 @@ uint8_t	dabBand;
 
 QString RadioInterface::footText () {
 	version			= QString (CURRENT_VERSION);
-        QString versionText = "Qt-DAB- version: " + QString(CURRENT_VERSION);
-        versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
-        versionText += "Rights of Qt, fftw, portaudio, libsamplerate and libsndfile gratefully acknowledged";
-        versionText += "Rights of other contribuants gratefully acknowledged\n";
-        versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
-        return versionText;
+        QString versionText = "Qt-DAB-version: " + QString(CURRENT_VERSION) + "\n";
+        versionText += "Built on " + QString(__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH) + "\n";
+        versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
+        versionText += "Rights of Qt, fftw, portaudio, libsamplerate and libsndfile gratefully acknowledged\n";
+        versionText += "Rights of other contributors gratefully acknowledged";
+       return versionText;
 }
 //
 //	doStart (QString) is called when - on startup - no device
