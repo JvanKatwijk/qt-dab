@@ -528,7 +528,9 @@ be phased out.
 Raspberry PI
 ------------------------------------------------------------------
 
-The Qt-DAB software runs pretty well on the author's RPI-2 and 3 when configured for running the backend in a separate thread. The average load on the 4 cores is somewhere between 50 and 60 percent.
+The Qt-DAB software runs pretty well on the author's RPI-2 and 3.
+When configured for running the backend in a separate thread, the average load on the 4 cores is slightly higher than avg 50 percent on the RPI2 and
+less than 50 percent on the RPI3.
 
 One remark: getting "sound" is not always easy. Be certain that you have installed the alsa-utils, and that you are - as non-root user - able to see devices with `aplay -L`
 
@@ -541,7 +543,10 @@ Since Raspbian Stretch is a Debian derivate, the description for creating a vers
 and build a full executable for qt-dab is part of the source tree.
 
 Before running this script, script *script-for-devian.txt*, copy the script
-to the parent directory (executing it will load a whole bunch of files.
+to the parent directory (executing it will load a whole bunch of files).
+
+Since it is possible to divert the sound output to bluetooth, it
+is certainly possible to run the program and listen using bluetooth headphones.
 
 ---------------------------------------------------------------------------
 appImage for x64 Linux systems
@@ -549,21 +554,24 @@ appImage for x64 Linux systems
 
 https://github.com/JvanKatwijk/qt-dab/releases contains a generated appImage, **Qt-DAB-x64.Appimage**, which is created on Ubuntu 16.04 (Xenial).
 
-Different from previous versions, this version assumes you have installed
-the support library for the devices you want to use.
+*Different from previous versions, this version assumes you have installed
+the support library for the devices you want to use.*
 
 If you want to run with an SDRplay, follow the installation instructions for the library from http://www.sdrplay.com . All further dependencies are included.
 
 If you want to run an RTLSDR based dabstick, please note that
-the appImage may complain with some Linux distros with a "librtlsdr.so" pre-installed
-that the kernel module has to be blacklisted. Depending on the distribution, blacklisting is in
+the appImage may complain with some Linux distros with a
+"librtlsdr.so" pre-installed that the kernel module has to be blacklisted. Depending on the distribution, blacklisting is in
 /etc/modprobe.d/local-blaclist
 
 For compiling and installing a support library for an RTLSDR device, 
 follow the instruction on https://osmocom.org/projects/rtl-sdr/wiki/Rtl-sdr.
+One of the instructions is how to configure such that blacklisting the
+kernel module is not needed.
 
 For compiling and installing a support library for an AIRspy device,
-find the sources on https://github.com/airspy/airspyone_host/tree/master/libairspy
+find the sources on https://github.com/airspy/airspyone_host/tree/master/libairspy. The sourcetree contains a description of how to generate the
+library, using the Gnu tools or cmake.
 
 The appImage itself is just a self-contained single file which you have to make executable in order to run.
 

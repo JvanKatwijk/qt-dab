@@ -216,6 +216,7 @@ uint8_t	dabBand;
 	           dabSettings -> value ("serviceOrder", 0). toInt ();
 	normalScan	=
 	           dabSettings -> value ("normalScan", 0). toInt () == 1;
+
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
@@ -2094,6 +2095,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	if ((serviceList. size () != 0) && (currentService != "")) {
 	   for (int i = 0; i < serviceList. size (); i ++) {
 	      if (serviceList. at (i). name == currentService) {
+	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i - 1;
 	         if (i < 0)
 	            i = serviceList. size () - 1;
@@ -2127,6 +2129,7 @@ void	RadioInterface::handle_nextServiceButton	() {
 	if ((serviceList. size () != 0) && (currentService != "")) {
 	   for (int i = 0; i < serviceList. size (); i ++) {
 	      if (serviceList. at (i). name == currentService) {
+	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i + 1;
 	         if (i >= serviceList. size ())
 	            i = 0;

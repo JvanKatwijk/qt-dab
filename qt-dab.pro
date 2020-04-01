@@ -292,7 +292,7 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 #CONFIG		+= dabstick
-#CONFIG		+= sdrplay-v2
+CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
 #CONFIG		+= lime
 #CONFIG		+= rtl_tcp
