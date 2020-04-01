@@ -308,7 +308,7 @@ it is definitely not the time on your clock.</string>
                <enum>QFrame::Sunken</enum>
               </property>
               <property name="digitCount">
-               <number>6</number>
+               <number>7</number>
               </property>
               <property name="segmentStyle">
                <enum>QLCDNumber::Flat</enum>
