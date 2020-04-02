@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Many of the ideas as implemented in Qt-DAB are derived from
  *    other work, made available through the GNU general Public License. 
  *    All copyrights of the original authors are recognized.
@@ -34,7 +35,7 @@
 #include	<cstdio>
 #include	<atomic>
 #include	"dab-constants.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
 class	dll_driver;
@@ -71,7 +72,7 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler: public virtualInput, public  Ui_dabstickWidget {
+class	rtlsdrHandler: public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *, QString &);

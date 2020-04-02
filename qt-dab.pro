@@ -22,6 +22,7 @@ RESOURCES	+= resources.qrc
 TRANSLATIONS = i18n/de_DE.ts
 
 DEPENDPATH += . \
+	      ./dab-maxi \
 	      ./src \
 	      ./includes \
 	      ./service-description \
@@ -55,7 +56,7 @@ DEPENDPATH += . \
 	      ./tii-viewer
 
 INCLUDEPATH += . \
-	      ./ \
+	      ./dab-maxi \
 	      ./src \
 	      ./includes \
 	      ./service-description \
@@ -80,8 +81,8 @@ INCLUDEPATH += . \
 	      ./tii-viewer
 
 # Input
-HEADERS += ./radio.h \
-	   ./dab-processor.h \
+HEADERS += ./dab-processor.h \
+	   ./dab-maxi/radio.h \
 	   ./service-description/service-descriptor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
@@ -157,7 +158,7 @@ HEADERS += ./radio.h \
 	   ./includes/support/scanner-table.h \
 	   ./includes/scopes-qwt6/spectrogramdata.h \
 	   ./includes/scopes-qwt6/iqdisplay.h \
-	   ./devices/virtual-input.h \
+	   ./devices/device-handler.h \
 	   ./devices/xml-filewriter.h \
 	   ./devices/filereader-widget.h \
 	   ./devices/rawfiles-new/rawfiles.h \
@@ -182,9 +183,9 @@ FORMS	+= ./tii-viewer/tii-widget.ui
 #FORMS	+= ./devices/filereader-widget.ui 
 FORMS	+= ./devices/xml-filereader/xmlfiles.ui
 
-SOURCES += ./main.cpp \
-	   ./radio.cpp \
-	   ./dab-processor.cpp \
+SOURCES += ./dab-processor.cpp \
+	   ./dab-maxi/main.cpp \
+	   ./dab-maxi/radio.cpp \
 	   ./service-description/audio-descriptor.cpp \
 	   ./service-description/data-descriptor.cpp \
 	   ./src/ofdm/timesyncer.cpp \
@@ -251,7 +252,7 @@ SOURCES += ./main.cpp \
 	   ./src/support/history-handler.cpp \
 	   ./src/support/scanner-table.cpp \
 	   ./src/scopes-qwt6/iqdisplay.cpp \
-	   ./devices/virtual-input.cpp \
+	   ./devices/device-handler.cpp \
 	   ./devices/xml-filewriter.cpp \
 	   ./devices/rawfiles-new/rawfiles.cpp \
 	   ./devices/rawfiles-new/raw-reader.cpp \
@@ -294,11 +295,11 @@ LIBS		+= -lqwt-qt5
 #CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
-#CONFIG		+= lime
+CONFIG		+= lime
 #CONFIG		+= rtl_tcp
-#CONFIG		+= airspy
-#CONFIG		+= hackrf
-#CONFIG		+= soapy
+CONFIG		+= airspy
+CONFIG		+= hackrf
+CONFIG		+= soapy
 #CONFIG		+= elad_s1	# does not work yet
 
 CONFIG		+= faad

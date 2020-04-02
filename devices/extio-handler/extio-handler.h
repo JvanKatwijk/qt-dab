@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -26,7 +27,7 @@
 #include	<QWidget>
 #include	<QComboBox>
 #include	<QString>
-#include	<virtual-input.h>
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 
 class		QSettings;
@@ -167,7 +168,7 @@ typedef enum {
   , extHw_modeTX  = 1
 } extHw_ModeRxTxT;
 
-class	extioHandler:public virtualInput {
+class	extioHandler:public deviceHandler {
 Q_OBJECT
 public:
 			extioHandler		(QSettings *);

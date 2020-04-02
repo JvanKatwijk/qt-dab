@@ -32,7 +32,7 @@
 #include	<cstdint>
 #include	<atomic>
 #include	<vector>
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 //
 //      Note:
@@ -45,7 +45,7 @@ class	sampleReader : public QObject {
 Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
-	                         	virtualInput *theRig,
+	                         	deviceHandler *theRig,
 	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
 
 			~sampleReader();
@@ -58,7 +58,7 @@ public:
 	        void	stopDumping();
 private:
 		RadioInterface	*myRadioInterface;
-		virtualInput	*theRig;
+		deviceHandler	*theRig;
 		RingBuffer<std::complex<float>> *spectrumBuffer;
 		std::vector<std::complex<float>> localBuffer;
 		int32_t		localCounter;

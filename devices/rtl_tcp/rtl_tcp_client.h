@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -35,11 +36,11 @@
 #include	<QComboBox>
 #include	<cstdio>
 #include	"dab-constants.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtl_tcp-widget.h"
 
-class	rtl_tcp_client: public virtualInput, Ui_rtl_tcp_widget {
+class	rtl_tcp_client: public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
 			rtl_tcp_client	(QSettings *);

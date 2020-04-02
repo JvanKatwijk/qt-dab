@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -31,7 +32,7 @@
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	<LimeSuite.h>
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"lime-widget.h"
 
 #ifdef __MINGW32__
@@ -94,7 +95,7 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
 
-class	limeHandler: public virtualInput, public limeWidget {
+class	limeHandler: public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
 			limeHandler		(QSettings *, QString &);

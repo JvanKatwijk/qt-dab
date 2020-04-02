@@ -176,7 +176,7 @@ add_definitions (-DPRESET_NAME)
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           .
-	           ./
+	           ./dab-maxi
 	           ./service-description
 	           ./includes
 	           ./includes/ofdm
@@ -253,7 +253,7 @@ add_definitions (-DPRESET_NAME)
 	     ./includes/backend/data/mot/mot-object.h
 	     ./includes/backend/data/mot/mot-dir.h
 	     ./includes/backend/data/data-processor.h
-	     ./devices/virtual-input.h
+	     ./devices/device-handler.h
 	     ./devices/xml-filewriter.h
 	     ./devices/rawfiles-new/rawfiles.h
 	     ./devices/rawfiles-new/raw-reader.h
@@ -292,7 +292,7 @@ add_definitions (-DPRESET_NAME)
 
 	set (${objectName}_SRCS
 	     ${${objectName}_SRCS}
-	     ./main.cpp
+	     ./dab-maxi/main.cpp
 	     ./dab-processor.cpp
 	     ./service-description/audio-descriptor.cpp
 	     ./service-description/data-descriptor.cpp
@@ -336,7 +336,7 @@ add_definitions (-DPRESET_NAME)
 	     ./src/backend/data/mot/mot-object.cpp
 	     ./src/backend/data/mot/mot-dir.cpp
 	     ./src/backend/data/data-processor.cpp
-	     ./devices/virtual-input.cpp
+	     ./devices/device-handler.cpp
 	     ./devices/xml-filewriter.cpp
 	     ./devices/rawfiles-new/rawfiles.cpp
 	     ./devices/rawfiles-new/raw-reader.cpp
@@ -428,13 +428,13 @@ add_definitions (-DPRESET_NAME)
 	   )
 
 	set (${objectName}_MOCS
-	        ${${objectName}_MOCS} ./radio.h)
+	        ${${objectName}_MOCS} ./dab-maxi/radio.h)
 
 	set ($(objectName)_HDRS
-	        ${${objectName}_HDRS} ./radio.h)
+	        ${${objectName}_HDRS} ./dab-maxi/radio.h)
 
 	set (${objectName}_SRCS
-	        ${${objectName}_SRCS} ./radio.cpp)
+	        ${${objectName}_SRCS} ./dab-maxi/radio.cpp)
 
 
 #########################################################################

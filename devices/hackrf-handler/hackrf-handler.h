@@ -8,6 +8,7 @@
  *    Fabio Capozzi
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -32,7 +33,7 @@
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ui_hackrf-widget.h"
 #include	"libhackrf/hackrf.h"
 
@@ -78,7 +79,7 @@ typedef int	(*pfn_hackrf_si5351c_write)
 
 
 ///////////////////////////////////////////////////////////////////////////
-class	hackrfHandler: public virtualInput, public Ui_hackrfWidget {
+class	hackrfHandler: public deviceHandler, public Ui_hackrfWidget {
 Q_OBJECT
 public:
 			hackrfHandler		(QSettings *, QString &);

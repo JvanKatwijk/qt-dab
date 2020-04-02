@@ -933,9 +933,9 @@ void	RadioInterface::updateTimeDisplay() {
 }
 //
 //	precondition: everything is quiet
-virtualInput	*RadioInterface::setDevice (const QString &s) {
+deviceHandler	*RadioInterface::setDevice (const QString &s) {
 QString	file;
-virtualInput	*inputDevice	= nullptr;
+deviceHandler	*inputDevice	= nullptr;
 ///	OK, everything quiet, now let us see what to do
 #ifdef	HAVE_AIRSPY
 	if (s == "airspy") {
@@ -1193,7 +1193,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	fprintf (stderr, "going for a device %s\n", deviceName. toLatin1 (). data ());
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
-	   inputDevice = new virtualInput();
+	   inputDevice = new deviceHandler ();
 	   return;		// nothing will happen
 	}
 	doStart();		// will set running

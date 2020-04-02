@@ -32,7 +32,7 @@ int16_t res     = 1;
 }
 
 	sampleReader::sampleReader (RadioInterface *mr,
-	                            virtualInput	*theRig,
+	                            deviceHandler	*theRig,
 	                            RingBuffer<std::complex<float>> *spectrumBuffer
 	                           ) {
 int	i;

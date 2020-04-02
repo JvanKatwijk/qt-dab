@@ -19,13 +19,10 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- * 	Default (void) implementation of
- * 	virtual input class
  */
-#include	"virtual-input.h"
+#include	"device-handler.h"
 
-	virtualInput::virtualInput() {
+	deviceHandler::deviceHandler	() {
 	lastFrequency	= 100000;
 	vfoOffset	= 0;
 	theGain		= 50;
@@ -33,42 +30,43 @@
 	myFrame		= nullptr;
 }
 
-	virtualInput::~virtualInput() {
+	deviceHandler::~deviceHandler	() {
 	myFrame		= nullptr;
 }
 
-bool	virtualInput::restartReader	(int32_t freq) {
+bool	deviceHandler::restartReader	(int32_t freq) {
 	(void)freq;
 	return true;
 }
 
-void	virtualInput::stopReader() {
+void	deviceHandler::stopReader	() {
 }
 
-int32_t	virtualInput::getSamples	(std::complex<float> *v, int32_t amount) {
+int32_t	deviceHandler::getSamples	(std::complex<float> *v,
+	                                               int32_t amount) {
 	(void)v; 
 	(void)amount; 
 	return amount;
 }
 
-int32_t	virtualInput::Samples() {
+int32_t	deviceHandler::Samples		() {
 	return 1024;
 }
 
-void	virtualInput::resetBuffer() {
+void	deviceHandler::resetBuffer	() {
 }
 
-void	virtualInput::hide	() {
+void	deviceHandler::hide		() {
 	if (myFrame != nullptr)
 	   myFrame	-> hide ();
 }
 
-void	virtualInput::show	() {
+void	deviceHandler::show		() {
 	if (myFrame != nullptr)
 	   myFrame -> show ();
 }
 
-bool	virtualInput::isHidden	() { 
+bool	deviceHandler::isHidden		() { 
 	if (myFrame != nullptr)
 	   return myFrame -> isHidden ();
 	return false;

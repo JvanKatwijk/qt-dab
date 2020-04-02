@@ -37,7 +37,7 @@
   */
 
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
-	                                 virtualInput	*theRig,
+	                                 deviceHandler	*theRig,
 	                                 uint8_t	dabMode,
 	                                 int16_t	threshold,
 	                                 int16_t	diff_length,

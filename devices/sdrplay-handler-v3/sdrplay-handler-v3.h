@@ -33,7 +33,7 @@
 #include	<queue>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
@@ -46,7 +46,7 @@ class	xml_fileWriter;
 #define GETPROCADDRESS  dlsym
 #endif
 
-class	sdrplayHandler_v3: public virtualInput, public Ui_sdrplayWidget_v3 {
+class	sdrplayHandler_v3: public deviceHandler, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *, QString &);

@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -29,7 +30,7 @@
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
 
@@ -90,7 +91,7 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 
 ///////////////////////////////////////////////////////////////////////////
-class	sdrplayHandler: public virtualInput, public Ui_sdrplayWidget {
+class	sdrplayHandler: public deviceHandler, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
 			sdrplayHandler		(QSettings *, QString &);

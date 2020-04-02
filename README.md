@@ -37,17 +37,12 @@ Introduction
 
 **Qt-DAB-3.3** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-Some other programs are derived from the sources of Qt-DAB, a "light" version **dabradio**, an SDRPlay-specific version **sdrplayDab**, a command-line based version and a stand-alone server version **dab-server**.
-The versions with a GUI are implemented in C++, using the Qt framework for the implementation of the GUI. The command-line version dab-cmdline and the dab-server are implemented using C++, and do not depend on Qt.
-
-The **dab-server** can be installed to run as a "service" on e.g. an RPI, with control - over a bluetooth connection - from an "app" on an Android tablet.
-
-Furthermore, for DX purposes, a **dab-scanner** is implemented that allows
+For DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a txt file, formatted for use with *LibreOffice Calc* and
 comparable programs.
 
-**dabradio**, **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
+Derived programs, such as **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
 
 Qt-DAB-3.3 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
 
@@ -57,8 +52,35 @@ Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi, t
 
 See also the section of configuring Qt-DAB
 
+-----------------------------------------------------------------
+dab-mini
+-----------------------------------------------------------------
+
+When having the sound of DAB as background music,  a DAB program often runs
+on a (headless) RPI2 or 3. Since the RPI is headless, control is
+using my laptop. Quite often I do not need all the whistless and bells 
+that are provided on the Qt-DAB GUI, I basically only need a list of
+services, and a very few buttons to select channel and service.
+
+When using *dabradio* for this, I really miss goodies like presets, and
+previous and next selectors for channels and services.
+A choice was made not to upgrade the *dabradio* but to build an
+additional restricted GUI on top of the Qt-DAB sources: the *dab-mini*.
+
+The obvious advantage is that changes to the Qt-DAB sources would
+be changes to the *dab-mini* sources.
+As the picture shows, the *dab-mini* GUI is minimal, a few selectors
+for setting the gain of the configured and detected device, a channel
+selector, a few buttons to select previous and next channel, to
+select previous and next service, a preset selector and a selector for
+the audio device.
+
+![dab-mini](/dab-mini.png?raw=true)
+
+See the subdirectory *dab-mini* (or the separate repository)
+
 ------------------------------------------------------------------
-Widgets and scopes
+Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------
 
 The picture on top shows Qt-DAB's main window and the other 5 **optional**

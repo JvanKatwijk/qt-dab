@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -27,7 +28,7 @@
 #include	<QFrame>
 #include	<atomic>
 #include	"dab-constants.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_xmlfiles.h"
 
@@ -36,8 +37,7 @@ class	xmlDescriptor;
 class	xml_Reader;
 /*
  */
-class	xml_fileReader: public virtualInput,
-	                public Ui_xmlfile_widget {
+class	xml_fileReader: public deviceHandler, public Ui_xmlfile_widget {
 Q_OBJECT
 public:
 				xml_fileReader	(QString);

@@ -39,7 +39,7 @@
 #include	"ofdm-decoder.h"
 #include	"fic-handler.h"
 #include	"msc-handler.h"
-#include	"virtual-input.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"tii_detector.h"
 //
@@ -51,7 +51,7 @@ class dabProcessor: public QThread {
 Q_OBJECT
 public:
 		dabProcessor  	(RadioInterface *,
-	                         virtualInput *,
+	                         deviceHandler *,
 	                         uint8_t,
 	                         int16_t,
 	                         int16_t,
@@ -107,7 +107,7 @@ private:
 	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;
-	virtualInput	*theRig;
+	deviceHandler	*theRig;
 	dabParams	params;
 	RingBuffer<std::complex<float> > *tiiBuffer;
 	int16_t		tii_delay;
