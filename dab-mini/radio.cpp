@@ -207,7 +207,6 @@ QString	presetName;
 	                                      tii_delay,
 	                                      tii_depth,
 	                                      echo_depth,
-	                                      picturesPath,
 	                                      responseBuffer,
 	                                      spectrumBuffer,
 	                                      iqBuffer,

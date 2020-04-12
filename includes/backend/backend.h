@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -47,8 +48,7 @@ public:
 	                 descriptorType	*d,
 	                 RingBuffer<int16_t> *,
 	                 RingBuffer<uint8_t> *,
-	                 RingBuffer<uint8_t> *,
-	                 QString	picturesPath);
+	                 RingBuffer<uint8_t> *);
 		~Backend();
 	int32_t	process		(int16_t *, int16_t);
 	void	stopRunning();

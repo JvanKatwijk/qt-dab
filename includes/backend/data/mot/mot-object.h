@@ -24,6 +24,7 @@
 #ifndef	__MOT_OBJECT__
 #define	__MOT_OBJECT__
 #include	"dab-constants.h"
+#include	"mot-content-types.h"
 #include	<QObject>
 #include	<QImage>
 #include	<QLabel>
@@ -39,7 +40,6 @@ class	motObject: public QObject {
 Q_OBJECT
 public:
 		motObject (RadioInterface *mr,
-	                   QString	picturePath,
 	                   bool		dirElement,
 	                   uint16_t	transportId,
 	                   uint8_t	*segment,
@@ -60,8 +60,7 @@ private:
 	int32_t		segmentSize;
 	uint32_t	headerSize;
 	uint32_t	bodySize;
-	int		contentType;
-	int		contentsubType;
+	MOTContentType	contentType;
 	QString		name;
 	void		handleComplete();
 	std::map<int, QByteArray> motMap;

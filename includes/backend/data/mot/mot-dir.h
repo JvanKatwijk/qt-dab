@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -32,7 +33,6 @@ class	RadioInterface;
 class	motDirectory {
 public:
 			motDirectory	(RadioInterface *,
-	                                 QString,
 	                                 uint16_t,
 	                                 int16_t,
 	                                 int32_t,
@@ -52,7 +52,6 @@ private:
 	uint16_t	transportId;
 
 	RadioInterface	*myRadioInterface;
-	QString		picturesPath;
 	uint8_t		*dir_segments;
 	bool		marked [512];
 	int16_t		dir_segmentSize;

@@ -28,13 +28,12 @@
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
-	padHandler::padHandler	(RadioInterface *mr, QString picturesPath) {
+	padHandler::padHandler	(RadioInterface *mr) {
 	myRadioInterface	= mr;
 	connect (this, SIGNAL (showLabel (QString)),
 	         mr, SLOT (showLabel (QString)));
 	connect (this, SIGNAL (show_motHandling (bool)),
 	         mr, SLOT (show_motHandling (bool)));
-	this	-> picturePath	= picturesPath;
 	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
@@ -473,7 +472,6 @@ uint16_t	index;
 	      if (currentSlide == nullptr) {
 //	         fprintf (stderr, "creating %d\n", transportId);
 	         currentSlide	= new motObject (myRadioInterface,
-	                                         picturePath,
 	                                         false,
 	   	                                 transportId,
 	                                         &data [index + 2],
@@ -488,7 +486,6 @@ uint16_t	index;
 //	                                           transportId);
 	         delete currentSlide;
 	         currentSlide	= new motObject (myRadioInterface,
-	                                         picturePath,
 	                                         false,
 	   	                                 transportId,
 	                                         &data [index + 2],

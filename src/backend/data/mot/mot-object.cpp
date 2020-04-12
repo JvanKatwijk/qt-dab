@@ -27,15 +27,14 @@
 #include	"radio.h"
 
 	   motObject::motObject (RadioInterface *mr,
-	                         QString	picturePath,
 	                         bool		dirElement,
 	                         uint16_t	transportId,
 	                         uint8_t	*segment,
 	                         int32_t	segmentSize,
 	                         bool		lastFlag) {
 int32_t pointer = 7;
+uint16_t	rawContentType = 0;
 
-	this	-> picturePath	= picturePath;
 	this	-> dirElement	= dirElement;
 	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
 	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
@@ -53,8 +52,10 @@ int32_t pointer = 7;
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
-	contentType     = ((segment [5] >> 1) & 0x3F);
-	contentsubType	= ((segment [5] & 0x01) << 8) | segment [6];
+// Extract the content type
+	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
+	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
+	contentType = static_cast<MOTContentType>(rawContentType);
 
 //	we are actually only interested in the name, if any
         while ((uint16_t)pointer < headerSize) {
@@ -149,14 +150,15 @@ int32_t i;
 
 void	motObject::handleComplete() {
 QByteArray result;
+const MOTContentBaseType baseType = getContentBaseType (contentType);
 
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
-	if (contentType == 2) 
-	   the_picture (result, contentsubType, name);
+	if (baseType == MOTBaseTypeImage)
+	   the_picture (result, (int)contentType, name);
 	else
-	   handle_motObject(result, name, contentType, dirElement);
+	   handle_motObject(result, name, (int)contentType, dirElement);
 }
 
 int	motObject::get_headerSize() {

@@ -47,7 +47,6 @@ Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
-	                                         QString,
 	                                         RingBuffer<uint8_t> *);
 			~mscHandler();
 	void		processBlock_0		(std::complex<float> *);
@@ -67,7 +66,6 @@ private:
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
-	QString		picturesPath;
 	dabParams	params;
 	fftHandler      my_fftHandler;
 	std::complex<float>     *fft_buffer;

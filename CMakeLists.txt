@@ -212,6 +212,7 @@ add_definitions (-DPRESET_NAME)
 	     ./service-description/data-descriptor.h 
              ./includes/country-codes.h
 	     ./includes/dab-constants.h
+	     ./includes/mot-content-types.h 
              ./includes/ofdm/sample-reader.h
 	     ./includes/ofdm/phasereference.h
 	     ./includes/ofdm/ofdm-decoder.h

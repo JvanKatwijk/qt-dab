@@ -34,10 +34,8 @@ struct {
 	motObject	*motSlide;
 } motTable [15];
 
-	motHandler::motHandler (RadioInterface *mr,
-	                        QString	picturesPath) {
+	motHandler::motHandler (RadioInterface *mr) {
 	myRadioInterface	= mr;
-	this	-> picturesPath	= picturesPath;
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
@@ -119,7 +117,6 @@ int32_t	i;
 	         if (h != nullptr) 
 	            break;
 	         h = new motObject (myRadioInterface,
-	                            picturesPath,
 	                            false,	// not within a directory
 	                            transportId,
 	                            &motVector [2],	
@@ -162,7 +159,6 @@ int32_t	i;
 //	         int32_t segSize
 //	                        = ((segment [9] & 0x1F) << 8) | segment [10];
 	         theDirectory	= new motDirectory (myRadioInterface,
-	                                            picturesPath,
 	                                            transportId,
 	                                            segmentSize,
 	                                            dirSize,

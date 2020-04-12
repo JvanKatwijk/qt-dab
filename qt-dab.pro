@@ -87,6 +87,7 @@ HEADERS += ./dab-processor.h \
 	   ./service-description/audio-descriptor.h \
 	   ./service-description/data-descriptor.h \
 	   ./includes/dab-constants.h \
+	   ./includes/mot-content-types.h \
 	   ./includes/country-codes.h \
 	   ./includes/ofdm/timesyncer.h \
 	   ./includes/ofdm/sample-reader.h \

@@ -37,14 +37,12 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 QString	picturesPath,
 	                                 RingBuffer<uint8_t> *frameBuffer) :
 	                                       params (dabMode),
 	                                       my_fftHandler (dabMode),
 	                                       myMapper (dabMode),
 	                                       bufferSpace (params. get_L()){
 	myRadioInterface	= mr;
-	this	-> picturesPath	= picturesPath;
 	this	-> frameBuffer	= frameBuffer;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
@@ -186,8 +184,7 @@ void	mscHandler::set_Channel (descriptorType *d,
 	                                     d,
 	                                     audioBuffer,
 	                                     dataBuffer,
-	                                     frameBuffer,
-	                                     picturesPath));
+	                                     frameBuffer));
 	work_to_be_done. store (true);
 	locker. unlock();
 }

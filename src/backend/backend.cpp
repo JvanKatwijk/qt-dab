@@ -33,15 +33,13 @@
 	                         descriptorType	*d,
 	                         RingBuffer<int16_t> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
-	                         RingBuffer<uint8_t> *frameBuffer,
-	                         QString	picturesPath):
+	                         RingBuffer<uint8_t> *frameBuffer):
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,
 	                                            audiobuffer,
 	                                            databuffer,
-	                                            frameBuffer,
-	                                            picturesPath),
+	                                            frameBuffer),
 	                                    deconvolver (d)
 #ifdef	__THREADED_BACKEND
 	                                    ,freeSlots (NUMBER_SLOTS) 

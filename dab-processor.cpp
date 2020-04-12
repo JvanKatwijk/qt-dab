@@ -44,7 +44,6 @@
 	                                 int16_t	tii_delay,
 	                                 int16_t	tii_depth,
 	                                 int16_t	echo_depth,
-	                                 QString	picturesPath,
 	                                 RingBuffer<float> *responseBuffer,
 		                         RingBuffer<std::complex<float>> *
 	                                                         spectrumBuffer,
@@ -61,7 +60,6 @@
 	                                 ),
 	                                 my_ficHandler (mr, dabMode),
 	                                 my_mscHandler (mr, dabMode,
-	                                                std::move(picturesPath),
 	                                                frameBuffer),
 	                                 phaseSynchronizer (mr,
 	                                                    dabMode, 

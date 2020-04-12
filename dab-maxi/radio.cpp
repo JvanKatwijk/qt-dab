@@ -32,6 +32,7 @@
 #include	<QDir>
 #include	<fstream>
 #include	"dab-constants.h"
+#include	"mot-content-types.h"
 #include	<iostream>
 #include	<numeric>
 #include	<unistd.h>
@@ -505,7 +506,6 @@ int32_t	frequency;
 	                                      tii_delay,
 	                                      tii_depth,
 	                                      echo_depth,
-	                                      picturesPath,
 	                                      responseBuffer,
 	                                      spectrumBuffer,
 	                                      iqBuffer,
@@ -703,7 +703,8 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	if (contentType == 7) {		// epg data
+// epg data
+	if (MOTBaseTypeApplication == (MOTContentBaseType)contentType) {
 #ifdef	TRY_EPG
 	   if (epgPath == "")
 	      return;
@@ -720,16 +721,16 @@ QString realName;
 	   return;
 	}
 //
-//	Only send the picture to show when it is a slide and not
-//	an element of a directory
 	if (filePath == "")
 	   return;
 	if (!dirElement)
 	   return;
-
 	if (name == QString (""))
 	   name = "no name";
+
 	realName = filePath ;
+	if ((realName != "") && (!realName. endsWith ("/")))
+	   realName. append ("/");
 	realName. append (name);
 	realName  = QDir::toNativeSeparators (realName);
 	fprintf (stderr, "going to write file %s\n",
@@ -746,26 +747,38 @@ QString realName;
 }
 //	MOT slide, to show
 void	RadioInterface::showMOT		(QByteArray data,
-	                                 int subtype, QString name) {
+	                                 int contentType,
+	                                 QString pictureName) {
 const char *type;
-QString pictureName = picturesPath;
 	if (!running. load())
 	   return;
 
-	if (pictureName == QString (""))
-	   pictureName. append (QString ("no name"));
-        else
-	   pictureName. append (name);
-	checkDir (pictureName);
-	type = subtype == 0 ? "GIF" :
-	       subtype == 1 ? "JPG" :
-//	       subtype == 1 ? "JPEG" :
-	       subtype == 2 ? "BMP" : "PNG";
+	switch (static_cast<MOTContentType>(contentType)) {
+	   case MOTCTImageGIF:
+	      type = "GIF";
+	      break;
+
+	   case MOTCTImageJFIF:
+	      type = "JPG";
+	      break;
+
+	   case MOTCTImageBMP:
+	      type = "BMP";
+	      break;
+
+	   case MOTCTImagePNG:
+	      type = "PNG";
+	      break;
+
+	   default:
+                return;
+        }
 
 	QPixmap p;
 	p. loadFromData (data, type);
 	if (saveSlides && (pictureName != QString (""))) {
-	   pictureName	= QDir::toNativeSeparators (pictureName);
+	   pictureName = picturesPath + pictureName;
+	   pictureName = QDir::toNativeSeparators (pictureName);
 	   FILE *x = fopen (pictureName. toLatin1(). data(), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",

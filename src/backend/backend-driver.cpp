@@ -31,31 +31,27 @@
 	                              descriptorType *d,
 	                              RingBuffer<int16_t> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
-	                              RingBuffer<uint8_t> *frameBuffer,
-	                              QString		picturesPath) {
+	                              RingBuffer<uint8_t> *frameBuffer) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy != 077) {
               theProcessor = new mp2Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
-	                                       frameBuffer,
-	                                       picturesPath);
+	                                       frameBuffer);
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
               theProcessor = new mp4Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
-	                                       frameBuffer,
-	                                       picturesPath);
+	                                       frameBuffer);
 	   }
 	}
 	else
 	if (d -> type == PACKET_SERVICE)
 	   theProcessor = new dataProcessor (mr,
 	                                     (packetdata *)d,
-	                                     dataBuffer,
-	                                     picturesPath);
+	                                     dataBuffer);
 }
 
 

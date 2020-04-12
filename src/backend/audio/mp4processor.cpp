@@ -45,9 +45,8 @@
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
-	                            RingBuffer<uint8_t> *frameBuffer,
-	                            QString	picturesPath)
-	                               :my_padhandler (mr, picturesPath),
+	                            RingBuffer<uint8_t> *frameBuffer)
+	                               :my_padhandler (mr),
  	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 
 	myRadioInterface	= mr;

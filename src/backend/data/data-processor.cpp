@@ -35,8 +35,7 @@
 //	fragmentsize == Length * CUSize
 	dataProcessor::dataProcessor	(RadioInterface *mr,
 	                                 packetdata	*pd,
-	                                 RingBuffer<uint8_t> *dataBuffer,
-	                                 QString	picturesPath) {
+	                                 RingBuffer<uint8_t> *dataBuffer) {
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
@@ -65,7 +64,7 @@
 	      break;
 
 	   case 60:
-	      my_dataHandler	= new motHandler (mr, picturesPath);
+	      my_dataHandler	= new motHandler (mr);
 	      break;
 	   
 	}

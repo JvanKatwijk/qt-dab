@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -35,8 +36,7 @@ public:
 	                 descriptorType *,
 	                 RingBuffer<int16_t> *,
 	                 RingBuffer<uint8_t> *,
-	                 RingBuffer<uint8_t> *,
-	                 QString);
+	                 RingBuffer<uint8_t> *);
     ~backendDriver();
 void	addtoFrame	(std::vector<uint8_t> outData);
 private:

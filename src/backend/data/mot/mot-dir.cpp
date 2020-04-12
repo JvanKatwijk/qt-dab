@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +26,6 @@
 #include	"mot-dir.h"
 
 	motDirectory::motDirectory (RadioInterface *mr,
-	                            QString	picturesPath,
 	                            uint16_t	transportId,
 	                            int16_t	segmentSize,
 	                            int32_t	dirSize,
@@ -34,7 +34,6 @@
 int16_t	i;
 
 	   this	-> myRadioInterface	= mr;
-	   this	-> picturesPath		= picturesPath;
 	   for (i = 0; i < 512; i ++)
 	      marked [i] = false;
 	   num_dirSegments	= -1;
@@ -132,7 +131,6 @@ int16_t	i;
 	      break;
 	   uint8_t *segment	= &data [currentBase + 2];
 	   motObject *handle	= new motObject (myRadioInterface,
-	                                         picturesPath,
 	                                         true,
 	                                         transportId,
 	                                         segment,

@@ -58,7 +58,6 @@ public:
 	                         int16_t,
 	                         int16_t,	// tii_depth
 	                         int16_t,	// echo_depth
-	                         QString,
 	                         RingBuffer<float> *,
 	                         RingBuffer<std::complex<float>>	*,
 	                         RingBuffer<std::complex<float>>	*,

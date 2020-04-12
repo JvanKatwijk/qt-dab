@@ -34,7 +34,7 @@ class	motObject;
 class	padHandler: public QObject {
 Q_OBJECT
 public:
-		padHandler		(RadioInterface *, QString);
+		padHandler		(RadioInterface *);
 		~padHandler();
 	void	processPAD		(uint8_t *, int16_t, uint8_t, uint8_t);
 private:
@@ -46,7 +46,6 @@ private:
 	void	add_MSC_element		(std::vector<uint8_t>);
 	void	build_MSC_segment	(std::vector<uint8_t>);
 	bool	pad_crc			(uint8_t *, int16_t);
-	QString	picturePath;
 	QString	dynamicLabelText;
 	int16_t	charSet;
 	motObject	*currentSlide;

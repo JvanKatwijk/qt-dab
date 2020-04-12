@@ -56,8 +56,7 @@ public:
 			mp2Processor	(RadioInterface *,
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
-	                                 RingBuffer<uint8_t> *,
-	                                 QString);
+	                                 RingBuffer<uint8_t> *);
 			~mp2Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 	void		setFile		(FILE *);
