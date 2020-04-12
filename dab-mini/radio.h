@@ -25,6 +25,7 @@
 #define __SIMPLE_RADIO__
 
 #include	"dab-constants.h"
+#include	"mot-content-types.h"
 #include	<QMainWindow>
 #include	<QStringList>
 #include	<QStandardItemModel>
@@ -139,7 +140,8 @@ public slots:
 	void			show_snr		(int);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
-	void			showMOT			(QByteArray, int,
+	void			showMOT			(QByteArray,
+                                                                  MOTContentType,
 	                                                          QString);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);

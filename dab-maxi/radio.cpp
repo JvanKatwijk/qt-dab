@@ -681,15 +681,28 @@ ensemblePrinter	my_Printer;
 
 //	showMOT is triggered by the MOT handler,
 void	RadioInterface::showMOT		(QByteArray data,
-	                                 int subtype, QString pictureName) {
+                                         MOTContentType contentType,
+                                         QString pictureName) {
 const char *type;
 	if (!running. load())
 	   return;
 
-	type = subtype == 0 ? "GIF" :
-	       subtype == 1 ? "JPG" :
-//	       subtype == 1 ? "JPEG" :
-	       subtype == 2 ? "BMP" : "PNG";
+        switch (contentType) {
+        case MOTCTImageGIF:
+                type = "GIF";
+                break;
+        case MOTCTImageJFIF:
+                type = "JPG";
+                break;
+        case MOTCTImageBMP:
+                type = "BMP";
+                break;
+        case MOTCTImagePNG:
+                type = "PNG";
+                break;
+        default:
+                return;
+        }
 
 	QPixmap p;
 	p. loadFromData (data, type);

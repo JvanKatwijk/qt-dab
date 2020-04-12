@@ -340,8 +340,9 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 //	showMOT is triggered by the MOT handler,
 void	RadioInterface::showMOT		(QByteArray data,
-	                                 int subtype, QString pictureName) {
-	(void)data; (void)subtype; (void)pictureName;
+                                         MOTContentType contentType,
+                                         QString pictureName) {
+	(void)data; (void)contentType; (void)pictureName;
 }
 //
 //	sendDatagram is triggered by the ip handler,
