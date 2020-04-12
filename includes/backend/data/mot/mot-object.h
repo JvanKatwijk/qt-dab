@@ -42,7 +42,7 @@ class	motObject: public QObject {
 Q_OBJECT
 public:
 		motObject (RadioInterface *mr,
-	                   QString	picturePath,
+	                   const QString& picturePath,
 	                   bool		dirElement,
 	                   uint16_t	transportId,
 	                   uint8_t	*segment,
