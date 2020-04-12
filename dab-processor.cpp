@@ -44,7 +44,7 @@
 	                                 int16_t	tii_delay,
 	                                 int16_t	tii_depth,
 	                                 int16_t	echo_depth,
-	                                 QString	picturesPath,
+	                                 const QString&	picturesPath,
 	                                 RingBuffer<float> *responseBuffer,
 		                         RingBuffer<std::complex<float>> *
 	                                                         spectrumBuffer,

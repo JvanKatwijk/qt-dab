@@ -37,7 +37,7 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 QString	picturesPath,
+	                                 const QString&	picturesPath,
 	                                 RingBuffer<uint8_t> *frameBuffer) :
 	                                       params (dabMode),
 	                                       my_fftHandler (dabMode),

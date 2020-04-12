@@ -47,7 +47,7 @@ Q_OBJECT
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
-	                                         QString,
+	                                         const QString&,
 	                                         RingBuffer<uint8_t> *);
 			~mscHandler();
 	void		processBlock_0		(std::complex<float> *);
