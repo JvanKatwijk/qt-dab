@@ -35,7 +35,7 @@ struct {
 } motTable [15];
 
 	motHandler::motHandler (RadioInterface *mr,
-	                        QString	picturesPath) {
+	                        const QString&	picturesPath) {
 	myRadioInterface	= mr;
 	this	-> picturesPath	= picturesPath;
 	orderNumber		= 0;
