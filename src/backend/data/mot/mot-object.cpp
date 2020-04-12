@@ -33,11 +33,12 @@
 	                         int32_t	segmentSize,
 	                         bool		lastFlag) {
 int32_t pointer = 7;
+uint16_t rawContentType = 0;
 
 	this	-> picturePath	= picturePath;
 	this	-> dirElement	= dirElement;
-	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
-	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
+	connect (this, SIGNAL (the_picture (QByteArray, MOTContentType, QString)),
+	         mr,   SLOT   (showMOT     (QByteArray, MOTContentType, QString)));
 	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
 	this	-> segmentSize		= -1;
@@ -48,8 +49,11 @@ int32_t pointer = 7;
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
-	contentType     = ((segment [5] >> 1) & 0x3F);
-	contentsubType	= ((segment [5] & 0x01) << 8) | segment [6];
+
+	// Extract the content type
+	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
+	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
+	contentType = static_cast<MOTContentType>(rawContentType);
 
 //	we are actually only interested in the name, if any
         while ((uint16_t)pointer < headerSize) {
@@ -143,12 +147,13 @@ int32_t i;
 
 
 void	motObject::handleComplete() {
+const MOTContentBaseType baseType = getContentBaseType(contentType);
 QByteArray result;
 
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
-	if (contentType == 7) {		// epg data
+	if (baseType == MOTBaseTypeApplication) {		// epg data
 #ifdef	TRY_EPG
 	   if (name == QString (""))
 	      name = "epg file";
@@ -165,7 +170,7 @@ QByteArray result;
 //
 //	Only send the picture to show when it is a slide and not
 //	an element of a directory
-	if ((contentType != 2) || dirElement) {
+	if ((baseType != MOTBaseTypeImage) || dirElement) {
 	   if (name == QString (""))
 	      name = "no name";
 	   QString realName = picturePath;
@@ -192,7 +197,7 @@ QByteArray result;
         else
 	   realName. append (name);
 	checkDir (realName);
-	the_picture (result, contentsubType, realName);
+	the_picture (result, contentType, realName);
 }
 
 void	motObject::checkDir (QString &s) {

@@ -23,6 +23,7 @@
 #ifndef	__MOT_OBJECT__
 #define	__MOT_OBJECT__
 #include	"dab-constants.h"
+#include	"mot-content-types.h"
 #include	<QObject>
 #include	<QImage>
 #include	<QLabel>
@@ -63,8 +64,7 @@ private:
 	int32_t		segmentSize;
 	uint32_t	headerSize;
 	uint32_t	bodySize;
-	int		contentType;
-	int		contentsubType;
+	MOTContentType	contentType;
 	QString		name;
 	void		handleComplete();
 #ifdef	TRY_EPG
@@ -73,7 +73,7 @@ private:
 	std::map<int, QByteArray> motMap;
 
 signals:
-        void	the_picture (QByteArray, int, QString);
+        void	the_picture (QByteArray, MOTContentType, QString);
 };
 
 #endif
