@@ -46,7 +46,7 @@
 	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
-	                            QString	picturesPath)
+	                            const QString&	picturesPath)
 	                               :my_padhandler (mr, picturesPath),
  	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 

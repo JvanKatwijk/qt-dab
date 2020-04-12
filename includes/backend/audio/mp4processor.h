@@ -53,7 +53,7 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
 	                                 RingBuffer<uint8_t> *,
-	                                 QString);
+	                                 const QString&);
 			~mp4Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 private:
