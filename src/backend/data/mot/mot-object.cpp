@@ -153,10 +153,6 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
-	if (picturePath.isEmpty())
-	   /* No picture path given */
-	   return;
-
 	if (baseType == MOTBaseTypeApplication) {		// epg data
 #ifdef	TRY_EPG
 	   if (name == QString (""))
@@ -175,22 +171,24 @@ QByteArray result;
 //	Only send the picture to show when it is a slide and not
 //	an element of a directory
 	if ((baseType != MOTBaseTypeImage) || dirElement) {
-	   if (name == QString (""))
-	      name = "no name";
-	   QString realName = picturePath;
-	   realName. append (name);
-	   realName  = QDir::toNativeSeparators (realName);
-	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8(). data());
-	   checkDir (realName);
-	   FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
-	   if (x == nullptr)
-	      fprintf (stderr, "cannot write file %s\n",
-	                           realName. toUtf8(). data());
-	   else {
-	      (void)fwrite (result. data(), 1, bodySize, x);
-	      fclose (x);
-	   }
+		if (!picturePath.isEmpty()) {
+			if (name == QString (""))
+				name = "no name";
+			QString realName = picturePath;
+			realName. append (name);
+			realName  = QDir::toNativeSeparators (realName);
+			fprintf (stderr, "going to write file %s\n",
+					realName. toUtf8(). data());
+			checkDir (realName);
+			FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
+			if (x == nullptr)
+				fprintf (stderr, "cannot write file %s\n",
+						realName. toUtf8(). data());
+			else {
+				(void)fwrite (result. data(), 1, bodySize, x);
+				fclose (x);
+			}
+		}
 	   return;
 	}
 
