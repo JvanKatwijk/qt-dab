@@ -37,8 +37,8 @@ uint16_t rawContentType = 0;
 
 	this	-> picturePath	= picturePath;
 	this	-> dirElement	= dirElement;
-	connect (this, SIGNAL (the_picture (QByteArray, uint16_t, QString)),
-	         mr,   SLOT   (showMOT     (QByteArray, uint16_t, QString)));
+	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
+	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
 	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
 	this	-> segmentSize		= -1;
@@ -201,7 +201,7 @@ QByteArray result;
         else
 	   realName. append (name);
 	checkDir (realName);
-	the_picture (result, static_cast<uint16_t>(contentType), realName);
+	the_picture (result, static_cast<int>(contentType), realName);
 }
 
 void	motObject::checkDir (QString &s) {

@@ -681,7 +681,7 @@ ensemblePrinter	my_Printer;
 
 //	showMOT is triggered by the MOT handler,
 void	RadioInterface::showMOT		(QByteArray data,
-                                         uint16_t contentType,
+                                         int contentType,
                                          QString pictureName) {
 const char *type;
 	if (!running. load())
