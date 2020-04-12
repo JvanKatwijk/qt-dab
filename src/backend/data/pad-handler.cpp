@@ -28,7 +28,7 @@
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
-	padHandler::padHandler	(RadioInterface *mr, QString picturesPath) {
+	padHandler::padHandler	(RadioInterface *mr, const QString& picturesPath) {
 	myRadioInterface	= mr;
 	connect (this, SIGNAL (showLabel (QString)),
 	         mr, SLOT (showLabel (QString)));
