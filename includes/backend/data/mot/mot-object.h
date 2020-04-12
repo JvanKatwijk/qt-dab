@@ -73,7 +73,7 @@ private:
 	std::map<int, QByteArray> motMap;
 
 signals:
-        void	the_picture (QByteArray, MOTContentType, QString);
+        void	the_picture (QByteArray, uint16_t, QString);
 };
 
 #endif

@@ -340,7 +340,7 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 //	showMOT is triggered by the MOT handler,
 void	RadioInterface::showMOT		(QByteArray data,
-                                         MOTContentType contentType,
+                                         uint16_t contentType,
                                          QString pictureName) {
 	(void)data; (void)contentType; (void)pictureName;
 }

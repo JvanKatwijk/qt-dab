@@ -197,7 +197,7 @@ public slots:
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			showMOT			(QByteArray,
-                                                                  MOTContentType,
+                                                                  uint16_t,
 	                                                          QString);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
