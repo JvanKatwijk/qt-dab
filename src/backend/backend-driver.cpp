@@ -32,7 +32,7 @@
 	                              RingBuffer<int16_t> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
 	                              RingBuffer<uint8_t> *frameBuffer,
-	                              QString		picturesPath) {
+	                              const QString&	picturesPath) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy != 077) {
               theProcessor = new mp2Processor (mr,
