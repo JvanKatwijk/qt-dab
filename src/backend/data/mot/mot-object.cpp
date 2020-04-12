@@ -153,6 +153,10 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
+	if (picturePath.isEmpty())
+	   /* No picture path given */
+	   return;
+
 	if (baseType == MOTBaseTypeApplication) {		// epg data
 #ifdef	TRY_EPG
 	   if (name == QString (""))
