@@ -206,14 +206,16 @@ uint8_t	dabBand;
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 	if (saveSlides != 0)
 	   set_picturePath ();
+
+	epgPath		= dabSettings -> value ("epgPath", ""). toString ();
+	filePath	= dabSettings -> value ("filePath", ""). toString ();
 /*
  * Experimental:
  *	lots of people seem to want the scan to continue, rather than
  *	stop whever a channel with data is found.
  */
-
 	serviceOrder	=
-	           dabSettings -> value ("serviceOrder", 0). toInt ();
+	           dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	normalScan	=
 	           dabSettings -> value ("normalScan", 0). toInt () == 1;
 
@@ -271,7 +273,8 @@ uint8_t	dabBand;
 	                                                 dabSettings,
 	                                                 responseBuffer);
 
-	my_tiiViewer		= new tiiViewer (this, tiiBuffer);
+	my_tiiViewer		= new tiiViewer (this,
+	                                         dabSettings, tiiBuffer);
 
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             = dabSettings -> value ("history",
@@ -679,13 +682,81 @@ ensemblePrinter	my_Printer;
 	fclose (file_P);
 }
 
-//	showMOT is triggered by the MOT handler,
+void	checkDir (QString &s) {
+int16_t	ind	= s. lastIndexOf (QChar ('/'));
+int16_t	i;
+QString	dir;
+
+	if (ind == -1)		// no slash, no directory
+	   return;
+
+	for (i = 0; i < ind; i ++)
+	   dir. append (s [i]);
+
+	if (QDir (dir). exists())
+	   return;
+	QDir(). mkpath (dir);
+}
+
+void	RadioInterface::handle_motObject (QByteArray result,
+	                                  QString name,
+	                                  int contentType, bool dirElement) {
+QString realName;
+
+	if (contentType == 7) {		// epg data
+#ifdef	TRY_EPG
+	   if (epgPath == "")
+	      return;
+	   if (name == QString (""))
+	      name = "epg file";
+	   realName = epgPath;
+	   realName. append (name);
+	   realName  = QDir::toNativeSeparators (realName);
+	   checkDir (realName);
+	   std::vector<uint8_t> epgData (result. begin(), result. end());
+	   epgHandler. decode (epgData, realName);
+	   fprintf (stderr, "epg file %s\n", realName. toLatin1 (). data ());
+#endif
+	   return;
+	}
+//
+//	Only send the picture to show when it is a slide and not
+//	an element of a directory
+	if (filePath == "")
+	   return;
+	if (!dirElement)
+	   return;
+
+	if (name == QString (""))
+	   name = "no name";
+	realName = filePath ;
+	realName. append (name);
+	realName  = QDir::toNativeSeparators (realName);
+	fprintf (stderr, "going to write file %s\n",
+	                         realName. toUtf8(). data());
+	checkDir (realName);
+	FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
+	if (x == nullptr)
+	   fprintf (stderr, "cannot write file %s\n",
+	                           realName. toUtf8(). data());
+	else {
+	   (void)fwrite (result. data(), 1, result. length (), x);
+	   fclose (x);
+	}
+}
+//	MOT slide, to show
 void	RadioInterface::showMOT		(QByteArray data,
-	                                 int subtype, QString pictureName) {
+	                                 int subtype, QString name) {
 const char *type;
+QString pictureName = picturesPath;
 	if (!running. load())
 	   return;
 
+	if (pictureName == QString (""))
+	   pictureName. append (QString ("no name"));
+        else
+	   pictureName. append (name);
+	checkDir (pictureName);
 	type = subtype == 0 ? "GIF" :
 	       subtype == 1 ? "JPG" :
 //	       subtype == 1 ? "JPEG" :
@@ -1400,7 +1471,6 @@ void	RadioInterface::hideButtons() {
 void	RadioInterface::setSyncLost() {
 }
 
-
 void	RadioInterface::set_picturePath() {
 QString defaultPath	= QDir::tempPath();
 
@@ -2093,7 +2163,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	presetTimer. stop ();
 	stopService  ();
 	if ((serviceList. size () != 0) && (currentService != "")) {
-	   for (int i = 0; i < serviceList. size (); i ++) {
+	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == currentService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i - 1;
@@ -2127,11 +2197,11 @@ void	RadioInterface::handle_nextServiceButton	() {
 	presetTimer. stop ();
 	stopService ();
 	if ((serviceList. size () != 0) && (currentService != "")) {
-	   for (int i = 0; i < serviceList. size (); i ++) {
+	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == currentService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i + 1;
-	         if (i >= serviceList. size ())
+	         if (i >= (int)(serviceList. size ()))
 	            i = 0;
 	         dabService s;
 	         s. serviceName = serviceList. at (i). name;
@@ -2433,7 +2503,7 @@ std::vector<serviceId> k;
 	   k. push_back (n);
 	   return k;
 	}
-	int 	baseN		= 0;
+	uint32_t baseN		= 0;
 	QString baseS		= "";
 	bool	inserted	= false;
 	for (const auto serv : l) {

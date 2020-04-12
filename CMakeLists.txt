@@ -84,6 +84,10 @@ if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
 endif ()
 
+if (DEFINED TRY_EPG)
+   set(TRY_EPG true)
+endif ()
+
 if (DEFINED VITERBI_SSE)
    set(VITERBI_SSE true)
 endif ()
@@ -108,7 +112,7 @@ endif ()
 
 add_definitions (-DMSC_DATA__)		# use at your own risk
 add_definitions (-DPRESET_NAME)
-#add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
+#add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 #
 ########################################################################
 

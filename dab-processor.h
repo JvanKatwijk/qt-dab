@@ -100,7 +100,7 @@ public:
 	void		clearEnsemble		();
 	void		getFrameQuality		(int *, int*, int *);
 private:
-
+	int		threshold;
 	int		totalFrames;
 	int		goodFrames;
 	int		badFrames;

@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -31,9 +32,6 @@
 #include	<QDir>
 #include	<map>
 #include	<iterator>
-#ifdef	TRY_EPG
-#include	"epgdec.h"
-#endif
 
 class	RadioInterface;
 
@@ -56,7 +54,6 @@ public:
 	int		get_headerSize();
 private:
 	bool		dirElement;
-	void		checkDir	(QString&);
 	QString		picturePath;
 	uint16_t	transportId;
 	int16_t		numofSegments;
@@ -67,13 +64,11 @@ private:
 	int		contentsubType;
 	QString		name;
 	void		handleComplete();
-#ifdef	TRY_EPG
-	CEPGDecoder     epgHandler;
-#endif
 	std::map<int, QByteArray> motMap;
 
 signals:
-        void	the_picture (QByteArray, int, QString);
+        void	the_picture	(QByteArray, int, QString);
+	void	handle_motObject (QByteArray, QString, int, bool);
 };
 
 #endif

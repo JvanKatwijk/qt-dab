@@ -141,6 +141,8 @@ public slots:
 	void			showLabel		(QString);
 	void			showMOT			(QByteArray, int,
 	                                                          QString);
+	void			handle_motObject	(QByteArray, QString,
+	                                                      int, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();

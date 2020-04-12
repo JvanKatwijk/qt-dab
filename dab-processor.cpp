@@ -76,6 +76,7 @@
 	                                                 iqBuffer) {
 
 	this	-> myRadioInterface	= mr;
+	this	-> threshold		= threshold;
 	this	-> theRig		= theRig;
 	this	-> tiiBuffer		= tiiBuffer;
 	this	-> T_null		= params. get_T_null();
@@ -185,7 +186,7 @@ notSynced:
   *	Note that we probably already had 30 to 40 samples of the T_g
   *	part
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 3);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();
@@ -204,7 +205,8 @@ Check_endofNULL:
   *	We use a correlation that will find the first sample after the
   *	cyclic prefix.
   */
-	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 10);
+	   startIndex = phaseSynchronizer. findIndex (ofdmBuffer,
+	                                              3 * threshold);
 	   if (startIndex < 0) { // no sync, try again
 	      if (!correctionNeeded) {
 	         setSyncLost();

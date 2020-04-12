@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -137,7 +138,7 @@ std::vector<int> resultVector;
 	else 
 	   resultVector. push_back (maxIndex);	
 
-	if (threshold <= 5)	//	
+	if (threshold <= 3)	//	
 	   return maxIndex;
 	for (int k = 0; k < depth; k ++) {
 	   float MMax = 0;

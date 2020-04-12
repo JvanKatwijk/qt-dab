@@ -1,8 +1,30 @@
-
+#
+/*
+ *    Copyright (C) 2014 .. 2017
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of Qt-DAB
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation recorder 2 of the License.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+#include	<QMessageBox>
 #include	"soapy-handler.h"
-#include <stdio.h> //printf
-#include <stdlib.h> //free
-#include <complex.h>
+#include	<stdio.h> //printf
+#include	<stdlib.h> //free
+#include	<complex.h>
+#include	"soapy_CS8.h"
 #include	"soapy_CS16.h"
 #include	"soapy_CF32.h"
 
@@ -38,7 +60,6 @@ bool	contains (std::vector<std::string> s, std::string key) {
 	return false;
 }
 
-
 void	soapyHandler::createDevice (void) {
 QString s	= deviceLineEdit -> text();
 QString	handlerName	= "driver=";
@@ -47,8 +68,11 @@ QString	handlerName	= "driver=";
 
 	device  = SoapySDR::Device::make (handlerName. toLatin1(). data());
 
-        if (device == nullptr)
+        if (device == nullptr) {
+	   QMessageBox::warning (myFrame, tr ("Warning"),
+                                       tr ("could not find soapy support\n"));
            return;
+	}
 
 	deviceNameLabel	-> setText (device -> getHardwareKey(). c_str());
         fprintf (stderr, "channels = %d\n",
@@ -88,8 +112,8 @@ QString	handlerName	= "driver=";
            SoapySDR::Range r    = device -> getGainRange (SOAPY_SDR_RX,
                                                           0,
                                                           gains [0]);
-	   spinBox_1 -> setMinimum (r. minimum());
-	   spinBox_1 -> setMaximum (r. maximum());
+	   spinBox_1 -> setMinimum (r. minimum ());
+	   spinBox_1 -> setMaximum (r. maximum ());
 	   labelSpinbox_1	-> setText (QString (gains [0]. c_str()));
 	   spinBox_1		-> show();
 	   labelSpinbox_1	-> show();
@@ -110,7 +134,7 @@ QString	handlerName	= "driver=";
 	            this, SLOT (handle_spinBox_2 (int)));
 	}
 
-        SoapySDR::Range r = device -> getGainRange (SOAPY_SDR_RX, 0);
+        SoapySDR::Range r = device -> getGainRange (SOAPY_SDR_RX, 0, gains [0]);
         fprintf (stderr, "range totaal = %f, %f\n",
                                   r. minimum(), r. maximum());
 
@@ -150,9 +174,10 @@ QString	handlerName	= "driver=";
 	else
 	if (contains (streamFormats, "CS16"))
 	   worker	= new soapy_CS16 (device);
-//	else
-//	if (contains (streamFormats, "CS8"))
-//	   worker	= new soapy_CS8 (device);
+	else
+	if (contains (streamFormats, "CS8"))
+	   worker	= new soapy_CS8 (device);
+	statusLabel	-> setText ("OK");
 }
 
 void	soapyHandler::setVFOFrequency		(int32_t f) {

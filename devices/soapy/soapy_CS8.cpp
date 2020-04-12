@@ -1,3 +1,24 @@
+#
+/*
+ *    Copyright (C) 2014 .. 2017
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of Qt-DAB
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation recorder 2 of the License.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #include	<SoapySDR/Device.hpp>
 #include	<SoapySDR/Formats.hpp>
 #include        <SoapySDR/Errors.hpp>
@@ -27,11 +48,11 @@
 	delete theBuffer;
 }
 
-int	soapy_CS16::Samples	(void) {
+int	soapy_CS8::Samples	(void) {
 	return theBuffer	-> GetRingBufferReadAvailable () / 2;
 }
 
-int	soapy_CS16::getSamples	(std::complex<float> *v, int amount) {
+int	soapy_CS8::getSamples	(std::complex<float> *v, int amount) {
 int8_t temp [amount * 2];
 int	realAmount;
 	realAmount	= theBuffer -> getDataFromBuffer (temp, amount * 2);
@@ -41,7 +62,7 @@ int	realAmount;
 	return realAmount / 2;
 }
 
-void	soapy_CS16::run	(void) {
+void	soapy_CS8::run	(void) {
 int     flag    = 0;
 long long int timeNS;
 int8_t buffer [2048 * 2];

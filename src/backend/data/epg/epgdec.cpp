@@ -37,14 +37,15 @@
 
 static QDomElement element (QDomDocument &doc, const tag_length_value &tlv);
 
-void	CEPGDecoder::decode (const vector<_BYTE>& vecData, const QString &name) {
+void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
+                                             const QString &name) {
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
 	tag_length_value tlv (&vecData [0]);
 	if (tlv. is_epg()) {
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString();
-	   FILE *epgFile = fopen (name. toUtf8(). data(), "w");
+	   FILE *epgFile = fopen (name. toUtf8(). data (), "w");
 	   if (epgFile != nullptr) {
 	      fprintf (stderr, "filename = %s\n", name. toUtf8(). data());
 	      fprintf (epgFile, test. toLatin1(). data());
@@ -70,7 +71,7 @@ static char token_list[20][255];
 
 static uint32_t default_content_id;
 
-static const char *enums0[] = { (char*)2, "DAB", "DRM" };
+static const char *enums0 [] = { (char*)2, "DAB", "DRM" };
 static const char *enums1[] = { (char*)9, nullptr, "series",
 	"show",
 	"programConcept",

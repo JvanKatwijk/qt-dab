@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +26,8 @@
 #include	<QColor>
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
-	                                         RingBuffer<std::complex<float>> *sbuffer) {
+	                         QSettings	*dabSettings,
+	                         RingBuffer<std::complex<float>> *sbuffer) {
 int16_t	i;
 QString	colorString	= "black";
 QColor	displayColor;
@@ -33,14 +35,23 @@ QColor	gridColor;
 QColor	curveColor;
 
 	this	-> myRadioInterface	= mr;
+	this	-> dabSettings		= dabSettings;
 	this	-> tiiBuffer		= sbuffer;
 
+	colorString			= dabSettings -> value ("displaycolor", "black"). toString();
 	displayColor			= QColor (colorString);
-	colorString			= "white";
+	colorString			= dabSettings -> value ("gridcolor",
+	                                                 "white"). toString();
 	gridColor			= QColor (colorString);
+	colorString		        = dabSettings -> value ("gridcolor",
+	                                                 "white"). toString();
 	curveColor			= QColor (colorString);
 
-	displaySize			= 1024;
+	displaySize			= dabSettings -> value ("displaySize",
+	                                                   1024).toInt();
+	if ((displaySize & (displaySize - 1)) != 0)
+	   displaySize = 1024;
+
 	this	-> myFrame		= new QFrame (nullptr);
 	setupUi (this -> myFrame);
 
@@ -72,10 +83,10 @@ QColor	curveColor;
 	grid	-> attach (plotgrid);
 
 	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(Qt::white));
+   	spectrumCurve	-> setPen (QPen(curveColor));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
 	spectrumCurve	-> setBaseline	(get_db (0));
-	ourBrush	= new QBrush (Qt::white);
+	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
 	spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);

@@ -1,0 +1,36 @@
+
+dab-mini implements a small GUI on the top of the full set of Qt-DAB sources.
+
+Basically, two files - and device drivers - had to be changed for that.
+
+In the main program, some of the (few) command line options were removed
+The file "radio.cpp" (as well as the header file "radio.h") were adapted
+to deal with a simpler interface. The class RadioInterface, implemented
+in that file, responds to signals from the GUI, but also handles
+all signals arriving from the different parts of the DAB implementation.
+
+The file radio.cpp therefore contains a lot of "slots" doing nothing,
+and it carrier a lot of buffers,
+needed as parameter for the classes instantiated, while it is certain that nothing will be done with the data in those buffers.
+
+The device handlers needed some change as well. They are kept in
+a directory "devices-dab-mini". In the setup chose here, there are no
+separate widgets for device control. All control is in maximum 2 spinboxes
+and one checkbox.
+
+Creating an executable is using either the qmake or the cmake route
+
+For qmake: edit the dab-mini.pro file to select (unselect) devices for the
+configuration.
+
+For cmake:
+	mkdir build
+	cd build
+	cmake .. -DXXXX=ON -DYYY=ON ... -DZZZ=ON
+
+where
+	-DMMM=ON
+is specified for device MMM
+
+
+

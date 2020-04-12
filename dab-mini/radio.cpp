@@ -338,7 +338,15 @@ QString s;
 //////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////
-//	showMOT is triggered by the MOT handler,
+
+void	RadioInterface::handle_motObject (QByteArray result, QString name,
+	                                  int contentType, bool dirName) {
+	(void)result;
+	(void)name;
+	(void)contentType;
+	(void)dirName;
+}
+
 void	RadioInterface::showMOT		(QByteArray data,
 	                                 int subtype, QString pictureName) {
 	(void)data; (void)subtype; (void)pictureName;

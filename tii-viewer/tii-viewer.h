@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -24,6 +25,7 @@
 #ifndef		__TII_VIEWER__
 #define		__TII_VIEWER__
 
+#include	<QSettings>
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<QObject>
@@ -44,6 +46,7 @@ class	tiiViewer: public QObject, Ui_tiiWidget {
 Q_OBJECT
 public:
 			tiiViewer		(RadioInterface *,
+	                                         QSettings *,
 	                                         RingBuffer<std::complex<float>> *);
 			~tiiViewer		();
 	void		showSpectrum		(int32_t);
@@ -55,6 +58,7 @@ public:
 	void		clear();
 private:
 	RadioInterface	*myRadioInterface;
+	QSettings	*dabSettings;
 	RingBuffer<std::complex<float>>	*tiiBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;

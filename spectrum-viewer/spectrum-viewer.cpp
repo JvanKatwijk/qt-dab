@@ -82,10 +82,12 @@ QColor	curveColor;
 	grid	-> attach (plotgrid);
 
 	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(Qt::white));
+//	spectrumCurve	-> setPen (QPen(Qt::white));
+	spectrumCurve	-> setPen (QPen(curveColor));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
 	spectrumCurve	-> setBaseline	(get_db (0));
-	ourBrush	= new QBrush (Qt::white);
+//	ourBrush	= new QBrush (Qt::white);
+	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
 	spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);

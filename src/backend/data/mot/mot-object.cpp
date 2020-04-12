@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -38,6 +39,10 @@ int32_t pointer = 7;
 	this	-> dirElement	= dirElement;
 	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
 	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
+	connect (this, SIGNAL (handle_motObject (QByteArray, QString,
+	                                         int, bool)),
+	         mr,   SLOT   (handle_motObject (QByteArray, QString,
+	                                         int, bool)));
 	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
 	this	-> segmentSize		= -1;
@@ -148,67 +153,10 @@ QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
-	if (contentType == 7) {		// epg data
-#ifdef	TRY_EPG
-	   if (name == QString (""))
-	      name = "epg file";
-	   QString realName = picturePath;
-	   realName. append (name);
-	   realName  = QDir::toNativeSeparators (realName);
-	   checkDir (realName);
-	   std::vector<uint8_t> epgData (result. begin(), result. end());
-	   epgHandler. decode (epgData, realName);
-	   fprintf (stderr, "epg file %s\n", realName. toLatin1 (). data ());
-#endif
-	   return;
-	}
-//
-//	Only send the picture to show when it is a slide and not
-//	an element of a directory
-	if ((contentType != 2) || dirElement) {
-	   if (name == QString (""))
-	      name = "no name";
-	   QString realName = picturePath;
-	   realName. append (name);
-	   realName  = QDir::toNativeSeparators (realName);
-	   fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8(). data());
-	   checkDir (realName);
-	   FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
-	   if (x == nullptr)
-	      fprintf (stderr, "cannot write file %s\n",
-	                           realName. toUtf8(). data());
-	   else {
-	      (void)fwrite (result. data(), 1, bodySize, x);
-	      fclose (x);
-	   }
-	   return;
-	}
-
-//	MOT slide, to show
-	QString realName = picturePath;
-	if (name == QString (""))
-	   realName. append (QString ("no name"));
-        else
-	   realName. append (name);
-	checkDir (realName);
-	the_picture (result, contentsubType, realName);
-}
-
-void	motObject::checkDir (QString &s) {
-int16_t	ind	= s. lastIndexOf (QChar ('/'));
-int16_t	i;
-QString	dir;
-
-	if (ind == -1)		// no slash, no directory
-	   return;
-
-	for (i = 0; i < ind; i ++)
-	   dir. append (s [i]);
-
-	if (QDir (dir). exists())
-	   return;
-	QDir(). mkpath (dir);
+	if (contentType == 2) 
+	   the_picture (result, contentsubType, name);
+	else
+	   handle_motObject(result, name, contentType, dirElement);
 }
 
 int	motObject::get_headerSize() {

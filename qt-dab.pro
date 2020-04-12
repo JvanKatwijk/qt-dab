@@ -292,7 +292,7 @@ LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
-#CONFIG		+= dabstick
+CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3		# pretty experimental
 CONFIG		+= lime
@@ -500,10 +500,12 @@ soapy {
 	INCLUDEPATH     += ./devices/soapy
         HEADERS         += ./devices/soapy/soapy-handler.h \
 	                   ./devices/soapy/soapy-worker.h \
+	                   ./devices/soapy/soapy_CS8.h \
 	                   ./devices/soapy/soapy_CS16.h \
 	                   ./devices/soapy/soapy_CF32.h
         SOURCES         += ./devices/soapy/soapy-handler.cpp \
 	                   ./devices/soapy/soapy-worker.cpp \
+	                   ./devices/soapy/soapy_CS8.cpp \
 	                   ./devices/soapy/soapy_CS16.cpp \
 	                   ./devices/soapy/soapy_CF32.cpp
         FORMS           += ./devices/soapy/soapy-widget.ui

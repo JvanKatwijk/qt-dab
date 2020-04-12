@@ -34,13 +34,21 @@ QColor	gridColor;
 QColor	curveColor;
 
 	this	-> myRadioInterface	= mr;
-	plotLength	= s -> value ("plotLength", 1000). toInt ();
+	this	-> dabSettings		= s;
+	plotLength			= s -> value ("plotLength",
+	                                                  1000). toInt ();
 	this	-> responseBuffer	= b;
-	colorString			= "black";
+
+	colorString			= dabSettings -> value ("displaycolor",
+	                                              "black"). toString();
 	displayColor			= QColor (colorString);
-	colorString			= "white";
+	colorString			= dabSettings -> value ("gridcolor",
+	                                               "white"). toString();
 	gridColor			= QColor (colorString);
-	curveColor			= QColor ("red");
+	colorString			= dabSettings -> value ("gridcolor",
+	                                                "white"). toString();
+	curveColor                      = QColor (colorString);
+
 	myFrame				= new QFrame;
 	setupUi (this -> myFrame);
 
@@ -62,10 +70,10 @@ QColor	curveColor;
 	grid	-> attach (plotgrid);
 
 	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(Qt::white));
+   	spectrumCurve	-> setPen (QPen(curveColor));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
 	spectrumCurve	-> setBaseline	(0);
-	ourBrush	= new QBrush (Qt::white);
+	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
 	spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);

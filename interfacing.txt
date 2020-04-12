@@ -18,12 +18,12 @@ The interface
 
 The qt-dab software assumes a device to support the interface to
 the device implemented as a class derived from the 
-class "virtualInput"
+class "deviceHandler"
 
-class	virtualInput: public QObject {
+class	deviceHandler: public QObject {
 public:
-			virtualInput 	(void);
-virtual			~virtualInput 	(void);
+			deviceHandler 	(void);
+virtual			~deviceHandler 	(void);
 virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency	(void);
 virtual		int32_t	defaultFrequency(void);
@@ -74,7 +74,7 @@ need to be done in the device handler.
 The function resetBuffer will clear the buffer in the device driver, it is
 used when switching channels.
 
-The function bitdepth returns - as the name suggests - the number of bits
+The function bitDepth returns - as the name suggests - the number of bits
 in the (elements of the) sample. E.g dabsticks provide 8 bits, SDRplay 12.
 The value is used to scale the Y-axis of the scopes.
 
@@ -82,7 +82,7 @@ The device driver might have a small GUI, with probably a slider or spinbox
 for gain, and maybe other settings. See one of the existing device drivers
 for examples.
 
-if the drives does contain its own GUI, the function "show" is called
+if the driver does contain its own GUI, the function "show" is called
 whenever it should be visible, the function "hide" when it should
 be hidden and the function "isHidden" to return the status, being hidden or not.
 
@@ -133,7 +133,6 @@ the following lines
 #endif
 
 where the appropriate parameters are passed on to the constructor.
-
 
 That is it, however ...
 

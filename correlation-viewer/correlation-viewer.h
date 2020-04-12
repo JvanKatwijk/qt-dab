@@ -55,9 +55,10 @@ public:
 	bool		isHidden		();
 
 private:
+	RadioInterface	*myRadioInterface;
+	QSettings	*dabSettings;
 	std::vector<int> indexVector;
 	float		get_db			(float);
-	RadioInterface	*myRadioInterface;
 	RingBuffer<float> *responseBuffer;
 	int16_t		displaySize;
 	QFrame		*myFrame;

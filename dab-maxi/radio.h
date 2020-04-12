@@ -46,6 +46,9 @@
 #endif
 #include	"preset-handler.h"
 #include	"scanner-table.h"
+#ifdef	TRY_EPG
+#include	"epgdec.h"
+#endif
 
 class	QSettings;
 class	deviceHandler;
@@ -119,11 +122,16 @@ private:
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;
 #endif
+#ifdef	TRY_EPG
+	CEPGDecoder		epgHandler;
+#endif
 	RingBuffer<int16_t>	*audioBuffer;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
 	bool			saveSlides;
 	QString			picturesPath;
+	QString			epgPath;
+	QString			filePath;
 	int			switchTime;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
@@ -197,6 +205,8 @@ public slots:
 	void			showLabel		(QString);
 	void			showMOT			(QByteArray, int,
 	                                                          QString);
+	void			handle_motObject	(QByteArray, QString,
+	                                                      int, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();
