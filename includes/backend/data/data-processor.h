@@ -42,7 +42,7 @@ public:
 	dataProcessor	(RadioInterface *mr,
 	                 packetdata	*pd,
 	                 RingBuffer<uint8_t>	*dataBuffer,
-	                 QString	picturesPath);
+	                 const QString&	picturesPath);
 	~dataProcessor();
 void	addtoFrame	(std::vector<uint8_t>);
 private:

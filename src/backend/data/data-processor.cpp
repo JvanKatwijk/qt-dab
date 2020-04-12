@@ -36,7 +36,7 @@
 	dataProcessor::dataProcessor	(RadioInterface *mr,
 	                                 packetdata	*pd,
 	                                 RingBuffer<uint8_t> *dataBuffer,
-	                                 QString	picturesPath) {
+	                                 const QString&	picturesPath) {
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
