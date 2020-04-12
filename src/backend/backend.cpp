@@ -34,7 +34,7 @@
 	                         RingBuffer<int16_t> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
 	                         RingBuffer<uint8_t> *frameBuffer,
-	                         QString	picturesPath):
+	                         const QString&	picturesPath):
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,

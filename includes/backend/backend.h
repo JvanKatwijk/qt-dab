@@ -48,7 +48,7 @@ public:
 	                 RingBuffer<int16_t> *,
 	                 RingBuffer<uint8_t> *,
 	                 RingBuffer<uint8_t> *,
-	                 QString	picturesPath);
+	                 const QString&	picturesPath);
 		~Backend();
 	int32_t	process		(int16_t *, int16_t);
 	void	stopRunning();
