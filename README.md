@@ -6,6 +6,14 @@ Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terr
 ![Qt-DAB with xml input](/qt-dab-3.3.png?raw=true)
 
 ------------------------------------------------------------------
+New: some documentation
+------------------------------------------------------------------
+
+Since the Qt-DAB program is pretty large and has quite a number
+of options for users to influence the behaviour, I added a *preliminary*
+piece of documentation in the sections docs
+
+------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 
