@@ -1009,10 +1009,14 @@ void	RadioInterface::updateTimeDisplay() {
 	                                            total_ficError * 100.0 / total_fics);
 	   total_ficError	= 0;
 	   total_fics		= 0;
+#ifndef TCP_STREAMER 
+#ifndef	QT_AUDIO
 	   if (streamoutSelector -> isVisible ()) {
 	      int xxx = ((audioSink *)soundOut)	-> missed();
 	      fprintf (stderr, "missed %d\n", xxx);
 	   }
+#endif
+#endif
 	}
 }
 //
