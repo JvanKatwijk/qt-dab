@@ -720,6 +720,8 @@ QString realName;
 #endif
 	   return;
 	}
+
+	fprintf (stderr, "contentType %x\n", contentType);
 //
 	if (filePath == "")
 	   return;
@@ -745,6 +747,7 @@ QString realName;
 	   fclose (x);
 	}
 }
+
 //	MOT slide, to show
 void	RadioInterface::showMOT		(QByteArray data,
 	                                 int contentType,
@@ -779,10 +782,11 @@ const char *type;
 	if (saveSlides && (pictureName != QString (""))) {
 	   pictureName = picturesPath + pictureName;
 	   pictureName = QDir::toNativeSeparators (pictureName);
-	   FILE *x = fopen (pictureName. toLatin1(). data(), "w+b");
+	   checkDir (pictureName);
+	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureName. toLatin1(). data());
+	                            pictureName. toLatin1 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
 	                            pictureName. toLatin1(). data());

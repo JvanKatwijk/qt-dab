@@ -155,6 +155,7 @@ const MOTContentBaseType baseType = getContentBaseType (contentType);
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
+	fprintf (stderr, "mot object with type %x\n", contentType);
 	if (baseType == MOTBaseTypeImage)
 	   the_picture (result, (int)contentType, name);
 	else
