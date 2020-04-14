@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= dab-mini-1.0
+TARGET		= dabMini-1.0
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -221,15 +221,11 @@ isEmpty(GITHASHSTRING) {
 }
 
 INCLUDEPATH	+= /usr/local/include
-INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
 LIBS		+= -lz
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
-#correct this for the correct path to the qwt6 library on your system
-#LIBS		+= -lqwt
-LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -245,8 +241,7 @@ CONFIG		+= faad
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out
 
-CONFIG		+= try-epg		# do not use
-DEFINES		+= PRESET_NAME
+#CONFIG		+= try-epg		# do not use
 DEFINES		+= __THREADED_BACKEND
 #DEFINES	+= SHOW_MISSING
 
@@ -275,14 +270,9 @@ isEmpty(GITHASHSTRING) {
 }
 
 INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 INCLUDEPATH	+= /mingw32/include
-INCLUDEPATH	+= /mingw32/include/qwt
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-#INCLUDEPATH	+= /mingw/include
-#INCLUDEPATH	+= /mingw64/include/qwt
-#INCLUDEPATH	+= C:/msys64/mingw64/include/qwt
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -294,10 +284,6 @@ LIBS 		+= -lstdc++
 LIBS		+= -lws2_32
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
-#correct this for the correct path to the qwt6 library on your system
-#mingw64 wants the first one, cross compiling mingw64-32 the second one
-#LIBS		+= -lqwt
-LIBS		+= -lqwt-qt5
 CONFIG		+= faad
 #CONFIG		+= extio
 CONFIG		+= airspy

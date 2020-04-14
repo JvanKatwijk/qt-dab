@@ -156,7 +156,7 @@ const MOTContentBaseType baseType = getContentBaseType (contentType);
 	   result. append (it. second);
 
 	fprintf (stderr, "mot object with type %x\n", contentType);
-	if (baseType == MOTBaseTypeImage)
+	if ((baseType == MOTBaseTypeImage) && !dirElement)
 	   the_picture (result, (int)contentType, name);
 	else
 	   handle_motObject(result, name, (int)contentType, dirElement);
