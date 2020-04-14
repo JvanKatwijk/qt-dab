@@ -526,13 +526,14 @@ add_definitions (-DPRESET_NAME)
 
 	   include_directories (
 	     ./devices/sdrplay-handler-v3
+	     ./devices/sdrplay-handler-v3/include
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./devices/sdrplay-handler-v3/sdrplay-commands.h
-	        ./devices/sdrplay-handler-v3/sdrplay_api.h
+	        ./devices/sdrplay-handler-v3/include/sdrplay_api.h
            )
 
 	   set (${objectName}_SRCS
