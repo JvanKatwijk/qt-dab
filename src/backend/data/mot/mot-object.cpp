@@ -36,8 +36,6 @@ int32_t pointer = 7;
 uint16_t	rawContentType = 0;
 
 	this	-> dirElement	= dirElement;
-	connect (this, SIGNAL (the_picture (QByteArray, int, QString)),
-	         mr,   SLOT   (showMOT     (QByteArray, int, QString)));
 	connect (this, SIGNAL (handle_motObject (QByteArray, QString,
 	                                         int, bool)),
 	         mr,   SLOT   (handle_motObject (QByteArray, QString,
@@ -150,16 +148,10 @@ int32_t i;
 
 void	motObject::handleComplete() {
 QByteArray result;
-const MOTContentBaseType baseType = getContentBaseType (contentType);
-
 	for (const auto &it : motMap)
 	   result. append (it. second);
 
-	fprintf (stderr, "mot object with type %x\n", contentType);
-	if ((baseType == MOTBaseTypeImage) && !dirElement)
-	   the_picture (result, (int)contentType, name);
-	else
-	   handle_motObject(result, name, (int)contentType, dirElement);
+	handle_motObject (result, name, (int)contentType, dirElement);
 }
 
 int	motObject::get_headerSize() {

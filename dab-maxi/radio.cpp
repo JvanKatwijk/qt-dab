@@ -210,6 +210,10 @@ uint8_t	dabBand;
 
 	epgPath		= dabSettings -> value ("epgPath", ""). toString ();
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
+	if ((epgPath != "") && (!epgPath. endsWith ("/")))
+	   epgPath = epgPath + "/";
+	if ((filePath != "") && (!filePath. endsWith ("/")))
+	   filePath = filePath + "/";
 /*
  * Experimental:
  *	lots of people seem to want the scan to continue, rather than
@@ -226,7 +230,12 @@ uint8_t	dabBand;
 	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
 
-	dataDisplay		->  hide();
+	bool	b	=
+	            dabSettings -> value ("motSlides", 0). toInt () == 1;
+	motSlides	= b ? new QLabel () : nullptr;
+	if (motSlides != nullptr)
+	   motSlides		-> hide ();
+	dataDisplay		-> hide();
 	serviceList. clear ();
         model . clear ();
         ensembleDisplay         -> setModel (&model);
@@ -703,57 +712,83 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-// epg data
-	if (MOTBaseTypeApplication == (MOTContentBaseType)contentType) {
-#ifdef	TRY_EPG
-	   if (epgPath == "")
-	      return;
-	   if (name == QString (""))
-	      name = "epg file";
-	   realName = epgPath;
-	   realName. append (name);
-	   realName  = QDir::toNativeSeparators (realName);
-	   checkDir (realName);
-	   std::vector<uint8_t> epgData (result. begin(), result. end());
-	   epgHandler. decode (epgData, realName);
-	   fprintf (stderr, "epg file %s\n", realName. toLatin1 (). data ());
-#endif
-	   return;
-	}
+	fprintf (stderr, "handle_MOT: type %x, name %s dir = %d\n",
+	                           contentType,
+	                           name. toLatin1 (). data (), dirElement);
+	switch (getContentBaseType ((MOTContentType)contentType)) {
+	   case MOTBaseTypeGeneralData:
+	      break;
 
-	fprintf (stderr, "contentType %x\n", contentType);
-//
+	   case MOTBaseTypeText:
+	      save_MOTtext (result, contentType, name);
+	      break;
+
+	   case MOTBaseTypeImage:
+	      show_MOTlabel (result, contentType, name);
+	      break;
+
+	   case MOTBaseTypeAudio:
+	      break;
+
+	   case MOTBaseTypeVideo:
+	      break;
+
+	   case MOTBaseTypeTransport:
+	      break;
+
+	   case MOTBaseTypeSystem:
+	      break;
+
+	   case  MOTBaseTypeApplication: 	// epg data
+#ifdef	TRY_EPG
+	      if (epgPath == "")
+	         return;
+	      if (name == QString (""))
+	         name = "epg file";
+	      realName = epgPath + name;
+	      realName  = QDir::toNativeSeparators (realName);
+	      checkDir (realName);
+	      {  std::vector<uint8_t> epgData (result. begin(),
+	                                                  result. end());
+	         epgHandler. decode (epgData, realName);
+	      }
+	      fprintf (stderr, "epg file %s\n", realName. toLatin1 (). data ());
+#endif
+	      return;
+
+	   case MOTBaseTypeProprietary:
+	      break;
+	}
+}
+
+void	RadioInterface::save_MOTtext (QByteArray result,
+	                              int contentType,  QString name) {
 	if (filePath == "")
 	   return;
-	if (!dirElement)
-	   return;
-	if (name == QString (""))
-	   name = "no name";
 
-	realName = filePath ;
-	if ((realName != "") && (!realName. endsWith ("/")))
-	   realName. append ("/");
-	realName. append (name);
-	realName  = QDir::toNativeSeparators (realName);
-	fprintf (stderr, "going to write file %s\n",
-	                         realName. toUtf8(). data());
-	checkDir (realName);
-	FILE *x = fopen (realName. toLatin1 (). data(), "w+b");
+QString textName = QDir::toNativeSeparators (filePath + name);
+
+	(void)contentType;
+	checkDir (textName);
+	FILE *x = fopen (textName. toLatin1 (). data (), "w+b");
 	if (x == nullptr)
 	   fprintf (stderr, "cannot write file %s\n",
-	                           realName. toUtf8(). data());
+	                            textName. toLatin1 (). data ());
 	else {
-	   (void)fwrite (result. data(), 1, result. length (), x);
+	   fprintf (stderr, "going to write file %s\n",
+	                            textName. toLatin1(). data());
+	   (void)fwrite (result. data (), 1, result.length(), x);
 	   fclose (x);
 	}
 }
 
+
 //	MOT slide, to show
-void	RadioInterface::showMOT		(QByteArray data,
+void	RadioInterface::show_MOTlabel	(QByteArray data,
 	                                 int contentType,
 	                                 QString pictureName) {
 const char *type;
-	if (!running. load())
+	if (!running. load() || (pictureName == QString ("")))
 	   return;
 
 	switch (static_cast<MOTContentType>(contentType)) {
@@ -779,27 +814,35 @@ const char *type;
 
 	QPixmap p;
 	p. loadFromData (data, type);
-	if (saveSlides && (pictureName != QString (""))) {
-	   pictureName = picturesPath + pictureName;
-	   pictureName = QDir::toNativeSeparators (pictureName);
-	   checkDir (pictureName);
-	   FILE *x = fopen (pictureName. toLatin1 (). data (), "w+b");
+	if (saveSlides) {
+	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
+	   checkDir (pict);
+	   FILE *x = fopen (pict. toLatin1 (). data (), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pictureName. toLatin1 (). data ());
+	                            pict. toLatin1 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
-	                            pictureName. toLatin1(). data());
+	                            pict. toLatin1(). data());
 	      (void)fwrite (data. data(), 1, data.length(), x);
 	      fclose (x);
 	   }
 	}
 
-	int w   = techData. pictureLabel -> width ();
-        int h   = 2 * w / 3;
-        techData. pictureLabel ->
+	if (motSlides == nullptr) {
+	   int w   = techData. pictureLabel -> width ();
+           int h   = 2 * w / 3;
+           techData. pictureLabel ->
                   setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
-        techData. pictureLabel -> show ();
+           techData. pictureLabel -> show ();
+	}
+	else {
+	   QString s = serviceLabel -> text ();
+	   if (!my_dabProcessor -> is_audioService (s))
+	      return;
+	   motSlides	-> setPixmap (p);
+	   motSlides	-> show ();
+	}
 }
 //
 //	sendDatagram is triggered by the ip handler,
@@ -935,6 +978,7 @@ void	RadioInterface::TerminateProcess() {
 	presetTimer.  stop();
 
 	theTable. hide ();
+	motSlides	-> hide ();
 	my_presetHandler. savePresets (presetSelector);
 	if (audioDumper != nullptr) {
 	   soundOut	-> stopDumping();
@@ -947,6 +991,7 @@ void	RadioInterface::TerminateProcess() {
 	   my_dabProcessor	-> stop();		// definitely concurrent
 
 	delete my_history;
+	delete	motSlides;
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
@@ -2011,6 +2056,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
+	motSlides	-> hide ();
+        techData. pictureLabel -> hide ();
 	if (runningServices. size () < 1) 
 	   fprintf (stderr, "Sorry, no service planned\n");
 

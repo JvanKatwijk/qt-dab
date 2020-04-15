@@ -139,8 +139,6 @@ public slots:
 	void			show_snr		(int);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
-	void			showMOT			(QByteArray, int,
-	                                                          QString);
 	void			handle_motObject	(QByteArray, QString,
 	                                                      int, bool);
 	void			sendDatagram		(int);

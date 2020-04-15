@@ -110,7 +110,7 @@ private:
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentService;
-
+	QLabel			*motSlides;
 	std::vector<int>	secondariesVector;
 	bool			isSynced;
 	std::atomic<bool>	running;
@@ -192,6 +192,11 @@ private:
 	void			showServices		();
 
 	bool			doStart			();
+	void			save_MOTtext		(QByteArray, int,
+                                                                 QString);
+	void			show_MOTlabel		(QByteArray, int,
+                                                                  QString);
+
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);
@@ -203,8 +208,6 @@ public slots:
 	void			show_snr		(int);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
-	void			showMOT			(QByteArray, int,
-	                                                          QString);
 	void			handle_motObject	(QByteArray, QString,
 	                                                      int, bool);
 	void			sendDatagram		(int);

@@ -345,11 +345,6 @@ void	RadioInterface::handle_motObject (QByteArray result, QString name,
 	(void)contentType;
 	(void)dirName;
 }
-
-void	RadioInterface::showMOT		(QByteArray data,
-	                                 int subtype, QString pictureName) {
-	(void)data; (void)subtype; (void)pictureName;
-}
 //
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(int length) {
