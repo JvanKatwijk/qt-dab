@@ -72,3 +72,7 @@ bool	deviceHandler::isHidden		() {
 	return false;
 }
 
+QString	deviceHandler::deviceName	() {
+	return "no name";
+}
+

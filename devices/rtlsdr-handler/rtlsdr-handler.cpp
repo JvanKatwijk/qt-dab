@@ -192,7 +192,7 @@ char	manufac [256], product [256], serial [256];
 	   throw (23);
 	}
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
-	deviceName      -> setText (deviceModel);
+	deviceVersion	-> setText (deviceModel);
 
 	open			= true;
 	r			= this -> rtlsdr_set_sample_rate (device,
@@ -570,6 +570,10 @@ int16_t	rtlsdrHandler::maxGain() {
 
 int16_t	rtlsdrHandler::bitDepth() {
 	return 8;
+}
+
+QString	rtlsdrHandler::deviceName	() {
+	return deviceModel;
 }
 
 void	rtlsdrHandler::set_iqDump	() {

@@ -47,6 +47,7 @@ virtual		int16_t	bitDepth	() { return 10;}
 virtual		void	hide		();
 virtual		void	show		();
 virtual		bool	isHidden	();
+virtual		QString deviceName	();
 //
 protected:
 		int32_t	lastFrequency;

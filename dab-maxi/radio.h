@@ -125,9 +125,12 @@ private:
 #ifdef	TRY_EPG
 	CEPGDecoder		epgHandler;
 #endif
-	RingBuffer<int16_t>	*audioBuffer;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
+	RingBuffer<int16_t>	*audioBuffer;
+	QString			saveDir_rawDump;
+	QString			saveDir_frameDump;
+	QString			saveDir_audioDump;
 	bool			saveSlides;
 	QString			picturesPath;
 	QString			epgPath;
@@ -188,7 +191,8 @@ private:
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
-	QString			filenameSuggestion 	(QString);
+	QString			filenameSuggestion 	(QString,
+	                                                 QString, QString);
 	void			showServices		();
 
 	bool			doStart			();

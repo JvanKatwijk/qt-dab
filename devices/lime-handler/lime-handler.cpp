@@ -265,6 +265,10 @@ int16_t	limeHandler::bitDepth() {
 	return 12;
 }
 
+QString	limeHandler::deviceName	() {
+	return "limeSDR";
+}
+
 void	limeHandler::showErrors		(int underrun, int overrun) {
 	underrunDisplay	-> display (underrun);
 	overrunDisplay	-> display (overrun);

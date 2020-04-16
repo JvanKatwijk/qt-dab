@@ -70,7 +70,7 @@
 	typeofUnitLabel		-> setText (theDescriptor -> blockList [0]. typeofUnit);
 	modulationtypeLabel	-> setText (theDescriptor -> blockList [0]. modType);
 
-	deviceName		-> setText (theDescriptor -> deviceName);
+	deviceVersion		-> setText (theDescriptor -> deviceName);
 	deviceModel		-> setText (theDescriptor -> deviceModel);
 	recorderName		-> setText (theDescriptor -> recorderName);
 	recorderVersion		-> setText (theDescriptor -> recorderVersion);

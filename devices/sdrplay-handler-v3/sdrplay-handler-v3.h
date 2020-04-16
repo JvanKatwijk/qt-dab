@@ -61,6 +61,7 @@ public:
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
+	QString		deviceName		();
 
         void            update_PowerOverload (
                                          sdrplay_api_EventParamsT *params);
@@ -105,7 +106,7 @@ private:
 	float			apiVersion;
 	QString			serial;
 	bool			has_antennaSelect;
-	QString			deviceName;
+	QString			deviceModel;
 	int			lnaState;
 	int			ppmValue;
 	HINSTANCE		Handle;

@@ -426,6 +426,10 @@ int16_t	hackrfHandler::bitDepth() {
 	return 8;
 }
 
+QString	hackrfHandler::deviceName	() {
+	return "hackRF";
+}
+
 bool	hackrfHandler::load_hackrfFunctions() {
 //
 //	link the required procedures

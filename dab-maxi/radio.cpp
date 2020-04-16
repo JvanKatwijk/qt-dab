@@ -214,6 +214,28 @@ uint8_t	dabBand;
 	   epgPath = epgPath + "/";
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
+
+	saveDir_rawDump		= QDir::homePath ();
+	saveDir_frameDump	= QDir::homePath ();
+	saveDir_audioDump	= QDir::homePath ();
+	saveDir_rawDump		= dabSettings -> value ("saveDir_rawDump",
+	                                                 saveDir_rawDump).
+	                                                       toString ();
+	if ((saveDir_rawDump != "") && (!saveDir_rawDump. endsWith ("/")))
+	   saveDir_rawDump = saveDir_rawDump + "/";
+
+	saveDir_frameDump	= dabSettings -> value ("saveDir_frameDump",
+	                                                 saveDir_frameDump).
+	                                                       toString ();
+	if ((saveDir_frameDump != "") && (!saveDir_frameDump. endsWith ("/")))
+	   saveDir_frameDump = saveDir_frameDump + "/";
+
+	saveDir_audioDump	= dabSettings -> value ("saveDir_audioDump",
+	                                                 saveDir_audioDump).
+	                                                       toString ();
+	if ((saveDir_audioDump != "") && (!saveDir_audioDump. endsWith ("/")))
+	   saveDir_audioDump = saveDir_audioDump + "/";
+
 /*
  * Experimental:
  *	lots of people seem to want the scan to continue, rather than
@@ -562,6 +584,9 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	if (inputDevice != nullptr)
            s    -> setValue ("devicewidgetButton",
                                   inputDevice -> isHidden () != 0);
+	s	-> setValue ("saveDir_rawDump", saveDir_rawDump);
+	s	-> setValue ("saveDir_frameDump", saveDir_frameDump);
+	s	-> setValue ("saveDir_audioDump", saveDir_audioDump);
 	s	-> sync();
 }
 
@@ -649,14 +674,25 @@ QString s;
 //////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////
-QString	RadioInterface::filenameSuggestion (QString theTime) {
-QString	name	= QDir::homePath () + "/Qt-DAB-";
+QString trim (QString inp) {
+int lastIndex;
+	while (true) {
+	   lastIndex = inp. lastIndexOf (' ');
+	   if (lastIndex < 0)
+	      break;
+	   inp. remove (lastIndex, 1);
+	}
+	return inp;
+}
 
+QString	RadioInterface::filenameSuggestion (QString name,
+	                                    QString theTime, QString type) {
+QString result;
+	name	= trim (name);	// get rid of spaces to up to 16 positions
 	theTime. replace (":", "-");
-	theTime. replace (" ", "-");
-	name. append (theTime);
-	name. append (".txt");
-	return name;
+	result = name + theTime + type;
+	result. replace (" ", "-");
+	return result;
 }
 
 void	RadioInterface::handle_contentButton	() {
@@ -668,7 +704,9 @@ ensemblePrinter	my_Printer;
 	if (!running. load() || (ensembleId -> text () == QString ("")))
 	   return;
 
-	QString suggestedFileName	= filenameSuggestion (theTime);
+	QString suggestedFileName =
+	                 filenameSuggestion (QDir::homePath () + "/Qt-DAB-",
+	                                                theTime, ".txt");
 	QString fileName = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
 	                                        suggestedFileName,
@@ -977,6 +1015,9 @@ void	RadioInterface::TerminateProcess() {
 	signalTimer.  stop();
 	presetTimer.  stop();
 
+
+	stop_frameDumping	();
+	stop_sourceDumping	();
 	theTable. hide ();
 	motSlides	-> hide ();
 	my_presetHandler. savePresets (presetSelector);
@@ -1594,10 +1635,15 @@ void	RadioInterface::stop_sourceDumping	() {
 
 void	RadioInterface::start_sourceDumping () {
 SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
+QString suggestedFileName =
+	       filenameSuggestion (saveDir_rawDump +
+	                           inputDevice -> deviceName () + "-",
+	                           localTimeDisplay -> text (), ".sdr");
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
-	                                     QDir::homePath(),
+	                                     suggestedFileName,
 	                                     tr ("raw data (*.sdr)"));
+
 	if (file == QString (""))       // apparently cancelled
 	   return;
 	file    = QDir::toNativeSeparators (file);
@@ -1612,6 +1658,8 @@ SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 	   qDebug() << "cannot open " << file. toUtf8(). data();
 	   return;
 	}
+	int x	= file. lastIndexOf ("/");
+	saveDir_rawDump	= file. remove (x, file. count () - x);
 
 	colorButton (dumpButton, Qt::red, 12);
 	dumpButton	-> setText ("writing");
@@ -1640,9 +1688,13 @@ void	RadioInterface::stop_audioDumping	() {
 
 void	RadioInterface::start_audioDumping () {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
+QString suggestedFileName =
+	       filenameSuggestion (saveDir_audioDump +
+	                           serviceLabel -> text () + "-",
+	                           localTimeDisplay -> text (), ".wav");
 	QString file = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
-	                                        QDir::homePath(),
+	                                        suggestedFileName,
 	                                        tr ("PCM wave file (*.wav)"));
 	if (file == QString (""))
 	   return;
@@ -1660,6 +1712,8 @@ SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 	   return;
 	}
 
+	int x	= file. lastIndexOf ("/");
+	saveDir_frameDump	= file. remove (x, file. count () - x);
 	colorButton (audioDumpButton, Qt::red, 12);
 	audioDumpButton		-> setText ("WRITING");
 	audioDumpButton		-> update ();
@@ -1685,9 +1739,13 @@ void	RadioInterface::stop_frameDumping () {
 }
 
 void	RadioInterface::start_frameDumping () {
+QString suggestedFileName =
+	filenameSuggestion (saveDir_frameDump +
+	                    serviceLabel -> text () + "-",
+                            localTimeDisplay -> text (), ".aac");
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
-	                                     QDir::homePath(),
+	                                     suggestedFileName,
 	                                     tr ("aac data (*.aac)"));
 	if (file == QString (""))       // apparently cancelled
 	   return;
@@ -1699,6 +1757,8 @@ void	RadioInterface::start_frameDumping () {
 	                               tr (s. toLatin1 (). data ()));
 	   return;
 	}
+	int x	= file. lastIndexOf ("/");
+	saveDir_frameDump = file. remove (x, file. count () - x);
 	colorButton (frameDumpButton, Qt::red, 12);
 	frameDumpButton		-> setText ("recording");
 	frameDumpButton		-> update ();

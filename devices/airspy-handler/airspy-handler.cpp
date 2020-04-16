@@ -767,6 +767,10 @@ int	airspyHandler::getBufferSpace	() {
 	return _I_Buffer -> GetRingBufferWriteAvailable ();
 }
 
+QString	airspyHandler::deviceName	() {
+	return "AIRspy";
+}
+
 void	airspyHandler::set_xmlDump () {
 	if (xmlDumper == nullptr) {
 	  if (setup_xmlDump ())

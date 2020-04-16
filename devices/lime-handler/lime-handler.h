@@ -109,7 +109,7 @@ public:
         int32_t         Samples			();
         void            resetBuffer		();
         int16_t         bitDepth		();
-
+	QString		deviceName		();
 private:
 	QString		recorderVersion;
 	QString		deviceModel;

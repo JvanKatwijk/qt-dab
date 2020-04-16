@@ -471,6 +471,9 @@ int16_t	sdrplayHandler::bitDepth () {
 	return nrBits;
 }
 
+QString	sdrplayHandler::deviceName	() {
+	return deviceModel;
+}
 
 void	sdrplayHandler::set_agcControl (int dummy) {
 bool agcMode	= agcControl -> isChecked();

@@ -97,7 +97,7 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	int		getBufferSpace		();
-
+	QString		deviceName		();
 	int16_t		currentTab;
 
 private:

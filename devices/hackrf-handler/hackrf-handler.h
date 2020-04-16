@@ -94,7 +94,8 @@ public:
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
-//
+
+	QString		deviceName		();
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int8_t>>	*_I_Buffer;
 	hackrf_device	*theDevice;

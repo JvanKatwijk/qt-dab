@@ -87,6 +87,7 @@ public:
 	void		resetBuffer	();
 	int16_t		maxGain		();
 	int16_t		bitDepth	();
+	QString		deviceName	();
 //
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<std::complex<uint8_t>>	*_I_Buffer;

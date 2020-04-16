@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>203</width>
-    <height>302</height>
+    <height>330</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,7 +114,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="deviceName">
+    <widget class="QLabel" name="deviceVersion">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>

@@ -196,6 +196,10 @@ int16_t	sdrplayHandler_v3::bitDepth	() {
 	return nrBits;
 }
 
+QString	sdrplayHandler_v3::deviceName	() {
+	return deviceModel;
+}
+
 ///////////////////////////////////////////////////////////////////////////
 //	Handling the GUI
 //////////////////////////////////////////////////////////////////////
@@ -548,21 +552,21 @@ uint32_t                ndev;
 	switch (hwVersion) {
 	   case 1:		// old RSP
 	      lna_upperBound	= 3;
-	      deviceName	= "RSP-I";
+	      deviceModel	= "RSP-I";
 	      denominator	= 2048;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
 	      break;
 	   case 2:		// RSP II
 	      lna_upperBound	= 8;
-	      deviceName 	= "RSP-II";
+	      deviceModel 	= "RSP-II";
 	      denominator	= 2048;
 	      nrBits		= 14;
 	      has_antennaSelect	= true;
 	      break;
 	   case 3:		// RSP-DUO
 	      lna_upperBound	= 9;
-	      deviceName	= "RSP-DUO";
+	      deviceModel	= "RSP-DUO";
 	      denominator	= 2048;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
@@ -570,7 +574,7 @@ uint32_t                ndev;
 	   default:
 	   case 255:		// RSP-1A
 	      lna_upperBound	= 9;
-	      deviceName	= "RSP-1A";
+	      deviceModel	= "RSP-1A";
 	      denominator	= 8192;
 	      nrBits		= 14;
 	      has_antennaSelect	= false;
@@ -578,7 +582,7 @@ uint32_t                ndev;
 	}
 
 	set_lnabounds_signal	(0, lna_upperBound);
-	set_deviceName_signal	(deviceName);
+	set_deviceName_signal	(deviceModel);
 	set_serial_signal	(serial);
 	set_apiVersion_signal	(apiVersion);
 	set_antennaSelect_signal (has_antennaSelect);

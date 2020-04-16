@@ -106,6 +106,7 @@ public:
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
+	QString		deviceName		();
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int16_t>>	*_I_Buffer;
