@@ -1,6 +1,6 @@
 # Qt-DAB-3.3 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). It is the successor of both DAB-rpi and sdr-j-DAB, two former programs by the same author.
+Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
 
 
 ![Qt-DAB with xml input](/qt-dab-3.3.png?raw=true)
@@ -18,6 +18,7 @@ Table of Contents
 ------------------------------------------------------------------
 
 * [Introduction](#introduction)
+* [dabMini](#dabMini)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
 * [Presets](#Presets)
@@ -61,11 +62,12 @@ Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi, t
 See also the section of configuring Qt-DAB
 
 -----------------------------------------------------------------
-dab-mini
+dabMini
 -----------------------------------------------------------------
 
-When having the sound of DAB as background music,  a DAB program often runs
-on a (headless) RPI2 or 3. Since the RPI is headless, control is
+When having the sound of DAB as background music, I have often a
+DAB program running on a (headless) RPI2 or 3.
+Since the RPI is headless, control is
 using my laptop. Quite often I do not need all the whistless and bells 
 that are provided on the Qt-DAB GUI, I basically only need a list of
 services, and a very few buttons to select channel and service.
@@ -73,11 +75,11 @@ services, and a very few buttons to select channel and service.
 When using *dabradio* for this, I really miss goodies like presets, and
 previous and next selectors for channels and services.
 A choice was made not to upgrade the *dabradio* but to build an
-additional restricted GUI on top of the Qt-DAB sources: the *dab-mini*.
+additional restricted GUI on top of the Qt-DAB sources: the *dabMini*.
 
-The obvious advantage is that changes to the Qt-DAB sources would
-be changes to the *dab-mini* sources.
-As the picture shows, the *dab-mini* GUI is minimal, a few selectors
+The obvious advantage is that modifications to the Qt-DAB sources would
+also apply to the *dabMini* sources.
+As the picture shows, the *dabMini* GUI is minimal, a few selectors
 for setting the gain of the configured and detected device, a channel
 selector, a few buttons to select previous and next channel, to
 select previous and next service, a preset selector and a selector for
