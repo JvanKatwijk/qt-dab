@@ -32,7 +32,7 @@
 //	protection level/classes, ..
 //	https://www.etsi.org/deliver/etsi_tr/101400_101499/10149603/01.01.02_60/tr_10149603v010102p.pdf
 
-static const char *uep_rates [] = {"7/20", "2/5", "1/2", "3/5"};
+static const char *uep_rates [] = {"7/20", "2/5", "1/2", "3/5", "3/4"};
 static const char *eep_Arates[] = {"1/4",  "3/8", "1/2", "3/4"};  // see ETSI EN 300 401 V1.3.2 (2000-09), Table 8, page 46
 static const char *eep_Brates[] = {"4/9",  "4/7", "4/6", "4/5"};  // see ETSI EN 300 401 V1.3.2 (2000-09), Table 9, page 46
 
@@ -668,6 +668,6 @@ int h = protLevel;
 	                    eep_Arates [h & 03] :
 	                    eep_Brates [h & 03]; // EEP -A/-B
 	else
-	   return uep_rates [h & 03];     // UEP
+	   return uep_rates [h-1];     // UEP
 }
 
