@@ -22,7 +22,8 @@
 
 #include	<QThread>
 #include	<QSettings>
-#include	<QHBoxLayout>
+#include	<QTime>
+#include	<QDate>
 #include	<QLabel>
 #include	<QFileDialog>
 #include	"sdrplay-handler-v2.h"
@@ -823,9 +824,26 @@ void	sdrplayHandler::set_xmlDump () {
 }
 
 bool	sdrplayHandler::setup_xmlDump () {
+QTime	theTime;
+QDate	theDate;
+QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
+	                                   QDir::homePath ()). toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir += "/";
+
+	QString channel		= sdrplaySettings -> value ("channel", "xx").
+	                                                       toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                           theTime. currentTime(). toString ();
+	timeString. replace (":", "-");
+
+        QString suggestedFileName =
+                    saveDir + deviceModel + "-" + channel + "-" + timeString + ".uff";
+        suggestedFileName. replace (" ", "-");
+
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
+	                                         suggestedFileName,
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -841,6 +859,9 @@ bool	sdrplayHandler::setup_xmlDump () {
 	                                      deviceModel,
 	                                      recorderVersion);
 	dumping. store (true);
+	int x   = fileName. lastIndexOf ("/");
+        saveDir = fileName. remove (x, fileName. count () - x);
+	sdrplaySettings	-> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }
 

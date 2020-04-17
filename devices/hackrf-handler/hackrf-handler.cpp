@@ -25,7 +25,8 @@
 
 #include	<QThread>
 #include	<QSettings>
-#include	<QHBoxLayout>
+#include	<QTime>
+#include	<QDate>
 #include	<QLabel>
 #include	<QDebug>
 #include	<QFileDialog>
@@ -585,9 +586,27 @@ void	hackrfHandler::set_xmlDump () {
 }
 
 bool	hackrfHandler::setup_xmlDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
+QTime	theTime;
+QDate	theDate;
+QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
+                                           QDir::homePath ()). toString ();
+        if ((saveDir != "") && (!saveDir. endsWith ("/")))
+           saveDir += "/";
+
+	QString channel		= hackrfSettings -> value ("channel", "xx").
+	                                                   toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                          theTime. currentTime (). toString ();
+        timeString. replace (":", "-");
+
+        QString suggestedFileName =
+                    saveDir + "hackrf" + "-" + channel +  "-" + timeString + ".uff";
+        suggestedFileName. replace (" ", "-");
+
+	QString fileName =
+	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
+	                                         suggestedFileName,
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -603,6 +622,10 @@ bool	hackrfHandler::setup_xmlDump () {
 	                                      "--",
 	                                      recorderVersion);
 	dumping. store (true);
+	int x		= fileName. lastIndexOf ("/");
+        saveDir		= fileName. remove (x, fileName. count () - x);
+        hackrfSettings	-> setValue ("saveDir_xmlDump", saveDir);
+
 	return true;
 }
 

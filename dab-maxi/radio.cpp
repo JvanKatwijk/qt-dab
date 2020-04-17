@@ -215,26 +215,6 @@ uint8_t	dabBand;
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
 
-	saveDir_rawDump		= QDir::homePath ();
-	saveDir_frameDump	= QDir::homePath ();
-	saveDir_audioDump	= QDir::homePath ();
-	saveDir_rawDump		= dabSettings -> value ("saveDir_rawDump",
-	                                                 saveDir_rawDump).
-	                                                       toString ();
-	if ((saveDir_rawDump != "") && (!saveDir_rawDump. endsWith ("/")))
-	   saveDir_rawDump = saveDir_rawDump + "/";
-
-	saveDir_frameDump	= dabSettings -> value ("saveDir_frameDump",
-	                                                 saveDir_frameDump).
-	                                                       toString ();
-	if ((saveDir_frameDump != "") && (!saveDir_frameDump. endsWith ("/")))
-	   saveDir_frameDump = saveDir_frameDump + "/";
-
-	saveDir_audioDump	= dabSettings -> value ("saveDir_audioDump",
-	                                                 saveDir_audioDump).
-	                                                       toString ();
-	if ((saveDir_audioDump != "") && (!saveDir_audioDump. endsWith ("/")))
-	   saveDir_audioDump = saveDir_audioDump + "/";
 
 /*
  * Experimental:
@@ -577,16 +557,11 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 
 	s	-> setValue ("device",
 	                      deviceSelector -> currentText());
-	s	-> setValue ("channel",
-	                      channelSelector -> currentText());
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText());
 	if (inputDevice != nullptr)
            s    -> setValue ("devicewidgetButton",
                                   inputDevice -> isHidden () != 0);
-	s	-> setValue ("saveDir_rawDump", saveDir_rawDump);
-	s	-> setValue ("saveDir_frameDump", saveDir_frameDump);
-	s	-> setValue ("saveDir_audioDump", saveDir_audioDump);
 	s	-> sync();
 }
 
@@ -1635,10 +1610,23 @@ void	RadioInterface::stop_sourceDumping	() {
 
 void	RadioInterface::start_sourceDumping () {
 SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
-QString suggestedFileName =
-	       filenameSuggestion (saveDir_rawDump +
-	                           inputDevice -> deviceName () + "-",
-	                           localTimeDisplay -> text (), ".sdr");
+QString deviceName	= inputDevice -> deviceName ();
+QString channelName	= channelSelector -> currentText ();
+QString suggestedFileName;
+QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
+	                                         QDir::homePath ()). toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir = saveDir + "/";
+	
+	if (deviceName == "") {
+	   fprintf (stderr, "No dumping possible from selected reader\n");
+	   return;
+	}
+	   
+	suggestedFileName =
+                 filenameSuggestion (deviceName + "-" + channelName + "+",
+	                             localTimeDisplay -> text (), ".sdr");
+	suggestedFileName = saveDir + suggestedFileName;
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     suggestedFileName,
@@ -1658,8 +1646,9 @@ QString suggestedFileName =
 	   qDebug() << "cannot open " << file. toUtf8(). data();
 	   return;
 	}
-	int x	= file. lastIndexOf ("/");
-	saveDir_rawDump	= file. remove (x, file. count () - x);
+	int x		= file. lastIndexOf ("/");
+	saveDir		= file. remove (x, file. count () - x);
+	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
 
 	colorButton (dumpButton, Qt::red, 12);
 	dumpButton	-> setText ("writing");
@@ -1688,8 +1677,14 @@ void	RadioInterface::stop_audioDumping	() {
 
 void	RadioInterface::start_audioDumping () {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
-QString suggestedFileName =
-	       filenameSuggestion (saveDir_audioDump +
+QString	saveDir		= dabSettings -> value ("saveDir_audioDump",
+	                                         QDir::homePath ()).
+	                                                       toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir = saveDir + "/";
+
+	QString suggestedFileName =
+	       filenameSuggestion (saveDir +
 	                           serviceLabel -> text () + "-",
 	                           localTimeDisplay -> text (), ".wav");
 	QString file = QFileDialog::getSaveFileName (this,
@@ -1712,8 +1707,10 @@ QString suggestedFileName =
 	   return;
 	}
 
-	int x	= file. lastIndexOf ("/");
-	saveDir_frameDump	= file. remove (x, file. count () - x);
+	int x		= file. lastIndexOf ("/");
+	saveDir		= file. remove (x, file. count () - x);
+	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
+
 	colorButton (audioDumpButton, Qt::red, 12);
 	audioDumpButton		-> setText ("WRITING");
 	audioDumpButton		-> update ();
@@ -1739,10 +1736,15 @@ void	RadioInterface::stop_frameDumping () {
 }
 
 void	RadioInterface::start_frameDumping () {
-QString suggestedFileName =
-	filenameSuggestion (saveDir_frameDump +
-	                    serviceLabel -> text () + "-",
-                            localTimeDisplay -> text (), ".aac");
+QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
+	                                QDir::homePath ()).  toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir = saveDir + "/";
+
+	QString suggestedFileName =
+	   filenameSuggestion (saveDir +
+	                       serviceLabel -> text () + "-",
+                               localTimeDisplay -> text (), ".aac");
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     suggestedFileName,
@@ -1758,7 +1760,9 @@ QString suggestedFileName =
 	   return;
 	}
 	int x	= file. lastIndexOf ("/");
-	saveDir_frameDump = file. remove (x, file. count () - x);
+	saveDir = file. remove (x, file. count () - x);
+	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
+
 	colorButton (frameDumpButton, Qt::red, 12);
 	frameDumpButton		-> setText ("recording");
 	frameDumpButton		-> update ();
@@ -2401,6 +2405,7 @@ void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
+	dabSettings		-> setValue ("channel", channel);
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start ();
 }

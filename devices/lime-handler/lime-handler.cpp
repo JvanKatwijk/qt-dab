@@ -21,6 +21,7 @@
  */
 
 #include	<QFileDialog>
+#include	<QTime>
 #include	"lime-handler.h"
 #include	"xml-filewriter.h"
 
@@ -483,9 +484,27 @@ void	limeHandler::set_xmlDump () {
 }
 
 bool	limeHandler::setup_xmlDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
+QTime	theTime;
+QDate	theDate;
+QString saveDir = limeSettings -> value ("saveDir_xmlDump",
+                                           QDir::homePath ()). toString ();
+        if ((saveDir != "") && (!saveDir. endsWith ("/")))
+           saveDir += "/";
+
+	QString channel		= limeSettings -> value ("channel", "xx").
+	                                                      toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                          theTime. currentTime (). toString ();
+        timeString. replace (":", "-");
+
+        QString suggestedFileName =
+                    saveDir + "limeSDR" + "-" + channel + "-" + timeString + ".uff";
+        suggestedFileName. replace (" ", "-");
+
+	QString fileName =
+	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
+	                                         suggestedFileName,
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -501,6 +520,9 @@ bool	limeHandler::setup_xmlDump () {
 	                                      "1",
 	                                      recorderVersion);
 	dumping. store (true);
+	int x   = fileName. lastIndexOf ("/");
+	saveDir = fileName. remove (x, fileName. count () - x);
+	limeSettings -> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }
 

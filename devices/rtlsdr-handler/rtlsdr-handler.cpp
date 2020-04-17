@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -27,6 +28,8 @@
 
 #include	<QThread>
 #include	<QFileDialog>
+#include	<QTime>
+#include	<QDate>
 #include	<QDir>
 #include	"rtlsdr-handler.h"
 #include	"rtl-dongleselect.h"
@@ -625,9 +628,27 @@ void	rtlsdrHandler::set_xmlDump () {
 }
 
 bool	rtlsdrHandler::setup_xmlDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
+QTime	theTime;
+QDate	theDate;
+QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
+                                           QDir::homePath ()). toString ();
+        if ((saveDir != "") && (!saveDir. endsWith ("/")))
+           saveDir += "/";
+
+	QString channel		= rtlsdrSettings -> value ("channel", "xx").
+	                                                      toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                          theTime. currentTime(). toString ();
+        timeString. replace (":", "-");
+
+        QString suggestedFileName =
+                    saveDir + deviceModel + "-" + channel + "-" + timeString + ".uff";
+        suggestedFileName. replace (" ", "-");
+
+	QString fileName =
+	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
+	                                         suggestedFileName,
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -643,6 +664,10 @@ bool	rtlsdrHandler::setup_xmlDump () {
 	                                      deviceModel,
 	                                      recorderVersion);
 	xml_dumping. store (true);
+	int x		= fileName. lastIndexOf ("/");
+	saveDir		= fileName. remove (x, fileName. count () - x);
+	rtlsdrSettings	-> setValue ("saveDir_xmlDump", saveDir);
+
 	return true;
 }
 

@@ -128,9 +128,6 @@ private:
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
 	RingBuffer<int16_t>	*audioBuffer;
-	QString			saveDir_rawDump;
-	QString			saveDir_frameDump;
-	QString			saveDir_audioDump;
 	bool			saveSlides;
 	QString			picturesPath;
 	QString			epgPath;

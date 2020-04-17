@@ -44,7 +44,6 @@ public:
                 		~xml_fileReader	();
 	int32_t			getSamples	(std::complex<float> *,
 	                                                         int32_t);
-	uint8_t			myIdentity	();
 	int32_t			Samples		();
 	bool			restartReader	(int32_t);
 	void			stopReader	(void);

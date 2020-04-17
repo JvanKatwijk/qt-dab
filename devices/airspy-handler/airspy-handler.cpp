@@ -22,6 +22,8 @@
 #endif
 
 #include	<QFileDialog>
+#include	<QTime>
+#include	<QDate>
 #include	"airspy-handler.h"
 #include	"airspyfilter.h"
 #include	"xml-filewriter.h"
@@ -783,9 +785,26 @@ void	airspyHandler::set_xmlDump () {
 }
 
 bool	airspyHandler::setup_xmlDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
+QTime	theTime;
+QDate	theDate;
+QString saveDir = airspySettings -> value ("saveDir_xmlDump",
+                                           QDir::homePath ()). toString ();
+        if ((saveDir != "") && (!saveDir. endsWith ("/")))
+           saveDir += "/";
+	QString channel		= airspySettings -> value ("channel", "xx").
+	                                                     toString ();
+        QString timeString      = theDate. currentDate (). toString () + "-" +
+	                          theTime. currentTime (). toString ();
+	timeString. replace (":", "-");
+
+        QString suggestedFileName =
+                saveDir + "AIRspy" + "-" + channel + "-" + timeString + ".uff";
+        suggestedFileName. replace (" ", "-");
+
+	QString fileName =
+	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         QDir::homePath(),
+	                                         suggestedFileName,
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -801,6 +820,9 @@ bool	airspyHandler::setup_xmlDump () {
 	                                      "I",
 	                                      recorderVersion);
 	dumping. store (true);
+	int x		= fileName. lastIndexOf ("/");
+        saveDir		= fileName. remove (x, fileName. count () - x);
+        airspySettings	-> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }
 
