@@ -3,7 +3,7 @@
 Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
 
 
-![Qt-DAB with xml input](/qt-dab-3.3.png?raw=true)
+![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
 ------------------------------------------------------------------
 New: some documentation
@@ -108,7 +108,7 @@ Another - a sixth - widget shows when running a *scan*; the widget will show the
 While the main window is always shown, visibility of the others is
 under user control, the main widget contains a button for each of those.
 
-![Qt-DAB with SDRplay input](/qt-dab-3.3-kaal.png?raw=true)
+![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function

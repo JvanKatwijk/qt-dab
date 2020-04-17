@@ -994,7 +994,8 @@ void	RadioInterface::TerminateProcess() {
 	stop_frameDumping	();
 	stop_sourceDumping	();
 	theTable. hide ();
-	motSlides	-> hide ();
+	if (motSlides != nullptr)
+	   motSlides	-> hide ();
 	my_presetHandler. savePresets (presetSelector);
 	if (audioDumper != nullptr) {
 	   soundOut	-> stopDumping();
@@ -1007,7 +1008,8 @@ void	RadioInterface::TerminateProcess() {
 	   my_dabProcessor	-> stop();		// definitely concurrent
 
 	delete my_history;
-	delete	motSlides;
+	if (motSlides != nullptr)
+	   delete	motSlides;
 	if (currentService != nullptr)
 	   delete currentService;
 	currentService	= nullptr;
@@ -2120,7 +2122,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
-	motSlides	-> hide ();
+	if (motSlides != nullptr)
+	   motSlides	-> hide ();
         techData. pictureLabel -> hide ();
 	if (runningServices. size () < 1) 
 	   fprintf (stderr, "Sorry, no service planned\n");
