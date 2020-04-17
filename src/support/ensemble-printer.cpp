@@ -29,7 +29,7 @@
 #include	"dab-processor.h"
 
 static
-const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5"};
+const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5", "3/4"};
 static
 const char *eep_Arates [] = {nullptr, "1/4",  "3/8", "1/2", "3/4"};
 static
@@ -142,7 +142,7 @@ bool	firstData;
 	      else  {
 	         protL = "UEP ";
 	         protL. append (QString::number (h));
-	         codeRate = uep_rates [h + 1];
+	         codeRate = uep_rates [h];
 	      }
 	      countryId = (d. SId >> (5 * 4)) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
