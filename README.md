@@ -1,15 +1,22 @@
-# Qt-DAB-3.3 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.4 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.3 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
+Qt-DAB-3.4 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
 
 
 ![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
 ------------------------------------------------------------------
-New: some documentation
+New in 3.4
 ------------------------------------------------------------------
 
-Since the Qt-DAB program is pretty large and has quite a number
+There is not much changed in the use of Qt-DAB, quite some internal
+modifications though.
+
+When touching one of the *dump* buttons, a filename is suggested,
+and the directory in which the dump is stored will be remembered for
+a next time.
+
+Furthermore, the Qt-DAB program is pretty large and has quite a number
 of options for users to influence the behaviour, I added a *preliminary*
 piece of documentation in the sections docs
 
@@ -199,7 +206,7 @@ Note that the services are encoded as "channel:serviceName" pair:
 it sometimes happens that a service appears in more than one ensemble
 (as example the "Omroep West" service appears in channels 5B and 8A.)
 
-![Qt-DAB with sdrplay input](/qt-dab-3.3-presets.png?raw=true)
+![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
 The presets are stored in an xml file, `.qt-dab-presets.xml'.
 
@@ -227,7 +234,7 @@ clicking on a channel:servicename combination with the left
 mouse button will cause the QT-DAB software to attempt to set the channel and
 select the name.
 
-![Qt-DAB with sdrplay input](/qt-dab-3.3-history.png?raw=true)
+![Qt-DAB with sdrplay input](/qt-dab-history.png?raw=true)
 
 ---------------------------------------------------------------------------
 Comment on some settings
