@@ -51,7 +51,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.3** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.4** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 For DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
@@ -60,7 +60,7 @@ comparable programs.
 
 Derived programs, such as **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
 
-Qt-DAB-3.3 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
+Qt-DAB-3.4 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
 
 Finally, Qt-DAB supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -224,7 +224,7 @@ button on the keyboard simultaneously.
 Maintaining History 
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.3 saves all service names found. Pairs Channel:serviceName
+Qt-DAB-3.4 saves all service names found. Pairs Channel:serviceName
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 
