@@ -24,7 +24,7 @@
 #include	<QStringList>
 #include	"ensemble-printer.h"
 #include	"country-codes.h"
-#include	"dab_tables.h"
+#include	"dab-tables.h"
 #include	"text-mapper.h"
 #include	"dab-processor.h"
 

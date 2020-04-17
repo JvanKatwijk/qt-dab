@@ -147,7 +147,7 @@ HEADERS += ./dab-processor.h \
 	   ./includes/support/dab-params.h \
 	   ./includes/support/band-handler.h \
 	   ./includes/support/text-mapper.h \
-	   ./includes/support/dab_tables.h \
+	   ./includes/support/dab-tables.h \
 	   ./includes/support/ensemble-printer.h \
 	   ./includes/support/preset-handler.h \
 	   ./includes/support/presetcombobox.h \
@@ -242,7 +242,7 @@ SOURCES += ./dab-processor.cpp \
 	   ./src/support/dab-params.cpp \
 	   ./src/support/band-handler.cpp \
 	   ./src/support/text-mapper.cpp \
-	   ./src/support/dab_tables.cpp \
+	   ./src/support/dab-tables.cpp \
 	   ./src/support/ensemble-printer.cpp \
 	   ./src/support/preset-handler.cpp \
 	   ./src/support/presetcombobox.cpp \

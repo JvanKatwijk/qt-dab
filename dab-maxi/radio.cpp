@@ -45,7 +45,7 @@
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
-#include	"dab_tables.h"
+#include	"dab-tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO

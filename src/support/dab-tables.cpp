@@ -17,7 +17,7 @@
  *    along with DAB-library; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "dab_tables.h"
+#include "dab-tables.h"
 
 #include <cstring>
 #include <cstdlib>
@@ -658,7 +658,6 @@ const char * getProtectionLevel (bool shortForm, int16_t protLevel) {
 	   }
 	}
 }
-
 
 const char *getCodeRate (bool shortForm, int16_t protLevel) {
 int h = protLevel;
