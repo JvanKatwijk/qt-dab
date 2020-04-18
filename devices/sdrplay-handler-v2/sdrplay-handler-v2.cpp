@@ -344,7 +344,6 @@ void myStreamCallback (int16_t		*xi,
 	               void		*cbContext) {
 int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
-float	denominator	= (float)(p -> denominator);
 std::complex<int16_t> localBuf [numSamples];
 
 	if (reset || hwRemoved)
@@ -823,6 +822,11 @@ void	sdrplayHandler::set_xmlDump () {
 	}
 }
 
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '/') || (c == '-');
+}
+
 bool	sdrplayHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
@@ -835,15 +839,15 @@ QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
 	                                                       toString ();
 	QString timeString      = theDate. currentDate (). toString () + "-" +
 	                           theTime. currentTime(). toString ();
-	timeString. replace (":", "-");
-
         QString suggestedFileName =
-                    saveDir + deviceModel + "-" + channel + "-" + timeString + ".uff";
-        suggestedFileName. replace (" ", "-");
+                    saveDir + deviceModel + "-" + channel + "-" + timeString;
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+           if (!isValid (suggestedFileName. at (i)))
+              suggestedFileName. replace (i, 1, '-');
 
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         suggestedFileName,
+	                                         suggestedFileName + ".uff",
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -859,8 +863,10 @@ QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
 	                                      deviceModel,
 	                                      recorderVersion);
 	dumping. store (true);
-	int x   = fileName. lastIndexOf ("/");
-        saveDir = fileName. remove (x, fileName. count () - x);
+
+	QString dumper	= QDir::fromNativeSeparators (fileName);
+	int x		= dumper. lastIndexOf ("/");
+        saveDir		= dumper. remove (x, dumper. count () - x);
 	sdrplaySettings	-> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }

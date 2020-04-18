@@ -660,33 +660,39 @@ int lastIndex;
 	return inp;
 }
 
-QString	RadioInterface::filenameSuggestion (QString name,
-	                                    QString theTime, QString type) {
-QString result;
-	name	= trim (name);	// get rid of spaces to up to 16 positions
-	theTime. replace (":", "-");
-	result = name + theTime + type;
-	result. replace (" ", "-");
-	return result;
+static inline
+bool	isValid (QChar c) {
+	return c. isLetter () || c. isDigit () || (c == '/') || (c == '-');
 }
 
 void	RadioInterface::handle_contentButton	() {
+ensemblePrinter	my_Printer;
+QString suggestedFileName;
 QString currentChannel	= channelSelector -> currentText();
 int32_t	frequency	= inputDevice -> getVFOFrequency();
-QString theTime		= localTimeDisplay -> text ();
-ensemblePrinter	my_Printer;
+QString	saveDir		= dabSettings -> value ("contentDir",
+	                                        QDir::homePath ()). toString ();
 
 	if (!running. load() || (ensembleId -> text () == QString ("")))
 	   return;
 
-	QString suggestedFileName =
-	                 filenameSuggestion (QDir::homePath () + "/Qt-DAB-",
-	                                                theTime, ".txt");
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	suggestedFileName = saveDir + "Qt-DAB-" + currentChannel +
+	                    "-" + localTimeDisplay -> text ();
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      suggestedFileName. replace (i, 1, '-');
+	fprintf (stderr, "suggested filename %s\n",
+	                         suggestedFileName. toLatin1 (). data ());
 	QString fileName = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
-	                                        suggestedFileName,
-//	                                        QDir::homePath(),
+	                                        suggestedFileName + ".txt",
 	                                        tr ("Text (*.txt)"));
+	if (fileName == "")
+	   return;
+
 	fileName	= QDir::toNativeSeparators (fileName);
 	FILE *file_P	= fopen (fileName. toUtf8(). data(), "w");
 
@@ -696,8 +702,14 @@ ensemblePrinter	my_Printer;
 	   return;
 	}
 
+	QString	dumper	= QDir::fromNativeSeparators (fileName);
+        int x           = dumper. lastIndexOf ("/");
+        saveDir         = dumper. remove (x, dumper. count () - x);
+        dabSettings     -> setValue ("contentDir", saveDir);
+
 	my_Printer. showEnsembleData (currentChannel,
-	                              frequency, theTime,
+	                              frequency,
+	                              localTimeDisplay -> text (),
 	                              serviceList,
 	                              my_dabProcessor, file_P);
 
@@ -1617,28 +1629,29 @@ QString channelName	= channelSelector -> currentText ();
 QString suggestedFileName;
 QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	                                         QDir::homePath ()). toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir = saveDir + "/";
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
 	
 	if (deviceName == "") {
 	   fprintf (stderr, "No dumping possible from selected reader\n");
 	   return;
 	}
 	   
-	suggestedFileName =
-                 filenameSuggestion (deviceName + "-" + channelName + "+",
-	                             localTimeDisplay -> text (), ".sdr");
-	suggestedFileName = saveDir + suggestedFileName;
+	suggestedFileName = saveDir + deviceName + "-" + channelName +
+	                    "-" + localTimeDisplay -> text ();
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      suggestedFileName. replace (i, 1, '-');
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
-	                                     suggestedFileName,
+	                                     suggestedFileName + ".sdr",
 	                                     tr ("raw data (*.sdr)"));
 
 	if (file == QString (""))       // apparently cancelled
 	   return;
-	file    = QDir::toNativeSeparators (file);
 	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
 	   file.append (".sdr");
+	file	= QDir::toNativeSeparators (file);
 	sf_info -> samplerate   = INPUT_RATE;
 	sf_info -> channels     = 2;
 	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -1648,8 +1661,10 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	   qDebug() << "cannot open " << file. toUtf8(). data();
 	   return;
 	}
-	int x		= file. lastIndexOf ("/");
-	saveDir		= file. remove (x, file. count () - x);
+
+	QString dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
 
 	colorButton (dumpButton, Qt::red, 12);
@@ -1679,25 +1694,25 @@ void	RadioInterface::stop_audioDumping	() {
 
 void	RadioInterface::start_audioDumping () {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
-QString	saveDir		= dabSettings -> value ("saveDir_audioDump",
-	                                         QDir::homePath ()).
-	                                                       toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir = saveDir + "/";
+QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
+	                                 QDir::homePath ()).  toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
 
-	QString suggestedFileName =
-	       filenameSuggestion (saveDir +
-	                           serviceLabel -> text () + "-",
-	                           localTimeDisplay -> text (), ".wav");
+	QString suggestedFileName = saveDir + serviceLabel -> text () +
+	                            "-" + localTimeDisplay -> text ();
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i))) 
+	      suggestedFileName. replace (i, 1, '-');
 	QString file = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
-	                                        suggestedFileName,
+	                                        suggestedFileName + ".wav",
 	                                        tr ("PCM wave file (*.wav)"));
 	if (file == QString (""))
 	   return;
-	file		= QDir::toNativeSeparators (file);
 	if (!file.endsWith (".wav", Qt::CaseInsensitive))
 	   file.append (".wav");
+	file		= QDir::toNativeSeparators (file);
 	sf_info		-> samplerate	= 48000;
 	sf_info		-> channels	= 2;
 	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
@@ -1709,8 +1724,9 @@ QString	saveDir		= dabSettings -> value ("saveDir_audioDump",
 	   return;
 	}
 
-	int x		= file. lastIndexOf ("/");
-	saveDir		= file. remove (x, file. count () - x);
+	QString	dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
 
 	colorButton (audioDumpButton, Qt::red, 12);
@@ -1740,20 +1756,22 @@ void	RadioInterface::stop_frameDumping () {
 void	RadioInterface::start_frameDumping () {
 QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	                                QDir::homePath ()).  toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ("/")))
-	   saveDir = saveDir + "/";
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
 
-	QString suggestedFileName =
-	   filenameSuggestion (saveDir +
-	                       serviceLabel -> text () + "-",
-                               localTimeDisplay -> text (), ".aac");
+	QString suggestedFileName = saveDir + serviceLabel -> text () +
+	                            "-" + localTimeDisplay -> text ();
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      suggestedFileName. replace (i,1, '-');
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
-	                                     suggestedFileName,
+	                                     suggestedFileName + ".aac",
 	                                     tr ("aac data (*.aac)"));
 	if (file == QString (""))       // apparently cancelled
 	   return;
-	file    = QDir::toNativeSeparators (file);
+
+	file		= QDir::toNativeSeparators (file);
 	frameDumper = fopen (file. toLatin1 (). data (), "w+b");
 	if (frameDumper == nullptr) {
 	   QString s = QString ("cannot open ") + file;
@@ -1761,8 +1779,10 @@ QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	                               tr (s. toLatin1 (). data ()));
 	   return;
 	}
-	int x	= file. lastIndexOf ("/");
-	saveDir = file. remove (x, file. count () - x);
+
+	QString dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
 
 	colorButton (frameDumpButton, Qt::red, 12);

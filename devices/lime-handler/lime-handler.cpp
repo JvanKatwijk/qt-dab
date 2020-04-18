@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -483,6 +484,11 @@ void	limeHandler::set_xmlDump () {
 	}
 }
 
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '/');
+}
+
 bool	limeHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
@@ -495,16 +501,15 @@ QString saveDir = limeSettings -> value ("saveDir_xmlDump",
 	                                                      toString ();
 	QString timeString      = theDate. currentDate (). toString () + "-" +
 	                          theTime. currentTime (). toString ();
-        timeString. replace (":", "-");
-
         QString suggestedFileName =
-                    saveDir + "limeSDR" + "-" + channel + "-" + timeString + ".uff";
-        suggestedFileName. replace (" ", "-");
-
+                    saveDir + "limeSDR" + "-" + channel + "-" + timeString;
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	if (!isValid (suggestedFileName. at (i)))
+	   suggestedFileName. replace (i, 1, '-');
 	QString fileName =
 	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         suggestedFileName,
+	                                         suggestedFileName + ".uff",
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -520,8 +525,10 @@ QString saveDir = limeSettings -> value ("saveDir_xmlDump",
 	                                      "1",
 	                                      recorderVersion);
 	dumping. store (true);
-	int x   = fileName. lastIndexOf ("/");
-	saveDir = fileName. remove (x, fileName. count () - x);
+
+	QString dumper	= QDir::fromNativeSeparators (fileName);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
 	limeSettings -> setValue ("saveDir_xmlDump", saveDir);
 	return true;
 }

@@ -4,14 +4,14 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Programming
  *
- *    This file is part of the  qt-dab program
+ *    This file is part of the  Qt-DAB program
  *
- *    qt-dab is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    qt-dab is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
@@ -33,7 +33,7 @@
 class   RadioInterface;
 class	QComboBox;
 
-typedef struct {
+typedef struct presetData_ {
 	QString serviceName;
 	QString channel;
 } presetData;

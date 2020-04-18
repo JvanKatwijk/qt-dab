@@ -188,8 +188,6 @@ private:
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
-	QString			filenameSuggestion 	(QString,
-	                                                 QString, QString);
 	void			showServices		();
 
 	bool			doStart			();

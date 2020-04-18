@@ -213,13 +213,11 @@ char	manufac [256], product [256], serial [256];
 	}
 
 	r			= this -> rtlsdr_get_sample_rate (device);
-	fprintf (stderr, "samplerate set to %d\n", r);
-
 	
 	gainsCount = rtlsdr_get_tuner_gains (device, nullptr);
 	fprintf(stderr, "Supported gain values (%d): ", gainsCount);
 	gains		= new int [gainsCount];
-	gainsCount = rtlsdr_get_tuner_gains (device, gains);
+	gainsCount	= rtlsdr_get_tuner_gains (device, gains);
 	for (i = gainsCount; i > 0; i--) {
 	   fprintf(stderr, "%.1f ", gains [i - 1] / 10.0);
 	   combo_gain -> addItem (QString::number (gains [i - 1]));
@@ -229,8 +227,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode (device, 0);
 
-	_I_Buffer		= new RingBuffer<std::complex<uint8_t>>(4 * 1024 * 1024);
-
+	_I_Buffer	= new RingBuffer<std::complex<uint8_t>>(4 * 1024 * 1024);
 	theGain		= gains [gainsCount / 2];	// default
 //
 //	See what the saved values are and restore the GUI settings
@@ -358,19 +355,14 @@ int32_t	r;
 	return true;
 }
 
-void	rtlsdrHandler::stopReader() {
+void	rtlsdrHandler::stopReader () {
 	if (workerHandle == nullptr)
 	   return;
-
 	close_xmlDump ();
-	if (workerHandle != nullptr) { // we are running
-	   this -> rtlsdr_cancel_async (device);
-	   if (workerHandle != nullptr) {
-	      while (!workerHandle -> isFinished()) 
-	         usleep (100);
-	      delete	workerHandle;
-	   }
-	}
+	this -> rtlsdr_cancel_async (device);
+	while (!workerHandle -> isFinished()) 
+	   usleep (100);
+	delete	workerHandle;
 	workerHandle = nullptr;
 }
 //
@@ -581,9 +573,10 @@ QString	rtlsdrHandler::deviceName	() {
 
 void	rtlsdrHandler::set_iqDump	() {
 	if (iqDumper == nullptr) {
-	   if (setup_iqDump ())
+	   if (setup_iqDump ()) {
               iq_dumpButton	-> setText ("writing raw file");
 	      xml_dumpButton	-> hide ();
+	   }
         }
         else {
            close_iqDump ();
@@ -627,6 +620,11 @@ void	rtlsdrHandler::set_xmlDump () {
 	}
 }
 
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '/');
+}
+
 bool	rtlsdrHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
@@ -639,16 +637,15 @@ QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
 	                                                      toString ();
 	QString timeString      = theDate. currentDate (). toString () + "-" +
 	                          theTime. currentTime(). toString ();
-        timeString. replace (":", "-");
-
         QString suggestedFileName =
-                    saveDir + deviceModel + "-" + channel + "-" + timeString + ".uff";
-        suggestedFileName. replace (" ", "-");
-
+                    saveDir + deviceModel + "-" + channel + "-" + timeString;
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      suggestedFileName. replace (i, 1, '-');
 	QString fileName =
 	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
-	                                         suggestedFileName,
+	                                         suggestedFileName + ".uff",
 	                                         tr ("Xml (*.uff)"));
         fileName        = QDir::toNativeSeparators (fileName);
         xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
@@ -664,8 +661,10 @@ QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
 	                                      deviceModel,
 	                                      recorderVersion);
 	xml_dumping. store (true);
-	int x		= fileName. lastIndexOf ("/");
-	saveDir		= fileName. remove (x, fileName. count () - x);
+
+	QString	dumper	= QDir::fromNativeSeparators (fileName);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
 	rtlsdrSettings	-> setValue ("saveDir_xmlDump", saveDir);
 
 	return true;
