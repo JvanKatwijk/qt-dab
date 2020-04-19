@@ -37,7 +37,7 @@
 #include	<vector>
 #include	"radio.h"
 #include	"band-handler.h"
-#include	"dab_tables.h"
+//#include	"dab_tables.h"
 #include	"audiosink.h"
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
@@ -448,15 +448,12 @@ void	RadioInterface::TerminateProcess() {
 	dumpControlState (dabSettings);
 	delete		soundOut;
 	delete		inputDevice;
-	fprintf (stderr, "going to delete dabProcessor\n");
-
 	delete		my_dabProcessor;
-	fprintf (stderr, "deleted dabProcessor\n");
-	delete	iqBuffer;
-	delete	spectrumBuffer;
-	delete	responseBuffer;
-	delete	tiiBuffer;
-	delete	frameBuffer;
+	delete		iqBuffer;
+	delete		spectrumBuffer;
+	delete		responseBuffer;
+	delete		tiiBuffer;
+	delete		frameBuffer;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -777,20 +774,24 @@ void	RadioInterface::localSelect (const QString &s) {
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
 	signalTimer. stop ();
+	fprintf (stderr, "in stopService: timers zijn gestopt\n");
+	my_dabProcessor -> reset_msc ();
+	fprintf (stderr, "we hebben dabProcessor ge-reset\n");
+	soundOut	-> stop ();
+	fprintf (stderr, "sound is gestopt, now the service kleuren\n");
 	if (runningServices. size () > 0) {
 	   dabService s = runningServices. at (runningServices. size () - 1);
 	   QString serviceName = s. serviceName;
-	   soundOut	-> stop ();
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-                 my_dabProcessor -> reset_msc ();
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         break;
 	      }
 	   }
 	}
+	fprintf (stderr, "de kleuren weer goedgezet\n");
 	cleanScreen	();
 }
 //
@@ -999,11 +1000,15 @@ int	tunedFrequency	=
 void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
+	fprintf (stderr, "in stopChannel: device moet stoppen\n");
 	inputDevice			-> stopReader ();
+	fprintf (stderr, "service gaat stoppen \n");
 	stopService ();
+	fprintf (stderr, "service is gestopt\n");
 	if (!my_dabProcessor -> isRunning ())
 	   return;		// do not stop twice
 	my_dabProcessor		-> stop ();
+	fprintf (stderr, "alles gestopt!\n");
 //	the visual elements
 	setSynced	(false);
 	serviceList. clear ();
@@ -1088,7 +1093,7 @@ std::vector<serviceId> k;
 	for (const auto serv : l) {
 	   if (!inserted &&
 	         (order == ID_BASED ?
-	             ((baseN < n. SId) && (n. SId <= serv. SId)):
+	             ((baseN < (int)n. SId) && (n. SId <= serv. SId)):
 	             ((baseS < n. name) && (n. name < serv. name)))) {
 	      k. push_back (n);
 	      inserted = true;

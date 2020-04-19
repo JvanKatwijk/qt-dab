@@ -7,8 +7,8 @@
 TEMPLATE	= app
 TARGET		= qt-dab-3.4
 QT		+= widgets xml
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math

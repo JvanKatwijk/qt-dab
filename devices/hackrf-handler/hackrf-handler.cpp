@@ -587,7 +587,7 @@ void	hackrfHandler::set_xmlDump () {
 
 static inline
 bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '/');
+	return c. isLetterOrNumber () || (c == '-');
 }
 
 bool	hackrfHandler::setup_xmlDump () {
@@ -602,11 +602,11 @@ QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
 	                                                   toString ();
 	QString timeString      = theDate. currentDate (). toString () + "-" +
 	                          theTime. currentTime (). toString ();
+	for (int i = 0; i < timeString. length (); i ++)
+	   if (!isValid (timeString. at (i)))
+	      timeString. replace (i, 1, '-');
         QString suggestedFileName =
                     saveDir + "hackrf" + "-" + channel +  "-" + timeString;
-	for (int i = 0; i < suggestedFileName. length (); i ++)
-	   if (!isValid (suggestedFileName. at (i)))
-	      suggestedFileName. replace (i, 1, '-');
 	QString fileName =
 	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),

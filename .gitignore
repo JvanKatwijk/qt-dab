@@ -3,5 +3,9 @@ build
 .qmake.stash
 Makefile
 Output
+dab-mini/linux-bin
+dab-mini/Output
+
+
 
 

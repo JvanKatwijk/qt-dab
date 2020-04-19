@@ -7,8 +7,8 @@
 TEMPLATE	= app
 TARGET		= dabMini-1.0
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -126,7 +126,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
 	   ../includes/support/text-mapper.h \
-	   ../includes/support/dab_tables.h \
+	   ../includes/support/dab-tables.h \
 	   ../includes/support/ensemble-printer.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/smallcombobox.h \
@@ -195,7 +195,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
 	   ../src/support/text-mapper.cpp \
-	   ../src/support/dab_tables.cpp \
+	   ../src/support/dab-tables.cpp \
 	   ../src/support/ensemble-printer.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
@@ -254,7 +254,7 @@ CONFIG	+= NO_SSE
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		=  ../../windows-qt-dab
+DESTDIR		=  ../../../windows-dab-mini
 #DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 
@@ -285,26 +285,13 @@ LIBS		+= -lws2_32
 LIBS		+= -lusb-1.0
 LIBS		+= -lz
 CONFIG		+= faad
-#CONFIG		+= extio
 CONFIG		+= airspy
-CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
-CONFIG		+= sdrplay-v2
-CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay
 CONFIG		+= hackrf
-#CONFIG		+= lime
+CONFIG		+= lime
 CONFIG		+= NO_SSE
 
-#very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
-
-#if you want to listen remote, uncomment
-#CONFIG		+= tcp-streamer		# use for remote listening
-#otherwise, if you want to use the default qt way of soud out
-#CONFIG		+= qt-audio
-#comment both out if you just want to use the "normal" way
-
-CONFIG		+= try-epg		# do not use
 DEFINES		+= PRESET_NAME
 }
 #

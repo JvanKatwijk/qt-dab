@@ -662,7 +662,7 @@ int lastIndex;
 
 static inline
 bool	isValid (QChar c) {
-	return c. isLetter () || c. isDigit () || (c == '/') || (c == '-');
+	return c. isLetter () || c. isDigit () || (c == '-');
 }
 
 void	RadioInterface::handle_contentButton	() {
@@ -679,11 +679,13 @@ QString	saveDir		= dabSettings -> value ("contentDir",
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
+	QString theTime	= localTimeDisplay -> text ();
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
 	suggestedFileName = saveDir + "Qt-DAB-" + currentChannel +
-	                    "-" + localTimeDisplay -> text ();
-	for (int i = 0; i < suggestedFileName. length (); i ++)
-	   if (!isValid (suggestedFileName. at (i)))
-	      suggestedFileName. replace (i, 1, '-');
+	                    "-" + theTime;
+	
 	fprintf (stderr, "suggested filename %s\n",
 	                         suggestedFileName. toLatin1 (). data ());
 	QString fileName = QFileDialog::getSaveFileName (this,
@@ -1636,12 +1638,13 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	   fprintf (stderr, "No dumping possible from selected reader\n");
 	   return;
 	}
-	   
+
+	QString theTime	= localTimeDisplay -> text ();
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
 	suggestedFileName = saveDir + deviceName + "-" + channelName +
-	                    "-" + localTimeDisplay -> text ();
-	for (int i = 0; i < suggestedFileName. length (); i ++)
-	   if (!isValid (suggestedFileName. at (i)))
-	      suggestedFileName. replace (i, 1, '-');
+	                    "-" + theTime;
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     suggestedFileName + ".sdr",
@@ -1699,11 +1702,12 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
-	QString suggestedFileName = saveDir + serviceLabel -> text () +
-	                            "-" + localTimeDisplay -> text ();
-	for (int i = 0; i < suggestedFileName. length (); i ++)
-	   if (!isValid (suggestedFileName. at (i))) 
-	      suggestedFileName. replace (i, 1, '-');
+	QString tailS = serviceLabel -> text () + "-" + 
+	                                      localTimeDisplay -> text ();
+	for (int i = 0; i < tailS. length (); i ++)
+	   if (!isValid (tailS. at (i))) 
+	      tailS. replace (i, 1, '-');
+	QString suggestedFileName = saveDir + tailS;
 	QString file = QFileDialog::getSaveFileName (this,
 	                                        tr ("Save file ..."),
 	                                        suggestedFileName + ".wav",
@@ -1759,11 +1763,12 @@ QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
-	QString suggestedFileName = saveDir + serviceLabel -> text () +
-	                            "-" + localTimeDisplay -> text ();
-	for (int i = 0; i < suggestedFileName. length (); i ++)
-	   if (!isValid (suggestedFileName. at (i)))
-	      suggestedFileName. replace (i,1, '-');
+	QString tailS	= serviceLabel -> text () + "-" +
+	                                 localTimeDisplay -> text ();
+	for (int i = 0; i < tailS. length (); i ++)
+	   if (!isValid (tailS. at (i)))
+	      tailS. replace (i,1, '-');
+	QString suggestedFileName = saveDir + tailS;
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     suggestedFileName + ".aac",
@@ -2106,11 +2111,11 @@ void	RadioInterface::stopService	() {
 	   dabService s = runningServices. at (runningServices. size () - 1);
 	   QString serviceName = s. serviceName;
 	   soundOut	-> stop ();
+           my_dabProcessor -> reset_msc ();
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-                 my_dabProcessor -> reset_msc ();
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         break;
 	      }
