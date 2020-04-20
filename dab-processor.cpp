@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -150,6 +151,7 @@ std::vector<int16_t> ibits;
 	theRig  -> resetBuffer();
 	coarseOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
+	my_ficHandler. reset ();
 	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
@@ -345,25 +347,20 @@ SyncOnPhase:
 	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
-	my_mscHandler.  stop();
-	my_ficHandler.  stop();
 }
 
 void	dabProcessor:: reset() {
-	myReader. setRunning (false);
-	while (isRunning())
-	   wait();
-	usleep (10000);
-	my_ficHandler.  reset();
-	start();
+	stop	();
+	start	();
 }
 
 void	dabProcessor::stop() {
 	myReader. setRunning (false);
-	while (isRunning())
-	   wait();
+	while (isRunning ())
+	   wait ();
 	usleep (10000);
-	my_ficHandler.  reset();
+	my_mscHandler.  stop();
+	my_ficHandler.  stop();
 }
 
 void	dabProcessor::coarseCorrectorOn() {

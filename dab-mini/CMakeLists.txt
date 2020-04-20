@@ -209,7 +209,7 @@ add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
 	     ../includes/support/dab-params.h
 	     ../includes/support/band-handler.h
 	     ../includes/support/text-mapper.h
-	     ../includes/support/dab_tables.h
+	     ../includes/support/dab-tables.h
 	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
 	     ../includes/support/preset-handler.h
@@ -274,7 +274,7 @@ add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
 	     ../src/support/text-mapper.cpp
-	     ../src/support/dab_tables.cpp
+	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
 	     ../src/support/smallqlistview.cpp

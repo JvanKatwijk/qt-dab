@@ -229,10 +229,9 @@ QString	presetName;
 }
 
 QString RadioInterface::footText () {
-	version			= QString (CURRENT_VERSION);
-        QString versionText = "simpeRadio- : " + QString(CURRENT_VERSION);
+        QString versionText = "simpeRadio-1.0: ";
         versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
-        versionText += "Rights of Qt, portaudio, libsamplerate gratefully acknowledged";
+        versionText += "Rights of Qt, fft, portaudio, libsamplerate gratefully acknowledged";
         versionText += "Rights of other contribuants gratefully acknowledged\n";
         versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
         return versionText;
@@ -440,12 +439,12 @@ void	RadioInterface::TerminateProcess() {
 
 	my_presetHandler. savePresets (presetSelector);
 
+	dumpControlState (dabSettings);
 	inputDevice		-> stopReader();	// might be concurrent
 	my_dabProcessor		-> stop();		// definitely concurrent
 
 	soundOut		-> stop();
 //	everything should be halted by now
-	dumpControlState (dabSettings);
 	delete		soundOut;
 	delete		inputDevice;
 	delete		my_dabProcessor;
@@ -725,6 +724,7 @@ void	RadioInterface::localSelect (const QString &s) {
               return;
            }
 	   s. serviceName = service;
+	   runningServices. resize (0);
 	   runningServices. push_back (s);
 	   startService (&s);
 	   return;
@@ -774,11 +774,9 @@ void	RadioInterface::localSelect (const QString &s) {
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
 	signalTimer. stop ();
-	fprintf (stderr, "in stopService: timers zijn gestopt\n");
 	my_dabProcessor -> reset_msc ();
-	fprintf (stderr, "we hebben dabProcessor ge-reset\n");
+	usleep (1000);
 	soundOut	-> stop ();
-	fprintf (stderr, "sound is gestopt, now the service kleuren\n");
 	if (runningServices. size () > 0) {
 	   dabService s = runningServices. at (runningServices. size () - 1);
 	   QString serviceName = s. serviceName;
@@ -791,7 +789,7 @@ void	RadioInterface::stopService	() {
 	      }
 	   }
 	}
-	fprintf (stderr, "de kleuren weer goedgezet\n");
+	runningServices. resize (0);
 	cleanScreen	();
 }
 //
@@ -810,6 +808,7 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	   return;
 	}
 	s. serviceName = currentProgram;
+	runningServices. resize (0);
 	runningServices. push_back (s);
 	startService (&s);
 }
@@ -817,8 +816,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
-	if (runningServices. size () < 1) 
-	   fprintf (stderr, "Sorry, no service planned\n");
+//	if (runningServices. size () < 1) 
+//	   fprintf (stderr, "Sorry, no service planned\n");
 
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
@@ -989,6 +988,7 @@ void	RadioInterface::setPresetStation() {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
+	inputDevice		-> stopReader ();	// just the be sure
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start ();
 }
@@ -1000,15 +1000,11 @@ int	tunedFrequency	=
 void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
-	fprintf (stderr, "in stopChannel: device moet stoppen\n");
 	inputDevice			-> stopReader ();
-	fprintf (stderr, "service gaat stoppen \n");
 	stopService ();
-	fprintf (stderr, "service is gestopt\n");
 	if (!my_dabProcessor -> isRunning ())
 	   return;		// do not stop twice
 	my_dabProcessor		-> stop ();
-	fprintf (stderr, "alles gestopt!\n");
 //	the visual elements
 	setSynced	(false);
 	serviceList. clear ();

@@ -98,7 +98,7 @@ public:
 	}
 
 private:
-virtual void	run() {
+virtual void	run () {
 	(theStick -> rtlsdr_read_async) (theStick -> device,
 	                          (rtlsdr_read_async_cb_t)&RTLSDRCallBack,
 	                          (void *)theStick,
@@ -362,6 +362,7 @@ void	rtlsdrHandler::stopReader () {
 	this -> rtlsdr_cancel_async (device);
 	while (!workerHandle -> isFinished()) 
 	   usleep (100);
+	_I_Buffer -> FlushRingBuffer();
 	delete	workerHandle;
 	workerHandle = nullptr;
 }
@@ -608,7 +609,7 @@ void	rtlsdrHandler::close_iqDump () {
 }
 	   
 void	rtlsdrHandler::set_xmlDump () {
-	if (xmlDumper == nullptr) {
+	if (!xml_dumping. load ()) {
 	  if (setup_xmlDump ())
 	      xml_dumpButton	-> setText ("writing xml file");
 	      iq_dumpButton	-> hide	();
@@ -630,6 +631,10 @@ QTime	theTime;
 QDate	theDate;
 QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
                                            QDir::homePath ()). toString ();
+
+	if (xml_dumping. load ())
+	   return false;
+
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";
 
@@ -671,7 +676,9 @@ QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
 }
 
 void	rtlsdrHandler::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
+	if (!xml_dumping. load ())
+	   return;
+	if (xmlDumper == nullptr)	// cannot happen
 	   return;
 	xml_dumping. store (false);
 	usleep (1000);

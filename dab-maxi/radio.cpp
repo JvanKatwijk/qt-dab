@@ -2107,11 +2107,12 @@ void	RadioInterface::localSelect (const QString &s) {
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
 	signalTimer. stop ();
+        my_dabProcessor -> reset_msc ();
+	usleep (1000);
+	soundOut	-> stop ();
 	if (runningServices. size () > 0) {
 	   dabService s = runningServices. at (runningServices. size () - 1);
 	   QString serviceName = s. serviceName;
-	   soundOut	-> stop ();
-           my_dabProcessor -> reset_msc ();
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
@@ -2449,9 +2450,9 @@ void	RadioInterface::stopChannel	() {
 	stopService ();
 	if (!my_dabProcessor -> isRunning ())
 	   return;		// do not stop twice
+	usleep (1000);
 	my_dabProcessor			-> stop ();
 	ficError_display		-> setValue (0);
-//	techData. ficError_display	-> setValue (0);
 	stop_sourceDumping	();
 	stop_audioDumping	();
 //	note framedumping - if any - was already stopped

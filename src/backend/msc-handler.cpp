@@ -102,8 +102,11 @@ void    mscHandler::run () {
 int	currentBlock	= 0;
 std::vector<int16_t> ibits;
 
-	if (running. load ())
+	if (running. load ()) {
 	   fprintf (stderr, "already running\n");
+	   return;
+	}
+
 	running. store (true);
 	ibits. resize (BitsperBlock);
         while (running. load()) {
@@ -149,11 +152,16 @@ std::vector<int16_t> ibits;
 //	services
 //	It might be called several times, so ...
 void	mscHandler::reset() {
+	stop	();
+	start	();
+}
+
+void	mscHandler::stop() {
 	running. store (false);
+	work_to_be_done. store (false);
 	while (isRunning())
 	   usleep (100);
 	locker. lock();
-	work_to_be_done. store (false);
 	for (auto const &b : theBackends) {
 	   b -> stopRunning();
 	   delete b;
@@ -163,11 +171,6 @@ void	mscHandler::reset() {
 	bufferSpace. release (nrBlocks - bufferSpace. available());
 	amount	= 0;
 	locker. unlock();
-	start();
-}
-
-void	mscHandler::stop() {
-	reset();
 }
 //
 //	Note, the set_Channel function is called from within a

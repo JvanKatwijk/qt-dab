@@ -441,6 +441,7 @@ mir_sdr_ErrT err;
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
 	                errorCodes (err). toLatin1(). data());
+	_I_Buffer	-> FlushRingBuffer();
 	running. store (false);
 }
 
