@@ -355,6 +355,8 @@ void	dabProcessor:: reset() {
 }
 
 void	dabProcessor::stop() {
+	if (!isRunning ())
+	   return;
 	myReader. setRunning (false);
 	while (isRunning ())
 	   wait ();

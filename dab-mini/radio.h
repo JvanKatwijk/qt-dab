@@ -55,6 +55,7 @@ public:
 	QString		serviceName;
 	uint32_t	SId;
 	int		SCIds;
+	bool		valid;
 };
 
 class RadioInterface: public QWidget, private Ui_dab_mini {
@@ -73,7 +74,7 @@ private:
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QSettings		*dabSettings;
-	std::vector<dabService>	runningServices;
+//	std::vector<dabService>	runningServices;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
 	RingBuffer<std::complex<float>>  *tiiBuffer;

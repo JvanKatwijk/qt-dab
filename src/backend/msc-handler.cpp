@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -27,7 +28,7 @@
 #include	"dab-params.h"
 //
 //	Interface program for processing the MSC.
-//	The ofdm processor assumes the existence of an msc-handler, whether
+//	The dabProcessor assumes the existence of an msc-handler, whether
 //	a service is selected or not. 
 
 #define	CUSize	(4 * 16)

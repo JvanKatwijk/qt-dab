@@ -2447,15 +2447,16 @@ void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
 	inputDevice			-> stopReader ();
-	stopService ();
-	if (!my_dabProcessor -> isRunning ())
-	   return;		// do not stop twice
-	usleep (1000);
-	my_dabProcessor			-> stop ();
-	ficError_display		-> setValue (0);
 	stop_sourceDumping	();
 	stop_audioDumping	();
 //	note framedumping - if any - was already stopped
+//	stopService ();		// but do not noth on coloring the servicename
+	presetTimer. stop ();
+        signalTimer. stop ();
+        soundOut        -> stop ();
+	my_dabProcessor			-> stop ();
+//	all stopped, now look at the GUI elements
+	ficError_display		-> setValue (0);
 	my_tiiViewer	-> clear();
 //	the visual elements
 	setSynced	(false);
@@ -2466,11 +2467,11 @@ void	RadioInterface::stopChannel	() {
 	serviceList. clear ();
 	model. clear ();
 	ensembleDisplay			-> setModel (&model);
+	cleanScreen	();
 }
 
 void    RadioInterface::selectChannel (const QString &channel) {
 	presetTimer. stop ();
-	stopService ();
 	stopScanning ();
 	stopChannel ();
 	startChannel (channel);
@@ -2486,7 +2487,6 @@ int     currentChannel  = channelSelector -> currentIndex ();
 	stopScanning ();
 	presetTimer. stop ();
 	presetSelector -> setCurrentIndex (0);
-	stopService ();
 	stopChannel ();
 	currentChannel ++;
 	if (currentChannel >= channelSelector -> count ())
