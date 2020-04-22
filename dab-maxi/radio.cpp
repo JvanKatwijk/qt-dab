@@ -168,7 +168,6 @@ uint8_t	dabBand;
 	running. 		store (false);
 	scanning. 		store (false);
 	isSynced		= false;
-	runningServices. 	resize (0);
 	spectrumBuffer          =
 	                  new RingBuffer<std::complex<float>> (2 * 32768);
 	iqBuffer		=
@@ -188,16 +187,19 @@ uint8_t	dabBand;
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
+	currentService. valid	= false;
+	nextService. valid	= false;
 	bool has_presetName	=
 	              dabSettings -> value ("has-presetName", 1). toInt() != 0;
 	if (has_presetName) {
 	   presetName		=
 	              dabSettings -> value ("presetname", ""). toString();
-	   dabService s;
-	   s. serviceName = presetName;
-	   s. SId	  = 0;
-	   s. SCIds	  = 0;
-	   runningServices. push_back (s);
+	   if (presetName != "") {
+	      nextService. serviceName = presetName;
+	      nextService. SId		= 0;
+	      nextService. SCIds	= 0;
+	      nextService. valid	= true;
+	   }
 	}
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
@@ -408,7 +410,7 @@ uint8_t	dabBand;
 	if (inputDevice != nullptr) {
 	   if (doStart()) {
 	      qApp	-> installEventFilter (this);
-	      currentService	= nullptr;
+	      currentServiceDescriptor	= nullptr;
 	      return;
 	   }
 	   else {
@@ -420,7 +422,7 @@ uint8_t	dabBand;
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
-	currentService	= nullptr;
+	currentServiceDescriptor	= nullptr;
 }
 
 QString RadioInterface::footText () {
@@ -524,7 +526,7 @@ int32_t	frequency;
 	                                      frameBuffer
 	                                      );
 
-	if (runningServices. size () > 0) {
+	if (nextService. valid) {
 	   presetTimer. setSingleShot	(true);
 	   presetTimer. setInterval 	(switchTime);
 	   presetTimer. start 		(switchTime);
@@ -548,12 +550,11 @@ int32_t	frequency;
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
 	   return;
-	QString presetName;
-	
-	if (runningServices. size () > 0) {
-	   dabService serv = runningServices. back ();
-	   s	-> setValue ("presetname", serv. serviceName);
-	}
+
+	if (currentService. valid)
+	   s	-> setValue ("presetname", currentService. serviceName);
+	else
+	   s	-> setValue ("presetname", "");
 
 	s	-> setValue ("device",
 	                      deviceSelector -> currentText());
@@ -926,8 +927,8 @@ uint8_t localBuffer [length + 8];
 void	RadioInterface::changeinConfiguration() {
 	if (running. load ()) {
 	   dabService s;
-	   if (runningServices. size () > 0) 
-	      s = runningServices. at (runningServices. size () - 1);
+	   if (currentService. valid) 
+	      s = currentService;
 	   stopScanning    ();
 	   stopService     ();
 	   fprintf (stderr, "change detected\n");
@@ -946,11 +947,10 @@ void	RadioInterface::changeinConfiguration() {
 	   ensembleDisplay -> setModel (&model);
 //
 //	and restart the one that was running
-	   if (s. serviceName != "") {
+	   if (s. valid) {
 	      if (s. SCIds != 0) { // secondary service may be gone
 	         if (my_dabProcessor -> findService (s. SId, s. SCIds) ==
 	                                                   s. serviceName) {
-	            runningServices. push_back (s);
 	            startService (&s);
 	            return;
 	         }
@@ -967,7 +967,6 @@ void	RadioInterface::changeinConfiguration() {
                                 tr ("insufficient data for this program\n"));
                  return;
               }
-	      runningServices. push_back (s);
 	      startService (&s);
 	   }
 	}
@@ -1024,9 +1023,9 @@ void	RadioInterface::TerminateProcess() {
 	delete my_history;
 	if (motSlides != nullptr)
 	   delete	motSlides;
-	if (currentService != nullptr)
-	   delete currentService;
-	currentService	= nullptr;
+	if (currentServiceDescriptor != nullptr)
+	   delete currentServiceDescriptor;
+	currentServiceDescriptor	= nullptr;
 	soundOut		-> stop();
 	dataDisplay		->  hide();
 //	everything should be halted by now
@@ -1941,16 +1940,17 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (event -> type () == QEvent::KeyPress) {
 	   QKeyEvent *ke = static_cast <QKeyEvent *> (event);
 	   if (ke -> key () == Qt::Key_Return) {
+	      presetTimer. stop ();
+	      nextService. valid = false;
 	      QString serviceName =
 	         ensembleDisplay -> currentIndex ().
 	                             data (Qt::DisplayRole). toString ();
-//
-//	to avoid multiple events from a keystroke we
-//	test whether or not the current service is already selected
-	      if ((runningServices. size () > 0)  &&
-	             (runningServices. at (runningServices. size () - 1). serviceName ==
-	                          serviceLabel -> text ())) {
-	         selectService (ensembleDisplay -> currentIndex ());
+	      if (currentService. serviceName != serviceName) {
+	         fprintf (stderr, "currentservice = %s (%d)\n",
+	                  currentService. serviceName. toLatin1 (). data (),
+                                        currentService. valid);
+                 stopService ();
+                 selectService (ensembleDisplay -> currentIndex ());
               }
            }
         }
@@ -1987,17 +1987,17 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      }
 	      
 	      if (ad. defined) {
-	         if (currentService != nullptr) 
-	            delete currentService;
-	         currentService	= new audioDescriptor (&ad);
+	         if (currentServiceDescriptor != nullptr) 
+	            delete currentServiceDescriptor;
+	         currentServiceDescriptor	= new audioDescriptor (&ad);
 	         return true;
 	      }
 
 	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
 	      if (pd. defined) {
-	         if (currentService != nullptr)
-	            delete currentService;
-	         currentService	= new dataDescriptor (&pd);
+	         if (currentServiceDescriptor != nullptr)
+	            delete currentServiceDescriptor;
+	         currentServiceDescriptor	= new dataDescriptor (&pd);
 	         return true;
 	      }
 	   }
@@ -2058,7 +2058,6 @@ void	RadioInterface::localSelect (const QString &s) {
               return;
            }
 	   s. serviceName = service;
-	   runningServices. push_back (s);
 	   startService (&s);
 	   return;
 	}
@@ -2082,21 +2081,14 @@ void	RadioInterface::localSelect (const QString &s) {
 	   return;
 
 	stopChannel ();
-	runningServices. resize (0);
-	dabService serv;
-	serv. serviceName = service;
-//	my_dabProcessor -> getParameters (service, &serv. SId, &serv. SCIds);
-//	if (serv. SId == 0) {
-//	   QMessageBox::warning (this, tr ("Warning"),
-//	                         tr ("insufficient data for this program\n"));
-//           return;
-//	}
-
-	runningServices. push_back (serv);
-	presetTimer. setSingleShot (true);
-	presetTimer. setInterval (switchTime);
-	presetTimer. start (switchTime);
-	startChannel	(channelSelector -> currentText ());
+	nextService. valid = true;
+        nextService. serviceName        = service;
+        nextService. SId                = 0;
+        nextService. SCIds              = 0;
+        presetTimer. setSingleShot (true);
+        presetTimer. setInterval (switchTime);
+        presetTimer. start (switchTime);
+        startChannel    (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2106,13 +2098,13 @@ void	RadioInterface::localSelect (const QString &s) {
 
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
+	presetSelector	-> setCurrentIndex (0);
 	signalTimer. stop ();
-        my_dabProcessor -> reset_msc ();
-	usleep (1000);
-	soundOut	-> stop ();
-	if (runningServices. size () > 0) {
-	   dabService s = runningServices. at (runningServices. size () - 1);
-	   QString serviceName = s. serviceName;
+	if (currentService. valid) {
+           my_dabProcessor -> reset_msc ();
+	   usleep (1000);
+	   soundOut	-> stop ();
+	   QString serviceName = currentService. serviceName;
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
@@ -2122,6 +2114,7 @@ void	RadioInterface::stopService	() {
 	      }
 	   }
 	}
+	currentService. valid = false;
 	cleanScreen	();
 }
 //
@@ -2141,18 +2134,24 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	   return;
 	}
 	s. serviceName = currentProgram;
-	runningServices. push_back (s);
 	startService (&s);
 }
 //
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
+	if (currentService. valid) {
+	   fprintf (stderr, "Niet verwacht, service %s still valid\n",
+	                    currentService. serviceName. toLatin1 (). data ());
+	   stopService ();
+	}
+
+	currentService		= *s;
+	currentService. valid	= false;
+
 	if (motSlides != nullptr)
 	   motSlides	-> hide ();
         techData. pictureLabel -> hide ();
-	if (runningServices. size () < 1) 
-	   fprintf (stderr, "Sorry, no service planned\n");
 
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
@@ -2162,11 +2161,14 @@ QString serviceName	= s -> serviceName;
 	      colorService (model. index (i, 0), Qt::red, 15);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
-	      if (my_dabProcessor -> is_audioService (serviceName))
+	      if (my_dabProcessor -> is_audioService (serviceName)) {
 	         start_audioService (serviceName);
+	         currentService. valid = true;
+	      }
 	      else
-	      if (my_dabProcessor -> is_packetService (serviceName))
+	      if (my_dabProcessor -> is_packetService (serviceName)) {
 	         start_packetService (serviceName);
+	      }
 	      else
 	         fprintf (stderr, "%s is not clear\n",
 	                            serviceName. toLatin1 (). data ());
@@ -2317,15 +2319,18 @@ packetdata pd;
 //
 //	Previous and next services. trivial implementation
 void	RadioInterface::handle_prevServiceButton	() {
+	presetTimer. stop ();
+	nextService. valid	= false;
+	if (!currentService. valid)
+	   return;
+	QString oldService	= currentService. serviceName;
 	disconnect (prevServiceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_prevServiceButton ()));
-	QString currentService = serviceLabel -> text ();
 	stopScanning ();
-	presetTimer. stop ();
 	stopService  ();
-	if ((serviceList. size () != 0) && (currentService != "")) {
+	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
-	      if (serviceList. at (i). name == currentService) {
+	      if (serviceList. at (i). name == oldService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i - 1;
 	         if (i < 0)
@@ -2340,7 +2345,6 @@ void	RadioInterface::handle_prevServiceButton	() {
 	            break;
                  }
 	         s. serviceName = serviceList. at (i). name;
-	         runningServices. push_back (s);
 	         startService (&s);
 	         break;
 	      }
@@ -2351,15 +2355,18 @@ void	RadioInterface::handle_prevServiceButton	() {
 }
 
 void	RadioInterface::handle_nextServiceButton	() {
+	presetTimer. stop ();
+	nextService. valid	= false;
+	if (!currentService. valid)
+	   return;
+	QString oldService = currentService. serviceName;
 	disconnect (nextServiceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_nextServiceButton ()));
-	QString currentService = serviceLabel -> text ();
 	stopScanning ();
-	presetTimer. stop ();
 	stopService ();
-	if ((serviceList. size () != 0) && (currentService != "")) {
+	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
-	      if (serviceList. at (i). name == currentService) {
+	      if (serviceList. at (i). name == oldService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i + 1;
 	         if (i >= (int)(serviceList. size ()))
@@ -2396,10 +2403,10 @@ void	RadioInterface::setPresetStation() {
 	}
 	stopScanning ();
 
-	if (runningServices. size () == 0)
+	if (!nextService. valid)
 	   return;
 
-	QString presetName	= runningServices. back (). serviceName;
+	QString presetName	= nextService. serviceName;
 	for (const auto& service: serviceList) {
 	   if (service. name. contains (presetName)) {
 	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
@@ -2416,9 +2423,9 @@ void	RadioInterface::setPresetStation() {
 	      return;
 	   }
 	}
+	nextService. valid = false;
 //
 //	not found, no service selected
-	runningServices. pop_back ();
 	fprintf (stderr, "presetName %s not found\n", presetName. toLatin1 (). data ());
 }
 
@@ -2426,10 +2433,8 @@ void	RadioInterface::setPresetStation() {
 //
 //	Channel basics
 ///////////////////////////////////////////////////////////////////////////
-//	Precondition: no channel should be activated
+//	Precondition: no channel should be active
 //	
-//	Others assume that the name of the service is
-//	save in the runningServices
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
@@ -2441,8 +2446,6 @@ int	tunedFrequency	=
 //
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
-//	The "stopService" (if any) clears the service related
-//	elements on the screen(s)
 void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
@@ -2452,9 +2455,15 @@ void	RadioInterface::stopChannel	() {
 //	note framedumping - if any - was already stopped
 //	stopService ();		// but do not noth on coloring the servicename
 	presetTimer. stop ();
+	presetSelector		-> setCurrentIndex (0);
         signalTimer. stop ();
-        soundOut        -> stop ();
-	my_dabProcessor			-> stop ();
+//
+//	The service - ifany - is stopped by halting the dabProcessor
+        soundOut		-> stop ();
+	my_dabProcessor		-> stop ();
+	usleep (1000);
+	currentService. valid	= false;
+	nextService. valid	= false;
 //	all stopped, now look at the GUI elements
 	ficError_display		-> setValue (0);
 	my_tiiViewer	-> clear();

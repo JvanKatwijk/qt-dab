@@ -72,6 +72,7 @@ public:
 	QString		serviceName;
 	uint32_t	SId;
 	int		SCIds;
+	bool		valid;
 };
 
 class RadioInterface: public QWidget, private Ui_dabradio {
@@ -97,8 +98,9 @@ private:
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	QSettings		*dabSettings;
-	std::vector<dabService>	runningServices;
         spectrumViewer		*my_spectrumViewer;
+	dabService		currentService;
+	dabService		nextService;
 	RingBuffer<std::complex<float>>  *spectrumBuffer;
 	RingBuffer<std::complex<float>>  *iqBuffer;
 	RingBuffer<std::complex<float>>  *tiiBuffer;
@@ -109,7 +111,7 @@ private:
 	bool			normalScan;
 	int16_t			tii_delay;
 	int32_t			dataPort;
-	serviceDescriptor	*currentService;
+	serviceDescriptor	*currentServiceDescriptor;
 	QLabel			*motSlides;
 	std::vector<int>	secondariesVector;
 	bool			isSynced;

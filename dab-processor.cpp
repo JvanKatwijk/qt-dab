@@ -431,7 +431,7 @@ void    dabProcessor::set_dataChannel (packetdata *d,
 	my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
 }
 
-uint8_t	dabProcessor::get_ecc() {
+uint8_t	dabProcessor::get_ecc () {
 	return my_ficHandler. get_ecc();
 }
 
