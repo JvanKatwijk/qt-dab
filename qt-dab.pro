@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.4
+TARGET		= qt-dab-3.4.1
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console

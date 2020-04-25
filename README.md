@@ -1,24 +1,18 @@
-# Qt-DAB-3.4 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.4.1 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.4 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
+Qt-DAB-3.4.1 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
 
 
 ![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
 ------------------------------------------------------------------
-New in 3.4
+New in 3.4.1
 ------------------------------------------------------------------
 
-There is not much changed in the use of Qt-DAB, quite some internal
-modifications though.
-
-When touching one of the *dump* buttons, a filename is suggested,
-and the directory in which the dump is stored will be remembered for
-a next time.
-
-Furthermore, the Qt-DAB program is pretty large and has quite a number
-of options for users to influence the behaviour, I added a *preliminary*
-piece of documentation in the sections docs
+Based on user requests, a minor addition is implemented: if scanning
+ends normally, i.e. not being interrupted, a possibility is created
+to save the scan into a file. File is in text format,
+can be shown nicely in LibreOffice of similar programs.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -51,7 +45,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.4** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.4,1** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 For DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
@@ -60,7 +54,7 @@ comparable programs.
 
 Derived programs, such as **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
 
-Qt-DAB-3.4 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
+Qt-DAB-3.4.1 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
 
 Finally, Qt-DAB supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -224,7 +218,7 @@ button on the keyboard simultaneously.
 Maintaining History 
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.4 saves all service names found. Pairs Channel:serviceName
+Qt-DAB-3.4.1 saves all service names found. Pairs Channel:serviceName
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 

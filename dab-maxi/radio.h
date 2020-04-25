@@ -176,7 +176,7 @@ private:
 	void			start_audioService	(const QString &);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
-	void			stopScanning		();
+	void			stopScanning		(bool);
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
         void			start_sourceDumping     ();

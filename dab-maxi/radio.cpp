@@ -644,7 +644,7 @@ QString s;
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	my_dabProcessor	-> coarseCorrectorOff();
 	if (normalScan)
-	   stopScanning ();	// if scanning, we are done
+	   stopScanning (false);	// if scanning, we are done
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -929,7 +929,7 @@ void	RadioInterface::changeinConfiguration() {
 	   dabService s;
 	   if (currentService. valid) 
 	      s = currentService;
-	   stopScanning    ();
+	   stopScanning    (false);
 	   stopService     ();
 	   fprintf (stderr, "change detected\n");
 //
@@ -1347,7 +1347,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
 	running. store (false);
 	if (inputDevice != nullptr) {
-	   stopScanning	();
+	   stopScanning	(false);
 	   stopService ();
 	   stopChannel ();	// will also stop the reader
 	   disconnectGUI();
@@ -2047,7 +2047,7 @@ void	RadioInterface::localSelect (const QString &s) {
 	   return;
 	QString channel = list. at (0);
 	QString service	= list. at (1);
-	stopScanning ();
+	stopScanning (false);
 	if (channel == channelSelector -> currentText ()) {
 	   stopService ();
 	   dabService s;
@@ -2123,7 +2123,7 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	presetTimer.	stop();
 	presetSelector -> setCurrentIndex (0);
 	signalTimer.	stop ();
-	stopScanning	();
+	stopScanning	(false);
 	stopService 	();		// if any
 
 	dabService s;
@@ -2326,7 +2326,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	QString oldService	= currentService. serviceName;
 	disconnect (prevServiceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_prevServiceButton ()));
-	stopScanning ();
+	stopScanning (false);
 	stopService  ();
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
@@ -2362,7 +2362,7 @@ void	RadioInterface::handle_nextServiceButton	() {
 	QString oldService = currentService. serviceName;
 	disconnect (nextServiceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_nextServiceButton ()));
-	stopScanning ();
+	stopScanning (false);
 	stopService ();
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
@@ -2401,7 +2401,7 @@ void	RadioInterface::setPresetStation() {
 	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
 	   return;
 	}
-	stopScanning ();
+	stopScanning (false);
 
 	if (!nextService. valid)
 	   return;
@@ -2481,9 +2481,9 @@ void	RadioInterface::stopChannel	() {
 
 void    RadioInterface::selectChannel (const QString &channel) {
 	presetTimer. stop ();
-	stopScanning ();
-	stopChannel ();
-	startChannel (channel);
+	stopScanning	(false);
+	stopChannel	();
+	startChannel	(channel);
 }
 //
 /////////////////////////////////////////////////////////////////////////
@@ -2493,7 +2493,7 @@ void    RadioInterface::selectChannel (const QString &channel) {
 
 void	RadioInterface::handle_nextChannelButton () {
 int     currentChannel  = channelSelector -> currentIndex ();
-	stopScanning ();
+	stopScanning	(false);
 	presetTimer. stop ();
 	presetSelector -> setCurrentIndex (0);
 	stopChannel ();
@@ -2510,9 +2510,9 @@ int     currentChannel  = channelSelector -> currentIndex ();
 
 void	RadioInterface::handle_prevChannelButton () {
 int     currentChannel  = channelSelector -> currentIndex ();
-	stopScanning ();
 	presetTimer. stop ();
-	stopChannel ();
+	stopScanning	(false);
+	stopChannel	();
 	currentChannel --;
 	if (currentChannel < 0)
 	   currentChannel =  channelSelector -> count () - 1;
@@ -2533,7 +2533,7 @@ void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
 	if (scanning. load ()) 
-	   stopScanning ();
+	   stopScanning (false);
 	else
 	   startScanning ();
 }
@@ -2570,15 +2570,46 @@ void	RadioInterface::startScanning	() {
 	}
 }
 
-void	RadioInterface::stopScanning	() {
-      if (!running. load())
+void	RadioInterface::stopScanning	(bool dump) {
+	if (!running. load())
            return;
         if (!scanning. load ())
            return;
         signalTimer. stop ();
+        my_dabProcessor -> set_scanMode (scanning. load ());
+	if (!normalScan && dump) {
+	   QMessageBox::StandardButton resultButton =
+                        QMessageBox::question (this, "dabRadio",
+                                               tr("save the scan?\n"),
+                                               QMessageBox::No | QMessageBox::Yes,
+                                               QMessageBox::Yes);
+           if (resultButton == QMessageBox::Yes) {
+	      QString	saveDir = dabSettings -> value ("contentDir",
+	                                        QDir::homePath ()). toString ();
+
+	      if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	         saveDir = saveDir + '/';
+
+	      QString theTime	= localTimeDisplay -> text ();
+	      for (int i = 0; i < theTime. length (); i ++)
+	         if (!isValid (theTime. at (i)))
+	            theTime. replace (i, 1, '-');
+	      QString suggestedFileName =
+	                       saveDir + "Qt-DAB-scan" + "-" + theTime;
+	
+	      fprintf (stderr, "suggested filename %s\n",
+	                            suggestedFileName. toLatin1 (). data ());
+	      QString fileName = QFileDialog::getSaveFileName (this,
+	                                        tr ("Save file ..."),
+	                                        suggestedFileName + ".txt",
+	                                        tr ("Text (*.txt)"));
+	      if (fileName != "")
+	         theTable. dump (fileName);
+	   }
+	}
+
 	theTable. hide ();
         scanning. store (false);
-        my_dabProcessor -> set_scanMode (scanning. load ());
         scanButton      -> setText ("scan");
 }
 
@@ -2599,7 +2630,8 @@ void	RadioInterface::No_Signal_Found () {
 	   if ((cc >= channelSelector -> count ()) && !normalScan) {
 //	if at the end we can't use "stopScanning", since that
 //	hides the table, and we want to stay visible until ...
-                 signalTimer. stop ();
+	      signalTimer. stop ();
+	      stopScanning (true);
 //	      my_dabProcessor -> set_scanMode (scanning. load ());
 	   }
 	   else {  // we just continue
@@ -2619,7 +2651,7 @@ void	RadioInterface::No_Signal_Found () {
 	}
 	else
 	if (scanning. load ()) 
-	   stopScanning ();
+	   stopScanning (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2651,7 +2683,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
                                             d. protLevel);
 	   theTable.
                   add_to_Ensemble (audioService, serviceId,
-                                   d. ASCTy == 077 ? "DAB+" : "DAB",
+                                   d. ASCTy == 077 ? "DAB+ (plus)" : "DAB",
                                    bitRate, protL, codeRate);
 	}
 }

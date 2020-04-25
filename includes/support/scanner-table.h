@@ -46,6 +46,7 @@ public:
 	void	add_to_Ensemble	(QString, QString, QString,
 	                                     QString, QString, QString);
 	void	clear		();
+	void	dump		(const QString &);
 private:
 	QScrollArea	*myWidget;
 	QTableWidget	*outputWidget;

@@ -49,6 +49,22 @@ int16_t rows    = outputWidget -> rowCount ();
         delete  myWidget;
 }
 
+void	scannerTable::dump	(const QString &fileName) {
+FILE	*dumpFile;
+	dumpFile	= fopen (fileName. toUtf8 (). data (), "w");
+	if (dumpFile == nullptr)
+	   return;
+
+	for (int i = 0; i < outputWidget -> rowCount (); i ++) {
+	   for (int j = 0; j < outputWidget -> columnCount (); j ++) {
+	      QString t = outputWidget -> item (i, j) -> text ();
+	      fprintf (dumpFile, "%s;", t. toUtf8 (). data ());
+	   }
+	   fprintf (dumpFile, "\n");
+	}
+	fclose (dumpFile);
+}
+
 void	scannerTable::clear	() {
 int	rows	= outputWidget -> rowCount ();
 	if (is_clear)

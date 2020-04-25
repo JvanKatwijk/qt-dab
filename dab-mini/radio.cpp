@@ -892,7 +892,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	         dabService s;
 	         s. serviceName = serviceList. at (i). name;
 	         my_dabProcessor ->
-	                  getParameters (s, serviceName, &s. SId, &s. SCIds);
+	                  getParameters (s. serviceName, &s. SId, &s. SCIds);
 	         if (s. SId == 0) {
                     QMessageBox::warning (this, tr ("Warning"),
                                  tr ("insufficient data for this program\n"));
