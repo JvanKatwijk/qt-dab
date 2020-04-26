@@ -14,12 +14,16 @@ ends normally, i.e. not being interrupted, a possibility is created
 to save the scan into a file. File is in text format,
 can be shown nicely in LibreOffice of similar programs.
 
+Furthermore, the sources of sdrplayDab are now integrated in the
+Qt-DAB sourcetree, see the directory sdrplayDab
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 
 * [Introduction](#introduction)
 * [dabMini](#dabMini)
+* [sdrplayDab](#sdrplayDab)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes)
 * [Presets](#Presets)
@@ -40,7 +44,6 @@ Table of Contents
 * [xml-files and support](#xml-files-and-support)
 * [Copyright](#copyright)
 
-
 ------------------------------------------------------------------
 Introduction
 ------------------------------------------------------------------
@@ -52,9 +55,9 @@ for a continuous scanning of selected channels in a given band. Results are
 written in a txt file, formatted for use with *LibreOffice Calc* and
 comparable programs.
 
-Derived programs, such as **sdrplayDab**, the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
+Derived programs, such as the **dab-scanner** and the Qt-free versions **dab-cmdline** and the **dab-server** have their own repository on Github.
 
-Qt-DAB-3.4.1 also supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
+Qt-DAB-3.4.1 supports file input, from pre-recorded files (`*.sdr`, `*.iq` and `*.raw`) and on the aforementionedxml files. Obviously there is a provision for dumping the input into an (\*.sdr)-file and - for most configured devices - as xml file. 
 
 Finally, Qt-DAB supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
@@ -89,6 +92,16 @@ the audio device.
 ![dab-mini](/dab-mini.png?raw=true)
 
 See the subdirectory *dab-mini* (or the separate repository)
+
+------------------------------------------------------------------------
+sdrplayDab
+------------------------------------------------------------------------
+
+sdrplayDab is a version of Qt-DAB based on the SDRplay RSP devices.
+The input handling is completely different from that in Qt-DAB and dabMini.
+It turns out to have a slightly better performance that its brothers.
+
+![sdrplayDab](/qt-dab-sdrplay.png?raw=true)
 
 ------------------------------------------------------------------
 Widgets and scopes for Qt-DAB
