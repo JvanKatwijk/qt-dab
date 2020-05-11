@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  dab-mini.ico
 RESOURCES	+= resources.qrc
@@ -118,6 +118,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/process-params.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
            ../includes/support/fft-handler.h \
@@ -242,13 +243,8 @@ CONFIG		+= faad
 #otherwise, if you want to use the default qt way of sound out
 
 #CONFIG		+= try-epg		# do not use
-DEFINES		+= __THREADED_BACKEND
-#DEFINES	+= SHOW_MISSING
-
-#For x64 linux system uncomment SSE
-#For any other system comment SSE out and uncomment NO_SSE
-#CONFIG	+= SSE
-CONFIG	+= NO_SSE
+CONFIG		+= PC
+#CONFIG		+= RPI
 }
 #
 # an attempt to have it run under W32 through cross compilation
@@ -291,8 +287,6 @@ CONFIG		+= sdrplay
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= NO_SSE
-
-DEFINES		+= PRESET_NAME
 }
 #
 try-epg	{
@@ -305,8 +299,20 @@ try-epg	{
 	SOURCES		+= ../src/backend/data/epg/epgdec.cpp 
 }
 
+# for RPI2 use:
+RPI	{
+	DEFINES		+= __MSC_THREAD__
+	DEFINES		+= __THREADED_BACKEND
+	DEFINES		+= NEON_AVAILABLE
+	QMAKE_CFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
+	QMAKE_CXXFLAGS	+=  -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=neon-vfpv4  
+	HEADERS		+= ./src/support/viterbi-spiral/spiral-neon.h
+	SOURCES		+= ./src/support/viterbi-spiral/spiral-neon.c
+}
 
-SSE	{
+PC	{
+#	DEFINES		+= __THREADED_BACKEND
+#	DEFINES		+= __MSC_THREAD__
 	DEFINES		+= SSE_AVAILABLE
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c

@@ -26,6 +26,7 @@
 #include	"fic-handler.h"
 #include	"msc-handler.h"
 #include	"radio.h"
+#include	"process-params.h"
 #include	"dab-params.h"
 #include	"timesyncer.h"
 //
@@ -38,46 +39,28 @@
   */
 
 	dabProcessor::dabProcessor	(RadioInterface	*mr,
-	                                 deviceHandler	*theRig,
-	                                 uint8_t	dabMode,
-	                                 int16_t	threshold,
-	                                 int16_t	diff_length,
-	                                 int16_t	tii_delay,
-	                                 int16_t	tii_depth,
-	                                 int16_t	echo_depth,
-	                                 RingBuffer<float> *responseBuffer,
-		                         RingBuffer<std::complex<float>> *
-	                                                         spectrumBuffer,
-	                                 RingBuffer<std::complex<float>> *
-	                                                         iqBuffer,
-	                                 RingBuffer<std::complex<float>> *
-	                                                         tiiBuffer,
-	                                 RingBuffer<uint8_t> *frameBuffer
-	                                 ):
-	                                 params (dabMode),
+	                                 deviceHandler	*inputDevice,
+	                                 processParams	*p):
+	                                 params (p -> dabMode),
 	                                 myReader (mr,
-	                                           theRig,
-	                                           spectrumBuffer
-	                                 ),
-	                                 my_ficHandler (mr, dabMode),
-	                                 my_mscHandler (mr, dabMode,
-	                                                frameBuffer),
-	                                 phaseSynchronizer (mr,
-	                                                    dabMode, 
-	                                                    threshold,
-	                                                    diff_length,
-	                                                    echo_depth,
-	                                                    responseBuffer),
-	                                 my_TII_Detector (dabMode, tii_depth), 
-	                                 my_ofdmDecoder (mr,
-	                                                 dabMode,
-	                                                 theRig -> bitDepth(),
-	                                                 iqBuffer) {
+	                                           inputDevice,
+	                                           p -> spectrumBuffer),
+	                                 my_ficHandler (mr, p -> dabMode),
+	                                 my_mscHandler (mr, p -> dabMode,
+	                                                p -> frameBuffer),
+	                                 phaseSynchronizer (mr, p),
+	                                 my_TII_Detector (p -> dabMode,
+	                                                  p -> tii_depth), 
+	                                 my_ofdmDecoder (mr, 
+	                                                 p -> dabMode,
+	                                                 inputDevice -> bitDepth(),
+	                                                 p -> iqBuffer) {
 
 	this	-> myRadioInterface	= mr;
-	this	-> threshold		= threshold;
-	this	-> theRig		= theRig;
-	this	-> tiiBuffer		= tiiBuffer;
+	this	-> inputDevice		= inputDevice;
+	this	-> frequency		= 220000000;	// default
+	this	-> threshold		= p -> threshold;
+	this	-> tiiBuffer		= p -> tiiBuffer;
 	this	-> T_null		= params. get_T_null();
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -102,8 +85,8 @@
 	scanMode			= false;
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
-	connect (this, SIGNAL (No_Signal_Found (void)),
-	         myRadioInterface, SLOT (No_Signal_Found(void)));
+//	connect (this, SIGNAL (No_Signal_Found (void)),
+//	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
 	connect (this, SIGNAL (show_Spectrum (int)),
@@ -113,7 +96,6 @@
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	my_TII_Detector. reset();
-//	the thread will be started from somewhere else
 }
 
 	dabProcessor::~dabProcessor() {
@@ -128,6 +110,19 @@
 	}
 }
 
+void	dabProcessor::start (int frequency) {
+	this	-> frequency	= frequency;
+	my_ficHandler. reset	();
+	my_mscHandler. reset_Channel ();
+	QThread::start ();
+}
+
+void	dabProcessor::stop	() {
+	myReader. setRunning (false);
+	while (isRunning ())
+	   wait ();
+	usleep (10000);
+}
 /***
    *	\brief run
    *	The main thread, reading samples,
@@ -136,7 +131,7 @@
    *	and sending them to the ofdmDecoder who will transfer the results
    *	Finally, estimating the small freqency error
    */
-void	dabProcessor::run() {
+void	dabProcessor::run	() {
 int32_t startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
@@ -144,15 +139,14 @@ timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
 std::vector<int16_t> ibits;
 
+	inputDevice	-> resetBuffer ();
+	inputDevice	-> restartReader (frequency);
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
+	coarseOffset		= 0;
 	correctionNeeded	= true;
 	attempts		= 0;
-	theRig  -> resetBuffer();
-	coarseOffset		= 0;
 	myReader. setRunning (true);	// useful after a restart
-	my_ficHandler. reset ();
-	my_mscHandler. start ();
 //
 //	to get some idea of the signal strength
 	try {
@@ -163,14 +157,14 @@ std::vector<int16_t> ibits;
 notSynced:
 	   totalFrames ++;
 	   setSynced (false);
-	   my_TII_Detector. reset();
+	   my_TII_Detector. reset ();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
 	      case TIMESYNC_ESTABLISHED:
 	         break;			// yes, we are ready
 
 	      case NO_DIP_FOUND:
-	         if (scanMode && (++ attempts >= 5)) {
-	        emit (No_Signal_Found());
+	         if (++ attempts >= 8) {
+	            emit (No_Signal_Found());
 	            attempts = 0;
 	         }
 	         goto notSynced;
@@ -305,8 +299,8 @@ SyncOnPhase:
  *	The TII data is encoded in the null period of the
  *	odd frames 
  */
-       if (params. get_dabMode() == 1) {
-	  if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
+          if (params. get_dabMode () == 1) {
+	     if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
 	            QByteArray secondaries =
@@ -347,46 +341,35 @@ SyncOnPhase:
 	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
+	inputDevice	-> stopReader ();
 }
 
-void	dabProcessor:: reset() {
-	stop	();
-	start	();
-}
-
-void	dabProcessor::stop() {
-	if (!isRunning ())
-	   return;
-	myReader. setRunning (false);
-	while (isRunning ())
-	   wait ();
-	usleep (10000);
-	my_mscHandler.  stop();
-	my_ficHandler.  stop();
-}
-
-void	dabProcessor::coarseCorrectorOn() {
-	correctionNeeded 	= true;
-	coarseOffset	= 0;
-}
-
-void	dabProcessor::coarseCorrectorOff() {
-	correctionNeeded	= false;
-}
 
 void	dabProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;
 }
-//
-//	just a convenience functions
 
-QString	dabProcessor::findService		(uint32_t SId, int SCIds) {
+void	dabProcessor::getFrameQuality	(int	*totalFrames,
+	                                 int	*goodFrames,
+	                                 int	*badFrames) {
+	*totalFrames	= this	-> totalFrames;
+	*goodFrames	= this	-> goodFrames;
+	*badFrames	= this	-> badFrames;
+	this	-> totalFrames	= 0;
+	this	-> goodFrames	= 0;
+	this	-> badFrames	= 0;
+}
+//
+//	just convenience functions
+//	ficHandler abstracts channel data
+
+QString	dabProcessor::findService	(uint32_t SId, int SCIds) {
 	return my_ficHandler. findService (SId, SCIds);
 }
 
-void	dabProcessor::getParameters		(const QString &s,
-	                                         uint32_t *p_SId, int*p_SCIds) {
+void	dabProcessor::getParameters	(const QString &s,
+	                                 uint32_t *p_SId, int*p_SCIds) {
 	my_ficHandler. getParameters (s, p_SId, p_SCIds);
 }
 
@@ -417,8 +400,21 @@ void	dabProcessor::dataforPacketService	(const QString &s,
 	my_ficHandler. dataforPacketService (s, pd, compnr);
 }
 
-void	dabProcessor::reset_msc() {
-	my_mscHandler. reset();
+uint8_t	dabProcessor::get_ecc 		() {
+	return my_ficHandler. get_ecc();
+}
+
+int32_t dabProcessor::get_ensembleId	() {
+	return my_ficHandler. get_ensembleId();
+}
+
+QString dabProcessor::get_ensembleName	() {
+	return my_ficHandler. get_ensembleName();
+}
+//
+//	for the mscHandler:
+void	dabProcessor::reset_Services	() {
+	my_mscHandler. reset_Channel ();
 }
 
 void    dabProcessor::set_audioChannel (audiodata *d,
@@ -429,26 +425,6 @@ void    dabProcessor::set_audioChannel (audiodata *d,
 void    dabProcessor::set_dataChannel (packetdata *d,
 	                                      RingBuffer<uint8_t> *b) {
 	my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
-}
-
-uint8_t	dabProcessor::get_ecc () {
-	return my_ficHandler. get_ecc();
-}
-
-int32_t dabProcessor::get_ensembleId() {
-	return my_ficHandler. get_ensembleId();
-}
-
-QString dabProcessor::get_ensembleName() {
-	return my_ficHandler. get_ensembleName();
-}
-
-void	dabProcessor::clearEnsemble() {
-	my_ficHandler. clearEnsemble();
-}
-
-void	dabProcessor::print_Overview () {
-	my_ficHandler. print_Overview ();
 }
 
 void	dabProcessor::startDumping	(SNDFILE *f) {
@@ -470,16 +446,5 @@ bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
 	   case 4:
 	      return (cf & 03) >= 2;
 	}
-}
-
-void	dabProcessor::getFrameQuality	(int	*totalFrames,
-	                                 int	*goodFrames,
-	                                 int	*badFrames) {
-	*totalFrames	= this	-> totalFrames;
-	*goodFrames	= this	-> goodFrames;
-	*badFrames	= this	-> badFrames;
-	this	-> totalFrames	= 0;
-	this	-> goodFrames	= 0;
-	this	-> badFrames	= 0;
 }
 

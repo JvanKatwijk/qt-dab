@@ -203,6 +203,7 @@ add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/process-params.h
 	     ../includes/support/fft-handler.h
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h

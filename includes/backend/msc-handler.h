@@ -23,10 +23,12 @@
 #ifndef	__MSC_HANDLER__
 #define	__MSC_HANDLER__
 
+#ifdef __MSC_THREAD__
 #include	<QThread>
 #include	<QWaitCondition>
-#include	<QMutex>
 #include	<QSemaphore>
+#endif
+#include	<QMutex>
 #include	<atomic>
 #include	<cstdio>
 #include	<cstdint>
@@ -42,8 +44,11 @@
 class	RadioInterface;
 class	Backend;
 
+#ifdef	__MSC_THREAD__
 class mscHandler: public QThread  {
-Q_OBJECT
+#else
+class	mscHandler {
+#endif
 public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
@@ -55,12 +60,9 @@ public:
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
 //
-//	This function should be called before issuing a request
-//	to handle a service
-	void		reset();
-//
-//	This function will kill
-	void		stop();
+//	
+	void		reset_Channel		();
+	void		reset_Buffers		();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);
 	RadioInterface	*myRadioInterface;
@@ -80,19 +82,22 @@ private:
 	int16_t		blkCount;
 	std::atomic<bool> work_to_be_done;
 	int16_t		BitsperBlock;
+	std::vector<int16_t> ibits;
+
 	int16_t		numberofblocksperCIF;
 	int16_t		blockCount;
-	void            run();
-        std::atomic<bool>       running;
-        std::vector<std::vector<std::complex<float> > > command;
-        int16_t         amount;
-        int16_t         currentBlock;
-        void            processBlock_0();
         void            processMsc	(int32_t n);
-        QSemaphore      bufferSpace;
-        QWaitCondition  commandHandler;
         QMutex          helper;
 	int		nrBlocks;
+#ifdef	__MSC_THREAD__
+        void            processBlock_0	();
+        std::vector<std::vector<std::complex<float> > > command;
+        int16_t         amount;
+	void            run();
+        QSemaphore      bufferSpace;
+        QWaitCondition  commandHandler;
+        std::atomic<bool>       running;
+#endif
 };
 
 #endif

@@ -46,37 +46,24 @@
 
 class	RadioInterface;
 class	dabParams;
+class	processParams;
 
 class dabProcessor: public QThread {
 Q_OBJECT
 public:
 		dabProcessor  	(RadioInterface *,
 	                         deviceHandler *,
-	                         uint8_t,
-	                         int16_t,
-	                         int16_t,
-	                         int16_t,
-	                         int16_t,	// tii_depth
-	                         int16_t,	// echo_depth
-	                         RingBuffer<float> *,
-	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<std::complex<float>>	*,
-	                         RingBuffer<uint8_t> *
-	                        );
-		~dabProcessor();
-    void		reset();
-	void		stop();
-	void		setOffset		(int32_t);
-	void		coarseCorrectorOn();
-	void		coarseCorrectorOff();
+	                         processParams *);
+		~dabProcessor			();
+	void		start			(int32_t);
+	void		stop			();
 	void		startDumping		(SNDFILE *);
-    void		stopDumping();
+	void		stopDumping		();
 	void		set_scanMode		(bool);
+	void		getFrameQuality		(int *, int*, int *);
 //
 //	inheriting from our delegates
-	void		set_tiiCoordinates();
-
+//	for the ficHandler:
 	QString		findService		(uint32_t, int);
 	void		getParameters		(const QString &,
 	                                         uint32_t *, int *);
@@ -87,18 +74,19 @@ public:
 	                                             audiodata *);
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
-	void		reset_msc();
+        uint8_t		get_ecc			();
+        int32_t		get_ensembleId		();
+        QString		get_ensembleName	();
+
+//
+//	for the mscHandler
+	void		reset_Services		();
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
-        uint8_t		get_ecc			();
-        int32_t		get_ensembleId		();
-        QString		get_ensembleName	();
-	void		print_Overview		();
-	void		clearEnsemble		();
-	void		getFrameQuality		(int *, int*, int *);
 private:
+	int		frequency;
 	int		threshold;
 	int		totalFrames;
 	int		goodFrames;
@@ -106,7 +94,7 @@ private:
 	bool		tiiSwitch;
 	int16_t		tii_depth;
 	int16_t		echo_depth;
-	deviceHandler	*theRig;
+	deviceHandler	*inputDevice;
 	dabParams	params;
 	RingBuffer<std::complex<float> > *tiiBuffer;
 	int16_t		tii_delay;

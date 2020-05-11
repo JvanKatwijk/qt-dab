@@ -33,21 +33,16 @@
   */
 
 	phaseReference::phaseReference (RadioInterface *mr,
-	                                uint8_t		dabMode,
-	                                int16_t		threshold,
-	                                int16_t		diff_length,
-	                                int16_t		depth,
-	                                RingBuffer<float> *b):
-	                                     phaseTable (dabMode),
-	                                     params (dabMode),
-	                                     my_fftHandler (dabMode) {
+	                                processParams	*p):
+	                                     phaseTable (p -> dabMode),
+	                                     params (p -> dabMode),
+	                                     my_fftHandler (p -> dabMode) {
 int32_t	i;
 float	Phi_k;
 
-	this	-> response	= b;
-	this	-> threshold	= threshold;
-	this	-> diff_length	= diff_length;
-	this	-> depth	= depth;
+	this	-> response	= p -> responseBuffer;
+	this	-> diff_length	= p -> diff_length;
+	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();

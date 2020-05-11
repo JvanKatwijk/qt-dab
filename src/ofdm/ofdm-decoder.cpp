@@ -63,8 +63,8 @@
 	fft_buffer			= my_fftHandler. getVector();
 	phaseReference			.resize (T_u);
 
-	connect (this, SIGNAL (show_snr (int)),
-	         mr, SLOT (show_snr (int)));
+//	connect (this, SIGNAL (show_snr (int)),
+//	         mr, SLOT (show_snr (int)));
 	snrCount		= 0;
 	snr			= 0;	
 }

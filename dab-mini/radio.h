@@ -38,6 +38,7 @@
 #include	"ringbuffer.h"
 #include        "band-handler.h"
 #include	"text-mapper.h"
+#include	"process-params.h"
 #include	"preset-handler.h"
 
 class	QSettings;
@@ -69,18 +70,21 @@ public:
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
+	RingBuffer<std::complex<float>>  spectrumBuffer;
+        RingBuffer<std::complex<float>>  iqBuffer;
+        RingBuffer<std::complex<float>>  tiiBuffer;
+        RingBuffer<float>       responseBuffer;
+        RingBuffer<uint8_t>     frameBuffer;
+        RingBuffer<uint8_t>     dataBuffer;
+        RingBuffer<int16_t>     audioBuffer;
+
+	processParams		globals;
 	int			serviceOrder;
 	QString			version;
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QSettings		*dabSettings;
 //	std::vector<dabService>	runningServices;
-	RingBuffer<std::complex<float>>  *spectrumBuffer;
-	RingBuffer<std::complex<float>>  *iqBuffer;
-	RingBuffer<std::complex<float>>  *tiiBuffer;
-	RingBuffer<float>       *responseBuffer;
-
-
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			isSynced;
@@ -91,9 +95,6 @@ private:
 	textMapper		the_textMapper;
 	dabProcessor		*my_dabProcessor;
 	audioBase		*soundOut;
-	RingBuffer<int16_t>	*audioBuffer;
-	RingBuffer<uint8_t>	*dataBuffer;
-	RingBuffer<uint8_t>	*frameBuffer;
 	QString			picturesPath;
 	int			switchTime;
 
@@ -129,6 +130,8 @@ private:
 	void			localSelect		(const QString &s);
 	QString			filenameSuggestion 	(QString);
 	bool			doStart			();
+	void			hide_for_safety		();
+	void			show_for_safety		();
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);

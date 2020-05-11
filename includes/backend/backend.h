@@ -61,6 +61,7 @@ public:
 	int16_t		bitRate;
 	QString		serviceName;
 private:
+	backendDeconvolver	deconvolver;
 #ifdef	__THREADED_BACKEND
 void	run();
 	atomic<bool>	running;
@@ -82,7 +83,6 @@ void	run();
 	int16_t		interleaverIndex;
 	std::vector<uint8_t> disperseVector;
 	backendDriver		driver;
-	backendDeconvolver	deconvolver;
 };
 
 #endif

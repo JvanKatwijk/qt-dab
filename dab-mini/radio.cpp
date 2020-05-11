@@ -61,11 +61,22 @@
 
 dabService	nextService;
 dabService	currentService;
-
+//
+//	Note:
+//	The buffers, like spectrumBuffer etc,
+//	are needed for the dabProcessor, there content is
+//	not touched here
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
+	                                        spectrumBuffer (2 * 32768),
+                                                iqBuffer (2 * 1536),
+                                                tiiBuffer (32768),
+                                                responseBuffer (32768),
+                                                frameBuffer (2 * 32768),
+                                                dataBuffer (32768),
+                                                audioBuffer (8 * 32768),
 	                                        my_presetHandler (this),
 	                                        theBand ("") {
 int16_t	latency;
@@ -80,39 +91,34 @@ QString	presetName;
 //
 //	These buffers are not used here, but needed as parameter
 //	in dabProcessor
-	spectrumBuffer          =
-	                  new RingBuffer<std::complex<float>> (2 * 32768);
-	iqBuffer		=
-	                  new RingBuffer<std::complex<float>> (2 * 1536);
-	responseBuffer		=
-	                  new RingBuffer<float> (32768);
-	tiiBuffer		=
-	                  new RingBuffer<std::complex<float>> (32768);
-	audioBuffer		=
-	                  new RingBuffer<int16_t>(16 * 32768);
-	frameBuffer		=
-	                  new RingBuffer<uint8_t> (2 * 32768);
-	dataBuffer		=
-	                  new RingBuffer<uint8_t>(32768);
+//	"globals" is introduced to reduce the number of parameters
+//	for the dabProcessor
+	globals. spectrumBuffer		= &spectrumBuffer;
+	globals. iqBuffer		= &iqBuffer;
+	globals. responseBuffer		= &responseBuffer;
+	globals. tiiBuffer		= &tiiBuffer;
+	globals. frameBuffer		= &frameBuffer;
+	globals. dabMode	= 1;
+	globals. threshold	=
+	                  dabSettings -> value ("threshold", 3). toInt();
+	globals. diff_length	=
+	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
+	globals. tii_delay	=
+	           dabSettings  -> value ("tii_delay", 5). toInt();
+	if (globals. tii_delay < 5)
+	   globals. tii_delay = 5;
+	globals. tii_depth	=
+	               dabSettings -> value ("tii_depth", 1). toInt();
+	globals. echo_depth	=
+	               dabSettings -> value ("echo_depth", 1). toInt();
+
 	switchTime		=
 	                  dabSettings -> value ("switchTime", 8000). toInt ();
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
-	currentService. valid	= false;
-	nextService. valid	= false;
-	bool has_presetName	=
-	              dabSettings -> value ("has-presetName", 1). toInt() != 0;
-	if (has_presetName) {
-	   presetName		=
-	              dabSettings -> value ("presetname", ""). toString();
-	   if (presetName != "") {
-	      nextService. serviceName = presetName;
-	      nextService. SId		= 0;
-	      nextService. SCIds	= 0;
-	      nextService. valid	= true;
-	   }
-	}
+
+	my_dabProcessor		= nullptr;
 //
 //	as with many of the buffers, picturesPath is not used
 //	but used in the dabProcessor
@@ -179,20 +185,24 @@ QString	presetName;
 	   exit (21);
 	}
 
+	currentService. valid	= false;
+	nextService. valid	= false;
+	bool has_presetName	=
+	              dabSettings -> value ("has-presetName", 1). toInt() != 0;
+	if (has_presetName) {
+	   presetName		=
+	              dabSettings -> value ("presetname", ""). toString();
+	   if (presetName != "") {
+	      nextService. serviceName = presetName;
+	      nextService. SId		= 0;
+	      nextService. SCIds	= 0;
+	      nextService. valid	= true;
+	   }
+	}
 	qApp	-> installEventFilter (this);
-	int threshold		=
-	                  dabSettings -> value ("threshold", 3). toInt();
-	int diff_length		=
-	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
-	int tii_delay		=
-	           dabSettings  -> value ("tii_delay", 5). toInt();
-	if (tii_delay < 5)
-	   tii_delay = 5;
-	int     tii_depth       =
-	               dabSettings -> value ("tii_depth", 1). toInt();
-	int     echo_depth      =
-	               dabSettings -> value ("echo_depth", 1). toInt();
 	
+	my_dabProcessor	= new dabProcessor (this, inputDevice, &globals);
+
 	connect (presetSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_presetSelector (const QString &)));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
@@ -208,32 +218,17 @@ QString	presetName;
 	connect	(prevchannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_prevChannelButton (void)));
 //
-//	It is time for some action
-	my_dabProcessor = new dabProcessor   (this,
-	                                      inputDevice,
-	                                      1,
-	                                      threshold,
-	                                      diff_length,
-	                                      tii_delay,
-	                                      tii_depth,
-	                                      echo_depth,
-	                                      responseBuffer,
-	                                      spectrumBuffer,
-	                                      iqBuffer,
-	                                      tiiBuffer,
-	                                      frameBuffer
-	                                      );
-	if (nextService. valid) {
-	   presetTimer. setSingleShot	(true);
-	   presetTimer. setInterval 	(switchTime);
-	   presetTimer. start 		(switchTime);
-	}
 
 	h	= dabSettings -> value ("channel", "12C"). toString();
         k	= channelSelector -> findText (h);
         if (k != -1)
            channelSelector -> setCurrentIndex (k);
 
+	if (nextService. valid) {
+	   presetTimer. setSingleShot	(true);
+	   presetTimer. setInterval 	(switchTime);
+	   presetTimer. start 		(switchTime);
+	}
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
 }
@@ -259,7 +254,6 @@ QString RadioInterface::footText () {
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
 	   return;
-	QString presetName;
 	
 	if (currentService. valid)
 	   s	-> setValue ("presetname", currentService. serviceName);
@@ -339,7 +333,6 @@ QString s;
 	   return;
 	ensembleId      -> setAlignment(Qt::AlignCenter);
         ensembleId      -> setText (v + QString (":") + hextoString (id));
-	my_dabProcessor	-> coarseCorrectorOff();
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -424,8 +417,8 @@ void	RadioInterface::changeinConfiguration() {
 void	RadioInterface::newAudio	(int amount, int rate) {
 	if (running. load ()) {
 	   int16_t vec [amount];
-	   while (audioBuffer -> GetRingBufferReadAvailable() > amount) {
-	      audioBuffer -> getDataFromBuffer (vec, amount);
+	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+	      audioBuffer. getDataFromBuffer (vec, amount);
 	      soundOut	-> audioOut (vec, amount, rate);
 	   }
 	}
@@ -440,27 +433,22 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   *	A clean termination is what is needed, regardless of the GUI
   */
 void	RadioInterface::TerminateProcess() {
+	soundOut		-> stop();
 	running. store (false);
 	displayTimer. stop();
 	signalTimer.  stop();
 	presetTimer.  stop();
 
 	my_presetHandler. savePresets (presetSelector);
-
 	dumpControlState (dabSettings);
-	inputDevice		-> stopReader();	// might be concurrent
-	my_dabProcessor		-> stop();		// definitely concurrent
 
-	soundOut		-> stop();
+	my_dabProcessor		-> stop();		// definitely concurrent
+	usleep (1000);		// give space to clean up pending signals
 //	everything should be halted by now
 	delete		soundOut;
 	delete		inputDevice;
 	delete		my_dabProcessor;
-	delete		iqBuffer;
-	delete		spectrumBuffer;
-	delete		responseBuffer;
-	delete		tiiBuffer;
-	delete		frameBuffer;
+	usleep (1000);
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -765,7 +753,8 @@ void	RadioInterface::stopService	() {
 	presetSelector -> setCurrentIndex (0);
 	signalTimer. stop ();
 	if (currentService. valid) {
-	   my_dabProcessor -> reset_msc ();
+	   fprintf (stderr, "stopping service\n");
+	   my_dabProcessor -> reset_Services ();
 	   usleep (1000);
 	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
@@ -857,7 +846,7 @@ audiodata ad;
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (serviceName);
 
-	my_dabProcessor -> set_audioChannel (&ad, audioBuffer);
+	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
 //	activate sound
 	soundOut -> restart ();
 }
@@ -994,22 +983,20 @@ void	RadioInterface::setPresetStation () {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
-	inputDevice		-> restartReader (tunedFrequency);
-	my_dabProcessor		-> start ();
+	my_dabProcessor		-> start (tunedFrequency);
+	show_for_safety	();
 }
 //
-//	apart from stopping the reader, a lot of administration
-//	is to be done.
 void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
-	inputDevice		-> stopReader ();
+	soundOut		-> stop ();
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
 	signalTimer. stop ();
+	hide_for_safety	();
 //
 //	The service - if any - is stopped by halting the dabProcessor
-	soundOut		-> stop ();
 	my_dabProcessor		-> stop ();
 	usleep (1000);
 	currentService. valid	= false;
@@ -1022,15 +1009,17 @@ void	RadioInterface::stopChannel	() {
 	cleanScreen	();
 }
 
+//
+/////////////////////////////////////////////////////////////////////////
+//
+//	select, next- and previous channel buttons
+/////////////////////////////////////////////////////////////////////////
+
 void    RadioInterface::selectChannel (const QString &channel) {
 	stopChannel ();
 	startChannel (channel);
 }
-//
-/////////////////////////////////////////////////////////////////////////
-//
-//	next- and previous channel buttons
-/////////////////////////////////////////////////////////////////////////
+
 
 void	RadioInterface::handle_nextChannelButton () {
 int     currentChannel  = channelSelector -> currentIndex ();
@@ -1104,5 +1093,15 @@ std::vector<serviceId> k;
 	if (!inserted)
 	   k. push_back (n);
 	return k;
+}
+
+void	RadioInterface::hide_for_safety () {
+	prev_serviceButton	->	hide ();
+        next_serviceButton	->	hide ();
+}
+
+void	RadioInterface::show_for_safety () {
+	prev_serviceButton	->	show ();
+        next_serviceButton	->	show ();
 }
 

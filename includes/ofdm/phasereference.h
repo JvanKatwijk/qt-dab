@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013 .. 2017
@@ -31,6 +30,7 @@
 #include	"phasetable.h"
 #include	"dab-constants.h"
 #include	"dab-params.h"
+#include	"process-params.h"
 #include	"ringbuffer.h"
 class	RadioInterface;
 
@@ -38,11 +38,7 @@ class phaseReference : public QObject, public phaseTable {
 Q_OBJECT
 public:
 			phaseReference 		(RadioInterface *,
-	                                         uint8_t,
-	                                         int16_t,
-	                                         int16_t,
-	                                         int16_t,
-						 RingBuffer<float> *b = nullptr);
+	                                         processParams *);
 			~phaseReference();
 	int32_t		findIndex		(std::vector<std::complex<float>>, int);
 	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
@@ -55,7 +51,6 @@ private:
 	fftHandler	my_fftHandler;
 	RingBuffer<float> *response;
 	std::vector<float> phaseDifferences;
-	int16_t		threshold;
 	int16_t		diff_length;
 	int16_t		depth;
 	int32_t		T_u;
