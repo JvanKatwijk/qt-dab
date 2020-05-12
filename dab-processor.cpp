@@ -85,8 +85,6 @@
 	scanMode			= false;
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
-//	connect (this, SIGNAL (No_Signal_Found (void)),
-//	         myRadioInterface, SLOT (No_Signal_Found(void)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
 	connect (this, SIGNAL (show_Spectrum (int)),
@@ -343,8 +341,8 @@ SyncOnPhase:
 	}
 	inputDevice	-> stopReader ();
 }
-
-
+//
+//
 void	dabProcessor::set_scanMode	(bool b) {
 	scanMode	= b;
 	attempts	= 0;

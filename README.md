@@ -14,7 +14,7 @@ different, versions of a DAB decoder
  * first of all, there is Qt-DAB, a fairly complete DAB decoder,
 based on the idea that *the user is in full control* . For Qt-DAB
 an appImage is available for x64 Linux, and an installer is available
-for Windows. See the subdirectory *dabMaxi* for construction details.
+for Windows. See the subdirectory *dab-maxi* for construction details.
 
 ![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
@@ -25,18 +25,18 @@ which all required libraries will be installed, the sources
 will be downloaded and compiled into an executable.
 For Windows an installer in available.
 dabMini and Qt-DAB share over 95 percent of the sources,
-see the subdirectory *dabMini* for construction details.
+see the subdirectory *dab-mini* for construction details.
 
 ![dab-mini](/dab-mini.png?raw=true)
 
  * third, an experimental version, called *dab-2*. While the sources
 of *dab-2* and Qt-DAB overlap for more than 90 percent, a completely
-different implementation approach is taken for building up
+different architectural approach is taken for building up
 the DAB frames. Note that dab-2 and Qt-DAB share most of the GUI, 
 dab-2 has a different widget for device control.
 See the subdirectory *dab-2* for construction details.
 
-![sdrplayDab](/qt-dab-sdrplay.png?raw=true)
+![dab-2](/dab-2-picture.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents
