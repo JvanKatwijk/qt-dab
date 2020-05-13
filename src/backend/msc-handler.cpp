@@ -185,10 +185,10 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 	                           =  - imag (r1) / ab1 * 1023.0;
 	   }
 
-	   memcpy (phaseReference. data(), fft_buffer,
-	                 params. get_T_u() * sizeof (std::complex<float>));
 	   process_mscBlock (ibits, blkno);
 	}
+	memcpy (phaseReference. data(), fft_buffer,
+	        params. get_T_u() * sizeof (std::complex<float>));
 }
 #endif
 //
@@ -223,7 +223,6 @@ void	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock();
-//
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     d,
 	                                     audioBuffer,

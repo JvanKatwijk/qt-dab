@@ -241,6 +241,6 @@ int16_t	inputCounter	= 0;
 	for (i = 0; i < outSize * 4 + 24; i ++)
 	   if (indexTable [i])
 	      viterbiBlock [i] = v [inputCounter ++];
-	viterbiHandler::deconvolve (viterbiBlock. data(), outBuffer);
+	viterbiSpiral::deconvolve (viterbiBlock. data(), outBuffer);
 	return true;
 }

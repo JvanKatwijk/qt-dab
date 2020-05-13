@@ -26,11 +26,12 @@
 
 #include	<cstdint>
 #include        <vector>
-#include        "viterbi-handler.h"
+#include        "viterbi-spiral.h"
+//#include        "viterbi-handler.h"
 
 extern uint8_t	PI_X [];
 
-class   protection: public viterbiHandler {
+class   protection: public viterbiSpiral {
 public:
                 protection      (int16_t, int16_t);
 virtual         ~protection();
