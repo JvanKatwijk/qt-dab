@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the sdrplayDab
+ *    This file is part of dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab; if not, write to the Free Software
+ *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * 	This particular driver is a very simple wrapper around the
@@ -76,6 +76,9 @@ std::complex<float> localBuffer [READLEN_DEFAULT / 2];
 
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
+
+	if (theStick -> iqDumper. load () != nullptr)
+	   fwrite (buf, 1, len, theStick -> iqDumper. load ());
 
 	for (uint32_t i = 0; i < len / 2; i ++) 
 	   localBuffer [i] =
@@ -277,6 +280,7 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (set_ppmCorrection  (int)));
 	connect (iq_dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_iqDump ()));
+	iqDumper. store (nullptr);
 }
 
 	rtlsdrHandler::~rtlsdrHandler	() {
@@ -520,7 +524,7 @@ QString	rtlsdrHandler::deviceName	() {
 }
 
 void	rtlsdrHandler::set_iqDump	() {
-	if (iqDumper == nullptr) {
+	if (iqDumper. load () == nullptr) {
 	   if (setup_iqDump ()) {
               iq_dumpButton	-> setText ("writing raw file");
 	   }
@@ -532,13 +536,14 @@ void	rtlsdrHandler::set_iqDump	() {
 }
 
 bool	rtlsdrHandler::setup_iqDump () {
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	QString fileName =
+	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
 	                                         QDir::homePath(),
 	                                         tr ("raw (*.raw)"));
         fileName        = QDir::toNativeSeparators (fileName);
-        iqDumper	= fopen (fileName. toUtf8 (). data (), "w");
-	if (iqDumper == nullptr)
+        iqDumper. store (fopen (fileName. toUtf8 (). data (), "w"));
+	if (iqDumper. load () == nullptr)
 	   return false;
 	
 	iq_dumping. store (true);
@@ -546,11 +551,11 @@ bool	rtlsdrHandler::setup_iqDump () {
 }
 
 void	rtlsdrHandler::close_iqDump () {
-	if (iqDumper == nullptr)	// this can happen !!
+	if (iqDumper. load () == nullptr)	// this can happen !!
 	   return;
 	iq_dumping. store (false);
-	fclose (iqDumper);
-	iqDumper	= nullptr;
+	fclose (iqDumper. load ());
+	iqDumper. store (nullptr);
 }
 	   
 void	rtlsdrHandler::show	() {

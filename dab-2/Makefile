@@ -1448,20 +1448,21 @@ protTables.o: ../src/protection/protTables.cpp ../includes/protection/protTables
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o protTables.o ../src/protection/protTables.cpp
 
 protection.o: ../src/protection/protection.cpp ../includes/protection/protection.h \
-		../includes/support/viterbi-jan/viterbi-handler.h
+		../includes/support/viterbi-spiral/viterbi-spiral.h \
+		../includes/dab-constants.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o protection.o ../src/protection/protection.cpp
 
 eep-protection.o: ../src/protection/eep-protection.cpp ../includes/dab-constants.h \
 		../includes/protection/eep-protection.h \
 		../includes/protection/protection.h \
-		../includes/support/viterbi-jan/viterbi-handler.h \
+		../includes/support/viterbi-spiral/viterbi-spiral.h \
 		../includes/protection/protTables.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o eep-protection.o ../src/protection/eep-protection.cpp
 
 uep-protection.o: ../src/protection/uep-protection.cpp ../includes/dab-constants.h \
 		../includes/protection/uep-protection.h \
 		../includes/protection/protection.h \
-		../includes/support/viterbi-jan/viterbi-handler.h \
+		../includes/support/viterbi-spiral/viterbi-spiral.h \
 		../includes/protection/protTables.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o uep-protection.o ../src/protection/uep-protection.cpp
 
@@ -1580,7 +1581,7 @@ backend-deconvolver.o: ../src/backend/backend-deconvolver.cpp ../includes/backen
 		../includes/dab-constants.h \
 		../includes/protection/eep-protection.h \
 		../includes/protection/protection.h \
-		../includes/support/viterbi-jan/viterbi-handler.h \
+		../includes/support/viterbi-spiral/viterbi-spiral.h \
 		../includes/protection/uep-protection.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o backend-deconvolver.o ../src/backend/backend-deconvolver.cpp
 

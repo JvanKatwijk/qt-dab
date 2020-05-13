@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are acknowledged.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -137,8 +134,10 @@ int	zeroCount = 0;
 	      this -> deviceName = component. attribute ("Name", "unknown");
 	      this ->  deviceModel = component. attribute ("Model", "???");
 	   }
+
 	   if (component. tagName () == "Time") 
 	      this -> recordingTime = component. attribute ("Value", "???");
+
 	   if (component. tagName () == "Sample") {
 	      QDomNodeList childNodes = component. childNodes ();
 	      for (int k = 0; k < childNodes. count (); k ++) {

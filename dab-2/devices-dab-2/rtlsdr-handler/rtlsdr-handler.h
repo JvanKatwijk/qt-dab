@@ -92,6 +92,7 @@ public:
 	dabProcessor	*base;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
+	std::atomic<FILE*>	iqDumper;
 private:
 	QSettings	*rtlsdrSettings;
 	QFrame		*myFrame;
@@ -106,7 +107,6 @@ private:
 	QString		deviceModel;
 	QString		recorderVersion;
 	void		handle_Value		(int, float, float);
-	FILE		*iqDumper;
         bool            setup_iqDump		();
         void            close_iqDump		();
         std::atomic<bool> iq_dumping;

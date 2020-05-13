@@ -305,7 +305,7 @@ CONFIG	+= NO_SSE
 win32 {
 #DESTDIR	= ../../../dab-win
 #DESTDIR		=  ../../../windows-dab-2
-DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
+DESTDIR	= /usr/shared/sdr-j-development/windows-dab-2
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
