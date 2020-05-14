@@ -280,7 +280,6 @@ char	manufac [256], product [256], serial [256];
 	iqDumper	= nullptr;
 	iq_dumping. store (false);
 	xml_dumping. store (false);
-
 }
 
 	rtlsdrHandler::~rtlsdrHandler() {

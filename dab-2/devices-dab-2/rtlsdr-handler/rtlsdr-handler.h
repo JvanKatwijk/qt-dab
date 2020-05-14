@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the sdrplayDab
+ *    This file is part of dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab; if not, write to the Free Software
+ *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -36,6 +36,7 @@
 #include	"ui_rtlsdr-widget.h"
 
 class	dll_driver;
+class	xml_fileWriter;
 class	dabProcessor;
 class	RadioInterface;
 //
@@ -92,7 +93,8 @@ public:
 	dabProcessor	*base;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
-	std::atomic<FILE*>	iqDumper;
+	std::atomic<bool> 	xmlDumping;
+        xml_fileWriter		*xmlWriter;
 private:
 	QSettings	*rtlsdrSettings;
 	QFrame		*myFrame;
@@ -106,10 +108,10 @@ private:
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
+	FILE* 			xmlDumper;
+        bool            setup_xmlDump           ();
+        void            close_xmlDump           ();
 	void		handle_Value		(int, float, float);
-        bool            setup_iqDump		();
-        void            close_iqDump		();
-        std::atomic<bool> iq_dumping;
 
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
@@ -136,7 +138,7 @@ private slots:
 	void		set_ExternalGain	(const QString &);
 	void		set_autogain		(const QString &);
 	void		set_ppmCorrection	(int);
-	void		set_iqDump		();
+	void		set_xmlDump		();
 };
 #endif
 

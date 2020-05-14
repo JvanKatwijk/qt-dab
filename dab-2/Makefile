@@ -14,10 +14,10 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DGITHASH=\"------\" -DPRESET_NAME -D__MSC_THREAD__ -DHAVE_RTLSDR -DHAVE_SDRPLAY_V2 -DTRY_EPG -D__WITH_FAAD__ -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_CORE_LIB
-CFLAGS        = -pipe -g -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-CXXFLAGS      = -pipe -std=c++11 -g -isystem /usr/include/qt5 -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I. -I.. -I./src -I../includes -I../service-description -I../includes/protection -I../includes/ofdm -I../includes/backend -I../includes/backend/audio -I../includes/backend/data -I../includes/backend/data/mot -I../includes/backend/data/journaline -I../includes/output -I../includes/support -I../includes/support/viterbi-jan -I../includes/support/viterbi-spiral -I../includes/scopes-qwt6 -I../spectrum-viewer -I../correlation-viewer -I../tii-viewer -Idevices-dab-2 -Idevices-dab-2/wavfiles -Idevices-dab-2/rawfiles -isystem /usr/local/include -isystem /usr/local/include -isystem /usr/include/qt4/qwt -isystem /usr/include/qt5/qwt -isystem /usr/include/qt4/qwt -isystem /usr/include/qwt -I/usr/local/qwt-6.1.4-svn/ -Idevices-dab-2/rtlsdr-handler -Idevices-dab-2/sdrplay-handler-v2 -I../includes/backend/data/epg -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtXml -isystem /usr/include/qt5/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib64/qt5/mkspecs/linux-g++
+DEFINES       = -DGITHASH=\"------\" -DPRESET_NAME -D__MSC_THREAD__ -DHAVE_RTLSDR -DHAVE_SDRPLAY_V2 -DHAVE_HACKRF -DTRY_EPG -D__WITH_FAAD__ -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_XML_LIB -DQT_CORE_LIB
+CFLAGS        = -pipe -flto -ffast-math -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+CXXFLAGS      = -pipe -std=c++11 -isystem /usr/include/qt5 -O2 -Wall -W -D_REENTRANT -fPIC $(DEFINES)
+INCPATH       = -I. -I. -I.. -I./src -I../includes -I../service-description -I../includes/protection -I../includes/ofdm -I../includes/backend -I../includes/backend/audio -I../includes/backend/data -I../includes/backend/data/mot -I../includes/backend/data/journaline -I../includes/output -I../includes/support -I../includes/support/viterbi-spiral -I../includes/scopes-qwt6 -I../spectrum-viewer -I../correlation-viewer -I../tii-viewer -Idevices-dab-2 -Idevices-dab-2/wavfiles -Idevices-dab-2/rawfiles -isystem /usr/local/include -isystem /usr/local/include -isystem /usr/include/qt4/qwt -isystem /usr/include/qt5/qwt -isystem /usr/include/qt4/qwt -isystem /usr/include/qwt -I/usr/local/qwt-6.1.4-svn/ -Idevices-dab-2/rtlsdr-handler -Idevices-dab-2/sdrplay-handler-v2 -Idevices-dab-2/hackrf-handler -I../includes/backend/data/epg -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtXml -isystem /usr/include/qt5/QtCore -I. -isystem /usr/include/libdrm -I. -I/usr/lib64/qt5/mkspecs/linux-g++
 QMAKE         = /usr/bin/qmake-qt5
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -39,7 +39,7 @@ COMPRESS      = gzip -9f
 DISTNAME      = dab-21.0.0
 DISTDIR = /home/jan/qt-dab/dab-2/.tmp/dab-21.0.0
 LINK          = g++
-LFLAGS        = -g -Wl,-O1
+LFLAGS        = -Wl,-O1
 LIBS          = $(SUBLIBS) -lfftw3f -lfftw3 -lusb-1.0 -ldl -lportaudio -lz -lsndfile -lsamplerate -lqwt-qt5 -lfaad /usr/lib64/libQt5Widgets.so /usr/lib64/libQt5Gui.so /usr/lib64/libQt5Xml.so /usr/lib64/libQt5Core.so /usr/lib64/libGL.so -lpthread   
 AR            = ar cqs
 RANLIB        = 
@@ -98,7 +98,6 @@ SOURCES       = main.cpp \
 		../src/output/audio-base.cpp \
 		../src/output/newconverter.cpp \
 		../src/output/audiosink.cpp \
-		../src/support/viterbi-jan/viterbi-handler.cpp \
 		../src/support/viterbi-spiral/viterbi-spiral.cpp \
 		../src/support/fft-handler.cpp \
 		../src/support/dab-params.cpp \
@@ -118,6 +117,7 @@ SOURCES       = main.cpp \
 		../spectrum-viewer/spectrum-viewer.cpp \
 		../correlation-viewer/correlation-viewer.cpp \
 		../tii-viewer/tii-viewer.cpp \
+		devices-dab-2/xml-filewriter.cpp \
 		devices-dab-2/device-handler.cpp \
 		devices-dab-2/wavfiles/wavfiles.cpp \
 		devices-dab-2/rawfiles/rawfiles.cpp \
@@ -125,6 +125,7 @@ SOURCES       = main.cpp \
 		devices-dab-2/rtlsdr-handler/rtl-dongleselect.cpp \
 		devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp \
 		devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp \
+		devices-dab-2/hackrf-handler/hackrf-handler.cpp \
 		../src/backend/data/epg/epgdec.cpp \
 		../src/support/viterbi-spiral/spiral-no-sse.c \
 		../src/backend/audio/faad-decoder.cpp qrc_resources.cpp \
@@ -162,6 +163,7 @@ SOURCES       = main.cpp \
 		moc_rtl-dongleselect.cpp \
 		moc_sdrplay-handler.cpp \
 		moc_sdrplayselect.cpp \
+		moc_hackrf-handler.cpp \
 		moc_faad-decoder.cpp
 OBJECTS       = main.o \
 		radio.o \
@@ -209,7 +211,6 @@ OBJECTS       = main.o \
 		audio-base.o \
 		newconverter.o \
 		audiosink.o \
-		viterbi-handler.o \
 		viterbi-spiral.o \
 		fft-handler.o \
 		dab-params.o \
@@ -229,6 +230,7 @@ OBJECTS       = main.o \
 		spectrum-viewer.o \
 		correlation-viewer.o \
 		tii-viewer.o \
+		xml-filewriter.o \
 		device-handler.o \
 		wavfiles.o \
 		rawfiles.o \
@@ -236,6 +238,7 @@ OBJECTS       = main.o \
 		rtl-dongleselect.o \
 		sdrplay-handler.o \
 		sdrplayselect.o \
+		hackrf-handler.o \
 		epgdec.o \
 		spiral-no-sse.o \
 		faad-decoder.o \
@@ -274,6 +277,7 @@ OBJECTS       = main.o \
 		moc_rtl-dongleselect.o \
 		moc_sdrplay-handler.o \
 		moc_sdrplayselect.o \
+		moc_hackrf-handler.o \
 		moc_faad-decoder.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib64/qt5/mkspecs/common/unix.conf \
@@ -431,7 +435,6 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../includes/output/newconverter.h \
 		../includes/output/audiosink.h \
 		../includes/support/process-params.h \
-		../includes/support/viterbi-jan/viterbi-handler.h \
 		../includes/support/viterbi-spiral/viterbi-spiral.h \
 		../includes/support/fft-handler.h \
 		../includes/support/ringbuffer.h \
@@ -453,6 +456,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../spectrum-viewer/spectrum-viewer.h \
 		../correlation-viewer/correlation-viewer.h \
 		../tii-viewer/tii-viewer.h \
+		devices-dab-2/xml-filewriter.h \
 		devices-dab-2/device-handler.h \
 		devices-dab-2/wavfiles/wavfiles.h \
 		devices-dab-2/rawfiles/rawfiles.h \
@@ -460,6 +464,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		devices-dab-2/rtlsdr-handler/rtl-dongleselect.h \
 		devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h \
 		devices-dab-2/sdrplay-handler-v2/sdrplayselect.h \
+		devices-dab-2/hackrf-handler/hackrf-handler.h \
 		../includes/backend/data/epg/epgdec.h \
 		../src/support/viterbi-spiral/spiral-no-sse.h \
 		../includes/backend/audio/faad-decoder.h main.cpp \
@@ -508,7 +513,6 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../src/output/audio-base.cpp \
 		../src/output/newconverter.cpp \
 		../src/output/audiosink.cpp \
-		../src/support/viterbi-jan/viterbi-handler.cpp \
 		../src/support/viterbi-spiral/viterbi-spiral.cpp \
 		../src/support/fft-handler.cpp \
 		../src/support/dab-params.cpp \
@@ -528,6 +532,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		../spectrum-viewer/spectrum-viewer.cpp \
 		../correlation-viewer/correlation-viewer.cpp \
 		../tii-viewer/tii-viewer.cpp \
+		devices-dab-2/xml-filewriter.cpp \
 		devices-dab-2/device-handler.cpp \
 		devices-dab-2/wavfiles/wavfiles.cpp \
 		devices-dab-2/rawfiles/rawfiles.cpp \
@@ -535,6 +540,7 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		devices-dab-2/rtlsdr-handler/rtl-dongleselect.cpp \
 		devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp \
 		devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp \
+		devices-dab-2/hackrf-handler/hackrf-handler.cpp \
 		../src/backend/data/epg/epgdec.cpp \
 		../src/support/viterbi-spiral/spiral-no-sse.c \
 		../src/backend/audio/faad-decoder.cpp
@@ -546,7 +552,7 @@ TARGET        = linux-bin/dab-2
 first: all
 ####### Build rules
 
-linux-bin/dab-2: ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h $(OBJECTS)  
+linux-bin/dab-2: ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h ui_hackrf-widget.h $(OBJECTS)  
 	@test -d linux-bin/ || mkdir -p linux-bin/
 	$(LINK) $(LFLAGS) -o $(TARGET) $(OBJECTS) $(OBJCOMP) $(LIBS)
 
@@ -773,9 +779,9 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents resources.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib64/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents radio.h dab-processor.h ../service-description/service-descriptor.h ../service-description/audio-descriptor.h ../service-description/data-descriptor.h ../includes/dab-constants.h ../includes/mot-content-types.h ../includes/country-codes.h ../includes/ofdm/ofdm-decoder.h ../includes/ofdm/phasereference.h ../includes/ofdm/phasetable.h ../includes/ofdm/freq-interleaver.h ../includes/ofdm/tii_detector.h ../includes/ofdm/fic-handler.h ../includes/ofdm/fib-decoder.h ../includes/ofdm/fib-table.h ../includes/ofdm/dab-config.h ../includes/protection/protTables.h ../includes/protection/protection.h ../includes/protection/eep-protection.h ../includes/protection/uep-protection.h ../includes/backend/msc-handler.h ../includes/backend/galois.h ../includes/backend/reed-solomon.h ../includes/backend/rscodec.h ../includes/backend/charsets.h ../includes/backend/firecode-checker.h ../includes/backend/frame-processor.h ../includes/backend/backend.h ../includes/backend/backend-driver.h ../includes/backend/backend-deconvolver.h ../includes/backend/audio/mp2processor.h ../includes/backend/audio/mp4processor.h ../includes/backend/audio/bitWriter.h ../includes/backend/data/data-processor.h ../includes/backend/data/pad-handler.h ../includes/backend/data/virtual-datahandler.h ../includes/backend/data/tdc-datahandler.h ../includes/backend/data/ip-datahandler.h ../includes/backend/data/mot/mot-handler.h ../includes/backend/data/mot/mot-object.h ../includes/backend/data/mot/mot-dir.h ../includes/backend/data/journaline-datahandler.h ../includes/backend/data/journaline/dabdatagroupdecoder.h ../includes/backend/data/journaline/crc_8_16.h ../includes/backend/data/journaline/log.h ../includes/backend/data/journaline/newssvcdec_impl.h ../includes/backend/data/journaline/Splitter.h ../includes/backend/data/journaline/dabdgdec_impl.h ../includes/backend/data/journaline/newsobject.h ../includes/backend/data/journaline/NML.h ../includes/output/audio-base.h ../includes/output/newconverter.h ../includes/output/audiosink.h ../includes/support/process-params.h ../includes/support/viterbi-jan/viterbi-handler.h ../includes/support/viterbi-spiral/viterbi-spiral.h ../includes/support/fft-handler.h ../includes/support/ringbuffer.h ../includes/support/dab-params.h ../includes/support/band-handler.h ../includes/support/text-mapper.h ../includes/support/dab-tables.h ../includes/support/ensemble-printer.h ../includes/support/preset-handler.h ../includes/support/presetcombobox.h ../includes/support/smallcombobox.h ../includes/support/smallpushbutton.h ../includes/support/verysmallpushbutton.h ../includes/support/smallqlistview.h ../includes/support/history-handler.h ../includes/support/scanner-table.h ../includes/scopes-qwt6/spectrogramdata.h ../includes/scopes-qwt6/iqdisplay.h ../spectrum-viewer/spectrum-viewer.h ../correlation-viewer/correlation-viewer.h ../tii-viewer/tii-viewer.h devices-dab-2/device-handler.h devices-dab-2/wavfiles/wavfiles.h devices-dab-2/rawfiles/rawfiles.h devices-dab-2/rtlsdr-handler/rtlsdr-handler.h devices-dab-2/rtlsdr-handler/rtl-dongleselect.h devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h devices-dab-2/sdrplay-handler-v2/sdrplayselect.h ../includes/backend/data/epg/epgdec.h ../src/support/viterbi-spiral/spiral-no-sse.h ../includes/backend/audio/faad-decoder.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp radio.cpp dab-processor.cpp ../service-description/audio-descriptor.cpp ../service-description/data-descriptor.cpp ../src/ofdm/ofdm-decoder.cpp ../src/ofdm/phasereference.cpp ../src/ofdm/phasetable.cpp ../src/ofdm/freq-interleaver.cpp ../src/ofdm/tii_detector.cpp ../src/ofdm/fic-handler.cpp ../src/ofdm/fib-decoder.cpp ../src/protection/protTables.cpp ../src/protection/protection.cpp ../src/protection/eep-protection.cpp ../src/protection/uep-protection.cpp ../src/backend/msc-handler.cpp ../src/backend/galois.cpp ../src/backend/reed-solomon.cpp ../src/backend/rscodec.cpp ../src/backend/charsets.cpp ../src/backend/firecode-checker.cpp ../src/backend/backend.cpp ../src/backend/backend-driver.cpp ../src/backend/backend-deconvolver.cpp ../src/backend/audio/mp2processor.cpp ../src/backend/audio/mp4processor.cpp ../src/backend/audio/bitWriter.cpp ../src/backend/data/pad-handler.cpp ../src/backend/data/data-processor.cpp ../src/backend/data/tdc-datahandler.cpp ../src/backend/data/ip-datahandler.cpp ../src/backend/data/mot/mot-handler.cpp ../src/backend/data/mot/mot-object.cpp ../src/backend/data/mot/mot-dir.cpp ../src/backend/data/journaline-datahandler.cpp ../src/backend/data/journaline/crc_8_16.c ../src/backend/data/journaline/log.c ../src/backend/data/journaline/newssvcdec_impl.cpp ../src/backend/data/journaline/Splitter.cpp ../src/backend/data/journaline/dabdgdec_impl.c ../src/backend/data/journaline/newsobject.cpp ../src/backend/data/journaline/NML.cpp ../src/output/audio-base.cpp ../src/output/newconverter.cpp ../src/output/audiosink.cpp ../src/support/viterbi-jan/viterbi-handler.cpp ../src/support/viterbi-spiral/viterbi-spiral.cpp ../src/support/fft-handler.cpp ../src/support/dab-params.cpp ../src/support/band-handler.cpp ../src/support/text-mapper.cpp ../src/support/dab-tables.cpp ../src/support/ensemble-printer.cpp ../src/support/preset-handler.cpp ../src/support/presetcombobox.cpp ../src/support/smallcombobox.cpp ../src/support/smallpushbutton.cpp ../src/support/verysmallpushbutton.cpp ../src/support/smallqlistview.cpp ../src/support/history-handler.cpp ../src/support/scanner-table.cpp ../src/scopes-qwt6/iqdisplay.cpp ../spectrum-viewer/spectrum-viewer.cpp ../correlation-viewer/correlation-viewer.cpp ../tii-viewer/tii-viewer.cpp devices-dab-2/device-handler.cpp devices-dab-2/wavfiles/wavfiles.cpp devices-dab-2/rawfiles/rawfiles.cpp devices-dab-2/rtlsdr-handler/rtlsdr-handler.cpp devices-dab-2/rtlsdr-handler/rtl-dongleselect.cpp devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp ../src/backend/data/epg/epgdec.cpp ../src/support/viterbi-spiral/spiral-no-sse.c ../src/backend/audio/faad-decoder.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents ../forms/technical_data.ui ../forms/dabradio.ui ../forms/audio-description.ui ../forms/data-description.ui ../spectrum-viewer/scopewidget.ui ../correlation-viewer/correlation-widget.ui ../tii-viewer/tii-widget.ui devices-dab-2/filereader-widget.ui devices-dab-2/rtlsdr-handler/rtlsdr-widget.ui devices-dab-2/sdrplay-widget.ui $(DISTDIR)/
+	$(COPY_FILE) --parents radio.h dab-processor.h ../service-description/service-descriptor.h ../service-description/audio-descriptor.h ../service-description/data-descriptor.h ../includes/dab-constants.h ../includes/mot-content-types.h ../includes/country-codes.h ../includes/ofdm/ofdm-decoder.h ../includes/ofdm/phasereference.h ../includes/ofdm/phasetable.h ../includes/ofdm/freq-interleaver.h ../includes/ofdm/tii_detector.h ../includes/ofdm/fic-handler.h ../includes/ofdm/fib-decoder.h ../includes/ofdm/fib-table.h ../includes/ofdm/dab-config.h ../includes/protection/protTables.h ../includes/protection/protection.h ../includes/protection/eep-protection.h ../includes/protection/uep-protection.h ../includes/backend/msc-handler.h ../includes/backend/galois.h ../includes/backend/reed-solomon.h ../includes/backend/rscodec.h ../includes/backend/charsets.h ../includes/backend/firecode-checker.h ../includes/backend/frame-processor.h ../includes/backend/backend.h ../includes/backend/backend-driver.h ../includes/backend/backend-deconvolver.h ../includes/backend/audio/mp2processor.h ../includes/backend/audio/mp4processor.h ../includes/backend/audio/bitWriter.h ../includes/backend/data/data-processor.h ../includes/backend/data/pad-handler.h ../includes/backend/data/virtual-datahandler.h ../includes/backend/data/tdc-datahandler.h ../includes/backend/data/ip-datahandler.h ../includes/backend/data/mot/mot-handler.h ../includes/backend/data/mot/mot-object.h ../includes/backend/data/mot/mot-dir.h ../includes/backend/data/journaline-datahandler.h ../includes/backend/data/journaline/dabdatagroupdecoder.h ../includes/backend/data/journaline/crc_8_16.h ../includes/backend/data/journaline/log.h ../includes/backend/data/journaline/newssvcdec_impl.h ../includes/backend/data/journaline/Splitter.h ../includes/backend/data/journaline/dabdgdec_impl.h ../includes/backend/data/journaline/newsobject.h ../includes/backend/data/journaline/NML.h ../includes/output/audio-base.h ../includes/output/newconverter.h ../includes/output/audiosink.h ../includes/support/process-params.h ../includes/support/viterbi-spiral/viterbi-spiral.h ../includes/support/fft-handler.h ../includes/support/ringbuffer.h ../includes/support/dab-params.h ../includes/support/band-handler.h ../includes/support/text-mapper.h ../includes/support/dab-tables.h ../includes/support/ensemble-printer.h ../includes/support/preset-handler.h ../includes/support/presetcombobox.h ../includes/support/smallcombobox.h ../includes/support/smallpushbutton.h ../includes/support/verysmallpushbutton.h ../includes/support/smallqlistview.h ../includes/support/history-handler.h ../includes/support/scanner-table.h ../includes/scopes-qwt6/spectrogramdata.h ../includes/scopes-qwt6/iqdisplay.h ../spectrum-viewer/spectrum-viewer.h ../correlation-viewer/correlation-viewer.h ../tii-viewer/tii-viewer.h devices-dab-2/xml-filewriter.h devices-dab-2/device-handler.h devices-dab-2/wavfiles/wavfiles.h devices-dab-2/rawfiles/rawfiles.h devices-dab-2/rtlsdr-handler/rtlsdr-handler.h devices-dab-2/rtlsdr-handler/rtl-dongleselect.h devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h devices-dab-2/sdrplay-handler-v2/sdrplayselect.h devices-dab-2/hackrf-handler/hackrf-handler.h ../includes/backend/data/epg/epgdec.h ../src/support/viterbi-spiral/spiral-no-sse.h ../includes/backend/audio/faad-decoder.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp radio.cpp dab-processor.cpp ../service-description/audio-descriptor.cpp ../service-description/data-descriptor.cpp ../src/ofdm/ofdm-decoder.cpp ../src/ofdm/phasereference.cpp ../src/ofdm/phasetable.cpp ../src/ofdm/freq-interleaver.cpp ../src/ofdm/tii_detector.cpp ../src/ofdm/fic-handler.cpp ../src/ofdm/fib-decoder.cpp ../src/protection/protTables.cpp ../src/protection/protection.cpp ../src/protection/eep-protection.cpp ../src/protection/uep-protection.cpp ../src/backend/msc-handler.cpp ../src/backend/galois.cpp ../src/backend/reed-solomon.cpp ../src/backend/rscodec.cpp ../src/backend/charsets.cpp ../src/backend/firecode-checker.cpp ../src/backend/backend.cpp ../src/backend/backend-driver.cpp ../src/backend/backend-deconvolver.cpp ../src/backend/audio/mp2processor.cpp ../src/backend/audio/mp4processor.cpp ../src/backend/audio/bitWriter.cpp ../src/backend/data/pad-handler.cpp ../src/backend/data/data-processor.cpp ../src/backend/data/tdc-datahandler.cpp ../src/backend/data/ip-datahandler.cpp ../src/backend/data/mot/mot-handler.cpp ../src/backend/data/mot/mot-object.cpp ../src/backend/data/mot/mot-dir.cpp ../src/backend/data/journaline-datahandler.cpp ../src/backend/data/journaline/crc_8_16.c ../src/backend/data/journaline/log.c ../src/backend/data/journaline/newssvcdec_impl.cpp ../src/backend/data/journaline/Splitter.cpp ../src/backend/data/journaline/dabdgdec_impl.c ../src/backend/data/journaline/newsobject.cpp ../src/backend/data/journaline/NML.cpp ../src/output/audio-base.cpp ../src/output/newconverter.cpp ../src/output/audiosink.cpp ../src/support/viterbi-spiral/viterbi-spiral.cpp ../src/support/fft-handler.cpp ../src/support/dab-params.cpp ../src/support/band-handler.cpp ../src/support/text-mapper.cpp ../src/support/dab-tables.cpp ../src/support/ensemble-printer.cpp ../src/support/preset-handler.cpp ../src/support/presetcombobox.cpp ../src/support/smallcombobox.cpp ../src/support/smallpushbutton.cpp ../src/support/verysmallpushbutton.cpp ../src/support/smallqlistview.cpp ../src/support/history-handler.cpp ../src/support/scanner-table.cpp ../src/scopes-qwt6/iqdisplay.cpp ../spectrum-viewer/spectrum-viewer.cpp ../correlation-viewer/correlation-viewer.cpp ../tii-viewer/tii-viewer.cpp devices-dab-2/xml-filewriter.cpp devices-dab-2/device-handler.cpp devices-dab-2/wavfiles/wavfiles.cpp devices-dab-2/rawfiles/rawfiles.cpp devices-dab-2/rtlsdr-handler/rtlsdr-handler.cpp devices-dab-2/rtlsdr-handler/rtl-dongleselect.cpp devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp devices-dab-2/hackrf-handler/hackrf-handler.cpp ../src/backend/data/epg/epgdec.cpp ../src/support/viterbi-spiral/spiral-no-sse.c ../src/backend/audio/faad-decoder.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../forms/technical_data.ui ../forms/dabradio.ui ../forms/audio-description.ui ../forms/data-description.ui ../spectrum-viewer/scopewidget.ui ../correlation-viewer/correlation-widget.ui ../tii-viewer/tii-widget.ui devices-dab-2/filereader-widget.ui devices-dab-2/rtlsdr-handler/rtlsdr-widget.ui devices-dab-2/sdrplay-widget.ui devices-dab-2/hackrf-handler/hackrf-widget.ui $(DISTDIR)/
 	$(COPY_FILE) --parents ../i18n/de_DE.ts $(DISTDIR)/
 
 
@@ -815,14 +821,19 @@ compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
 moc_predefs.h: /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
-	g++ -pipe -std=c++11 -g -isystem /usr/include/qt5 -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
+	g++ -pipe -std=c++11 -isystem /usr/include/qt5 -O2 -Wall -W -dM -E -o moc_predefs.h /usr/lib64/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_radio.cpp moc_dab-processor.cpp moc_ofdm-decoder.cpp moc_phasereference.cpp moc_fic-handler.cpp moc_fib-decoder.cpp moc_mp2processor.cpp moc_mp4processor.cpp moc_data-processor.cpp moc_pad-handler.cpp moc_virtual-datahandler.cpp moc_tdc-datahandler.cpp moc_ip-datahandler.cpp moc_mot-object.cpp moc_audio-base.cpp moc_audiosink.cpp moc_preset-handler.cpp moc_presetcombobox.cpp moc_smallcombobox.cpp moc_smallpushbutton.cpp moc_verysmallpushbutton.cpp moc_smallqlistview.cpp moc_history-handler.cpp moc_scanner-table.cpp moc_iqdisplay.cpp moc_spectrum-viewer.cpp moc_correlation-viewer.cpp moc_tii-viewer.cpp moc_device-handler.cpp moc_rawfiles.cpp moc_rtlsdr-handler.cpp moc_rtl-dongleselect.cpp moc_sdrplay-handler.cpp moc_sdrplayselect.cpp moc_faad-decoder.cpp
+compiler_moc_header_make_all: moc_radio.cpp moc_dab-processor.cpp moc_ofdm-decoder.cpp moc_phasereference.cpp moc_fic-handler.cpp moc_fib-decoder.cpp moc_mp2processor.cpp moc_mp4processor.cpp moc_data-processor.cpp moc_pad-handler.cpp moc_virtual-datahandler.cpp moc_tdc-datahandler.cpp moc_ip-datahandler.cpp moc_mot-object.cpp moc_audio-base.cpp moc_audiosink.cpp moc_preset-handler.cpp moc_presetcombobox.cpp moc_smallcombobox.cpp moc_smallpushbutton.cpp moc_verysmallpushbutton.cpp moc_smallqlistview.cpp moc_history-handler.cpp moc_scanner-table.cpp moc_iqdisplay.cpp moc_spectrum-viewer.cpp moc_correlation-viewer.cpp moc_tii-viewer.cpp moc_device-handler.cpp moc_rawfiles.cpp moc_rtlsdr-handler.cpp moc_rtl-dongleselect.cpp moc_sdrplay-handler.cpp moc_sdrplayselect.cpp moc_hackrf-handler.cpp moc_faad-decoder.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_radio.cpp moc_dab-processor.cpp moc_ofdm-decoder.cpp moc_phasereference.cpp moc_fic-handler.cpp moc_fib-decoder.cpp moc_mp2processor.cpp moc_mp4processor.cpp moc_data-processor.cpp moc_pad-handler.cpp moc_virtual-datahandler.cpp moc_tdc-datahandler.cpp moc_ip-datahandler.cpp moc_mot-object.cpp moc_audio-base.cpp moc_audiosink.cpp moc_preset-handler.cpp moc_presetcombobox.cpp moc_smallcombobox.cpp moc_smallpushbutton.cpp moc_verysmallpushbutton.cpp moc_smallqlistview.cpp moc_history-handler.cpp moc_scanner-table.cpp moc_iqdisplay.cpp moc_spectrum-viewer.cpp moc_correlation-viewer.cpp moc_tii-viewer.cpp moc_device-handler.cpp moc_rawfiles.cpp moc_rtlsdr-handler.cpp moc_rtl-dongleselect.cpp moc_sdrplay-handler.cpp moc_sdrplayselect.cpp moc_faad-decoder.cpp
+	-$(DEL_FILE) moc_radio.cpp moc_dab-processor.cpp moc_ofdm-decoder.cpp moc_phasereference.cpp moc_fic-handler.cpp moc_fib-decoder.cpp moc_mp2processor.cpp moc_mp4processor.cpp moc_data-processor.cpp moc_pad-handler.cpp moc_virtual-datahandler.cpp moc_tdc-datahandler.cpp moc_ip-datahandler.cpp moc_mot-object.cpp moc_audio-base.cpp moc_audiosink.cpp moc_preset-handler.cpp moc_presetcombobox.cpp moc_smallcombobox.cpp moc_smallpushbutton.cpp moc_verysmallpushbutton.cpp moc_smallqlistview.cpp moc_history-handler.cpp moc_scanner-table.cpp moc_iqdisplay.cpp moc_spectrum-viewer.cpp moc_correlation-viewer.cpp moc_tii-viewer.cpp moc_device-handler.cpp moc_rawfiles.cpp moc_rtlsdr-handler.cpp moc_rtl-dongleselect.cpp moc_sdrplay-handler.cpp moc_sdrplayselect.cpp moc_hackrf-handler.cpp moc_faad-decoder.cpp
 moc_radio.cpp: radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -845,7 +856,7 @@ moc_radio.cpp: radio.h \
 		ui_technical_data.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include radio.h -o moc_radio.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include radio.h -o moc_radio.cpp
 
 moc_dab-processor.cpp: dab-processor.h \
 		../includes/dab-constants.h \
@@ -864,7 +875,7 @@ moc_dab-processor.cpp: dab-processor.h \
 		../includes/ofdm/tii_detector.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include dab-processor.h -o moc_dab-processor.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include dab-processor.h -o moc_dab-processor.cpp
 
 moc_ofdm-decoder.cpp: ../includes/ofdm/ofdm-decoder.h \
 		../includes/dab-constants.h \
@@ -875,7 +886,7 @@ moc_ofdm-decoder.cpp: ../includes/ofdm/ofdm-decoder.h \
 		../includes/ofdm/freq-interleaver.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/ofdm-decoder.h -o moc_ofdm-decoder.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/ofdm-decoder.h -o moc_ofdm-decoder.cpp
 
 moc_phasereference.cpp: ../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -886,7 +897,7 @@ moc_phasereference.cpp: ../includes/ofdm/phasereference.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/phasereference.h -o moc_phasereference.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/phasereference.h -o moc_phasereference.cpp
 
 moc_fic-handler.cpp: ../includes/ofdm/fic-handler.h \
 		../includes/support/viterbi-spiral/viterbi-spiral.h \
@@ -900,7 +911,7 @@ moc_fic-handler.cpp: ../includes/ofdm/fic-handler.h \
 		../includes/ofdm/freq-interleaver.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/fic-handler.h -o moc_fic-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/fic-handler.h -o moc_fic-handler.cpp
 
 moc_fib-decoder.cpp: ../includes/ofdm/fib-decoder.h \
 		../includes/backend/msc-handler.h \
@@ -912,7 +923,7 @@ moc_fib-decoder.cpp: ../includes/ofdm/fib-decoder.h \
 		../includes/ofdm/freq-interleaver.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/fib-decoder.h -o moc_fib-decoder.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/ofdm/fib-decoder.h -o moc_fib-decoder.cpp
 
 moc_mp2processor.cpp: ../includes/backend/audio/mp2processor.h \
 		../includes/backend/frame-processor.h \
@@ -920,7 +931,7 @@ moc_mp2processor.cpp: ../includes/backend/audio/mp2processor.h \
 		../includes/backend/data/pad-handler.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/mp2processor.h -o moc_mp2processor.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/mp2processor.h -o moc_mp2processor.cpp
 
 moc_mp4processor.cpp: ../includes/backend/audio/mp4processor.h \
 		../includes/dab-constants.h \
@@ -937,25 +948,25 @@ moc_mp4processor.cpp: ../includes/backend/audio/mp4processor.h \
 		../includes/backend/audio/neaacdec.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/mp4processor.h -o moc_mp4processor.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/mp4processor.h -o moc_mp4processor.cpp
 
 moc_data-processor.cpp: ../includes/backend/data/data-processor.h \
 		../includes/backend/frame-processor.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/data-processor.h -o moc_data-processor.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/data-processor.h -o moc_data-processor.cpp
 
 moc_pad-handler.cpp: ../includes/backend/data/pad-handler.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/pad-handler.h -o moc_pad-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/pad-handler.h -o moc_pad-handler.cpp
 
 moc_virtual-datahandler.cpp: ../includes/backend/data/virtual-datahandler.h \
 		../includes/dab-constants.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/virtual-datahandler.h -o moc_virtual-datahandler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/virtual-datahandler.h -o moc_virtual-datahandler.cpp
 
 moc_tdc-datahandler.cpp: ../includes/backend/data/tdc-datahandler.h \
 		../includes/dab-constants.h \
@@ -963,7 +974,7 @@ moc_tdc-datahandler.cpp: ../includes/backend/data/tdc-datahandler.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/tdc-datahandler.h -o moc_tdc-datahandler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/tdc-datahandler.h -o moc_tdc-datahandler.cpp
 
 moc_ip-datahandler.cpp: ../includes/backend/data/ip-datahandler.h \
 		../includes/dab-constants.h \
@@ -971,14 +982,14 @@ moc_ip-datahandler.cpp: ../includes/backend/data/ip-datahandler.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/ip-datahandler.h -o moc_ip-datahandler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/ip-datahandler.h -o moc_ip-datahandler.cpp
 
 moc_mot-object.cpp: ../includes/backend/data/mot/mot-object.h \
 		../includes/dab-constants.h \
 		../includes/mot-content-types.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/mot/mot-object.h -o moc_mot-object.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/data/mot/mot-object.h -o moc_mot-object.cpp
 
 moc_audio-base.cpp: ../includes/output/audio-base.h \
 		../includes/dab-constants.h \
@@ -986,7 +997,7 @@ moc_audio-base.cpp: ../includes/output/audio-base.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/output/audio-base.h -o moc_audio-base.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/output/audio-base.h -o moc_audio-base.cpp
 
 moc_audiosink.cpp: ../includes/output/audiosink.h \
 		../includes/dab-constants.h \
@@ -995,42 +1006,47 @@ moc_audiosink.cpp: ../includes/output/audiosink.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/output/audiosink.h -o moc_audiosink.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/output/audiosink.h -o moc_audiosink.cpp
 
 moc_preset-handler.cpp: ../includes/support/preset-handler.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/preset-handler.h -o moc_preset-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/preset-handler.h -o moc_preset-handler.cpp
 
 moc_presetcombobox.cpp: ../includes/support/presetcombobox.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/presetcombobox.h -o moc_presetcombobox.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/presetcombobox.h -o moc_presetcombobox.cpp
 
 moc_smallcombobox.cpp: ../includes/support/smallcombobox.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallcombobox.h -o moc_smallcombobox.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallcombobox.h -o moc_smallcombobox.cpp
 
 moc_smallpushbutton.cpp: ../includes/support/smallpushbutton.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallpushbutton.h -o moc_smallpushbutton.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallpushbutton.h -o moc_smallpushbutton.cpp
 
 moc_verysmallpushbutton.cpp: ../includes/support/verysmallpushbutton.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/verysmallpushbutton.h -o moc_verysmallpushbutton.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/verysmallpushbutton.h -o moc_verysmallpushbutton.cpp
 
 moc_smallqlistview.cpp: ../includes/support/smallqlistview.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallqlistview.h -o moc_smallqlistview.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/smallqlistview.h -o moc_smallqlistview.cpp
 
 moc_history-handler.cpp: ../includes/support/history-handler.h \
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1053,18 +1069,18 @@ moc_history-handler.cpp: ../includes/support/history-handler.h \
 		ui_technical_data.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/history-handler.h -o moc_history-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/history-handler.h -o moc_history-handler.cpp
 
 moc_scanner-table.cpp: ../includes/support/scanner-table.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/scanner-table.h -o moc_scanner-table.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/support/scanner-table.h -o moc_scanner-table.cpp
 
 moc_iqdisplay.cpp: ../includes/scopes-qwt6/iqdisplay.h \
 		../includes/dab-constants.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/scopes-qwt6/iqdisplay.h -o moc_iqdisplay.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/scopes-qwt6/iqdisplay.h -o moc_iqdisplay.cpp
 
 moc_spectrum-viewer.cpp: ../spectrum-viewer/spectrum-viewer.h \
 		../includes/dab-constants.h \
@@ -1072,7 +1088,7 @@ moc_spectrum-viewer.cpp: ../spectrum-viewer/spectrum-viewer.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../spectrum-viewer/spectrum-viewer.h -o moc_spectrum-viewer.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../spectrum-viewer/spectrum-viewer.h -o moc_spectrum-viewer.cpp
 
 moc_correlation-viewer.cpp: ../correlation-viewer/correlation-viewer.h \
 		../includes/dab-constants.h \
@@ -1080,7 +1096,7 @@ moc_correlation-viewer.cpp: ../correlation-viewer/correlation-viewer.h \
 		ui_correlation-widget.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../correlation-viewer/correlation-viewer.h -o moc_correlation-viewer.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../correlation-viewer/correlation-viewer.h -o moc_correlation-viewer.cpp
 
 moc_tii-viewer.cpp: ../tii-viewer/tii-viewer.h \
 		../includes/dab-constants.h \
@@ -1088,13 +1104,13 @@ moc_tii-viewer.cpp: ../tii-viewer/tii-viewer.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../tii-viewer/tii-viewer.h -o moc_tii-viewer.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../tii-viewer/tii-viewer.h -o moc_tii-viewer.cpp
 
 moc_device-handler.cpp: devices-dab-2/device-handler.h \
 		../includes/dab-constants.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/device-handler.h -o moc_device-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/device-handler.h -o moc_device-handler.cpp
 
 moc_rawfiles.cpp: devices-dab-2/rawfiles/rawfiles.h \
 		../includes/dab-constants.h \
@@ -1103,7 +1119,7 @@ moc_rawfiles.cpp: devices-dab-2/rawfiles/rawfiles.h \
 		ui_filereader-widget.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rawfiles/rawfiles.h -o moc_rawfiles.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rawfiles/rawfiles.h -o moc_rawfiles.cpp
 
 moc_rtlsdr-handler.cpp: devices-dab-2/rtlsdr-handler/rtlsdr-handler.h \
 		../includes/dab-constants.h \
@@ -1112,12 +1128,12 @@ moc_rtlsdr-handler.cpp: devices-dab-2/rtlsdr-handler/rtlsdr-handler.h \
 		ui_rtlsdr-widget.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rtlsdr-handler/rtlsdr-handler.h -o moc_rtlsdr-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rtlsdr-handler/rtlsdr-handler.h -o moc_rtlsdr-handler.cpp
 
 moc_rtl-dongleselect.cpp: devices-dab-2/rtlsdr-handler/rtl-dongleselect.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rtlsdr-handler/rtl-dongleselect.h -o moc_rtl-dongleselect.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/rtlsdr-handler/rtl-dongleselect.h -o moc_rtl-dongleselect.cpp
 
 moc_sdrplay-handler.cpp: devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h \
 		../includes/dab-constants.h \
@@ -1126,27 +1142,37 @@ moc_sdrplay-handler.cpp: devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h \
 		ui_sdrplay-widget.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h -o moc_sdrplay-handler.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h -o moc_sdrplay-handler.cpp
 
 moc_sdrplayselect.cpp: devices-dab-2/sdrplay-handler-v2/sdrplayselect.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/sdrplay-handler-v2/sdrplayselect.h -o moc_sdrplayselect.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/sdrplay-handler-v2/sdrplayselect.h -o moc_sdrplayselect.cpp
+
+moc_hackrf-handler.cpp: devices-dab-2/hackrf-handler/hackrf-handler.h \
+		../includes/dab-constants.h \
+		../includes/support/ringbuffer.h \
+		devices-dab-2/device-handler.h \
+		ui_hackrf-widget.h \
+		devices-dab-2/hackrf-handler/libhackrf/hackrf.h \
+		moc_predefs.h \
+		/usr/lib64/qt5/bin/moc
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include devices-dab-2/hackrf-handler/hackrf-handler.h -o moc_hackrf-handler.cpp
 
 moc_faad-decoder.cpp: ../includes/backend/audio/faad-decoder.h \
 		../includes/backend/audio/neaacdec.h \
 		../includes/support/ringbuffer.h \
 		moc_predefs.h \
 		/usr/lib64/qt5/bin/moc
-	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-jan -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/faad-decoder.h -o moc_faad-decoder.cpp
+	/usr/lib64/qt5/bin/moc $(DEFINES) --include /home/jan/qt-dab/dab-2/moc_predefs.h -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab/dab-2 -I/home/jan/qt-dab -I/home/jan/qt-dab/dab-2/src -I/home/jan/qt-dab/includes -I/home/jan/qt-dab/service-description -I/home/jan/qt-dab/includes/protection -I/home/jan/qt-dab/includes/ofdm -I/home/jan/qt-dab/includes/backend -I/home/jan/qt-dab/includes/backend/audio -I/home/jan/qt-dab/includes/backend/data -I/home/jan/qt-dab/includes/backend/data/mot -I/home/jan/qt-dab/includes/backend/data/journaline -I/home/jan/qt-dab/includes/output -I/home/jan/qt-dab/includes/support -I/home/jan/qt-dab/includes/support/viterbi-spiral -I/home/jan/qt-dab/includes/scopes-qwt6 -I/home/jan/qt-dab/spectrum-viewer -I/home/jan/qt-dab/correlation-viewer -I/home/jan/qt-dab/tii-viewer -I/home/jan/qt-dab/dab-2/devices-dab-2 -I/home/jan/qt-dab/dab-2/devices-dab-2/wavfiles -I/home/jan/qt-dab/dab-2/devices-dab-2/rawfiles -I/usr/local/include -I/usr/local/include -I/usr/include/qt4/qwt -I/usr/include/qt5/qwt -I/usr/include/qt4/qwt -I/usr/include/qwt -I/usr/local/qwt-6.1.4-svn -I/home/jan/qt-dab/dab-2/devices-dab-2/rtlsdr-handler -I/home/jan/qt-dab/dab-2/devices-dab-2/sdrplay-handler-v2 -I/home/jan/qt-dab/dab-2/devices-dab-2/hackrf-handler -I/home/jan/qt-dab/includes/backend/data/epg -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtXml -I/usr/include/qt5/QtCore -I/usr/include/c++/9 -I/usr/include/c++/9/x86_64-redhat-linux -I/usr/include/c++/9/backward -I/usr/lib/gcc/x86_64-redhat-linux/9/include -I/usr/local/include -I/usr/include ../includes/backend/audio/faad-decoder.h -o moc_faad-decoder.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
 compiler_moc_source_make_all:
 compiler_moc_source_clean:
-compiler_uic_make_all: ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h
+compiler_uic_make_all: ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h ui_hackrf-widget.h
 compiler_uic_clean:
-	-$(DEL_FILE) ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h
+	-$(DEL_FILE) ui_technical_data.h ui_dabradio.h ui_audio-description.h ui_data-description.h ui_scopewidget.h ui_correlation-widget.h ui_tii-widget.h ui_filereader-widget.h ui_rtlsdr-widget.h ui_sdrplay-widget.h ui_hackrf-widget.h
 ui_technical_data.h: ../forms/technical_data.ui \
 		/usr/lib64/qt5/bin/uic
 	/usr/lib64/qt5/bin/uic ../forms/technical_data.ui -o ui_technical_data.h
@@ -1195,6 +1221,10 @@ ui_sdrplay-widget.h: devices-dab-2/sdrplay-widget.ui \
 		/usr/lib64/qt5/bin/uic
 	/usr/lib64/qt5/bin/uic devices-dab-2/sdrplay-widget.ui -o ui_sdrplay-widget.h
 
+ui_hackrf-widget.h: devices-dab-2/hackrf-handler/hackrf-widget.ui \
+		/usr/lib64/qt5/bin/uic
+	/usr/lib64/qt5/bin/uic devices-dab-2/hackrf-handler/hackrf-widget.ui -o ui_hackrf-widget.h
+
 compiler_yacc_decl_make_all:
 compiler_yacc_decl_clean:
 compiler_yacc_impl_make_all:
@@ -1208,6 +1238,11 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 main.o: main.cpp ../includes/dab-constants.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1234,6 +1269,11 @@ radio.o: radio.cpp ../includes/dab-constants.h \
 		../includes/mot-content-types.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1273,6 +1313,9 @@ radio.o: radio.cpp ../includes/dab-constants.h \
 		devices-dab-2/rawfiles/rawfiles.h \
 		devices-dab-2/rtlsdr-handler/rtlsdr-handler.h \
 		ui_rtlsdr-widget.h \
+		devices-dab-2/hackrf-handler/hackrf-handler.h \
+		ui_hackrf-widget.h \
+		devices-dab-2/hackrf-handler/libhackrf/hackrf.h \
 		devices-dab-2/sdrplay-handler-v2/sdrplay-handler.h \
 		ui_sdrplay-widget.h \
 		../spectrum-viewer/spectrum-viewer.h \
@@ -1301,6 +1344,11 @@ dab-processor.o: dab-processor.cpp dab-processor.h \
 		../includes/ofdm/tii_detector.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		../includes/support/band-handler.h \
 		../includes/support/text-mapper.h \
 		../includes/support/preset-handler.h \
@@ -1334,6 +1382,11 @@ ofdm-decoder.o: ../src/ofdm/ofdm-decoder.cpp ../includes/ofdm/ofdm-decoder.h \
 		../includes/ofdm/freq-interleaver.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/process-params.h \
@@ -1359,6 +1412,11 @@ phasereference.o: ../src/ofdm/phasereference.cpp ../includes/ofdm/phasereference
 		../includes/support/ringbuffer.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/ofdm-decoder.h \
 		../includes/ofdm/freq-interleaver.h \
@@ -1402,6 +1460,11 @@ fic-handler.o: ../src/ofdm/fic-handler.cpp ../includes/ofdm/fic-handler.h \
 		../includes/ofdm/freq-interleaver.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/process-params.h \
@@ -1426,6 +1489,11 @@ fib-decoder.o: ../src/ofdm/fib-decoder.cpp ../includes/ofdm/fib-decoder.h \
 		../includes/ofdm/freq-interleaver.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/process-params.h \
@@ -1469,6 +1537,11 @@ uep-protection.o: ../src/protection/uep-protection.cpp ../includes/dab-constants
 msc-handler.o: ../src/backend/msc-handler.cpp ../includes/dab-constants.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1513,6 +1586,11 @@ firecode-checker.o: ../src/backend/firecode-checker.cpp ../includes/backend/fire
 backend.o: ../src/backend/backend.cpp ../includes/dab-constants.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1542,6 +1620,11 @@ backend-driver.o: ../src/backend/backend-driver.cpp ../includes/backend/backend-
 		../includes/dab-constants.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1592,6 +1675,11 @@ mp2processor.o: ../src/backend/audio/mp2processor.cpp ../includes/backend/audio/
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1628,6 +1716,11 @@ mp4processor.o: ../src/backend/audio/mp4processor.cpp ../includes/backend/audio/
 		../includes/backend/audio/neaacdec.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1658,6 +1751,11 @@ pad-handler.o: ../src/backend/data/pad-handler.cpp ../includes/backend/data/pad-
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1686,6 +1784,11 @@ pad-handler.o: ../src/backend/data/pad-handler.cpp ../includes/backend/data/pad-
 data-processor.o: ../src/backend/data/data-processor.cpp ../includes/dab-constants.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1722,6 +1825,11 @@ tdc-datahandler.o: ../src/backend/data/tdc-datahandler.cpp ../includes/backend/d
 		../includes/support/ringbuffer.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1749,6 +1857,11 @@ ip-datahandler.o: ../src/backend/data/ip-datahandler.cpp ../includes/backend/dat
 		../includes/support/ringbuffer.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1778,6 +1891,11 @@ mot-handler.o: ../src/backend/data/mot/mot-handler.cpp ../includes/backend/data/
 		../includes/backend/data/mot/mot-dir.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1805,6 +1923,11 @@ mot-object.o: ../src/backend/data/mot/mot-object.cpp ../includes/backend/data/mo
 		../includes/mot-content-types.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1887,9 +2010,6 @@ audiosink.o: ../src/output/audiosink.cpp ../includes/output/audiosink.h \
 		../includes/support/ringbuffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o audiosink.o ../src/output/audiosink.cpp
 
-viterbi-handler.o: ../src/support/viterbi-jan/viterbi-handler.cpp ../includes/support/viterbi-jan/viterbi-handler.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o viterbi-handler.o ../src/support/viterbi-jan/viterbi-handler.cpp
-
 viterbi-spiral.o: ../src/support/viterbi-spiral/viterbi-spiral.cpp ../includes/backend/mm_malloc.h \
 		../includes/support/viterbi-spiral/viterbi-spiral.h \
 		../includes/dab-constants.h
@@ -1939,6 +2059,11 @@ preset-handler.o: ../src/support/preset-handler.cpp ../includes/support/preset-h
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -1979,6 +2104,11 @@ history-handler.o: ../src/support/history-handler.cpp ../includes/support/histor
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -2005,6 +2135,11 @@ scanner-table.o: ../src/support/scanner-table.cpp ../includes/support/scanner-ta
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -2050,6 +2185,9 @@ tii-viewer.o: ../tii-viewer/tii-viewer.cpp ../tii-viewer/tii-viewer.h \
 		../includes/support/ringbuffer.h \
 		../includes/scopes-qwt6/iqdisplay.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tii-viewer.o ../tii-viewer/tii-viewer.cpp
+
+xml-filewriter.o: devices-dab-2/xml-filewriter.cpp devices-dab-2/xml-filewriter.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o xml-filewriter.o devices-dab-2/xml-filewriter.cpp
 
 device-handler.o: devices-dab-2/device-handler.cpp devices-dab-2/device-handler.h \
 		../includes/dab-constants.h \
@@ -2117,6 +2255,7 @@ rtlsdr-handler.o: devices-dab-2/rtlsdr-handler/rtlsdr-handler.cpp devices-dab-2/
 		devices-dab-2/rtlsdr-handler/rtl-dongleselect.h \
 		devices-dab-2/rtlsdr-handler/rtl-sdr.h \
 		devices-dab-2/rtlsdr-handler/rtl-sdr_export.h \
+		devices-dab-2/xml-filewriter.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -2132,6 +2271,11 @@ rtlsdr-handler.o: devices-dab-2/rtlsdr-handler/rtlsdr-handler.cpp devices-dab-2/
 		../includes/ofdm/tii_detector.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		../includes/support/band-handler.h \
 		../includes/support/text-mapper.h \
 		../includes/support/preset-handler.h \
@@ -2149,6 +2293,7 @@ sdrplay-handler.o: devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp devices-
 		devices-dab-2/device-handler.h \
 		ui_sdrplay-widget.h \
 		devices-dab-2/sdrplay-handler-v2/sdrplayselect.h \
+		devices-dab-2/xml-filewriter.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -2164,6 +2309,11 @@ sdrplay-handler.o: devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp devices-
 		../includes/ofdm/tii_detector.h \
 		radio.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		../includes/support/band-handler.h \
 		../includes/support/text-mapper.h \
 		../includes/support/preset-handler.h \
@@ -2174,6 +2324,41 @@ sdrplay-handler.o: devices-dab-2/sdrplay-handler-v2/sdrplay-handler.cpp devices-
 
 sdrplayselect.o: devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp devices-dab-2/sdrplay-handler-v2/sdrplayselect.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o sdrplayselect.o devices-dab-2/sdrplay-handler-v2/sdrplayselect.cpp
+
+hackrf-handler.o: devices-dab-2/hackrf-handler/hackrf-handler.cpp devices-dab-2/hackrf-handler/hackrf-handler.h \
+		../includes/dab-constants.h \
+		../includes/support/ringbuffer.h \
+		devices-dab-2/device-handler.h \
+		ui_hackrf-widget.h \
+		devices-dab-2/hackrf-handler/libhackrf/hackrf.h \
+		devices-dab-2/xml-filewriter.h \
+		radio.h \
+		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
+		dab-processor.h \
+		../includes/ofdm/phasereference.h \
+		../includes/support/fft-handler.h \
+		../includes/support/dab-params.h \
+		../includes/ofdm/phasetable.h \
+		../includes/support/process-params.h \
+		../includes/ofdm/ofdm-decoder.h \
+		../includes/ofdm/freq-interleaver.h \
+		../includes/ofdm/fic-handler.h \
+		../includes/support/viterbi-spiral/viterbi-spiral.h \
+		../includes/ofdm/fib-decoder.h \
+		../includes/backend/msc-handler.h \
+		../includes/ofdm/tii_detector.h \
+		../includes/support/band-handler.h \
+		../includes/support/text-mapper.h \
+		../includes/support/preset-handler.h \
+		../includes/support/scanner-table.h \
+		../includes/backend/data/epg/epgdec.h \
+		ui_technical_data.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o hackrf-handler.o devices-dab-2/hackrf-handler/hackrf-handler.cpp
 
 epgdec.o: ../src/backend/data/epg/epgdec.cpp ../includes/backend/data/epg/epgdec.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o epgdec.o ../src/backend/data/epg/epgdec.cpp
@@ -2187,6 +2372,11 @@ faad-decoder.o: ../src/backend/audio/faad-decoder.cpp ../includes/backend/audio/
 		radio.h \
 		../includes/dab-constants.h \
 		ui_dabradio.h \
+		../includes/support/presetcombobox.h \
+		../includes/support/smallcombobox.h \
+		../includes/support/smallpushbutton.h \
+		../includes/support/smallqlistview.h \
+		../includes/support/verysmallpushbutton.h \
 		dab-processor.h \
 		../includes/ofdm/phasereference.h \
 		../includes/support/fft-handler.h \
@@ -2312,6 +2502,9 @@ moc_sdrplay-handler.o: moc_sdrplay-handler.cpp
 
 moc_sdrplayselect.o: moc_sdrplayselect.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_sdrplayselect.o moc_sdrplayselect.cpp
+
+moc_hackrf-handler.o: moc_hackrf-handler.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_hackrf-handler.o moc_hackrf-handler.cpp
 
 moc_faad-decoder.o: moc_faad-decoder.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_faad-decoder.o moc_faad-decoder.cpp

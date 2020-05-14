@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>437</width>
-    <height>296</height>
+    <width>443</width>
+    <height>341</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -238,6 +238,13 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="xml_dumpButton">
+       <property name="text">
+        <string>xml dump</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  dab-2.ico
 RESOURCES	+= resources.qrc
@@ -34,7 +34,7 @@ DEPENDPATH += . \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
-	      ../src/support/viterbi-jan \
+#	      ../src/support/viterbi-jan \
 	      ../src/support/viterbi-spiral \
 	      ../includes/ofdm \
 	      ../includes/protection \
@@ -67,7 +67,7 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/journaline \
 	      ../includes/output \
 	      ../includes/support \
-	      ../includes/support/viterbi-jan \
+#	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
               ../spectrum-viewer \
@@ -135,7 +135,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/process-params.h \
-	   ../includes/support/viterbi-jan/viterbi-handler.h \
+#	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
            ../includes/support/fft-handler.h \
 	   ../includes/support/ringbuffer.h \
@@ -158,6 +158,7 @@ HEADERS += ./radio.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
 	   ../correlation-viewer/correlation-viewer.h \
 	   ../tii-viewer/tii-viewer.h \
+	   ./devices-dab-2/xml-filewriter.h \
 	   ./devices-dab-2/device-handler.h \
 	   ./devices-dab-2/wavfiles/wavfiles.h \
 	   ./devices-dab-2/rawfiles/rawfiles.h
@@ -220,7 +221,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
-	   ../src/support/viterbi-jan/viterbi-handler.cpp \
+#	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
            ../src/support/fft-handler.cpp \
 #	   ../src/support/Xtan2.cpp \
@@ -241,6 +242,7 @@ SOURCES += ./main.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
 	   ../tii-viewer/tii-viewer.cpp \
+	   ./devices-dab-2/xml-filewriter.cpp \
 	   ./devices-dab-2/device-handler.cpp \
 	   ./devices-dab-2/wavfiles/wavfiles.cpp \
 	   ./devices-dab-2/rawfiles/rawfiles.cpp
@@ -264,6 +266,7 @@ INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr
 #
 CONFIG		+= rtlsdr
 CONFIG		+= sdrplay-v2
+CONFIG		+= hackrf
 #CONFIG		+= sdrplay-v3
 
 LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
@@ -292,7 +295,7 @@ CONFIG		+= faad
 CONFIG		+= try-epg		# do not use
 DEFINES		+= PRESET_NAME
 #DEFINES	+= __THREADED_BACKEND
-DEFINES	+= __MSC_THREAD__
+#DEFINES	+= __MSC_THREAD__
 #DEFINES	+= SHOW_MISSING
 
 #For x64 linux system uncomment SSE
@@ -390,14 +393,26 @@ sdrplay-v2   	{
 }
 
 sdrplay-v3	{
-DEPEND_PATH	+= ./devices/sdrplay-handler-v3 
-INCLUDEPATH	+= ./devices/sdrplay-handler-v3 \
-	           ./devices/sdrplay-handler-v3/include 
-HEADERS		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
-	           ./devices/sdrplay-handler-v3/sdrplay-commands.h 
-SOURCES		+= ./devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp 
-FORMS		+= ./devices/sdrplay-widget.ui
-DEFINES		+= HAVE_SDRPLAY_V3
+	DEPEND_PATH	+= ./devices-dab-2/sdrplay-handler-v3 
+	INCLUDEPATH	+= ./devices-dab-2/sdrplay-handler-v3 \
+	                   ./devices-dab-2/sdrplay-handler-v3/include 
+	HEADERS		+= ./devices-dab-2/sdrplay-handler-v3/sdrplay-handler-v3.h \
+	                   ./devices-dab-2/sdrplay-handler-v3/sdrplay-commands.h 
+	SOURCES		+= ./devices-dab-2/sdrplay-handler-v3/sdrplay-handler-v3.cpp 
+	FORMS		+= ./devices-dab-2/sdrplay-widget.ui
+	DEFINES		+= HAVE_SDRPLAY_V3
+}
+
+#
+#	the hackrf
+#
+hackrf {
+	DEFINES		+= HAVE_HACKRF
+	DEPENDPATH	+= ./devices-dab-2/hackrf-handler 
+	INCLUDEPATH	+= ./devices-dab-2/hackrf-handler 
+	HEADERS		+= ./devices-dab-2/hackrf-handler/hackrf-handler.h 
+	SOURCES		+= ./devices-dab-2/hackrf-handler/hackrf-handler.cpp 
+	FORMS		+= ./devices-dab-2/hackrf-handler/hackrf-widget.ui
 }
 
 send_datagram {

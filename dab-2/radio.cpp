@@ -56,6 +56,9 @@
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
+#ifdef	HAVE_HACKRF
+#include	"hackrf-handler.h"
+#endif
 #ifdef	HAVE_SDRPLAY_V2
 #include	"sdrplay-handler.h"
 #elif	HAVE_SDRPLAY_V3
@@ -542,12 +545,14 @@ deviceHandler	*inputDevice	= nullptr;
 	                            tr ("File input failed\n"));
 	   }
 	}
+
 #ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
 	      inputDevice	= new sdrplayHandler (this,
 	                                              dabSettings,
-	                                              my_dabProcessor);
+	                                              my_dabProcessor,
+	                                              version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -569,6 +574,24 @@ deviceHandler	*inputDevice	= nullptr;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("SDRplay: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_HACKRF
+	if (s == "hackrf") {
+	   try {
+	      QString recorder = "hackrf";
+	      inputDevice	= new hackrfHandler (this,
+	                                             dabSettings,
+	                                             my_dabProcessor,
+	                                             recorder);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("hackrf: no library or device\n"));
 	      return nullptr;
 	   }
 	}

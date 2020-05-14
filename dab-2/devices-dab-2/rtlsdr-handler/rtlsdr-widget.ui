@@ -94,9 +94,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="iq_dumpButton">
+    <widget class="QPushButton" name="xml_dumpButton">
      <property name="text">
-      <string>dump to raw file</string>
+      <string>xml dump</string>
      </property>
     </widget>
    </item>

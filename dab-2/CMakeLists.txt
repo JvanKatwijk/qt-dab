@@ -50,7 +50,23 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 #	default value
 	set(USE_PORTAUDIO true)
 
-   set(SDRPLAY_V2 true)
+
+if(DEFINED SDRPLAY)
+   set(SDRPLAY true)
+endif ()
+
+#if(DEFINED SDRPLAY_V3)
+#   set(SDRPLAY_V3 true)
+#endif ()
+
+if(DEFINED RTLSDR)
+   set(RTLSDR true)
+endif ()
+
+if(DEFINED HACKRF)
+	set(HACKRF true)
+endif ()
+
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
@@ -240,6 +256,7 @@ endif ()
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
 	     ../tii-viewer/tii-viewer.h
+	     ./devices-dab-2/xml-filewriter.h
 	     ./devices-dab-2/device-handler.h
 	     ./devices-dab-2/wavfiles/wavfiles.h
 	     ./devices-dab-2/rawfiles/rawfiles.h
@@ -314,6 +331,7 @@ endif ()
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
 	     ../tii-viewer/tii-viewer.cpp
+	     ./devices-dab-2/xml-filewriter.cpp
 	     ./devices-dab-2/device-handler.cpp
 	     ./devices-dab-2/wavfiles/wavfiles.cpp
 	     ./devices-dab-2/rawfiles/rawfiles.cpp
@@ -416,24 +434,6 @@ endif ()
 #	The devices
 #
 	if (SDRPLAY_V2)
-	   find_path (SDRPLAYLIB_INCLUDE_DIR
-	              NAMES mirsdrapi-rsp.h
-	              PATHS
-	              /usr/local/include/
-	   )
-	   find_library (SDRPLAYLIB
-	                 NAMES libmirsdrapi-rsp.so
-	                 PATHS /usr/local/lib
-	   )
-
-	   if (NOT(SDRPLAYLIB))
-              message (FATAL_ERROR "please install libmirsdrapi-rsp.so")
-           else (NOT(SDRPLAYLIB))
-              set (extraLibs ${extraLibs} ${SDRPLAYLIB})
-           endif (NOT(SDRPLAYLIB))
-
-	   include_directories (${SDRPLAYLIB_INCLUDE_DIR})
-
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ./devices-dab-2/sdrplay-widget.ui
@@ -464,7 +464,70 @@ endif ()
 
 	 add_definitions (-DHAVE_SDRPLAY_V2)
 	endif (SDRPLAY)
+
+	if (RTLSDR)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ./devices-dab-2/rtlsdr-handler/rtlsdr-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices-dab-2/rtlsdr-handler/rtl-dongleselect.h
+	        ./devices-dab-2/rtlsdr-handler/rtlsdr-handler.h
+	   )
+
+	   include_directories (
+	        ./devices-dab-2/rtlsdr-handler/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices-dab-2/rtlsdr-handler/rtlsdr-handler.h
+	        ./devices-dab-2/rtlsdr-handler/rtl-dongleselect.h
+	        ./devices-dab-2/rtlsdr-handler/rtl-sdr.h
+	        ./devices-dab-2/rtlsdr-handler/rtl-sdr_export.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices-dab-2/rtlsdr-handler/rtlsdr-handler.cpp
+	        ./devices-dab-2/rtlsdr-handler/rtl-dongleselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_RTLSDR)
+	endif()
 #
+	if (HACKRF)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices-dab-2/hackrf-handler/hackrf-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices-dab-2/hackrf-handler/hackrf-handler.h
+	   )
+
+	   include_directories (
+	     ./devices-dab-2/hackrf-handler
+	     ./devices-dab-2/hackrf-handler/libhackrf
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices-dab-2/hackrf-handler/hackrf-handler.h
+	        ./devices-dab-2/hackrf-handler/libhackrf/hackrf.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices-dab-2/hackrf-handler/hackrf-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_HACKRF)
+	endif (HACKRF)
+
 	if (TCP_STREAMER)
 	   add_definitions (-DTCP_STREAMER)
 	   find_package (Qt5Network REQUIRED)

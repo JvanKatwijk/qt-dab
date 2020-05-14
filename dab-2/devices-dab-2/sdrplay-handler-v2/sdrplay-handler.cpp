@@ -1,22 +1,22 @@
 #
 /*
- *    Copyright (C) 2017 2020
+ *    Copyright (C) 2017 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of sdrplayDab program
+ *    This file is part of dab-2
  *
- *    srplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation version 2 of the License.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab if not, write to the Free Software
+ *    along with dab-2 if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -24,9 +24,11 @@
 #include	<QSettings>
 #include	<QHBoxLayout>
 #include	<QLabel>
+#include	<QFileDialog>
 #include	<complex>
 #include	"sdrplay-handler.h"
 #include	"sdrplayselect.h"
+#include	"xml-filewriter.h"
 #include	"dab-processor.h"
 #include	"radio.h"
 
@@ -59,7 +61,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	here we start
 	sdrplayHandler::sdrplayHandler  (RadioInterface *mr,
 	                                 QSettings *s,
-	                                 dabProcessor *base) {
+	                                 dabProcessor *base,
+	                                 QString &recorderVersion) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
@@ -69,6 +72,7 @@ sdrplaySelect	*sdrplaySelector;
 	(void)mr;
 	sdrplaySettings		= s;
 	this	-> base		= base;
+	this	-> recorderVersion	= recorderVersion;
 	this	-> myFrame	= new QFrame (NULL);
 	this	-> checker	= myFrame;
 	setupUi (this -> myFrame);
@@ -76,7 +80,6 @@ sdrplaySelect	*sdrplaySelector;
 	antennaSelector		-> hide ();
 	tunerSelector		-> hide ();
 	this	-> inputRate	= 2048000;
-	_I_Buffer		= NULL;
 
 	bool success            = fetchLibrary ();
         if (!success) {
@@ -104,7 +107,6 @@ sdrplaySelect	*sdrplaySelector;
 	   throw (24);
 	}
 
-	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 	vfoFrequency	= Khz (220000);		// default
 	totalOffset	= 0;
 
@@ -230,10 +232,14 @@ sdrplaySelect	*sdrplaySelector;
 	         this, SLOT (set_ppmControl (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
+	connect (xml_dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
 
 	lnaValueDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value ()));
 	running. store (false);
+	xmlDumping. store	(false);
+	xmlDumper	= nullptr;
 }
 
 	sdrplayHandler::~sdrplayHandler	(void) {
@@ -252,8 +258,6 @@ sdrplaySelect	*sdrplaySelector;
 
 	if (numofDevs > 0)
 	   my_mir_sdr_ReleaseDeviceIdx (1);
-	if (_I_Buffer != NULL)
-	   delete _I_Buffer;
 }
 
 void	sdrplayHandler::setOffset		(int32_t offset) {
@@ -373,6 +377,7 @@ int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 float	denominator	= (float)(p -> denominator);
 std::complex<float> localBuf [numSamples];
+std::complex<int16_t> dumpBuf [numSamples];
 static	int teller	= 0;
 mir_sdr_ErrT	err;
 
@@ -384,9 +389,11 @@ mir_sdr_ErrT	err;
 	                                       (float) (xi [i]) / denominator,
 	                                       (float) (xq [i]) / denominator);
 	   localBuf [i] = symb;
+	   dumpBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
 	}
 	int res = p -> base -> addSymbol (localBuf, numSamples);
-
+	if (p -> xmlDumping. load ())
+	   p -> xmlWriter -> add (dumpBuf, numSamples);
 	(void)	firstSampleNum;
 	(void)	grChanged;
 	(void)	rfChanged;
@@ -462,6 +469,7 @@ mir_sdr_ErrT err;
 	if (!running. load ())
 	   return;
 
+	close_xmlDump ();
 	err	= my_mir_sdr_StreamUninit	();
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
@@ -474,7 +482,6 @@ int32_t	sdrplayHandler::getVFOFrequency	(void) {
 }
 
 void	sdrplayHandler::resetBuffer	(void) {
-	_I_Buffer	-> FlushRingBuffer ();
 }
 
 int16_t	sdrplayHandler::bitDepth	(void) {
@@ -835,5 +842,77 @@ void	sdrplayHandler::releaseLibrary	() {
 void	sdrplayHandler::handle_Value (int offset, float lowVal, float highVal) {
 	setOffset (offset);
 	setGains  (lowVal, highVal);
+}
+
+void	sdrplayHandler::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      xml_dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   xml_dumpButton	-> setText ("Dump");
+	}
+}
+
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '-');
+}
+
+bool	sdrplayHandler::setup_xmlDump () {
+QTime	theTime;
+QDate	theDate;
+QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
+	                                   QDir::homePath ()). toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir += "/";
+
+	QString channel		= sdrplaySettings -> value ("channel", "xx").
+	                                                       toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                           theTime. currentTime(). toString ();
+	for (int i = 0; i < timeString. length (); i ++)
+           if (!isValid (timeString. at (i)))
+              timeString. replace (i, 1, '-');
+	
+        QString suggestedFileName =
+                    saveDir + deviceLabel -> text () + "-" + channel + "-" + timeString;
+
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         suggestedFileName + ".uff",
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      nrBits,
+	                                      "int16",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "SDRplay",
+	                                      deviceLabel -> text (),
+	                                      recorderVersion);
+	xmlDumping. store (true);
+
+	QString dumper	= QDir::fromNativeSeparators (fileName);
+	int x		= dumper. lastIndexOf ("/");
+        saveDir		= dumper. remove (x, dumper. count () - x);
+	sdrplaySettings	-> setValue ("saveDir_xmlDump", saveDir);
+	return true;
+}
+
+void	sdrplayHandler::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	xmlDumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
 }
 

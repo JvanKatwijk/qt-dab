@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the sdrplayDab program
+ *    This file is part of the dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab; if not, write to the Free Software
+ *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -36,6 +36,7 @@
 
 class	dabProcessor;
 class	RadioInterface;
+class	xml_fileWriter;
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -97,7 +98,8 @@ Q_OBJECT
 public:
 			sdrplayHandler		(RadioInterface *,
 	                                         QSettings *,
-		                                 dabProcessor *);
+		                                 dabProcessor *,
+	                                         QString &);
 			~sdrplayHandler		(void);
 	void		setOffset		(int);
 	bool		restartReader		(int32_t);
@@ -111,8 +113,8 @@ public:
 	QString		deviceName		(void);
 //
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<float>>	*_I_Buffer;
 	float		denominator;
+        xml_fileWriter	*xmlWriter;
 	dabProcessor	*base;
 	void		set_initialGain	(float);
 	void		setGains	(float, float);
@@ -121,6 +123,9 @@ public:
 	int16_t		hwVersion;
 	bool		theSwitch;
 	char		selectedAntenna;
+
+	std::atomic<bool>	xmlDumping;
+	FILE		*xmlDumper;
 private:
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;
@@ -152,6 +157,7 @@ private:
 	pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
 	pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
 
+	QString		recorderVersion;
 	bool		loadFunctions		();
 	bool		fetchLibrary		();
 	void		releaseLibrary		();
@@ -167,6 +173,10 @@ private:
 	int16_t		nrBits;
 	HINSTANCE	Handle;
 	void		handle_Value		(int, float, float);
+
+        bool		setup_xmlDump		();
+	void		close_xmlDump		();
+
 private slots:
 	void		set_lnagainReduction	(int);
 	void		set_debugControl	(int);
@@ -174,6 +184,7 @@ private slots:
 	void		set_ppmControl		(int);
 	void		set_antennaSelect	(const QString &);
 	void		set_tunerSelect		(const QString &);
+	void		set_xmlDump		();
 };
 #endif
 
