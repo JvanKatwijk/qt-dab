@@ -34,17 +34,14 @@ Q_OBJECT
 public:
 			deviceHandler 	(void);
 virtual			~deviceHandler 	(void);
-virtual		void	setOffset	(int);
 virtual		bool	restartReader	(int32_t);
 virtual		void	stopReader	(void);
 virtual		int32_t	getVFOFrequency	(void);
 virtual		void	resetBuffer	(void);
 virtual		int16_t	bitDepth	(void) { return 10;}
-virtual		void	setEnv		(dabProcessor *);
 virtual		void	show		(void) {}
 virtual		void	hide		(void) {}
 virtual		bool	isHidden	(void) {return false;}
-virtual		bool	isSDRPLAY_2	(void) {return false;}
 virtual		QString	deviceName	(void);
 public	slots:
 void		set_Values		(int, float, float);

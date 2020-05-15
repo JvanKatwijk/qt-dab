@@ -96,6 +96,7 @@ public:
 	std::atomic<bool> 	xmlDumping;
         xml_fileWriter		*xmlWriter;
 private:
+	int		vfoFrequency;
 	QSettings	*rtlsdrSettings;
 	QFrame		*myFrame;
 	int32_t		inputRate;
@@ -108,7 +109,7 @@ private:
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
-	FILE* 			xmlDumper;
+	FILE*		xmlDumper;
         bool            setup_xmlDump           ();
         void            close_xmlDump           ();
 	void		handle_Value		(int, float, float);

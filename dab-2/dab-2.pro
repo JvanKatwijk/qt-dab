@@ -51,7 +51,8 @@ DEPENDPATH += . \
 	      ../tii-viewer \
 	      ./devices-dab-2 \
 	      ./devices-dab-2/wavfiles \
-	      ./devices-dab-2/rawfiles
+	      ./devices-dab-2/rawfiles \
+	      ./devices-dab-2/xml-filereader
 
 INCLUDEPATH += . \
 	      ../ \
@@ -75,7 +76,8 @@ INCLUDEPATH += . \
 	      ../tii-viewer \
 	      ./devices-dab-2 \
 	      ./devices-dab-2/wavfiles \
-	      ./devices-dab-2/rawfiles 
+	      ./devices-dab-2/rawfiles \
+	      ./devices-dab-2/xml-filereader
 
 # Input
 HEADERS += ./radio.h \
@@ -161,7 +163,12 @@ HEADERS += ./radio.h \
 	   ./devices-dab-2/xml-filewriter.h \
 	   ./devices-dab-2/device-handler.h \
 	   ./devices-dab-2/wavfiles/wavfiles.h \
-	   ./devices-dab-2/rawfiles/rawfiles.h
+	   ./devices-dab-2/rawfiles/rawfiles.h \
+	   ./devices-dab-2/xml-filereader/element-reader.h \
+	   ./devices-dab-2/xml-filereader/xml-filereader.h \
+	   ./devices-dab-2/xml-filereader/xml-reader.h \
+	   ./devices-dab-2/xml-filereader/xml-descriptor.h
+
 
 FORMS	+= ../forms/technical_data.ui
 FORMS	+= ../forms/dabradio.ui 
@@ -171,6 +178,8 @@ FORMS	+= ../spectrum-viewer/scopewidget.ui
 FORMS	+= ../correlation-viewer/correlation-widget.ui
 FORMS	+= ../tii-viewer/tii-widget.ui
 FORMS	+= ./devices-dab-2/filereader-widget.ui
+FORMS   += ./devices-dab-2/xml-filereader/xmlfiles.ui
+
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -245,7 +254,11 @@ SOURCES += ./main.cpp \
 	   ./devices-dab-2/xml-filewriter.cpp \
 	   ./devices-dab-2/device-handler.cpp \
 	   ./devices-dab-2/wavfiles/wavfiles.cpp \
-	   ./devices-dab-2/rawfiles/rawfiles.cpp
+	   ./devices-dab-2/rawfiles/rawfiles.cpp \
+	   ./devices-dab-2/xml-filereader/xml-filereader.cpp \
+	   ./devices-dab-2/xml-filereader/xml-reader.cpp \
+	   ./devices-dab-2/xml-filereader/xml-descriptor.cpp
+
 #
 #
 unix {
@@ -267,6 +280,8 @@ INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr
 CONFIG		+= rtlsdr
 CONFIG		+= sdrplay-v2
 CONFIG		+= hackrf
+CONFIG		+= airspy
+CONFIG		+= lime
 #CONFIG		+= sdrplay-v3
 
 LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
@@ -332,9 +347,13 @@ LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 #INCLUDEPATH	+= /mingw64/include/qwt
 #INCLUDEPATH	+= C:/msys64/mingw64/include/qwt
 
-#	choose one of:
+
+#
 CONFIG		+= rtlsdr
-#CONFIG		+= sdrplay-v2
+CONFIG		+= sdrplay-v2
+CONFIG		+= hackrf
+CONFIG		+= airspy
+CONFIG		+= lime
 #CONFIG		+= sdrplay-v3
 
 LIBS		+= -lfftw3f -lfftw3
@@ -413,6 +432,33 @@ hackrf {
 	HEADERS		+= ./devices-dab-2/hackrf-handler/hackrf-handler.h 
 	SOURCES		+= ./devices-dab-2/hackrf-handler/hackrf-handler.cpp 
 	FORMS		+= ./devices-dab-2/hackrf-handler/hackrf-widget.ui
+}
+#
+# airspy support
+#
+airspy {
+	DEFINES		+= HAVE_AIRSPY
+	DEPENDPATH	+= ./devices-dab-2/airspy 
+	INCLUDEPATH	+= ./devices-dab-2/airspy-handler \
+	                   ./devices-dab-2/airspy-handler/libairspy
+	HEADERS		+= ./devices-dab-2/airspy-handler/airspy-handler.h \
+	                   ./devices-dab-2/airspy-handler/airspyfilter.h \
+	                   ./devices-dab-2/airspy-handler/libairspy/airspy.h
+	SOURCES		+= ./devices-dab-2/airspy-handler/airspy-handler.cpp \
+	                   ./devices-dab-2/airspy-handler/airspyfilter.cpp
+	FORMS		+= ./devices-dab-2/airspy-handler/airspy-widget.ui
+}
+#
+#	limeSDR
+#
+lime  {
+	DEFINES		+= HAVE_LIME
+	INCLUDEPATH	+= ./devices-dab-2/lime-handler
+	DEPENDPATH	+= ./devices-dab-2/lime-handler
+        HEADERS         += ./devices-dab-2/lime-handler/lime-handler.h \	
+	                   ./devices-dab-2/lime-handler/lime-widget.h \
+	                   ./devices-dab-2/lime-handler/LMS7002M_parameters.h
+        SOURCES         += ./devices-dab-2/lime-handler/lime-handler.cpp 
 }
 
 send_datagram {

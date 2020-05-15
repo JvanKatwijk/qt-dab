@@ -67,6 +67,13 @@ if(DEFINED HACKRF)
 	set(HACKRF true)
 endif ()
 
+if(DEFINED AIRSPY)
+	set(AIRSPY true)
+endif ()
+
+if(DEFINED LIMESDR)
+	set(LIMESDR true)
+endif ()
 
 if (DEFINED DATA_STREAMER)
    set(DATA_STREAMER true)
@@ -176,6 +183,7 @@ endif ()
 	           ./devices-dab-2
 	           ./devices-dab-2/wavfiles
 	           ./devices-dab-2/rawfiles
+	           ./devices-dab-2/xml-filereader
 	           /usr/include/
 	)
 
@@ -260,6 +268,11 @@ endif ()
 	     ./devices-dab-2/device-handler.h
 	     ./devices-dab-2/wavfiles/wavfiles.h
 	     ./devices-dab-2/rawfiles/rawfiles.h
+	     ./devices-dab-2/xml-filereader/element-reader.h
+             ./devices-dab-2/xml-filereader/xml-filereader.h
+             ./devices-dab-2/xml-filereader/xml-reader.h
+             ./devices-dab-2/xml-filereader/xml-descriptor.h
+
 	)
 
 	set (${objectName}_SRCS
@@ -335,6 +348,10 @@ endif ()
 	     ./devices-dab-2/device-handler.cpp
 	     ./devices-dab-2/wavfiles/wavfiles.cpp
 	     ./devices-dab-2/rawfiles/rawfiles.cpp
+	     ./devices-dab-2/xml-filereader/xml-filereader.cpp
+             ./devices-dab-2/xml-filereader/xml-reader.cpp
+             ./devices-dab-2/xml-filereader/xml-descriptor.cpp
+
 	)
 
 	set (${objectName}_MOCS
@@ -343,6 +360,8 @@ endif ()
 	     ./devices-dab-2/device-handler.h
 	     ./devices-dab-2/wavfiles/wavfiles.h
 	     ./devices-dab-2/rawfiles/rawfiles.h
+	     ./devices-dab-2/xml-filereader/xml-filereader.h
+	     ./devices-dab-2/xml-filereader/xml-reader.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/audiosink.h
 	     ../includes/ofdm/ofdm-decoder.h
@@ -388,6 +407,7 @@ endif ()
 	     ../correlation-viewer/correlation-widget.ui
 	     ../tii-viewer/tii-widget.ui
 	     ./devices-dab-2/filereader-widget.ui
+	     ./devices-dab-2/xml-filereader/xmlfiles.ui
 	   )
 
 	set (${objectName}_MOCS
@@ -545,6 +565,71 @@ endif ()
 	        ../src/output/tcp-streamer.cpp
 	   )
 	endif (TCP_STREAMER)
+
+	if (AIRSPY)
+#           find_package(LibAIRSPY)
+#           if (NOT LIBAIRSPY_FOUND)
+#               message(FATAL_ERROR "please install airspy library")
+#           endif ()
+#	   ## include_directories (${AIRSPYLIB_INCLUDE_DIR})
+
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices-dab-2/airspy-handler/airspy-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices-dab-2/airspy-handler/airspy-handler.h
+	   )
+
+	   include_directories (
+	     ./devices-dab-2/airspy-handler
+	     ./devices-dab-2/airspy-handler/libairspy
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices-dab-2/airspy-handler/airspy-handler.h
+	        ./devices-dab-2/airspy-handler/airspyfilter.h
+	        ./devices-dab-2/airspy-handler/libairspy/airspy.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices-dab-2/airspy-handler/airspy-handler.cpp
+	        ./devices-dab-2/airspy-handler/airspyfilter.cpp
+	   )
+
+	   add_definitions (-DHAVE_AIRSPY)
+	endif (AIRSPY)
+
+	if (LIMESDR)
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices-dab-2/lime-handler/lime-handler.h
+	        ./devices-dab-2/lime-handler/lime-widget.h
+	   )
+
+	   include_directories (
+	     ./devices-dab-2/lime-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices-dab-2/lime-handler/lime-handler.h
+	        ./devices-dab-2/lime-handler/lime-widget.h
+	        ./devices-dab-2/lime-handler/LimeSuite.h
+	        ./devices-dab-2/lime-handler/LMS7002M_parameters.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices-dab-2/lime-handler/lime-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_LIME)
+	endif (LIMESDR)
 
 	if (QT_AUDIO)
 	   add_definitions (-DQT_AUDIO)

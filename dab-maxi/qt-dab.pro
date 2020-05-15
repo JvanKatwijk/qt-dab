@@ -7,8 +7,8 @@
 TEMPLATE	= app
 TARGET		= qt-dab-3.4.1
 QT		+= widgets xml
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -326,8 +326,8 @@ CONFIG		+= PC
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		=  ../../../windows-qt-dab
-#DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
+#DESTDIR		=  ../../../windows-qt-dab
+DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
 exists ("./.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -368,13 +368,13 @@ CONFIG		+= faad
 #
 #	devices
 #CONFIG		+= extio
-#CONFIG		+= airspy
+CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3
-#CONFIG		+= hackrf
-#CONFIG		+= lime
+CONFIG		+= sdrplay-v3
+CONFIG		+= hackrf
+CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler

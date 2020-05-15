@@ -71,7 +71,7 @@ struct timeval  tv;
 	                              (cos (2.0 * M_PI * i / 2048000),
 	                               sin (2.0 * M_PI * i / 2048000));
         currentPhase    = 0;
-        phaseOffset     = 0;
+        totalOffset	= 0;
 
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);
@@ -196,7 +196,7 @@ uint8_t	temp [2 * length];
 	                              mapTable [temp [2 * i]],
 	                              mapTable [temp [2 * i + 1]]);
 	   data [i] *= oscillatorTable [currentPhase];
-	   currentPhase -= phaseOffset;
+	   currentPhase -= totalOffset;
 	   currentPhase = (currentPhase + 2048000) % 2048000;
 	}
 	return	n & ~01;
@@ -216,8 +216,8 @@ bool	rawFiles::isHidden	(void) {
 
 void	rawFiles::handle_Value	(int offset, float lowVal, float highVal) {
 	if (offset != 0) 
-	   phaseOffset += offset;
-	freq_errorDisplay	-> display (offset);
+	   totalOffset += offset;
+	freq_errorDisplay	-> display (totalOffset);
 }
 
 

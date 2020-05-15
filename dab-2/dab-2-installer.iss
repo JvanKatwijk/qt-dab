@@ -1,11 +1,11 @@
 
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
-#define MyAppName "sdrplayDab"
+#define MyAppName "dab-2"
 #define MyAppVersion "3.4"
 #define MyAppPublisher "Lazy Chair Computing"
-#define MyAppURL "https://github.com/JvanKatwijk/sdrplayDab"
-#define MyAppExeName "sdrplayDab-3.4.exe";
+#define MyAppURL "https://github.com/JvanKatwijk/qt-dab/dab-2"
+#define MyAppExeName "dab-2.1.exe";
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -21,9 +21,9 @@ AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={pf}\{#MyAppName}
 DisableProgramGroupPage=yes
-LicenseFile=D:\sdr-j-development\windows-sdrplay\COPYRIGHT.this_software
-InfoBeforeFile=D:\sdr-j-development\windows-sdrplay\preamble.txt
-OutputBaseFilename=setup-sdrplayDab
+LicenseFile=D:\sdr-j-development\windows-dab-2\COPYRIGHT.this_software
+InfoBeforeFile=D:\sdr-j-development\windows-dab-2\preamble.txt
+OutputBaseFilename=setup-dab-2
 Compression=lzma
 SolidCompression=yes
 
@@ -34,8 +34,8 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "D:\sdr-j-development\windows-sdrplay\sdrplayDab-3.4.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "D:\sdr-j-development\windows-sdrplay\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "D:\sdr-j-development\windows-dab-2\dab-2.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "D:\sdr-j-development\windows-dab-2\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ;Source: "C:\Users\JvanK\Downloads\SDRplay_RSP_API-Windows-2.13.1.exe"; DestDir: "{app}"; AfterInstall : install_sdrplayApi
 
 [Icons]

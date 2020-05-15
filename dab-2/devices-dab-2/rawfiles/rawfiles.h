@@ -54,7 +54,7 @@ private:
         QFrame          *myFrame;
         std::complex<float> *oscillatorTable;
         int             currentPhase;
-        int             phaseOffset;
+        int		totalOffset;
         void            handle_Value    (int, float, float);
 virtual void            run             (void);
         int32_t         readBuffer      (std::complex<float> *, int32_t);

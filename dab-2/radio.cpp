@@ -50,14 +50,21 @@
 #else
 #include	"audiosink.h"
 #endif
+#include	"device-handler.h"
 #include	"wavfiles.h"
 #include	"rawfiles.h"
-#include	"device-handler.h"
+#include	"xml-filereader.h"
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
+#endif
+#ifdef	HAVE_AIRSPY
+#include	"airspy-handler.h"
+#endif
+#ifdef	HAVE_LIMESDR
+#include	"lime-handler.h"
 #endif
 #ifdef	HAVE_SDRPLAY_V2
 #include	"sdrplay-handler.h"
@@ -363,6 +370,7 @@ uint8_t	dabBand;
 //	The input device talks to the dabProcessor
 	inputDevice     = nullptr;
 
+	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
 	deviceSelector	-> addItem ("sdrplay");
 #endif
@@ -390,7 +398,6 @@ uint8_t	dabBand;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
-	deviceSelector	-> addItem ("xml-files");
 
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -546,6 +553,25 @@ deviceHandler	*inputDevice	= nullptr;
 	   }
 	}
 
+	if (s == "xml files") {
+	   QString file	= QFileDialog::getOpenFileName (this,
+                                                  tr ("Open file ..."),
+                                                   QDir::homePath(),
+                                                   tr ("xml data (*.*)"));
+	   if (file == QString (""))
+	      return nullptr;
+	   file         = QDir::toNativeSeparators (file);
+
+	   try {
+	      inputDevice	= new xml_fileReader (this,
+	                                              my_dabProcessor,
+	                                              file);
+	   } catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("File input failed\n"));
+	   }
+	}
+
 #ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
@@ -582,7 +608,7 @@ deviceHandler	*inputDevice	= nullptr;
 #ifdef	HAVE_HACKRF
 	if (s == "hackrf") {
 	   try {
-	      QString recorder = "hackrf";
+	      QString recorder = "dab-2";
 	      inputDevice	= new hackrfHandler (this,
 	                                             dabSettings,
 	                                             my_dabProcessor,
@@ -592,6 +618,40 @@ deviceHandler	*inputDevice	= nullptr;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("hackrf: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_AIRSPY
+	if (s == "airspy") {
+	   try {
+	      inputDevice	= new airspyHandler (this,
+	                                             dabSettings,
+	                                             my_dabProcessor,
+	                                             version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("airspy: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_LIMESDR
+	if (s == "limeSDR") {
+	   try {
+	      inputDevice	= new limeHandler (this,
+	                                           dabSettings,
+	                                           my_dabProcessor,
+	                                           version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("limeSDR: no library or device\n"));
 	      return nullptr;
 	   }
 	}

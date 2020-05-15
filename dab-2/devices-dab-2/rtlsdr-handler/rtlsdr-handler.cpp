@@ -283,6 +283,7 @@ char	manufac [256], product [256], serial [256];
                  this, SLOT (set_xmlDump ()));
 	xmlDumping. store (false);
 	xmlDumper	= nullptr;
+	vfoFrequency	= 220000000;
 }
 
 	rtlsdrHandler::~rtlsdrHandler	() {
@@ -318,6 +319,7 @@ void	rtlsdrHandler::handle_Value	(int offset, float lowVal, float highVal) {
 int	newFrequency	= this -> rtlsdr_get_center_freq (device) + offset;
 
 	totalOffset	+= offset;
+	vfoFrequency	+= offset;
 	(void)lowVal; (void)highVal;
 	if (offset != 0) {
 	   (void)(this -> rtlsdr_set_center_freq (device, newFrequency));
@@ -332,10 +334,11 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
 int32_t	r;
 
-	(void)(this -> rtlsdr_set_center_freq (device, freq));
 	if (workerHandle != nullptr)
 	   return true;
 
+	totalOffset	= 0;
+	vfoFrequency	= freq;
 	r = this -> rtlsdr_reset_buffer (device);
 	if (r < 0)
 	   return false;

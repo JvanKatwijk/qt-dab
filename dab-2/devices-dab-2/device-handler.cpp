@@ -42,17 +42,8 @@ void	deviceHandler::stopReader	(void) {
 void	deviceHandler::resetBuffer	(void) {
 }
 
-void	deviceHandler::setOffset	(int32_t o) {
-	(void)o;
-}
-
 int32_t	deviceHandler::getVFOFrequency	(void) {
 	return -1;
-}
-
-void	deviceHandler::setEnv		(dabProcessor *p) {
-	fprintf (stderr, "calling setEnv with %ld\n", (uint64_t)p);
-	base = p;
 }
 
 QString	deviceHandler::deviceName	() {

@@ -250,8 +250,8 @@ CONFIG		+= PC
 # an attempt to have it run under W32 through cross compilation
 win32 {
 #DESTDIR	= ../../../dab-win
-DESTDIR		=  ../../../windows-dab-mini
-#DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
+#DESTDIR		=  ../../../windows-dab-mini
+DESTDIR	= /usr/shared/sdr-j-development/windows-dab-mini
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {

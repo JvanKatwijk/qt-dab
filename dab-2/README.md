@@ -1,10 +1,14 @@
 
-sdrplayDab is experimental software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+).
-It is a variant of Qt-DAB, and optimized for use with SDRplay RSP
-devices. It uses a completely different approach 
-for recognizing DAB frames than used in qt-dab. 
+dab-2 is experimental software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+).
+It is a variant of Qt-DAB, with a different approach to assembling DAB frames.
 
 ![sdrplayDab](/sdrplay-picture-1.png?raw=true)
+
+-------------------------------------------------------------------------
+dab-2 is a tool for me to experiment with
+--------------------------------------------------------------------------
+
+So, it might not function
 
 # Copyright
 
@@ -12,9 +16,8 @@ for recognizing DAB frames than used in qt-dab.
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
-	The sdrplayDab software is made available under the GPL-2.0.
-	The sdrplayDab software, of which the sdrplayDab software is a part, 
-	is distributed in the hope that it will be useful,
+	The dab-2 software is made available under the GPL-2.0.
+	The dab-2 software is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.

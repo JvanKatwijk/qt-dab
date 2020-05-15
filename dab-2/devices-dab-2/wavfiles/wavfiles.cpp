@@ -79,7 +79,7 @@ SF_INFO *sf_info;
                                     (cos (2.0 * M_PI * i / 2048000),
                                      sin (2.0 * M_PI * i / 2048000));
 	currentPhase	= 0;
-	phaseOffset	= 0;
+	totalOffset	= 0;
 }
 
 	wavFiles::~wavFiles (void) {
@@ -98,6 +98,7 @@ bool	wavFiles::restartReader	(int frequency) {
 	(void)frequency;
 	if (readerOK)
 	   readerPausing = false;
+	totalOffset	= 0;
 	start ();
 	return readerOK;
 }
@@ -184,7 +185,7 @@ float	temp [2 * length];
 	for (i = 0; i < n; i ++) {
 	   data [i] = std::complex<float> (temp [2 * i], temp [2 * i + 1]);
 	   data [i] *= oscillatorTable [currentPhase];
-	   currentPhase -= phaseOffset;
+	   currentPhase -= totalOffset;
 	   currentPhase = (currentPhase + 2048000) % 2048000;
 	}
 	return	n & ~01;
@@ -204,7 +205,7 @@ bool	wavFiles::isHidden	(void) {
 
 void	wavFiles::handle_Value	(int offset, float lowVal, float highVal) {
 	if (offset != 0) 
-	   phaseOffset += offset;
-	freq_errorDisplay	-> display (offset);
+	   totalOffset += offset;
+	freq_errorDisplay	-> display (totalOffset);
 }
 
