@@ -29,9 +29,9 @@
 
 #include	"soapy_CS16.h"
 
-	soapy_CS16::soapy_CS16 (SoapySDR::Device *device) {
+	soapy_CS16::soapy_CS16 (SoapySDR::Device *device):
+	                             theBuffer (16 * 32768) {
 	this	-> theDevice	= device;
-	theBuffer		= new RingBuffer<int16_t> (16 * 32768);
 	std::vector<size_t> xxx;
 	stream		= device -> setupStream (SOAPY_SDR_RX,
 	                                         "CS16", xxx,
@@ -46,17 +46,16 @@
 	   usleep (1000);
 	}
 	theDevice	-> deactivateStream (stream);
-	delete theBuffer;
 }
 
 int	soapy_CS16::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable() / 2;
+	return theBuffer. GetRingBufferReadAvailable() / 2;
 }
 
 int	soapy_CS16::getSamples	(std::complex<float> *v, int amount) {
 int16_t temp [amount * 2];
 int	realAmount;
-	realAmount	= theBuffer -> getDataFromBuffer (temp, amount * 2);
+	realAmount	= theBuffer. getDataFromBuffer (temp, amount * 2);
 	for (int i = 0; i < realAmount / 2; i ++) 
 	   v [i] = std::complex<float> (temp [2 * i] / 8191.0,
 	                                temp [2 * i + 1] / 8191.0);
@@ -72,7 +71,7 @@ void *const buffs [] = {buffer};
 int	cnt	= 0;
 	while (running) {
            theDevice -> readStream (stream, buffs, 2048, flag, timeNS, 10000);
-	   theBuffer -> putDataIntoBuffer (buffer, 2 * 2048);
+	   theBuffer. putDataIntoBuffer (buffer, 2 * 2048);
 	}
 }
 

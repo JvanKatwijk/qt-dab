@@ -62,9 +62,6 @@
 #ifdef	HAVE_SDRPLAY_V3
 #include	"sdrplay-handler-v3.h"
 #endif
-#ifdef	HAVE_ELAD_S1
-#include	"elad-handler.h"
-#endif
 #ifdef	__MINGW32__
 #ifdef	HAVE_EXTIO
 #include	"extio-handler.h"
@@ -380,6 +377,7 @@ uint8_t	dabBand;
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
 
+	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
 	deviceSelector	-> addItem ("sdrplay");
 #endif
@@ -391,9 +389,6 @@ uint8_t	dabBand;
 #endif
 #ifdef	HAVE_AIRSPY
 	deviceSelector	-> addItem ("airspy");
-#endif
-#ifdef	HAVE_ELAD_S1
-	deviceSelector	-> addItem ("elad-s1");
 #endif
 #ifdef	HAVE_HACKRF
 	deviceSelector	-> addItem ("hackrf");
@@ -410,7 +405,6 @@ uint8_t	dabBand;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
-	deviceSelector	-> addItem ("xml-files");
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -1061,7 +1055,8 @@ void	RadioInterface::updateTimeDisplay() {
 deviceHandler	*RadioInterface::setDevice (const QString &s) {
 QString	file;
 deviceHandler	*inputDevice	= nullptr;
-///	OK, everything quiet, now let us see what to do
+//	OK, everything quiet, now let us see what to do
+
 #ifdef	HAVE_AIRSPY
 	if (s == "airspy") {
 	   try {
@@ -1177,20 +1172,6 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_ELAD_S1
-	if (s == "elad-s1") {
-	   try {
-	      inputDevice	= new eladHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("elad-s1: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
 #ifdef	HAVE_RTLSDR
 	if (s == "dabstick") {
 	   try {
@@ -1206,7 +1187,7 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-	if (s == "xml-files") {
+	if (s == "xml files") {
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath(),

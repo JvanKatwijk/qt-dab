@@ -104,6 +104,7 @@ public:
 	xml_fileWriter		*xmlWriter;
 	hackrf_device	*theDevice;
 private:
+	QFrame			myFrame;
 	int			totalOffset;
 	bool			load_hackrfFunctions	();
 	pfn_hackrf_init		hackrf_init;
@@ -132,7 +133,6 @@ private:
 	pfn_hackrf_si5351c_write hackrf_si5351c_write;
 //	Fine aggiunta
 
-	QFrame			*myFrame;
 	QSettings		*hackrfSettings;
 	QString			recorderVersion;
 	int32_t			inputRate;

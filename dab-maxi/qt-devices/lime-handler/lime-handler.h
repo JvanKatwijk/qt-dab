@@ -109,15 +109,19 @@ public:
         int32_t         Samples			();
         void            resetBuffer		();
         int16_t         bitDepth		();
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
 	QString		deviceName		();
 private:
+	QFrame		myFrame;
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
-	RingBuffer<std::complex<int16_t>> *_I_Buffer;
+	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;

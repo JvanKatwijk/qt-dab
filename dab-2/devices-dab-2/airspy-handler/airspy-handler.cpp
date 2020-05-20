@@ -37,7 +37,8 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 	airspyHandler::airspyHandler (RadioInterface *mr,
 	                              QSettings *s,
 	                              dabProcessor *p,
-	                              QString &recorderVersion) {
+	                              QString &recorderVersion):
+	                                    myFrame (nullptr) {
 int	result, i;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
@@ -47,9 +48,8 @@ uint32_t samplerateCount;
 	this	-> airspySettings	= s;
 	this	-> base			= p;
 	this	-> recorderVersion	= recorderVersion;
-	myFrame				= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	setupUi (&myFrame);
+	this	-> myFrame. show();
 
 	filter			= nullptr;
 	airspySettings	-> beginGroup ("airspyHandler");
@@ -93,7 +93,6 @@ uint32_t samplerateCount;
 #ifndef	__MINGW32__
 	   fprintf (stderr, "Error = %s\n", dlerror());
 #endif
-	   delete myFrame;
 	   throw (20);
 	}
 
@@ -107,7 +106,6 @@ uint32_t samplerateCount;
 	   dlclose (Handle);
 	
 #endif
-	   delete myFrame;
 	}
 //
 	strcpy (serial,"");
@@ -120,7 +118,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -133,7 +130,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (22);
 	}
 
@@ -160,7 +156,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (23);
 	}
 	else
@@ -175,7 +170,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -260,7 +254,6 @@ uint32_t samplerateCount;
 	}
 	if (filter	!= nullptr)
 	   delete filter;
-	delete myFrame;
 	if (Handle == nullptr) {
 	   return;	// nothing achieved earlier
 	}
@@ -777,15 +770,15 @@ QString	airspyHandler::deviceName	() {
 }
 
 void	airspyHandler::show		() {
-	myFrame -> show ();
+	myFrame. show ();
 }
 
 void	airspyHandler::hide		() {
-	myFrame -> hide ();
+	myFrame. hide ();
 }
 
 bool	airspyHandler::isHidden		() {
-	return myFrame -> isHidden ();
+	return myFrame. isHidden ();
 }
 
 void	airspyHandler::set_xmlDump () {

@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the sdrplayDab program
+ *    This file is part of dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab; if not, write to the Free Software
+ *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #ifndef	__DEVICE_HANDLER__
@@ -25,6 +25,7 @@
 
 #include	<stdint.h>
 #include	<QThread>
+#include	<QFrame>
 #include	"dab-constants.h"
 
 class	dabProcessor;
@@ -47,7 +48,7 @@ public	slots:
 void		set_Values		(int, float, float);
 protected:
 virtual		void	handle_Value	(int, float, float);
-		dabProcessor	*base;
+	
 };
 #endif
 

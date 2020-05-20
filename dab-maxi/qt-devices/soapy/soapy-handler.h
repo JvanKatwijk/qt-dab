@@ -53,8 +53,12 @@ public:
 	                                                          int32_t);
 	int32_t		Samples			(void);
 	void		resetBuffer		(void);
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
 	int16_t		bitDepth		(void);
 private:
+	QFrame			myFrame;
 	SoapySDR::Device	*device;
 	SoapySDR::Stream	*stream;
 	QSettings		*soapySettings;

@@ -34,11 +34,11 @@ public:
 	                ~airspyFilter();
 	std::complex<float> Pass	(float re, float im);
 	int16_t		firSize;
-	float		*kernel;
-	float		*buffer_re;
-	float		*buffer_im;
 	int16_t		ip;
 	int32_t		sampleRate;
+	float		buffer_re [];
+	float		buffer_im [];
+	float		kernel[];
 };
 
 #endif

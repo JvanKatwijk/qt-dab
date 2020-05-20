@@ -28,6 +28,7 @@ public:
 	void	add		(std::complex<int16_t> *, int);
 	void	computeHeader	(QString &, QString &);
 private:
+	QFrame		myFrame;
 	int		denominator;
 	int		frequency;
 	QString		create_xmltree		(QString &, QString &);

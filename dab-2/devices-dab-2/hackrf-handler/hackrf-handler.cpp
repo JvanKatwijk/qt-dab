@@ -40,13 +40,13 @@
 	hackrfHandler::hackrfHandler  (RadioInterface	*mr,
 	                               QSettings	*s,
 	                               dabProcessor	*base,
-	                               QString &recorderVersion) {
+	                               QString &recorderVersion):
+	                                   myFrame (nullptr) {
 int	res;
 	hackrfSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	this	-> myFrame		= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	setupUi (&myFrame);
+	myFrame. show ();
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
@@ -62,7 +62,6 @@ int	res;
 
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
-	   delete myFrame;
 	   throw (20);
 	}
 
@@ -73,7 +72,6 @@ int	res;
 #else
            dlclose (Handle);
 #endif
-           delete myFrame;
            throw (21);
         }
 //
@@ -108,7 +106,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_init:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -117,7 +114,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_open:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (22);
 	}
 
@@ -126,7 +122,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_samplerate:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (23);
 	}
 
@@ -136,7 +131,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_bw:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -145,7 +139,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_freq: ");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -155,7 +148,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
 	   fprintf (stderr, "%s \n",
                         this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (26);
 	}
 
@@ -164,7 +156,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
 	   fprintf (stderr, "%s \n",
 	                this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (27);
 	}
 
@@ -174,7 +165,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_si5351c_read: ");
 	   fprintf (stderr, "%s \n",
                      this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (28);
 	}
 
@@ -183,7 +173,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_si5351c_write: ");
 	   fprintf (stderr, "%s \n",
 	              this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (29);
 	}
 
@@ -237,7 +226,6 @@ int	res;
 	hackrfSettings	-> endGroup();
 	this	-> hackrf_close (theDevice);
 	this	-> hackrf_exit();
-	delete myFrame;
 }
 //
 
@@ -642,13 +630,13 @@ void	hackrfHandler::close_xmlDump () {
 //
 
 void    hackrfHandler::show     () {
-        myFrame -> show ();
+        myFrame. show ();
 }
 
 void    hackrfHandler::hide     () {
-        myFrame -> hide ();
+        myFrame. hide ();
 }
 
 bool    hackrfHandler::isHidden () {
-        return !myFrame -> isVisible ();
+        return !myFrame. isVisible ();
 }

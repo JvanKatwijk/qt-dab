@@ -140,7 +140,7 @@ QString freqExtension		= "";
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-	delete MyRadioInterface;
+//	delete MyRadioInterface;
 	delete dabSettings;
 	return 1;
 }

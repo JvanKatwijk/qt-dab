@@ -62,7 +62,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	sdrplayHandler::sdrplayHandler  (RadioInterface *mr,
 	                                 QSettings *s,
 	                                 dabProcessor *base,
-	                                 QString &recorderVersion) {
+	                                 QString &recorderVersion):
+	                                     myFrame (nullptr) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
@@ -73,23 +74,19 @@ sdrplaySelect	*sdrplaySelector;
 	sdrplaySettings		= s;
 	this	-> base		= base;
 	this	-> recorderVersion	= recorderVersion;
-	this	-> myFrame	= new QFrame (NULL);
-	this	-> checker	= myFrame;
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	setupUi (&myFrame);
+	myFrame. show	();
 	antennaSelector		-> hide ();
 	tunerSelector		-> hide ();
 	this	-> inputRate	= 2048000;
 
 	bool success            = fetchLibrary ();
         if (!success) {
-           delete myFrame;
            throw (23);
         }
         success = loadFunctions();
         if (!success) {
            releaseLibrary       ();
-           delete myFrame;
            throw (23);
         }
 
@@ -97,13 +94,11 @@ sdrplaySelect	*sdrplaySelector;
 	if (err != mir_sdr_Success) {
 	   fprintf (stderr, "error at ApiVersion %s\n",
 	                 errorCodes (err). toLatin1 (). data ());
-	   delete myFrame;
 	   throw (24);
 	}
 	
 	if (ver < 2.13) {
 	   fprintf (stderr, "sorry, library too old\n");
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -135,13 +130,11 @@ sdrplaySelect	*sdrplaySelector;
 	   fprintf (stderr, "error at GetDevices %s \n",
 	                   errorCodes (err). toLatin1 (). data ());
 
-	   delete myFrame;
 	   throw (25);
 	}
 
 	if (numofDevs == 0) {
 	   fprintf (stderr, "Sorry, no device found\n");
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -170,7 +163,6 @@ sdrplaySelect	*sdrplaySelector;
 	if (err != mir_sdr_Success) {
 	   fprintf (stderr, "error at SetDeviceIdx %s \n",
 	                   errorCodes (err). toLatin1 (). data ());
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -254,7 +246,6 @@ sdrplaySelect	*sdrplaySelector;
 	                              agcControl -> isChecked () ? 1 : 0);
 	sdrplaySettings	-> endGroup ();
 	sdrplaySettings	-> sync ();
-	delete	myFrame;
 
 	if (numofDevs > 0)
 	   my_mir_sdr_ReleaseDeviceIdx (1);
@@ -317,35 +308,6 @@ mir_sdr_ErrT err = my_mir_sdr_GetCurrentGain (&gains);
 	averageValue		-> display (str);
 	nullValue		-> display (lvv);
 	reportedGain		-> display (gains. curr);
-}
-
-void	sdrplayHandler::set_initialGain (float initial_str) {
-mir_sdr_GainValuesT gains;
-mir_sdr_ErrT err = my_mir_sdr_GetCurrentGain (&gains);
-
-	if (err != mir_sdr_Success)
-	   fprintf (stderr, "error getting gain values %s\n",
-	                           errorCodes (err). toLatin1 (). data ());
-	int gainCorr = gain_setpoint -> value () - initial_str; 
-	if (gainCorr < -20)
-	   gainCorr = -20;
-	if (gainCorr > 20)
-	   gainCorr = 20;
-	int GRdB = gains. curr -  get_lnaGRdB (hwVersion, lnaState);
-	if (GRdB + gainCorr < 20)
-	   GRdB = 20;
-	else
-	if (GRdB + gainCorr > 59)
-	   GRdB = 59;
-	else
-	   GRdB = GRdB + gainCorr;
-
-	err = my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1 , 0);
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr,
-	            "error setting gainReduction at search phase (%d) %s\n",
-	                               GRdB,
-	                               errorCodes (err). toLatin1 (). data ());
 }
 
 void	sdrplayHandler::set_lnagainReduction (int lnaState) {
@@ -583,15 +545,15 @@ QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 }
 
 void	sdrplayHandler::show	(void) {
-	myFrame		-> show ();
+	myFrame. show	();
 }
 
 void	sdrplayHandler::hide	(void) {
-	myFrame		-> hide	();
+	myFrame. hide	();
 }
 
 bool	sdrplayHandler::isHidden	(void) {
-	return !myFrame	-> isVisible ();
+	return !myFrame. isVisible ();
 }
 
 QString	sdrplayHandler::deviceName	(void) {

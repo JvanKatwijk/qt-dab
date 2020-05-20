@@ -28,17 +28,16 @@
 #include	<QString>
 #include	"wavfiles.h"
 
-#define	__BUFFERSIZE	8 * 32768
+#define	__BUFFERSIZE__	8 * 32768
 
-	wavFiles::wavFiles (QString f) {
+	wavFiles::wavFiles (QString f):
+	   myFrame (nullptr),
+	   _I_Buffer (__BUFFERSIZE__) {
 SF_INFO *sf_info;
 
 	fileName	= f;
-	myFrame		= new QFrame;
-	setupUi (myFrame);
-	myFrame		-> show();
-
-	_I_Buffer	= new RingBuffer<std::complex<float>> (__BUFFERSIZE);
+	setupUi (&myFrame);
+	myFrame. show	();
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
@@ -46,14 +45,12 @@ SF_INFO *sf_info;
 	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s no legitimate sound file\n", 
 	                                f. toUtf8().data());
-	   delete myFrame;
 	   throw (24);
 	}
 	if ((sf_info -> samplerate != 2048000) ||
 	    (sf_info -> channels != 2)) {
 	   fprintf (stderr, "This is not a recorded dab file, sorry\n");
 	   sf_close (filePointer);
-	   delete myFrame;
 	   throw (25);
 	}
 	nameofFile	-> setText (f);
@@ -75,15 +72,13 @@ SF_INFO *sf_info;
 	}
 	if (filePointer != nullptr)
 	   sf_close (filePointer);
-	delete _I_Buffer;
-	delete	myFrame;
 }
 
 bool	wavFiles::restartReader		(int32_t freq) {
 	(void)freq;
 	if (running. load())
            return true;
-        readerTask      = new wavReader (this, filePointer, _I_Buffer);
+        readerTask      = new wavReader (this, filePointer, &_I_Buffer);
         running. store (true);
         return true;
 }
@@ -105,16 +100,16 @@ int32_t	amount;
 	if (filePointer == nullptr)
 	   return 0;
 
-	while (_I_Buffer -> GetRingBufferReadAvailable() < size)
+	while (_I_Buffer. GetRingBufferReadAvailable() < size)
 	      usleep (100);
 
-	amount = _I_Buffer	-> getDataFromBuffer (V, size);
+	amount = _I_Buffer. getDataFromBuffer (V, size);
 	
 	return amount;
 }
 
 int32_t	wavFiles::Samples() {
-	return _I_Buffer -> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void    wavFiles::setProgress (int progress, float timelength) {
@@ -122,5 +117,16 @@ void    wavFiles::setProgress (int progress, float timelength) {
         currentTime       -> display (timelength);
 }
 
+void	wavFiles::show		() {
+	myFrame. show ();
+}
+
+void	wavFiles::hide		() {
+	myFrame. hide	();
+}
+
+bool	wavFiles::isHidden	() {
+	return myFrame. isHidden ();
+}
 
 

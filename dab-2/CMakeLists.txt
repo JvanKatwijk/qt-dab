@@ -517,6 +517,37 @@ endif ()
 
 	   add_definitions (-DHAVE_RTLSDR)
 	endif()
+
+	if (RTL_TCP)
+	   find_package (Qt5Network REQUIRED)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./devices-dab-2/rtl_tcp/rtl_tcp-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./devices-dab-2/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   include_directories (
+	      ./devices-dab-2/rtl_tcp
+	      ${Qt5Network_INCLUDE_DIRS}
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./devices-dab-2/rtl_tcp/rtl_tcp_client.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./devices-dab-2/rtl_tcp/rtl_tcp_client.cpp
+	   )
+
+	   set (RTLTCP_lib Qt5::Network)
+	   add_definitions (-DHAVE_RTL_TCP)
+	endif (RTLTCP)
 #
 	if (HACKRF)
 	   set (${objectName}_UIS

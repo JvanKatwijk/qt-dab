@@ -45,7 +45,8 @@
               theProcessor = new mp4Processor (mr,
 	                                       d -> bitRate,
                                                audioBuffer,
-	                                       frameBuffer);
+	                                       frameBuffer,
+	                                       d -> is_secundair);
 	   }
 	}
 	else

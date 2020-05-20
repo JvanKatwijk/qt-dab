@@ -58,7 +58,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	here we start
 	sdrplayHandler::sdrplayHandler  (QSettings *s,
 	                                 QString &recorderVersion):
-	                                           myFrame (nullptr){
+	                                           myFrame (nullptr),
+	                                           _I_Buffer (4 * 1024 * 1024) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
@@ -72,7 +73,6 @@ sdrplaySelect	*sdrplaySelector;
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
 	this	-> inputRate	= Khz (2048);
-	_I_Buffer		= nullptr;
 	bool success		= fetchLibrary ();
 	if (!success) {
 	   throw (23);
@@ -99,7 +99,6 @@ sdrplaySelect	*sdrplaySelector;
 	}
 
 	api_version	-> display (ver);
-	_I_Buffer	= new RingBuffer<complex<int16_t>>(8 *1024 * 1024);
 	vfoFrequency	= Khz (220000);		// default
 
 //	See if there are settings from previous incarnations
@@ -254,8 +253,6 @@ sdrplaySelect	*sdrplaySelector;
 
 	if (numofDevs > 0)
 	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
-	if (_I_Buffer != nullptr)
-	   delete _I_Buffer;
 	releaseLibrary	();
 }
 
@@ -342,11 +339,11 @@ std::complex<int16_t> localBuf [numSamples];
 	for (i = 0; i <  (int)numSamples; i ++)
 //	   localBuf [i] = std::complex<int16_t> (xq [i], xi [i]);
 	   localBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
-	int n = p -> _I_Buffer -> GetRingBufferWriteAvailable ();
+	int n = p -> _I_Buffer. GetRingBufferWriteAvailable ();
 	if (n >= (int)numSamples) 
-	   p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	   p -> _I_Buffer. putDataIntoBuffer (localBuf, numSamples);
 	else {
-	   p -> _I_Buffer -> skipDataInBuffer (2048000 / 2);
+	   p -> _I_Buffer. skipDataInBuffer (2048000 / 2);
 	}
 	(void)	firstSampleNum;
 	(void)	grChanged;
@@ -437,7 +434,7 @@ mir_sdr_ErrT err;
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
 	                errorCodes (err). toLatin1(). data());
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 	running. store (false);
 }
 
@@ -447,7 +444,7 @@ mir_sdr_ErrT err;
 int32_t	sdrplayHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int16_t> temp [size];
 int i;
-	int amount	= _I_Buffer	-> getDataFromBuffer (temp, size);
+	int amount	= _I_Buffer. getDataFromBuffer (temp, size);
 	for (i = 0; i < amount; i ++) 
 	   V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
 	                                imag (temp [i]) / (float) denominator);
@@ -457,11 +454,11 @@ int i;
 }
 
 int32_t	sdrplayHandler::Samples () {
-	return _I_Buffer	-> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void	sdrplayHandler::resetBuffer () {
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	sdrplayHandler::bitDepth () {

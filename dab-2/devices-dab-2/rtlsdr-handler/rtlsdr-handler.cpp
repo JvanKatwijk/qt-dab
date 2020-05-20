@@ -120,7 +120,8 @@ virtual void	run () {
 	rtlsdrHandler::rtlsdrHandler (RadioInterface *mr,
 	                              QSettings *s,
 	                              dabProcessor *base,
-	                              QString &recorderVersion) {
+	                              QString &recorderVersion):
+	                                 myFrame (nullptr) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -134,9 +135,8 @@ char	manufac [256], product [256], serial [256];
 	this	-> base		= base;
 	this	-> recorderVersion
 		                = recorderVersion;
-	myFrame			= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	setupUi (&myFrame);
+	myFrame. show	();
 	inputRate		= 2048000;
 	workerHandle		= nullptr;
 
@@ -145,7 +145,6 @@ char	manufac [256], product [256], serial [256];
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
-	   delete myFrame;
 	   throw (20);
 	}
 #else
@@ -154,7 +153,6 @@ char	manufac [256], product [256], serial [256];
 
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%s)\n", libraryString, dlerror());
-	   delete myFrame;
 	   throw (20);
 	}
 #endif
@@ -164,7 +162,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (21);
 	}
 //
@@ -177,7 +174,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (22);
 	}
 
@@ -200,7 +196,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (23);
 	}
 
@@ -216,7 +211,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -288,7 +282,6 @@ char	manufac [256], product [256], serial [256];
 
 	rtlsdrHandler::~rtlsdrHandler	() {
 	if (Handle == nullptr) {	// should not happen
-	   delete myFrame;
 	   return;
 	}
 
@@ -312,7 +305,6 @@ char	manufac [256], product [256], serial [256];
 #endif
 	if (gains != nullptr)
 	   delete[] gains;
-	delete	myFrame;
 }
 
 void	rtlsdrHandler::handle_Value	(int offset, float lowVal, float highVal) {
@@ -531,15 +523,15 @@ QString	rtlsdrHandler::deviceName	() {
 }
 
 void	rtlsdrHandler::show	() {
-	myFrame	-> show ();
+	myFrame. show	();
 }
 
 void	rtlsdrHandler::hide	() {
-	myFrame	-> hide ();
+	myFrame. hide	();
 }
 
 bool	rtlsdrHandler::isHidden	() {
-	return !myFrame -> isVisible ();
+	return !myFrame. isVisible ();
 }
 
 void	rtlsdrHandler::set_xmlDump () {

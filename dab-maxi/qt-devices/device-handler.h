@@ -55,7 +55,6 @@ protected:
 	        int32_t	vfoOffset;
 	        int	theGain;
 		int32_t	coarseOffset;
-		QFrame	*myFrame;
 };
 #endif
 

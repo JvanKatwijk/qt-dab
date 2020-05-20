@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -45,12 +46,14 @@
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
-	                            RingBuffer<uint8_t> *frameBuffer)
+	                            RingBuffer<uint8_t> *frameBuffer,
+	                            bool		secundair)
 	                               :my_padhandler (mr),
  	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
+	this	-> secundair	= secundair;
 	connect (this, SIGNAL (show_frameErrors (int)),
 	         mr, SLOT (show_frameErrors (int)));
 	connect (this, SIGNAL (show_rsErrors (int)),
@@ -268,17 +271,8 @@ stream_parms    streamParameters;
 //	but first the crc check
 	   if (check_crc_bytes (&outVector [au_start [i]],
 	                                aac_frame_length)) {
-//	first handle the pad data if any
-	      if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
-	                                      
-	         int16_t count = outVector [au_start [i] + 1];
-	         uint8_t buffer [count];
-	         memcpy (buffer, &outVector [au_start [i] + 2], count);
-	         uint8_t L0	= buffer [count - 1];
-	         uint8_t L1	= buffer [count - 2];
-	         my_padhandler. processPAD (buffer, count - 3, L1, L0);
-	      }
-
+//
+//	firs prepare dumping
 	      std::vector<uint8_t> fileBuffer;
 	      int segmentSize =
 	              build_aacFile (aac_frame_length,
@@ -286,34 +280,46 @@ stream_parms    streamParameters;
 	                             &(outVector. data () [au_start [i]]),
 	                             fileBuffer);
 	      frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
-	                                        segmentSize);
+	                                                  segmentSize);
 	      newFrame (segmentSize);
+	      if (!secundair) {
+
+//	first handle the pad data if any
+	         if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
+	            int16_t count = outVector [au_start [i] + 1];
+	            uint8_t buffer [count];
+	            memcpy (buffer, &outVector [au_start [i] + 2], count);
+	            uint8_t L0	= buffer [count - 1];
+	            uint8_t L1	= buffer [count - 2];
+	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
+	         }
 //
 //	then handle the audio
 #ifdef	__WITH_FDK_AAC__
-	      tmp = aacDecoder -> MP42PCM (&streamParameters, 
-	                                   fileBuffer. data (), 
-	                                   segmentSize);
+	         tmp = aacDecoder -> MP42PCM (&streamParameters, 
+	                                      fileBuffer. data (), 
+	                                      segmentSize);
 #else
-	      uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
+	         uint8_t theAudioUnit [2 * 960 + 10];	// sure, large enough
 
-	      memcpy (theAudioUnit,
-	                 &outVector [au_start [i]], aac_frame_length);
-	      memset (&theAudioUnit [aac_frame_length], 0, 10);
+	         memcpy (theAudioUnit,
+	                    &outVector [au_start [i]], aac_frame_length);
+	         memset (&theAudioUnit [aac_frame_length], 0, 10);
 
-	      tmp = aacDecoder -> MP42PCM (&streamParameters,
-	                                   theAudioUnit,
-	                                   aac_frame_length);
+	         tmp = aacDecoder -> MP42PCM (&streamParameters,
+	                                      theAudioUnit,
+	                                      aac_frame_length);
 #endif
 //	      emit isStereo (streamParameters. aacChannelMode);
-	      emit isStereo (tmp == 2);
+//	         emit isStereo (tmp == 2);
 	
-	      if (tmp <= 0) 
-	         aacErrors ++;
-	      if (++aacFrames > 25) {
-	         show_aacErrors (aacErrors);
-	         aacErrors	= 0;
-	         aacFrames	= 0;
+	         if (tmp <= 0) 
+	            aacErrors ++;
+	         if (++aacFrames > 25) {
+	            show_aacErrors (aacErrors);
+	            aacErrors	= 0;
+	            aacFrames	= 0;
+	         }
 	      }
 	   }
 	   else {

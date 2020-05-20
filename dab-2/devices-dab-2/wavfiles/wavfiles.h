@@ -32,6 +32,7 @@
 #include	"ringbuffer.h"
 
 #include	"ui_filereader-widget.h"
+//#include	"filereader-widget.h"
 class	dabProcessor;
 
 class	wavFiles: public deviceHandler,
@@ -47,7 +48,8 @@ public:
 private:
 	QString		fileName;
 	int		tester;
-	QFrame		*myFrame;
+	dabProcessor	*base;
+	QFrame		myFrame;
 	std::complex<float> *oscillatorTable;
 	int		currentPhase;
 	int		totalOffset;

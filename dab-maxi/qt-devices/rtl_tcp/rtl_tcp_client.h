@@ -53,6 +53,9 @@ public:
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
 	int32_t		Samples		();
+	void		show		();
+	void		hide		();
+	bool		isHidden	();
 	int16_t		bitDepth	();
 private slots:
 	void		sendGain	(int);
@@ -63,6 +66,7 @@ private slots:
 	void		wantConnect	();
 	void		setDisconnect	();
 private:
+	QFrame		myFrame;
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
 	void		setGainMode	(int32_t gainMode);
@@ -70,7 +74,6 @@ private:
 	QLineEdit	*hostLineEdit;
 	bool		isvalidRate	(int32_t);
 	QSettings	*remoteSettings;
-	QFrame		*theFrame;
 	int32_t		theRate;
 	int32_t		vfoFrequency;
 	RingBuffer<std::complex<float>>	*_I_Buffer;

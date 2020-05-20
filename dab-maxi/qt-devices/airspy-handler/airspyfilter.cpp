@@ -28,15 +28,15 @@
 
 	airspyFilter::airspyFilter (int16_t firSize,
 	                            int32_t cutoffFreq,
-	                            int32_t sampleRate) {
+	                            int32_t sampleRate),
+	                               buffer_re (firSize),
+	                               buffer_im (firSize),
+	                               kernel (firSize) {
 float	tmp [firSize];
 float	lo	= (float)(cutoffFreq) / sampleRate;
 float	sum	= 0.0;
 int16_t	i;
 
-	this	-> buffer_re	= new float [firSize];
-	this	-> buffer_im	= new float [firSize];
-	this	-> kernel	= new float [firSize];
 	this	-> firSize	= firSize;
 	ip			= 0;
 //
@@ -61,9 +61,6 @@ int16_t	i;
 }
 
 	airspyFilter::~airspyFilter() {
-	delete [] kernel;
-	delete [] buffer_re;
-	delete [] buffer_im;
 }
 
 //      we process the samples backwards rather than reversing

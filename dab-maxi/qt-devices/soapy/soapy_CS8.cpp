@@ -29,9 +29,9 @@
 
 #include	"soapy_CS8.h"
 
-	soapy_CS8::soapy_CS8 (SoapySDR::Device *device) {
+	soapy_CS8::soapy_CS8 (SoapySDR::Device *device):
+	                           theBuffer (16 * 32768) {
 	this	-> theDevice	= device;
-	theBuffer		= new RingBuffer<int8_t> (16 * 32768);
 	std::vector<size_t> xxx;
 	stream		= device -> setupStream (SOAPY_SDR_RX,
 	                                         "CS8", xxx,
@@ -45,17 +45,16 @@
 	while (isRunning ()) {
 	   usleep (1000);
 	}
-	delete theBuffer;
 }
 
 int	soapy_CS8::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable () / 2;
+	return theBuffer. GetRingBufferReadAvailable () / 2;
 }
 
 int	soapy_CS8::getSamples	(std::complex<float> *v, int amount) {
 int8_t temp [amount * 2];
 int	realAmount;
-	realAmount	= theBuffer -> getDataFromBuffer (temp, amount * 2);
+	realAmount	= theBuffer. getDataFromBuffer (temp, amount * 2);
 	for (int i = 0; i < realAmount / 2; i ++) 
 	   v [i] = std::complex<float> (temp [2 * i] / 127.0,
 	                                temp [2 * i + 1] / 127.0);
@@ -70,7 +69,7 @@ void *const buffs [] = {buffer};
 	running	= true;
 	while (running) {
            theDevice -> readStream (stream, buffs, 2048, flag, timeNS, 10000);
-	   theBuffer -> putDataIntoBuffer (buffer, 2 * 2048);
+	   theBuffer. putDataIntoBuffer (buffer, 2 * 2048);
 	}
 	theDevice	-> deactivateStream (stream);
 }

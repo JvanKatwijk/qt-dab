@@ -30,9 +30,9 @@
 
 #include	"soapy_CF32.h"
 
-	soapy_CF32::soapy_CF32 (SoapySDR::Device *device) {
+	soapy_CF32::soapy_CF32 (SoapySDR::Device *device):
+	                            theBuffer (16 * 32768) {
 	this	-> theDevice	= device;
-	theBuffer		= new RingBuffer<std::complex<float>> (32 * 32768);
 	std::vector<size_t> xxx;
 	stream		= device -> setupStream (SOAPY_SDR_RX,
 	                                         "CF32", xxx,
@@ -46,16 +46,15 @@
 	   usleep (1000);
 	}
 	theDevice	-> deactivateStream (stream);
-	delete theBuffer;
 }
 
 int	soapy_CF32::Samples	(void) {
-	return theBuffer	-> GetRingBufferReadAvailable();
+	return theBuffer. GetRingBufferReadAvailable();
 }
 
 int	soapy_CF32::getSamples	(std::complex<float> *v, int amount) {
 int	realAmount;
-	realAmount	= theBuffer -> getDataFromBuffer (v, amount);
+	realAmount	= theBuffer. getDataFromBuffer (v, amount);
 	return realAmount;
 }
 
@@ -71,7 +70,7 @@ void *const buffs [] = {buffer};
            int aa = theDevice -> readStream (stream, buffs,
 	                                       4096, flag, timeNS, 10000);
 	   if (aa > 0)
-	      theBuffer -> putDataIntoBuffer (buffer, aa);
+	      theBuffer. putDataIntoBuffer (buffer, aa);
 	}
 }
 

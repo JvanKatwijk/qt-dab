@@ -134,6 +134,7 @@ class	descriptorType {
 public:
 	uint8_t	type;
 	bool	defined;
+	bool	is_secundair;
 	QString	serviceName;
 	int32_t	SId;
 	int	SCIds;
@@ -148,6 +149,7 @@ public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
+	is_secundair	= false;
 	}
 virtual		~descriptorType() {}
 };

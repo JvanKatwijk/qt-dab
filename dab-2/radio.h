@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the sdrplayDab
+ *    This file is part of dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab; if not, write to the Free Software
+ *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -45,6 +45,9 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
+#include        "spectrum-viewer.h"
+#include        "correlation-viewer.h"
+#include        "tii-viewer.h"
 #include	"preset-handler.h"
 #include	"scanner-table.h"
 #ifdef  TRY_EPG
@@ -57,9 +60,6 @@ class	audioBase;
 class	common_fft;
 class	serviceDescriptor;
 class	historyHandler;
-class	spectrumViewer;
-class	correlationViewer;
-class	tiiViewer;
 
 #include	"ui_technical_data.h"
 
@@ -89,24 +89,27 @@ public:
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
+	RingBuffer<std::complex<float>>  spectrumBuffer;
+	RingBuffer<std::complex<float>>  iqBuffer;
+	RingBuffer<std::complex<float>>  tiiBuffer;
+	RingBuffer<float>	responseBuffer;
+	RingBuffer<uint8_t>	frameBuffer;
+	RingBuffer<uint8_t>	dataBuffer;
+	RingBuffer<int16_t>	audioBuffer;
+        spectrumViewer		my_spectrumViewer;
+	correlationViewer	my_correlationViewer;
+	tiiViewer		my_tiiViewer;
+	presetHandler		my_presetHandler;
 	processParams		globals;
 	QString			version;
 	int			serviceOrder;
-	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	scannerTable		theTable;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	QSettings		*dabSettings;
-        spectrumViewer		*my_spectrumViewer;
 	dabService		currentService;
 	dabService		nextService;
-	RingBuffer<std::complex<float>>  *spectrumBuffer;
-	RingBuffer<std::complex<float>>  *iqBuffer;
-	RingBuffer<std::complex<float>>  *tiiBuffer;
-	correlationViewer	*my_correlationViewer;
-	RingBuffer<float>	*responseBuffer;
-	tiiViewer		*my_tiiViewer;
 
 	bool			normalScan;
 	int16_t			tii_delay;
@@ -127,9 +130,6 @@ private:
 #ifdef	TRY_EPG
 	CEPGDecoder		epgHandler;
 #endif
-	RingBuffer<int16_t>	*audioBuffer;
-	RingBuffer<uint8_t>	*dataBuffer;
-	RingBuffer<uint8_t>	*frameBuffer;
 	bool			saveSlides;
 	QString			picturesPath;
 	QString			epgPath;

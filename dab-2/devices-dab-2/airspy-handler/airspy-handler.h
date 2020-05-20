@@ -19,7 +19,6 @@
 
 #include	<QObject>
 #include	<QSettings>
-#include	<QFrame>
 #include	<vector>
 #include	<atomic>
 #include	"dab-constants.h"
@@ -104,8 +103,8 @@ public:
 	int16_t		currentTab;
 	dabProcessor	*base;
 private:
-	QFrame		*myFrame;
 	QString		recorderVersion;
+	QFrame		myFrame;
 	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
         bool            setup_xmlDump           ();

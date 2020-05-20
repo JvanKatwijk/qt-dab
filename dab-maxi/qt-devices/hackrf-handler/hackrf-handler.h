@@ -95,11 +95,15 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
 	QString		deviceName		();
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<int8_t>>	*_I_Buffer;
+	RingBuffer<std::complex<int8_t>>	_I_Buffer;
 	hackrf_device	*theDevice;
 private:
+	QFrame			myFrame;
 	bool			load_hackrfFunctions	();
 	pfn_hackrf_init		hackrf_init;
 	pfn_hackrf_open		hackrf_open;

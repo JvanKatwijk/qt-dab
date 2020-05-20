@@ -96,9 +96,9 @@ public:
 	std::atomic<bool> 	xmlDumping;
         xml_fileWriter		*xmlWriter;
 private:
+	QFrame		myFrame;
 	int		vfoFrequency;
 	QSettings	*rtlsdrSettings;
-	QFrame		*myFrame;
 	int32_t		inputRate;
 	int32_t		deviceCount;
 	HINSTANCE	Handle;

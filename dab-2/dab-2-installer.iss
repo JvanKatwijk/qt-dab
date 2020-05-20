@@ -5,7 +5,7 @@
 #define MyAppVersion "3.4"
 #define MyAppPublisher "Lazy Chair Computing"
 #define MyAppURL "https://github.com/JvanKatwijk/qt-dab/dab-2"
-#define MyAppExeName "dab-2.1.exe";
+#define MyAppExeName "dab-2.exe";
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.

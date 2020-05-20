@@ -61,11 +61,11 @@ void	wavReader::stopReader() {
 	}
 }
 
-void	wavReader::run() {
-std::complex<float>	*bi;
+void	wavReader::run	() {
 int32_t	bufferSize	= 32768;
 int64_t	nextStop;
 int	teller		= 0;
+std::complex<float> bi [bufferSize];
 
 	connect (this, SIGNAL (setProgress (int, float)),
                  parent,   SLOT (setProgress (int, float)));
@@ -73,7 +73,6 @@ int	teller		= 0;
 
 	running. store (true);
 
-	bi		= new std::complex<float> [bufferSize];
 	nextStop	= getMyTime();
 	try {
 	   while (running. load()) {
@@ -104,6 +103,5 @@ int	teller		= 0;
 	   }
 	} catch (int e) {}
 	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);
-	delete[] bi;
 }
 

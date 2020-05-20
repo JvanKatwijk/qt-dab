@@ -35,15 +35,16 @@
 
 #define	DEFAULT_GAIN	30
 
-	hackrfHandler::hackrfHandler  (QSettings *s, QString &recorderVersion) {
+	hackrfHandler::hackrfHandler  (QSettings *s,
+	                               QString &recorderVersion):
+	                                  myFrame (nullptr),
+	                                  _I_Buffer (4 * 1024 * 1024) {
 int	res;
 	hackrfSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	this	-> myFrame		= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show ();
+	setupUi (&myFrame);
+	myFrame. show	();
 	this	-> inputRate		= Khz (2048);
-	_I_Buffer			= nullptr;
 
 #ifdef  __MINGW32__
         const char *libraryString = "libhackrf.dll";
@@ -58,7 +59,6 @@ int	res;
 
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
-	   delete myFrame;
 	   throw (20);
 	}
 
@@ -69,13 +69,11 @@ int	res;
 #else
            dlclose (Handle);
 #endif
-           delete myFrame;
            throw (21);
         }
 //
 //	From here we have a library available
 
-	_I_Buffer	= new RingBuffer<std::complex<int8_t>>(1024 * 1024);
 	vfoFrequency	= Khz (220000);
 //
 //	See if there are settings from previous incarnations
@@ -105,7 +103,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_init:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -114,7 +111,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_open:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (22);
 	}
 
@@ -123,7 +119,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_samplerate:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (23);
 	}
 
@@ -133,7 +128,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_bw:");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -142,7 +136,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_freq: ");
 	   fprintf (stderr, "%s \n",
 	                 this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -152,7 +145,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
 	   fprintf (stderr, "%s \n",
                         this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (26);
 	}
 
@@ -161,7 +153,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
 	   fprintf (stderr, "%s \n",
 	                this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (27);
 	}
 
@@ -171,7 +162,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_si5351c_read: ");
 	   fprintf (stderr, "%s \n",
                      this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (28);
 	}
 
@@ -180,7 +170,6 @@ int	res;
 	   fprintf (stderr, "Problem with hackrf_si5351c_write: ");
 	   fprintf (stderr, "%s \n",
 	              this -> hackrf_error_name (hackrf_error (res)));
-	   delete myFrame;
 	   throw (29);
 	}
 
@@ -219,8 +208,6 @@ int	res;
 
 	hackrfHandler::~hackrfHandler() {
 	stopReader();
-	if (_I_Buffer != nullptr)
-	   delete _I_Buffer;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnagainSlider -> value());
@@ -235,7 +222,6 @@ int	res;
 	hackrfSettings	-> endGroup();
 	this	-> hackrf_close (theDevice);
 	this	-> hackrf_exit();
-	delete myFrame;
 }
 //
 
@@ -348,7 +334,7 @@ int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
 int	i;
 uint8_t *p	= transfer -> buffer;
-RingBuffer<std::complex<int8_t> > * q = ctx -> _I_Buffer;
+RingBuffer<std::complex<int8_t> > * q = & (ctx -> _I_Buffer);
 int	bufferIndex	= 0;
 
 	for (i = 0; i < transfer -> valid_length / 2; i += 1) {
@@ -405,7 +391,7 @@ int	res;
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
-	int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (int i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / 127.0,
                                         imag (temp [i]) / 127.0);
@@ -416,11 +402,11 @@ std::complex<int8_t> temp [size];
 }
 
 int32_t	hackrfHandler::Samples () {
-	return _I_Buffer	-> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void	hackrfHandler::resetBuffer() {
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	hackrfHandler::bitDepth() {
@@ -644,5 +630,17 @@ void	hackrfHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
+}
+
+void	hackrfHandler::show	() {
+	myFrame. show	();
+}
+
+void	hackrfHandler::hide	() {
+	myFrame. hide	();
+}
+
+bool	hackrfHandler::isHidden	() {
+	return myFrame. isHidden ();
 }
 

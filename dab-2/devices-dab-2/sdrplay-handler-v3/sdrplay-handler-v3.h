@@ -76,16 +76,16 @@ public:
         int			theGain;
 
 private:
-	QSettings			*sdrplaySettings;
-	int				inputRate;
-	void				run			();
-	bool				messageHandler		(generalCommand *);
-	std::atomic<int>		reportIndicator;
-	int32_t				vfoFrequency;
-	QFrame				myFrame;
+	QFrame			myFrame;
+	QSettings		*sdrplaySettings;
+	int			inputRate;
+	void			run			();
+	bool			messageHandler		(generalCommand *);
+	std::atomic<int		reportIndicator;
+	int32_t			vfoFrequency;
 
-	sdrplay_api_Open_t              sdrplay_api_Open;
-        sdrplay_api_Close_t             sdrplay_api_Close;
+	sdrplay_api_Open_t	sdrplay_api_Open;
+        sdrplay_api_Close_t	sdrplay_api_Close;
         sdrplay_api_ApiVersion_t        sdrplay_api_ApiVersion;
         sdrplay_api_LockDeviceApi_t     sdrplay_api_LockDeviceApi;
         sdrplay_api_UnlockDeviceApi_t   sdrplay_api_UnlockDeviceApi;

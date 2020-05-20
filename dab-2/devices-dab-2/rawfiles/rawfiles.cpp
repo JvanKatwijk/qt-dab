@@ -45,19 +45,18 @@ struct timeval  tv;
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	rawFiles::rawFiles (QString f, dabProcessor *base) {
+	rawFiles::rawFiles (QString f, dabProcessor *base):
+	                         myFrame (nullptr) {
 	fileName	= f;
 	this	-> base	= base;
-	myFrame		= new QFrame;
-	setupUi	(myFrame);
-	myFrame		-> show ();
+	setupUi	(&myFrame);
+	myFrame.  show	();
 	_I_Buffer	= new RingBuffer<std::complex<float>>(INPUT_FRAMEBUFFERSIZE);
 	filePointer	= fopen (f. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
 	                                   f. toUtf8(). data());
 	   perror ("file ?");
-	   delete myFrame;
 	   delete _I_Buffer;
 	   throw (31);
 	}
@@ -83,7 +82,6 @@ struct timeval  tv;
 	   usleep (1000);
 	fclose (filePointer);
 	delete _I_Buffer;
-	delete myFrame;	
 	delete oscillatorTable;
 }
 
@@ -203,15 +201,15 @@ uint8_t	temp [2 * length];
 }
 
 void	rawFiles::show		(void) {
-	myFrame		-> show ();
+	myFrame. show ();
 }
 
 void	rawFiles::hide		(void) {
-	myFrame		-> hide ();
+	myFrame. hide ();
 }
 
 bool	rawFiles::isHidden	(void) {
-	return !myFrame	-> isVisible ();
+	return !myFrame. isVisible ();
 }
 
 void	rawFiles::handle_Value	(int offset, float lowVal, float highVal) {

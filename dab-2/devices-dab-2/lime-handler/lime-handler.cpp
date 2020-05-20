@@ -38,14 +38,14 @@ lms_info_str_t limedevices [10];
 	limeHandler::limeHandler (RadioInterface *mr,
 	                          QSettings	*s,
 	                          dabProcessor	*base,
-	                          QString &recorderVersion) {
+	                          QString &recorderVersion):
+	                              myFrame (nullptr) {
 	(void)mr;
 	this	-> limeSettings		= s;
 	this	-> base			= base;
 	this	-> recorderVersion	= recorderVersion;
-	this	-> myFrame		= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	setupUi (&myFrame);
+	myFrame. show	();
 
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
@@ -60,7 +60,6 @@ lms_info_str_t limedevices [10];
 
         if (Handle == nullptr) {
            fprintf (stderr, "failed to open %s\n", libraryString);
-           delete myFrame;
            throw (20);
         }
 
@@ -71,7 +70,6 @@ lms_info_str_t limedevices [10];
 #else
            dlclose (Handle);
 #endif
-           delete myFrame;
            throw (21);
         }
 //
@@ -79,7 +77,6 @@ lms_info_str_t limedevices [10];
 
 	int ndevs	= LMS_GetDeviceList (limedevices);
 	if (ndevs == 0) {	// no devices found
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -88,21 +85,18 @@ lms_info_str_t limedevices [10];
 
 	int res		= LMS_Open (&theDevice, nullptr, nullptr);
 	if (res < 0) {	// some error
-	   delete myFrame;
 	   throw (22);
 	}
 
 	res		= LMS_Init (theDevice);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   delete myFrame;
 	   throw (23);
 	}
 
 	res		= LMS_GetNumChannels (theDevice, LMS_CH_RX);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -111,14 +105,12 @@ lms_info_str_t limedevices [10];
 	res		= LMS_EnableChannel (theDevice, LMS_CH_RX, 0, true);
 	if (res < 0) {	// some error
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (24);
 	}
 
 	res	= LMS_SetSampleRate (theDevice, 2048000.0, 0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -152,7 +144,6 @@ lms_info_str_t limedevices [10];
 	                                                 0, 220000000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (26);
 	}
 
@@ -160,7 +151,6 @@ lms_info_str_t limedevices [10];
 	                                               0, 1536000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (27);
 	}
 
@@ -192,7 +182,6 @@ lms_info_str_t limedevices [10];
 	limeSettings	-> setValue ("gain", gainSelector -> value());
 	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
-	delete myFrame;
 }
 
 bool	limeHandler::restartReader	(int32_t freq) {
@@ -481,15 +470,15 @@ bool	limeHandler::load_limeFunctions() {
 }
 
 void	limeHandler::hide	() {
-	myFrame	-> hide ();
+	myFrame. hide ();
 }
 
 void	limeHandler::show	() {
-	myFrame	-> show ();
+	myFrame. show ();
 }
 
 bool	limeHandler::isHidden	() {
-	return myFrame -> isHidden ();
+	return myFrame. isHidden ();
 }
 
 void	limeHandler::set_xmlDump () {

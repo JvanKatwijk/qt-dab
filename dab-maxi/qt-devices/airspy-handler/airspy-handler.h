@@ -32,7 +32,6 @@
 #include	"libairspy/airspy.h"
 #endif
 
-class	airspyFilter;
 class	xml_fileWriter;
 extern "C"  {
 typedef	int (*pfn_airspy_init)();
@@ -97,10 +96,15 @@ public:
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	int		getBufferSpace		();
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
 	QString		deviceName		();
 	int16_t		currentTab;
 
 private:
+	QFrame		myFrame;
+	RingBuffer<std::complex<float>> _I_Buffer;
 	QString		recorderVersion;
 	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
@@ -166,10 +170,7 @@ const	char*		board_id_name();
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;
-	RingBuffer<std::complex<float>> *_I_Buffer;
 	int32_t		inputRate;
-	airspyFilter	*filter;
-	bool		filtering;
 	struct airspy_device* device;
 	uint64_t 	serialNumber;
 	char		serial[128];

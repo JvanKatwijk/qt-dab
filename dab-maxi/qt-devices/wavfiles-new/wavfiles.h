@@ -43,9 +43,13 @@ public:
 	int32_t		Samples		();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
+	void		show		();	
+	void		hide		();
+	bool		isHidden	();
 private:
+	QFrame		myFrame;
 	QString		fileName;
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<float>>	_I_Buffer;
 	int32_t		bufferSize;
 	SNDFILE		*filePointer;
 	wavReader	*readerTask;

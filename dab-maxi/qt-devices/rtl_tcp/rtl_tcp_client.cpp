@@ -34,12 +34,12 @@
 //
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
-	rtl_tcp_client::rtl_tcp_client	(QSettings *s) {
+	rtl_tcp_client::rtl_tcp_client	(QSettings *s):
+	   myFrame (nullptr) {
 	remoteSettings		= s;
 
-	theFrame		= new QFrame;
-	setupUi (theFrame);
-	this	-> theFrame	-> show();
+	setupUi (&myFrame);
+	myFrame. show		();
 
     //	setting the defaults and constants
 	theRate		= 2048000;
@@ -89,7 +89,6 @@
 	toServer. close();
 	delete	_I_Buffer;
 	delete	hostLineEdit;
-	delete	theFrame;
 }
 //
 void	rtl_tcp_client::wantConnect() {
@@ -137,7 +136,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	            this, SLOT (setConnection (void)));
 	toServer. connectToHost (serverAddress, basePort);
 	if (!toServer. waitForConnected (2000)) {
-	   QMessageBox::warning (theFrame, tr ("sdr"),
+	   QMessageBox::warning (&myFrame, tr ("sdr"),
 	                                   tr ("connection failed\n"));
 	   return;
 	}
@@ -150,7 +149,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	connected	= true;
 }
 
-int32_t	rtl_tcp_client::getRate() {
+int32_t	rtl_tcp_client::getRate	() {
 	return theRate;
 }
 
@@ -304,5 +303,17 @@ void	rtl_tcp_client::setDisconnect() {
 void	rtl_tcp_client::set_Offset	(int32_t o) {
 	sendCommand (0x0a, Khz (o));
 	vfoOffset	= o;
+}
+
+void	rtl_tcp_client::show		() {
+	myFrame. show ();
+}
+
+void	rtl_tcp_client::hide		() {
+	myFrame. hide ();
+}
+
+bool	rtl_tcp_client::isHidden	() {
+	return myFrame. isHidden ();
 }
 

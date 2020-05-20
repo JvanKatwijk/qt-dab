@@ -72,12 +72,12 @@ if(DEFINED HACKRF)
 	set(HACKRF true)
 endif ()
 
-if(DEFINED RTLTCP)
-   set(RTLTCP true)
-endif ()
-
 if(DEFINED LIMESDR)
    set(LIMESDR true)
+endif ()
+
+if(DEFINED RTL_TCP)
+	set(RTL_TCP true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
@@ -563,14 +563,12 @@ endif ()
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./qt-devices/airspy-handler/airspy-handler.h
-	        ./qt-devices/airspy-handler/airspyfilter.h
 	        ./qt-devices/airspy-handler/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./qt-devices/airspy-handler/airspy-handler.cpp
-	        ./qt-devices/airspy-handler/airspyfilter.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
@@ -709,7 +707,7 @@ endif ()
 	   )
 	endif (QT_AUDIO)
 
-	if (RTLTCP)
+	if (RTL_TCP)
 	   find_package (Qt5Network REQUIRED)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}

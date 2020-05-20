@@ -27,11 +27,9 @@
 	vfoOffset	= 0;
 	theGain		= 50;
 	coarseOffset	= 0;
-	myFrame		= nullptr;
 }
 
 	deviceHandler::~deviceHandler	() {
-	myFrame		= nullptr;
 }
 
 void	deviceHandler::adjustFreq	(int offset) {
@@ -61,18 +59,12 @@ void	deviceHandler::resetBuffer	() {
 }
 
 void	deviceHandler::hide		() {
-	if (myFrame != nullptr)
-	   myFrame	-> hide ();
 }
 
 void	deviceHandler::show		() {
-	if (myFrame != nullptr)
-	   myFrame -> show ();
 }
 
 bool	deviceHandler::isHidden		() { 
-	if (myFrame != nullptr)
-	   return myFrame -> isHidden ();
 	return false;
 }
 

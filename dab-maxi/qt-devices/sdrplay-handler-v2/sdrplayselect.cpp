@@ -31,7 +31,7 @@
 //	Whenever there are two or more sdrplay devices connected
 //	to the computer, the user is asked to make a choice.
 
-	sdrplaySelect::sdrplaySelect() {
+	sdrplaySelect::sdrplaySelect	() {
 	toptext		= new QLabel (this);
 	toptext		-> setText ("Select an rsp device");
 	selectorDisplay	= new QListView (this);

@@ -57,7 +57,7 @@ public:
 private:
 	void			handle_Value	(int, float, float);
 	dabProcessor		*base;
-	QFrame			*myFrame;
+	QFrame			myFrame;
 	std::atomic<bool>	running;
 	QString			fileName;
 	FILE			*theFile;

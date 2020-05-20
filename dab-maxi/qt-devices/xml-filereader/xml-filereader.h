@@ -48,10 +48,14 @@ public:
 	bool			restartReader	(int32_t);
 	void			stopReader	(void);
 	int			getVFOFrequency	();
+	void			hide		();
+	void			show		();
+	bool			isHidden	();
 private:
+	QFrame			myFrame;
 	std::atomic<bool>	running;
 	QString			fileName;
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE			*theFile;
 	uint32_t		filePointer;
 	xmlDescriptor		*theDescriptor;

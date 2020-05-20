@@ -28,10 +28,11 @@
 #include	"soapy_CS16.h"
 #include	"soapy_CF32.h"
 
-	soapyHandler::soapyHandler (QSettings *soapySettings) {
+	soapyHandler::soapyHandler (QSettings *soapySettings):
+	                             myFrame (nullptr) {
 	this	-> soapySettings	= soapySettings;
-        this    -> myFrame              = new QFrame (nullptr);
-        setupUi (this -> myFrame);
+        setupUi (&myFrame);
+	myFrame. show ();
 	deviceLineEdit		= new QLineEdit (nullptr);
 	deviceLineEdit		-> show();
 	connect (deviceLineEdit, SIGNAL (returnPressed (void)),
@@ -50,7 +51,6 @@
 	if (worker != nullptr)
 	   delete worker;
 	delete deviceLineEdit;
-	delete myFrame;
 }
 
 bool	contains (std::vector<std::string> s, std::string key) {
@@ -69,7 +69,7 @@ QString	handlerName	= "driver=";
 	device  = SoapySDR::Device::make (handlerName. toLatin1(). data());
 
         if (device == nullptr) {
-	   QMessageBox::warning (myFrame, tr ("Warning"),
+	   QMessageBox::warning (&myFrame, tr ("Warning"),
                                        tr ("could not find soapy support\n"));
            return;
 	}
@@ -233,5 +233,17 @@ void	soapyHandler::handleAntenna (const QString &s) {
 	if (worker == nullptr)
 	   return;
 	device	-> setAntenna (SOAPY_SDR_RX, 0, s. toLatin1(). data());
+}
+
+void	soapyHandler::show		() {
+	myFrame. show ();
+}
+
+void	soapyHandler::hide		() {
+	myFrame. hide ();
+}
+
+bool	soapyHandler::isHidden		() {
+	return myFrame. isHidden ();
 }
 

@@ -1,8 +1,6 @@
 # Qt-DAB-3.4 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.4.1 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini, built on the same set of sources.
-
-
+Qt-DAB-3.4.1 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
 
 ------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -29,7 +27,7 @@ see the subdirectory *dab-mini* for construction details.
 
 ![dab-mini](/dab-mini.png?raw=true)
 
- * third, an experimental version, called *dab-2*. While the sources
+ * third, an *experimental version*, called *dab-2*. While the sources
 of *dab-2* and Qt-DAB overlap for more than 90 percent, a completely
 different architectural approach is taken for building up
 the DAB frames. Note that dab-2 and Qt-DAB share most of the GUI, 

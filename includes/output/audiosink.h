@@ -66,7 +66,7 @@ private:
 	int16_t		bufSize;
 	PaStream	*ostream;
 	SNDFILE		*dumpFile;
-	RingBuffer<float>	*_O_Buffer;
+	RingBuffer<float>	_O_Buffer;
 	PaStreamParameters	outputParameters;
 
 	int16_t		*outTable;

@@ -38,18 +38,17 @@
 //
 	xml_fileReader::xml_fileReader (RadioInterface	*mr,
 	                                dabProcessor	*base,
-	                                QString		&f) {
+	                                QString		&f):
+	                                   myFrame (nullptr) {
 	(void)mr;
 	this	-> base	= base;
 	fileName	= f;
-	myFrame		= new QFrame;
-	setupUi	(myFrame);
+	setupUi	(&myFrame);
 	theFile	= fopen (f. toUtf8 (). data(), "rb");
 	if (theFile == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
 	                                   f. toUtf8(). data());
 	   perror ("file ?");
-	   delete myFrame;
 	   throw (31);
 	}
 	
@@ -59,7 +58,6 @@
 	if (!ok) {
 	   fprintf (stderr, "%s probably not an xml file\n",
 	                               f. toUtf8 (). data ());
-	   delete myFrame;
 	   throw (32);
 	}
 
@@ -99,7 +97,6 @@
 	if (theFile != nullptr)
 	   fclose (theFile);
 
-	delete	myFrame;
 	delete	theDescriptor;
 }
 
@@ -156,14 +153,14 @@ int16_t	xml_fileReader::bitDepth	() {
 }
 
 void	xml_fileReader::hide	() {
-	myFrame	-> hide ();
+	myFrame. hide	();
 }
 
 void	xml_fileReader::show	() {
-	myFrame	-> show ();
+	myFrame. show	();
 }
 
 bool	xml_fileReader::isHidden	() {
-	return myFrame -> isHidden ();
+	return myFrame. isHidden ();
 }
 

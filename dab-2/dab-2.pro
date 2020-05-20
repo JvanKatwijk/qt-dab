@@ -277,13 +277,6 @@ isEmpty(GITHASHSTRING) {
 INCLUDEPATH	+= /usr/local/include
 INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 #
-CONFIG		+= rtlsdr
-CONFIG		+= sdrplay-v2
-CONFIG		+= hackrf
-CONFIG		+= airspy
-CONFIG		+= lime
-#CONFIG		+= sdrplay-v3
-
 LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
 LIBS		+= -lz
@@ -293,6 +286,15 @@ LIBS		+= -lsamplerate
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
 #
+CONFIG		+= sdrplay-v2
+#CONFIG		+= sdrplay-v3
+CONFIG		+= rtlsdr
+CONFIG		+= rtl_tcp
+CONFIG		+= hackrf
+CONFIG		+= airspy
+CONFIG		+= lime
+CONFIG		+= soapy
+
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -347,15 +349,6 @@ LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 #INCLUDEPATH	+= /mingw64/include/qwt
 #INCLUDEPATH	+= C:/msys64/mingw64/include/qwt
 
-
-#
-CONFIG		+= rtlsdr
-CONFIG		+= sdrplay-v2
-CONFIG		+= hackrf
-CONFIG		+= airspy
-CONFIG		+= lime
-#CONFIG		+= sdrplay-v3
-
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -372,6 +365,15 @@ LIBS		+= -lz
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
 CONFIG		+= faad
+
+CONFIG		+= extio
+#CONFIG		+= airspy
+#CONFIG		+= rtl_tcp
+#CONFIG		+= rtlsdr
+CONFIG		+= sdrplay-v2
+#CONFIG		+= sdrplay-v3
+#CONFIG		+= hackrf
+#CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
@@ -421,6 +423,18 @@ sdrplay-v3	{
 	FORMS		+= ./devices-dab-2/sdrplay-widget.ui
 	DEFINES		+= HAVE_SDRPLAY_V3
 }
+#
+#	limeSDR
+#
+lime  {
+	DEFINES		+= HAVE_LIME
+	INCLUDEPATH	+= ./devices-dab-2/lime-handler
+	DEPENDPATH	+= ./devices-dab-2/lime-handler
+        HEADERS         += ./devices-dab-2/lime-handler/lime-handler.h \	
+	                   ./devices-dab-2/lime-handler/lime-widget.h \
+	                   ./devices-dab-2/lime-handler/LMS7002M_parameters.h
+        SOURCES         += ./devices-dab-2/lime-handler/lime-handler.cpp 
+}
 
 #
 #	the hackrf
@@ -449,16 +463,42 @@ airspy {
 	FORMS		+= ./devices-dab-2/airspy-handler/airspy-widget.ui
 }
 #
-#	limeSDR
+extio {
+        DEFINES         += HAVE_EXTIO
+        INCLUDEPATH     += ./devices-dab-2/extio-handler
+        HEADERS         += ./devices-dab-2/extio-handler/extio-handler.h \
+                           ./devices-dab-2/extio-handler/common-readers.h \
+                           ./devices-dab-2/extio-handler/virtual-reader.h
+        SOURCES         += ./devices-dab-2/extio-handler/extio-handler.cpp \
+                           ./devices-dab-2/extio-handler/common-readers.cpp \
+                           ./devices-dab-2/extio-handler/virtual-reader.cpp
+}
+
 #
-lime  {
-	DEFINES		+= HAVE_LIME
-	INCLUDEPATH	+= ./devices-dab-2/lime-handler
-	DEPENDPATH	+= ./devices-dab-2/lime-handler
-        HEADERS         += ./devices-dab-2/lime-handler/lime-handler.h \	
-	                   ./devices-dab-2/lime-handler/lime-widget.h \
-	                   ./devices-dab-2/lime-handler/LMS7002M_parameters.h
-        SOURCES         += ./devices-dab-2/lime-handler/lime-handler.cpp 
+rtl_tcp {
+	DEFINES		+= HAVE_RTL_TCP
+	QT		+= network
+	INCLUDEPATH	+= ./devices-dab-2/rtl_tcp
+	HEADERS		+= ./devices-dab-2/rtl_tcp/rtl_tcp_client.h
+	SOURCES		+= ./devices-dab-2/rtl_tcp/rtl_tcp_client.cpp
+	FORMS		+= ./devices-dab-2/rtl_tcp/rtl_tcp-widget.ui
+}
+
+soapy {
+	DEFINES		+= HAVE_SOAPY
+	INCLUDEPATH     += ./devices-dab-2/soapy
+        HEADERS         += ./devices-dab-2/soapy/soapy-handler.h \
+	                   ./devices-dab-2/soapy/soapy-worker.h \
+	                   ./devices-dab-2/soapy/soapy_CS8.h \
+	                   ./devices-dab-2/soapy/soapy_CS16.h \
+	                   ./devices-dab-2/soapy/soapy_CF32.h
+        SOURCES         += ./devices-dab-2/soapy/soapy-handler.cpp \
+	                   ./devices-dab-2/soapy/soapy-worker.cpp \
+	                   ./devices-dab-2/soapy/soapy_CS8.cpp \
+	                   ./devices-dab-2/soapy/soapy_CS16.cpp \
+	                   ./devices-dab-2/soapy/soapy_CF32.cpp
+        FORMS           += ./devices-dab-2/soapy/soapy-widget.ui
+	LIBS		+= -lSoapySDR -lm
 }
 
 send_datagram {

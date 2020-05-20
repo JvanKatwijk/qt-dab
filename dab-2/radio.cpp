@@ -42,6 +42,10 @@
 #include	"ensemble-printer.h"
 #include	"audio-descriptor.h"
 #include	"data-descriptor.h"
+#include	"device-handler.h"
+#include	"wavfiles.h"
+#include	"rawfiles.h"
+#include	"xml-filereader.h"
 #include	"dab-tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -50,31 +54,36 @@
 #else
 #include	"audiosink.h"
 #endif
-#include	"device-handler.h"
-#include	"wavfiles.h"
-#include	"rawfiles.h"
-#include	"xml-filereader.h"
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
-#ifdef	HAVE_HACKRF
-#include	"hackrf-handler.h"
+#ifdef	HAVE_SDRPLAY_V2
+#include	"sdrplay-handler.h"
+#endif
+#ifdef	HAVE_SDRPLAY_V3
+#include	"sdrplay-handler-v3.h"
+#endif
+#ifdef	__MINGW32__
+#ifdef	HAVE_EXTIO
+#include	"extio-handler.h"
+#endif
+#endif
+#ifdef	HAVE_RTL_TCP
+#include	"rtl_tcp_client.h"
 #endif
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
 #endif
-#ifdef	HAVE_LIMESDR
+#ifdef	HAVE_HACKRF
+#include	"hackrf-handler.h"
+#endif
+#ifdef	HAVE_SOAPY
+#include	"soapy-handler.h"
+#endif
+#ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
-#ifdef	HAVE_SDRPLAY_V2
-#include	"sdrplay-handler.h"
-#elif	HAVE_SDRPLAY_V3
-#include	"sdrplay-handler-v3.h"
-#endif
 #include	"ui_technical_data.h"
-#include	"spectrum-viewer.h"
-#include	"correlation-viewer.h"
-#include	"tii-viewer.h"
 #include	"history-handler.h"
 
 #ifdef	__MINGW32__
@@ -139,6 +148,23 @@ uint8_t convert (QString s) {
 	                                int32_t		dataPort,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
+	                                        spectrumBuffer (2 * 32768),
+	                                        iqBuffer (2 * 1536),
+	                                        tiiBuffer (32768),
+	                                        responseBuffer (32768),
+	                                        frameBuffer (2 * 32768),
+        	                                dataBuffer (32768),
+	                                        audioBuffer (8 * 32768),
+	                                        my_spectrumViewer (
+	                                                 this, Si,
+	                                                 &spectrumBuffer,
+	                                                 &iqBuffer),
+	                                        my_correlationViewer (
+	                                                 this, Si,
+	                                                 &responseBuffer),
+	                                        my_tiiViewer (
+	                                                 this, Si,
+		                                         &tiiBuffer),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension),
 	                                        theTable (this) {
@@ -152,24 +178,34 @@ uint8_t	dabBand;
 	running. 		store (false);
 	scanning. 		store (false);
 	isSynced		= false;
-	globals. spectrumBuffer          =
-	                  new RingBuffer<std::complex<float>> (2 * 32768);
-	globals. iqBuffer		=
-	                  new RingBuffer<std::complex<float>> (2 * 1536);
-	globals. responseBuffer		=
-	                  new RingBuffer<float> (32768);
-	globals. tiiBuffer		=
-	                  new RingBuffer<std::complex<float>> (32768);
-	globals. frameBuffer		=
-	                  new RingBuffer<uint8_t> (2 * 32768);
-	audioBuffer		=
-	                  new RingBuffer<int16_t>(16 * 32768);
-	dataBuffer		=
-	                  new RingBuffer<uint8_t>(32768);
+
+//	"globals" is introduced to reduce the number of parameters
+//	for the dabProcessor
+	globals. spectrumBuffer          = &spectrumBuffer;
+	globals. iqBuffer		= &iqBuffer;
+	globals. responseBuffer		= &responseBuffer;
+	globals. tiiBuffer		= &tiiBuffer;
+	globals. frameBuffer		= &frameBuffer;
 	switchTime		=
 	                  dabSettings -> value ("switchTime", 8000). toInt ();
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
+
+	QString dabMode         =
+	               dabSettings   -> value ("dabMode", "Mode 1"). toString();
+	globals. dabMode	= convert (dabMode);
+	globals. threshold		=
+	                  dabSettings -> value ("threshold", 3). toInt();
+	globals. diff_length	=
+	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
+	globals. tii_delay   =
+	           dabSettings  -> value ("tii_delay", 5). toInt();
+	if (globals. tii_delay < 5)
+	   globals. tii_delay = 5;
+	globals. tii_depth       =
+	               dabSettings -> value ("tii_depth", 1). toInt();
+	globals. echo_depth      =
+	               dabSettings -> value ("echo_depth", 1). toInt();
 
 	currentService. valid	= false;
 	nextService. valid	= false;
@@ -264,19 +300,6 @@ uint8_t	dabBand;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
-	my_spectrumViewer	=
-	              new spectrumViewer (this, dabSettings,
-	                                  globals. spectrumBuffer,
-	                                  globals. iqBuffer);
-
-	my_correlationViewer	=
-	              new correlationViewer (this, dabSettings,
-	                                     globals. responseBuffer);
-
-	my_tiiViewer		=
-	              new tiiViewer (this, dabSettings,
-		                     globals. tiiBuffer);
-
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             = dabSettings -> value ("history",
                                                     historyFile). toString ();
@@ -288,23 +311,6 @@ uint8_t	dabBand;
         connect (historyButton, SIGNAL (clicked ()),
                  this, SLOT (handle_historyButton ()));
 
-	QString dabMode         =
-	               dabSettings   -> value ("dabMode", "Mode 1"). toString();
-	globals. dabMode	= convert (dabMode);
-
-	globals. threshold		=
-	                  dabSettings -> value ("threshold", 3). toInt();
-	globals. diff_length	=
-	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
-	globals. tii_delay   =
-	           dabSettings  -> value ("tii_delay", 5). toInt();
-	if (globals. tii_delay < 5)
-	   globals. tii_delay = 5;
-	globals. tii_depth       =
-	               dabSettings -> value ("tii_depth", 1). toInt();
-	globals. echo_depth      =
-	               dabSettings -> value ("echo_depth", 1). toInt();
-	
 //	restore some settings from previous incarnations
 	QString t       =
 	        dabSettings     -> value ("dabBand", "VHF Band III"). toString();
@@ -502,6 +508,178 @@ QString	file;
 deviceHandler	*inputDevice	= nullptr;
 //	OK, everything quiet, now let us see what to do
 
+#ifdef	HAVE_AIRSPY
+	if (s == "airspy") {
+	   try {
+	      inputDevice	= new airspyHandler (this,
+	                                             dabSettings,
+	                                             my_dabProcessor,
+	                                             version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("airspy: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_HACKRF
+	if (s == "hackrf") {
+	   try {
+	      QString recorder = "dab-2";
+	      inputDevice	= new hackrfHandler (this,
+	                                             dabSettings,
+	                                             my_dabProcessor,
+	                                             recorder);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("hackrf: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef  HAVE_SOAPY
+        if (s == "soapy") {
+           try {
+              inputDevice       = new soapyHandler (this,
+	                                            dabSettings,
+	                                            my_dabProcessor);
+              showButtons();
+           }
+           catch (int e) {
+              QMessageBox::warning (this, tr ("Warning"),
+                                          tr ("no soapy device found\n"));
+              return nullptr;
+           }
+        }
+        else
+#endif
+#ifdef	HAVE_LIMESDR
+	if (s == "limeSDR") {
+	   try {
+	      inputDevice	= new limeHandler (this,
+	                                           dabSettings,
+	                                           my_dabProcessor,
+	                                           version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("limeSDR: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef HAVE_EXTIO
+//      extio is - in its current settings - for Windows, it is a
+//      wrap around the dll
+        if (s == "extio") {
+           try {
+              inputDevice = new extioHandler (this,
+	                                      dabSettings,
+	                                      my_dabProcessor);
+              showButtons();
+           }
+           catch (int e) {
+              QMessageBox::warning (this, tr ("Warning"),
+                                    tr ("extio: no luck\n") );
+              return nullptr;
+           }
+        }
+        else
+#endif
+#ifdef HAVE_RTL_TCP
+//      RTL_TCP might be working.
+        if (s == "rtl_tcp") {
+           try {
+              inputDevice = new rtl_tcp_client (this,
+	                                        dabSettings,
+	                                        my_dabProcessor);
+              showButtons();
+           }
+           catch (int e) {
+              QMessageBox::warning (this, tr ("Warning"),
+                                   tr ("rtl_tcp: no luck\n") );
+              return nullptr;
+           }
+        }
+        else
+#endif
+#ifdef	HAVE_SDRPLAY_V2
+	if (s == "sdrplay") {
+	   try {
+	      inputDevice	= new sdrplayHandler (this,
+	                                              dabSettings,
+	                                              my_dabProcessor,
+	                                              version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("SDRplay: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_SDRPLAY_V3
+	if (s == "sdrplay-v3") {
+	   try {
+	      inputDevice	= new sdrplayHandler_v3 (this,
+	                                                 dabSettings, 
+	                                                 my_dabProcessor);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("SDRplay: no library or device\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_RTLSDR
+	if (s == "rtlsdr") {
+	   try {
+	      QString version = " ";
+	      inputDevice	= new rtlsdrHandler (this,
+	                                             dabSettings,
+	                                             my_dabProcessor,
+	                                             version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
+	      fprintf (stderr, "error = %d\n", e);
+	      return nullptr;
+	   }
+	}
+#endif
+	if (s == "xml files") {
+	   QString file	= QFileDialog::getOpenFileName (this,
+                                                  tr ("Open file ..."),
+                                                   QDir::homePath(),
+                                                   tr ("xml data (*.*)"));
+	   if (file == QString (""))
+	      return nullptr;
+	   file         = QDir::toNativeSeparators (file);
+
+	   try {
+	      inputDevice	= new xml_fileReader (this,
+	                                              my_dabProcessor,
+	                                              file);
+	   } catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("File input failed\n"));
+	   }
+	}
 	if (s == "file input (.raw)") {
 	   QString file	= QFileDialog::getOpenFileName (this,
                                                   tr ("Open file ..."),
@@ -552,137 +730,13 @@ deviceHandler	*inputDevice	= nullptr;
 	                            tr ("File input failed\n"));
 	   }
 	}
-
-	if (s == "xml files") {
-	   QString file	= QFileDialog::getOpenFileName (this,
-                                                  tr ("Open file ..."),
-                                                   QDir::homePath(),
-                                                   tr ("xml data (*.*)"));
-	   if (file == QString (""))
-	      return nullptr;
-	   file         = QDir::toNativeSeparators (file);
-
-	   try {
-	      inputDevice	= new xml_fileReader (this,
-	                                              my_dabProcessor,
-	                                              file);
-	   } catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                            tr ("File input failed\n"));
-	   }
-	}
-
-#ifdef	HAVE_SDRPLAY_V2
-	if (s == "sdrplay") {
-	   try {
-	      inputDevice	= new sdrplayHandler (this,
-	                                              dabSettings,
-	                                              my_dabProcessor,
-	                                              version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_SDRPLAY_V3
-	if (s == "sdrplay-v3") {
-	   try {
-	      inputDevice	= new sdrplayHandler_v3 (this,
-	                                                 dabSettings, 
-	                                                 my_dabProcessor);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_HACKRF
-	if (s == "hackrf") {
-	   try {
-	      QString recorder = "dab-2";
-	      inputDevice	= new hackrfHandler (this,
-	                                             dabSettings,
-	                                             my_dabProcessor,
-	                                             recorder);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("hackrf: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_AIRSPY
-	if (s == "airspy") {
-	   try {
-	      inputDevice	= new airspyHandler (this,
-	                                             dabSettings,
-	                                             my_dabProcessor,
-	                                             version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("airspy: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_LIMESDR
-	if (s == "limeSDR") {
-	   try {
-	      inputDevice	= new limeHandler (this,
-	                                           dabSettings,
-	                                           my_dabProcessor,
-	                                           version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("limeSDR: no library or device\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_RTLSDR
-	if (s == "rtlsdr") {
-	   try {
-	      QString version = " ";
-	      inputDevice	= new rtlsdrHandler (this,
-	                                             dabSettings,
-	                                             my_dabProcessor,
-	                                             version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
-	      fprintf (stderr, "error = %d\n", e);
-	      return nullptr;
-	   }
-	}
-#endif
-
 	if (inputDevice == nullptr)
 	   return nullptr;
 
 	connect (my_dabProcessor, SIGNAL (set_Values (int, float, float)),
 	         inputDevice, SLOT (set_Values (int, float, float)));
 
-	my_spectrumViewer	-> setBitDepth (inputDevice -> bitDepth());
+	my_spectrumViewer. setBitDepth (inputDevice -> bitDepth());
 
 	if (devicewidgetButton -> text () == "hide") {
 	   inputDevice  -> show ();
@@ -1038,11 +1092,11 @@ const char *type;
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(int length) {
 uint8_t localBuffer [length];
-	if (dataBuffer -> GetRingBufferReadAvailable() < length) {
+	if (dataBuffer. GetRingBufferReadAvailable() < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
 	}
-	dataBuffer -> getDataFromBuffer (localBuffer, length);
+	dataBuffer. getDataFromBuffer (localBuffer, length);
 #ifdef	_SEND_DATAGRAM_
 	if (running. load()) {
 	   dataOut_socket. writeDatagram ((const char *)localBuffer, length,
@@ -1061,12 +1115,12 @@ uint8_t localBuffer [length + 8];
 	(void)frametype;
 	if (!running. load())
 	   return;
-	if (dataBuffer -> GetRingBufferReadAvailable() < length) {
+	if (dataBuffer. GetRingBufferReadAvailable() < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
 	}
 #ifdef	DATA_STREAMER
-	dataBuffer -> getDataFromBuffer (&localBuffer [8], length);
+	dataBuffer. getDataFromBuffer (&localBuffer [8], length);
 	localBuffer [0] = 0xFF;
 	localBuffer [1] = 0x00;
 	localBuffer [2] = 0xFF;
@@ -1140,8 +1194,8 @@ void	RadioInterface::changeinConfiguration() {
 void	RadioInterface::newAudio	(int amount, int rate) {
 	if (running. load ()) {
 	   int16_t vec [amount];
-	   while (audioBuffer -> GetRingBufferReadAvailable() > amount) {
-	      audioBuffer -> getDataFromBuffer (vec, amount);
+	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+	      audioBuffer. getDataFromBuffer (vec, amount);
 	      soundOut	-> audioOut (vec, amount, rate);
 	   }
 	}
@@ -1164,43 +1218,39 @@ void	RadioInterface::TerminateProcess() {
 	displayTimer. stop();
 	signalTimer.  stop();
 	presetTimer.  stop();
-
-	theTable. hide ();
-	my_presetHandler. savePresets (presetSelector);
-	if (audioDumper != nullptr) {
-	   soundOut	-> stopDumping();
-	   sf_close (audioDumper);
-	}
-
+	soundOut		-> stop();
 	if (inputDevice != nullptr) 
 	   inputDevice		-> stopReader ();	// might be concurrent
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor	-> stop();		
 
-	delete my_history;
+	dumpControlState (dabSettings);
+	my_presetHandler. savePresets (presetSelector);
+	stop_frameDumping		();
+//	stop_sourceDumping		();
+	stop_audioDumping		();
+	theTable. hide ();
+	dataDisplay	-> hide ();
+
+	if (motSlides != nullptr)
+	   motSlides	-> hide ();
+
+	my_spectrumViewer. hide ();
+	my_correlationViewer. hide ();
+	my_tiiViewer. hide ();
+	if (inputDevice != nullptr)
+	   delete	inputDevice;
+	fprintf (stderr, "going to delete dabProcessor\n");
+	if (my_dabProcessor != nullptr)
+	   delete	my_dabProcessor;
+
+	delete		soundOut;
+	if (motSlides != nullptr)
+	   delete motSlides;
 	if (currentServiceDescriptor != nullptr)
 	   delete currentServiceDescriptor;
-	currentServiceDescriptor	= nullptr;
-	soundOut		-> stop();
-	fprintf (stderr, "audio deleted\n");
-	dataDisplay		->  hide();
-//	everything should be halted by now
-	dumpControlState (dabSettings);
-	delete		soundOut;
-	if (inputDevice != nullptr)
-	   delete		inputDevice;
-	fprintf (stderr, "going to delete dabProcessor\n");
-	delete		my_dabProcessor;
-	fprintf (stderr, "deleted dabProcessor\n");
-	delete	dataDisplay;
-	delete	my_spectrumViewer;
-	delete	my_tiiViewer;
-	delete	my_correlationViewer;
-	delete	globals. iqBuffer;
-	delete	globals. spectrumBuffer;
-	delete	globals. responseBuffer;
-	delete	globals. tiiBuffer;
-	delete	globals. frameBuffer;
+	delete		dataDisplay;
+	delete		my_history;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -1373,38 +1423,38 @@ QString a = "Est: ";
            a. append (QString::number (mainId) + " " + QString::number (subId));
            transmitter_coordinates      -> setAlignment (Qt::AlignRight);
            transmitter_coordinates	-> setText (a);
-           my_tiiViewer -> showSecondaries (data);
+           my_tiiViewer. showSecondaries (data);
         }
-        my_tiiViewer    -> showSpectrum (1);
+        my_tiiViewer. showSpectrum (1);
 
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (running. load())
-	   my_spectrumViewer -> showSpectrum (amount,
+	   my_spectrumViewer. showSpectrum (amount,
 				              inputDevice -> getVFOFrequency());
 }
 
 void	RadioInterface::showIQ	(int amount) {
 	if (running. load())
-	   my_spectrumViewer	-> showIQ (amount);
+	   my_spectrumViewer. showIQ (amount);
 }
 
 void	RadioInterface::showQuality	(float q) {
 	if (running. load())
-	   my_spectrumViewer	-> showQuality (q);
+	   my_spectrumViewer. showQuality (q);
 }
 
 void	RadioInterface::showCorrelation	(int amount, int marker) {
 	if (running. load())
-	   my_correlationViewer -> showCorrelation (amount, marker);
+	   my_correlationViewer. showCorrelation (amount, marker);
 }
 
 void	RadioInterface::showIndex (int ind) {
 	if (!running. load())
 	   return;
 
-	my_correlationViewer -> showIndex (ind);
+	my_correlationViewer. showIndex (ind);
 }
 
 //
@@ -1621,31 +1671,31 @@ uint8_t buffer [amount];
 }
 
 void	RadioInterface::handle_tiiButton	() {
-	if (my_tiiViewer -> isHidden())
-	   my_tiiViewer -> show();
+	if (my_tiiViewer. isHidden())
+	   my_tiiViewer. show();
 	else
-	   my_tiiViewer -> hide();
+	   my_tiiViewer. hide();
 }
 
 void	RadioInterface::handle_correlationButton	() {
-	if (my_correlationViewer -> isHidden())
-	   my_correlationViewer	-> show();
+	if (my_correlationViewer. isHidden())
+	   my_correlationViewer. show();
 	else
-	   my_correlationViewer	-> hide();
+	   my_correlationViewer. hide();
 }
 
 void	RadioInterface::handle_spectrumButton	() {
-	if (my_spectrumViewer -> isHidden())
-	   my_spectrumViewer -> show();
+	if (my_spectrumViewer. isHidden())
+	   my_spectrumViewer. show();
 	else
-	   my_spectrumViewer -> hide();
+	   my_spectrumViewer. hide();
 }
 
 void    RadioInterface::handle_historyButton    () {
-        if (my_history  -> isHidden ())
-           my_history   -> show ();
+        if (my_history -> isHidden ())
+           my_history -> show ();
         else
-           my_history   -> hide ();
+           my_history -> hide ();
 }
 //
 //	When changing (or setting) a device, we do not want anybody
@@ -2028,12 +2078,12 @@ audiodata ad;
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (serviceName);
 
-	my_dabProcessor -> set_audioChannel (&ad, audioBuffer);
+	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
 	   my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
 	   if (pd. defined) {
-	      my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
 	      break;
 	   }
 	}
@@ -2088,7 +2138,7 @@ packetdata pd;
 	   return;
 	}
 
-	my_dabProcessor -> set_dataChannel (&pd, dataBuffer);
+	my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
 	switch (pd. DSCTy) {
 	   default:
 	      showLabel (QString ("unimplemented Data"));
@@ -2275,7 +2325,7 @@ void	RadioInterface::stopChannel	() {
 //      all stopped, now look at the GUI elements
         ficError_display	-> setValue (0);
 
-	my_tiiViewer	-> clear();
+	my_tiiViewer. clear();
 //	the visual elements
 	setSynced	(false);
 	ensembleId		-> setText ("");

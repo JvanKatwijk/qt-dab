@@ -164,7 +164,7 @@ HEADERS += ./radio.h \
 	   ../tii-viewer/tii-viewer.h \
 	   ./qt-devices/device-handler.h \
 	   ./qt-devices/xml-filewriter.h \
-	   ./qt-devices/filereader-widget.h \
+#	   ./qt-devices/filereader-widget.h \
 	   ./qt-devices/rawfiles-new/rawfiles.h \
 	   ./qt-devices/rawfiles-new/raw-reader.h \
            ./qt-devices/wavfiles-new/wavfiles.h \
@@ -293,15 +293,14 @@ LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
-CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3		# pretty experimental
-#CONFIG		+= lime
-#CONFIG		+= rtl_tcp
-#CONFIG		+= airspy
-#CONFIG		+= hackrf
+CONFIG		+= sdrplay-v3		# pretty experimental
+CONFIG		+= dabstick
+CONFIG		+= rtl_tcp
+CONFIG		+= airspy
+CONFIG		+= hackrf
+CONFIG		+= lime
 CONFIG		+= soapy
-#CONFIG		+= elad_s1	# does not work yet
 
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
@@ -367,14 +366,14 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= faad
 #
 #	devices
-#CONFIG		+= extio
-CONFIG		+= airspy
+CONFIG		+= extio
+#CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
-CONFIG		+= dabstick
+#CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
-CONFIG		+= sdrplay-v3
-CONFIG		+= hackrf
-CONFIG		+= lime
+#CONFIG		+= sdrplay-v3
+#CONFIG		+= hackrf
+#CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
@@ -461,10 +460,8 @@ airspy {
 	INCLUDEPATH	+= ./qt-devices/airspy-handler \
 	                   ./qt-devices/airspy-handler/libairspy
 	HEADERS		+= ./qt-devices/airspy-handler/airspy-handler.h \
-	                   ./qt-devices/airspy-handler/airspyfilter.h \
 	                   ./qt-devices/airspy-handler/libairspy/airspy.h
-	SOURCES		+= ./qt-devices/airspy-handler/airspy-handler.cpp \
-	                   ./qt-devices/airspy-handler/airspyfilter.cpp
+	SOURCES		+= ./qt-devices/airspy-handler/airspy-handler.cpp
 	FORMS		+= ./qt-devices/airspy-handler/airspy-widget.ui
 }
 
@@ -506,22 +503,6 @@ soapy {
 	                   ./qt-devices/soapy/soapy_CF32.cpp
         FORMS           += ./qt-devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
-}
-
-##	does not work, just a test
-elad_s1	{
-	DEFINES		+= HAVE_ELAD_S1
-	DEPENDPATH	+= ./qt-devices/elad-s1-handler
-	INCLUDEPATH	+= ./qt-devices/elad-s1-handler
-	HEADERS		+= ./qt-devices/elad-s1-handler/elad-handler.h \
-	                   ./qt-devices/elad-s1-handler/elad-filter.h \
-	                   ./qt-devices/elad-s1-handler/elad-worker.h \
-	                   ./qt-devices/elad-s1-handler/elad-loader.h 
-	SOURCES		+= ./qt-devices/elad-s1-handler/elad-handler.cpp \
-	                   ./qt-devices/elad-s1-handler/elad-filter.cpp \
-	                   ./qt-devices/elad-s1-handler/elad-worker.cpp \
-	                   ./qt-devices/elad-s1-handler/elad-loader.cpp 
-	FORMS		+= ./qt-devices/elad-s1-handler/widget.ui
 }
 
 send_datagram {

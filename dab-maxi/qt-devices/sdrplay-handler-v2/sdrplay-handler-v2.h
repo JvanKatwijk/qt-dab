@@ -114,7 +114,7 @@ public:
 	bool		isHidden		();
 //
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<int16_t>>	*_I_Buffer;
+	RingBuffer<std::complex<int16_t>>	_I_Buffer;
 	float		denominator;
 private:
 	QFrame			myFrame;

@@ -25,7 +25,6 @@
 #include	<QTime>
 #include	<QDate>
 #include	"airspy-handler.h"
-#include	"airspyfilter.h"
 #include	"xml-filewriter.h"
 
 static
@@ -33,7 +32,10 @@ const	int	EXTIO_NS	=  8192;
 static
 const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
-	airspyHandler::airspyHandler (QSettings *s, QString recorderVersion) {
+	airspyHandler::airspyHandler (QSettings *s,
+	                              QString recorderVersion):
+	                                 myFrame (nullptr),	
+                                         _I_Buffer (4 * 1024 * 1024) {
 int	result, i;
 int	distance	= 1000000;
 std::vector <uint32_t> sampleRates;
@@ -41,11 +43,9 @@ uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
-	myFrame				= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	setupUi (&myFrame);
+	myFrame. show		();
 
-	filter			= nullptr;
 	airspySettings	-> beginGroup ("airspyHandler");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
 	                                                          toInt();
@@ -74,7 +74,6 @@ uint32_t samplerateCount;
 
 	device			= nullptr;
 	serialNumber		= 0;
-	_I_Buffer		= nullptr;
 #ifdef	__MINGW32__
 	const char *libraryString = "airspy.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
@@ -88,7 +87,6 @@ uint32_t samplerateCount;
 #ifndef	__MINGW32__
 	   fprintf (stderr, "Error = %s\n", dlerror());
 #endif
-	   delete myFrame;
 	   throw (20);
 	}
 
@@ -102,7 +100,6 @@ uint32_t samplerateCount;
 	   dlclose (Handle);
 	
 #endif
-	   delete myFrame;
 	}
 //
 	strcpy (serial,"");
@@ -115,7 +112,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -128,7 +124,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (22);
 	}
 
@@ -155,7 +150,6 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (23);
 	}
 	else
@@ -170,18 +164,10 @@ uint32_t samplerateCount;
 #else
 	   dlclose (Handle);
 #endif
-	   delete myFrame;
 	   throw (24);
 	}
 
 	airspySettings	-> beginGroup ("airspyHandler");
-	filtering 	= airspySettings -> value ("filtering", 0). toInt();
-	int filterDegree = airspySettings -> value ("filterdegree", 9). toInt();
-	filterDegree	= (filterDegree & ~01) + 1;
-//
-//	if we apply filtering it is using a symmetric lowpass filter
-	filter		= new airspyFilter (filterDegree,
-	                                        1024000, selectedRate);
 	airspySettings	-> endGroup();
 
 //	The sizes of the mapTables follow from the input and output rate
@@ -196,8 +182,6 @@ uint32_t samplerateCount;
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
 
-	_I_Buffer	= new RingBuffer<std::complex<float>>
-	                                                    (1024 * 1024 * 8);
 	tabWidget	-> setCurrentIndex (0);
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_linearity (int)));
@@ -252,9 +236,6 @@ uint32_t samplerateCount;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
-	if (filter	!= nullptr)
-	   delete filter;
-	delete myFrame;
 	if (Handle == nullptr) {
 	   return;	// nothing achieved earlier
 	}
@@ -264,9 +245,7 @@ uint32_t samplerateCount;
 #else
 	dlclose (Handle);
 #endif
-err:
-	if (_I_Buffer != nullptr)
-	   delete _I_Buffer;
+err:;
 }
 
 void	airspyHandler::setVFOFrequency (int32_t nf) {
@@ -299,7 +278,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
 	}
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
 	if (result != AIRSPY_SUCCESS) {
@@ -386,7 +365,7 @@ int32_t  i, j;
 	                          cmul (convBuffer [inpBase], 1 - inpRatio);
 	      }
 
-	      _I_Buffer	-> putDataIntoBuffer (temp, 2048);
+	      _I_Buffer. putDataIntoBuffer (temp, 2048);
 //
 //	shift the sample at the end to the beginning, it is needed
 //	as the starting sample for the next time
@@ -428,21 +407,21 @@ int result = my_airspy_open (&device);
 
 //
 //	These functions are added for the SDR-J interface
-void	airspyHandler::resetBuffer() {
-	_I_Buffer	-> FlushRingBuffer();
+void	airspyHandler::resetBuffer	() {
+	_I_Buffer. FlushRingBuffer	();
 }
 
-int16_t	airspyHandler::bitDepth() {
+int16_t	airspyHandler::bitDepth		() {
 	return 13;
 }
 
 int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 
-	return _I_Buffer	-> getDataFromBuffer (v, size);
+	return _I_Buffer. getDataFromBuffer (v, size);
 }
 
-int32_t	airspyHandler::Samples() {
-	return _I_Buffer	-> GetRingBufferReadAvailable();
+int32_t	airspyHandler::Samples		() {
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 //
 #define GAIN_COUNT (22)
@@ -766,7 +745,7 @@ void	airspyHandler::show_tab (int t) {
 }
 
 int	airspyHandler::getBufferSpace	() {
-	return _I_Buffer -> GetRingBufferWriteAvailable ();
+	return _I_Buffer. GetRingBufferWriteAvailable ();
 }
 
 QString	airspyHandler::deviceName	() {
@@ -841,5 +820,17 @@ void	airspyHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
+}
+
+void	airspyHandler::show	() {
+	myFrame. show ();
+}
+
+void	airspyHandler::hide	() {
+	myFrame. hide	();
+}
+
+bool	airspyHandler::isHidden	() {
+	return myFrame. isHidden ();
 }
 

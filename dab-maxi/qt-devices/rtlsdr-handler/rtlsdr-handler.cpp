@@ -76,7 +76,7 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
 
-	(void)theStick -> _I_Buffer ->
+	(void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
 }
 //
@@ -108,8 +108,9 @@ virtual void	run () {
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
-	                                  QString &recorderVersion):
-	                                         myFrame (nullptr) {
+	                              QString &recorderVersion):
+	                                    myFrame (nullptr),
+	                                    _I_Buffer (4 * 1024 * 1024) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -125,7 +126,6 @@ char	manufac [256], product [256], serial [256];
 	inputRate			= 2048000;
 	libraryLoaded			= false;
 	open			= false;
-	_I_Buffer		= nullptr;
 	workerHandle		= nullptr;
 	lastFrequency		= KHz (22000);	// just a dummy
 	gains			= nullptr;
@@ -227,7 +227,6 @@ char	manufac [256], product [256], serial [256];
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode (device, 0);
 
-	_I_Buffer	= new RingBuffer<std::complex<uint8_t>>(4 * 1024 * 1024);
 	theGain		= gains [gainsCount / 2];	// default
 //
 //	See what the saved values are and restore the GUI settings
@@ -315,8 +314,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	dlclose (Handle);
 #endif
-	if (_I_Buffer != nullptr)
-	   delete _I_Buffer;
 	if (gains != nullptr)
 	   delete[] gains;
 //	delete	myFrame;
@@ -341,7 +338,7 @@ int32_t	r;
 	if (workerHandle != nullptr)
 	   return true;
 
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 	r = this -> rtlsdr_reset_buffer (device);
 	if (r < 0)
 	   return false;
@@ -361,7 +358,7 @@ void	rtlsdrHandler::stopReader () {
 	this -> rtlsdr_cancel_async (device);
 	while (!workerHandle -> isFinished()) 
 	   usleep (100);
-	_I_Buffer -> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 	delete	workerHandle;
 	workerHandle = nullptr;
 }
@@ -388,7 +385,7 @@ int	amount;
 
 static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;
-	amount = _I_Buffer	-> getDataFromBuffer (temp, size);
+	amount = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++) 
 	   V [i] = std::complex<float> (mapTable [real (temp [i])],
 	                                mapTable [imag (temp [i])]);
@@ -410,7 +407,7 @@ static int iqTeller	= 0;
 }
 
 int32_t	rtlsdrHandler::Samples() {
-	return _I_Buffer	-> GetRingBufferReadAvailable ();
+	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 //
 
@@ -556,7 +553,7 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 }
 
 void	rtlsdrHandler::resetBuffer() {
-	_I_Buffer -> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	rtlsdrHandler::maxGain() {

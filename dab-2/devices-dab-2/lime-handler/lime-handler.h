@@ -117,10 +117,10 @@ public:
 	QString		deviceName		();
 	dabProcessor	*base;
 private:
+	QFrame		myFrame;
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
-	QFrame		*myFrame;
 	int		vfoFrequency;
 	int		totalOffset;
 	std::atomic<bool>	running;

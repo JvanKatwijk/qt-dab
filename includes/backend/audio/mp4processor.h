@@ -53,7 +53,8 @@ public:
 			mp4Processor	(RadioInterface *,
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
-	                                 RingBuffer<uint8_t> *);
+	                                 RingBuffer<uint8_t> *,
+	                                 bool secundair = false);
 			~mp4Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 private:
@@ -65,7 +66,7 @@ private:
                                      uint8_t	*data,
                                      std::vector<uint8_t> &fileBuffer);
 
-
+	bool		secundair;
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;
 	int16_t		blocksInBuffer;

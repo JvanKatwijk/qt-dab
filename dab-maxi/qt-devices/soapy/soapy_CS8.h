@@ -41,7 +41,7 @@ void	run		(void);
 private:
 SoapySDR::Device	*theDevice;
 SoapySDR::Stream	*stream;
-RingBuffer<int8_t> *theBuffer;
+RingBuffer<int8_t>	theBuffer;
 bool	running;
 };
 

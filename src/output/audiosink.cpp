@@ -27,14 +27,14 @@
 #include	<QMessageBox>
 #include	<QComboBox>
 
-	audioSink::audioSink	(int16_t latency) {
+	audioSink::audioSink	(int16_t latency):
+	                           _O_Buffer (8 * 32768) {
 int32_t	i;
 	this	-> latency	= latency;
 	if (latency <= 0)
 	   latency = 1;
 
 	this	-> CardRate	= 48000;
-	_O_Buffer		= new RingBuffer<float>(8 * 32768);
 	portAudio		= false;
 	writerRunning		= false;
 	if (Pa_Initialize() != paNoError) {
@@ -71,7 +71,6 @@ int32_t	i;
 	if (portAudio)
 	   Pa_Terminate();
 
-	delete	_O_Buffer;
 	delete[] outTable;
 }
 
@@ -148,7 +147,7 @@ PaError err;
 	if (!Pa_IsStreamStopped (ostream))
 	   return;
 
-	_O_Buffer	-> FlushRingBuffer();
+	_O_Buffer. FlushRingBuffer();
 	paCallbackReturn = paContinue;
 	err = Pa_StartStream (ostream);
 	if (err == paNoError)
@@ -201,7 +200,7 @@ uint32_t	i;
 	(void)inputBuffer;
 	(void)timeInfo;
 	if (ud -> paCallbackReturn == paContinue) {
-	   outB = (reinterpret_cast < audioSink *> (userData)) -> _O_Buffer;
+	   outB = &((reinterpret_cast < audioSink *> (userData)) -> _O_Buffer);
 	   actualSize = outB -> getDataFromBuffer (outp, 2 * framesPerBuffer);
 	   theMissed += 2 * framesPerBuffer - actualSize;
 	   for (i = actualSize; i < 2 * framesPerBuffer; i ++)
@@ -218,7 +217,7 @@ int32_t	h	= theMissed;
 }
 
 void	audioSink::audioOutput	(float *b, int32_t amount) {
-	_O_Buffer	-> putDataIntoBuffer (b, 2 * amount);
+	_O_Buffer. putDataIntoBuffer (b, 2 * amount);
 }
 
 QString audioSink::outputChannelwithRate (int16_t ch, int32_t rate) {

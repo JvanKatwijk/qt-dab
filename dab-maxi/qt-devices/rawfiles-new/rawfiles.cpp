@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -37,19 +38,17 @@
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	rawFiles::rawFiles (QString f) {
+	rawFiles::rawFiles (QString f):
+	   myFrame (nullptr),
+	   _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	fileName	= f;
-	myFrame		= new QFrame;
-	setupUi	(myFrame);
-	myFrame		-> show ();
-	_I_Buffer	= new RingBuffer<std::complex<float>>(INPUT_FRAMEBUFFERSIZE);
+	setupUi	(&myFrame);
+	myFrame. show	();
 	filePointer	= fopen (f. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
 	   fprintf (stderr, "file %s cannot open\n",
 	                                   f. toUtf8(). data());
 	   perror ("file ?");
-	   delete myFrame;
-	   delete _I_Buffer;
 	   throw (31);
 	}
 	nameofFile	-> setText (f);
@@ -72,16 +71,13 @@
 	}
 	if (filePointer != nullptr)
 	   fclose (filePointer);
-
-	delete _I_Buffer;
-	delete	myFrame;
 }
 
 bool	rawFiles::restartReader	(int32_t freq) {
 	(void)freq;
 	if (running. load())
 	   return true;
-	readerTask	= new rawReader (this, filePointer, _I_Buffer);
+	readerTask	= new rawReader (this, filePointer, &_I_Buffer);
 	running. store (true);
 	return true;
 }
@@ -103,20 +99,32 @@ int32_t	amount;
 	if (filePointer == nullptr)
 	   return 0;
 
-	while ((int32_t)(_I_Buffer -> GetRingBufferReadAvailable ()) < size)
+	while ((int32_t)(_I_Buffer. GetRingBufferReadAvailable ()) < size)
 	   usleep (500);
 
-	amount = _I_Buffer	-> getDataFromBuffer (V,  size);
+	amount = _I_Buffer. getDataFromBuffer (V,  size);
 	return amount;
 }
 
 int32_t	rawFiles::Samples() {
-	return _I_Buffer -> GetRingBufferReadAvailable ();
+	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 
 void	rawFiles::setProgress (int progress, float timelength) {
 	fileProgress      -> setValue (progress);
 	currentTime       -> display (timelength);
+}
+
+void	rawFiles::show		() {
+	myFrame. show ();
+}
+
+void	rawFiles::hide		() {
+	myFrame. hide ();
+}
+
+bool	rawFiles::isHidden	() {
+	return myFrame. isHidden ();
 }
 
 

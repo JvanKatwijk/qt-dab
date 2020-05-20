@@ -116,7 +116,6 @@ public:
 	float		denominator;
         xml_fileWriter	*xmlWriter;
 	dabProcessor	*base;
-	void		set_initialGain	(float);
 	void		setGains	(float, float);
 	QString		errorCodes	(mir_sdr_ErrT);
 	int		lnaState;
@@ -127,6 +126,7 @@ public:
 	std::atomic<bool>	xmlDumping;
 	FILE		*xmlDumper;
 private:
+	QFrame		myFrame;
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;
 	pfn_mir_sdr_StreamUninit	my_mir_sdr_StreamUninit;
@@ -164,8 +164,6 @@ private:
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
 	QSettings	*sdrplaySettings;
-	QFrame		*myFrame;
-	QFrame		*checker;
 	int32_t		inputRate;
 	int32_t		vfoFrequency;
 	int32_t		totalOffset;

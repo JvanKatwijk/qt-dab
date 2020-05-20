@@ -53,15 +53,15 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	set(USE_PORTAUDIO true)
 
 if(DEFINED AIRSPY)
-   set(AIRSPY true)
+	set(AIRSPY true)
 endif ()
 
 if(DEFINED SDRPLAY)
-   set(SDRPLAY true)
+	set(SDRPLAY true)
 endif ()
 
 if(DEFINED RTLSDR)
-   set(RTLSDR true)
+	set(RTLSDR true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -69,9 +69,8 @@ if(DEFINED HACKRF)
 endif ()
 
 if(DEFINED LIMESDR)
-   set(LIMESDR true)
+	set(LIMESDR true)
 endif ()
-
 
 add_definitions (-DPRESET_NAME)
 add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI

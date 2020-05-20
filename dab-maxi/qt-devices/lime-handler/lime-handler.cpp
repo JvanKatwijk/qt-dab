@@ -31,12 +31,14 @@ static
 int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
-	limeHandler::limeHandler (QSettings *s, QString &recorderVersion) {
+	limeHandler::limeHandler (QSettings *s,
+	                          QString &recorderVersion):
+	                             myFrame (nullptr),
+	                             _I_Buffer (4* 1024 * 1024) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
-	this	-> myFrame	= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show();
+	setupUi (&myFrame);
+	myFrame. show	();
 
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
@@ -51,7 +53,6 @@ lms_info_str_t limedevices [10];
 
         if (Handle == nullptr) {
            fprintf (stderr, "failed to open %s\n", libraryString);
-           delete myFrame;
            throw (20);
         }
 
@@ -62,7 +63,6 @@ lms_info_str_t limedevices [10];
 #else
            dlclose (Handle);
 #endif
-           delete myFrame;
            throw (21);
         }
 //
@@ -70,7 +70,6 @@ lms_info_str_t limedevices [10];
 
 	int ndevs	= LMS_GetDeviceList (limedevices);
 	if (ndevs == 0) {	// no devices found
-	   delete myFrame;
 	   throw (21);
 	}
 
@@ -79,21 +78,18 @@ lms_info_str_t limedevices [10];
 
 	int res		= LMS_Open (&theDevice, nullptr, nullptr);
 	if (res < 0) {	// some error
-	   delete myFrame;
 	   throw (22);
 	}
 
 	res		= LMS_Init (theDevice);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   delete myFrame;
 	   throw (23);
 	}
 
 	res		= LMS_GetNumChannels (theDevice, LMS_CH_RX);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -102,14 +98,12 @@ lms_info_str_t limedevices [10];
 	res		= LMS_EnableChannel (theDevice, LMS_CH_RX, 0, true);
 	if (res < 0) {	// some error
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (24);
 	}
 
 	res	= LMS_SetSampleRate (theDevice, 2048000.0, 0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -143,7 +137,6 @@ lms_info_str_t limedevices [10];
 	                                                 0, 220000000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (26);
 	}
 
@@ -151,7 +144,6 @@ lms_info_str_t limedevices [10];
 	                                               0, 1536000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   delete myFrame;
 	   throw (27);
 	}
 
@@ -159,7 +151,6 @@ lms_info_str_t limedevices [10];
 
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	_I_Buffer	= new RingBuffer<std::complex<int16_t>> (8 * 1024 * 1024);
 	
 	limeSettings	-> beginGroup ("limeSettings");
 	k	= limeSettings	-> value ("gain", 50). toInt();
@@ -185,8 +176,6 @@ lms_info_str_t limedevices [10];
 	limeSettings	-> setValue ("gain", gainSelector -> value());
 	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
-	delete _I_Buffer;
-	delete myFrame;
 }
 
 void	limeHandler::setVFOFrequency	(int32_t f) {
@@ -246,7 +235,7 @@ void	limeHandler::stopReader() {
 int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 int i;
-        int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+        int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / 2048.0,
                                         imag (temp [i]) / 2048.0);
@@ -256,11 +245,11 @@ int i;
 }
 
 int	limeHandler::Samples() {
-	return _I_Buffer -> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void	limeHandler::resetBuffer() {
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	limeHandler::bitDepth() {
@@ -290,7 +279,7 @@ int	amountRead	= 0;
 	   res = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (res > 0) {
-	      _I_Buffer -> putDataIntoBuffer (localBuffer, res);
+	      _I_Buffer. putDataIntoBuffer (localBuffer, res);
 	      amountRead	+= res;
 	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
 	      underruns	+= streamStatus. underrun;
@@ -542,5 +531,17 @@ void	limeHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
+}
+
+void	limeHandler::show	() {
+	myFrame. show ();
+}
+
+void	limeHandler::hide	() {
+	myFrame. hide ();
+}
+
+bool	limeHandler::isHidden	() {
+	return myFrame. isHidden ();
 }
 

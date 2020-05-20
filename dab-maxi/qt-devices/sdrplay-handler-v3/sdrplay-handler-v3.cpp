@@ -62,16 +62,15 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
-	                                       QString &recorderVersion) {
+	                                       QString &recorderVersion):
+	                                          myFrame (nullptr),
+	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	myFrame				= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-	this	-> myFrame	-> show	();
+	setupUi (&myFrame);
+	myFrame. show	();
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
-	_I_Buffer		= new RingBuffer<
-	                              std::complex<int16_t>>(8 *1024 * 1024);
 	nrBits			= 12;	// default
 	denominator		= 2048;	// default
 
@@ -137,9 +136,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	sdrplaySettings	-> endGroup ();
 	sdrplaySettings	-> sync();
 
-	myFrame	-> hide ();
-	delete	myFrame;
-	delete _I_Buffer;
+	myFrame. hide ();
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -174,23 +171,21 @@ int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 int	i;
 
-	int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
                                         imag (temp [i]) / (float) denominator);
         if (dumping. load ())
            xmlWriter -> add (temp, amount);
         return amount;
-
-	return _I_Buffer	-> getDataFromBuffer (V, amount);
 }
 
 int32_t	sdrplayHandler_v3::Samples	() {
-	return _I_Buffer	-> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void	sdrplayHandler_v3::resetBuffer	() {
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	sdrplayHandler_v3::bitDepth	() {
@@ -385,7 +380,7 @@ static int teller	= 0;
 	   std::complex<int16_t> symb = std::complex<int16_t> (xi [i], xq [i]);
 	   localBuf [i] = symb;
 	}
-	p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	p -> _I_Buffer. putDataIntoBuffer (localBuf, numSamples);
 }
 
 static
@@ -969,3 +964,16 @@ bool	sdrplayHandler_v3::loadFunctions () {
 
 	return true;
 }
+
+void	sdrplayHandler_v3::show		() {
+	myFrame. show ();
+}
+
+void	sdrplayHandler_v3::hide		() {
+	myFrame. hide ();
+}
+
+bool	sdrplayHandler_v3::isHidden	() {
+	return myFrame. isHidden ();
+}
+

@@ -31,6 +31,7 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 
+//#include	"filereader-widget.h"
 #include	"ui_filereader-widget.h"
 
 class	dabProcessor;
@@ -50,8 +51,8 @@ public:
 private:
 	QString		fileName;
 	dabProcessor	*base;
+	QFrame		myFrame;
 	int		tester;
-        QFrame          *myFrame;
         std::complex<float> *oscillatorTable;
         int             currentPhase;
         int		totalOffset;

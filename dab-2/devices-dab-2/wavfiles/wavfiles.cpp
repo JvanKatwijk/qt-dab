@@ -40,14 +40,14 @@ struct timeval	tv;
 
 #define	__BUFFERSIZE	8 * 32768
 
-	wavFiles::wavFiles (QString f, dabProcessor *base) {
+	wavFiles::wavFiles (QString f, dabProcessor *base):
+	                                   myFrame (nullptr) {
 SF_INFO *sf_info;
 
 	fileName	= f;
 	this	-> base	= base;
-	myFrame		= new QFrame;
-	setupUi (myFrame);
-	myFrame	-> show ();
+	setupUi (&myFrame);
+	myFrame. show	();
 	readerOK	= false;
 	_I_Buffer	= new RingBuffer<std::complex<float>>(__BUFFERSIZE);
 
@@ -57,7 +57,6 @@ SF_INFO *sf_info;
 	if (filePointer == NULL) {
 	   fprintf (stderr, "file %s no legitimate sound file\n", 
 	                                f. toUtf8 ().data ());
-	   delete myFrame;
 	   throw (24);
 	}
 
@@ -65,7 +64,6 @@ SF_INFO *sf_info;
 	    (sf_info -> channels != 2)) {
 	   fprintf (stderr, "This is not a recorded dab file, sorry\n");
 	   sf_close (filePointer);
-	   delete myFrame;
 	   throw (25);
 	}
 
@@ -90,7 +88,6 @@ SF_INFO *sf_info;
 	   sf_close (filePointer);
 	}
 	delete _I_Buffer;
-	delete	myFrame;
 	delete oscillatorTable;
 }
 
@@ -192,15 +189,15 @@ float	temp [2 * length];
 }
 
 void	wavFiles::show		(void) {
-	myFrame		-> show ();
+	myFrame. show	();
 }
 
 void	wavFiles::hide		(void) {
-	myFrame		-> hide ();
+	myFrame. hide	();
 }
 
 bool	wavFiles::isHidden	(void) {
-	return !myFrame	-> isVisible ();
+	return !myFrame. isVisible ();
 }
 
 void	wavFiles::handle_Value	(int offset, float lowVal, float highVal) {
