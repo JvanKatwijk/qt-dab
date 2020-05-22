@@ -47,13 +47,13 @@
 	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
-	                            bool		secundair)
+	                            uint8_t		procMode)
 	                               :my_padhandler (mr),
  	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
-	this	-> secundair	= secundair;
+	this	-> procMode	= procMode;
 	connect (this, SIGNAL (show_frameErrors (int)),
 	         mr, SLOT (show_frameErrors (int)));
 	connect (this, SIGNAL (show_rsErrors (int)),
@@ -273,17 +273,19 @@ stream_parms    streamParameters;
 	                                aac_frame_length)) {
 //
 //	firs prepare dumping
-	      std::vector<uint8_t> fileBuffer;
-	      int segmentSize =
+	      if ((procMode == __BOTH) || (procMode == __ONLY_DATA)) {
+	         std::vector<uint8_t> fileBuffer;
+	         int segmentSize =
 	              build_aacFile (aac_frame_length,
 	                             &streamParameters,
 	                             &(outVector. data () [au_start [i]]),
 	                             fileBuffer);
-	      frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
+	         frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
 	                                                  segmentSize);
-	      newFrame (segmentSize);
-	      if (!secundair) {
+	         newFrame (segmentSize);
+	      }
 
+	      if ((procMode == __BOTH) || (procMode == __ONLY_SOUND)) {
 //	first handle the pad data if any
 	         if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
 	            int16_t count = outVector [au_start [i] + 1];

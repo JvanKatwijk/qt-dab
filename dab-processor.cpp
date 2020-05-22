@@ -415,6 +415,10 @@ void	dabProcessor::reset_Services	() {
 	my_mscHandler. reset_Channel ();
 }
 
+void	dabProcessor::stopService (const QString &s) {
+	my_mscHandler. stopService (s);
+}
+
 void    dabProcessor::set_audioChannel (audiodata *d,
 	                                      RingBuffer<int16_t> *b) {
 	my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);

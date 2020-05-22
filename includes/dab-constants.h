@@ -130,11 +130,14 @@ float	im	= imag (z);
 #define		L_BAND		0101
 #define		A_BAND		0102
 
+#define	__BOTH		0
+#define	__ONLY_SOUND	1
+#define	__ONLY_DATA	2
 class	descriptorType {
 public:
 	uint8_t	type;
 	bool	defined;
-	bool	is_secundair;
+	uint8_t	procMode;
 	QString	serviceName;
 	int32_t	SId;
 	int	SCIds;
@@ -149,7 +152,7 @@ public:
 		descriptorType() {
 	defined		= false;
 	serviceName	= "";
-	is_secundair	= false;
+	procMode	= __BOTH;
 	}
 virtual		~descriptorType() {}
 };

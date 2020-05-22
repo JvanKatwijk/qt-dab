@@ -7,10 +7,10 @@ dab-mini/linux-bin
 dab-mini/Output
 dab-mini/build
 dab-mini/Makefile
-sdrplay-dab/linux-bin
-sdrplay-dab/Output
-sdrplay-dab/build
-sdrplay-dab/Makefile
+dab-2/linux-bin
+dab-2/Output
+dab-2/build
+dab-2/Makefile
 
 
 

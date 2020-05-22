@@ -2,7 +2,29 @@
 
 Qt-DAB-3.4.1 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
 
-------------------------------------------------------------------
+-----------------------------------------------------------------
+Gadget in dabMini
+-----------------------------------------------------------------
+
+Just as a gadget (merely a programming exercise) dabMini has now
+an option to record a second service, but only for DAB+ services.
+
+Assume you want a recording of service XXX, but at the same time you
+want to listen to service YYY, with this gadget this is possible,
+but only in dabMini.
+
+Touching a service with the right mouse button will bring a menu asking
+you for a filename to store the AAC data of the service (independent of
+whether or not a service was already selected).
+
+After providing a filename the AAC data of that service will
+be recorded in the given file, until (a) the servicename
+is touched with the right mouse button again, (b) another servicename
+is touched with the right mouse button, in which case the previoius one
+will be closed and the current one will be openen for recording, (c)
+another channel is selected, or (d) the program is terminated.
+
+------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
 ------------------------------------------------------------------
 

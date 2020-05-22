@@ -62,6 +62,7 @@ public:
 //
 //	
 	void		reset_Channel		();
+	void		stopService		(const QString &);
 	void		reset_Buffers		();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);

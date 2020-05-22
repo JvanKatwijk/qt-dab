@@ -219,6 +219,21 @@ void	mscHandler::reset_Channel () {
 	locker. unlock ();
 }
 
+void	mscHandler::stopService	(const QString &s) {
+	locker. lock ();
+	for (int i = 0; i < theBackends. size (); i ++) {
+	   Backend *b = theBackends. at (i);
+	   if (b -> serviceName == s) {
+	      b -> stopRunning ();
+	      delete b;
+	      theBackends. erase (theBackends. begin () + i);
+	   }
+	}
+	if (theBackends. size () == 0)
+	   work_to_be_done. store (false);
+	locker. unlock ();
+}
+
 void	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer) {

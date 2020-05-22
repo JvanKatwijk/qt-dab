@@ -78,6 +78,9 @@ private:
         RingBuffer<uint8_t>     dataBuffer;
         RingBuffer<int16_t>     audioBuffer;
 
+	void			start_secondService	(const QString &);
+	void			stop_secondService	();
+	FILE			*frameDumper;
 	processParams		globals;
 	int			serviceOrder;
 	QString			version;

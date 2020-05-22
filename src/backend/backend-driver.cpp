@@ -46,7 +46,7 @@
 	                                       d -> bitRate,
                                                audioBuffer,
 	                                       frameBuffer,
-	                                       d -> is_secundair);
+	                                       d -> procMode);
 	   }
 	}
 	else

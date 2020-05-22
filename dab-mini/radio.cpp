@@ -8,8 +8,7 @@
  *
  *    dab-mini is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
- *    the Free Software Foundation; either version 2 of the License, or
- *    (at your option) any later version.
+ *    the Free Software Foundation, version 2 of the License.
  *
  *    dab-mini is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,6 +21,7 @@
  */
 #include	<QSettings>
 #include	<QMessageBox>
+#include	<QFileDialog>
 #include	<QDebug>
 #include	<QDateTime>
 #include	<QFile>
@@ -53,14 +53,16 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
-
 //
 //	approach: if a preset is called for, the "nextService"
 //	is set,
 //	if a service is running "currentService" is set
+//	the "secondService" is a gadget, it allows for writing
+//	the aac contents of another service
 
 dabService	nextService;
 dabService	currentService;
+dabService	secondService;
 //
 //	Note:
 //	The buffers, like spectrumBuffer etc,
@@ -97,8 +99,10 @@ QString	presetName;
 	globals. iqBuffer		= &iqBuffer;
 	globals. responseBuffer		= &responseBuffer;
 	globals. tiiBuffer		= &tiiBuffer;
+//
+//	frameBuffer is used for the "secondService"
 	globals. frameBuffer		= &frameBuffer;
-	globals. dabMode	= 1;
+	globals. dabMode		= 1;
 	globals. threshold	=
 	                  dabSettings -> value ("threshold", 3). toInt();
 	globals. diff_length	=
@@ -121,7 +125,7 @@ QString	presetName;
 	my_dabProcessor		= nullptr;
 //
 //	as with many of the buffers, picturesPath is not used
-//	but used in the dabProcessor
+//	but needed as parameter in the dabProcessor
 	picturesPath     = QDir::tempPath();
 
 	serviceOrder	=
@@ -218,7 +222,6 @@ QString	presetName;
 	connect	(prevchannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_prevChannelButton (void)));
 //
-
 	h	= dabSettings -> value ("channel", "12C"). toString();
         k	= channelSelector -> findText (h);
         if (k != -1)
@@ -229,6 +232,8 @@ QString	presetName;
 	   presetTimer. setInterval 	(switchTime);
 	   presetTimer. start 		(switchTime);
 	}
+
+	frameDumper	= nullptr;
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
 }
@@ -369,6 +374,7 @@ void	RadioInterface::changeinConfiguration() {
 	      s = currentService;
 	      stopService     ();
 	   }
+	   stop_secondService ();
 	   fprintf (stderr, "change detected\n");
 //
 //	we rebuild the services list from the fib and
@@ -424,7 +430,6 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	}
 }
 //
-
 ///////////////////////////////////////////////////////////////////////////////
 //	
 /**
@@ -433,6 +438,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   *	A clean termination is what is needed, regardless of the GUI
   */
 void	RadioInterface::TerminateProcess() {
+	stopChannel ();
 	soundOut		-> stop();
 	running. store (false);
 	displayTimer. stop();
@@ -593,11 +599,6 @@ void	RadioInterface::showCorrelation	(int amount, int marker) {
 void	RadioInterface::showIndex (int ind) {
 	(void)ind;
 }
-
-void	RadioInterface::newFrame	(int amount) {
-	(void)amount;
-}
-
 //
 ////////////////////////////////////////////////////////////////////////////
 
@@ -668,7 +669,19 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         presetSelector -> addItem (itemText);
 	         return true;
 	      }
-	      
+	      else {
+	         if (secondService. valid) {
+	            stop_secondService ();
+	            secondService. valid = false;
+	         }
+	         if (secondService. serviceName != serviceName) {
+	            audiodata ad;
+	            my_dabProcessor	-> dataforAudioService (serviceName,
+	                                                          &ad);
+	            if (ad. defined && (ad. ASCTy == 077))
+	               start_secondService (serviceName);
+	         }
+	      }
 	   }
 	}
 	return QWidget::eventFilter (obj, event);
@@ -754,7 +767,8 @@ void	RadioInterface::stopService	() {
 	signalTimer. stop ();
 	if (currentService. valid) {
 	   fprintf (stderr, "stopping service\n");
-	   my_dabProcessor -> reset_Services ();
+//	   my_dabProcessor -> reset_Services ();
+	   my_dabProcessor -> stopService (currentService. serviceName);
 	   usleep (1000);
 	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
@@ -842,10 +856,10 @@ audiodata ad;
  	                         tr ("insufficient data for this program\n"));
 	   return;
 	}
-
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (serviceName);
 
+	ad. procMode	= __ONLY_SOUND;
 	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
 //	activate sound
 	soundOut -> restart ();
@@ -994,9 +1008,10 @@ void	RadioInterface::stopChannel	() {
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
 	signalTimer. stop ();
-	hide_for_safety	();
+	hide_for_safety		();
+	stop_secondService ();	// just in case ...
 //
-//	The service - if any - is stopped by halting the dabProcessor
+//	The service(s) - if any - is stopped by halting the dabProcessor
 	my_dabProcessor		-> stop ();
 	usleep (1000);
 	currentService. valid	= false;
@@ -1103,5 +1118,81 @@ void	RadioInterface::hide_for_safety () {
 void	RadioInterface::show_for_safety () {
 	prev_serviceButton	->	show ();
         next_serviceButton	->	show ();
+}
+
+static inline
+bool    isValid (QChar c) {
+        return c. isLetter () || c. isDigit () || (c == '-');
+}
+
+void	RadioInterface::start_secondService	(const QString &s) {
+audiodata ad;
+
+	my_dabProcessor	-> dataforAudioService (s, &ad);
+	if (!ad. defined)
+	   return;
+	QString saveDir		= QDir::homePath ();
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+           saveDir = saveDir + '/';
+
+        QString theTime = timeDisplay -> text ();
+        QString suggestedFileName =
+	                    secondService. serviceName + 
+	                    channelSelector -> currentText () +
+                            "-" + theTime;
+        for (int i = 0; i < suggestedFileName. length (); i ++)
+           if (!isValid (suggestedFileName. at (i)))
+              suggestedFileName. replace (i, 1, '-');
+	suggestedFileName = saveDir + suggestedFileName;
+        fprintf (stderr, "suggested filename %s\n",
+                                 suggestedFileName. toLatin1 (). data ());
+        QString fileName = QFileDialog::getSaveFileName (this,
+                                                tr ("Save file ..."),
+                                                suggestedFileName + ".aac",
+                                                tr ("aac (*.aac)"));
+        if (fileName == "")
+           return;
+
+	fileName        = QDir::toNativeSeparators (fileName);
+	frameDumper	= fopen (fileName. toUtf8(). data(), "w");
+
+        if (frameDumper == nullptr) {
+           fprintf (stderr, "Could not open file %s\n",
+                                      fileName. toUtf8(). data());
+           return;
+        }
+
+	secondService. serviceName = s;
+	secondService. valid	= true;
+	ad. procMode	= __ONLY_DATA;
+	frameBuffer. FlushRingBuffer ();
+	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
+}
+
+void	RadioInterface::stop_secondService () {
+	if (frameDumper == nullptr)
+	   return;
+	if (!secondService. valid)
+	   return;
+	fprintf (stderr, "stopping second service %s\n",
+	                      secondService. serviceName.toLatin1 (). data ());
+	my_dabProcessor -> stopService (secondService. serviceName);
+	fclose (frameDumper);
+	frameDumper = nullptr;
+}
+
+void	RadioInterface::newFrame	(int amount) {
+uint8_t buffer [amount];
+
+	if (frameDumper == nullptr) {
+	   frameBuffer. FlushRingBuffer ();
+	   return;
+	}
+
+	while (frameBuffer. GetRingBufferReadAvailable () > amount) {
+	   frameBuffer. getDataFromBuffer (buffer, amount);
+	   if (frameDumper != nullptr)
+	      fwrite (buffer, amount, 1, frameDumper);
+	}
 }
 
