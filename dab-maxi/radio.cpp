@@ -1394,7 +1394,7 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 }
 
-void	RadioInterface::setStereo	(bool s) {
+void	RadioInterface::setStereo	(int s) {
 	(void)s;
 }
 

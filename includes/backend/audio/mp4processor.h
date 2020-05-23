@@ -96,7 +96,7 @@ signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);
 	void		show_aacErrors			(int);
-	void		isStereo			(bool);
+	void		isStereo			(int);
 	void		newFrame			(int);
 };
 

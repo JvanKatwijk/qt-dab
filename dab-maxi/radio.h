@@ -224,7 +224,7 @@ public slots:
 	void			changeinConfiguration	();
 	void			newAudio		(int, int);
 //
-	void			setStereo		(bool);
+	void			setStereo		(int);
 	void			set_streamSelector	(int);
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);

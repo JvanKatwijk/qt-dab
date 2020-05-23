@@ -140,7 +140,6 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
 
@@ -210,7 +209,7 @@ public slots:
 	void			changeinConfiguration	();
 	void			newAudio		(int, int);
 //
-	void			setStereo		(bool);
+	void			setStereo		(int);
 	void			set_streamSelector	(int);
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
@@ -231,6 +230,7 @@ private slots:
 	void			handle_scanButton	();
 	void			handle_audiodumpButton 	();
         void			handle_framedumpButton	();
+        void			handle_rawdumpButton	();
 	void			handle_nextChannelButton();
 	void			handle_prevChannelButton();
 	void			handle_prevServiceButton	();

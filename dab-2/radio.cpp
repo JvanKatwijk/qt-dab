@@ -335,7 +335,6 @@ uint8_t	dabBand;
 //
 //
 	audioDumper		= nullptr;
-	rawDumper		= nullptr;
 	frameDumper		= nullptr;
 	ficBlocks		= 0;
 	ficSuccess		= 0;
@@ -1227,7 +1226,6 @@ void	RadioInterface::TerminateProcess() {
 	dumpControlState (dabSettings);
 	my_presetHandler. savePresets (presetSelector);
 	stop_frameDumping		();
-//	stop_sourceDumping		();
 	stop_audioDumping		();
 	theTable. hide ();
 	dataDisplay	-> hide ();
@@ -1394,14 +1392,14 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 }
 
-void	RadioInterface::setStereo	(bool s) {
+void	RadioInterface::setStereo	(int s) {
 	(void)s;
 //	if (!running. load())
 //	   return;
 //	if (s) { 
 //	   stereoLabel -> 
 //	               setStyleSheet ("QLabel {background-color : green; color: white}");
-//	   stereoLabel -> setText ("stereo");
+//	   stereoLabel -> setText ("ST");
 //	}
 //	else {
 //	   stereoLabel ->
@@ -1657,6 +1655,11 @@ void	RadioInterface::handle_framedumpButton () {
 	   start_frameDumping ();
 }
 
+void	RadioInterface::handle_rawdumpButton	() {
+	QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("raw dump not implemented\nuse xml dump instead\n"));
+}
+
 void    RadioInterface::newFrame        (int amount) {
 uint8_t buffer [amount];
 
@@ -1729,6 +1732,8 @@ void	RadioInterface::connectGUI() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	connect (frameDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
+	connect (dumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_rawdumpButton (void)));
 	connect (show_tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_tiiButton (void)));
 	connect (show_correlationButton, SIGNAL (clicked (void)),
@@ -1764,6 +1769,8 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_audiodumpButton (void)));
 	disconnect (frameDumpButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_framedumpButton (void)));
+	disconnect (dumpButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_rawdumpButton ()));
 	disconnect (show_tiiButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_tiiButton (void)));
 	disconnect (show_correlationButton, SIGNAL (clicked (void)),
@@ -2186,7 +2193,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	stopScanning (false);
 	stopService  ();
 	if ((serviceList. size () != 0) && (oldService != "")) {
-	   for (int i = 0; i < serviceList. size (); i ++) {
+	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i - 1;
@@ -2222,11 +2229,11 @@ void	RadioInterface::handle_nextServiceButton	() {
 	stopScanning (false);
 	stopService ();
 	if ((serviceList. size () != 0) && (oldService != "")) {
-	   for (int i = 0; i < serviceList. size (); i ++) {
+	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
 	         i = i + 1;
-	         if (i >= serviceList. size ())
+	         if (i >= (int)(serviceList. size ()))
 	            i = 0;
 	         dabService s;
 	         s. serviceName = serviceList. at (i). name;
@@ -2564,7 +2571,7 @@ std::vector<serviceId> k;
 	   k. push_back (n);
 	   return k;
 	}
-	int 	baseN		= 0;
+	uint32_t baseN		= 0;
 	QString baseS		= "";
 	bool	inserted	= false;
 	for (const auto serv : l) {

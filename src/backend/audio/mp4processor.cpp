@@ -60,8 +60,8 @@
 	         mr, SLOT (show_rsErrors (int)));
 	connect (this, SIGNAL (show_aacErrors (int)),
 	         mr, SLOT (show_aacErrors (int)));
-	connect (this, SIGNAL (isStereo (bool)),
-	         mr, SLOT (setStereo (bool)));
+	connect (this, SIGNAL (isStereo (int)),
+	         mr, SLOT (setStereo (int)));
 	connect (this, SIGNAL (newFrame (int)),
 	         mr, SLOT (newFrame (int)));
 #ifdef	__WITH_FDK_AAC__
@@ -312,9 +312,7 @@ stream_parms    streamParameters;
 	                                      theAudioUnit,
 	                                      aac_frame_length);
 #endif
-//	      emit isStereo (streamParameters. aacChannelMode);
-//	         emit isStereo (tmp == 2);
-	
+	         emit isStereo (streamParameters. aacChannelMode);
 	         if (tmp <= 0) 
 	            aacErrors ++;
 	         if (++aacFrames > 25) {

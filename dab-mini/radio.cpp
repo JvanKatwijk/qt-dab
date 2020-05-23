@@ -126,10 +126,10 @@ QString	presetName;
 //
 //	as with many of the buffers, picturesPath is not used
 //	but needed as parameter in the dabProcessor
-	picturesPath     = QDir::tempPath();
+	picturesPath		= QDir::tempPath();
 
-	serviceOrder	=
-	           dabSettings -> value ("serviceOrder", 0). toInt ();
+	serviceOrder		=
+	                 dabSettings -> value ("serviceOrder", 0). toInt ();
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
@@ -572,7 +572,7 @@ void	RadioInterface::showLabel	(QString s) {
 	}
 }
 
-void	RadioInterface::setStereo	(bool s) {
+void	RadioInterface::setStereo	(int s) {
 	(void)s;
 }
 
@@ -584,7 +584,7 @@ void	RadioInterface::showSpectrum	(int32_t amount) {
 	(void)amount;
 }
 
-void	RadioInterface::showIQ	(int amount) {
+void	RadioInterface::showIQ		(int amount) {
 	(void)amount;
 }
 
@@ -596,7 +596,7 @@ void	RadioInterface::showCorrelation	(int amount, int marker) {
 	(void)amount; (void)marker;
 }
 
-void	RadioInterface::showIndex (int ind) {
+void	RadioInterface::showIndex 	(int ind) {
 	(void)ind;
 }
 //
