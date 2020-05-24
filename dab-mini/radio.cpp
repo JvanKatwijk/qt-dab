@@ -89,7 +89,6 @@ QString	presetName;
 	dabSettings		= Si;
 	running. 		store (false);
 	scanning. 		store (false);
-	isSynced		= false;
 //
 //	These buffers are not used here, but needed as parameter
 //	in dabProcessor
@@ -336,7 +335,7 @@ void	RadioInterface::nameofEnsemble (int id, const QString &v) {
 QString s;
 	if (!running. load())
 	   return;
-	ensembleId      -> setAlignment(Qt::AlignCenter);
+	ensembleId      -> setAlignment(Qt::AlignLeft);
         ensembleId      -> setText (v + QString (":") + hextoString (id));
 }
 
@@ -438,6 +437,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   *	A clean termination is what is needed, regardless of the GUI
   */
 void	RadioInterface::TerminateProcess() {
+	dumpControlState (dabSettings);
 	stopChannel ();
 	soundOut		-> stop();
 	running. store (false);
@@ -446,7 +446,6 @@ void	RadioInterface::TerminateProcess() {
 	presetTimer.  stop();
 
 	my_presetHandler. savePresets (presetSelector);
-	dumpControlState (dabSettings);
 
 	my_dabProcessor		-> stop();		// definitely concurrent
 	usleep (1000);		// give space to clean up pending signals
@@ -823,6 +822,7 @@ QString serviceName	= s -> serviceName;
 	      if (my_dabProcessor -> is_audioService (serviceName)) {
 	         start_audioService (serviceName);
 	         currentService. valid = true;
+	         currentService. serviceName = serviceName;
 	      }
 	      else
 	         fprintf (stderr, "%s not supported\n",
@@ -856,8 +856,8 @@ audiodata ad;
  	                         tr ("insufficient data for this program\n"));
 	   return;
 	}
-	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (serviceName);
+	serviceLabel -> setAlignment(Qt::AlignLeft);
 
 	ad. procMode	= __ONLY_SOUND;
 	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);

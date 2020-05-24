@@ -70,7 +70,6 @@ presetComboBox::presetComboBox (QWidget *parent):
 
 QSize   presetComboBox:: sizeHint ()const {
 QSize   temp = QComboBox::sizeHint ();
-        return QSize (temp. rwidth () / 3, temp. rheight ());
+        return QSize (temp. rwidth () / 6, temp. rheight () / 4);
 }
-
 
