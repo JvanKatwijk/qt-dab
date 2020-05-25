@@ -231,7 +231,8 @@ LIBS		+= -lsamplerate
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
-CONFIG		+= sdrplay
+#CONFIG		+= sdrplay
+CONFIG		+= sdrplay-v3
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
@@ -356,6 +357,17 @@ sdrplay {
         INCLUDEPATH     += ./devices-dab-mini/sdrplay-handler
         HEADERS         += ./devices-dab-mini/sdrplay-handler/sdrplay-handler.h
         SOURCES         += ./devices-dab-mini/sdrplay-handler/sdrplay-handler.cpp
+}
+#
+sdrplay-v3 {
+	DEFINES		+= HAVE_SDRPLAY_V3
+	DEPENDPATH	+= ./devices-dab-mini/sdrplay-handler-v3
+	INCLUDEPATH	+= ./devices-dab-mini/sdrplay-handler-v3 \
+	                   ./devices-dab-mini/sdrplay-handler-v3/include
+	HEADERS		+= ./devices-dab-mini/sdrplay-handler-v3/sdrplay-handler-v3.h \
+	                   ./devices-dab-mini/sdrplay-handler-v3/sdrplay-commands.h 
+	SOURCES		+= ./devices-dab-mini/sdrplay-handler-v3/sdrplay-handler-v3.cpp 
+	FORMS		+= ./devices-dab-mini/sdrplay-handler-v3/sdrplay-widget-v3.ui
 }
 #
 # airspy support

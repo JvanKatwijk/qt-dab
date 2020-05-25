@@ -107,7 +107,7 @@ public:
 	int16_t		bitDepth		(void);
 //
 //	The buffer should be visible by the callback function
-	RingBuffer<std::complex<float>>	*_I_Buffer;
+	RingBuffer<std::complex<float>>	_I_Buffer;
 	float		denominator;
 private:
 	QSettings	*sdrplaySettings;

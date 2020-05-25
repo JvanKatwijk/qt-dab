@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of sdrplayDab
+ *    This file is part of dab-2
  *
- *    sdrplayDab is free software; you can redistribute it and/or modify
+ *    dab-2 is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation version 2 of the License.
  *
- *    sdrplayDab is distributed in the hope that it will be useful,
+ *    dab-2 is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with sdrplayDab if not, write to the Free Software
+ *    along with dab-2 if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -28,6 +28,7 @@
 #include	"sdrplay-handler-v3.h"
 #include	"sdrplay-commands.h"
 #include	"dab-processor.h"
+#include	"xml-filewriter.h"
 #include	"radio.h"
 
 static
@@ -60,21 +61,23 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	}
 }
 
-	sdrplayHandler_v3::sdrplayHandler_v3  (RadioInterface *mr,
-	                                       QSettings *s,
-	                                       dabProcessor *base,
-	                                       int sampleRate):
+	sdrplayHandler_v3::sdrplayHandler_v3  (RadioInterface	*mr,
+	                                       QSettings	*s,
+	                                       dabProcessor 	*base,
+	                                       QString		&recorder):
 	                                             myFrame (nullptr) {
 	(void)mr;
 	sdrplaySettings			= s;
 	this	-> base			= base;
-	this	-> inputRate		= sampleRate;
+	this	-> recorderVersion	= recorder;
+	this	-> inputRate		= 2048000;
 	setupUi (&myFrame);
 	myFrame.		show	();
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	nrBits			= 12;	// default
 
+	totalOffset		= 0;
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	gainSetPoint		=
 	            sdrplaySettings -> value ("sdrplay-gainSetPoint", -35).
@@ -98,10 +101,16 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	and be prepared for future changes in the settings
 	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_lnagainReduction (int)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
 	connect (ppmControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmControl (int)));
+	connect (agcControl, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_agcControl (int)));
+	connect (xml_dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (set_xmlDump ()));
+
+	xmlDumping. store (false);
+	xmlDumper	= nullptr;
+
 	connect (antennaSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_antennaSelect (const QString &)));
 	connect (tunerSelector, SIGNAL (activated (const QString &)),
@@ -223,6 +232,8 @@ restartRequest r (newFreq);
         if (receiverRuns. load ())
            return true;
         vfoFrequency    = newFreq;
+	totalOffset	= 0;
+	set_GRdB (gainSetPoint);
 	return messageHandler (&r);
 }
 
@@ -230,6 +241,19 @@ void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
         if (!receiverRuns. load ())
            return;
+	close_xmlDump ();
+	messageHandler (&r);
+}
+
+void	sdrplayHandler_v3::handle_Value (int offset,
+	                                  float lowVal, float highVal) {
+	totalOffset	+= offset;
+	set_frequencyRequest r (vfoFrequency + totalOffset);
+	freq_offsetDisplay	-> display (totalOffset);
+	averageValue	->
+	           display (10 * log10 ((highVal + 0.005) / denominator));
+	nullValue	-> 
+	           display (10 * log10 ((lowVal + 0.005) / denominator));
 	messageHandler (&r);
 }
 
@@ -240,6 +264,7 @@ set_frequencyRequest r (newFreq);
 }
 
 void	sdrplayHandler_v3::set_gain	(int gain) {
+	set_GRdB (gain);
 	gainSetPoint	= gain;
 }
 
@@ -273,6 +298,7 @@ void    StreamACallback (short *xi, short *xq,
 sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 float	denominator	= (float)(p -> denominator);
 std::complex<float> localBuf [numSamples];
+std::complex<int16_t> dumpBuf [numSamples];
 static int teller	= 0;
 
 	(void)params;
@@ -286,30 +312,11 @@ static int teller	= 0;
 	                                       (float) (xi [i]) / denominator,
 	                                       (float) (xq [i]) / denominator);
 	   localBuf [i] = symb;
+	   dumpBuf [i] = std::complex<int16_t> (xi [i], xq [i]);
 	}
-	int res = p -> base -> addSymbol (localBuf, numSamples);
-	switch (res) {
-	   case GO_ON:
-	      break;
-	   
-	   case DEVICE_UPDATE: {
-	      int    offset;
-	      float  lowVal, highVal;
-              if (++ teller > 10) {
-                 p -> base -> update_data (&offset, &lowVal, &highVal);
-                 p -> setOffset (offset);
-                 p -> setGains  (lowVal, highVal);
-                 teller      = 0;
-              }
-           }
-	   break;
-	   
-//	   case INITIAL_STRENGTH: {
-//	      float str = 10 * log10 ((p -> base -> initialSignal () + 0.005) / denominator);
-//	      p -> set_initialGain (str);
-//	   }
-//	   break;
-	}
+	(void) p -> base -> addSymbol (localBuf, numSamples);
+	if (p -> xmlDumping. load ())
+	   p -> xmlWriter -> add (dumpBuf, numSamples);
 }
 
 static
@@ -417,7 +424,7 @@ uint32_t                ndev;
 	   goto closeAPI;
         }
 
-        if (apiVersion != SDRPLAY_API_VERSION) {
+        if (apiVersion < 3.05) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
 	   goto closeAPI;
@@ -758,16 +765,6 @@ closeAPI:
 	fprintf (stderr, "De taak is gestopt\n");
 }
 
-
-int	totalOffset	= 0;
-void	sdrplayHandler_v3::setOffset (int offset) {
-	vfoFrequency		+= offset;
-	totalOffset		+= offset;
-	freq_offset_signal	(totalOffset);
-	freq_error_signal	(offset);
-	setVFOFrequency (vfoFrequency);
-}
-
 static inline
 int     constrain (int v, int l, int h) {
         if (v < l)
@@ -775,31 +772,6 @@ int     constrain (int v, int l, int h) {
         if (v > h)
            return h;
 	return v;
-}
-
-void	sdrplayHandler_v3::setGains (float lowVal, float highVal) {
-
-	float str = 10 * log10 ((highVal + 0.005)  / denominator);
-        float lvv = 10 * log10 ((lowVal  + 0.005)  / denominator);
-
-	if (theGain == -1)
-	   return;
-	avgValue_signal (str);
-	dipValue_signal (lvv);
-	show_TotalGain_signal (theGain);
-
-//	we compute the "error" in the gain setting,
-//	and we derive the GRdB value needed to correct that
-        int gainCorr    = gainSetPoint - str;
-        gainCorr        = constrain (gainCorr, -20, 20);
-
-	int lnaState	= chParams	-> tunerParams. gain.LNAstate;
-        int GRdB        = theGain - get_lnaGRdB (hwVersion, lnaState);
-        GRdB            = constrain (GRdB + gainCorr, 20, 59);
-	
-	if ((chParams -> ctrlParams.agc.enable == sdrplay_api_AGC_DISABLE) &&
-                   (GRdB != 0)) 
-	   set_GRdB (GRdB);
 }
 
 HINSTANCE	sdrplayHandler_v3::fetchLibrary () {
@@ -966,3 +938,76 @@ bool	sdrplayHandler_v3::loadFunctions () {
 
 	return true;
 }
+
+void	sdrplayHandler_v3::set_xmlDump () {
+	if (xmlDumper == nullptr) {
+	  if (setup_xmlDump ())
+	      xml_dumpButton	-> setText ("writing");
+	}
+	else {
+	   close_xmlDump ();
+	   xml_dumpButton	-> setText ("Dump");
+	}
+}
+
+static inline
+bool	isValid (QChar c) {
+	return c. isLetterOrNumber () || (c == '-');
+}
+
+bool	sdrplayHandler_v3::setup_xmlDump () {
+QTime	theTime;
+QDate	theDate;
+QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
+	                                   QDir::homePath ()). toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir += "/";
+
+	QString channel		= sdrplaySettings -> value ("channel", "xx").
+	                                                       toString ();
+	QString timeString      = theDate. currentDate (). toString () + "-" +
+	                           theTime. currentTime(). toString ();
+	for (int i = 0; i < timeString. length (); i ++)
+           if (!isValid (timeString. at (i)))
+              timeString. replace (i, 1, '-');
+	
+        QString suggestedFileName =
+                    saveDir + deviceLabel -> text () + "-" + channel + "-" + timeString;
+
+	QString fileName = QFileDialog::getSaveFileName (nullptr,
+	                                         tr ("Save file ..."),
+	                                         suggestedFileName + ".uff",
+	                                         tr ("Xml (*.uff)"));
+        fileName        = QDir::toNativeSeparators (fileName);
+        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	if (xmlDumper == nullptr)
+	   return false;
+	
+	xmlWriter	= new xml_fileWriter (xmlDumper,
+	                                      nrBits,
+	                                      "int16",
+	                                      2048000,
+	                                      getVFOFrequency (),
+	                                      "SDRplay-3",
+	                                      deviceLabel -> text (),
+	                                      recorderVersion);
+	xmlDumping. store (true);
+
+	QString dumper	= QDir::fromNativeSeparators (fileName);
+	int x		= dumper. lastIndexOf ("/");
+        saveDir		= dumper. remove (x, dumper. count () - x);
+	sdrplaySettings	-> setValue ("saveDir_xmlDump", saveDir);
+	return true;
+}
+
+void	sdrplayHandler_v3::close_xmlDump () {
+	if (xmlDumper == nullptr)	// this can happen !!
+	   return;
+	xmlDumping. store (false);
+	usleep (1000);
+	xmlWriter	-> computeHeader ();
+	delete xmlWriter;
+	fclose (xmlDumper);
+	xmlDumper	= nullptr;
+}
+

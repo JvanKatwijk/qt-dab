@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of dab-mini
  *
- *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    dab-mini is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation version 2 of the License.
  *
- *    Qt-DAB is distributed in the hope that it will be useful,
+ *    dab-mini is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB if not, write to the Free Software
+ *    along with dab-mini if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -30,7 +30,8 @@
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
 	                               QSpinBox	*ifgainSelector,
-	                               QSpinBox	*lnaSelector) {
+	                               QSpinBox	*lnaSelector):
+	                                 _I_Buffer (4 * 1024 * 1024) {
 int	err;
 int	res;
 	hackrfSettings			= s;
@@ -41,7 +42,6 @@ int	res;
 	lnaSelector	-> setToolTip ("lna gain, range 1 .. 40");
 	lnaSelector	-> setRange (1, 40);
 	this	-> inputRate		= Khz (2048);
-	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 
 #ifdef  __MINGW32__
         const char *libraryString = "libhackrf.dll";
@@ -134,8 +134,6 @@ int	res;
 
 	hackrfHandler::~hackrfHandler	(void) {
 	stopReader ();
-	if (_I_Buffer != NULL)
-	   delete _I_Buffer;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaSelector -> value ());
@@ -177,7 +175,7 @@ hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
 int	i;
 //std::complex<float> buffer [transfer -> buffer_length / 2];
 uint8_t *p	= transfer -> buffer;
-RingBuffer<std::complex<float> > * q = ctx -> _I_Buffer;
+RingBuffer<std::complex<float> > * q = &(ctx -> _I_Buffer);
 
 	for (i = 0; i < transfer -> valid_length / 2; i ++) {
 	   float re	= (int8_t)(p [2 * i]) / 128.0;
@@ -222,15 +220,15 @@ int	res;
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-	return _I_Buffer	-> getDataFromBuffer (V, size);
+	return _I_Buffer. getDataFromBuffer (V, size);
 }
 
 int32_t	hackrfHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable ();
+	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 
 void	hackrfHandler::resetBuffer	(void) {
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer. FlushRingBuffer ();
 }
 
 int16_t	hackrfHandler::bitDepth	(void) {

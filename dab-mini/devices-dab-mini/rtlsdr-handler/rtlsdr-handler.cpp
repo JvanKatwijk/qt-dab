@@ -49,7 +49,7 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	if ((theStick == NULL) || (len != READLEN_DEFAULT))
 	   return;
 
-	(void)theStick -> _I_Buffer -> putDataIntoBuffer (buf, len);
+	(void)theStick -> _I_Buffer. putDataIntoBuffer (buf, len);
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -81,7 +81,8 @@ virtual void	run (void) {
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *rtlsdrSettings,
 	                              QSpinBox	*ifgainSelector,
-	                              QCheckBox	*agcControl) {
+	                              QCheckBox	*agcControl):
+	                                 _I_Buffer (4 * 1024 * 1024) {
 int16_t	deviceCount;
 int32_t	r;
 int	i, k;
@@ -95,7 +96,6 @@ int	i, k;
 	inputRate		= 2048000;
 	libraryLoaded		= false;
 	open			= false;
-	_I_Buffer		= NULL;
 	workerHandle		= NULL;
 	lastFrequency		= KHz (22000);	// just a dummy
 	gains			= NULL;
@@ -173,7 +173,6 @@ int	i, k;
 
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode        (device, 0);
-	_I_Buffer		= new RingBuffer<uint8_t>(8 * 1024 * 1024);
 //
 //	See what the saved values are and restore the GUI settings
 	
@@ -222,8 +221,6 @@ int	i, k;
 #else
 	dlclose (Handle);
 #endif
-	if (_I_Buffer != NULL)
-	   delete _I_Buffer;
 	if (gains != NULL)
 	   delete[] gains;
 
@@ -240,7 +237,7 @@ int32_t	r;
 	if (workerHandle != NULL)
 	   return true;
 
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer. FlushRingBuffer ();
 	r = this -> rtlsdr_reset_buffer (device);
 	if (r < 0)
 	   return false;
@@ -311,7 +308,7 @@ int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) {
 int32_t	amount, i;
 uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 //
-	amount = _I_Buffer	-> getDataFromBuffer (tempBuffer, 2 * size);
+	amount = _I_Buffer. getDataFromBuffer (tempBuffer, 2 * size);
 	for (i = 0; i < amount / 2; i ++)
 	    V [i] = std::complex<float>
 	                    (convTable [tempBuffer [2 * i]],
@@ -320,7 +317,7 @@ uint8_t	*tempBuffer = (uint8_t *)alloca (2 * size * sizeof (uint8_t));
 }
 
 int32_t	rtlsdrHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable () / 2;
+	return _I_Buffer. GetRingBufferReadAvailable () / 2;
 }
 //
 bool	rtlsdrHandler::load_rtlFunctions (void) {
@@ -456,7 +453,7 @@ bool	rtlsdrHandler::load_rtlFunctions (void) {
 }
 
 void	rtlsdrHandler::resetBuffer (void) {
-	_I_Buffer -> FlushRingBuffer ();
+	_I_Buffer. FlushRingBuffer ();
 }
 
 int16_t	rtlsdrHandler::bitDepth	(void) {

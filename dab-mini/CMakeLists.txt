@@ -60,6 +60,10 @@ if(DEFINED SDRPLAY)
 	set(SDRPLAY true)
 endif ()
 
+if(DEFINED SDRPLAY_V3)
+	set(SDRPLAY_V3 true)
+endif ()
+
 if(DEFINED RTLSDR)
 	set(RTLSDR true)
 endif ()
@@ -73,7 +77,8 @@ if(DEFINED LIMESDR)
 endif ()
 
 add_definitions (-DPRESET_NAME)
-add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
+add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
+add_definitions (-D__MSC_THREAD__)
 #
 ########################################################################
 
@@ -402,10 +407,6 @@ add_definitions (-DTHREADED_DECODING)	# uncomment for use for an RPI
 	endif (SDRPLAY)
 
 	if (SDRPLAY_V3)
-	   set (${objectName}_UIS
-	        ${${objectName}_UIS}
-	        ./devices-dab-mini/sdrplay-handler-v3/sdrplay-widget-v3.ui
-	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}

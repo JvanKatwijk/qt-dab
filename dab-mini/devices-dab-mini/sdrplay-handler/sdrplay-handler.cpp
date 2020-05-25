@@ -40,7 +40,8 @@ int     RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 	sdrplayHandler::sdrplayHandler  (QSettings *sdrplaySettings,
 	                                 QSpinBox	*GRdBSetting,
 	                                 QSpinBox	*lnaGainSetting,
-	                                 QCheckBox	*agcControl) {
+	                                 QCheckBox	*agcControl):
+	                                   _I_Buffer (4 * 1024 * 1024) {
 int	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
@@ -54,7 +55,6 @@ mir_sdr_GainValuesT gainDesc;
 	this	-> agcControl		= agcControl;
 
 	this	-> inputRate		= Khz (2048);
-	_I_Buffer			= NULL;
 	libraryLoaded			= false;
 
 #ifdef	__MINGW32__
@@ -122,7 +122,6 @@ ULONG APIkeyValue_length = 255;
 	   throw (24);
 	}
 
-	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
 //
 	my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
 	if (numofDevs == 0) {
@@ -217,8 +216,6 @@ ULONG APIkeyValue_length = 255;
 	                          agcControl -> isChecked () ? 1 : 0);
 	sdrplaySettings	-> endGroup ();
 
-	if (_I_Buffer != NULL)
-	   delete _I_Buffer;
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
 #else
@@ -299,7 +296,7 @@ std::complex<float> *localBuf =
 	for (i = 0; i <  (int)numSamples; i ++)
 	   localBuf [i] = std::complex<float> (float (xi [i]) / denominator,
 	                                       float (xq [i]) / denominator);
-	p -> _I_Buffer -> putDataIntoBuffer (localBuf, numSamples);
+	p ->  _I_Buffer. putDataIntoBuffer (localBuf, numSamples);
 	(void)	firstSampleNum;
 	(void)	grChanged;
 	(void)	rfChanged;
@@ -367,7 +364,7 @@ void	sdrplayHandler::stopReader	(void) {
 	   return;
 
 	my_mir_sdr_StreamUninit	();
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer. FlushRingBuffer ();
 	running. store (false);
 }
 
@@ -375,15 +372,15 @@ void	sdrplayHandler::stopReader	(void) {
 //	The brave old getSamples. For the sdrplay, we get
 //	size still in I/Q pairs
 int32_t	sdrplayHandler::getSamples (std::complex<float> *V, int32_t size) { 
-	return _I_Buffer	-> getDataFromBuffer (V, size);
+	return _I_Buffer. getDataFromBuffer (V, size);
 }
 
 int32_t	sdrplayHandler::Samples	(void) {
-	return _I_Buffer	-> GetRingBufferReadAvailable ();
+	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 
 void	sdrplayHandler::resetBuffer	(void) {
-	_I_Buffer	-> FlushRingBuffer ();
+	_I_Buffer. FlushRingBuffer ();
 }
 
 int16_t	sdrplayHandler::bitDepth	(void) {

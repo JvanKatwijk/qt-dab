@@ -287,7 +287,7 @@ LIBS		+= -lsamplerate
 LIBS		+= -lqwt-qt5
 #
 CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay-v3
 CONFIG		+= rtlsdr
 CONFIG		+= rtl_tcp
 CONFIG		+= hackrf

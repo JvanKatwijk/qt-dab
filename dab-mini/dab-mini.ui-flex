@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dab_mini</class>
+ <widget class="QWidget" name="dab_mini">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>262</width>
+    <height>391</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>dabMini</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="timeDisplay">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="serviceLabel">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="ensembleId">
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+           <weight>75</weight>
+           <italic>true</italic>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallQListView" name="ensembleDisplay">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="ficLabel">
+           <property name="text">
+            <string>FIC</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="agcControl">
+           <property name="text">
+            <string>agc</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="copyrightLabel">
+           <property name="text">
+            <string>©</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="smallSpinBox" name="gainSelector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>gain(reduction).
+For the SDRplay: it is gain reduction in the range 20 .. 59
+For the RTLSDR is is gain, range depending on the device</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallSpinBox" name="lnaSelector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>LNA state for the sdrplay, the range of values depends on the model of the RSP</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallComboBox" name="channelSelector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="toolTip">
+          <string>Channel selector. </string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="0">
+          <widget class="verySmallPushButton" name="prevchannelButton">
+           <property name="toolTip">
+            <string>Select the previous channel.</string>
+           </property>
+           <property name="text">
+            <string>&lt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="verySmallPushButton" name="nextchannelButton">
+           <property name="toolTip">
+            <string>Select the next channel.</string>
+           </property>
+           <property name="text">
+            <string>&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="verySmallPushButton" name="prev_serviceButton">
+           <property name="toolTip">
+            <string>Select the previous service in the displayed list of services.</string>
+           </property>
+           <property name="text">
+            <string>&lt;</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="verySmallPushButton" name="next_serviceButton">
+           <property name="toolTip">
+            <string>Select the next service in the list of displayed services.</string>
+           </property>
+           <property name="text">
+            <string>&gt;</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="smallComboBox" name="streamoutSelector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="presetComboBox" name="presetSelector">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <item>
+      <property name="text">
+       <string>Presets</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="dynamicLabel">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>smallQListView</class>
+   <extends>QListView</extends>
+   <header>smallqlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallComboBox</class>
+   <extends>QComboBox</extends>
+   <header>smallcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>smallspinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>presetComboBox</class>
+   <extends>QComboBox</extends>
+   <header>presetcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>verySmallPushButton</class>
+   <extends>QPushButton</extends>
+   <header>verysmallpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

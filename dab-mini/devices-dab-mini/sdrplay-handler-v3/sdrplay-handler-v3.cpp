@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of dab-mini
  *
- *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    dab-mini is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation version 2 of the License.
  *
- *    Qt-DAB is distributed in the hope that it will be useful,
+ *    dab-mini is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB if not, write to the Free Software
+ *    along with dab-mini if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -24,11 +24,8 @@
 #include	<QSettings>
 #include	<QTime>
 #include	<QDate>
-#include	<QLabel>
-#include	<QFileDialog>
 #include	"sdrplay-handler-v3.h"
 #include	"sdrplay-commands.h"
-#include	"xml-filewriter.h"
 
 static
 int     RSP1_Table []	= {0, 24, 19, 43};
@@ -60,61 +57,48 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	}
 }
 
-
-	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
-	                                       QString &recorderVersion):
-	                                          myFrame (nullptr),
+	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings	*s,
+	                                       QSpinBox		*GRdBSetting,
+	                                       QSpinBox		*lnaGainSetting,
+	                                       QCheckBox	*agcControl):
 	                                          _I_Buffer (4 * 1024 * 1024) {
-	sdrplaySettings			= s;
-	this	-> recorderVersion	= recorderVersion;
-	setupUi (&myFrame);
-	myFrame. show	();
-	antennaSelector		-> hide	();
-	tunerSelector		-> hide	();
+	sdrplaySettings		= s;
 	nrBits			= 12;	// default
+	this		-> GRdBSetting		= GRdBSetting;
+	GRdBSetting     -> setToolTip ("if gain reduction");
+        this		-> lnaGainSetting       = lnaGainSetting;
+        lnaGainSetting  -> setToolTip ("lna state selection");
+        this		-> agcControl           = agcControl;
+
 	denominator		= 2048;	// default
 
-	xmlDumper		= nullptr;
-	dumping. store	(false);
 //	See if there are settings from previous incarnations
 //	and config stuff
 
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
-	GRdBSelector 		-> setValue (
+	GRdBSetting 		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt());
 
 	lnaGainSetting		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-lnastate", 4). toInt());
 
-	ppmControl		-> setValue (
-	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
-
 	agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
 	if (agcMode) {
 	   agcControl -> setChecked (true);
-	   GRdBSelector         -> hide ();
-	   gainsliderLabel      -> hide ();
+	   GRdBSetting      -> hide ();
 	}
 	sdrplaySettings	-> endGroup	();
 
 //	and be prepared for future changes in the settings
-	connect (GRdBSelector, SIGNAL (valueChanged (int)),
+	connect (GRdBSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ifgainReduction (int)));
 	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_lnagainReduction (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
-	connect (ppmControl, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmControl (int)));
-	connect (antennaSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (set_antennaSelect (const QString &)));
-	connect (dumpButton, SIGNAL (clicked ()),
-                 this, SLOT (set_xmlDump ()));
 
 	vfoFrequency	= MHz (220);
-	theGain		= -1;
-	debugControl	-> hide ();
 	start ();
 	usleep (1000);
 }
@@ -125,43 +109,32 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	   usleep (1000);
 //	thread should be stopped by now
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
-	sdrplaySettings -> setValue ("sdrplay-ppm",
-	                                           ppmControl -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
-	                                           GRdBSelector -> value ());
+	                                           GRdBSetting -> value ());
 	sdrplaySettings -> setValue ("sdrplay-lnastate",
 	                                           lnaGainSetting -> value ());
 	sdrplaySettings	-> setValue ("sdrplay-agcMode",
 	                                  agcControl -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> endGroup ();
 	sdrplaySettings	-> sync();
-
-	myFrame. hide ();
 }
 
 /////////////////////////////////////////////////////////////////////////
 //	Implementing the interface
 /////////////////////////////////////////////////////////////////////////
 
-int32_t	sdrplayHandler_v3::defaultFrequency	() {
-	return Mhz (220);
-}
-
-int32_t	sdrplayHandler_v3::getVFOFrequency() {
-	return vfoFrequency;
-}
-
 bool	sdrplayHandler_v3::restartReader	(int32_t newFreq) {
-restartRequest r (newFreq);
+restartRequest r_1 (newFreq);
+GRdBRequest r_2 (GRdBSetting -> value ());
         if (receiverRuns. load ())
            return true;
         vfoFrequency    = newFreq;
-        return messageHandler (&r);
+        messageHandler (&r_1);
+        return messageHandler (&r_2);
 }
 
 void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
-	close_xmlDump ();
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -175,8 +148,6 @@ int	i;
         for (i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
                                         imag (temp [i]) / (float) denominator);
-        if (dumping. load ())
-           xmlWriter -> add (temp, amount);
         return amount;
 }
 
@@ -192,31 +163,9 @@ int16_t	sdrplayHandler_v3::bitDepth	() {
 	return nrBits;
 }
 
-QString	sdrplayHandler_v3::deviceName	() {
-	return deviceModel;
-}
-
 ///////////////////////////////////////////////////////////////////////////
 //	Handling the GUI
 //////////////////////////////////////////////////////////////////////
-
-void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
-	lnaGainSetting	-> setRange (low, high);
-	lnaGRdBDisplay	->
-	         display (get_lnaGRdB (hwVersion, lnaGainSetting -> value ()));
-}
-
-void	sdrplayHandler_v3::set_deviceName (const QString& s) {
-	deviceLabel	-> setText (s);
-}
-
-void	sdrplayHandler_v3::set_serial	(const QString& s) {
-	serialNumber	-> setText (s);
-}
-
-void	sdrplayHandler_v3::set_apiVersion (float version) {
-	api_version	-> display (version);
-}
 
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
@@ -230,7 +179,6 @@ lnaRequest r (lnaState);
 	if (!receiverRuns. load ())
            return;
         messageHandler (&r);
-	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
 
 void	sdrplayHandler_v3::set_agcControl (int dummy) {
@@ -239,114 +187,13 @@ agcRequest r (agcMode, 30);
 	(void)dummy;
         messageHandler (&r);
 	if (agcMode) {
-           GRdBSelector         -> hide ();
-           gainsliderLabel      -> hide ();
+           GRdBSetting		-> hide ();
 	}
 	else {
-	   GRdBSelector		-> show ();
-	   gainsliderLabel	-> show ();
+	   GRdBSetting		-> show ();
 	}
 }
 
-void	sdrplayHandler_v3::set_ppmControl (int ppm) {
-ppmRequest r (ppm);
-        messageHandler (&r);
-}
-
-void	sdrplayHandler_v3::set_antennaSelect	(const QString &s) {
-antennaRequest r (s == "Antenna A" ? 'A' : 'B');
-        messageHandler (&r);
-}
-
-void	sdrplayHandler_v3::set_xmlDump () {
-	if (xmlDumper == nullptr) {
-	  if (setup_xmlDump ())
-	      dumpButton	-> setText ("writing");
-	}
-	else {
-	   close_xmlDump ();
-	   dumpButton	-> setText ("Dump");
-	}
-}
-//
-////////////////////////////////////////////////////////////////////////
-//	showing data
-////////////////////////////////////////////////////////////////////////
-void	sdrplayHandler_v3::set_antennaSelect (bool b) {
-	if (b)
-	   antennaSelector		-> show	();
-	else
-	   antennaSelector		-> hide	();
-}
-
-void	sdrplayHandler_v3::show_tunerSelector	(bool b) {
-	if (b)
-	   tunerSelector	-> show	();
-	else
-	   tunerSelector	-> hide	();
-}
-
-static inline
-bool	isValid (QChar c) {
-	return c. isLetterOrNumber () || (c == '-');
-}
-
-bool	sdrplayHandler_v3::setup_xmlDump () {
-QTime theTime;
-QDate theDate;
-QString saveDir = sdrplaySettings -> value ("saveDir_xmlDump",
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
-
-	QString channel		= sdrplaySettings -> value ("channel", "xx").
-	                                                      toString ();
-	QString timeString      = theDate. currentDate (). toString () + "-" +
-	                          theTime. currentTime (). toString ();
-        for (int i = 0; i < timeString. length (); i ++)
-           if (!isValid (timeString. at (i)))
-              timeString. replace (i, 1, "-");
-
-	QString suggestedFileName =
-                    saveDir + deviceModel + "-" + channel + "-" +timeString;
-	QString fileName =
-	           QFileDialog::getSaveFileName (nullptr,
-	                                         tr ("Save file ..."),
-	                                         suggestedFileName +".uff",
-	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
-	if (xmlDumper == nullptr)
-	   return false;
-	
-	xmlWriter	= new xml_fileWriter (xmlDumper,
-	                                      nrBits,
-	                                      "int16",
-	                                      2048000,
-	                                      vfoFrequency,
-	                                      "SDRplay",
-	                                      "????",
-	                                      recorderVersion);
-	dumping. store (true);
-
-	QString dumper	= QDir::fromNativeSeparators (fileName);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-        sdrplaySettings -> setValue ("saveDir_xmlDump", saveDir);
-	return true;
-}
-
-void	sdrplayHandler_v3::close_xmlDump () {
-	if (xmlDumper == nullptr)	// this can happen !!
-	   return;
-	dumping. store (false);
-	usleep (1000);
-	xmlWriter	-> computeHeader ();
-	delete xmlWriter;
-	fclose (xmlDumper);
-	xmlDumper	= nullptr;
-}
-//
 ///////////////////////////////////////////////////////////////////////
 //	the real controller starts here
 ///////////////////////////////////////////////////////////////////////
@@ -400,7 +247,6 @@ void	EventCallback (sdrplay_api_EventT eventId,
                        void *cbContext) {
 sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 	(void)tuner;
-	p -> theGain	= params -> gainParams. currGain;
 	switch (eventId) {
 	   case sdrplay_api_GainChange:
 	      break;
@@ -441,17 +287,6 @@ uint32_t                ndev;
 	chosenDevice		= nullptr;
 	deviceParams		= nullptr;
 
-	connect (this, SIGNAL (set_lnabounds_signal (int, int)),
-	         this, SLOT (set_lnabounds (int, int)));
-	connect (this, SIGNAL (set_deviceName_signal (const QString &)),
-	         this, SLOT (set_deviceName (const QString &)));
-	connect (this, SIGNAL (set_serial_signal (const QString &)),
-	         this, SLOT (set_serial (const QString &)));
-	connect (this, SIGNAL (set_apiVersion_signal (float)),
-	         this, SLOT (set_apiVersion (float)));
-	connect (this, SIGNAL (set_antennaSelect_signal (bool)),
-	         this, SLOT (set_antennaSelect (bool)));
-
 	denominator		= 2048;		// default
 	nrBits			= 12;		// default
 
@@ -486,7 +321,7 @@ uint32_t                ndev;
 	   goto closeAPI;
         }
 
-        if (apiVersion < 3.06) {
+        if (apiVersion < 3.05) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
 	   goto closeAPI;
@@ -579,21 +414,18 @@ uint32_t                ndev;
 	      deviceModel	= "RSP-I";
 	      denominator	= 2048;
 	      nrBits		= 12;
-	      has_antennaSelect	= false;
 	      break;
 	   case 2:		// RSP II
 	      lna_upperBound	= 8;
 	      deviceModel 	= "RSP-II";
 	      denominator	= 2048;
 	      nrBits		= 14;
-	      has_antennaSelect	= true;
 	      break;
 	   case 3:		// RSP-DUO
 	      lna_upperBound	= 9;
 	      deviceModel	= "RSP-DUO";
 	      denominator	= 2048;
 	      nrBits		= 12;
-	      has_antennaSelect	= false;
 	      break;
 	   default:
 	   case 255:		// RSP-1A
@@ -601,15 +433,10 @@ uint32_t                ndev;
 	      deviceModel	= "RSP-1A";
 	      denominator	= 8192;
 	      nrBits		= 14;
-	      has_antennaSelect	= false;
 	      break;
 	}
 
-	set_lnabounds_signal	(0, lna_upperBound);
-	set_deviceName_signal	(deviceModel);
-	set_serial_signal	(serial);
-	set_apiVersion_signal	(apiVersion);
-	set_antennaSelect_signal (has_antennaSelect);
+	lnaGainSetting -> setRange	(0, lna_upperBound);
 	threadRuns. store (true);	// it seems we can do some work
 
 	while (threadRuns. load ()) {
@@ -697,17 +524,6 @@ uint32_t                ndev;
 	      case PPM_REQUEST: {
 	         ppmRequest *p = (ppmRequest *)(server_queue. front ());
 	         server_queue. pop ();
-	         p -> result	= false;
-	         deviceParams    -> devParams -> ppm = p -> ppmValue;
-                 err = sdrplay_api_Update (chosenDevice -> dev,
-                                           chosenDevice -> tuner,
-                                           sdrplay_api_Update_Dev_Ppm,
-                                           sdrplay_api_Update_Ext1_None);
-                 if (err != sdrplay_api_Success) {
-                    fprintf (stderr, "lna: error %s\n",
-                                      sdrplay_api_GetErrorString (err));
-	            p -> result = false;
-	         }
 	         p -> waiter. release (1);
 	         break;
 	      }
@@ -734,18 +550,6 @@ uint32_t                ndev;
 	      case ANTENNASELECT_REQUEST: {
 	         antennaRequest *p = (antennaRequest *)(server_queue. front ());
 	         server_queue. pop ();
-	         p -> result = true;
-	         deviceParams    -> rxChannelA -> rsp2TunerParams. antennaSel =
-                                    p -> antenna == 'A' ?
-                                             sdrplay_api_Rsp2_ANTENNA_A:
-                                             sdrplay_api_Rsp2_ANTENNA_B;
-                 err = sdrplay_api_Update (chosenDevice -> dev,
-                                           chosenDevice -> tuner,
-                                           sdrplay_api_Update_Rsp2_AntennaControl,
-                                           sdrplay_api_Update_Ext1_None);
-                 if (err != sdrplay_api_Success)
-	            p -> result = false;
-
 	         p -> waiter. release (1);
 	         break;
 	      }
@@ -755,7 +559,6 @@ uint32_t                ndev;
 	                        (gainvalueRequest *)(server_queue. front ());
 	         server_queue. pop ();
 	         p -> result = true;
-	         p -> gainValue = theGain;
 	         p -> waiter. release (1);
 	         break;
 	      }
@@ -963,17 +766,5 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	}
 
 	return true;
-}
-
-void	sdrplayHandler_v3::show		() {
-	myFrame. show ();
-}
-
-void	sdrplayHandler_v3::hide		() {
-	myFrame. hide ();
-}
-
-bool	sdrplayHandler_v3::isHidden	() {
-	return myFrame. isHidden ();
 }
 

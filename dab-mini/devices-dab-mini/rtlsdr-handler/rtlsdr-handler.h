@@ -80,7 +80,7 @@ public:
 	int16_t		bitDepth	(void);
 //
 //	These need to be visible for the separate usb handling thread
-	RingBuffer<uint8_t>	*_I_Buffer;
+	RingBuffer<uint8_t>	_I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
 private:

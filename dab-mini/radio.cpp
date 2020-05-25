@@ -44,6 +44,9 @@
 #ifdef	HAVE_SDRPLAY
 #include	"sdrplay-handler.h"
 #endif
+#ifdef	HAVE_SDRPLAY_V3
+#include	"sdrplay-handler-v3.h"
+#endif
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
 #endif
@@ -234,6 +237,8 @@ QString	presetName;
 
 	frameDumper	= nullptr;
 	startChannel (channelSelector -> currentText ());
+	ficSuccess	= 0;
+	ficBlocks	= 0;
 	running. store (true);
 }
 
@@ -479,6 +484,18 @@ deviceHandler *inputDevice;
 	   return inputDevice;
 	} catch (int e) {}
 #endif
+#ifdef	HAVE_SDRPLAY_V3
+	try {
+	   inputDevice	= new sdrplayHandler_v3 (dabSettings,
+	                                         gainSelector,
+	                                         lnaSelector,
+	                                         agcControl);
+	   gainSelector	-> show ();
+	   lnaSelector	-> show ();
+	   agcControl -> show ();
+	   return inputDevice;
+	} catch (int e) {}
+#endif
 #ifdef	HAVE_RTLSDR
 	try {
 	   inputDevice	= new rtlsdrHandler (dabSettings,
@@ -548,7 +565,18 @@ void	RadioInterface::show_aacErrors (int s) {
 }
 
 void	RadioInterface::show_ficSuccess (bool b) {
-	(void)b;
+	if (b) 
+	   ficSuccess ++;
+	if (++ficBlocks >= 25){
+	   if (ficSuccess > 24)
+	      ficLabel ->
+	          setStyleSheet ("QLabel {background-color : green; color: white}");
+	   else
+	      ficLabel ->
+	          setStyleSheet ("QLabel {background-color : red; color: white}");
+	   ficBlocks	= 0;
+	   ficSuccess	= 0;
+	}
 }
 
 void	RadioInterface::show_motHandling (bool b) {
@@ -809,6 +837,8 @@ QString serviceName	= s -> serviceName;
 	   stopService ();
 	}
 
+	ficBlocks		= 0;
+	ficSuccess		= 0;
 	currentService		= *s;
 	currentService. valid	= false;
 	int rowCount		= model. rowCount ();
@@ -1005,6 +1035,8 @@ void	RadioInterface::stopChannel	() {
 	if ((inputDevice == nullptr) || (my_dabProcessor == nullptr))
 	   return;
 	soundOut		-> stop ();
+	ficSuccess		= 0;
+	ficBlocks		= 0;
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
 	signalTimer. stop ();

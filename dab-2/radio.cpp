@@ -632,7 +632,8 @@ deviceHandler	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new sdrplayHandler_v3 (this,
 	                                                 dabSettings, 
-	                                                 my_dabProcessor);
+	                                                 my_dabProcessor,
+	                                                 version);
 	      showButtons();
 	   }
 	   catch (int e) {
