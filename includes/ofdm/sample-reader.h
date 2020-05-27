@@ -64,7 +64,6 @@ private:
 		int32_t		localCounter;
 		int32_t		bufferSize;
 		int32_t		currentPhase;
-		std::complex<float>	*oscillatorTable;
 		std::atomic<bool>	running;
 		int32_t		bufferContent;
 		float		sLevel;

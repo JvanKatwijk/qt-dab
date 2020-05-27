@@ -106,7 +106,6 @@ private:
 	int32_t		lastFrequency;
 	bool		libraryLoaded;
 	bool		open;
-	int		*gains;
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;

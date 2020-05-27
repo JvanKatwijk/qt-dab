@@ -122,7 +122,7 @@ private:
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
 	QStringList	antennaList;
-	RingBuffer<std::complex<int16_t>> *_I_Buffer;
+	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;

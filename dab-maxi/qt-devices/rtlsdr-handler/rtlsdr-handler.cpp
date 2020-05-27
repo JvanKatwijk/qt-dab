@@ -128,7 +128,6 @@ char	manufac [256], product [256], serial [256];
 	open			= false;
 	workerHandle		= nullptr;
 	lastFrequency		= KHz (22000);	// just a dummy
-	gains			= nullptr;
 
 #ifdef	__MINGW32__
 	const char *libraryString = "rtlsdr.dll";
@@ -216,18 +215,19 @@ char	manufac [256], product [256], serial [256];
 	
 	gainsCount = rtlsdr_get_tuner_gains (device, nullptr);
 	fprintf(stderr, "Supported gain values (%d): ", gainsCount);
-	gains		= new int [gainsCount];
-	gainsCount	= rtlsdr_get_tuner_gains (device, gains);
-	for (i = gainsCount; i > 0; i--) {
-	   fprintf(stderr, "%.1f ", gains [i - 1] / 10.0);
-	   combo_gain -> addItem (QString::number (gains [i - 1]));
+	{  int gains [gainsCount];
+	   gainsCount	= rtlsdr_get_tuner_gains (device, gains);
+	   for (i = gainsCount; i > 0; i--) {
+	      fprintf(stderr, "%.1f ", gains [i - 1] / 10.0);
+	      combo_gain -> addItem (QString::number (gains [i - 1]));
+	   }
+	   fprintf(stderr, "\n");
+	   theGain		= gains [gainsCount / 2];	// default
 	}
-	fprintf(stderr, "\n");
 
 	rtlsdr_set_tuner_gain_mode (device, 1);
 	rtlsdr_set_agc_mode (device, 0);
 
-	theGain		= gains [gainsCount / 2];	// default
 //
 //	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
@@ -314,9 +314,6 @@ char	manufac [256], product [256], serial [256];
 #else
 	dlclose (Handle);
 #endif
-	if (gains != nullptr)
-	   delete[] gains;
-//	delete	myFrame;
 }
 
 void	rtlsdrHandler::setVFOFrequency	(int32_t f) {

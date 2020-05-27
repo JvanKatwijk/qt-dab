@@ -31,7 +31,8 @@ lms_info_str_t limedevices [10];
 	limeHandler::limeHandler (QSettings	*limeSettings,
 	                          QSpinBox	*gainSelector,
 	                          QSpinBox	*lnaGainSetting,
-	                          QCheckBox      *agcControl) {
+	                          QCheckBox      *agcControl):
+	                             _I_Buffer (4 * 1024 * 1024) {
 	this	-> limeSettings		= limeSettings;
 	this	-> gainSelector		= gainSelector;
         this	-> lnaGainSetting	= lnaGainSetting;
@@ -140,7 +141,6 @@ lms_info_str_t limedevices [10];
 
 	LMS_Calibrate (theDevice, LMS_CH_RX, 0, 2500000.0, 0);
 	
-	_I_Buffer	= new RingBuffer<std::complex<int16_t>> (8 * 1024 * 1024);
 
 	gainSelector	-> setRange (0, 73);
 	limeSettings	-> beginGroup ("limeSettings");
@@ -162,7 +162,6 @@ lms_info_str_t limedevices [10];
 	limeSettings	-> setValue ("gain", gainSelector -> value());
 	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
-	delete _I_Buffer;
 }
 
 void	limeHandler::setGain		(int g) {
@@ -206,7 +205,7 @@ void	limeHandler::stopReader() {
 int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 int i;
-        int amount      = _I_Buffer     -> getDataFromBuffer (temp, size);
+        int amount      = _I_Buffer. getDataFromBuffer (temp, size);
         for (i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / 2048.0,
                                         imag (temp [i]) / 2048.0);
@@ -214,11 +213,11 @@ int i;
 }
 
 int	limeHandler::Samples() {
-	return _I_Buffer -> GetRingBufferReadAvailable();
+	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
 void	limeHandler::resetBuffer() {
-	_I_Buffer	-> FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer();
 }
 
 int16_t	limeHandler::bitDepth() {
@@ -238,7 +237,7 @@ int	amountRead	= 0;
 	   res = LMS_RecvStream (&stream, localBuffer,
 	                                     FIFO_SIZE,  &meta, 1000);
 	   if (res > 0) {
-	      _I_Buffer -> putDataIntoBuffer (localBuffer, res);
+	      _I_Buffer. putDataIntoBuffer (localBuffer, res);
 	      amountRead	+= res;
 	      res	= LMS_GetStreamStatus (&stream, &streamStatus);
 	      underruns	+= streamStatus. underrun;

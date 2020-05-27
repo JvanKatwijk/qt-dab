@@ -3,9 +3,10 @@
 /*
  *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -179,7 +180,7 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
-QByteArray	TII_Detector::processNULL() {
+QByteArray	TII_Detector::processNULL () {
 int i, j;
 float	hulpTable	[NUM_GROUPS * GROUPSIZE];
 float	C_table		[GROUPSIZE];	// contains the values
@@ -198,7 +199,7 @@ QByteArray results;
 //
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the
-//	NUM_GROUPS GROUPSIZE-value groups. 
+//	NUM_GROUPS GROUPSIZE - value groups. 
 
 	memset (avgTable, 0, NUM_GROUPS * sizeof (float));
 	for (i = 0; i < NUM_GROUPS; i ++) {

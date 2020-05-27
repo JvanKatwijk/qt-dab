@@ -1218,13 +1218,13 @@ void	RadioInterface::TerminateProcess() {
 	displayTimer. stop();
 	signalTimer.  stop();
 	presetTimer.  stop();
+	dumpControlState (dabSettings);
 	soundOut		-> stop();
 	if (inputDevice != nullptr) 
 	   inputDevice		-> stopReader ();	// might be concurrent
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor	-> stop();		
 
-	dumpControlState (dabSettings);
 	my_presetHandler. savePresets (presetSelector);
 	stop_frameDumping		();
 	stop_audioDumping		();
