@@ -139,6 +139,11 @@ Not yet or partly implemented:
 
 Qt-DAB supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
+Note:
+While the 2.13 support for SDRplay devices is able to handle
+the RSP 1, RSP II, RSP Ia and RSP duo, for handling the RSP-Dx one
+needs 3.06 (3.07) support
+
 ------------------------------------------------------------------
 Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------

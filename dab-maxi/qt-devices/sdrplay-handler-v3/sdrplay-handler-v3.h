@@ -94,6 +94,8 @@ private:
 	sdrplay_api_CallbackFnsT        cbFns;
 	sdrplay_api_RxChannelParamsT    *chParams;
 
+	bool				failFlag;
+	bool			successFlag;
 	int			denominator;
         std::atomic<bool>       threadRuns;
 	void			run			();

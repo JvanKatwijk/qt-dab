@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=dabMini
+Exec=dabMini
+Icon=dab-mini
+Type=Application
+Categories=AudioVideo;
+Comment=A DAB/DAB+ decoder using Qt and C++

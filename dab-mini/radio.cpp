@@ -472,24 +472,24 @@ deviceHandler *inputDevice;
 	gainSelector	-> hide ();
 	lnaSelector	-> hide ();
 	agcControl	-> hide ();
-#ifdef	HAVE_SDRPLAY
-	try {
-	   inputDevice	= new sdrplayHandler (dabSettings,
-	                                      gainSelector,
-	                                      lnaSelector,
-	                                      agcControl);
-	   gainSelector	-> show ();
-	   lnaSelector	-> show ();
-	   agcControl -> show ();
-	   return inputDevice;
-	} catch (int e) {}
-#endif
 #ifdef	HAVE_SDRPLAY_V3
 	try {
 	   inputDevice	= new sdrplayHandler_v3 (dabSettings,
 	                                         gainSelector,
 	                                         lnaSelector,
 	                                         agcControl);
+	   gainSelector	-> show ();
+	   lnaSelector	-> show ();
+	   agcControl -> show ();
+	   return inputDevice;
+	} catch (int e) {}
+#endif
+#ifdef	HAVE_SDRPLAY
+	try {
+	   inputDevice	= new sdrplayHandler (dabSettings,
+	                                      gainSelector,
+	                                      lnaSelector,
+	                                      agcControl);
 	   gainSelector	-> show ();
 	   lnaSelector	-> show ();
 	   agcControl -> show ();

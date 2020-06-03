@@ -40,6 +40,9 @@ static
 int	RSPduo_Table []	= {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 static
+int     RSPDx_Table []  = {0, 3, 6, 9, 12, 15, 24,27, 30, 33, 36, 39, 42, 45,
+                           48, 51, 54, 57, 60, 53, 66, 69, 72, 75, 78, 81, 84};
+static
 int	get_lnaGRdB (int hwVersion, int lnaState) {
 	switch (hwVersion) {
 	   case 1:
@@ -54,6 +57,9 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	   case 3:
 	      return RSPduo_Table [lnaState];
+
+	   case 4:
+              return RSPDx_Table [lnaState];
 	}
 }
 
@@ -99,8 +105,17 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	         this, SLOT (set_agcControl (int)));
 
 	vfoFrequency	= MHz (220);
+	failFlag	= false;
+	successFlag	= false;
 	start ();
-	usleep (1000);
+	while (!failFlag && !successFlag)
+	   usleep (1000);
+	if (failFlag) {
+	   while (isRunning ())
+	      usleep (1000);
+	   throw (21);
+	}
+	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
 }
 
 	sdrplayHandler_v3::~sdrplayHandler_v3 () {
@@ -297,6 +312,7 @@ uint32_t                ndev;
 //	load the functions
 	bool success	= loadFunctions ();
 	if (!success) {
+	   failFlag	= true;
 	   releaseLibrary ();
 	   return;
         }
@@ -308,6 +324,7 @@ uint32_t                ndev;
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 	   releaseLibrary ();
+	   failFlag	= true;
 	   return;
 	}
 
@@ -427,6 +444,13 @@ uint32_t                ndev;
 	      denominator	= 2048;
 	      nrBits		= 12;
 	      break;
+	   case 4:		// RSPDx
+	      lna_upperBound	= 26;
+	      deviceModel	= "RSP-Dx";
+	      denominator	= 2048;
+	      nrBits		= 14;
+	      break;
+
 	   default:
 	   case 255:		// RSP-1A
 	      lna_upperBound	= 9;
@@ -439,6 +463,7 @@ uint32_t                ndev;
 	lnaGainSetting -> setRange	(0, lna_upperBound);
 	threadRuns. store (true);	// it seems we can do some work
 
+	successFlag	= true;
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
@@ -593,6 +618,7 @@ normal_exit:
 unlockDevice_closeAPI:
 	sdrplay_api_UnlockDeviceApi	();
 closeAPI:	
+	failFlag	= true;
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
 	releaseLibrary	();

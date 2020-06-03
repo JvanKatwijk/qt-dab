@@ -80,13 +80,14 @@ public:
 	FILE			*xmlDumper;
 
 private:
+	bool			successFlag;
+	bool			failFlag;
 	QString			recorderVersion;
 	QFrame			myFrame;
 	QSettings		*sdrplaySettings;
 	int			inputRate;
 	void			run			();
 	bool			messageHandler		(generalCommand *);
-	std::atomic<int>	reportIndicator;
 	int32_t			vfoFrequency;
 	int			totalOffset;
 	sdrplay_api_Open_t	sdrplay_api_Open;

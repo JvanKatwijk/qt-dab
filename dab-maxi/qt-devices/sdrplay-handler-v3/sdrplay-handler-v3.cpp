@@ -43,6 +43,10 @@ static
 int	RSPduo_Table []	= {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 static
+int     RSPDx_Table []  = {0, 3, 6, 9, 12, 15, 24,27, 30, 33, 36, 39, 42, 45,
+                           48, 51, 54, 57, 60, 53, 66, 69, 72, 75, 78, 81, 84};
+
+static
 int	get_lnaGRdB (int hwVersion, int lnaState) {
 	switch (hwVersion) {
 	   case 1:
@@ -57,6 +61,9 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	   case 3:
 	      return RSPduo_Table [lnaState];
+
+	   case 4:
+	      return RSPDx_Table [lnaState];
 	}
 }
 
@@ -91,12 +98,13 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
+	sdrplaySettings	-> endGroup	();
+
 	if (agcMode) {
 	   agcControl -> setChecked (true);
 	   GRdBSelector         -> hide ();
 	   gainsliderLabel      -> hide ();
 	}
-	sdrplaySettings	-> endGroup	();
 
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, SIGNAL (valueChanged (int)),
@@ -115,8 +123,17 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	vfoFrequency	= MHz (220);
 	theGain		= -1;
 	debugControl	-> hide ();
+	failFlag	= false;
+	successFlag	= false;
 	start ();
-	usleep (1000);
+	while (!failFlag && !successFlag)
+	   usleep (1000);
+	if (failFlag) {
+	   while (isRunning ())
+	      usleep (1000);
+	   throw (21);
+	}
+	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
 }
 
 	sdrplayHandler_v3::~sdrplayHandler_v3 () {
@@ -456,12 +473,15 @@ uint32_t                ndev;
 	nrBits			= 12;		// default
 
 	Handle			= fetchLibrary ();
-	if (Handle == nullptr)
+	if (Handle == nullptr) {
+	   failFlag	= true;
 	   return;
+	}
 
 //	load the functions
 	bool success	= loadFunctions ();
 	if (!success) {
+	   failFlag	= true;
 	   releaseLibrary ();
 	   return;
         }
@@ -472,6 +492,7 @@ uint32_t                ndev;
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
+	   failFlag	= true;
 	   releaseLibrary ();
 	   return;
 	}
@@ -595,6 +616,13 @@ uint32_t                ndev;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
 	      break;
+	   case 4:		// RSPDx
+	      lna_upperBound	= 26;
+	      deviceModel	= "RSPDx";
+	      denominator	= 2048;
+	      nrBits		= 14;
+	      has_antennaSelect	= true;
+	      break;
 	   default:
 	   case 255:		// RSP-1A
 	      lna_upperBound	= 9;
@@ -611,7 +639,7 @@ uint32_t                ndev;
 	set_apiVersion_signal	(apiVersion);
 	set_antennaSelect_signal (has_antennaSelect);
 	threadRuns. store (true);	// it seems we can do some work
-
+	successFlag	= true;
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
@@ -735,14 +763,14 @@ uint32_t                ndev;
 	         antennaRequest *p = (antennaRequest *)(server_queue. front ());
 	         server_queue. pop ();
 	         p -> result = true;
-	         deviceParams    -> rxChannelA -> rsp2TunerParams. antennaSel =
+	         deviceParams -> rxChannelA -> rsp2TunerParams. antennaSel =
                                     p -> antenna == 'A' ?
                                              sdrplay_api_Rsp2_ANTENNA_A:
                                              sdrplay_api_Rsp2_ANTENNA_B;
                  err = sdrplay_api_Update (chosenDevice -> dev,
-                                           chosenDevice -> tuner,
-                                           sdrplay_api_Update_Rsp2_AntennaControl,
-                                           sdrplay_api_Update_Ext1_None);
+                                              chosenDevice -> tuner,
+                                              sdrplay_api_Update_Rsp2_AntennaControl,
+                                              sdrplay_api_Update_Ext1_None);
                  if (err != sdrplay_api_Success)
 	            p -> result = false;
 
@@ -790,6 +818,7 @@ normal_exit:
 unlockDevice_closeAPI:
 	sdrplay_api_UnlockDeviceApi	();
 closeAPI:	
+	failFlag	= true;
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
 	releaseLibrary	();

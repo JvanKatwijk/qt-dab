@@ -93,6 +93,8 @@ private:
 	QSpinBox		*GRdBSetting;
 	QCheckBox		*agcControl;
 
+	bool			successFlag;
+	bool			failFlag;
 	int			denominator;
         std::atomic<bool>       threadRuns;
 	void			run			();

@@ -415,13 +415,14 @@ add_definitions (-D__MSC_THREAD__)
 
 	   include_directories (
 	     ./devices-dab-mini/sdrplay-handler-v3
+	     ./devices-dab-mini/sdrplay-handler-v3/includes
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./devices-dab-mini/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ./devices-dab-mini/sdrplay-handler-v3/sdrplay-commands.h
-	        ./devices-dab-mini/sdrplay-handler-v3/sdrplay_api.h
+	        ./devices-dab-mini/sdrplay-handler-v3/includes/sdrplay_api.h
            )
 
 	   set (${objectName}_SRCS

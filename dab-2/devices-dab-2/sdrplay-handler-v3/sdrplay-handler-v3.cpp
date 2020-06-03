@@ -44,6 +44,10 @@ static
 int	RSPduo_Table []	= {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 static
+int	RSPDx_Table []	= {0, 3, 6, 9, 12, 15, 24,27, 30, 33, 36, 39, 42, 45,
+	                   48, 51, 54, 57, 60, 53, 66, 69, 72, 75, 78, 81, 84};
+
+static
 int	get_lnaGRdB (int hwVersion, int lnaState) {
 	switch (hwVersion) {
 	   case 1:
@@ -58,6 +62,9 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	   case 3:
 	      return RSPduo_Table [lnaState];
+
+	   case 4:
+	      return RSPDx_Table [lnaState];
 	}
 }
 
@@ -118,17 +125,18 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	connect (gain_setpoint, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gain (int)));
 	threadRuns. store (false);
-	reportIndicator. store (0);
+	successFlag	= false;
+	failFlag	= false;
 	start ();
-	while (reportIndicator. load () == 0)
+	while (!successFlag && !failFlag)
 	   usleep (1000);
-	if (reportIndicator. load () > 1) {
+	if (failFlag) {
 	   while (isRunning ())
 	      usleep (1000);
-	   fprintf (stderr, "foute boel\n");
 	   throw (24);
 	}
 
+	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
 //	OK, the controller runs, let us extract the
 //	data to show on the gui
 
@@ -372,7 +380,6 @@ sdrplay_api_ErrT        err;
 sdrplay_api_DeviceT     devs [6];
 uint32_t                ndev;
 
-	reportIndicator. store (0);
         threadRuns. store (false);
 	receiverRuns. store (false);
 
@@ -394,13 +401,16 @@ uint32_t                ndev;
 	nrBits			= 12;		// default
 
 	Handle			= fetchLibrary ();
-	if (Handle == nullptr)
+	if (Handle == nullptr) {
+	   failFlag	= true;
 	   return;
+	}
 
 //	load the functions
 	bool success	= loadFunctions ();
 	if (!success) {
 	   releaseLibrary ();
+	   failFlag	= true;
 	   return;
         }
 	fprintf (stderr, "functions loaded\n");
@@ -411,6 +421,7 @@ uint32_t                ndev;
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 	   releaseLibrary ();
+	   failFlag	= true;
 	   return;
 	}
 
@@ -480,6 +491,7 @@ uint32_t                ndev;
 //	set the parameter values
 	chParams	= deviceParams -> rxChannelA;
 	deviceParams	-> devParams -> fsFreq. fsHz	= inputRate;
+
 	chParams	-> tunerParams. bwType = sdrplay_api_BW_1_536;
 	chParams	-> tunerParams. ifType = sdrplay_api_IF_Zero;
 //
@@ -535,6 +547,13 @@ uint32_t                ndev;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
 	      break;
+	   case 4:		// RSPDx
+	      lna_upperBound	= 26;
+	      deviceName	= "RSP_DX";
+	      denominator	= 2048;
+	      nrBits		= 14;
+              has_antennaSelect	= true;
+	      break;
 	   default:
 	   case 255:		// RSP-1A
 	      lna_upperBound	= 9;
@@ -546,7 +565,7 @@ uint32_t                ndev;
 	}
 
 	threadRuns. store (true);	// it seems we can do some work
-	reportIndicator. store (1);
+	successFlag	= true;
 
 	fprintf (stderr, "ready for action\n");
 	usleep (1000);
@@ -703,10 +722,12 @@ uint32_t                ndev;
 	         antennaRequest *p = (antennaRequest *)(server_queue. front ());
 	         server_queue. pop ();
 	         p -> result = true;
+	                                  sdrplay_api_RspDx_ANTENNA_B :
+	                                  sdrplay_api_Rsp2_ANTENNA_B;
 	         deviceParams    -> rxChannelA -> rsp2TunerParams. antennaSel =
-                                    p -> antenna == 'A' ?
-                                             sdrplay_api_Rsp2_ANTENNA_A:
-                                             sdrplay_api_Rsp2_ANTENNA_B;
+                                    p -> antenna == 'A' ? 
+	                                  sdrplay_api_Rsp2_ANTENNA_A:
+	                                  sdrplay_api_Rsp2_ANTENNA_B;
                  err = sdrplay_api_Update (chosenDevice -> dev,
                                            chosenDevice -> tuner,
                                            sdrplay_api_Update_Rsp2_AntennaControl,
@@ -744,7 +765,6 @@ normal_exit:
 	   fprintf (stderr, "sdrplay_api_ReleaseDevice failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
 
-//	sdrplay_api_UnlockDeviceApi	(); ??
         sdrplay_api_Close               ();
 	if (err != sdrplay_api_Success) 
 	   fprintf (stderr, "sdrplay_api_Close failed %s\n",
@@ -758,7 +778,7 @@ normal_exit:
 unlockDevice_closeAPI:
 	sdrplay_api_UnlockDeviceApi	();
 closeAPI:	
-	reportIndicator. store (2);
+	failFlag	= true;
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
 	releaseLibrary	();
