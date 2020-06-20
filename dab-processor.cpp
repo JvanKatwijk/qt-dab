@@ -70,7 +70,7 @@
 	this	-> carriers		= params. get_carriers();
 	this	-> carrierDiff		= params. get_carrierDiff();
 
-	this	-> tii_delay		= tii_delay;
+	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 
 	ofdmBuffer. resize (2 * T_s);

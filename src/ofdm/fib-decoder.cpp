@@ -481,9 +481,10 @@ dabConfig	*localBase = CN_bit == 0 ? currentConfig : nextConfig;
 	QString serviceName =
 	    ensemble -> services [serviceIndex]. serviceLabel;
 
-	if (!ensemble -> services [serviceIndex]. is_shown)
+	if (!ensemble -> services [serviceIndex]. is_shown) {
 	   addtoEnsemble (serviceName,
 	                  ensemble -> services [serviceIndex]. SId);
+	}
 	ensemble -> services [serviceIndex]. is_shown			= true;
 	localBase -> serviceComps [serviceCompIndex]. is_madePublic	= true;
 	localBase -> serviceComps [serviceCompIndex]. subchannelId 	= SubChId;

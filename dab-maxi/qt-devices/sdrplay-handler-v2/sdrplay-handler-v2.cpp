@@ -38,8 +38,8 @@ int     RSP1A_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 static
 int     RSP2_Table [] = {0, 10, 15, 21, 24, 34, 39, 45, 64};
 
-static
-int	RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
+//static
+//int	RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 static
 int	get_lnaGRdB (int hwVersion, int lnaState) {
@@ -58,8 +58,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	here we start
 	sdrplayHandler::sdrplayHandler  (QSettings *s,
 	                                 QString &recorderVersion):
-	                                           myFrame (nullptr),
-	                                           _I_Buffer (4 * 1024 * 1024) {
+	                                           _I_Buffer (4 * 1024 * 1024),
+	                                           myFrame (nullptr) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
@@ -254,27 +254,6 @@ sdrplaySelect	*sdrplaySelector;
 	if (numofDevs > 0)
 	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	releaseLibrary	();
-}
-
-static inline
-int16_t	bankFor_sdr (int32_t freq) {
-	if (freq < 12 * MHz (1))
-	   return mir_sdr_BAND_AM_LO;
-	if (freq < 30 * MHz (1))
-	   return mir_sdr_BAND_AM_MID;
-	if (freq < 60 * MHz (1))
-	   return mir_sdr_BAND_AM_HI;
-	if (freq < 120 * MHz (1))
-	   return mir_sdr_BAND_VHF;
-	if (freq < 250 * MHz (1))
-	   return mir_sdr_BAND_3;
-	if (freq < 420 * MHz (1))
-	   return mir_sdr_BAND_X;
-	if (freq < 1000 * MHz (1))
-	   return mir_sdr_BAND_4_5;
-	if (freq < 2000 * MHz (1))
-	   return mir_sdr_BAND_L;
-	return -1;
 }
 
 int32_t	sdrplayHandler::defaultFrequency() {

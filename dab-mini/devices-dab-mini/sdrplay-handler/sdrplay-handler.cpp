@@ -24,17 +24,17 @@
 #include	"sdrplay-handler.h"
 #include	"sdrplayselect.h"
 
-static
-int     RSP1_Table [] = {0, 24, 19, 43};
-//
-static
-int     RSP1A_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
-//
-static
-int     RSP2_Table [] = {0, 10, 15, 21, 24, 34, 39, 45, 64};
-//
-static
-int     RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
+//static
+//int     RSP1_Table [] = {0, 24, 19, 43};
+////
+//static
+//int     RSP1A_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
+////
+//static
+//int     RSP2_Table [] = {0, 10, 15, 21, 24, 34, 39, 45, 64};
+////
+//static
+//int     RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 
 
 	sdrplayHandler::sdrplayHandler  (QSettings *sdrplaySettings,
@@ -45,7 +45,6 @@ int     RSPduo_Table [] = {0, 6, 12, 18, 20, 26, 32, 38, 57, 62};
 int	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
-mir_sdr_GainValuesT gainDesc;
 
 	this	-> sdrplaySettings	= sdrplaySettings;
 	this	-> GRdBSelector		= GRdBSetting;
@@ -95,7 +94,8 @@ ULONG APIkeyValue_length = 255;
 	Handle		= dlopen ("libusb-1.0.so", RTLD_NOW | RTLD_GLOBAL);
 	Handle		= dlopen ("libmirsdrapi-rsp.so", RTLD_NOW);
 	if (Handle == NULL) {
-	   fprintf (stderr, "we could not load libmirsdrapi-rsp\nIf that is not the device you were expecting, do not worry\n", dlerror ());
+	   fprintf (stderr,  "%s",
+	             "we could not load libmirsdrapi-rsp\nIf that is not the device you were expecting, do not worry\n");
 	   throw (23);
 	}
 #endif
@@ -318,7 +318,6 @@ int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
 int     GRdB            = GRdBSelector  -> value ();
-int     lnaState        = lnaGainSetting -> value ();
 
 	if (running. load ())
 	   return true;

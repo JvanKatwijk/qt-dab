@@ -307,7 +307,7 @@ int table_idx = quant_lut_step3 [b2_table][sb];
 void 	mp2Processor::read_samples (struct quantizer_spec *q,
 	                            int scalefactor, int *sample) {
 int idx, adj, scale;
-register int val;
+int val;
 
 	if (!q) {
         // no bits allocated for this subband

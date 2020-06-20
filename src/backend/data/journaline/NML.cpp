@@ -259,9 +259,9 @@ std::string NML::Dump(void) const
 //returns 0 on error
 unsigned char* NMLFactory::getNextSection( const unsigned char*& p, unsigned short& plen, unsigned short& reslen )
 {
-    register int i = 0;
-    register int j = 0;
-    register int dslen;
+    int i = 0;
+    int j = 0;
+    int dslen;
     unsigned char* res = (unsigned char*)malloc( plen + 1 );
 
     // we will loop through the entire data until a break case is met

@@ -294,13 +294,14 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
-CONFIG		+= sdrplay-v3		# pretty experimental
+#CONFIG		+= sdrplay-v3		# pretty experimental
 CONFIG		+= dabstick
-CONFIG		+= rtl_tcp
+#CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-CONFIG		+= soapy
+#CONFIG		+= soapy
+CONFIG		+= pluto
 
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
@@ -505,6 +506,14 @@ soapy {
 	LIBS		+= -lSoapySDR -lm
 }
 
+pluto	{
+	DEFINES		+= HAVE_PLUTO
+	INCLUDEPATH	+= ./qt-devices/pluto
+	HEADERS		+= ./qt-devices/pluto/pluto-handler.h
+	SOURCES		+= ./qt-devices/pluto/pluto-handler.cpp
+	FORMS		+= ./qt-devices/pluto/pluto-widget.ui
+	LIBS		+= -liio
+}
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network

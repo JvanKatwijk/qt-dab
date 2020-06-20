@@ -35,13 +35,13 @@
 	                         RingBuffer<int16_t> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
 	                         RingBuffer<uint8_t> *frameBuffer):
+	                                    deconvolver (d),
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,
 	                                            audiobuffer,
 	                                            databuffer,
-	                                            frameBuffer),
-	                                    deconvolver (d)
+	                                            frameBuffer) 
 #ifdef	__THREADED_BACKEND
 	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 

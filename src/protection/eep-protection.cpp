@@ -36,7 +36,8 @@
 	                                     protection (bitRate, protLevel) {
 int16_t	i, j;
 int16_t	viterbiCounter	= 0;
-int16_t	L1, L2;
+int16_t	L1 = 0,
+        L2 = 0;
 int8_t	*PI1, *PI2, *PI_X;
 
 	if ((protLevel & (1 << 2)) == 0) {	// set A profiles

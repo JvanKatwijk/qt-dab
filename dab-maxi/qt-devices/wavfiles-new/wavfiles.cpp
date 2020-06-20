@@ -129,4 +129,3 @@ bool	wavFiles::isHidden	() {
 	return myFrame. isHidden ();
 }
 
-

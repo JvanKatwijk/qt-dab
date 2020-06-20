@@ -98,7 +98,6 @@ void	xml_Reader::stopReader	() {
 static	int cycleCount = 0;
 void	xml_Reader::run () {
 int	samplesRead	= 0;
-int	blockSize	= 2048;
 uint64_t	nextStop;
 int	startPoint	= filePointer;
 
@@ -134,7 +133,6 @@ int	startPoint	= filePointer;
 //
 //	the readSamples function returns 1 msec of data,
 //	we assume taking this data does not take time
-//	         nextStop = nextStop + ((uint64_t)blockSize * 1000) / 2048;
 	         nextStop = nextStop + (uint64_t)1000;
 	         if (nextStop > currentTime ())
 	            usleep ( nextStop - currentTime ());

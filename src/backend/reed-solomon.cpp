@@ -251,7 +251,7 @@ int16_t j;
 //	use Horner to compute the syndromes
 bool	reedSolomon::computeSyndromes (uint8_t *data, uint8_t *syndromes) {
 int16_t i;
-uint16_t syn_error;
+uint16_t syn_error = 0;
 
 /* form the syndromes; i.e., evaluate data (x) at roots of g(x) */
 

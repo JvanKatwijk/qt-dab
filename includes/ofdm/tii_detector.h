@@ -47,7 +47,6 @@ private:
 	fftHandler		my_fftHandler;
 	int16_t			T_u;
 	int16_t			carriers;
-	bool			ind;
 	std::complex<float>	*fft_buffer;
 	std::vector<complex<float> >	theBuffer;
 	std::vector<float>	window;

@@ -66,10 +66,10 @@ int	galois::modnn (int x){
 		galois::~galois() {
 }
 
-static inline
-uint16_t	round_mod (int16_t a, int16_t n) {
-	return (a % n < 0) ? (a % n + n) : (a % n);
-}
+//static inline
+//uint16_t	round_mod (int16_t a, int16_t n) {
+//	return (a % n < 0) ? (a % n + n) : (a % n);
+//}
 
 uint16_t	galois::add_poly	(uint16_t a, uint16_t b) {
 	return a ^ b;

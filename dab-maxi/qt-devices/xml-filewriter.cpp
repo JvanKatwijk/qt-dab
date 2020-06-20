@@ -72,7 +72,7 @@ QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 	   return;
 	s = create_xmltree	();
 	fseek (xmlFile, 0, SEEK_SET);
-	fprintf (xmlFile, topLine. toLatin1 (). data ());
+	fprintf (xmlFile, "%s", topLine. toLatin1 (). data ());
 	char * cs = s. toLatin1 (). data ();
 	int len = strlen (cs);
 	fwrite (cs, 1, len, xmlFile);

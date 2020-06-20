@@ -62,6 +62,8 @@ public:
 	QString		serviceName;
 private:
 	backendDeconvolver	deconvolver;
+	std::vector<uint8_t>	outV;
+	backendDriver		driver;
 #ifdef	__THREADED_BACKEND
 void	run();
 	atomic<bool>	running;
@@ -76,13 +78,11 @@ void	run();
 
 	int16_t		fragmentSize;
 	int		serviceId;
-	std::vector<uint8_t> outV;
 	std::vector<std::vector <int16_t>> interleaveData;
 	std::vector<int16_t> tempX;
 	int16_t		countforInterleaver;
 	int16_t		interleaverIndex;
 	std::vector<uint8_t> disperseVector;
-	backendDriver		driver;
 };
 
 #endif

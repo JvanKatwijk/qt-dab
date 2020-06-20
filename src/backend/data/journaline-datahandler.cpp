@@ -40,8 +40,9 @@ void my_callBack (
 	DAB_DATAGROUP_DECODER_deleteDec (theDecoder);
 }
 
-void	journaline_dataHandler::add_mscDatagroup (QByteArray &msc) {
-int16_t	len	= msc. length();
+//void	journaline_dataHandler::add_mscDatagroup (QByteArray &msc) {
+void	journaline_dataHandler::add_mscDatagroup (std::vector<uint8_t> msc) {
+int16_t	len	= msc. size ();
 uint8_t	*data	= (uint8_t *)(msc. data());
 uint8_t buffer [len / 8];
 int16_t	i;

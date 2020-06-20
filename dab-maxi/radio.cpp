@@ -82,6 +82,9 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
+#ifdef	HAVE_PLUTO
+#include	"pluto-handler.h"
+#endif
 #include	"ui_technical_data.h"
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
@@ -398,6 +401,9 @@ uint8_t	dabBand;
 #endif
 #ifdef	HAVE_LIME
 	deviceSelector	-> addItem ("limeSDR");
+#endif
+#ifdef	HAVE_PLUTO
+	deviceSelector	-> addItem ("pluto");
 #endif
 #ifdef  HAVE_EXTIO
 	deviceSelector	-> addItem ("extio");
@@ -1108,6 +1114,20 @@ deviceHandler	*inputDevice	= nullptr;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no lime device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_PLUTO
+	if (s == "pluto") {
+	   try {
+	      inputDevice = new plutoHandler (dabSettings, version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no pluto device found\n"));
 	      return nullptr;
 	   }
 	}

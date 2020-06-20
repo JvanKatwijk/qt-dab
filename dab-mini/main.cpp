@@ -75,7 +75,6 @@ RadioInterface  *MyRadioInterface;
 // Default values
 QSettings       *dabSettings;           // ini file
 QString		presetName	= PRESETS;
-int32_t		dataPort	= 8888;
 int     opt;
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");

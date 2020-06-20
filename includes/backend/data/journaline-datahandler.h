@@ -32,7 +32,8 @@ class	journaline_dataHandler:public virtual_dataHandler {
 public:
 	journaline_dataHandler();
 	~journaline_dataHandler();
-void	add_mscDatagroup	(QByteArray &);
+void	add_mscDatagroup	(std::vector<uint8_t>);
+//void	add_mscDatagroup	(QByteArray &);
 private:
 	DAB_DATAGROUP_DECODER_t theDecoder;
 	DAB_DATAGROUP_DECODER_data	myCallBack;

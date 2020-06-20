@@ -147,9 +147,9 @@ float	mmax	= 0;
 	      mmax = Y_values [i];
 	}
 
-//	if (++lcount < 3)
-//	   return;
-//	lcount = 0;
+	if (++lcount < 2)
+	   return;
+	lcount = 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)marker - plotLength / 2,
 				         (double)marker + plotLength / 2 - 1);
