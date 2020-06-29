@@ -26,8 +26,6 @@
 
 #include	<QtNetwork>
 #include        <QMessageBox>
-#include        <QLineEdit>
-#include        <QHostAddress>
 #include        <QByteArray>
 #include	<QObject>
 #include	<QFrame>
@@ -47,6 +45,10 @@ struct stream_cfg {
         const char* rfport; // Port name
 };
 
+#define	PLUTO_RATE	2500000
+#define	DAB_RATE	2048000
+#define	DIVIDER		1000
+#define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
 class	plutoHandler: public deviceHandler, public Ui_plutoWidget {
 Q_OBJECT
 public:
@@ -69,7 +71,6 @@ public:
 	QString		deviceName		();
 private:
 	QFrame			myFrame;
-	QLineEdit		hostLineEdit;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	void			run		();
 	QSettings		*plutoSettings;
@@ -85,10 +86,13 @@ private:
 	struct	iio_buffer	*rxbuf;
 	struct	stream_cfg	rxcfg;
 	bool			connected;
+	std::complex<float>	convBuffer	[CONV_SIZE + 1];
+	int			convIndex;
+	int16_t			mapTable_int	[DAB_RATE / DIVIDER];
+	float			mapTable_float	[DAB_RATE / DIVIDER];
 private slots:
 	void		set_gainControl	(int);
 	void		set_agcControl	(int);
-//	void		set_connection	();
 };
 #endif
 

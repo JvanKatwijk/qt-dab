@@ -145,41 +145,23 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion):
 	                                  myFrame (nullptr),
-	                                  hostLineEdit (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show	();
-	this	-> inputRate		= Khz (2048);
 
 	ctx				= nullptr;
 	rxbuf				= nullptr;
 	rx0_i				= nullptr;
 	rx0_q				= nullptr;
 
-	rxcfg. bw_hz			= 1536000;
-	rxcfg. fs_hz			= 2048000;
+	rxcfg. bw_hz			= PLUTO_RATE;
+	rxcfg. fs_hz			= PLUTO_RATE;
 	rxcfg. lo_hz			= 220000000;
 	rxcfg. rfport			= "A_BALANCED";
 
-//	connected			= false;
-//	hostLineEdit. setInputMask ("000.000.000.000");
-//	hostLineEdit. show ();
-//	state	-> setText ("Enter IP address, \nthen press return");
-//	connect (&hostLineEdit, SIGNAL (returnPressed ()),
-//	         this, SLOT (set_connection ()));
-//}
-//
-//void	plutoHandler::set_connection () {
-//QString s	= hostLineEdit. text ();
-//
-//	ctx	= iio_create_context_from_uri (s. toLatin1 (). data ());
-//	if (ctx == nullptr) {
-//	   state -> setText ("no context found, try again");
-//	   return;
-//	}
-
+	state	-> setText ("Looking for context");
 	ctx	= iio_create_default_context ();
 	if (ctx == nullptr) {
 	   fprintf (stderr, "default context failed\n");
@@ -193,6 +175,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	   fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
 	}
+
 	if (ctx == nullptr) {
 	   fprintf (stderr, "No pluto found, fatal\n");
 	   throw (24);
@@ -246,19 +229,25 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	agcMode		= false;
 	
 //	and be prepared for future changes in the settings
-	disconnect (&hostLineEdit, SIGNAL (returnPressed ()),
-	            this, SLOT (set_connection ()));
 	connect (gainControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gainControl (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
+
+	float	divider		= (float)DIVIDER;
+	float	denominator	= DAB_RATE / divider;
+	for (int i = 0; i < DAB_RATE / DIVIDER; i ++) {
+           float inVal  = float (PLUTO_RATE / divider);
+           mapTable_int [i]     =  int (floor (i * (inVal / denominator)));
+           mapTable_float [i]   = i * (inVal / denominator) - mapTable_int [i];
+        }
+        convIndex       = 0;
+
 	running. store (false);
 	connected	= true;
-	hostLineEdit. hide ();
 }
 
 	plutoHandler::~plutoHandler() {
-	hostLineEdit. hide ();
 	myFrame. hide ();
 	if (!connected)
 	   return;
@@ -271,8 +260,8 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
 int	ret;
 	rxcfg. lo_hz = newFrequency;
-	ret = iio_channel_attr_write_longlong (rx0_i, "frequency",
-	                                                 rxcfg. lo_hz);
+	ret = iio_channel_attr_write_longlong
+	                             (rx0_i, "frequency", rxcfg. lo_hz);
 	if (ret < 0) {
 	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	}
@@ -339,31 +328,40 @@ void	plutoHandler::run	() {
 char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
-std::complex<float> localBuf [2048];
-int	localbufP	= 0;
+std::complex<float> localBuf [DAB_RATE / DIVIDER];
 
 	while (running. load ()) {
-	   nbytes_rx	= iio_buffer_refill (rxbuf);
-	   p_inc	= iio_buffer_step (rxbuf);
+	   nbytes_rx	= iio_buffer_refill	(rxbuf);
+	   p_inc	= iio_buffer_step	(rxbuf);
 	   p_end	= (char *)(iio_buffer_end  (rxbuf));
 	   for (p_dat = (char *)iio_buffer_first (rxbuf, rx0_i);
 	        p_dat < p_end; p_dat += p_inc) {
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
-	         localBuf [localbufP] = std::complex<float> (i_p / 2048.0,
-	                                                     q_p / 2048.0);
-	         localbufP ++;
-	         if (localbufP >= 2048) {
-	            _I_Buffer. putDataIntoBuffer (localBuf, 2048);
-	            localbufP = 0;
-	         }
+	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
+	                                                       q_p / 2048.0);
+	      convBuffer [convIndex ++] = sample;
+	      if (convIndex > CONV_SIZE) {
+	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
+	            int16_t inpBase	= mapTable_int [j];
+	            float   inpRatio	= mapTable_float [j];
+	            localBuf [j]	= cmul (convBuffer [inpBase + 1],
+	                                                          inpRatio) +
+                                     cmul (convBuffer [inpBase], 1 - inpRatio);
+                 }
+	         _I_Buffer. putDataIntoBuffer (localBuf,
+	                                        DAB_RATE / DIVIDER);
+	         convBuffer [0] = convBuffer [CONV_SIZE];
+	         convIndex = 1;
+	      }
 	   }
 	}
 }
 
 int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) { 
-	(void)V;
-	return size;
+	if (!isRunning ())
+	   return 0;
+	return _I_Buffer. getDataFromBuffer (V, size);
 }
 
 int32_t	plutoHandler::Samples () {
