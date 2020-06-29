@@ -99,6 +99,19 @@
     <string>experimental Pluto interface</string>
    </property>
   </widget>
+  <widget class="QLabel" name="state">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>90</y>
+     <width>261</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
  <connections/>

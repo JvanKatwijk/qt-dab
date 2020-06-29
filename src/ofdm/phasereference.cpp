@@ -222,3 +222,12 @@ float pd	= 0;
 	return pd / LLENGTH;
 }
 
+float	phaseReference::phase (std::vector<complex<float>> v, int Ts) {
+std::complex<float> sum = std::complex<float> (0, 0);
+
+	for (int i = 0; i < Ts; i ++)
+	   sum += v [i];
+
+	return arg (sum);
+}
+

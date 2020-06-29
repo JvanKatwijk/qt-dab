@@ -269,7 +269,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-exists ("./.git") {
+exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
@@ -367,11 +367,12 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= faad
 #
 #	devices
-CONFIG		+= extio
-#CONFIG		+= airspy
+#CONFIG		+= extio
+CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
-#CONFIG		+= dabstick
+CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
+CONFIG		+= pluto
 #CONFIG		+= sdrplay-v3
 #CONFIG		+= hackrf
 #CONFIG		+= lime
@@ -508,6 +509,7 @@ soapy {
 
 pluto	{
 	DEFINES		+= HAVE_PLUTO
+	QT		+= network
 	INCLUDEPATH	+= ./qt-devices/pluto
 	HEADERS		+= ./qt-devices/pluto/pluto-handler.h
 	SOURCES		+= ./qt-devices/pluto/pluto-handler.cpp

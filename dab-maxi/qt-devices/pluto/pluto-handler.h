@@ -24,6 +24,11 @@
 #ifndef __PLUTO_HANDLER__
 #define	__PLUTO_HANDLER__
 
+#include	<QtNetwork>
+#include        <QMessageBox>
+#include        <QLineEdit>
+#include        <QHostAddress>
+#include        <QByteArray>
 #include	<QObject>
 #include	<QFrame>
 #include	<QSettings>
@@ -64,6 +69,7 @@ public:
 	QString		deviceName		();
 private:
 	QFrame			myFrame;
+	QLineEdit		hostLineEdit;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	void			run		();
 	QSettings		*plutoSettings;
@@ -78,9 +84,11 @@ private:
 	struct	iio_channel	*rx0_q;
 	struct	iio_buffer	*rxbuf;
 	struct	stream_cfg	rxcfg;
+	bool			connected;
 private slots:
 	void		set_gainControl	(int);
 	void		set_agcControl	(int);
+//	void		set_connection	();
 };
 #endif
 

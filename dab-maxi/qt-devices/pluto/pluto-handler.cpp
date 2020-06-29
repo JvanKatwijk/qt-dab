@@ -29,8 +29,6 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 
-#define	DEFAULT_GAIN	30
-
 /* static scratch mem for strings */
 static char tmpstr[64];
 
@@ -52,31 +50,31 @@ struct iio_device *dev =  iio_context_find_device(ctx, "ad9361-phy");
         return dev;
 }
 
-/* finds AD9361 streaming IIO devices */
-static
-bool	get_ad9361_stream_dev (struct iio_context *ctx,
-	                       struct iio_device **dev) {
-	*dev = iio_context_find_device (ctx, "cf-ad9361-lpc");
-	return *dev != nullptr;
-}
+///* finds AD9361 streaming IIO devices */
+//static
+//bool	get_ad9361_stream_dev (struct iio_context *ctx,
+//	                       struct iio_device **dev) {
+//	*dev = iio_context_find_device (ctx, "cf-ad9361-lpc");
+//	return *dev != nullptr;
+//}
 
-static
-bool	get_phy_chan (struct iio_context *ctx,
-                      int chid, struct iio_channel **chn) {
-	*chn = iio_device_find_channel (get_ad9361_phy (ctx),
-                                        get_ch_name ("voltage", chid),
-                                        false);
-	return *chn != nullptr;
-}
+//static
+//bool	get_phy_chan (struct iio_context *ctx,
+//                      int chid, struct iio_channel **chn) {
+//	*chn = iio_device_find_channel (get_ad9361_phy (ctx),
+//                                        get_ch_name ("voltage", chid),
+//                                        false);
+//	return *chn != nullptr;
+//}
 
-/* finds AD9361 local oscillator IIO configuration channels */
-static
-bool    get_lo_chan (struct iio_context *ctx, struct iio_channel **chn) {
-	*chn = iio_device_find_channel (get_ad9361_phy (ctx),
-                                        get_ch_name ("altvoltage", 0),
-                                        true);
-	return *chn != nullptr;
-}
+///* finds AD9361 local oscillator IIO configuration channels */
+//static
+//bool    get_lo_chan (struct iio_context *ctx, struct iio_channel **chn) {
+//	*chn = iio_device_find_channel (get_ad9361_phy (ctx),
+//                                        get_ch_name ("altvoltage", 0),
+//                                        true);
+//	return *chn != nullptr;
+//}
 
 /* applies streaming configuration through IIO */
 static
@@ -86,7 +84,11 @@ struct iio_channel *chn = nullptr;
 
 // Configure phy and lo channels
 	fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", chid);
-	if (!get_phy_chan (ctx, chid, &chn)) {
+	chn = iio_device_find_channel (get_ad9361_phy (ctx),
+                                        get_ch_name ("voltage", chid),
+                                        false);
+	if (chn == nullptr) {
+	   fprintf (stderr, "cannot acquire phy channel %d\n", chid);
 	   return false;
 	}
 
@@ -143,6 +145,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion):
 	                                  myFrame (nullptr),
+	                                  hostLineEdit (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -160,52 +163,81 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	rxcfg. lo_hz			= 220000000;
 	rxcfg. rfport			= "A_BALANCED";
 
-	ctx = iio_create_default_context ();
+//	connected			= false;
+//	hostLineEdit. setInputMask ("000.000.000.000");
+//	hostLineEdit. show ();
+//	state	-> setText ("Enter IP address, \nthen press return");
+//	connect (&hostLineEdit, SIGNAL (returnPressed ()),
+//	         this, SLOT (set_connection ()));
+//}
+//
+//void	plutoHandler::set_connection () {
+//QString s	= hostLineEdit. text ();
+//
+//	ctx	= iio_create_context_from_uri (s. toLatin1 (). data ());
+//	if (ctx == nullptr) {
+//	   state -> setText ("no context found, try again");
+//	   return;
+//	}
+
+	ctx	= iio_create_default_context ();
 	if (ctx == nullptr) {
-	   fprintf (stderr, "no context found\n");
-	   throw (21);
+	   fprintf (stderr, "default context failed\n");
+	   ctx = iio_create_local_context ();
 	}
-
-	fprintf (stderr, "context created, now counting devices\n");
-	if (iio_context_get_devices_count(ctx) <= 0) {
-	   fprintf (stderr, "no devices found, fatal\n");
-	   throw (22);
+	if (ctx == nullptr) {
+	   fprintf (stderr, "creating local context failed\n");
+	   ctx = iio_create_network_context ("pluto.local");
 	}
-
-	fprintf (stderr, "we have devices\n");
-	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
-	rx = iio_context_find_device (ctx, "cf-ad9361-lpc");
-	if (rx == nullptr) {
-	   fprintf (stderr, "No rx streaming device found\n");
-	   throw (23);
+	if (ctx == nullptr) {
+	   fprintf (stderr, "creating network context with pluto.local failed\n");
+	   ctx = iio_create_network_context ("192.168.2.1");
 	}
-
-        fprintf (stderr, "* Configuring AD9361 for streaming\n");
-        if (!cfg_ad9361_streaming_ch (ctx, &rxcfg, 0)) {
-	   fprintf (stderr, "RX port 0 not found");
+	if (ctx == nullptr) {
+	   fprintf (stderr, "No pluto found, fatal\n");
 	   throw (24);
 	}
 
-	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
+	state	-> setText ("Context created,\n counting devices");
+	fprintf (stderr, "context created, now counting devices\n");
+	if (iio_context_get_devices_count (ctx) <= 0) {
+	   state -> setText ("no devices found, fatal");
+	   return;
+	}
+
+	state	-> setText ("we have devices\n, Acquiring AD9361 streaming devices");
+	rx = iio_context_find_device (ctx, "cf-ad9361-lpc");
+	if (rx == nullptr) {
+	   state -> setText ("No device found");
+	   return;
+	}
+
+        state -> setText ("* Configuring AD9361 for streaming\n");
+        if (!cfg_ad9361_streaming_ch (ctx, &rxcfg, 0)) {
+	   state -> setText ("RX port 0 not found");
+	   return;
+	}
+
+	state -> setText ("* Initializing AD9361 IIO streaming channels\n");
         if (!get_ad9361_stream_ch (ctx, rx, 0, &rx0_i)) {
-	   fprintf (stderr,  "RX chan i not found");
-	   throw (25);
+	   state -> setText ("RX chan i not found");
+	   return;
 	}
 
         if (!get_ad9361_stream_ch (ctx, rx, 1, &rx0_q)) {
-	   fprintf (stderr, "RX chan q not found");
-	   throw (26);
+	   state -> setText ("RX chan q not found");
+	   return;
 	}
 
-        fprintf (stderr, "* Enabling IIO streaming channels\n");
+        state -> setText ("* Enabling IIO streaming channels");
         iio_channel_enable (rx0_i);
         iio_channel_enable (rx0_q);
 
-        printf("* Creating non-cyclic IIO buffers with 1 MiS\n");
+        state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
         rxbuf = iio_device_create_buffer (rx, 1024*1024, false);
 	if (rxbuf == nullptr) {
-	   fprintf (stderr, "could not create RX buffer, fatal\n");
-	   throw (27);
+	   state -> setText ("could not create RX buffer, fatal");
+	   return;
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);
@@ -214,14 +246,22 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	agcMode		= false;
 	
 //	and be prepared for future changes in the settings
+	disconnect (&hostLineEdit, SIGNAL (returnPressed ()),
+	            this, SLOT (set_connection ()));
 	connect (gainControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gainControl (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
 	running. store (false);
+	connected	= true;
+	hostLineEdit. hide ();
 }
 
 	plutoHandler::~plutoHandler() {
+	hostLineEdit. hide ();
+	myFrame. hide ();
+	if (!connected)
+	   return;
 	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
@@ -254,7 +294,7 @@ char buf [64];
 	   agcMode	= !agcMode;
 	}
 
-	sprintf (buf, "%lu", (uint32_t)newGain);
+	sprintf (buf, "%u", (uint32_t)newGain);
 	ret = iio_channel_attr_write_longlong (rx0_i, "hardwaregain", newGain);
 	if (ret < 0) {
 	   fprintf (stderr,
@@ -274,6 +314,8 @@ void	plutoHandler::set_agcControl	(int dummy) {
 }
 
 bool	plutoHandler::restartReader	(int32_t freq) {
+	if (!connected)
+	   return false;
 	if (running. load())
 	   return true;		// should not happen
 
@@ -318,9 +360,6 @@ int	localbufP	= 0;
 	   }
 	}
 }
-
-	
-	
 
 int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) { 
 	(void)V;

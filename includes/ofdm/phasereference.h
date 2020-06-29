@@ -44,6 +44,7 @@ public:
 	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
 	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);
 //
+	float		phase			(std::vector<std::complex<float>>, int);
 //	This one is used in the ofdm decoder
 	std::vector<std::complex<float>> refTable;
 private:

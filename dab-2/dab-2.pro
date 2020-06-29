@@ -263,7 +263,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-exists ("./.git") {
+exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
@@ -367,13 +367,13 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= faad
 
 CONFIG		+= extio
-#CONFIG		+= airspy
+CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
-#CONFIG		+= rtlsdr
+CONFIG		+= rtlsdr
 CONFIG		+= sdrplay-v2
 #CONFIG		+= sdrplay-v3
-#CONFIG		+= hackrf
-#CONFIG		+= lime
+CONFIG		+= hackrf
+CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
