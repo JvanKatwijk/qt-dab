@@ -83,7 +83,7 @@ bool	cfg_ad9361_streaming_ch (struct iio_context *ctx,
 struct iio_channel *chn = nullptr;
 
 // Configure phy and lo channels
-	fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", chid);
+//	fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", chid);
 	chn = iio_device_find_channel (get_ad9361_phy (ctx),
                                         get_ch_name ("voltage", chid),
                                         false);
@@ -112,7 +112,7 @@ struct iio_channel *chn = nullptr;
 
 	cfg	-> gain_channel = chn;
 // Configure LO channel
-	fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
+//	fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
 	cfg -> lo_channel = iio_device_find_channel (get_ad9361_phy (ctx),
                                               get_ch_name ("altvoltage", 0),
                                               true);
@@ -162,21 +162,39 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	rxcfg. lo_hz			= 220000000;
 	rxcfg. rfport			= "A_BALANCED";
 
+	plutoSettings	-> beginGroup ("plutoSettings");
+	bool agcMode	=
+	             plutoSettings -> value ("pluto-agc", 0). toInt () == 1;
+	int  gainValue	=
+	             plutoSettings -> value ("pluto-gain", 33). toInt ();
+	plutoSettings	-> endGroup ();
+	if (agcMode) {
+	   agcControl	-> setChecked (true);	
+	   gainControl	-> hide ();
+	}
+	gainControl	-> setValue (gainValue);
+	   
 	state	-> setText ("Looking for context");
 	ctx	= iio_create_default_context ();
 	if (ctx == nullptr) {
-	   fprintf (stderr, "default context failed\n");
+//	   fprintf (stderr, "default context failed\n");
 	   ctx = iio_create_local_context ();
 	}
+	else
+	   state -> setText ("default context found");
 	if (ctx == nullptr) {
-	   fprintf (stderr, "creating local context failed\n");
+//	   fprintf (stderr, "creating local context failed\n");
 	   ctx = iio_create_network_context ("pluto.local");
 	}
+	else
+	   state -> setText ("local context created");
 	if (ctx == nullptr) {
 	   fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
 //	   ctx = iio_create_network_context ("qra.f5oeo.fr");
 	}
+	else
+	   state -> setText ("network with pluto.local failed");
 
 	if (ctx == nullptr) {
 	   fprintf (stderr, "No pluto found, fatal\n");
@@ -184,13 +202,13 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	}
 
 	state	-> setText ("Context created,\n counting devices");
-	fprintf (stderr, "context created, now counting devices\n");
+//	fprintf (stderr, "context created, now counting devices\n");
 	if (iio_context_get_devices_count (ctx) <= 0) {
 	   state -> setText ("no devices found, fatal");
 	   return;
 	}
 
-	state	-> setText ("we have devices\n, Acquiring AD9361 streaming devices");
+//	state	-> setText ("we have devices\n, Acquiring AD9361 streaming devices");
 	rx = iio_context_find_device (ctx, "cf-ad9361-lpc");
 	if (rx == nullptr) {
 	   state -> setText ("No device found");
@@ -217,7 +235,6 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
         state -> setText ("* Enabling IIO streaming channels");
         iio_channel_enable (rx0_i);
         iio_channel_enable (rx0_q);
-	fprintf (stderr, "Channels enabled\n");
 
         state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
         rxbuf = iio_device_create_buffer (rx, 1024*1024, false);
@@ -227,13 +244,20 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	}
 //
 	iio_buffer_set_blocking_mode (rxbuf, true);
-	int ret = iio_channel_attr_write (rxcfg. gain_channel,
-	                            "gain_control_mode", "manual");
-	ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
-	                                    "hardwaregain", 40);
-	if (ret < 0) 
-	   fprintf (stderr, "foute boel\n");
-	agcControl	-> setChecked (0);
+	if (!agcMode) {
+	   int ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                                     "gain_control_mode", "manual");
+	   ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
+	                                          "hardwaregain", gainValue);
+	   if (ret < 0) 
+	      state -> setText ("error in initial gain setting");
+	}
+	else {
+	   int ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                                     "gain_control_mode", "manual");
+	   if (ret < 0)
+	      state -> setText ("error in initial gain setting");
+	}
 	
 //	and be prepared for future changes in the settings
 	connect (gainControl, SIGNAL (valueChanged (int)),
@@ -252,12 +276,17 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 
 	running. store (false);
 	connected	= true;
-	fprintf (stderr, "we are connected\n");
-	state -> setText ("ready (I think)");
+	state -> setText ("ready to go");
 }
 
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
+	plutoSettings	-> beginGroup ("plutoSettings");
+	plutoSettings	-> setValue ("pluto-agcMode",
+	                              agcControl -> isChecked () ? 1 : 0);
+	plutoSettings	-> setValue ("pluto-gain", 
+	                              gainControl -> value ());
+	plutoSettings	-> endGroup ();
 	if (!connected)
 	   return;
 	stopReader();
@@ -275,32 +304,42 @@ int	ret;
 	if (ret < 0) {
 	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	}
-	fprintf (stderr, "frequency set to %d\n", rxcfg. lo_hz);
+//	fprintf (stderr, "frequency set to %d\n", rxcfg. lo_hz);
 }
 
 int32_t	plutoHandler::getVFOFrequency() {
 	return rxcfg. lo_hz;
 }
-
+//
+//	If the agc is set, but someone touches the gain button
+//	the agc is switched off. Btw, this is hypothetically
+//	since the gain control is made invisible when the
+//	agc is set
 void	plutoHandler::set_gainControl	(int newGain) {
 int ret;
-char buf [64];
+
 	if (agcControl -> isChecked ()) {
 	   ret = iio_channel_attr_write (rxcfg. gain_channel,
 	                                    "gain_control_mode", "manual");
 	   if (ret < 0) {
-	      fprintf (stderr, "could not change gain control to manual");
+	      state -> setText ("error in gain setting");
+//	      fprintf (stderr, "could not change gain control to manual");
 	      return;
 	   }
-	   agcControl -> setChecked (0);
+	   
+	   disconnect (agcControl, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_agcControl (int)));
+	   agcControl -> setChecked (false);
+	   connect (agcControl, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_agcControl (int)));
 	}
 
 	ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
 	                                          "hardwaregain", newGain);
 	if (ret < 0) {
-	   fprintf (stderr,
-	           "could not set hardware gain to %d\n", newGain);
-	   return;
+	   state -> setText ("error in gain setting");
+//	   fprintf (stderr,
+//	           "could not set hardware gain to %d\n", newGain);
 	}
 }
 
@@ -315,13 +354,31 @@ int ret;
 	      fprintf (stderr, "error in setting agc\n");
 	   else
 	      state -> setText ("agc set");
+	   gainControl -> hide ();
 	}
-	else 
-	   set_gainControl (gainControl -> value ());
+	else {	// switch agc off
+	   ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                                    "gain_control_mode", "manual");
+	   if (ret < 0) {
+	      state -> setText ("error in gain setting");
+	      return;
+	   }
+	   gainControl	-> show ();
+
+	   ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
+	                                          "hardwaregain", 
+	                                          gainControl -> value ());
+	   if (ret < 0) {
+	      state -> setText ("error in gain setting");
+	      fprintf (stderr,
+	               "could not set hardware gain to %d\n",
+	                                          gainControl -> value ());
+	   }
+	}
 }
 
 bool	plutoHandler::restartReader	(int32_t freq) {
-	fprintf (stderr, "restart called with %d\n", freq);
+//	fprintf (stderr, "restart called with %d\n", freq);
 	if (!connected)
 	   return false;
 	if (running. load())
@@ -345,25 +402,16 @@ char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
-bool	firstBuffer	= false;
-int	counter = 0;
-	fprintf (stderr, "running\n");
+
+	state -> setText ("running");
 	running. store (true);
 	while (running. load ()) {
 	   nbytes_rx	= iio_buffer_refill	(rxbuf);
 	   p_inc	= iio_buffer_step	(rxbuf);
 	   p_end	= (char *)(iio_buffer_end  (rxbuf));
-	   if (!firstBuffer) {
-	      firstBuffer = true;
-	      fprintf (stderr, "we start with %d bytes\n", nbytes_rx);
-	   }
+
 	   for (p_dat = (char *)iio_buffer_first (rxbuf, rx0_i);
 	        p_dat < p_end; p_dat += p_inc) {
-	      counter ++;
-	      if (counter >= PLUTO_RATE) {
-	        fprintf (stderr, "xx");
-	        counter = 0;
-	      }
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
