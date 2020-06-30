@@ -2538,8 +2538,8 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	   QString audioService = serv. name;
 	   audiodata d;
 	   my_dabProcessor -> dataforAudioService (audioService, &d);
-//	   if (!d. defined)
-//	      continue;
+	   if (!d. defined)
+	      continue;
 
 	   QString serviceId = hextoString (d. SId);
 	   QString bitRate   = QString::number (d. bitRate);
