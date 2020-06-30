@@ -2751,6 +2751,30 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
                                    d. ASCTy == 077 ? "DAB+ (plus)" : "DAB",
                                    bitRate, protL, codeRate);
 	}
+	for (serviceId serv: serviceList) {
+	   QString packetService = serv. name;
+	   packetdata d;
+	   my_dabProcessor -> dataforPacketService (packetService, &d, 0);
+	   if (!d. defined)
+	      continue;
+
+	   QString soort	= d. DSCTy == 60 ? "mot data" :
+	                          d. DSCTy == 59 ? "ip data" :
+	                          d. DSCTy == 44 ? "journaline data" :
+	                          d. DSCTy ==  5 ? "tdc data" :
+	                                             "unknow data";
+	   QString serviceId;
+	   serviceId. setNum (d. SId, 16);
+	   QString bitRate   = QString::number (d. bitRate);
+	   QString protL     = getProtectionLevel (d. shortForm,
+                                                   d. protLevel);
+	   QString codeRate  = getCodeRate (d. shortForm,
+                                            d. protLevel);
+	   theTable.
+                  add_to_Ensemble (packetService, serviceId,
+	                           soort,
+                                   bitRate, protL, codeRate);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////

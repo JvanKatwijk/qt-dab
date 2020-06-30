@@ -329,7 +329,7 @@ win32 {
 #DESTDIR		=  ../../../windows-qt-dab
 DESTDIR	= /usr/shared/sdr-j-development/windows-qt-dab
 # includes in mingw differ from the includes in fedora linux
-exists ("./.git") {
+exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
