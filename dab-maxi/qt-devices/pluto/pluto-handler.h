@@ -39,10 +39,12 @@
 
 /* common RX and TX streaming params */
 struct stream_cfg {
-        long long bw_hz; // Analog banwidth in Hz
-        long long fs_hz; // Baseband sample rate in Hz
-        long long lo_hz; // Local oscillator frequency in Hz
+        long long	bw_hz; // Analog banwidth in Hz
+        long long	fs_hz; // Baseband sample rate in Hz
+        long long	lo_hz; // Local oscillator frequency in Hz
         const char* rfport; // Port name
+	struct	iio_channel	*lo_channel;
+	struct	iio_channel	*gain_channel;
 };
 
 #define	PLUTO_RATE	2500000
@@ -78,7 +80,6 @@ private:
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
-	bool			agcMode;
 	struct	iio_device	*rx;
 	struct	iio_context	*ctx;
 	struct	iio_channel	*rx0_i;

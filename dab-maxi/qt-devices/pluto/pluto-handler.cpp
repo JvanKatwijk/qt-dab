@@ -110,17 +110,18 @@ struct iio_channel *chn = nullptr;
 	   return false;
 	}
 
+	cfg	-> gain_channel = chn;
 // Configure LO channel
 	fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
-	chn = iio_device_find_channel (get_ad9361_phy (ctx),
-                                        get_ch_name ("altvoltage", 0),
-                                        true);
-	if (chn == 0) {
+	cfg -> lo_channel = iio_device_find_channel (get_ad9361_phy (ctx),
+                                              get_ch_name ("altvoltage", 0),
+                                              true);
+	if (cfg -> lo_channel == nullptr) {
 	   fprintf (stderr, "cannot find lo for channel\n");
 	   return false;
 	}
 
-	if (iio_channel_attr_write_longlong (chn, "frequency",
+	if (iio_channel_attr_write_longlong (cfg -> lo_channel, "frequency",
 	                                                 cfg -> lo_hz) < 0) {
 	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	   return false;
@@ -174,6 +175,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	if (ctx == nullptr) {
 	   fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
+//	   ctx = iio_create_network_context ("qra.f5oeo.fr");
 	}
 
 	if (ctx == nullptr) {
@@ -215,6 +217,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
         state -> setText ("* Enabling IIO streaming channels");
         iio_channel_enable (rx0_i);
         iio_channel_enable (rx0_q);
+	fprintf (stderr, "Channels enabled\n");
 
         state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
         rxbuf = iio_device_create_buffer (rx, 1024*1024, false);
@@ -222,11 +225,15 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	   state -> setText ("could not create RX buffer, fatal");
 	   return;
 	}
-
+//
 	iio_buffer_set_blocking_mode (rxbuf, true);
-	iio_channel_attr_write (rx0_i, "gain_control_mode", "manual");
-	iio_channel_attr_write (rx0_q, "gain_control_mode", "manual");
-	agcMode		= false;
+	int ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                            "gain_control_mode", "manual");
+	ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
+	                                    "hardwaregain", 40);
+	if (ret < 0) 
+	   fprintf (stderr, "foute boel\n");
+	agcControl	-> setChecked (0);
 	
 //	and be prepared for future changes in the settings
 	connect (gainControl, SIGNAL (valueChanged (int)),
@@ -245,6 +252,8 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 
 	running. store (false);
 	connected	= true;
+	fprintf (stderr, "we are connected\n");
+	state -> setText ("ready (I think)");
 }
 
 	plutoHandler::~plutoHandler() {
@@ -261,10 +270,12 @@ void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
 int	ret;
 	rxcfg. lo_hz = newFrequency;
 	ret = iio_channel_attr_write_longlong
-	                             (rx0_i, "frequency", rxcfg. lo_hz);
+	                             (rxcfg. lo_channel,
+	                                   "frequency", rxcfg. lo_hz);
 	if (ret < 0) {
 	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	}
+	fprintf (stderr, "frequency set to %d\n", rxcfg. lo_hz);
 }
 
 int32_t	plutoHandler::getVFOFrequency() {
@@ -274,44 +285,49 @@ int32_t	plutoHandler::getVFOFrequency() {
 void	plutoHandler::set_gainControl	(int newGain) {
 int ret;
 char buf [64];
-	if (agcMode) {
-	   ret = iio_channel_attr_write (rx0_i, "gain_control_mode", "manual");
+	if (agcControl -> isChecked ()) {
+	   ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                                    "gain_control_mode", "manual");
 	   if (ret < 0) {
 	      fprintf (stderr, "could not change gain control to manual");
 	      return;
 	   }
-	   agcMode	= !agcMode;
+	   agcControl -> setChecked (0);
 	}
 
-	sprintf (buf, "%u", (uint32_t)newGain);
-	ret = iio_channel_attr_write_longlong (rx0_i, "hardwaregain", newGain);
+	ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
+	                                          "hardwaregain", newGain);
 	if (ret < 0) {
 	   fprintf (stderr,
-	           "could not set hardware gain to %s\n", buf);
+	           "could not set hardware gain to %d\n", newGain);
 	   return;
 	}
 }
 
 void	plutoHandler::set_agcControl	(int dummy) {
-	agcMode	= agcControl -> isChecked ();
+int ret;
+
 	(void)dummy;
-	if (agcMode) {
-	   iio_channel_attr_write (rx0_i, "gain_control_mode", "slow_attack");
+	if (agcControl -> isChecked ()) {
+	   ret = iio_channel_attr_write (rxcfg. gain_channel,
+	                               "gain_control_mode", "slow_attack");
+	   if (ret < 0) 
+	      fprintf (stderr, "error in setting agc\n");
+	   else
+	      state -> setText ("agc set");
 	}
 	else 
 	   set_gainControl (gainControl -> value ());
 }
 
 bool	plutoHandler::restartReader	(int32_t freq) {
+	fprintf (stderr, "restart called with %d\n", freq);
 	if (!connected)
 	   return false;
 	if (running. load())
 	   return true;		// should not happen
 
 	setVFOFrequency (freq);
-	if (vfoFrequency == 0)
-	   return false;
-
 	start ();
 	return true;
 }
@@ -329,13 +345,25 @@ char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
-
+bool	firstBuffer	= false;
+int	counter = 0;
+	fprintf (stderr, "running\n");
+	running. store (true);
 	while (running. load ()) {
 	   nbytes_rx	= iio_buffer_refill	(rxbuf);
 	   p_inc	= iio_buffer_step	(rxbuf);
 	   p_end	= (char *)(iio_buffer_end  (rxbuf));
+	   if (!firstBuffer) {
+	      firstBuffer = true;
+	      fprintf (stderr, "we start with %d bytes\n", nbytes_rx);
+	   }
 	   for (p_dat = (char *)iio_buffer_first (rxbuf, rx0_i);
 	        p_dat < p_end; p_dat += p_inc) {
+	      counter ++;
+	      if (counter >= PLUTO_RATE) {
+	        fprintf (stderr, "xx");
+	        counter = 0;
+	      }
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
