@@ -166,7 +166,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	bool agcMode	=
 	             plutoSettings -> value ("pluto-agc", 0). toInt () == 1;
 	int  gainValue	=
-	             plutoSettings -> value ("pluto-gain", 33). toInt ();
+	             plutoSettings -> value ("pluto-gain", 50). toInt ();
 	plutoSettings	-> endGroup ();
 	if (agcMode) {
 	   agcControl	-> setChecked (true);	
@@ -191,7 +191,6 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	if (ctx == nullptr) {
 	   fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
-//	   ctx = iio_create_network_context ("qra.f5oeo.fr");
 	}
 	else
 	   state -> setText ("network with pluto.local failed");
@@ -254,7 +253,8 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	}
 	else {
 	   int ret = iio_channel_attr_write (rxcfg. gain_channel,
-	                                     "gain_control_mode", "manual");
+	                                     "gain_control_mode",
+	                                            "slow_attack");
 	   if (ret < 0)
 	      state -> setText ("error in initial gain setting");
 	}

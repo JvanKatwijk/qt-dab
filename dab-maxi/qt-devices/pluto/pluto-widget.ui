@@ -95,6 +95,9 @@
      <height>19</height>
     </rect>
    </property>
+   <property name="toolTip">
+    <string>Experimental interface for Adalm Pluto. No garantees!!</string>
+   </property>
    <property name="text">
     <string>experimental Pluto interface</string>
    </property>

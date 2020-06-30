@@ -1,6 +1,14 @@
 # Qt-DAB-3.4 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.4.1 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
+Qt-DAB-3.4.2 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
+
+----------------------------------------------------------------
+Experimental support for adalm pluto
+----------------------------------------------------------------
+
+Qt-DAB-3.4.2 is equipped to support adalm pluto.
+The support is - highly - experimental and may contain
+(read: definitly will contain) errors
 
 -----------------------------------------------------------------
 Gadget in dabMini
@@ -81,7 +89,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.4,1** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.4,2** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 For DX purposes, a **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
@@ -228,7 +236,7 @@ button on the keyboard simultaneously.
 Maintaining History for Qt-DAB and dab-2
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.4.1 and dab-2.1 save all service names found.
+Qt-DAB-3.4.2 and dab-2.1 save all service names found.
 Pairs Channel:serviceName
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").

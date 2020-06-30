@@ -5,10 +5,10 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.4.1
+TARGET		= qt-dab-3.4.2
 QT		+= widgets xml
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
