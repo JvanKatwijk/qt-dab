@@ -124,13 +124,12 @@ char	manufac [256], product [256], serial [256];
 	setupUi (&myFrame);
 	myFrame. show();
 	inputRate			= 2048000;
-	libraryLoaded			= false;
 	open			= false;
 	workerHandle		= nullptr;
 	lastFrequency		= KHz (22000);	// just a dummy
+	const char *libraryString = "rtlsdr.dll";
 
 #ifdef	__MINGW32__
-	const char *libraryString = "rtlsdr.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
@@ -138,7 +137,6 @@ char	manufac [256], product [256], serial [256];
 	   throw (20);
 	}
 #else
-	const char *libraryString = "librtlsdr.so";
 	Handle		= dlopen ("librtlsdr.so", RTLD_NOW);
 
 	if (Handle == nullptr) {
@@ -147,7 +145,6 @@ char	manufac [256], product [256], serial [256];
 	   throw (20);
 	}
 #endif
-	libraryLoaded	= true;
 	if (!load_rtlFunctions()) {
 #ifdef __MINGW32__
 	   FreeLibrary (Handle);

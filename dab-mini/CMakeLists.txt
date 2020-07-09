@@ -75,6 +75,9 @@ endif ()
 if(DEFINED LIMESDR)
 	set(LIMESDR true)
 endif ()
+if (DEFINED FDK_AAC)
+        set (FDK_AAC true)
+endif ()
 
 add_definitions (-DPRESET_NAME)
 add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
@@ -95,11 +98,6 @@ add_definitions (-D__MSC_THREAD__)
         find_package(FFTW3f)
         if (NOT FFTW3F_FOUND)
             message(FATAL_ERROR "please install FFTW3")
-        endif ()
-
-        find_package(Faad)
-        if (NOT FAAD_FOUND )
-            message(FATAL_ERROR "please install libfaad")
         endif ()
 
         find_package(zlib)
@@ -183,7 +181,6 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/backend/backend.h
 	     ../includes/backend/backend-deconvolver.h
 	     ../includes/backend/backend-driver.h
-	     ../includes/backend/audio/faad-decoder.h
 	     ../includes/backend/audio/mp4processor.h
 	     ../includes/backend/audio/bitWriter.h
 	     ../includes/backend/audio/mp2processor.h
@@ -252,7 +249,6 @@ add_definitions (-D__MSC_THREAD__)
 	     ../src/backend/backend.cpp
 	     ../src/backend/backend-deconvolver.cpp
 	     ../src/backend/backend-driver.cpp
-	     ../src/backend/audio/faad-decoder.cpp
 	     ../src/backend/audio/mp4processor.cpp
 	     ../src/backend/audio/bitWriter.cpp
 	     ../src/backend/audio/mp2processor.cpp
@@ -304,7 +300,6 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/ofdm/tii_detector.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
-	     ../includes/backend/audio/faad-decoder.h
 	     ../includes/backend/audio/mp2processor.h
 	     ../includes/backend/audio/mp4processor.h
 	     ../includes/backend/data/virtual-datahandler.h
@@ -341,6 +336,47 @@ add_definitions (-D__MSC_THREAD__)
 
 
 #########################################################################
+
+	if (FDK_AAC)
+	   find_package(Fdk-AAC)
+	   if (NOT LIBFDK_AAC_FOUND)
+	      message (FATAL_ERROR, "please install libfdk-aac")
+	   endif ()
+	   include_directories (../specials/fdk-aac)
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../includes/backend/audio/fdk-aac.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../src/backend/audio/fdk-aac.cpp
+	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../includes/backend/audio/fdk-aac.h
+	   )
+           list(APPEND extraLibs ${FDK_AAC_LIBRARIES})
+	   add_definitions (-D__WITH_FDK_AAC__)
+	elseif (NOT FDK_AAC)
+           find_package(Faad)
+           if (NOT FAAD_FOUND )
+              message(FATAL_ERROR "please install libfaad")
+           endif ()
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../includes/backend/audio/faad-decoder.h
+	   )
+	   set (${objectName}_SRCS
+                ${${objectName}_SRCS}
+	        ../src/backend/audio/faad-decoder.cpp
+	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../includes/backend/audio/faad-decoder.h
+	   )
+	   add_definitions (-D__WITH_FAAD__)
+	endif (FDK-AAC)
+
 #	the viterbi decoder
 #
 	if (VITERBI_NEON)

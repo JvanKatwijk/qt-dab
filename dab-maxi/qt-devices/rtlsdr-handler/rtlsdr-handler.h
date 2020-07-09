@@ -104,7 +104,6 @@ private:
 	HINSTANCE	Handle;
 	dll_driver	*workerHandle;
 	int32_t		lastFrequency;
-	bool		libraryLoaded;
 	bool		open;
 	int16_t		gainsCount;
 	QString		deviceModel;

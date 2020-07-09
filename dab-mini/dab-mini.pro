@@ -333,7 +333,7 @@ faad	{
 
 fdk-aac	{
 	DEFINES		+= __WITH_FDK_AAC__
-	INCLUDEPATH	+= /usr/local/include/fdk-aac
+	INCLUDEPATH	+= ../specials/fdk-aac
 	HEADERS		+= ../includes/backend/audio/fdk-aac.h 
 	SOURCES		+= ../src/backend/audio/fdk-aac.cpp 
 	LIBS		+= -lfdk-aac

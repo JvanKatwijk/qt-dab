@@ -141,7 +141,7 @@ float	denominator	= 0;
 	                   square (absVal - abs (imag (x [i])));
 	}
 
-	return 10 * log10 (nominator / denominator);
+	return 10 * log10 (1.0 + nominator / denominator);
 //	avg	= arg (avgPoint * conj (std::complex<float> (absVal, absVal)));
 //	for (i = 0; i < carriers; i ++) {
 //	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;

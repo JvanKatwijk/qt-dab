@@ -53,19 +53,19 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 	set(USE_PORTAUDIO true)
 
 if(DEFINED AIRSPY)
-   set(AIRSPY true)
+	set(AIRSPY true)
 endif ()
 
 if(DEFINED SDRPLAY)
-   set(SDRPLAY true)
+	set(SDRPLAY true)
 endif ()
 
 if(DEFINED SDRPLAY_V3)
-   set(SDRPLAY_V3 true)
+	set(SDRPLAY_V3 true)
 endif ()
 
 if(DEFINED RTLSDR)
-   set(RTLSDR true)
+	set(RTLSDR true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -73,7 +73,7 @@ if(DEFINED HACKRF)
 endif ()
 
 if(DEFINED LIMESDR)
-   set(LIMESDR true)
+	set(LIMESDR true)
 endif ()
 
 if(DEFINED RTL_TCP)
@@ -81,21 +81,24 @@ if(DEFINED RTL_TCP)
 endif ()
 
 if (DEFINED DATA_STREAMER)
-   set(DATA_STREAMER true)
+	set(DATA_STREAMER true)
 endif ()
 
 if (DEFINED TRY_EPG)
-   set(TRY_EPG true)
+	set(TRY_EPG true)
 endif ()
 
 if (DEFINED VITERBI_SSE)
-   set(VITERBI_SSE true)
+	set(VITERBI_SSE true)
 endif ()
 
 if (DEFINED VITERBI_NEON)
-   set(VITERBI_NEON true)
+	set(VITERBI_NEON true)
 endif ()
 
+if (DEFINED FDK_AAC)
+	set (FDK_AAC true)
+endif ()
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, set
 if (DEFINED TCP_STREAMER)
@@ -140,10 +143,6 @@ endif ()
             message(FATAL_ERROR "please install FFTW3")
         endif ()
 
-        find_package(Faad)
-        if (NOT FAAD_FOUND )
-            message(FATAL_ERROR "please install libfaad")
-        endif ()
 
         find_package(zlib)
 	if (NOT ZLIB_FOUND)
@@ -238,7 +237,6 @@ endif ()
 	     ../includes/backend/backend.h
 	     ../includes/backend/backend-deconvolver.h
 	     ../includes/backend/backend-driver.h
-	     ../includes/backend/audio/faad-decoder.h
 	     ../includes/backend/audio/mp4processor.h
 	     ../includes/backend/audio/bitWriter.h
 	     ../includes/backend/audio/mp2processor.h
@@ -324,7 +322,6 @@ endif ()
 	     ../src/backend/backend.cpp
 	     ../src/backend/backend-deconvolver.cpp
 	     ../src/backend/backend-driver.cpp
-	     ../src/backend/audio/faad-decoder.cpp
 	     ../src/backend/audio/mp4processor.cpp
 	     ../src/backend/audio/bitWriter.cpp
 	     ../src/backend/audio/mp2processor.cpp
@@ -391,7 +388,6 @@ endif ()
 	     ../includes/ofdm/tii_detector.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
-	     ../includes/backend/audio/faad-decoder.h
 	     ../includes/backend/audio/mp2processor.h
 	     ../includes/backend/audio/mp4processor.h
 	     ../includes/backend/data/virtual-datahandler.h
@@ -437,11 +433,52 @@ endif ()
 
 
 #########################################################################
+
+	if (FDK_AAC)
+	   find_package(Fdk-AAC)
+	   if (NOT LIBFDK_AAC_FOUND)
+	      message (FATAL_ERROR, "please install libfdk-aac")
+	   endif ()
+	   include_directories (../specials/fdk-aac)
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ../includes/backend/audio/fdk-aac.h
+	   )
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../src/backend/audio/fdk-aac.cpp
+	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../includes/backend/audio/fdk-aac.h
+	   )
+           list(APPEND extraLibs ${FDK_AAC_LIBRARIES})
+	   add_definitions (-D__WITH_FDK_AAC__)
+	elseif (NOT FDK_AAC)
+           find_package(Faad)
+           if (NOT FAAD_FOUND )
+              message(FATAL_ERROR "please install libfaad")
+           endif ()
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../includes/backend/audio/faad-decoder.h
+	   )
+	   set (${objectName}_SRCS
+                ${${objectName}_SRCS}
+	        ../src/backend/audio/faad-decoder.cpp
+	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../includes/backend/audio/faad-decoder.h
+	   )
+	   add_definitions (-D__WITH_FAAD__)
+	endif (FDK-AAC)
+
 #	the viterbi decoder
 #
 	if (VITERBI_NEON)
 	   set(VITERBI_SSE false)
-	   set ($(objectName)_HDRS
+	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
 	        ../src/support/viterbi-spiral/spiral-neon.h
 	   )

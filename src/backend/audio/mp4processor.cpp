@@ -298,6 +298,12 @@ stream_parms    streamParameters;
 //
 //	then handle the audio
 #ifdef	__WITH_FDK_AAC__
+	         std::vector<uint8_t> fileBuffer;
+	         int segmentSize =
+	              build_aacFile (aac_frame_length,
+	                             &streamParameters,
+	                             &(outVector. data () [au_start [i]]),
+	                             fileBuffer);
 	         tmp = aacDecoder -> MP42PCM (&streamParameters, 
 	                                      fileBuffer. data (), 
 	                                      segmentSize);

@@ -302,6 +302,7 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
 CONFIG		+= pluto
+#CONFIG		+= pluto_2
 
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
@@ -369,13 +370,14 @@ CONFIG		+= faad
 #	devices
 #CONFIG		+= extio
 CONFIG		+= airspy
-#CONFIG		+= rtl_tcp
+CONFIG		+= rtl_tcp
 CONFIG		+= dabstick
 CONFIG		+= sdrplay-v2
 CONFIG		+= pluto
-#CONFIG		+= sdrplay-v3
-#CONFIG		+= hackrf
-#CONFIG		+= lime
+CONFIG		+= pluto_2
+CONFIG		+= sdrplay-v3
+CONFIG		+= hackrf
+CONFIG		+= lime
 CONFIG		+= NO_SSE
 
 #very experimental, simple server for connecting to a tdc handler
@@ -514,6 +516,16 @@ pluto	{
 	HEADERS		+= ./qt-devices/pluto/pluto-handler.h
 	SOURCES		+= ./qt-devices/pluto/pluto-handler.cpp
 	FORMS		+= ./qt-devices/pluto/pluto-widget.ui
+#	LIBS		+= -liio
+}
+
+pluto_2	{
+	DEFINES		+= HAVE_PLUTO_2
+	QT		+= network
+	INCLUDEPATH	+= ./qt-devices/pluto-2
+	HEADERS		+= ./qt-devices/pluto-2/pluto-2.h
+	SOURCES		+= ./qt-devices/pluto-2/pluto-2.cpp
+	FORMS		+= ./qt-devices/pluto-2/pluto-2.ui
 	LIBS		+= -liio
 }
 send_datagram {
@@ -607,7 +619,7 @@ faad	{
 
 fdk-aac	{
 	DEFINES		+= __WITH_FDK_AAC__
-	INCLUDEPATH	+= /usr/local/include/fdk-aac
+	INCLUDEPATH	+= ../specials/fdk-aac
 	HEADERS		+= ../includes/backend/audio/fdk-aac.h 
 	SOURCES		+= ../src/backend/audio/fdk-aac.cpp 
 	LIBS		+= -lfdk-aac

@@ -2,6 +2,18 @@
 
 Qt-DAB-3.4.2 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
 
+---------------------------------------------------------------
+Note for Ubuntu 20 and Fedora 32
+---------------------------------------------------------------
+
+Ubuntu 20 and Fedora 32 ship an incompatible faad library (2.9).
+There are two alternatives
+
+ a. build your own faad-2.8 (sources are included in the sourcetree)
+
+ b. Use the fdk-aac library. * See the installation instructions in the
+manual for configuring and installing the required library*.
+
 ----------------------------------------------------------------
 Experimental support for adalm pluto
 ----------------------------------------------------------------

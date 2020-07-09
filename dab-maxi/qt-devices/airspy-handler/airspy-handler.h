@@ -32,7 +32,7 @@
 #include	"libairspy/airspy.h"
 #endif
 
-class	xml_fileWriter;
+	class	xml_fileWriter;
 extern "C"  {
 typedef	int (*pfn_airspy_init)();
 typedef int (*pfn_airspy_exit)();
