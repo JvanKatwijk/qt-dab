@@ -85,7 +85,7 @@ public:
 	struct rtlsdr_dev	*device;
 private:
 	QSettings	*rtlsdrSettings;
-	QSpinBox	*ifgainSelector;
+	QSpinBox	*gainControl;
 	QCheckBox	*agcControl;
 	int32_t		inputRate;
 	HINSTANCE	Handle;
@@ -94,6 +94,8 @@ private:
 	bool		open;
 	int		*gains;
 	int16_t		gainsCount;
+	void		update_gainSettings	(int);
+	void		record_gainSettings	(int);
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	(void);
 	pfnrtlsdr_open	rtlsdr_open;
@@ -114,6 +116,9 @@ private:
 	pfnrtlsdr_get_device_count rtlsdr_get_device_count;
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+signals:
+	void		new_gainValue		(int);
+	void		new_agcValue		(bool);
 private slots:
 	void            set_ifgain		(int);
         void            set_agcControl          (int);

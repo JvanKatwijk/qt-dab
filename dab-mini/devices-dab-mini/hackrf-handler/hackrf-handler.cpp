@@ -29,15 +29,15 @@
 #define	DEFAULT_GAIN	30
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
-	                               QSpinBox	*ifgainSelector,
+	                               QSpinBox	*vgaSelector,
 	                               QSpinBox	*lnaSelector):
 	                                 _I_Buffer (4 * 1024 * 1024) {
 int	err;
 int	res;
 	hackrfSettings			= s;
-	this	-> ifgainSelector	= ifgainSelector;
-	ifgainSelector	-> setToolTip ("vga gain, range 1 .. 62");
-	ifgainSelector	-> setRange   (1, 62);
+	this	-> vgaSelector	= vgaSelector;
+	vgaSelector	-> setToolTip ("vga gain, range 1 .. 62");
+	vgaSelector	-> setRange   (1, 62);
 	this	-> lnaSelector		= lnaSelector;
 	lnaSelector	-> setToolTip ("lna gain, range 1 .. 40");
 	lnaSelector	-> setRange (1, 40);
@@ -70,7 +70,7 @@ int	res;
 	hackrfSettings		-> beginGroup ("hackrfSettings");
 	lnaSelector 		-> setValue (
 	            hackrfSettings -> value ("hack_lnaGain", 20). toInt ());
-	ifgainSelector 		-> setValue (
+	vgaSelector 		-> setValue (
 	            hackrfSettings -> value ("hack_vgaGain", 20). toInt ());
 
 	hackrfSettings	-> endGroup ();
@@ -112,12 +112,12 @@ int	res;
 	}
 
 	hackrf_set_lna_gain (theDevice, lnaSelector -> value ());
-	hackrf_set_vga_gain (theDevice, ifgainSelector -> value ());
+	hackrf_set_vga_gain (theDevice, vgaSelector -> value ());
 
 //	and be prepared for future changes in the settings
 	connect (lnaSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (setLNAGain (int)));
-	connect (ifgainSelector, SIGNAL (valueChanged (int)),
+	connect (vgaSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (setVGAGain (int)));
 
 	hackrf_device_list_t *deviceList = hackrf_device_list ();
@@ -128,7 +128,11 @@ int	res;
 	                 deviceList -> usb_board_ids [0];
 //	   usb_board_id_display -> setText (hackrf_usb_board_id_name (board_id));
 	}
-	
+
+	connect	(this, SIGNAL (new_lnaGainValue (int)),
+	         lnaSelector, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_vgaGainValue (int)),
+	         vgaSelector, SLOT (setValue (int)));
 	running. store (false);
 }
 
@@ -138,7 +142,7 @@ int	res;
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaSelector -> value ());
 	hackrfSettings -> setValue ("hack_vgaGain",
-	                                 ifgainSelector	-> value ());
+	                                 vgaSelector	-> value ());
 	hackrfSettings	-> endGroup ();
 	this    -> hackrf_close (theDevice);
 	this    -> hackrf_exit ();
@@ -192,6 +196,11 @@ int	res;
 //	if (hackrf_is_streaming (theDevice))
 //	   return true;
 
+	vfoFrequency	= frequency;
+	update_gainSettings (frequency / MHz (1));
+	hackrf_set_lna_gain (theDevice, lnaSelector -> value ());
+        hackrf_set_vga_gain (theDevice, vgaSelector -> value ());
+
 	res	= hackrf_set_freq (theDevice, frequency);
 	res	= hackrf_start_rx (theDevice, callback, this);	
 	if (res != HACKRF_SUCCESS) {
@@ -209,6 +218,8 @@ int	res;
 	   return;
 
 	res	= hackrf_stop_rx (theDevice);
+	record_gainSettings	(vfoFrequency / MHz (1));
+
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_stop_rx %d\n", res);
 	   return;
@@ -349,3 +360,52 @@ bool	hackrfHandler::load_hackrfFunctions (void) {
 	fprintf (stderr, "OK, functions seem to be loaded\n");
 	return true;
 }
+
+
+void	hackrfHandler::record_gainSettings	(int freq) {
+int	vgaValue;
+int	lnaValue;
+int	ampEnable;
+QString theValue;
+
+	vgaValue	= vgaSelector	-> value ();
+	lnaValue	= lnaSelector	-> value ();
+	theValue	= QString::number (vgaValue) + ":";
+	theValue	+= QString::number (lnaValue);
+	hackrfSettings  -> beginGroup ("hackrfSettings");
+        hackrfSettings	-> setValue (QString::number (freq), theValue);
+        hackrfSettings -> endGroup ();
+}
+
+void	hackrfHandler::update_gainSettings	(int freq) {
+int	vgaValue;
+int	lnaValue;
+QString	theValue	= "";
+
+	hackrfSettings	-> beginGroup ("hackrfSettings");
+	theValue	= hackrfSettings -> value (QString::number (freq), ""). toString ();
+	hackrfSettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () != 2) 	// should not happen
+	   return;
+
+	vgaValue	= result. at (0). toInt ();
+	lnaValue	= result. at (1). toInt ();
+
+	vgaSelector	-> blockSignals (true);
+	new_vgaGainValue (vgaValue);
+	while (vgaSelector -> value () != vgaValue)
+	   usleep (1000);
+	vgaSelector	-> blockSignals (false);
+
+	lnaSelector	-> blockSignals (true);
+	new_lnaGainValue (lnaValue);
+	while (lnaSelector -> value () != lnaValue)
+	   usleep (1000);
+	lnaSelector	-> blockSignals (false);
+}
+

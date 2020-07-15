@@ -162,7 +162,10 @@ private:
 	QTimer			channelTimer;
 	QTimer			presetTimer;
 	QTimer			startTimer;
+	QTimer			muteTimer;
 	int32_t			numberofSeconds;
+	int32_t			muteDelay;
+	bool			muting;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
 	int			total_ficError;
@@ -275,6 +278,7 @@ private slots:
 
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
+	void			handle_muteButton	();
 };
 #endif
 

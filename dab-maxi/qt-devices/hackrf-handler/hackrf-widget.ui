@@ -105,7 +105,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="vgagainSlider">
+      <widget class="QSlider" name="vgaGainSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
          <horstretch>0</horstretch>
@@ -145,7 +145,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSlider" name="lnagainSlider">
+      <widget class="QSlider" name="lnaGainSlider">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
          <horstretch>0</horstretch>

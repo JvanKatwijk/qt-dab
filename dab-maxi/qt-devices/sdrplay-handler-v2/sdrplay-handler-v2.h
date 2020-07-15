@@ -171,7 +171,13 @@ private:
         bool		setup_xmlDump		();
         void		close_xmlDump		();
 	std::atomic<bool> dumping;
-
+//	experimental
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
+signals:
+	void		new_GRdBValue		(int);
+	void		new_lnaValue		(int);
+	void		new_agcSetting		(bool);
 private slots:
 	void		set_ifgainReduction	(int);
 	void		set_lnagainReduction	(int);
@@ -181,6 +187,7 @@ private slots:
 	void		set_antennaSelect	(const QString &);
 	void		set_tunerSelect		(const QString &);
 	void		set_xmlDump		();
+	void		voidSignal		(int);
 };
 #endif
 

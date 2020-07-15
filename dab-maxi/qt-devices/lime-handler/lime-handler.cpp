@@ -161,6 +161,8 @@ lms_info_str_t limedevices [10];
 	         this, SLOT (setGain (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
+	connect (this, SIGNAL (new_gainValue (int)),
+	         gainSelector, SLOT (setValue (int)));
 	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
@@ -204,12 +206,19 @@ int	res;
 
 	if (isRunning())
 	   return true;
+
+	vfoFrequency	= freq;
+#ifdef	__KEEP_GAIN_SETTINGS__
+	update_gainSettings	(freq / MHz (1));
+	setGain (gainSelector -> value ());
+#endif
 	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
 	stream. isTx            = false;
         stream. channel         = 0;
         stream. fifoSize        = FIFO_SIZE;
         stream. throughputVsLatency     = 0.1;  // ???
         stream. dataFmt         = lms_stream_t::LMS_FMT_I12;    // 12 bit ints
+
 	res     = LMS_SetupStream (theDevice, &stream);
         if (res < 0)
            return false;
@@ -217,7 +226,7 @@ int	res;
         if (res < 0)
            return false;
 
-	start();
+	start ();
 	return true;
 }
 	
@@ -225,6 +234,9 @@ void	limeHandler::stopReader() {
 	close_xmlDump ();
 	if (!isRunning())
 	   return;
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings (vfoFrequency);
+#endif
 	running. store (false);
 	while (isRunning())
 	   usleep (200);
@@ -543,5 +555,31 @@ void	limeHandler::hide	() {
 
 bool	limeHandler::isHidden	() {
 	return myFrame. isHidden ();
+}
+
+void	limeHandler::record_gainSettings	(int key) {
+int gainValue	= gainSelector -> value ();
+QString theValue	= QString::number (gainValue);
+
+	limeSettings	-> beginGroup ("limeSettings");
+        limeSettings	-> setValue (QString::number (key), theValue);
+        limeSettings	-> endGroup ();
+}
+
+void	limeHandler::update_gainSettings	(int key) {
+int	gainValue;
+
+	limeSettings	-> beginGroup ("limeSettings");
+        gainValue	= limeSettings -> value (QString::number (key), -1). toInt ();
+        limeSettings	-> endGroup ();
+
+	if (gainValue == -1)
+	   return;
+
+	gainSelector	-> blockSignals (true);
+	new_gainValue (gainValue);
+	while (gainSelector -> value () != gainValue)
+	   usleep (1000);
+	gainSelector	-> blockSignals (false);
 }
 

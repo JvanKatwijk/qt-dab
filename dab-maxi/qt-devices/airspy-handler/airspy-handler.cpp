@@ -46,7 +46,7 @@ uint32_t samplerateCount;
 	setupUi (&myFrame);
 	myFrame. show		();
 
-	airspySettings	-> beginGroup ("airspyHandler");
+	airspySettings	-> beginGroup ("airspySettings");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
 	                                                          toInt();
 	linearitySlider		-> setValue (temp);
@@ -167,7 +167,7 @@ uint32_t samplerateCount;
 	   throw (24);
 	}
 
-	airspySettings	-> beginGroup ("airspyHandler");
+	airspySettings	-> beginGroup ("airspySettings");
 	airspySettings	-> endGroup();
 
 //	The sizes of the mapTables follow from the input and output rate
@@ -204,6 +204,35 @@ uint32_t samplerateCount;
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
 
+//
+//	and to restore settings, we need
+	connect (this, SIGNAL (new_lnaGainValue (int)),
+	         lnaSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_vgaGainValue (int)),
+	         vgaSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_mixerValue (int)),
+	         mixerSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_linearityValue (int)),
+	         linearitySlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_sensitivityValue (int)),
+	         sensitivitySlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_tabSetting (int)),
+	         tabWidget, SLOT (setCurrentIndex (int)));
+	connect (this, SIGNAL (new_lnaButtonText (const QString &)),
+	         lnaButtonLabel, SLOT (setText (const QString &)));
+	connect (this, SIGNAL (new_mixerButtonText (const QString &)),
+	         mixerButtonLabel, SLOT (setText (const QString &)));
+
+	connect (this, SIGNAL (new_lnaDisplay (int)),
+	         lnaDisplay, SLOT (display (int)));
+	connect (this, SIGNAL (new_vgaDisplay (int)),
+	         vgaDisplay, SLOT (display (int)));
+	connect (this, SIGNAL (new_mixerDisplay (int)),
+	         mixerDisplay, SLOT (display (int)));
+	connect (this, SIGNAL (new_sensitivityDisplay (int)),
+	         sensitivityDisplay, SLOT (display (int)));
+	connect (this, SIGNAL (new_linearityDisplay (int)),
+	         linearityDisplay, SLOT (display (int)));
 	displaySerial	-> setText (getSerial());
 	running. store (false);
 //	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
@@ -215,7 +244,7 @@ uint32_t samplerateCount;
 
 	airspyHandler::~airspyHandler() {
 	stopReader ();
-	airspySettings	-> beginGroup ("airspyHandler");
+	airspySettings	-> beginGroup ("airspySettings");
 	airspySettings -> setValue ("linearity", linearitySlider -> value());
 	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());
 	airspySettings -> setValue ("vga", vgaGain);
@@ -249,8 +278,9 @@ err:;
 }
 
 void	airspyHandler::setVFOFrequency (int32_t nf) {
-int result = my_airspy_set_freq (device, lastFrequency = nf);
+int result = my_airspy_set_freq (device, nf);
 
+	vfoFrequency	= nf;
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
@@ -272,7 +302,17 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	if (running. load())
 	   return true;
 
-	result = my_airspy_set_freq (device, lastFrequency = freq);
+	vfoFrequency	= freq;
+#ifdef	__KEEP_GAIN_SETTINGS__
+	update_gainSettings (freq / MHz (1));
+	set_vga_gain		(vgaSlider -> value ());
+	set_lna_gain		(lnaSlider -> value ());
+	set_mixer_gain		(mixerSlider -> value ());
+	my_airspy_set_lna_agc	(device, lna_agc ? 1 : 0);
+	my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
+	my_airspy_set_rf_bias	(device, rf_bias ? 1 : 0);
+#endif
+	result = my_airspy_set_freq (device, freq);
 
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
@@ -317,6 +357,9 @@ int	result;
 	   return;
 
 	close_xmlDump ();
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings (vfoFrequency / MHz (1));
+#endif
 	result = my_airspy_stop_rx (device);
 
 	if (result != AIRSPY_SUCCESS ) 
@@ -520,9 +563,9 @@ int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 	if (lna_agc)
-	   lnaButton	-> setText ("lna agc on");
+	   lnaButtonLabel	-> setText ("lna agc on");
 	else
-	   lnaButton	-> setText ("lna agc");
+	   lnaButtonLabel	-> setText ("lna agc");
 }
 
 /* Parameter value:
@@ -539,9 +582,9 @@ int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
 	if (mixer_agc)
-	   mixerButton	-> setText ("mixer agc on");
+	   mixerButtonLabel	-> setText ("mixer agc on");
 	else
-	   mixerButton	-> setText ("mixer agc");
+	   mixerButtonLabel	-> setText ("mixer agc");
 }
 
 
@@ -834,3 +877,114 @@ bool	airspyHandler::isHidden	() {
 	return myFrame. isHidden ();
 }
 
+void	airspyHandler::record_gainSettings	(int key) {
+int	linearity	= linearitySlider	-> value ();
+int	sensitivity	= sensitivitySlider	-> value ();
+int	lnaGainValue	= lnaSlider		-> value ();
+int	mixerValue	= mixerSlider		-> value ();
+int	vgaGainValue	= vgaSlider		-> value ();
+int	currentTab	= tabWidget		-> currentIndex ();
+QString theValue	= QString::number (linearity) + ":";
+
+	theValue	+= QString::number (sensitivity) + ":";
+	theValue	+= QString::number (lnaGainValue) + ":";
+	theValue	+= QString::number (mixerValue) + ":";
+	theValue	+= QString::number (vgaGainValue) + ":";
+	theValue	+= QString::number (lna_agc) + ":";
+	theValue	+= QString::number (mixer_agc) + ":";
+	theValue	+= QString::number (rf_bias) + ":";
+	theValue	+= QString::number (currentTab);
+
+        airspySettings	-> beginGroup ("airspySettings");
+        airspySettings	-> setValue (QString::number (key), theValue);
+        airspySettings	-> endGroup ();
+}
+
+void	airspyHandler::update_gainSettings	(int key) {
+int     linearity;
+int     sensitivity;
+int     lnaGainValue;
+int     mixerGainValue;
+int     vgaGainValue;
+int	lna_agc_setting;
+int	mixer_agc_setting;
+int	rf_bias_setting;
+int	tab_setting;
+QString theValue;
+
+        airspySettings	-> beginGroup ("airspySettings");
+        theValue = airspySettings -> value (QString::number (key), ""). toString ();
+        airspySettings	-> endGroup ();
+
+	if (theValue == QString (""))
+           return;              // or set some defaults here
+
+        QStringList result      = theValue. split (":");
+        if (result. size () != 9)        // should not happen
+           return;
+
+        linearity		= result. at (0). toInt ();
+        sensitivity		= result. at (1). toInt ();
+        lnaGainValue		= result. at (2). toInt ();
+	mixerGainValue		= result. at (3). toInt ();
+	vgaGainValue		= result. at (4). toInt ();
+	lna_agc			= result. at (5). toInt ();
+	mixer_agc		= result. at (6). toInt ();
+	rf_bias			= result. at (7). toInt ();
+	tab_setting		= result. at (8). toInt ();
+
+	lnaSlider	-> blockSignals (true);
+	new_lnaGainValue	(lnaGainValue);
+	new_lnaDisplay		(lnaGainValue);
+	while (lnaSlider -> value () != lnaGainValue)
+	   usleep (1000);
+	lnaSlider	-> blockSignals (false);
+
+	vgaSlider	-> blockSignals (true);
+	new_vgaGainValue	(vgaGainValue);
+	new_vgaDisplay		(vgaGainValue);
+	while (vgaSlider -> value () != vgaGainValue)
+	   usleep (1000);
+	vgaSlider	-> blockSignals (false);
+
+	mixerSlider	-> blockSignals (true);
+	new_mixerValue		(mixerGainValue);
+	new_mixerDisplay	(mixerGainValue);
+	while (mixerSlider -> value () != mixerGainValue)
+	   usleep (1000);
+	mixerSlider	-> blockSignals (false);
+
+	linearitySlider	-> blockSignals (true);
+	new_linearityValue	(linearity);
+	new_linearityDisplay	(linearity);
+	while (linearitySlider -> value () != linearity)
+	   usleep (1000);
+	linearitySlider	-> blockSignals (false);
+
+	sensitivitySlider -> blockSignals (true);
+	new_sensitivityValue	(sensitivity);
+	new_sensitivityDisplay	(sensitivity);
+	while (sensitivitySlider -> value () != sensitivity)
+	   usleep (1000);
+	sensitivitySlider -> blockSignals (false);
+
+	lnaButton	-> blockSignals (true);
+	QString	 lnaText = lna_agc == 1 ? "lna agc on" : " lna agc";
+	new_lnaButtonText (lnaText);
+	while (lnaButtonLabel -> text () != lnaText)
+	   usleep (1000);
+	lnaButton	-> blockSignals (false);
+
+	mixerButton	-> blockSignals (true);
+	QString mixerText = mixer_agc ? "mixer agc on" : "mixer agc";
+	new_mixerButtonText (mixerText);
+	while (mixerButtonLabel -> text () != mixerText)
+	   usleep (1000);
+	mixerButton	-> blockSignals (false);
+
+	tabWidget	-> blockSignals (true);
+	new_tabSetting (tab_setting);
+	while (tabWidget -> currentIndex () != tab_setting)
+	   usleep (1000);
+	tabWidget	-> blockSignals (false);
+}

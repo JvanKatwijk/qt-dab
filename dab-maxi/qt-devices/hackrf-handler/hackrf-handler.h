@@ -137,7 +137,6 @@ private:
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
 	HINSTANCE		Handle;
-	bool			libraryLoaded;
 
 	FILE			*xmlDumper;
         xml_fileWriter		*xmlWriter;
@@ -145,15 +144,22 @@ private:
         void			close_xmlDump           ();
         std::atomic<bool>	dumping;
 
+	void			record_gainSettings		(int);
+	void			update_gainSettings		(int);
+signals:
+	void			new_antEnable	(bool);
+	void			new_ampEnable	(bool);
+	void			new_vgaValue	(int);
+	void			new_lnaValue	(int);
 private slots:
-	void		setLNAGain	(int);
-	void		setVGAGain	(int);
+	void			setLNAGain	(int);
+	void			setVGAGain	(int);
 // contributed by Fabio
-	void		EnableAntenna	(int);
-	void		EnableAmpli	(int);
-	void		set_ppmCorrection (int);
+	void			EnableAntenna	(int);
+	void			EnableAmpli	(int);
+	void			set_ppmCorrection (int);
 // Fine aggiunta
-	void		set_xmlDump	();
+	void			set_xmlDump	();
 };
 #endif
 

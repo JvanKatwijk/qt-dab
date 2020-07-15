@@ -88,16 +88,16 @@ int32_t	r;
 int	i, k;
 
 	this	-> rtlsdrSettings	= rtlsdrSettings;
-	this	-> ifgainSelector	= ifgainSelector;
-	ifgainSelector	-> setToolTip ("ifgain, range 1 .. 100");
-	ifgainSelector	-> setRange (1, 100);
+	this	-> gainControl		= ifgainSelector;
+	gainControl	-> setToolTip ("ifgain, range 1 .. 100");
+	gainControl	-> setRange (1, 100);
 	this	-> agcControl		= agcControl;
 
 	inputRate		= 2048000;
 	libraryLoaded		= false;
 	open			= false;
 	workerHandle		= NULL;
-	lastFrequency		= KHz (22000);	// just a dummy
+	vfoFrequency		= KHz (22000);	// just a dummy
 	gains			= NULL;
 
 #ifdef	__MINGW32__
@@ -178,7 +178,7 @@ int	i, k;
 	
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
         int ifgain        = rtlsdrSettings -> value ("ifgain", 50). toInt ();
-        ifgainSelector	-> setValue (ifgain);
+        gainControl	-> setValue (ifgain);
 
         bool    agcMode = rtlsdrSettings -> value ("agcMode", 0). toInt () != 0;
         if (agcMode) {
@@ -191,10 +191,15 @@ int	i, k;
 	else
 	   rtlsdr_set_agc_mode (device, 0);
 	rtlsdr_set_tuner_gain	(device, gains [(int)(ifgain * gainsCount / 100)]);
-	connect (ifgainSelector, SIGNAL (valueChanged (int)),
+	connect (gainControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ifgain (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
+//
+	connect	(this, SIGNAL (new_gainValue	(int)),
+	         gainControl, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcValue (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 
 }
 
@@ -225,7 +230,7 @@ int	i, k;
 	   delete[] gains;
 
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-        rtlsdrSettings	-> setValue ("ifgain", ifgainSelector -> value ());
+        rtlsdrSettings	-> setValue ("ifgain", gainControl -> value ());
 	rtlsdrSettings	-> setValue ("agcMode", agcControl -> isChecked ());
 	rtlsdrSettings	-> endGroup ();
 }
@@ -242,11 +247,13 @@ int32_t	r;
 	if (r < 0)
 	   return false;
 
+	vfoFrequency	= frequency;
+	update_gainSettings	(frequency / MHz (1));
 	this -> rtlsdr_set_center_freq (device, frequency);
 	workerHandle	= new dll_driver (this);
 	rtlsdr_set_agc_mode (device, agcControl -> isChecked ());
 	rtlsdr_set_tuner_gain (device,
-	                  gains [(int)(ifgainSelector -> value () * gainsCount / 100)]);
+	                  gains [(int)(gainControl -> value () * gainsCount / 100)]);
 	return true;
 }
 
@@ -254,6 +261,7 @@ void	rtlsdrHandler::stopReader	(void) {
 	if (workerHandle == NULL)
 	   return;
 	if (workerHandle != NULL) { // we are running
+	   record_gainSettings	(vfoFrequency / MHz (1));
 	   this -> rtlsdr_cancel_async (device);
 	   if (workerHandle != NULL) {
 	      while (!workerHandle -> isFinished ()) 
@@ -273,9 +281,10 @@ void	rtlsdrHandler::set_ifgain (int gain) {
 }
 //
 void	rtlsdrHandler::set_agcControl	(int dummy) {
+	(void)dummy;
 	rtlsdr_set_agc_mode (device, agcControl -> isChecked ());
 	rtlsdr_set_tuner_gain (device,
-	             gains [(int)(ifgainSelector -> value () * gainsCount / 100)]);
+	             gains [(int)(gainControl -> value () * gainsCount / 100)]);
 }
 
 //
@@ -458,5 +467,51 @@ void	rtlsdrHandler::resetBuffer (void) {
 
 int16_t	rtlsdrHandler::bitDepth	(void) {
 	return 8;
+}
+
+////////////////////////////////////////////////////////////////////////
+//
+//      the frequency (the MHz component) is used as key
+//
+void    rtlsdrHandler::record_gainSettings (int freq) {
+int	gain	= gainControl	-> value ();
+int	agc	= agcControl	-> isChecked () ? 1 : 0;
+QString theValue        = QString::number (gain) + ":" + QString::number (agc);
+
+        rtlsdrSettings         -> beginGroup ("rtlsdrSettings");
+        rtlsdrSettings         -> setValue (QString::number (freq), theValue);
+        rtlsdrSettings         -> endGroup ();
+}
+
+void	rtlsdrHandler::update_gainSettings (int freq) {
+int	agc;
+int	gain;
+QString	theValue	= "";
+
+	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	theValue	= rtlsdrSettings -> value (QString::number (freq), ""). toString ();
+	rtlsdrSettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () != 2) 	// should not happen
+	   return;
+
+	gain	= result. at (0). toInt ();
+	agc	= result. at (1). toInt ();
+
+	gainControl	-> blockSignals (true);
+	new_gainValue (gain);
+	while (gainControl -> value () != gain)
+	   usleep (1000);
+	gainControl	-> blockSignals (false);
+
+	agcControl	-> blockSignals (true);
+	new_agcValue (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
 }
 

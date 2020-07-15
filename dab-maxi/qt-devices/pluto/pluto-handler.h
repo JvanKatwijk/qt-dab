@@ -141,6 +141,9 @@ private:
 	int			convIndex;
 	int16_t			mapTable_int	[DAB_RATE / DIVIDER];
 	float			mapTable_float	[DAB_RATE / DIVIDER];
+
+	void			record_gainSettings	(int);
+	void			update_gainSettings	(int);
 //
 //	and the functions from the library
 	
@@ -165,6 +168,9 @@ private:
 	p_iio_buffer_end		iio_buffer_end;
 	p_iio_buffer_first		iio_buffer_first;
 	p_iio_strerror			iio_strerror;
+signals:
+	void		new_gainValue		(int);
+	void		new_agcValue		(bool);
 private slots:
 	void		set_gainControl		(int);
 	void		set_agcControl		(int);

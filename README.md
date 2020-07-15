@@ -2,6 +2,29 @@
 
 Qt-DAB-3.4.2 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
 
+--------------------------------------------------------------
+Experimental support for saving gain settings per channel
+--------------------------------------------------------------
+
+Based on user request some device interfaces are equipped with
+a mechanism to save the gain settings per channel.
+The basic idea is that the gain setting may be quite different
+for different channels, and - especially when using present selection
+for services on different channels - it might be helpful to restore
+the correct gain setting when (either manually or automatically)
+selecting a channel.
+
+By default this option is switched off (since it is still experimental),
+it can be activated by uncommenting
+
+	__KEEP_GAIN_SETTINGS__
+
+in the ".pro" file for creating a qt-dab-3.xx executable
+
+Note: sdrplay-v2, rtlsdr, airspy and hackrf have been tested, the feature
+is not implemented in sdrplay-v3 support.
+
+
 ---------------------------------------------------------------
 Note for Ubuntu 20 and Fedora 32
 ---------------------------------------------------------------

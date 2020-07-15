@@ -105,12 +105,17 @@ private:
 	                        hackrf_usb_board_id_name;
 
 	QSettings	*hackrfSettings;
-	QSpinBox	*ifgainSelector;
+	QSpinBox	*vgaSelector;
 	QSpinBox	*lnaSelector;
 	int32_t		inputRate;
 	std::atomic<bool>	running;
         HINSTANCE	Handle;
         bool		libraryLoaded;
+	void		update_gainSettings	(int);
+	void		record_gainSettings	(int);
+signals:
+	void		new_lnaGainValue	(int);
+	void		new_vgaGainValue	(int);
 private slots:
 	void		setLNAGain	(int);
 	void		setVGAGain	(int);

@@ -104,12 +104,18 @@ sdrplaySelect	*sdrplaySelector;
 //	See if there are settings from previous incarnations
 //	and config stuff
 
+	connect (this, SIGNAL (new_GRdBValue (int)),
+	         GRdBSelector, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_lnaValue (int)),
+	         lnaGainSetting, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcSetting (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	coarseOffset	=
 	            sdrplaySettings -> value ("sdrplayOffset", 0). toInt();
-	GRdBSelector 		-> setValue (
+	new_GRdBValue (
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt());
-	lnaGainSetting		-> setValue (
+	new_lnaValue (
 	            sdrplaySettings -> value ("sdrplay-lnastate", 0). toInt());
 
 	ppmControl		-> setValue (
@@ -121,7 +127,7 @@ sdrplaySelect	*sdrplaySelector;
 	bool agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
 	if (agcMode) {
-	   agcControl -> setChecked (true);
+	   new_agcSetting	(true);
 	   GRdBSelector         -> hide();
 	   gainsliderLabel      -> hide();
 	}
@@ -217,19 +223,12 @@ sdrplaySelect	*sdrplaySelector;
 
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
-	connect (GRdBSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ifgainReduction (int)));
-	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_lnagainReduction (int)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
 	connect (debugControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_debugControl (int)));
 	connect (ppmControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmControl (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
-
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
 	xmlDumper	= nullptr;
@@ -269,32 +268,34 @@ mir_sdr_ErrT	err;
 int	GRdB		= GRdBSelector	-> value();
 int	lnaState	= lnaGainSetting -> value();
 
-	(void)newGain;
+	if (!running. load ())
+	   return;
 
-	err	=  my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1, 0);
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "Error at set_ifgain %s\n",
-	                    errorCodes (err). toLatin1(). data());
-	else {
-	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
-	}
+	err =  my_mir_sdr_RSP_SetGr (newGain, lnaState, 1, 0);
+	if (err != mir_sdr_Success)
+	   fprintf (stderr, "toch weer een fout\n");
+
+	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
 
 void	sdrplayHandler::set_lnagainReduction (int lnaState) {
 mir_sdr_ErrT err;
 
+
+	if (!running. load ())
+	   return;
+
 	if (!agcControl -> isChecked()) {
-	   set_ifgainReduction (0);
+	   (void)my_mir_sdr_RSP_SetGr (GRdBSelector -> value (),
+	                                                 lnaState, 1, 0);
+	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 	   return;
 	}
-
-	err	= my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
-	                                 -30, 0, 0, 0, 0, lnaState);
-	if (err != mir_sdr_Success) 
-	   fprintf (stderr, "Error at set_lnagainReduction %s\n",
-	                       errorCodes (err). toLatin1(). data());
-	else
-	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
+//
+//	apparently, agcControl is checked
+	(void)my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	                             -30, 0, 0, 0, 0, lnaState);
+	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
 
 //
@@ -341,21 +342,29 @@ void	myGainChangeCallback (uint32_t	GRdB,
 }
 
 void	sdrplayHandler::adjustFreq	(int offset) {
-	vfoFrequency	+= offset;
-	my_mir_sdr_SetRf ((double)(vfoFrequency), 1, 0);
+//	vfoFrequency	+= offset;
+//	my_mir_sdr_SetRf ((double)(vfoFrequency), 1, 0);
 }
 	
 bool	sdrplayHandler::restartReader	(int32_t freq) {
 int	gRdBSystem;
 int	samplesPerPacket;
 mir_sdr_ErrT	err;
-int	GRdB		= GRdBSelector	-> value();
-int	lnaState	= lnaGainSetting -> value();
+int	GRdB		= GRdBSelector	-> value ();
+int	lnaState	= lnaGainSetting	-> value ();
+int	agc		= agcControl	-> isChecked () ? 1 : 0;
 
 	vfoFrequency	= freq;
 	if (running. load())
 	   return true;
 
+#if	__KEEP_GAIN_SETTINGS__
+	update_gainSettings (freq / MHz (1));
+	GRdB		= GRdBSelector		-> value ();
+	lnaState	= lnaGainSetting	-> value ();
+	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
+	agc		= agcControl	-> isChecked () ? 1 : 0;
+#endif
 	err	= my_mir_sdr_StreamInit (&GRdB,
 	                                 double (inputRate) / MHz (1),
 	                                 double (vfoFrequency) / Mhz (1),
@@ -368,28 +377,35 @@ int	lnaState	= lnaGainSetting -> value();
 	                                 (mir_sdr_StreamCallback_t)myStreamCallback,
 	                                 (mir_sdr_GainChangeCallback_t)myGainChangeCallback,
 	                                 this);
-//	fprintf (stderr, "overall gain reduction %d\n", gRdBSystem);
 	if (err != mir_sdr_Success) {
-	   fprintf (stderr, "error = %s\n",
+	   fprintf (stderr, "streamInit error = %s\n",
 	                errorCodes (err). toLatin1(). data());
 	   return false;
 	}
+	if (err != mir_sdr_Success) 
+	   fprintf (stderr, "setting gain failed (plaats 2)\n");
 	err	= my_mir_sdr_SetPpm (double (ppmControl -> value()));
 	if (err != mir_sdr_Success) 
 	   fprintf (stderr, "error = %s\n",
 	                errorCodes (err). toLatin1(). data());
 
-	if (agcControl -> isChecked()) {
+	if (agc == 1) {
 	   my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
 	                          -30,
 	                          0, 0, 0, 0, lnaGainSetting -> value());
-	   GRdBSelector		-> hide();
+	   GRdBSelector		-> hide ();
+	   gainsliderLabel	-> hide ();
 	}
+	else {
+	   GRdBSelector		-> show ();
+	   gainsliderLabel	-> show ();
+	}
+	
 
 	err		= my_mir_sdr_SetDcMode (4, 1);
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
-	                errorCodes (err). toLatin1(). data());
+	                        errorCodes (err). toLatin1(). data());
 	err		= my_mir_sdr_SetDcTrackTime (63);
 	if (err != mir_sdr_Success)
 	   fprintf (stderr, "error = %s\n",
@@ -398,16 +414,38 @@ int	lnaState	= lnaGainSetting -> value();
 	if (err != mir_sdr_Success)
            fprintf (stderr, "error = %s\n",
                         errorCodes (err). toLatin1(). data());
+
+	connect (agcControl, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_agcControl (int)));
+	connect (GRdBSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_ifgainReduction (int)));
+	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_lnagainReduction (int)));
 	running. store (true);
 	return true;
 }
+
+void	sdrplayHandler::voidSignal	(int s) {
+	fprintf (stderr, "signal gehad\n");
+}
+
 
 void	sdrplayHandler::stopReader() {
 mir_sdr_ErrT err;
 
 	if (!running. load())
 	   return;
-
+	
+	disconnect (GRdBSelector, SIGNAL (valueChanged (int)),
+	            this, SLOT (set_ifgainReduction (int)));
+	disconnect (this, SLOT (set_ifgainReduction (int)));
+	disconnect (lnaGainSetting, SIGNAL (valueChanged (int)),
+	            this, SLOT (set_lnagainReduction (int)));
+	disconnect (agcControl, SIGNAL (stateChanged (int)),
+	            this, SLOT (set_agcControl (int)));
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings	(vfoFrequency / MHz (1));
+#endif
 	close_xmlDump ();		// just to be sure
 	err	= my_mir_sdr_StreamUninit();
 	if (err != mir_sdr_Success)
@@ -458,7 +496,12 @@ bool agcMode	= agcControl -> isChecked();
 	if (!agcMode) {
 	   GRdBSelector		-> show();
 	   gainsliderLabel	-> show();	// old name actually
-	   set_ifgainReduction (0);
+
+	   mir_sdr_ErrT err =  my_mir_sdr_RSP_SetGr (GRdBSelector -> value (),
+	                                             lnaGainSetting -> value (),
+	                                             1, 0);
+	   if (err != mir_sdr_Success) 
+	      fprintf (stderr, "fout by agcControl\n");
 	}
 	else {
 	   GRdBSelector		-> hide();
@@ -868,3 +911,64 @@ void	sdrplayHandler::close_xmlDump () {
 	xmlDumper	= nullptr;
 }
 
+/////////////////////////////////////////////////////////////////////////
+//Experimental
+/////////////////////////////////////////////////////////////////////////
+//
+//	the frequency (the MHz component) is used as key
+//
+void	sdrplayHandler::record_gainSettings (int freq) {
+int	GRdB		= GRdBSelector		-> value ();
+int	lnaState	= lnaGainSetting	-> value ();
+int	agc		= agcControl		-> isChecked () == 1;
+QString theValue	= QString::number (GRdB) + ":";
+
+	fprintf (stderr, "recording settings from %d\n", freq);
+	theValue. append (QString::number (lnaState));
+	theValue. append (":");
+	theValue. append (QString::number (agc));
+
+	sdrplaySettings         -> beginGroup ("sdrplaySettings");
+	sdrplaySettings		-> setValue (QString::number (freq), theValue);
+	sdrplaySettings		-> endGroup ();
+}
+
+void	sdrplayHandler::update_gainSettings (int freq) {
+int	GRdB;
+int	lnaState;
+int	agc;
+QString	theValue	= "";
+
+	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
+	sdrplaySettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () < 3) 	// should not happen
+	   return;
+
+	GRdB		= result. at (0). toInt ();
+	lnaState	= result. at (1). toInt ();
+	agc		= result. at (2). toInt ();
+
+	fprintf (stderr, "for %d values are %d %d %d\n",
+	              freq, GRdB, lnaState, agc);
+	GRdBSelector	-> blockSignals (true);
+	new_GRdBValue (GRdB);
+	while (GRdBSelector -> value () != GRdB)
+	   usleep (1000);
+	GRdBSelector	-> blockSignals (false);
+	lnaGainSetting	-> blockSignals (true);
+	new_lnaValue (lnaState);
+	while (lnaGainSetting -> value () != lnaState)
+	   usleep (1000);
+	lnaGainSetting	-> blockSignals (false);
+	agcControl	-> blockSignals (true);
+	new_agcSetting (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
+}

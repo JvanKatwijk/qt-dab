@@ -231,8 +231,8 @@ LIBS		+= -lsamplerate
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= dabstick
-#CONFIG		+= sdrplay
-CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay
+#CONFIG		+= sdrplay-v3
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime

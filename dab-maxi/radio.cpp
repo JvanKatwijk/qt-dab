@@ -382,6 +382,13 @@ uint8_t	dabBand;
 	presetTimer. setInterval (switchTime);
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
+//
+//	timer for muting
+	muteTimer. setSingleShot (true);
+	muting		= false;
+	muteDelay	= dabSettings -> value ("muteTime", 10). toInt ();
+//	connect (muteButtton, SIGNAL (timeout (void)),
+//	         this, SLOT (handle_muteButton ()));
 
 	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
@@ -965,6 +972,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   *	A clean termination is what is needed, regardless of the GUI
   */
 void	RadioInterface::TerminateProcess () {
+	if (scanning. load ())
+	   stopScanning (false);
 	running. store	(false);
 	hideButtons	();
 #ifdef	DATA_STREAMER
@@ -2853,5 +2862,20 @@ void	RadioInterface::show_for_safety () {
 	prevServiceButton	->	show ();
         nextServiceButton	->	show ();
 	contentButton		->	show ();
+}
+
+void	RadioInterface::handle_muteButton	() {
+	if (muteTimer. isActive ()) {
+	   muteTimer. stop ();
+	   disconnect (&muteTimer, SIGNAL (timeout ()),
+	               this, SLOT (handle_muteButton ()));
+	   muting = false;
+	   return;
+	}
+
+	connect (&muteTimer, SIGNAL (timeout (void)),
+                 this, SLOT (updateTimeDisplay (void)));
+        muteTimer. start (muteDelay * 1000);
+	muting = true;
 }
 

@@ -118,6 +118,7 @@ private:
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
+	int32_t		vfoFrequency;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
@@ -135,6 +136,8 @@ private:
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
 //	imported functions
 public:
 	pfn_LMS_GetDeviceList	LMS_GetDeviceList;
@@ -165,6 +168,8 @@ public:
 	pfn_LMS_StopStream	LMS_StopStream;
 	pfn_LMS_RecvStream	LMS_RecvStream;
 	pfn_LMS_GetStreamStatus	LMS_GetStreamStatus;
+signals:
+	void		new_gainValue	(int);
 private slots:
 	void		setGain		(int);
 	void		setAntenna	(int);

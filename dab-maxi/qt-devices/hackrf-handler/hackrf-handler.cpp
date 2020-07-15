@@ -37,8 +37,8 @@
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
 	                               QString &recorderVersion):
-	                                  myFrame (nullptr),
-	                                  _I_Buffer (4 * 1024 * 1024) {
+	                                  _I_Buffer (4 * 1024 * 1024),
+	                                  myFrame (nullptr) {
 int	res;
 	hackrfSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -62,7 +62,6 @@ int	res;
 	   throw (20);
 	}
 
-        libraryLoaded   = true;
         if (!load_hackrfFunctions()) {
 #ifdef __MINGW32__
            FreeLibrary (Handle);
@@ -78,9 +77,9 @@ int	res;
 //
 //	See if there are settings from previous incarnations
 	hackrfSettings		-> beginGroup ("hackrfSettings");
-	lnagainSlider 		-> setValue (
+	lnaGainSlider 		-> setValue (
 	            hackrfSettings -> value ("hack_lnaGain", DEFAULT_GAIN). toInt());
-	vgagainSlider 		-> setValue (
+	vgaGainSlider 		-> setValue (
 	            hackrfSettings -> value ("hack_vgaGain", DEFAULT_GAIN). toInt());
 //	contributed by Fabio
 	bool isChecked =
@@ -173,16 +172,16 @@ int	res;
 	   throw (29);
 	}
 
-	setLNAGain	(lnagainSlider		-> value());
-	setVGAGain	(vgagainSlider		-> value());
+	setLNAGain	(lnaGainSlider		-> value());
+	setVGAGain	(vgaGainSlider		-> value());
 	EnableAntenna	(1);		// value is a dummy really
 	EnableAmpli	(1);		// value is a dummy, really
 	set_ppmCorrection (ppm_correction	-> value());
 
 //	and be prepared for future changes in the settings
-	connect (lnagainSlider, SIGNAL (valueChanged (int)),
+	connect (lnaGainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (setLNAGain (int)));
-	connect (vgagainSlider, SIGNAL (valueChanged (int)),
+	connect (vgaGainSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (setVGAGain (int)));
 	connect (AntEnableButton, SIGNAL (stateChanged (int)),
 	         this, SLOT (EnableAntenna (int)));
@@ -201,6 +200,15 @@ int	res;
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
 	}
+
+	connect (this, SIGNAL (new_antEnable (bool)),
+	         AntEnableButton, SLOT (setChecked (bool)));
+	connect (this, SIGNAL (new_ampEnable (bool)),
+	         AmpEnableButton, SLOT (setChecked (bool)));
+	connect (this, SIGNAL (new_vgaValue (int)),
+		 vgaGainSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_lnaValue (int)),
+	         lnaGainSlider, SLOT (setValue (int)));
 	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
@@ -210,9 +218,9 @@ int	res;
 	stopReader();
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
-	                                 lnagainSlider -> value());
+	                                 lnaGainSlider -> value());
 	hackrfSettings -> setValue ("hack_vgaGain",
-	                                 vgagainSlider	-> value());
+	                                 vgaGainSlider	-> value());
 	hackrfSettings -> setValue ("hack_AntEnable",
 	                              AntEnableButton -> checkState() == Qt::Checked);
 	hackrfSettings -> setValue ("hack_AmpEnable",
@@ -352,6 +360,17 @@ int	res;
 	if (running. load())
 	   return true;
 
+	vfoFrequency	= freq;
+#ifdef	__KEEP_GAIN_SETTINGS__
+	update_gainSettings (freq / MHz (1));
+#endif
+	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());
+	this -> hackrf_set_vga_gain (theDevice, vgaGainSlider -> value ());
+	this -> hackrf_set_amp_enable (theDevice, 
+	                               AmpEnableButton -> isChecked () ? 1 : 0);
+	this -> hackrf_set_antenna_enable (theDevice, 
+	                            AntEnableButton -> isChecked () ? 1 : 0);
+
 	res	= this -> hackrf_set_freq (theDevice, freq);
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_set_freq: \n");
@@ -383,6 +402,9 @@ int	res;
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings	(vfoFrequency / MHz (1));
+#endif
 	running. store (false);
 }
 
@@ -642,5 +664,62 @@ void	hackrfHandler::hide	() {
 
 bool	hackrfHandler::isHidden	() {
 	return myFrame. isHidden ();
+}
+
+void	hackrfHandler::record_gainSettings	(int freq) {
+int	vgaValue;
+int	lnaValue;
+int	ampEnable;
+QString theValue;
+
+	vgaValue	= vgaGainSlider	-> value ();
+	lnaValue	= lnaGainSlider	-> value ();
+	ampEnable	= AmpEnableButton -> isChecked () ? 1 : 0;
+	theValue	= QString::number (vgaValue) + ":";
+	theValue	+= QString::number (lnaValue) + ":";
+	theValue	+= QString::number (ampEnable);
+	hackrfSettings  -> beginGroup ("hackrfSettings");
+        hackrfSettings	-> setValue (QString::number (freq), theValue);
+        hackrfSettings -> endGroup ();
+}
+
+void	hackrfHandler::update_gainSettings	(int freq) {
+int	vgaValue;
+int	lnaValue;
+int	ampEnable;
+QString	theValue	= "";
+
+	hackrfSettings	-> beginGroup ("hackrfSettings");
+	theValue	= hackrfSettings -> value (QString::number (freq), ""). toString ();
+	hackrfSettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () != 3) 	// should not happen
+	   return;
+
+	vgaValue	= result. at (0). toInt ();
+	lnaValue	= result. at (1). toInt ();
+	ampEnable	= result. at (2). toInt ();
+
+	vgaGainSlider	-> blockSignals (true);
+	new_vgaValue (vgaValue);
+	while (vgaGainSlider -> value () != vgaValue)
+	   usleep (1000);
+	vgaGainSlider	-> blockSignals (false);
+
+	lnaGainSlider	-> blockSignals (true);
+	new_lnaValue (lnaValue);
+	while (lnaGainSlider -> value () != lnaValue)
+	   usleep (1000);
+	lnaGainSlider	-> blockSignals (false);
+
+	AmpEnableButton	-> blockSignals (true);
+	new_ampEnable (ampEnable == 1);
+	while (AmpEnableButton -> isChecked () != (ampEnable == 1))
+	   usleep (1000);
+	AmpEnableButton	-> blockSignals (false);
 }
 

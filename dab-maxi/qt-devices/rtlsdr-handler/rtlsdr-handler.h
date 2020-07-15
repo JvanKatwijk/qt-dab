@@ -104,7 +104,6 @@ private:
 	HINSTANCE	Handle;
 	dll_driver	*workerHandle;
 	int32_t		lastFrequency;
-	bool		open;
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
@@ -118,6 +117,8 @@ private:
         void            close_iqDump		();
         std::atomic<bool> iq_dumping;
 
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;
@@ -139,9 +140,12 @@ private:
 	pfnrtlsdr_get_device_count rtlsdr_get_device_count;
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+signals:
+	void		new_gainIndex		(int);
+	void		new_agcSetting		(bool);
 private slots:
 	void		set_ExternalGain	(const QString &);
-	void		set_autogain		(const QString &);
+	void		set_autogain		(int);
 	void		set_ppmCorrection	(int);
 	void		set_xmlDump		();
 	void		set_iqDump		();

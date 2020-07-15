@@ -322,6 +322,8 @@ CONFIG		+= send_datagram
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
+
+#DEFINES	+=__KEEP_GAIN_SETTINGS__
 }
 #
 # an attempt to have it run under W32 through cross compilation

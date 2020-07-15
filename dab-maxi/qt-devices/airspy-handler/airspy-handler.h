@@ -1,4 +1,4 @@
-
+#
 /**
  *  IW0HDV Extio
  *
@@ -101,7 +101,6 @@ public:
 	bool		isHidden		();
 	QString		deviceName		();
 	int16_t		currentTab;
-
 private:
 	QFrame		myFrame;
 	RingBuffer<std::complex<float>> _I_Buffer;
@@ -111,7 +110,26 @@ private:
         bool            setup_xmlDump           ();
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
+	int		vfoFrequency;
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
+signals:
+	void		new_lnaGainValue	(int);
+	void		new_vgaGainValue	(int);
+	void		new_mixerValue		(int);
+	void		new_linearityValue	(int);
+	void		new_sensitivityValue	(int);
+	void		new_tabSetting		(int);
 
+	void		new_lnaButtonText	(const QString &);
+	void		new_mixerButtonText	(const QString &);
+
+	void		new_lnaDisplay		(int);
+	void		new_vgaDisplay		(int);
+	void		new_mixerDisplay	(int);
+	void		new_sensitivityDisplay	(int);
+	void		new_linearityDisplay	(int);
+	
 private slots:
 	void		set_linearity		(int value);
 	void		set_sensitivity		(int value);

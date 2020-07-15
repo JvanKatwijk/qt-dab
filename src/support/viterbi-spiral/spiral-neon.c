@@ -24,7 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <emmintrin.h>
 //#include <xmmintrin.h>
 //#include <mmintrin.h>
-#include "SSE2NEON.h"
+//#include "SSE2NEON.h"
+#include "sse2neon.h"
 #include	"spiral-neon.h"
 void init_FULL_SPIRAL() {
 }

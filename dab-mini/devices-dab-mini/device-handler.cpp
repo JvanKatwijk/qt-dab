@@ -26,7 +26,7 @@
 #include	"device-handler.h"
 
 	deviceHandler::deviceHandler	(void) {
-	lastFrequency	= 100000;
+	vfoFrequency	= 100000;
 }
 
 	deviceHandler::~deviceHandler	(void) {

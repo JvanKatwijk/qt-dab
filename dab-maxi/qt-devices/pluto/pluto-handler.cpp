@@ -109,6 +109,7 @@ struct iio_device *phys_dev	= nullptr;
 //	   delete myFrame;
 	   throw (21);
 	}
+
 	fprintf (stderr, "functions are loaded\n");
 	this	-> ctx			= nullptr;
 	this	-> rxbuf		= nullptr;
@@ -128,6 +129,7 @@ struct iio_device *phys_dev	= nullptr;
 	debugFlag	=
 	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
 	plutoSettings	-> endGroup ();
+
 	if (debugFlag)
 	   debugButton	-> setText ("debug on");
 	if (agcMode) {
@@ -191,6 +193,7 @@ struct iio_device *phys_dev	= nullptr;
 	   this -> iio_context_destroy (ctx);
 	   throw (27);
 	}
+
 	chn = this -> iio_device_find_channel (phys_dev,
                                        get_ch_name (QString ("voltage"), 0).
 	                                                  toLatin1 (). data (),
@@ -241,6 +244,7 @@ struct iio_device *phys_dev	= nullptr;
 	}
 
 	this	-> gain_channel = chn;
+
 // Configure LO channel
 	if (debugFlag)
 	   fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
@@ -327,7 +331,11 @@ struct iio_device *phys_dev	= nullptr;
 	         this, SLOT (toggle_debugButton ()));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
-//
+
+	connect (this, SIGNAL (new_gainValue (int)),
+	         gainControl, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcValue (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 //	set up for interpolator
 	float	denominator	= float (DAB_RATE) / DIVIDER;
         float inVal		= float (PLUTO_RATE) / DIVIDER;
@@ -464,7 +472,9 @@ bool	plutoHandler::restartReader	(int32_t freq) {
 	   return false;
 	if (running. load())
 	   return true;		// should not happen
-
+#ifdef	__KEEP_GAIN_SETTINGS__
+	update_gainSettings (freq /MHz (1));
+#endif
 	this -> lo_hz = freq;
 	int ret = this -> iio_channel_attr_write_longlong
 	                                              (this -> lo_channel,
@@ -484,6 +494,9 @@ void	plutoHandler::stopReader() {
 	if (!running. load())
 	   return;
 	close_xmlDump	();
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings (this -> lo_hz/ MHz (1));
+#endif
 	running. store (false);
 	while (isRunning())
 	   usleep (500);
@@ -771,5 +784,48 @@ void	plutoHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
+}
+
+void	plutoHandler::record_gainSettings (int freq) {
+int	gainValue	= gainControl		-> value ();
+int	agc		= agcControl		-> isChecked () ? 1 : 0;
+QString theValue	= QString::number (gainValue) + ":" +
+	                               QString::number (agc);
+
+	plutoSettings	-> beginGroup ("plutoSettings");
+	plutoSettings	-> setValue (QString::number (freq), theValue);
+	plutoSettings	-> endGroup ();
+}
+
+void	plutoHandler::update_gainSettings (int freq) {
+int	gainValue;
+int	agc;
+QString	theValue	= "";
+
+	plutoSettings	-> beginGroup ("plutoSettings");
+	theValue	= plutoSettings -> value (QString::number (freq), ""). toString ();
+	plutoSettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () != 2) 	// should not happen
+	   return;
+
+	gainValue	= result. at (0). toInt ();
+	agc		= result. at (1). toInt ();
+
+	gainControl	-> blockSignals (true);
+	new_gainValue (gainValue);
+	while (gainControl -> value () != gainValue)
+	   usleep (1000);
+	gainControl	-> blockSignals (false);
+
+	agcControl	-> blockSignals (true);
+	new_agcValue (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
 }
 

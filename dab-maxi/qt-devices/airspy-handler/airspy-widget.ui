@@ -449,9 +449,9 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>110</y>
+       <y>121</y>
        <width>81</width>
-       <height>32</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -462,9 +462,9 @@
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>110</y>
+       <y>121</y>
        <width>101</width>
-       <height>32</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
@@ -475,13 +475,39 @@
      <property name="geometry">
       <rect>
        <x>220</x>
-       <y>110</y>
+       <y>121</y>
        <width>101</width>
-       <height>32</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="text">
       <string>bias</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lnaButtonLabel">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>100</y>
+       <width>67</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="mixerButtonLabel">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>100</y>
+       <width>81</width>
+       <height>19</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>TextLabel</string>
      </property>
     </widget>
    </widget>

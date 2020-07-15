@@ -155,6 +155,12 @@ private:
 	std::atomic<bool>	running;
 	HINSTANCE	Handle;
 	int16_t		nrBits;
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
+signals:
+	void		new_GRdBValue		(int);
+	void		new_lnaGainValue	(int);
+	void		new_agcSetting		(bool);
 private slots:
 	void		set_ifgainReduction	(int);
 	void		set_lnagainReduction	(int);

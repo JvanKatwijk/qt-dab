@@ -202,6 +202,13 @@ ULONG APIkeyValue_length = 255;
 	         this, SLOT (set_lnagainReduction (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
+
+	connect (this, SIGNAL (new_GRdBValue (int)),
+	         GRdBSelector, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_lnaGainValue (int)),
+	         lnaGainSetting, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcSetting (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 }
 
 	sdrplayHandler::~sdrplayHandler	(void) {
@@ -322,6 +329,8 @@ int     GRdB            = GRdBSelector  -> value ();
 	if (running. load ())
 	   return true;
 
+	vfoFrequency	= frequency;
+	update_gainSettings (frequency / MHz (1));
 	err	= my_mir_sdr_StreamInit (&GRdB,
 	                                 double (inputRate) / MHz (1),
 	                                 double (frequency) / Mhz (1),
@@ -363,8 +372,9 @@ void	sdrplayHandler::stopReader	(void) {
 	   return;
 
 	my_mir_sdr_StreamUninit	();
-	_I_Buffer. FlushRingBuffer ();
+	record_gainSettings (vfoFrequency / MHz (1));
 	running. store (false);
+	_I_Buffer. FlushRingBuffer ();
 }
 
 //
@@ -605,4 +615,58 @@ QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	   default:
 	      return "???";
 	}
+}
+
+void	sdrplayHandler::record_gainSettings (int freq) {
+int	GRdB		= GRdBSelector		-> value ();
+int	lnaState	= lnaGainSetting	-> value ();
+int	agc		= agcControl		-> isChecked () == 1;
+QString theValue	= QString::number (GRdB) + ":";
+
+	fprintf (stderr, "recording settings from %d\n", freq);
+	theValue. append (QString::number (lnaState));
+	theValue. append (":");
+	theValue. append (QString::number (agc));
+
+	sdrplaySettings         -> beginGroup ("sdrplaySettings");
+	sdrplaySettings		-> setValue (QString::number (freq), theValue);
+	sdrplaySettings		-> endGroup ();
+}
+
+void	sdrplayHandler::update_gainSettings (int freq) {
+int	GRdB;
+int	lnaState;
+int	agc;
+QString	theValue	= "";
+
+	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
+	sdrplaySettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () < 3) 	// should not happen
+	   return;
+
+	GRdB		= result. at (0). toInt ();
+	lnaState	= result. at (1). toInt ();
+	agc		= result. at (2). toInt ();
+
+	GRdBSelector	-> blockSignals (true);
+	new_GRdBValue (GRdB);
+	while (GRdBSelector -> value () != GRdB)
+	   usleep (1000);
+	GRdBSelector	-> blockSignals (false);
+	lnaGainSetting	-> blockSignals (true);
+	new_lnaGainValue (lnaState);
+	while (lnaGainSetting -> value () != lnaState)
+	   usleep (1000);
+	lnaGainSetting	-> blockSignals (false);
+	agcControl	-> blockSignals (true);
+	new_agcSetting (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
 }
