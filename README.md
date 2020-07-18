@@ -9,7 +9,7 @@ Experimental support for saving gain settings per channel
 Based on user request some device interfaces are equipped with
 a mechanism to save the gain settings per channel.
 The basic idea is that the gain setting may be quite different
-for different channels, and - especially when using present selection
+for different channels, and - especially when using preset selection
 for services on different channels - it might be helpful to restore
 the correct gain setting when (either manually or automatically)
 selecting a channel.
