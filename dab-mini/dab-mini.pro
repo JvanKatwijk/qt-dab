@@ -252,7 +252,8 @@ CONFIG		+= PC
 win32 {
 #DESTDIR	= ../../../dab-win
 #DESTDIR		=  ../../../windows-dab-mini
-DESTDIR	= /usr/shared/sdr-j-development/windows-dab-mini
+#DESTDIR	= /usr/shared/sdr-j-development/windows-dab-mini
+DESTDIR		= /usr/shared/sdr-j-development/windows-dab64-mini
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
@@ -266,10 +267,12 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-INCLUDEPATH	+= /mingw32/include
+INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+#INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+#INCLUDEPATH	+= /mingw32/include
 INCLUDEPATH	+= /usr/local/include
-LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -286,8 +289,9 @@ CONFIG		+= airspy
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
-CONFIG		+= lime
-CONFIG		+= NO_SSE
+#CONFIG		+= lime
+CONFIG		+= PC
+#CONFIG		+= NO_SSE
 }
 #
 try-epg	{

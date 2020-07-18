@@ -111,7 +111,8 @@
 void	dabProcessor::start (int frequency) {
 	this	-> frequency	= frequency;
 	my_ficHandler. reset	();
-	my_mscHandler. reset_Channel ();
+	if (!scanMode)
+	   my_mscHandler. reset_Channel ();
 	QThread::start ();
 }
 
@@ -231,7 +232,8 @@ SyncOnPhase:
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
-	   my_mscHandler.  processBlock_0 (ofdmBuffer. data());
+	   if (!scanMode)
+	      my_mscHandler.  processBlock_0 (ofdmBuffer. data());
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
@@ -272,7 +274,8 @@ SyncOnPhase:
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      }
 
-	      my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
+	      if (!scanMode)
+	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
 	   }
 /**
@@ -412,21 +415,25 @@ QString dabProcessor::get_ensembleName	() {
 //
 //	for the mscHandler:
 void	dabProcessor::reset_Services	() {
-	my_mscHandler. reset_Channel ();
+	if (!scanMode)
+	   my_mscHandler. reset_Channel ();
 }
 
 void	dabProcessor::stopService (const QString &s) {
-	my_mscHandler. stopService (s);
+	if (!scanMode)
+	   my_mscHandler. stopService (s);
 }
 
 void    dabProcessor::set_audioChannel (audiodata *d,
 	                                      RingBuffer<int16_t> *b) {
-	my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);
+	if (!scanMode)
+	   my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);
 }
 
 void    dabProcessor::set_dataChannel (packetdata *d,
 	                                      RingBuffer<uint8_t> *b) {
-	my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
+	if (!scanMode)
+	   my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
 }
 
 void	dabProcessor::startDumping	(SNDFILE *f) {

@@ -91,13 +91,13 @@ public:
 	dll_driver (rtlsdrHandler *d) {
 	theStick	= d;
 	start();
-	}
+}
 
 	~dll_driver() {
-	}
+}
 
 private:
-virtual void	run () {
+void	run () {
 	(theStick -> rtlsdr_read_async) (theStick -> device,
 	                          (rtlsdr_read_async_cb_t)&RTLSDRCallBack,
 	                          (void *)theStick,
@@ -125,7 +125,6 @@ char	manufac [256], product [256], serial [256];
 	myFrame. show();
 	inputRate			= 2048000;
 	workerHandle		= nullptr;
-	lastFrequency		= KHz (22000);	// just a dummy
 	const char *libraryString = "rtlsdr.dll";
 
 #ifdef	__MINGW32__
@@ -218,14 +217,9 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	temp = rtlsdrSettings -> value ("externalGain", "10"). toString();
 	k	= gainControl -> findText (temp);
-	if (k != -1) {
-	   gainControl	-> setCurrentIndex (k);
-	}
-	else
-	   gainControl	-> setCurrentIndex (gainsCount / 2);
-	 
+	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
-	temp	= rtlsdrSettings -> value ("autogain",
+	temp		= rtlsdrSettings -> value ("autogain",
 	                                      "autogain_on"). toString();
 	agcControl	-> setChecked (temp == "autogain_on");
 	
@@ -260,6 +254,8 @@ char	manufac [256], product [256], serial [256];
 	connect (iq_dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_iqDump ()));
 	xmlDumper       = nullptr;
+//
+//	and for saving/restoring the gain setting:
 	connect (this, SIGNAL (new_gainIndex (int)),
 	         gainControl, SLOT (setCurrentIndex (int)));
 	connect (this, SIGNAL (new_agcSetting (bool)),
@@ -294,7 +290,6 @@ char	manufac [256], product [256], serial [256];
 }
 
 void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
-	lastFrequency	= f;
 	(void)(this -> rtlsdr_set_center_freq (device, f));
 }
 
@@ -313,7 +308,6 @@ int32_t	r;
 	r = this -> rtlsdr_reset_buffer (device);
 	if (r < 0)
 	   return false;
-	lastFrequency	= freq;
 	(void)(this -> rtlsdr_set_center_freq (device, freq));
 #ifdef	__KEEP_GAIN_SETTINGS__
 	update_gainSettings (freq / MHz (1));

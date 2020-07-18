@@ -2639,6 +2639,7 @@ void	RadioInterface::startScanning	() {
 	}
         scanning. store (true);
 
+	my_dabProcessor	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
         disconnect (channelSelector, SIGNAL (activated (const QString &)),
                     this, SLOT (selectChannel (const QString &)));
@@ -2647,6 +2648,7 @@ void	RadioInterface::startScanning	() {
                  this, SLOT (selectChannel (const QString &)));
         scanButton      -> setText ("scanning");
         channelTimer. start (switchTime);
+
         startChannel    (channelSelector -> currentText ());
 	if (!normalScan) {
 	   theTable. clear ();
@@ -2657,6 +2659,7 @@ void	RadioInterface::startScanning	() {
 void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
+	my_dabProcessor	-> set_scanMode (false);
 	if (!running. load ())
            return;
         if (!scanning. load ())

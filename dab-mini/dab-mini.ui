@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
-    <height>365</height>
+    <width>314</width>
+    <height>406</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -294,6 +294,19 @@ For the RTLSDR is is gain, range depending on the device</string>
    </property>
    <property name="text">
     <string>FIC</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="muteButton">
+   <property name="geometry">
+    <rect>
+     <x>233</x>
+     <y>360</y>
+     <width>71</width>
+     <height>36</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>mute</string>
    </property>
   </widget>
  </widget>

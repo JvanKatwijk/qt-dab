@@ -181,6 +181,13 @@ QString	presetName;
 	presetTimer. setInterval (switchTime);
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
+//
+//      timer for muting
+        muteTimer. setSingleShot (true);
+        muting          = false;
+        muteDelay       = dabSettings -> value ("muteTime", 10). toInt ();
+	connect (muteButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_muteButton ()));
 
 //	if a device was selected, we just start, otherwise
 //	we do not know what to do other than giving up
@@ -429,7 +436,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	   int16_t vec [amount];
 	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
 	      audioBuffer. getDataFromBuffer (vec, amount);
-	      soundOut	-> audioOut (vec, amount, rate);
+	      if (!muting)
+	         soundOut	-> audioOut (vec, amount, rate);
 	   }
 	}
 }
@@ -1039,6 +1047,8 @@ void	RadioInterface::stopChannel	() {
 	ficBlocks		= 0;
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
+	muteTimer. stop ();
+	muting			= false;
 	signalTimer. stop ();
 	hide_for_safety		();
 	stop_secondService ();	// just in case ...
@@ -1226,5 +1236,20 @@ uint8_t buffer [amount];
 	   if (frameDumper != nullptr)
 	      fwrite (buffer, amount, 1, frameDumper);
 	}
+}
+
+void    RadioInterface::handle_muteButton       () {
+        if (muting) {
+           muteTimer. stop ();
+           disconnect (&muteTimer, SIGNAL (timeout ()),
+                       this, SLOT (handle_muteButton ()));
+           muting = false;
+           return;
+        }
+
+        connect (&muteTimer, SIGNAL (timeout (void)),
+                 this, SLOT (handle_muteButton (void)));
+        muteTimer. start (muteDelay * 1000);
+        muting = true;
 }
 

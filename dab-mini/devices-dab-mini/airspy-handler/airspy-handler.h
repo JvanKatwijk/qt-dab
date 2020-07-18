@@ -153,6 +153,12 @@ static
 	int		data_available (void *buf, int buf_size);
 const	char *		getSerial (void);
 	int		open (void);
+
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
+signals:
+	void		new_ifgainValue		(int);
+	void		new_agcSetting		(bool);
 private slots:
 	void		set_ifgain		(int value);
 	void		set_agcControl		(int b);

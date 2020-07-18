@@ -756,9 +756,10 @@ ULONG APIkeyValue_length = 255;
 	                    nullptr,
 	                    (LPBYTE)&APIkeyValue,
 	                    (LPDWORD)&APIkeyValue_length);
-//	Ok, make explicit it is in the 32 bits section
+//	Ok, make explicit it is in the 32 or 64 bits section
 	   wchar_t *x =
-	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
+//	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);

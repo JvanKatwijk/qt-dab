@@ -24,7 +24,6 @@ in the ".pro" file for creating a qt-dab-3.xx executable
 Note: sdrplay-v2, rtlsdr, airspy and hackrf have been tested, the feature
 is not implemented in sdrplay-v3 support.
 
-
 ---------------------------------------------------------------
 Note for Ubuntu 20 and Fedora 32
 ---------------------------------------------------------------

@@ -176,6 +176,12 @@ uint32_t samplerateCount;
 	         this, SLOT (set_ifgain (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
+//
+//	and for saving/restoring gain values
+	connect (this, SIGNAL (new_ifgainValue (int)),
+	         ifgainSelector, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcSetting (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 }
 
 	airspyHandler::~airspyHandler (void) {
@@ -222,6 +228,10 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return true;
 
 	theBuffer	-> FlushRingBuffer ();
+
+	vfoFrequency	= frequency;
+	update_gainSettings	(frequency / MHz (1));
+
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_set_sample_type () failed: %s (%d)\n",
@@ -233,6 +243,8 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	my_airspy_set_freq (device, frequency);
 	my_airspy_set_sensitivity_gain (device,
 	                    ifgainSelector -> value ());
+	result = my_airspy_set_mixer_agc (device, 
+	                                  agcControl -> isChecked ()? 1 : 0);
 	
 	result = my_airspy_start_rx (device,
 	            (airspy_sample_block_cb_fn)callback, this);
@@ -253,6 +265,7 @@ int	result;
 	   return;
 	result = my_airspy_stop_rx (device);
 
+	record_gainSettings (vfoFrequency / MHz (1));
 	if (result != AIRSPY_SUCCESS ) 
 	   printf ("my_airspy_stop_rx() failed: %s (%d)\n",
 	          my_airspy_error_name ((airspy_error)result), result);
@@ -572,5 +585,48 @@ bool	airspyHandler::load_airspyFunctions (void) {
 	}
 
 	return true;
+}
+
+void	airspyHandler::record_gainSettings	(int key) {
+int	theGain	= ifgainSelector -> value ();
+int	agc	= agcControl -> isChecked () ? 1 : 0;
+QString	theValue	= QString::number (theGain) + ":" + 
+	                              QString::number (agc);
+
+	airspySettings         -> beginGroup ("airspySettings");
+        airspySettings         -> setValue (QString::number (key), theValue);
+        airspySettings         -> endGroup ();
+}
+
+void	airspyHandler::update_gainSettings	(int key) {
+int	theGain;
+int	agc;
+QString	theValue;
+
+	airspySettings -> beginGroup ("airspySettings");
+        theValue        = airspySettings -> value (QString::number (key), ""). toString ();
+        airspySettings -> endGroup ();
+
+        if (theValue == QString (""))
+           return;              // or set some defaults here
+
+	QStringList result      = theValue. split (":");
+        if (result. size () != 2)        // should not happen
+           return;
+
+        theGain		= result. at (0). toInt ();
+        agc		= result. at (1). toInt ();
+
+	ifgainSelector	-> blockSignals (true);
+	new_ifgainValue (theGain);
+	while (ifgainSelector -> value () != theGain)
+	   usleep (1000);
+	ifgainSelector	-> blockSignals (false);
+
+	agcControl	-> blockSignals (true);
+	new_agcSetting	(agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
 }
 
