@@ -294,7 +294,7 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3		# pretty experimental
+CONFIG		+= sdrplay-v3		# pretty experimental
 CONFIG		+= dabstick
 #CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -323,7 +323,7 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 
-#DEFINES	+=__KEEP_GAIN_SETTINGS__
+DEFINES	+=__KEEP_GAIN_SETTINGS__
 }
 
 bits-64	{
@@ -376,32 +376,13 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-#or for 64 bit
-	TARGET		= qt-dab64-3.4.2
-	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-qt-dab64
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
-	#CONFIG		+= extio
-	CONFIG		+= airspy
-	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick
-	CONFIG		+= sdrplay-v2
-	#CONFIG		+= pluto
-	#CONFIG		+= pluto_2
-	#CONFIG		+= sdrplay-v3
-	CONFIG		+= hackrf
-	#CONFIG		+= lime
-	CONFIG		+= NO_SSE
-#
-#for win32, comment out the lines above,
-#for win64, comment out lines below
-#	TARGET		= qt-dab32-3.4.2
-#	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-qt-dab32
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+#for for 64 bit
+#	TARGET		= qt-dab64-3.4.2
+#	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-qt-dab64
+#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 #	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-#	CONFIG		+= extio
+#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#	#CONFIG		+= extio
 #	CONFIG		+= airspy
 #	CONFIG		+= rtl_tcp
 #	CONFIG		+= dabstick
@@ -412,6 +393,24 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= hackrf
 #	#CONFIG		+= lime
 #	CONFIG		+= NO_SSE
+#
+#for win32, comment out the lines above,
+	TARGET		= qt-dab32-3.4.2
+	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-qt-dab32
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+	CONFIG		+= extio
+	CONFIG		+= airspy
+	CONFIG		+= rtl_tcp
+	CONFIG		+= dabstick
+	CONFIG		+= sdrplay-v2
+	#CONFIG		+= pluto
+	#CONFIG		+= pluto_2
+	#CONFIG		+= sdrplay-v3
+	CONFIG		+= hackrf
+#	#CONFIG		+= lime
+	CONFIG		+= NO_SSE
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include

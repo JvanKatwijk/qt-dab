@@ -66,28 +66,28 @@ public:
 	bool		isHidden		();
 	QString		deviceName		();
 
-        void            update_PowerOverload (
-                                         sdrplay_api_EventParamsT *params);
+	void            update_PowerOverload (
+	                                 sdrplay_api_EventParamsT *params);
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
-        std::atomic<bool>	receiverRuns;
+	std::atomic<bool>	receiverRuns;
 	int		theGain;
 private:
 	QFrame				myFrame;
 	sdrplay_api_Open_t              sdrplay_api_Open;
-        sdrplay_api_Close_t             sdrplay_api_Close;
-        sdrplay_api_ApiVersion_t        sdrplay_api_ApiVersion;
-        sdrplay_api_LockDeviceApi_t     sdrplay_api_LockDeviceApi;
-        sdrplay_api_UnlockDeviceApi_t   sdrplay_api_UnlockDeviceApi;
-        sdrplay_api_GetDevices_t        sdrplay_api_GetDevices;
-        sdrplay_api_SelectDevice_t      sdrplay_api_SelectDevice;
-        sdrplay_api_ReleaseDevice_t     sdrplay_api_ReleaseDevice;
-        sdrplay_api_GetErrorString_t    sdrplay_api_GetErrorString;
+	sdrplay_api_Close_t             sdrplay_api_Close;
+	sdrplay_api_ApiVersion_t        sdrplay_api_ApiVersion;
+	sdrplay_api_LockDeviceApi_t     sdrplay_api_LockDeviceApi;
+	sdrplay_api_UnlockDeviceApi_t   sdrplay_api_UnlockDeviceApi;
+	sdrplay_api_GetDevices_t        sdrplay_api_GetDevices;
+	sdrplay_api_SelectDevice_t      sdrplay_api_SelectDevice;
+	sdrplay_api_ReleaseDevice_t     sdrplay_api_ReleaseDevice;
+	sdrplay_api_GetErrorString_t    sdrplay_api_GetErrorString;
 	sdrplay_api_GetLastError_t      sdrplay_api_GetLastError;
-        sdrplay_api_DebugEnable_t       sdrplay_api_DebugEnable;
-        sdrplay_api_GetDeviceParams_t   sdrplay_api_GetDeviceParams;
-        sdrplay_api_Init_t              sdrplay_api_Init;
-        sdrplay_api_Uninit_t            sdrplay_api_Uninit;
-        sdrplay_api_Update_t            sdrplay_api_Update;
+	sdrplay_api_DebugEnable_t       sdrplay_api_DebugEnable;
+	sdrplay_api_GetDeviceParams_t   sdrplay_api_GetDeviceParams;
+	sdrplay_api_Init_t              sdrplay_api_Init;
+	sdrplay_api_Uninit_t            sdrplay_api_Uninit;
+	sdrplay_api_Update_t            sdrplay_api_Update;
 
 	sdrplay_api_DeviceT             *chosenDevice;
 	sdrplay_api_DeviceParamsT       *deviceParams;
@@ -97,7 +97,7 @@ private:
 	bool				failFlag;
 	bool			successFlag;
 	int			denominator;
-        std::atomic<bool>       threadRuns;
+	std::atomic<bool>       threadRuns;
 	void			run			();
 	bool			messageHandler		(generalCommand *);
 
@@ -116,17 +116,23 @@ private:
 	int			lnaState;
 	int			ppmValue;
 	HINSTANCE		Handle;
-        FILE			*xmlDumper;
-        xml_fileWriter		*xmlWriter;
-        bool			setup_xmlDump		();
-        void			close_xmlDump		();
-        std::atomic<bool>	dumping;
+	FILE			*xmlDumper;
+	xml_fileWriter		*xmlWriter;
+	bool			setup_xmlDump		();
+	void			close_xmlDump		();
+	std::atomic<bool>	dumping;
 	std::queue<generalCommand *>	server_queue;
 	QSemaphore		serverjobs;
 	HINSTANCE		fetchLibrary		();
-        void			releaseLibrary		();
-        bool			loadFunctions		();
-
+	void			releaseLibrary		();
+	bool			loadFunctions		();
+//      experimental
+	void			record_gainSettings	(int);
+	void			update_gainSettings	(int);
+signals:
+	void			new_GRdBValue		(int);
+	void			new_lnaValue		(int);
+	void			new_agcSetting		(bool);
 private slots:
 	void			set_ifgainReduction	(int);
 	void			set_lnagainReduction	(int);

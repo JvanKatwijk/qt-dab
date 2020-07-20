@@ -924,7 +924,6 @@ int	lnaState	= lnaGainSetting	-> value ();
 int	agc		= agcControl		-> isChecked () == 1;
 QString theValue	= QString::number (GRdB) + ":";
 
-	fprintf (stderr, "recording settings from %d\n", freq);
 	theValue. append (QString::number (lnaState));
 	theValue. append (":");
 	theValue. append (QString::number (agc));
@@ -955,8 +954,6 @@ QString	theValue	= "";
 	lnaState	= result. at (1). toInt ();
 	agc		= result. at (2). toInt ();
 
-	fprintf (stderr, "for %d values are %d %d %d\n",
-	              freq, GRdB, lnaState, agc);
 	GRdBSelector	-> blockSignals (true);
 	new_GRdBValue (GRdB);
 	while (GRdBSelector -> value () != GRdB)

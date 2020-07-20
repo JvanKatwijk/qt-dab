@@ -88,7 +88,7 @@ public:
 
 //
 //	40 up shows good results
-#define		DIFF_LENGTH	40
+#define		DIFF_LENGTH	60
 static inline
 bool	isIndeterminate (float x) {
 	return x != x;

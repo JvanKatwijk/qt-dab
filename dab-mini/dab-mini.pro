@@ -250,11 +250,6 @@ CONFIG		+= PC
 #
 # an attempt to have it run under W32 through cross compilation
 win32 {
-#DESTDIR	= ../../../dab-win
-#DESTDIR		=  ../../../windows-dab-mini
-#DESTDIR	= /usr/shared/sdr-j-development/windows-dab-mini
-DESTDIR		= /usr/shared/sdr-j-development/windows-dab64-mini
-# includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
@@ -267,12 +262,19 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-#INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-#INCLUDEPATH	+= /mingw32/include
+#for 64 bit
+	TARGET		= dabMini64-1.0
+	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-mini
+	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#for 32 bit
+#	TARGET		= dabMini-32-1.0
+#	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-mini
+#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+
+#	common:
 INCLUDEPATH	+= /usr/local/include
-LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
-#LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
@@ -290,8 +292,8 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
 #CONFIG		+= lime
-CONFIG		+= PC
-#CONFIG		+= NO_SSE
+#CONFIG		+= PC
+CONFIG		+= NO_SSE
 }
 #
 try-epg	{

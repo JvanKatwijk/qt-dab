@@ -42,6 +42,7 @@ float	Phi_k;
 
 	this	-> response	= p -> responseBuffer;
 	this	-> diff_length	= p -> diff_length;
+	this	-> diff_length	= 128;
 	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
@@ -68,10 +69,10 @@ float	Phi_k;
 //      prepare a table for the coarse frequency synchronization
 //      can be a static one, actually, we are only interested in
 //      the ones with a null
-	for (i = 1; i <= diff_length; i ++)
+	for (i = 1; i <= diff_length; i ++) 
 	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
 	                         conj (refTable [(T_u + i + 1) % T_u])));
-
+	
 	connect (this, SIGNAL (showCorrelation (int, int)),
 	         mr,   SLOT   (showCorrelation (int, int)));
 	connect (this, SIGNAL (showIndex   (int)),
@@ -176,31 +177,46 @@ std::vector<int> resultVector;
 //	between subsequent carriers
 #define	SEARCH_RANGE	(2 * 35)
 int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
-int16_t	i, j, index = 100;
+int16_t	i, j, index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
 	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT();
 
 	for (i = T_u - SEARCH_RANGE / 2;
-	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) 
+	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
 	      abs (arg (fft_buffer [i % T_u] * conj (fft_buffer [(i + 1) % T_u])));
+	}
 
-	float	Mmin = 1000;
-	for (i = T_u - SEARCH_RANGE /2;
+	float	Mmin	= 1000;
+	float	Mmax	= 0;
+	for (i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2; i ++) {
-	   float sum = 0;
+	   float sum	= 0;
+	   float sum2	= 0;
 
-	   for (j = 1; j < diff_length; j ++)
-	      if (phaseDifferences [j - 1] < 0.1)
+	   for (j = 1; j < diff_length; j ++) {
+	      if (phaseDifferences [j - 1] < 0.1) {
 	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
+	      }
+	      if (phaseDifferences [j - 1] > M_PI - 0.1) {
+	         sum2 += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
+	      }
+	   }
 	   if (sum < Mmin) {
 	      Mmin = sum;
-	      index = i;
+	      index_1 = i;
+	   }
+	   if (sum2 > Mmax) {
+	      Mmax = sum2;
+	      index_2 = i;
 	   }
 	}
-	return index - T_u; 
+
+	if (index_1 != index_2)
+	   return 100;
+	return index_1 - T_u; 
 }
 //	An alternative way to compute the small frequency offset
 //	is to look at the phase offset of subsequent carriers

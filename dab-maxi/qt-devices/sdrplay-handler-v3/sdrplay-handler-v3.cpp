@@ -70,8 +70,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
 	                                       QString &recorderVersion):
-	                                          myFrame (nullptr),
-	                                          _I_Buffer (4 * 1024 * 1024) {
+	                                          _I_Buffer (4 * 1024 * 1024),
+	                                          myFrame (nullptr) {
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
@@ -86,7 +86,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	See if there are settings from previous incarnations
 //	and config stuff
 
-	sdrplaySettings		-> beginGroup ("sdrplaySettings");
+	sdrplaySettings		-> beginGroup ("sdrplaySettings_v3");
 	GRdBSelector 		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt());
 
@@ -141,7 +141,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	while (isRunning ())
 	   usleep (1000);
 //	thread should be stopped by now
-	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
 	sdrplaySettings -> setValue ("sdrplay-ppm",
 	                                           ppmControl -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
@@ -169,16 +169,39 @@ int32_t	sdrplayHandler_v3::getVFOFrequency() {
 }
 
 bool	sdrplayHandler_v3::restartReader	(int32_t newFreq) {
+int	GRdB	= GRdBSelector -> value ();
+int	lnaState	= lnaGainSetting	-> value ();
+int	agc	= agcControl -> isChecked () ? 1 : 0;
 restartRequest r (newFreq);
+
         if (receiverRuns. load ())
            return true;
         vfoFrequency    = newFreq;
-        return messageHandler (&r);
+#ifdef	__KEEP_GAIN_SETTINGS__
+	update_gainSettings (vfoFrequency / MHz (1));
+	GRdB		= GRdBSelector -> value ();
+	lnaState	= lnaGainSetting	-> value ();
+	agc		= agcControl	-> isChecked () ? 1 : 0;
+#endif
+	messageHandler (&r);
+
+	GRdBRequest req_1 (GRdB);
+        messageHandler (&req_1);
+
+	lnaRequest req_2 (lnaState);
+        messageHandler (&req_2);
+        lnaGRdBDisplay  -> display (get_lnaGRdB (hwVersion, lnaState));
+
+	agcRequest req_3 (agcControl -> isChecked (), 30);
+        messageHandler (&req_3);
 }
 
 void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
 	close_xmlDump ();
+#ifdef	__KEEP_GAIN_SETTINGS__
+	record_gainSettings (vfoFrequency / MHz (1));
+#endif
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -1006,3 +1029,62 @@ bool	sdrplayHandler_v3::isHidden	() {
 	return myFrame. isHidden ();
 }
 
+//Experimental
+/////////////////////////////////////////////////////////////////////////
+//
+//	the frequency (the MHz component) is used as key
+//
+void	sdrplayHandler_v3::record_gainSettings (int freq) {
+int	GRdB		= GRdBSelector		-> value ();
+int	lnaState	= lnaGainSetting	-> value ();
+int	agc		= agcControl		-> isChecked () == 1;
+QString theValue	= QString::number (GRdB) + ":";
+
+	theValue. append (QString::number (lnaState));
+	theValue. append (":");
+	theValue. append (QString::number (agc));
+
+	sdrplaySettings         -> beginGroup ("sdrplaySettings_v3");
+	sdrplaySettings		-> setValue (QString::number (freq), theValue);
+	sdrplaySettings		-> endGroup ();
+}
+
+void	sdrplayHandler_v3::update_gainSettings (int freq) {
+int	GRdB;
+int	lnaState;
+int	agc;
+QString	theValue	= "";
+
+	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
+	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
+	sdrplaySettings	-> endGroup ();
+
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
+
+	QStringList result	= theValue. split (":");
+	if (result. size () < 3) 	// should not happen
+	   return;
+
+	GRdB		= result. at (0). toInt ();
+	lnaState	= result. at (1). toInt ();
+	agc		= result. at (2). toInt ();
+
+	fprintf (stderr, "for %d values are %d %d %d\n",
+	              freq, GRdB, lnaState, agc);
+	GRdBSelector	-> blockSignals (true);
+	new_GRdBValue (GRdB);
+	while (GRdBSelector -> value () != GRdB)
+	   usleep (1000);
+	GRdBSelector	-> blockSignals (false);
+	lnaGainSetting	-> blockSignals (true);
+	new_lnaValue (lnaState);
+	while (lnaGainSetting -> value () != lnaState)
+	   usleep (1000);
+	lnaGainSetting	-> blockSignals (false);
+	agcControl	-> blockSignals (true);
+	new_agcSetting (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
+}
