@@ -80,7 +80,7 @@ if(DEFINED RTL_TCP)
 	set(RTL_TCP true)
 endif ()
 
-if(DEFINED PLUTO(
+if(DEFINED PLUTO)
 	set(PLUTO true)
 endif ()
 
