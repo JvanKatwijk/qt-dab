@@ -670,6 +670,7 @@ endif ()
 	        ./qt-devices/pluto-handler/pluto-handler.cpp
 	   )
 
+	   list(APPEND extraLibs -liio)
 	   add_definitions (-DHAVE_PLUTO)
 	endif (PLUTO)
 #
