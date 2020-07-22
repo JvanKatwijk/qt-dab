@@ -129,6 +129,7 @@ private:
 //      experimental
 	void			record_gainSettings	(int);
 	void			update_gainSettings	(int);
+	bool			save_gainSettings;
 signals:
 	void			new_GRdBValue		(int);
 	void			new_lnaValue		(int);

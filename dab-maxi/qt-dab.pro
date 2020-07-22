@@ -5,7 +5,6 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= qt-dab-3.4.2
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -269,6 +268,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
+TARGET		= qt-dab-3.5
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -326,41 +326,6 @@ CONFIG		+= PC
 DEFINES	+=__KEEP_GAIN_SETTINGS__
 }
 
-bits-64	{
-	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-qt-dab64
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
-	#CONFIG		+= extio
-	CONFIG		+= airspy
-	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick
-	CONFIG		+= sdrplay-v2
-	#CONFIG		+= pluto
-	#CONFIG		+= pluto_2
-	#CONFIG		+= sdrplay-v3
-	CONFIG		+= hackrf
-	#CONFIG		+= lime
-	CONFIG		+= NO_SSE
-}
-
-bits-32	{
-	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-qt-dab32
-	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-	CONFIG		+= extio
-	CONFIG		+= airspy
-	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick
-	CONFIG		+= sdrplay-v2
-	#CONFIG		+= pluto
-	#CONFIG		+= pluto_2
-	#CONFIG		+= sdrplay-v3
-	CONFIG		+= hackrf
-	#CONFIG		+= lime
-	CONFIG		+= NO_SSE
-}
 
 # an attempt to have it run under W32 through cross compilation
 win32 {
@@ -377,40 +342,41 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit
-#	TARGET		= qt-dab64-3.4.2
-#	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-qt-dab64
-#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-#	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
-#	#CONFIG		+= extio
-#	CONFIG		+= airspy
-#	CONFIG		+= rtl_tcp
-#	CONFIG		+= dabstick
-#	CONFIG		+= sdrplay-v2
-#	#CONFIG		+= pluto
-#	#CONFIG		+= pluto_2
-#	#CONFIG		+= sdrplay-v3
-#	CONFIG		+= hackrf
-#	#CONFIG		+= lime
-#	CONFIG		+= NO_SSE
-#
-#for win32, comment out the lines above,
-	TARGET		= qt-dab32-3.4.2
-	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-qt-dab32
-	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+	TARGET		= qt-dab64-3.5
+	DEFINES		+= __BITS64__
+	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-qt
+	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-	CONFIG		+= extio
+	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+	#CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
 	CONFIG		+= dabstick
 	CONFIG		+= sdrplay-v2
-	#CONFIG		+= pluto
-	#CONFIG		+= pluto_2
-	#CONFIG		+= sdrplay-v3
+	CONFIG		+= pluto
+#	#CONFIG		+= pluto_2
+#	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
-#	#CONFIG		+= lime
+	CONFIG		+= lime
 	CONFIG		+= NO_SSE
+#
+#for win32, comment out the lines above
+#	TARGET		= qt-dab32-3.5
+#	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-qt
+#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+#	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+#	CONFIG		+= extio
+#	CONFIG		+= airspy
+#	CONFIG		+= rtl_tcp
+#	CONFIG		+= dabstick
+#	CONFIG		+= sdrplay-v2
+#	CONFIG		+= pluto
+##	#CONFIG		+= pluto_2
+#	#CONFIG		+= sdrplay-v3
+#	CONFIG		+= hackrf
+#	CONFIG		+= lime
+#	CONFIG		+= NO_SSE
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -564,11 +530,11 @@ soapy {
 pluto	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
-	INCLUDEPATH	+= ./qt-devices/pluto
-	HEADERS		+= ./qt-devices/pluto/pluto-handler.h
-	SOURCES		+= ./qt-devices/pluto/pluto-handler.cpp
-	FORMS		+= ./qt-devices/pluto/pluto-widget.ui
-#	LIBS		+= -liio
+	INCLUDEPATH	+= ./qt-devices/pluto-handler
+	HEADERS		+= ./qt-devices/pluto-handler/pluto-handler.h
+	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
+	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
+	LIBS		+= -liio
 }
 
 pluto_2	{

@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>313</width>
-    <height>233</height>
+    <width>324</width>
+    <height>224</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Pluto control</string>
+  </property>
+  <property name="toolTip">
+   <string>Pluto support is experimental. I do not have one so testing was limited.</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

@@ -131,6 +131,8 @@ sdrplaySelect	*sdrplaySelector;
 	   GRdBSelector         -> hide();
 	   gainsliderLabel      -> hide();
 	}
+	save_gainSettings	=
+	       sdrplaySettings	-> value ("save_gainSettings", 1). toInt () != 0;
 	sdrplaySettings	-> endGroup();
 
 	err = my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
@@ -358,13 +360,13 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	if (running. load())
 	   return true;
 
-#if	__KEEP_GAIN_SETTINGS__
-	update_gainSettings (freq / MHz (1));
-	GRdB		= GRdBSelector		-> value ();
-	lnaState	= lnaGainSetting	-> value ();
-	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
-	agc		= agcControl	-> isChecked () ? 1 : 0;
-#endif
+	if (save_gainSettings) {
+	   update_gainSettings (freq / MHz (1));
+	   GRdB		= GRdBSelector		-> value ();
+	   lnaState	= lnaGainSetting	-> value ();
+	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
+	   agc		= agcControl	-> isChecked () ? 1 : 0;
+	}
 	err	= my_mir_sdr_StreamInit (&GRdB,
 	                                 double (inputRate) / MHz (1),
 	                                 double (vfoFrequency) / Mhz (1),
@@ -443,9 +445,9 @@ mir_sdr_ErrT err;
 	            this, SLOT (set_lnagainReduction (int)));
 	disconnect (agcControl, SIGNAL (stateChanged (int)),
 	            this, SLOT (set_agcControl (int)));
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings	(vfoFrequency / MHz (1));
-#endif
+	if (save_gainSettings)
+	   record_gainSettings	(vfoFrequency / MHz (1));
+
 	close_xmlDump ();		// just to be sure
 	err	= my_mir_sdr_StreamUninit();
 	if (err != mir_sdr_Success)
@@ -758,8 +760,11 @@ ULONG APIkeyValue_length = 255;
 	                    (LPDWORD)&APIkeyValue_length);
 //	Ok, make explicit it is in the 32 or 64 bits section
 	   wchar_t *x =
+#ifdef	__BITS64__
 	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
-//	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+#else
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+#endif
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);

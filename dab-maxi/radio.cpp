@@ -105,6 +105,7 @@ __int64 FileTimeToInt64 (FILETIME & ft) {
 	return (foo.QuadPart);
 }
 
+
 bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 FILETIME IdleTime, KernelTime, UserTime;
 size_t	thisIdle, thisKernel, thisUser;
@@ -2624,6 +2625,7 @@ void	RadioInterface::handle_scanButton () {
 void	RadioInterface::startScanning	() {
 	presetTimer. stop ();
 	channelTimer. stop ();
+
 	connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	         this, SLOT (No_Signal_Found ()));
         presetSelector -> setCurrentIndex (0);
@@ -2638,7 +2640,10 @@ void	RadioInterface::startScanning	() {
 	   cc = 0;
 	}
         scanning. store (true);
-
+	if (!normalScan)
+	   scanDumpFile	= findScanDump_FileName ();
+	else
+	   scanDumpFile = nullptr;
 	my_dabProcessor	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
         disconnect (channelSelector, SIGNAL (activated (const QString &)),
@@ -2666,38 +2671,12 @@ void	RadioInterface::stopScanning	(bool dump) {
            return;
         channelTimer. stop ();
 	scanning. store (false);
-	if (!normalScan && dump) {
-	   QMessageBox::StandardButton resultButton =
-                        QMessageBox::question (this, "dabRadio",
-                                               tr("save the scan?\n"),
-                                               QMessageBox::No | QMessageBox::Yes,
-                                               QMessageBox::Yes);
-           if (resultButton == QMessageBox::Yes) {
-	      QString	saveDir = dabSettings -> value ("contentDir",
-	                                        QDir::homePath ()). toString ();
-
-	      if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	         saveDir = saveDir + '/';
-
-	      QString theTime	= localTimeDisplay -> text ();
-	      for (int i = 0; i < theTime. length (); i ++)
-	         if (!isValid (theTime. at (i)))
-	            theTime. replace (i, 1, '-');
-	      QString suggestedFileName =
-	                       saveDir + "Qt-DAB-scan" + "-" + theTime;
-	
-	      fprintf (stderr, "suggested filename %s\n",
-	                            suggestedFileName. toLatin1 (). data ());
-	      QString fileName = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file ..."),
-	                                        suggestedFileName + ".txt",
-	                                        tr ("Text (*.txt)"));
-	      if (fileName != "")
-	         theTable. dump (fileName);
-	   }
-	   theTable. hide ();
+	if (scanDumpFile != nullptr) {
+	   fclose (scanDumpFile);
+	   scanDumpFile = nullptr;
 	}
 
+//	theTable. hide ();
         scanButton      -> setText ("scan");
 }
 
@@ -2753,6 +2732,7 @@ void	RadioInterface::No_Signal_Found () {
 ////////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::showServices () {
+ensemblePrinter	my_Printer;
 QString SNR = "SNR " + QString::number (snrDisplay -> value ());
 QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	if (my_dabProcessor == nullptr) {
@@ -2783,6 +2763,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
                                    d. ASCTy == 077 ? "DAB+ (plus)" : "DAB",
                                    bitRate, protL, codeRate);
 	}
+
 	for (serviceId serv: serviceList) {
 	   QString packetService = serv. name;
 	   packetdata d;
@@ -2807,6 +2788,12 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	                           soort,
                                    bitRate, protL, codeRate);
 	}
+	if (scanDumpFile != nullptr)
+	   my_Printer. showEnsembleData (channelSelector -> currentText (),
+	                                 inputDevice -> getVFOFrequency (),
+		                         localTimeDisplay -> text (),
+	                                 serviceList,
+	                                 my_dabProcessor, scanDumpFile);
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -2880,5 +2867,38 @@ void	RadioInterface::handle_muteButton	() {
                  this, SLOT (updateTimeDisplay (void)));
         muteTimer. start (muteDelay * 1000);
 	muting = true;
+}
+
+FILE	*RadioInterface::findScanDump_FileName		() {
+	QMessageBox::StandardButton resultButton =
+	             QMessageBox::question (this, "dabRadio",
+	                                    tr ("save the scan?\n"),
+	                                    QMessageBox::No | QMessageBox::Yes,
+	                                    QMessageBox::Yes);
+	if (resultButton != QMessageBox::Yes)
+	   return nullptr;
+
+	QString   saveDir = dabSettings -> value ("contentDir",
+                                                QDir::homePath ()). toString ();
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	QString theTime   = localTimeDisplay -> text ();
+	if (theTime == "localTime") 
+	   theTime = QDateTime::currentDateTime (). toString ();
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+	QString suggestedFileName =
+                               saveDir + "Qt-DAB-scan" + "-" + theTime;
+
+	fprintf (stderr, "suggested filename %s\n",
+                                    suggestedFileName. toLatin1 (). data ());
+	QString fileName = QFileDialog::getSaveFileName (this,
+                                                tr ("Save file ..."),
+                                                suggestedFileName + ".txt",
+                                                tr ("Text (*.txt)"));
+	return  fopen (fileName. toUtf8 (). data (), "w");
 }
 

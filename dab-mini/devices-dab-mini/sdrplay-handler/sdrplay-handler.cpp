@@ -79,9 +79,13 @@ ULONG APIkeyValue_length = 255;
 	                    NULL,
 	                    (LPBYTE)&APIkeyValue,
 	                    (LPDWORD)&APIkeyValue_length);
-//	Ok, make explicit it is in the 64 bits section
+//	Ok, make 
 	   wchar_t *x =
+#ifdef	__BITS64__
+	         wcscat (APIkeyValue, (wchar_t *)L"\\x64\\mir_sdr_api.dll");
+#else
 	         wcscat (APIkeyValue, (wchar_t *)L"\\x86\\mir_sdr_api.dll");
+#endif
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);

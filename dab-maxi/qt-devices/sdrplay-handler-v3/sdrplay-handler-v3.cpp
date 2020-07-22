@@ -98,6 +98,8 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
+	save_gainSettings	=
+	       sdrplaySettings -> value ("save_gainSettings", 1). toInt () != 0;
 	sdrplaySettings	-> endGroup	();
 
 	if (agcMode) {
@@ -177,31 +179,30 @@ restartRequest r (newFreq);
         if (receiverRuns. load ())
            return true;
         vfoFrequency    = newFreq;
-#ifdef	__KEEP_GAIN_SETTINGS__
-	update_gainSettings (vfoFrequency / MHz (1));
-	GRdB		= GRdBSelector -> value ();
-	lnaState	= lnaGainSetting	-> value ();
-	agc		= agcControl	-> isChecked () ? 1 : 0;
-#endif
+	if (save_gainSettings) {
+	   update_gainSettings (vfoFrequency / MHz (1));
+	   GRdB		= GRdBSelector -> value ();
+	   lnaState	= lnaGainSetting	-> value ();
+	   agc		= agcControl	-> isChecked () ? 1 : 0;
+
+	   GRdBRequest req_1 (GRdB);
+           messageHandler (&req_1);
+
+	   lnaRequest req_2 (lnaState);
+           messageHandler (&req_2);
+           lnaGRdBDisplay  -> display (get_lnaGRdB (hwVersion, lnaState));
+
+	   agcRequest req_3 (agcControl -> isChecked (), 30);
+           messageHandler (&req_3);
+	}
 	messageHandler (&r);
-
-	GRdBRequest req_1 (GRdB);
-        messageHandler (&req_1);
-
-	lnaRequest req_2 (lnaState);
-        messageHandler (&req_2);
-        lnaGRdBDisplay  -> display (get_lnaGRdB (hwVersion, lnaState));
-
-	agcRequest req_3 (agcControl -> isChecked (), 30);
-        messageHandler (&req_3);
 }
 
 void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
 	close_xmlDump ();
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings (vfoFrequency / MHz (1));
-#endif
+	if (save_gainSettings)
+	   record_gainSettings (vfoFrequency / MHz (1));
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);

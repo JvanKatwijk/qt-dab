@@ -9,6 +9,7 @@ before_install:
     
 install: 
     - sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
+    - sudo apt-get -y install libiio-dev
     - # source /opt/qt5/bin/qt5-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
@@ -24,7 +25,7 @@ script:
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
   - cd dab-maxi
-  - cmake . -DRTLSDR=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - cmake . -DRTLSDR=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DPLUTO=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .

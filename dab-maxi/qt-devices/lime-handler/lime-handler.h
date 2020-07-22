@@ -115,6 +115,7 @@ public:
 	QString		deviceName		();
 private:
 	QFrame		myFrame;
+	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
@@ -122,7 +123,6 @@ private:
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];
-	RingBuffer<std::complex<int16_t>> _I_Buffer;
 	bool		load_limeFunctions();
 	HINSTANCE	Handle;
 	bool		libraryLoaded;
@@ -138,6 +138,7 @@ private:
 
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
+	bool		save_gainSettings;
 //	imported functions
 public:
 	pfn_LMS_GetDeviceList	LMS_GetDeviceList;

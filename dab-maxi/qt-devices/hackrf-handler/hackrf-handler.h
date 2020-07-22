@@ -146,6 +146,7 @@ private:
 
 	void			record_gainSettings		(int);
 	void			update_gainSettings		(int);
+	bool			save_gainSettings;
 signals:
 	void			new_antEnable	(bool);
 	void			new_ampEnable	(bool);

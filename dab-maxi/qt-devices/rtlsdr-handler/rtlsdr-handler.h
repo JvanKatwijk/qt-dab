@@ -119,6 +119,7 @@ private:
 
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
+	bool		save_gainSettings;
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;

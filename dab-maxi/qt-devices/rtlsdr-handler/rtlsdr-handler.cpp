@@ -224,6 +224,8 @@ char	manufac [256], product [256], serial [256];
 	agcControl	-> setChecked (temp == "autogain_on");
 	
 	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
+	save_gainSettings	=
+		rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	rtlsdrSettings	-> endGroup();
 
 	rtlsdr_get_usb_strings (device, manufac, product, serial);
@@ -309,9 +311,9 @@ int32_t	r;
 	if (r < 0)
 	   return false;
 	(void)(this -> rtlsdr_set_center_freq (device, freq));
-#ifdef	__KEEP_GAIN_SETTINGS__
-	update_gainSettings (freq / MHz (1));
-#endif
+	if (save_gainSettings)
+	   update_gainSettings (freq / MHz (1));
+
 	rtlsdr_set_agc_mode (device, agcControl -> isChecked () ? 1 : 0);
 	rtlsdr_set_tuner_gain (device,
 	                       gainControl -> currentText (). toInt ());
@@ -323,9 +325,9 @@ void	rtlsdrHandler::stopReader () {
 	if (workerHandle == nullptr)
 	   return;
 	close_xmlDump ();
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (device)) / MHz (1));
-#endif
+	if (save_gainSettings)
+	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (device)) / MHz (1));
+
 	this -> rtlsdr_cancel_async (device);
 	while (!workerHandle -> isFinished()) 
 	   usleep (100);

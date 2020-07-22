@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= dabMini-1.0
+TARGET		= dabMini-2.0
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -236,6 +236,9 @@ CONFIG		+= sdrplay
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
+CONFIG		+= pluto
+
+#
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 
@@ -251,7 +254,7 @@ CONFIG		+= PC
 # an attempt to have it run under W32 through cross compilation
 win32 {
 
-exists ("./.git") {
+exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
@@ -263,7 +266,8 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for 64 bit
-	TARGET		= dabMini64-1.0
+	TARGET		= dabMini-64-1.0
+	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-mini
 	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
@@ -291,7 +295,9 @@ CONFIG		+= airspy
 CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
+CONFIG		+= pluto
 #CONFIG		+= lime
+
 #CONFIG		+= PC
 CONFIG		+= NO_SSE
 }
@@ -412,3 +418,12 @@ lime {
         SOURCES         += ./devices-dab-mini/lime-handler/lime-handler.cpp
 }
 #
+pluto   {
+        DEFINES         += HAVE_PLUTO
+        QT              += network
+        INCLUDEPATH     += ./devices-dab-mini/pluto-handler
+        HEADERS         += ./devices-dab-mini/pluto-handler/pluto-handler.h
+        SOURCES         += ./devices-dab-mini/pluto-handler/pluto-handler.cpp
+	LIBS            += -liio
+}
+

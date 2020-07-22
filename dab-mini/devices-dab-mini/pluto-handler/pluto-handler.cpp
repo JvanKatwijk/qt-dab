@@ -4,19 +4,19 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of Qt-DAB
+ *    This file is part of dabMini
  *
- *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    dabMini is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation version 2 of the License.
  *
- *    Qt-DAB is distributed in the hope that it will be useful,
+ *    dabMini is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with Qt-DAB if not, write to the Free Software
+ *    along with dabMini if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
@@ -26,8 +26,7 @@
 #include	<QDate>
 #include	<QLabel>
 #include	<QDebug>
-#include	<QFileDialog>
-#include	"pluto-2.h"
+#include	"pluto-handler.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -45,9 +44,6 @@ QString result = type;
 	result. append (QString::number (id));
 	return result;
 }
-
-static
-bool	debugFlag	= false;
 
 /* returns ad9361 phy device */
 static
@@ -67,16 +63,14 @@ bool	cfg_ad9361_streaming_ch (struct iio_context *ctx,
 struct iio_channel *chn = nullptr;
 
 // Configure phy and lo channels
-	if (debugFlag)
-	   fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", chid);
+	fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", chid);
 	try {
 	   chn = iio_device_find_channel (get_ad9361_phy (ctx),
                                        get_ch_name (QString ("voltage"), chid).
 	                                                  toLatin1 (). data (),
                                        false);
 	} catch (int e) {
-	   if (debugFlag)
-	      fprintf (stderr, "cannot acquire phy channel %d\n", chid);
+	   fprintf (stderr, "cannot acquire phy channel %d\n", chid);
 	   return false;
 	}
 
@@ -85,8 +79,7 @@ struct iio_channel *chn = nullptr;
 	if (res < 0) {
 	   char error [255];
 	   iio_strerror (res, error, 255); 
-	   if (debugFlag)
-	      fprintf (stderr, "error in port selection %s\n", error);
+	   fprintf (stderr, "error in port selection %s\n", error);
 	   return false;
 	}
 
@@ -95,8 +88,7 @@ struct iio_channel *chn = nullptr;
 	if (res < 0) {
 	   char error [255];
 	   iio_strerror (res, error, 255); 
-	   if (debugFlag)
-	      fprintf (stderr, "cannot select bandwidth %s\n", error);
+	   fprintf (stderr, "cannot select bandwidth %s\n", error);
 	   return false;
 	}
 
@@ -106,15 +98,13 @@ struct iio_channel *chn = nullptr;
 	if (res < 0) {
 	   char error [255];
 	   iio_strerror (res, error, 255); 
-	   if (debugFlag)
-	      fprintf (stderr, "cannot set sampling frequency %s\n", error);
+	   fprintf (stderr, "cannot set sampling frequency %s\n", error);
 	   return false;
 	}
 
 	cfg	-> gain_channel = chn;
 // Configure LO channel
-	if (debugFlag)
-	   fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
+	fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
 	cfg -> lo_channel = nullptr;
 	try {
 	  cfg -> lo_channel =
@@ -123,8 +113,7 @@ struct iio_channel *chn = nullptr;
                                               true);
 	} catch (int e) {}
 	if (cfg -> lo_channel == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "cannot find lo for channel\n");
+	   fprintf (stderr, "cannot find lo for channel\n");
 	   return false;
 	}
 
@@ -134,8 +123,7 @@ struct iio_channel *chn = nullptr;
 	if (res < 0 ) {
 	   char error [255];
 	   iio_strerror (res, error, 255); 
-	   if (debugFlag)
-	      fprintf (stderr, "cannot set local oscillator frequency %s\n",
+	   fprintf (stderr, "cannot set local oscillator frequency %s\n",
 	                                                           error);
 	   return false;
 	}
@@ -156,14 +144,11 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
         return *chn != nullptr;
 }
 
-	pluto_2::pluto_2  (QSettings *s,
-	                             QString &recorderVersion):
-	                                  myFrame (nullptr),
+	plutoHandler::plutoHandler  (QSettings *s,
+	                             QSpinBox	*gainControl,
+	                             QCheckBox	*agcControl):
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
-	this	-> recorderVersion	= recorderVersion;
-	setupUi (&myFrame);
-	myFrame. show	();
 
 	ctx				= nullptr;
 	rxbuf				= nullptr;
@@ -180,34 +165,26 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	             plutoSettings -> value ("pluto-agc", 0). toInt () == 1;
 	int  gainValue	=
 	             plutoSettings -> value ("pluto-gain", 50). toInt ();
-	debugFlag	=
-	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
 	plutoSettings	-> endGroup ();
-	if (debugFlag)
-	   debugButton	-> setText ("debug on");
 	if (agcMode) {
 	   agcControl	-> setChecked (true);	
 	   gainControl	-> hide ();
 	}
 	gainControl	-> setValue (gainValue);
 	   
-	state	-> setText ("Looking for context");
 	ctx	= iio_create_default_context ();
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "default context failed\n");
+	   fprintf (stderr, "default context failed\n");
 	   ctx = iio_create_local_context ();
 	}
 
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "creating local context failed\n");
+	   fprintf (stderr, "creating local context failed\n");
 	   ctx = iio_create_network_context ("pluto.local");
 	}
 
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "creating network context with pluto.local failed\n");
+	   fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
 	}
 
@@ -215,75 +192,60 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 	   fprintf (stderr, "No pluto found, fatal\n");
 	   throw (24);
 	}
-	if (debugFlag)
-	   fprintf (stderr, "context name %s\n",
+
+	fprintf (stderr, "context name %s\n",
 	                    iio_context_get_name (ctx));
 
-	state	-> setText ("Context created,\n counting devices");
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   state -> setText ("no devices found, fatal");
 	   goto err2;
 	}
 
-//	state	-> setText ("we have devices\n, Acquiring AD9361 streaming devices");
 	rx = iio_context_find_device (ctx, "cf-ad9361-lpc");
 	if (rx == nullptr) {
-	   state -> setText ("No device found");
 	   goto err2;
 	}
 
-        state -> setText ("* Configuring AD9361 for streaming\n");
         if (!cfg_ad9361_streaming_ch (ctx, &rxcfg, 0)) {
-	   state -> setText ("RX port 0 not found");
 	   goto err2;
 	}
 
-	state -> setText ("* Initializing AD9361 IIO streaming channels\n");
         if (!get_ad9361_stream_ch (ctx, rx, 0, &rx0_i)) {
-	   state -> setText ("RX chan i not found");
 	   goto err2;
 	}
 
         if (!get_ad9361_stream_ch (ctx, rx, 1, &rx0_q)) {
-	   state -> setText ("RX chan q not found");
 	   goto err2;
 	}
 
-        state -> setText ("* Enabling IIO streaming channels");
         iio_channel_enable (rx0_i);
         iio_channel_enable (rx0_q);
 
-        state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
         rxbuf = iio_device_create_buffer (rx, 1024*1024, false);
 	if (rxbuf == nullptr) {
-	   state -> setText ("could not create RX buffer, fatal");
 	   goto err2;
 	}
 //
 	iio_buffer_set_blocking_mode (rxbuf, true);
 	if (!agcMode) {
-	   int ret = iio_channel_attr_write (rxcfg. gain_channel,
+	   (void)iio_channel_attr_write (rxcfg. gain_channel,
 	                                     "gain_control_mode", "manual");
-	   ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
+	   (void)iio_channel_attr_write_longlong (rxcfg. gain_channel,
 	                                          "hardwaregain", gainValue);
-	   if (ret < 0) 
-	      state -> setText ("error in initial gain setting");
 	}
 	else {
-	   int ret = iio_channel_attr_write (rxcfg. gain_channel,
+	   (void)iio_channel_attr_write (rxcfg. gain_channel,
 	                                     "gain_control_mode",
 	                                            "slow_attack");
-	   if (ret < 0)
-	      state -> setText ("error in initial gain setting");
 	}
-	
 //	and be prepared for future changes in the settings
 	connect (gainControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gainControl (int)));
 	connect (agcControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_agcControl (int)));
-	connect (debugButton, SIGNAL (clicked ()),
-	         this, SLOT (toggle_debugButton ()));
+	connect (this, SIGNAL (new_gainValue (int)),
+	         gainControl, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_agcValue (bool)),
+	         agcControl, SLOT (setChecked (bool)));
 
 	{
 	   float	divider		= (float)DIVIDER;
@@ -300,7 +262,6 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 
 	running. store (false);
 	connected	= true;
-	state -> setText ("ready to go");
 	return;
 err1:
 	iio_buffer_destroy	(rxbuf);
@@ -309,14 +270,12 @@ err2:
 	throw (21);
 }
 
-	pluto_2::~pluto_2 () {
-	myFrame. hide ();
+	plutoHandler::~plutoHandler () {
 	plutoSettings	-> beginGroup ("plutoSettings");
 	plutoSettings	-> setValue ("pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);
 	plutoSettings	-> setValue ("pluto-gain", 
 	                              gainControl -> value ());
-	plutoSettings	-> setValue ("pluto-debug", debugFlag ? 1 : 0);
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
@@ -325,59 +284,31 @@ err2:
 	iio_context_destroy (ctx);
 }
 //
-
-void	pluto_2::setVFOFrequency	(int32_t newFrequency) {
-int	ret;
-	rxcfg. lo_hz = newFrequency;
-	ret = iio_channel_attr_write_longlong
-	                             (rxcfg. lo_channel,
-	                                   "frequency", rxcfg. lo_hz);
-	if (ret < 0) {
-	   fprintf (stderr, "cannot set local oscillator frequency\n");
-	}
-	if (debugFlag)
-	   fprintf (stderr, "frequency set to %d\n", (int)(rxcfg. lo_hz));
-}
-
-int32_t	pluto_2::getVFOFrequency() {
-	return rxcfg. lo_hz;
-}
-//
 //	If the agc is set, but someone touches the gain button
 //	the agc is switched off. Btw, this is hypothetically
 //	since the gain control is made invisible when the
 //	agc is set
-void	pluto_2::set_gainControl	(int newGain) {
+void	plutoHandler::set_gainControl	(int newGain) {
 int ret;
 
 	if (agcControl -> isChecked ()) {
 	   ret = iio_channel_attr_write (rxcfg. gain_channel,
 	                                    "gain_control_mode", "manual");
 	   if (ret < 0) {
-	      state -> setText ("error in gain setting");
-	      if (debugFlag)
-	         fprintf (stderr, "could not change gain control to manual");
+	      fprintf (stderr, "could not change gain control to manual");
 	      return;
 	   }
-	   
-	   disconnect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
-	   agcControl -> setChecked (false);
-	   connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
 	}
 
 	ret = iio_channel_attr_write_longlong (rxcfg. gain_channel,
 	                                          "hardwaregain", newGain);
 	if (ret < 0) {
-	   state -> setText ("error in gain setting");
-	   if (debugFlag) 
-	      fprintf (stderr,
+	   fprintf (stderr,
 	               "could not set hardware gain to %d\n", newGain);
 	}
 }
 
-void	pluto_2::set_agcControl	(int dummy) {
+void	plutoHandler::set_agcControl	(int dummy) {
 int ret;
 
 	(void)dummy;
@@ -385,21 +316,16 @@ int ret;
 	   ret = iio_channel_attr_write (rxcfg. gain_channel,
 	                               "gain_control_mode", "slow_attack");
 	   if (ret < 0) {
-	      if (debugFlag)
-	         fprintf (stderr, "error in setting agc\n");
+	      fprintf (stderr, "error in setting agc\n");
 	      return;
 	   }
-	   else
-	      state -> setText ("agc set");
 	   gainControl -> hide ();
 	}
 	else {	// switch agc off
 	   ret = iio_channel_attr_write (rxcfg. gain_channel,
 	                                    "gain_control_mode", "manual");
 	   if (ret < 0) {
-	      state -> setText ("error in gain setting");
-	      if (debugFlag)
-	         fprintf (stderr, "error in gain setting\n");
+	      fprintf (stderr, "error in gain setting\n");
 	      return;
 	   }
 	   gainControl	-> show ();
@@ -408,30 +334,26 @@ int ret;
 	                                          "hardwaregain", 
 	                                          gainControl -> value ());
 	   if (ret < 0) {
-	      state -> setText ("error in gain setting");
-	      if (debugFlag)
-	         fprintf (stderr,
+	      fprintf (stderr,
 	                  "could not set hardware gain to %d\n",
 	                                          gainControl -> value ());
 	   }
 	}
 }
 
-bool	pluto_2::restartReader	(int32_t freq) {
-	if (debugFlag)
-	   fprintf (stderr, "restart called with %d\n", freq);
-	if (!connected)
+bool	plutoHandler::restartReader	(int32_t freq) {
+	if (!connected)		// cannot happen
 	   return false;
 	if (running. load())
 	   return true;		// should not happen
 
+	update_gainSettings	(freq / MHz (1));
 	rxcfg. lo_hz = freq;
 	int ret = iio_channel_attr_write_longlong
 	                             (rxcfg. lo_channel,
 	                                   "frequency", rxcfg. lo_hz);
 	if (ret < 0) {
-	   if (debugFlag)
-	      fprintf (stderr, "cannot set local oscillator frequency\n");
+	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	   return false;
 	}
 	else
@@ -439,21 +361,21 @@ bool	pluto_2::restartReader	(int32_t freq) {
 	return true;
 }
 
-void	pluto_2::stopReader() {
+void	plutoHandler::stopReader () {
 	if (!running. load())
 	   return;
+	record_gainSettings	(rxcfg. lo_hz / MHz (1));
 	running. store (false);
 	while (isRunning())
 	   usleep (500);
 }
 
-void	pluto_2::run	() {
+void	plutoHandler::run	() {
 char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
 
-	state -> setText ("running");
 	running. store (true);
 	while (running. load ()) {
 	   nbytes_rx	= iio_buffer_refill	(rxbuf);
@@ -484,42 +406,64 @@ std::complex<float> localBuf [DAB_RATE / DIVIDER];
 	}
 }
 
-int32_t	pluto_2::getSamples (std::complex<float> *V, int32_t size) { 
+int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) { 
 	if (!isRunning ())
 	   return 0;
 	return _I_Buffer. getDataFromBuffer (V, size);
 }
 
-int32_t	pluto_2::Samples () {
+int32_t	plutoHandler::Samples () {
 	return _I_Buffer. GetRingBufferReadAvailable();
 }
 
-void	pluto_2::resetBuffer() {
+void	plutoHandler::resetBuffer() {
 	_I_Buffer. FlushRingBuffer();
 }
 
-int16_t	pluto_2::bitDepth() {
+int16_t	plutoHandler::bitDepth() {
 	return 12;
 }
 
-QString	pluto_2::deviceName	() {
-	return "ADALM PLUTO";
+void	plutoHandler::record_gainSettings (int freq) {
+int	gainValue	= gainControl		-> value ();
+int	agc		= agcControl		-> isChecked () ? 1 : 0;
+QString theValue	= QString::number (gainValue) + ":" +
+	                               QString::number (agc);
+
+	plutoSettings	-> beginGroup ("plutoSettings");
+	plutoSettings	-> setValue (QString::number (freq), theValue);
+	plutoSettings	-> endGroup ();
 }
 
-void	pluto_2::show	() {
-	myFrame. show	();
-}
+void	plutoHandler::update_gainSettings (int freq) {
+int	gainValue;
+int	agc;
+QString	theValue	= "";
 
-void	pluto_2::hide	() {
-	myFrame. hide	();
-}
+	plutoSettings	-> beginGroup ("plutoSettings");
+	theValue	= plutoSettings -> value (QString::number (freq), ""). toString ();
+	plutoSettings	-> endGroup ();
 
-bool	pluto_2::isHidden	() {
-	return myFrame. isHidden ();
-}
+	if (theValue == QString (""))
+	   return;		// or set some defaults here
 
-void	pluto_2::toggle_debugButton	() {
-	debugFlag	= !debugFlag;
-	debugButton -> setText (debugFlag ? "debug on" : "debug off");
+	QStringList result	= theValue. split (":");
+	if (result. size () != 2) 	// should not happen
+	   return;
+
+	gainValue	= result. at (0). toInt ();
+	agc		= result. at (1). toInt ();
+
+	gainControl	-> blockSignals (true);
+	new_gainValue (gainValue);
+	while (gainControl -> value () != gainValue)
+	   usleep (1000);
+	gainControl	-> blockSignals (false);
+
+	agcControl	-> blockSignals (true);
+	new_agcValue (agc == 1);
+	while (agcControl -> isChecked () != (agc == 1))
+	   usleep (1000);
+	agcControl	-> blockSignals (false);
 }
 

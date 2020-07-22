@@ -181,7 +181,7 @@ uint8_t	dabBand;
 
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
-	globals. spectrumBuffer          = &spectrumBuffer;
+	globals. spectrumBuffer		= &spectrumBuffer;
 	globals. iqBuffer		= &iqBuffer;
 	globals. responseBuffer		= &responseBuffer;
 	globals. tiiBuffer		= &tiiBuffer;

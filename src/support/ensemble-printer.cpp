@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ bool	firstData;
 	if (ensembleLabel == QString (""))
 	   return;
 
+	fprintf (file_P, "\n\n\n");
 	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; time of recording  %s\n\n",
 	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,

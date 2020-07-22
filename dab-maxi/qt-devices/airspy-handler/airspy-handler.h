@@ -113,6 +113,7 @@ private:
 	int		vfoFrequency;
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
+	bool		save_gainSettings;
 signals:
 	void		new_lnaGainValue	(int);
 	void		new_vgaGainValue	(int);

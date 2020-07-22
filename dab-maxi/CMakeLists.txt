@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.4.2)
+set (objectName qt-dab-3.5)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -78,6 +78,10 @@ endif ()
 
 if(DEFINED RTL_TCP)
 	set(RTL_TCP true)
+endif ()
+
+if(DEFINED PLUTO(
+	set(PLUTO true)
 endif ()
 
 if (DEFINED DATA_STREAMER)
@@ -640,6 +644,34 @@ endif ()
 
 	   add_definitions (-DHAVE_HACKRF)
 	endif (HACKRF)
+#
+	if (PLUTO)
+	   set (${objectName}_UIS
+	        ${${objectName}_UIS}
+	        ./qt-devices/pluto-handler/pluto-widget.ui
+	   )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ./qt-devices/pluto-handler/pluto-handler.h
+	   )
+
+	   include_directories (
+	     ./qt-devices/pluto-handler
+	   )
+
+	   set ($(objectName)_HDRS
+	        ${${objectName}_HDRS}
+	        ./qt-devices/pluto-handler/pluto-handler.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ./qt-devices/pluto-handler/pluto-handler.cpp
+	   )
+
+	   add_definitions (-DHAVE_PLUTO)
+	endif (PLUTO)
 #
 	if (LIMESDR)
 	   set (${objectName}_MOCS

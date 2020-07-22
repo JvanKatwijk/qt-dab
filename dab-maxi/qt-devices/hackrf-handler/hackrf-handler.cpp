@@ -92,7 +92,8 @@ int	res;
                                                       Qt::Unchecked);
 	ppm_correction      -> setValue (
 	          hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
-//	end
+	save_gainSettings	=
+	          hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
 
 	hackrfSettings	-> endGroup();
 
@@ -361,9 +362,9 @@ int	res;
 	   return true;
 
 	vfoFrequency	= freq;
-#ifdef	__KEEP_GAIN_SETTINGS__
-	update_gainSettings (freq / MHz (1));
-#endif
+	if (save_gainSettings)
+	   update_gainSettings (freq / MHz (1));
+	
 	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());
 	this -> hackrf_set_vga_gain (theDevice, vgaGainSlider -> value ());
 	this -> hackrf_set_amp_enable (theDevice, 
@@ -402,9 +403,8 @@ int	res;
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings	(vfoFrequency / MHz (1));
-#endif
+	if (save_gainSettings)
+	   record_gainSettings	(vfoFrequency / MHz (1));
 	running. store (false);
 }
 

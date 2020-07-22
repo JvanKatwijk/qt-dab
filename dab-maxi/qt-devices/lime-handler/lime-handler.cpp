@@ -119,6 +119,8 @@ lms_info_str_t limedevices [10];
 
 	limeSettings -> beginGroup ("limeSettings");
 	QString antenne	= limeSettings -> value ("antenna", "default"). toString();
+	save_gainSettings	=
+	          limeSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	limeSettings	-> endGroup();
 
 	int k       = antennaList -> findText (antenne);
@@ -208,10 +210,10 @@ int	res;
 	   return true;
 
 	vfoFrequency	= freq;
-#ifdef	__KEEP_GAIN_SETTINGS__
-	update_gainSettings	(freq / MHz (1));
-	setGain (gainSelector -> value ());
-#endif
+	if (save_gainSettings) {
+	   update_gainSettings	(freq / MHz (1));
+	   setGain (gainSelector -> value ());
+	}
 	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, freq);
 	stream. isTx            = false;
         stream. channel         = 0;
@@ -234,9 +236,9 @@ void	limeHandler::stopReader() {
 	close_xmlDump ();
 	if (!isRunning())
 	   return;
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings (vfoFrequency);
-#endif
+	if (save_gainSettings)
+	   record_gainSettings (vfoFrequency);
+
 	running. store (false);
 	while (isRunning())
 	   usleep (200);

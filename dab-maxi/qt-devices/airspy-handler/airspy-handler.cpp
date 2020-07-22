@@ -56,20 +56,26 @@ uint32_t samplerateCount;
 	sensitivitySlider	-> setValue (temp);
 	sensitivityDisplay	-> display (temp);
 
-	vgaGain			= airspySettings -> value ("vga", 5).toInt();
+	vgaGain			=
+	           airspySettings -> value ("vga", 5).toInt();
 	vgaSlider		-> setValue (vgaGain);
 	vgaDisplay		-> display (vgaGain);
-	mixerGain		= airspySettings -> value ("mixer", 10). toInt();
+	mixerGain		=
+	           airspySettings -> value ("mixer", 10). toInt();
 	mixerSlider		-> setValue (mixerGain);
 	mixerDisplay		-> display (mixerGain);
 	mixer_agc		= false;
-	lnaGain			= airspySettings -> value ("lna", 5). toInt();
+	lnaGain			=
+	           airspySettings -> value ("lna", 5). toInt();
 	lnaSlider		-> setValue (lnaGain);
 	lnaDisplay		-> display  (lnaGain);
 	mixer_agc		= false;
 	lna_agc			= false;
 	rf_bias			= false;
-	coarseOffset		= airspySettings -> value ("airspyOffset", 0). toInt();
+	coarseOffset		=
+	           airspySettings -> value ("airspyOffset", 0). toInt();
+	save_gainSettings	=
+	          airspySettings -> value ("save_gainSettings", 1). toInt () != 0;
 	airspySettings	-> endGroup();
 
 	device			= nullptr;
@@ -303,15 +309,15 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return true;
 
 	vfoFrequency	= freq;
-#ifdef	__KEEP_GAIN_SETTINGS__
-	update_gainSettings (freq / MHz (1));
-	set_vga_gain		(vgaSlider -> value ());
-	set_lna_gain		(lnaSlider -> value ());
-	set_mixer_gain		(mixerSlider -> value ());
-	my_airspy_set_lna_agc	(device, lna_agc ? 1 : 0);
-	my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
-	my_airspy_set_rf_bias	(device, rf_bias ? 1 : 0);
-#endif
+	if (save_gainSettings) {
+	   update_gainSettings (freq / MHz (1));
+	   set_vga_gain		(vgaSlider -> value ());
+	   set_lna_gain		(lnaSlider -> value ());
+	   set_mixer_gain	(mixerSlider -> value ());
+	   my_airspy_set_lna_agc	(device, lna_agc ? 1 : 0);
+	   my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
+	   my_airspy_set_rf_bias	(device, rf_bias ? 1 : 0);
+	}
 	result = my_airspy_set_freq (device, freq);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -357,9 +363,8 @@ int	result;
 	   return;
 
 	close_xmlDump ();
-#ifdef	__KEEP_GAIN_SETTINGS__
-	record_gainSettings (vfoFrequency / MHz (1));
-#endif
+	if (save_gainSettings)
+	   record_gainSettings (vfoFrequency / MHz (1));
 	result = my_airspy_stop_rx (device);
 
 	if (result != AIRSPY_SUCCESS ) 
