@@ -9,6 +9,7 @@ before_install:
     
 install: 
     - sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
+    - sudo apt-get -y install libiio-dev
     - # source /opt/qt5/bin/qt5-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
     - # svn checkout svn://svn.code.sf.net/p/qwt/code/branches/qwt-6.1 qwt
@@ -23,13 +24,14 @@ script:
   - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
-  - cmake . -DRTLSDR=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - cd dab-maxi
+  - cmake . -DRTLSDR=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DPLUTO=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .
   - rm -rf *_autogen
   - mkdir -p appdir/usr/bin
-  - cp qt-dab-3.4.1  appdir/usr/bin/qt-dab
+  - cp qt-dab-3.5  appdir/usr/bin/qt-dab
  
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp qt-dab.png appdir/qt-dab.png
@@ -42,12 +44,8 @@ after_success:
   - chmod a+x linuxdeployqt*.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
-  - # Workaround for https://github.com/probonopd/linuxdeployqt/issues/31#issuecomment-289267637
   - ./linuxdeployqt*.AppImage --appimage-extract
   - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
-  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
-  - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
-  - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
   - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)

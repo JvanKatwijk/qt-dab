@@ -6,19 +6,19 @@ Qt-DAB-3.5 is software for Windows, Linux and Raspberry Pi for listening to terr
 Differences 3.5 <-> 3.4
 -----------------------------------------------------------------------
 
-	a. Support for pluto devices - experimental though
-	b. saving gain settings for different channels when configured
-	c. support for saving the ensemble data in detail when scanning
-	d. improved algorithm for frequency synchronization
-	e. for windows both 32 and 64 bit executables
-	f. for dabMini an appImage (x64) is availablce
+	a. Support for pluto devices - experimental though,
+	b. saving gain settings for different channels when configured,
+	c. support for saving the ensemble data in detail when scanning,
+	d. improved algorithm for frequency synchronization,
+	e. for windows both 32 and 64 bit executables,
+	f. also for dabMini an appImage (x64) is availablce.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
 ------------------------------------------------------------------
 
-The directory Qt-DAB is now the home of THREE related, but 
-different, versions of a DAB decoder
+The directory qt-dab is now the home of *THREE* related, but 
+different, versions of a DAB decoder:
 
  * first of all, there is Qt-DAB, a fairly complete DAB decoder,
 based on the idea that *the user is in full control* . For Qt-DAB
@@ -28,11 +28,12 @@ for Windows. See the subdirectory *dab-maxi* for construction details.
 ![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
  * second, the *little* sister is *dabMini*, built using the same set
-of sources, but with an absolutely minimal GUI. For installing an
-executable on an RPI the documentation contains a script with
+of sources, but with an absolutely minimal GUI.
+For Windows an installer in available and for x64 Linux an appImage.
+For installing an
+executable on an *RPI* the documentation contains a script with
 which all required libraries will be installed, the sources
 will be downloaded and compiled into an executable.
-For Windows an installer in available.
 dabMini and Qt-DAB share over 95 percent of the sources,
 see the subdirectory *dab-mini* for construction details.
 
@@ -41,7 +42,7 @@ see the subdirectory *dab-mini* for construction details.
  * third, an *experimental version*, called *dab-2*. While the sources
 of *dab-2* and Qt-DAB overlap for more than 90 percent, a completely
 different architectural approach is taken for building up
-the DAB frames. Note that dab-2 and Qt-DAB share most of the GUI, 
+the DAB frames. Note that dab-2 and Qt-DAB share almost all of the GUI, 
 dab-2 has a different widget for device control.
 See the subdirectory *dab-2* for construction details.
 
@@ -52,6 +53,7 @@ Table of Contents
 ------------------------------------------------------------------
 
 * [Introduction](#introduction)
+* [Documentation](#documentation)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Presets](#presets-for-qt-dab-dabmini-and-dab-2)
@@ -83,6 +85,18 @@ Derived programs, such as the **dab-scanner** and the Qt-free versions **dab-cmd
 
 Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi,
 the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
+
+--------------------------------------------------------------------
+Documentation
+--------------------------------------------------------------------
+
+An extensive "user's guide" - in pdf format - can be found in the "docs"
+section of the source tree. The documentation contains a fomplete
+description of the widgets, of the values in the ".ini" file,
+on configuring for creating an executable (Linux), and even a
+complete description on how to add a device to the configuration.
+
+![Qt-DAB documentation](/qt-usersguide.png?raw=true)
 
 ------------------------------------------------------------------
 Features
@@ -203,7 +217,8 @@ of what will be recorded if a choice is made to save the output of the scan.
 Presets for Qt-DAB, dabMini and dab-2
 ----------------------------------------------------------------------
 
-A **preset** selector is available to store and select "favorit" services.
+A **preset** selector is available to allow storing and selecting
+"favorit" services.
 Note that the services are encoded as "channel:serviceName" pair:
 it sometimes happens that a service appears in more than one ensemble
 (as example the "Omroep West" service appears in channels 5B and 8A.)
@@ -227,7 +242,7 @@ Maintaining History for Qt-DAB and dab-2
 ---------------------------------------------------------------------------
 
 Qt-DAB-3.5 and dab-2.1 save all service names found.
-Pairs Channel:serviceName
+Pairs "Channel:serviceName"
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
 

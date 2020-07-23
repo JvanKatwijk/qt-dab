@@ -24,7 +24,6 @@ class	deviceHandler: public QObject {
 public:
 			deviceHandler 	(void);
 virtual			~deviceHandler 	(void);
-virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency	(void);
 virtual		int32_t	defaultFrequency(void);
 virtual		bool	restartReader	(int32_t);
