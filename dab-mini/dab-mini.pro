@@ -266,16 +266,16 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for 64 bit
-	TARGET		= dabMini-64-1.0
-	DEFINES		+= __BITS64__
-	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-mini
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#	TARGET		= dabMini-64-1.0
+#	DEFINES		+= __BITS64__
+#	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-mini
+#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 #for 32 bit
-#	TARGET		= dabMini-32-1.0
-#	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-mini
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+	TARGET		= dabMini-32-1.0
+	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-mini
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 
 #	common:
 INCLUDEPATH	+= /usr/local/include

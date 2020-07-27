@@ -8,10 +8,11 @@ Differences 3.5 <-> 3.4
 
 	a. Support for pluto devices - experimental though,
 	b. saving gain settings for different channels when configured,
-	c. support for saving the ensemble data in detail when scanning,
-	d. improved algorithm for frequency synchronization,
-	e. for windows both 32 and 64 bit executables,
-	f. also for dabMini an appImage (x64) is availablce.
+	c. support for saving detailed output of the scan,
+	d. clock error counter and rs corrections counter
+	e. improved algorithm for frequency synchronization,
+	f. for windows both 32 and 64 bit installers,
+	g. also for dabMini an appImage (x64) is availablce.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -77,8 +78,8 @@ Introduction
 For DX purposes, a separate **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a txt file, formatted for use with *LibreOffice Calc* and
-comparable programs. Note that **Qt-DAB-3.5** supports a scan function,
-scanning the whole band, and saving the data found in a text file,
+comparable programs. Note that in **Qt-DAB-3.5** the scan function
+is extended with an option to save detailed data in a text file,
 compatible with e.g. LibreOffice.
 
 Derived programs, such as the **dab-scanner** and the Qt-free versions **dab-cmdline** have their own repository on Github.

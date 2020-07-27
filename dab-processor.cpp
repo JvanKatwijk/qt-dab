@@ -93,6 +93,8 @@
 	         myRadioInterface, SLOT (show_tii (QByteArray)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
+	connect (this, SIGNAL (show_clockErr (int)),
+	         mr, SLOT (show_clockError (int)));
 	my_TII_Detector. reset();
 }
 
@@ -137,6 +139,9 @@ std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
 int		attempts;
 std::vector<int16_t> ibits;
+int	frameCount	= 0;
+int	sampleCount	= 0;
+int	totalSamples	= 0;
 
 	inputDevice	-> resetBuffer ();
 	inputDevice	-> restartReader (frequency);
@@ -155,6 +160,10 @@ std::vector<int16_t> ibits;
 //Initing:
 notSynced:
 	   totalFrames ++;
+	   totalSamples	= 0;
+	   frameCount	= 0;
+	   sampleCount	= 0;
+
 	   setSynced (false);
 	   my_TII_Detector. reset ();
 	   switch (myTimeSyncer. sync (T_null, T_F)) {
@@ -187,10 +196,18 @@ notSynced:
 	      badFrames ++;
 	      goto notSynced;
 	   }
+	   sampleCount	= startIndex;
 	   goto SyncOnPhase;
 //
 Check_endofNULL:
 	   totalFrames ++;
+	   frameCount ++;
+	   totalSamples	+= sampleCount;
+	   if (frameCount > 10) {
+	      show_clockErr (totalSamples - frameCount * 196608);
+	      totalSamples = 0;
+	      frameCount = 0;
+	   }
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_u, coarseOffset + fineOffset);
 /**
@@ -208,6 +225,7 @@ Check_endofNULL:
 	      goto notSynced;
 	   }
 
+	   sampleCount = startIndex;
 SyncOnPhase:
 	   goodFrames ++;
 /**
@@ -231,6 +249,7 @@ SyncOnPhase:
 	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
+	   sampleCount += T_u;
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 	   if (!scanMode)
 	      my_mscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -265,6 +284,7 @@ SyncOnPhase:
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
+	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) 
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 
@@ -284,6 +304,7 @@ SyncOnPhase:
   */
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_null, coarseOffset + fineOffset);
+	   sampleCount += T_null;
 	   float sum	= 0;
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);

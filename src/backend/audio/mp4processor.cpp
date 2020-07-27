@@ -60,10 +60,12 @@
 	         mr, SLOT (show_rsErrors (int)));
 	connect (this, SIGNAL (show_aacErrors (int)),
 	         mr, SLOT (show_aacErrors (int)));
-	connect (this, SIGNAL (isStereo (int)),
-	         mr, SLOT (setStereo (int)));
+	connect (this, SIGNAL (isStereo (bool)),
+	         mr, SLOT (setStereo (bool)));
 	connect (this, SIGNAL (newFrame (int)),
 	         mr, SLOT (newFrame (int)));
+	connect (this, SIGNAL (show_rsCorrections (int)),
+	         mr, SLOT (show_rsCorrections (int)));
 #ifdef	__WITH_FDK_AAC__
 	aacDecoder		= new fdkAAC (mr, b);
 #else
@@ -83,6 +85,8 @@
 	aacFrames	= 0;
 	successFrames	= 0;
 	rsErrors	= 0;
+	totalCorrections	= 0;
+	goodFrames		= 0;
 }
 
 	mp4Processor::~mp4Processor() {
@@ -182,6 +186,14 @@ stream_parms    streamParameters;
 //	      fprintf (stderr, "RS failure\n");
 	      return false;
 	   }
+	   totalCorrections += ler;
+	   goodFrames ++;
+	   if (goodFrames >= 100) {
+	      show_rsCorrections (totalCorrections);
+	      totalCorrections = 0;
+	      goodFrames = 0;
+	   }
+
 	   for (k = 0; k < 110; k ++) 
 	      outVector [j + k * RSDims] = rsOut [k];
 	}

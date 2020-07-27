@@ -190,6 +190,7 @@ uint8_t	dabBand;
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
 	isSynced		= false;
+	stereoSetting		= false;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -332,6 +333,8 @@ uint8_t	dabBand;
 	QPalette p	= ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::green);
 	ficError_display		-> setPalette (p);
+	techData. stereoLabel		->
+	                   setStyleSheet ("QLabel {background-color : red}");
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
 	techData. aacError_display	-> setPalette (p);
@@ -1444,8 +1447,17 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 }
 
-void	RadioInterface::setStereo	(int s) {
-	(void)s;
+void	RadioInterface::setStereo	(bool s) {
+	if (!running. load ())
+	   return;
+	if (stereoSetting == s)
+	   return;
+	
+	techData. stereoLabel	-> setStyleSheet (s ?
+	   	         "QLabel {background-color: green; color : black}":
+	   	         "QLabel {background-color: red; color : black}");
+	techData. stereoLabel	-> setText (s ? "stereo" : "mono");
+	stereoSetting = s;
 }
 
 void	RadioInterface::show_tii	(QByteArray data) {
@@ -1484,6 +1496,18 @@ void	RadioInterface::showQuality	(float q) {
 	if (!running. load())
 	   return;
 	my_spectrumViewer. showQuality (q);
+}
+
+void	RadioInterface::show_rsCorrections	(int c) {
+	if (!running)
+	   return;
+	techData. rsCorrections	-> display (c);
+}
+
+void	RadioInterface::show_clockError	(int e) {
+	if (!running. load ())
+	   return;
+	my_spectrumViewer. show_clockErr (e);
 }
 
 void	RadioInterface::showCorrelation	(int amount, int marker) {
@@ -2239,6 +2263,11 @@ void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
 	presetSelector			-> setCurrentIndex (0);
+	techData. stereoLabel	-> setStyleSheet (
+	   	         "QLabel {background-color: red; color : black}");
+	techData. stereoLabel	-> setText ("");
+	stereoSetting			= false;
+	techData. rsCorrections		-> display (0);
 	techData. frameError_display	-> setValue (0);
 	techData. rsError_display	-> setValue (0);
 	techData. aacError_display	-> setValue (0);

@@ -124,6 +124,7 @@ private:
 	QLabel			*motSlides;
 	std::vector<int>	secondariesVector;
 	bool			isSynced;
+	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice;
@@ -229,7 +230,7 @@ public slots:
 	void			changeinConfiguration	();
 	void			newAudio		(int, int);
 //
-	void			setStereo		(int);
+	void			setStereo		(bool);
 	void			set_streamSelector	(int);
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
@@ -239,12 +240,15 @@ public slots:
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);
+	void			show_rsCorrections	(int);
 	void			show_tii		(QByteArray);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
+
+	void			show_clockError		(int);
 
 //	Somehow, these must be connected to the GUI
 private slots:

@@ -133,6 +133,7 @@ signals:
 	void		show_tii		(QByteArray);
 	void		show_Spectrum		(int);
 	void		show_snr		(int);
+	void		show_clockErr		(int);
 };
 #endif
 

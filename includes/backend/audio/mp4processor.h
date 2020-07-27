@@ -77,7 +77,8 @@ private:
         int16_t         aacFrames;
         int16_t         successFrames;
         int16_t         charSet;
-
+	int		goodFrames;
+	int		totalCorrections;
 	int16_t		bitRate;
 	RingBuffer<uint8_t>	*frameBuffer;
 	std::vector<uint8_t> frameBytes;
@@ -96,8 +97,9 @@ signals:
 	void		show_frameErrors		(int);
 	void		show_rsErrors			(int);
 	void		show_aacErrors			(int);
-	void		isStereo			(int);
+	void		isStereo			(bool);
 	void		newFrame			(int);
+	void		show_rsCorrections		(int);
 };
 
 #endif

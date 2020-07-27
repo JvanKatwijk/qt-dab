@@ -110,7 +110,7 @@ private:
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
-
+	bool			stereoSetting;
 	bool			normalScan;
 	int16_t			tii_delay;
 	int32_t			dataPort;
@@ -225,6 +225,7 @@ public slots:
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
+	void			show_rsCorrections	(int);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_scanButton	();

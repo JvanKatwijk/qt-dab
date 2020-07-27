@@ -309,6 +309,19 @@ For the RTLSDR is is gain, range depending on the device</string>
     <string>mute</string>
    </property>
   </widget>
+  <widget class="QLabel" name="stereoLabel">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>320</y>
+     <width>67</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

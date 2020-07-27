@@ -178,6 +178,7 @@ uint8_t	dabBand;
 	running. 		store (false);
 	scanning. 		store (false);
 	isSynced		= false;
+	stereoSetting		= false;
 
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -1394,19 +1395,16 @@ void	RadioInterface::showLabel	(QString s) {
 }
 
 void	RadioInterface::setStereo	(int s) {
-	(void)s;
-//	if (!running. load())
-//	   return;
-//	if (s) { 
-//	   stereoLabel -> 
-//	               setStyleSheet ("QLabel {background-color : green; color: white}");
-//	   stereoLabel -> setText ("ST");
-//	}
-//	else {
-//	   stereoLabel ->
-//	               setStyleSheet ("QLabel {background-color : red}");
-//	   stereoLabel -> setText ("");
-//	}
+	if (!running. load ())
+           return;
+        if (stereoSetting == s)
+           return;
+
+        techData. stereoLabel   -> setStyleSheet (s ?
+                         "QLabel {background-color: green; color : black}":
+                         "QLabel {background-color: red; color : black}");
+        techData. stereoLabel   -> setText (s ? "stereo" : "mono");
+        stereoSetting = s;
 }
 
 void	RadioInterface::show_tii (QByteArray data) {
@@ -1447,6 +1445,11 @@ void	RadioInterface::showQuality	(float q) {
 void	RadioInterface::showCorrelation	(int amount, int marker) {
 	if (running. load())
 	   my_correlationViewer. showCorrelation (amount, marker);
+}
+
+void	RadioInterface::show_rsCorrections (int e) {
+	if (running. load())
+	   techData. rsCorrections		-> display (e);
 }
 
 void	RadioInterface::showIndex (int ind) {
@@ -2056,6 +2059,12 @@ void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
 	presetSelector			-> setCurrentIndex (0);
+	techData. stereoLabel   -> setStyleSheet (
+                         "QLabel {background-color: white; color : black}");
+	techData. stereoLabel		-> setText ("");
+	stereoSetting                   = false;
+
+	techData. rsCorrections		-> display (0);
 	techData. frameError_display	-> setValue (0);
 	techData. rsError_display	-> setValue (0);
 	techData. aacError_display	-> setValue (0);

@@ -265,3 +265,8 @@ void	spectrumViewer:: showQuality (float q) {
 	   quality_display -> display (q);
 }
 
+void	spectrumViewer::show_clockErr	(int e) {
+	if (!myFrame -> isHidden ())
+	   clockError -> display (e);
+}
+

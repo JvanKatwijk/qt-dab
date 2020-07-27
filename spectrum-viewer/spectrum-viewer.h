@@ -55,6 +55,7 @@ public:
 	void		showSpectrum	(int32_t, int32_t);
 	void		showIQ		(int32_t);
 	void		showQuality	(float);
+	void		show_clockErr	(int);
 	void		setBitDepth	(int16_t);
 	void		show();
 	void		hide();

@@ -67,6 +67,13 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
         </widget>
        </item>
        <item>
+        <widget class="QLCDNumber" name="clockError">
+         <property name="toolTip">
+          <string>clock offset. The value indicates the number of samples too many or too few for 10 DAB frames (which is about 1 second).</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QSlider" name="scopeSlider">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zoom in/out&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

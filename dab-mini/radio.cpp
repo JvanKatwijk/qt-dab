@@ -123,7 +123,7 @@ QString	presetName;
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
-
+	stereoSetting		= false;
 	my_dabProcessor		= nullptr;
 //
 //	as with many of the buffers, picturesPath is not used
@@ -607,8 +607,18 @@ void	RadioInterface::showLabel	(QString s) {
 	}
 }
 
-void	RadioInterface::setStereo	(int s) {
-	(void)s;
+void	RadioInterface::setStereo	(bool s) {
+	if (!running. load ())
+           return;
+        if (stereoSetting == s)
+           return;
+
+        stereoLabel   -> setStyleSheet (s ?
+                         "QLabel {background-color: green; color : black}":
+                         "QLabel {background-color: red; color : black}");
+        stereoLabel   -> setText (s ? "stereo" : "mono");
+        stereoSetting = s;
+
 }
 
 void	RadioInterface::show_tii	(QByteArray data) {
@@ -625,6 +635,14 @@ void	RadioInterface::showIQ		(int amount) {
 
 void	RadioInterface::showQuality	(float q) {
 	(void)q;
+}
+
+void	RadioInterface::show_rsCorrections	(int c) {
+	(void)c;
+}
+
+void	RadioInterface::show_clockError	(int e) {
+	(void)e;
 }
 
 void	RadioInterface::showCorrelation	(int amount, int marker) {
@@ -883,6 +901,10 @@ void	RadioInterface::cleanScreen	() {
 	serviceLabel		-> setText ("");
 	dynamicLabel		-> setText ("");
 	presetSelector		-> setCurrentIndex (0);
+	stereoLabel	-> setStyleSheet (
+                         "QLabel {background-color: white; color : black}");
+        stereoLabel	-> setText ("");
+	stereoSetting		= false;
 }
 
 void	RadioInterface::start_audioService (const QString &serviceName) {
