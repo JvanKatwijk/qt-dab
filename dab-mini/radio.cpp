@@ -56,6 +56,9 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
+#ifdef	HAVE_PLUTO
+#include	"pluto-handler.h"
+#endif
 //
 //	approach: if a preset is called for, the "nextService"
 //	is set,
@@ -536,6 +539,16 @@ deviceHandler *inputDevice;
 	   return inputDevice;
 	} catch (int e) {}
 #endif
+#ifdef	HAVE_PLUTO
+	try {
+	   inputDevice = new plutoHandler (dabSettings,
+	                                   gainSelector,
+	                                   agcControl);
+	   gainSelector	-> show ();
+	   agcControl	-> show ();
+	   return inputDevice;
+	} catch (int e) {}
+#endif
 #ifdef	HAVE_HACKRF
 	try {
 	   inputDevice	= new hackrfHandler (dabSettings,
@@ -614,8 +627,8 @@ void	RadioInterface::setStereo	(bool s) {
            return;
 
         stereoLabel   -> setStyleSheet (s ?
-                         "QLabel {background-color: green; color : black}":
-                         "QLabel {background-color: red; color : black}");
+                         "QLabel {background-color: green; color : white}":
+                         "QLabel {background-color: red; color : white}");
         stereoLabel   -> setText (s ? "stereo" : "mono");
         stereoSetting = s;
 

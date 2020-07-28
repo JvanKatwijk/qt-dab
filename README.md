@@ -2,11 +2,18 @@
 
 Qt-DAB-3.5 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
 
+---------------------------------------------------------------------
+Support for Adalm Pluto!
+---------------------------------------------------------------------
+
+I just got the Pluto!! and could work on the support for the
+pluto on both the Qt-DAB and dabMini. Seems to work pretty well!
+
 ----------------------------------------------------------------------
 Differences 3.5 <-> 3.4
 -----------------------------------------------------------------------
 
-	a. Support for pluto devices - experimental though,
+	a. Support for pluto devices,
 	b. saving gain settings for different channels when configured,
 	c. support for saving detailed output of the scan,
 	d. clock error counter and rs corrections counter

@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2017 .. 2018
+ *    Copyright (C) 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the dabMini
+ *    This file is part of dabMini
  *
  *    dabMini is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -24,25 +24,16 @@
 #ifndef __PLUTO_HANDLER__
 #define	__PLUTO_HANDLER__
 
-#include        <QByteArray>
-#include	<QSpinBox>
-#include	<QCheckBox>
+#include	<QtNetwork>
 #include	<QSettings>
+#include        <QCheckBox>
+#include        <QSpinBox>
 #include	<atomic>
 #include	<iio.h>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 
-/* common RX and TX streaming params */
-struct stream_cfg {
-        long long	bw_hz; // Analog banwidth in Hz
-        long long	fs_hz; // Baseband sample rate in Hz
-        long long	lo_hz; // Local oscillator frequency in Hz
-        const char* rfport; // Port name
-	struct	iio_channel	*lo_channel;
-	struct	iio_channel	*gain_channel;
-};
 
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2100000
@@ -50,12 +41,12 @@ struct stream_cfg {
 #define	DIVIDER		1000
 #define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
 #endif
+
 class	plutoHandler: public deviceHandler {
 Q_OBJECT
 public:
-			plutoHandler		(QSettings *, 
-	                                         QSpinBox *,
-	                                         QCheckBox *);
+			plutoHandler		(QSettings *,
+	                                         QSpinBox *, QCheckBox *);
             		~plutoHandler		();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
@@ -67,20 +58,31 @@ public:
 
 private:
 	RingBuffer<std::complex<float>>	_I_Buffer;
+	QSettings		*plutoSettings;
 	QSpinBox		*gainControl;
 	QCheckBox		*agcControl;
+
 	void			run		();
-	QSettings		*plutoSettings;
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
+//      configuration items
+        int64_t                 bw_hz; // Analog banwidth in Hz
+        int64_t                 fs_hz; // Baseband sample rate in Hz
+        int64_t                 lo_hz; // Local oscillator frequency in Hz
+	bool			get_ad9361_stream_ch (struct iio_context *ctx,
+                                                      struct iio_device *dev,
+                                                      int chid,
+	                                              struct iio_channel **);
 
+        const char* rfport; // Port name
+        struct  iio_channel     *lo_channel;
+        struct  iio_channel     *gain_channel;
 	struct	iio_device	*rx;
 	struct	iio_context	*ctx;
 	struct	iio_channel	*rx0_i;
 	struct	iio_channel	*rx0_q;
 	struct	iio_buffer	*rxbuf;
-	struct	stream_cfg	rxcfg;
 	bool			connected;
 	std::complex<float>	convBuffer	[CONV_SIZE + 1];
 	int			convIndex;
@@ -89,9 +91,11 @@ private:
 
 	void			record_gainSettings	(int);
 	void			update_gainSettings	(int);
+	bool			save_gainSettings;
+//
 signals:
-	void			new_gainValue	(int);
-	void			new_agcValue	(bool);
+	void		new_gainValue		(int);
+	void		new_agcValue		(bool);
 private slots:
 	void		set_gainControl		(int);
 	void		set_agcControl		(int);

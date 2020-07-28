@@ -56,16 +56,16 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="usb_board_id_display">
+    <widget class="QLabel" name="contextName">
      <property name="text">
-      <string>usb board display</string>
+      <string>context name</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="serialNumber">
+    <widget class="QLabel" name="name_of_device">
      <property name="text">
-      <string>serial number</string>
+      <string>device name</string>
      </property>
     </widget>
    </item>

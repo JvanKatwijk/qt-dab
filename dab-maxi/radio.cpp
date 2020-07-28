@@ -1454,8 +1454,8 @@ void	RadioInterface::setStereo	(bool s) {
 	   return;
 	
 	techData. stereoLabel	-> setStyleSheet (s ?
-	   	         "QLabel {background-color: green; color : black}":
-	   	         "QLabel {background-color: red; color : black}");
+	   	         "QLabel {background-color: green; color : white}":
+	   	         "QLabel {background-color: red; color : white}");
 	techData. stereoLabel	-> setText (s ? "stereo" : "mono");
 	stereoSetting = s;
 }

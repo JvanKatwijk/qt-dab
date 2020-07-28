@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2017 .. 2018
+ *    Copyright (C) 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -37,15 +37,7 @@
 #include	"device-handler.h"
 #include	"ui_pluto-widget.h"
 
-/* common RX and TX streaming params */
-struct stream_cfg {
-        long long	bw_hz; // Analog banwidth in Hz
-        long long	fs_hz; // Baseband sample rate in Hz
-        long long	lo_hz; // Local oscillator frequency in Hz
-        const char* rfport; // Port name
-	struct	iio_channel	*lo_channel;
-	struct	iio_channel	*gain_channel;
-};
+class	xml_fileWriter;
 
 #ifndef	PLUTO_RATE
 #define	PLUTO_RATE	2100000
@@ -54,7 +46,6 @@ struct stream_cfg {
 #define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
 #endif
 
-class	xml_fileWriter;
 class	plutoHandler: public deviceHandler, public Ui_plutoWidget {
 Q_OBJECT
 public:
@@ -62,7 +53,6 @@ public:
             		~plutoHandler		();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
-
 	bool		restartReader		(int32_t);
 	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
@@ -78,24 +68,36 @@ public:
 private:
 	QFrame			myFrame;
 	RingBuffer<std::complex<float>>	_I_Buffer;
-	void			run		();
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
 	FILE			*xmlDumper;
-        xml_fileWriter		*xmlWriter;
-        bool			setup_xmlDump   ();
-        void			close_xmlDump   ();
-        std::atomic<bool>       dumping;
+	xml_fileWriter		*xmlWriter;
+	bool			setup_xmlDump	();
+	void			close_xmlDump	();
+	std::atomic<bool>	dumping;
 
+	void			run		();
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
+	bool			debugFlag;
+//      configuration items
+        int64_t                 bw_hz; // Analog banwidth in Hz
+        int64_t                 fs_hz; // Baseband sample rate in Hz
+        int64_t                 lo_hz; // Local oscillator frequency in Hz
+	bool			get_ad9361_stream_ch (struct iio_context *ctx,
+                                                      struct iio_device *dev,
+                                                      int chid,
+	                                              struct iio_channel **);
+
+        const char* rfport; // Port name
+        struct  iio_channel     *lo_channel;
+        struct  iio_channel     *gain_channel;
 	struct	iio_device	*rx;
 	struct	iio_context	*ctx;
 	struct	iio_channel	*rx0_i;
 	struct	iio_channel	*rx0_q;
 	struct	iio_buffer	*rxbuf;
-	struct	stream_cfg	rxcfg;
 	bool			connected;
 	std::complex<float>	convBuffer	[CONV_SIZE + 1];
 	int			convIndex;
@@ -105,9 +107,10 @@ private:
 	void			record_gainSettings	(int);
 	void			update_gainSettings	(int);
 	bool			save_gainSettings;
+//
 signals:
-	void			new_gainValue	(int);
-	void			new_agcValue	(bool);
+	void		new_gainValue		(int);
+	void		new_agcValue		(bool);
 private slots:
 	void		set_gainControl		(int);
 	void		set_agcControl		(int);

@@ -237,7 +237,6 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= pluto
-
 #
 CONFIG		+= faad
 #CONFIG		+= fdk-aac

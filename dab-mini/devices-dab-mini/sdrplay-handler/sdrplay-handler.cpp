@@ -174,6 +174,7 @@ ULONG APIkeyValue_length = 255;
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	int lnaState	= sdrplaySettings -> value ("lnaState", 3). toInt ();
 	lnaGainSetting	-> setValue (lnaState);
+	GRdBSelector	-> setRange (20, 59);
 	int GRdB	= sdrplaySettings -> value ("GRdB", 35). toInt ();
 	GRdBSelector		-> setValue (GRdB);
 	bool	agcMode	= sdrplaySettings -> value ("agcMode", 0). toInt () != 0;
