@@ -23,6 +23,7 @@
 #include	<QThread>
 #include	<QDebug>
 #include	"pluto-handler.h"
+#include	"ad9361.h"
 
 static	bool	debugFlag	= true;
 
@@ -286,6 +287,18 @@ struct iio_device *phys_dev	= nullptr;
 	                     i * (inVal / denominator) - mapTable_int [i];
         }
         convIndex       = 0;
+
+        float Fpass     = 1536000 / 2;
+        float Fstop     = Fpass * 1.2;
+        float wnomTX    = 1.6 * Fstop;  // dummy here
+        float wnomRX    = 1536000; // RF bandwidth of analog filter
+	int enabled;
+	ad9361_get_trx_fir_enable (phys_dev, &enabled);
+	if (enabled)
+	   ad9361_set_trx_fir_enable (phys_dev, 0);
+        int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
+                                                           Fpass, Fstop,
+                                                           wnomTX, wnomRX);
 	running. store (false);
 	connected	= true;
 }

@@ -51,7 +51,7 @@
       <string>Experimental interface for Adalm Pluto. No garantees!!</string>
      </property>
      <property name="text">
-      <string>experimental Pluto interface</string>
+      <string>Pluto interface</string>
      </property>
     </widget>
    </item>
@@ -71,6 +71,13 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QPushButton" name="filterButton">
+       <property name="text">
+        <string>filter</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="debugButton">
        <property name="text">

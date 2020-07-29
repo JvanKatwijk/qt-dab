@@ -75,13 +75,14 @@ private:
 	bool			setup_xmlDump	();
 	void			close_xmlDump	();
 	std::atomic<bool>	dumping;
-
+	bool			filterOn;
 	void			run		();
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
 	bool			debugFlag;
 //      configuration items
+	struct iio_device *phys_dev;
         int64_t                 bw_hz; // Analog banwidth in Hz
         int64_t                 fs_hz; // Baseband sample rate in Hz
         int64_t                 lo_hz; // Local oscillator frequency in Hz
@@ -115,6 +116,7 @@ private slots:
 	void		set_gainControl		(int);
 	void		set_agcControl		(int);
 	void		toggle_debugButton	();
+	void		set_filter		();
 	void		set_xmlDump		();
 };
 #endif

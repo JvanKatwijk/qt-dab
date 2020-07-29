@@ -534,7 +534,7 @@ pluto	{
 	HEADERS		+= ./qt-devices/pluto-handler/pluto-handler.h
 	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
 	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
-	LIBS		+= -liio
+	LIBS		+= -liio -lad9361
 }
 
 pluto_2	{

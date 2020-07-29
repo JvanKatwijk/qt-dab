@@ -30,6 +30,7 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 #include	"xml-filewriter.h"
+#include	"ad9361.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -68,7 +69,9 @@ bool	plutoHandler::
 	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 struct iio_channel *chn		= nullptr;
-struct iio_device *phys_dev	= nullptr;
+//struct iio_device *phys_dev	= nullptr;
+
+	phys_dev			= nullptr;
 
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -94,6 +97,8 @@ struct iio_device *phys_dev	= nullptr;
 	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
 	save_gainSettings =
 	             plutoSettings -> value ("save_gainSettings", 1). toInt () != 0;
+	filterOn	=
+	             plutoSettings -> value ("filter", 1). toInt () != 0;
 	plutoSettings	-> endGroup ();
 
 	if (debugFlag)
@@ -262,7 +267,7 @@ struct iio_device *phys_dev	= nullptr;
         iio_channel_enable (rx0_q);
 
         state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
-        rxbuf	= iio_device_create_buffer (rx, 1024*1024, false);
+        rxbuf	= iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
 	   if (debugFlag) 
 	      fprintf (stderr, "could not create RX buffer, fatal\n");
@@ -298,6 +303,8 @@ struct iio_device *phys_dev	= nullptr;
 	         this, SLOT (toggle_debugButton ()));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
+	connect (filterButton, SIGNAL (clicked ()),
+	         this, SLOT (set_filter ()));
 
 	connect (this, SIGNAL (new_gainValue (int)),
 	         gainControl, SLOT (setValue (int)));
@@ -315,6 +322,25 @@ struct iio_device *phys_dev	= nullptr;
 	dumping. store	(false);
 	xmlDumper	= nullptr;
 	running. store (false);
+//	int ret = ad9361_set_bb_rate_custom_filter_auto (phys_dev, 2100000);
+	if (filterOn) {
+           float Fpass     = 153600 / 2;
+           float Fstop     = Fpass * 1.1;
+           float wnomTX    = 1.6 * Fstop;  // dummy here
+           float wnomRX    = 1536000;	// RF bandwidth of analog filter
+	   int enabled;
+	   ad9361_get_trx_fir_enable (phys_dev, &enabled);
+	   if (enabled)
+	      ad9361_set_trx_fir_enable (phys_dev, 0);
+           int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
+                                                              Fpass, Fstop,
+                                                              wnomTX, wnomRX);
+           if (ret < 0)
+              fprintf (stderr, "mislukt, error code %d\n", ret);
+	   filterButton	-> setText ("filter off");
+	}
+	else
+	   filterButton -> setText ("filter on");
 	connected	= true;
 	state -> setText ("ready to go");
 }
@@ -327,6 +353,7 @@ struct iio_device *phys_dev	= nullptr;
 	plutoSettings	-> setValue ("pluto-gain", 
 	                              gainControl -> value ());
 	plutoSettings	-> setValue ("pluto-debug", debugFlag ? 1 : 0);
+	plutoSettings	-> setValue ("filter", filterOn ? 1 : 0);
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
@@ -444,16 +471,6 @@ int ret;
 	   update_gainSettings (freq /MHz (1));
 //
 //	settings are restored, now handle them
-	ret = iio_channel_attr_write_longlong (this -> gain_channel,
-	                                       "hardwaregain",
-	                                       gainControl -> value ());
-	if (ret < 0) {
-	   state -> setText ("error in gain setting");
-	   if (debugFlag) 
-	      fprintf (stderr,
-	               "could not set hardware gain to %d\n", 
-	                                         gainControl -> value ());
-	}
 	ret = iio_channel_attr_write (this -> gain_channel,
 	                              "gain_control_mode",
 	                              agcControl -> isChecked () ?
@@ -465,6 +482,18 @@ int ret;
 	else
 	   state -> setText (agcControl -> isChecked ()? "agc set" : "agc off");
 
+	if (!agcControl -> isChecked ()) {
+	   ret = iio_channel_attr_write_longlong (this -> gain_channel,
+	                                          "hardwaregain",
+	                                          gainControl -> value ());
+	   if (ret < 0) {
+	      state -> setText ("error in gain setting");
+	      if (debugFlag) 
+	         fprintf (stderr,
+	                  "could not set hardware gain to %d\n", 
+	                                         gainControl -> value ());
+	   }
+	}
 	if (agcControl -> isChecked ())
 	   gainControl -> hide ();
 	else
@@ -545,6 +574,26 @@ int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) {
 
 int32_t	plutoHandler::Samples () {
 	return _I_Buffer. GetRingBufferReadAvailable();
+}
+
+void	plutoHandler::set_filter () {
+float Fpass     = 1536000 / 2;
+float Fstop     = Fpass * 1.2;
+float wnomTX    = 1.6 * Fstop;  // dummy here
+float wnomRX    = 1536000; // RF bandwidth of analog filter
+int enabled, ret;
+
+	if (filterOn) {
+           ad9361_set_trx_fir_enable (phys_dev, 0);
+	   filterButton -> setText ("filter on");
+	}
+	else {
+           ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
+                                                          Fpass, Fstop,
+                                                          wnomTX, wnomRX);
+	   filterButton -> setText ("filter off");
+	}
+	filterOn = !filterOn;
 }
 
 void	plutoHandler::resetBuffer() {
