@@ -73,6 +73,11 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="filterButton">
+       <property name="toolTip">
+        <string>The filter button. The pluto has a possibility of loading a filter configuration and enabling (or
+disabling it). By default a filter configuration is loaded and enabled. The text on the button states what the effect of touching it is. If the button text reads &quot;filter on&quot;, it therefore means that the
+filter is disabled, but will be enabled by touching the button.</string>
+       </property>
        <property name="text">
         <string>filter</string>
        </property>

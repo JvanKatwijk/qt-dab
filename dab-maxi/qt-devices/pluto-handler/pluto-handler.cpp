@@ -30,7 +30,9 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 #include	"xml-filewriter.h"
-#include	"ad9361.h"
+//
+//	Description for the fir-filter is here:
+#include	"dabFilter.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -47,6 +49,34 @@ QString get_ch_name (QString type, int id) {
 QString result = type;
 	result. append (QString::number (id));
 	return result;
+}
+
+int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
+int ret = iio_device_attr_write_bool (dev,
+	                              "in_out_voltage_filter_fir_en",
+	                              !!enable);
+	if (ret < 0)
+	   ret = iio_channel_attr_write_bool (
+	                        iio_device_find_channel(dev, "out", false),
+	                        "voltage_filter_fir_en", !!enable);
+	return ret;
+}
+
+int	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
+bool value;
+
+	int ret = iio_device_attr_read_bool (dev,
+	                                     "in_out_voltage_filter_fir_en",
+	                                     &value);
+
+	if (ret < 0)
+	   ret = iio_channel_attr_read_bool (
+	                        iio_device_find_channel (dev, "out", false),
+	                        "voltage_filter_fir_en", &value);
+	if (!ret)
+	   *enable	= value;
+
+	return ret;
 }
 
 /* finds AD9361 streaming IIO channels */
@@ -97,8 +127,7 @@ struct iio_channel *chn		= nullptr;
 	             plutoSettings -> value ("pluto-debug", 0). toInt () == 1;
 	save_gainSettings =
 	             plutoSettings -> value ("save_gainSettings", 1). toInt () != 0;
-	filterOn	=
-	             plutoSettings -> value ("filter", 1). toInt () != 0;
+	filterOn	= true;
 	plutoSettings	-> endGroup ();
 
 	if (debugFlag)
@@ -322,25 +351,20 @@ struct iio_channel *chn		= nullptr;
 	dumping. store	(false);
 	xmlDumper	= nullptr;
 	running. store (false);
-//	int ret = ad9361_set_bb_rate_custom_filter_auto (phys_dev, 2100000);
-	if (filterOn) {
-           float Fpass     = 153600 / 2;
-           float Fstop     = Fpass * 1.1;
-           float wnomTX    = 1.6 * Fstop;  // dummy here
-           float wnomRX    = 1536000;	// RF bandwidth of analog filter
-	   int enabled;
-	   ad9361_get_trx_fir_enable (phys_dev, &enabled);
-	   if (enabled)
-	      ad9361_set_trx_fir_enable (phys_dev, 0);
-           int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
-                                                              Fpass, Fstop,
-                                                              wnomTX, wnomRX);
-           if (ret < 0)
-              fprintf (stderr, "mislukt, error code %d\n", ret);
-	   filterButton	-> setText ("filter off");
-	}
-	else
-	   filterButton -> setText ("filter on");
+	int enabled;
+//
+//	go for the filter
+	ad9361_get_trx_fir_enable (phys_dev, &enabled);
+	if (enabled)
+	   ad9361_set_trx_fir_enable (phys_dev, 0);
+	int ret = iio_device_attr_write_raw (phys_dev,
+	                                     "filter_fir_config",
+	                                     dabFilter, strlen (dabFilter));
+	if (ret < 0)
+	   fprintf (stderr, "filter mislukt");
+//	and enable it
+	filterButton	-> setText ("filter off");
+	ad9361_set_trx_fir_enable (phys_dev, 1);
 	connected	= true;
 	state -> setText ("ready to go");
 }
@@ -353,10 +377,10 @@ struct iio_channel *chn		= nullptr;
 	plutoSettings	-> setValue ("pluto-gain", 
 	                              gainControl -> value ());
 	plutoSettings	-> setValue ("pluto-debug", debugFlag ? 1 : 0);
-	plutoSettings	-> setValue ("filter", filterOn ? 1 : 0);
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
+	ad9361_set_trx_fir_enable (phys_dev, 0);
 	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
@@ -575,22 +599,16 @@ int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) {
 int32_t	plutoHandler::Samples () {
 	return _I_Buffer. GetRingBufferReadAvailable();
 }
-
+//
+//	we know that the coefficients are loaded
 void	plutoHandler::set_filter () {
-float Fpass     = 1536000 / 2;
-float Fstop     = Fpass * 1.2;
-float wnomTX    = 1.6 * Fstop;  // dummy here
-float wnomRX    = 1536000; // RF bandwidth of analog filter
-int enabled, ret;
-
+int ret;
 	if (filterOn) {
            ad9361_set_trx_fir_enable (phys_dev, 0);
 	   filterButton -> setText ("filter on");
 	}
 	else {
-           ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
-                                                          Fpass, Fstop,
-                                                          wnomTX, wnomRX);
+           ad9361_set_trx_fir_enable (phys_dev, 1);
 	   filterButton -> setText ("filter off");
 	}
 	filterOn = !filterOn;

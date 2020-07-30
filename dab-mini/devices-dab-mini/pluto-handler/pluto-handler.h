@@ -67,6 +67,8 @@ private:
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
 //      configuration items
+
+	struct iio_device	*phys_dev;
         int64_t                 bw_hz; // Analog banwidth in Hz
         int64_t                 fs_hz; // Baseband sample rate in Hz
         int64_t                 lo_hz; // Local oscillator frequency in Hz

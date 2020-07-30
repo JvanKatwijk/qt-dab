@@ -421,8 +421,9 @@ pluto   {
         DEFINES         += HAVE_PLUTO
         QT              += network
         INCLUDEPATH     += ./devices-dab-mini/pluto-handler
+        HEADERS         += ./devices-dab-mini/pluto-handler/dabFilter.h
         HEADERS         += ./devices-dab-mini/pluto-handler/pluto-handler.h
         SOURCES         += ./devices-dab-mini/pluto-handler/pluto-handler.cpp
-	LIBS            += -liio -lad9361
+	LIBS            += -liio 
 }
 

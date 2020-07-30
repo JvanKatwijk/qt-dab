@@ -302,7 +302,6 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
 CONFIG		+= pluto
-#CONFIG		+= pluto_2
 
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
@@ -354,7 +353,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= dabstick
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= pluto
-#	#CONFIG		+= pluto_2
 #	CONFIG		+= sdrplay-v3
 #	CONFIG		+= hackrf
 #	CONFIG		+= lime
@@ -372,7 +370,6 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= dabstick
 #	CONFIG		+= sdrplay-v2
 #	CONFIG		+= pluto
-##	#CONFIG		+= pluto_2
 #	CONFIG		+= sdrplay-v3
 #	CONFIG		+= hackrf
 #	CONFIG		+= lime
@@ -531,21 +528,13 @@ pluto	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
 	INCLUDEPATH	+= ./qt-devices/pluto-handler
+	HEADERS		+= ./qt-devices/pluto-handler/dabFilter.h
 	HEADERS		+= ./qt-devices/pluto-handler/pluto-handler.h
 	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
 	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
-	LIBS		+= -liio -lad9361
+	LIBS		+= -liio 
 }
 
-pluto_2	{
-	DEFINES		+= HAVE_PLUTO_2
-	QT		+= network
-	INCLUDEPATH	+= ./qt-devices/pluto-2
-	HEADERS		+= ./qt-devices/pluto-2/pluto-2.h
-	SOURCES		+= ./qt-devices/pluto-2/pluto-2.cpp
-	FORMS		+= ./qt-devices/pluto-2/pluto-2.ui
-	LIBS		+= -liio
-}
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network

@@ -23,7 +23,7 @@
 #include	<QThread>
 #include	<QDebug>
 #include	"pluto-handler.h"
-#include	"ad9361.h"
+#include	"dabFilter.h"
 
 static	bool	debugFlag	= true;
 
@@ -43,7 +43,35 @@ QString result = type;
 	result. append (QString::number (id));
 	return result;
 }
+//
+//	Functions from the libad9361, needed here
+int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
+int ret = iio_device_attr_write_bool (dev,
+	                              "in_out_voltage_filter_fir_en",
+	                              !!enable);
+	if (ret < 0)
+	   ret = iio_channel_attr_write_bool (
+	                        iio_device_find_channel(dev, "out", false),
+	                        "voltage_filter_fir_en", !!enable);
+	return ret;
+}
 
+int	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
+bool value;
+
+	int ret = iio_device_attr_read_bool (dev,
+	                                     "in_out_voltage_filter_fir_en",
+	                                     &value);
+
+	if (ret < 0)
+	   ret = iio_channel_attr_read_bool (
+	                        iio_device_find_channel (dev, "out", false),
+	                        "voltage_filter_fir_en", &value);
+	if (!ret)
+	   *enable	= value;
+
+	return ret;
+}
 /* finds AD9361 streaming IIO channels */
 bool	plutoHandler::
 	      get_ad9361_stream_ch (struct iio_context *ctx,
@@ -64,8 +92,8 @@ bool	plutoHandler::
 	                             QCheckBox	*agcControl):
 	                                  _I_Buffer (4 * 1024 * 1024) {
 struct iio_channel *chn		= nullptr;
-struct iio_device *phys_dev	= nullptr;
 
+	phys_dev			= nullptr;
 	plutoSettings			= s;
 	this	-> gainControl		= gainControl;
 	this	-> agcControl		= agcControl;
@@ -288,17 +316,19 @@ struct iio_device *phys_dev	= nullptr;
         }
         convIndex       = 0;
 
-        float Fpass     = 1536000 / 2;
-        float Fstop     = Fpass * 1.2;
-        float wnomTX    = 1.6 * Fstop;  // dummy here
-        float wnomRX    = 1536000; // RF bandwidth of analog filter
 	int enabled;
+//	go for the filter
 	ad9361_get_trx_fir_enable (phys_dev, &enabled);
 	if (enabled)
 	   ad9361_set_trx_fir_enable (phys_dev, 0);
-        int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev, PLUTO_RATE,
-                                                           Fpass, Fstop,
-                                                           wnomTX, wnomRX);
+	int ret = iio_device_attr_write_raw (phys_dev,
+	                                     "filter_fir_config",
+	                                     dabFilter, strlen (dabFilter));
+	if (ret < 0)
+	   fprintf (stderr, "filter mislukt");
+//	and enable it
+	ad9361_set_trx_fir_enable (phys_dev, 1);
+
 	running. store (false);
 	connected	= true;
 }
@@ -313,6 +343,7 @@ struct iio_device *phys_dev	= nullptr;
 	if (!connected)		// should not happen
 	   return;
 	stopReader();
+	ad9361_set_trx_fir_enable (phys_dev, 0);
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
 }
