@@ -1,13 +1,15 @@
 # Qt-DAB-3.5 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.5 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little brother dabMini and the other brother dab-2, all built on the same set of sources.
+Qt-DAB-3.5 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
 
 ---------------------------------------------------------------------
 Support for Adalm Pluto!
 ---------------------------------------------------------------------
 
 I just got the Pluto!! and could work on the support for the
-pluto on both the Qt-DAB and dabMini. Seems to work pretty well!
+pluto on both the Qt-DAB and dabMini. Support for the pluto is
+now standard part of the appImages for qt-dab and dabMini  as well
+as for the Windows executables, packed into the Windows installer.
 
 ----------------------------------------------------------------------
 Differences 3.5 <-> 3.4
@@ -116,33 +118,31 @@ Features
   * Both DAB bands supported): 
   	* VHF Band III (default),
    	* L-Band (obsolete now)
-  * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file)
-  * Spectrum view (incl. constellation diagram, correlation result, TII spectrum)
-  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars)
-  * Detailed information for other services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type)
-  * Automatic display of TII (Transmitter Identification Information) data when transmitted
-  * *Presets* for easy switching of programs in different ensembles
-(see section *Presets*)
-  * Dumping of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later
-  * Dumping the input in xml format (see section on xml format)
-  * Saving audio as uncompressed wave files
-  * Saving aac frames from DAB+ services for processing by e.g. VLC
-  * Saving the ensemble content (description of audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
-  * Scanning function (scan the band, show the results on the screen and save a
-detailed description of the services found in a file)
-  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888)
-  * TPEG output: when configured the data is sent to a specified ip address
+  * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file)m
+  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum,
+  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars),
+  * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type),
+  * Automatic display of TII (Transmitter Identification Information) data when transmitted,
+  * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
+  * Dumping of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files and playing them again later,
+  * Dumping the input in xml format (see section on xml format),
+  * Saving audio as uncompressed wave files,
+  * Saving aac frames from DAB+ services for processing by e.g. VLC,
+  * Saving the ensemble content description: audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
+  * Scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
+  * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
+  * TPEG output: when configured the data is sent to a specified ip address,
   * Supports inputs from 
-  	- SDRplay (both RSP I and RSP II), with separate entries for v2 and v3 library
-  	- Airspy, including Airspy mini,
+	- Adalm Pluto
    	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
+  	- Airspy, including Airspy mini,
+  	- SDRplay ( RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
-	- pluto (experimental),
 	- Soapy (experimental, Linux only), 
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files, and
-	- rtl_tcp servers
+	- rtl_tcp servers.
   * Clean interface to add other devices, see below.
 
 Not yet or partly implemented:
@@ -198,9 +198,6 @@ To ease selection of a service, a second pair of "-" and "+" buttons
 is available, now for selecting the previous resp. the next service 
 on the list.
 
-Different from previous versions is that now some information, previously
-shown on the "technical data" widget is now shown on the main widget.
-
 Some data on the selected service - if any - is to be found on
 a separate widget. This widget will show where the data for the
 service is to be found in the DAB frames, and how it is encoded.
@@ -215,8 +212,8 @@ scan and store a description of the ensemble are in that section.
 
 ![Qt-DAB scan result](/qt-dab-buttons.png?raw=true)
 
-During **scanning**, a separate window will be shown with the results
-of the scan as shown in the picture. Note that what is shown is a subset
+During *scanning*, a separate window will be shown with the results
+of the scan as shown in the picture. Note that what is shown is a *subset*
 of what will be recorded if a choice is made to save the output of the scan. 
 
 ![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
@@ -225,10 +222,11 @@ of what will be recorded if a choice is made to save the output of the scan.
 Presets for Qt-DAB, dabMini and dab-2
 ----------------------------------------------------------------------
 
-A **preset** selector is available to allow storing and selecting
+A *preset* selector is available to allow storing and selecting
 "favorit" services.
-Note that the services are encoded as "channel:serviceName" pair:
-it sometimes happens that a service appears in more than one ensemble
+Note that the services in the preset list are encoded as
+"channel:serviceName" pair: it sometimes happens that a
+service appears in more than one ensemble
 (as example the "Omroep West" service appears in channels 5B and 8A.)
 
 ![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
