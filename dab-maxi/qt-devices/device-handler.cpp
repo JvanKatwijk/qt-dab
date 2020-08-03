@@ -32,16 +32,16 @@
 	deviceHandler::~deviceHandler	() {
 }
 
-void	deviceHandler::adjustFreq	(int offset) {
-	(void)offset;
-}
-
 bool	deviceHandler::restartReader	(int32_t freq) {
 	(void)freq;
 	return true;
 }
 
 void	deviceHandler::stopReader	() {
+}
+
+void	deviceHandler::setVFOFrequency	(int freq) {
+	(void)freq;
 }
 
 int32_t	deviceHandler::getSamples	(std::complex<float> *v,

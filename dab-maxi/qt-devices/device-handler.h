@@ -37,10 +37,10 @@ class	deviceHandler: public QThread {
 public:
 			deviceHandler	();
 virtual			~deviceHandler	();
-virtual		int32_t	getVFOFrequency() {return 0;}
 virtual		bool	restartReader	(int32_t freq);
-virtual		void	adjustFreq	(int);
 virtual		void	stopReader	();
+virtual		void	setVFOFrequency	(int32_t);
+virtual		int32_t	getVFOFrequency() {return 0;}
 virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
 virtual		int32_t	Samples		();
 virtual		void	resetBuffer	();

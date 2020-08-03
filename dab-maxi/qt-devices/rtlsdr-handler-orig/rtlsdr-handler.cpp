@@ -271,12 +271,7 @@ char	manufac [256], product [256], serial [256];
 	if (Handle == nullptr) {	// nothing achieved earlier on
 	   return;
 	}
-	this -> rtlsdr_cancel_async (device);
-	while (!workerHandle -> isFinished()) 
-	   usleep (100);
-	_I_Buffer. FlushRingBuffer();
-	delete	workerHandle;
-	workerHandle = nullptr;
+	
 	stopReader	();
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	rtlsdrSettings	-> setValue ("externalGain",
@@ -304,12 +299,17 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 	return (int32_t)(this -> rtlsdr_get_center_freq (device));
 }
 //
+//
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
 int32_t	r;
 
+	if (workerHandle != nullptr)
+	   return true;
+
 	_I_Buffer. FlushRingBuffer();
-//	if (r < 0)
-//	   return false;
+	r = this -> rtlsdr_reset_buffer (device);
+	if (r < 0)
+	   return false;
 	(void)(this -> rtlsdr_set_center_freq (device, freq));
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
@@ -317,26 +317,23 @@ int32_t	r;
 	rtlsdr_set_agc_mode (device, agcControl -> isChecked () ? 1 : 0);
 	rtlsdr_set_tuner_gain (device,
 	                       gainControl -> currentText (). toInt ());
-	if (workerHandle == nullptr) {
-	   r = this -> rtlsdr_reset_buffer (device);
-	   workerHandle	= new dll_driver (this);
-	}
+	workerHandle	= new dll_driver (this);
 	return true;
 }
 
 void	rtlsdrHandler::stopReader () {
-//	if (workerHandle == nullptr)
-//	   return;
+	if (workerHandle == nullptr)
+	   return;
 	close_xmlDump ();
 	if (save_gainSettings)
 	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (device)) / MHz (1));
 
-//	this -> rtlsdr_cancel_async (device);
-//	while (!workerHandle -> isFinished()) 
-//	   usleep (100);
-//	_I_Buffer. FlushRingBuffer();
-//	delete	workerHandle;
-//	workerHandle = nullptr;
+	this -> rtlsdr_cancel_async (device);
+	while (!workerHandle -> isFinished()) 
+	   usleep (100);
+	_I_Buffer. FlushRingBuffer();
+	delete	workerHandle;
+	workerHandle = nullptr;
 }
 //
 //	when selecting  the gain from a table, use the table value

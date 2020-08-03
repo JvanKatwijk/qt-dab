@@ -1,6 +1,29 @@
 # Qt-DAB-3.5 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.5 is software for Windows, Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
+Qt-DAB-3.5 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
+
+--------------------------------------------------------------------
+Note on Windows
+--------------------------------------------------------------------
+
+While Windows is probably a very good OS, it seems my way of programming
+and Windows are incompatible. I develop under Linux and 
+cross-compile for windows. Linux development is simple: if something
+is wrong - and that happens from time to time - it is always relatively
+easy to detect what is wrong and fix it.
+
+The point is that things that run fine under Linux do not (always) run
+fine under Windows: same software, no changes. In case it does not run
+correctly under Windows, finding out what happens can be done, but finding
+the cause, i.e. why it happens is virtually impossible!
+
+One of the recurring issues is that the program crashes under Windows
+after some run time. Another is that running the scan function under
+windows, with a DABstick attached, crashes.
+
+So, while I keep on cross compiling the software for windows, do not
+expect the smooth behaviour as it is under Linux: for whatever reason
+it sometimes crashes.
 
 ---------------------------------------------------------------------
 Support for Adalm Pluto!
@@ -20,8 +43,7 @@ Differences 3.5 <-> 3.4
 	c. support for saving detailed output of the scan,
 	d. clock error counter and rs corrections counter
 	e. improved algorithm for frequency synchronization,
-	f. for windows both 32 and 64 bit installers,
-	g. also for dabMini an appImage (x64) is availablce.
+	f. also for dabMini an appImage (x64) is availablce.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -31,15 +53,12 @@ The directory qt-dab is now the home of *THREE* related, but
 different, versions of a DAB decoder:
 
  * first of all, there is Qt-DAB, a fairly complete DAB decoder,
-based on the idea that *the user is in full control* . For Qt-DAB
-an appImage is available for x64 Linux, and an installer is available
-for Windows. See the subdirectory *dab-maxi* for construction details.
+based on the idea that *the user is in full control* .
 
 ![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
 
  * second, the *little* sister is *dabMini*, built using the same set
 of sources, but with an absolutely minimal GUI.
-For Windows an installer in available and for x64 Linux an appImage.
 For installing an
 executable on an *RPI* the documentation contains a script with
 which all required libraries will be installed, the sources
@@ -295,8 +314,9 @@ For the *Band*, one will add/set a line
 Installation on Windows
 ------------------------------------------------------------------
 
+Read carefully what I have said on Windows!
+
 For windows *two*  **installers** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
-Since version 3.5 there are different installers for the 32 bit and the 64
 bit versions for both qt-dab-3.5 and dabMini.
 
 The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.

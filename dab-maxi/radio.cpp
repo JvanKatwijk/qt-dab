@@ -20,6 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<QCoreApplication>
 #include	<QSettings>
 #include	<QMessageBox>
 #include	<QFileDialog>
@@ -322,6 +323,10 @@ uint8_t	dabBand;
                  this, SLOT (handle_historySelect (const QString &)));
         connect (historyButton, SIGNAL (clicked ()),
                  this, SLOT (handle_historyButton ()));
+	connect (this, SIGNAL (set_newChannel (int)),
+                 channelSelector, SLOT (setCurrentIndex (int)));
+        connect (this, SIGNAL (set_newPresetIndex (int)),
+                 presetSelector, SLOT (setCurrentIndex (int)));
 
 //	restore some settings from previous incarnations
 	QString t       =
@@ -2078,7 +2083,7 @@ void    RadioInterface::handle_historySelect (const QString &s) {
 	   return;
 
         presetTimer. stop ();
-	presetSelector	-> setCurrentIndex (0);
+//	presetSelector	-> setCurrentIndex (0);
         localSelect (s);
 }
 
@@ -2121,22 +2126,18 @@ void	RadioInterface::localSelect (const QString &s) {
 //	The hard part is stopping the current service,
 //      selecting a new channel,
 //      waiting a while
+	stopChannel ();
 //      trying to start the selected service
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (selectChannel (const QString &)));
 	int k           = channelSelector -> findText (channel);
 	if (k != -1) {
-	   channelSelector -> setCurrentIndex (k);
+	   new_channelIndex (k);
 	}
 	else 
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Incorrect preset\n"));
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel (const QString &)));
 	if (k == -1)
 	   return;
 
-	stopChannel ();
 	nextService. valid = true;
         nextService. serviceName        = service;
         nextService. SId                = 0;
@@ -2154,7 +2155,7 @@ void	RadioInterface::localSelect (const QString &s) {
 
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
-	presetSelector	-> setCurrentIndex (0);
+//	presetSelector	-> setCurrentIndex (0);
 	channelTimer. stop ();
 	if (my_dabProcessor == nullptr) {
 	   fprintf (stderr, "Expert error 22\n");
@@ -2190,7 +2191,7 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	   return;
 	}
 	presetTimer.	stop();
-	presetSelector -> setCurrentIndex (0);
+//	presetSelector -> setCurrentIndex (0);
 	channelTimer.	stop ();
 	stopScanning	(false);
 	stopService 	();		// if any
@@ -2262,7 +2263,7 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
 void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
-	presetSelector			-> setCurrentIndex (0);
+	new_presetIndex (0);
 	techData. stereoLabel	-> setStyleSheet (
 	   	         "QLabel {background-color: red; color : black}");
 	techData. stereoLabel	-> setText ("");
@@ -2550,11 +2551,12 @@ void	RadioInterface::stopChannel	() {
 //	note framedumping - if any - was already stopped
 	presetTimer. stop ();
         channelTimer. stop ();
-	presetSelector		-> setCurrentIndex (0);
 //
 //	The service - if any - is stopped by halting the dabProcessor
-	hide_for_safety	();	// hide some buttons
+//	hide_for_safety	();	// hide some buttons
 	my_dabProcessor		-> stop ();
+	my_tiiViewer. clear();
+	QCoreApplication::processEvents ();
 //
 //	no processing left at this time
 	usleep (1000);		// may be handling pensing signals?
@@ -2563,15 +2565,18 @@ void	RadioInterface::stopChannel	() {
 
 //	all stopped, now look at the GUI elements
 	ficError_display	-> setValue (0);
-	my_tiiViewer. clear();
 //	the visual elements related to service and channel
 	setSynced	(false);
 	ensembleId	-> setText ("");
 	transmitter_coordinates	-> setText (" ");
-	serviceList. clear ();
-	model. clear ();
-	ensembleDisplay		-> setModel (&model);
-	cleanScreen	();
+//	if (serviceList. size () > 0) {
+	   serviceList. clear ();
+	   model. clear ();
+//	   ensembleDisplay	-> blockSignals (true);
+	   ensembleDisplay	-> setModel (&model);
+//	   ensembleDisplay	-> blockSignals (false);
+	   cleanScreen	();
+//	}
 }
 
 //
@@ -2606,21 +2611,17 @@ int     currentChannel  = channelSelector -> currentIndex ();
 	currentChannel ++;
 	if (currentChannel >= channelSelector -> count ())
 	   currentChannel = 0;
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (selectChannel (const QString &)));
-	channelSelector -> setCurrentIndex (currentChannel);
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel (const QString &)));
+	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
 }
 
 void	RadioInterface::handle_prevChannelButton () {
+int     currentChannel  = channelSelector -> currentIndex ();
+
 	if (!running. load ())
 	   return;
 
-int     currentChannel  = channelSelector -> currentIndex ();
 	presetTimer. stop ();
-	presetSelector -> setCurrentIndex (0);
 	if (my_dabProcessor == nullptr) 
 	   fprintf (stderr, "Expert error 25\n");
 	else
@@ -2629,11 +2630,7 @@ int     currentChannel  = channelSelector -> currentIndex ();
 	currentChannel --;
 	if (currentChannel < 0)
 	   currentChannel =  channelSelector -> count () - 1;
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (selectChannel (const QString &)));
-	channelSelector -> setCurrentIndex (currentChannel);
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel (const QString &)));
+	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
 }
 
@@ -2657,7 +2654,7 @@ void	RadioInterface::startScanning	() {
 
 	connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	         this, SLOT (No_Signal_Found ()));
-        presetSelector -> setCurrentIndex (0);
+	new_presetIndex (0);
         stopChannel     ();
 	int  cc      = channelSelector -> currentIndex ();
 	if (normalScan) {
@@ -2675,11 +2672,7 @@ void	RadioInterface::startScanning	() {
 	   scanDumpFile = nullptr;
 	my_dabProcessor	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
-        disconnect (channelSelector, SIGNAL (activated (const QString &)),
-                    this, SLOT (selectChannel (const QString &)));
-        channelSelector -> setCurrentIndex (cc);
-        connect (channelSelector, SIGNAL (activated (const QString &)),
-                 this, SLOT (selectChannel (const QString &)));
+	new_channelIndex (cc);
         scanButton      -> setText ("scanning");
         channelTimer. start (switchTime);
 
@@ -2736,11 +2729,7 @@ void	RadioInterface::No_Signal_Found () {
 	      if (cc >= channelSelector -> count ())
 	         cc = 0;
 //	To avoid reaction of the system on setting a different value:
-	      disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	                  this, SLOT (selectChannel (const QString &)));
-	      channelSelector -> setCurrentIndex (cc);
-	      connect (channelSelector, SIGNAL (activated (const QString &)),
-	               this, SLOT (selectChannel (const QString &)));
+	      new_channelIndex (cc);
 
 	      connect (my_dabProcessor, SIGNAL (No_Signal_Found (void)),
 	               this, SLOT (No_Signal_Found (void)));
@@ -2930,4 +2919,35 @@ FILE	*RadioInterface::findScanDump_FileName		() {
                                                 tr ("Text (*.txt)"));
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
+
+void	RadioInterface::new_presetIndex (int index) {
+	if (presetSelector -> currentIndex () == index)
+	   return;
+//	disconnect (presetSelector, SIGNAL (activated (const QString &)),
+//	            this, SLOT (handle_presetSelector (const QString &)));
+	presetSelector -> blockSignals (true);
+	set_newPresetIndex (index);
+        while (presetSelector -> currentIndex () != 0)
+           usleep (200);
+	presetSelector	-> blockSignals (false);
+//	presetSelector -> setCurrentIndex (index);
+//	connect (presetSelector, SIGNAL (activated (const QString &)),
+//	         this, SLOT (handle_presetSelector (const QString &)));
+}
+
+void	RadioInterface::new_channelIndex (int index) {
+	if (channelSelector -> currentIndex () == index)
+	   return;
+//	disconnect (channelSelector, SIGNAL (activated (const QString &)),
+//	            this, SLOT (selectChannel (const QString &)));
+	channelSelector	-> blockSignals (true);
+	set_newChannel (index);
+	while (channelSelector -> currentIndex () != index)
+	   usleep (2000);
+//	channelSelector -> setCurrentIndex (index);
+	channelSelector	-> blockSignals (false);
+//	connect (channelSelector, SIGNAL (activated (const QString &)),
+//	         this, SLOT (selectChannel (const QString &)));
+}
+
 

@@ -212,6 +212,15 @@ private:
 
 	void			hide_for_safety		();
 	void			show_for_safety		();
+//
+//	short hands
+        void                    new_presetIndex         (int);
+        void                    new_channelIndex        (int);
+
+signals:
+	void                    set_newChannel		(int);
+        void                    set_newPresetIndex      (int);
+
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);
