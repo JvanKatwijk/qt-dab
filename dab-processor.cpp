@@ -360,7 +360,7 @@ SyncOnPhase:
 	   goto Check_endofNULL;
 	}
 	catch (int e) {
-	   fprintf (stderr, "dabProcessor is stopping\n");
+//	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
 	inputDevice	-> stopReader ();

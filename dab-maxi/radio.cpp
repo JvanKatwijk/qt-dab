@@ -250,8 +250,6 @@ uint8_t	dabBand;
 	   epgPath = epgPath + "/";
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
-
-
 /*
  * Experimental:
  *	lots of people seem to want the scan to continue, rather than
@@ -826,6 +824,7 @@ const char *type;
 
 	QPixmap p;
 	p. loadFromData (data, type);
+
 	if (saveSlides) {
 	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
 	   checkDir (pict);
@@ -840,8 +839,10 @@ const char *type;
 	      fclose (x);
 	   }
 	}
+	
 	if (!currentService. is_audio)
 	   return;
+
 	if (motSlides == nullptr) {
 	   int w   = techData. pictureLabel -> width ();
            int h   = 2 * w / 3;

@@ -57,7 +57,7 @@ based on the idea that *the user is in full control* .
 
  * second, the *little* sister is *dabMini*, built using the same set
 of sources, but with an absolutely minimal GUI.
-For installing an
+To assist in creating and installing an
 executable on an *RPI* the documentation contains a script with
 which all required libraries will be installed, the sources
 will be downloaded and compiled into an executable.
@@ -103,7 +103,7 @@ Introduction
 
 For DX purposes, a separate **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
-written in a txt file, formatted for use with *LibreOffice Calc* and
+written in a text file, formatted for use with *LibreOffice Calc* and
 comparable programs. Note that in **Qt-DAB-3.5** the scan function
 is extended with an option to save detailed data in a text file,
 compatible with e.g. LibreOffice.
@@ -118,7 +118,7 @@ Documentation
 --------------------------------------------------------------------
 
 An extensive "user's guide" - in pdf format - can be found in the "docs"
-section of the source tree. The documentation contains a fomplete
+section of the source tree. The documentation contains a complete
 description of the widgets, of the values in the ".ini" file,
 on configuring for creating an executable (Linux), and even a
 complete description on how to add a device to the configuration.
