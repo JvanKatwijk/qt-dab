@@ -96,6 +96,7 @@ public:
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
+	bool		isActive;
 private:
 	QFrame		myFrame;
 	QSettings	*rtlsdrSettings;
@@ -116,7 +117,6 @@ private:
         bool            setup_iqDump		();
         void            close_iqDump		();
         std::atomic<bool> iq_dumping;
-
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;

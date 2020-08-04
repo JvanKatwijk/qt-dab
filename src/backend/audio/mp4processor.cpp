@@ -330,7 +330,8 @@ stream_parms    streamParameters;
 	                                      theAudioUnit,
 	                                      aac_frame_length);
 #endif
-	         emit isStereo (streamParameters. aacChannelMode);
+	         emit isStereo ((streamParameters. aacChannelMode == 1) ||
+	                        (streamParameters. psFlag == 1));
 	         if (tmp <= 0) 
 	            aacErrors ++;
 	         if (++aacFrames > 25) {

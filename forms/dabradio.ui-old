@@ -754,7 +754,7 @@ the reach of this receiver.</string>
          </widget>
         </item>
         <item row="3" column="6" colspan="2">
-         <widget class="smallPushButton" name="muteButton">
+         <widget class="smallPushButton" name="audioDumpButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -771,12 +771,12 @@ the reach of this receiver.</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>mute</string>
+           <string>audio dump</string>
           </property>
          </widget>
         </item>
         <item row="3" column="4" colspan="2">
-         <widget class="smallPushButton" name="notUsedButton">
+         <widget class="smallPushButton" name="frameDumpButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -793,7 +793,7 @@ the reach of this receiver.</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;Code for converting the aac headers to ones that can be understood by e.g. VLC is from Stefan Poeschel. All rights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>not used</string>
+           <string>frame dump</string>
           </property>
          </widget>
         </item>

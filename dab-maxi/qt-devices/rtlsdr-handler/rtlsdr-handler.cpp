@@ -76,7 +76,8 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
 
-	(void)theStick -> _I_Buffer.
+	if (theStick -> isActive)
+	   (void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
 }
 //
@@ -126,7 +127,7 @@ char	manufac [256], product [256], serial [256];
 	inputRate			= 2048000;
 	workerHandle		= nullptr;
 	const char *libraryString = "rtlsdr.dll";
-
+	isActive		= false;
 #ifdef	__MINGW32__
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == nullptr) {
@@ -307,9 +308,6 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
 int32_t	r;
 
-	_I_Buffer. FlushRingBuffer();
-//	if (r < 0)
-//	   return false;
 	(void)(this -> rtlsdr_set_center_freq (device, freq));
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
@@ -321,22 +319,16 @@ int32_t	r;
 	   r = this -> rtlsdr_reset_buffer (device);
 	   workerHandle	= new dll_driver (this);
 	}
+	isActive	= true;
 	return true;
 }
 
 void	rtlsdrHandler::stopReader () {
-//	if (workerHandle == nullptr)
-//	   return;
+	isActive	= false;
+	_I_Buffer. FlushRingBuffer();
 	close_xmlDump ();
 	if (save_gainSettings)
 	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (device)) / MHz (1));
-
-//	this -> rtlsdr_cancel_async (device);
-//	while (!workerHandle -> isFinished()) 
-//	   usleep (100);
-//	_I_Buffer. FlushRingBuffer();
-//	delete	workerHandle;
-//	workerHandle = nullptr;
 }
 //
 //	when selecting  the gain from a table, use the table value

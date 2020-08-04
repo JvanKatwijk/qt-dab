@@ -295,7 +295,7 @@ CONFIG		+= dabstick
 CONFIG		+= sdrplay
 CONFIG		+= hackrf
 CONFIG		+= pluto
-#CONFIG		+= lime
+CONFIG		+= lime
 
 #CONFIG		+= PC
 CONFIG		+= NO_SSE

@@ -291,11 +291,11 @@ uint8_t	dabBand;
 
 //	Where do we leave the audio out?
 	streamoutSelector	-> hide();
-#ifdef	TCP_STREAMER
-	soundOut		= new tcpStreamer	(20040);
-#elif	QT_AUDIO
-	soundOut		= new Qt_Audio();
-#else
+//#ifdef	TCP_STREAMER
+//	soundOut		= new tcpStreamer	(20040);
+//#elif	QT_AUDIO
+//	soundOut		= new Qt_Audio();
+//#else
 // just sound out
 	soundOut		= new audioSink		(latency);
 
@@ -311,7 +311,7 @@ uint8_t	dabBand;
 
 	if ((k == -1) || err)
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
-#endif
+//#endif
 //
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             =
@@ -395,9 +395,7 @@ uint8_t	dabBand;
 //	timer for muting
 	muteTimer. setSingleShot (true);
 	muting		= false;
-	muteDelay	= dabSettings -> value ("muteTime", 10). toInt ();
-//	connect (muteButtton, SIGNAL (timeout (void)),
-//	         this, SLOT (handle_muteButton ()));
+	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 
 	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
@@ -967,7 +965,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	   int16_t vec [amount];
 	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
 	      audioBuffer. getDataFromBuffer (vec, amount);
-	      soundOut	-> audioOut (vec, amount, rate);
+	      if (!muting)
+	         soundOut	-> audioOut (vec, amount, rate);
 	   }
 	}
 }
@@ -1704,9 +1703,9 @@ void	RadioInterface::stop_audioDumping	() {
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
 	audioDumper = nullptr;
-	colorButton (audioDumpButton, Qt::white, 10);
-	audioDumpButton	-> setText ("audio dump");
-	audioDumpButton	-> update ();
+	colorButton (techData. audioDumpButton, Qt::white, 10);
+	techData. audioDumpButton	-> setText ("audio dump");
+	techData. audioDumpButton	-> update ();
 }
 
 void	RadioInterface::start_audioDumping () {
@@ -1750,9 +1749,9 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
 
-	colorButton (audioDumpButton, Qt::red, 12);
-	audioDumpButton		-> setText ("WRITING");
-	audioDumpButton		-> update ();
+	colorButton (techData. audioDumpButton, Qt::red, 12);
+	techData. audioDumpButton		-> setText ("WRITING");
+	techData. audioDumpButton		-> update ();
 	soundOut		-> startDumping (audioDumper);
 }
 
@@ -1770,9 +1769,9 @@ void	RadioInterface::stop_frameDumping () {
 	if (frameDumper == nullptr)
 	   return;
 	fclose (frameDumper);
-	colorButton (frameDumpButton, Qt::white, 10);
-	frameDumpButton	-> setText ("frame dump");
-	frameDumpButton	-> update ();
+	colorButton (techData. frameDumpButton, Qt::white, 10);
+	techData. frameDumpButton	-> setText ("frame dump");
+	techData. frameDumpButton	-> update ();
 	frameDumper	= nullptr;
 }
 
@@ -1812,9 +1811,9 @@ QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
 
-	colorButton (frameDumpButton, Qt::red, 12);
-	frameDumpButton		-> setText ("recording");
-	frameDumpButton		-> update ();
+	colorButton (techData. frameDumpButton, Qt::red, 12);
+	techData. frameDumpButton		-> setText ("recording");
+	techData. frameDumpButton		-> update ();
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -1908,9 +1907,9 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_prevChannelButton (void)));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_sourcedumpButton (void)));
-	connect (audioDumpButton, SIGNAL (clicked (void)),
+	connect (techData. audioDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_audiodumpButton (void)));
-	connect (frameDumpButton, SIGNAL (clicked (void)),
+	connect (techData. frameDumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
 	connect (show_tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_tiiButton (void)));
@@ -1918,6 +1917,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_correlationButton (void)));
 	connect (show_spectrumButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_spectrumButton (void)));
+	connect (muteButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_muteButton (void)));
 }
 
 void	RadioInterface::disconnectGUI() {
@@ -1943,9 +1944,9 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_prevChannelButton (void)));
 	disconnect (dumpButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_sourcedumpButton (void)));
-	disconnect (audioDumpButton, SIGNAL (clicked (void)),
+	disconnect (techData. audioDumpButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_audiodumpButton (void)));
-	disconnect (frameDumpButton, SIGNAL (clicked (void)),
+	disconnect (techData. frameDumpButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_framedumpButton (void)));
 	disconnect (show_tiiButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_tiiButton (void)));
@@ -1953,9 +1954,9 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_correlationButton (void)));
 	disconnect (show_spectrumButton, SIGNAL (clicked (void)),
 	            this, SLOT (handle_spectrumButton (void)));
+	disconnect (muteButton, SIGNAL (clicked (void)),
+	            this, SLOT (handle_muteButton (void)));
 }
-
-//
 //
 #include <QCloseEvent>
 void RadioInterface::closeEvent (QCloseEvent *event) {
@@ -2673,6 +2674,8 @@ void	RadioInterface::startScanning	() {
 	my_dabProcessor	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
 	new_channelIndex (cc);
+	dynamicLabel	-> setText ("scanning channel " +
+	                                     channelSelector -> currentText ());
         scanButton      -> setText ("scanning");
         channelTimer. start (switchTime);
 
@@ -2699,6 +2702,7 @@ void	RadioInterface::stopScanning	(bool dump) {
 	}
 
 //	theTable. hide ();
+	dynamicLabel	-> setText ("Scan ended");
         scanButton      -> setText ("scan");
 }
 
@@ -2735,6 +2739,9 @@ void	RadioInterface::No_Signal_Found () {
 	               this, SLOT (No_Signal_Found (void)));
 	      connect (&channelTimer, SIGNAL (timeout (void)),
                        this, SLOT (channel_timeOut (void)));
+
+	      dynamicLabel -> setText ("scanning channel " +
+	                                  channelSelector -> currentText ());
 	      startChannel (channelSelector -> currentText ());
 	      channelTimer. start (switchTime);
 	   }
@@ -2856,8 +2863,8 @@ std::vector<serviceId> k;
 //	dabProcessor, we hide some buttons
 void	RadioInterface::hide_for_safety () {
         dumpButton		->	hide ();
-        frameDumpButton		->	hide ();
-	audioDumpButton		->	hide ();
+        techData. frameDumpButton	->	hide ();
+	techData. audioDumpButton	->	hide ();
 	prevServiceButton	->	hide ();
         nextServiceButton	->	hide ();
 	contentButton		->	hide ();
@@ -2865,25 +2872,29 @@ void	RadioInterface::hide_for_safety () {
 
 void	RadioInterface::show_for_safety () {
         dumpButton		->	show ();
-        frameDumpButton		->	show ();
-	audioDumpButton		->	show ();
+        techData. frameDumpButton	->	show ();
+	techData. audioDumpButton	->	show ();
 	prevServiceButton	->	show ();
         nextServiceButton	->	show ();
 	contentButton		->	show ();
 }
 
 void	RadioInterface::handle_muteButton	() {
-	if (muteTimer. isActive ()) {
+	if (muting) {
 	   muteTimer. stop ();
 	   disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (handle_muteButton ()));
+	   muteButton	-> setText ("mute");
+	   muteButton	-> update ();
 	   muting = false;
 	   return;
 	}
 
 	connect (&muteTimer, SIGNAL (timeout (void)),
-                 this, SLOT (updateTimeDisplay (void)));
-        muteTimer. start (muteDelay * 1000);
+                 this, SLOT (handle_muteButton (void)));
+        muteTimer. start (muteDelay * 1000 * 60);
+	muteButton	-> setText ("MUTING");
+	muteButton	-> update ();
 	muting = true;
 }
 
@@ -2923,31 +2934,23 @@ FILE	*RadioInterface::findScanDump_FileName		() {
 void	RadioInterface::new_presetIndex (int index) {
 	if (presetSelector -> currentIndex () == index)
 	   return;
-//	disconnect (presetSelector, SIGNAL (activated (const QString &)),
-//	            this, SLOT (handle_presetSelector (const QString &)));
 	presetSelector -> blockSignals (true);
 	set_newPresetIndex (index);
         while (presetSelector -> currentIndex () != 0)
            usleep (200);
 	presetSelector	-> blockSignals (false);
 //	presetSelector -> setCurrentIndex (index);
-//	connect (presetSelector, SIGNAL (activated (const QString &)),
-//	         this, SLOT (handle_presetSelector (const QString &)));
 }
 
 void	RadioInterface::new_channelIndex (int index) {
 	if (channelSelector -> currentIndex () == index)
 	   return;
-//	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-//	            this, SLOT (selectChannel (const QString &)));
 	channelSelector	-> blockSignals (true);
 	set_newChannel (index);
 	while (channelSelector -> currentIndex () != index)
 	   usleep (2000);
 //	channelSelector -> setCurrentIndex (index);
 	channelSelector	-> blockSignals (false);
-//	connect (channelSelector, SIGNAL (activated (const QString &)),
-//	         this, SLOT (selectChannel (const QString &)));
 }
 
 

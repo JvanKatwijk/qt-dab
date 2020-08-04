@@ -364,7 +364,9 @@ struct iio_channel *chn		= nullptr;
 	   fprintf (stderr, "filter mislukt");
 //	and enable it
 	filterButton	-> setText ("filter off");
-	ad9361_set_trx_fir_enable (phys_dev, 1);
+	ret = ad9361_set_trx_fir_enable (phys_dev, 1);
+	if (ret < 0)
+	   fprintf (stderr, "enabling filter failed\n");
 	connected	= true;
 	state -> setText ("ready to go");
 }

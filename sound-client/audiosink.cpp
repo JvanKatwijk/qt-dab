@@ -2,27 +2,23 @@
 /*
  *    Copyright (C) 2011, 2012, 2013
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
- *    This file is part of the SDR-J.
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
+ *    This file is part of Qt-DAB
  *
- *    SDR-J is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    SDR-J is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with SDR-J; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include	"audiosink.h"
@@ -40,7 +36,6 @@ int32_t	i;
 	_O_Buffer		= new RingBuffer<float>(2 * 32768);
 	portAudio		= false;
 	writerRunning		= false;
-
 	if (Pa_Initialize () != paNoError) {
 	   fprintf (stderr, "Initializing Pa for output failed\n");
 	   return;
@@ -201,11 +196,11 @@ uint32_t	i;
 //
 //	putSample output comes from the FM receiver
 
-int32_t	audioSink::putSample	(DSPCOMPLEX v) {
+int32_t	audioSink::putSample	(std::complex<float> v) {
 	return putSamples (&v, 1);
 }
 
-int32_t	audioSink::putSamples		(DSPCOMPLEX *V, int32_t n) {
+int32_t	audioSink::putSamples		(std::complex<float> *V, int32_t n) {
 float	*buffer = (float *)alloca (2 * n * sizeof (float));
 int32_t	i;
 int32_t	available = _O_Buffer -> GetRingBufferWriteAvailable ();

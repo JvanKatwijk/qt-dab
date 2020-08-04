@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>228</width>
-    <height>539</height>
+    <width>229</width>
+    <height>570</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,24 @@
        </property>
        <property name="text">
         <string>programName</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="smallPushButton" name="frameDumpButton">
+       <property name="text">
+        <string>frame dump</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="audioDumpButton">
+       <property name="text">
+        <string>dump audio</string>
        </property>
       </widget>
      </item>
@@ -326,16 +344,6 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="pictureLabel">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slideshow (SLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label_7">
@@ -365,8 +373,25 @@
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="QLabel" name="pictureLabel">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slideshow (SLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">smallpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
