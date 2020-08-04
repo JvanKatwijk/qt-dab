@@ -17,13 +17,11 @@ fine under Windows: same software, no changes. In case it does not run
 correctly under Windows, finding out what happens can be done, but finding
 the cause, i.e. why it happens is virtually impossible!
 
-One of the recurring issues is that the program crashes under Windows
-after some run time. Another is that running the scan function under
-windows, with a DABstick attached, crashes.
+So, yes, I am aware of the fact that sometime things do not go under Windows
+as under Linux.
 
 So, while I keep on cross compiling the software for windows, do not
-expect the smooth behaviour as it is under Linux: for whatever reason
-it sometimes crashes.
+always expect the smooth behaviour as it is under Linux.
 
 ---------------------------------------------------------------------
 Support for Adalm Pluto!
