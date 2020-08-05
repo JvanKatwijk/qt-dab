@@ -33,7 +33,7 @@ now standard part of the appImages for qt-dab and dabMini  as well
 as for the Windows executables, packed into the Windows installer.
 
 ----------------------------------------------------------------------
-Differences 3.5 <-> 3.4
+Differences 3.5.2 <-> 3.4
 -----------------------------------------------------------------------
 
 	a. Support for pluto devices,
@@ -41,7 +41,8 @@ Differences 3.5 <-> 3.4
 	c. support for saving detailed output of the scan,
 	d. clock error counter and rs corrections counter
 	e. improved algorithm for frequency synchronization,
-	f. also for dabMini an appImage (x64) is availablce.
+	f. added a "mute" button (moved 2 buttons to technical data)
+	g. also for dabMini an appImage (x64) is availablce.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
