@@ -109,7 +109,7 @@ int32_t	i;
 
 	uint32_t segmentSize    = ((motVector [0] & 0x1F) << 8) |
 	                                motVector [1];
-	
+
 	switch (groupType) {
 	   case 3:
 	      if (segmentNumber == 0) {
@@ -128,8 +128,19 @@ int32_t	i;
 
 	   case 4: {
 	         motObject *h = getHandle (transportId);
-	         if (h == nullptr)
+	         if ((h == nullptr) && (segmentNumber != 0))
 	            break;
+	         if ((h == nullptr) && (segmentNumber == 0)) {
+	            h = new motObject (myRadioInterface,
+                                       false,      // not within a directory
+                                       transportId,
+                                       &motVector [2],
+                                       segmentSize,
+                                       lastFlag);
+                    setHandle (h, transportId);
+	            break;
+	         }
+
 	         h -> addBodySegment (&motVector [2],
 	                              segmentNumber,
 	                              segmentSize,

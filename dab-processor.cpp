@@ -143,8 +143,8 @@ int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
 
-	inputDevice	-> resetBuffer ();
-	inputDevice	-> restartReader (frequency);
+//	inputDevice	-> resetBuffer ();
+//	inputDevice	-> restartReader (frequency);
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
@@ -363,7 +363,7 @@ SyncOnPhase:
 //	   fprintf (stderr, "dabProcessor is stopping\n");
 	   ;
 	}
-	inputDevice	-> stopReader ();
+//	inputDevice	-> stopReader ();
 }
 //
 //
@@ -440,9 +440,9 @@ void	dabProcessor::reset_Services	() {
 	   my_mscHandler. reset_Channel ();
 }
 
-void	dabProcessor::stopService (const QString &s) {
+void	dabProcessor::stopService (descriptorType *d) {
 	if (!scanMode)
-	   my_mscHandler. stopService (s);
+	   my_mscHandler. stopService (d);
 }
 
 void    dabProcessor::set_audioChannel (audiodata *d,

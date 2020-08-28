@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-3.5</string>
+   <string>Qt-DAB-3.5.3</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
@@ -728,7 +728,7 @@ the reach of this receiver.</string>
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>xx</string>
+           <string>list</string>
           </property>
          </widget>
         </item>
@@ -768,7 +768,7 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>mute the sound with this button. The default period is 2 minutes, can be set in the &quot;.ini&quot; file</string>
           </property>
           <property name="text">
            <string>mute</string>
@@ -790,7 +790,7 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;Code for converting the aac headers to ones that can be understood by e.g. VLC is from Stefan Poeschel. All rights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>This button is not used in this version</string>
           </property>
           <property name="text">
            <string>not used</string>

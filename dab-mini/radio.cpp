@@ -1070,6 +1070,7 @@ void	RadioInterface::setPresetStation () {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
+	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety	();
 }
@@ -1090,6 +1091,7 @@ void	RadioInterface::stopChannel	() {
 //
 //	The service(s) - if any - is stopped by halting the dabProcessor
 	my_dabProcessor		-> stop ();
+	inputDevice		-> stopReader ();
 	usleep (1000);
 	currentService. valid	= false;
 	nextService. valid	= false;

@@ -116,7 +116,6 @@ private:
 	dabService		currentService;
 	dabService		nextService;
 
-
 	bool			normalScan;
 	int16_t			tii_delay;
 	int32_t			dataPort;
@@ -151,6 +150,8 @@ private:
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
 
+	void			set_Colors		();
+	void			set_channelButton	(int);
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
 	bool			isMember (std::vector<serviceId>,
@@ -183,7 +184,7 @@ private:
 	deviceHandler		*setDevice		(const QString &);
 	historyHandler		*my_history;
 //
-	void			start_audioService	(const QString &);
+	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
 	FILE			*findScanDump_FileName	();
@@ -209,7 +210,9 @@ private:
                                                                  QString);
 	void			show_MOTlabel		(QByteArray, int,
                                                                   QString);
+enum direction {FORWARD, BACKWARDS};
 
+	void			handle_serviceButton	(direction);
 	void			hide_for_safety		();
 	void			show_for_safety		();
 //

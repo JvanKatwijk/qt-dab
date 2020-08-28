@@ -81,7 +81,7 @@ public:
 //
 //	for the mscHandler
 	void		reset_Services		();
-	void		stopService		(const QString &);
+	void		stopService		(descriptorType *);
 	void		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,

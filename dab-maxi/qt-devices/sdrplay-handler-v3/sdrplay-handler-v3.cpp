@@ -98,8 +98,6 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
-	save_gainSettings	=
-	       sdrplaySettings -> value ("save_gainSettings", 1). toInt () != 0;
 	sdrplaySettings	-> endGroup	();
 
 	if (agcMode) {
@@ -171,38 +169,17 @@ int32_t	sdrplayHandler_v3::getVFOFrequency() {
 }
 
 bool	sdrplayHandler_v3::restartReader	(int32_t newFreq) {
-int	GRdB	= GRdBSelector -> value ();
-int	lnaState	= lnaGainSetting	-> value ();
-int	agc	= agcControl -> isChecked () ? 1 : 0;
 restartRequest r (newFreq);
 
         if (receiverRuns. load ())
            return true;
         vfoFrequency    = newFreq;
-	if (save_gainSettings) {
-	   update_gainSettings (vfoFrequency / MHz (1));
-	   GRdB		= GRdBSelector -> value ();
-	   lnaState	= lnaGainSetting	-> value ();
-	   agc		= agcControl	-> isChecked () ? 1 : 0;
-
-	   GRdBRequest req_1 (GRdB);
-           messageHandler (&req_1);
-
-	   lnaRequest req_2 (lnaState);
-           messageHandler (&req_2);
-           lnaGRdBDisplay  -> display (get_lnaGRdB (hwVersion, lnaState));
-
-	   agcRequest req_3 (agcControl -> isChecked (), 30);
-           messageHandler (&req_3);
-	}
-	messageHandler (&r);
+	return messageHandler (&r);
 }
 
 void	sdrplayHandler_v3::stopReader	() {
 stopRequest r;
 	close_xmlDump ();
-	if (save_gainSettings)
-	   record_gainSettings (vfoFrequency / MHz (1));
         if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -261,6 +238,7 @@ void	sdrplayHandler_v3::set_apiVersion (float version) {
 
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
+
 	if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -268,6 +246,7 @@ GRdBRequest r (GRdB);
 
 void	sdrplayHandler_v3::set_lnagainReduction (int lnaState) {
 lnaRequest r (lnaState);
+
 	if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -295,8 +274,7 @@ ppmRequest r (ppm);
 }
 
 void	sdrplayHandler_v3::set_antennaSelect	(const QString &s) {
-antennaRequest r (s == "Antenna A" ? 'A' : 'B');
-        messageHandler (&r);
+//	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' : 'B'));
 }
 
 void	sdrplayHandler_v3::set_xmlDump () {
@@ -394,11 +372,11 @@ void	sdrplayHandler_v3::close_xmlDump () {
 
 bool    sdrplayHandler_v3::messageHandler (generalCommand *r) {
         server_queue. push (r);
-        serverjobs. release (1);
-        while (!r -> waiter. tryAcquire (1, 1000))
-           if (!threadRuns. load ())
-              return false;
-        return true;
+	serverjobs. release (1);
+	while (!r -> waiter. tryAcquire (1, 1000))
+	   if (!threadRuns. load ())
+	      return false;
+	return true;
 }
 
 static
@@ -664,12 +642,15 @@ uint32_t                ndev;
 	set_antennaSelect_signal (has_antennaSelect);
 	threadRuns. store (true);	// it seems we can do some work
 	successFlag	= true;
+
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
 	   if (!threadRuns. load ())
 	      goto normal_exit;
-//
+
 //	here we could assert that the server_queue is not empty
+//	Note that we emulate synchronous calling, so
+//	we signal the caller when we are done
 	   switch (server_queue. front () -> cmd) {
 	      case RESTART_REQUEST: {
 	         restartRequest *p = (restartRequest *)(server_queue. front ());
@@ -1030,62 +1011,3 @@ bool	sdrplayHandler_v3::isHidden	() {
 	return myFrame. isHidden ();
 }
 
-//Experimental
-/////////////////////////////////////////////////////////////////////////
-//
-//	the frequency (the MHz component) is used as key
-//
-void	sdrplayHandler_v3::record_gainSettings (int freq) {
-int	GRdB		= GRdBSelector		-> value ();
-int	lnaState	= lnaGainSetting	-> value ();
-int	agc		= agcControl		-> isChecked () == 1;
-QString theValue	= QString::number (GRdB) + ":";
-
-	theValue. append (QString::number (lnaState));
-	theValue. append (":");
-	theValue. append (QString::number (agc));
-
-	sdrplaySettings         -> beginGroup ("sdrplaySettings_v3");
-	sdrplaySettings		-> setValue (QString::number (freq), theValue);
-	sdrplaySettings		-> endGroup ();
-}
-
-void	sdrplayHandler_v3::update_gainSettings (int freq) {
-int	GRdB;
-int	lnaState;
-int	agc;
-QString	theValue	= "";
-
-	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
-	theValue	= sdrplaySettings -> value (QString::number (freq), ""). toString ();
-	sdrplaySettings	-> endGroup ();
-
-	if (theValue == QString (""))
-	   return;		// or set some defaults here
-
-	QStringList result	= theValue. split (":");
-	if (result. size () < 3) 	// should not happen
-	   return;
-
-	GRdB		= result. at (0). toInt ();
-	lnaState	= result. at (1). toInt ();
-	agc		= result. at (2). toInt ();
-
-	fprintf (stderr, "for %d values are %d %d %d\n",
-	              freq, GRdB, lnaState, agc);
-	GRdBSelector	-> blockSignals (true);
-	new_GRdBValue (GRdB);
-	while (GRdBSelector -> value () != GRdB)
-	   usleep (1000);
-	GRdBSelector	-> blockSignals (false);
-	lnaGainSetting	-> blockSignals (true);
-	new_lnaValue (lnaState);
-	while (lnaGainSetting -> value () != lnaState)
-	   usleep (1000);
-	lnaGainSetting	-> blockSignals (false);
-	agcControl	-> blockSignals (true);
-	new_agcSetting (agc == 1);
-	while (agcControl -> isChecked () != (agc == 1))
-	   usleep (1000);
-	agcControl	-> blockSignals (false);
-}

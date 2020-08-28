@@ -33,6 +33,7 @@ QString	colorString	= "black";
 QColor	displayColor;
 QColor	gridColor;
 QColor	curveColor;
+bool	brush;
 
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= dabSettings;
@@ -43,10 +44,11 @@ QColor	curveColor;
 	colorString			= dabSettings -> value ("gridcolor",
 	                                                 "white"). toString();
 	gridColor			= QColor (colorString);
-	colorString		        = dabSettings -> value ("gridcolor",
+	colorString		        = dabSettings -> value ("curvecolor",
 	                                                 "white"). toString();
 	curveColor			= QColor (colorString);
 
+	brush				= dabSettings -> value ("brush", 1). toInt () == 1;
 	displaySize			= dabSettings -> value ("displaySize",
 	                                                   1024).toInt();
 	if ((displaySize & (displaySize - 1)) != 0)
@@ -88,7 +90,8 @@ QColor	curveColor;
 	spectrumCurve	-> setBaseline	(get_db (0));
 	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	spectrumCurve	-> setBrush (*ourBrush);
+	if (brush)
+	   spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);
 	
 	Marker		= new QwtPlotMarker();

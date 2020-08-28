@@ -83,6 +83,8 @@ int32_t	i;
 	avgSignalValue			= 0;
 	avgLocalValue			= 0;
 	counter				= 0;
+	sampleCounter			= 0;
+	nrFrames			= 0;
 	dataBuffer. resize (BUFSIZE);
 	memset (dataBuffer. data (), 0, BUFSIZE * sizeof (float));
 	bufferP				= 0;
@@ -101,6 +103,8 @@ int32_t	i;
 
 	connect (this, SIGNAL (show_snr (float)),
 	         myRadioInterface, SLOT (show_snr (float)));
+	connect (this, SIGNAL (show_clockErr (int)),
+	         mr, SLOT (show_clockError (int)));
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (set_freqOffset (int)),
@@ -122,21 +126,18 @@ int32_t	i;
 //	the basic interpretation is using an explicit state-based
 //	approach
 
-static int frameCount = 0;
 int	dabProcessor::addSymbol	(std::complex<float> *buffer, int count) {
 int	retValue	= GO_ON;		// default
-
-static	int dabCounter	= 0;
 
 	for (int i = 0; i < count; i ++) {
 	   std::complex<float> symbol = buffer [i];
 	   avgSignalValue	= 0.9999 * avgSignalValue +
-	                     0.0001 * jan_abs (symbol);
+	                                   0.0001 * jan_abs (symbol);
 	   dataBuffer [bufferP] = jan_abs (symbol);
 	   avgLocalValue	+= jan_abs (symbol) -
 	                      dataBuffer [(bufferP - 50) & BUFMASK];
 	   bufferP		= (bufferP + 1) & BUFMASK;
-	   dabCounter ++;
+	   sampleCounter ++;
 
 	   if (localCounter < bufferSize)
 	      localBuffer [localCounter ++] = symbol;
@@ -213,6 +214,8 @@ static	int dabCounter	= 0;
 	            dipValue		= 0;
 	            processorMode  	= END_OF_DIP;
 	            ofdmBufferIndex	= 0;
+	            totalSamples	= 0;
+	            frameCount		= 0;
 	         }
 	         else 
 	         if (dipCnt > T_null + 100) {	// no luck here
@@ -232,21 +235,22 @@ static	int dabCounter	= 0;
 	      case END_OF_DIP:
 	         ofdmBuffer [ofdmBufferIndex ++] = symbol;
 	         if (ofdmBufferIndex >= T_u) {
-	            int startIndex = phaseSynchronizer. findIndex (ofdmBuffer, 3);
+	            int startIndex =
+	                  phaseSynchronizer. findIndex (ofdmBuffer, 3);
 	            if (startIndex < 0) {		// no sync
 	               if (attempts > 5) {
 	                  emit No_Signal_Found ();
-                       processorMode       = START;
+                          processorMode       = START;
 	                  break;
-                    }
+                       }
 	               else {
 	                  processorMode = LOOKING_FOR_DIP;
 	                  break;
 	               }
 	            }
 	            attempts	= 0;	// we made it!!!
-	            dabCounter	= dabCounter - T_u + startIndex;
-	            dabCounter	= T_u - startIndex;
+//	            sampleCounter = sampleCounterCounter - T_u + startIndex;
+	            sampleCounter = T_u - startIndex;
 	            memmove (ofdmBuffer. data (),
 	                     &((ofdmBuffer. data ()) [startIndex]),
                            (T_u - startIndex) * sizeof (std::complex<float>));
@@ -263,7 +267,7 @@ static	int dabCounter	= 0;
 	            if (startIndex < 0) {		// no sync
 	               if (attempts > 5) {
 	                  emit No_Signal_Found ();
-                       processorMode       = START;
+                          processorMode       = START;
 	                  break;
 	               }
 	               else {
@@ -271,10 +275,18 @@ static	int dabCounter	= 0;
 	                  break;
 	               }
 	            }
+
 	            attempts	= 0;	// we made it!!!
-	            dabCounter	= dabCounter - T_u + startIndex;
-//	         fprintf (stderr, "%d \n", dabCounter);
-	            dabCounter	= T_u - startIndex;
+	            sampleCounter	= sampleCounter - T_u + startIndex;
+	            totalSamples	+= sampleCounter;
+	            frameCount ++;
+	            if (frameCount >= 10) {
+	               show_clockErr (totalSamples - frameCount * 196608);
+                       totalSamples = 0;
+                       frameCount = 0;
+                    }
+	           
+	            sampleCounter	= T_u - startIndex;
 	            memmove (ofdmBuffer. data (),
 	                     &((ofdmBuffer. data ()) [startIndex]),
                            (T_u - startIndex) * sizeof (std::complex<float>));
@@ -287,6 +299,7 @@ static	int dabCounter	= 0;
 	         ofdmBuffer [ofdmBufferIndex] = symbol;
 	         if (++ofdmBufferIndex < T_u)
 	            break;
+
 	         my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 	         my_mscHandler.  processBlock_0 (ofdmBuffer. data ());
 //      Here we look only at the block_0 when we need a coarse
@@ -294,7 +307,7 @@ static	int dabCounter	= 0;
 	         correctionNeeded     = !my_ficHandler. syncReached ();
 	         if (correctionNeeded) {
 	            int correction    =
-                    phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
+                        phaseSynchronizer. estimate_CarrierOffset (ofdmBuffer);
 	            if (correction != 100) {
 	               coarseOffset   = correction * carrierDiff;
 	               totalOffset	+= coarseOffset;
@@ -370,12 +383,12 @@ static	int dabCounter	= 0;
 	            dipValue	/= T_null;
 	            avg_dipValue	= 0.9 * avg_dipValue + 0.1 * dipValue;
 	            avg_signalValue	= 0.9 * avg_signalValue + 0.1 * avgSignalValue;
-	            if (++frameCount >= 10) {
+	            if (++nrFrames >= 10) {
 	               set_Values (coarseOffset + fineOffset,
 	                           avg_dipValue, avg_signalValue);
 	               coarseOffset	= 0;
 	               fineOffset	= 0;
-	               frameCount 	= 0;
+	               nrFrames 	= 0;
 	               float snr = 20 * log10 (avg_signalValue / avg_dipValue);
 	               show_snr (snr);
 	            }

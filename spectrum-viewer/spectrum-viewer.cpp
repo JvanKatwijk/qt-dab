@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -34,6 +35,7 @@ QString	colorString	= "black";
 QColor	displayColor;
 QColor	gridColor;
 QColor	curveColor;
+bool	brush;
 
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= dabSettings;
@@ -44,9 +46,9 @@ QColor	curveColor;
 	displayColor			= QColor (colorString);
 	colorString			= dabSettings -> value ("gridcolor", "white"). toString();
 	gridColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("gridcolor", "white"). toString();
+	colorString			= dabSettings -> value ("curvecolor", "white"). toString();
 	curveColor			= QColor (colorString);
-
+	brush				= dabSettings -> value ("brush", 1). toInt () == 1;
 	displaySize			= dabSettings -> value ("displaySize", 1024).toInt();
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
@@ -60,9 +62,9 @@ QColor	curveColor;
 	spectrum		= (std::complex<float> *)
 	               fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
-                                    FFTW_FORWARD, FFTW_ESTIMATE);
+                                  reinterpret_cast <fftwf_complex *>(spectrum),
+                                  reinterpret_cast <fftwf_complex *>(spectrum),
+                                  FFTW_FORWARD, FFTW_ESTIMATE);
 	
 	plotgrid		= dabScope;
 	plotgrid	-> setCanvasBackground (displayColor);
@@ -89,7 +91,8 @@ QColor	curveColor;
 //	ourBrush	= new QBrush (Qt::white);
 	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	spectrumCurve	-> setBrush (*ourBrush);
+	if (brush)
+	   spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);
 	
 	Marker		= new QwtPlotMarker();

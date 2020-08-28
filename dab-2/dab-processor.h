@@ -121,7 +121,10 @@ private:
 	std::vector<std::complex<float>> localBuffer;
 	int32_t         localCounter;
 	int32_t         bufferSize;
-
+	int		frameCount;
+	int		nrFrames;
+	int		sampleCounter;
+	int		totalSamples;
 	int16_t		attempts;
 	int32_t		T_null;
 	int32_t		T_u;
@@ -163,6 +166,7 @@ signals:
 	void		show_tii		(QByteArray);
 	void		show_snr		(float);
 	void		set_Values		(int, float, float);
+	void		show_clockErr		(int);
 };
 #endif
 

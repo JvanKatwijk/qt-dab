@@ -33,7 +33,7 @@ now standard part of the appImages for qt-dab and dabMini  as well
 as for the Windows executables, packed into the Windows installer.
 
 ----------------------------------------------------------------------
-Differences 3.5.2 <-> 3.4
+Differences 3.5.3 <-> 3.4
 -----------------------------------------------------------------------
 
 	a. Support for pluto devices,
@@ -43,6 +43,8 @@ Differences 3.5.2 <-> 3.4
 	e. improved algorithm for frequency synchronization,
 	f. added a "mute" button (moved 2 buttons to technical data)
 	g. also for dabMini an appImage (x64) is availablce.
+
+Version 3.5.3. added - apart from a number of internal changes - colors.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -85,6 +87,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Presets](#presets-for-qt-dab-dabmini-and-dab-2)
+* [Colors](#setting-colors-qt-dab)
 * [History](maintaining-history-for-qt-dab-and-dab-2)
 * [Comment on some settings](#comment-on-some-settings)
 * [Obsolete properties](#obsolete-properties)
@@ -236,6 +239,16 @@ of what will be recorded if a choice is made to save the output of the scan.
 
 ![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
 
+Of course, different people have different tastes when it comes to
+what should be displayed on a scope.
+While the default setting uses black and white, i.e. back for the background
+and white for the grid and the signal, others may want more contrasting
+colors.
+To accomodate that, the background color od the scopes, the grid color,
+the cuolor of the curve and the setting of a brush can be adapted
+
+![Qt-DAB scope](/qt-dab-scope-2.png?raw=true)
+
 ----------------------------------------------------------------------
 Presets for Qt-DAB, dabMini and dab-2
 ----------------------------------------------------------------------
@@ -260,6 +273,32 @@ Of course, one is also able to *remove* an entry from the presets.
 To do this, select the entry (by putting the curson on it without
 clicking any of the mouse buttons) and press the *shift* and the *delete*
 button on the keyboard simultaneously.
+
+----------------------------------------------------------------------
+Colors for Qt-DAB
+----------------------------------------------------------------------
+
+While it has been possible for a long time to set some colors
+to the displays, 3.5.3 sets colors to the various buttons (in total
+there are 18 push buttons).
+Since colors are a matter of taste, and setting all buttons to the same
+color seems rather boring, starting in version 3.5.2 there is the possibility
+to set a base color for each button as well as the color for the button text.
+(Dark base colors require light colored text and vice versa).
+
+The ".ini" file is the place to specify the settings for the button colors.
+For a button, e.g. "muteButton", "muteButton_color=xxx" is used to set
+the base color to "xxx" (provided "xxx" is a valid color name), and
+"muteButton_font=xxx" is used to set the color of the text on the button.
+
+The documentation contains a full specification of the names of the
+buttons and a list of allowable color names.
+
+The file  "./dab-maxi/color-scheme" contains a list of possible
+settings for the colors. This file is best included in the ".ini" file.
+
+For color setting in the displays, there are 4 possible settings
+(displaycolor, gridcolor, curvecolor and brush), see the documentation.
 
 ---------------------------------------------------------------------------
 Maintaining History for Qt-DAB and dab-2

@@ -379,6 +379,7 @@ int	samplesPerPacket;
 mir_sdr_ErrT	err;
 int	GRdB		= 30;
 
+	fprintf (stderr, "restart with freq %d\n", frequency);
 	if (running. load ())
 	   return true;
 
@@ -422,6 +423,7 @@ int	GRdB		= 30;
 	   my_mir_sdr_AgcControl (mir_sdr_AGC_DISABLE, -30,
                                   0, 0, 0, 0, lnaGainSetting -> value());
 	running. store (true);
+	fprintf (stderr, "restarted with freq %d\n", frequency);
 	return true;
 }
 

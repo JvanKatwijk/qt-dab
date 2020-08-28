@@ -151,10 +151,13 @@ private:
                                                       serviceId, int);
 	QStringList		soundChannels;
 	QTimer			displayTimer;
-	QTimer			signalTimer;
+	QTimer			channelTimer;
 	QTimer			presetTimer;
 	QTimer			startTimer;
+	QTimer			muteTimer;
 	int32_t			numberofSeconds;
+	int			muteDelay;
+	bool			muting;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
 	void			connectGUI		();
@@ -172,6 +175,8 @@ private:
 	void			start_audioService	(const QString &);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
+	FILE                    *findScanDump_FileName  ();
+        FILE                    *scanDumpFile;
 	void			stopScanning		(bool);
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
@@ -191,6 +196,18 @@ private:
 	                                                 QString);
         void                    show_MOTlabel           (QByteArray, int,
                                                                   QString);
+	void			hide_for_safety		();
+        void                    show_for_safety         ();
+
+//
+//      short hands
+        void                    new_presetIndex         (int);
+        void                    new_channelIndex        (int);
+
+signals:
+        void                    set_newChannel          (int);
+        void                    set_newPresetIndex      (int);
+
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);
@@ -209,7 +226,7 @@ public slots:
 	void			changeinConfiguration	();
 	void			newAudio		(int, int);
 //
-	void			setStereo		(int);
+	void			setStereo		(bool);
 	void			set_streamSelector	(int);
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
@@ -226,12 +243,13 @@ public slots:
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
 	void			show_rsCorrections	(int);
+	void			show_clockError		(int);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_scanButton	();
 	void			handle_audiodumpButton 	();
         void			handle_framedumpButton	();
-        void			handle_rawdumpButton	();
+        void			handle_sourcedumpButton	();
 	void			handle_nextChannelButton();
 	void			handle_prevChannelButton();
 	void			handle_prevServiceButton	();
@@ -252,10 +270,11 @@ private slots:
 	void			handle_historyButton	();
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
-	void			signalTimer_out		();
+	void			channel_timeOut		();
 	void			selectChannel		(const QString &);
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
+	void			handle_muteButton	();
 };
 #endif
 

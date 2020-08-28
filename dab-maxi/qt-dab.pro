@@ -9,11 +9,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -317,7 +317,7 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-#CONFIG		+= try-epg		# do not use
+CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
@@ -532,7 +532,7 @@ pluto	{
 	HEADERS		+= ./qt-devices/pluto-handler/pluto-handler.h
 	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
 	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
-	LIBS		+= -liio 
+	LIBS		+= -liio -lad9361
 }
 
 send_datagram {

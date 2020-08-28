@@ -56,6 +56,7 @@ int32_t i, j;
 	this	-> serviceName		= d -> serviceName;
 	this	-> shortForm		= d -> shortForm;
 	this	-> protLevel		= d -> protLevel;
+	this	-> subChId		= d -> subchId;
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);

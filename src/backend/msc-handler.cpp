@@ -210,6 +210,7 @@ void	mscHandler::reset_Buffers	() {
 
 void	mscHandler::reset_Channel () {
 //	work_to_be_done. store (false);
+	fprintf (stderr, "channel reset: all services will be stopped\n");
 	locker. lock ();
 	for (auto const &b : theBackends) {
 	   b -> stopRunning();
@@ -219,11 +220,13 @@ void	mscHandler::reset_Channel () {
 	locker. unlock ();
 }
 
-void	mscHandler::stopService	(const QString &s) {
+void	mscHandler::stopService	(descriptorType *d) {
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
-	   if (b -> serviceName == s) {
+	   if (b -> subChId == d -> subchId) {
+	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",
+	                                    d -> subchId);
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);

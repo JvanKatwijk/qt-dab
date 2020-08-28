@@ -59,6 +59,7 @@ public:
 	bool		shortForm;
 	int		protLevel;
 	int16_t		bitRate;
+	int16_t		subChId;
 	QString		serviceName;
 private:
 	backendDeconvolver	deconvolver;

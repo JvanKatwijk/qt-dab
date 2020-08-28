@@ -32,7 +32,7 @@
 #include	"xml-filewriter.h"
 //
 //	Description for the fir-filter is here:
-#include	"dabFilter.h"
+#include	"ad9361.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -351,22 +351,16 @@ struct iio_channel *chn		= nullptr;
 	dumping. store	(false);
 	xmlDumper	= nullptr;
 	running. store (false);
-	int enabled;
 //
 //	go for the filter
-	ad9361_get_trx_fir_enable (phys_dev, &enabled);
-	if (enabled)
-	   ad9361_set_trx_fir_enable (phys_dev, 0);
-	int ret = iio_device_attr_write_raw (phys_dev,
-	                                     "filter_fir_config",
-	                                     dabFilter, strlen (dabFilter));
-	if (ret < 0)
-	   fprintf (stderr, "filter mislukt");
-//	and enable it
+	int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev,	
+	                                               PLUTO_RATE,
+	                                               1540000 / 2,	
+	                                               1.1 * 1540000 / 2,
+	                                               1536000,
+	                                               1536000);
+
 	filterButton	-> setText ("filter off");
-	ret = ad9361_set_trx_fir_enable (phys_dev, 1);
-	if (ret < 0)
-	   fprintf (stderr, "enabling filter failed\n");
 	connected	= true;
 	state -> setText ("ready to go");
 }
@@ -382,7 +376,7 @@ struct iio_channel *chn		= nullptr;
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
-	ad9361_set_trx_fir_enable (phys_dev, 0);
+//	ad9361_set_trx_fir_enable (phys_dev, 0);
 	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
@@ -606,11 +600,11 @@ int32_t	plutoHandler::Samples () {
 void	plutoHandler::set_filter () {
 int ret;
 	if (filterOn) {
-           ad9361_set_trx_fir_enable (phys_dev, 0);
+//	   ad9361_set_trx_fir_enable (phys_dev, 0);
 	   filterButton -> setText ("filter on");
 	}
 	else {
-           ad9361_set_trx_fir_enable (phys_dev, 1);
+//	   ad9361_set_trx_fir_enable (phys_dev, 1);
 	   filterButton -> setText ("filter off");
 	}
 	filterOn = !filterOn;

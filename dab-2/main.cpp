@@ -32,7 +32,7 @@
 #include        "dab-constants.h"
 #include        "radio.h"
 
-#define DEFAULT_INI     ".qt-dab.ini"
+#define DEFAULT_INI     ".dab-2.ini"
 #define	PRESETS		".qt-dab-presets.xml"
 #ifndef	GITHASH
 #define	GITHASH	"      "

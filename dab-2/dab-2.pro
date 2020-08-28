@@ -10,11 +10,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++11
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -flto -ffast-math
+#MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  dab-2.ico
 RESOURCES	+= resources.qrc
@@ -288,6 +288,7 @@ LIBS		+= -lqwt-qt5
 #
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
+CONFIG		+= pluto
 CONFIG		+= rtlsdr
 CONFIG		+= rtl_tcp
 CONFIG		+= hackrf
@@ -370,6 +371,7 @@ CONFIG		+= extio
 CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
 CONFIG		+= rtlsdr
+CONFIG		+= pluto
 CONFIG		+= sdrplay-v2
 #CONFIG		+= sdrplay-v3
 CONFIG		+= hackrf
@@ -446,6 +448,18 @@ hackrf {
 	HEADERS		+= ./devices-dab-2/hackrf-handler/hackrf-handler.h 
 	SOURCES		+= ./devices-dab-2/hackrf-handler/hackrf-handler.cpp 
 	FORMS		+= ./devices-dab-2/hackrf-handler/hackrf-widget.ui
+}
+#
+#	pluto
+#
+hackrf {
+	DEFINES		+= HAVE_PLUTO
+	DEPENDPATH	+= ./devices-dab-2/pluto-handler 
+	INCLUDEPATH	+= ./devices-dab-2/pluto-handler 
+	HEADERS		+= ./devices-dab-2/pluto-handler/pluto-handler.h 
+	SOURCES		+= ./devices-dab-2/pluto-handler/pluto-handler.cpp 
+	FORMS		+= ./devices-dab-2/pluto-handler/pluto-widget.ui
+	LIBS		+= -liio -lad9361
 }
 #
 # airspy support

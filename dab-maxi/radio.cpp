@@ -86,9 +86,6 @@
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
 #endif
-#ifdef	HAVE_PLUTO_2
-#include	"pluto-2.h"
-#endif
 #include	"ui_technical_data.h"
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
@@ -138,6 +135,17 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	return true;
 }
 #endif
+
+static
+void	colorButton (QPushButton *pb, QColor c, int p) {
+QPalette pal = pb	-> palette ();
+	pal. setColor (QPalette::Button, c);
+	pb		-> setAutoFillBackground (true);
+	pb		-> setPalette (pal);
+	QFont font	= pb -> font ();
+	font. setPointSize (p);
+	pb		-> setFont (font);
+}
 
 static
 uint8_t convert (QString s) {
@@ -289,12 +297,12 @@ uint8_t	dabBand;
 
 //	Where do we leave the audio out?
 	streamoutSelector	-> hide();
-//#ifdef	TCP_STREAMER
-//	soundOut		= new tcpStreamer	(20040);
-//#elif	QT_AUDIO
-//	soundOut		= new Qt_Audio();
-//#else
-// just sound out
+#ifdef	TCP_STREAMER
+	soundOut		= new tcpStreamer	(20040);
+#elif	QT_AUDIO
+	soundOut		= new Qt_Audio();
+#else
+//	just sound out
 	soundOut		= new audioSink		(latency);
 
 	((audioSink *)soundOut)	-> setupChannels (streamoutSelector);
@@ -309,7 +317,7 @@ uint8_t	dabBand;
 
 	if ((k == -1) || err)
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
-//#endif
+#endif
 //
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             =
@@ -334,10 +342,11 @@ uint8_t	dabBand;
 	theBand. setupChannels  (channelSelector, dabBand);
 
 	QPalette p	= ficError_display -> palette();
-	p. setColor (QPalette::Highlight, Qt::green);
+	p. setColor (QPalette::Highlight, Qt::red);
 	ficError_display		-> setPalette (p);
 	techData. stereoLabel		->
 	                   setStyleSheet ("QLabel {background-color : red}");
+	p. setColor (QPalette::Highlight, Qt::green);
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
 	techData. aacError_display	-> setPalette (p);
@@ -357,9 +366,9 @@ uint8_t	dabBand;
 	total_ficError		= 0;
 	total_fics		= 0;
 	syncedLabel		->
-	               setStyleSheet ("QLabel {background-color : red; color: white}");
-//	stereoLabel		->
-//	               setStyleSheet ("QLabel {background-color : red}");
+	        setStyleSheet ("QLabel {background-color : red; color: white}");
+	techData. stereoLabel		->
+	        setStyleSheet ("QLabel {background-color : red}");
 
 //
 	connect (streamoutSelector, SIGNAL (activated (int)),
@@ -420,9 +429,6 @@ uint8_t	dabBand;
 #ifdef	HAVE_PLUTO
 	deviceSelector	-> addItem ("pluto");
 #endif
-#ifdef	HAVE_PLUTO_2
-	deviceSelector	-> addItem ("pluto-2");
-#endif
 #ifdef  HAVE_EXTIO
 	deviceSelector	-> addItem ("extio");
 #endif
@@ -438,7 +444,11 @@ uint8_t	dabBand;
 	   deviceSelector       -> setCurrentIndex (k);
 	   inputDevice	= setDevice (deviceSelector -> currentText());
 	}
-	
+
+	set_Colors ();
+	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
+	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
+
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	currentServiceDescriptor	= nullptr;
@@ -456,6 +466,7 @@ uint8_t	dabBand;
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
+
 }
 
 QString RadioInterface::footText () {
@@ -715,14 +726,17 @@ QString	dir;
 	   return;
 	QDir(). mkpath (dir);
 }
+static int fileNumber	= 0;
+static int propNumber	= 0;
 
 void	RadioInterface::handle_motObject (QByteArray result,
 	                                  QString name,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	fprintf (stderr, "handle_MOT: type %x, name %s dir = %d\n",
+	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
 	                           contentType,
+	                           getContentBaseType ((MOTContentType)contentType),
 	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
@@ -749,6 +763,7 @@ QString realName;
 	      break;
 
 	   case  MOTBaseTypeApplication: 	// epg data
+	      fprintf (stderr, "epg\n");
 #ifdef	TRY_EPG
 	      if (epgPath == "")
 	         return;
@@ -759,6 +774,9 @@ QString realName;
 	      checkDir (realName);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
+	         FILE *f = fopen ("/tmp/epg-file.xxx", "w");
+	         fwrite (epgData. data (), 1, epgData. size (), f);
+	         fclose (f);
 	         epgHandler. decode (epgData, realName);
 	      }
 	      fprintf (stderr, "epg file %s\n",
@@ -1157,20 +1175,6 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_PLUTO_2
-	if (s == "pluto-2") {
-	   try {
-	      inputDevice = new pluto_2 (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no pluto device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a
 //	wrap around the dll
@@ -1383,22 +1387,43 @@ void	RadioInterface::handle_devicewidgetButton	() {
 
 
 void	RadioInterface::showTime	(const QString &s) {
-	localTimeDisplay	-> setText (s);
+	localTimeDisplay -> setText (s);
 }
 
 void	RadioInterface::show_frameErrors (int s) {
-	if (running. load()) 
-	   techData. frameError_display	-> setValue (100 - 4 * s);
+	if (!running. load ()) 
+	   return;
+	QPalette p      = techData. frameError_display -> palette();
+	if (100 - 4 * s < 80)
+           p. setColor (QPalette::Highlight, Qt::red);
+	else
+           p. setColor (QPalette::Highlight, Qt::green);
+	techData. frameError_display	-> setPalette (p);
+	techData. frameError_display	-> setValue (100 - 4 * s);
 }
 
 void	RadioInterface::show_rsErrors (int s) {
-	if (running. load())
-	   techData. rsError_display	-> setValue (100 - 4 * s);
+	if (!running. load())		// should not happen
+	   return;
+	QPalette p      = techData. rsError_display -> palette();
+	if (100 - 4 * s < 80)
+           p. setColor (QPalette::Highlight, Qt::red);
+	else
+           p. setColor (QPalette::Highlight, Qt::green);
+	techData. rsError_display	-> setPalette (p);
+	techData. rsError_display	-> setValue (100 - 4 * s);
 }
 	
 void	RadioInterface::show_aacErrors (int s) {
-	if (running. load())
-	   techData. aacError_display	-> setValue (100 - 4 * s);
+	if (!running. load ())
+	   return;
+	QPalette p      = techData. aacError_display -> palette();
+	if (100 - 4 * s < 80)
+	   p. setColor (QPalette::Highlight, Qt::red);
+	else
+	   p. setColor (QPalette::Highlight, Qt::green);
+	techData. aacError_display	-> setPalette (p);
+	techData. aacError_display	-> setValue (100 - 4 * s);
 }
 
 void	RadioInterface::show_ficSuccess (bool b) {
@@ -1408,6 +1433,12 @@ void	RadioInterface::show_ficSuccess (bool b) {
 	   ficSuccess ++;
 
 	if (++ficBlocks >= 100) {
+	   QPalette p      = ficError_display -> palette();
+	   if (ficSuccess < 85)
+              p. setColor (QPalette::Highlight, Qt::red);
+	   else
+	      p. setColor (QPalette::Highlight, Qt::green);
+	   ficError_display                -> setPalette (p);
 	   ficError_display	-> setValue (ficSuccess);
 	   total_ficError	+= 100 - ficSuccess;
 	   total_fics		+= 100;
@@ -1439,12 +1470,9 @@ void	RadioInterface::setSynced	(bool b) {
 	   return;
 
 	isSynced = b;
-	if (isSynced) 
-	      syncedLabel -> 
-	               setStyleSheet ("QLabel {background-color : green; color: white}");
-	else
-	      syncedLabel ->
-	               setStyleSheet ("QLabel {background-color : red}");
+	syncedLabel	-> setStyleSheet (b ?
+	   	              "QLabel {background-color: green; color : white}":
+	   	              "QLabel {background-color: red; color : white}");
 }
 
 void	RadioInterface::showLabel	(QString s) {
@@ -1488,7 +1516,7 @@ void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (!running. load())
 	   return;
 	my_spectrumViewer. showSpectrum (amount,
-				              inputDevice -> getVFOFrequency());
+				         inputDevice -> getVFOFrequency());
 }
 
 void	RadioInterface::showIQ		(int amount) {
@@ -1607,16 +1635,6 @@ void	RadioInterface::handle_resetButton	() {
 //	dump handling
 //
 /////////////////////////////////////////////////////////////////////////
-static
-void	colorButton (QPushButton *pb, QColor c, int p) {
-QPalette pal = pb	-> palette ();
-	pal. setColor (QPalette::Button, c);
-	pb		-> setAutoFillBackground (true);
-	pb		-> setPalette (pal);
-	QFont font	= pb -> font ();
-	font. setPointSize (p);
-	pb		-> setFont (font);
-}
 
 void	RadioInterface::stop_sourceDumping	() {
 	if (rawDumper == nullptr) 
@@ -1625,7 +1643,9 @@ void	RadioInterface::stop_sourceDumping	() {
 	my_dabProcessor	-> stopDumping();
 	sf_close (rawDumper);
 	rawDumper	= nullptr;
-	colorButton (dumpButton, Qt::white, 10);
+	QFont font      = dumpButton -> font ();
+        font. setPointSize (10);
+        dumpButton -> setFont (font);
 	dumpButton	-> setText ("Raw dump");
 	dumpButton	-> update ();
 }
@@ -1656,7 +1676,7 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	      theTime. replace (i, 1, '-');
 
 	suggestedFileName = saveDir + deviceName + "-" + channelName +
-	                    "-" + theTime;
+	                                                    "-" + theTime;
 	QString file = QFileDialog::getSaveFileName (this,
 	                                     tr ("Save file ..."),
 	                                     suggestedFileName + ".sdr",
@@ -1682,7 +1702,9 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
 
-	colorButton (dumpButton, Qt::red, 12);
+	QFont font      = dumpButton -> font ();
+        font. setPointSize (12);
+        dumpButton -> setFont (font);
 	dumpButton	-> setText ("writing");
 	dumpButton	-> update ();
 	my_dabProcessor -> startDumping (rawDumper);
@@ -1704,7 +1726,18 @@ void	RadioInterface::stop_audioDumping	() {
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
 	audioDumper = nullptr;
-	colorButton (techData. audioDumpButton, Qt::white, 10);
+	QString audioDumpButton_color =
+           dabSettings -> value ("audioDumpButton_color", "cyan"). toString ();
+	QString audioDumpButton_font =
+           dabSettings -> value ("audioDumpButton_font", "black"). toString ();
+
+	QString temp = "QPushButton {background-color: %1; color: %2}";
+	techData. audioDumpButton
+	                -> setStyleSheet (temp. arg (audioDumpButton_color,
+	                                             audioDumpButton_font));
+	QFont font      = techData. audioDumpButton -> font ();
+        font. setPointSize (10);
+        dumpButton -> setFont (font);
 	techData. audioDumpButton	-> setText ("audio dump");
 	techData. audioDumpButton	-> update ();
 }
@@ -1750,9 +1783,11 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
 
-	colorButton (techData. audioDumpButton, Qt::red, 12);
-	techData. audioDumpButton		-> setText ("WRITING");
-	techData. audioDumpButton		-> update ();
+	QFont font	= techData. audioDumpButton -> font ();
+        font. setPointSize (12);
+        techData. audioDumpButton -> setFont (font);
+	techData. audioDumpButton	-> setText ("writing");
+	techData. audioDumpButton	-> update ();
 	soundOut		-> startDumping (audioDumper);
 }
 
@@ -1770,7 +1805,10 @@ void	RadioInterface::stop_frameDumping () {
 	if (frameDumper == nullptr)
 	   return;
 	fclose (frameDumper);
-	colorButton (techData. frameDumpButton, Qt::white, 10);
+
+	QFont font      = techData. frameDumpButton -> font ();
+        font. setPointSize (10);
+        techData. frameDumpButton -> setFont (font);
 	techData. frameDumpButton	-> setText ("frame dump");
 	techData. frameDumpButton	-> update ();
 	frameDumper	= nullptr;
@@ -1812,9 +1850,11 @@ QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
 
-	colorButton (techData. frameDumpButton, Qt::red, 12);
-	techData. frameDumpButton		-> setText ("recording");
-	techData. frameDumpButton		-> update ();
+	QFont font	= techData. frameDumpButton -> font ();
+        font. setPointSize (12);
+        techData. frameDumpButton	-> setFont (font);
+	techData. frameDumpButton	-> setText ("recording");
+	techData. frameDumpButton	-> update ();
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -2134,11 +2174,11 @@ void	RadioInterface::localSelect (const QString &s) {
 	if (k != -1) {
 	   new_channelIndex (k);
 	}
-	else 
+	else {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("Incorrect preset\n"));
-	if (k == -1)
 	   return;
+	}
 
 	nextService. valid = true;
         nextService. serviceName        = service;
@@ -2165,10 +2205,28 @@ void	RadioInterface::stopService	() {
 	}
 
 	if (currentService. valid) {
-           my_dabProcessor -> reset_Services ();
-	   usleep (1000);
-	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
+	   if (my_dabProcessor -> is_audioService (serviceName)) {
+	      audiodata ad;
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	      my_dabProcessor -> stopService (&ad);
+	      soundOut	-> stop ();
+	      for (int i = 0; i < 10; i ++) {
+	         packetdata pd;
+                 my_dabProcessor -> dataforPacketService (ad. serviceName, &pd, i);
+                 if (pd. defined) {
+                    my_dabProcessor -> stopService (&pd);
+                    break;
+                 }
+	      }
+	   }
+	   else {
+	      packetdata pd;
+	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
+	      if (pd. defined)
+	         my_dabProcessor -> stopService (&pd);
+	   }
+
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
@@ -2192,8 +2250,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	   fprintf (stderr, "no service should be visible\n");
 	   return;
 	}
+
 	presetTimer.	stop();
-//	presetSelector -> setCurrentIndex (0);
 	channelTimer.	stop ();
 	stopScanning	(false);
 	stopService 	();		// if any
@@ -2213,17 +2271,12 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
-	if (currentService. valid) {
-	   fprintf (stderr, "Niet verwacht, service %s still valid\n",
-	                    currentService. serviceName. toLatin1 (). data ());
-	   stopService ();
-	}
-
 	currentService		= *s;
 	currentService. valid	= false;
 
 	if (motSlides != nullptr)
 	   motSlides	-> hide ();
+
         techData. pictureLabel -> hide ();
 
 	int rowCount	= model. rowCount ();
@@ -2234,10 +2287,13 @@ QString serviceName	= s -> serviceName;
 	      colorService (model. index (i, 0), Qt::red, 15);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
-	      if (my_dabProcessor -> is_audioService (serviceName)) {
+	      audiodata ad;
+	      
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	      if (ad. defined) {
 	         currentService. valid = true;
 	         currentService. is_audio	= true;
-	         start_audioService (serviceName);
+	         start_audioService (&ad);
 	      }
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
@@ -2288,42 +2344,43 @@ void	RadioInterface::cleanScreen	() {
 	setStereo	(false);
 }
 
-void	RadioInterface::start_audioService (const QString &serviceName) {
-audiodata ad;
-
-	my_dabProcessor -> dataforAudioService (serviceName, &ad);
-	if (!ad. defined) {
+void	RadioInterface::start_audioService (audiodata *ad) {
+	if (!ad ->  defined) {
 	   QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));
 	   return;
 	}
 
 	serviceLabel -> setAlignment(Qt::AlignCenter);
-	serviceLabel -> setText (serviceName);
+	serviceLabel -> setText (ad -> serviceName);
 
-	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
+	my_dabProcessor -> set_audioChannel (ad, &audioBuffer);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
-	   my_dabProcessor -> dataforPacketService (serviceName, &pd, i);
+	   my_dabProcessor -> dataforPacketService (ad -> serviceName, &pd, i);
 	   if (pd. defined) {
 	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	      fprintf (stderr, "adding %s (%d) as subservice\n",
+	                            pd. serviceName. toLatin1 (). data (),
+	                            pd. subchId);
 	      break;
 	   }
 	}
 //	activate sound
 	soundOut -> restart ();
 //	show service related data
-	techData. programName		-> setText (serviceName);
-	techData. serviceIdDisplay	-> display (ad. SId);
-	techData. bitrateDisplay 	-> display (ad. bitRate);
-	techData. startAddressDisplay 	-> display (ad. startAddr);
-	techData. lengthDisplay		-> display (ad. length);
-	techData. subChIdDisplay 	-> display (ad. subchId);
-	QString protL	= getProtectionLevel (ad. shortForm, ad. protLevel);
+	techData. programName		-> setText (ad -> serviceName);
+	techData. serviceIdDisplay	-> display (ad -> SId);
+	techData. bitrateDisplay 	-> display (ad -> bitRate);
+	techData. startAddressDisplay 	-> display (ad -> startAddr);
+	techData. lengthDisplay		-> display (ad -> length);
+	techData. subChIdDisplay 	-> display (ad -> subchId);
+	QString protL	= getProtectionLevel (ad -> shortForm,
+	                                         ad -> protLevel);
 	techData. uepField		-> setText (protL);
-	techData. ASCTy			-> setText (ad. ASCTy == 077 ?
+	techData. ASCTy			-> setText (ad -> ASCTy == 077 ?
 	                                                  "DAB+" : "DAB");
-	if (ad. ASCTy == 077) {
+	if (ad -> ASCTy == 077) {
 	   techData. rsError_display	-> show ();
 	   techData. aacError_display	-> show ();
 	}
@@ -2333,18 +2390,18 @@ audiodata ad;
 	}
 	  
 	techData. language ->
-	   setText (getLanguage (ad. language));
+	   setText (getLanguage (ad -> language));
 	techData. programType ->
 	   setText (the_textMapper.
-	               get_programm_type_string (ad. programType));
-	if (ad. fmFrequency == -1) {
+	               get_programm_type_string (ad -> programType));
+	if (ad -> fmFrequency == -1) {
 	   techData. fmFrequency	-> hide ();
 	   techData. fmLabel		-> hide	();
 	}
 	else {
 	   techData. fmLabel		-> show ();
 	   techData. fmFrequency	-> show ();
-	   QString f = QString::number (ad. fmFrequency);
+	   QString f = QString::number (ad -> fmFrequency);
 	   f. append (" Khz");
 	   techData. fmFrequency	-> setText (f);
 	}
@@ -2397,9 +2454,24 @@ packetdata pd;
 //	next and previous service selection
 ////////////////////////////////////////////////////////////////////////////
 
-//
-//	Previous and next services. trivial implementation
 void	RadioInterface::handle_prevServiceButton	() {
+	disconnect (prevServiceButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_prevServiceButton ()));
+	handle_serviceButton (BACKWARDS);
+	connect (prevServiceButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_prevServiceButton ()));
+}
+
+void	RadioInterface::handle_nextServiceButton	() {
+	disconnect (nextServiceButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_nextServiceButton ()));
+	handle_serviceButton (FORWARD);
+	connect (nextServiceButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_nextServiceButton ()));
+}
+
+//	Previous and next services. trivial implementation
+void	RadioInterface::handle_serviceButton	(direction d) {
 	if (!running. load ())
 	   return;
 
@@ -2411,17 +2483,18 @@ void	RadioInterface::handle_prevServiceButton	() {
 
 	QString oldService	= currentService. serviceName;
 	
-	disconnect (prevServiceButton, SIGNAL (clicked ()),
-	            this, SLOT (handle_prevServiceButton ()));
 	stopService  ();
 
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
 	         colorService (model. index (i, 0), Qt::black, 11);
-	         i = i - 1;
-	         if (i < 0)
-	            i = serviceList. size () - 1;
+	         if (d == FORWARD) {
+	            i = (i + 1) % serviceList. size ();
+	         }
+	         else {
+	            i = (i - 1 + serviceList. size ()) % serviceList. size ();
+	         }
 	         dabService s;
 	         my_dabProcessor ->
 	                  getParameters (serviceList. at (i). name,
@@ -2437,51 +2510,6 @@ void	RadioInterface::handle_prevServiceButton	() {
 	      }
 	   }
 	}
-	connect (prevServiceButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_prevServiceButton ()));
-}
-
-void	RadioInterface::handle_nextServiceButton	() {
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
-	nextService. valid	= false;
-	stopScanning (false);
-	if (!currentService. valid)
-	   return;
-
-	QString oldService = currentService. serviceName;
-	disconnect (nextServiceButton, SIGNAL (clicked ()),
-	            this, SLOT (handle_nextServiceButton ()));
-	stopService ();
-	if ((serviceList. size () != 0) && (oldService != "")) {
-	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
-	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, 11);
-	         i = i + 1;
-	         if (i >= (int)(serviceList. size ()))
-	            i = 0;
-
-	         dabService s;
-	         my_dabProcessor ->
-	                 getParameters (serviceList. at (i). name,
-                                                   &s. SId, &s. SCIds);
-
-	         if (s. SId == 0) {
-	            QMessageBox::warning (this, tr ("Warning"),
-	                      tr ("insufficient data for this program\n"));
-	            break;
-                 }
-
-	         s. serviceName = serviceList. at (i). name;
-	         startService (&s);
-	         break;
-	      }
-	   }
-	}
-	connect (nextServiceButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_nextServiceButton ()));
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2537,15 +2565,17 @@ void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-	my_dabProcessor		-> start (tunedFrequency);
 	dabSettings		-> setValue ("channel", channel);
+	inputDevice		-> resetBuffer ();
+	inputDevice		-> restartReader (tunedFrequency);
+	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety ();
 }
 //
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
 void	RadioInterface::stopChannel	() {
-	if (inputDevice == nullptr)
+	if (inputDevice == nullptr)		// should not happen
 	   return;
 	stop_sourceDumping	();
 	stop_audioDumping	();
@@ -2554,9 +2584,10 @@ void	RadioInterface::stopChannel	() {
 	presetTimer. stop ();
         channelTimer. stop ();
 //
-//	The service - if any - is stopped by halting the dabProcessor
-//	hide_for_safety	();	// hide some buttons
+//	The services - if any - need to be stopped
+	hide_for_safety	();	// hide some buttons
 	my_dabProcessor		-> stop ();
+	inputDevice		-> stopReader ();
 	my_tiiViewer. clear();
 	QCoreApplication::processEvents ();
 //
@@ -2599,39 +2630,29 @@ void    RadioInterface::selectChannel (const QString &channel) {
 }
 
 void	RadioInterface::handle_nextChannelButton () {
-int     currentChannel  = channelSelector -> currentIndex ();
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
-	presetSelector -> setCurrentIndex (0);
-	if (my_dabProcessor == nullptr) 
-	   fprintf (stderr, "Expert error 24\n");
-	else
-	   stopScanning	(false);
-	stopChannel ();
-	currentChannel ++;
-	if (currentChannel >= channelSelector -> count ())
-	   currentChannel = 0;
-	new_channelIndex (currentChannel);
-	startChannel (channelSelector -> currentText ());
+	set_channelButton (channelSelector -> currentIndex () + 1);
 }
 
 void	RadioInterface::handle_prevChannelButton () {
-int     currentChannel  = channelSelector -> currentIndex ();
+	set_channelButton (channelSelector -> currentIndex () - 1);
+}
 
+void	RadioInterface::set_channelButton (int currentChannel) {
 	if (!running. load ())
 	   return;
 
 	presetTimer. stop ();
-	if (my_dabProcessor == nullptr) 
-	   fprintf (stderr, "Expert error 25\n");
-	else
-	   stopScanning (false);
+	if (my_dabProcessor == nullptr) {
+	   fprintf (stderr, "Expert error 23\n");
+	   abort ();
+	}
+
+	stopScanning (false);
 	stopChannel	();
-	currentChannel --;
 	if (currentChannel < 0)
-	   currentChannel =  channelSelector -> count () - 1;
+	   currentChannel = channelSelector -> count () - 1;
+	if (currentChannel >= channelSelector -> count ())
+	   currentChannel = 0;
 	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
 }
@@ -2953,5 +2974,125 @@ void	RadioInterface::new_channelIndex (int index) {
 //	channelSelector -> setCurrentIndex (index);
 	channelSelector	-> blockSignals (false);
 }
+//
+//	merely as a gadget, for each button the color can be set
+void	RadioInterface::set_Colors () {
+	dabSettings	-> beginGroup ("colorSettings");
+QString contentButton_color =
+	   dabSettings -> value ("contentButton_color", "cyan"). toString ();
+QString contentButton_font =
+	   dabSettings -> value ("contentButton_font", "black"). toString ();
+QString detailButton_color =
+	   dabSettings -> value ("detailButton_color", "cyan"). toString ();
+QString detailButton_font =
+	   dabSettings -> value ("detailButton_font", "black"). toString ();
+QString resetButton_color =
+	   dabSettings -> value ("resetButton_color", "red"). toString ();
+QString resetButton_font =
+	   dabSettings -> value ("resetButton_font", "white"). toString ();
+QString scanButton_color =
+	   dabSettings -> value ("scanButton_color", "yellow"). toString ();
+QString scanButton_font =
+	   dabSettings -> value ("scanButton_font", "black"). toString ();
 
+QString tiiButton_color =
+	   dabSettings -> value ("tiiButton_color", "yellow"). toString ();
+QString tiiButton_font =
+	   dabSettings -> value ("tiiButton_font", "black"). toString ();
+QString correlationButton_color =
+	   dabSettings -> value ("correlationButton_color", "yellow"). toString ();
+QString correlationButton_font =
+	   dabSettings -> value ("correlationButton_font", "black"). toString ();
+QString spectrumButton_color =
+	   dabSettings -> value ("spectrumButton_color", "yellow"). toString ();
+QString spectrumButton_font =
+	   dabSettings -> value ("spectrumButton_font", "black"). toString ();
+QString devicewidgetButton_color =
+	   dabSettings -> value ("devicewidgetButton_color", "cyan"). toString ();
+QString devicewidgetButton_font =
+	   dabSettings -> value ("devicewidgetButton_font", "black"). toString ();
+
+QString historyButton_color =
+	   dabSettings -> value ("historyButton_color", "magenta"). toString ();
+QString historyButton_font =
+	   dabSettings -> value ("historyButton_font", "white"). toString ();
+QString dumpButton_color =
+	   dabSettings -> value ("dumpButton_color", "magenta"). toString ();
+QString dumpButton_font =
+	   dabSettings -> value ("dumpButton_font", "white"). toString ();
+QString notUsedButton_color =
+	   dabSettings -> value ("notUsedButton_color", "black"). toString ();
+QString notUsedButton_font =
+	   dabSettings -> value ("notUsedButton_font", "white"). toString ();
+QString muteButton_color =
+	   dabSettings -> value ("muteButton_color", "cyan"). toString ();
+QString muteButton_font =
+	   dabSettings -> value ("muteButton_font", "black"). toString ();
+
+QString prevChannelButton_color =
+	   dabSettings -> value ("prevChannelButton_color", "cyan"). toString ();
+QString nextChannelButton_color =
+	   dabSettings -> value ("nextChannelButton_color", "yellow"). toString ();
+QString prevServiceButton_color =
+	   dabSettings -> value ("prevServiceButton_color", "cyan"). toString ();
+QString nextServiceButton_color =
+	   dabSettings -> value ("nextChannelButton_color", "yellow"). toString ();
+
+QString	frameDumpButton_color =
+	   dabSettings -> value ("frameDumpButton_color", "magenta"). toString ();
+QString	frameDumpButton_font =
+	   dabSettings -> value ("frameDumpButton_font", "white"). toString ();
+QString	audioDumpButton_color =
+	   dabSettings -> value ("audioDumpButton_color", "magenta"). toString ();
+QString	audioDumpButton_font =
+	   dabSettings -> value ("audioDumpButton_font", "white"). toString ();
+
+	dabSettings	-> endGroup ();
+QString temp = "QPushButton {background-color: %1; color: %2}";
+
+	contentButton	-> setStyleSheet (temp. arg (contentButton_color,
+	                                             contentButton_font));
+	detailButton	-> setStyleSheet (temp. arg (detailButton_color,
+	                                             detailButton_font));
+	resetButton	-> setStyleSheet (temp. arg (resetButton_color,	
+	                                             resetButton_font));
+	scanButton	-> setStyleSheet (temp. arg (scanButton_color,
+	                                             scanButton_font));
+
+	show_tiiButton	-> setStyleSheet (temp. arg (tiiButton_color,
+	                                             tiiButton_font));
+	show_correlationButton
+	                -> setStyleSheet (temp. arg (correlationButton_color,
+	                                              correlationButton_font));
+	show_spectrumButton
+	                -> setStyleSheet (temp. arg (spectrumButton_color,
+	                                             spectrumButton_font));
+	devicewidgetButton -> setStyleSheet (temp. arg (devicewidgetButton_color,
+	                                                devicewidgetButton_font));
+
+	historyButton	-> setStyleSheet (temp. arg (historyButton_color,
+	                                             historyButton_font));
+	dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
+	                                             dumpButton_font));
+	notUsedButton	-> setStyleSheet (temp. arg (notUsedButton_color,
+	                                             notUsedButton_font));
+	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
+	                                             muteButton_font));
+
+	prevChannelButton -> setStyleSheet (temp. arg (prevChannelButton_color,
+	                                               "red"));
+	nextChannelButton -> setStyleSheet (temp. arg (nextChannelButton_color,
+	                                               "black"));
+	prevServiceButton -> setStyleSheet (temp. arg (prevServiceButton_color,
+	                                               "red"));
+	nextServiceButton -> setStyleSheet (temp. arg (nextServiceButton_color,
+	                                               "black"));
+
+	techData. frameDumpButton ->
+	                     setStyleSheet (temp. arg (frameDumpButton_color,
+	                                               frameDumpButton_font));
+	techData. audioDumpButton ->
+	                     setStyleSheet (temp. arg (audioDumpButton_color,
+	                                               audioDumpButton_font));
+}
 

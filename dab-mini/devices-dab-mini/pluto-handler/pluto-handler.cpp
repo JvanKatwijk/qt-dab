@@ -23,7 +23,7 @@
 #include	<QThread>
 #include	<QDebug>
 #include	"pluto-handler.h"
-#include	"dabFilter.h"
+#include	"ad9361.h"
 
 static	bool	debugFlag	= true;
 
@@ -316,18 +316,15 @@ struct iio_channel *chn		= nullptr;
         }
         convIndex       = 0;
 
-	int enabled;
-//	go for the filter
-	ad9361_get_trx_fir_enable (phys_dev, &enabled);
-	if (enabled)
-	   ad9361_set_trx_fir_enable (phys_dev, 0);
-	int ret = iio_device_attr_write_raw (phys_dev,
-	                                     "filter_fir_config",
-	                                     dabFilter, strlen (dabFilter));
-	if (ret < 0)
-	   fprintf (stderr, "filter mislukt");
-//	and enable it
-	ad9361_set_trx_fir_enable (phys_dev, 1);
+//      go for the filter
+        int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev,
+                                                           PLUTO_RATE,
+                                                           1540000 / 2,
+                                                           1.1 * 1540000 / 2,
+                                                           1536000,
+                                                           1536000);
+
+
 
 	running. store (false);
 	connected	= true;
@@ -492,8 +489,8 @@ char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
-std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 
+	fprintf (stderr, "we are running\n");
 	running. store (true);
 	while (running. load ()) {
 	   nbytes_rx	= iio_buffer_refill	(rxbuf);
@@ -504,8 +501,6 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	        p_dat < p_end; p_dat += p_inc) {
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
-	      std::complex<int16_t>dumpS = std::complex<int16_t> (i_p, q_p);
-	      dumpBuf [convIndex] = dumpS;
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
@@ -524,6 +519,7 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	      }
 	   }
 	}
+	fprintf (stderr, "... and stopped\n");
 }
 
 int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) { 

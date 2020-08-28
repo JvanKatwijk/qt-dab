@@ -424,6 +424,6 @@ pluto   {
         HEADERS         += ./devices-dab-mini/pluto-handler/dabFilter.h
         HEADERS         += ./devices-dab-mini/pluto-handler/pluto-handler.h
         SOURCES         += ./devices-dab-mini/pluto-handler/pluto-handler.cpp
-	LIBS            += -liio 
+	LIBS            += -liio  -lad9361
 }
 
