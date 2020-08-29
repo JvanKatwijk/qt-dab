@@ -351,15 +351,15 @@ struct iio_channel *chn		= nullptr;
 	dumping. store	(false);
 	xmlDumper	= nullptr;
 	running. store (false);
-//
 //	go for the filter
+	ad9361_set_trx_fir_enable (phys_dev, 0);
+//
 	int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev,	
 	                                               PLUTO_RATE,
 	                                               1540000 / 2,	
 	                                               1.1 * 1540000 / 2,
 	                                               1536000,
 	                                               1536000);
-
 	filterButton	-> setText ("filter off");
 	connected	= true;
 	state -> setText ("ready to go");
@@ -376,7 +376,7 @@ struct iio_channel *chn		= nullptr;
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
-//	ad9361_set_trx_fir_enable (phys_dev, 0);
+	ad9361_set_trx_fir_enable (phys_dev, 0);
 	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
