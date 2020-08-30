@@ -300,7 +300,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= soapy
+CONFIG		+= soapy
 CONFIG		+= pluto
 
 CONFIG		+= faad
@@ -369,10 +369,10 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= rtl_tcp
 	CONFIG		+= dabstick
 	CONFIG		+= sdrplay-v2
-	CONFIG		+= pluto
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
+#	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 #
 #	end of 32/64 specifics
@@ -533,6 +533,17 @@ pluto	{
 	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
 	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
 	LIBS		+= -liio -lad9361
+}
+
+pluto-2	{
+	DEFINES		+= HAVE_PLUTO
+	QT		+= network
+	INCLUDEPATH	+= ./qt-devices/pluto-handler-fixed
+	HEADERS		+= ./qt-devices/pluto-handler-fixed/dabFilter.h
+	HEADERS		+= ./qt-devices/pluto-handler-fixed/pluto-handler.h
+	SOURCES		+= ./qt-devices/pluto-handler-fixed/pluto-handler.cpp
+	FORMS		+= ./qt-devices/pluto-handler-fixed/pluto-widget.ui
+	LIBS		+= -liio 
 }
 
 send_datagram {

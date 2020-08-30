@@ -449,6 +449,13 @@ uint8_t	dabBand;
 	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
 	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
 
+	if (dabSettings	-> value ("spectrumVisible", 0). toInt () == 1) 
+	   my_spectrumViewer. show ();
+	if (dabSettings -> value ("tiiVisible", 0). toInt () == 1) 
+	   my_tiiViewer. show ();
+	if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
+	   my_correlationViewer. show ();
+
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	currentServiceDescriptor	= nullptr;
@@ -564,6 +571,12 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	if (inputDevice != nullptr)
            s    -> setValue ("devicewidgetButton",
                                   inputDevice -> isHidden () != 0);
+	s	-> setValue ("spectrumVisible",
+	                          my_spectrumViewer. isHidden () ? 0 : 1);
+	s	-> setValue ("tiiVisible",
+	                          my_tiiViewer. isHidden () ? 0 : 1);
+	s	-> setValue ("correlationVisible",
+	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> sync();
 }
 
@@ -1002,6 +1015,7 @@ void	RadioInterface::TerminateProcess () {
 	if (scanning. load ())
 	   stopScanning (false);
 	running. store	(false);
+	dumpControlState (dabSettings);
 	hideButtons	();
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");
@@ -1013,7 +1027,6 @@ void	RadioInterface::TerminateProcess () {
 	soundOut	-> stop ();
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor -> stop ();
-	dumpControlState (dabSettings);
 	my_presetHandler. savePresets (presetSelector);
 	stop_frameDumping	();
 	stop_sourceDumping	();
@@ -2979,77 +2992,77 @@ void	RadioInterface::new_channelIndex (int index) {
 void	RadioInterface::set_Colors () {
 	dabSettings	-> beginGroup ("colorSettings");
 QString contentButton_color =
-	   dabSettings -> value ("contentButton_color", "cyan"). toString ();
+	   dabSettings -> value ("contentButton_color", "white"). toString ();
 QString contentButton_font =
 	   dabSettings -> value ("contentButton_font", "black"). toString ();
 QString detailButton_color =
-	   dabSettings -> value ("detailButton_color", "cyan"). toString ();
+	   dabSettings -> value ("detailButton_color", "white"). toString ();
 QString detailButton_font =
 	   dabSettings -> value ("detailButton_font", "black"). toString ();
 QString resetButton_color =
-	   dabSettings -> value ("resetButton_color", "red"). toString ();
+	   dabSettings -> value ("resetButton_color", "white"). toString ();
 QString resetButton_font =
-	   dabSettings -> value ("resetButton_font", "white"). toString ();
+	   dabSettings -> value ("resetButton_font", "black"). toString ();
 QString scanButton_color =
-	   dabSettings -> value ("scanButton_color", "yellow"). toString ();
+	   dabSettings -> value ("scanButton_color", "white"). toString ();
 QString scanButton_font =
 	   dabSettings -> value ("scanButton_font", "black"). toString ();
 
 QString tiiButton_color =
-	   dabSettings -> value ("tiiButton_color", "yellow"). toString ();
+	   dabSettings -> value ("tiiButton_color", "white"). toString ();
 QString tiiButton_font =
 	   dabSettings -> value ("tiiButton_font", "black"). toString ();
 QString correlationButton_color =
-	   dabSettings -> value ("correlationButton_color", "yellow"). toString ();
+	   dabSettings -> value ("correlationButton_color", "white"). toString ();
 QString correlationButton_font =
 	   dabSettings -> value ("correlationButton_font", "black"). toString ();
 QString spectrumButton_color =
-	   dabSettings -> value ("spectrumButton_color", "yellow"). toString ();
+	   dabSettings -> value ("spectrumButton_color", "white"). toString ();
 QString spectrumButton_font =
 	   dabSettings -> value ("spectrumButton_font", "black"). toString ();
 QString devicewidgetButton_color =
-	   dabSettings -> value ("devicewidgetButton_color", "cyan"). toString ();
+	   dabSettings -> value ("devicewidgetButton_color", "white"). toString ();
 QString devicewidgetButton_font =
 	   dabSettings -> value ("devicewidgetButton_font", "black"). toString ();
 
 QString historyButton_color =
-	   dabSettings -> value ("historyButton_color", "magenta"). toString ();
+	   dabSettings -> value ("historyButton_color", "white"). toString ();
 QString historyButton_font =
-	   dabSettings -> value ("historyButton_font", "white"). toString ();
+	   dabSettings -> value ("historyButton_font", "black"). toString ();
 QString dumpButton_color =
-	   dabSettings -> value ("dumpButton_color", "magenta"). toString ();
+	   dabSettings -> value ("dumpButton_color", "white"). toString ();
 QString dumpButton_font =
-	   dabSettings -> value ("dumpButton_font", "white"). toString ();
+	   dabSettings -> value ("dumpButton_font", "black"). toString ();
 QString notUsedButton_color =
 	   dabSettings -> value ("notUsedButton_color", "black"). toString ();
 QString notUsedButton_font =
 	   dabSettings -> value ("notUsedButton_font", "white"). toString ();
 QString muteButton_color =
-	   dabSettings -> value ("muteButton_color", "cyan"). toString ();
+	   dabSettings -> value ("muteButton_color", "white"). toString ();
 QString muteButton_font =
 	   dabSettings -> value ("muteButton_font", "black"). toString ();
 
 QString prevChannelButton_color =
-	   dabSettings -> value ("prevChannelButton_color", "cyan"). toString ();
+	   dabSettings -> value ("prevChannelButton_color", "white"). toString ();
 QString nextChannelButton_color =
-	   dabSettings -> value ("nextChannelButton_color", "yellow"). toString ();
+	   dabSettings -> value ("nextChannelButton_color", "white"). toString ();
 QString prevServiceButton_color =
-	   dabSettings -> value ("prevServiceButton_color", "cyan"). toString ();
+	   dabSettings -> value ("prevServiceButton_color", "white"). toString ();
 QString nextServiceButton_color =
-	   dabSettings -> value ("nextChannelButton_color", "yellow"). toString ();
+	   dabSettings -> value ("nextChannelButton_color", "white"). toString ();
 
 QString	frameDumpButton_color =
-	   dabSettings -> value ("frameDumpButton_color", "magenta"). toString ();
+	   dabSettings -> value ("frameDumpButton_color", "white"). toString ();
 QString	frameDumpButton_font =
-	   dabSettings -> value ("frameDumpButton_font", "white"). toString ();
+	   dabSettings -> value ("frameDumpButton_font", "black"). toString ();
 QString	audioDumpButton_color =
-	   dabSettings -> value ("audioDumpButton_color", "magenta"). toString ();
+	   dabSettings -> value ("audioDumpButton_color", "white"). toString ();
 QString	audioDumpButton_font =
-	   dabSettings -> value ("audioDumpButton_font", "white"). toString ();
+	   dabSettings -> value ("audioDumpButton_font", "black"). toString ();
 
 	dabSettings	-> endGroup ();
-QString temp = "QPushButton {background-color: %1; color: %2}";
 
+	QString temp = "QPushButton {background-color: %1; color: %2}";
 	contentButton	-> setStyleSheet (temp. arg (contentButton_color,
 	                                             contentButton_font));
 	detailButton	-> setStyleSheet (temp. arg (detailButton_color,

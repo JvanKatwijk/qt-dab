@@ -46,6 +46,14 @@ class	xml_fileWriter;
 #define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
 #endif
 
+
+struct stream_cfg {
+        long long bw_hz;
+        long long fs_hz;
+        long long lo_hz;
+        const char *rfport;
+};
+
 class	plutoHandler: public deviceHandler, public Ui_plutoWidget {
 Q_OBJECT
 public:
@@ -82,23 +90,13 @@ private:
 	std::atomic<bool>	running;
 	bool			debugFlag;
 //      configuration items
-	struct iio_device *phys_dev;
-        int64_t                 bw_hz; // Analog banwidth in Hz
-        int64_t                 fs_hz; // Baseband sample rate in Hz
-        int64_t                 lo_hz; // Local oscillator frequency in Hz
-	bool			get_ad9361_stream_ch (struct iio_context *ctx,
-                                                      struct iio_device *dev,
-                                                      int chid,
-	                                              struct iio_channel **);
 
-        const char* rfport; // Port name
-        struct  iio_channel     *lo_channel;
-        struct  iio_channel     *gain_channel;
 	struct	iio_device	*rx;
 	struct	iio_context	*ctx;
 	struct	iio_channel	*rx0_i;
 	struct	iio_channel	*rx0_q;
 	struct	iio_buffer	*rxbuf;
+	struct stream_cfg	rx_cfg;
 	bool			connected;
 	std::complex<float>	convBuffer	[CONV_SIZE + 1];
 	int			convIndex;

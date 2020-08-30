@@ -87,7 +87,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Presets](#presets-for-qt-dab-dabmini-and-dab-2)
-* [Colors](#setting-colors-qt-dab)
+* [Colors](#Colors-for-Qt-DAB)
 * [History](maintaining-history-for-qt-dab-and-dab-2)
 * [Comment on some settings](#comment-on-some-settings)
 * [Obsolete properties](#obsolete-properties)
@@ -154,7 +154,7 @@ Features
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
   * TPEG output: when configured the data is sent to a specified ip address,
   * Supports inputs from 
-	- Adalm Pluto
+	- Adalm Pluto,
    	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
@@ -240,12 +240,12 @@ of what will be recorded if a choice is made to save the output of the scan.
 ![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
 
 Of course, different people have different tastes when it comes to
-what should be displayed on a scope.
+colors on a scope.
 While the default setting uses black and white, i.e. back for the background
 and white for the grid and the signal, others may want more contrasting
 colors.
-To accomodate that, the background color od the scopes, the grid color,
-the cuolor of the curve and the setting of a brush can be adapted
+To accomodate that, the background color of the scopes, the grid color,
+the color of the curve and the setting of a brush can be adapted
 
 ![Qt-DAB scope](/qt-dab-scope-2.png?raw=true)
 
@@ -279,25 +279,28 @@ Colors for Qt-DAB
 ----------------------------------------------------------------------
 
 While it has been possible for a long time to set some colors
-to the displays, 3.5.3 sets colors to the various buttons (in total
-there are 18 push buttons).
-Since colors are a matter of taste, and setting all buttons to the same
-color seems rather boring, starting in version 3.5.2 there is the possibility
+to the displays, 3.5.3 colors the various buttons (in total
+there are 18 push buttons, 16 on the main GUI, two on the
+technical data widget).
+Since selecting a color is a matter of taste,
+and setting all buttons to the same
+color seems rather boring, starting in version 3.5.3 there is the possibility
 to set a base color for each button as well as the color for the button text.
 (Dark base colors require light colored text and vice versa).
 
 The ".ini" file is the place to specify the settings for the button colors.
+The :.ini" file contains a special section, *colorSettings*, containing
+color settings.
 For a button, e.g. "muteButton", "muteButton_color=xxx" is used to set
 the base color to "xxx" (provided "xxx" is a valid color name), and
 "muteButton_font=xxx" is used to set the color of the text on the button.
 
-The documentation contains a full specification of the names of the
-buttons and a list of allowable color names.
+The documentation contains a full specification of the *names* of the
+buttons and a list of allowable *color names* while the
+file  "./dab-maxi/color-scheme" contains a list of possible
+settings for the colors. *This file is best included in the ".ini" file*.
 
-The file  "./dab-maxi/color-scheme" contains a list of possible
-settings for the colors. This file is best included in the ".ini" file.
-
-For color setting in the displays, there are 4 possible settings
+For setting in  colors the displays, there are 4 possible settings
 (displaycolor, gridcolor, curvecolor and brush), see the documentation.
 
 ---------------------------------------------------------------------------

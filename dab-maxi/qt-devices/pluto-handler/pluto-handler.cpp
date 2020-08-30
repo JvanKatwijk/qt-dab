@@ -30,10 +30,8 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 #include	"xml-filewriter.h"
-//
-//	Description for the fir-filter is here:
 #include	"ad9361.h"
-
+//
 /* static scratch mem for strings */
 static char tmpstr[64];
 
@@ -42,13 +40,6 @@ static
 char*	get_ch_name (const char* type, int id) {
         snprintf (tmpstr, sizeof(tmpstr), "%s%d", type, id);
         return tmpstr;
-}
-
-static 
-QString get_ch_name (QString type, int id) {
-QString result = type;
-	result. append (QString::number (id));
-	return result;
 }
 
 int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
@@ -79,30 +70,129 @@ bool value;
 	return ret;
 }
 
+enum iodev { RX, TX };
+
+/* returns ad9361 phy device */
+static
+struct iio_device* get_ad9361_phy (struct iio_context *ctx) {
+struct iio_device *dev = iio_context_find_device (ctx, "ad9361-phy");
+	return dev;
+}
+
+/* finds AD9361 streaming IIO devices */
+static
+bool get_ad9361_stream_dev (struct iio_context *ctx,
+	                    enum iodev d, struct iio_device **dev) {
+	switch (d) {
+	case TX:
+	   *dev = iio_context_find_device (ctx, "cf-ad9361-dds-core-lpc");
+	   return *dev != NULL;
+
+	case RX:
+	   *dev = iio_context_find_device (ctx, "cf-ad9361-lpc");
+	   return *dev != NULL;
+
+	default: 
+	   return false;
+	}
+}
+
 /* finds AD9361 streaming IIO channels */
-bool	plutoHandler::
-	      get_ad9361_stream_ch (struct iio_context *ctx,
-	                            struct iio_device *dev,
-	                            int chid, struct iio_channel **chn) {
-	(void)ctx;
-        *chn = iio_device_find_channel (dev, get_ch_name ("voltage", chid),
-	                                                       false);
-        if (*chn == nullptr)
+static
+bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
+	                   enum iodev d, struct iio_device *dev,
+	                   int chid, struct iio_channel **chn) {
+	*chn = iio_device_find_channel (dev,
+	                                get_ch_name ("voltage", chid),
+	                                d == TX);
+	if (!*chn)
 	   *chn = iio_device_find_channel (dev,
 	                                   get_ch_name ("altvoltage", chid),
-	                                   false);
-        return *chn != nullptr;
+	                                   d == TX);
+	return *chn != NULL;
+}
+
+/* finds AD9361 phy IIO configuration channel with id chid */
+static
+bool	get_phy_chan (struct iio_context *ctx,
+	              enum iodev d, int chid, struct iio_channel **chn) {
+	switch (d) {
+	   case RX:
+	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
+	                                      get_ch_name ("voltage", chid),
+	                                      false);
+	      return *chn != NULL;
+
+	   case TX:
+	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
+	                                      get_ch_name ("voltage", chid),
+	                                      true);
+	      return *chn != NULL;
+
+	   default: 
+	      return false;
+	}
+}
+
+/* finds AD9361 local oscillator IIO configuration channels */
+static
+bool	get_lo_chan (struct iio_context *ctx,
+	             enum iodev d, struct iio_channel **chn) {
+// LO chan is always output, i.e. true
+	switch (d) {
+	   case RX:
+	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
+	                                      get_ch_name ("altvoltage", 0),
+	                                      true);
+	      return *chn != NULL;
+
+	   case TX:
+	      *chn = iio_device_find_channel (get_ad9361_phy (ctx),
+	                                      get_ch_name ("altvoltage", 1),
+	                                      true);
+	      return *chn != NULL;
+
+	   default: 
+	      return false;
+	}
+}
+
+/* applies streaming configuration through IIO */
+bool cfg_ad9361_streaming_ch (struct iio_context *ctx,
+	                      struct stream_cfg *cfg,
+	                      enum iodev type, int chid) {
+struct iio_channel *chn = NULL;
+int	ret;
+
+// Configure phy and lo channels
+	printf("* Acquiring AD9361 phy channel %d\n", chid);
+	if (!get_phy_chan (ctx, type, chid, &chn)) {
+	   return false;
+	}
+	ret = iio_channel_attr_write (chn,
+	                              "rf_port_select", cfg -> rfport);
+	if (ret < 0)
+	   return false;
+	ret = iio_channel_attr_write_longlong (chn,
+	                                       "rf_bandwidth", cfg -> bw_hz);
+	ret = iio_channel_attr_write_longlong (chn,
+	                                       "sampling_frequency",
+	                                       cfg -> fs_hz);
+
+// Configure LO channel
+	printf("* Acquiring AD9361 %s lo channel\n", type == TX ? "TX" : "RX");
+	if (!get_lo_chan (ctx, type, &chn)) {
+	   return false;
+	}
+	ret = iio_channel_attr_write_longlong (chn,
+	                                       "frequency", cfg -> lo_hz);
+	return true;
 }
 
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion):
 	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024) {
-struct iio_channel *chn		= nullptr;
-//struct iio_device *phys_dev	= nullptr;
-
-	phys_dev			= nullptr;
-
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
@@ -113,10 +203,10 @@ struct iio_channel *chn		= nullptr;
 	this	-> rx0_i		= nullptr;
 	this	-> rx0_q		= nullptr;
 
-	this	-> bw_hz		= PLUTO_RATE;
-	this	-> fs_hz		= PLUTO_RATE;
-	this	-> lo_hz		= 220000000;
-	this	-> rfport		= "A_BALANCED";
+	rx_cfg. bw_hz			= 1536000;
+	rx_cfg. fs_hz			= PLUTO_RATE;
+	rx_cfg. lo_hz			= 220000000;
+	rx_cfg. rfport			= "A_BALANCED";
 
 	plutoSettings	-> beginGroup ("plutoSettings");
 	bool agcMode	=
@@ -137,24 +227,19 @@ struct iio_channel *chn		= nullptr;
 	   gainControl	-> hide ();
 	}
 	gainControl	-> setValue (gainValue);
-	   
-	state	-> setText ("Looking for context");
+//
+//	step 1: establish a context
+//
 	ctx	= iio_create_default_context ();
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "default context failed\n");
 	   ctx = iio_create_local_context ();
 	}
 
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "creating local context failed\n");
 	   ctx = iio_create_network_context ("pluto.local");
 	}
 
 	if (ctx == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "creating network context with pluto.local failed\n");
 	   ctx = iio_create_network_context ("192.168.2.1");
 	}
 
@@ -162,167 +247,67 @@ struct iio_channel *chn		= nullptr;
 	   fprintf (stderr, "No pluto found, fatal\n");
 	   throw (24);
 	}
+//
 
-	if (debugFlag)
-	   fprintf (stderr, "context name found %s\n",
-	                            iio_context_get_name (ctx));
-
-	state	-> setText ("Context created,\n looking for devices");
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   state -> setText ("no devices found, fatal");
-	   iio_context_destroy	(ctx);
+	   fprintf (stderr, "no devices, fatal");
 	   throw (25);
 	}
 
-	rx = iio_context_find_device (ctx, "cf-ad9361-lpc");
-	if (rx == nullptr) {
-	   state -> setText ("No device found");
-	   iio_context_destroy (ctx);
-	   throw (26);
-	}
-
-	contextName	-> setText (iio_context_get_name (ctx));
-	name_of_device	-> setText (iio_device_get_name (rx));
-        state -> setText ("* Configuring AD9361 for streaming\n");
-
-// Configure phy and lo channels
-	if (debugFlag)
-	   fprintf (stderr, "* Acquiring AD9361 phy channel %d\n", 0);
-	phys_dev = iio_context_find_device (ctx, "ad9361-phy");
-	if (phys_dev == nullptr) {
-	   if (debugFlag) 
-	      fprintf (stderr, "no ad9361 found\n");
-	   iio_context_destroy (ctx);
+	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
+	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
+	   fprintf (stderr, "No RX device found\n");
 	   throw (27);
 	}
 
-	chn = iio_device_find_channel (phys_dev,
-                                       get_ch_name (QString ("voltage"), 0).
-	                                                  toLatin1 (). data (),
-                                       false);
-	if (chn == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "cannot acquire phy channel %d\n", 0);
-	   iio_context_destroy (ctx);
-	   throw (27);
-	}
-
-	int res = iio_channel_attr_write (chn, "rf_port_select",
-	                                               this -> rfport);
-	if (res < 0) {
-	   if (debugFlag) {
-	      char error [255];
-	      iio_strerror (res, error, 255); 
-	      fprintf (stderr, "error in port selection %s\n", error);
-	   }
-	   iio_context_destroy (ctx);
+	fprintf (stderr, "* Configuring AD9361 for streaming\n");
+	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
+	   fprintf (stderr, "RX port 0 not found\n");
 	   throw (28);
 	}
 
-	res = iio_channel_attr_write_longlong (chn,
-	                                       "rf_bandwidth",
-	                                       this -> bw_hz);
-	if (res < 0) {
-	   if (debugFlag) {
-	      char errorText [255];
-	      iio_strerror (res, errorText, 255); 
-	      fprintf (stderr, "cannot select bandwidth %s\n", errorText);
+	struct iio_channel *chn;
+	if (get_phy_chan (ctx, RX, 0, &chn)) {
+	   int ret;
+	   if (agcMode)
+	      ret = iio_channel_attr_write (chn,
+	                                    "gain_control_mode",
+	                                    "slow_attack");
+	   else {
+	      ret = iio_channel_attr_write (chn,
+	                                    "gain_control_mode",
+	                                    "manual");
+	      ret = iio_channel_attr_write_longlong (chn,
+	                                             "hardwaregain",
+	                                             gainValue);
 	   }
-	   iio_context_destroy (ctx);
-	   throw (29);
+
+	   if (ret < 0)
+	      fprintf (stderr, "setting agc/gain did not work\n");
 	}
 
-	res = iio_channel_attr_write_longlong (chn, "sampling_frequency",
-	                                              this -> fs_hz);
-	if (res < 0) {
-	   if (debugFlag) {
-	      char errorText [255];
-	      iio_strerror (res, errorText, 255); 
-	      fprintf (stderr, "cannot set sampling frequency %s\n", errorText);
-	   }
-	   iio_context_destroy (ctx);
+	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
+	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
+	   fprintf (stderr, "RX chan i not found");
 	   throw (30);
 	}
-
-	this	-> gain_channel = chn;
-
-// Configure LO channel
-	if (debugFlag)
-	   fprintf (stderr, "* Acquiring AD9361 %s lo channel\n", "RX");
-	phys_dev = iio_context_find_device (ctx, "ad9361-phy");
-//
-	this -> lo_channel =
-	             iio_device_find_channel (phys_dev,
-                                              get_ch_name ("altvoltage", 0),
-                                              true);
-	if (this -> lo_channel == nullptr) {
-	   if (debugFlag)
-	      fprintf (stderr, "cannot find lo for channel\n");
-	   iio_context_destroy (ctx);
+	
+	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
+	   fprintf (stderr,"RX chan q not found");
 	   throw (31);
 	}
-
-	res = iio_channel_attr_write_longlong (this -> lo_channel,
-	                                               "frequency",
-	                                               this -> lo_hz);
-	if (res < 0 ) {
-	   if (debugFlag) {
-	      char error [255];
-	      iio_strerror (res, error, 255); 
-	      fprintf (stderr, "cannot set local oscillator frequency %s\n",
-	                                                           error);
-	   }
-	   iio_context_destroy (ctx);
-	   throw (32);
-	}
-
-	state -> setText ("* Initializing AD9361 IIO streaming channels\n");
-        if (!get_ad9361_stream_ch (ctx, rx, 0, &rx0_i)) {
-	   if (debugFlag)
-	      fprintf (stderr, "Rx chan i not found\n");
-	   iio_context_destroy (ctx);
-	   throw (33);
-	}
-
-        if (!get_ad9361_stream_ch (ctx, rx, 1, &rx0_q)) {
-	   if (debugFlag)
-              fprintf (stderr, "Rx chan i not found\n");
-           iio_context_destroy (ctx);
-           throw (34);
-	}
-
-        state -> setText ("* Enabling IIO streaming channels");
+	
         iio_channel_enable (rx0_i);
         iio_channel_enable (rx0_q);
 
-        state -> setText ("* Creating non-cyclic IIO buffers with 1 MiS\n");
-        rxbuf	= iio_device_create_buffer (rx, 256*1024, false);
+        rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
-	   if (debugFlag) 
-	      fprintf (stderr, "could not create RX buffer, fatal\n");
+	   fprintf (stderr, "could not create RX buffer, fatal");
 	   iio_context_destroy (ctx);
 	   throw (35);
 	}
-//
+
 	iio_buffer_set_blocking_mode (rxbuf, true);
-	if (!agcMode) {
-	   int ret = iio_channel_attr_write (this -> gain_channel,
-	                                             "gain_control_mode",
-	                                             "manual");
-	   ret = iio_channel_attr_write_longlong (this -> gain_channel,
-	                                                  "hardwaregain",
-	                                                  gainValue);
-	   if (ret < 0) 
-	      state -> setText ("error in initial gain setting");
-	}
-	else {
-	   int ret = iio_channel_attr_write (this -> gain_channel,
-	                                             "gain_control_mode",
-	                                             "slow_attack");
-	   if (ret < 0)
-	      state -> setText ("error in initial gain setting");
-	}
-	
 //	and be prepared for future changes in the settings
 	connect (gainControl, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_gainControl (int)));
@@ -351,15 +336,16 @@ struct iio_channel *chn		= nullptr;
 	dumping. store	(false);
 	xmlDumper	= nullptr;
 	running. store (false);
-//	go for the filter
-	ad9361_set_trx_fir_enable (phys_dev, 0);
+	int enabled;
 //
-	int ret = ad9361_set_bb_rate_custom_filter_manual (phys_dev,	
-	                                               PLUTO_RATE,
-	                                               1540000 / 2,	
-	                                               1.1 * 1540000 / 2,
-	                                               1536000,
-	                                               1536000);
+//	go for the filter
+	(void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
+                                                         PLUTO_RATE,
+                                                         1540000 / 2,
+                                                         1.1 * 1540000 / 2,
+                                                         1920000,
+                                                         1536000);
+
 	filterButton	-> setText ("filter off");
 	connected	= true;
 	state -> setText ("ready to go");
@@ -376,7 +362,7 @@ struct iio_channel *chn		= nullptr;
 	plutoSettings	-> endGroup ();
 	if (!connected)		// should not happen
 	   return;
-	ad9361_set_trx_fir_enable (phys_dev, 0);
+	ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
 	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
@@ -385,20 +371,23 @@ struct iio_channel *chn		= nullptr;
 
 void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
 int	ret;
-	this	-> lo_hz = newFrequency;
-	ret	= iio_channel_attr_write_longlong (this -> lo_channel,
+struct iio_channel *lo_channel;
+
+	rx_cfg. lo_hz = newFrequency;
+	ret	= get_lo_chan (ctx, RX, &lo_channel);
+	ret	= iio_channel_attr_write_longlong (lo_channel,
 	                                           "frequency",
-	                                           this -> lo_hz);
+	                                           rx_cfg. lo_hz);
 	if (ret < 0) {
 	   fprintf (stderr, "cannot set local oscillator frequency\n");
 	}
 	if (debugFlag)
 	   fprintf (stderr, "frequency set to %d\n",
-	                                 (int)(this -> lo_hz));
+	                                 (int)(rx_cfg. lo_hz));
 }
 
 int32_t	plutoHandler::getVFOFrequency () {
-	return this -> lo_hz;
+	return rx_cfg. lo_hz;
 }
 //
 //	If the agc is set, but someone touches the gain button
@@ -407,11 +396,12 @@ int32_t	plutoHandler::getVFOFrequency () {
 //	agc is set
 void	plutoHandler::set_gainControl	(int newGain) {
 int ret;
-
+struct iio_channel *chn;
+	ret = get_phy_chan (ctx, RX, 0, &chn);
+	if (ret < 0)
+	   return;
 	if (agcControl -> isChecked ()) {
-	   ret = iio_channel_attr_write (this -> gain_channel,
-	                                         "gain_control_mode",
-	                                         "manual");
+	   ret = iio_channel_attr_write (chn, "gain_control_mode", "manual");
 	   if (ret < 0) {
 	      state -> setText ("error in gain setting");
 	      if (debugFlag)
@@ -426,9 +416,7 @@ int ret;
 	         this, SLOT (set_agcControl (int)));
 	}
 
-	ret = iio_channel_attr_write_longlong (this -> gain_channel,
-	                                       "hardwaregain",
-	                                       newGain);
+	ret = iio_channel_attr_write_longlong (chn, "hardwaregain", newGain);
 	if (ret < 0) {
 	   state -> setText ("error in gain setting");
 	   if (debugFlag) 
@@ -439,12 +427,13 @@ int ret;
 
 void	plutoHandler::set_agcControl	(int dummy) {
 int ret;
+struct iio_channel *gain_channel;
 
+	get_phy_chan (ctx, RX, 0, &gain_channel);
 	(void)dummy;
 	if (agcControl -> isChecked ()) {
-	   ret = iio_channel_attr_write (this -> gain_channel,
-	                                         "gain_control_mode",
-	                                         "slow_attack");
+	   ret = iio_channel_attr_write (gain_channel,
+	                                 "gain_control_mode", "slow_attack");
 	   if (ret < 0) {
 	      if (debugFlag)
 	         fprintf (stderr, "error in setting agc\n");
@@ -455,9 +444,8 @@ int ret;
 	   gainControl -> hide ();
 	}
 	else {	// switch agc off
-	   ret = iio_channel_attr_write (this -> gain_channel,
-	                                         "gain_control_mode",
-	                                         "manual");
+	   ret = iio_channel_attr_write (gain_channel,
+	                                 "gain_control_mode", "manual");
 	   if (ret < 0) {
 	      state -> setText ("error in gain setting");
 	      if (debugFlag)
@@ -466,7 +454,7 @@ int ret;
 	   }
 	   gainControl	-> show ();
 
-	   ret = iio_channel_attr_write_longlong (this -> gain_channel,
+	   ret = iio_channel_attr_write_longlong (gain_channel,
 	                                          "hardwaregain", 
 	                                          gainControl -> value ());
 	   if (ret < 0) {
@@ -481,6 +469,8 @@ int ret;
 
 bool	plutoHandler::restartReader	(int32_t freq) {
 int ret;
+iio_channel *lo_channel;
+iio_channel *gain_channel;
 	if (debugFlag)
 	   fprintf (stderr, "restart called with %d\n", freq);
 	if (!connected)		// should not happen
@@ -489,9 +479,10 @@ int ret;
 	   return true;		// should not happen
 	if (save_gainSettings)
 	   update_gainSettings (freq /MHz (1));
-//
+
+	get_phy_chan (ctx, RX, 0, &gain_channel);
 //	settings are restored, now handle them
-	ret = iio_channel_attr_write (this -> gain_channel,
+	ret = iio_channel_attr_write (gain_channel,
 	                              "gain_control_mode",
 	                              agcControl -> isChecked () ?
 	                                       "slow_attack" : "manual");
@@ -503,7 +494,7 @@ int ret;
 	   state -> setText (agcControl -> isChecked ()? "agc set" : "agc off");
 
 	if (!agcControl -> isChecked ()) {
-	   ret = iio_channel_attr_write_longlong (this -> gain_channel,
+	   ret = iio_channel_attr_write_longlong (gain_channel,
 	                                          "hardwaregain",
 	                                          gainControl -> value ());
 	   if (ret < 0) {
@@ -519,10 +510,11 @@ int ret;
 	else
 	   gainControl	-> show ();
 
-	this -> lo_hz = freq;
-	ret = iio_channel_attr_write_longlong (this -> lo_channel,
+	get_lo_chan (ctx, RX, &lo_channel);
+	rx_cfg. lo_hz = freq;
+	ret = iio_channel_attr_write_longlong (lo_channel,
 	                                       "frequency",
-	                                       this -> lo_hz);
+	                                       rx_cfg. lo_hz);
 	if (ret < 0) {
 	   if (debugFlag)
 	      fprintf (stderr, "cannot set local oscillator frequency\n");
@@ -538,7 +530,7 @@ void	plutoHandler::stopReader() {
 	   return;
 	close_xmlDump	();
 	if (save_gainSettings)
-	   record_gainSettings (this -> lo_hz/ MHz (1));
+	   record_gainSettings (rx_cfg. lo_hz/ MHz (1));
 	running. store (false);
 	while (isRunning())
 	   usleep (500);
@@ -600,12 +592,13 @@ int32_t	plutoHandler::Samples () {
 void	plutoHandler::set_filter () {
 int ret;
 	if (filterOn) {
-//	   ad9361_set_trx_fir_enable (phys_dev, 0);
+           ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
 	   filterButton -> setText ("filter on");
 	}
 	else {
-//	   ad9361_set_trx_fir_enable (phys_dev, 1);
+           ret = ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 1);
 	   filterButton -> setText ("filter off");
+	   fprintf (stderr, "setting filter went %s\n", ret == 0 ? "ok" : "wrong");
 	}
 	filterOn = !filterOn;
 }
