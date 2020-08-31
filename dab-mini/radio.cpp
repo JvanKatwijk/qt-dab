@@ -833,8 +833,10 @@ void	RadioInterface::stopService	() {
 	signalTimer. stop ();
 	if (currentService. valid) {
 	   fprintf (stderr, "stopping service\n");
-//	   my_dabProcessor -> reset_Services ();
-	   my_dabProcessor -> stopService (currentService. serviceName);
+	   audiodata ad;
+	   my_dabProcessor -> dataforAudioService (currentService. serviceName,
+	                                                  &ad);
+	   my_dabProcessor -> stopService (&ad);
 	   usleep (1000);
 	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
@@ -1255,7 +1257,10 @@ void	RadioInterface::stop_secondService () {
 	   return;
 	fprintf (stderr, "stopping second service %s\n",
 	                      secondService. serviceName.toLatin1 (). data ());
-	my_dabProcessor -> stopService (secondService. serviceName);
+	audiodata ad;
+	my_dabProcessor	-> dataforAudioService (secondService. serviceName,
+	                                                      &ad);
+	my_dabProcessor -> stopService (&ad);
 	fclose (frameDumper);
 	frameDumper = nullptr;
 }
