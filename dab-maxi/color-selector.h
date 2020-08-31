@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB program
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,26 +20,32 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"verysmallpushbutton.h"
-#include	<QMouseEvent>
+#
+#ifndef	__COLOR_SELECTOR__
+#define	__COLOR_SELECTOR__
+#
+#include	<QDialog>
+#include	<QLabel>
+#include	<QListView>
+#include	<QStringListModel>
+#include	<QStringList>
+#include	<cstdint>
 
-	verySmallPushButton::verySmallPushButton (QWidget *parent):
-	                                          QPushButton (parent) {
-}
+class	colorSelector: public QDialog {
+Q_OBJECT
+public:
+			colorSelector	(const QString &);
+			~colorSelector	();
+	QString		getColor	(int);
+private:
+	QLabel		*toptext;
+	QListView	*selectorDisplay;
+	QStringListModel colorList;
+	QStringList	colors;
+	int16_t		selectedItem;
+private slots:
+void	select_color	(QModelIndex);
+};
 
-	verySmallPushButton::~verySmallPushButton () {}
-
-QSize	verySmallPushButton::sizeHint ()const {
-QSize	temp = QPushButton::sizeHint ();
-	return QSize (temp. rwidth () / 3, 2 * temp. rheight () / 3);
-}
-
-
-void    verySmallPushButton::mousePressEvent (QMouseEvent *e) {
-        if (e -> button () == Qt::RightButton) {
-           emit rightClicked ();
-        }
-        else
-           emit clicked ();
-}
+#endif
 

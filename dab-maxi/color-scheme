@@ -27,8 +27,8 @@ prevChannelButton_color=cyan
 nextChannelButton_color=yellow
 prevServiceButton_color=cyan
 nextServiceButton_color=yellow
-frameDumpButton_color=magenta
-frameDumpButton_font=white
-audioDumpButton_color=magenta
-audioDumpButton_font=white
+framedumpButton_color=magenta
+framedumpButton_font=white
+audiodumpButton_color=magenta
+audiodumpButton_font=white
 

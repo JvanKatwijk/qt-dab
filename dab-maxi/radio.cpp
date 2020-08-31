@@ -46,6 +46,7 @@
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
+#include	"color-selector.h"
 #include	"dab-tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -103,7 +104,6 @@ __int64 FileTimeToInt64 (FILETIME & ft) {
 	return (foo.QuadPart);
 }
 
-
 bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 FILETIME IdleTime, KernelTime, UserTime;
 size_t	thisIdle, thisKernel, thisUser;
@@ -136,6 +136,23 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 }
 #endif
 
+#define	CONTENT_BUTTON		QString ("contentButton")
+#define DETAIL_BUTTON		QString ("detailButton")
+#define	RESET_BUTTON		QString ("resetButton")
+#define SCAN_BUTTON		QString ("scanButton")
+#define	TII_BUTTON		QString ("tiiButton")
+#define	CORRELATION_BUTTON	QString ("correlationButton")
+#define	SPECTRUM_BUTTON		QString ("spectrumButton")
+#define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
+#define	HISTORY_BUTTON		QString ("historyButton")
+#define	DUMP_BUTTON		QString ("dumpButton")
+#define	MUTE_BUTTON		QString ("muteButton")
+#define PREVCHANNEL_BUTTON	QString ("prevChannelButton")
+#define NEXTCHANNEL_BUTTON	QString ("nextChannelButton")
+#define PREVSERVICE_BUTTON	QString ("prevServiceButton")
+#define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
+#define	FRAMEDUMP_BUTTON	QString ("framedumpButton")
+#define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 static
 void	colorButton (QPushButton *pb, QColor c, int p) {
 QPalette pal = pb	-> palette ();
@@ -327,8 +344,6 @@ uint8_t	dabBand;
 
         connect (my_history, SIGNAL (handle_historySelect (const QString &)),
                  this, SLOT (handle_historySelect (const QString &)));
-        connect (historyButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_historyButton ()));
 	connect (this, SIGNAL (set_newChannel (int)),
                  channelSelector, SLOT (setCurrentIndex (int)));
         connect (this, SIGNAL (set_newPresetIndex (int)),
@@ -374,7 +389,44 @@ uint8_t	dabBand;
 	connect (streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 	my_presetHandler. loadPresets (presetFile, presetSelector);
-//	
+//
+//	Connect the buttons for the color_settings
+	connect (contentButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_contentButton (void)));
+	connect (detailButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_detailButton ()));
+	connect (resetButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_resetButton (void)));
+	connect	(scanButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_scanButton (void)));
+	connect (show_tiiButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_tiiButton (void)));
+	connect (show_correlationButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_correlationButton (void)));
+	connect (show_spectrumButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_spectrumButton (void)));
+        connect (devicewidgetButton, SIGNAL (rightClicked ()),
+                 this, SLOT (color_devicewidgetButton ()));
+        connect (historyButton, SIGNAL (rightClicked ()),
+                 this, SLOT (color_historyButton ()));
+	connect (dumpButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_sourcedumpButton (void)));
+	connect (muteButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_muteButton (void)));
+
+	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_prevChannelButton (void)));
+	connect (nextChannelButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_nextChannelButton (void)));
+	connect (prevServiceButton, SIGNAL (rightClicked ()),
+                 this, SLOT (color_prevServiceButton ()));
+        connect (nextServiceButton, SIGNAL (rightClicked ()),
+                 this, SLOT (color_nextServiceButton ()));
+
+	connect (techData. framedumpButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_framedumpButton (void)));
+	connect (techData. audiodumpButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_audiodumpButton (void)));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -1739,20 +1791,22 @@ void	RadioInterface::stop_audioDumping	() {
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
 	audioDumper = nullptr;
-	QString audioDumpButton_color =
-           dabSettings -> value ("audioDumpButton_color", "cyan"). toString ();
-	QString audioDumpButton_font =
-           dabSettings -> value ("audioDumpButton_font", "black"). toString ();
+	QString audiodumpButton_color =
+           dabSettings -> value (AUDIODUMP_BUTTON + "_color",
+	                                              "white"). toString ();
+	QString audiodumpButton_font =
+           dabSettings -> value (AUDIODUMP_BUTTON + "_font",
+	                                               "black"). toString ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	techData. audioDumpButton
-	                -> setStyleSheet (temp. arg (audioDumpButton_color,
-	                                             audioDumpButton_font));
-	QFont font      = techData. audioDumpButton -> font ();
+	techData. audiodumpButton
+	                -> setStyleSheet (temp. arg (audiodumpButton_color,
+	                                             audiodumpButton_font));
+	QFont font      = techData. audiodumpButton -> font ();
         font. setPointSize (10);
         dumpButton -> setFont (font);
-	techData. audioDumpButton	-> setText ("audio dump");
-	techData. audioDumpButton	-> update ();
+	techData. audiodumpButton	-> setText ("audio dump");
+	techData. audiodumpButton	-> update ();
 }
 
 void	RadioInterface::start_audioDumping () {
@@ -1796,11 +1850,11 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
 
-	QFont font	= techData. audioDumpButton -> font ();
+	QFont font	= techData. audiodumpButton -> font ();
         font. setPointSize (12);
-        techData. audioDumpButton -> setFont (font);
-	techData. audioDumpButton	-> setText ("writing");
-	techData. audioDumpButton	-> update ();
+        techData. audiodumpButton -> setFont (font);
+	techData. audiodumpButton	-> setText ("writing");
+	techData. audiodumpButton	-> update ();
 	soundOut		-> startDumping (audioDumper);
 }
 
@@ -1819,11 +1873,11 @@ void	RadioInterface::stop_frameDumping () {
 	   return;
 	fclose (frameDumper);
 
-	QFont font      = techData. frameDumpButton -> font ();
+	QFont font      = techData. framedumpButton -> font ();
         font. setPointSize (10);
-        techData. frameDumpButton -> setFont (font);
-	techData. frameDumpButton	-> setText ("frame dump");
-	techData. frameDumpButton	-> update ();
+        techData. framedumpButton -> setFont (font);
+	techData. framedumpButton	-> setText ("frame dump");
+	techData. framedumpButton	-> update ();
 	frameDumper	= nullptr;
 }
 
@@ -1863,11 +1917,11 @@ QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
 
-	QFont font	= techData. frameDumpButton -> font ();
+	QFont font	= techData. framedumpButton -> font ();
         font. setPointSize (12);
-        techData. frameDumpButton	-> setFont (font);
-	techData. frameDumpButton	-> setText ("recording");
-	techData. frameDumpButton	-> update ();
+        techData. framedumpButton	-> setFont (font);
+	techData. framedumpButton	-> setText ("recording");
+	techData. framedumpButton	-> update ();
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -1939,77 +1993,87 @@ void    RadioInterface::handle_historyButton    () {
 //	we just disconnet them and (re)connect them as soon as
 //	a device is operational
 void	RadioInterface::connectGUI	() {
-	connect (detailButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_detailButton ()));
-	connect (prevServiceButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_prevServiceButton ()));
-        connect (nextServiceButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_nextServiceButton ()));
-        connect (devicewidgetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_devicewidgetButton ()));
 	connect (contentButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_contentButton (void)));
-	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (selectService (QModelIndex)));
+	connect (detailButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_detailButton ()));
 	connect (resetButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_resetButton (void)));
 	connect	(scanButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_scanButton (void)));
-	connect (nextChannelButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_nextChannelButton (void)));
-	connect	(prevChannelButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_prevChannelButton (void)));
-	connect (dumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_sourcedumpButton (void)));
-	connect (techData. audioDumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_audiodumpButton (void)));
-	connect (techData. frameDumpButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_framedumpButton (void)));
 	connect (show_tiiButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_tiiButton (void)));
 	connect (show_correlationButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_correlationButton (void)));
 	connect (show_spectrumButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_spectrumButton (void)));
+        connect (devicewidgetButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_devicewidgetButton ()));
+        connect (historyButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_historyButton ()));
+	connect (dumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_sourcedumpButton (void)));
 	connect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_muteButton (void)));
+
+	connect (nextChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_nextChannelButton (void)));
+	connect	(prevChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_prevChannelButton (void)));
+	connect (prevServiceButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_prevServiceButton ()));
+        connect (nextServiceButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_nextServiceButton ()));
+
+	connect (techData. audiodumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_audiodumpButton (void)));
+	connect (techData. framedumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_framedumpButton (void)));
+
+	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	         this, SLOT (selectService (QModelIndex)));
 }
 
 void	RadioInterface::disconnectGUI() {
-	disconnect (detailButton, SIGNAL (clicked ()),
-	            this, SLOT (handle_detailButton ()));
-	disconnect (prevServiceButton, SIGNAL (clicked ()),
-                    this, SLOT (handle_prevServiceButton ()));
-        disconnect (nextServiceButton, SIGNAL (clicked ()),
-                    this, SLOT (handle_nextServiceButton ()));
-	disconnect (devicewidgetButton, SIGNAL (clicked ()),
-                    this, SLOT (handle_devicewidgetButton ()));
 	disconnect (contentButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_contentButton (void)));
-	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
-	            this, SLOT (selectService (QModelIndex)));
+	         this, SLOT (handle_contentButton (void)));
+	disconnect (detailButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_detailButton ()));
 	disconnect (resetButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_resetButton (void)));
-	disconnect (scanButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_scanButton (void)));
-	disconnect (nextChannelButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_nextChannelButton (void)));
-	disconnect (prevChannelButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_prevChannelButton (void)));
-	disconnect (dumpButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_sourcedumpButton (void)));
-	disconnect (techData. audioDumpButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_audiodumpButton (void)));
-	disconnect (techData. frameDumpButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_framedumpButton (void)));
+	         this, SLOT (handle_resetButton (void)));
+	disconnect	(scanButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_scanButton (void)));
 	disconnect (show_tiiButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_tiiButton (void)));
+	         this, SLOT (handle_tiiButton (void)));
 	disconnect (show_correlationButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_correlationButton (void)));
+	         this, SLOT (handle_correlationButton (void)));
 	disconnect (show_spectrumButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_spectrumButton (void)));
+	         this, SLOT (handle_spectrumButton (void)));
+        disconnect (devicewidgetButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_devicewidgetButton ()));
+        disconnect (historyButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_historyButton ()));
+	disconnect (dumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_sourcedumpButton (void)));
 	disconnect (muteButton, SIGNAL (clicked (void)),
-	            this, SLOT (handle_muteButton (void)));
+	         this, SLOT (handle_muteButton (void)));
+
+	disconnect (nextChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_nextChannelButton (void)));
+	disconnect	(prevChannelButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_prevChannelButton (void)));
+	disconnect (prevServiceButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_prevServiceButton ()));
+        disconnect (nextServiceButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_nextServiceButton ()));
+
+	disconnect (techData. audiodumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_audiodumpButton (void)));
+	disconnect (techData. framedumpButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_framedumpButton (void)));
+
+	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	         this, SLOT (selectService (QModelIndex)));
 }
 //
 #include <QCloseEvent>
@@ -2057,7 +2121,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
               my_history -> clearHistory ();
            }
         }
-        else
+	else
 	if ((obj == this -> ensembleDisplay -> viewport()) &&
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
@@ -2898,8 +2962,8 @@ std::vector<serviceId> k;
 //	dabProcessor, we hide some buttons
 void	RadioInterface::hide_for_safety () {
         dumpButton		->	hide ();
-        techData. frameDumpButton	->	hide ();
-	techData. audioDumpButton	->	hide ();
+        techData. framedumpButton	->	hide ();
+	techData. audiodumpButton	->	hide ();
 	prevServiceButton	->	hide ();
         nextServiceButton	->	hide ();
 	contentButton		->	hide ();
@@ -2907,8 +2971,8 @@ void	RadioInterface::hide_for_safety () {
 
 void	RadioInterface::show_for_safety () {
         dumpButton		->	show ();
-        techData. frameDumpButton	->	show ();
-	techData. audioDumpButton	->	show ();
+        techData. framedumpButton	->	show ();
+	techData. audiodumpButton	->	show ();
 	prevServiceButton	->	show ();
         nextServiceButton	->	show ();
 	contentButton		->	show ();
@@ -2989,76 +3053,109 @@ void	RadioInterface::new_channelIndex (int index) {
 }
 //
 //	merely as a gadget, for each button the color can be set
+//	
 void	RadioInterface::set_Colors () {
 	dabSettings	-> beginGroup ("colorSettings");
 QString contentButton_color =
-	   dabSettings -> value ("contentButton_color", "white"). toString ();
+	   dabSettings -> value (CONTENT_BUTTON + "_color",
+	                                              "white"). toString ();
 QString contentButton_font =
-	   dabSettings -> value ("contentButton_font", "black"). toString ();
+	   dabSettings -> value (CONTENT_BUTTON + "_font",
+	                                              "black"). toString ();
 QString detailButton_color =
-	   dabSettings -> value ("detailButton_color", "white"). toString ();
+	   dabSettings -> value (DETAIL_BUTTON + "_color",
+	                                              "white"). toString ();
 QString detailButton_font =
-	   dabSettings -> value ("detailButton_font", "black"). toString ();
+	   dabSettings -> value (DETAIL_BUTTON + "_font",
+	                                              "black"). toString ();
 QString resetButton_color =
-	   dabSettings -> value ("resetButton_color", "white"). toString ();
+	   dabSettings -> value (RESET_BUTTON + "_color",
+	                                              "white"). toString ();
 QString resetButton_font =
-	   dabSettings -> value ("resetButton_font", "black"). toString ();
+	   dabSettings -> value (RESET_BUTTON + "_font",
+	                                              "black"). toString ();
 QString scanButton_color =
-	   dabSettings -> value ("scanButton_color", "white"). toString ();
+	   dabSettings -> value (SCAN_BUTTON + "_color",
+	                                              "white"). toString ();
 QString scanButton_font =
-	   dabSettings -> value ("scanButton_font", "black"). toString ();
+	   dabSettings -> value (SCAN_BUTTON + "_font",
+	                                              "black"). toString ();
 
 QString tiiButton_color =
-	   dabSettings -> value ("tiiButton_color", "white"). toString ();
+	   dabSettings -> value (TII_BUTTON + "_color",	
+	                                              "white"). toString ();
 QString tiiButton_font =
-	   dabSettings -> value ("tiiButton_font", "black"). toString ();
+	   dabSettings -> value (TII_BUTTON + "_font",
+	                                              "black"). toString ();
 QString correlationButton_color =
-	   dabSettings -> value ("correlationButton_color", "white"). toString ();
+	   dabSettings -> value (CORRELATION_BUTTON +"_color",
+	                                              "white"). toString ();
 QString correlationButton_font =
-	   dabSettings -> value ("correlationButton_font", "black"). toString ();
+	   dabSettings -> value (CORRELATION_BUTTON + "_font",
+	                                              "black"). toString ();
 QString spectrumButton_color =
-	   dabSettings -> value ("spectrumButton_color", "white"). toString ();
+	   dabSettings -> value (SPECTRUM_BUTTON + "_color",
+	                                              "white"). toString ();
 QString spectrumButton_font =
-	   dabSettings -> value ("spectrumButton_font", "black"). toString ();
+	   dabSettings -> value (SPECTRUM_BUTTON + "_font",
+	                                              "black"). toString ();
 QString devicewidgetButton_color =
-	   dabSettings -> value ("devicewidgetButton_color", "white"). toString ();
+	   dabSettings -> value (DEVICEWIDGET_BUTTON + "_color",
+	                                              "white"). toString ();
 QString devicewidgetButton_font =
-	   dabSettings -> value ("devicewidgetButton_font", "black"). toString ();
+	   dabSettings -> value (DEVICEWIDGET_BUTTON + "_font",
+	                                              "black"). toString ();
 
 QString historyButton_color =
-	   dabSettings -> value ("historyButton_color", "white"). toString ();
+	   dabSettings -> value (HISTORY_BUTTON + "_color",
+	                                              "white"). toString ();
 QString historyButton_font =
-	   dabSettings -> value ("historyButton_font", "black"). toString ();
+	   dabSettings -> value (HISTORY_BUTTON + "_font",
+	                                              "black"). toString ();
 QString dumpButton_color =
-	   dabSettings -> value ("dumpButton_color", "white"). toString ();
+	   dabSettings -> value (DUMP_BUTTON + "_color",
+	                                              "white"). toString ();
 QString dumpButton_font =
-	   dabSettings -> value ("dumpButton_font", "black"). toString ();
+	   dabSettings -> value (DUMP_BUTTON + "_font",
+	                                              "black"). toString ();
 QString notUsedButton_color =
-	   dabSettings -> value ("notUsedButton_color", "black"). toString ();
+	   dabSettings -> value ("notUsedButton_color",
+	                                              "black"). toString ();
 QString notUsedButton_font =
-	   dabSettings -> value ("notUsedButton_font", "white"). toString ();
+	   dabSettings -> value ("notUsedButton_font",
+	                                              "white"). toString ();
 QString muteButton_color =
-	   dabSettings -> value ("muteButton_color", "white"). toString ();
+	   dabSettings -> value (MUTE_BUTTON + "_color",
+	                                              "white"). toString ();
 QString muteButton_font =
-	   dabSettings -> value ("muteButton_font", "black"). toString ();
+	   dabSettings -> value (MUTE_BUTTON + "_font",
+	                                              "black"). toString ();
 
 QString prevChannelButton_color =
-	   dabSettings -> value ("prevChannelButton_color", "white"). toString ();
+	   dabSettings -> value (PREVCHANNEL_BUTTON + "_color",
+	                                              "white"). toString ();
 QString nextChannelButton_color =
-	   dabSettings -> value ("nextChannelButton_color", "white"). toString ();
+	   dabSettings -> value (NEXTCHANNEL_BUTTON + "_color",
+	                                              "white"). toString ();
 QString prevServiceButton_color =
-	   dabSettings -> value ("prevServiceButton_color", "white"). toString ();
+	   dabSettings -> value (PREVCHANNEL_BUTTON + "_color",
+	                                              "white"). toString ();
 QString nextServiceButton_color =
-	   dabSettings -> value ("nextChannelButton_color", "white"). toString ();
+	   dabSettings -> value (NEXTCHANNEL_BUTTON + "_color",
+	                                              "white"). toString ();
 
-QString	frameDumpButton_color =
-	   dabSettings -> value ("frameDumpButton_color", "white"). toString ();
-QString	frameDumpButton_font =
-	   dabSettings -> value ("frameDumpButton_font", "black"). toString ();
-QString	audioDumpButton_color =
-	   dabSettings -> value ("audioDumpButton_color", "white"). toString ();
-QString	audioDumpButton_font =
-	   dabSettings -> value ("audioDumpButton_font", "black"). toString ();
+QString	framedumpButton_color =
+	   dabSettings -> value (FRAMEDUMP_BUTTON + "_color",
+	                                              "white"). toString ();
+QString	framedumpButton_font =
+	   dabSettings -> value (FRAMEDUMP_BUTTON + "_font",
+		                                      "black"). toString ();
+QString	audiodumpButton_color =
+	   dabSettings -> value (AUDIODUMP_BUTTON + "_color",
+	                                              "white"). toString ();
+QString	audiodumpButton_font =
+	   dabSettings -> value (AUDIODUMP_BUTTON + "_font",
+	                                              "black"). toString ();
 
 	dabSettings	-> endGroup ();
 
@@ -3101,11 +3198,108 @@ QString	audioDumpButton_font =
 	nextServiceButton -> setStyleSheet (temp. arg (nextServiceButton_color,
 	                                               "black"));
 
-	techData. frameDumpButton ->
-	                     setStyleSheet (temp. arg (frameDumpButton_color,
-	                                               frameDumpButton_font));
-	techData. audioDumpButton ->
-	                     setStyleSheet (temp. arg (audioDumpButton_color,
-	                                               audioDumpButton_font));
+	techData. framedumpButton ->
+	                     setStyleSheet (temp. arg (framedumpButton_color,
+	                                               framedumpButton_font));
+	techData. audiodumpButton ->
+	                     setStyleSheet (temp. arg (audiodumpButton_color,
+	                                               audiodumpButton_font));
+}
+
+void	RadioInterface::color_contentButton	() {
+	set_buttonColors (contentButton, CONTENT_BUTTON);
+}
+
+void	RadioInterface::color_detailButton	() {
+	set_buttonColors (detailButton, DETAIL_BUTTON);
+}
+
+void	RadioInterface::color_resetButton	() {
+	set_buttonColors (resetButton, RESET_BUTTON);
+}
+
+void	RadioInterface::color_scanButton	() {
+	set_buttonColors (scanButton, SCAN_BUTTON);
+}
+
+void	RadioInterface::color_tiiButton		() {
+	set_buttonColors (show_tiiButton, TII_BUTTON);
+}
+
+void	RadioInterface::color_correlationButton	()	{
+	set_buttonColors (show_correlationButton, CORRELATION_BUTTON);
+}
+
+void	RadioInterface::color_spectrumButton	()	{
+	set_buttonColors (show_spectrumButton, SPECTRUM_BUTTON);
+}
+
+void	RadioInterface::color_devicewidgetButton	() {
+	set_buttonColors (devicewidgetButton, DEVICEWIDGET_BUTTON);
+}
+
+void	RadioInterface::color_historyButton	()	{
+	set_buttonColors (historyButton, HISTORY_BUTTON);
+}
+
+void	RadioInterface::color_sourcedumpButton	()	{
+	set_buttonColors (dumpButton, DUMP_BUTTON);
+}
+
+void	RadioInterface::color_muteButton	()	{
+	set_buttonColors (muteButton, MUTE_BUTTON);
+}
+
+void	RadioInterface::color_prevChannelButton	()	{
+	set_buttonColors (prevChannelButton, PREVCHANNEL_BUTTON);
+}
+
+void	RadioInterface::color_nextChannelButton	()	{
+	set_buttonColors (nextChannelButton, NEXTCHANNEL_BUTTON);
+}
+
+void	RadioInterface::color_prevServiceButton	()	{
+	set_buttonColors (prevServiceButton, PREVSERVICE_BUTTON);
+}
+
+void	RadioInterface::color_nextServiceButton	()	{
+	set_buttonColors (nextServiceButton, NEXTSERVICE_BUTTON);
+}
+
+void	RadioInterface::color_framedumpButton	()	{
+	set_buttonColors (techData. framedumpButton, FRAMEDUMP_BUTTON);
+}
+
+void	RadioInterface::color_audiodumpButton	()	{
+	set_buttonColors (techData. audiodumpButton, AUDIODUMP_BUTTON);
+}
+
+void	RadioInterface::set_buttonColors	(QPushButton *b,
+	                                         const QString &buttonName) {
+colorSelector *selector;
+int	index;
+
+	selector		= new colorSelector ("button color");
+	index			= selector -> QDialog::exec ();
+	QString baseColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	selector		= new colorSelector ("text color");
+	index			= selector	-> QDialog::exec ();
+	QString textColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	QString temp = "QPushButton {background-color: %1; color: %2}";
+	b	-> setStyleSheet (temp. arg (baseColor, textColor));
+
+	QString buttonColor = buttonName + "_color";
+	QString buttonFont	= buttonName + "_font";
+
+	dabSettings	-> beginGroup ("colorSettings");
+	dabSettings	-> setValue (buttonColor, baseColor);
+	dabSettings	-> setValue (buttonFont, textColor);
+	dabSettings	-> endGroup ();
 }
 

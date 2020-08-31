@@ -44,7 +44,7 @@ Differences 3.5.3 <-> 3.4
 	f. added a "mute" button (moved 2 buttons to technical data)
 	g. also for dabMini an appImage (x64) is availablce.
 
-Version 3.5.3. added - apart from a number of internal changes - colors.
+Version 3.5.3. added - apart from a number of internal changes - color setting to the buttons.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -288,17 +288,13 @@ color seems rather boring, starting in version 3.5.3 there is the possibility
 to set a base color for each button as well as the color for the button text.
 (Dark base colors require light colored text and vice versa).
 
-The ".ini" file is the place to specify the settings for the button colors.
-The :.ini" file contains a special section, *colorSettings*, containing
-color settings.
-For a button, e.g. "muteButton", "muteButton_color=xxx" is used to set
-the base color to "xxx" (provided "xxx" is a valid color name), and
-"muteButton_font=xxx" is used to set the color of the text on the button.
+To ease life a little, selecting a color setting for a button is
+now made easy: right clock with the mouse on the button, and a
+small menu appears on which the color for the button can be
+selected (one of a predefined list), and next a similar menu appears
+for selecting the color of the text on the button.
 
-The documentation contains a full specification of the *names* of the
-buttons and a list of allowable *color names* while the
-file  "./dab-maxi/color-scheme" contains a list of possible
-settings for the colors. *This file is best included in the ".ini" file*.
+The settings are saved in the ".ini" file.
 
 For setting in  colors the displays, there are 4 possible settings
 (displaycolor, gridcolor, curvecolor and brush), see the documentation.

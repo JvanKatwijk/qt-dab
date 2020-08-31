@@ -9,11 +9,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-#QMAKE_CFLAGS	+=  -flto -ffast-math
-#MAKE_CXXFLAGS	+=  -flto -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -flto -ffast-math
+MAKE_CXXFLAGS	+=  -flto -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -80,6 +80,7 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
+	   ./color-selector.h \
 	   ../dab-processor.h \
 	   ../service-description/service-descriptor.h \
 	   ../service-description/audio-descriptor.h \
@@ -185,6 +186,7 @@ FORMS	+= ./qt-devices/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
+	   ./color-selector.cpp \
 	   ../dab-processor.cpp \
 	   ../service-description/audio-descriptor.cpp \
 	   ../service-description/data-descriptor.cpp \

@@ -175,6 +175,8 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
+	void			set_buttonColors	(QPushButton *,
+	                                                 const QString &);
 	QString			footText		();
 	void			cleanScreen		();
 	void			set_picturePath		();
@@ -297,6 +299,26 @@ private slots:
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
 	void			handle_muteButton	();
+
+//
+//	color handlers
+	void			color_contentButton	();
+	void			color_detailButton	();
+	void			color_resetButton	();
+	void			color_scanButton	();
+	void			color_tiiButton		();
+	void			color_correlationButton	();
+	void			color_spectrumButton	();
+	void			color_devicewidgetButton	();
+	void			color_historyButton	();
+	void			color_sourcedumpButton	();
+	void			color_muteButton	();
+	void			color_prevChannelButton	();
+	void			color_nextChannelButton	();
+	void			color_prevServiceButton	();
+	void			color_nextServiceButton	();
+	void			color_framedumpButton	();
+	void			color_audiodumpButton	();
 };
 #endif
 

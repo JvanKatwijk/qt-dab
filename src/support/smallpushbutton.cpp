@@ -20,6 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include "smallpushbutton.h"
+#include	<QMouseEvent>
 
 	smallPushButton::smallPushButton (QWidget *parent):
 	                                  QPushButton (parent) {
@@ -30,6 +31,14 @@
 QSize	smallPushButton::sizeHint ()const {
 QSize	temp = QPushButton::sizeHint ();
 	return QSize (2 * temp. rwidth () / 3, 2 * temp. rheight () / 3);
+}
+
+void	smallPushButton::mousePressEvent (QMouseEvent *e) {
+	if (e -> button () == Qt::RightButton) {
+	   emit rightClicked ();
+	}
+	else
+	   emit clicked ();
 }
 
 

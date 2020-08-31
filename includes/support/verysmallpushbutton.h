@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
@@ -6,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -30,9 +30,12 @@
 class	verySmallPushButton : public QPushButton {
 Q_OBJECT
 public:
-	verySmallPushButton		(QWidget *);
+	verySmallPushButton	(QWidget *);
 	~verySmallPushButton	();
 QSize	sizeHint		()const;
+void    mousePressEvent		(QMouseEvent *e);
+signals:
+void    rightClicked            ();
 };
 #endif
 

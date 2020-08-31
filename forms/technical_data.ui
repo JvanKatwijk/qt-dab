@@ -36,7 +36,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="smallPushButton" name="frameDumpButton">
+      <widget class="smallPushButton" name="framedumpButton">
        <property name="toolTip">
         <string>DAB+ audio services are encoded in an AAC format. Touching this button will show a menu
 with which a file can be selected to store the AAC frames into.
@@ -49,7 +49,7 @@ files</string>
       </widget>
      </item>
      <item>
-      <widget class="smallPushButton" name="audioDumpButton">
+      <widget class="smallPushButton" name="audiodumpButton">
        <property name="toolTip">
         <string>The audio output can be saved as a file in uncompressed PCM format. Touching this button
 will show a menu with which a file can be selected for storage of the PCM data.

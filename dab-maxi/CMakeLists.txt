@@ -209,7 +209,8 @@ endif ()
 	)
 
 	set (${objectName}_HDRS
-	     ./dab-maxi/radio.h
+	     ./radio.h
+	     ./color-selector.h
 	     ../dab-processor.h
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
@@ -302,6 +303,7 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./color-selector.cpp
 	     ../dab-processor.cpp
 	     ../service-description/audio-descriptor.cpp
 	     ../service-description/data-descriptor.cpp
@@ -381,6 +383,7 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
+	     ./color-selector.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/audiosink.h
