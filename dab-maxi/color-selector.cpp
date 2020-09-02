@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -38,10 +38,11 @@
 	setLayout (layOut);
 
 	colors = QStringList();
-	colors << "colors" << "white" << "black" << "red" << "darkRed" << "green" <<
-	          "darkGreen" << "blue" << "darkBlue" << "cyan" <<
-	          "darkCyan" << "magenta" << "darkMagenta" << 
-	          "yellow" << "darkYellow" << "gray" << "darkGray";
+	colors << "colors" << "white" << "black" << "red" <<
+	          "darkRed" << "green" << "darkGreen" << "blue" <<
+	          "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
+	          "darkMagenta" << "yellow" << "darkYellow" <<
+	          "gray" << "darkGray";
 	colorList. setStringList (colors);
 	selectorDisplay	-> setModel (&colorList);
 	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),

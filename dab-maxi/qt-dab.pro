@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 QMAKE_CFLAGS	+=  -flto -ffast-math
 MAKE_CXXFLAGS	+=  -flto -ffast-math
@@ -374,7 +374,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-#	CONFIG		+= pluto-2
+	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 #
 #	end of 32/64 specifics
@@ -540,12 +540,11 @@ pluto	{
 pluto-2	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
-	INCLUDEPATH	+= ./qt-devices/pluto-handler-fixed
-	HEADERS		+= ./qt-devices/pluto-handler-fixed/dabFilter.h
-	HEADERS		+= ./qt-devices/pluto-handler-fixed/pluto-handler.h
-	SOURCES		+= ./qt-devices/pluto-handler-fixed/pluto-handler.cpp
-	FORMS		+= ./qt-devices/pluto-handler-fixed/pluto-widget.ui
-	LIBS		+= -liio 
+	INCLUDEPATH	+= ./qt-devices/pluto-handler-2
+	HEADERS		+= ./qt-devices/pluto-handler-2/dabFilter.h
+	HEADERS		+= ./qt-devices/pluto-handler-2/pluto-handler.h
+	SOURCES		+= ./qt-devices/pluto-handler-2/pluto-handler.cpp
+	FORMS		+= ./qt-devices/pluto-handler-2/pluto-widget.ui
 }
 
 send_datagram {

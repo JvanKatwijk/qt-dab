@@ -3281,7 +3281,7 @@ int	index;
 
 	selector		= new colorSelector ("button color");
 	index			= selector -> QDialog::exec ();
-	QString baseColor	= selector	-> getColor (index);
+	QString baseColor	= selector -> getColor (index);
 	delete selector;
 	if (index == 0)
 	   return;
@@ -3294,7 +3294,7 @@ int	index;
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 	b	-> setStyleSheet (temp. arg (baseColor, textColor));
 
-	QString buttonColor = buttonName + "_color";
+	QString buttonColor	= buttonName + "_color";
 	QString buttonFont	= buttonName + "_font";
 
 	dabSettings	-> beginGroup ("colorSettings");

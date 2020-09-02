@@ -30,8 +30,10 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 #include	"xml-filewriter.h"
-#include	"ad9361.h"
 //
+//	Description for the fir-filter is here:
+#include	"ad9361.h"
+
 /* static scratch mem for strings */
 static char tmpstr[64];
 
@@ -339,13 +341,13 @@ int	ret;
 	int enabled;
 //
 //	go for the filter
-	(void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
+        (void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
                                                          PLUTO_RATE,
                                                          1540000 / 2,
                                                          1.1 * 1540000 / 2,
                                                          1920000,
                                                          1536000);
-
+//	and enable it
 	filterButton	-> setText ("filter off");
 	connected	= true;
 	state -> setText ("ready to go");
