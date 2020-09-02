@@ -651,26 +651,26 @@ endif ()
 	if (PLUTO)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ./qt-devices/pluto-handler-fixed/pluto-widget.ui
+	        ./qt-devices/pluto-handler-2/pluto-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ./qt-devices/pluto-handler-fixed/pluto-handler.h
+	        ./qt-devices/pluto-handler-2/pluto-handler.h
 	   )
 
 	   include_directories (
-	     ./qt-devices/pluto-handler-fixed
+	     ./qt-devices/pluto-handler-2
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ./qt-devices/pluto-handler-fixed/pluto-handler.h
+	        ./qt-devices/pluto-handler-2/pluto-handler.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ./qt-devices/pluto-handler-fixed/pluto-handler.cpp
+	        ./qt-devices/pluto-handler-2/pluto-handler.cpp
 	   )
 
 	   list(APPEND extraLibs -liio)
