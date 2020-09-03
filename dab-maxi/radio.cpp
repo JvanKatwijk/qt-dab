@@ -456,6 +456,18 @@ uint8_t	dabBand;
 	muting		= false;
 	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 
+	QPalette *lcdPalette	= new QPalette;
+	lcdPalette	-> setColor (QPalette::Background, Qt::white);
+	lcdPalette	-> setColor (QPalette::Base, Qt::black);
+	snrDisplay	-> setPalette (*lcdPalette);
+	snrDisplay	-> setAutoFillBackground (true);
+	frequencyDisplay	-> setPalette (*lcdPalette);
+	frequencyDisplay	-> setAutoFillBackground (true);
+	cpuMonitor	-> setPalette (*lcdPalette);
+	cpuMonitor	-> setAutoFillBackground (true);
+	correctorDisplay	-> setPalette (*lcdPalette);
+	correctorDisplay	-> setAutoFillBackground (true);
+
 	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
 	deviceSelector	-> addItem ("sdrplay");
@@ -511,6 +523,7 @@ uint8_t	dabBand;
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	currentServiceDescriptor	= nullptr;
+
 	if (inputDevice != nullptr) {
 	   if (doStart ()) {
 	      qApp	-> installEventFilter (this);
@@ -1408,7 +1421,8 @@ deviceHandler	*inputDevice	= nullptr;
 //
 //	newDevice is called from the GUI when selecting a device
 void	RadioInterface::newDevice (const QString &deviceName) {
-//
+
+	fprintf (stderr, "op naar een nieuw device\n");
 //	Part I : stopping all activities
 	running. store (false);
 	stopChannel	();

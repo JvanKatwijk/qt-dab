@@ -25,6 +25,7 @@
 #include	<QSettings>
 #include	"iqdisplay.h"
 #include	<QColor>
+#include	"color-selector.h"
 
 	spectrumViewer::spectrumViewer	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings,
@@ -32,9 +33,6 @@
 	                                 RingBuffer<std::complex<float>>* ibuffer) {
 int16_t	i;
 QString	colorString	= "black";
-QColor	displayColor;
-QColor	gridColor;
-QColor	curveColor;
 bool	brush;
 
 	this	-> myRadioInterface	= mr;
@@ -42,14 +40,19 @@ bool	brush;
 	this	-> spectrumBuffer	= sbuffer;
 	this	-> iqBuffer		= ibuffer;
 
-	colorString			= dabSettings -> value ("displaycolor", "black"). toString();
-	displayColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("gridcolor", "white"). toString();
-	gridColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("curvecolor", "white"). toString();
-	curveColor			= QColor (colorString);
-	brush				= dabSettings -> value ("brush", 1). toInt () == 1;
-	displaySize			= dabSettings -> value ("displaySize", 1024).toInt();
+	dabSettings	-> beginGroup ("spectrumViewer");
+	colorString		= dabSettings -> value ("displayColor",
+	                                           "black"). toString();
+	displayColor		= QColor (colorString);
+	colorString		= dabSettings -> value ("gridColor",
+	                                           "white"). toString();
+	gridColor		= QColor (colorString);
+	colorString		= dabSettings -> value ("curveColor",
+	                                            "white"). toString();
+	curveColor		= QColor (colorString);
+	brush			= dabSettings -> value ("brush", 0). toInt () == 1;
+	displaySize		= dabSettings -> value ("displaySize", 1024).toInt();
+	dabSettings	-> endGroup ();
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
 	this	-> myFrame		= new QFrame (nullptr);
@@ -67,7 +70,7 @@ bool	brush;
                                   FFTW_FORWARD, FFTW_ESTIMATE);
 	
 	plotgrid		= dabScope;
-	plotgrid	-> setCanvasBackground (displayColor);
+	plotgrid		-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid	-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
@@ -83,12 +86,21 @@ bool	brush;
 #endif
 	grid	-> attach (plotgrid);
 
+	lm_picker	= new QwtPlotPicker (dabScope -> canvas ());
+	QwtPickerMachine *lpickerMachine =
+                             new QwtPickerClickPointMachine ();
+
+	lm_picker       -> setStateMachine (lpickerMachine);
+        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
+                                            Qt::RightButton);
+        connect (lm_picker, SIGNAL (selected (const QPointF&)),
+                 this, SLOT (rightMouseClick (const QPointF &)));
+
 	spectrumCurve	= new QwtPlotCurve ("");
-//	spectrumCurve	-> setPen (QPen(Qt::white));
-	spectrumCurve	-> setPen (QPen(curveColor));
+	spectrumCurve   -> setPen (QPen(curveColor, 2.0));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
 	spectrumCurve	-> setBaseline	(get_db (0));
-//	ourBrush	= new QBrush (Qt::white);
+
 	ourBrush	= new QBrush (curveColor);
 	ourBrush	-> setStyle (Qt::Dense3Pattern);
 	if (brush)
@@ -271,5 +283,55 @@ void	spectrumViewer:: showQuality (float q) {
 void	spectrumViewer::show_clockErr	(int e) {
 	if (!myFrame -> isHidden ())
 	   clockError -> display (e);
+}
+
+void	spectrumViewer::rightMouseClick	(const QPointF &point) {
+colorSelector *selector;
+int	index;
+	selector		= new colorSelector ("display color");
+	index			= selector -> QDialog::exec ();
+	QString displayColor	= selector -> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	selector		= new colorSelector ("grid color");
+	index			= selector	-> QDialog::exec ();
+	QString gridColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	selector		= new colorSelector ("curve color");
+	index			= selector	-> QDialog::exec ();
+	QString curveColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+
+	dabSettings	-> beginGroup ("spectrumViewer");
+	dabSettings	-> setValue ("displayColor", displayColor);
+	dabSettings	-> setValue ("gridColor", gridColor);
+	dabSettings	-> setValue ("curveColor", curveColor);
+	dabSettings	-> endGroup ();
+	this		-> displayColor	= QColor (displayColor);
+	this		-> gridColor	= QColor (gridColor);
+	this		-> curveColor	= QColor (curveColor);
+	spectrumCurve	-> setPen (QPen (this -> curveColor, 2.0));
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid		-> setMajPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#else
+	grid		-> setMajorPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#endif
+	grid		-> enableXMin (true);
+	grid		-> enableYMin (true);
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid		-> setMinPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#else
+	grid		-> setMinorPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#endif
+	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
 

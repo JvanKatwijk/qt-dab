@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -39,7 +40,16 @@
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
 #include	<qwt_plot_curve.h>
-#include	<qwt_plot_marker.h>
+#include        <qwt_color_map.h>
+#include        <qwt_plot_zoomer.h>
+#include        <qwt_plot_textlabel.h>
+#include        <qwt_plot_panner.h>
+#include        <qwt_plot_layout.h>
+#include	<qwt_picker_machine.h>
+#include        <qwt_scale_widget.h>
+#include        <QBrush>
+#include        <QTimer>
+
 
 class	RadioInterface;
 class	QSettings;
@@ -65,6 +75,11 @@ private:
 	QSettings	*dabSettings;
 	RingBuffer<std::complex<float>>	*spectrumBuffer;
 	RingBuffer<std::complex<float>>	*iqBuffer;
+	QwtPlotPicker	*lm_picker;
+	QColor		displayColor;
+	QColor		gridColor;
+	QColor		curveColor;
+
 	int16_t		displaySize;
 	int16_t		spectrumSize;
 	std::complex<float>	*spectrum;
@@ -83,6 +98,8 @@ private:
 	int32_t		normalizer;
 
 	IQDisplay	*myIQDisplay;
+private slots:
+	void		rightMouseClick		(const QPointF &);
 };
 
 #endif

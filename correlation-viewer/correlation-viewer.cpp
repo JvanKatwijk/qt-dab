@@ -24,14 +24,12 @@
 #include	"correlation-viewer.h"
 #include	<QSettings>
 #include	<QColor>
+#include	"color-selector.h"
 
 	correlationViewer::correlationViewer	(RadioInterface	*mr,
 	                                         QSettings	*s,
 	                                         RingBuffer<float> *b) {
 QString	colorString	= "black";
-QColor	displayColor;
-QColor	gridColor;
-QColor	curveColor;
 bool	brush;
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= s;
@@ -39,38 +37,50 @@ bool	brush;
 	                                                  1000). toInt ();
 	this	-> responseBuffer	= b;
 
-	colorString			= dabSettings -> value ("displaycolor",
+	dabSettings	-> beginGroup ("correlationViewer");
+	colorString	= dabSettings -> value ("displayColor",
 	                                              "black"). toString();
-	displayColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("gridcolor",
+	displayColor	= QColor (colorString);
+	colorString	= dabSettings -> value ("gridColor",
 	                                               "white"). toString();
-	gridColor			= QColor (colorString);
-	colorString			= dabSettings -> value ("curvecolor",
+	gridColor	= QColor (colorString);
+	colorString	= dabSettings -> value ("curveColor",
 	                                                "white"). toString();
-	curveColor                      = QColor (colorString);
-	brush				= dabSettings -> value ("brush", 1). toInt () == 1;
+	curveColor	= QColor (colorString);
+	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
+	dabSettings	-> endGroup ();
 	myFrame				= new QFrame;
 	setupUi (this -> myFrame);
 
 	plotgrid			= impulseGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
-	grid			= new QwtPlotGrid;
+	grid		= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
+	grid		-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid	-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid		-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid	-> enableXMin (true);
-	grid	-> enableYMin (true);
+	grid		-> enableXMin (true);
+	grid		-> enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
+	grid		-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid	-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid		-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid	-> attach (plotgrid);
+	grid		-> attach (plotgrid);
+
+	lm_picker       = new QwtPlotPicker (plotgrid -> canvas ());
+        QwtPickerMachine *lpickerMachine =
+                             new QwtPickerClickPointMachine ();
+
+        lm_picker       -> setStateMachine (lpickerMachine);
+        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
+                                            Qt::RightButton);
+        connect (lm_picker, SIGNAL (selected (const QPointF&)),
+                 this, SLOT (rightMouseClick (const QPointF &)));
 
 	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(curveColor));
+   	spectrumCurve	-> setPen (QPen(curveColor, 2.0));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
 	spectrumCurve	-> setBaseline	(0);
 	ourBrush	= new QBrush (curveColor);
@@ -168,5 +178,57 @@ float	mmax	= 0;
 
 float	correlationViewer::get_db (float x) {
 	return 20 * log10 ((x + 1) / (float)(4 * 512));
+}
+
+void	correlationViewer::rightMouseClick	(const QPointF &point) {
+colorSelector *selector;
+int	index;
+	(void)point;
+	selector		= new colorSelector ("display color");
+	index			= selector -> QDialog::exec ();
+	QString displayColor	= selector -> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	selector		= new colorSelector ("grid color");
+	index			= selector	-> QDialog::exec ();
+	QString gridColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+	selector		= new colorSelector ("curve color");
+	index			= selector	-> QDialog::exec ();
+	QString curveColor	= selector	-> getColor (index);
+	delete selector;
+	if (index == 0)
+	   return;
+
+	dabSettings	-> beginGroup ("correlationViewer");
+	dabSettings	-> setValue ("displayColor", displayColor);
+	dabSettings	-> setValue ("gridColor", gridColor);
+	dabSettings	-> setValue ("curveColor", curveColor);
+	dabSettings	-> endGroup ();
+
+	this		-> displayColor	= QColor (displayColor);
+	this		-> gridColor	= QColor (gridColor);
+	this		-> curveColor	= QColor (curveColor);
+	spectrumCurve	-> setPen (QPen(this -> curveColor, 2.0));
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid		-> setMajPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#else
+	grid		-> setMajorPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#endif
+	grid		-> enableXMin (true);
+	grid		-> enableYMin (true);
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid		-> setMinPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#else
+	grid		-> setMinorPen (QPen(this -> gridColor, 0,
+	                                                   Qt::DotLine));
+#endif
+	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
 

@@ -44,7 +44,7 @@ Differences 3.5.3 <-> 3.4
 	f. added a "mute" button (moved 2 buttons to technical data)
 	g. also for dabMini an appImage (x64) is availablce.
 
-Version 3.5.3. added - apart from a number of internal changes - color setting to the buttons.
+Version 3.5.3. added - apart from a number of internal changes - color setting to the buttons and scopes.
 
 ------------------------------------------------------------------------
 README FIRST  === README FIRST === README FIRST === README FIRST
@@ -241,11 +241,6 @@ of what will be recorded if a choice is made to save the output of the scan.
 
 Of course, different people have different tastes when it comes to
 colors on a scope.
-While the default setting uses black and white, i.e. back for the background
-and white for the grid and the signal, others may want more contrasting
-colors.
-To accomodate that, the background color of the scopes, the grid color,
-the color of the curve and the setting of a brush can be adapted
 
 ![Qt-DAB scope](/qt-dab-scope-2.png?raw=true)
 
@@ -296,8 +291,11 @@ for selecting the color of the text on the button.
 
 The settings are saved in the ".ini" file.
 
-For setting in  colors the displays, there are 4 possible settings
-(displaycolor, gridcolor, curvecolor and brush), see the documentation.
+For setting the colors on the scopes, right click on the scope. Three
+questions will be asked: what will be the color of the display (background),
+what will be the color of the grid and what will be the color of the curve.
+
+![Qt-DAB with colors](/qt-dab-colors.png?raw=true)
 
 ---------------------------------------------------------------------------
 Maintaining History for Qt-DAB and dab-2

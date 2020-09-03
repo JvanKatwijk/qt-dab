@@ -38,7 +38,15 @@
 #include	<qwt_plot_marker.h>
 #include	<qwt_plot_grid.h>
 #include	<qwt_plot_curve.h>
-#include	<qwt_plot_marker.h>
+#include        <qwt_color_map.h>
+#include        <qwt_plot_zoomer.h>
+#include        <qwt_plot_textlabel.h>
+#include        <qwt_plot_panner.h>
+#include        <qwt_plot_layout.h>
+#include        <qwt_picker_machine.h>
+#include        <qwt_scale_widget.h>
+#include        <QBrush>
+
 
 class	RadioInterface;
 class	correlationViewer: public QObject, Ui_correlationWidget {
@@ -65,8 +73,14 @@ private:
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;
 	QwtPlotCurve	*spectrumCurve;
+	QwtPlotPicker   *lm_picker;
+        QColor          displayColor;
+        QColor          gridColor;
+        QColor          curveColor;
 	QBrush		*ourBrush;
 	int		plotLength;
+private slots:
+        void            rightMouseClick (const QPointF &);
 };
 
 #endif
