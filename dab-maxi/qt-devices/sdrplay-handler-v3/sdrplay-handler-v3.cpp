@@ -67,7 +67,6 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	}
 }
 
-
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
 	                                       QString &recorderVersion):
 	                                          _I_Buffer (4 * 1024 * 1024),
@@ -509,7 +508,8 @@ uint32_t                ndev;
 	   goto closeAPI;
         }
 
-        if (apiVersion < (SDRPLAY_API_VERSION - 0.01)) {
+	if (apiVersion < 3.05) {
+//	if (apiVersion < (SDRPLAY_API_VERSION - 0.01)) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
 	   goto closeAPI;

@@ -812,10 +812,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-	                           contentType,
-	                           getContentBaseType ((MOTContentType)contentType),
-	                           name. toLatin1 (). data (), dirElement);
+//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+//	                           contentType,
+//	                           getContentBaseType ((MOTContentType)contentType),
+//	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -852,13 +852,13 @@ QString realName;
 	      checkDir (realName);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-	         FILE *f = fopen ("/tmp/epg-file.xxx", "w");
-	         fwrite (epgData. data (), 1, epgData. size (), f);
-	         fclose (f);
+//	         FILE *f = fopen ("/tmp/epg-file.xxx", "w");
+//	         fwrite (epgData. data (), 1, epgData. size (), f);
+//	         fclose (f);
 	         epgHandler. decode (epgData, realName);
 	      }
-	      fprintf (stderr, "epg file %s\n",
-	                            realName. toLatin1 (). data ());
+//	      fprintf (stderr, "epg file %s\n",
+//	                            realName. toLatin1 (). data ());
 #endif
 	      return;
 
