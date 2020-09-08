@@ -414,6 +414,7 @@ endif ()
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
+	     ../includes/support/color-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
