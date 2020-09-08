@@ -282,7 +282,7 @@ endif ()
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
-	     ../includes/color-selector.h
+	     ../includes/support/color-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -383,7 +383,6 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
-	     ./color-selector.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/audiosink.h
