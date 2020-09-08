@@ -42,7 +42,7 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
 	tag_length_value tlv (&vecData [0]);
-	fprintf (stderr, "de tag is %d\n", tlv. tag);
+//	fprintf (stderr, "de tag is %d\n", tlv. tag);
 	if (tlv. is_epg ()) {
 	   doc. appendChild (element (doc, tlv));
 	   QString test = doc. toString();

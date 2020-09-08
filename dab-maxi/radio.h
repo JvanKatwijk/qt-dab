@@ -299,7 +299,6 @@ private slots:
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
 	void			handle_muteButton	();
-
 //
 //	color handlers
 	void			color_contentButton	();

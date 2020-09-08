@@ -210,7 +210,6 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
-	     ./color-selector.h
 	     ../dab-processor.h
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
@@ -283,6 +282,7 @@ endif ()
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
+	     ../includes/color-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -303,7 +303,6 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
-	     ./color-selector.cpp
 	     ../dab-processor.cpp
 	     ../service-description/audio-descriptor.cpp
 	     ../service-description/data-descriptor.cpp
@@ -366,6 +365,7 @@ endif ()
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
 	     ../src/support/scanner-table.cpp
+	     ../src/support/color-selector.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 

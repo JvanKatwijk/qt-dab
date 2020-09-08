@@ -155,6 +155,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/smallqlistview.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
+	   ../includes/support/color-selector.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -247,6 +248,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallqlistview.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
+	   ../src/support/color-selector.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \

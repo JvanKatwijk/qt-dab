@@ -41,17 +41,17 @@ bool	brush;
 	this	-> iqBuffer		= ibuffer;
 
 	dabSettings	-> beginGroup ("spectrumViewer");
-	colorString		= dabSettings -> value ("displayColor",
+	colorString	= dabSettings -> value ("displayColor",
 	                                           "black"). toString();
-	displayColor		= QColor (colorString);
-	colorString		= dabSettings -> value ("gridColor",
+	displayColor	= QColor (colorString);
+	colorString	= dabSettings -> value ("gridColor",
 	                                           "white"). toString();
-	gridColor		= QColor (colorString);
-	colorString		= dabSettings -> value ("curveColor",
+	gridColor	= QColor (colorString);
+	colorString	= dabSettings -> value ("curveColor",
 	                                            "white"). toString();
-	curveColor		= QColor (colorString);
-	brush			= dabSettings -> value ("brush", 0). toInt () == 1;
-	displaySize		= dabSettings -> value ("displaySize", 1024).toInt();
+	curveColor	= QColor (colorString);
+	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
+	displaySize	= dabSettings -> value ("displaySize", 1024).toInt();
 	dabSettings	-> endGroup ();
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
@@ -312,6 +312,7 @@ int	index;
 	dabSettings	-> setValue ("gridColor", gridColor);
 	dabSettings	-> setValue ("curveColor", curveColor);
 	dabSettings	-> endGroup ();
+
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);

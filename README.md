@@ -23,20 +23,11 @@ as under Linux.
 So, while I keep on cross compiling the software for windows, do not
 always expect the smooth behaviour as it is under Linux.
 
----------------------------------------------------------------------
-Support for Adalm Pluto!
----------------------------------------------------------------------
-
-I just got the Pluto!! and could work on the support for the
-pluto on both the Qt-DAB and dabMini. Support for the pluto is
-now standard part of the appImages for qt-dab and dabMini  as well
-as for the Windows executables, packed into the Windows installer.
-
 ----------------------------------------------------------------------
 Differences 3.5.3 <-> 3.4
 -----------------------------------------------------------------------
 
-	a. Support for pluto devices,
+	a. Support for adalm ppluto devices,
 	b. saving gain settings for different channels when configured,
 	c. support for saving detailed output of the scan,
 	d. clock error counter and rs corrections counter

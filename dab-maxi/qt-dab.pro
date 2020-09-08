@@ -80,7 +80,6 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
-	   ./color-selector.h \
 	   ../dab-processor.h \
 	   ../service-description/service-descriptor.h \
 	   ../service-description/audio-descriptor.h \
@@ -156,6 +155,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
 	   ../includes/support/history-handler.h \
+	   ../includes/support/color-selector.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
@@ -186,7 +186,6 @@ FORMS	+= ./qt-devices/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
-	   ./color-selector.cpp \
 	   ../dab-processor.cpp \
 	   ../service-description/audio-descriptor.cpp \
 	   ../service-description/data-descriptor.cpp \
@@ -253,6 +252,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallqlistview.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
+	   ../src/support/color-selector.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
