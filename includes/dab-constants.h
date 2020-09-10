@@ -81,10 +81,12 @@ class serviceId {
 public:
 	QString		name;
 	uint32_t	SId;
+	uint16_t	subChId;
 };
 //	order by id order by name
 #define ID_BASED        1
 #define ALPHA_BASED     0
+#define	SUBCH_BASED	2
 
 //
 //	40 up shows good results

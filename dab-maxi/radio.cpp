@@ -671,14 +671,26 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	serviceId ed;
 	ed. name = serviceName;
 	ed. SId	= SId;
+	
 	if (isMember (serviceList, ed))
 	   return;
+
+	if (serviceOrder	== SUBCH_BASED) {
+	   audiodata ad;
+	   packetdata pd;
+	   my_dabProcessor	-> dataforAudioService (serviceName, &ad);
+	   if (ad. defined)
+	      ed. subChId	= ad. subchId;
+	   else {
+	      my_dabProcessor	-> dataforPacketService (serviceName, &pd, 0);
+	      if (pd. defined)
+	         ed. subChId	= pd. subchId;
+	      else
+	         ed. subChId	= 2000;
+	   }
+	}
+
 	serviceList = insert (serviceList, ed, serviceOrder);
-#if 0
-	fprintf (stderr, "adding %s serviceId %x subchId %d\n",
-	                          serviceName. toLatin1 (). data (),
-	                          SId, subChId);
-#endif
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
 
@@ -812,10 +824,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-//	                           contentType,
-//	                           getContentBaseType ((MOTContentType)contentType),
-//	                           name. toLatin1 (). data (), dirElement);
+	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+	                           contentType,
+	                           getContentBaseType ((MOTContentType)contentType),
+	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -852,10 +864,14 @@ QString realName;
 	      checkDir (realName);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-//	         FILE *f = fopen ("/tmp/epg-file.xxx", "w");
+//	         QString fn = "/tmp/epgfile" + QString::number (fileNumber ++) + ".xxx";
+//	         fprintf (stderr, "going to write %s (%d bytes)\n",
+//	                                      fn. toLatin1 (). data (),
+//	                                      (int)(epgData. size ()));
+//	         FILE *f = fopen (fn. toLatin1 (). data (), "w+b");
 //	         fwrite (epgData. data (), 1, epgData. size (), f);
 //	         fclose (f);
-	         epgHandler. decode (epgData, realName);
+//	         epgHandler. decode (epgData, realName);
 	      }
 //	      fprintf (stderr, "epg file %s\n",
 //	                            realName. toLatin1 (). data ());
@@ -2948,25 +2964,44 @@ std::vector<serviceId>
 	RadioInterface::insert (std::vector<serviceId> l,
 	                        serviceId n, int order) {
 std::vector<serviceId> k;
+
 	if (l . size () == 0) {
 	   k. push_back (n);
 	   return k;
 	}
 	uint32_t baseN		= 0;
+	uint16_t baseSubCh	= 0;
 	QString baseS		= "";
+
 	bool	inserted	= false;
 	for (const auto serv : l) {
-	   if (!inserted &&
-	         (order == ID_BASED ?
-	             ((baseN < n. SId) && (n. SId <= serv. SId)):
-	             ((baseS < n. name) && (n. name < serv. name)))) {
-	      k. push_back (n);
-	      inserted = true;
+	   if (!inserted) {
+	      if (order == ID_BASED) {
+	         if ((baseN <= n. SId) && (n. SId <= serv. SId)) {
+	            k. push_back (n);
+	            inserted = true;
+	         }
+	      }
+	      else
+	      if (order == SUBCH_BASED) {
+	         if ((baseSubCh <= n. subChId) && (n. subChId <= serv. subChId)) {
+	            k. push_back (n);
+	            inserted = true;
+	         }
+	      }
+	      else {
+	         if ((baseS < n. name) && (n. name < serv. name)) {
+	            k. push_back (n);
+	            inserted = true;
+	         }
+	      }
 	   }
 	   baseS	= serv. name;
 	   baseN	= serv. SId;
+	   baseSubCh	= serv. subChId;
 	   k. push_back (serv);
 	}
+
 	if (!inserted)
 	   k. push_back (n);
 	return k;
