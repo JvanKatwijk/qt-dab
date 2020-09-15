@@ -64,6 +64,7 @@ class	serviceDescriptor;
 class	historyHandler;
 
 #include	"ui_technical_data.h"
+#include	"ui_config.h"
 
 /*
  *	The main gui object. It inherits from
@@ -112,6 +113,8 @@ private:
 	scannerTable		theTable;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
+	Ui_configWidget		configWidget;
+	QFrame			*configDisplay;
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
@@ -140,7 +143,6 @@ private:
 	QString			picturesPath;
 	QString			epgPath;
 	QString			filePath;
-	int			switchTime;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
@@ -165,8 +167,8 @@ private:
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
+	int			muteDelay;
 	int32_t			numberofSeconds;
-	int32_t			muteDelay;
 	bool			muting;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
@@ -299,6 +301,7 @@ private slots:
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
 	void			handle_muteButton	();
+	void			muteButton_timeOut	();
 //
 //	color handlers
 	void			color_contentButton	();
@@ -318,6 +321,14 @@ private slots:
 	void			color_nextServiceButton	();
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
+//
+//	config handlers
+	void			handle_configSetting	();
+	void			handle_muteTimeSetting	(int);
+	void			handle_switchTimeSetting (int);
+	void			handle_orderAlfabetical	();
+	void			handle_orderServiceIds	();
+	void			handle_ordersubChannelIds	();
 };
 #endif
 

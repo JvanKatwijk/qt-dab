@@ -88,6 +88,7 @@
 #include	"pluto-handler.h"
 #endif
 #include	"ui_technical_data.h"
+#include	"ui_config.h"
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
@@ -225,8 +226,6 @@ uint8_t	dabBand;
 	globals. responseBuffer		= &responseBuffer;
 	globals. tiiBuffer		= &tiiBuffer;
 	globals. frameBuffer		= &frameBuffer;
-	switchTime		=
-	                  dabSettings -> value ("switchTime", 8000). toInt ();
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -280,8 +279,6 @@ uint8_t	dabBand;
  *	lots of people seem to want the scan to continue, rather than
  *	stop whever a channel with data is found.
  */
-	serviceOrder	=
-	           dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	normalScan	=
 	           dabSettings -> value ("normalScan", 0). toInt () == 1;
 
@@ -291,12 +288,30 @@ uint8_t	dabBand;
 	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
 
+	configDisplay	= new QFrame (nullptr);
+	configWidget. setupUi (configDisplay);
+
+	int x = dabSettings -> value ("switchTime", 8). toInt ();
+	configWidget. switchTimeSetting -> setValue (x);
+
+	x = dabSettings -> value ("muteTime", 2). toInt ();
+	configWidget. muteTimeSetting -> setValue (x);
+
+	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
+	if (x == ALPHA_BASED)
+	   configWidget. orderAlfabetical -> setChecked (true);
+	else
+	if (x == ID_BASED)
+	   configWidget. orderServiceIds -> setChecked (true);
+	else
+	   configWidget. ordersubChannelIds -> setChecked (true);
 	bool	b	=
 	            dabSettings -> value ("motSlides", 0). toInt () == 1;
 	motSlides	= b ? new QLabel () : nullptr;
 	if (motSlides != nullptr)
 	   motSlides		-> hide ();
-	dataDisplay		-> hide();
+	dataDisplay		-> hide ();
+	stillMuting		-> hide ();
 	serviceList. clear ();
         model . clear ();
         ensembleDisplay         -> setModel (&model);
@@ -447,14 +462,12 @@ uint8_t	dabBand;
 //
 //	presetTimer
 	presetTimer. setSingleShot (true);
-	presetTimer. setInterval (switchTime);
 	connect (&presetTimer, SIGNAL (timeout (void)),
 	            this, SLOT (setPresetStation (void)));
 //
 //	timer for muting
 	muteTimer. setSingleShot (true);
 	muting		= false;
-	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 
 	QPalette *lcdPalette	= new QPalette;
 	lcdPalette	-> setColor (QPalette::Background, Qt::white);
@@ -569,7 +582,7 @@ void	RadioInterface::doStart (const QString &dev) {
 //
 //	when doStart is called, a device is available and selected
 bool	RadioInterface::doStart	() {
-
+int	switchTime;
 	QString h       = dabSettings -> value ("channel", "12C"). toString();
 	int k           = channelSelector -> findText (h);
 	if (k != -1) 
@@ -598,11 +611,13 @@ bool	RadioInterface::doStart	() {
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (newDevice (const QString &)));
 //
-	secondariesVector. resize (0);
+	secondariesVector. resize (0);	
 	if (nextService. valid) {
+	   switchTime		=
+	                  dabSettings -> value ("switchTime", 8). toInt ();
 	   presetTimer. setSingleShot	(true);
-	   presetTimer. setInterval 	(switchTime);
-	   presetTimer. start 		(switchTime);
+	   presetTimer. setInterval 	(switchTime * 1000);
+	   presetTimer. start 		(switchTime * 1000);
 	}
 
 	startChannel (channelSelector -> currentText ());
@@ -664,17 +679,20 @@ void	RadioInterface::channel_timeOut() {
 //	a slot, called by the fic/fib handlers
 void	RadioInterface::addtoEnsemble (const QString &serviceName,
 	                                             int32_t SId) {
+int	serviceOrder;
 	if (!running. load())
 	   return;
 
 	(void)SId;
 	serviceId ed;
-	ed. name = serviceName;
-	ed. SId	= SId;
+	ed. name	= serviceName;
+	ed. SId		= SId;
 	
 	if (isMember (serviceList, ed))
 	   return;
 
+	serviceOrder	=
+	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (serviceOrder	== SUBCH_BASED) {
 	   audiodata ad;
 	   packetdata pd;
@@ -1023,6 +1041,7 @@ uint8_t localBuffer [length + 8];
   *	signal may be pending though
   */
 void	RadioInterface::changeinConfiguration () {
+int	serviceOrder;
 	if (!running. load () || my_dabProcessor == nullptr)
 	   return;
 	dabService s;
@@ -1031,6 +1050,8 @@ void	RadioInterface::changeinConfiguration () {
 	stopScanning    (false);
 	stopService     ();
 	fprintf (stderr, "change detected\n");
+	serviceOrder	= 
+	        dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 //
 //	we rebuild the services list from the fib and
 //	then we (try to) restart the service
@@ -1133,6 +1154,7 @@ void	RadioInterface::TerminateProcess () {
 	if (currentServiceDescriptor != nullptr)
 	   delete currentServiceDescriptor;
 	delete	dataDisplay;
+	delete	configDisplay;
 	delete	my_history;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
@@ -2062,6 +2084,20 @@ void	RadioInterface::connectGUI	() {
 
 	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
+
+	connect (configButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_configSetting ()));
+	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_muteTimeSetting (int)));
+	connect (configWidget. switchTimeSetting,
+	                                 SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_switchTimeSetting (int)));
+	connect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderAlfabetical ()));
+	connect (configWidget. orderServiceIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderServiceIds ()));
+	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_ordersubChannelIds ()));
 }
 
 void	RadioInterface::disconnectGUI() {
@@ -2104,6 +2140,21 @@ void	RadioInterface::disconnectGUI() {
 
 	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
+
+	disconnect (configButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_configSetting ()));
+	disconnect (configWidget. muteTimeSetting,
+	                                    SIGNAL (valueChanged (int)),
+	            this, SLOT (handle_muteTimeSetting (int)));
+	disconnect (configWidget. switchTimeSetting,
+	                                    SIGNAL (valueChanged (int)),
+	            this, SLOT (handle_switchTimeSetting (int)));
+	disconnect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
+	            this, SLOT (handle_orderAlfabetical ()));
+	disconnect (configWidget. orderServiceIds, SIGNAL (clicked ()),
+	            this, SLOT (handle_orderServiceIds ()));
+	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
+	            this, SLOT (handle_ordersubChannelIds ()));
 }
 //
 #include <QCloseEvent>
@@ -2247,6 +2298,7 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
 }
 
 void	RadioInterface::localSelect (const QString &s) {
+int	switchTime;
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 	if (list. length () != 2)
 	   return;
@@ -2292,8 +2344,10 @@ void	RadioInterface::localSelect (const QString &s) {
         nextService. SId                = 0;
         nextService. SCIds              = 0;
         presetTimer. setSingleShot (true);
-        presetTimer. setInterval (switchTime);
-        presetTimer. start (switchTime);
+	switchTime			=
+	                  dabSettings -> value ("switchTime", 8). toInt ();
+        presetTimer. setInterval (switchTime * 1000);
+        presetTimer. start (switchTime * 1000);
         startChannel    (channelSelector -> currentText ());
 }
 
@@ -2779,6 +2833,7 @@ void	RadioInterface::handle_scanButton () {
 }
 
 void	RadioInterface::startScanning	() {
+int	switchTime;
 	presetTimer. stop ();
 	channelTimer. stop ();
 
@@ -2806,7 +2861,9 @@ void	RadioInterface::startScanning	() {
 	dynamicLabel	-> setText ("scanning channel " +
 	                                     channelSelector -> currentText ());
         scanButton      -> setText ("scanning");
-        channelTimer. start (switchTime);
+	switchTime		=
+	                  dabSettings -> value ("switchTime", 8). toInt ();
+        channelTimer. start (switchTime * 1000);
 
         startChannel    (channelSelector -> currentText ());
 	if (!normalScan) {
@@ -2843,6 +2900,7 @@ void	RadioInterface::stopScanning	(bool dump) {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::No_Signal_Found () {
+int	switchTime;
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found (void)),
 	            this, SLOT (No_Signal_Found (void)));
         disconnect (&channelTimer, SIGNAL (timeout (void)),
@@ -2871,6 +2929,8 @@ void	RadioInterface::No_Signal_Found () {
 
 	      dynamicLabel -> setText ("scanning channel " +
 	                                  channelSelector -> currentText ());
+	      switchTime	= 
+	                  dabSettings -> value ("switchTime", 8). toInt ();
 	      startChannel (channelSelector -> currentText ());
 	      channelTimer. start (switchTime);
 	   }
@@ -3027,21 +3087,43 @@ void	RadioInterface::show_for_safety () {
 	contentButton		->	show ();
 }
 
+void	RadioInterface::muteButton_timeOut	() {
+	muteDelay --;
+	if (muteDelay > 0) {
+	   stillMuting -> display (muteDelay);
+	   muteTimer. start (1000);
+	   return;
+	}
+	else {
+           disconnect (&muteTimer, SIGNAL (timeout ()),
+                       this, SLOT (muteButton_timeOut ()));
+           muteButton   -> setText ("mute");
+           muteButton   -> update ();
+	   stillMuting	-> hide ();
+           muting = false;
+	}
+}
+
 void	RadioInterface::handle_muteButton	() {
 	if (muting) {
 	   muteTimer. stop ();
 	   disconnect (&muteTimer, SIGNAL (timeout ()),
-	               this, SLOT (handle_muteButton ()));
+	               this, SLOT (muteButton_timeOut ()));
 	   muteButton	-> setText ("mute");
 	   muteButton	-> update ();
 	   muting = false;
+	   stillMuting	-> hide ();
 	   return;
 	}
 
 	connect (&muteTimer, SIGNAL (timeout (void)),
-                 this, SLOT (handle_muteButton (void)));
-        muteTimer. start (muteDelay * 1000 * 60);
+                 this, SLOT (muteButton_timeOut (void)));
+	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
+	muteDelay	*= 60;
+        muteTimer. start (1000);
 	muteButton	-> setText ("MUTING");
+	stillMuting	-> show ();
+	stillMuting	-> display (muteDelay);
 	muteButton	-> update ();
 	muting = true;
 }
@@ -3233,7 +3315,7 @@ QString	audiodumpButton_font =
 	                                             historyButton_font));
 	dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
 	                                             dumpButton_font));
-	notUsedButton	-> setStyleSheet (temp. arg (notUsedButton_color,
+	configButton	-> setStyleSheet (temp. arg (notUsedButton_color,
 	                                             notUsedButton_font));
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
@@ -3351,4 +3433,35 @@ int	index;
 	dabSettings	-> setValue (buttonFont, textColor);
 	dabSettings	-> endGroup ();
 }
+
+/////////////////////////////////////////////////////////////////////////
+//	External configuration items				//////
+
+void	RadioInterface::handle_configSetting	() {
+	if (configDisplay -> isHidden ()) 
+	   configDisplay -> show ();
+	else
+	   configDisplay -> hide ();
+}
+
+void	RadioInterface::handle_muteTimeSetting	(int newV) {
+	dabSettings	-> setValue ("muteTime", newV);
+}
+
+void	RadioInterface::handle_switchTimeSetting	(int newV) {
+	dabSettings	-> setValue ("switchTime", newV);
+}
+
+void	RadioInterface::handle_orderAlfabetical		() {
+	dabSettings -> setValue ("serviceOrder", ALPHA_BASED);
+}
+
+void	RadioInterface::handle_orderServiceIds		() {
+	dabSettings -> setValue ("serviceOrder", ID_BASED);
+}
+
+void	RadioInterface::handle_ordersubChannelIds	() {
+	dabSettings -> setValue ("serviceOrder", SUBCH_BASED);
+}
+
 
