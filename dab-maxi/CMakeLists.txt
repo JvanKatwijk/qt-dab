@@ -430,7 +430,7 @@ endif ()
 	        ${${objectName}_UIS}
 	     ../forms/dabradio.ui
 	     ../forms/technical_data.ui
-	     ../forms/config.ui
+	     ../forms/config-helper.ui
 	     ../forms/audio-description.ui
 	     ../forms/data-description.ui
 	     ../spectrum-viewer/scopewidget.ui

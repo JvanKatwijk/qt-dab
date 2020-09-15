@@ -176,7 +176,7 @@ HEADERS += ./radio.h \
 
 FORMS	+= ../forms/technical_data.ui
 FORMS	+= ../forms/dabradio.ui 
-FORMS	+= ../forms/config.ui 
+FORMS	+= ../forms/config-helper.ui 
 FORMS	+= ../forms/audio-description.ui
 FORMS	+= ../forms/data-description.ui
 FORMS	+= ../spectrum-viewer/scopewidget.ui

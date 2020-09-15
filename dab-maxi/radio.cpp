@@ -87,8 +87,6 @@
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
 #endif
-#include	"ui_technical_data.h"
-#include	"ui_config.h"
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"

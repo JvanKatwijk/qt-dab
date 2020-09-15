@@ -147,6 +147,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
+           <widget class="QLCDNumber" name="stillMuting"/>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
              <widget class="QLabel" name="runtimeDisplay">
@@ -517,10 +520,10 @@ it is definitely not the time on your clock.</string>
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="2" colspan="3">
-         <widget class="smallPushButton" name="detailButton">
+        <item row="2" column="0" colspan="4">
+         <widget class="smallComboBox" name="streamoutSelector">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -532,15 +535,27 @@ it is definitely not the time on your clock.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Audio Device</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="smallPushButton" name="historyButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Detail</string>
+           <string>list</string>
           </property>
          </widget>
         </item>
         <item row="0" column="5">
-         <widget class="smallPushButton" name="resetButton">
+         <widget class="verySmallPushButton" name="resetButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -555,55 +570,8 @@ it is definitely not the time on your clock.</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="6" colspan="2">
-         <widget class="smallPushButton" name="scanButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>Touching the scan button will cause the software to make a single scan over all channels in the selected band. Ensembles (and their services) found will be displayed in a separate window.
-The windows will be visible as long as the scanning mode is on (note that after completing the
-scan, i.e. the cycle from (in Mode I) channel 5A to 13F, the software will wait until the scanner
-is officlally stopped).</string>
-          </property>
-          <property name="text">
-           <string>Scan</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="smallPushButton" name="show_tiiButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>TII</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="2" colspan="3">
-         <widget class="smallPushButton" name="show_correlationButton">
+         <widget class="verySmallPushButton" name="show_correlationButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -627,8 +595,40 @@ the reach of this receiver.</string>
           </property>
          </widget>
         </item>
+        <item row="1" column="7">
+         <widget class="verySmallPushButton" name="devicewidgetButton">
+          <property name="toolTip">
+           <string>Hide or show the widget for device control.</string>
+          </property>
+          <property name="text">
+           <string>show</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1" colspan="3">
+         <widget class="verySmallPushButton" name="dumpButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Raw dump</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="5" colspan="2">
-         <widget class="smallPushButton" name="show_spectrumButton">
+         <widget class="verySmallPushButton" name="show_spectrumButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -649,20 +649,10 @@ the reach of this receiver.</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="7">
-         <widget class="smallPushButton" name="devicewidgetButton">
-          <property name="toolTip">
-           <string>Hide or show the widget for device control.</string>
-          </property>
-          <property name="text">
-           <string>show</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="4">
-         <widget class="smallComboBox" name="streamoutSelector">
+        <item row="1" column="0" colspan="2">
+         <widget class="verySmallPushButton" name="show_tiiButton">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -674,13 +664,11 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-          <item>
-           <property name="text">
-            <string>Audio Device</string>
-           </property>
-          </item>
+          <property name="text">
+           <string>TII</string>
+          </property>
          </widget>
         </item>
         <item row="2" column="4" colspan="4">
@@ -722,18 +710,30 @@ the reach of this receiver.</string>
           </item>
          </widget>
         </item>
-        <item row="3" column="0">
-         <widget class="verySmallPushButton" name="historyButton">
+        <item row="0" column="2" colspan="3">
+         <widget class="verySmallPushButton" name="detailButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>list</string>
+           <string>Detail</string>
           </property>
          </widget>
         </item>
         <item row="0" column="0" colspan="2">
-         <widget class="smallPushButton" name="contentButton">
+         <widget class="verySmallPushButton" name="contentButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -753,8 +753,33 @@ the reach of this receiver.</string>
           </property>
          </widget>
         </item>
+        <item row="0" column="6" colspan="2">
+         <widget class="verySmallPushButton" name="scanButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>Touching the scan button will cause the software to make a single scan over all channels in the selected band. Ensembles (and their services) found will be displayed in a separate window.
+The windows will be visible as long as the scanning mode is on (note that after completing the
+scan, i.e. the cycle from (in Mode I) channel 5A to 13F, the software will wait until the scanner
+is officlally stopped).</string>
+          </property>
+          <property name="text">
+           <string>Scan</string>
+          </property>
+         </widget>
+        </item>
         <item row="3" column="6" colspan="2">
-         <widget class="smallPushButton" name="muteButton">
+         <widget class="verySmallPushButton" name="configButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -771,12 +796,12 @@ the reach of this receiver.</string>
            <string>mute the sound with this button. The default period is 2 minutes, can be set in the &quot;.ini&quot; file</string>
           </property>
           <property name="text">
-           <string>mute</string>
+           <string>config</string>
           </property>
          </widget>
         </item>
         <item row="3" column="4" colspan="2">
-         <widget class="smallPushButton" name="notUsedButton">
+         <widget class="verySmallPushButton" name="muteButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -793,29 +818,7 @@ the reach of this receiver.</string>
            <string>This button is not used in this version</string>
           </property>
           <property name="text">
-           <string>not used</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="smallPushButton" name="dumpButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Raw dump</string>
+           <string>mute</string>
           </property>
          </widget>
         </item>

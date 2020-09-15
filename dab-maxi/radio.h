@@ -64,7 +64,7 @@ class	serviceDescriptor;
 class	historyHandler;
 
 #include	"ui_technical_data.h"
-#include	"ui_config.h"
+#include	"ui_config-helper.h"
 
 /*
  *	The main gui object. It inherits from
