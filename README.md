@@ -1,6 +1,6 @@
-# Qt-DAB-3.5 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.6 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.5 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
+Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
 
 --------------------------------------------------------------------
 DISCLAIMER (for use on Windows)
@@ -23,23 +23,57 @@ as under Linux.
 So, while I keep on cross compiling the software for windows, do not
 always expect the smooth behaviour as it is under Linux.
 
+---------------------------------------------------------------------
+Disclaimer
+---------------------------------------------------------------------
+
+3.6 is software "under development", and while this software seems
+to be usable, this is not a stable release (yet).
+The documentation, i.e. the user's guide is not yet updated
+
 ----------------------------------------------------------------------
-Differences 3.5.3 <-> 3.4
+New in 3.6
 -----------------------------------------------------------------------
 
-	a. Support for adalm ppluto devices,
-	b. saving gain settings for different channels when configured,
-	c. support for saving detailed output of the scan,
-	d. clock error counter and rs corrections counter
-	e. improved algorithm for frequency synchronization,
-	f. added a "mute" button (moved 2 buttons to technical data)
-	g. also for dabMini an appImage (x64) is availablce.
+Most of the differences between version 3.6 and previous versions are
+(hopefully) unnoticed by the user (some of them are cornerstones for
+future functional additions). However, one change is very visible:
+the "mute button" is on a different location, and the button on the 
+right bottom corner is now "config" button. The changes are large
+enough to justify a change in version number.
 
-Version 3.5.3. added - apart from a number of internal changes - color setting to the buttons and scopes.
+The rationale for a "config" button is that there is a need (well,
+I have a need) to change some of the settings, without having to
+edit the ".ini" file.
 
-------------------------------------------------------------------------
-README FIRST  === README FIRST === README FIRST === README FIRST
-------------------------------------------------------------------
+![configuration](/configuration widget.png?raw=true)
+
+The "config" button, when pressed, gives access to a widget with a few
+settings. Currently, there are three settings 
+
+	a. the switchtime, the maximum delay when selecting a service in a different channel;
+
+	b. the "mute" time, the time - in minutes - that audio mutes;
+
+	c. the plotLength, the length of the X-axis in the correlation display.
+
+While most people will not notice it, there are different orderings possible
+for the services in the service list.
+One may choose between (Alfabetical, by service Identifier or by the
+number of the subchannel).
+
+As an experiment - inspired by others - an alarm timer is introduced.
+It happened a few times that I missed the news, transmitted on the hour,
+which was part of a different service than the one I was listening to.
+
+So, it is now possible to specify a time on which a selected service on
+a selected channel can be started, regardless of the service and channel
+that we ar elistening to.
+**The GUI elements for this feature are - still - experimental.**
+
+----------------------------------------------------------------------
+The contents of the qt-dab sourcetree
+----------------------------------------------------------------------
 
 The directory qt-dab is now the home of *THREE* related, but 
 different, versions of a DAB decoder:
@@ -176,18 +210,19 @@ needs 3.06 (3.07) support
 Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------
 
-The picture on top shows Qt-DAB's main window and the other 5 **optional**
+The picture on top shows Qt-DAB's main window and the other 6 **optional**
 widgets:
 
-  * a widget with controls for the attached device,
   * a widget showing the technical information of the *selected service* as well
 as some information on the quality of the decoding, 
   * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
   * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
-  * and a widget showing the response(s) from different transmitters in the SFN,
+  * a widget showing the correlations response(s) from different transmitters in the SFN,
+  * a widget with controls for the attached device,
+  * a widget for additional configuration settings.
 
-Another - a sixth - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
-possibility is created to save a detailed description of the services
+Another - a seventh - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
+possibility was created to save a detailed description of the services
 in the different channels, in a format easily to process with LibreOffice
 or comparable programs.
 

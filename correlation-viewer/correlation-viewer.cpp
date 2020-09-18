@@ -34,7 +34,7 @@ bool	brush;
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= s;
 	plotLength			= s -> value ("plotLength",
-	                                                  1000). toInt ();
+	                                                  10). toInt () * 100;
 	this	-> responseBuffer	= b;
 
 	dabSettings	-> beginGroup ("correlationViewer");
@@ -140,8 +140,6 @@ bool	correlationViewer::isHidden() {
 static int lcount = 0;
 void	correlationViewer::showCorrelation (int32_t dots, int marker) {
 uint16_t	i;
-double X_axis	[plotLength];
-double Y_values [plotLength];
 float data	[dots];
 float	mmax	= 0;
 
@@ -149,6 +147,10 @@ float	mmax	= 0;
 	if (myFrame -> isHidden())
 	   return;
 
+	plotLength	= dabSettings -> value ("plotLength",
+	                                             10). toInt () * 100;
+	double X_axis	[plotLength];
+	double Y_values [plotLength];
 	for (i = 0; i < plotLength; i ++) 
 	   X_axis [i] = marker - plotLength / 2 + i;
 

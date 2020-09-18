@@ -155,8 +155,9 @@ HEADERS += ./radio.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
 	   ../includes/support/history-handler.h \
-	   ../includes/support/color-selector.h \
 	   ../includes/support/scanner-table.h \
+	   ../includes/support/color-selector.h \
+	   ../includes/support/alarm-selector.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -254,6 +255,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
+	   ../src/support/alarm-selector.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
@@ -271,7 +273,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-3.5
+TARGET		= qt-dab-3.6
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -320,7 +322,7 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-CONFIG		+= try-epg		# do not use
+#CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
@@ -362,7 +364,7 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= NO_SSE
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-3.5
+	TARGET		= qt-dab32-3.6
 	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
@@ -406,7 +408,7 @@ CONFIG		+= faad
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-CONFIG		+= try-epg		# do not use
+#CONFIG		+= try-epg		# do not use
 DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 #	devices

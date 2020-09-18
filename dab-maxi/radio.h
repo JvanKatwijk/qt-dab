@@ -170,6 +170,7 @@ private:
 	QTimer			startTimer;
 	QTimer			muteTimer;
 	QTimer			epgTimer;
+	QTimer			alarmTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
 	bool			muting;
@@ -307,6 +308,7 @@ private slots:
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
 	void			epgTimer_timeOut	();
+	void			alarmTimer_timeOut	();
 //
 //	color handlers
 	void			color_contentButton	();
@@ -326,6 +328,7 @@ private slots:
 	void			color_nextServiceButton	();
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
+	void			color_configButton	();
 //
 //	config handlers
 	void			handle_configSetting	();
@@ -334,6 +337,8 @@ private slots:
 	void			handle_orderAlfabetical	();
 	void			handle_orderServiceIds	();
 	void			handle_ordersubChannelIds	();
+	void			handle_alarmSelector	(const QString &);
+	void			handle_setTime_button	();
+	void			handle_plotLengthSetting	(int);
 };
 #endif
-

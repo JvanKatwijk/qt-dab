@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-3.5.3</string>
+   <string>Qt-DAB-3.6</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
@@ -793,7 +793,8 @@ is officlally stopped).</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>mute the sound with this button. The default period is 2 minutes, can be set in the &quot;.ini&quot; file</string>
+           <string>config Button. Touching this button will show/hide a widget where some configuration settings
+can be changed. The config widget also contains a posisbility for setting an alarm like signal.</string>
           </property>
           <property name="text">
            <string>config</string>
@@ -815,7 +816,8 @@ is officlally stopped).</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>This button is not used in this version</string>
+           <string>The mute button, when touched a first time, the audio - if any - will be muted for a given amount of time (default 2 minutes, can be set in the configuration widget). If touched for a second time
+muting will stop.</string>
           </property>
           <property name="text">
            <string>mute</string>
