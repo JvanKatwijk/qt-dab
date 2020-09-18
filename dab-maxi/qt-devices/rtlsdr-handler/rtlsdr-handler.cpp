@@ -125,17 +125,18 @@ char	manufac [256], product [256], serial [256];
 	setupUi (&myFrame);
 	myFrame. show();
 	inputRate			= 2048000;
-	workerHandle		= nullptr;
-	const char *libraryString = "rtlsdr.dll";
+	workerHandle			= nullptr;
 	isActive		= false;
 #ifdef	__MINGW32__
+	const char *libraryString	= "rtlsdr.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
 	   throw (20);
 	}
 #else
-	Handle		= dlopen ("librtlsdr.so", RTLD_NOW);
+	const char *libraryString	= "librtlsdr.so";
+	Handle			= dlopen ("librtlsdr.so", RTLD_NOW);
 
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%s)\n", libraryString, dlerror());
@@ -150,9 +151,8 @@ char	manufac [256], product [256], serial [256];
 #endif
 	   throw (21);
 	}
-//
 //	Ok, from here we have the library functions accessible
-	deviceCount 		= this -> rtlsdr_get_device_count();
+	deviceCount 		= this -> rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
 	   fprintf (stderr, "No devices found\n");
 #ifdef __MINGW32__

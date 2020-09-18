@@ -25,7 +25,7 @@
 #include <QAbstractItemView>
 
 bool KHBoxEventFilter::eventFilter (QObject *obj, QEvent *event) {
-	if (event -> type() == QEvent::KeyPress) {
+	if (event -> type () == QEvent::KeyPress) {
 	   auto keyEvent = static_cast<QKeyEvent *>(event);
 	   if ((keyEvent->modifiers() == Qt::ShiftModifier) &&
 	       (keyEvent->key() == Qt::Key::Key_Delete)) {
@@ -43,8 +43,8 @@ bool KHBoxEventFilter::eventFilter (QObject *obj, QEvent *event) {
 	return QObject::eventFilter(obj, event);
 }
 
-bool KHBoxListEventFilter::eventFilter (QObject *obj, QEvent *event) {
-	if (event -> type() == QEvent::KeyPress) {
+bool	KHBoxListEventFilter::eventFilter (QObject *obj, QEvent *event) {
+	if (event -> type () == QEvent::KeyPress) {
 	   auto keyEvent = static_cast<QKeyEvent *>(event);
 	   if ((keyEvent->modifiers() == Qt::ShiftModifier) &&
 	       (keyEvent->key() == Qt::Key::Key_Delete)) {
@@ -71,5 +71,9 @@ presetComboBox::presetComboBox (QWidget *parent):
 QSize   presetComboBox:: sizeHint ()const {
 QSize   temp = QComboBox::sizeHint ();
         return QSize (temp. rwidth () / 6, temp. rheight () / 4);
+}
+
+void	presetComboBox::mouseDoubleClickEvent (QMouseEvent *e) {
+	fprintf (stderr, "double mouse click\n");
 }
 

@@ -102,6 +102,8 @@ const QString listElement = channel + ":" + serviceName;
 	for (int i = 0; i < historyList. size (); i ++)
 	   if (historyList. at (i) == listElement)
 	      return;
+//	fprintf (stderr, "adding %s %s\n", channel. toLatin1 (). data (),
+//	                                   serviceName. toLatin1 (). data ());
 	historyList. append (listElement);
 	displayList. setStringList (historyList);
 	this	-> setModel (&displayList);

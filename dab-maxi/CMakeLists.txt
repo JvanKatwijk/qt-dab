@@ -210,6 +210,7 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
+	     ./si-processor.h
 	     ../dab-processor.h
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
@@ -303,6 +304,7 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./si-processor.cpp
 	     ../dab-processor.cpp
 	     ../service-description/audio-descriptor.cpp
 	     ../service-description/data-descriptor.cpp
@@ -383,6 +385,7 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
+	     ./si-processor.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/audiosink.h

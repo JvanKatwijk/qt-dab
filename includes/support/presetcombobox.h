@@ -21,6 +21,7 @@
 #ifndef	__PRESET_COMBOBOX__
 #define	__PRESET_COMBOBOX__
 
+#include	<QEvent>
 #include	<QComboBox>
 #include	<QSize>
 
@@ -56,6 +57,7 @@ public:
 protected:
 	KHBoxEventFilter boxEF;
 	KHBoxListEventFilter listEF;
+	void	mouseDoubleClickEvent	(QMouseEvent *e);
 };
 
 #endif 

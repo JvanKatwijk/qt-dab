@@ -50,6 +50,7 @@
 #include	"scanner-table.h"
 #ifdef	TRY_EPG
 #include	"epgdec.h"
+#include	"si-processor.h"
 #endif
 
 #include	"spectrum-viewer.h"
@@ -138,6 +139,7 @@ private:
 #endif
 #ifdef	TRY_EPG
 	CEPGDecoder		epgHandler;
+	siProcessor		siHandler;
 #endif
 	bool			saveSlides;
 	QString			picturesPath;
@@ -167,6 +169,7 @@ private:
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
+	QTimer			epgTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
 	bool			muting;
@@ -187,6 +190,7 @@ private:
 	void			showButtons		();
 	deviceHandler		*setDevice		(const QString &);
 	historyHandler		*my_history;
+	historyHandler		*my_presets;
 //
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
@@ -302,6 +306,7 @@ private slots:
 	void			setPresetStation	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
+	void			epgTimer_timeOut	();
 //
 //	color handlers
 	void			color_contentButton	();

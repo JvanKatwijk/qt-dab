@@ -466,7 +466,10 @@ uint8_t	dabBand;
 //	timer for muting
 	muteTimer. setSingleShot (true);
 	muting		= false;
-
+//
+//	timer for autostart epg service
+	connect (&epgTimer, SIGNAL (timeout ()),
+	         this, SLOT (epgTimer_timeOut ()));
 	QPalette *lcdPalette	= new QPalette;
 	lcdPalette	-> setColor (QPalette::Background, Qt::white);
 	lcdPalette	-> setColor (QPalette::Base, Qt::black);
@@ -628,9 +631,6 @@ int	switchTime;
 }
 //
 /**
-  *	\brief At the end, we might save some GUI values
-  *	The QSettings could have been the class variable as well
-  *	as the parameter
   */
 void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
@@ -693,11 +693,11 @@ int	serviceOrder;
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (serviceOrder	== SUBCH_BASED) {
 	   audiodata ad;
-	   packetdata pd;
 	   my_dabProcessor	-> dataforAudioService (serviceName, &ad);
 	   if (ad. defined)
 	      ed. subChId	= ad. subchId;
 	   else {
+	      packetdata pd;
 	      my_dabProcessor	-> dataforPacketService (serviceName, &pd, 0);
 	      if (pd. defined)
 	         ed. subChId	= pd. subchId;
@@ -832,6 +832,7 @@ QString	dir;
 	   return;
 	QDir(). mkpath (dir);
 }
+
 static int fileNumber	= 0;
 static int propNumber	= 0;
 
@@ -875,18 +876,18 @@ QString realName;
 	         return;
 	      if (name == QString (""))
 	         name = "epg file";
-	      realName = epgPath + name;
-	      realName  = QDir::toNativeSeparators (realName);
+	      realName  = QDir::toNativeSeparators (epgPath + name);
 	      checkDir (realName);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-//	         QString fn = "/tmp/epgfile" + QString::number (fileNumber ++) + ".xxx";
-//	         fprintf (stderr, "going to write %s (%d bytes)\n",
-//	                                      fn. toLatin1 (). data (),
-//	                                      (int)(epgData. size ()));
-//	         FILE *f = fopen (fn. toLatin1 (). data (), "w+b");
-//	         fwrite (epgData. data (), 1, epgData. size (), f);
-//	         fclose (f);
+	         siHandler. process_SI (epgData. data (), epgData. size ());
+	         QString fn = "/tmp/epgfile" + QString::number (fileNumber ++) + ".xxx";
+	         fprintf (stderr, "going to write %s (%d bytes)\n",
+	                                      fn. toLatin1 (). data (),
+	                                      (int)(epgData. size ()));
+	         FILE *f = fopen (fn. toLatin1 (). data (), "w+b");
+	         fwrite (epgData. data (), 1, epgData. size (), f);
+	         fclose (f);
 //	         epgHandler. decode (epgData, realName);
 	      }
 //	      fprintf (stderr, "epg file %s\n",
@@ -1458,7 +1459,6 @@ deviceHandler	*inputDevice	= nullptr;
 //	newDevice is called from the GUI when selecting a device
 void	RadioInterface::newDevice (const QString &deviceName) {
 
-	fprintf (stderr, "op naar een nieuw device\n");
 //	Part I : stopping all activities
 	running. store (false);
 	stopChannel	();
@@ -1566,11 +1566,10 @@ void	RadioInterface::show_motHandling (bool b) {
 	if (!running. load())
 	   return;
 	if (b) 
-	   techData. motAvailable -> 
-	               setStyleSheet ("QLabel {background-color : green; color: white}");
-	else 
-	   techData. motAvailable ->
-	               setStyleSheet ("QLabel {background-color : red; color : white}");
+	techData. motAvailable -> 
+	            setStyleSheet (b ?
+	                   "QLabel {background-color : green; color: white}":
+	                   "QLabel {background-color : red; color : white}");
 }
 	
 //	called from the ofdmDecoder, it is computed for each frame
@@ -1595,17 +1594,17 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 }
 
-void	RadioInterface::setStereo	(bool s) {
+void	RadioInterface::setStereo	(bool b) {
 	if (!running. load ())
 	   return;
-	if (stereoSetting == s)
+	if (stereoSetting == b)
 	   return;
 	
-	techData. stereoLabel	-> setStyleSheet (s ?
+	techData. stereoLabel	-> setStyleSheet (b ?
 	   	         "QLabel {background-color: green; color : white}":
 	   	         "QLabel {background-color: red; color : white}");
-	techData. stereoLabel	-> setText (s ? "stereo" : "mono");
-	stereoSetting = s;
+	techData. stereoLabel	-> setText (b ? "stereo" : "mono");
+	stereoSetting = b;
 }
 
 void	RadioInterface::show_tii	(QByteArray data) {
@@ -1624,7 +1623,6 @@ QString a = "Est: ";
 	   my_tiiViewer. showSecondaries (data);
         }
 	my_tiiViewer. showSpectrum (1);
-
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -1801,6 +1799,7 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	   return;
 	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
 	   file.append (".sdr");
+
 	file	= QDir::toNativeSeparators (file);
 	sf_info -> samplerate   = INPUT_RATE;
 	sf_info -> channels     = 2;
@@ -1840,18 +1839,7 @@ void	RadioInterface::stop_audioDumping	() {
 	   return;
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
-	audioDumper = nullptr;
-	QString audiodumpButton_color =
-           dabSettings -> value (AUDIODUMP_BUTTON + "_color",
-	                                              "white"). toString ();
-	QString audiodumpButton_font =
-           dabSettings -> value (AUDIODUMP_BUTTON + "_font",
-	                                               "black"). toString ();
-
-	QString temp = "QPushButton {background-color: %1; color: %2}";
-	techData. audiodumpButton
-	                -> setStyleSheet (temp. arg (audiodumpButton_color,
-	                                             audiodumpButton_font));
+	audioDumper	= nullptr;
 	QFont font      = techData. audiodumpButton -> font ();
         font. setPointSize (10);
         dumpButton -> setFont (font);
@@ -1983,7 +1971,8 @@ void	RadioInterface::handle_framedumpButton () {
 	else
 	   start_frameDumping ();
 }
-
+//
+//	called from the mp4 handler, using a signal
 void    RadioInterface::newFrame        (int amount) {
 uint8_t buffer [amount];
 	if (!running. load ())
@@ -2410,8 +2399,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	   return;
 	}
 
-	presetTimer.	stop();
-	channelTimer.	stop ();
+	presetTimer.	stop	();
+	channelTimer.	stop	();
 	stopScanning	(false);
 	stopService 	();		// if any
 
@@ -2729,6 +2718,9 @@ int	tunedFrequency	=
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety ();
+	int	switchTime	=
+                          dabSettings -> value ("switchTime", 8). toInt ();
+        epgTimer. start (switchTime * 1000);
 }
 //
 //	apart from stopping the reader, a lot of administration
@@ -2736,6 +2728,7 @@ int	tunedFrequency	=
 void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
+	epgTimer. stop		();
 	stop_sourceDumping	();
 	stop_audioDumping	();
         soundOut	-> stop ();
@@ -2930,7 +2923,7 @@ int	switchTime;
 	      switchTime	= 
 	                  dabSettings -> value ("switchTime", 8). toInt ();
 	      startChannel (channelSelector -> currentText ());
-	      channelTimer. start (switchTime);
+	      channelTimer. start (switchTime * 1000);
 	   }
 	}
 	else
@@ -3462,4 +3455,15 @@ void	RadioInterface::handle_ordersubChannelIds	() {
 	dabSettings -> setValue ("serviceOrder", SUBCH_BASED);
 }
 
+void	RadioInterface::epgTimer_timeOut	() {
+#ifdef	TRY_EPG
+	epgTimer. stop ();
+	for (const auto serv : serviceList) {
+	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
+	       serv. name. endsWith (" epg ", Qt::CaseInsensitive))
+	      fprintf (stderr, "is %s an EPG file?\n",
+	                              serv. name. toLatin1 (). data ());
+	}
+#endif
+}
 

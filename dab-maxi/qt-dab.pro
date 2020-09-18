@@ -559,8 +559,10 @@ try-epg	{
 	DEPENDPATH	+= ../src/backend/data/epg \
 	                   ../includes/backend/data/epg 
 	INCLUDEPATH	+= ../includes/backend/data/epg 
-	HEADERS		+= ../includes/backend/data/epg/epgdec.h 
-	SOURCES		+= ../src/backend/data/epg/epgdec.cpp 
+	HEADERS		+= ../includes/backend/data/epg/epgdec.h \
+	                   ./si-processor.h
+	SOURCES		+= ../src/backend/data/epg/epgdec.cpp \
+	                   ./si-processor.cpp
 }
 
 tcp-streamer	{
