@@ -284,6 +284,7 @@ endif ()
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
+	     ../includes/support/alarm-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -368,6 +369,7 @@ endif ()
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
 	     ../src/support/scanner-table.cpp
 	     ../src/support/color-selector.cpp
+	     ../src/support/alarm-selector.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
@@ -417,6 +419,7 @@ endif ()
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
+	     ../includes/support/alarm-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 

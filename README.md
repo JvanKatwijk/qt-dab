@@ -46,7 +46,7 @@ The rationale for a "config" button is that there is a need (well,
 I have a need) to change some of the settings, without having to
 edit the ".ini" file.
 
-![configuration](/configuration widget.png?raw=true)
+![configuration](/configuration-widget.png?raw=true)
 
 The "config" button, when pressed, gives access to a widget with a few
 settings. Currently, there are three settings 
