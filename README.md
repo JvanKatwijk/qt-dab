@@ -74,6 +74,9 @@ that we ar elistening to. The services to be used in the alarm selection
 are the ones in the currentlly selected channel and those in the
 presets.
 
+The GUI contains an indicator which shows when the alarm is set.
+
+
 **The GUI elements for this feature are - still - experimental.**
 
 ----------------------------------------------------------------------
