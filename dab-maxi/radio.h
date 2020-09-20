@@ -120,7 +120,6 @@ private:
 	dabService		currentService;
 	dabService		nextService;
 
-	bool			normalScan;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
@@ -153,7 +152,7 @@ private:
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
-
+	bool			fullScanMode;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
@@ -197,6 +196,12 @@ private:
 	void			start_packetService	(const QString &);
 	void			startScanning		();
 	FILE			*findScanDump_FileName	();
+	SNDFILE			*findAudioDump_fileName	(const QString &,
+	                                                 const QString &);
+	FILE			*findFrameDump_fileName	(const QString &,
+	                                                 const QString &);
+	SNDFILE			*findRawDump_fileName	(const QString &,
+	                                                 const QString &);
 	FILE			*scanDumpFile;
 	void			stopScanning		(bool);
         void			start_audioDumping      ();
@@ -333,12 +338,13 @@ private slots:
 //	config handlers
 	void			handle_configSetting	();
 	void			handle_muteTimeSetting	(int);
-	void			handle_switchTimeSetting (int);
+	void			handle_switchDelaySetting (int);
 	void			handle_orderAlfabetical	();
 	void			handle_orderServiceIds	();
 	void			handle_ordersubChannelIds	();
 	void			handle_alarmSelector	(const QString &);
 	void			handle_setTime_button	();
 	void			handle_plotLengthSetting	(int);
+	void			handle_fullScanSelector	(int);
 };
 #endif

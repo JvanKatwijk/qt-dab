@@ -404,13 +404,6 @@ it is definitely not the time on your clock.</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>FIC </string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QProgressBar" name="ficError_display">
             <property name="maximumSize">
              <size>
@@ -420,6 +413,20 @@ it is definitely not the time on your clock.</string>
             </property>
             <property name="value">
              <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>FIC </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="alarmLabel">
+            <property name="text">
+             <string>Alarm</string>
             </property>
            </widget>
           </item>

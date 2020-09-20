@@ -154,16 +154,6 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #define	FRAMEDUMP_BUTTON	QString ("framedumpButton")
 #define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 #define	CONFIG_BUTTON		QString	("configButton")
-static
-void	colorButton (QPushButton *pb, QColor c, int p) {
-QPalette pal = pb	-> palette ();
-	pal. setColor (QPalette::Button, c);
-	pb		-> setAutoFillBackground (true);
-	pb		-> setPalette (pal);
-	QFont font	= pb -> font ();
-	font. setPointSize (p);
-	pb		-> setFont (font);
-}
 
 static
 uint8_t convert (QString s) {
@@ -221,11 +211,11 @@ uint8_t	dabBand;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
-	globals. spectrumBuffer          = &spectrumBuffer;
-	globals. iqBuffer		= &iqBuffer;
-	globals. responseBuffer		= &responseBuffer;
-	globals. tiiBuffer		= &tiiBuffer;
-	globals. frameBuffer		= &frameBuffer;
+	globals. spectrumBuffer	= &spectrumBuffer;
+	globals. iqBuffer	= &iqBuffer;
+	globals. responseBuffer	= &responseBuffer;
+	globals. tiiBuffer	= &tiiBuffer;
+	globals. frameBuffer	= &frameBuffer;
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -239,10 +229,10 @@ uint8_t	dabBand;
 	globals. tii_delay   =
 	           dabSettings  -> value ("tii_delay", 5). toInt();
 	if (globals. tii_delay < 5)
-	   globals. tii_delay = 5;
-	globals. tii_depth       =
+	   globals. tii_delay	= 5;
+	globals. tii_depth      =
 	               dabSettings -> value ("tii_depth", 1). toInt();
-	globals. echo_depth      =
+	globals. echo_depth     =
 	               dabSettings -> value ("echo_depth", 1). toInt();
 
 	currentService. valid	= false;
@@ -274,13 +264,6 @@ uint8_t	dabBand;
 	   epgPath = epgPath + "/";
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
-/*
- * Experimental:
- *	lots of people seem to want the scan to continue, rather than
- *	stop whever a channel with data is found.
- */
-	normalScan	=
-	           dabSettings -> value ("normalScan", 0). toInt () == 1;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
@@ -291,8 +274,8 @@ uint8_t	dabBand;
 	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (configDisplay);
 
-	int x = dabSettings -> value ("switchTime", 8). toInt ();
-	configWidget. switchTimeSetting -> setValue (x);
+	int x = dabSettings -> value ("switchDelay", 8). toInt ();
+	configWidget. switchDelaySetting -> setValue (x);
 
 	x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
@@ -315,6 +298,19 @@ uint8_t	dabBand;
 	serviceList. clear ();
         model . clear ();
         ensembleDisplay         -> setModel (&model);
+	alarmLabel		->
+                           setStyleSheet ("QLabel {background-color : red}");
+	alarmLabel		-> setText ("Alarm");
+	alarmLabel		-> hide ();
+/*
+ * Experimental:
+ *	lots of people seem to want the scan to continue, rather than
+ *	stop whever a channel with data is found.
+ */
+	fullScanMode	=
+	           dabSettings -> value ("fullScan", 1). toInt () == 1;
+	if (fullScanMode)
+	   configWidget. fullScanSelector -> setChecked (true);
 
 	bool showWidget         =
 	                 dabSettings -> value ("showDeviceWidget", 0).
@@ -592,7 +588,7 @@ void	RadioInterface::doStart (const QString &dev) {
 //
 //	when doStart is called, a device is available and selected
 bool	RadioInterface::doStart	() {
-int	switchTime;
+int	switchDelay;
 	QString h       = dabSettings -> value ("channel", "12C"). toString();
 	int k           = channelSelector -> findText (h);
 	if (k != -1) 
@@ -623,11 +619,11 @@ int	switchTime;
 //
 	secondariesVector. resize (0);	
 	if (nextService. valid) {
-	   switchTime		=
-	                  dabSettings -> value ("switchTime", 8). toInt ();
+	   switchDelay		=
+	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	   presetTimer. setSingleShot	(true);
-	   presetTimer. setInterval 	(switchTime * 1000);
-	   presetTimer. start 		(switchTime * 1000);
+	   presetTimer. setInterval 	(switchDelay * 1000);
+	   presetTimer. start 		(switchDelay * 1000);
 	}
 
 	startChannel (channelSelector -> currentText ());
@@ -755,7 +751,7 @@ QString s;
 
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
-	if (normalScan) {
+	if (!fullScanMode){
 	   stopScanning (false);
 	}
 }
@@ -1635,6 +1631,7 @@ QString a = "Est: ";
 void	RadioInterface::showSpectrum	(int32_t amount) {
 	if (!running. load())
 	   return;
+
 	my_spectrumViewer. showSpectrum (amount,
 				         inputDevice -> getVFOFrequency());
 }
@@ -1642,30 +1639,35 @@ void	RadioInterface::showSpectrum	(int32_t amount) {
 void	RadioInterface::showIQ		(int amount) {
 	if (!running. load())
 	   return;
+
 	my_spectrumViewer. showIQ (amount);
 }
 
 void	RadioInterface::showQuality	(float q) {
 	if (!running. load())
 	   return;
+
 	my_spectrumViewer. showQuality (q);
 }
 
 void	RadioInterface::show_rsCorrections	(int c) {
 	if (!running)
 	   return;
+
 	techData. rsCorrections	-> display (c);
 }
 
 void	RadioInterface::show_clockError	(int e) {
 	if (!running. load ())
 	   return;
+
 	my_spectrumViewer. show_clockErr (e);
 }
 
 void	RadioInterface::showCorrelation	(int amount, int marker) {
 	if (!running. load())
 	   return;
+
 	my_correlationViewer. showCorrelation (amount, marker);
 }
 
@@ -1697,7 +1699,10 @@ void	RadioInterface::handle_detailButton	() {
 	else
 	   dataDisplay -> hide();
 }
-
+//
+//	Whenever the input device is a file, some functions,
+//	e.g. selecting a channel, setting an alarm, are not
+//	meaningful
 void	RadioInterface::showButtons		() {
 	scanButton		-> show ();
 	channelSelector		-> show ();
@@ -1706,6 +1711,7 @@ void	RadioInterface::showButtons		() {
 	prevChannelButton	-> show ();
 	frequencyDisplay	-> show ();
 	presetSelector		-> show ();
+	configWidget. alarmSelector -> show ();
 }
 
 void	RadioInterface::hideButtons		() {
@@ -1716,6 +1722,7 @@ void	RadioInterface::hideButtons		() {
 	prevChannelButton	-> hide ();
 	frequencyDisplay	-> hide ();
 	presetSelector		-> hide ();
+	configWidget. alarmSelector -> hide ();
 }
 
 void	RadioInterface::setSyncLost	() {
@@ -1745,6 +1752,7 @@ QString defaultPath	= QDir::tempPath ();
 void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
+
 	stopChannel ();
 	startChannel	(channelSelector -> currentText ());
 }
@@ -1773,65 +1781,23 @@ void	RadioInterface::stop_sourceDumping	() {
 	setButtonFont (dumpButton, "Raw dump", 10);
 }
 //
-//	This is a response on a GUI event, so the existence
-//	of dabProcessor was already asserted
 void	RadioInterface::start_sourceDumping () {
-SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
 QString deviceName	= inputDevice -> deviceName ();
 QString channelName	= channelSelector -> currentText ();
-QString suggestedFileName;
-QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
-	                                         QDir::homePath ()). toString ();
+	
 	if (scanning. load ())
 	   return;
 
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-	
-	if (deviceName == "") {
-	   fprintf (stderr, "No dumping possible from selected reader\n");
+	rawDumper	= findRawDump_fileName (deviceName, channelName);
+	if (rawDumper == nullptr)
 	   return;
-	}
-
-	QString theTime	= localTimeDisplay -> text ();
-	for (int i = 0; i < theTime. length (); i ++)
-	   if (!isValid (theTime. at (i)))
-	      theTime. replace (i, 1, '-');
-
-	suggestedFileName = saveDir + deviceName + "-" + channelName +
-	                                                    "-" + theTime;
-	QString file = QFileDialog::getSaveFileName (this,
-	                                     tr ("Save file ..."),
-	                                     suggestedFileName + ".sdr",
-	                                     tr ("raw data (*.sdr)"));
-
-	if (file == QString (""))       // apparently cancelled
-	   return;
-	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
-	   file.append (".sdr");
-
-	file	= QDir::toNativeSeparators (file);
-	sf_info -> samplerate   = INPUT_RATE;
-	sf_info -> channels     = 2;
-	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	rawDumper = sf_open (file. toUtf8 (). data(),
-	                                   SFM_WRITE, sf_info);
-	if (rawDumper == nullptr) {
-	   qDebug() << "cannot open " << file. toUtf8(). data();
-	   return;
-	}
-
-	QString dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
 
 	setButtonFont (dumpButton, "writing", 12);
 	my_dabProcessor -> startDumping (rawDumper);
 }
 
 void	RadioInterface::handle_sourcedumpButton () {
-	if (!running. load ())
+	if (!running. load () || scanning. load ())
 	   return;
 
 	if (rawDumper != nullptr)
@@ -1843,6 +1809,7 @@ void	RadioInterface::handle_sourcedumpButton () {
 void	RadioInterface::stop_audioDumping	() {
 	if (audioDumper == nullptr)
 	   return;
+
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
 	audioDumper	= nullptr;
@@ -1850,52 +1817,17 @@ void	RadioInterface::stop_audioDumping	() {
 }
 
 void	RadioInterface::start_audioDumping () {
-SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
-QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
-	                                 QDir::homePath ()).  toString ();
-	if (scanning. load ())
+	audioDumper	= findAudioDump_fileName  (serviceLabel -> text (),
+	                                           localTimeDisplay -> text ());
+	if (audioDumper == nullptr)
 	   return;
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	QString tailS = serviceLabel -> text () + "-" + 
-	                                      localTimeDisplay -> text ();
-	for (int i = 0; i < tailS. length (); i ++)
-	   if (!isValid (tailS. at (i))) 
-	      tailS. replace (i, 1, '-');
-	QString suggestedFileName = saveDir + tailS;
-	QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file ..."),
-	                                        suggestedFileName + ".wav",
-	                                        tr ("PCM wave file (*.wav)"));
-	if (file == QString (""))
-	   return;
-	if (!file.endsWith (".wav", Qt::CaseInsensitive))
-	   file.append (".wav");
-	file		= QDir::toNativeSeparators (file);
-	sf_info		-> samplerate	= 48000;
-	sf_info		-> channels	= 2;
-	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-	audioDumper	= sf_open (file. toUtf8(). data(),
-	                                   SFM_WRITE, sf_info);
-	if (audioDumper == nullptr) {
-	   qDebug() << "Cannot open " << file. toUtf8(). data();
-	   return;
-	}
-
-	QString	dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
 
 	setButtonFont (techData. audiodumpButton, "writing", 12);
 	soundOut	-> startDumping (audioDumper);
 }
 
 void	RadioInterface::handle_audiodumpButton () {
-	if (!running. load ())
+	if (!running. load () || scanning. load ())
 	   return;
 
 	if (audioDumper != nullptr) 
@@ -1907,53 +1839,22 @@ void	RadioInterface::handle_audiodumpButton () {
 void	RadioInterface::stop_frameDumping () {
 	if (frameDumper == nullptr)
 	   return;
-	fclose (frameDumper);
 
+	fclose (frameDumper);
 	setButtonFont (techData. framedumpButton, "frame dump", 10);
 	frameDumper	= nullptr;
 }
 
 void	RadioInterface::start_frameDumping () {
-QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
-	                                QDir::homePath ()).  toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	if (scanning. load ())
+	frameDumper	= findFrameDump_fileName (serviceLabel -> text (),
+	                                          localTimeDisplay -> text ());
+	if (frameDumper == nullptr)
 	   return;
-
-	QString tailS	= serviceLabel -> text () + "-" +
-	                                 localTimeDisplay -> text ();
-	for (int i = 0; i < tailS. length (); i ++)
-	   if (!isValid (tailS. at (i)))
-	      tailS. replace (i,1, '-');
-	QString suggestedFileName = saveDir + tailS;
-	QString file = QFileDialog::getSaveFileName (this,
-	                                     tr ("Save file ..."),
-	                                     suggestedFileName + ".aac",
-	                                     tr ("aac data (*.aac)"));
-	if (file == QString (""))       // apparently cancelled
-	   return;
-
-	file		= QDir::toNativeSeparators (file);
-	frameDumper = fopen (file. toLatin1 (). data (), "w+b");
-	if (frameDumper == nullptr) {
-	   QString s = QString ("cannot open ") + file;
-	   QMessageBox::warning (this, tr ("Warning"),
-	                               tr (s. toLatin1 (). data ()));
-	   return;
-	}
-
-	QString dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
-
 	setButtonFont (techData. framedumpButton, "recording", 12);
 }
 
 void	RadioInterface::handle_framedumpButton () {
-	if (!running. load ())
+	if (!running. load () || scanning. load ())
 	   return;
 
 	if (frameDumper != nullptr) 
@@ -1967,6 +1868,7 @@ void    RadioInterface::newFrame        (int amount) {
 uint8_t buffer [amount];
 	if (!running. load ())
 	   return;
+
 	if (frameDumper == nullptr) 
 	   frameBuffer. FlushRingBuffer ();
 	else
@@ -2066,9 +1968,9 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_configSetting ()));
 	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_muteTimeSetting (int)));
-	connect (configWidget. switchTimeSetting,
+	connect (configWidget. switchDelaySetting,
 	                                 SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_switchTimeSetting (int)));
+	         this, SLOT (handle_switchDelaySetting (int)));
 	connect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
 	         this, SLOT (handle_orderAlfabetical ()));
 	connect (configWidget. orderServiceIds, SIGNAL (clicked ()),
@@ -2082,6 +1984,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_setTime_button ()));
 	connect (configWidget. plotLengthSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_plotLengthSetting (int)));
+	connect (configWidget. fullScanSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_fullScanSelector (int)));
 }
 
 void	RadioInterface::disconnectGUI() {
@@ -2132,9 +2036,9 @@ void	RadioInterface::disconnectGUI() {
 	disconnect (configWidget. muteTimeSetting,
 	                                    SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_muteTimeSetting (int)));
-	disconnect (configWidget. switchTimeSetting,
+	disconnect (configWidget. switchDelaySetting,
 	                                    SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_switchTimeSetting (int)));
+	            this, SLOT (handle_switchDelaySetting (int)));
 	disconnect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
 	            this, SLOT (handle_orderAlfabetical ()));
 	disconnect (configWidget. orderServiceIds, SIGNAL (clicked ()),
@@ -2149,6 +2053,8 @@ void	RadioInterface::disconnectGUI() {
 	disconnect (configWidget. plotLengthSetting,
 	                                         SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_plotLengthSetting (int)));
+	disconnect (configWidget. fullScanSelector, SIGNAL (stateChanged (int)),
+	            this, SLOT (handle_fullScanSelector (int)));
 }
 //
 #include <QCloseEvent>
@@ -2162,7 +2068,7 @@ void RadioInterface::closeEvent (QCloseEvent *event) {
 	if (resultButton != QMessageBox::Yes) {
 	   event -> ignore();
 	} else {
-	   TerminateProcess();
+	   TerminateProcess ();
 	   event -> accept();
 	}
 }
@@ -2170,6 +2076,12 @@ void RadioInterface::closeEvent (QCloseEvent *event) {
 bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if (!running. load ())
 	   return QWidget::eventFilter (obj, event);
+
+	if (my_dabProcessor == nullptr) {
+	   fprintf (stderr, "expert error 5\n");
+	   return true;
+	}
+
 	if (event -> type () == QEvent::KeyPress) {
 	   QKeyEvent *ke = static_cast <QKeyEvent *> (event);
 	   if (ke -> key () == Qt::Key_Return) {
@@ -2203,14 +2115,11 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   if (ev -> buttons() & Qt::RightButton) {
 	      audiodata ad;
 	      packetdata pd;
-	      if (my_dabProcessor == nullptr) {
-	         fprintf (stderr, "expert error 5\n");
-	         return true;
-	      }
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
 	      if (serviceName. at (1) == ' ')
 	         return true;
+
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
 	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
 	         presetData pd;
@@ -2240,6 +2149,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      }
 	   }
 	}
+
 	return QWidget::eventFilter (obj, event);
 }
 
@@ -2277,7 +2187,6 @@ void    RadioInterface::handle_historySelect (const QString &s) {
 	   return;
 
         presetTimer. stop ();
-//	presetSelector	-> setCurrentIndex (0);
         localSelect (s);
 }
 
@@ -2292,7 +2201,7 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
 }
 
 void	RadioInterface::localSelect (const QString &s) {
-int	switchTime;
+int	switchDelay;
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 	if (list. length () != 2)
 	   return;
@@ -2304,6 +2213,7 @@ int	switchTime;
 	   fprintf (stderr, "Expert error 21\n");
 	   return;
 	}
+
 	if (channel == channelSelector -> currentText ()) {
 	   stopService ();
 	   dabService s;
@@ -2338,10 +2248,10 @@ int	switchTime;
         nextService. SId                = 0;
         nextService. SCIds              = 0;
         presetTimer. setSingleShot (true);
-	switchTime			=
-	                  dabSettings -> value ("switchTime", 8). toInt ();
-        presetTimer. setInterval (switchTime * 1000);
-        presetTimer. start (switchTime * 1000);
+	switchDelay			=
+	                  dabSettings -> value ("switchDelay", 8). toInt ();
+        presetTimer. setInterval (switchDelay * 1000);
+        presetTimer. start (switchDelay * 1000);
         startChannel    (channelSelector -> currentText ());
 }
 
@@ -2352,7 +2262,6 @@ int	switchTime;
 
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
-//	presetSelector	-> setCurrentIndex (0);
 	channelTimer. stop ();
 	if (my_dabProcessor == nullptr) {
 	   fprintf (stderr, "Expert error 22\n");
@@ -2725,10 +2634,12 @@ int	tunedFrequency	=
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety ();
-	int	switchTime	=
-                          dabSettings -> value ("switchTime", 8). toInt ();
+	int	switchDelay	=
+                          dabSettings -> value ("switchDelay", 8). toInt ();
+#ifdef	TRY_EPG
 	if (!scanning. load ())
-           epgTimer. start (switchTime * 1000);
+           epgTimer. start (switchDelay * 1000);
+#endif
 }
 //
 //	apart from stopping the reader, a lot of administration
@@ -2832,7 +2743,9 @@ void	RadioInterface::handle_scanButton () {
 }
 
 void	RadioInterface::startScanning	() {
-int	switchTime;
+int	switchDelay;
+
+	fullScanMode	= dabSettings -> value ("fullScan", 1). toInt ();
 	presetTimer. stop ();
 	channelTimer. stop ();
 
@@ -2842,7 +2755,7 @@ int	switchTime;
 	new_presetIndex (0);
         stopChannel     ();
 	int  cc      = channelSelector -> currentIndex ();
-	if (normalScan) {
+	if (!fullScanMode) {
 	   cc ++;
 	   if (cc >= channelSelector -> count ())
               cc = 0;
@@ -2851,7 +2764,7 @@ int	switchTime;
 	   cc = 0;
 	}
         scanning. store (true);
-	if (!normalScan)
+	if (fullScanMode)
 	   scanDumpFile	= findScanDump_FileName ();
 	else
 	   scanDumpFile = nullptr;
@@ -2861,12 +2774,12 @@ int	switchTime;
 	dynamicLabel	-> setText ("scanning channel " +
 	                                     channelSelector -> currentText ());
         scanButton      -> setText ("scanning");
-	switchTime		=
-	                  dabSettings -> value ("switchTime", 8). toInt ();
-        channelTimer. start (switchTime * 1000);
+	switchDelay		=
+	                  dabSettings -> value ("switchDelay", 8). toInt ();
+        channelTimer. start (switchDelay * 1000);
 
         startChannel    (channelSelector -> currentText ());
-	if (!normalScan) {
+	if (fullScanMode) {
 	   theTable. clear ();
 	   theTable. show ();
 	}
@@ -2900,20 +2813,21 @@ void	RadioInterface::stopScanning	(bool dump) {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::No_Signal_Found () {
-int	switchTime;
+int	switchDelay;
+
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found (void)),
 	            this, SLOT (No_Signal_Found (void)));
+	channelTimer. stop ();
         disconnect (&channelTimer, SIGNAL (timeout (void)),
                     this, SLOT (channel_timeOut (void)));
 
-	channelTimer. stop ();
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
-	   if ((!normalScan) && (serviceList. size () > 0))
+	   if (fullScanMode && (serviceList. size () > 0))
 	      showServices ();
 	   stopChannel ();
 	   cc ++;
-	   if ((cc >= channelSelector -> count ()) && !normalScan) {
+	   if ((cc >= channelSelector -> count ()) && fullScanMode) {
 	      stopScanning (true);
 	   }
 	   else {  // we just continue
@@ -2929,10 +2843,10 @@ int	switchTime;
 
 	      dynamicLabel -> setText ("scanning channel " +
 	                                  channelSelector -> currentText ());
-	      switchTime	= 
-	                  dabSettings -> value ("switchTime", 8). toInt ();
+	      switchDelay	= 
+	                  dabSettings -> value ("switchDelay", 8). toInt ();
+	      channelTimer. start (switchDelay * 1000);
 	      startChannel (channelSelector -> currentText ());
-	      channelTimer. start (switchTime * 1000);
 	   }
 	}
 	else
@@ -3127,10 +3041,135 @@ void	RadioInterface::handle_muteButton	() {
 	muteButton	-> update ();
 	muting = true;
 }
+//
+//	Intermezzo: finding filenames
+//
+FILE	*RadioInterface::findFrameDump_fileName (const QString &service,
+	                                         const QString &time) {
+QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
+	                                QDir::homePath ()).  toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	QString tailS	= service + "-" + time + ".aac";
+	for (int i = 0; i < tailS. length (); i ++)
+	   if (!isValid (tailS. at (i)))
+	      tailS. replace (i,1, '-');
+
+	QString suggestedFileName = saveDir + tailS;
+	QString file = QFileDialog::getSaveFileName (this,
+	                                     tr ("Save file ..."),
+	                                     suggestedFileName,
+	                                     tr ("aac data (*.aac)"));
+	if (file == QString (""))       // apparently cancelled
+	   return nullptr;
+
+	file		= QDir::toNativeSeparators (file);
+	FILE *theFile	= fopen (file. toLatin1 (). data (), "w+b");
+	if (theFile == nullptr) {
+	   QString s = QString ("cannot open ") + file;
+	   QMessageBox::warning (this, tr ("Warning"),
+	                               tr (s. toLatin1 (). data ()));
+	   return nullptr;
+	}
+
+	QString dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
+	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
+	
+	return theFile;
+}
+
+SNDFILE	*RadioInterface::findAudioDump_fileName (const QString &service,
+	                                         const QString &time) {
+SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
+QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
+	                                 QDir::homePath ()).  toString ();
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	QString tailS = service + "-" + time;
+	for (int i = 0; i < tailS. length (); i ++)
+	   if (!isValid (tailS. at (i))) 
+	      tailS. replace (i, 1, '-');
+
+	QString suggestedFileName = saveDir + tailS + ".wav";
+	QString file = QFileDialog::getSaveFileName (this,
+	                                        tr ("Save file ..."),
+	                                        suggestedFileName,
+	                                        tr ("PCM wave file (*.wav)"));
+	if (file == QString (""))
+	   return nullptr;
+	if (!file.endsWith (".wav", Qt::CaseInsensitive))
+	   file.append (".wav");
+	file		= QDir::toNativeSeparators (file);
+	sf_info		-> samplerate	= 48000;
+	sf_info		-> channels	= 2;
+	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+
+	SNDFILE *theFile	= sf_open (file. toUtf8(). data(),
+	                                   SFM_WRITE, sf_info);
+	if (theFile == nullptr) {
+	   qDebug() << "Cannot open " << file. toUtf8(). data();
+	   return nullptr;
+	}
+
+	QString	dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
+	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
+
+	return theFile;
+}
+
+SNDFILE *RadioInterface::findRawDump_fileName (const QString &deviceName,
+	                                       const QString &channelName) {
+SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
+QString theTime		= QDateTime::currentDateTime (). toString ();
+QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
+	                                        QDir::homePath ()). toString ();
+SNDFILE	*theFile;
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+
+	QString suggestedFileName = saveDir +
+		                    deviceName + "-" +
+	                            channelName + "-" + theTime + ".sdr";
+	QString file = QFileDialog::getSaveFileName (this,
+	                                     tr ("Save file ..."),
+	                                     suggestedFileName,
+	                                     tr ("raw data (*.sdr)"));
+
+	if (file == QString (""))       // apparently cancelled
+	   return nullptr;
+	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
+	   file.append (".sdr");
+
+	file	= QDir::toNativeSeparators (file);
+	sf_info -> samplerate   = INPUT_RATE;
+	sf_info -> channels     = 2;
+	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+	theFile = sf_open (file. toUtf8 (). data(),
+	                                   SFM_WRITE, sf_info);
+	if (theFile == nullptr) {
+	   qDebug() << "cannot open " << file. toUtf8(). data();
+	   return nullptr;
+	}
+
+	QString dumper	= QDir::fromNativeSeparators (file);
+	int x		= dumper. lastIndexOf ("/");
+	saveDir		= dumper. remove (x, dumper. count () - x);
+	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
+
+	return theFile;
+}
 
 FILE	*RadioInterface::findScanDump_FileName		() {
 	QMessageBox::StandardButton resultButton =
-	             QMessageBox::question (this, "dabRadio",
+	             QMessageBox::question (this, "Qt-DAB",
 	                                    tr ("save the scan?\n"),
 	                                    QMessageBox::No | QMessageBox::Yes,
 	                                    QMessageBox::Yes);
@@ -3143,9 +3182,7 @@ FILE	*RadioInterface::findScanDump_FileName		() {
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
-	QString theTime   = localTimeDisplay -> text ();
-	if (theTime == "localTime") 
-	   theTime = QDateTime::currentDateTime (). toString ();
+	QString theTime = QDateTime::currentDateTime (). toString ();
 	for (int i = 0; i < theTime. length (); i ++)
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
@@ -3183,7 +3220,9 @@ void	RadioInterface::new_channelIndex (int index) {
 	channelSelector	-> blockSignals (false);
 }
 //
+/////////////////////////////////////////////////////////////////////////
 //	merely as a gadget, for each button the color can be set
+//	Lots of code, just for a gadget
 //	
 void	RadioInterface::set_Colors () {
 	dabSettings	-> beginGroup ("colorSettings");
@@ -3249,12 +3288,6 @@ QString dumpButton_color =
 QString dumpButton_font =
 	   dabSettings -> value (DUMP_BUTTON + "_font",
 	                                              "black"). toString ();
-QString notUsedButton_color =
-	   dabSettings -> value ("notUsedButton_color",
-	                                              "black"). toString ();
-QString notUsedButton_font =
-	   dabSettings -> value ("notUsedButton_font",
-	                                              "white"). toString ();
 QString muteButton_color =
 	   dabSettings -> value (MUTE_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -3321,8 +3354,8 @@ QString configButton_font	=
 	                                             historyButton_font));
 	dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
 	                                             dumpButton_font));
-	configButton	-> setStyleSheet (temp. arg (notUsedButton_color,
-	                                             notUsedButton_font));
+	configButton	-> setStyleSheet (temp. arg (configButton_color,
+	                                             configButton_font));
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
 
@@ -3458,8 +3491,18 @@ void	RadioInterface::handle_muteTimeSetting	(int newV) {
 	dabSettings	-> setValue ("muteTime", newV);
 }
 
-void	RadioInterface::handle_switchTimeSetting	(int newV) {
-	dabSettings	-> setValue ("switchTime", newV);
+void	RadioInterface::handle_switchDelaySetting	(int newV) {
+	dabSettings	-> setValue ("switchDelay", newV);
+}
+
+void	RadioInterface::handle_plotLengthSetting	(int l) {
+	dabSettings -> setValue ("plotLength", l);
+}
+
+void	RadioInterface::handle_fullScanSelector		(int d) {
+	(void)d;
+	dabSettings	-> setValue ("fullScan", 
+	                              configWidget. fullScanSelector -> isChecked () ? 1 : 0);
 }
 
 void	RadioInterface::handle_orderAlfabetical		() {
@@ -3472,6 +3515,91 @@ void	RadioInterface::handle_orderServiceIds		() {
 
 void	RadioInterface::handle_ordersubChannelIds	() {
 	dabSettings -> setValue ("serviceOrder", SUBCH_BASED);
+}
+
+
+///////////////////////////////////////////////////////////////////////////
+//	Handling alarm
+struct  {
+QString		alarmService;
+int		targetHour;
+int		targetMinute;
+} alarmData;
+
+void	RadioInterface::handle_alarmSelector	(const QString &s) {
+	alarmTimer. stop ();
+	alarmLabel	-> hide ();
+
+	if (s == "set alarm") {
+	   QStringList candidates;
+	   alarmSelector theSelector;
+	   for (int i = 0; i < serviceList. size (); i ++) {
+	      QString service = channelSelector -> currentText () +
+	                           ":" + serviceList. at (i). name;
+	      theSelector. addtoList (service);
+	      candidates += service;
+	   }
+	   for (int i = 1; i < presetSelector -> count (); i ++) {
+	      if (!candidates. contains (presetSelector -> itemText (i))) {
+                 theSelector.
+                      addtoList (presetSelector -> itemText (i));
+	         candidates += presetSelector -> itemText (i);
+	      }
+	   }
+           int selected = theSelector. QDialog::exec ();
+//	   fprintf (stderr, "selected item %d\n", selected);
+	   alarmData. alarmService	= candidates. at (selected);
+	   alarmData. targetHour	= configWidget.
+	                                       alarm_hours -> value ();
+	   alarmData. targetMinute	= configWidget.
+	                                       alarm_minutes -> value ();
+	   
+	   QTime theTime = QTime::currentTime ();
+	   if (theTime. hour () > alarmData. targetHour)
+	      alarmData. targetHour = (alarmData. targetHour + 12) % 24;
+	   if (alarmData. targetHour * 60 + alarmData. targetMinute <
+	               theTime. hour () * 60 + theTime. minute ()) {
+	      QMessageBox::warning (this, tr ("Warning"),
+                             tr ("cannot set alarm in the past\n"));
+	      return;
+	   }
+	   else {
+	      alarmTimer. setSingleShot	(true);
+	      alarmTimer. setInterval 	(60 * 1000);
+	      alarmTimer. start		(60 * 1000);
+	      fprintf (stderr, "alarm set for %s at %d %d\n",
+	                       alarmData. alarmService. toLatin1 (). data (),
+	                       alarmData. targetHour, alarmData. targetMinute);
+	      alarmLabel	-> show ();
+	   }
+	}
+}
+
+void	RadioInterface::alarmTimer_timeOut	() {
+QTime theTime = QTime::currentTime ();
+int	actualTime	= (theTime. hour () * 60 + theTime. minute ()) * 60 +
+	                                   theTime. second ();
+int	targetTime	= (alarmData. targetHour * 60 +
+	                                  alarmData. targetMinute) * 60;
+int	theDelay	= 60;	// seconds
+	alarmTimer. stop ();
+	if (actualTime >= targetTime - 30) {
+	   handle_historySelect (alarmData. alarmService);
+	   alarmLabel	-> hide ();
+	   return;
+	}
+
+	if (actualTime - targetTime < 180)
+	   theDelay = 20;
+	alarmTimer. setSingleShot (true);
+	alarmTimer. setInterval   (theDelay * 1000);
+	alarmTimer. start         (theDelay * 1000);
+}
+
+void	RadioInterface::handle_setTime_button	() {
+QTime theTime = QTime::currentTime ();
+	configWidget. alarm_hours -> setValue (theTime. hour ());
+	configWidget. alarm_minutes -> setValue (theTime. minute ());
 }
 
 void	RadioInterface::epgTimer_timeOut	() {
@@ -3487,64 +3615,5 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   }
 	}
 #endif
-}
-
-static
-QString alarmService;
-void	RadioInterface::handle_alarmSelector	(const QString &s) {
-int	alarmHours;
-int	alarmMinutes;
-
-	if (presetSelector -> count () < 2)
-	   return;
-	alarmTimer. stop ();
-	if (s == "set alarm") {
-	   alarmHours	= configWidget. alarm_hours -> value ();
-	   alarmMinutes	= configWidget. alarm_minutes -> value ();
-	   QTime theTime = QTime::currentTime ();
-	   if (theTime. hour () > alarmHours)
-	      alarmHours = (alarmHours + 12) % 24;
-	   if (alarmHours * 60 + alarmMinutes <
-	               theTime. hour () * 60 + theTime. minute ()) {
-	      QMessageBox::warning (this, tr ("Warning"),
-                             tr ("cannot set alarm in the past\n"));
-	      return;
-	   }
-	   else {
-	      alarmSelector theSelector;
-	      for (int candidate = 1;
-	               candidate < presetSelector -> count (); candidate ++) 
-                 theSelector.
-                      addtoList (presetSelector -> itemText (candidate));
-              int selected = theSelector. QDialog::exec() + 1;
-	      alarmService = presetSelector -> itemText (selected);
-	      int alarmDelay = (alarmHours - theTime. hour ()) * 60 +
-	                        alarmMinutes - theTime. minute ();
-	      fprintf (stderr, "over %d minuten  selecteren we %s\n",
-	                        alarmDelay, 
-	                             presetSelector -> itemText (selected).
-	                                                toLatin1 (). data ());
-	
-	      alarmTimer. setSingleShot	(true);
-	      alarmTimer. setInterval 	(alarmDelay * 60 * 1000);
-	      alarmTimer. start		(alarmDelay * 60 * 1000);
-	   }
-	}
-}
-
-void	RadioInterface::alarmTimer_timeOut	() {
-	alarmTimer. stop ();
-	fprintf (stderr, "het alarm is gegaan\n");
-	handle_historySelect (alarmService);
-}
-
-void	RadioInterface::handle_setTime_button	() {
-QTime theTime = QTime::currentTime ();
-	configWidget. alarm_hours -> setValue (theTime. hour ());
-	configWidget. alarm_minutes -> setValue (theTime. minute ());
-}
-
-void	RadioInterface::handle_plotLengthSetting	(int l) {
-	dabSettings -> setValue ("plotLength", l);
 }
 

@@ -2932,7 +2932,7 @@ QString	audiodumpButton_font =
 	                                             historyButton_font));
 	dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
 	                                             dumpButton_font));
-	notUsedButton	-> setStyleSheet (temp. arg (notUsedButton_color,
+	configButton	-> setStyleSheet (temp. arg (notUsedButton_color,
 	                                             notUsedButton_font));
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));

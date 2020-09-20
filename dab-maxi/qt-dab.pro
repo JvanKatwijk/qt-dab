@@ -346,7 +346,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit
-#	TARGET		= qt-dab64-3.5
+#	TARGET		= qt-dab64-3.6
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include

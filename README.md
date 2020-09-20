@@ -2,6 +2,14 @@
 
 Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
 
+---------------------------------------------------------------------
+DISCLAIMER
+---------------------------------------------------------------------
+
+THIS SOFTWARE IS UNDER DEVELOPMENT, IT MIGHT CONTAIN ERRORS, IT MAY
+CHANGE ON AN ALMOST DAILY BASIS AND THE DOCUMENTATION IS NOT UP TO DATE.
+PLEASE WAIT FOR A STABLE RELEASE 3.6 TO ARRIVE AND USE THE 3.5.3 RELEASE.
+
 --------------------------------------------------------------------
 DISCLAIMER (for use on Windows)
 --------------------------------------------------------------------
@@ -23,14 +31,6 @@ as under Linux.
 So, while I keep on cross compiling the software for windows, do not
 always expect the smooth behaviour as it is under Linux.
 
----------------------------------------------------------------------
-Disclaimer
----------------------------------------------------------------------
-
-3.6 is software "under development", and while this software seems
-to be usable, this is not a stable release (yet).
-The documentation, i.e. the user's guide is not yet updated
-
 ----------------------------------------------------------------------
 New in 3.6
 -----------------------------------------------------------------------
@@ -46,29 +46,34 @@ The rationale for a "config" button is that there is a need (well,
 I have a need) to change some of the settings, without having to
 edit the ".ini" file.
 
-![configuration](/configuration-widget.png?raw=true)
+![configuration](/qt-dab-config.png?raw=true)
 
 The "config" button, when pressed, gives access to a widget with a few
-settings. Currently, there are three settings 
+settings. Currently, there are the following settings:
 
-	a. the switchtime, the maximum delay when selecting a service in a different channel;
+	a. the *switchtime*, the maximum delay when selecting a service in a different channel;
 
-	b. the "mute" time, the time - in minutes - that audio mutes;
+	b. the *mute* time, the time - in minutes - that audio mutes;
 
-	c. the plotLength, the length of the X-axis in the correlation display.
+	c. the *plotLength*, the length of the X-axis in the correlation display.
+
+	d. *full scan* selector, scan the while band (default), or until a DABsignal is detected.
 
 While most people will not notice it, there are different orderings possible
 for the services in the service list.
-One may choose between (Alfabetical, by service Identifier or by the
+One may choose between (Alfabetical, by service Identifier, or by the
 number of the subchannel).
 
-As an experiment - inspired by others - an alarm timer is introduced.
+As an experiment - inspired by others - a simple ALARM timer is introduced.
 It happened a few times that I missed the news, transmitted on the hour,
 which was part of a different service than the one I was listening to.
 
 So, it is now possible to specify a time on which a selected service on
 a selected channel can be started, regardless of the service and channel
-that we ar elistening to.
+that we ar elistening to. The services to be used in the alarm selection
+are the ones in the currentlly selected channel and those in the
+presets.
+
 **The GUI elements for this feature are - still - experimental.**
 
 ----------------------------------------------------------------------
