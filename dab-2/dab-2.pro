@@ -156,6 +156,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
+	   ../includes/support/alarm-selector.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -173,6 +174,7 @@ HEADERS += ./radio.h \
 
 FORMS	+= ../forms/technical_data.ui
 FORMS	+= ../forms/dabradio.ui 
+FORMS	+= ../forms/config-helper.ui
 FORMS	+= ../forms/audio-description.ui
 FORMS	+= ../forms/data-description.ui
 FORMS	+= ../spectrum-viewer/scopewidget.ui
@@ -249,6 +251,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
+	   ../src/support/alarm-selector.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \

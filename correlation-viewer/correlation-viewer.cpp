@@ -33,8 +33,6 @@ QString	colorString	= "black";
 bool	brush;
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= s;
-	plotLength			= s -> value ("plotLength",
-	                                                  10). toInt () * 100;
 	this	-> responseBuffer	= b;
 
 	dabSettings	-> beginGroup ("correlationViewer");
@@ -147,10 +145,12 @@ float	mmax	= 0;
 	if (myFrame -> isHidden())
 	   return;
 
-	plotLength	= dabSettings -> value ("plotLength",
+	int plotLength	= dabSettings -> value ("plotLength",
 	                                             10). toInt () * 100;
+	if (plotLength > 1024)
+	   plotLength = 1024;
 	double X_axis	[plotLength];
-	double Y_values [plotLength];
+	double Y_values [plotLength];	
 	for (i = 0; i < plotLength; i ++) 
 	   X_axis [i] = marker - plotLength / 2 + i;
 

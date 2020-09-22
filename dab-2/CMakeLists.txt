@@ -258,6 +258,8 @@ endif ()
              ../includes/support/smallcombobox.h
              ../includes/support/history-handler.h
              ../includes/support/scanner-table.h
+	     ../includes/support/color-selector.h
+	     ../includes/support/alarm-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -330,6 +332,8 @@ endif ()
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
              ../src/support/scanner-table.cpp
+	     ../src/support/color-selector.cpp
+	     ../src/support/alarm-selector.cpp
 	     ../src/support/preset-handler.cpp
              ../src/support/presetcombobox.cpp
              ../src/support/smallqlistview.cpp
@@ -387,6 +391,8 @@ endif ()
              ../includes/support/smallcombobox.h
              ../includes/support/history-handler.h
              ../includes/support/scanner-table.h
+	     ../includes/support/color-selector.h
+	     ../includes/support/alarm-selector.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -397,6 +403,7 @@ endif ()
 	        ${${objectName}_UIS}
 	     ../forms/dabradio.ui
 	     ../forms/technical_data.ui
+	     ../forms/config-helper.ui
 	     ../forms/audio-description.ui
 	     ../forms/data-description.ui
 	     ../spectrum-viewer/scopewidget.ui

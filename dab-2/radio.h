@@ -62,7 +62,7 @@ class	serviceDescriptor;
 class	historyHandler;
 
 #include	"ui_technical_data.h"
-
+#include	"ui_config-helper.h"
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -107,11 +107,12 @@ private:
 	scannerTable		theTable;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
+	Ui_configWidget		configWidget;
+	QFrame			*configDisplay;
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
 	bool			stereoSetting;
-	bool			normalScan;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
@@ -142,6 +143,7 @@ private:
 #endif
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
+	bool			fullScanMode;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
@@ -157,8 +159,9 @@ private:
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
-	int32_t			numberofSeconds;
+	QTimer			alarmTimer;
 	int			muteDelay;
+	int32_t			numberofSeconds;
 	bool			muting;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
@@ -179,6 +182,11 @@ private:
 	void			start_audioService	(const QString &);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
+	FILE			*findContentDump_fileName	(const QString &);
+	FILE			*findFrameDump_fileName	(const QString &,
+	                                                 const QString &);
+	SNDFILE			*findAudioDump_fileName	(const QString &,
+	                                                 const QString &);
 	FILE                    *findScanDump_FileName  ();
         FILE                    *scanDumpFile;
 	void			stopScanning		(bool);
@@ -279,6 +287,8 @@ private slots:
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
 	void			handle_muteButton	();
+	void			muteButton_timeOut	();
+	void			alarmTimer_timeOut	();
 //
 //	color handlers
 	void			color_contentButton	();
@@ -298,6 +308,20 @@ private slots:
 	void			color_nextServiceButton	();
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
+	void			color_configButton	();
+//
+//	config handlers
+	void			handle_configSetting	();
+	void			handle_muteTimeSetting	(int);
+	void			handle_switchDelaySetting (int);
+	void			handle_orderAlfabetical	();
+	void			handle_orderServiceIds	();
+	void			handle_ordersubChannelIds	();
+	void			handle_alarmSelector	(const QString &);
+	void			handle_setTime_button	();
+	void			handle_plotLengthSetting	(int);
+	void			handle_fullScanSelector	(int);
+	void			handle_motslideSelector	(int);
 };
 #endif
 

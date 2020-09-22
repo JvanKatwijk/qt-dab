@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>337</width>
-    <height>343</height>
+    <width>373</width>
+    <height>415</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Configuration</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="3">
+   <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="label">
      <property name="text">
       <string>mute time (in minutes)</string>
@@ -42,7 +42,14 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="4" rowspan="2">
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string> PlotLength (unit 100)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
     <widget class="QSpinBox" name="plotLengthSetting">
      <property name="minimum">
       <number>1</number>
@@ -55,20 +62,20 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string> PlotLength (unit 100)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0" rowspan="2" colspan="5">
+   <item row="3" column="0" colspan="2">
     <widget class="QCheckBox" name="fullScanSelector">
      <property name="toolTip">
       <string>select a full scan (i.e. over all channels in the band) or a scan until a channel with data is met. Default is full scan.</string>
      </property>
      <property name="text">
       <string>      full scan</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="5">
+    <widget class="QCheckBox" name="motslideSelector">
+     <property name="text">
+      <string>    mot slides on separate widget</string>
      </property>
     </widget>
    </item>

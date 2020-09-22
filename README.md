@@ -8,10 +8,10 @@ DISCLAIMER
 
 THIS SOFTWARE IS UNDER DEVELOPMENT, IT MIGHT CONTAIN ERRORS, IT MAY
 CHANGE ON AN ALMOST DAILY BASIS AND THE DOCUMENTATION IS NOT UP TO DATE.
-PLEASE WAIT FOR A STABLE RELEASE 3.6 TO ARRIVE AND USE THE 3.5.3 RELEASE.
+A STABLE RELEASE 3.6 WILL ARRIVE LATER ON. YOU CAN USE THE 3.5.3 RELEASE.
 
 --------------------------------------------------------------------
-DISCLAIMER (for use on Windows)
+DISCLAIMER 
 --------------------------------------------------------------------
 
 While Windows is probably a very good OS, it seems that my way of programming
@@ -49,7 +49,8 @@ edit the ".ini" file.
 ![configuration](/qt-dab-config.png?raw=true)
 
 The "config" button, when pressed, gives access to a widget with a few
-settings. Currently, there are the following settings:
+settings to set or alter values in the ".ini" (i.e. configuration) file.
+Currently, there are the following settings:
 
 	a. the *switchtime*, the maximum delay when selecting a service in a different channel;
 
@@ -59,25 +60,30 @@ settings. Currently, there are the following settings:
 
 	d. *full scan* selector, scan the while band (default), or until a DABsignal is detected.
 
-While most people will not notice it, there are different orderings possible
-for the services in the service list.
+	e. *mot slides* selector, show slides in a separate window when checked, otherwise as part of the technical data widget.
+
+While most people will not be aware of it,
+there are different orderings possible for the services in the service list.
 One may choose between (Alfabetical, by service Identifier, or by the
 number of the subchannel).
 
 As an experiment - inspired by others - a simple ALARM timer is introduced.
 It happened a few times that I missed the news, transmitted on the hour,
-which was part of a different service than the one I was listening to.
+but on a different service than the one I was listening to.
 
-So, it is now possible to specify a time on which a selected service on
+Now it is possible to specify a time on which a selected service on
 a selected channel can be started, regardless of the service and channel
-that we ar elistening to. The services to be used in the alarm selection
-are the ones in the currentlly selected channel and those in the
-presets.
+that we ar elistening to. The services that can be selected in
+the alarm selection are the ones in the currently selected channel
+and those in the presets.
 
-The GUI contains an indicator which shows when the alarm is set.
-
+The GUI contains an indicator which shows when the alarm is set, when no
+alarm is set, the small label is not shown.
 
 **The GUI elements for this feature are - still - experimental.**
+
+Of course, the coloring, as implemented in 3.5.3 also applies to the config
+button.
 
 ----------------------------------------------------------------------
 The contents of the qt-dab sourcetree

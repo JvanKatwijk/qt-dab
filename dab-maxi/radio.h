@@ -195,13 +195,14 @@ private:
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
-	FILE			*findScanDump_FileName	();
-	SNDFILE			*findAudioDump_fileName	(const QString &,
-	                                                 const QString &);
+	FILE			*findContentDump_fileName	(const QString &);
 	FILE			*findFrameDump_fileName	(const QString &,
+	                                                 const QString &);
+	SNDFILE			*findAudioDump_fileName	(const QString &,
 	                                                 const QString &);
 	SNDFILE			*findRawDump_fileName	(const QString &,
 	                                                 const QString &);
+	FILE			*findScanDump_FileName	();
 	FILE			*scanDumpFile;
 	void			stopScanning		(bool);
         void			start_audioDumping      ();
@@ -346,5 +347,6 @@ private slots:
 	void			handle_setTime_button	();
 	void			handle_plotLengthSetting	(int);
 	void			handle_fullScanSelector	(int);
+	void			handle_motslideSelector	(int);
 };
 #endif

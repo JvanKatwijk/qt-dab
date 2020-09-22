@@ -78,7 +78,7 @@ std::complex<float> localBuffer [READLEN_DEFAULT / 2];
 	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
 	   return;
 
-	if (!theStick -> xmlDumping. load ())
+	if (theStick -> xmlDumping. load ())
 	   theStick -> xmlWriter -> add ((std::complex<uint8_t>*)buf, len / 2);
 
 	for (uint32_t i = 0; i < len / 2; i ++) 
@@ -221,10 +221,10 @@ char	manufac [256], product [256], serial [256];
 	{  int  gains [gainsCount];
 	   gainsCount	= rtlsdr_get_tuner_gains (device, gains);
 	   for (i = gainsCount; i > 0; i--) {
-	      fprintf(stderr, "%.1f ", gains [i - 1] / 10.0);
+	      fprintf (stderr, "%.1f ", gains [i - 1] / 10.0);
 	      combo_gain -> addItem (QString::number (gains [i - 1]));
 	   }
-	   fprintf(stderr, "\n");
+	   fprintf (stderr, "\n");
 
 	   rtlsdr_set_tuner_gain_mode (device, 1);
 	   rtlsdr_set_agc_mode (device, 0);
@@ -307,7 +307,8 @@ char	manufac [256], product [256], serial [256];
 	   delete[] gains;
 }
 
-void	rtlsdrHandler::handle_Value	(int offset, float lowVal, float highVal) {
+void	rtlsdrHandler::handle_Value	(int offset,
+	                                 float lowVal, float highVal) {
 int	newFrequency	= this -> rtlsdr_get_center_freq (device) + offset;
 
 	totalOffset	+= offset;
