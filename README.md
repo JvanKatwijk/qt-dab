@@ -144,12 +144,12 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.5** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.6** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 For DX purposes, a separate **dab-scanner** is implemented that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a text file, formatted for use with *LibreOffice Calc* and
-comparable programs. Note that in **Qt-DAB-3.5** the scan function
+comparable programs. Note that in **Qt-DAB-3.6** the scan function
 is extended with an option to save detailed data in a text file,
 compatible with e.g. LibreOffice.
 
@@ -343,7 +343,7 @@ what will be the color of the grid and what will be the color of the curve.
 Maintaining History for Qt-DAB and dab-2
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.5 and dab-2.1 save all service names found.
+Qt-DAB-3.6 and dab-2.1 save all service names found.
 Pairs "Channel:serviceName"
 will be made (in)visible when touching the appropriate button (the
 one labeled with "xx").
@@ -360,13 +360,12 @@ select the name.
 Comment on some  configuration settings
 -------------------------------------------------------------------------------
 
-All three programs maintain a number of settings in an ".ini" file.
+All **three** programs maintain a number of settings in an ".ini" file.
 A typical setting is the channel/service combination at program termination,
 values, used to initialize the software at program start up.
 
 Next to this kind of settings, there is a myriad of possible settings
-that can be done by the user. As an example, the color or the various
-scopes can be set.
+that can be done by the user.
 A complete description of the settings can be found in the user's manual
 (in the subdirectory *docs*).
 
@@ -394,9 +393,9 @@ Installation on Windows
 Read carefully what I have said on Windows!
 
 For windows *two*  **installers** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
-bit versions for both qt-dab-3.5 and dabMini.
 
-The installer will also call the official installer for the dll implementing the api for getting access to the SDRplay devices.
+The installer will also call the official installer for the dll implementing
+the 2.3 api for getting access to the SDRplay devices.
 
 Note that the Windows versions are cross-compiled from within Linux,
 using the mingw64-xxx toolset.

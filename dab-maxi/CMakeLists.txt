@@ -362,7 +362,7 @@ endif ()
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
 	     ../src/support/smallqlistview.cpp
-	     ../src/support/smallspinbox/cpp
+	     ../src/support/smallspinbox.cpp
 	     ../src/support/smallpushbutton.cpp
 	     ../src/support/verysmallpushbutton.cpp
 	     ../src/support/smallcombobox.cpp
@@ -489,7 +489,7 @@ endif ()
 	        ../includes/backend/audio/faad-decoder.h
 	   )
 	   add_definitions (-D__WITH_FAAD__)
-	endif (FDK-AAC)
+	endif (FDK_AAC)
 
 #	the viterbi decoder
 #
@@ -819,7 +819,7 @@ endif ()
 
 	   set (RTLTCP_lib Qt5::Network)
 	   add_definitions (-DHAVE_RTL_TCP)
-	endif (RTLTCP)
+	endif (RTL_TCP)
 
 	if (TRY_EPG)
 
