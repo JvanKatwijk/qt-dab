@@ -153,6 +153,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/smallpushbutton.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
+	   ../includes/support/smallspinbox.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
@@ -248,6 +249,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallpushbutton.cpp \
 	   ../src/support/verysmallpushbutton.cpp \
 	   ../src/support/smallqlistview.cpp \
+	   ../src/support/smallspinbox.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
@@ -331,7 +333,7 @@ CONFIG	+= NO_SSE
 win32 {
 #DESTDIR	= ../../../dab-win
 #DESTDIR		=  ../../../windows-dab-2
-DESTDIR	= /usr/shared/sdr-j-development/windows-dab-2
+DESTDIR	= /usr/shared/sdr-j-development/w32-programs/windows-dab-2
 # includes in mingw differ from the includes in fedora linux
 
 exists ("./.git") {
@@ -376,9 +378,9 @@ CONFIG		+= extio
 CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
 CONFIG		+= rtlsdr
-CONFIG		+= pluto
+#CONFIG		+= pluto
 CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay-v3
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= NO_SSE
@@ -457,8 +459,9 @@ hackrf {
 #
 #	pluto
 #
-hackrf {
+pluto {
 	DEFINES		+= HAVE_PLUTO
+	QT		+= network
 	DEPENDPATH	+= ./devices-dab-2/pluto-handler 
 	INCLUDEPATH	+= ./devices-dab-2/pluto-handler 
 	HEADERS		+= ./devices-dab-2/pluto-handler/pluto-handler.h 

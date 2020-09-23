@@ -220,20 +220,20 @@ uint8_t	dabBand;
 	                  dabSettings -> value ("latency", 5). toInt();
 
 	QString dabMode         =
-	               dabSettings   -> value ("dabMode", "Mode 1"). toString();
+	          dabSettings   -> value ("dabMode", "Mode 1"). toString();
 	globals. dabMode	= convert (dabMode);
 	globals. threshold		=
-	                  dabSettings -> value ("threshold", 3). toInt();
+	          dabSettings -> value ("threshold", 3). toInt();
 	globals. diff_length	=
-	           dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
+	          dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
 	globals. tii_delay   =
-	           dabSettings  -> value ("tii_delay", 5). toInt();
+	          dabSettings  -> value ("tii_delay", 5). toInt();
 	if (globals. tii_delay < 5)
 	   globals. tii_delay	= 5;
 	globals. tii_depth      =
-	               dabSettings -> value ("tii_depth", 1). toInt();
+	          dabSettings -> value ("tii_depth", 1). toInt();
 	globals. echo_depth     =
-	               dabSettings -> value ("echo_depth", 1). toInt();
+	          dabSettings -> value ("echo_depth", 1). toInt();
 
 	currentService. valid	= false;
 	nextService. valid	= false;
@@ -274,11 +274,22 @@ uint8_t	dabBand;
 	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (configDisplay);
 
-	int x = dabSettings -> value ("switchDelay", 8). toInt ();
-	configWidget. switchDelaySetting -> setValue (x);
-
-	x = dabSettings -> value ("muteTime", 2). toInt ();
+	int x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
+
+	x = dabSettings -> value ("switchDelay", 8). toInt ();
+	configWidget. switchDelaySetting -> setValue (x);
+//
+//	fullScanMode is - unfortunately - global
+	fullScanMode	=
+	           dabSettings -> value ("fullScan", 1). toInt () == 1;
+	if (fullScanMode)
+	   configWidget. fullScanSelector -> setChecked (true);
+
+	bool motselectionMode =
+	           dabSettings -> value ("motSlides", 0). toInt () == 1;
+	if (motselectionMode)
+	   configWidget. motslideSelector -> setChecked (true);
 
 	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (x == ALPHA_BASED)
@@ -295,26 +306,11 @@ uint8_t	dabBand;
         model . clear ();
         ensembleDisplay         -> setModel (&model);
 	alarmLabel		->
-                           setStyleSheet ("QLabel {background-color : red}");
+                         setStyleSheet ("QLabel {background-color : red}");
 	alarmLabel		-> setText ("Alarm");
 	alarmLabel		-> hide ();
 /*
  */
-	fullScanMode	=
-	           dabSettings -> value ("fullScan", 1). toInt () == 1;
-	if (fullScanMode)
-	   configWidget. fullScanSelector -> setChecked (true);
-
-	bool motselectionMode =
-	           dabSettings -> value ("motSlides", 0). toInt () == 1;
-	if (motselectionMode)
-	   configWidget. motslideSelector -> setChecked (true);
-
-	bool showWidget         =
-	                 dabSettings -> value ("showDeviceWidget", 0).
-                                                              toInt () != 0;
-	devicewidgetButton	-> setText (showWidget ? "show" : "hide");
-
 #ifdef	DATA_STREAMER
 	dataStreamer		= new tcpServer (dataPort);
 #else
@@ -530,6 +526,11 @@ uint8_t	dabBand;
 	   deviceSelector       -> setCurrentIndex (k);
 	   inputDevice	= setDevice (deviceSelector -> currentText());
 	}
+
+	bool showWidget         =
+	                 dabSettings -> value ("showDeviceWidget", 0).
+                                                              toInt () != 0;
+	devicewidgetButton	-> setText (showWidget ? "show" : "hide");
 
 	if (dabSettings	-> value ("spectrumVisible", 0). toInt () == 1) 
 	   my_spectrumViewer. show ();
@@ -2272,7 +2273,6 @@ void	RadioInterface::stopService	() {
 	         break;
 	      }
 	   }
-	   currentService. valid = false;
 	}
 	cleanScreen	();
 }
@@ -2311,10 +2311,6 @@ QString serviceName	= s -> serviceName;
 	currentService		= *s;
 	currentService. valid	= false;
 
-	if (motSlides != nullptr)
-	   motSlides	-> hide ();
-
-        techData. pictureLabel -> hide ();
 
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
@@ -2358,6 +2354,12 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
 void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
+	if (motSlides != nullptr) {
+	   delete motSlides;
+	   motSlides = nullptr;
+	}
+        techData. pictureLabel -> hide ();
+
 	new_presetIndex (0);
 	techData. stereoLabel	-> setStyleSheet (
 	   	         "QLabel {background-color: red; color : black}");

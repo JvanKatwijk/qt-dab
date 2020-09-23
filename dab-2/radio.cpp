@@ -414,8 +414,8 @@ uint8_t	dabBand;
                  this, SLOT (color_devicewidgetButton ()));
         connect (historyButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_historyButton ()));
-	connect (dumpButton, SIGNAL (rightClicked (void)),
-	         this, SLOT (color_sourcedumpButton (void)));
+//	connect (dumpButton, SIGNAL (rightClicked (void)),
+//	         this, SLOT (color_sourcedumpButton (void)));
 	connect (muteButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_muteButton (void)));
 	connect (configButton, SIGNAL (rightClicked (void)),
@@ -520,7 +520,6 @@ uint8_t	dabBand;
         if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
            my_correlationViewer. show ();
 
-	
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
 	if (inputDevice != nullptr) {
@@ -2142,8 +2141,10 @@ QString serviceName	= s -> serviceName;
 	currentService          = *s;
 	currentService. valid   = false;
 
-	if (motSlides != nullptr)
-	   motSlides    -> hide ();
+	if (motSlides != nullptr) {
+	   delete motSlides;
+	   motSlides = nullptr;
+	}
 	techData. pictureLabel -> hide ();
 
 	int rowCount	= model. rowCount ();
@@ -3195,7 +3196,7 @@ void	RadioInterface::color_historyButton	()	{
 }
 
 void	RadioInterface::color_sourcedumpButton	()	{
-	set_buttonColors (dumpButton, DUMP_BUTTON);
+//	set_buttonColors (dumpButton, DUMP_BUTTON);
 }
 
 void	RadioInterface::color_muteButton	()	{

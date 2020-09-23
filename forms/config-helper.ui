@@ -22,7 +22,7 @@
     </widget>
    </item>
    <item row="0" column="4">
-    <widget class="QSpinBox" name="muteTimeSetting">
+    <widget class="smallSpinBox" name="muteTimeSetting">
      <property name="toolTip">
       <string>Set here the mute time in minutes</string>
      </property>
@@ -36,7 +36,7 @@
     </widget>
    </item>
    <item row="1" column="4">
-    <widget class="QSpinBox" name="switchDelaySetting">
+    <widget class="smallSpinBox" name="switchDelaySetting">
      <property name="toolTip">
       <string>Set here the delay, when searching for data in a channel, in seconds</string>
      </property>
@@ -50,7 +50,7 @@
     </widget>
    </item>
    <item row="2" column="4">
-    <widget class="QSpinBox" name="plotLengthSetting">
+    <widget class="smallSpinBox" name="plotLengthSetting">
      <property name="minimum">
       <number>1</number>
      </property>
@@ -124,21 +124,21 @@
     </widget>
    </item>
    <item row="8" column="1" colspan="3">
-    <widget class="QSpinBox" name="alarm_hours">
+    <widget class="smallSpinBox" name="alarm_hours">
      <property name="maximum">
       <number>23</number>
      </property>
     </widget>
    </item>
    <item row="8" column="4">
-    <widget class="QSpinBox" name="alarm_minutes">
+    <widget class="smallSpinBox" name="alarm_minutes">
      <property name="maximum">
       <number>59</number>
      </property>
     </widget>
    </item>
    <item row="9" column="0" colspan="2">
-    <widget class="QPushButton" name="setTime_button">
+    <widget class="smallPushButton" name="setTime_button">
      <property name="text">
       <string>set Time</string>
      </property>
@@ -163,6 +163,18 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>smallSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header location="global">smallspinbox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">smallpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
  <buttongroups>

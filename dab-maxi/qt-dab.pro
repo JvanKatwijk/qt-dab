@@ -154,6 +154,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/smallpushbutton.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
+	   ../includes/support/smallspinbox.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
@@ -252,6 +253,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallpushbutton.cpp \
 	   ../src/support/verysmallpushbutton.cpp \
 	   ../src/support/smallqlistview.cpp \
+	   ../src/support/smallspinbox.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \

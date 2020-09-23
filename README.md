@@ -60,10 +60,11 @@ Currently, there are the following settings:
 
 	d. *full scan* selector, scan the while band (default), or until a DABsignal is detected.
 
-	e. *mot slides* selector, show slides in a separate window when checked, otherwise as part of the technical data widget.
+	e. *mot slides* selector, show slides in a separate window when checked, otherwise as part of the technical data widget. 
 
 While most people will not be aware of it,
-there are different orderings possible for the services in the service list.
+there are different orderings possible for displaying the services in
+the service list. 
 One may choose between (Alfabetical, by service Identifier, or by the
 number of the subchannel).
 
