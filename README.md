@@ -279,7 +279,7 @@ During *scanning*, a separate window will be shown with the results
 of the scan as shown in the picture. Note that what is shown is a *subset*
 of what will be recorded if a choice is made to save the output of the scan. 
 
-![Qt-DAB with xml input](/qt-dab-scanner.png?raw=true)
+![Qt-DAB with xml input](/qt-dab-scan-button.png?raw=true)
 
 Of course, different people have different tastes when it comes to
 colors on a scope.

@@ -296,6 +296,7 @@ LIBS		+= -lqwt-qt5
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= pluto
+#CONFIG		+= pluto-2
 CONFIG		+= rtlsdr
 CONFIG		+= rtl_tcp
 CONFIG		+= hackrf
@@ -378,7 +379,7 @@ CONFIG		+= extio
 CONFIG		+= airspy
 #CONFIG		+= rtl_tcp
 CONFIG		+= rtlsdr
-#CONFIG		+= pluto
+CONFIG		+= pluto-2
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= hackrf
@@ -468,6 +469,19 @@ pluto {
 	SOURCES		+= ./devices-dab-2/pluto-handler/pluto-handler.cpp 
 	FORMS		+= ./devices-dab-2/pluto-handler/pluto-widget.ui
 	LIBS		+= -liio -lad9361
+}
+#
+#	pluto
+#
+pluto-2 {
+	DEFINES		+= HAVE_PLUTO
+	QT		+= network
+	DEPENDPATH	+= ./devices-dab-2/pluto-handler-2 
+	INCLUDEPATH	+= ./devices-dab-2/pluto-handler-2
+	HEADERS		+= ./devices-dab-2/pluto-handler-2/dabFilter.h 
+	HEADERS		+= ./devices-dab-2/pluto-handler-2/pluto-handler.h 
+	SOURCES		+= ./devices-dab-2/pluto-handler-2/pluto-handler.cpp 
+	FORMS		+= ./devices-dab-2/pluto-handler-2/pluto-widget.ui
 }
 #
 # airspy support
