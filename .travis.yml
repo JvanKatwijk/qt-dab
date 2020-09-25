@@ -8,7 +8,8 @@ before_install:
     - sudo apt-get update -qq
     
 install: 
-    - sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
+    - #sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev librtlsdr-dev librtlsdr0 libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
+    - sudo apt-get -y install qt5-qmake qt5-default libqt5opengl5-dev qtbase5-dev libqwt-qt5-dev libsndfile1-dev libfftw3-dev portaudio19-dev libfaad-dev zlib1g-dev rtl-sdr libusb-1.0-0-dev mesa-common-dev libgl1-mesa-dev libsamplerate-dev 
     - sudo apt-get -y install libiio-dev
     - # source /opt/qt5/bin/qt5-env.sh
     - # QWT for Qt 5, see https://github.com/arkottke/strata/blob/master/.travis.yml
@@ -24,7 +25,18 @@ script:
   - # sed -i -e 's|CONFIG.*sdrplay||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*airspy||g' qt-dab.pro
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
-  -
+
+  - git clone git://git.osmocom.org/rtl-sdr.git
+  - cd rtl-sdr/
+  - mkdir build
+  - cd build
+  - cmake ../ -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON
+  - make
+  - cp src/librtlsdr.so* /tmp
+  - cd ..
+  - rm -rf build
+  - cd ..
+
   - cd dab-maxi
   - cmake . -DRTLSDR=ON -DRTLTCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DPLUTO=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
@@ -50,7 +62,8 @@ after_success:
   - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
-  - find /usr/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - cp /tmp/librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - #find /usr/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - #find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
