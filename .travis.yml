@@ -51,7 +51,7 @@ after_success:
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
   - # find /usr/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
-  - #find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
   - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
