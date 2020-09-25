@@ -45,8 +45,13 @@ after_success:
   - chmod a+x linuxdeployqt*.AppImage
   - unset QTDIR; unset QT_PLUGIN_PATH ; unset LD_LIBRARY_PATH
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
+  - # Workaround for https://github.com/probonopd/linuxdeployqt/issues/31#issuecomment-289267637
   - ./linuxdeployqt*.AppImage --appimage-extract
   - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
+  - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
+  - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
+  - find /usr/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - #find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
   - export PATH=squashfs-root/usr/bin/:$PATH # Make it pick up our private patched mksquashfs; https://github.com/plougher/squashfs-tools/pull/13/files
   - squashfs-root/usr/bin/appimagetool $(readlink -f ./appdir/)
