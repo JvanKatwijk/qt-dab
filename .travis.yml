@@ -63,7 +63,7 @@ after_success:
   - find appdir/usr/plugins/ -type f -exec squashfs-root/usr/bin/patchelf --set-rpath '$ORIGIN/../../lib' {} \;
   - ./linuxdeployqt*.AppImage ./appdir/usr/share/applications/* -bundle-non-qt-libs
   - # Workaround for https://github.com/JvanKatwijk/qt-dab/issues/34
-  - find /tmp -f name librtlsdr.so* rtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
+  - find /tmp -f name rtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - #find /usr/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - #find /usr/lib/ -type f -name librtlsdr.so* -exec cp {} appdir/usr/lib/librtlsdr.so \;
   - chmod a+x appimage/* ; rm appdir/AppRun ; cp appimage/* appdir/
