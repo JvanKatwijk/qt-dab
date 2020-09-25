@@ -38,7 +38,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QComboBox" name="gainControl">
+      <widget class="QComboBox" name="combo_gain">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -60,10 +60,23 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="agcControl">
-     <property name="text">
-      <string>autogain</string>
+    <widget class="QComboBox" name="combo_autogain">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
+     <item>
+      <property name="text">
+       <string>autogain_off</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>autogain_on</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>

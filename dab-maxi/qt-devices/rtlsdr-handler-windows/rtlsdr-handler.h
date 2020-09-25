@@ -88,21 +88,23 @@ public:
 	int16_t		maxGain		();
 	int16_t		bitDepth	();
 	QString		deviceName	();
-//
+	void		show		();
+	void		hide		();
+	bool		isHidden	();
+
 //	These need to be visible for the separate usb handling thread
-	RingBuffer<std::complex<uint8_t>>	*_I_Buffer;
+	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
+	bool		isActive;
 private:
+	QFrame		myFrame;
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
 	HINSTANCE	Handle;
 	dll_driver	*workerHandle;
 	int32_t		lastFrequency;
-	bool		libraryLoaded;
-	bool		open;
-	int		*gains;
 	int16_t		gainsCount;
 	QString		deviceModel;
 	QString		recorderVersion;
@@ -115,7 +117,9 @@ private:
         bool            setup_iqDump		();
         void            close_iqDump		();
         std::atomic<bool> iq_dumping;
-
+	void		record_gainSettings	(int);
+	void		update_gainSettings	(int);
+	bool		save_gainSettings;
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;
@@ -137,9 +141,12 @@ private:
 	pfnrtlsdr_get_device_count rtlsdr_get_device_count;
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+signals:
+	void		new_gainIndex		(int);
+	void		new_agcSetting		(bool);
 private slots:
 	void		set_ExternalGain	(const QString &);
-	void		set_autogain		(const QString &);
+	void		set_autogain		(int);
 	void		set_ppmCorrection	(int);
 	void		set_xmlDump		();
 	void		set_iqDump		();
