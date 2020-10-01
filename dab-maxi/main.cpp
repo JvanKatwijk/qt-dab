@@ -54,7 +54,6 @@ QString fileName;
 	fileName.append("/.qt-dab.ini");
 	qDebug() << fileName;
 #else
-
 	fileName = QDir::homePath();
 	fileName. append ("/");
 	fileName. append (v);

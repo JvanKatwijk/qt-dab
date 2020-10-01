@@ -120,6 +120,7 @@ private:
 	dabService		currentService;
 	dabService		nextService;
 
+	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
@@ -152,7 +153,7 @@ private:
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
-	bool			fullScanMode;
+	int			scanMode;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
@@ -268,7 +269,7 @@ public slots:
 	void			showIQ			(int);
 	void			showQuality		(float);
 	void			show_rsCorrections	(int);
-	void			show_tii		(QByteArray);
+	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);
@@ -346,7 +347,7 @@ private slots:
 	void			handle_alarmSelector	(const QString &);
 	void			handle_setTime_button	();
 	void			handle_plotLengthSetting	(int);
-	void			handle_fullScanSelector	(int);
+	void			handle_scanmodeSelector	(int);
 	void			handle_motslideSelector	(int);
 };
 #endif

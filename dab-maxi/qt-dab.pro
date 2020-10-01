@@ -9,8 +9,8 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-QMAKE_CFLAGS	+=  -flto -ffast-math
-MAKE_CXXFLAGS	+=  -flto -ffast-math
+QMAKE_CFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 #QMAKE_CFLAGS	+=  -g
 #QMAKE_CXXFLAGS	+=  -g
 #QMAKE_LFLAGS	+=  -g
@@ -410,7 +410,7 @@ CONFIG		+= faad
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-#CONFIG		+= try-epg		# do not use
+CONFIG		+= try-epg		# do not use
 DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 #	devices
