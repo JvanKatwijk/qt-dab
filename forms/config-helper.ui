@@ -49,7 +49,7 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="4">
+   <item row="2" column="4" rowspan="2">
     <widget class="smallSpinBox" name="plotLengthSetting">
      <property name="minimum">
       <number>1</number>
@@ -63,13 +63,22 @@
     </widget>
    </item>
    <item row="3" column="0" colspan="2">
-    <widget class="QCheckBox" name="fullScanSelector">
-     <property name="toolTip">
-      <string>select a full scan (i.e. over all channels in the band) or a scan until a channel with data is met. Default is full scan.</string>
-     </property>
-     <property name="text">
-      <string>      full scan</string>
-     </property>
+    <widget class="QComboBox" name="scanmodeSelector">
+     <item>
+      <property name="text">
+       <string>single scan</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>scan to data</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>continuous</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="4" column="0" colspan="5">

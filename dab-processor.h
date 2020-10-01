@@ -121,7 +121,7 @@ private:
 	int32_t		carrierDiff;
 	int16_t		fineOffset;
 	int32_t		coarseOffset;
-
+	QByteArray	transmitters;
 	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
@@ -130,7 +130,7 @@ signals:
 	void		setSynced		(bool);
 	void		No_Signal_Found		();
 	void		setSyncLost		();
-	void		show_tii		(QByteArray);
+	void		show_tii		(int, int);
 	void		show_Spectrum		(int);
 	void		show_snr		(int);
 	void		show_clockErr		(int);

@@ -45,7 +45,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QLabel" name="secondariesDisplay">
+    <widget class="QLabel" name="transmitterDisplay">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If more than one transmitter in the SFN can be identified, the (mainId, subId) of the transmitter&lt;/p&gt;&lt;p&gt;is shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>

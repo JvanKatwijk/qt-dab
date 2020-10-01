@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
  *
@@ -31,7 +31,7 @@
 #include	<QTableWidgetItem>
 #include	<QObject>
 #include	<QString>
-
+#include	<QByteArray>
 class	RadioInterface;
 
 class	scannerTable: QObject {
@@ -42,7 +42,7 @@ public:
 	void	show		();
 	void	hide		();
 	void	newEnsemble	(QString, QString, QString,
-	                                     QString, QString, QString);
+	                                     QString, QString, QByteArray);
 	void	add_to_Ensemble	(QString, QString, QString,
 	                                     QString, QString, QString);
 	void	clear		();

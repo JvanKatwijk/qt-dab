@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -26,6 +27,7 @@
 //	pressed - the content of the ensemble with relevant data.
 //	The output can be viewed (a.o) in LibreOfficeCalc
 #include	<QString>
+#include	<QByteArray>
 #include	"dab-constants.h"
 #include	<vector>
 #include	<cstdint>
@@ -40,6 +42,7 @@ public:
 	void	showEnsembleData	(QString,
 	                                 int32_t,
 	                                 QString,	// time
+	                                 QByteArray,	// TII data
 	                                 std::vector<serviceId>,
 	                                 dabProcessor *,
 	                                 FILE *);

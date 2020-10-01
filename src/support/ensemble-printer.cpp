@@ -55,10 +55,23 @@ int16_t	i = 0;
 	return QString ("          ");
 }
 
+static
+QString textfor (QByteArray transmitters) {
+QString s;
+	fprintf (stderr, "in textfor: transmitters. size = %d\n", transmitters. size ());
+	if (transmitters. size () == 0)
+	   return " ";
+	for (int i = 0; i < transmitters. size (); i += 2)
+	   s = s + " (" + QString::number (transmitters. at (i)) +
+	           "+" + QString::number (transmitters. at (i + 1)) + ")";
+	return s;
+}
+
 void	ensemblePrinter::showEnsembleData (QString	channel,
 	                                   int32_t	freq,
 	                                   QString	theTime,
-	                                   std::vector<serviceId>	Services,
+	                                   QByteArray	transmitters,
+	                                   std::vector<serviceId> Services,
 	                                   dabProcessor *my_dabProcessor,
 	                                   FILE		*file_P) {
 uint8_t	countryId;
@@ -75,12 +88,13 @@ bool	firstData;
 	   return;
 
 	fprintf (file_P, "\n\n\n");
-	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; time of recording  %s\n\n",
+	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; time of recording  %s; tii %s\n\n",
 	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,
 	                  currentChannel. toUtf8(). data(),
 	                  frequency / 1000,
-	                  theTime. toUtf8(). data ());
+	                  theTime. toUtf8(). data (),
+	                  textfor (transmitters). toLatin1 (). data ());
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 

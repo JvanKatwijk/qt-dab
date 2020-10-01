@@ -89,8 +89,8 @@
 	         myRadioInterface, SLOT (setSyncLost (void)));
 	connect (this, SIGNAL (show_Spectrum (int)),
 	         myRadioInterface, SLOT (showSpectrum (int)));
-	connect (this, SIGNAL (show_tii (QByteArray)),
-	         myRadioInterface, SLOT (show_tii (QByteArray)));
+	connect (this, SIGNAL (show_tii (int, int)),
+	         myRadioInterface, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
 	connect (this, SIGNAL (show_clockErr (int)),
@@ -113,6 +113,7 @@
 void	dabProcessor::start (int frequency) {
 	this	-> frequency	= frequency;
 	my_ficHandler. reset	();
+	transmitters. clear ();
 	if (!scanMode)
 	   my_mscHandler. reset_Channel ();
 	QThread::start ();
@@ -133,7 +134,7 @@ void	dabProcessor::stop	() {
    *	Finally, estimating the small freqency error
    */
 void	dabProcessor::run	() {
-int32_t startIndex;
+int32_t		startIndex;
 int32_t		i;
 std::complex<float>	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
@@ -325,13 +326,16 @@ SyncOnPhase:
 	     if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
-	            QByteArray secondaries =
-	                              my_TII_Detector. processNULL ();
-	            show_tii (secondaries);
+	            uint16_t res = my_TII_Detector. processNULL ();
+	            if (res != 0) {
+	               uint8_t mainId	= res >> 8;
+	               uint8_t subId	= res & 0xFF;
+	               show_tii (mainId, subId);
+	            }
 	            tii_counter = 0;
 	            my_TII_Detector. reset();
 	         }
-	        tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
+	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	      }
 	   }
 /**
@@ -375,9 +379,9 @@ void	dabProcessor::set_scanMode	(bool b) {
 void	dabProcessor::getFrameQuality	(int	*totalFrames,
 	                                 int	*goodFrames,
 	                                 int	*badFrames) {
-	*totalFrames	= this	-> totalFrames;
-	*goodFrames	= this	-> goodFrames;
-	*badFrames	= this	-> badFrames;
+	*totalFrames		= this	-> totalFrames;
+	*goodFrames		= this	-> goodFrames;
+	*badFrames		= this	-> badFrames;
 	this	-> totalFrames	= 0;
 	this	-> goodFrames	= 0;
 	this	-> badFrames	= 0;

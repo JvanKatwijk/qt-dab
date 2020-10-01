@@ -58,12 +58,12 @@ public:
 	                                         RingBuffer<std::complex<float>> *);
 			~tiiViewer		();
 	void		showSpectrum		(int32_t);
-	void		showSecondaries		(QByteArray);
+	void		showTransmitters	(QByteArray);
 	void		setBitDepth		(int16_t);
-	void		show();
-	void		hide();
-	bool		isHidden();
-	void		clear();
+	void		show			();
+	void		hide			();
+	bool		isHidden		();
+	void		clear			();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;

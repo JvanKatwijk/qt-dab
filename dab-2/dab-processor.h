@@ -141,6 +141,7 @@ private:
 	int32_t		nullCount;
 	uint8_t		processorMode;
 	bool		correctionNeeded;
+	QByteArray	transmitters;
 	std::vector<std::complex<float>	>ofdmBuffer;
 	std::vector<float>dataBuffer;
 	int		bufferP;

@@ -113,20 +113,30 @@ int16_t row     = outputWidget -> rowCount ();
 	return row;
 }
 
+static
+QString textfor (QByteArray transmitters) {
+QString res;
+	if (transmitters. size () == 0)
+	   return " ";
+	for (int i = 0; i < transmitters. size (); i += 2)
+	   res = res + " (" + QString::number (transmitters. at (i)) +
+	               "+" + QString::number (transmitters. at (i + 1)) + ")";
+	return res;
+}
+	
 void	scannerTable::newEnsemble	(QString currentChannel,
 	                                 QString ensembleName,
 	                                 QString ensembleId,
 	                                 QString freq,
 	                                 QString snr,
-	                                 QString transmitters) {
+	                                 QByteArray transmitters) {
 int16_t row	= addRow ();
-
 	outputWidget	-> item (row, 0) -> setText (currentChannel);
 	outputWidget	-> item (row, 1) -> setText (ensembleName);
 	outputWidget	-> item (row, 2) -> setText (ensembleId);
 	outputWidget	-> item (row, 3) -> setText (freq);
 	outputWidget	-> item (row, 4) -> setText (snr);
-	outputWidget	-> item (row, 5) -> setText (transmitters);
+	outputWidget	-> item (row, 5) -> setText (textfor (transmitters));
 
 	row	= addRow ();
 	outputWidget	-> item (row, 0) -> setText ("serviceName");

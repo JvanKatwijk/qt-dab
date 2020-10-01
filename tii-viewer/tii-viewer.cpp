@@ -131,26 +131,26 @@ bool	brush;
 }
 
 void	tiiViewer::clear() {
-	secondariesDisplay	-> setText (" ");
+	transmitterDisplay	-> setText (" ");
 }
 
-void	tiiViewer::showSecondaries	(QByteArray data) {
+void	tiiViewer::showTransmitters	(QByteArray transmitters) {
 	if (myFrame	-> isHidden())
 	   return;
 
-	if (data. size () == 0) {
-	   secondariesDisplay	-> setText (" ");
+	if (transmitters. size () == 0) {
+	   transmitterDisplay	-> setText (" ");
 	   return;
 	}
 
 	QString t	= "transmitter IDs ";
-	for (int i = 0; i < data. size () / 2; i ++) {
-	   int mainId	= data. at (2 * i);
-	   int subId	= data. at (2 * i + 1);
-	   t . append (QString::number (mainId) +
-                                " " + QString::number (subId) + " ");
+	for (int i = 0; i < transmitters. size (); i += 2) {
+	   uint8_t mainId	= transmitters. at (i);
+	   uint8_t subId	= transmitters. at (i + 1);
+	   t = t + " (" + QString::number (mainId) +
+                    "+" + QString::number (subId) + ")";
         }
-	secondariesDisplay	-> setText (t);
+	transmitterDisplay	-> setText (t);
 }
 
 void	tiiViewer::showSpectrum	(int32_t amount) {

@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2014 .. 2017
@@ -6,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -28,7 +28,6 @@
 #include	"dab-params.h"
 #include	"fft-handler.h"
 #include	<vector>
-#include	<QByteArray>
 
 class	TII_Detector {
 public:
@@ -36,7 +35,7 @@ public:
 			~TII_Detector();
 	void		reset();
 	void		addBuffer	(std::vector<std::complex<float>>);
-	QByteArray	processNULL	();
+	uint16_t	processNULL	();
 
 private:
 	void			collapse	(std::complex<float> *,

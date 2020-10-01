@@ -419,6 +419,7 @@ void	dabProcessor::start	() {
 	processorMode		= START;
 	nullCount		= 0;
 	correctionNeeded	= true;
+	transmitters. clear ();
 	my_ficHandler.  reset ();
 	my_mscHandler. reset_Channel ();
 }
@@ -520,11 +521,20 @@ void	dabProcessor::handle_tii_detection
 	if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	   my_TII_Detector. addBuffer (b);
 	   if (++tii_counter >= theParams -> tii_delay) {
-	      QByteArray secondaries =
-                                      my_TII_Detector. processNULL ();
-	      show_tii (secondaries);
-	      tii_counter = 0;
-	      my_TII_Detector. reset();
+	      uint16_t res = my_TII_Detector. processNULL ();
+	      if (res != 0) {
+	         uint8_t mainId   = res >> 8;
+	         uint8_t subId    = res & 0xFF;
+	         for (uint16_t k = 0; k < transmitters. size (); k += 2)
+	            if ((transmitters. at (k) == mainId) &&
+	                (transmitters. at (k + 1) == subId))
+	               res = 0;
+                 if (res != 0) {
+                    transmitters. append (mainId);
+                    transmitters. append (subId);
+                    show_tii (transmitters);
+                 }
+              }
 	   }
 	   tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	}

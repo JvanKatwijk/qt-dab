@@ -143,7 +143,7 @@ private:
 #endif
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
-	bool			fullScanMode;
+	int			scanMode;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
@@ -320,7 +320,7 @@ private slots:
 	void			handle_alarmSelector	(const QString &);
 	void			handle_setTime_button	();
 	void			handle_plotLengthSetting	(int);
-	void			handle_fullScanSelector	(int);
+	void			handle_scanmodeSelector	(int);
 	void			handle_motslideSelector	(int);
 };
 #endif

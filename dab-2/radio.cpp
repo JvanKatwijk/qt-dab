@@ -133,6 +133,21 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	return true;
 }
 #endif
+#define SINGLE_SCAN		0
+#define SCAN_TO_DATA		1
+#define SCAN_CONTINUOUSLY	2
+
+static inline
+QString scanmodeText (int e) {
+        if (e == SINGLE_SCAN)
+           return QString ("single scan");
+        if (e == SCAN_TO_DATA)
+           return QString ("scan to data");
+        if (e == SCAN_CONTINUOUSLY)
+           return QString ("scan continuously");
+        return QString ("???");
+}
+
 
 #define	CONTENT_BUTTON		QString ("contentButton")
 #define DETAIL_BUTTON		QString ("detailButton")
@@ -299,10 +314,10 @@ uint8_t	dabBand;
 	alarmLabel		-> hide ();
 /*
  */
-	fullScanMode	=
-	           dabSettings -> value ("fullScan", 1). toInt () == 1;
-	if (fullScanMode)
-	   configWidget. fullScanSelector -> setChecked (true);
+//	scanMode is - unfortunately - global
+        scanMode        =
+                   dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
+        configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 
 	bool motselectionMode =
 	           dabSettings -> value ("motSlides", 0). toInt () == 1;
@@ -1036,7 +1051,7 @@ QString s;
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	my_dabProcessor	-> coarseCorrectorOff();
-	if (!fullScanMode)
+	if (scanMode == SCAN_TO_DATA)
 	   stopScanning (false);	// if scanning, we are done
 }
 
@@ -1069,6 +1084,7 @@ QString saveDir         = dabSettings -> value ("contentDir",
 	my_Printer. showEnsembleData (currentChannel,
 	                              frequency, 
 	                              localTimeDisplay -> text (),
+	                              transmitter_coordinates -> text (),
 	                              serviceList,
 	                              my_dabProcessor, fileP);
 	fclose (fileP);
@@ -1529,22 +1545,24 @@ void	RadioInterface::setStereo	(bool s) {
 }
 
 void	RadioInterface::show_tii (QByteArray data) {
-int8_t  mainId, subId;
 QString a = "Est: ";
 
-	if (!running. load())
-	   return;
+        if (!running. load())
+           return;
 
-	if (data. size () > 1) {
-	   mainId       = data. at (0);
-	   subId        = data. at (1);
-	   a. append (QString::number (mainId) + " " + QString::number (subId));
-	   transmitter_coordinates      -> setAlignment (Qt::AlignRight);
-	   transmitter_coordinates	-> setText (a);
-	   my_tiiViewer. showSecondaries (data);
+	for (uint16_t i = 0; i < data. size (); i += 2) {
+	   uint8_t mainId	= data. at (i);
+	   uint8_t subId	= data. at (i + 1);
+           a = a + " " +  (QString::number (mainId) + " " +
+	                                QString::number (subId));
 	}
-	my_tiiViewer. showSpectrum (1);
 
+	if (data. size () > 0) {
+	   transmitter_coordinates	-> setAlignment (Qt::AlignRight);
+	   transmitter_coordinates	-> setText (a);
+	   my_tiiViewer. showTransmitters (data);
+        }
+	my_tiiViewer. showSpectrum (1);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -1833,8 +1851,9 @@ void	RadioInterface::connectGUI() {
 	         this, SLOT (handle_setTime_button ()));
 	connect (configWidget. plotLengthSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_plotLengthSetting (int)));
-	connect (configWidget. fullScanSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_fullScanSelector (int)));
+	connect (configWidget. scanmodeSelector,
+	                           SIGNAL (currentIndexChanged (int)),
+	         this, SLOT (handle_scanmodeSelector (int)));
 	connect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_motslideSelector (int)));
 }
@@ -1896,14 +1915,14 @@ void	RadioInterface::disconnectGUI() {
 	disconnect (configWidget. setTime_button, SIGNAL (clicked ()),
 	            this, SLOT (handle_setTime_button ()));
 	disconnect (configWidget. plotLengthSetting,
-	                                         SIGNAL (valueChanged (int)),
+	                           SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_plotLengthSetting (int)));
-	disconnect (configWidget. fullScanSelector, SIGNAL (stateChanged (int)),
-	            this, SLOT (handle_fullScanSelector (int)));
+	disconnect (configWidget. scanmodeSelector,
+	                           SIGNAL (currentIndexChanged (int)),
+	            this, SLOT (handle_scanmodeSelector (int)));
 	disconnect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_motslideSelector (int)));
 }
-
 //
 //
 #include <QCloseEvent>
@@ -2564,7 +2583,9 @@ void	RadioInterface::handle_scanButton () {
 void	RadioInterface::startScanning	() {
 int	switchDelay;
 
-	fullScanMode	= dabSettings -> value ("fullScan", 1). toInt () == 1;
+	scanMode	= dabSettings -> value ("scanMode", SINGLE_SCAN).
+                                                                     toInt ();
+
 	presetTimer. stop ();
 	channelTimer. stop ();
 	
@@ -2573,7 +2594,7 @@ int	switchDelay;
 	new_presetIndex (0);
 	stopChannel     ();
 	int  cc      = channelSelector -> currentIndex ();
-	if (!fullScanMode) {
+	if (scanMode == SCAN_TO_DATA) {
 	   cc ++;
 	   if (cc >= channelSelector -> count ())
 	      cc = 0;
@@ -2582,22 +2603,25 @@ int	switchDelay;
 	   cc = 0;
 	}
 	scanning. store (true);
-	if (fullScanMode)
+	if (scanMode != SCAN_TO_DATA)
 	   scanDumpFile	= findScanDump_FileName ();
 	else
 	   scanDumpFile = nullptr;
+
 	my_dabProcessor	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
 	new_channelIndex (cc);
-	dynamicLabel	-> setText ("scanning channel " +
-	                                     channelSelector -> currentText ());
+	dynamicLabel    -> setText ("scan mode \"" +
+                                    scanmodeText (scanMode) +
+                                    "\" scanning channel " +
+                                    channelSelector -> currentText ());
 	scanButton      -> setText ("scanning");
 	switchDelay		=
 	                 dabSettings -> value ("switchDelay", 8). toInt ();
 	channelTimer. start (switchDelay * 1000);
 
 	startChannel    (channelSelector -> currentText ());
-	if (fullScanMode) {
+	if (scanMode != SCAN_TO_DATA) {
 	   theTable. clear ();
 	   theTable. show ();
 	}
@@ -2606,6 +2630,10 @@ int	switchDelay;
 void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
+	(void)dump;
+        dynamicLabel    -> setText ("Scan ended");
+        scanButton      -> setText ("scan");
+
 	my_dabProcessor -> set_scanMode (false);
 	if (!running. load ())
 	   return;
@@ -2617,10 +2645,6 @@ void	RadioInterface::stopScanning	(bool dump) {
 	   fclose (scanDumpFile);
 	   scanDumpFile = nullptr;
 	}
-
-//      theTable. hide ();
-	dynamicLabel    -> setText ("Scan ended");
-	scanButton      -> setText ("scan");
 }
 
 //	If the ofdm processor has waited for a period of N frames
@@ -2640,29 +2664,30 @@ int	switchDelay;
 
 	if (running. load () && scanning. load ()) {
 	   int	cc	= channelSelector -> currentIndex ();
-	   if ((fullScanMode) && (serviceList. size () > 0))
+	   if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
 	      showServices ();
 	   stopChannel ();
 	   cc ++;
-	   if ((cc >= channelSelector -> count ()) && fullScanMode) {
-//	if at the end we can't use "stopScanning", since that
-//	hides the table, and we want to stay visible until ...
+	   if ((cc >= channelSelector -> count ()) &&
+	                                   (scanMode == SINGLE_SCAN)) {
 	         stopScanning	(true);
 	   }
 	   else {  // we just continue
-	      if (cc >= channelSelector -> count ())
+	      if (cc >= channelSelector -> count ()) 
 	         cc = 0;
 //	To avoid reaction of the system on setting a different value:
 	      new_channelIndex (cc);
+
 	      my_dabProcessor	-> set_scanMode (true);
 	      connect (my_dabProcessor, SIGNAL (No_Signal_Found (void)),
 	               this, SLOT (No_Signal_Found (void)));
 	      connect (&channelTimer, SIGNAL (timeout (void)),
 	               this, SLOT (channel_timeOut (void)));
 
-	      dynamicLabel -> setText ("scanning channel " +
-	                                  channelSelector -> currentText ());
-
+	      dynamicLabel -> setText ("scan mode \"" +
+                                       scanmodeText (scanMode) +
+                                       "\" scanning channel " +
+                                       channelSelector -> currentText ());
 	      switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	      channelTimer. start (switchDelay * 1000);
@@ -2711,6 +2736,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	   my_Printer. showEnsembleData (channelSelector -> currentText (),
 	                                 inputDevice -> getVFOFrequency (),
 	                                 localTimeDisplay -> text (),
+	                                 transmitter_coordinates -> text (),
 	                                 serviceList,
 	                                 my_dabProcessor, scanDumpFile);
 
@@ -3282,10 +3308,8 @@ void	RadioInterface::handle_plotLengthSetting	(int l) {
 	dabSettings -> setValue ("plotLength", l);
 }
 
-void	RadioInterface::handle_fullScanSelector		(int d) {
-	(void)d;
-	dabSettings	-> setValue ("fullScan", 
-	                              configWidget. fullScanSelector -> isChecked () ? 1 : 0);
+void	RadioInterface::handle_scanmodeSelector		(int d) {
+	dabSettings -> setValue ("scanMode", d);
 }
 
 void	RadioInterface::handle_motslideSelector		(int d) {
@@ -3377,14 +3401,16 @@ int	targetTime	= (alarmData. targetHour * 60 +
 	                                  alarmData. targetMinute) * 60;
 int	theDelay	= 60;	// seconds
 	alarmTimer. stop ();
-	if (actualTime >= targetTime - 30) {
+	if (actualTime >= targetTime - 20) {
 	   handle_historySelect (alarmData. alarmService);
 	   alarmLabel	-> hide ();
 	   return;
 	}
 
-	if (actualTime - targetTime < 120)
+	if (actualTime >= targetTime - 200)
 	   theDelay = 10;
+	if (actualTime >= targetTime - 40)
+	   theDelay = 1;
 	alarmTimer. setSingleShot (true);
 	alarmTimer. setInterval   (theDelay * 1000);
 	alarmTimer. start         (theDelay * 1000);

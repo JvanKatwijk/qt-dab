@@ -1,22 +1,18 @@
 # Qt-DAB-3.6 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and the other brother dab-2, all built on the same set of sources.
+Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
 ---------------------------------------------------------------------
 DISCLAIMER
 ---------------------------------------------------------------------
 
-THIS SOFTWARE IS UNDER DEVELOPMENT, IT MIGHT CONTAIN ERRORS, IT MAY
-CHANGE ON AN ALMOST DAILY BASIS AND THE DOCUMENTATION IS NOT UP TO DATE.
-A STABLE RELEASE 3.6 WILL ARRIVE AT SOME POINT LATER ON.
-YOU CAN ALWAYS USE THE 3.5.3 RELEASE.
+Current release, 3.6, is a Prerelease
 
 --------------------------------------------------------------------
 DISCLAIMER 
 --------------------------------------------------------------------
 
-While Windows is probably a very good OS, it seems that my way of programming
-and Windows are incompatible. I develop under Linux and 
+I develop my software under Linux and 
 cross-compile for windows. Linux development is simple: if something
 is wrong - and that happens from time to time - it is always relatively
 easy to detect what is wrong and fix it.
