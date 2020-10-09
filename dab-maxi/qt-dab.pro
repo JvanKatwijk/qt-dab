@@ -287,13 +287,15 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
+CONFIG		+= link_pkgconfig
+PKGCONFIG	+= fftw3f 
+PKGCONFIG	+= sndfile
+PKGCONFIG	+= samplerate
+PKGCONFIG	+= libusb-1.0
 INCLUDEPATH	+= /usr/local/include
 INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-LIBS		+= -lfftw3f  -lfftw3 -lusb-1.0 -ldl  #
 LIBS		+= -lportaudio
-LIBS		+= -lz
-LIBS		+= -lsndfile
-LIBS		+= -lsamplerate
+LIBS		+= -lz -ldl
 #correct this for the correct path to the qwt6 library on your system
 #LIBS		+= -lqwt
 LIBS		+= -lqwt-qt5
@@ -347,19 +349,20 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-#for for 64 bit
+##for for 64 bit
 #	TARGET		= qt-dab64-3.6
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 #	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 #	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+#	LIBS		+= -liio
 ##	#CONFIG		+= extio
 #	CONFIG		+= airspy
 #	CONFIG		+= rtl_tcp
 #	CONFIG		+= dabstick
 #	CONFIG		+= sdrplay-v2
-#	CONFIG		+= pluto
+#	CONFIG		+= pluto-2
 ##	CONFIG		+= sdrplay-v3
 ##	CONFIG		+= hackrf
 ##	CONFIG		+= lime

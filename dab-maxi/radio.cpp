@@ -2002,9 +2002,6 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_sourcedumpButton (void)));
 	disconnect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_muteButton (void)));
-	disconnect (configButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_configButton (void)));
-
 	disconnect (nextChannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_nextChannelButton (void)));
 	disconnect	(prevChannelButton, SIGNAL (clicked (void)),
@@ -3181,6 +3178,9 @@ SNDFILE	*theFile;
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
 	QString suggestedFileName = saveDir +
 		                    deviceName + "-" +
 	                            channelName + "-" + theTime + ".sdr";
@@ -3200,7 +3200,10 @@ SNDFILE	*theFile;
 	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 	theFile = sf_open (file. toUtf8 (). data(),
 	                                   SFM_WRITE, sf_info);
+	fprintf (stderr, "the file %s is open?\n", 
+	                              file. toUtf8 (). data ());
 	if (theFile == nullptr) {
+	   fprintf (stderr, "foute boel\n");
 	   qDebug() << "cannot open " << file. toUtf8(). data();
 	   return nullptr;
 	}
@@ -3209,7 +3212,7 @@ SNDFILE	*theFile;
 	int x		= dumper. lastIndexOf ("/");
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
-
+	fprintf (stderr, "theffile is open\n");
 	return theFile;
 }
 
