@@ -183,7 +183,7 @@ int	zeroCount = 0;
 	         if (nodes. at (j). isComment ()) {
 	            continue;
 	         }
-
+	      fprintf (stderr, "Datablocks has %d siblings\n", nodes. count ());
 	         QDomElement Child = nodes. at (j). toElement ();
 	         if (Child. tagName () == "Datablock") {
 	            fprintf (stderr, "weer een block\n");

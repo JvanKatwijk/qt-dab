@@ -543,7 +543,7 @@ char	*p_end, *p_dat;
 int	p_inc;
 int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
-std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
+std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
 
 	state -> setText ("running");
 	running. store (true);
@@ -556,14 +556,13 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	        p_dat < p_end; p_dat += p_inc) {
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
-	      std::complex<int16_t>dumpS = std::complex<int16_t> (i_p, q_p);
-	      dumpBuf [convIndex] = dumpS;
+	      dumpBuf [convIndex] = std::complex<int16_t> (i_p, q_p);
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONV_SIZE) {
 	         if (dumping. load ())
-	            xmlWriter -> add (dumpBuf, CONV_SIZE);
+	            xmlWriter -> add (&dumpBuf [1], CONV_SIZE);
 	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
