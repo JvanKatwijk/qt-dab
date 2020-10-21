@@ -2,12 +2,6 @@
 
 Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
----------------------------------------------------------------------
-DISCLAIMER
----------------------------------------------------------------------
-
-Current release, 3.6, is a Prerelease
-
 --------------------------------------------------------------------
 DISCLAIMER 
 --------------------------------------------------------------------
@@ -53,9 +47,9 @@ Currently, there are the following settings:
 
 	b. the *mute* time, the time - in minutes - that audio mutes;
 
-	c. the *plotLength*, the length of the X-axis in the correlation display.
+	c. the *plotLength*, the length of the X-axis in the correlation display expressed in entities of 100 samples;
 
-	d. *full scan* selector, scan the while band (default), or until a DABsignal is detected.
+	d. *full scan* selector, scan the while band once (default), continuously, or until a DABsignal is detected.
 
 	e. *mot slides* selector, show slides in a separate window when checked, otherwise as part of the technical data widget. 
 
@@ -77,8 +71,6 @@ and those in the presets.
 
 The GUI contains an indicator which shows when the alarm is set, when no
 alarm is set, the small label is not shown.
-
-**The GUI elements for this feature are - still - experimental.**
 
 Of course, the coloring, as implemented in 3.5.3 also applies to the config
 button.
@@ -198,6 +190,7 @@ Features
   	- SDRplay ( RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
 	- Soapy (experimental, Linux only), 
+	- ExtIO (expertimental, Windows only),
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files, and
 	- rtl_tcp servers.
