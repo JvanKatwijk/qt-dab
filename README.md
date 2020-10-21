@@ -140,8 +140,11 @@ written in a text file, formatted for use with *LibreOffice Calc* and
 comparable programs. Note that in **Qt-DAB-3.6** the scan function
 is extended with an option to save detailed data in a text file,
 compatible with e.g. LibreOffice.
+For scanning purposes, a command line scanner exists, one where the channels
+that are to be scanned passed as command line parameter, and that dumps a specified number of seconds of the input of those channels with DAB data into a file.
 
-Derived programs, such as the **dab-scanner** and the Qt-free versions **dab-cmdline** have their own repository on Github.
+Derived programs, such as the **dab-scanner** and the command line based
+versions, **terminal-DAB**, **dab-cmdline**, **channelScanner** and **dab2fm* have their own repository on Github.
 
 Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi,
 the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
