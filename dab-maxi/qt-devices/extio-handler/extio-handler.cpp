@@ -163,7 +163,12 @@ int32_t	inputRate	= 0;
 //	apparently, the library is open, so record that
 	dll_open	= true;
 	myContext	= (extioHandler *)this;
-//	
+
+	if (DllMain != nullptr) {
+	   fprintf (stderr, "we have a main\n");
+	   fflush (stderr);
+	   DllMain (nullptr, DLL_PROCESS_ATTACH, nullptr);
+	}
 //	and start the rig
 	rigName		= new char [128];
 	rigModel	= new char [128];
@@ -182,14 +187,24 @@ int32_t	inputRate	= 0;
 	   throw (24);
 	}
 
+	ShowGUI();
 	bool	OK = false;
 	while (!OK) {
 	   inputRate	= GetHWSR();
 	   fprintf (stderr, "inputRate = %d\n", inputRate);
-	   if (inputRate < Khz (2000) ||
-	       (1000 * (inputRate / 1000) != inputRate)) 
-	      QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("please select an inputrate 2048000"));
+	   if ((inputRate < Khz (2000)) || (inputRate > Khz (4000)) ||
+	       (1000 * (inputRate / 1000) != inputRate)) {
+	       QMessageBox::StandardButton resultButton =
+                        QMessageBox::question (nullptr, "extio",
+                                               tr ("cannot handle this rate\n\
+	                                            give up?\n"),
+                                               QMessageBox::No | QMessageBox::Yes,
+                                               QMessageBox::Yes);
+              if (resultButton == QMessageBox::Yes) {
+	         HideGUI ();
+	         throw (25);
+	      }
+	   }
 	   else
 	      OK = true;
 	}
@@ -221,7 +236,6 @@ int32_t	inputRate	= 0;
 	      break;
 	}
 
-	ShowGUI();
 	fprintf (stderr, "Hw open successful\n");
 }
 
@@ -241,6 +255,9 @@ int32_t	inputRate	= 0;
 
 bool	extioHandler::loadFunctions (void) {
 //	start binding addresses, 
+	DllMain		= nullptr;
+	DllMain		= (pfnDllMain)GETPROCADDRESS (Handle, "DllMain");
+	
 	InitHW		= (pfnInitHW)GETPROCADDRESS (Handle, "InitHW");
 	if (InitHW == NULL) {
 	   fprintf (stderr, "Failed to load InitHW\n");

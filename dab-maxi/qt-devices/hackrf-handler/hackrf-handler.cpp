@@ -48,7 +48,7 @@ int	res;
 
 #ifdef  __MINGW32__
         const char *libraryString = "libhackrf.dll";
-        Handle          = LoadLibrary ((wchar_t *)L"hackrf.dll");
+        Handle          = LoadLibrary ((wchar_t *)L"libhackrf.dll");
 #elif  __clang__
         const char *libraryString = "/opt/local/lib/libhackrf.dylib";
         Handle = dlopen(libraryString,RTLD_NOW);

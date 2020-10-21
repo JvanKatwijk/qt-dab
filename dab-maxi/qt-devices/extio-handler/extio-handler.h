@@ -40,6 +40,7 @@ class		virtualReader;
 #endif
 
 typedef	int	(*pfnExtIOCallback) (int cnt, int status, float IQoffs, void *IQdata);
+typedef bool (STDCALL *pfnDllMain)(HINSTANCE, DWORD, LPVOID);
 typedef bool (STDCALL *pfnInitHW)(char *, char *, int& ); // 
 typedef bool (STDCALL *pfnOpenHW)(void);
 typedef void (STDCALL *pfnCloseHW)(void);
@@ -198,6 +199,7 @@ private:
 	bool		loadFunctions	(void);
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 //	functions to be extracted from the dll
+	pfnDllMain	DllMain;	// maybe available
 	pfnInitHW	InitHW;		// should be available
 	pfnOpenHW	OpenHW;		// should be available
 	pfnSetHWLO	SetHWLO;	// should be available

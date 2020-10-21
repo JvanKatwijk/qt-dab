@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 QMAKE_CFLAGS	+=  -O3 -ffast-math
 QMAKE_CXXFLAGS	+=  -O3 -ffast-math
@@ -372,7 +372,7 @@ isEmpty(GITHASHSTRING) {
 	TARGET		= qt-dab32-3.6
 	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 	CONFIG		+= extio
 	CONFIG		+= airspy
