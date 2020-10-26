@@ -330,12 +330,12 @@ SyncOnPhase:
 	            if (res != 0) {
 	               uint8_t mainId	= res >> 8;
 	               uint8_t subId	= res & 0xFF;
+	               tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	               show_tii (mainId, subId);
 	            }
 	            tii_counter = 0;
 	            my_TII_Detector. reset();
 	         }
-	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	      }
 	   }
 /**

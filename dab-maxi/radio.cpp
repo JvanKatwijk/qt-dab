@@ -79,14 +79,17 @@
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
 #endif
-#ifdef	HAVE_SOAPY
-#include	"soapy-handler.h"
-#endif
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
+#endif
+#ifdef	HAVE_SOAPY
+#include	"soapy-handler.h"
+#endif
+#ifdef	HAVE_ELAD
+#include	"elad-handler.h"
 #endif
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
@@ -531,6 +534,9 @@ uint8_t	dabBand;
 #ifdef	HAVE_RTL_TCP
 	deviceSelector	-> addItem ("rtl_tcp");
 #endif
+#ifdef	HAVE_ELAD
+	deviceSelector	-> addItem ("elad-s1");
+#endif
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -858,22 +864,25 @@ QString realName;
 	         return;
 	      if (name == QString (""))
 	         name = "epg file";
-	      realName  = QDir::toNativeSeparators (epgPath + name);
-	      checkDir (realName);
+	      name  = QDir::toNativeSeparators (epgPath + name);
+	      checkDir (name);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
 //	         siHandler. process_SI (epgData. data (), epgData. size ());
-	         QString fn = "/tmp/epgfile" + QString::number (fileNumber ++) + ".xxx";
 	         fprintf (stderr, "going to write %s (%d bytes)\n",
-	                                      fn. toLatin1 (). data (),
+	                                      name. toLatin1 (). data (),
 	                                      (int)(epgData. size ()));
-	         FILE *f = fopen (fn. toLatin1 (). data (), "w+b");
+	         FILE *f = fopen (name. toLatin1 (). data (), "w+b");
+	         if (f == nullptr)
+	            fprintf (stderr, "Opening %s failed\n",
+	                                      name. toLatin1 (). data ());
+	
 	         fwrite (epgData. data (), 1, epgData. size (), f);
 	         fclose (f);
-	         epgHandler. decode (epgData, realName);
+//	         epgHandler. decode (epgData, realName);
 	      }
-//	      fprintf (stderr, "epg file %s\n",
-//	                            realName. toLatin1 (). data ());
+	      fprintf (stderr, "epg file %s\n",
+	                            realName. toLatin1 (). data ());
 #endif
 	      return;
 
@@ -1280,6 +1289,20 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
+#ifdef	HAVE_ELAD
+	if (s == "elad-s1") {
+	   try {
+	      inputDevice = new eladHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no elad device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
 #ifdef HAVE_EXTIO
 //	extio is - in its current settings - for Windows, it is a
 //	wrap around the dll
@@ -1599,13 +1622,19 @@ void	RadioInterface::setStereo	(bool b) {
 
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
-
-	for (int i = 0; i < transmitters. size (); i += 2)
+bool	found	= false;
+	for (int i = 0; i < transmitters. size (); i += 2) {
 	   if ((transmitters. at (i) == mainId) &&
-	       (transmitters. at (i + 1) == subId))
-	   return;
-	transmitters. append (mainId);
-	transmitters. append (subId);
+	       (transmitters. at (i + 1) == subId)) {
+	      found = true;
+	      break;
+	   }
+	}
+
+	if (!found) {
+	   transmitters. append (mainId);
+	   transmitters. append (subId);
+	}
         if (!running. load())
            return;
 

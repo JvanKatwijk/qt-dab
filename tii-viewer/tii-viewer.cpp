@@ -61,7 +61,7 @@ bool	brush;
 	this	-> myFrame	-> hide();
 	displayBuffer. resize (displaySize);
 	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
-	this	-> spectrumSize	= 4 * displaySize;
+	this	-> spectrumSize	= 2 * displaySize;
 	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
                                     reinterpret_cast <fftwf_complex *>(spectrum),
@@ -162,9 +162,9 @@ int16_t	averageCount	= 3;
 
 	   
 	(void)amount;
-	if (tiiBuffer -> GetRingBufferReadAvailable() < spectrumSize)
+	if (tiiBuffer -> GetRingBufferReadAvailable() < spectrumSize) {
 	   return;
-
+	}
 	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
 	tiiBuffer	-> FlushRingBuffer ();
 	if (myFrame	-> isHidden ())

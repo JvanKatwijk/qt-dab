@@ -205,8 +205,16 @@ int32_t	inputRate	= 0;
 	         throw (25);
 	      }
 	   }
-	   else
-	      OK = true;
+	   else {
+	      QString f = QString::number (inputRate / 1000) + " KHz is OK?";
+	      QMessageBox::StandardButton testButton =
+	            QMessageBox::question (nullptr, "extio",
+	                                     tr (f. toLatin1 (). data ()), 
+	                                   QMessageBox::No | QMessageBox::Yes,
+	                                     QMessageBox::Yes);
+	      if (testButton == QMessageBox::Yes)
+	         OK = true;
+	   }
 	}
 
 	_I_Buffer	= new RingBuffer<std::complex<float>>(1024 * 1024);
