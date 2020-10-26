@@ -1619,6 +1619,9 @@ void	RadioInterface::setStereo	(bool b) {
 	techData. stereoLabel	-> setText (b ? "stereo" : "mono");
 	stereoSetting = b;
 }
+//
+//	In this version we show the spectrum even when the
+//	mainId and subId did not change
 
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
