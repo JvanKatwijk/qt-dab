@@ -1623,6 +1623,13 @@ void	RadioInterface::setStereo	(bool b) {
 //	In this version we show the spectrum even when the
 //	mainId and subId did not change
 
+static
+QString	tiiNumber (int n) {
+	if (n >= 10)
+	   return QString::number (n);
+	return QString ("0") + QString::number (n);
+}
+
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
@@ -1641,8 +1648,7 @@ bool	found	= false;
         if (!running. load())
            return;
 
-	a = a + " " +  (QString::number (mainId) + " " +
-	                                QString::number (subId));
+	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
 	transmitter_coordinates	-> setText (a);
@@ -3401,7 +3407,7 @@ QString	audiodumpButton_font =
 	                                              "black"). toString ();
 
 QString	configButton_color =
-	   dabSettings -> value (AUDIODUMP_BUTTON + "_color",
+	   dabSettings -> value (CONFIG_BUTTON + "_color",
 	                                              "black"). toString ();
 QString configButton_font	=
 	   dabSettings -> value (CONFIG_BUTTON + "_font",

@@ -35,7 +35,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Spectrum view&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>Spectrumview. The spectrum of the incoming signal is shown here.</string>
        </property>
       </widget>
      </item>
@@ -52,7 +52,7 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram. The decoded symbols consist of a complex value, i.e. a value in a two dimensional space. Ideally the diagram shows 4 dots, one in each quadrant. The number below the diagram (at left) shows - in dB - the deviation of the ideal position.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>

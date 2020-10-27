@@ -134,6 +134,13 @@ void	tiiViewer::clear() {
 	transmitterDisplay	-> setText (" ");
 }
 
+static
+QString tiiNumber (int n) {
+	if (n >= 10)
+	   return QString::number (n);
+	return QString ("0") + QString::number (n);
+}
+
 void	tiiViewer::showTransmitters	(QByteArray transmitters) {
 	if (myFrame	-> isHidden())
 	   return;
@@ -147,8 +154,8 @@ void	tiiViewer::showTransmitters	(QByteArray transmitters) {
 	for (int i = 0; i < transmitters. size (); i += 2) {
 	   uint8_t mainId	= transmitters. at (i);
 	   uint8_t subId	= transmitters. at (i + 1);
-	   t = t + " (" + QString::number (mainId) +
-                    "+" + QString::number (subId) + ")";
+	   t = t + " (" + tiiNumber (mainId) +
+                    "+" + tiiNumber (subId) + ")";
         }
 	transmitterDisplay	-> setText (t);
 }
