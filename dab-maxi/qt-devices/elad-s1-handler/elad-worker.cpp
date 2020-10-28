@@ -33,7 +33,9 @@
 //	basic functions, it reads the bytes, converts them to
 //	samples and converts the rate to 2048000
 //	
-	eladWorker::eladWorker (int32_t		defaultFreq,
+	eladWorker::eladWorker (int32_t		externalFrequency,
+	                        int32_t		NyquistWidth,
+	                        int32_t		Offset,
 	                        eladLoader	*f,
 	                        eladHandler	*h,
 	                        RingBuffer<std::complex<float>> *theBuffer,
@@ -41,12 +43,14 @@
 	                          _I_Buffer (16 * 32768) {
 int	i;
 	fprintf (stderr, "creating a worker\n");
-	this	-> theRate	= 3072000;
-	this	-> defaultFreq	= defaultFreq;
-	this	-> functions	= f;
-	this	-> theBuffer	= theBuffer;
-	*OK			= false;	// just the default
-	iqSwitch		= false;
+	this	-> theRate		= 3072000;
+	this	-> externalFrequency	= externalFrequency;
+	this	-> NyquistWidth		= NyquistWidth;
+	this	-> Offset		= Offset;
+	this	-> functions		= f;
+	this	-> theBuffer		= theBuffer;
+	*OK				= false;	// just the default
+	iqSwitch. store (false);
 
 	conversionNumber	= theRate == 192000 ? 1:
 	                          theRate <= 3072000 ? 2 : 3;
@@ -72,7 +76,6 @@ int	i;
 	fprintf (stderr, "testing functions\n");
 	if (!functions	-> OK ())
 	   return;
-	lastFrequency		= defaultFreq;	// the parameter!!!!
 	fprintf (stderr, "functions are OK\n");
 	functions	-> StartFIFO (functions -> getHandle ());
 	connect (this, SIGNAL (show_eladFrequeny (int)),
@@ -205,6 +208,23 @@ int	rc, i;
 	convIndex	= 0;
 	fprintf (stderr, "worker thread started\n");
 
+	int K = 0;
+	iqSwitch. store (false);
+	eladFrequency	= externalFrequency - MHz (Offset);
+	while (eladFrequency > KHz (NyquistWidth)) {
+	   eladFrequency -= KHz (NyquistWidth);
+	   K ++;
+	}
+	if ((K & 01) == 0) {	// even
+	   eladFrequency = KHz (NyquistWidth) - eladFrequency;
+	   iqSwitch. store (true);
+	}
+
+	bool result = functions -> SetHWLO (functions -> getHandle (),
+	                                                 &eladFrequency);
+	show_eladFrequency (eladFrequency);
+	show_iqSwitch (iqSwitch);
+
 	while (running. load ()) {
 	   rc = libusb_bulk_transfer (functions -> getHandle (),
 	                              (6 | LIBUSB_ENDPOINT_IN),
@@ -233,7 +253,7 @@ int	rc, i;
 	      for (i = 0; i < 1024; i ++) {
 	         convBuffer [convIndex ++] =
 	                       makeSample_30bits (&myBuffer [iqSize * i],
-	                                          iqSwitch);
+	                                          iqSwitch. load ());
 	         if (convIndex > convBufferSize) {
 	            std::complex<float> temp [DAB_RATE / 1000];
 //	            fprintf (stderr, "start converting\n");
@@ -258,28 +278,12 @@ int	rc, i;
 	fprintf (stderr, "eladWorker now stopped\n");
 }
 
-void	eladWorker::setVFOFrequency	(int32_t f) {
-int	result;
-int	realFreq;
-	if (!running. load ())
-	   return;
-
-	realFreq	= f % Khz (3072);
-	iqSwitch	= ((f / Khz (3072)) & 01) == 01;
-	lastFrequency	= f;
-	result = functions -> SetHWLO (functions -> getHandle (),
-	                                                 &lastFrequency);
-	if (result == 1)
-	   fprintf (stderr, "setting frequency to %d succeeded\n",
-	                                              realFreq);
-	else
-	   fprintf (stderr, "setting frequency to %d failed\n",
-	                                               realFreq);
-	show_eladFrequency (realFreq);
-	show_iqSwitch (iqSwitch);
+int32_t	eladWorker::getVFOFrequency	(void) {
+	return externalFrequency;
 }
 
-int32_t	eladWorker::getVFOFrequency	(void) {
-	return lastFrequency;
+void	eladWorker::toggle_IQSwitch	() {
+	iqSwitch. store (!iqSwitch. load ());
+	show_iqSwitch (iqSwitch. load ());
 }
 

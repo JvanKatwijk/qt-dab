@@ -56,8 +56,10 @@ public:
 	int16_t	bitDepth		(void);
 private	slots:
 	void	setGainReduction	(void);
-	void	setOffset		(int);
 	void	setFilter		(void);
+	void	set_Offset		(int);
+	void	set_NyquistWidth	(int);
+	void	toggle_IQSwitch		();
 public slots:
 	void	show_eladFrequency	(int);
 	void	show_iqSwitch		(bool);
@@ -69,11 +71,11 @@ private:
 	eladLoader	*theLoader;
 	eladWorker	*theWorker;
 	int32_t		vfoFrequency;
-	int32_t		vfoOffset;
 	int		gainReduced;
 	int		localFilter;
-	uint8_t		conversionNumber;
-	int16_t		iqSize;
+	int		Offset;
+	int		Nyquist;
+	bool		iqSwitched;
 };
 #endif
 

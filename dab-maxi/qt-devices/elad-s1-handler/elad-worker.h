@@ -41,22 +41,27 @@ class	eladHandler;
 class	eladWorker: public QThread {
 Q_OBJECT
 public:
-			eladWorker	(int32_t,	// initial freq
+			eladWorker	(int32_t,	// selected frequency
+	                                 int32_t,	// NyquistWidth (KHz)
+	                                 int32_t,	// Offset (in MHz)
 	                                 eladLoader *,
 	                                 eladHandler *,
 	                                 RingBuffer<std::complex<float>> *,
 	                                 bool *);
-			~eladWorker	(void);
-	void		setVFOFrequency	(int32_t);
-	int32_t		getVFOFrequency	(void);
-	void		stop		(void);
+			~eladWorker		();
+	int32_t		getVFOFrequency		();
+	void		toggle_IQSwitch		();
+	void		stop			();
 private:
-	void			run	(void);
+	void		run			();
 	eladLoader		*functions;	// 
 	RingBuffer<uint8_t>	_I_Buffer;
 	RingBuffer<std::complex<float>>	*theBuffer;
-	int32_t			defaultFreq;
-	long int		lastFrequency;
+	int32_t			externalFrequency;
+	long int		eladFrequency;
+	int32_t			NyquistWidth;
+	int32_t			Offset;
+	std::atomic<bool>	iqSwitch;
 	std::atomic<bool>	running;
 	int32_t			theRate;
 	int			mapTable_int	[2048];
@@ -67,7 +72,6 @@ private:
         int			convBufferSize;
         int			convIndex;
         std::complex<float>	*convBuffer;
-	bool			iqSwitch;
 signals:
 	void			show_eladFrequency	(int);
 	void			show_iqSwitch	(bool);

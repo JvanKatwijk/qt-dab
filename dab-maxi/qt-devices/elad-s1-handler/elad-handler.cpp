@@ -46,8 +46,8 @@ int16_t	success;
 	myFrame. show ();
 	theLoader		= NULL;
 	theWorker		= NULL;
-	vfoOffset			=
-	             eladSettings -> value ("elad-offset", 0). toInt ();
+	Offset			= offsetSelector	-> value ();
+	Nyquist			= NyquistWidth		-> value ();
 
 //
 //	sometimes problems with dynamic linkage of libusb, it is
@@ -97,21 +97,26 @@ int16_t	success;
 	filterText	-> setText ("no filter");
 	gainReduced	= 0;
 	gainLabel	-> setText ("0");
-	connect (hzOffset, SIGNAL (valueChanged (int)),
-	         this, SLOT (setOffset (int)));
 	connect (gainReduction, SIGNAL (clicked (void)),
 	         this, SLOT (setGainReduction (void)));
 	connect (filter, SIGNAL (clicked (void)),
 	         this, SLOT (setFilter (void)));
+	connect (NyquistWidth, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_NyquistWidth (int)));
+	connect (offsetSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_Offset (int)));
+	connect (IQSwitch, SIGNAL (clicked ()),
+	         this, SLOT (toggle_IQSwitch ()));
 }
 //
 	eladHandler::~eladHandler	(void) {
-	eladSettings -> setValue ("elad-offset", vfoOffset);
 	stopReader ();
-	if (theLoader != NULL)
-	   delete theLoader;
+//
+//	theWorker refers to the loader, so clean up int his order
 	if (theWorker != NULL)
 	   delete theWorker;
+	if (theLoader != NULL)
+	   delete theLoader;
 }
 
 int32_t	eladHandler::defaultFrequency	(void) {
@@ -119,7 +124,7 @@ int32_t	eladHandler::defaultFrequency	(void) {
 }
 
 int32_t	eladHandler::getVFOFrequency	(void) {
-	return vfoFrequency + vfoOffset;
+	return vfoFrequency;
 }
 
 bool	eladHandler::restartReader	(int32_t frequency) {
@@ -131,6 +136,8 @@ bool	success;
 
 	_I_Buffer. FlushRingBuffer ();
 	theWorker	= new eladWorker (vfoFrequency,
+	                                  Nyquist,
+	                                  Offset,
 	                                  theLoader,
 	                                  this,
 	                                  &_I_Buffer,
@@ -174,10 +181,6 @@ int16_t	eladHandler::bitDepth	(void) {
 }
 
 //
-void	eladHandler::setOffset	(int k) {
-	vfoOffset	= k;
-}
-
 void	eladHandler::setGainReduction	(void) {
 	gainReduced = gainReduced == 1 ? 0 : 1;
 	theLoader -> set_en_ext_io_ATT20 (theLoader -> getHandle (),
@@ -202,4 +205,18 @@ void	eladHandler::show_iqSwitch	(bool b) {
 	else
 	   elad_iqSwitch -> setText ("normal IQ");
 }
+
+void	eladHandler::toggle_IQSwitch	() {
+	if (theWorker != nullptr)
+	   theWorker -> toggle_IQSwitch ();
+}
+
+void	eladHandler::set_NyquistWidth	(int w) {
+	Nyquist		= w;
+}
+
+void	eladHandler::set_Offset		(int w) {
+	Offset		= w;
+}
+
 

@@ -9,11 +9,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-QMAKE_CFLAGS	+=  -O3 -ffast-math
-QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -O3 -ffast-math
+#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+QMAKE_CFLAGS	+=  -g
+QMAKE_CXXFLAGS	+=  -g
+QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -311,7 +311,7 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 CONFIG		+= pluto
-#CONFIG		+= elad
+CONFIG		+= elad
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -557,6 +557,7 @@ pluto-2	{
 
 elad	{
 	DEFINES		+= HAVE_ELAD
+	DEPENDPATH	+= ./qt-devices/elad-s1-handler
 	INCLUDEPATH	+= ./qt-devices/elad-s1-handler
 	HEADERS		+= ./qt-devices/elad-s1-handler/elad-handler.h
 	HEADERS		+= ./qt-devices/elad-s1-handler/elad-loader.h
