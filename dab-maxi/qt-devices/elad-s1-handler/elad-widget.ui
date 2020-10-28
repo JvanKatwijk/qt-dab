@@ -21,6 +21,12 @@
        <property name="toolTip">
         <string>Offset selector: change will have effect on the next channel selection</string>
        </property>
+       <property name="minimum">
+        <number>-999</number>
+       </property>
+       <property name="maximum">
+        <number>999</number>
+       </property>
       </widget>
      </item>
      <item>
