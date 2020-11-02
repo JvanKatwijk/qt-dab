@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2014
+ *    Copyright (C) 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Computing
+ *    Lazy Chair Programming
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -21,39 +21,29 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __ELAD_WORKER__
-#define	__ELAD_WORKER__
+#ifndef	__TIMETABLE_HANDLER__
+#define	__TIMETABLE_HANDLER__
 
-#include	<stdlib.h>
-#include	<stdio.h>
-#include	<math.h>
-#include	<string.h>
-#include	<unistd.h>
-#include	<atomic>
-#include	<stdint.h>
-#include	<QThread>
-#include	"dab-constants.h"
-#include	"ringbuffer.h"
+#include	"radio.h"
+#include	<QListView>
+#include	<QStringList>
+#include	<QStringListModel>
+#include	<QModelIndex>
 
-class	eladLoader;
-class	eladHandler;
+class	RadioInterface;
 
-class	eladWorker: public QThread {
+class	timeTableHandler:public QListView {
 Q_OBJECT
 public:
-			eladWorker	(int32_t,	// selected frequency
-	                                 eladLoader *,
-	                                 eladHandler *,
-	                                 RingBuffer<uint8_t> *,
-	                                 bool *);
-			~eladWorker		();
-	void		stop			();
+		timeTableHandler	(RadioInterface *radio);
+		~timeTableHandler	();
+	void	addElement		(int, const QString &);
+	void	clear			();
 private:
-	void			run		();
-	eladLoader		*functions;	// 
-	RingBuffer<uint8_t>	*_O_Buffer;
-	long int		eladFrequency;
-	std::atomic<bool>	running;
+	QStringList		timeTableList;
+	QStringListModel	displayList;
+	RadioInterface	*radio;
 };
+
 #endif
 

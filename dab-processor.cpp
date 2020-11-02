@@ -437,6 +437,20 @@ int32_t dabProcessor::get_ensembleId	() {
 QString dabProcessor::get_ensembleName	() {
 	return my_ficHandler. get_ensembleName();
 }
+
+void	dabProcessor::set_epgData	(int SId,
+	                                 int32_t theTime, const QString &s) {
+	my_ficHandler. set_epgData (SId, theTime, s);
+}
+
+bool	dabProcessor::has_timeTable	(uint32_t SId) {
+	return my_ficHandler. has_timeTable (SId);
+}
+
+std::vector<epgElement>	dabProcessor::find_epgData	(uint32_t SId) {
+	return my_ficHandler. find_epgData (SId);
+}
+
 //
 //	for the mscHandler:
 void	dabProcessor::reset_Services	() {
@@ -449,16 +463,20 @@ void	dabProcessor::stopService (descriptorType *d) {
 	   my_mscHandler. stopService (d);
 }
 
-void    dabProcessor::set_audioChannel (audiodata *d,
+bool    dabProcessor::set_audioChannel (audiodata *d,
 	                                      RingBuffer<int16_t> *b) {
 	if (!scanMode)
-	   my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);
+	   return my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);
+	else
+	   return false;
 }
 
-void    dabProcessor::set_dataChannel (packetdata *d,
+bool    dabProcessor::set_dataChannel (packetdata *d,
 	                                      RingBuffer<uint8_t> *b) {
 	if (!scanMode)
-	   my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
+	   return my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
+	else
+	   return false;
 }
 
 void	dabProcessor::startDumping	(SNDFILE *f) {

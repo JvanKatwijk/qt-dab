@@ -25,7 +25,7 @@
 #include        "mp4processor.h"
 #include	"data-processor.h"
 //
-//	Driver program for the selected backend. Embodying that in a4
+//	Driver program for the selected backend. Embodying that in a
 //	separate class makes the "Backend" class simpler.
 
 	backendDriver::backendDriver (RadioInterface *mr,

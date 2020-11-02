@@ -41,14 +41,14 @@ int	rc;
 	  
 	fprintf (stderr, "going to load %s\n", hwLibname);
 	hwHandle	= dlopen (hwLibname, RTLD_NOW);
-	if (hwHandle == NULL) {
+	if (hwHandle == nullptr) {
 	   fprintf (stderr, "error report %s\n", dlerror ());
 	   libusb_close (dev_handle);
 	   return;
 	}
 //	load the init function
 	Init	= (FDMS1_HW_INIT) dlsym (hwHandle, (const char *)"fdms1_hw_init");
-	if (Init == NULL) {
+	if (Init == nullptr) {
 	   fprintf (stderr, "Could not load fdms1_hw_init\n");
 	   dlclose (hwHandle);
 	   return;
@@ -59,7 +59,7 @@ int	rc;
 //	cwLibname	= "/usr/local/lib64/libfdms1_hw_ctrl.so.1.0";
 	fprintf (stderr, "going to load %s\n", cwLibname);
 	cwHandle	= dlopen (cwLibname, RTLD_NOW);
-	if (cwHandle == NULL) {
+	if (cwHandle == nullptr) {
 	   fprintf (stderr, "error report %s\n", dlerror ());
 	   dlclose (hwHandle);
 	   return;
@@ -70,14 +70,14 @@ int	rc;
 //	Load the functions one by one
 	set_en_ext_io_ATT20 = (Pset_en_ext_io_ATT20)
 	                GETPROCADDRESS (cwHandle, "set_en_ext_io_ATT20");
-	if (set_en_ext_io_ATT20 == NULL) {
+	if (set_en_ext_io_ATT20 == nullptr) {
 	   fprintf (stderr, "Could not load set_en_ext_io_ATT20\n");
 	   return;
 	}
 
 	set_en_ext_io_LP30 = (Pset_en_ext_io_ATT20)
 	                GETPROCADDRESS (cwHandle, "set_en_ext_io_LP30");
-	if (set_en_ext_io_LP30 == NULL) {
+	if (set_en_ext_io_LP30 == nullptr) {
 	   fprintf (stderr, "Could not load set_en_ext_io_ATT20\n");
 	   return;
 	}
@@ -93,7 +93,7 @@ int	rc;
 //	We first open the USB lib
 	usb_OK		= false;
 	dev_handle	= startUSB ();
-	if (dev_handle == NULL)  {
+	if (dev_handle == nullptr)  {
 	   *success = -2;
 	   return;
 	}
@@ -139,7 +139,7 @@ int	rc;
 //
 
 libusb_device_handle *eladLoader::startUSB	(void) {
-libusb_device_handle	*dev_handle	= NULL;
+libusb_device_handle	*dev_handle	= nullptr;
 uint16_t vendor_id =  0x1721;
 uint16_t product_id = 0x0610;
 
@@ -153,7 +153,7 @@ int rc = libusb_init ( &context );
 	   fprintf (stderr,
 	            "Error in libusb_init: [%d] %s\n",
 	            rc, libusb_error_name (rc));
-	   return NULL;
+	   return nullptr;
 	}
 
 	dev_handle = libusb_open_device_with_vid_pid (context,
@@ -164,7 +164,7 @@ int rc = libusb_init ( &context );
 	   fprintf (stderr, "Error in libusb_open_device_with_vid_pid\n");
 	   fprintf (stderr,
 	            "Check FDMS1 is properly connected and turned on.\n");
-	   return NULL;
+	   return nullptr;
 	}
 
 	fprintf (stderr, "libusb_open_device_with_vid_pid OK\n");
@@ -181,7 +181,7 @@ int rc = libusb_init ( &context );
 	   fprintf (stderr,
 	            "Cannot claim interface: [%d] %s\n",
 	            rc, libusb_error_name (rc));
-	   return NULL;
+	   return nullptr;
 	}
 	return dev_handle;
 }

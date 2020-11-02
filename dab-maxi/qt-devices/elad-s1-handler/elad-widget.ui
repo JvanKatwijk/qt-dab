@@ -68,7 +68,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QLCDNumber" name="eladFrequency"/>
+      <widget class="QLCDNumber" name="eladFrequencyDisplay"/>
      </item>
      <item>
       <widget class="QLabel" name="label_2">

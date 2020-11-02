@@ -42,8 +42,8 @@
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
-	connect (this, SIGNAL (setTime (const QString &)),
-	         myRadioInterface, SLOT (showTime (const QString &)));
+	connect (this, SIGNAL (clockTime (int, int, int, int, int)),
+	         myRadioInterface, SLOT (clockTime (int, int, int, int, int)));
 	connect (this, SIGNAL (changeinConfiguration ()),
 	         myRadioInterface, SLOT (changeinConfiguration ()));
 	connect (this, SIGNAL (startAnnouncement (const QString &, int)),
@@ -1575,9 +1575,6 @@ uint8_t	fibDecoder::get_ecc() {
 	return 0;
 }
 
-void	fibDecoder::print_Overview () {
-}
-
 /////////////////////////////////////////////////////////////////////////////
 //
 //	Country, LTO & international table 8.1.3.2
@@ -1602,9 +1599,10 @@ uint8_t ecc;
 	}
 }
 
-QString monthTable [] = {
-"jan", "feb", "mar", "apr", "may", "jun",
-"jul", "aug", "sep", "oct", "nov", "dec"};
+//static
+//QString monthTable [] = {
+//"jan", "feb", "mar", "apr", "may", "jun",
+//"jul", "aug", "sep", "oct", "nov", "dec"};
 
 int	monthLength [] {
 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -1654,29 +1652,30 @@ void	adjustTime (int32_t *dateTime) {
 	}
 }
 
-QString	mapTime (int32_t *dateTime) {
-QString result	= QString::number (dateTime [0]);
-	result. append ("-");
-	result. append (monthTable [dateTime [1] - 1]);
-	result. append ("-");
-
-	QString day	= QString ("%1").
-	                      arg (dateTime [2], 2, 10, QChar ('0'));
-	result. append (day);
-	result. append (" ");
-	int hours	= dateTime [3];
-	if (hours < 0)	hours += 24;
-	if (hours >= 24) hours -= 24;
-
-	QString hoursasString 
-		= QString ("%1"). arg (hours, 2, 10, QChar ('0'));
-	result. append (hoursasString);
-	result. append (":");
-	QString minutesasString =
-	              QString ("%1"). arg (dateTime [4], 2, 10, QChar ('0'));
-	result. append (minutesasString);
-	return result;
-}
+//QString	mapTime (int32_t *dateTime) {
+//QString result	= QString::number (dateTime [0]);
+//	result. append ("-");
+//	result. append (monthTable [dateTime [1] - 1]);
+//	result. append ("-");
+//
+//	QString day	= QString ("%1").
+//	                      arg (dateTime [2], 2, 10, QChar ('0'));
+//	result. append (day);
+//	result. append (" ");
+//	int hours	= dateTime [3];
+//	if (hours < 0)	hours += 24;
+//	if (hours >= 24) hours -= 24;
+//
+//	dateTime [3] = hours;
+//	QString hoursasString 
+//		= QString ("%1"). arg (hours, 2, 10, QChar ('0'));
+//	result. append (hoursasString);
+//	result. append (":");
+//	QString minutesasString =
+//	              QString ("%1"). arg (dateTime [4], 2, 10, QChar ('0'));
+//	result. append (minutesasString);
+//	return result;
+//}
 //
 //	Date and Time
 //	FIG0/10 are copied from the work of
@@ -1725,7 +1724,68 @@ int32_t	theTime	[6];
 
 	if (change) {
 	   adjustTime (dateTime);
-	   const QString timeString = mapTime (dateTime);
-	   emit  setTime (timeString);
+//	   const QString timeString = mapTime (dateTime);
+	   emit  clockTime (dateTime [0], dateTime [1],
+	                    dateTime [2], dateTime [3], dateTime [4]);
 	}
 }
+
+void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime, 
+	                            const QString theText) {
+	for (int i = 0; i < 64; i ++) {
+           if (ensemble -> services [i]. inUse &&
+               ensemble -> services [i]. SId == SId) {
+	      service *S = &(ensemble -> services [i]);
+	      for (uint16_t j = 0; j < S -> epgData. size (); j ++) {
+	         if (S -> epgData. at (j). theTime == theTime)  {
+	            S -> epgData.at (j). theText = theText;
+	            return;	
+	         }
+	      }
+	      epgElement ep;
+	      ep. theTime	= theTime;
+	      ep. theText	= theText;
+	      S -> epgData. push_back (ep);
+	      return;
+	   }
+	}
+}
+
+std::vector<epgElement> fibDecoder::get_timeTable (uint32_t SId) {
+std::vector<epgElement> res;
+int	index	= findService (SId);
+	if (index == -1)
+	   return res;
+	 return ensemble -> services [index]. epgData;
+}
+
+std::vector<epgElement> fibDecoder::get_timeTable (const QString &service) {
+std::vector<epgElement> res;
+int	index	= findService (service);
+	if (index == -1)
+	   return res;
+	 return ensemble -> services [index]. epgData;
+}
+
+bool	fibDecoder::has_timeTable	(uint32_t SId) {
+int index	= findService (SId);
+std::vector<epgElement> t;
+	if (index == -1)
+	   return false;
+	t = ensemble -> services [index]. epgData;
+	return t. size () > 2;
+}
+
+std::vector<epgElement>	fibDecoder::find_epgData	(uint32_t SId) {
+int index	= findService (SId);
+std::vector<epgElement> res;
+
+	if (index == -1)
+	   return res;
+
+	service *s = &(ensemble -> services [index]);
+
+	res = s -> epgData;
+	return res;
+}
+

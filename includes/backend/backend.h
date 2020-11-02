@@ -54,6 +54,7 @@ public:
 	void	stopRunning();
 //
 //	we need sometimes to access the key parameters for decoding
+	int		serviceId;
 	int		startAddr;
 	int		Length;
 	bool		shortForm;
@@ -78,7 +79,6 @@ void	run();
 	RadioInterface	*radioInterface;
 
 	int16_t		fragmentSize;
-	int		serviceId;
 	std::vector<std::vector <int16_t>> interleaveData;
 	std::vector<int16_t> tempX;
 	int16_t		countforInterleaver;

@@ -33,49 +33,57 @@
 #include	"ui_elad-widget.h"
 #include	<libusb-1.0/libusb.h>
 
+#define	ELAD_RATE	3072000
+
 class	QSettings;
 class	eladWorker;
 class	eladLoader;
-typedef	std::complex<float>(*makeSampleP)(uint8_t *);
+//typedef	std::complex<float>(*makeSampleP)(uint8_t *);
 
 class	eladHandler: public deviceHandler, public Ui_eladWidget {
 Q_OBJECT
 public:
 		eladHandler		(QSettings *);
-		~eladHandler		(void);
-	int32_t	getVFOFrequency		(void);
+		~eladHandler		();
+	int32_t	getVFOFrequency		();
 	bool	legalFrequency		(int32_t);
-	int32_t	defaultFrequency	(void);
+	int32_t	defaultFrequency	();
 
 	bool	restartReader		(int32_t);
-	void	stopReader		(void);
+	void	stopReader		();
 	int32_t	getSamples		(std::complex<float> *, int32_t);
-	int32_t	Samples			(void);
-	void	resetBuffer		(void);
-	int32_t	getRate			(void);
-	int16_t	bitDepth		(void);
+	int32_t	Samples			();
+	void	resetBuffer		();
+	int32_t	getRate			();
+	int16_t	bitDepth		();
 private	slots:
-	void	setGainReduction	(void);
-	void	setFilter		(void);
+	void	setGainReduction	();
+	void	setFilter		();
 	void	set_Offset		(int);
 	void	set_NyquistWidth	(int);
 	void	toggle_IQSwitch		();
-public slots:
-	void	show_eladFrequency	(int);
 	void	show_iqSwitch		(bool);
 private:
 	QSettings	*eladSettings;
 	QFrame		myFrame;
-	RingBuffer<std::complex<float>>	_I_Buffer;
+	RingBuffer<uint8_t>	_I_Buffer;
+	RingBuffer<std::complex<float>>	_O_Buffer;
 	bool		deviceOK;
 	eladLoader	*theLoader;
 	eladWorker	*theWorker;
-	int32_t		vfoFrequency;
+	int32_t		externalFrequency;
+	int32_t		eladFrequency;
 	int		gainReduced;
 	int		localFilter;
 	int		Offset;
 	int		Nyquist;
-	bool		iqSwitched;
+	std::atomic<bool> iqSwitch;
+	int		iqSize;
+	std::complex<float> convBuffer	[ELAD_RATE / 1000 + 1];
+	int		mapTable_int	[INPUT_RATE / 1000];
+        float		mapTable_float	[INPUT_RATE / 1000];
+	int		convIndex;
+	int		convBufferSize;
 };
 #endif
 

@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -77,14 +78,17 @@ public:
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
         QString		get_ensembleName	();
-
+	void		set_epgData		(int32_t, int32_t,
+	                                                 const QString &);
+	bool		has_timeTable		(uint32_t);
+	std::vector<epgElement>	find_epgData		(uint32_t);
 //
 //	for the mscHandler
 	void		reset_Services		();
 	void		stopService		(descriptorType *);
-	void		set_audioChannel	(audiodata *,
+	bool		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
-	void		set_dataChannel		(packetdata *,
+	bool		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
 private:
 	int		frequency;

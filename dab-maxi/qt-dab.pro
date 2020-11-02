@@ -159,6 +159,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
 	   ../includes/support/alarm-selector.h \
+	   ../includes/support/time-table.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -258,6 +259,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
 	   ../src/support/alarm-selector.cpp \
+	   ../src/support/time-table.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
@@ -577,12 +579,15 @@ try-epg	{
 	DEFINES		+= TRY_EPG
 	QT		+= xml
 	DEPENDPATH	+= ../src/backend/data/epg \
-	                   ../includes/backend/data/epg 
-	INCLUDEPATH	+= ../includes/backend/data/epg 
+	                   ../src/backend/data/epg-2 \
+	                   ../includes/backend/data/epg \
+	                   ../includes/backend/data/epg-2
+	INCLUDEPATH	+= ../includes/backend/data/epg \
+	                   ../includes/backend/data/epg-2
 	HEADERS		+= ../includes/backend/data/epg/epgdec.h \
-	                   ./si-processor.h
+	                   ../includes/backend/data/epg-2/epg-decoder.h
 	SOURCES		+= ../src/backend/data/epg/epgdec.cpp \
-	                   ./si-processor.cpp
+	                   ../src/backend/data/epg-2/epg-decoder.cpp
 }
 
 tcp-streamer	{

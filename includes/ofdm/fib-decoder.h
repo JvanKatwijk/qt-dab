@@ -28,9 +28,12 @@
 #include	<cstdint>
 #include	<cstdio>
 #include	<QObject>
+#include	<QByteArray>
 #include	"msc-handler.h"
 #include	<QMutex>
-	
+#include	"dab-config.h"
+
+
 class	RadioInterface;
 
 class	ensembleDescriptor;
@@ -40,14 +43,14 @@ class	Cluster;
 class	fibDecoder: public QObject {
 Q_OBJECT
 public:
-			fibDecoder	(RadioInterface *);
-			~fibDecoder	();
+			fibDecoder		(RadioInterface *);
+			~fibDecoder		();
 
-	void		clearEnsemble	();
-	bool		syncReached	();
-	void	dataforAudioService	(const QString &, audiodata *);
-	void	dataforPacketService	(const QString &,
-	                                      packetdata *, int16_t);
+	void		clearEnsemble		();
+	bool		syncReached		();
+	void		dataforAudioService	(const QString &, audiodata *);
+	void		dataforPacketService	(const QString &,
+	                                          packetdata *, int16_t);
 
 	std::vector<serviceId>	getServices	(int);
 
@@ -57,7 +60,11 @@ public:
 	int32_t		get_ensembleId	();
 	QString		get_ensembleName	();
 	int32_t		get_CIFcount	();	
-	void		print_Overview	();
+	void		set_epgData	(uint32_t, int32_t, const QString);
+	std::vector<epgElement> get_timeTable	(uint32_t);
+	std::vector<epgElement> get_timeTable	(const QString &);
+	bool		has_timeTable	(uint32_t SId);
+	std::vector<epgElement>	find_epgData	(uint32_t);
 protected:
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
@@ -158,7 +165,7 @@ private:
 signals:
 	void		addtoEnsemble		(const QString &, int);
 	void		nameofEnsemble		(int, const QString &);
-	void		setTime			(const QString &);
+	void		clockTime		(int, int, int, int, int);
 	void		changeinConfiguration	();
 	void		startAnnouncement	(const QString &, int);
 	void		stopAnnouncement	(const QString &, int);

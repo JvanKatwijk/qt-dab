@@ -50,7 +50,7 @@
 #include	"scanner-table.h"
 #ifdef	TRY_EPG
 #include	"epgdec.h"
-#include	"si-processor.h"
+#include	"epg-decoder.h"
 #endif
 
 #include	"spectrum-viewer.h"
@@ -63,6 +63,7 @@ class	audioBase;
 class	common_fft;
 class	serviceDescriptor;
 class	historyHandler;
+class	timeTableHandler;
 
 #include	"ui_technical_data.h"
 #include	"ui_config-helper.h"
@@ -120,12 +121,14 @@ private:
 	dabService		currentService;
 	dabService		nextService;
 
+	int			currentHour;
+	int			currentMinute;
 	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
 	QLabel			*motSlides;
-	std::vector<int>	secondariesVector;
+//	std::vector<int>	secondariesVector;
 	bool			isSynced;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
@@ -139,11 +142,15 @@ private:
 #endif
 #ifdef	TRY_EPG
 	CEPGDecoder		epgHandler;
-	siProcessor		siHandler;
+	epgDecoder		epgProcessor;
+	QString			epgPath;
+	QTimer			epgTimer;
+	uint32_t		extract_epg (QString,
+                                      std::vector<serviceId> serviceList,
+	                              uint32_t);
 #endif
 	bool			saveSlides;
 	QString			picturesPath;
-	QString			epgPath;
 	QString			filePath;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
@@ -163,13 +170,13 @@ private:
 	std::vector<serviceId>
 	  	                insert   (std::vector<serviceId>,
 	                                  serviceId, int);
+
 	QStringList		soundChannels;
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
-	QTimer			epgTimer;
 	QTimer			alarmTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
@@ -192,6 +199,7 @@ private:
 	deviceHandler		*setDevice		(const QString &);
 	historyHandler		*my_history;
 	historyHandler		*my_presets;
+	timeTableHandler	*my_timeTable;
 //
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
@@ -271,15 +279,21 @@ public slots:
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
-	void			showTime		(const QString &);
+	void			clockTime		(int, int, int, int, int);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
 
 	void			show_clockError		(int);
+#ifdef	TRY_EPG
+	void			set_epgData		(int,
+	                                                 int, const QString &);
+	void			epgTimer_timeOut	();
+#endif
 
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			handle_timeTable	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();
 	void			handle_resetButton	();
@@ -314,7 +328,6 @@ private slots:
 	void			setPresetStation	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
-	void			epgTimer_timeOut	();
 	void			alarmTimer_timeOut	();
 //
 //	color handlers

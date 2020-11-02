@@ -39,16 +39,22 @@ struct motTable_ {
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
-	for (int i = 0; i < 15; i ++)
-	   motTable [i]. orderNumber = -1;
+	for (int i = 0; i < 15; i ++) {
+	   motTable [i]. orderNumber	= -1;
+	   motTable [i]. motSlide	= nullptr;
+	}
 }
 
 	motHandler::~motHandler() {
 int	i;
 
 	for (i = 0; i < 15; i ++)
-	   if (motTable [i]. orderNumber > 0)
-	      delete motTable [i]. motSlide;
+	   if (motTable [i]. orderNumber > 0) {
+	      if (motTable [i]. motSlide != nullptr) {
+	         delete motTable [i]. motSlide;
+	         motTable [i]. motSlide = nullptr;
+	      }
+	   }
 	if (theDirectory != nullptr)
 	   delete theDirectory;
 }

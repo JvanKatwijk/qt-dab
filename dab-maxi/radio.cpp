@@ -95,6 +95,7 @@
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
 #include	"history-handler.h"
+#include	"time-table.h"
 
 #ifdef	__MINGW32__
 #include <windows.h>
@@ -226,6 +227,9 @@ uint8_t	dabBand;
 	my_dabProcessor		= nullptr;
 	isSynced		= false;
 	stereoSetting		= false;
+
+	currentHour		= -1;
+	currentMinute		= -1;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -276,10 +280,6 @@ uint8_t	dabBand;
 	if (saveSlides != 0)
 	   set_picturePath ();
 
-	epgPath		= dabSettings -> value ("epgPath", ""). toString ();
-	filePath	= dabSettings -> value ("filePath", ""). toString ();
-	if ((epgPath != "") && (!epgPath. endsWith ("/")))
-	   epgPath = epgPath + "/";
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
 
@@ -288,6 +288,7 @@ uint8_t	dabBand;
 //
 	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
+	techData. timeTable_button -> hide ();
 
 	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (configDisplay);
@@ -358,11 +359,27 @@ uint8_t	dabBand;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
+#ifdef	TRY_EPG
+	epgPath		= dabSettings -> value ("epgPath", ""). toString ();
+	connect (&epgProcessor,
+	             SIGNAL (set_epgData (int, int, const QString &)),
+	         this, SLOT (set_epgData (int, int, const QString &)));
+	filePath	= dabSettings -> value ("filePath", ""). toString ();
+	if ((epgPath != "") && (!epgPath. endsWith ("/")))
+	   epgPath = epgPath + "/";
+//	timer for autostart epg service
+        epgTimer. setSingleShot (true);
+        connect (&epgTimer, SIGNAL (timeout ()),
+                 this, SLOT (epgTimer_timeOut ()));
+
+#endif
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             =
 	             dabSettings -> value ("history", historyFile). toString ();
         historyFile             = QDir::toNativeSeparators (historyFile);
         my_history              = new historyHandler (this, historyFile);
+	my_timeTable		= new timeTableHandler (this);
+	my_timeTable	-> hide ();
 
         connect (my_history, SIGNAL (handle_historySelect (const QString &)),
                  this, SLOT (handle_historySelect (const QString &)));
@@ -451,6 +468,9 @@ uint8_t	dabBand;
 	connect (techData. audiodumpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_audiodumpButton (void)));
 
+
+	connect (techData. timeTable_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_timeTable ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -478,11 +498,6 @@ uint8_t	dabBand;
 	muteTimer. setSingleShot (true);
 	muting		= false;
 //
-//	timer for autostart epg service
-	epgTimer. setSingleShot	(true);
-	connect (&epgTimer, SIGNAL (timeout ()),
-	         this, SLOT (epgTimer_timeOut ()));
-
 	alarmTimer. setSingleShot	(true);
 	connect (&alarmTimer, SIGNAL (timeout ()),
 	         this, SLOT (alarmTimer_timeOut ()));
@@ -637,7 +652,7 @@ bool	RadioInterface::doStart	() {
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (newDevice (const QString &)));
 //
-	secondariesVector. resize (0);	
+//	secondariesVector. resize (0);	
 	if (nextService. valid) {
 	   int switchDelay		=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -821,18 +836,15 @@ QString	dir;
 	QDir(). mkpath (dir);
 }
 
-static int fileNumber	= 0;
-static int propNumber	= 0;
-
 void	RadioInterface::handle_motObject (QByteArray result,
 	                                  QString name,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-	                           contentType,
-	                           getContentBaseType ((MOTContentType)contentType),
-	                           name. toLatin1 (). data (), dirElement);
+//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+//	                           contentType,
+//	                           getContentBaseType ((MOTContentType)contentType),
+//	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -842,7 +854,8 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeImage:
-	      show_MOTlabel (result, contentType, name);
+	      if (dirElement == 0)
+	         show_MOTlabel (result, contentType, name);
 	      break;
 
 	   case MOTBaseTypeAudio:
@@ -868,17 +881,22 @@ QString realName;
 	      checkDir (name);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
-//	         siHandler. process_SI (epgData. data (), epgData. size ());
-	         fprintf (stderr, "going to write %s (%d bytes)\n",
-	                                      name. toLatin1 (). data (),
-	                                      (int)(epgData. size ()));
-	         FILE *f = fopen (name. toLatin1 (). data (), "w+b");
-	         if (f == nullptr)
-	            fprintf (stderr, "Opening %s failed\n",
+	         uint32_t ensembleId =
+	                     my_dabProcessor -> get_ensembleId ();
+	         uint32_t currentSId =
+	                     extract_epg (name, serviceList, ensembleId);
+	         fprintf (stderr, "currentSID = %X\n", currentSId);
+	         if (currentSId != 0) {
+	            FILE *f = fopen (name. toLatin1 (). data (), "w+b");
+	            if (f == nullptr)
+	               fprintf (stderr, "Opening %s failed\n",
 	                                      name. toLatin1 (). data ());
 	
-	         fwrite (epgData. data (), 1, epgData. size (), f);
-	         fclose (f);
+	            fwrite (epgData. data (), 1, epgData. size (), f);
+	            fclose (f);
+	            epgProcessor. process_epg (epgData. data (), 
+	                                       epgData. size (), currentSId);
+	         }
 //	         epgHandler. decode (epgData, realName);
 	      }
 	      fprintf (stderr, "epg file %s\n",
@@ -1123,7 +1141,9 @@ void	RadioInterface::TerminateProcess () {
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
+#ifdef	TRY_EPG
 	epgTimer.	stop	();
+#endif
 	alarmTimer.	stop	();
 	soundOut	-> stop ();
 	if (my_dabProcessor != nullptr)
@@ -1155,6 +1175,7 @@ void	RadioInterface::TerminateProcess () {
 	delete	dataDisplay;
 	delete	configDisplay;
 	delete	my_history;
+	delete	my_timeTable;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
 }
@@ -1514,8 +1535,39 @@ void	RadioInterface::handle_devicewidgetButton	() {
 //	to be displayed
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::showTime	(const QString &s) {
-	localTimeDisplay -> setText (s);
+static
+const char *monthTable [] = {
+	"jan",
+	"feb",
+	"mar",
+	"apr",
+	"may",
+	"jun",
+	"jul",
+	"aug",
+	"sep",
+	"oct",
+	"nov",
+	"dec"
+};
+
+
+void	RadioInterface::clockTime (int year, int month, int day,
+	                                    int hours, int minutes){
+char dayString [3];
+char hourString [3];
+char minuteString [3];
+	currentHour	= hours;
+	currentMinute	= minutes;
+	sprintf (dayString, "%2d", day);
+	sprintf (hourString, "%2d", hours);
+	sprintf (minuteString, "%2d", minutes);
+	QString result = QString::number (year) + "-" +
+	                       monthTable [month - 1] + "-" +
+	                       QString (dayString) + "  " +
+	                       QString (hourString) + ":" +
+	                       QString (minuteString);
+	localTimeDisplay -> setText (result);
 }
 
 void	RadioInterface::show_frameErrors (int s) {
@@ -2291,6 +2343,10 @@ int	switchDelay;
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
 	channelTimer. stop ();
+
+	techData. timeTable_button -> hide ();
+	my_timeTable	-> hide ();
+
 	if (my_dabProcessor == nullptr) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
@@ -2380,6 +2436,8 @@ QString serviceName	= s -> serviceName;
 	      if (ad. defined) {
 	         currentService. valid = true;
 	         currentService. is_audio	= true;
+	         if (my_dabProcessor -> has_timeTable (ad. SId))
+	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
 	      }
 	      else
@@ -2444,10 +2502,13 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   return;
 	}
 
+	fprintf (stderr, "we start %s at %2d:%2d\n",
+	                        ad -> serviceName. toLatin1 (). data (),
+	                        currentHour, currentMinute);
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 
-	my_dabProcessor -> set_audioChannel (ad, &audioBuffer);
+	(void)my_dabProcessor -> set_audioChannel (ad, &audioBuffer);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
 	   my_dabProcessor -> dataforPacketService (ad -> serviceName, &pd, i);
@@ -2504,6 +2565,7 @@ void	RadioInterface::start_packetService (const QString &s) {
 packetdata pd;
 
 	my_dabProcessor -> dataforPacketService (s, &pd, 0);
+	   return;
 	if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	   QMessageBox::warning (this, tr ("sdr"),
@@ -2511,7 +2573,11 @@ packetdata pd;
 	   return;
 	}
 
-	my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	if (!my_dabProcessor -> set_dataChannel (&pd, &dataBuffer)) {
+	   QMessageBox::warning (this, tr ("sdr"),
+ 	                         tr ("could not start this service\n"));
+	   return;
+	}
 	switch (pd. DSCTy) {
 	   default:
 	      showLabel (QString ("unimplemented Data"));
@@ -2680,7 +2746,11 @@ void	RadioInterface::stopChannel	() {
 	stop_audioDumping	();
         soundOut	-> stop ();
 //	note framedumping - if any - was already stopped
+#ifdef	TRY_EPG
 	epgTimer. stop		();
+	techData. timeTable_button -> hide ();
+	my_timeTable	-> hide ();
+#endif
 	presetTimer. stop 	();
         channelTimer. stop	();
 //
@@ -2779,8 +2849,9 @@ int	switchDelay;
 	                                                             toInt ();
 	presetTimer. stop ();
 	channelTimer. stop ();
-
+#ifdef	TRY_EPG
 	epgTimer. stop ();
+#endif
 	connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	         this, SLOT (No_Signal_Found ()));
 	new_presetIndex (0);
@@ -3646,7 +3717,7 @@ void	RadioInterface::handle_alarmSelector	(const QString &s) {
 	                                       alarm_minutes -> value ();
 
 	   QDateTime theDateTime	= QDateTime::currentDateTime ();
-	   QDate theDate		= theDateTime. date ();
+//	   QDate theDate		= theDateTime. date ();
 	   QTime theTime		= theDateTime. time ();
 	   if ((theTime. hour () > alarmData. targetHour) && (
 	          alarmData. targetHour < 12))
@@ -3702,18 +3773,74 @@ QTime theTime = QTime::currentTime ();
 	configWidget. alarm_minutes -> setValue (theTime. minute ());
 }
 
-void	RadioInterface::epgTimer_timeOut	() {
 #ifdef	TRY_EPG
+void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
 	if (scanning. load ())
 	   return;
 	for (const auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
 	       serv. name. endsWith (" epg ", Qt::CaseInsensitive)) {
-	         start_packetService (serv. name);
+	      packetdata pd;
+              my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
+              if ((!pd. defined) ||
+                    (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
+	         return;
+	      if (pd. DSCTy != 60)
 	         break;
+	      fprintf (stderr, "Starting hidden service %s\n",
+	                                serv. name. toLatin1 (). data ());
+	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	      break;
 	   }
 	}
+}
 #endif
+
+//------------------------------------------------------------------------
+//------------------------------------------------------------------------
+
+#ifdef	TRY_EPG
+uint32_t RadioInterface::extract_epg (QString name,
+	                              std::vector<serviceId> serviceList,
+	                              uint32_t ensembleId) {
+	for (const auto serv : serviceList) {
+	   if (name. contains (QString::number (serv. SId, 16),
+	                          Qt::CaseInsensitive)) 
+	   
+	      return serv. SId;
+	}
+	return 0;
+}
+
+void	RadioInterface::set_epgData (int SId,
+	                             int theTime, const QString &theText) {
+	if (my_dabProcessor != nullptr)
+	   my_dabProcessor -> set_epgData (SId, theTime, theText);
+}
+
+#endif
+
+void	RadioInterface::handle_timeTable	() {
+	if (!currentService. valid)
+	   return;
+
+	if (!currentService. is_audio)
+	   return;
+
+	if (my_timeTable == nullptr)
+	   return;
+
+	if  (my_timeTable -> isHidden ())
+	   my_timeTable -> show ();
+	else
+	   my_timeTable -> hide ();
+
+	my_timeTable	-> clear ();
+	std::vector<epgElement> res =
+	           my_dabProcessor -> find_epgData (currentService. SId);
+	for (const auto& element: res)
+	   my_timeTable -> addElement (element. theTime,
+	                               element. theText);
 }
 

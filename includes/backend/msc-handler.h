@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -56,7 +57,7 @@ public:
 			~mscHandler();
 	void		processBlock_0		(std::complex<float> *);
 	void		process_Msc		(std::complex<float> *, int);
-	void		set_Channel		(descriptorType *,
+	bool		set_Channel		(descriptorType *,
 	                                           RingBuffer<int16_t> *,
 	                                           RingBuffer<uint8_t> *);
 //

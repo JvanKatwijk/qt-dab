@@ -237,10 +237,17 @@ void	mscHandler::stopService	(descriptorType *d) {
 	locker. unlock ();
 }
 
-void	mscHandler::set_Channel (descriptorType *d,
+bool	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer) {
 	locker. lock();
+	for (int i = 0; i < theBackends. size (); i ++) {
+	   if (d -> SId == theBackends. at (i) -> serviceId) {
+	      fprintf (stderr, "The service is already running\n");
+	      locker. unlock ();
+	      return false;
+	   }
+	}
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     d,
 	                                     audioBuffer,

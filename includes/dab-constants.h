@@ -77,6 +77,12 @@ using namespace std;
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
 
+
+typedef struct {
+        int     theTime;
+        QString theText;
+} epgElement;
+
 class serviceId {
 public:
 	QString		name;
