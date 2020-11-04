@@ -492,9 +492,25 @@ uint8_t ltoFlag = getBit (v, 8 * index + 19);
 uint8_t utcFlag	= getBit (v, 8 * index + 20);
 int	hours;
 int	minutes;
+int	ltoBase;
 
 	hours	= getBits (v, 8 * index + 21, 5);
 	minutes	= getBits (v, 8 * index + 26, 6);
+
+	if (utcFlag)
+	   ltoBase = 48;
+	else
+	   ltoBase = 32;
+
+	if (ltoFlag) {
+	   uint16_t halfHours = getBits (v, 8 * index + ltoBase + 2, 6);
+	   if (halfHours & 0x20)
+	      halfHours = - halfHours & 0x1F;
+	   else
+	      halfHours = halfHours & 0x1F;
+	   minutes += halfHours * 30;
+	}
+	
 	return hours * 60 + minutes;
 }
 

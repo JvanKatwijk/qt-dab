@@ -313,7 +313,7 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 CONFIG		+= pluto
-CONFIG		+= elad
+#CONFIG		+= elad
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -328,7 +328,7 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-CONFIG		+= try-epg		# do not use
+#CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING

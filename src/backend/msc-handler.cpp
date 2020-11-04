@@ -253,8 +253,9 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer));
-//	work_to_be_done. store (true);
+	work_to_be_done. store (true);
 	locker. unlock();
+	return true;
 }
 
 //

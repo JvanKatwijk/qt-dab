@@ -103,10 +103,10 @@ int16_t	success;
 
 	iqSize		= 8;
 //
-	connect (gainReduction, SIGNAL (clicked (void)),
-	         this, SLOT (setGainReduction (void)));
-	connect (filter, SIGNAL (clicked (void)),
-	         this, SLOT (setFilter (void)));
+	connect (gainReduction, SIGNAL (clicked ()),
+	         this, SLOT (setGainReduction ()));
+	connect (filter, SIGNAL (clicked ()),
+	         this, SLOT (setFilter ()));
 	connect (NyquistWidth, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_NyquistWidth (int)));
 	connect (offsetSelector, SIGNAL (valueChanged (int)),
@@ -219,22 +219,25 @@ int ii = 0; int qq = 0;
 int16_t	i = 0;
 uint32_t	uii = 0, uqq = 0;
 
-	uint8_t i0 = buf [i++];
-	uint8_t i1 = buf [i++];
-	uint8_t i2 = buf [i++];
-	uint8_t i3 = buf [i++];
+	uint8_t i0 = buf [i++]; //i+0
+        uint8_t i1 = buf [i++]; //i+1
+        uint8_t i2 = buf [i++]; //i+2
+        uint8_t i3 = buf [i++]; //i+3
 
-	uint8_t q0 = buf [i++];
-	uint8_t q1 = buf [i++];
-	uint8_t q2 = buf [i++];
-	uint8_t q3 = buf [i++];
+        uint8_t q0 = buf [i++]; //i+4
+        uint8_t q1 = buf [i++]; //i+5
+        uint8_t q2 = buf [i++]; //i+6
+        uint8_t q3 = buf [i++]; //i+7
 
+// Andrea Montefusco recipe
+// from four unsigned 8bit little endian order to unsigned 32bit (just move),
+// then cast it to signed 32 bit
+        uii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
+        uqq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
 
-	uii = (i3 << 24) | (i2 << 16) | (i1 << 8) | i0;
-	uqq = (q3 << 24) | (q2 << 16) | (q1 << 8) | q0;
+        ii =(int)uii;
+        qq =(int)uqq;
 
-	ii	= (int) uii;
-	qq	= (int) uqq;
 	if (iqSwitch)
 	   return std::complex<float> ((float)qq * SCALE_FACTOR_32to14,
 	                               (float)ii * SCALE_FACTOR_32to14);
@@ -243,13 +246,8 @@ uint32_t	uii = 0, uqq = 0;
 	                               (float)qq * SCALE_FACTOR_32to14);
 }
 
-
 //	we are - in this context - certain that whenever getSamples
 //	is called, there are sufficient samples available.
-//
-//	However, they may still need resampling !!!!
-//	sampling is now done inline
-#define	SEGMENT_SIZE	(512 * iqSize)
 //
 //	all conversion now has to be done while answering
 //	a request for samples
@@ -260,6 +258,7 @@ uint32_t	uii = 0, uqq = 0;
 //	   3. we fill the conversion buffer and
 //	   4. from time to time, we convert the rate
 //	   until the _O_Buffer is filled up with at least "size" samples
+#define	SEGMENT_SIZE	(1024 * iqSize)
 static
 int	teller		= 0;
 int32_t	eladHandler::getSamples (std::complex<float> *V, int32_t size) { 
@@ -267,14 +266,16 @@ uint8_t lBuf [SEGMENT_SIZE];
 std::complex<float> temp [INPUT_RATE / 1000];
 //
 //	if we have sufficient samples in the buffer, go for it
-	if (_O_Buffer. GetRingBufferReadAvailable () >= size) {
+	if (_O_Buffer. GetRingBufferReadAvailable () >= size) 
 	   return _O_Buffer. getDataFromBuffer (V, size);
-	}
 //
 //	per cycle we read in SEGMENT_SIZE bytes, convert them
 //	to 512 complex numbers and put these samples into the
 //	rate converter
-	while ((_I_Buffer. GetRingBufferReadAvailable () > SEGMENT_SIZE) &&
+	while (Samples () < size)
+	   usleep (500);
+
+	while ((_I_Buffer. GetRingBufferReadAvailable () >= SEGMENT_SIZE) &&
 	       (_O_Buffer. GetRingBufferReadAvailable () < size)) {
 	   _I_Buffer. getDataFromBuffer (lBuf, SEGMENT_SIZE);
 
@@ -362,6 +363,7 @@ void	eladHandler::show_iqSwitch	(bool b) {
 
 void	eladHandler::toggle_IQSwitch	() {
 	iqSwitch. store (!iqSwitch. load ());
+	show_iqSwitch (iqSwitch. load ());
 }
 
 void	eladHandler::set_NyquistWidth	(int w) {

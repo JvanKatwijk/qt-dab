@@ -841,10 +841,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-//	                           contentType,
-//	                           getContentBaseType ((MOTContentType)contentType),
-//	                           name. toLatin1 (). data (), dirElement);
+	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+	                           contentType,
+	                           getContentBaseType ((MOTContentType)contentType),
+	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -2444,6 +2444,7 @@ QString serviceName	= s -> serviceName;
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
 	         currentService. valid = true;
 	         currentService. is_audio	= false;
+	fprintf (stderr, "starting a packet service\n");
 	         start_packetService (serviceName);
 	      }
 	      else
@@ -2565,7 +2566,6 @@ void	RadioInterface::start_packetService (const QString &s) {
 packetdata pd;
 
 	my_dabProcessor -> dataforPacketService (s, &pd, 0);
-	   return;
 	if ((!pd. defined) ||
 	            (pd.  DSCTy == 0) || (pd. bitRate == 0)) {
 	   QMessageBox::warning (this, tr ("sdr"),
@@ -2578,6 +2578,7 @@ packetdata pd;
  	                         tr ("could not start this service\n"));
 	   return;
 	}
+
 	switch (pd. DSCTy) {
 	   default:
 	      showLabel (QString ("unimplemented Data"));

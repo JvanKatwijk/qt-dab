@@ -57,6 +57,9 @@ int32_t i, j;
 	this	-> shortForm		= d -> shortForm;
 	this	-> protLevel		= d -> protLevel;
 	this	-> subChId		= d -> subchId;
+
+	fprintf (stderr, "starting a backend for %s (%X)\n",
+	                  serviceName. toLatin1 (). data (), serviceId);
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);
