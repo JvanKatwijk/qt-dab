@@ -164,7 +164,7 @@ signals:
 	void		setSyncLost		(void);
 	void		show_Spectrum		(int);
 	void		set_freqOffset		(int);
-	void		show_tii		(QByteArray);
+	void		show_tii		(int, int);
 	void		show_snr		(float);
 	void		set_Values		(int, float, float);
 	void		show_clockErr		(int);

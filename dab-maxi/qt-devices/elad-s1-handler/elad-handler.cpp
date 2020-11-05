@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014
+ *    Copyright (C) 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -92,13 +92,12 @@ int16_t	success;
 	gainReduced	= 0;
 	gainLabel	-> setText ("0");
 
-        for (int i = 0; i < INPUT_RATE / 1000; i ++) {
+        for (int i = 0; i < 2048; i ++) {
            float inVal  = float (ELAD_RATE / 1000);
-           mapTable_int [i] =  int (floor (i * (inVal / (INPUT_RATE / 1000))));
-           mapTable_float [i] = i * (inVal / (INPUT_RATE / 1000)) - mapTable_int [i];
+           mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
+           mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
         }
 	convIndex	= 0;
-	convBufferSize	= ELAD_RATE / 1000 + 1;
 	fprintf (stderr, "mapTables initialized\n");
 
 	iqSize		= 8;
@@ -263,7 +262,7 @@ static
 int	teller		= 0;
 int32_t	eladHandler::getSamples (std::complex<float> *V, int32_t size) { 
 uint8_t lBuf [SEGMENT_SIZE];
-std::complex<float> temp [INPUT_RATE / 1000];
+std::complex<float> temp [2048];
 //
 //	if we have sufficient samples in the buffer, go for it
 	if (_O_Buffer. GetRingBufferReadAvailable () >= size) 
@@ -283,10 +282,10 @@ std::complex<float> temp [INPUT_RATE / 1000];
 	      convBuffer [convIndex ++] =
 	                     makeSample_31bits (&lBuf [iqSize * i],
                                                 iqSwitch. load ());
-	      if (convIndex > convBufferSize) {
+	      if (convIndex > ELAD_RATE / 1000) {
 	         float sum = 0;
 	         int16_t j;
-	         for (j = 0; j < INPUT_RATE / 1000; j ++) {
+	         for (j = 0; j < 2048; j ++) {
 	            int16_t  inpBase		= mapTable_int [j];
 	            float    inpRatio		= mapTable_float [j];
 	            temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
@@ -295,14 +294,14 @@ std::complex<float> temp [INPUT_RATE / 1000];
                  }
 	         if (++teller > 1000) {
 	            fprintf (stderr, "signal is %f dB\n",
-	                        10 * log10 (sum / (INPUT_RATE / 1000 / 84)));
+	                        10 * log10 (sum / 2048 / 84));
 	            teller = 0;
 	         }
 	
-	         _O_Buffer. putDataIntoBuffer (temp, INPUT_RATE / 1000);
+	         _O_Buffer. putDataIntoBuffer (temp, 2048);
 //      shift the sample at the end to the beginning, it is needed
 //      as the starting sample for the next time
-                 convBuffer [0] = convBuffer [convBufferSize];
+                 convBuffer [0] = convBuffer [ELAD_RATE / 1000];
                  convIndex = 1;
               }
 	   }

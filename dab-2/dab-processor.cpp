@@ -111,8 +111,8 @@ int32_t	i;
 	         myRadioInterface, SLOT (set_CorrectorDisplay (int)));
         connect (this, SIGNAL (show_Spectrum (int)),
                  mr, SLOT (showSpectrum (int)));
-	connect (this, SIGNAL (show_tii (QByteArray)),
-                 myRadioInterface, SLOT (show_tii (QByteArray)));
+	connect (this, SIGNAL (show_tii (int, int)),
+                 myRadioInterface, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (No_Signal_Found (void)),
 	         myRadioInterface, SLOT (No_Signal_Found (void)));
 	my_TII_Detector. reset ();
@@ -525,18 +525,12 @@ void	dabProcessor::handle_tii_detection
 	      if (res != 0) {
 	         uint8_t mainId   = res >> 8;
 	         uint8_t subId    = res & 0xFF;
-	         for (uint16_t k = 0; k < transmitters. size (); k += 2)
-	            if ((transmitters. at (k) == mainId) &&
-	                (transmitters. at (k + 1) == subId))
-	               res = 0;
-                 if (res != 0) {
-                    transmitters. append (mainId);
-                    transmitters. append (subId);
-                    show_tii (transmitters);
-                 }
+	         tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data (), T_u);
+	         show_tii (mainId, subId);
               }
+	      tii_counter = 0;
+	      my_TII_Detector. reset ();
 	   }
-	   tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
 	}
 }
 

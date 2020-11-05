@@ -20,13 +20,10 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 #include	<sys/time.h>
 #include	"elad-reader.h"
-#include	"eladfiles.h"
+#include	"elad-files.h"
 
-
-#define	BUFFERSIZE	32768
 static inline
 int64_t         getMyTime() {
 struct timeval  tv;
@@ -43,10 +40,12 @@ struct timeval  tv;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= fseek (filePointer, 0, SEEK_END);
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
-        sf_seek (filePointer, 0, SEEK_SET);
+        fseek (filePointer, 0, SEEK_SET);
 	period          = 1000;  // segments of 1 millisecond
         fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
+	connect (this, SIGNAL (setProgress (int)),
+	         parent, SLOT (setProgress (int)));
 	start();
 }
 
@@ -81,13 +80,14 @@ uint8_t lBuffer [bufferSize];
 	      }
 
 	      nextStop += period;
-	      int n = fread (lbuffer,8, 3072, filePointer);,
+	      int n = fread (lBuffer, 8, 3072, filePointer);
 	      if (n < bufferSize) {
-	         sf_seek (filePointer, 0, SEEK_SET);
 	         for (int i = n; i < bufferSize; i ++)
-	            bi [i] = std::complex <float> (0, 0);
+	            lBuffer [i] = 0;
+	         fseek (filePointer, 0, SEEK_SET);
 	      }
-	      theBuffer -> putDataIntoBuffer (lbuffer, bufferSize);
+
+	      theBuffer -> putDataIntoBuffer (lBuffer, bufferSize);
 	      if (nextStop - getMyTime() > 0)
 	         usleep (nextStop - getMyTime());
 	   }

@@ -112,13 +112,16 @@ private:
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
-	bool			stereoSetting;
+	int			currentHour;
+	int			currentMinute;
+	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
 	QLabel			*motSlides;
 	std::vector<int>	secondariesVector;
 	bool			isSynced;
+	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice;
@@ -248,7 +251,7 @@ public slots:
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);
-	void			show_tii		(QByteArray);
+	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);

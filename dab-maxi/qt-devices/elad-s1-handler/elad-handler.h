@@ -83,7 +83,6 @@ private:
 	int		mapTable_int	[INPUT_RATE / 1000];
         float		mapTable_float	[INPUT_RATE / 1000];
 	int		convIndex;
-	int		convBufferSize;
 };
 #endif
 

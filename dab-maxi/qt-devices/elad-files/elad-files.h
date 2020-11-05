@@ -31,12 +31,12 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 
-#include	"filereader-widget.h"
+#include	"ui_elad-files.h"
 #include	"elad-reader.h"
 
 #define	ELAD_RATE	3072000
 #define	DAB_RATE	2048000
-class	eladFiles: public deviceHandler, public filereaderWidget {
+class	eladFiles: public deviceHandler, public Ui_eladreaderWidget {
 Q_OBJECT
 public:
 			eladFiles	(QString);
@@ -63,10 +63,11 @@ private:
         int             mapTable_int    [DAB_RATE / 1000];
         float           mapTable_float  [DAB_RATE / 1000];
         int             convIndex;
-        int             convBufferSize;
+	std::atomic<bool> iqSwitch;
 
 public slots:
-	void		setProgress	(int, float);
+	void		setProgress	(int);
+	void		handle_iqButton	();
 };
 
 #endif

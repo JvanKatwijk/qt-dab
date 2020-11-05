@@ -414,6 +414,7 @@ endif ()
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/data-processor.h
+	     ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/smallqlistview.h
@@ -825,17 +826,19 @@ endif ()
 	endif (RTL_TCP)
 
 	if (TRY_EPG)
-
 	   include_directories (
+	      ../includes/backend/data/epg-2
 	      ../includes/backend/data/epg
 	   )
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
+	             ../includes/backend/data/epg-2/epg-decoder.h
 	             ../includes/backend/data/epg/epgdec.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
+	             ../src/backend/data/epg-2/epg-decoder.cpp
 	             ../src/backend/data/epg/epgdec.cpp
 	   )
 	   add_definitions (-DTRY_EPG)

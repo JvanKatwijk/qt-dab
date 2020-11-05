@@ -171,7 +171,7 @@ progDesc	theElement;
 	      return endPoint;
 
 	   case 0x81: {		// creation time
-	      int time = process_474 (v, index, length);
+//	      int time = process_474 (v, index, length);
 //	      fprintf (stderr, "schedule created  at %2d:%2d\n",
 //	                             time / 60, time % 60);
 	      return endPoint;
@@ -391,7 +391,10 @@ int length	= v [index + 1];
 	      return index + length;
 
 	   case 0x82:		// actual time
-//	      process_474	(v, index, length);
+	     { int xx = process_474	(v, index, length);
+//	       fprintf (stderr, "actual time %d %d\n",
+//	                                   xx / 60, xx % 60);
+	      }
 	      return index + length;
 
 	   default:
@@ -494,16 +497,21 @@ int	hours;
 int	minutes;
 int	ltoBase;
 
+	fprintf (stderr, "Handling time, utcFlag %d, ltoFlag %d\n",
+	                                             utcFlag, ltoFlag);
 	hours	= getBits (v, 8 * index + 21, 5);
 	minutes	= getBits (v, 8 * index + 26, 6);
 
+	fprintf (stderr, "hours = %d, minutes = %d\n", hours, minutes);
 	if (utcFlag)
 	   ltoBase = 48;
 	else
 	   ltoBase = 32;
 
 	if (ltoFlag) {
-	   uint16_t halfHours = getBits (v, 8 * index + ltoBase + 2, 6);
+	   uint16_t halfHours = getBits (v, 8 * index + ltoBase, 8);
+	   fprintf (stderr, "half hpurs sign %d, value %d\n",
+	                               halfHours & 0x20, halfHours & 0x1F);
 	   if (halfHours & 0x20)
 	      halfHours = - halfHours & 0x1F;
 	   else

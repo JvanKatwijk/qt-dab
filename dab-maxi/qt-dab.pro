@@ -313,7 +313,8 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 CONFIG		+= pluto
-#CONFIG		+= elad
+CONFIG		+= elad-device
+CONFIG		+= elad-files
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -328,7 +329,7 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-#CONFIG		+= try-epg		# do not use
+CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
@@ -557,7 +558,7 @@ pluto-2	{
 	FORMS		+= ./qt-devices/pluto-handler-2/pluto-widget.ui
 }
 
-elad	{
+elad-device	{
 	DEFINES		+= HAVE_ELAD
 	DEPENDPATH	+= ./qt-devices/elad-s1-handler
 	INCLUDEPATH	+= ./qt-devices/elad-s1-handler
@@ -568,6 +569,16 @@ elad	{
 	SOURCES		+= ./qt-devices/elad-s1-handler/elad-loader.cpp
 	SOURCES		+= ./qt-devices/elad-s1-handler/elad-worker.cpp
 	FORMS		+= ./qt-devices/elad-s1-handler/elad-widget.ui
+}
+elad-files	{
+	DEFINES		+= HAVE_ELAD_FILES
+	DEPENDPATH	+= ./qt-devices/elad-files
+	INCLUDEPATH	+= ./qt-devices/elad-files
+	HEADERS		+= ./qt-devices/elad-files/elad-files.h
+	HEADERS		+= ./qt-devices/elad-files/elad-reader.h
+	SOURCES		+= ./qt-devices/elad-files/elad-files.cpp
+	SOURCES		+= ./qt-devices/elad-files/elad-reader.cpp
+	FORMS		+= ./qt-devices/elad-files/elad-files.ui
 }
 
 send_datagram {

@@ -42,12 +42,13 @@ public:
 private:
 virtual void		run		();
 	FILE		*filePointer;
+	RingBuffer<uint8_t> *theBuffer;
 	uint64_t	period;
 	std::atomic<bool>	running;
 	int64_t		fileLength;
 	eladFiles	*parent;
 signals:
-	void		setProgress	(int, float);
+	void		setProgress	(int);
 };
 
 #endif

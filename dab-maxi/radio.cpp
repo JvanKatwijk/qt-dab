@@ -91,6 +91,9 @@
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
 #endif
+#ifdef	HAVE_ELAD_FILES
+#include	"elad-files.h"
+#endif
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
@@ -552,6 +555,9 @@ uint8_t	dabBand;
 #ifdef	HAVE_ELAD
 	deviceSelector	-> addItem ("elad-s1");
 #endif
+#ifdef	HAVE_ELAD_FILES
+	deviceSelector	-> addItem ("elad-files");
+#endif
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
@@ -841,10 +847,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-	                           contentType,
-	                           getContentBaseType ((MOTContentType)contentType),
-	                           name. toLatin1 (). data (), dirElement);
+//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+//	                           contentType,
+//	                           getContentBaseType ((MOTContentType)contentType),
+//	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -871,7 +877,6 @@ QString realName;
 	      break;
 
 	   case  MOTBaseTypeApplication: 	// epg data
-	      fprintf (stderr, "epg\n");
 #ifdef	TRY_EPG
 	      if (epgPath == "")
 	         return;
@@ -899,8 +904,8 @@ QString realName;
 	         }
 //	         epgHandler. decode (epgData, realName);
 	      }
-	      fprintf (stderr, "epg file %s\n",
-	                            realName. toLatin1 (). data ());
+//	      fprintf (stderr, "epg file %s\n",
+//	                            realName. toLatin1 (). data ());
 #endif
 	      return;
 
@@ -1319,6 +1324,27 @@ deviceHandler	*inputDevice	= nullptr;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no elad device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_ELAD_FILES
+	if (s == "elad-files") {
+	   try {
+	      file = QFileDialog::getOpenFileName (this,
+	                                           tr ("Open file ..."),
+	                                           QDir::homePath(),
+	                                           tr ("ela data (*.*)"));
+	      if (file == QString (""))
+	         return nullptr;
+	      file		= QDir::toNativeSeparators (file);
+	      inputDevice	= new eladFiles (file);
+	      hideButtons ();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no elad valid file found\n"));
 	      return nullptr;
 	   }
 	}
@@ -2444,7 +2470,6 @@ QString serviceName	= s -> serviceName;
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
 	         currentService. valid = true;
 	         currentService. is_audio	= false;
-	fprintf (stderr, "starting a packet service\n");
 	         start_packetService (serviceName);
 	      }
 	      else

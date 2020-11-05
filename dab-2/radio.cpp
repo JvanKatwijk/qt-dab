@@ -283,6 +283,7 @@ uint8_t	dabBand;
 
 	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (dataDisplay);
+	techData. timeTable_button	-> hide ();
 
 	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (configDisplay);
@@ -1084,7 +1085,7 @@ QString saveDir         = dabSettings -> value ("contentDir",
 	my_Printer. showEnsembleData (currentChannel,
 	                              frequency, 
 	                              localTimeDisplay -> text (),
-	                              transmitter_coordinates -> text (),
+	                              transmitters,
 	                              serviceList,
 	                              my_dabProcessor, fileP);
 	fclose (fileP);
@@ -1213,6 +1214,7 @@ const char *type;
 
 	QPixmap p;
 	p. loadFromData (data, type);
+
 	if (saveSlides) {
 	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
 	   checkDir (pict);
@@ -1544,25 +1546,41 @@ void	RadioInterface::setStereo	(bool s) {
 	stereoSetting = s;
 }
 
-void	RadioInterface::show_tii (QByteArray data) {
-QString a = "Est: ";
+static
+QString tiiNumber (int n) {
+        if (n >= 10)
+           return QString::number (n);
+        return QString ("0") + QString::number (n);
+}
 
+void	RadioInterface::show_tii (int mainId, int subId) {
+QString a = "Est: ";
+bool	found	= false;
+
+	for (int i = 0; i < transmitters. size (); i += 2) {
+	   if ((transmitters. at (i) == mainId) &&
+	       (transmitters. at (i + 1) == subId)) {
+	      found = true;
+	      break;
+	   }
+	}
+
+	if (!found) {
+	   transmitters. append (mainId);
+	   transmitters. append (subId);
+	}
         if (!running. load())
            return;
 
-	for (uint16_t i = 0; i < data. size (); i += 2) {
-	   uint8_t mainId	= data. at (i);
-	   uint8_t subId	= data. at (i + 1);
-           a = a + " " +  (QString::number (mainId) + " " +
-	                                QString::number (subId));
-	}
+	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
-	if (data. size () > 0) {
-	   transmitter_coordinates	-> setAlignment (Qt::AlignRight);
-	   transmitter_coordinates	-> setText (a);
-	   my_tiiViewer. showTransmitters (data);
-        }
+	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
+	transmitter_coordinates	-> setText (a);
+	my_tiiViewer. showTransmitters (transmitters);
 	my_tiiViewer. showSpectrum (1);
+        if (!running. load())
+           return;
+	
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -2500,6 +2518,7 @@ void	RadioInterface::stopChannel	() {
 	setSynced	(false);
 	ensembleId	-> setText ("");
 	transmitter_coordinates	-> setText (" ");
+	transmitters. clear ();
 	if (serviceList. size () > 0) {
 	   serviceList. clear ();
 	   model. clear ();
@@ -2713,7 +2732,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	                       my_dabProcessor	-> get_ensembleName (),
 	                       ensembleId,
 	                       SNR,
-	                       transmitter_coordinates -> text ());
+	                       transmitters);
 	for (serviceId serv: serviceList) {
 	   QString audioService = serv. name;
 	   audiodata d;
@@ -2736,7 +2755,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	   my_Printer. showEnsembleData (channelSelector -> currentText (),
 	                                 inputDevice -> getVFOFrequency (),
 	                                 localTimeDisplay -> text (),
-	                                 transmitter_coordinates -> text (),
+	                                 transmitters,
 	                                 serviceList,
 	                                 my_dabProcessor, scanDumpFile);
 

@@ -27,7 +27,7 @@
 #include	<sys/time.h>
 #include	<ctime>
 #include	<QString>
-#include	"wavfiles.h"
+#include	"elad-files.h"
 
 #define	__BUFFERSIZE__	32 * 32768
 
@@ -50,20 +50,18 @@ SF_INFO *sf_info;
 
         for (int i = 0; i < DAB_RATE / 1000; i ++) {
            float inVal  = float (ELAD_RATE / 1000);
-           mapTable_int [i] =  int (floor (i * (inVal / (INPUT_RATE / 1000))));
-           mapTable_float [i] = i * (inVal / (INPUT_RATE / 1000)) - mapTable_int [i];
+           mapTable_int [i] =  int (floor (i * (inVal / 2048.0)));
+           mapTable_float [i] = i * (inVal / 2048.0) - mapTable_int [i];
         }
         convIndex       = 0;
-        convBufferSize  = ELAD_RATE / 1000 + 1;
         fprintf (stderr, "mapTables initialized\n");
 
         iqSize          = 8;
-
+	iqSwitch. store (false);
 	nameofFile	-> setText (f);
 	fileProgress	-> setValue (0);
-	currentTime	-> display (0);
-	int64_t fileLength	= fseek (filePointer, 0, SEEK_END);
-	totalTime	-> display ((float)fileLength / 2048000);
+	connect (iqSwitch_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_iqButton ()));
 	running. store (false);
 }
 //
@@ -84,7 +82,7 @@ bool	eladFiles::restartReader	(int32_t freq) {
 	(void)freq;
 	if (running. load())
            return true;
-        readerTask      = new wavReader (this, filePointer, &_I_Buffer);
+        readerTask      = new eladReader (this, filePointer, &_I_Buffer);
         running. store (true);
         return true;
 }
@@ -99,7 +97,7 @@ void	eladFiles::stopReader() {
         running. store (false);
 }
 
-std::complex<float>	makeSample_31bits (uint8_t *, bool);
+//std::complex<float>	makeSample_31bits (uint8_t *, bool);
 
 typedef union {
 	struct __attribute__((__packed__)) {
@@ -158,73 +156,81 @@ uint32_t	uii = 0, uqq = 0;
 	                               (float)qq * SCALE_FACTOR_32to14);
 }
 
-
+#define	SEGMENT_SIZE	(1024 * iqSize)
 //	size is in I/Q pairs
+//	Note: Samples computes the amount of samples that either
+//	are already available or can be computed based on the
+//	current content of the _I_Buffer
 int32_t	eladFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
-	
+uint8_t	lbuffer [SEGMENT_SIZE];
+std::complex<float> temp [2048];
+
 	if (filePointer == nullptr)
 	   return 0;
 
 	if (_O_Buffer. GetRingBufferReadAvailable () >= size)
 	   return _O_Buffer. getDataFromBuffer (V, size);
-
 	while (Samples () < size)
 	   usleep (500);
 
 	while ((_O_Buffer. GetRingBufferReadAvailable () < size) &&
-	       (_I_Buffer. GETRingBufferReadAvailable () > SEGMENT_SIZE)) {
+	       (_I_Buffer. GetRingBufferReadAvailable () > SEGMENT_SIZE)) {
 
 	   _I_Buffer. getDataFromBuffer (lbuffer, SEGMENT_SIZE);
 	   for (int i = 0; i < SEGMENT_SIZE / iqSize; i ++) {
 	      convBuffer [convIndex] = makeSample (&(lbuffer [iqSize * i]),
-	                                                iqSwitch. loasd ());
+	                                                iqSwitch. load ());
 	      convIndex ++;
-	      if (convIndex > ELAD_RATE / 1000 + 1) {
+	      if (convIndex > ELAD_RATE / 1000) {
 	         float sum = 0;
 	         int16_t j;
-	         for (j = 0; j < INPUT_RATE / 1000; j ++) {
+	         for (j = 0; j < 2048; j ++) {
 	            int16_t  inpBase		= mapTable_int [j];
 	            float    inpRatio		= mapTable_float [j];
 	            temp [j]  = cmul (convBuffer [inpBase + 1], inpRatio) +
-                                cmul (convBuffer [inpBase], 1 - inpRatio);
+	                        cmul (convBuffer [inpBase], 1 - inpRatio);
 	            sum += abs (temp [j]);
-                 }
-	         if (++teller > 1000) {
-	            fprintf (stderr, "signal is %f dB\n",
-	                        10 * log10 (sum / (INPUT_RATE / 1000 / 84)));
-	            teller = 0;
 	         }
 	
-	         _O_Buffer. putDataIntoBuffer (temp, INPUT_RATE / 1000);
-//      shift the sample at the end to the beginning, it is needed
-//      as the starting sample for the next time
-                 convBuffer [0] = convBuffer [convBufferSize];
-                 convIndex = 1;
+	         _O_Buffer. putDataIntoBuffer (temp, 2048);
+//	shift the sample at the end to the beginning, it is needed
+//	as the starting sample for the next time
+	         convBuffer [0] = convBuffer [ELAD_RATE / 1000];
+	         convIndex = 1;
               }
 	   }
 	}
 	return _O_Buffer. getDataFromBuffer (V, size);
 }
 
-int32_t	eladHandler::Samples	(void) {
+int32_t	eladFiles::Samples	(void) {
 int64_t	bufferContent	= _I_Buffer. GetRingBufferReadAvailable ();
 	return _O_Buffer. GetRingBufferReadAvailable () +
 	       (int)(((int64_t)2048 * bufferContent / (int64_t)3072) / iqSize);
 }
 
-void    wavFiles::setProgress (int progress, float timelength) {
+void    eladFiles::setProgress (int progress) {
+	fileProgress	-> setValue (progress);
 }
 
-void	wavFiles::show		() {
+void	eladFiles::show		() {
 	myFrame. show ();
 }
 
-void	wavFiles::hide		() {
+void	eladFiles::hide		() {
 	myFrame. hide	();
 }
 
-bool	wavFiles::isHidden	() {
+bool	eladFiles::isHidden	() {
 	return myFrame. isHidden ();
+}
+
+void	eladFiles::handle_iqButton	() {
+	iqSwitch. store (!iqSwitch. load ());
+	if (iqSwitch)
+	   iqSwitch_button -> setText ("Q/I");
+	else
+	   iqSwitch_button -> setText ("I/Q");
 }
 
