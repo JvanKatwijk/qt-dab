@@ -1583,9 +1583,9 @@ char hourString [3];
 char minuteString [3];
 	currentHour	= hours;
 	currentMinute	= minutes;
-	sprintf (dayString, "%2d", day);
-	sprintf (hourString, "%2d", hours);
-	sprintf (minuteString, "%2d", minutes);
+	sprintf (dayString, "%.2d", day);
+	sprintf (hourString, "%.2d", hours);
+	sprintf (minuteString, "%.2d", minutes);
 	QString result = QString::number (year) + "-" +
 	                       monthTable [month - 1] + "-" +
 	                       QString (dayString) + "  " +
@@ -2528,7 +2528,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   return;
 	}
 
-	fprintf (stderr, "we start %s at %2d:%2d\n",
+	fprintf (stderr, "we start %s at %.2d:%.2d\n",
 	                        ad -> serviceName. toLatin1 (). data (),
 	                        currentHour, currentMinute);
 	serviceLabel -> setAlignment(Qt::AlignCenter);
