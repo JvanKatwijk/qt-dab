@@ -42,7 +42,7 @@ void	timeTableHandler::addElement (int theTime,
 int	hours	= theTime / 60;
 int	minutes	= theTime % 60;
 char t [6];
-	sprintf (t, "%2d:%2d", theTime / 60, theTime % 60);
+	sprintf (t, "%.2d:%.2d", theTime / 60, theTime % 60);
 	
 	const QString listElement = QString (t)+ " -- " + theText;
 	timeTableList. append (listElement);
