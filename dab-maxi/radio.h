@@ -146,8 +146,8 @@ private:
 	QString			epgPath;
 	QTimer			epgTimer;
 	uint32_t		extract_epg (QString,
-                                      std::vector<serviceId> serviceList,
-	                              uint32_t);
+                                             std::vector<serviceId> serviceList,
+	                                     uint32_t);
 #endif
 	bool			saveSlides;
 	QString			picturesPath;

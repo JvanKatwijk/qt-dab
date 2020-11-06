@@ -80,16 +80,18 @@ uint8_t lBuffer [bufferSize];
 	      }
 
 	      nextStop += period;
-	      int n = fread (lBuffer, 8, 3072, filePointer);
-	      if (n < bufferSize) {
+	      int n = fread (lBuffer, 1, 6 * 8 * 512, filePointer);
+	      if (n < 8 * 512) {
 	         for (int i = n; i < bufferSize; i ++)
 	            lBuffer [i] = 0;
 	         fseek (filePointer, 0, SEEK_SET);
+	         fprintf (stderr, "file reset\n");
 	      }
 
-	      theBuffer -> putDataIntoBuffer (lBuffer, bufferSize);
+	      theBuffer -> putDataIntoBuffer (lBuffer, n);
 	      if (nextStop - getMyTime() > 0)
-	         usleep (nextStop - getMyTime());
+	         usleep (period);
+//	         usleep (nextStop - getMyTime());
 	   }
 	} catch (int e) {}
 	fprintf (stderr, "taak voor replay eindigt hier\n"); fflush (stderr);

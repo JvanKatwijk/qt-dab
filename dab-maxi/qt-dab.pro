@@ -314,7 +314,7 @@ CONFIG		+= lime
 CONFIG		+= soapy
 CONFIG		+= pluto
 CONFIG		+= elad-device
-CONFIG		+= elad-files
+#CONFIG		+= elad-files		# do not use this
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -570,6 +570,7 @@ elad-device	{
 	SOURCES		+= ./qt-devices/elad-s1-handler/elad-worker.cpp
 	FORMS		+= ./qt-devices/elad-s1-handler/elad-widget.ui
 }
+
 elad-files	{
 	DEFINES		+= HAVE_ELAD_FILES
 	DEPENDPATH	+= ./qt-devices/elad-files

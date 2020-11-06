@@ -156,32 +156,25 @@ uint32_t	uii = 0, uqq = 0;
 	                               (float)qq * SCALE_FACTOR_32to14);
 }
 
-#define	SEGMENT_SIZE	(1024 * iqSize)
+#define	SEGMENT_SIZE	(1024 * 8)
+uint8_t	lbuffer [SEGMENT_SIZE];
 //	size is in I/Q pairs
 //	Note: Samples computes the amount of samples that either
 //	are already available or can be computed based on the
 //	current content of the _I_Buffer
 int32_t	eladFiles::getSamples	(std::complex<float> *V, int32_t size) {
 int32_t	amount;
-uint8_t	lbuffer [SEGMENT_SIZE];
 std::complex<float> temp [2048];
 
 	if (filePointer == nullptr)
 	   return 0;
 
-	if (_O_Buffer. GetRingBufferReadAvailable () >= size)
-	   return _O_Buffer. getDataFromBuffer (V, size);
-	while (Samples () < size)
+	while (Samples () < size)	// should not happen
 	   usleep (500);
 
-	while ((_O_Buffer. GetRingBufferReadAvailable () < size) &&
-	       (_I_Buffer. GetRingBufferReadAvailable () > SEGMENT_SIZE)) {
-
+	while (_O_Buffer. GetRingBufferReadAvailable () < size) {
 	   _I_Buffer. getDataFromBuffer (lbuffer, SEGMENT_SIZE);
 	   for (int i = 0; i < SEGMENT_SIZE / iqSize; i ++) {
-	      convBuffer [convIndex] = makeSample (&(lbuffer [iqSize * i]),
-	                                                iqSwitch. load ());
-	      convIndex ++;
 	      if (convIndex > ELAD_RATE / 1000) {
 	         float sum = 0;
 	         int16_t j;

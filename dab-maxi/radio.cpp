@@ -470,8 +470,6 @@ uint8_t	dabBand;
 	         this, SLOT (color_framedumpButton (void)));
 	connect (techData. audiodumpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_audiodumpButton (void)));
-
-
 	connect (techData. timeTable_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_timeTable ()));
 //	display the version
@@ -1802,8 +1800,10 @@ void	RadioInterface::handle_detailButton	() {
 
 	if (dataDisplay -> isHidden())
 	   dataDisplay -> show();
-	else
+	else {
 	   dataDisplay -> hide();
+	   my_timeTable	-> hide ();
+	}
 }
 //
 //	Whenever the input device is a file, some functions,

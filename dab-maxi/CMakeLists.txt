@@ -414,7 +414,6 @@ endif ()
 	     ../includes/backend/data/tdc-datahandler.h
 	     ../includes/backend/data/journaline-datahandler.h
 	     ../includes/backend/data/data-processor.h
-	     ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/smallqlistview.h
