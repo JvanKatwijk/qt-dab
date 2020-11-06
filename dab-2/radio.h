@@ -253,7 +253,7 @@ public slots:
 	void			showQuality		(float);
 	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
-	void			showTime		(const QString &);
+	void			clockTime               (int, int, int, int, int);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);

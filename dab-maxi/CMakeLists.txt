@@ -840,6 +840,10 @@ endif ()
 	             ../src/backend/data/epg-2/epg-decoder.cpp
 	             ../src/backend/data/epg/epgdec.cpp
 	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+              ../includes/backend/data/epg-2/epg-decoder.h
+	   )
 	   add_definitions (-DTRY_EPG)
 	endif (TRY_EPG)
 

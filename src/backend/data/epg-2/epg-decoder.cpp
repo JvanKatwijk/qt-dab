@@ -464,7 +464,7 @@ char	text [length + 1];
 	for (int i = 0; i < length; i ++)
 	   text [i] = v [index + i];
 	text [length] = 0;
-	stringTable [tag] = QString (text);
+	stringTable [tag] = QString::fromUtf8 (text);
 	return index + length;
 }
 	
@@ -497,12 +497,12 @@ int	hours;
 int	minutes;
 int	ltoBase;
 
-	fprintf (stderr, "Handling time, utcFlag %d, ltoFlag %d\n",
-	                                             utcFlag, ltoFlag);
+//	fprintf (stderr, "Handling time, utcFlag %d, ltoFlag %d\n",
+//	                                             utcFlag, ltoFlag);
 	hours	= getBits (v, 8 * index + 21, 5);
 	minutes	= getBits (v, 8 * index + 26, 6);
 
-	fprintf (stderr, "hours = %d, minutes = %d\n", hours, minutes);
+//	fprintf (stderr, "hours = %d, minutes = %d\n", hours, minutes);
 	if (utcFlag)
 	   ltoBase = 48;
 	else
@@ -510,8 +510,8 @@ int	ltoBase;
 
 	if (ltoFlag) {
 	   uint16_t halfHours = getBits (v, 8 * index + ltoBase, 8);
-	   fprintf (stderr, "half hpurs sign %d, value %d\n",
-	                               halfHours & 0x20, halfHours & 0x1F);
+//	   fprintf (stderr, "half hpurs sign %d, value %d\n",
+//	                               halfHours & 0x20, halfHours & 0x1F);
 	   if (halfHours & 0x20)
 	      halfHours = - halfHours & 0x1F;
 	   else
@@ -564,9 +564,13 @@ QString result = "";
 	   case 0x01:
 	      if (length == 1)
 	         return stringTable [v [index]];
-	      else
-	      for (int i = 0; i < length; i ++)
-	          result. append (v [index + i]);
+	      else {
+	         char temp [length + 1];
+	         for (int i = 0; i < length; i ++)
+	            temp [i] = v [index + i];
+	         temp [length] = 0;
+	         result = QString::fromUtf8 (temp);
+	      }
 	      break;
 	   default:
 	      break;

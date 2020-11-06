@@ -1464,9 +1464,39 @@ void	RadioInterface::updateTimeDisplay() {
 //	to be displayed
 ///////////////////////////////////////////////////////////////////////////
 
+static
+const char *monthTable [] = {
+        "jan",
+        "feb",
+        "mar",
+        "apr",
+        "may",
+        "jun",
+        "jul",
+        "aug",
+        "sep",
+        "oct",
+        "nov",
+        "dec"
+};
 
-void	RadioInterface::showTime	(const QString &s) {
-	localTimeDisplay	-> setText (s);
+void	RadioInterface::clockTime	(int year, int month, int day,
+	                                        int hours, int minutes) {
+char dayString [3];
+char hourString [3];
+char minuteString [3];
+        currentHour     = hours;
+        currentMinute   = minutes;
+        sprintf (dayString, "%2d", day);
+        sprintf (hourString, "%2d", hours);
+        sprintf (minuteString, "%2d", minutes);
+        QString result = QString::number (year) + "-" +
+                               monthTable [month - 1] + "-" +
+                               QString (dayString) + "  " +
+                               QString (hourString) + ":" +
+                               QString (minuteString);
+
+	localTimeDisplay	-> setText (result);
 }
 
 void	RadioInterface::show_frameErrors (int s) {

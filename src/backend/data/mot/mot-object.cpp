@@ -145,7 +145,7 @@ int32_t i;
 }
 
 
-void	motObject::handleComplete() {
+void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
