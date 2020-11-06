@@ -84,14 +84,14 @@
    <item row="4" column="0" colspan="5">
     <widget class="QCheckBox" name="motslideSelector">
      <property name="text">
-      <string>    mot slides on separate widget</string>
+      <string>    MOT slides on separate widget</string>
      </property>
     </widget>
    </item>
    <item row="5" column="3" colspan="2">
     <widget class="QRadioButton" name="orderAlfabetical">
      <property name="text">
-      <string>Alfabetically</string>
+      <string>alphabetically</string>
      </property>
      <attribute name="buttonGroup">
       <string notr="true">buttonGroup</string>
@@ -174,14 +174,14 @@
  </widget>
  <customwidgets>
   <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header>smallpushbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>smallSpinBox</class>
    <extends>QSpinBox</extends>
    <header location="global">smallspinbox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>smallPushButton</class>
-   <extends>QPushButton</extends>
-   <header location="global">smallpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
