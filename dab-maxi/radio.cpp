@@ -2755,9 +2755,9 @@ int	tunedFrequency	=
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety ();
-#ifdef	TRY_EPG
 	int	switchDelay	=
                           dabSettings -> value ("switchDelay", 8). toInt ();
+#ifdef	TRY_EPG
 	if (!scanning. load ())
            epgTimer. start (switchDelay * 1000);
 #endif
@@ -3806,7 +3806,8 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   return;
 	for (const auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
-	       serv. name. endsWith (" epg ", Qt::CaseInsensitive)) {
+	       serv. name. endsWith (" epg ", Qt::CaseInsensitive) ||
+               serv. name. startsWith ("EPG ", Qt::CaseInsensitive) ) {
 	      packetdata pd;
               my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
               if ((!pd. defined) ||
