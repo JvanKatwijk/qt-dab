@@ -1487,9 +1487,9 @@ char hourString [3];
 char minuteString [3];
         currentHour     = hours;
         currentMinute   = minutes;
-        sprintf (dayString, "%2d", day);
-        sprintf (hourString, "%2d", hours);
-        sprintf (minuteString, "%2d", minutes);
+        sprintf (dayString, "%.2d", day);
+        sprintf (hourString, "%.2d", hours);
+        sprintf (minuteString, "%.2d", minutes);
         QString result = QString::number (year) + "-" +
                                monthTable [month - 1] + "-" +
                                QString (dayString) + "  " +

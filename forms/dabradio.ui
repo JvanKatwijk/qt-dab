@@ -75,7 +75,8 @@
         <item>
          <widget class="smallPushButton" name="prevServiceButton">
           <property name="toolTip">
-           <string>Select the previous service on the list of services (the previous one of the first element is the last element of the list).</string>
+           <string>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
+&lt;p&gt;Select the previous service on the list of services&lt;br /&gt;(the previous one of the first element is the last element of the list).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>-</string>
@@ -85,7 +86,7 @@
         <item>
          <widget class="smallPushButton" name="nextServiceButton">
           <property name="toolTip">
-           <string>Select the next service on the list of services (the next of the last element is the first element).</string>
+           <string>&lt;html&gt;&lt;head /&gt; &lt;body&gt;&lt;p&gt;Select the next service on the list of services &lt;br /&gt;(the next of the last element is the first element).&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>+</string>
@@ -170,8 +171,8 @@
             <item>
              <widget class="QLabel" name="localTimeDisplay">
               <property name="toolTip">
-               <string>Local time is the time as received from the transmission. If you are running recordings, then
-it is definitely not the time on your clock.</string>
+               <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Local time is the time as received from the transmission. &lt;br /&gt;&lt;br /&gt;If you are running recordings, then
+it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
@@ -592,10 +593,12 @@ it is definitely not the time on your clock.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>Touching this button will show (or hide) the resulting correlation of the first datablock of the DAB
-ensemble with the values as they should be. The &quot;peaks&quot; (if any) show the samples where
-the correlation is strongest. More than one peak shows more than one transmitter within
-the reach of this receiver.</string>
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;
+Touching this button will show (or hide) the resulting correlation of the first&lt;br /&gt;
+ datablock of the DAB ensemble with the values as they should be. &lt;br /&gt;&lt;br /&gt;
+The &quot;peaks&quot; (if any) show the samples where the correlation is strongest. &lt;br /&gt;
+More than one peak shows more than one transmitter within
+the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>corr-result</string>
@@ -649,7 +652,7 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. Pressing it&lt;/p&gt;&lt;p&gt;again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. &lt;br /&gt;&lt;br /&gt;Pressing it again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Spectrum</string>
@@ -671,7 +674,10 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;
+If configured - pushing this button will switch the spectrum display 
+between &lt;br /&gt;
+&amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. &lt;br /&gt;&lt;br /&gt;In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>TII</string>
@@ -775,10 +781,9 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>Touching the scan button will cause the software to make a single scan over all channels in the selected band. Ensembles (and their services) found will be displayed in a separate window.
-The windows will be visible as long as the scanning mode is on (note that after completing the
-scan, i.e. the cycle from (in Mode I) channel 5A to 13F, the software will wait until the scanner
-is officlally stopped).</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching the scan button will cause the software to make a single scan over all channels. Ensembles (and their services) found will be displayed in a separate window.&lt;/p&gt;&lt;p&gt;The windows will be visible as long as the scanning mode is on &lt;br/&gt;
+(note that after completing the scan, i.e. the cycle from channel 5A to 13F, &lt;br /&gt;
+the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Scan</string>
@@ -800,8 +805,7 @@ is officlally stopped).</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>config Button. Touching this button will show/hide a widget where some configuration settings
-can be changed. The config widget also contains a posisbility for setting an alarm like signal.</string>
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Touching this button will show/hide a widget where some configuration settings can be changed. &lt;br /&gt;&lt;br /&gt;The config widget also contains a posisbility for setting an alarm like signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>config</string>
@@ -823,8 +827,11 @@ can be changed. The config widget also contains a posisbility for setting an ala
            </font>
           </property>
           <property name="toolTip">
-           <string>The mute button, when touched a first time, the audio - if any - will be muted for a given amount of time (default 2 minutes, can be set in the configuration widget). If touched for a second time
-muting will stop.</string>
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;
+The mute button, when touched a first time, the audio - if any - &lt;br /&gt;
+will be muted for a given amount of time (default 2 minutes, &lt;br /&gt;
+can be set in the configuration widget). &lt;br /&gt; &lt;br /&gt;
+If touched for a second time muting will stop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>mute</string>

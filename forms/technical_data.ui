@@ -37,6 +37,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="timeTable_button">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - opens a new windows with SPI (formerly called EPG) preview.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note that this is still work in progress.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>timeTable</string>
        </property>
@@ -49,10 +52,7 @@
      <item>
       <widget class="smallPushButton" name="framedumpButton">
        <property name="toolTip">
-        <string>DAB+ audio services are encoded in an AAC format. Touching this button will show a menu
-with which a file can be selected to store the AAC frames into.
-As usual, touching the button again will close the output file. Programs like vlc can handle such
-files</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB+ audio services are encoded in an AAC format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to store the AAC frames into a file.&lt;/p&gt;&lt;p&gt;As usual, touching the button again will close the output file. Programs like vlc can handle such files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>frame dump</string>
@@ -62,9 +62,7 @@ files</string>
      <item>
       <widget class="smallPushButton" name="audiodumpButton">
        <property name="toolTip">
-        <string>The audio output can be saved as a file in uncompressed PCM format. Touching this button
-will show a menu with which a file can be selected for storage of the PCM data.
-The output is a regular &quot;.wav&quot; file which can be handled by many other audio programs.</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audio output can be saved as a file in uncompressed PCM format. &lt;/p&gt;&lt;p&gt;Touching this button will show a menu to save the PCM data into a file.&lt;/p&gt;&lt;p&gt;The output is a regular &amp;quot;.wav&amp;quot; file which can be handled by many other audio programs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>dump audio</string>
@@ -285,6 +283,9 @@ The output is a regular &quot;.wav&quot; file which can be handled by many other
      </item>
      <item row="4" column="1">
       <widget class="QLabel" name="stereoLabel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo or mono indicator. &lt;/p&gt;&lt;p&gt;Note: May not work properly in some cases.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>mono</string>
        </property>
@@ -296,6 +297,9 @@ The output is a regular &quot;.wav&quot; file which can be handled by many other
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="fmLabel">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This DAB service is on FM as well. Feature only used by some DAB services.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>also on FM:</string>
        </property>
@@ -411,7 +415,7 @@ The output is a regular &quot;.wav&quot; file which can be handled by many other
   <customwidget>
    <class>smallPushButton</class>
    <extends>QPushButton</extends>
-   <header location="global">smallpushbutton.h</header>
+   <header>smallpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
