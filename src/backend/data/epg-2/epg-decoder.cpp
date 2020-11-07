@@ -172,7 +172,7 @@ progDesc	theElement;
 
 	   case 0x81: {		// creation time
 //	      int time = process_474 (v, index, length);
-//	      fprintf (stderr, "schedule created  at %2d:%2d\n",
+//	      fprintf (stderr, "schedule created  at %.2d:%.2d\n",
 //	                             time / 60, time % 60);
 	      return endPoint;
 	   }
