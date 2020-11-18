@@ -214,6 +214,10 @@ uint8_t convert (QString s) {
 	                                        my_tiiViewer (
 	                                                  this, Si,
 	                                                  &tiiBuffer),
+#ifdef	__WITH_SNR_VIEWER__
+	                                        my_snrViewer (
+	                                                  this, Si),
+#endif
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension),
 	                                        theTable (this) {
@@ -577,6 +581,9 @@ uint8_t	dabBand;
 	   my_tiiViewer. show ();
 	if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
 	   my_correlationViewer. show ();
+#ifdef	__WITH_SNR_VIEWER__
+	my_snrViewer. show ();
+#endif
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -1165,6 +1172,9 @@ void	RadioInterface::TerminateProcess () {
 	my_spectrumViewer. hide ();
 	my_correlationViewer. hide ();
 	my_tiiViewer. hide ();
+#ifdef	__WITH_SNR_VIEWER__
+	my_snrViewer. hide ();
+#endif
 	if (my_dabProcessor != nullptr)
 	   delete	my_dabProcessor;
 	if (inputDevice != nullptr)
@@ -1662,11 +1672,19 @@ void	RadioInterface::show_motHandling (bool b) {
 }
 	
 //	called from the ofdmDecoder, it is computed for each frame
+#ifdef	__WITH_SNR_VIEWER__
+void	RadioInterface::show_snr (int s, float sig, float noise) {
+	if (running. load())
+	   snrDisplay	-> display (s);
+	my_snrViewer. add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
+	my_snrViewer. show_snr ();
+}
+#else
 void	RadioInterface::show_snr (int s) {
 	if (running. load())
 	   snrDisplay	-> display (s);
 }
-
+#endif
 //	just switch a color, called from the ofdmprocessor
 void	RadioInterface::setSynced	(bool b) {
 	if (!running. load() || (isSynced == b))

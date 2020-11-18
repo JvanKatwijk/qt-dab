@@ -56,6 +56,9 @@
 #include	"spectrum-viewer.h"
 #include	"tii-viewer.h"
 #include	"correlation-viewer.h"
+#ifdef		__WITH_SNR_VIEWER__
+#include	"snr-viewer.h"
+#endif
 
 class	QSettings;
 class	deviceHandler;
@@ -106,6 +109,9 @@ private:
         spectrumViewer		my_spectrumViewer;
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
+#ifdef	__WITH_SNR_VIEWER__
+	snrViewer		my_snrViewer;
+#endif
 	presetHandler		my_presetHandler;
 	processParams		globals;
 	QString			version;
@@ -256,7 +262,11 @@ public slots:
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
+#ifdef	__WITH_SNR_VIEWER__
+	void			show_snr		(int, float, float);
+#else
 	void			show_snr		(int);
+#endif
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			handle_motObject	(QByteArray, QString,

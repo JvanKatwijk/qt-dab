@@ -75,10 +75,10 @@ int	rc;
 	   return;
 	}
 
-	set_en_ext_io_LP30 = (Pset_en_ext_io_ATT20)
+	set_en_ext_io_LP30 = (Pset_en_ext_io_LP30)
 	                GETPROCADDRESS (cwHandle, "set_en_ext_io_LP30");
 	if (set_en_ext_io_LP30 == nullptr) {
-	   fprintf (stderr, "Could not load set_en_ext_io_ATT20\n");
+	   fprintf (stderr, "Could not load set_en_ext_io_LP30\n");
 	   return;
 	}
 

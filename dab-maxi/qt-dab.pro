@@ -9,11 +9,11 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-#QMAKE_CFLAGS	+=  -O3 -ffast-math
-#QMAKE_CXXFLAGS	+=  -O3 -ffast-math
-QMAKE_CFLAGS	+=  -g
-QMAKE_CXXFLAGS	+=  -g
-QMAKE_LFLAGS	+=  -g
+QMAKE_CFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math
+#QMAKE_CFLAGS	+=  -g
+#QMAKE_CXXFLAGS	+=  -g
+#QMAKE_LFLAGS	+=  -g
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab.ico
 RESOURCES	+= resources.qrc
@@ -311,8 +311,8 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-CONFIG		+= soapy
-CONFIG		+= pluto
+#CONFIG		+= soapy
+#CONFIG		+= pluto
 CONFIG		+= elad-device
 #CONFIG		+= elad-files		# do not use this
 CONFIG		+= faad
@@ -323,6 +323,7 @@ CONFIG		+= faad
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram
 
+#CONFIG		+= snrViewer	# do not use this unless you know what and why
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out
@@ -682,5 +683,13 @@ fdk-aac	{
 	HEADERS		+= ../includes/backend/audio/fdk-aac.h 
 	SOURCES		+= ../src/backend/audio/fdk-aac.cpp 
 	LIBS		+= -lfdk-aac
+}
+
+snrViewer	{
+	DEFINES		+= __WITH_SNR_VIEWER__
+	INCLUDEPATH	+= ../snr-viewer/
+	HEADERS		+= ../snr-viewer/snr-viewer.h
+	SOURCES		+= ../snr-viewer/snr-viewer.cpp
+	FORMS		+= ../snr-viewer/snr-widget.ui
 }
 
