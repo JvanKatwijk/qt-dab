@@ -136,7 +136,11 @@ signals:
 	void		setSyncLost		();
 	void		show_tii		(int, int);
 	void		show_Spectrum		(int);
+#ifdef	__WITH_SNR_VIEWER__
+	void		show_snr		(int, float, float);
+#else
 	void		show_snr		(int);
+#endif
 	void		show_clockErr		(int);
 };
 #endif

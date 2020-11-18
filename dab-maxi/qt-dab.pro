@@ -323,7 +323,7 @@ CONFIG		+= faad
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram
 
-#CONFIG		+= snrViewer	# do not use this unless you know what and why
+CONFIG		+= snrViewer	# do not use this unless you know what and why
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out

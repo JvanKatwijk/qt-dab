@@ -91,8 +91,13 @@
 	         myRadioInterface, SLOT (showSpectrum (int)));
 	connect (this, SIGNAL (show_tii (int, int)),
 	         myRadioInterface, SLOT (show_tii (int, int)));
+#ifdef	__WITH_SNR_VIEWER__
+	connect (this, SIGNAL (show_snr (int, float, float)),
+	         mr, SLOT (show_snr (int, float, float)));
+#else
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
+#endif
 	connect (this, SIGNAL (show_clockErr (int)),
 	         mr, SLOT (show_clockError (int)));
 	my_TII_Detector. reset();
@@ -143,7 +148,10 @@ std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
-
+#ifdef	__WITH_SNR_VIEWER__
+double	cLevel		= 0;
+int	cCount		= 0;
+#endif
 //	inputDevice	-> resetBuffer ();
 //	inputDevice	-> restartReader (frequency);
 	ibits. resize (2 * params. get_carriers());
@@ -229,6 +237,10 @@ Check_endofNULL:
 	   sampleCount = startIndex;
 SyncOnPhase:
 	   goodFrames ++;
+#ifdef	__WITH_SNR_VIEWER__
+	   cLevel	= 0;
+	   cCount	= 0;
+#endif
 /**
   *	Once here, we are synchronized, we need to copy the data we
   *	used for synchronization for block 0
@@ -250,7 +262,7 @@ SyncOnPhase:
 	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
-	   sampleCount += T_u;
+	   sampleCount	+= T_u;
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 	   if (!scanMode)
 	      my_mscHandler.  processBlock_0 (ofdmBuffer. data());
@@ -286,9 +298,13 @@ SyncOnPhase:
 	      myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
 	      sampleCount += T_s;
-	      for (i = (int)T_u; i < (int)T_s; i ++) 
+	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-
+#ifdef	__WITH_SNR_VIEWER__	
+	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
+	         cCount += 2;
+#endif
+	      }
 	      if (ofdmSymbolCount < 4) {
 	         my_ofdmDecoder. decode (ofdmBuffer,
 	                            ofdmSymbolCount, ibits. data());
@@ -314,10 +330,17 @@ SyncOnPhase:
 	   snr = 0.9 * snr +
 	     0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
 	   static int ccc	= 0;
-	   if (++ccc > 10) {
+#ifdef	__WITH_SNR_VIEWER__
+	   if (++ccc > 2 ) {
+	      ccc = 0;
+	      show_snr ((int)snr, cLevel / cCount, sum);
+	   }
+#else
+	   if (++ccc > 10 ) {
 	      ccc = 0;
 	      show_snr ((int)snr);
 	   }
+#endif
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 

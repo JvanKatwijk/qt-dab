@@ -50,7 +50,7 @@ public:
 
 			~sampleReader();
 		void	setRunning	(bool b);
-		float	get_sLevel();
+		float	get_sLevel	();
 		std::complex<float> getSample	(int32_t);
 	        void	getSamples	(std::complex<float> *v,
 	                                 int32_t n, int32_t phase);
