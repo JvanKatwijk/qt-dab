@@ -1,122 +1,17 @@
-# Qt-DAB-3.6 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.7 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.6 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
+Qt-DAB-3.7 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
 ![overview](/qt-dab-0.png?raw=true)
-
---------------------------------------------------------------------
-DISCLAIMER 
---------------------------------------------------------------------
-
-I develop my software under Linux and 
-cross-compile for windows. Linux development is simple: if something
-is wrong - and that happens from time to time - it is always relatively
-easy to detect what is wrong and fix it.
-
-The point is that things that run fine under Linux do not (always) run
-fine under Windows: same software, no changes. In case it does not run
-correctly under Windows, finding out what happens can be done, but finding
-the cause, i.e. why it happens is virtually impossible!
-
-So, yes, I am aware of the fact that sometime things do not go under Windows
-as under Linux.
-
-So, while I keep on cross compiling the software for windows, do not
-always expect the smooth behaviour as it is under Linux.
-
-----------------------------------------------------------------------
-New in 3.6
------------------------------------------------------------------------
-
-Most of the differences between version 3.6 and previous versions are
-(hopefully) unnoticed by the user (some of them are cornerstones for
-future functional additions). However, one change is very visible:
-the "mute button" is on a different location, and the button on the 
-right bottom corner is now "config" button. The changes are large
-enough to justify a change in version number.
-
-The rationale for a "config" button is that there is a need (well,
-I have a need) to change some of the settings, without having to
-edit the ".ini" file.
-
-![configuration](/qt-dab-config.png?raw=true)
-
-The "config" button, when pressed, gives access to a widget with a few
-settings to set or alter values in the ".ini" (i.e. configuration) file.
-Currently, there are the following settings:
-
-	a. the *switchtime*, the maximum delay when selecting a service in a different channel;
-
-	b. the *mute* time, the time - in minutes - that audio mutes;
-
-	c. the *plotLength*, the length of the X-axis in the correlation display expressed in entities of 100 samples;
-
-	d. *full scan* selector, scan the while band once (default), continuously, or until a DABsignal is detected.
-
-	e. *mot slides* selector, show slides in a separate window when checked, otherwise as part of the technical data widget. 
-
-While most people will not be aware of it,
-there are different orderings possible for displaying the services in
-the service list. 
-One may choose between (Alfabetical, by service Identifier, or by the
-number of the subchannel).
-
-As an experiment - inspired by others - a simple ALARM timer is introduced.
-It happened a few times that I missed the news, transmitted on the hour,
-but on a different service than the one I was listening to.
-
-Now it is possible to specify a time on which a selected service on
-a selected channel can be started, regardless of the service and channel
-that we ar elistening to. The services that can be selected in
-the alarm selection are the ones in the currently selected channel
-and those in the presets.
-
-The GUI contains an indicator which shows when the alarm is set, when no
-alarm is set, the small label is not shown.
-
-Of course, the coloring, as implemented in 3.5.3 also applies to the config
-button.
-
-----------------------------------------------------------------------
-The contents of the qt-dab sourcetree
-----------------------------------------------------------------------
-
-The directory qt-dab is now the home of *THREE* related, but 
-different, versions of a DAB decoder:
-
- * first of all, there is Qt-DAB, a fairly complete DAB decoder,
-based on the idea that *the user is in full control* .
-
-![Qt-DAB with xml input](/qt-dab-1.png?raw=true)
-
- * second, the *little* sister is *dabMini*, built using the same set
-of sources, but with an absolutely minimal GUI.
-To assist in creating and installing an
-executable on an *RPI* the documentation contains a script with
-which all required libraries will be installed, the sources
-will be downloaded and compiled into an executable.
-dabMini and Qt-DAB share over 95 percent of the sources,
-see the subdirectory *dab-mini* for construction details.
-
-![dab-mini](/dab-mini.png?raw=true)
-
- * third, an *experimental version*, called *dab-2*. While the sources
-of *dab-2* and Qt-DAB overlap for more than 90 percent, a completely
-different architectural approach is taken for building up
-the DAB frames. Note that dab-2 and Qt-DAB share almost all of the GUI, 
-dab-2 has a different widget for device control.
-See the subdirectory *dab-2* for construction details.
-
-![dab-2](/dab-2-picture.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 
 * [Introduction](#introduction)
-* [Documentation](#documentation)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
+* [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab-dabmini-and-dab-2)
 * [Colors](#Colors-for-Qt-DAB)
 * [History](maintaining-history-for-qt-dab-and-dab-2)
@@ -128,40 +23,37 @@ Table of Contents
 * [Interfacing to another device](#interfacing-to-another-device)
 * [Using other bands than Band III or L Band](#using-other-bands-than-band-iii-or-l-band)
 * [xml-files and support](#xml-files-and-support)
+* [EPG-Handling](#EPG-Handling)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.6** is an implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.7** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
-For DX purposes, a separate **dab-scanner** is implemented that allows
+It provides an abundant amount of selectors and displays, most of
+which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
+
+While Qt-DAB provides an extensive **scan** function, 
+a separate **dab-scanner** exists as well that allows
 for a continuous scanning of selected channels in a given band. Results are 
 written in a text file, formatted for use with *LibreOffice Calc* and
-comparable programs. Note that in **Qt-DAB-3.6** the scan function
-is extended with an option to save detailed data in a text file,
-compatible with e.g. LibreOffice.
-For scanning purposes, a command line scanner exists, one where the channels
-that are to be scanned passed as command line parameter, and that dumps a specified number of seconds of the input of those channels with DAB data into a file.
+comparable programs. (Note that in **Qt-DAB-3.7** the scan function
+has an option to save detailed data in a text file, compatible with e.g.
+LibreOffice.)
 
-Derived programs, such as the **dab-scanner** and the command line based
-versions, **terminal-DAB**, **dab-cmdline**, **channelScanner** and **dab2fm* have their own repository on Github.
+Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
+"command lines", from time to time I just prefer a simple command line
+driven device. Therefore, a **terminal-DAB-xxx** version was developed, a
+simpler version, just for listening to a DAB service, making use of 
+command line
 
-Since the Qt-DAB program has to run on a headless RPI 2/3 using the home WiFi,
-the resulting PCM output can be sent - if so configured - to a TCP port (Sources for a small client are part of the source distribution).
+![Qt-DAB terminal DAB](/qt-dab-terminal-dab.png?raw=true)
 
---------------------------------------------------------------------
-Documentation
---------------------------------------------------------------------
-
-An extensive "user's guide" - in pdf format - can be found in the "docs"
-section of the source tree. The documentation contains a complete
-description of the widgets, of the values in the ".ini" file,
-on configuring for creating an executable (Linux), and even a
-complete description on how to add a device to the configuration.
-
-![Qt-DAB documentation](/qt-usersguide.png?raw=true)
+For those who are nostalgic to the era of nice wooden radios with glowing tubes,
+a program exists - for the Pluto - to receive DAB and transmit a selected
+service in FM stereo with the "dynamic label" sent as RDS.
 
 ------------------------------------------------------------------
 Features
@@ -174,8 +66,8 @@ Features
   	* VHF Band III (default),
    	* L-Band (obsolete now)
   * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file)m
-  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum,
-  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, 4 quality bars),
+  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time.
+  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
   * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type),
   * Automatic display of TII (Transmitter Identification Information) data when transmitted,
   * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
@@ -187,6 +79,7 @@ Features
   * Scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
   * TPEG output: when configured the data is sent to a specified ip address,
+  * EPG detection and building up a time table,
   * Supports inputs from 
 	- Adalm Pluto,
    	- SDR DAB sticks (RTL2838U or similar), 
@@ -205,11 +98,8 @@ Not yet or partly implemented:
 
   * DMB (Audio and Video)
   * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client are part of the source distribution.
-  * EPG: when configured, the EPG decoding will generate so called EHB files.
   * Journaline (an untested Journaline implementation is part of the sources).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
-
-Qt-DAB also supports input from an rtl_tcp server, if such server is used as input device, the connection needs to support the inputrate, i.e. 2,048,000 I/Q samples (i.e. 2 * 2,048,000 bytes/second).
 
 Note:
 While the 2.13 support for SDRplay devices is able to handle
@@ -220,26 +110,29 @@ needs 3.06 (3.07) support
 Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------
 
-The picture on top shows Qt-DAB's main window and the other 6 **optional**
-widgets:
+Qt-DAB has a main widget and a number of  **optional**
+widgets, visible or invisible under user's control
 
+  * a widget with controls for the attached device,
+  * a widget for additional configuration settings.
   * a widget showing the technical information of the *selected service* as well
 as some information on the quality of the decoding, 
   * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
   * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
   * a widget showing the correlations response(s) from different transmitters in the SFN,
-  * a widget with controls for the attached device,
-  * a widget for additional configuration settings.
+  * a wadiget showing the development - over time - of the SNR
 
-Another - a seventh - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
+![Qt-DAB totaal](/qt-dab-totaal.png?raw=true)
+
+Another - an eight' - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
 possibility was created to save a detailed description of the services
 in the different channels, in a format easily to process with LibreOffice
 or comparable programs.
 
-While the main window is always shown, visibility of the others is
-under user control, the main widget contains a button for each of those.
+While the main window is **always** shown, visibility of the others is
+under user control, the main widget contains a button for each..
 
-![Qt-DAB with SDRplay input](/qt-dab-2.png?raw=true)
+![Qt-DAB main widget](/qt-dab-main-widget.png?raw=true)
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
@@ -256,32 +149,41 @@ is available, now for selecting the previous resp. the next service
 on the list.
 
 Some data on the selected service - if any - is to be found on
-a separate widget. This widget will show where the data for the
+a separate widget, the "technical data" widget.
+This widget will show where the data for the
 service is to be found in the DAB frames, and how it is encoded.
 
 Depending on a setting in the ".ini" file, a logo or slide, transmitted
-with the audio transmission, will be shown here or on a separate widget.
+as Program Associated Data with the audio transmission, will be shown here or on a separate widget
+(the setting can be modified from the configuration widget).
 
 The further selectors are concentrated on the bottom part of the right side
 of the widget. Buttons to make scopes visible, to store input and or
 output into a file, to select input device and the audio and to
 scan and store a description of the ensemble are in that section.
 
-![Qt-DAB scan result](/qt-dab-buttons.png?raw=true)
+![qt-dan controls ](/qt-dab-main-controls.png?raw=true)
 
 During *scanning*, a separate window will be shown with the results
 of the scan as shown in the picture. Note that what is shown is a *subset*
 of what will be recorded if a choice is made to save the output of the scan. 
 
-![Qt-DAB with xml input](/qt-dab-scan-button.png?raw=true)
+![Qt-DAB scan result](/qt-dab-scan-result.png?raw=true)
 
-Of course, different people have different tastes when it comes to
-colors on a scope.
+--------------------------------------------------------------------
+Documentation
+--------------------------------------------------------------------
 
-![Qt-DAB scope](/qt-dab-scope-2.png?raw=true)
+An extensive "user's guide" - in pdf format - can be found in the "docs"
+section of the source tree. The documentation contains a complete
+description of the widgets, of the values in the ".ini" file,
+on configuring for creating an executable (Linux), and even a
+complete description on how to add a device to the configuration.
+
+![Qt-DAB documentation](/qt-usersguide.png?raw=true)
 
 ----------------------------------------------------------------------
-Presets for Qt-DAB, dabMini and dab-2
+Presets for Qt-DAB
 ----------------------------------------------------------------------
 
 A *preset* selector is available to allow storing and selecting
@@ -290,8 +192,6 @@ Note that the services in the preset list are encoded as
 "channel:serviceName" pair: it sometimes happens that a
 service appears in more than one ensemble
 (as example the "Omroep West" service appears in channels 5B and 8A.)
-
-![Qt-DAB with sdrplay input](/qt-dab-presets.png?raw=true)
 
 The presets are stored in an xml file, `.qt-dab-presets.xml'.
 
@@ -309,15 +209,10 @@ button on the keyboard simultaneously.
 Colors for Qt-DAB
 ----------------------------------------------------------------------
 
-While it has been possible for a long time to set some colors
-to the displays, 3.5.3 colors the various buttons (in total
-there are 18 push buttons, 16 on the main GUI, two on the
+Setting colors is rather personal, that is why Qt-DAB provides
+the possibility of setting a color to buttons and displays.
+(in total there are 19 push buttons, 16 on the main GUI, 3 on the
 technical data widget).
-Since selecting a color is a matter of taste,
-and setting all buttons to the same
-color seems rather boring, starting in version 3.5.3 there is the possibility
-to set a base color for each button as well as the color for the button text.
-(Dark base colors require light colored text and vice versa).
 
 To ease life a little, selecting a color setting for a button is
 now made easy: right clock with the mouse on the button, and a
@@ -331,16 +226,14 @@ For setting the colors on the scopes, right click on the scope. Three
 questions will be asked: what will be the color of the display (background),
 what will be the color of the grid and what will be the color of the curve.
 
-![Qt-DAB with colors](/qt-dab-colors.png?raw=true)
-
 ---------------------------------------------------------------------------
-Maintaining History for Qt-DAB and dab-2
+Maintaining History
 ---------------------------------------------------------------------------
 
-Qt-DAB-3.6 and dab-2.1 save all service names found.
-Pairs "Channel:serviceName"
+Qt-DAB-3.7 saves all service names found.
+The list of Pairs "Channel:serviceName"
 will be made (in)visible when touching the appropriate button (the
-one labeled with "xx").
+one labeled with "list").
 
 The data in stored in a file in xml format.
 The *history* can be cleared by a click of the right mouse button,
@@ -348,18 +241,15 @@ clicking on a channel:servicename combination with the left
 mouse button will cause the QT-DAB software to attempt to set the channel and
 select the name.
 
-![Qt-DAB with sdrplay input](/qt-dab-history.png?raw=true)
-
 ---------------------------------------------------------------------------
 Comment on some  configuration settings
 -------------------------------------------------------------------------------
 
-All **three** programs maintain a number of settings in an ".ini" file.
-A typical setting is the channel/service combination at program termination,
-values, used to initialize the software at program start up.
-
-Next to this kind of settings, there is a myriad of possible settings
-that can be done by the user.
+Various settings are maintained between program invocations in a
+so-called ".ini" file. 
+Typical settings are the channel/service combination at program termination,
+values, used to initialize the software at program start up and the colors
+for buttons and displays.
 A complete description of the settings can be found in the user's manual
 (in the subdirectory *docs*).
 
@@ -382,43 +272,55 @@ For the *Band*, one will add/set a line
 
 ------------------------------------------------------------------
 Installation on Windows
-------------------------------------------------------------------
+--------------------------------------------------------------------
 
-Read carefully what I have said on Windows!
+Development of Qt-DAB and related software is on Linux, 
+the cross compilation facilities of MINGW make it possible to
+cross compile the software for windows.
 
 For windows *two*  **installers** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 
 The installer will also call the official installer for the dll implementing
 the 2.3 api for getting access to the SDRplay devices.
 
-Note that the Windows versions are cross-compiled from within Linux,
-using the mingw64-xxx toolset.
-
 ------------------------------------------------------------------
-Installation on Linux (PC and RPI)
+Installation on Linux-x64
 ------------------------------------------------------------------
 
-Unfortunately different Linux distributions have different ways of
-naming and ordering libraries. However, for Ubuntu - one of the
-more popular distros - the aforementioned user's manual
-contains a complete script that can be used to install all required
-libraries, download the sources and build an executable.
+For Linux-x64 systems, an **appImage** is available. appImages
+are automatically generated when pushing modifications to the software
+in Github.
 
-An alternative is - of course - installing the *appImage* for qt-dab.
-The appImage is an executable file, containing all what is needed - apart from
-the support libraries for the devices. The appImage for Qt-DAB is
-compiled with support for RTL SDR devices, for the 2.13 and 3.06 support
-library for the SDRplay, with support for the AIRspy, the limeSDR,
-the hackrf, pluto (and of course the various file readers).
 The appImage can be found in "https://github.com/JvanKatwijk/qt-dab/releases".
+The appImage is configured for
+
+	* RTL_TCP
+	* AIRSPY
+	* SDRPLAY
+	* SDRPLAY_V3
+	* LIMESDR
+	* HACKRF
+	* PLUTO
+
+Of course it is possible to generate an executable, the 
+aforementioned user's manual
+contains a complete script that can be used to install all required
+libraries, download the sources and build an executable on an Ubuntu
+(Debian) based system.
 
 Since Buster, the current system on the RPI's, has the same roots
 as Ubuntu, the script for Ubuntu can be used to install Qt-DAB
 on an RPI.
 
+Note that the source tree contains two variants next to the Qt-DAB program,
+a **dabMini** program, a dab decoder with a minimal interface, and **dab-2**
+an experimental variant. Both use large parts of the same sources as Qt-DAB does.
+ 
 For the dabMini, an appImage is available for use on an x64 based
 Linux system, and the user's manual contains a complete
 script, tested on an RPI 2 and 3.
+
+**dab-2** is experimental and not - officially - supported
 
 ----------------------------------------------------------------------
 Configuring 
@@ -444,11 +346,7 @@ differs since it lacks a separate widget for the control).
 
 Device handlers are implemented as a class, derived from
 the class *deviceHandler*. Only a few functions have to
-be implemented, to *get* the VFO frequency, 
-to inspect the number of samples available and to get a number
-of samples, to start and stop operating the device
-and to report on the number of bits per sample. This last
-function, is used to scale the various spectrum scopes.
+be implemented.
 
 A complete description of how to interface a device to Qt-DAB
 is given in the user's manual.
@@ -458,7 +356,7 @@ Using other bands than Band III or L Band
 ------------------------------------------------------------------------
 
 While it is known that the DAB transmissions are now all in Band III,
-there are situations where might be desirable to use other frequencies.
+there are situations where it might be desirable to use other frequencies.
 If you want to experiment with a modulator, connected to an SDR device
 on different frequencies than the default one (or you want just to
 have a restricted number of channels from Band III or L Band), Qt-DAB
@@ -523,6 +421,21 @@ data in the data block.
 
 The picture shows the reader when reading a file, generated from raw
 data emitted by the Hackrf device.
+
+----------------------------------------------------------------------
+EPG-Handling
+----------------------------------------------------------------------
+
+In Qt-DAB-3.7 a first step is made to implement support for
+EPG (Electronic Program Guide).
+
+In the current implementation, an EPG Handler is automatically started
+whenever within an ensemble a service is recognized as carrier of
+EPG data.
+The handler will collect information about the program guides for the
+various services, and when collected, allow the user to view it.
+
+The software is experimental though.
 
 -----------------------------------------------------------------------
 # Copyright
