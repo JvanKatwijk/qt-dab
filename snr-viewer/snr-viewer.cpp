@@ -88,7 +88,7 @@ bool	brush;
 	   spectrumCurve	-> setBrush (*ourBrush);
 	spectrumCurve	-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	Y_Buffer	= new double [plotLength];
+	Y_Buffer. resize (plotLength);
 	for (int i = 0; i < plotLength; i ++)
 	   Y_Buffer [i] = 0;
 }
@@ -98,8 +98,31 @@ bool	brush;
 	delete		ourBrush;
 	delete		spectrumCurve;
 	delete		grid;
-	delete[]	Y_Buffer;
 	delete		myFrame;
+}
+
+void	snrViewer::setHeight	(int n) {
+	plotHeight	= n;
+	dabSettings	-> beginGroup ("snrViewer");
+	dabSettings	-> setValue ("snrHeight", n);
+	dabSettings	-> endGroup ();
+}
+
+void	snrViewer::setLength	(int n) {
+	if (n < plotLength) {
+	   plotLength = n;
+	   Y_Buffer. resize (n);
+	}
+	else
+	if (n > plotLength) {
+	   Y_Buffer. resize (n);
+	   for (int i = plotLength; i < n; i ++)
+	      Y_Buffer [i] = 0;
+	   plotLength = n;
+	}
+	dabSettings	-> beginGroup ("snrViewer");
+	dabSettings	-> setValue ("snrLength", plotLength);
+	dabSettings	-> endGroup ();
 }
 
 void	snrViewer::show () {
@@ -133,7 +156,7 @@ double X_axis	[plotLength];
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	spectrumCurve   -> setBaseline  (0);
 
-	spectrumCurve	-> setSamples (X_axis, Y_Buffer, plotLength);
+	spectrumCurve	-> setSamples (X_axis, Y_Buffer. data (), plotLength);
 	plotgrid	-> replot(); 
 }
 

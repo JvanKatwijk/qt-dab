@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.6)
+set (objectName qt-dab-3.7)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -201,6 +201,7 @@ endif ()
 	           ../spectrum-viewer
 	           ../correlation-viewer
 	           ../tii-viewer
+	           ../snr-viewer
 	           ./qt-devices
 	           ./qt-devices/rawfiles-new
 	           ./qt-devices/wavfiles-new
@@ -291,6 +292,7 @@ endif ()
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
 	     ../tii-viewer/tii-viewer.h
+	     ../snr-viewer/snr-viewer.h
 	     ./qt-devices/device-handler.h
 	     ./qt-devices/xml-filewriter.h
 	     ./qt-devices/rawfiles-new/rawfiles.h
@@ -378,6 +380,7 @@ endif ()
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
 	     ../tii-viewer/tii-viewer.cpp
+	     ../snr-viewer/snr-viewer.cpp
 	     ./qt-devices/device-handler.cpp
 	     ./qt-devices/xml-filewriter.cpp
 	     ./qt-devices/rawfiles-new/rawfiles.cpp
@@ -430,6 +433,7 @@ endif ()
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
  	     ../tii-viewer/tii-viewer.h
+ 	     ../snr-viewer/snr-viewer.h
 	     ./qt-devices/rawfiles-new/rawfiles.h
 	     ./qt-devices/rawfiles-new/raw-reader.h
 	     ./qt-devices/wavfiles-new/wavfiles.h
@@ -448,6 +452,7 @@ endif ()
 	     ../spectrum-viewer/scopewidget.ui
 	     ../correlation-viewer/correlation-widget.ui
 	     ../tii-viewer/tii-widget.ui
+	     ../snr-viewer/snr-widget.ui
 	     ./qt-devices/xml-filereader/xmlfiles.ui
 	   )
 

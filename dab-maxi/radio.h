@@ -56,9 +56,7 @@
 #include	"spectrum-viewer.h"
 #include	"tii-viewer.h"
 #include	"correlation-viewer.h"
-#ifdef		__WITH_SNR_VIEWER__
 #include	"snr-viewer.h"
-#endif
 
 class	QSettings;
 class	deviceHandler;
@@ -109,9 +107,7 @@ private:
         spectrumViewer		my_spectrumViewer;
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
-#ifdef	__WITH_SNR_VIEWER__
 	snrViewer		my_snrViewer;
-#endif
 	presetHandler		my_presetHandler;
 	processParams		globals;
 	QString			version;
@@ -240,6 +236,7 @@ private:
                                                                  QString);
 	void			show_MOTlabel		(QByteArray, int,
                                                                   QString);
+	void			stop_muting		();
 enum direction {FORWARD, BACKWARDS};
 
 	void			handle_serviceButton	(direction);
@@ -262,11 +259,7 @@ public slots:
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
-#ifdef	__WITH_SNR_VIEWER__
 	void			show_snr		(int, float, float);
-#else
-	void			show_snr		(int);
-#endif
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			handle_motObject	(QByteArray, QString,
@@ -310,6 +303,7 @@ private slots:
 	void			handle_scanButton	();
 
 	void			handle_tiiButton	();
+	void			handle_snrButton	();
 	void			handle_correlationButton	();
 	void			handle_spectrumButton	();
 	void			handle_devicewidgetButton	();
@@ -348,6 +342,7 @@ private slots:
 	void			color_tiiButton		();
 	void			color_correlationButton	();
 	void			color_spectrumButton	();
+	void			color_snrButton		();
 	void			color_devicewidgetButton	();
 	void			color_historyButton	();
 	void			color_sourcedumpButton	();
@@ -368,9 +363,11 @@ private slots:
 	void			handle_orderServiceIds	();
 	void			handle_ordersubChannelIds	();
 	void			handle_alarmSelector	(const QString &);
-	void			handle_setTime_button	();
+	void			handle_setTime_button		();
 	void			handle_plotLengthSetting	(int);
-	void			handle_scanmodeSelector	(int);
-	void			handle_motslideSelector	(int);
+	void			handle_scanmodeSelector		(int);
+	void			handle_motslideSelector		(int);
+	void			handle_snrHeightSelector	(int);
+	void			handle_snrLengthSelector	(int);
 };
 #endif

@@ -48,6 +48,7 @@ DEPENDPATH += . \
               ../spectrum-viewer \
 	      ../correlation-viewer \
 	      ../tii-viewer \
+	      ../snr-viewer \
 	      ./qt-devices \
 	      ./qt-devices/rawfiles-new \
 	      ./qt-devices/wavfiles-new\
@@ -73,6 +74,7 @@ INCLUDEPATH += . \
               ../spectrum-viewer \
 	      ../correlation-viewer \
 	      ../tii-viewer \
+	      ../snr-viewer \
 	      ./qt-devices \
 	      ./qt-devices/rawfiles-new \
 	      ./qt-devices/wavfiles-new \
@@ -165,6 +167,7 @@ HEADERS += ./radio.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
 	   ../correlation-viewer/correlation-viewer.h \
 	   ../tii-viewer/tii-viewer.h \
+	   ../snr-viewer/snr-viewer.h \
 	   ./qt-devices/device-handler.h \
 	   ./qt-devices/xml-filewriter.h \
 #	   ./qt-devices/filereader-widget.h \
@@ -185,6 +188,7 @@ FORMS	+= ../forms/data-description.ui
 FORMS	+= ../spectrum-viewer/scopewidget.ui
 FORMS	+= ../correlation-viewer/correlation-widget.ui
 FORMS	+= ../tii-viewer/tii-widget.ui
+FORMS	+= ../snr-viewer/snr-widget.ui
 #FORMS	+= ./qt-devices/filereader-widget.ui 
 FORMS	+= ./qt-devices/xml-filereader/xmlfiles.ui
 
@@ -264,6 +268,7 @@ SOURCES += ./main.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
 	   ../tii-viewer/tii-viewer.cpp \
+	   ../snr-viewer/snr-viewer.cpp \
 	   ./qt-devices/device-handler.cpp \
 	   ./qt-devices/xml-filewriter.cpp \
 	   ./qt-devices/rawfiles-new/rawfiles.cpp \
@@ -277,7 +282,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-3.6
+TARGET		= qt-dab-3.7
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -323,7 +328,6 @@ CONFIG		+= faad
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram
 
-CONFIG		+= snrViewer	# do not use this unless you know what and why
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out
@@ -354,7 +358,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-3.6
+#	TARGET		= qt-dab64-3.7
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -373,7 +377,7 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= NO_SSE
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-3.6
+	TARGET		= qt-dab32-3.7
 	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -685,11 +689,4 @@ fdk-aac	{
 	LIBS		+= -lfdk-aac
 }
 
-snrViewer	{
-	DEFINES		+= __WITH_SNR_VIEWER__
-	INCLUDEPATH	+= ../snr-viewer/
-	HEADERS		+= ../snr-viewer/snr-viewer.h
-	SOURCES		+= ../snr-viewer/snr-viewer.cpp
-	FORMS		+= ../snr-viewer/snr-widget.ui
-}
 

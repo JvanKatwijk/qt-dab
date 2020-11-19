@@ -6,63 +6,107 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>373</width>
-    <height>415</height>
+    <width>332</width>
+    <height>514</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Configuration</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>mute time (in minutes)</string>
-     </property>
-    </widget>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>mute time (in minutes)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="smallSpinBox" name="muteTimeSetting">
+       <property name="toolTip">
+        <string>Set here the mute time in minutes</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>switch time (in seconds)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="smallSpinBox" name="switchDelaySetting">
+       <property name="toolTip">
+        <string>Set here the delay, when searching for data in a channel, in seconds</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string> PlotLength (unit 100)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="smallSpinBox" name="plotLengthSetting">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>5</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>snr height</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="snrHeightSelector">
+       <property name="minimum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>15</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>snr Length</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="snrLengthSelector">
+       <property name="minimum">
+        <number>100</number>
+       </property>
+       <property name="maximum">
+        <number>5000</number>
+       </property>
+       <property name="singleStep">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
-   <item row="0" column="4">
-    <widget class="smallSpinBox" name="muteTimeSetting">
-     <property name="toolTip">
-      <string>Set here the mute time in minutes</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="3">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>switch time (in seconds)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4">
-    <widget class="smallSpinBox" name="switchDelaySetting">
-     <property name="toolTip">
-      <string>Set here the delay, when searching for data in a channel, in seconds</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string> PlotLength (unit 100)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4" rowspan="2">
-    <widget class="smallSpinBox" name="plotLengthSetting">
-     <property name="minimum">
-      <number>1</number>
-     </property>
-     <property name="maximum">
-      <number>10</number>
-     </property>
-     <property name="value">
-      <number>5</number>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item>
     <widget class="QComboBox" name="scanmodeSelector">
      <item>
       <property name="text">
@@ -81,94 +125,110 @@
      </item>
     </widget>
    </item>
-   <item row="4" column="0" colspan="5">
+   <item>
     <widget class="QCheckBox" name="motslideSelector">
      <property name="text">
       <string>    MOT slides on separate widget</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="3" colspan="2">
-    <widget class="QRadioButton" name="orderAlfabetical">
-     <property name="text">
-      <string>alphabetically</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">buttonGroup</string>
-     </attribute>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="2">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string> service order in list</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3" colspan="2">
-    <widget class="QRadioButton" name="orderServiceIds">
-     <property name="text">
-      <string>serviceIds</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">buttonGroup</string>
-     </attribute>
-    </widget>
-   </item>
-   <item row="7" column="3" colspan="2">
-    <widget class="QRadioButton" name="ordersubChannelIds">
-     <property name="text">
-      <string>subchannelIds</string>
-     </property>
-     <attribute name="buttonGroup">
-      <string notr="true">buttonGroup</string>
-     </attribute>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>alarm</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1" colspan="3">
-    <widget class="smallSpinBox" name="alarm_hours">
-     <property name="maximum">
-      <number>23</number>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="4">
-    <widget class="smallSpinBox" name="alarm_minutes">
-     <property name="maximum">
-      <number>59</number>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0" colspan="2">
-    <widget class="smallPushButton" name="setTime_button">
-     <property name="text">
-      <string>set Time</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="2" colspan="3">
-    <widget class="QComboBox" name="alarmSelector">
-     <property name="toolTip">
-      <string>An alarm can be set. If the alarm time is reached, the selected service will be chosen.</string>
-     </property>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <property name="text">
-       <string>set alarm</string>
-      </property>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string> service order in list</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <property name="text">
-       <string>remove alarm</string>
-      </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QRadioButton" name="orderAlfabetical">
+         <property name="text">
+          <string>alphabetically</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="orderServiceIds">
+         <property name="text">
+          <string>serviceIds</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="ordersubChannelIds">
+         <property name="text">
+          <string>subchannelIds</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
      </item>
-    </widget>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>alarm</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallSpinBox" name="alarm_hours">
+       <property name="maximum">
+        <number>23</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallSpinBox" name="alarm_minutes">
+       <property name="maximum">
+        <number>59</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="smallPushButton" name="setTime_button">
+       <property name="text">
+        <string>set Time</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="alarmSelector">
+       <property name="toolTip">
+        <string>An alarm can be set. If the alarm time is reached, the selected service will be chosen.</string>
+       </property>
+       <item>
+        <property name="text">
+         <string>set alarm</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>remove alarm</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

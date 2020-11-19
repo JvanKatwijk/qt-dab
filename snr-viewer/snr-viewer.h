@@ -31,6 +31,7 @@
 #include	<QFrame>
 #include	<QSettings>
 #include	<QObject>
+#include	<vector>
 #include	"ui_snr-widget.h"
 #include	<qwt.h>
 #include	<qwt_plot.h>
@@ -56,6 +57,8 @@ public:
 			~snrViewer	();
 	void		show_snr	();
 	void		add_snr		(float);
+	void		setLength	(int);
+	void		setHeight	(int);
 	void		show		();
 	void		hide		();
 	bool		isHidden	();
@@ -63,8 +66,8 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
-	double		*Y_Buffer;
-	float		get_db			(float);
+	std::vector<double>	Y_Buffer;
+	float		get_db		(float);
 	int16_t		displaySize;
 	QFrame		*myFrame;
 	QwtPlot		*plotgrid;

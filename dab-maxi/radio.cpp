@@ -165,6 +165,7 @@ QString scanmodeText (int e) {
 #define	TII_BUTTON		QString ("tiiButton")
 #define	CORRELATION_BUTTON	QString ("correlationButton")
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
+#define	SNR_BUTTON		QString ("snrButton")
 #define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
 #define	HISTORY_BUTTON		QString ("historyButton")
 #define	DUMP_BUTTON		QString ("dumpButton")
@@ -214,10 +215,8 @@ uint8_t convert (QString s) {
 	                                        my_tiiViewer (
 	                                                  this, Si,
 	                                                  &tiiBuffer),
-#ifdef	__WITH_SNR_VIEWER__
 	                                        my_snrViewer (
 	                                                  this, Si),
-#endif
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension),
 	                                        theTable (this) {
@@ -305,6 +304,11 @@ uint8_t	dabBand;
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
+
+	dabSettings	-> beginGroup ("snrViewer");
+	configWidget. snrHeightSelector -> setValue (dabSettings -> value ("snrHeight", 15). toInt ());
+	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 500). toInt ());
+	dabSettings	-> endGroup ();
 //
 //	scanMode is - unfortunately - global
 	scanMode	=
@@ -334,6 +338,7 @@ uint8_t	dabBand;
                          setStyleSheet ("QLabel {background-color : red}");
 	alarmLabel		-> setText ("Alarm");
 	alarmLabel		-> hide ();
+
 /*
  */
 #ifdef	DATA_STREAMER
@@ -450,14 +455,14 @@ uint8_t	dabBand;
 	         this, SLOT (color_correlationButton (void)));
 	connect (show_spectrumButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_spectrumButton (void)));
+	connect (snrButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_snrButton ()));
         connect (devicewidgetButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_devicewidgetButton ()));
         connect (historyButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_historyButton ()));
 	connect (dumpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_sourcedumpButton (void)));
-	connect (muteButton, SIGNAL (rightClicked (void)),
-	         this, SLOT (color_muteButton (void)));
 	connect (configButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_configButton (void)));
 
@@ -476,6 +481,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_audiodumpButton (void)));
 	connect (techData. timeTable_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_timeTable ()));
+	connect (techData. muteButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_muteButton (void)));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -581,9 +588,8 @@ uint8_t	dabBand;
 	   my_tiiViewer. show ();
 	if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
 	   my_correlationViewer. show ();
-#ifdef	__WITH_SNR_VIEWER__
-	my_snrViewer. show ();
-#endif
+	if (dabSettings -> value ("snrVisible", 0). toInt () == 1)
+	   my_snrViewer. show ();
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -603,7 +609,6 @@ uint8_t	dabBand;
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
-
 }
 
 QString RadioInterface::footText () {
@@ -706,6 +711,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_tiiViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("correlationVisible",
 	                          my_correlationViewer. isHidden () ? 0 : 1);
+	s	-> setValue ("snrVisible",
+	                          my_snrViewer. isHidden () ? 0 : 1);
 	s	-> sync();
 }
 //
@@ -1172,13 +1179,12 @@ void	RadioInterface::TerminateProcess () {
 	my_spectrumViewer. hide ();
 	my_correlationViewer. hide ();
 	my_tiiViewer. hide ();
-#ifdef	__WITH_SNR_VIEWER__
 	my_snrViewer. hide ();
-#endif
 	if (my_dabProcessor != nullptr)
 	   delete	my_dabProcessor;
 	if (inputDevice != nullptr)
 	   delete	inputDevice;
+	dabSettings	-> sync ();
 
 	delete		soundOut;
 	if (motSlides != nullptr)
@@ -1672,19 +1678,15 @@ void	RadioInterface::show_motHandling (bool b) {
 }
 	
 //	called from the ofdmDecoder, it is computed for each frame
-#ifdef	__WITH_SNR_VIEWER__
 void	RadioInterface::show_snr (int s, float sig, float noise) {
 	if (running. load())
 	   snrDisplay	-> display (s);
-	my_snrViewer. add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
-	my_snrViewer. show_snr ();
+	if (!my_snrViewer. isHidden ()) {
+	   my_snrViewer. add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
+	   my_snrViewer. show_snr ();
+	}
 }
-#else
-void	RadioInterface::show_snr (int s) {
-	if (running. load())
-	   snrDisplay	-> display (s);
-}
-#endif
+
 //	just switch a color, called from the ofdmprocessor
 void	RadioInterface::setSynced	(bool b) {
 	if (!running. load() || (isSynced == b))
@@ -2026,9 +2028,19 @@ void	RadioInterface::handle_spectrumButton	() {
 	   return;
 
 	if (my_spectrumViewer. isHidden())
-	   my_spectrumViewer. show();
+	   my_spectrumViewer. show ();
 	else
-	   my_spectrumViewer. hide();
+	   my_spectrumViewer. hide ();
+}
+
+void	RadioInterface::handle_snrButton	() {
+	if (!running. load ())
+	   return;
+
+	if (my_snrViewer. isHidden ())
+	   my_snrViewer. show ();
+	else
+	   my_snrViewer. hide ();
 }
 
 void    RadioInterface::handle_historyButton    () {
@@ -2060,14 +2072,14 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_correlationButton (void)));
 	connect (show_spectrumButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_spectrumButton (void)));
+	connect (snrButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_snrButton (void)));
         connect (devicewidgetButton, SIGNAL (clicked ()),
                  this, SLOT (handle_devicewidgetButton ()));
         connect (historyButton, SIGNAL (clicked ()),
                  this, SLOT (handle_historyButton ()));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_sourcedumpButton (void)));
-	connect (muteButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_muteButton (void)));
 
 	connect (nextChannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_nextChannelButton (void)));
@@ -2082,6 +2094,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	connect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
+	connect (techData. muteButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_muteButton (void)));
 
 	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
@@ -2111,6 +2125,10 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_scanmodeSelector (int)));
 	connect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_motslideSelector (int)));
+	connect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_snrHeightSelector (int)));
+	connect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_snrLengthSelector (int)));
 }
 
 void	RadioInterface::disconnectGUI() {
@@ -2128,14 +2146,14 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_correlationButton (void)));
 	disconnect (show_spectrumButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_spectrumButton (void)));
+	disconnect (snrButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_snrButton (void)));
         disconnect (devicewidgetButton, SIGNAL (clicked ()),
                  this, SLOT (handle_devicewidgetButton ()));
         disconnect (historyButton, SIGNAL (clicked ()),
                  this, SLOT (handle_historyButton ()));
 	disconnect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_sourcedumpButton (void)));
-	disconnect (muteButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_muteButton (void)));
 	disconnect (nextChannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_nextChannelButton (void)));
 	disconnect	(prevChannelButton, SIGNAL (clicked (void)),
@@ -2149,6 +2167,8 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	disconnect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
+	disconnect (techData. muteButton, SIGNAL (clicked (void)),
+	         this, SLOT (handle_muteButton (void)));
 
 	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
@@ -2179,6 +2199,10 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_scanmodeSelector (int)));
 	disconnect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_motslideSelector (int)));
+	disconnect (configWidget. snrHeightSelector, SIGNAL (stateChanged (int)),
+	            this, SLOT (handle_snrHeightSelector (int)));
+	disconnect (configWidget. snrLengthSelector, SIGNAL (stateChanged (int)),
+	            this, SLOT (handle_snrLengthSelector (int)));
 }
 //
 #include <QCloseEvent>
@@ -2387,6 +2411,7 @@ int	switchDelay;
 void	RadioInterface::stopService	() {
 	presetTimer. stop ();
 	channelTimer. stop ();
+	stop_muting	();
 
 	techData. timeTable_button -> hide ();
 	my_timeTable	-> hide ();
@@ -2789,6 +2814,7 @@ void	RadioInterface::stopChannel	() {
 	stop_sourceDumping	();
 	stop_audioDumping	();
         soundOut	-> stop ();
+	stop_muting		();
 //	note framedumping - if any - was already stopped
 #ifdef	TRY_EPG
 	epgTimer. stop		();
@@ -3171,20 +3197,27 @@ void	RadioInterface::muteButton_timeOut	() {
 	else {
            disconnect (&muteTimer, SIGNAL (timeout ()),
                        this, SLOT (muteButton_timeOut ()));
-	   setButtonFont (muteButton, "mute", 10);
+	   setButtonFont (techData. muteButton, "mute", 10);
 	   stillMuting	-> hide ();
            muting = false;
 	}
 }
 
+void	RadioInterface::stop_muting		() {
+	if (!muting) 
+	   return;
+
+	muteTimer. stop ();
+	disconnect (&muteTimer, SIGNAL (timeout ()),
+	               this, SLOT (muteButton_timeOut ()));
+	setButtonFont (techData. muteButton, "mute", 10);
+	muting = false;
+	stillMuting	-> hide ();
+}
+
 void	RadioInterface::handle_muteButton	() {
 	if (muting) {
-	   muteTimer. stop ();
-	   disconnect (&muteTimer, SIGNAL (timeout ()),
-	               this, SLOT (muteButton_timeOut ()));
-	   setButtonFont (muteButton, "mute", 10);
-	   muting = false;
-	   stillMuting	-> hide ();
+	   stop_muting ();
 	   return;
 	}
 
@@ -3193,7 +3226,7 @@ void	RadioInterface::handle_muteButton	() {
 	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 	muteDelay	*= 60;
         muteTimer. start (1000);
-	setButtonFont (muteButton, "MUTING", 12);
+	setButtonFont (techData. muteButton, "MUTING", 12);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
 	muting = true;
@@ -3469,6 +3502,12 @@ QString spectrumButton_color =
 QString spectrumButton_font =
 	   dabSettings -> value (SPECTRUM_BUTTON + "_font",
 	                                              "black"). toString ();
+QString snrButton_color =
+	   dabSettings -> value (SNR_BUTTON + "_color",
+	                                              "white"). toString ();
+QString snrButton_font =
+	   dabSettings -> value (SNR_BUTTON + "_font",
+	                                              "black"). toString ();
 QString devicewidgetButton_color =
 	   dabSettings -> value (DEVICEWIDGET_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -3547,6 +3586,8 @@ QString configButton_font	=
 	show_spectrumButton
 	                -> setStyleSheet (temp. arg (spectrumButton_color,
 	                                             spectrumButton_font));
+	snrButton	-> setStyleSheet (temp. arg (snrButton_color,
+	                                             snrButton_font));
 	devicewidgetButton -> setStyleSheet (temp. arg (devicewidgetButton_color,
 	                                                devicewidgetButton_font));
 
@@ -3556,8 +3597,6 @@ QString configButton_font	=
 	                                             dumpButton_font));
 	configButton	-> setStyleSheet (temp. arg (configButton_color,
 	                                             configButton_font));
-	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
-	                                             muteButton_font));
 
 	prevChannelButton -> setStyleSheet (temp. arg (prevChannelButton_color,
 	                                               "red"));
@@ -3574,6 +3613,8 @@ QString configButton_font	=
 	techData. audiodumpButton ->
 	                     setStyleSheet (temp. arg (audiodumpButton_color,
 	                                               audiodumpButton_font));
+	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
+	                                             muteButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -3604,6 +3645,11 @@ void	RadioInterface::color_spectrumButton	()	{
 	set_buttonColors (show_spectrumButton, SPECTRUM_BUTTON);
 }
 
+void	RadioInterface::color_snrButton		() {
+	set_buttonColors (snrButton, SNR_BUTTON);
+}
+
+
 void	RadioInterface::color_devicewidgetButton	() {
 	set_buttonColors (devicewidgetButton, DEVICEWIDGET_BUTTON);
 }
@@ -3616,9 +3662,6 @@ void	RadioInterface::color_sourcedumpButton	()	{
 	set_buttonColors (dumpButton, DUMP_BUTTON);
 }
 
-void	RadioInterface::color_muteButton	()	{
-	set_buttonColors (muteButton, MUTE_BUTTON);
-}
 
 void	RadioInterface::color_prevChannelButton	()	{
 	set_buttonColors (prevChannelButton, PREVCHANNEL_BUTTON);
@@ -3642,6 +3685,10 @@ void	RadioInterface::color_framedumpButton	()	{
 
 void	RadioInterface::color_audiodumpButton	()	{
 	set_buttonColors (techData. audiodumpButton, AUDIODUMP_BUTTON);
+}
+
+void	RadioInterface::color_muteButton	()	{
+	set_buttonColors (techData. muteButton, MUTE_BUTTON);
 }
 
 void	RadioInterface::color_configButton	()	{
@@ -3709,6 +3756,13 @@ void	RadioInterface::handle_motslideSelector		(int d) {
 	                              configWidget. motslideSelector -> isChecked () ? 1 : 0);
 }
 
+void	RadioInterface::handle_snrHeightSelector	(int d) {
+	my_snrViewer. setHeight (d);
+}
+
+void	RadioInterface::handle_snrLengthSelector	(int d) {
+	my_snrViewer. setLength (d);
+}
 
 void	RadioInterface::handle_orderAlfabetical		() {
 	dabSettings -> setValue ("serviceOrder", ALPHA_BASED);
