@@ -435,7 +435,14 @@ EPG data.
 The handler will collect information about the program guides for the
 various services, and when collected, allow the user to view it.
 
-The software is experimental though.
+Whenever the software has collected time table information of
+a given service, the technical Data widget will show, when selecting
+the service, a button labeled **timeTable**.
+
+![epg data](/qt-dab-epg-widget.png?raw=true)
+
+The software is experimental though and - at least here - the times
+on the time table are two hours off.
 
 -----------------------------------------------------------------------
 # Copyright

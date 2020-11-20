@@ -372,7 +372,7 @@ uint8_t	dabBand;
 #endif
 //
 #ifdef	TRY_EPG
-	epgPath		= dabSettings -> value ("epgPath", ""). toString ();
+	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
 	connect (&epgProcessor,
 	             SIGNAL (set_epgData (int, int, const QString &)),
 	         this, SLOT (set_epgData (int, int, const QString &)));
@@ -859,10 +859,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-//	                           contentType,
-//	                           getContentBaseType ((MOTContentType)contentType),
-//	                           name. toLatin1 (). data (), dirElement);
+	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+	                           contentType,
+	                           getContentBaseType ((MOTContentType)contentType),
+	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -2199,9 +2199,9 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_scanmodeSelector (int)));
 	disconnect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_motslideSelector (int)));
-	disconnect (configWidget. snrHeightSelector, SIGNAL (stateChanged (int)),
+	disconnect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_snrHeightSelector (int)));
-	disconnect (configWidget. snrLengthSelector, SIGNAL (stateChanged (int)),
+	disconnect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_snrLengthSelector (int)));
 }
 //
