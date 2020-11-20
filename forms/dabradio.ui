@@ -827,11 +827,7 @@ the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/b
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;
-The mute button, when touched a first time, the audio - if any - &lt;br /&gt;
-will be muted for a given amount of time (default 2 minutes, &lt;br /&gt;
-can be set in the configuration widget). &lt;br /&gt; &lt;br /&gt;
-If touched for a second time muting will stop.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>snr viewer</string>

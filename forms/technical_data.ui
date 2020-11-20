@@ -73,6 +73,9 @@
    </item>
    <item>
     <widget class="smallPushButton" name="muteButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute button controls whether or not the sound will be made audible. If set, the sound will be muted for a specified number of seconds, number being set in the configuration widget.&lt;/p&gt;&lt;p&gt;Touching the button when muting is on, will switch it off, as will changing the selected service or changing the channel.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>mute</string>
      </property>
