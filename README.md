@@ -2,7 +2,7 @@
 
 Qt-DAB-3.7 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
-![overview](/qt-dab-0.png?raw=true)
+![overview](/qt-dab-totaal.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents
@@ -120,7 +120,8 @@ as some information on the quality of the decoding,
   * a widget showing the spectrum of the received radio signal and the constellation of the decoded signal,
   * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
   * a widget showing the correlations response(s) from different transmitters in the SFN,
-  * a wadiget showing the development - over time - of the SNR
+  * a widget showing the development - over time - of the SNR
+  * if configured and data is detected, the time table for the current audio service
 
 ![Qt-DAB totaal](/qt-dab-totaal.png?raw=true)
 
@@ -437,9 +438,9 @@ various services, and when collected, allow the user to view it.
 
 Whenever the software has collected time table information of
 a given service, the technical Data widget will show, when selecting
-the service, a button labeled **timeTable**.
+the service, a button labeled **timeTable** .
 
-![epg data](/qt-dab-epg-widget.png?raw=true)
+![epg data](/qt-dab-epg-data.png?raw=true)
 
 The software is experimental though and - at least here - the times
 on the time table are two hours off.
