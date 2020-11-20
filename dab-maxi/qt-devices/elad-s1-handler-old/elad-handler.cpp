@@ -87,9 +87,9 @@ int16_t	success;
 //	since localFilter and gainReduced are also used as
 //	parameter for the API functions, they are int's rather
 //	than bool.
-	localFilter	= 1;
+	localFilter	= 0;
 	filterText	-> setText ("no filter");
-	gainReduced	= 1;
+	gainReduced	= 0;
 	gainLabel	-> setText ("0");
 
         for (int i = 0; i < 2048; i ++) {
@@ -293,8 +293,8 @@ std::complex<float> temp [2048];
 	            sum += abs (temp [j]);
                  }
 	         if (++teller > 1000) {
-	            //fprintf (stderr, "signal is %f dB\n",
-//10 * log10 (sum / 2048 / 84));
+	            fprintf (stderr, "signal is %f dB\n",
+	                        10 * log10 (sum / 2048 / 84));
 	            teller = 0;
 	         }
 	
@@ -340,30 +340,17 @@ int16_t	eladHandler::bitDepth	(void) {
 
 //
 void	eladHandler::setGainReduction	(void) {
-  	static int tempG;
-	//fprintf(stderr, "\n--gainReduced=%2d tempG=%2d\n",gainReduced,tempG);
 	gainReduced = gainReduced == 1 ? 0 : 1;
-	tempG=gainReduced;
 	theLoader -> set_en_ext_io_ATT20 (theLoader -> getHandle (),
 	                                     &gainReduced);
-	usleep(5000000);				     				     	gainReduced=tempG;
-	gainLabel -> setText (gainReduced == 1 ? "0" :"-20");
-	//fprintf(stderr, "  gainReduced=%2d tempG=%2d\n",gainReduced,tempG);
+	gainLabel -> setText (gainReduced == 1 ? "-20" : "0");
 }
 
 void	eladHandler::setFilter	(void) {
-        static int tempF;
-	localFilter = localFilter == 1 ? 0: 1;
-	tempF=localFilter; 
-	//fprintf(stderr,"\n--localFilter=%2d tempF=%2d\n",localFilter,tempF); 
+	localFilter = localFilter == 1 ? 0 : 1;
 	theLoader -> set_en_ext_io_LP30 (theLoader -> getHandle (),
 	                                     &localFilter);
-	usleep(500000);					     
-        localFilter = tempF;
-	
-	filterText	-> setText (localFilter == 1 ? "no filter" :"30 Mhz");
-	//fprintf(stderr,"  localFilter=%2d tempF=%2d\n",localFilter,tempF);
-	
+	filterText	-> setText (localFilter == 1 ? "30 Mhz" : "no filter");
 }
 
 void	eladHandler::show_iqSwitch	(bool b) {

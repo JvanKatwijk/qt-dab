@@ -75,10 +75,10 @@ int	rc;
 	   return;
 	}
 
-	set_en_ext_io_LP30 = (Pset_en_ext_io_ATT20)
+	set_en_ext_io_LP30 = (Pset_en_ext_io_LP30)
 	                GETPROCADDRESS (cwHandle, "set_en_ext_io_LP30");
 	if (set_en_ext_io_LP30 == nullptr) {
-	   fprintf (stderr, "Could not load set_en_ext_io_ATT20\n");
+	   fprintf (stderr, "Could not load set_en_ext_io_LP30\n");
 	   return;
 	}
 
@@ -99,16 +99,15 @@ int	rc;
 	}
 	usb_OK		= true;
 //	we are going for init
-	fprintf (stderr, "Loading FPGA, please wait ~10s \n");
+	fprintf (stderr, "Loading FPGA, please wait\n");
 	rc = Init (dev_handle);
 	if (rc == 0) {
 	   fprintf (stderr, "Loading FPGA Image failed %d\n", rc);
 	   *success = -3;
 	   return;
 	}
-	
 	rc = OpenHW (dev_handle, theRate);
-	fprintf (stderr, "Hardware opened %s Rate=%8d\n", rc == 1 ? "good" : "failed", theRate);
+	fprintf (stderr, "Hardware opened %s\n", rc == 1 ? "good" : "failed");
 	hardware_OK	= rc == 1;
 	if (!hardware_OK) {
 	   *success = -4;	
@@ -116,19 +115,10 @@ int	rc;
 	}
 	   
 	if (hardware_OK) {
-	   fprintf(stderr,"init undersampling mode: no filter LP30=1 , no attenuation ATT20=1\n");
 	   int d_en_ext_io_ATT20 = 1;
-	   int d_en_ext_io_LP30  = 1;
-	   //fprintf(stderr,"LP30=%2d ATT20=%2d   pre\n",d_en_ext_io_LP30,d_en_ext_io_ATT20);
-	   
+	   int d_en_ext_io_LP30 = 1;
 	   set_en_ext_io_ATT20 (dev_handle, &d_en_ext_io_ATT20);
-	   usleep(500000);
-	   set_en_ext_io_LP30  (dev_handle, &d_en_ext_io_LP30);
-	   usleep(500000);
-	   //fprintf(stderr,"LP30=%2d ATT20=%2d  post\n",d_en_ext_io_LP30,d_en_ext_io_ATT20); 
-	   d_en_ext_io_ATT20 = 1;
-	   d_en_ext_io_LP30  = 1;
-	   //fprintf(stderr,"LP30=%2d ATT20=%2d reset\n",d_en_ext_io_LP30,d_en_ext_io_ATT20);
+	   set_en_ext_io_LP30 (dev_handle, &d_en_ext_io_LP30);
 	}
 	*success	= 0;
 }

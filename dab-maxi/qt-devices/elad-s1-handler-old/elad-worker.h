@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2014
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB program
+ *    This file is part of the Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,32 +20,40 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#ifndef	__DONGLE_SELECT__
-#define	__DONGLE_SELECT__
-#
-#include	<QDialog>
-#include	<QLabel>
-#include	<QListView>
-#include	<QStringListModel>
-#include	<QStringList>
-#include	<cstdint>
 
-class	rtl_dongleSelect: public QDialog {
+#ifndef __ELAD_WORKER__
+#define	__ELAD_WORKER__
+
+#include	<stdlib.h>
+#include	<stdio.h>
+#include	<math.h>
+#include	<string.h>
+#include	<unistd.h>
+#include	<atomic>
+#include	<stdint.h>
+#include	<QThread>
+#include	"dab-constants.h"
+#include	"ringbuffer.h"
+
+class	eladLoader;
+class	eladHandler;
+
+class	eladWorker: public QThread {
 Q_OBJECT
 public:
-			rtl_dongleSelect();
-			~rtl_dongleSelect();
-	void		addtoDongleList		(const char *);
+			eladWorker	(int32_t,	// selected frequency
+	                                 eladLoader *,
+	                                 eladHandler *,
+	                                 RingBuffer<uint8_t> *,
+	                                 bool *);
+			~eladWorker		();
+	void		stop			();
 private:
-	QLabel		*toptext;
-	QListView	*selectorDisplay;
-	QStringListModel	dongleList;
-	QStringList	Dongles;
-	int16_t		selectedItem;
-private slots:
-	void		selectDongle	(QModelIndex);
+	void			run		();
+	eladLoader		*functions;	// 
+	RingBuffer<uint8_t>	*_O_Buffer;
+	long int		eladFrequency;
+	std::atomic<bool>	running;
 };
-
 #endif
 
