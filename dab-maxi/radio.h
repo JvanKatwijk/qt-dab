@@ -162,7 +162,6 @@ private:
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
-	int			scanMode;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;

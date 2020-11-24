@@ -295,7 +295,7 @@ mir_sdr_ErrT err;
 	}
 //
 //	apparently, agcControl is checked
-	(void)my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	(void)my_mir_sdr_AgcControl (mir_sdr_AGC_5HZ,
 	                             -30, 0, 0, 0, 0, lnaState);
 	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
@@ -392,7 +392,7 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 	                errorCodes (err). toLatin1(). data());
 
 	if (agc == 1) {
-	   my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	   my_mir_sdr_AgcControl (mir_sdr_AGC_5HZ,
 	                          -30,
 	                          0, 0, 0, 0, lnaGainSetting -> value());
 	   GRdBSelector		-> hide ();
@@ -491,7 +491,7 @@ QString	sdrplayHandler::deviceName	() {
 void	sdrplayHandler::set_agcControl (int dummy) {
 bool agcMode	= agcControl -> isChecked();
 	(void)dummy;
-	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
+	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_5HZ :
 	                                 mir_sdr_AGC_DISABLE,
 	                       -30,
 	                       0, 0, 0, 0, lnaGainSetting -> value());

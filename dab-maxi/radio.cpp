@@ -310,8 +310,7 @@ uint8_t	dabBand;
 	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 500). toInt ());
 	dabSettings	-> endGroup ();
 //
-//	scanMode is - unfortunately - global
-	scanMode	=
+	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
 	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 
@@ -802,9 +801,8 @@ QString s;
 
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
-	if (scanMode == SCAN_TO_DATA){
+	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
 	   stopScanning (false);
-	}
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -2611,9 +2609,11 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   techData. rsError_display	-> hide	();
 	   techData. aacError_display	-> hide ();
 	}
-	  
+	techData. codeRate ->
+	             setText (getCodeRate (ad -> shortForm,
+	                                              ad -> protLevel));
 	techData. language ->
-	   setText (getLanguage (ad -> language));
+	        setText (getLanguage (ad -> language));
 	techData. programType ->
 	   setText (the_textMapper.
 	               get_programm_type_string (ad -> programType));
@@ -2914,9 +2914,7 @@ void	RadioInterface::handle_scanButton () {
 
 void	RadioInterface::startScanning	() {
 int	switchDelay;
-
-	scanMode	= dabSettings -> value ("scanMode", SINGLE_SCAN).
-	                                                             toInt ();
+int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	presetTimer. stop ();
 	channelTimer. stop ();
 #ifdef	TRY_EPG
@@ -2964,7 +2962,6 @@ void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
-	dynamicLabel	-> setText ("Scan ended");
         scanButton      -> setText ("scan");
 
 	my_dabProcessor	-> set_scanMode (false);
@@ -2972,6 +2969,7 @@ void	RadioInterface::stopScanning	(bool dump) {
            return;
         if (!scanning. load ())
            return;
+	dynamicLabel	-> setText ("Scan ended");
         channelTimer. stop ();
 	scanning. store (false);
 	if (scanDumpFile != nullptr) {
@@ -2995,6 +2993,7 @@ int	nextScanChannel (int channel) {
 
 void	RadioInterface::No_Signal_Found () {
 int	switchDelay;
+int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found (void)),
 	            this, SLOT (No_Signal_Found (void)));
@@ -3536,15 +3535,27 @@ QString muteButton_font =
 
 QString prevChannelButton_color =
 	   dabSettings -> value (PREVCHANNEL_BUTTON + "_color",
+	                                              "black"). toString ();
+QString prevChannelButton_font =
+	   dabSettings -> value (PREVCHANNEL_BUTTON + "_font",
 	                                              "white"). toString ();
 QString nextChannelButton_color =
 	   dabSettings -> value (NEXTCHANNEL_BUTTON + "_color",
+	                                              "black"). toString ();
+QString nextChannelButton_font =
+	   dabSettings -> value (NEXTCHANNEL_BUTTON + "_font",
 	                                              "white"). toString ();
 QString prevServiceButton_color =
-	   dabSettings -> value (PREVCHANNEL_BUTTON + "_color",
+	   dabSettings -> value (PREVSERVICE_BUTTON + "_color",
+	                                              "blaCK"). toString ();
+QString prevServiceButton_font =
+	   dabSettings -> value (PREVSERVICE_BUTTON + "_font",
 	                                              "white"). toString ();
 QString nextServiceButton_color =
-	   dabSettings -> value (NEXTCHANNEL_BUTTON + "_color",
+	   dabSettings -> value (NEXTSERVICE_BUTTON + "_color",
+	                                              "black"). toString ();
+QString nextServiceButton_font =
+	   dabSettings -> value (NEXTSERVICE_BUTTON + "_font",
 	                                              "white"). toString ();
 
 QString	framedumpButton_color =
@@ -3599,13 +3610,13 @@ QString configButton_font	=
 	                                             configButton_font));
 
 	prevChannelButton -> setStyleSheet (temp. arg (prevChannelButton_color,
-	                                               "red"));
+	                                               prevChannelButton_font));
 	nextChannelButton -> setStyleSheet (temp. arg (nextChannelButton_color,
-	                                               "black"));
+	                                               nextChannelButton_font));
 	prevServiceButton -> setStyleSheet (temp. arg (prevServiceButton_color,
-	                                               "red"));
+	                                               prevServiceButton_font));
 	nextServiceButton -> setStyleSheet (temp. arg (nextServiceButton_color,
-	                                               "black"));
+	                                               nextServiceButton_font));
 
 	techData. framedumpButton ->
 	                     setStyleSheet (temp. arg (framedumpButton_color,
@@ -3648,7 +3659,6 @@ void	RadioInterface::color_spectrumButton	()	{
 void	RadioInterface::color_snrButton		() {
 	set_buttonColors (snrButton, SNR_BUTTON);
 }
-
 
 void	RadioInterface::color_devicewidgetButton	() {
 	set_buttonColors (devicewidgetButton, DEVICEWIDGET_BUTTON);

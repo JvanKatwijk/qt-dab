@@ -576,7 +576,7 @@ uint32_t                ndev;
 	if (agcMode) {
 	   chParams    -> ctrlParams. agc. setPoint_dBfs = -30;
 	   chParams    -> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_100HZ;
+                                             sdrplay_api_AGC_5HZ;
 	}
 	else
 	   chParams    -> ctrlParams. agc. enable =
@@ -689,7 +689,7 @@ uint32_t                ndev;
 	            chParams    -> ctrlParams. agc. setPoint_dBfs =
 	                                              - p -> setPoint;
                     chParams    -> ctrlParams. agc. enable =
-                                             sdrplay_api_AGC_100HZ;
+                                             sdrplay_api_AGC_5HZ;
 	         }
 	         else
 	            chParams    -> ctrlParams. agc. enable =
