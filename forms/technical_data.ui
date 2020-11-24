@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>248</width>
-    <height>627</height>
+    <width>246</width>
+    <height>669</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -154,6 +154,13 @@
        </property>
       </widget>
      </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>rs corrections/100</string>
+       </property>
+      </widget>
+     </item>
      <item row="4" column="1">
       <widget class="QLCDNumber" name="rsCorrections">
        <property name="toolTip">
@@ -184,17 +191,37 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>rs corrections/100</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_10">
+       <property name="text">
+        <string>PTY:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLabel" name="codeRate">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLabel" name="programType">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PTY (Program Type)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>programType</string>
+       </property>
+      </widget>
+     </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_5">
        <property name="minimumSize">
@@ -205,6 +232,37 @@
        </property>
        <property name="text">
         <string>Prot. level:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLabel" name="ASCTy">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="text">
+        <string>ASCTy</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>audio:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>Type:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Language:</string>
        </property>
       </widget>
      </item>
@@ -228,30 +286,13 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="label_8">
+      <widget class="QLabel" name="label_12">
        <property name="text">
-        <string>Type:</string>
+        <string>code rate:</string>
        </property>
       </widget>
      </item>
-     <item row="1" column="1">
-      <widget class="QLabel" name="ASCTy">
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="text">
-        <string>ASCTy</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Language:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
+     <item row="3" column="1">
       <widget class="QLabel" name="language">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Language (defined by provider)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -264,34 +305,7 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>PTY:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLabel" name="programType">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;PTY (Program Type)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="text">
-        <string>programType</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>audio:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QLabel" name="stereoLabel">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo or mono indicator. &lt;/p&gt;&lt;p&gt;Note: May not work properly in some cases.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>

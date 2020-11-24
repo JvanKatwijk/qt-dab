@@ -21,6 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include	<QFileDialog>
+#include	<QMessageBox>
 #include	"snr-viewer.h"
 #include	<QSettings>
 #include	<QColor>
@@ -50,7 +52,13 @@ bool	brush;
 	dabSettings	-> endGroup ();
 	myFrame				= new QFrame;
 	setupUi (this -> myFrame);
-
+#ifdef	__DUMP_SNR__
+	snrDumpFile. store (nullptr);
+	connect (snrDumpButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_snrDumpButton ()));
+#else
+	snrDumpButton 	-> hide ();
+#endif
 	plotgrid	= snrPlot;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid		= new QwtPlotGrid;
@@ -94,6 +102,9 @@ bool	brush;
 }
 
 	snrViewer::~snrViewer() {
+#ifdef	__DUMP_SNR__
+	stopDumping 	();
+#endif
 	myFrame		-> hide();
 	delete		ourBrush;
 	delete		spectrumCurve;
@@ -129,8 +140,11 @@ void	snrViewer::show () {
 	myFrame		-> show();
 }
 
-void	snrViewer::hide() {
+void	snrViewer::hide	() {
 	myFrame		-> hide();
+#ifdef	__DUMP_SNR__
+	stopDumping ();
+#endif
 }
 
 bool	snrViewer::isHidden() {
@@ -141,6 +155,10 @@ void	snrViewer::add_snr	(float snr) {
 	for (int i = plotLength - 1; i > 0; i --)
 	   Y_Buffer [i] = Y_Buffer [i - 1];
 	Y_Buffer [0]	= snr;
+#ifdef	__DUMP_SNR__
+	if (snrDumpFile. load () != nullptr)
+	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
+#endif
 }
 
 void	snrViewer::show_snr () {
@@ -216,3 +234,42 @@ int	index;
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
 
+#ifdef	__DUMP_SNR__
+void	snrViewer::handle_snrDumpButton () {
+	if (snrDumpFile. load () != nullptr) {
+	   stopDumping ();
+	   return;
+	}
+	startDumping ();
+}
+
+void	snrViewer::stopDumping () {
+	if (snrDumpFile. load () != nullptr) {
+	   fclose (snrDumpFile. load ());
+	   snrDumpFile. store (nullptr);
+	   snrDumpButton	-> setText ("dump");
+	}
+}
+
+void	snrViewer::startDumping () {
+	QString fileName = QFileDialog::getSaveFileName (myFrame,
+                                                       tr ("Open file ..."),
+                                                       QDir::homePath(),
+                                                       tr ("snr (*.snr)"));
+	if (fileName == QString ("")) {
+	   QMessageBox::warning (myFrame, tr ("Warning"),
+	                            tr ("no file selected"));
+	   return;
+	}
+	fileName = QDir::toNativeSeparators (fileName);
+
+	FILE *file = fopen (fileName. toLatin1 (). data (), "w+b");
+	if (file == nullptr) {
+	   QMessageBox::warning (myFrame, tr ("Warning"),
+	                            tr ("could not open file"));
+	   return;
+	}
+	snrDumpFile. store (file);
+	snrDumpButton -> setText ("dumping");
+}
+#endif

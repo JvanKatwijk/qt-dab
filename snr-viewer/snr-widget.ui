@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>206</height>
+    <height>188</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,14 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Correlation display. Time synchronization is done by correlation. The correlation result is depicted here. The selected &amp;quot;peak&amp;quot; is the one at (or near) sample 504.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;snr display. As well known a DAB frame starts with a so-called null period, a period where the amplitude of the transmitted  signal is (should be) zero. So, it is an excellent noise floor, and the SNR shown is computed as 10 * log10 (average amplitude from data blocks / average amplitude null period)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="snrDumpButton">
+     <property name="text">
+      <string>dump</string>
      </property>
     </widget>
    </item>

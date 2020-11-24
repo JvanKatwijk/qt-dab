@@ -32,6 +32,8 @@
 #include	<QSettings>
 #include	<QObject>
 #include	<vector>
+#include	<atomic>
+#include	<stdio.h>
 #include	"ui_snr-widget.h"
 #include	<qwt.h>
 #include	<qwt_plot.h>
@@ -80,8 +82,16 @@ private:
 	QBrush		*ourBrush;
 	int		plotLength;
 	int		plotHeight;
+#ifdef	__DUMP_SNR__
+	std::atomic<FILE *>	snrDumpFile;
+	void		startDumping		();
+	void		stopDumping		();
+#endif
 private slots:
         void            rightMouseClick (const QPointF &);
+#ifdef	__DUMP_SNR__
+	void		handle_snrDumpButton	();
+#endif
 };
 
 #endif
