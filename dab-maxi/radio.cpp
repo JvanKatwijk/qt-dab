@@ -307,7 +307,7 @@ uint8_t	dabBand;
 
 	dabSettings	-> beginGroup ("snrViewer");
 	configWidget. snrHeightSelector -> setValue (dabSettings -> value ("snrHeight", 15). toInt ());
-	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 500). toInt ());
+	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 312). toInt ());
 	dabSettings	-> endGroup ();
 //
 	int scanMode	=

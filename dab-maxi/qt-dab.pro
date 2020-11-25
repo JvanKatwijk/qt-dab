@@ -338,7 +338,7 @@ CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
-#DEFINES	+= __DUMP_SNR__		# for experiments only
+#DEFINES		+= __DUMP_SNR__		# for experiments only
 DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 

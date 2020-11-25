@@ -31,9 +31,9 @@ int16_t	i;
 
 	this	-> theFile	= f;
 	setupUi (this);
-	displayColor	= QColor	("black");
-	gridColor	= QColor	("white");
-	curveColor	= QColor	("white");
+	displayColor	= QColor	("white");
+	gridColor	= QColor	("red");
+	curveColor	= QColor	("red");
 	plotgrid	= viewerWindow;
 	plotgrid	-> setCanvasBackground (displayColor);
 	grid		= new QwtPlotGrid;
@@ -69,12 +69,19 @@ int16_t	i;
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	connect (viewSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_viewSlider (int)));
+	connect (amplitudeSlider, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_amplitudeSlider (int)));
 //
 //	Now looking at the file
+	seconds_per_frame	= 12.0 / 125;
+	seconds_per_sample	= 2 * seconds_per_frame;
 	fseek (theFile, 0, SEEK_END);
 	fileLength	= ftell (theFile);
 	fseek (theFile, 0, SEEK_SET);
-
+	fprintf (stderr, "samples per minute: %d\n",
+	                          (int)(60 / seconds_per_sample));
+	fprintf (stderr, "duration of record: %d seconds\n", 
+	                     (int)(fileLength / sizeof (float) * seconds_per_sample));
 	show_segment (0);
 }
 //
@@ -83,35 +90,39 @@ int16_t	i;
 }
 
 void	dumpViewer::handle_viewSlider	(int pos) {
-int lengthF	= fileLength / sizeof (float);
-int p		= pos * lengthF / 100;
-	show_segment (p * sizeof (float));
+	show_segment (pos);
 }
 
+void	dumpViewer::handle_amplitudeSlider (int h) {
+	(void)h;
+	show_segment (viewSlider -> value ());
+}
+
+//
+//	pos is the pos of the slider, so a value between 0 .. 100
 void	dumpViewer::show_segment (int pos) {
 double	X_axis [512];
 double	Y_Values [512];
 float	temp [512];
-
+int	lengthF	=  fileLength / sizeof (float);
+int	p	= pos * lengthF / 100;
 	for (int i = 0; i < 512; i ++)
-	   X_axis [i] = pos + i;
+	   X_axis [i] = (p + i) * seconds_per_sample;
 
 	memset (Y_Values, 0, sizeof (double) * 512);
-	fseek (theFile, pos, SEEK_SET);
+	fseek (theFile, p * sizeof (float), SEEK_SET);
 	int length = fread (temp, sizeof (float), 512, theFile);
 	for (int i = 0; i < length; i ++)
 	   Y_Values [i] = temp [i];
 
 	plotgrid        -> setAxisScale (QwtPlot::xBottom,
-                                         double (pos),
-                                         (double)(pos + 512));
+                                         double (p * seconds_per_sample),
+                                         (double)((p + 512) * seconds_per_sample));
         plotgrid        -> enableAxis (QwtPlot::xBottom);
         plotgrid        -> setAxisScale (QwtPlot::yLeft,
-                                         0, 14);
+                                         0, amplitudeSlider -> value ());
         plotgrid        -> enableAxis (QwtPlot::yLeft);
         spectrumCurve   -> setBaseline  (0);
-//	Y_values [0]	= 0;
-//	Y_values [512 - 1]	= 0;
         spectrumCurve   -> setSamples (X_axis, Y_Values, 512);
         plotgrid        -> replot();
 }

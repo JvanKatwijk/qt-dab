@@ -51,8 +51,11 @@ public:
 
 private	slots:
 	void	handle_viewSlider	(int);
+	void	handle_amplitudeSlider	(int);
 private:
-	FILE	*theFile;
+	FILE		*theFile;
+	float		seconds_per_frame;
+	float		seconds_per_sample;
 	void		show_segment	(int);
 	int		fileLength;
 	QwtPlot         *plotgrid;

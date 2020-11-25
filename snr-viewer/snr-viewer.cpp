@@ -36,7 +36,7 @@ bool	brush;
 	this	-> dabSettings		= s;
 
 	dabSettings	-> beginGroup ("snrViewer");
-	plotLength	= dabSettings -> value ("snrLength", 500). toInt ();
+	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
 	plotHeight	= dabSettings -> value ("snrHeight", 15). toInt ();
 	         
 	colorString	= dabSettings -> value ("displayColor",

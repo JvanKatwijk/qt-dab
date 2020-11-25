@@ -24,6 +24,7 @@ Table of Contents
 * [Using other bands than Band III or L Band](#using-other-bands-than-band-iii-or-l-band)
 * [xml-files and support](#xml-files-and-support)
 * [EPG-Handling](#EPG-Handling)
+* [Recording the SNR](#Recording-the-SNR)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
@@ -444,6 +445,39 @@ the service, a button labeled **timeTable** .
 
 The software is experimental though and - at least here - the times
 on the time table are two hours off.
+
+-----------------------------------------------------------------------
+Recording the SNR
+-----------------------------------------------------------------------
+
+Just as an experiment, a widget was added that shows the development of the 
+SNR over time. The main purpose of the widget is to look at the
+performance of different antennas. 
+
+Computation of the SNR is done with every second DAB frame. As is known,
+a DAB frame starts with a null period of app 2600 samples, followed by
+76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes in the numm period.
+
+Since for every second DAB frame, such a computation is performed, 
+about 5 computations per second are performed and shown. To be precise:
+each minute there are 312 computations.
+The default value for the X-axis of the display in the widget is
+therefore 312.
+
+As configuration option, the widget can be equipped with a **dump** button,
+touching the button will show a menu for file selection. Once a file
+is selected, the results of the computations are not only shown, but recorded
+in the file as well.
+
+To view the recording, a simple utility is made to make the contents
+of the recording visible. Sources for the utility are to be found
+in the (sub)directory **dumpviewer**.
+
+![dumpViewer](/dumpViewer.png?raw=true)
+
+The picture shows the variations in the SNR when moving the antenna
+and - the dip = when switching antennas.
+
 
 -----------------------------------------------------------------------
 # Copyright
