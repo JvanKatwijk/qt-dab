@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C)  2014 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -29,7 +29,8 @@
 #include	"color-selector.h"
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
-	                         QSettings	*s) {
+	                         QSettings	*s):
+	                             myFrame (nullptr) {
 QString	colorString	= "black";
 bool	brush;
 	this	-> myRadioInterface	= mr;
@@ -50,8 +51,7 @@ bool	brush;
 	curveColor	= QColor (colorString);
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
-	myFrame				= new QFrame;
-	setupUi (this -> myFrame);
+	setupUi (&myFrame);
 #ifdef	__DUMP_SNR__
 	snrDumpFile. store (nullptr);
 	connect (snrDumpButton, SIGNAL (clicked ()),
@@ -76,16 +76,6 @@ bool	brush;
 #endif
 	grid		-> attach (plotgrid);
 
-	lm_picker       = new QwtPlotPicker (plotgrid -> canvas ());
-	QwtPickerMachine *lpickerMachine =
-	                          new QwtPickerClickPointMachine ();
-
-	lm_picker       -> setStateMachine (lpickerMachine);
-	lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
-	                                                  Qt::RightButton);
-	connect (lm_picker, SIGNAL (selected (const QPointF&)),
-	                      this, SLOT (rightMouseClick (const QPointF &)));
-
 	spectrumCurve	= new QwtPlotCurve ("");
    	spectrumCurve	-> setPen (QPen(curveColor, 2.0));
 	spectrumCurve	-> setOrientation (Qt::Horizontal);
@@ -105,11 +95,9 @@ bool	brush;
 #ifdef	__DUMP_SNR__
 	stopDumping 	();
 #endif
-	myFrame		-> hide();
 	delete		ourBrush;
 	delete		spectrumCurve;
 	delete		grid;
-	delete		myFrame;
 }
 
 void	snrViewer::setHeight	(int n) {
@@ -137,18 +125,18 @@ void	snrViewer::setLength	(int n) {
 }
 
 void	snrViewer::show () {
-	myFrame		-> show();
+	myFrame. show();
 }
 
 void	snrViewer::hide	() {
-	myFrame		-> hide();
+	myFrame. hide();
 #ifdef	__DUMP_SNR__
 	stopDumping ();
 #endif
 }
 
 bool	snrViewer::isHidden() {
-	return myFrame	-> isHidden();
+	return myFrame. isHidden();
 }
 
 void	snrViewer::add_snr	(float snr) {
@@ -252,12 +240,12 @@ void	snrViewer::stopDumping () {
 }
 
 void	snrViewer::startDumping () {
-	QString fileName = QFileDialog::getSaveFileName (myFrame,
-                                                       tr ("Open file ..."),
-                                                       QDir::homePath(),
-                                                       tr ("snr (*.snr)"));
+	QString fileName = QFileDialog::getSaveFileName (&myFrame,
+                                                         tr ("Open file ..."),
+                                                         QDir::homePath(),
+                                                         tr ("snr (*.snr)"));
 	if (fileName == QString ("")) {
-	   QMessageBox::warning (myFrame, tr ("Warning"),
+	   QMessageBox::warning (&myFrame, tr ("Warning"),
 	                            tr ("no file selected"));
 	   return;
 	}
@@ -265,7 +253,7 @@ void	snrViewer::startDumping () {
 
 	FILE *file = fopen (fileName. toLatin1 (). data (), "w+b");
 	if (file == nullptr) {
-	   QMessageBox::warning (myFrame, tr ("Warning"),
+	   QMessageBox::warning (&myFrame, tr ("Warning"),
 	                            tr ("could not open file"));
 	   return;
 	}

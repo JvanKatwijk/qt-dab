@@ -1174,6 +1174,7 @@ void	RadioInterface::TerminateProcess () {
 	usleep (1000);		// pending signals
 //	everything should be halted by now
 
+	dabSettings	-> sync ();
 	my_spectrumViewer. hide ();
 	my_correlationViewer. hide ();
 	my_tiiViewer. hide ();
@@ -1182,7 +1183,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete	my_dabProcessor;
 	if (inputDevice != nullptr)
 	   delete	inputDevice;
-	dabSettings	-> sync ();
 
 	delete		soundOut;
 	if (motSlides != nullptr)

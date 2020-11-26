@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -174,7 +175,6 @@ std::complex<float> conjVector [T_u];
   *	first step: do the FFT
   */
 	my_fftHandler. do_FFT();
-	 
 /**
   *	a little optimization: we do not interchange the
   *	positive/negative frequencies to their right positions.

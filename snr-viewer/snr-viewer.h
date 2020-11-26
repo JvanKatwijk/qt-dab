@@ -68,14 +68,13 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
+	QFrame		myFrame;
 	std::vector<double>	Y_Buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
-	QFrame		*myFrame;
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;
 	QwtPlotCurve	*spectrumCurve;
-	QwtPlotPicker   *lm_picker;
         QColor          displayColor;
         QColor          gridColor;
         QColor          curveColor;
