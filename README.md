@@ -452,14 +452,15 @@ Recording the SNR
 
 Just as an experiment, a widget was added that shows the development of the 
 SNR over time. The main purpose of the widget is to look at the
-performance of different antennas. 
+performance of antennas. 
 
 Computation of the SNR is done with every second DAB frame. As is known,
-a DAB frame starts with a null period of app 2600 samples, followed by
-76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes in the numm period.
+a sampled DAB frame starts with a null period of app 2600 samples, followed by
+76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes of the
+samples in the null period.
 
-Since for every second DAB frame, such a computation is performed, 
-about 5 computations per second are performed and shown. To be precise:
+For every second DAB frame, such a computation is performed, 
+so, about 5 computations per second are performed and shown. To be precise:
 each minute there are 312 computations.
 The default value for the X-axis of the display in the widget is
 therefore 312.
@@ -476,7 +477,7 @@ in the (sub)directory **dumpviewer**.
 ![dumpViewer](/dumpViewer.png?raw=true)
 
 The picture shows the variations in the SNR when moving the antenna
-and - the dip = when switching antennas.
+and - the dip - when switching antennas.
 
 
 -----------------------------------------------------------------------

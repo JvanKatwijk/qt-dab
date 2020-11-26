@@ -71,6 +71,8 @@ int16_t	i;
 	         this, SLOT (handle_viewSlider (int)));
 	connect (amplitudeSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_amplitudeSlider (int)));
+	connect (compressor, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_compressor (int)));
 //
 //	Now looking at the file
 	seconds_per_frame	= 12.0 / 125;
@@ -82,7 +84,7 @@ int16_t	i;
 	                          (int)(60 / seconds_per_sample));
 	fprintf (stderr, "duration of record: %d seconds\n", 
 	                     (int)(fileLength / sizeof (float) * seconds_per_sample));
-	show_segment (0);
+	show_segment (0, 1);
 }
 //
 
@@ -90,34 +92,39 @@ int16_t	i;
 }
 
 void	dumpViewer::handle_viewSlider	(int pos) {
-	show_segment (pos);
+	show_segment (pos, compressor -> value ());
 }
 
 void	dumpViewer::handle_amplitudeSlider (int h) {
 	(void)h;
-	show_segment (viewSlider -> value ());
+	show_segment (viewSlider -> value (), 
+	              compressor -> value ());
+}
+
+void	dumpViewer::handle_compressor	(int h) {
+	show_segment (viewSlider -> value (), h);
 }
 
 //
 //	pos is the pos of the slider, so a value between 0 .. 100
-void	dumpViewer::show_segment (int pos) {
+void	dumpViewer::show_segment (int pos, int compression) {
 double	X_axis [512];
 double	Y_Values [512];
-float	temp [512];
+float	temp [512 * compression];
 int	lengthF	=  fileLength / sizeof (float);
 int	p	= pos * lengthF / 100;
 	for (int i = 0; i < 512; i ++)
-	   X_axis [i] = (p + i) * seconds_per_sample;
+	   X_axis [i] = (p + i) * compression * seconds_per_sample;
 
 	memset (Y_Values, 0, sizeof (double) * 512);
 	fseek (theFile, p * sizeof (float), SEEK_SET);
-	int length = fread (temp, sizeof (float), 512, theFile);
-	for (int i = 0; i < length; i ++)
-	   Y_Values [i] = temp [i];
+	int length = fread (temp, sizeof (float), 512 * compression, theFile);
+	for (int i = 0; i < length / compression; i ++)
+	   Y_Values [i] = temp [i * compression];
 
 	plotgrid        -> setAxisScale (QwtPlot::xBottom,
-                                         double (p * seconds_per_sample),
-                                         (double)((p + 512) * seconds_per_sample));
+                                         double (p * compression * seconds_per_sample),
+                                         (double)((p + 512) * compression * seconds_per_sample));
         plotgrid        -> enableAxis (QwtPlot::xBottom);
         plotgrid        -> setAxisScale (QwtPlot::yLeft,
                                          0, amplitudeSlider -> value ());
