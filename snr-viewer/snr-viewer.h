@@ -69,16 +69,18 @@ private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
 	QFrame		myFrame;
+	QwtPlotCurve	spectrumCurve;
+	QwtPlotGrid	grid;
+	QwtPlotPicker	*lm_picker;
+	QwtPickerMachine	*lpickerMachine;
+	std::vector<double>	X_axis;
 	std::vector<double>	Y_Buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
 	QwtPlot		*plotgrid;
-	QwtPlotGrid	*grid;
-	QwtPlotCurve	*spectrumCurve;
         QColor          displayColor;
         QColor          gridColor;
         QColor          curveColor;
-	QBrush		*ourBrush;
 	int		plotLength;
 	int		plotHeight;
 #ifdef	__DUMP_SNR__

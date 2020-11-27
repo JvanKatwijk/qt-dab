@@ -28,7 +28,9 @@
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
 	                         QSettings	*dabSettings,
-	                         RingBuffer<std::complex<float>> *sbuffer) {
+	                         RingBuffer<std::complex<float>> *sbuffer):
+	                              myFrame (nullptr),
+	                              spectrumCurve ("") {
 int16_t	i;
 QString	colorString	= "black";
 bool	brush;
@@ -55,12 +57,11 @@ bool	brush;
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
 
-	this	-> myFrame		= new QFrame (nullptr);
-	setupUi (this -> myFrame);
+	setupUi (&myFrame);
 
-	this	-> myFrame	-> hide();
+	myFrame. hide();
 	displayBuffer. resize (displaySize);
-	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
+	memset (displayBuffer. data (), 0, displaySize * sizeof (double));
 	this	-> spectrumSize	= 2 * displaySize;
 	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
@@ -70,20 +71,20 @@ bool	brush;
 	
 	plotgrid	= tiiGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
-	grid		= new QwtPlotGrid;
+//	grid		= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> attach (plotgrid);
+	grid. attach (plotgrid);
 
 	lm_picker       = new QwtPlotPicker (plotgrid -> canvas ());
         QwtPickerMachine *lpickerMachine =
@@ -95,15 +96,18 @@ bool	brush;
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
 
-	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(curveColor, 2.0));
-	spectrumCurve	-> setOrientation (Qt::Horizontal);
-	spectrumCurve	-> setBaseline	(get_db (0));
-	ourBrush	= new QBrush (curveColor);
-	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	if (brush)
-	   spectrumCurve	-> setBrush (*ourBrush);
-	spectrumCurve	-> attach (plotgrid);
+//	spectrumCurve	= new QwtPlotCurve ("");
+   	spectrumCurve. setPen (QPen(curveColor, 2.0));
+	spectrumCurve. setOrientation (Qt::Horizontal);
+	spectrumCurve.  setBaseline	(get_db (0));
+//	ourBrush	= new QBrush (curveColor);
+//	ourBrush	-> setStyle (Qt::Dense3Pattern);
+	if (brush) {
+	   QBrush ourBrush (curveColor);
+	   ourBrush. setStyle (Qt::Dense3Pattern);
+	   spectrumCurve. setBrush (ourBrush);
+	}
+	spectrumCurve. attach (plotgrid);
 	
 	Marker		= new QwtPlotMarker();
 	Marker		-> setLineStyle (QwtPlotMarker::VLine);
@@ -122,12 +126,9 @@ bool	brush;
     tiiViewer::~tiiViewer() {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
-	myFrame		-> hide();
+	myFrame. hide();
 	delete		Marker;
-	delete		ourBrush;
-	delete		spectrumCurve;
-	delete		grid;
-	delete		myFrame;
+//	delete		ourBrush;
 }
 
 void	tiiViewer::clear() {
@@ -142,7 +143,7 @@ QString tiiNumber (int n) {
 }
 
 void	tiiViewer::showTransmitters	(QByteArray transmitters) {
-	if (myFrame	-> isHidden())
+	if (myFrame. isHidden())
 	   return;
 
 	if (transmitters. size () == 0) {
@@ -174,7 +175,7 @@ int16_t	averageCount	= 3;
 	}
 	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
 	tiiBuffer	-> FlushRingBuffer ();
-	if (myFrame	-> isHidden ())
+	if (myFrame. isHidden ())
 	   return;
 //	and window it
 //	first X axis labels
@@ -239,11 +240,11 @@ float	amp1	= amp / 100;
 	for (i = 0; i < displaySize; i ++) 
 	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
 
-	spectrumCurve	-> setBaseline (get_db (0));
+	spectrumCurve. setBaseline (get_db (0));
 	Y1_value [0]		= get_db (0);
 	Y1_value [displaySize - 1] = get_db (0);
 
-	spectrumCurve	-> setSamples (X_axis, Y1_value, displaySize);
+	spectrumCurve. setSamples (X_axis, Y1_value, displaySize);
 	Marker		-> setXValue (marker);
 	plotgrid	-> replot(); 
 }
@@ -262,16 +263,16 @@ void	tiiViewer::setBitDepth	(int16_t d) {
 	   normalizer <<= 1;
 }
 
-void	tiiViewer::show() {
-	myFrame	-> show();
+void	tiiViewer::show () {
+	myFrame. show ();
 }
 
-void	tiiViewer::hide() {
-	myFrame	-> hide();
+void	tiiViewer::hide () {
+	myFrame. hide ();
 }
 
-bool	tiiViewer::isHidden() {
-	return myFrame -> isHidden();
+bool	tiiViewer::isHidden () {
+	return myFrame. isHidden ();
 }
 
 void	tiiViewer::rightMouseClick	(const QPointF &point) {
@@ -305,22 +306,18 @@ int	index;
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
-	spectrumCurve	-> setPen (QPen (this -> curveColor, 2.0));
+	spectrumCurve. setPen (QPen (this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(this -> gridColor, 0,
-	                                                    Qt::DotLine));
+	grid. setMajPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(this -> gridColor, 0,
-	                                                    Qt::DotLine));
+	grid. setMajorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(this -> gridColor, 0,
-	                                                    Qt::DotLine));
+	grid. setMinPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(this -> gridColor, 0,
-	                                                    Qt::DotLine));
+	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }

@@ -2,7 +2,7 @@
 
 Qt-DAB-3.7 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
-![overview](/qt-dab-totaal.png?raw=true)
+![overview](/qt-dab-screen.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents

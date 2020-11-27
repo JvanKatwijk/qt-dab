@@ -555,9 +555,8 @@ int     counter         = getBits   (d, used * 8 + 6, 10);
 #if 0
         fprintf (stderr, "nrServices %d, count %d\n",
                           nrServices, counter);
-#else
-	(void)nrServices; (void)counter;
 #endif
+	(void)nrServices; (void)counter;
 }
 
 // FIG0/8:  Service Component Global Definition (6.3.5)

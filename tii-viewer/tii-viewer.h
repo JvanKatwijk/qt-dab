@@ -67,6 +67,9 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
+	QFrame		myFrame;
+	QwtPlotCurve	spectrumCurve;
+	QwtPlotGrid	grid;
 	RingBuffer<std::complex<float>>	*tiiBuffer;
 	int16_t		displaySize;
 	int16_t		spectrumSize;
@@ -79,12 +82,9 @@ private:
 	QColor		curveColor;
 
 	fftwf_plan	plan;
-	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
-	QwtPlotGrid	*grid;
-	QwtPlotCurve	*spectrumCurve;
-	QBrush		*ourBrush;
+//	QBrush		*ourBrush;
 	int32_t		indexforMarker;
 
 	void		ViewSpectrum		(double *, double *, double, int);

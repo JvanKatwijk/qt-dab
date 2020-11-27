@@ -30,11 +30,11 @@
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
-	                             myFrame (nullptr) {
+	                             myFrame (nullptr),
+	                             spectrumCurve ("") {
 QString	colorString	= "black";
-bool	brush;
-	this	-> myRadioInterface	= mr;
-	this	-> dabSettings		= s;
+	this		-> myRadioInterface	= mr;
+	this		-> dabSettings		= s;
 
 	dabSettings	-> beginGroup ("snrViewer");
 	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
@@ -49,7 +49,6 @@ bool	brush;
 	colorString	= dabSettings -> value ("curveColor",
 	                                                "white"). toString();
 	curveColor	= QColor (colorString);
-	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
 	setupUi (&myFrame);
 #ifdef	__DUMP_SNR__
@@ -61,43 +60,53 @@ bool	brush;
 #endif
 	plotgrid	= snrPlot;
 	plotgrid	-> setCanvasBackground (displayColor);
-	grid		= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> attach (plotgrid);
+	grid. attach (plotgrid);
 
-	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(curveColor, 2.0));
-	spectrumCurve	-> setOrientation (Qt::Horizontal);
-	spectrumCurve	-> setBaseline	(0);
-	ourBrush	= new QBrush (curveColor);
-	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	if (brush)
-	   spectrumCurve	-> setBrush (*ourBrush);
-	spectrumCurve	-> attach (plotgrid);
+	lm_picker	= new QwtPlotPicker (plotgrid -> canvas ());
+	lpickerMachine =
+	                  new QwtPickerClickPointMachine ();
+	lm_picker	-> setStateMachine (lpickerMachine);
+	lm_picker	-> setMousePattern (QwtPlotPicker::MouseSelect1,
+	                                            Qt::RightButton);
+	connect (lm_picker, SIGNAL (selected (const QPointF &)),
+	         this, SLOT (rightMouseClick (const QPointF &)));
+
+   	spectrumCurve. setPen (QPen(curveColor, 2.0));
+	spectrumCurve. setOrientation (Qt::Horizontal);
+	spectrumCurve. setBaseline	(0);
+	spectrumCurve. attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
+	plotgrid	-> setAxisScale (QwtPlot::yLeft,
+				         0, plotHeight);
+	plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                 0, plotLength - 1);
+	plotgrid	-> enableAxis (QwtPlot::xBottom);
+	X_axis.   resize (plotLength);
 	Y_Buffer. resize (plotLength);
-	for (int i = 0; i < plotLength; i ++)
+	for (int i = 0; i < plotLength; i ++) {
+	   X_axis  [i] = i;
 	   Y_Buffer [i] = 0;
+	}
 }
 
 	snrViewer::~snrViewer() {
 #ifdef	__DUMP_SNR__
 	stopDumping 	();
 #endif
-	delete		ourBrush;
-	delete		spectrumCurve;
-	delete		grid;
+//	delete lm_picker;
+//	delete lpickerMachine;
 }
 
 void	snrViewer::setHeight	(int n) {
@@ -105,23 +114,34 @@ void	snrViewer::setHeight	(int n) {
 	dabSettings	-> beginGroup ("snrViewer");
 	dabSettings	-> setValue ("snrHeight", n);
 	dabSettings	-> endGroup ();
+	plotgrid	-> setAxisScale (QwtPlot::yLeft,
+				              0, plotHeight);
+	plotgrid	-> enableAxis (QwtPlot::yLeft);
+	spectrumCurve. setBaseline  (0);
 }
 
 void	snrViewer::setLength	(int n) {
 	if (n < plotLength) {
 	   plotLength = n;
 	   Y_Buffer. resize (n);
+	   X_axis. resize (plotLength);
 	}
 	else
 	if (n > plotLength) {
 	   Y_Buffer. resize (n);
-	   for (int i = plotLength; i < n; i ++)
+	   X_axis. resize (n);
+	   for (int i = plotLength; i < n; i ++) {
 	      Y_Buffer [i] = 0;
+	      X_axis [i] = plotLength + i;
+	   }
 	   plotLength = n;
 	}
 	dabSettings	-> beginGroup ("snrViewer");
 	dabSettings	-> setValue ("snrLength", plotLength);
 	dabSettings	-> endGroup ();
+	plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                           0, plotLength - 1);
+	plotgrid	-> enableAxis (QwtPlot::xBottom);
 }
 
 void	snrViewer::show () {
@@ -150,20 +170,9 @@ void	snrViewer::add_snr	(float snr) {
 }
 
 void	snrViewer::show_snr () {
-double X_axis	[plotLength];
-	for (int i = 0; i < plotLength; i ++) 
-	   X_axis [i] = i;
-
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                 0, plotLength - 1);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         0, plotHeight);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	spectrumCurve   -> setBaseline  (0);
-
-	spectrumCurve	-> setSamples (X_axis, Y_Buffer. data (), plotLength);
-	plotgrid	-> replot(); 
+	spectrumCurve. setSamples (X_axis. data (),
+	                                Y_Buffer. data (), plotLength);
+	plotgrid	-> replot (); 
 }
 
 float	snrViewer::get_db (float x) {
@@ -202,24 +211,24 @@ int	index;
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
-	spectrumCurve	-> setPen (QPen(this -> curveColor, 2.0));
+	spectrumCurve. setPen (QPen(this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(this -> gridColor, 0,
+	grid. setMajPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(this -> gridColor, 0,
+	grid. setMajorPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(this -> gridColor, 0,
+	grid. setMinPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(this -> gridColor, 0,
+	grid. setMinorPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #endif
-	plotgrid	-> setCanvasBackground (this -> displayColor);
+	plotgrid	->  setCanvasBackground (this -> displayColor);
 }
 
 #ifdef	__DUMP_SNR__

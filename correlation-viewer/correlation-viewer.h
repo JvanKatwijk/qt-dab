@@ -65,19 +65,18 @@ public:
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
+	QFrame		myFrame;
+	QwtPlotCurve	spectrumCurve;
+	QwtPlotGrid	grid;
 	std::vector<int> indexVector;
 	float		get_db			(float);
 	RingBuffer<float> *responseBuffer;
 	int16_t		displaySize;
-	QFrame		*myFrame;
 	QwtPlot		*plotgrid;
-	QwtPlotGrid	*grid;
-	QwtPlotCurve	*spectrumCurve;
 	QwtPlotPicker   *lm_picker;
         QColor          displayColor;
         QColor          gridColor;
         QColor          curveColor;
-	QBrush		*ourBrush;
 	int		plotLength;
 private slots:
         void            rightMouseClick (const QPointF &);

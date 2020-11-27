@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C)  2014 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -28,7 +28,9 @@
 
 	correlationViewer::correlationViewer	(RadioInterface	*mr,
 	                                         QSettings	*s,
-	                                         RingBuffer<float> *b) {
+	                                         RingBuffer<float> *b) :
+	                                           myFrame (nullptr),
+	                                           spectrumCurve ("") {
 QString	colorString	= "black";
 bool	brush;
 	this	-> myRadioInterface	= mr;
@@ -47,25 +49,23 @@ bool	brush;
 	curveColor	= QColor (colorString);
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
-	myFrame				= new QFrame;
-	setupUi (this -> myFrame);
+	setupUi (&myFrame);
 
 	plotgrid			= impulseGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
-	grid		= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> attach (plotgrid);
+	grid. attach (plotgrid);
 
 	lm_picker       = new QwtPlotPicker (plotgrid -> canvas ());
         QwtPickerMachine *lpickerMachine =
@@ -77,24 +77,20 @@ bool	brush;
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
 
-	spectrumCurve	= new QwtPlotCurve ("");
-   	spectrumCurve	-> setPen (QPen(curveColor, 2.0));
-	spectrumCurve	-> setOrientation (Qt::Horizontal);
-	spectrumCurve	-> setBaseline	(0);
-	ourBrush	= new QBrush (curveColor);
-	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	if (brush)
-	   spectrumCurve	-> setBrush (*ourBrush);
-	spectrumCurve	-> attach (plotgrid);
+   	spectrumCurve. setPen (QPen(curveColor, 2.0));
+	spectrumCurve. setOrientation (Qt::Horizontal);
+	spectrumCurve. setBaseline	(0);
+	if (brush) {
+	   QBrush ourBrush (curveColor);
+	   ourBrush. setStyle (Qt::Dense3Pattern);
+	   spectrumCurve. setBrush (ourBrush);
+	}
+	spectrumCurve. attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 }
 
 	correlationViewer::~correlationViewer() {
-	myFrame		-> hide();
-	delete		ourBrush;
-	delete		spectrumCurve;
-	delete		grid;
-	delete		myFrame;
+	myFrame. hide();
 }
 
 void	correlationViewer::showIndex	(int32_t v) {
@@ -124,15 +120,15 @@ QString theText;
 }
 
 void	correlationViewer::show () {
-	myFrame		-> show();
+	myFrame. show ();
 }
 
-void	correlationViewer::hide() {
-	myFrame		-> hide();
+void	correlationViewer::hide () {
+	myFrame. hide ();
 }
 
 bool	correlationViewer::isHidden() {
-	return myFrame	-> isHidden();
+	return myFrame. isHidden();
 }
 
 static int lcount = 0;
@@ -142,7 +138,7 @@ float data	[dots];
 float	mmax	= 0;
 
 	responseBuffer	-> getDataFromBuffer (data, dots);
-	if (myFrame -> isHidden())
+	if (myFrame. isHidden())
 	   return;
 
 	int plotLength	= dabSettings -> value ("plotLength",
@@ -170,11 +166,11 @@ float	mmax	= 0;
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         get_db (0), mmax);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	spectrumCurve   -> setBaseline  (get_db (0));
+	spectrumCurve. setBaseline  (get_db (0));
 
 	Y_values [0]		= get_db (0);
 	Y_values [plotLength - 1] 	= get_db (0);
-	spectrumCurve	-> setSamples (X_axis, Y_values, plotLength);
+	spectrumCurve. setSamples (X_axis, Y_values, plotLength);
 	plotgrid	-> replot(); 
 }
 
@@ -214,22 +210,18 @@ int	index;
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
-	spectrumCurve	-> setPen (QPen(this -> curveColor, 2.0));
+	spectrumCurve. setPen (QPen(this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMajPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMajPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMajorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
-	grid		-> enableXMin (true);
-	grid		-> enableYMin (true);
+	grid. enableXMin (true);
+	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMinPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
