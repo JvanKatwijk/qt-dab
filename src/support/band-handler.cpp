@@ -2,9 +2,10 @@
 /*
  *    Copyright (C) 2013, 2014, 2015, 2016, 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,129 +21,111 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 //
-//
 //	The issue:
 //	suppose that someone wants to add some -non official -
 //	frequencies, e.g. amateur bands.
 //	we therefore use the "frequencies_1" and "frequencies_2"
 //	tables for initializing the "bandIII" and "LBand" tables
-//	and allow the BandIII table to be overwritten by a
+//	and allow another table to be overwritten by a
 //	supplied table.
 //
 #include	"band-handler.h"
 #include	"dab-constants.h"
+#include	<QHeaderView>
 #include	<stdio.h>
 
 static
-struct {
-	const char *key;
-	int	fKHz;
-} frequencies_1 [] = {
-{"5A",	174928},
-{"5B",	176640},
-{"5C",	178352},
-{"5D",	180064},
-{"6A",	181936},
-{"6B",	183648},
-{"6C",	185360},
-{"6D",	187072},
-{"7A",	188928},
-{"7B",	190640},
-{"7C",	192352},
-{"7D",	194064},
-{"8A",	195936},
-{"8B",	197648},
-{"8C",	199360},
-{"8D",	201072},
-{"9A",	202928},
-{"9B",	204640},
-{"9C",	206352},
-{"9D",	208064},
-{"10A",	209936},
-{"10B", 211648},
-{"10C", 213360},
-{"10D", 215072},
-{"11A", 216928},
-{"11B",	218640},
-{"11C",	220352},
-{"11D",	222064},
-{"12A",	223936},
-{"12B",	225648},
-{"12C",	227360},
-{"12D",	229072},
-{"13A",	230784},
-{"13B",	232496},
-{"13C",	234208},
-{"13D",	235776},
-{"13E",	237488},
-{"13F",	239200},
-{nullptr, 0}
+dabFrequencies frequencies_1 [] = {
+{"5A",	174928, false},
+{"5B",	176640, false},
+{"5C",	178352, false},
+{"5D",	180064, false},
+{"6A",	181936, false},
+{"6B",	183648, false},
+{"6C",	185360, false},
+{"6D",	187072, false},
+{"7A",	188928, false},
+{"7B",	190640, false},
+{"7C",	192352, false},
+{"7D",	194064, false},
+{"8A",	195936, false},
+{"8B",	197648, false},
+{"8C",	199360, false},
+{"8D",	201072, false},
+{"9A",	202928, false},
+{"9B",	204640, false},
+{"9C",	206352, false},
+{"9D",	208064, false},
+{"10A",	209936, false},
+{"10B", 211648, false},
+{"10C", 213360, false},
+{"10D", 215072, false},
+{"11A", 216928, false},
+{"11B",	218640, false},
+{"11C",	220352, false},
+{"11D",	222064, false},
+{"12A",	223936, false},
+{"12B",	225648, false},
+{"12C",	227360, false},
+{"12D",	229072, false},
+{"13A",	230784, false},
+{"13B",	232496, false},
+{"13C",	234208, false},
+{"13D",	235776, false},
+{"13E",	237488, false},
+{"13F",	239200, false},
+{nullptr, 0, false}
 };
 
 static
-struct  {
-	const char *key;
-	int	fKHz;
-} frequencies_2 [] = {
-{"LA", 1452960},
-{"LB", 1454672},
-{"LC", 1456384},
-{"LD", 1458096},
-{"LE", 1459808},
-{"LF", 1461520},
-{"LG", 1463232},
-{"LH", 1464944},
-{"LI", 1466656},
-{"LJ", 1468368},
-{"LK", 1470080},
-{"LL", 1471792},
-{"LM", 1473504},
-{"LN", 1475216},
-{"LO", 1476928},
-{"LP", 1478640},
-{nullptr, 0}
+dabFrequencies frequencies_2 [] = {
+{"LA", 1452960, false},
+{"LB", 1454672, false},
+{"LC", 1456384, false},
+{"LD", 1458096, false},
+{"LE", 1459808, false},
+{"LF", 1461520, false},
+{"LG", 1463232, false},
+{"LH", 1464944, false},
+{"LI", 1466656, false},
+{"LJ", 1468368, false},
+{"LK", 1470080, false},
+{"LL", 1471792, false},
+{"LM", 1473504, false},
+{"LN", 1475216, false},
+{"LO", 1476928, false},
+{"LP", 1478640, false},
+{nullptr, 0, false}
 };
 
-typedef struct {
-	QString key;
-	int fKHz;
-}dab_frequencies;
 
-dab_frequencies bandIII_frequencies [100];
-dab_frequencies Lband_frequencies   [100];
+dabFrequencies alternatives [100];
 
-	bandHandler::bandHandler (const QString &a_band) {
-int filler;
-	for (filler = 0; frequencies_2 [filler]. fKHz != 0; filler ++) {
-	   Lband_frequencies [filler]. key =
-	                        QString (frequencies_2 [filler]. key);
-	   Lband_frequencies [filler]. fKHz =
-	                        frequencies_2 [filler]. fKHz;
-	}
-	Lband_frequencies [filler]. fKHz = 0;
-//
-	FILE *f	= nullptr;
-#ifndef	__MINGW32__
-	if (a_band != "")
-	   f = fopen (a_band. toLatin1 (). data (), "r");
-#endif
-	if (f == nullptr) {
-	   for (filler = 0; frequencies_1 [filler]. fKHz != 0; filler ++) {
-	      bandIII_frequencies [filler]. key =
-	                               QString (frequencies_1 [filler]. key);
-	      bandIII_frequencies [filler]. fKHz =
-	                               frequencies_1 [filler]. fKHz;
-	   }
-	   bandIII_frequencies [filler]. fKHz = 0;
+	bandHandler::bandHandler (const QString &a_band,
+	                           QSettings *s):
+	                                theTable (nullptr) {
+FILE	*f;
+	selectedBand		= nullptr;
+	dabSettings		= s;
+	theTable. setColumnCount (2);
+	QStringList header;
+	header	<< tr ("channel") << tr ("scan");
+	theTable. setHorizontalHeaderLabels (header);
+	theTable. verticalHeader () -> hide ();
+	theTable. setShowGrid	(true);
+	if (a_band == QString (""))
 	   return;
+	if (a_band != QString ("")) {
+	   f = fopen (a_band. toLatin1 (). data (), "r");
+	   if (f == nullptr)
+	      return;
 	}
 
-#ifndef	__MINGW32__
 //	OK we have a file with - hopefully - some input
 	int	cnt	= 0;
 	size_t	amount	= 128;
-	filler		= 0;
-	char *line	= (char *) malloc (256);
+	int filler		= 0;
+	char *line 	= new char [256];
 	while ((cnt < 100) && (amount > 0)) {
 	   amount = getline (&line, &amount, f);
 	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
@@ -156,59 +139,134 @@ int filler;
 	   int res = sscanf (line, "%s %d", channelName, &freq);
 	   if (res != 2)
 	      continue;
-	   bandIII_frequencies [filler]. fKHz	= freq;
-	   bandIII_frequencies [filler]. key	= QString (channelName);
+	   alternatives [filler]. key	= QString (channelName);
+	   alternatives [filler]. fKHz	= freq;
+	   alternatives [filler]. skip	= false;
 	   filler ++;
 	}
 
-	bandIII_frequencies [filler]. fKHz	= 0;
 	free (line);
+	alternatives [filler]. fKHz	= 0;
 	fclose (f);
-#endif
+	selectedBand	= alternatives;
 }
 
-	bandHandler::~bandHandler() {}
+	bandHandler::~bandHandler () {
+	if (!theTable. isHidden ())
+	   theTable. hide ();
+}
+
+void	bandHandler::saveSettings () {
+	dabSettings	-> beginGroup ("skipTable");
+	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	   if (selectedBand [i]. skip)
+	      dabSettings	-> setValue (selectedBand [i]. key, 1);
+	   else
+	      dabSettings	-> remove (selectedBand [i]. key);
+	}
+	dabSettings	-> sync ();
+	dabSettings	-> endGroup ();
+}
 
 void	bandHandler::setupChannels (QComboBox *s, uint8_t band) {
-dab_frequencies *t;
 int16_t	i;
 int16_t	c	= s -> count();
 
-	theBand	= band;
+	if (selectedBand == nullptr)	// preset band
+	   if (band == BAND_III)
+	      selectedBand = frequencies_1;
+	   else
+	      selectedBand = frequencies_2;
+
 //	clear the fields in the comboBox
 	for (i = 0; i < c; i ++) 
 	   s	-> removeItem (c - (i + 1));
 
-	if (band == BAND_III)
-	   t = bandIII_frequencies;
-	else
-	   t = Lband_frequencies;
-
-	for (i = 0; t [i]. key != nullptr; i ++) 
-	   s -> insertItem (i, t [i]. key, QVariant (i));
+	dabSettings	->  beginGroup ("skipTable");
+	for (i = 0; selectedBand [i]. key != nullptr; i ++) {
+	   s -> insertItem (i, selectedBand [i]. key, QVariant (i));
+	   bool skipValue =
+	         dabSettings -> value (selectedBand [i]. key, 0). toInt () == 1;
+	   selectedBand [i]. skip = skipValue;
+	   theTable. insertRow (i);
+	   theTable. setItem (i, 0, new QTableWidgetItem (selectedBand [i]. key));
+	   theTable. setItem (i, 1, new QTableWidgetItem (
+	                selectedBand [i]. skip ? QString ("-") : QString ("+")));
+	}
+	dabSettings	-> endGroup ();
+	connect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
+	         this, SLOT (cellSelected (int, int)));
 }
 
 //	find the frequency for a given channel in a given band
 int32_t	bandHandler::Frequency (QString Channel) {
 int32_t	tunedFrequency		= 0;
-dab_frequencies	*finger;
 int	i;
 
-	if (theBand == BAND_III)
-	   finger = bandIII_frequencies;
-	else
-	   finger = Lband_frequencies;
-
-	for (i = 0; finger [i]. key != nullptr; i ++) {
-	   if (finger [i]. key == Channel) {
-	      tunedFrequency	= KHz (finger [i]. fKHz);
+	for (i = 0; selectedBand [i]. key != nullptr; i ++) {
+	   if (selectedBand [i]. key == Channel) {
+	      tunedFrequency	= KHz (selectedBand [i]. fKHz);
 	      break;
 	   }
 	}
 
-	if (tunedFrequency == 0)
-	   tunedFrequency = KHz (finger [0]. fKHz);
+	if (tunedFrequency == 0)	// should not happen
+	   tunedFrequency = KHz (selectedBand [0]. fKHz);
 
 	return tunedFrequency;
+}
+
+int	bandHandler::nextChannel	(int index) {
+int	hulp	= index;
+	do {
+	   hulp ++;
+	   if (selectedBand [hulp]. fKHz == 0)
+	      index = 0;
+	} while (selectedBand [hulp]. skip && (hulp != index));
+	return hulp;
+}
+
+int	bandHandler::lastOf	(dabFrequencies *b) {
+int	index;
+	for (index = 0; selectedBand [index]. fKHz != 0; index ++);
+	return index - 1;
+}
+
+int	bandHandler::prevChannel	(int index) {
+int hulp	= index;
+	do {
+	   if (hulp == 0)
+	      hulp = lastOf (selectedBand);
+	   else
+	      hulp --;
+	} while (selectedBand [hulp]. skip && (hulp != index));
+	return hulp;
+}
+
+void    bandHandler::cellSelected (int row, int column) {
+QString s1 = theTable. item (row, 0) ->text ();
+QString s2 = theTable. item (row, 1) ->text ();
+int	amount_P	= 0;
+	(void)column;
+        if (s2 == "-") 
+           theTable. item (row, 1) -> setText ("+");
+	else
+           theTable. item (row, 1) -> setText ("-");
+	selectedBand [row]. skip = s2 != "-";
+	fprintf (stderr, "we zetten voor %s de zaak op %d\n",
+	              selectedBand [row]. key. toLatin1 (). data (),
+	              selectedBand [row]. skip);
+}
+
+void	bandHandler::show () {
+	theTable. show ();
+}
+
+void	bandHandler::hide () {
+	theTable. hide ();
+}
+
+bool	bandHandler::isHidden () {
+	return theTable. isHidden ();
 }
 

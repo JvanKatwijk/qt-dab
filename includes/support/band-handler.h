@@ -24,20 +24,42 @@
 #define	__BANDHANDLER__
 #include	<cstdint>
 #include	<QComboBox>
+#include	<QObject>
 #include	<QString>
+#include	<QSettings>
+#include	<QTableWidget>
 //
 //	a simple convenience class
 //
-class bandHandler {
-public:
-	bandHandler	(const QString &);
-	~bandHandler	();
-void	setupChannels	(QComboBox *s, uint8_t band);
-int32_t Frequency	(QString Channel);
-private:
-void	addItem		(char *name, int freq);
 
-	uint8_t		theBand;
+
+typedef struct {
+	QString key;
+	int	fKHz;
+	bool	skip;
+} dabFrequencies;
+class bandHandler: public QObject {
+Q_OBJECT
+public:
+		bandHandler	(const QString &, QSettings *);
+		~bandHandler	();
+	void	setupChannels	(QComboBox *s, uint8_t band);
+	int32_t Frequency	(QString Channel);
+	int	nextChannel	(int);
+	int	prevChannel	(int);
+	void	show		();
+	void	hide		();
+	bool	isHidden	();
+	void    saveSettings	();
+
+public slots:
+	void	cellSelected	(int, int);
+private:
+	QSettings	*dabSettings;
+	int	lastOf		(dabFrequencies *);
+	dabFrequencies		*selectedBand;
+	QTableWidget		theTable;
+	bool			visible;
 };
 #endif
 

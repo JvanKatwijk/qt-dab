@@ -234,7 +234,7 @@ private:
 	void			save_MOTtext		(QByteArray, int,
                                                                  QString);
 	void			show_MOTlabel		(QByteArray, int,
-                                                                  QString);
+                                                                  QString, int);
 	void			stop_muting		();
 enum direction {FORWARD, BACKWARDS};
 
@@ -368,5 +368,6 @@ private slots:
 	void			handle_motslideSelector		(int);
 	void			handle_snrHeightSelector	(int);
 	void			handle_snrLengthSelector	(int);
+	void			handle_skipList_button		();
 };
 #endif
