@@ -55,11 +55,10 @@ public:
 public slots:
 	void	cellSelected	(int, int);
 private:
-	QSettings	*dabSettings;
+	QSettings		*dabSettings;
 	int	lastOf		(dabFrequencies *);
 	dabFrequencies		*selectedBand;
 	QTableWidget		theTable;
-	bool			visible;
 };
 #endif
 

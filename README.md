@@ -25,6 +25,7 @@ Table of Contents
 * [xml-files and support](#xml-files-and-support)
 * [EPG-Handling](#EPG-Handling)
 * [Recording the SNR](#Recording-the-SNR)
+* [Scanning and the skip table](#Scanning-and-the-skip-table)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
@@ -479,6 +480,21 @@ in the (sub)directory **dumpviewer**.
 The picture shows the variations in the SNR when moving the antenna
 and - the dip - when switching antennas.
 
+----------------------------------------------------------------------
+* [Scanning and the skip table](#Scanning-and-the-skip-table)
+----------------------------------------------------------------------
+
+As known, Qt-DAB provides a possibility of scanning the band. Band III
+contains 39 channels, so there are - depending on your position -
+quite a number of channels where absolutely no DAB signal is.
+
+As in dabChannel, Qt-DAB has a mechanism to skip specified channels.
+The configuration widget contains a button to make the **skipTable**
+visible. The skipTable shows all channels in the selected band, 
+each channel labeled with a field containing a "+" or a "-" sign.
+Double clicking on the field will invert its setting.
+
+Obviously, settings are maintained between program invocations.
 
 -----------------------------------------------------------------------
 # Copyright

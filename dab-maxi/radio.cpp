@@ -245,7 +245,6 @@ uint8_t	dabBand;
 	globals. tiiBuffer	= &tiiBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
-	dabSettings	-> beginGroup ("General");
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -288,7 +287,6 @@ uint8_t	dabBand;
 	if (saveSlides != 0)
 	   set_picturePath ();
 
-	dabSettings	-> endGroup ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
 
@@ -317,7 +315,6 @@ uint8_t	dabBand;
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
 	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 
-	dabSettings	-> beginGroup ("General");
 	bool motselectionMode =
 	           dabSettings -> value ("motSlides", 0). toInt () == 1;
 	if (motselectionMode)
@@ -331,7 +328,6 @@ uint8_t	dabBand;
 	   configWidget. orderServiceIds -> setChecked (true);
 	else
 	   configWidget. ordersubChannelIds -> setChecked (true);
-	dabSettings	-> endGroup ();
 
 	motSlides		= nullptr;
 	dataDisplay		-> hide ();
@@ -365,9 +361,8 @@ uint8_t	dabBand;
 	((audioSink *)soundOut)	-> setupChannels (streamoutSelector);
 	streamoutSelector	-> show();
 	bool err;
-	dabSettings	-> beginGroup ("General");
 	h	= dabSettings -> value ("soundchannel", "default"). toString();
-	dabSettings	-> endGroup ();
+
 	k	= streamoutSelector -> findText (h);
 	if (k != -1) {
 	   streamoutSelector -> setCurrentIndex (k);
@@ -379,7 +374,6 @@ uint8_t	dabBand;
 #endif
 //
 #ifdef	TRY_EPG
-	dabSettings	-> beginGroup ("General");
 	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
 	connect (&epgProcessor,
 	             SIGNAL (set_epgData (int, int, const QString &)),
@@ -391,10 +385,8 @@ uint8_t	dabBand;
         epgTimer. setSingleShot (true);
         connect (&epgTimer, SIGNAL (timeout ()),
                  this, SLOT (epgTimer_timeOut ()));
-	dabSettings	-> endGroup ();
 
 #endif
-	dabSettings	-> beginGroup ("General");
 	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
         historyFile             =
 	             dabSettings -> value ("history", historyFile). toString ();
@@ -412,7 +404,6 @@ uint8_t	dabBand;
 //	restore some settings from previous incarnations
 	QString t       =
 	        dabSettings     -> value ("dabBand", "VHF Band III"). toString();
-	dabSettings	-> endGroup ();
 	dabBand         = t == "VHF Band III" ?  BAND_III : L_BAND;
 
 	theBand. setupChannels  (channelSelector, dabBand);
@@ -587,10 +578,12 @@ uint8_t	dabBand;
 	   inputDevice	= setDevice (deviceSelector -> currentText());
 	}
 
-	bool showWidget         =
-	                 dabSettings -> value ("devicewidgetButton", 0).
-                                                              toInt () != 0;
-	devicewidgetButton	-> setText (showWidget ? "hide" : "show");
+	if (inputDevice != nullptr) {
+	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
+	      inputDevice -> show ();
+	   else
+	      inputDevice -> hide ();
+	}
 
 	if (dabSettings	-> value ("spectrumVisible", 0). toInt () == 1) 
 	   my_spectrumViewer. show ();
@@ -705,7 +698,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
 	   return;
 
-	s	-> beginGroup ("General");
 	if (currentService. valid)
 	   s	-> setValue ("presetname", currentService. serviceName);
 	else
@@ -717,8 +709,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText());
 	if (inputDevice != nullptr)
-           s    -> setValue ("devicewidgetButton",
-                                  inputDevice -> isHidden () != 0);
+           s    -> setValue ("deviceVisible",
+                                  inputDevice -> isHidden () ? 0 : 1);
 	s	-> setValue ("spectrumVisible",
 	                          my_spectrumViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("tiiVisible",
@@ -727,7 +719,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("snrVisible",
 	                          my_snrViewer. isHidden () ? 0 : 1);
-	s	-> endGroup ();
 	s	-> sync();
 }
 //
@@ -1541,9 +1532,7 @@ deviceHandler	*inputDevice	= nullptr;
 	my_spectrumViewer. setBitDepth (inputDevice -> bitDepth());
 //
 //	do we want to see the widget for device control?
-	fprintf (stderr, "devicewidgetButton %d\n",
-	           dabSettings -> value ("devicewidgetButton", 0). toInt ());
-	if (dabSettings -> value ("devicewidgetButton", 0). toInt ()) {
+	if (dabSettings -> value ("deviceVisible", 0). toInt ()) {
 	   inputDevice  -> show ();
 	}
         else 
@@ -1568,28 +1557,25 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice = new deviceHandler ();
 	   return;		// nothing will happen
 	}
+	if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
+	   inputDevice -> show ();
+	else
+	   inputDevice -> hide ();
 	doStart();		// will set running
 }
 
 void	RadioInterface::handle_devicewidgetButton	() {
 	if (inputDevice == nullptr)
            return;
-        disconnect (devicewidgetButton, SIGNAL (clicked ()),
-                    this, SLOT (handle_devicewidgetButton ()));
 
         if (inputDevice -> isHidden ()) {
            inputDevice -> show ();
-           devicewidgetButton -> setText ("hide");
-           dabSettings -> setValue ("devicewidgetButton", 1);
+	   dabSettings -> setValue ("deviceVisible", 1);
         }
         else {
            inputDevice -> hide ();
-           devicewidgetButton -> setText ("show");
-           dabSettings -> setValue ("devicewidgetButton", 0);
+	   dabSettings -> setValue ("deviceVisible", 0);
         }
-
-        connect (devicewidgetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_devicewidgetButton ()));
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -2899,15 +2885,21 @@ void    RadioInterface::selectChannel (const QString &channel) {
 }
 
 void	RadioInterface::handle_nextChannelButton () {
-int	nextChannel	= theBand.
-	           nextChannel (channelSelector -> currentIndex ());
-	set_channelButton (nextChannel);
+//int	nextChannel	= theBand.
+//	           nextChannel (channelSelector -> currentIndex ());
+int	nrChannels	= channelSelector -> count ();
+int	newChannel	= channelSelector -> currentIndex () + 1;
+	set_channelButton (newChannel % nrChannels);
 }
 
 void	RadioInterface::handle_prevChannelButton () {
-int prevChannel	= theBand.
-	          prevChannel (channelSelector -> currentIndex ());
-	set_channelButton (prevChannel);
+//int prevChannel	= theBand.
+//	          prevChannel (channelSelector -> currentIndex ());
+int	nrChannels	= channelSelector -> count ();
+	if (channelSelector -> currentIndex () == 0)
+	   set_channelButton (nrChannels - 1);
+	else
+	   set_channelButton (channelSelector -> currentIndex () - 1);
 }
 
 void	RadioInterface::set_channelButton (int currentChannel) {
@@ -2922,10 +2914,6 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 
 	stopScanning (false);
 	stopChannel	();
-	if (currentChannel < 0)
-	   currentChannel = channelSelector -> count () - 1;
-	if (currentChannel >= channelSelector -> count ())
-	   currentChannel = 0;
 	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
 }
@@ -3983,7 +3971,6 @@ void	RadioInterface::handle_timeTable	() {
 
 void	RadioInterface::handle_skipList_button () {
 	if (!theBand. isHidden ()) {
-	   theBand. saveSettings ();
 	   theBand. hide ();
 	}
 	else

@@ -107,6 +107,7 @@ dabFrequencies alternatives [100];
 FILE	*f;
 	selectedBand		= nullptr;
 	dabSettings		= s;
+
 	theTable. setColumnCount (2);
 	QStringList header;
 	header	<< tr ("channel") << tr ("scan");
@@ -121,6 +122,7 @@ FILE	*f;
 	      return;
 	}
 
+#ifndef	__MINGW32__
 //	OK we have a file with - hopefully - some input
 	int	cnt	= 0;
 	size_t	amount	= 128;
@@ -149,6 +151,7 @@ FILE	*f;
 	alternatives [filler]. fKHz	= 0;
 	fclose (f);
 	selectedBand	= alternatives;
+#endif
 }
 
 	bandHandler::~bandHandler () {
@@ -164,7 +167,6 @@ void	bandHandler::saveSettings () {
 	   else
 	      dabSettings	-> remove (selectedBand [i]. key);
 	}
-	dabSettings	-> sync ();
 	dabSettings	-> endGroup ();
 }
 

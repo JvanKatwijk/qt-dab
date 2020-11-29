@@ -86,7 +86,7 @@ dabService	secondService;
                                                 dataBuffer (32768),
                                                 audioBuffer (8 * 32768),
 	                                        my_presetHandler (this),
-	                                        theBand ("") {
+	                                        theBand ("", Si ) {
 int16_t	latency;
 int16_t k;
 QString h;
