@@ -168,7 +168,8 @@ public slots:
 	void			showIQ			(int);
 	void			showQuality		(float);
 	void			show_rsCorrections	(int);
-	void			show_tii		(QByteArray);
+	void			show_tii		(int, int);
+	void			show_snr		(int, float, float);
 	void			closeEvent		(QCloseEvent *event);
 	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);

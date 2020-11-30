@@ -634,8 +634,12 @@ void	RadioInterface::setStereo	(bool s) {
 
 }
 
-void	RadioInterface::show_tii	(QByteArray data) {
-	(void)data;
+void	RadioInterface::show_tii	(int s1, int s2) {
+	(void)s1; (void)s2;
+}
+
+void	RadioInterface::show_snr	(int s1, float f1, float f2) {
+	(void)s1; (void)f1; (void)f2;
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
