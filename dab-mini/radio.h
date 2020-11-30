@@ -171,7 +171,9 @@ public slots:
 	void			show_tii		(int, int);
 	void			show_snr		(int, float, float);
 	void			closeEvent		(QCloseEvent *event);
-	void			showTime		(const QString &);
+	void			clockTime		(int, int, int,
+	                                                 int, int);
+//	void			showTime		(const QString &);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);

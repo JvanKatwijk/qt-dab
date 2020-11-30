@@ -1599,7 +1599,6 @@ const char *monthTable [] = {
 	"dec"
 };
 
-
 void	RadioInterface::clockTime (int year, int month, int day,
 	                                    int hours, int minutes){
 char dayString [3];
