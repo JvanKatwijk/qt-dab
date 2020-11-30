@@ -272,7 +272,7 @@ isEmpty(GITHASHSTRING) {
 #	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 #for 32 bit
 	TARGET		= dabMini-32-2.0
-	DESTDIR		= /usr/shared/sdr-j-development/w32-programs/windows-dab32-mini
+	DESTDIR		= /usr/shared/w32-programs/windows-dab32-mini
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 

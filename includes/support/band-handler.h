@@ -45,6 +45,7 @@ public:
 		~bandHandler	();
 	void	setupChannels	(QComboBox *s, uint8_t band);
 	int32_t Frequency	(QString Channel);
+	int	firstChannel	();
 	int	nextChannel	(int);
 	int	prevChannel	(int);
 	void	show		();

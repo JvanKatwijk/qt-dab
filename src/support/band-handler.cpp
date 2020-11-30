@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017
+ *    Copyright (C) 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -22,12 +22,12 @@
  */
 //
 //	The issue:
-//	suppose that someone wants to add some -non official -
+//	suppose that someone wants to add some - non official -
 //	frequencies, e.g. amateur bands.
-//	we therefore use the "frequencies_1" and "frequencies_2"
+//	Should be possible!
+//	We therefore use the "frequencies_1" and "frequencies_2"
 //	tables for initializing the "bandIII" and "LBand" tables
-//	and allow another table to be overwritten by a
-//	supplied table.
+//	and provide for another table for a supplied table.
 //
 #include	"band-handler.h"
 #include	"dab-constants.h"
@@ -114,6 +114,7 @@ FILE	*f;
 	theTable. setHorizontalHeaderLabels (header);
 	theTable. verticalHeader () -> hide ();
 	theTable. setShowGrid	(true);
+#ifndef	__MINGW32__
 	if (a_band == QString (""))
 	   return;
 	if (a_band != QString ("")) {
@@ -122,22 +123,19 @@ FILE	*f;
 	      return;
 	}
 
-#ifndef	__MINGW32__
 //	OK we have a file with - hopefully - some input
-	int	cnt	= 0;
-	size_t	amount	= 128;
+	size_t	amount		= 128;
 	int filler		= 0;
 	char *line 	= new char [256];
-	while ((cnt < 100) && (amount > 0)) {
+	while ((filler < 100) && (amount > 0)) {
 	   amount = getline (&line, &amount, f);
-	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
+//	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
 	   if ((int)amount == 0) {
 	      break;
 	   }
 	   line [amount] = 0;
 	   char channelName [128];
 	   int freq;
-	   cnt ++;
 	   int res = sscanf (line, "%s %d", channelName, &freq);
 	   if (res != 2)
 	      continue;
@@ -216,6 +214,15 @@ int	i;
 	   tunedFrequency = KHz (selectedBand [0]. fKHz);
 
 	return tunedFrequency;
+}
+
+int	bandHandler::firstChannel	() {
+int index	= 0;
+	while (selectedBand [index]. skip)
+	   index ++;
+	if (selectedBand [index]. fKHz == 0)
+	   return 0;
+	return index;
 }
 
 int	bandHandler::nextChannel	(int index) {

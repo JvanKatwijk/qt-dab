@@ -1686,11 +1686,13 @@ void	RadioInterface::show_motHandling (bool b) {
 	
 //	called from the ofdmDecoder, it is computed for each frame
 void	RadioInterface::show_snr (int s, float sig, float noise) {
-	if (running. load())
+	if (running. load ()) {
 	   snrDisplay	-> display (s);
-	if (!my_snrViewer. isHidden ()) {
-	   my_snrViewer. add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
-	   my_snrViewer. show_snr ();
+	   if (!my_snrViewer. isHidden ()) {
+	      my_snrViewer.
+	            add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
+	      my_snrViewer. show_snr ();
+	   }
 	}
 }
 
@@ -2950,7 +2952,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
               cc = 0;
 	}
 	else {
-	   cc = 0;
+	   cc = theBand. firstChannel ();
 	}
         scanning. store (true);
 	if (scanMode != SCAN_TO_DATA)

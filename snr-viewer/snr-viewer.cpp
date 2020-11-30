@@ -101,7 +101,7 @@ QString	colorString	= "black";
 	}
 }
 
-	snrViewer::~snrViewer() {
+	snrViewer::~snrViewer () {
 #ifdef	__DUMP_SNR__
 	stopDumping 	();
 #endif
@@ -124,7 +124,7 @@ void	snrViewer::setLength	(int n) {
 	if (n < plotLength) {
 	   plotLength = n;
 	   Y_Buffer. resize (n);
-	   X_axis. resize (plotLength);
+	   X_axis. resize (n);
 	}
 	else
 	if (n > plotLength) {
@@ -155,7 +155,7 @@ void	snrViewer::hide	() {
 #endif
 }
 
-bool	snrViewer::isHidden() {
+bool	snrViewer::isHidden () {
 	return myFrame. isHidden();
 }
 
