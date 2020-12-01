@@ -1686,12 +1686,17 @@ void	RadioInterface::show_motHandling (bool b) {
 	
 //	called from the ofdmDecoder, it is computed for each frame
 void	RadioInterface::show_snr (int s, float sig, float noise) {
+static int delayCount = 1;
 	if (running. load ()) {
 	   snrDisplay	-> display (s);
 	   if (!my_snrViewer. isHidden ()) {
 	      my_snrViewer.
 	            add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
-	      my_snrViewer. show_snr ();
+	      delayCount --;
+	      if (delayCount <= 0) {
+	         my_snrViewer. show_snr ();
+	         delayCount = 5;
+	      }
 	   }
 	}
 }

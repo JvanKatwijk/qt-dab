@@ -262,8 +262,10 @@ agcRequest r (agcMode, 30);
            gainsliderLabel      -> hide ();
 	}
 	else {
+	   GRdBRequest r2 (GRdBSelector -> value ());
 	   GRdBSelector		-> show ();
 	   gainsliderLabel	-> show ();
+	   messageHandler  (&r2);
 	}
 }
 
