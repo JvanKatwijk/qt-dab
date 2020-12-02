@@ -29,6 +29,9 @@
 //	tables for initializing the "bandIII" and "LBand" tables
 //	and provide for another table for a supplied table.
 //
+//	added functions to find the first, the next and the previous
+//	in the band wrt the skipTable
+//
 #include	"band-handler.h"
 #include	"dab-constants.h"
 #include	<QHeaderView>
