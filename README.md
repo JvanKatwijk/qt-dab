@@ -488,7 +488,7 @@ As known, Qt-DAB provides a possibility of scanning the band. Band III
 contains 39 channels, so there are - depending on your position -
 quite a number of channels where absolutely no DAB signal is.
 
-As in dabChannel, Qt-DAB has a mechanism to skip specified channels.
+As in **dabChannel**, Qt-DAB has a mechanism to skip specified channels.
 The configuration widget contains a button to make the **skipTable**
 visible. The skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
