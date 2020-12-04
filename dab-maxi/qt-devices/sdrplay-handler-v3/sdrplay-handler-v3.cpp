@@ -140,6 +140,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	while (isRunning ())
 	   usleep (1000);
 //	thread should be stopped by now
+	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
 	sdrplaySettings -> setValue ("sdrplay-ppm",
 	                                           ppmControl -> value ());
@@ -151,8 +152,6 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	                                  agcControl -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> endGroup ();
 	sdrplaySettings	-> sync();
-
-	myFrame. hide ();
 }
 
 /////////////////////////////////////////////////////////////////////////

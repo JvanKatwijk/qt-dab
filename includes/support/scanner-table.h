@@ -43,6 +43,7 @@ public:
 	void	hide		();
 	void	newEnsemble	(QString, QString, QString,
 	                                     QString, QString, QByteArray);
+	void	new_headline	();
 	void	add_to_Ensemble	(QString, QString, QString,
 	                                     QString, QString, QString);
 	void	clear		();

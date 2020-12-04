@@ -240,6 +240,7 @@ sdrplaySelect	*sdrplaySelector;
 
 	sdrplayHandler::~sdrplayHandler() {
 	stopReader();
+	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
 	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());

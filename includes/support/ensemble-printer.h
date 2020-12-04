@@ -46,6 +46,13 @@ public:
 	                                 std::vector<serviceId>,
 	                                 dabProcessor *,
 	                                 FILE *);
+	void	showSummaryData		(QString, int32_t,
+	                                 QString,	// SNR
+	                                 QString,	// time
+	                                 QByteArray,	// TII Data
+	                                 std::vector<serviceId>,	//
+	                                 dabProcessor	*,
+	                                 FILE *);
 private:
 	QString	code_to_string		(uint8_t, uint8_t);
 };

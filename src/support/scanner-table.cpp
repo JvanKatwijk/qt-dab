@@ -137,8 +137,10 @@ int16_t row	= addRow ();
 	outputWidget	-> item (row, 3) -> setText (freq);
 	outputWidget	-> item (row, 4) -> setText (snr);
 	outputWidget	-> item (row, 5) -> setText (textfor (transmitters));
+}
 
-	row	= addRow ();
+void	scannerTable::new_headline	() {
+int16_t	row	= addRow ();
 	outputWidget	-> item (row, 0) -> setText ("serviceName");
 	outputWidget	-> item (row, 1) -> setText ("serviceId");
 	outputWidget	-> item (row, 2) -> setText ("type ");

@@ -217,6 +217,7 @@ int	res;
 
 	hackrfHandler::~hackrfHandler() {
 	stopReader();
+	myFrame. hide ();
 	hackrfSettings	-> beginGroup ("hackrfSettings");
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaGainSlider -> value());

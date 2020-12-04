@@ -272,6 +272,7 @@ char	manufac [256], product [256], serial [256];
 	if (Handle == nullptr) {	// nothing achieved earlier on
 	   return;
 	}
+	myFrame. hide ();
 	this -> rtlsdr_cancel_async (device);
 	while (!workerHandle -> isFinished()) 
 	   usleep (100);

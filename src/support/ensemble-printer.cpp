@@ -58,7 +58,7 @@ int16_t	i = 0;
 static
 QString textfor (QByteArray transmitters) {
 QString s;
-	fprintf (stderr, "in textfor: transmitters. size = %d\n", transmitters. size ());
+//	fprintf (stderr, "in textfor: transmitters. size = %d\n", transmitters. size ());
 	if (transmitters. size () == 0)
 	   return " ";
 	for (int i = 0; i < transmitters. size (); i += 2)
@@ -66,6 +66,38 @@ QString s;
 	           "+" + QString::number (transmitters. at (i + 1)) + ")";
 	return s;
 }
+
+void	ensemblePrinter::showSummaryData  (QString	channel,
+	                                   int32_t	freq,
+	                                   QString	SNR,
+	                                   QString	theTime,
+	                                   QByteArray	transmitters,
+	                                   std::vector<serviceId> Services,
+	                                   dabProcessor *my_dabProcessor,
+	                                   FILE		*file_P) {
+uint8_t ecc_byte	= my_dabProcessor -> get_ecc();
+QString	ensembleLabel	= my_dabProcessor -> get_ensembleName();
+int32_t	ensembleId	= my_dabProcessor -> get_ensembleId();
+QString currentChannel	= channel;
+int32_t	frequency	= freq;
+bool	firstData;
+
+	if (ensembleLabel == QString (""))
+	   return;
+
+	fprintf (file_P, "\n\n\n");
+	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; nr services %d; time  %s; transmitters %s; %s; \n\n",
+	                  ensembleLabel. toUtf8(). data(),
+	                  ensembleId,
+	                  currentChannel. toUtf8(). data(),
+	                  frequency / 1000,
+	                  Services. size (),
+	                  theTime. toUtf8(). data (),
+	                  textfor (transmitters). toLatin1 (). data (),
+	                  SNR. toLatin1 (). data ());
+}
+
+
 
 void	ensemblePrinter::showEnsembleData (QString	channel,
 	                                   int32_t	freq,

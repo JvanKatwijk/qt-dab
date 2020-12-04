@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020
+ *    Copyright (C)  2015, 2016, 2017, 2018, 2019, 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -147,15 +147,15 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #define	SCAN_TO_DATA		1
 #define	SCAN_CONTINUOUSLY	2
 
+const
+char	*scanTextTable [3] = {
+	"single scan",
+	"scan to data",
+	"scan continuously"
+};
 static inline
 QString scanmodeText (int e) {
-	if (e == SINGLE_SCAN)
-	   return QString ("single scan");
-	if (e == SCAN_TO_DATA)
-	   return QString ("scan to data");
-	if (e == SCAN_CONTINUOUSLY)
-	   return QString ("scan continuously");
-	return QString ("???");
+	return QString (scanTextTable [e]);
 }
 
 #define	CONTENT_BUTTON		QString ("contentButton")
@@ -219,7 +219,8 @@ uint8_t convert (QString s) {
 	                                                  this, Si),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
-	                                        theTable (this) {
+	                                        theTable (this),
+	                                        filenameFinder (Si) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -814,11 +815,6 @@ QString s;
 //
 ///////////////////////////////////////////////////////////////////////////
 
-static inline
-bool	isValid (QChar c) {
-	return c. isLetter () || c. isDigit () || (c == '-');
-}
-
 void	RadioInterface::handle_contentButton	() {
 ensemblePrinter	my_Printer;
 QString	currentChannel	= channelSelector -> currentText ();
@@ -829,7 +825,8 @@ int	frequency	= inputDevice	-> getVFOFrequency ();
 	if (scanning. load ())
 	   return;
 
-	FILE *fileP	= findContentDump_fileName (currentChannel);
+	FILE *fileP	=
+	       filenameFinder. findContentDump_fileName (currentChannel);
 	if (fileP	== nullptr)
 	   return;
 //
@@ -1269,142 +1266,6 @@ QString	file;
 deviceHandler	*inputDevice	= nullptr;
 //	OK, everything quiet, now let us see what to do
 
-#ifdef	HAVE_AIRSPY
-	if (s == "airspy") {
-	   try {
-	      inputDevice	= new airspyHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("Airspy or Airspy mini not found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_HACKRF
-	if (s == "hackrf") {
-	   try {
-	      inputDevice	= new hackrfHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("hackrf not found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_SOAPY
-	if (s == "soapy") {
-	   try {
-	      inputDevice	= new soapyHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no soapy device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_LIME
-	if (s == "limeSDR") {
-	   try {
-	      inputDevice = new limeHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no lime device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_PLUTO
-	if (s == "pluto") {
-	   try {
-	      inputDevice = new plutoHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no pluto device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_ELAD
-	if (s == "elad-s1") {
-	   try {
-	      inputDevice = new eladHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no elad device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_ELAD_FILES
-	if (s == "elad-files") {
-	   try {
-	      file = QFileDialog::getOpenFileName (this,
-	                                           tr ("Open file ..."),
-	                                           QDir::homePath(),
-	                                           tr ("ela data (*.*)"));
-	      if (file == QString (""))
-	         return nullptr;
-	      file		= QDir::toNativeSeparators (file);
-	      inputDevice	= new eladFiles (file);
-	      hideButtons ();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no elad valid file found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef HAVE_EXTIO
-//	extio is - in its current settings - for Windows, it is a
-//	wrap around the dll
-	if (s == "extio") {
-	   try {
-	      inputDevice = new extioHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                            tr ("extio: no luck\n") );
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef HAVE_RTL_TCP
-//	RTL_TCP might be working. 
-	if (s == "rtl_tcp") {
-	   try {
-	      inputDevice = new rtl_tcp_client (dabSettings);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("rtl_tcp: no luck\n") );
-	      return nullptr;
-	   }
-	}
-	else
-#endif
 #ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
@@ -1443,6 +1304,121 @@ deviceHandler	*inputDevice	= nullptr;
 	      QMessageBox::warning (this, tr ("Warning"),
 	                           tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
 	      fprintf (stderr, "error = %d\n", e);
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_AIRSPY
+	if (s == "airspy") {
+	   try {
+	      inputDevice	= new airspyHandler (dabSettings, version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("Airspy or Airspy mini not found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_HACKRF
+	if (s == "hackrf") {
+	   try {
+	      inputDevice	= new hackrfHandler (dabSettings, version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("hackrf not found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_LIME
+	if (s == "limeSDR") {
+	   try {
+	      inputDevice = new limeHandler (dabSettings, version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no lime device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_PLUTO
+	if (s == "pluto") {
+	   try {
+	      inputDevice = new plutoHandler (dabSettings, version);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no pluto device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef HAVE_RTL_TCP
+//	RTL_TCP might be working. 
+	if (s == "rtl_tcp") {
+	   try {
+	      inputDevice = new rtl_tcp_client (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("rtl_tcp: no luck\n") );
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_ELAD
+	if (s == "elad-s1") {
+	   try {
+	      inputDevice = new eladHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no elad device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef	HAVE_SOAPY
+	if (s == "soapy") {
+	   try {
+	      inputDevice	= new soapyHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no soapy device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
+#ifdef HAVE_EXTIO
+//	extio is - in its current settings - for Windows, it is a
+//	wrap around the dll
+	if (s == "extio") {
+	   try {
+	      inputDevice = new extioHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("extio: no luck\n") );
 	      return nullptr;
 	   }
 	}
@@ -1542,15 +1518,17 @@ deviceHandler	*inputDevice	= nullptr;
 }
 //
 //	newDevice is called from the GUI when selecting a device
+//	with the selector
 void	RadioInterface::newDevice (const QString &deviceName) {
-
 //	Part I : stopping all activities
 	running. store (false);
-	fprintf (stderr, "in newDevice, going to stop channel\n");
 	stopChannel	();
-	disconnectGUI();
-	delete inputDevice;
-	fprintf (stderr, "device is deleted\n");
+	disconnectGUI	();
+	if (inputDevice != nullptr) {
+	   delete inputDevice;
+	   fprintf (stderr, "device is deleted\n");
+	   inputDevice = nullptr;
+	}
 	fprintf (stderr, "going for a device %s\n", deviceName. toLatin1 (). data ());
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
@@ -1585,18 +1563,8 @@ void	RadioInterface::handle_devicewidgetButton	() {
 
 static
 const char *monthTable [] = {
-	"jan",
-	"feb",
-	"mar",
-	"apr",
-	"may",
-	"jun",
-	"jul",
-	"aug",
-	"sep",
-	"oct",
-	"nov",
-	"dec"
+	"jan", "feb", "mar", "apr", "may", "jun",
+	"jul", "aug", "sep", "oct", "nov", "dec"
 };
 
 void	RadioInterface::clockTime (int year, int month, int day,
@@ -1828,16 +1796,19 @@ void	RadioInterface:: set_streamSelector (int k) {
 #endif
 }
 
+void	RadioInterface::switchVisibility (QWidget *w) {
+	if (w -> isHidden ())
+	   w  -> show ();
+	else
+	   w -> hide ();
+}
+
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
 	   return;
-
-	if (dataDisplay -> isHidden())
-	   dataDisplay -> show();
-	else {
-	   dataDisplay -> hide();
-	   my_timeTable	-> hide ();
-	}
+	switchVisibility (dataDisplay);
+	if (dataDisplay -> isHidden ())
+	   my_timeTable -> hide ();
 }
 //
 //	Whenever the input device is a file, some functions,
@@ -1926,7 +1897,8 @@ QString channelName	= channelSelector -> currentText ();
 	if (scanning. load ())
 	   return;
 
-	rawDumper	= findRawDump_fileName (deviceName, channelName);
+	rawDumper	=
+	         filenameFinder. findRawDump_fileName (deviceName, channelName);
 	if (rawDumper == nullptr)
 	   return;
 
@@ -1955,8 +1927,8 @@ void	RadioInterface::stop_audioDumping	() {
 }
 
 void	RadioInterface::start_audioDumping () {
-	audioDumper	= findAudioDump_fileName  (serviceLabel -> text (),
-	                                           localTimeDisplay -> text ());
+	audioDumper	=
+	      filenameFinder. findAudioDump_fileName  (serviceLabel -> text ());
 	if (audioDumper == nullptr)
 	   return;
 
@@ -1984,8 +1956,8 @@ void	RadioInterface::stop_frameDumping () {
 }
 
 void	RadioInterface::start_frameDumping () {
-	frameDumper	= findFrameDump_fileName (serviceLabel -> text (),
-	                                          localTimeDisplay -> text ());
+	frameDumper	=
+	     filenameFinder. findFrameDump_fileName (serviceLabel -> text ());
 	if (frameDumper == nullptr)
 	   return;
 	setButtonFont (techData. framedumpButton, "recording", 12);
@@ -2891,16 +2863,12 @@ void    RadioInterface::selectChannel (const QString &channel) {
 }
 
 void	RadioInterface::handle_nextChannelButton () {
-//int	nextChannel	= theBand.
-//	           nextChannel (channelSelector -> currentIndex ());
 int	nrChannels	= channelSelector -> count ();
 int	newChannel	= channelSelector -> currentIndex () + 1;
 	set_channelButton (newChannel % nrChannels);
 }
 
 void	RadioInterface::handle_prevChannelButton () {
-//int prevChannel	= theBand.
-//	          prevChannel (channelSelector -> currentIndex ());
 int	nrChannels	= channelSelector -> count ();
 	if (channelSelector -> currentIndex () == 0)
 	   set_channelButton (nrChannels - 1);
@@ -2960,8 +2928,11 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   cc = theBand. firstChannel ();
 	}
         scanning. store (true);
-	if (scanMode != SCAN_TO_DATA)
-	   scanDumpFile	= findScanDump_FileName ();
+	if (scanMode == SINGLE_SCAN)
+	   scanDumpFile	= filenameFinder. findScanDump_fileName ();
+	else
+	if (scanMode == SCAN_CONTINUOUSLY)
+	   scanDumpFile	= filenameFinder. findSummary_fileName ();
 	else
 	   scanDumpFile = nullptr;
 
@@ -3067,9 +3038,11 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	
 void	RadioInterface::showServices () {
 ensemblePrinter	my_Printer;
-QString SNR = "SNR " + QString::number (snrDisplay -> value ());
+int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
+QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
 QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
-	if (my_dabProcessor == nullptr) {
+
+	if (my_dabProcessor == nullptr) {	// cannot happen
 	   fprintf (stderr, "Expert error 26\n");
 	   return;
 	}
@@ -3079,56 +3052,71 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	                       ensembleId,
 	                       SNR,
 	                       transmitters);
-	for (serviceId serv: serviceList) {
-	   QString audioService = serv. name;
-	   audiodata d;
-	   my_dabProcessor -> dataforAudioService (audioService, &d);
-	   if (!d. defined)
-	      continue;
+	if (scanMode == SINGLE_SCAN) {
+	   theTable. new_headline ();
+	   for (serviceId serv: serviceList) {
+	      QString audioService = serv. name;
+	      audiodata d;
+	      my_dabProcessor -> dataforAudioService (audioService, &d);
+	      if (!d. defined)
+	         continue;
 
-	   QString serviceId = hextoString (d. SId);
-	   QString bitRate   = QString::number (d. bitRate);
-	   QString protL     = getProtectionLevel (d. shortForm,
+	      QString serviceId = hextoString (d. SId);
+	      QString bitRate   = QString::number (d. bitRate);
+	      QString protL     = getProtectionLevel (d. shortForm,
                                                    d. protLevel);
-	   QString codeRate  = getCodeRate (d. shortForm,
-                                            d. protLevel);
-	   theTable.
+	      QString codeRate  = getCodeRate (d. shortForm,
+                                               d. protLevel);
+	      theTable.
                   add_to_Ensemble (audioService, serviceId,
                                    d. ASCTy == 077 ? "DAB+ (plus)" : "DAB",
                                    bitRate, protL, codeRate);
-	}
+	   }
 
-	for (serviceId serv: serviceList) {
-	   QString packetService = serv. name;
-	   packetdata d;
-	   my_dabProcessor -> dataforPacketService (packetService, &d, 0);
-	   if (!d. defined)
-	      continue;
+	   for (serviceId serv: serviceList) {
+	      QString packetService = serv. name;
+	      packetdata d;
+	      my_dabProcessor -> dataforPacketService (packetService, &d, 0);
+	      if (!d. defined)
+	         continue;
 
-	   QString soort	= d. DSCTy == 60 ? "mot data" :
-	                          d. DSCTy == 59 ? "ip data" :
-	                          d. DSCTy == 44 ? "journaline data" :
-	                          d. DSCTy ==  5 ? "tdc data" :
-	                                             "unknow data";
-	   QString serviceId;
-	   serviceId. setNum (d. SId, 16);
-	   QString bitRate   = QString::number (d. bitRate);
-	   QString protL     = getProtectionLevel (d. shortForm,
+	      QString soort	= d. DSCTy == 60 ? "mot data" :
+	                             d. DSCTy == 59 ? "ip data" :
+	                             d. DSCTy == 44 ? "journaline data" :
+	                             d. DSCTy ==  5 ? "tdc data" :
+	                                                "unknow data";
+	      QString serviceId;
+	      serviceId. setNum (d. SId, 16);
+	      QString bitRate   = QString::number (d. bitRate);
+	      QString protL     = getProtectionLevel (d. shortForm,
                                                    d. protLevel);
-	   QString codeRate  = getCodeRate (d. shortForm,
+	      QString codeRate  = getCodeRate (d. shortForm,
                                             d. protLevel);
-	   theTable.
+	      theTable.
                   add_to_Ensemble (packetService, serviceId,
 	                           soort,
                                    bitRate, protL, codeRate);
+	   }
 	}
-	if (scanDumpFile != nullptr)
-	   my_Printer. showEnsembleData (channelSelector -> currentText (),
-	                                 inputDevice -> getVFOFrequency (),
-		                         localTimeDisplay -> text (),
-	                                 transmitters,
-	                                 serviceList,
-	                                 my_dabProcessor, scanDumpFile);
+	if (scanDumpFile != nullptr) {
+	   if (scanMode == SINGLE_SCAN)
+	      my_Printer. showEnsembleData (channelSelector -> currentText (),
+	                                    inputDevice -> getVFOFrequency (),
+		                            localTimeDisplay -> text (),
+	                                    transmitters,
+	                                    serviceList,
+	                                    my_dabProcessor, scanDumpFile);
+	   else
+	   if (scanMode == SCAN_CONTINUOUSLY)
+	      my_Printer. showSummaryData (channelSelector -> currentText (),
+	                                   inputDevice -> getVFOFrequency (),
+	                                   SNR,
+	                                   localTimeDisplay -> text (),
+	                                   transmitters,
+	                                   serviceList,
+	                                   my_dabProcessor,
+	                                   scanDumpFile);
+	}
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -3253,206 +3241,6 @@ void	RadioInterface::handle_muteButton	() {
 	muting = true;
 }
 //
-//	Intermezzo: finding filenames
-//
-FILE	*RadioInterface::findContentDump_fileName (const QString &channel) {
-QString suggestedFileName;
-QString	saveDir		= dabSettings -> value ("contentDir",
-	                                        QDir::homePath ()). toString ();
-QString theTime	= localTimeDisplay -> text ();
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	for (int i = 0; i < theTime. length (); i ++)
-	   if (!isValid (theTime. at (i)))
-	      theTime. replace (i, 1, '-');
-	suggestedFileName = saveDir + "Qt-DAB-" + channel +
-	                                          "-" + theTime;
-
-	QString fileName = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file ..."),
-	                                        suggestedFileName + ".txt",
-	                                        tr ("Text (*.txt)"));
-	if (fileName == "")
-	   return nullptr;
-
-	fileName	= QDir::toNativeSeparators (fileName);
-	FILE *fileP	= fopen (fileName. toUtf8(). data(), "w");
-
-	if (fileP == nullptr) {
-	   fprintf (stderr, "Could not open file %s\n",
-	                              fileName. toUtf8(). data());
-	   return nullptr;
-	}
-
-	QString	dumper	= QDir::fromNativeSeparators (fileName);
-        int x           = dumper. lastIndexOf ("/");
-        saveDir         = dumper. remove (x, dumper. count () - x);
-        dabSettings     -> setValue ("contentDir", saveDir);
-	return fileP;
-}
-
-//
-FILE	*RadioInterface::findFrameDump_fileName (const QString &service,
-	                                         const QString &time) {
-QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
-	                                QDir::homePath ()).  toString ();
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	QString tailS	= service + "-" + time + ".aac";
-	for (int i = 0; i < tailS. length (); i ++)
-	   if (!isValid (tailS. at (i)))
-	      tailS. replace (i,1, '-');
-
-	QString suggestedFileName = saveDir + tailS;
-	QString file = QFileDialog::getSaveFileName (this,
-	                                     tr ("Save file ..."),
-	                                     suggestedFileName,
-	                                     tr ("aac data (*.aac)"));
-	if (file == QString (""))       // apparently cancelled
-	   return nullptr;
-
-	file		= QDir::toNativeSeparators (file);
-	FILE *theFile	= fopen (file. toLatin1 (). data (), "w+b");
-	if (theFile == nullptr) {
-	   QString s = QString ("cannot open ") + file;
-	   QMessageBox::warning (this, tr ("Warning"),
-	                               tr (s. toLatin1 (). data ()));
-	   return nullptr;
-	}
-
-	QString dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
-	
-	return theFile;
-}
-
-SNDFILE	*RadioInterface::findAudioDump_fileName (const QString &service,
-	                                         const QString &time) {
-SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
-QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
-	                                 QDir::homePath ()).  toString ();
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	QString tailS = service + "-" + time;
-	for (int i = 0; i < tailS. length (); i ++)
-	   if (!isValid (tailS. at (i))) 
-	      tailS. replace (i, 1, '-');
-
-	QString suggestedFileName = saveDir + tailS + ".wav";
-	QString file = QFileDialog::getSaveFileName (this,
-	                                        tr ("Save file ..."),
-	                                        suggestedFileName,
-	                                        tr ("PCM wave file (*.wav)"));
-	if (file == QString (""))
-	   return nullptr;
-	if (!file.endsWith (".wav", Qt::CaseInsensitive))
-	   file.append (".wav");
-	file		= QDir::toNativeSeparators (file);
-	sf_info		-> samplerate	= 48000;
-	sf_info		-> channels	= 2;
-	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
-	SNDFILE *theFile	= sf_open (file. toUtf8(). data(),
-	                                   SFM_WRITE, sf_info);
-	if (theFile == nullptr) {
-	   qDebug() << "Cannot open " << file. toUtf8(). data();
-	   return nullptr;
-	}
-
-	QString	dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
-
-	return theFile;
-}
-
-SNDFILE *RadioInterface::findRawDump_fileName (const QString &deviceName,
-	                                       const QString &channelName) {
-SF_INFO *sf_info        = (SF_INFO *)alloca (sizeof (SF_INFO));
-QString theTime		= QDateTime::currentDateTime (). toString ();
-QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
-	                                        QDir::homePath ()). toString ();
-SNDFILE	*theFile;
-	for (int i = 0; i < theTime. length (); i ++)
-	   if (!isValid (theTime. at (i)))
-	      theTime. replace (i, 1, '-');
-
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-	QString suggestedFileName = saveDir +
-		                    deviceName + "-" +
-	                            channelName + "-" + theTime + ".sdr";
-	QString file = QFileDialog::getSaveFileName (this,
-	                                     tr ("Save file ..."),
-	                                     suggestedFileName,
-	                                     tr ("raw data (*.sdr)"));
-
-	if (file == QString (""))       // apparently cancelled
-	   return nullptr;
-	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
-	   file.append (".sdr");
-
-	file	= QDir::toNativeSeparators (file);
-	sf_info -> samplerate   = INPUT_RATE;
-	sf_info -> channels     = 2;
-	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	theFile = sf_open (file. toUtf8 (). data(),
-	                                   SFM_WRITE, sf_info);
-	fprintf (stderr, "the file %s is open?\n", 
-	                              file. toUtf8 (). data ());
-	if (theFile == nullptr) {
-	   fprintf (stderr, "foute boel\n");
-	   qDebug() << "cannot open " << file. toUtf8(). data();
-	   return nullptr;
-	}
-
-	QString dumper	= QDir::fromNativeSeparators (file);
-	int x		= dumper. lastIndexOf ("/");
-	saveDir		= dumper. remove (x, dumper. count () - x);
-	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
-	fprintf (stderr, "theffile is open\n");
-	return theFile;
-}
-
-FILE	*RadioInterface::findScanDump_FileName		() {
-	QMessageBox::StandardButton resultButton =
-	             QMessageBox::question (this, "Qt-DAB",
-	                                    tr ("save the scan?\n"),
-	                                    QMessageBox::No | QMessageBox::Yes,
-	                                    QMessageBox::Yes);
-	if (resultButton != QMessageBox::Yes)
-	   return nullptr;
-
-	QString   saveDir = dabSettings -> value ("contentDir",
-                                                QDir::homePath ()). toString ();
-
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-	   saveDir = saveDir + '/';
-
-	QString theTime = QDateTime::currentDateTime (). toString ();
-	for (int i = 0; i < theTime. length (); i ++)
-	   if (!isValid (theTime. at (i)))
-	      theTime. replace (i, 1, '-');
-	QString suggestedFileName =
-                               saveDir + "Qt-DAB-scan" + "-" + theTime;
-
-	fprintf (stderr, "suggested filename %s\n",
-                                    suggestedFileName. toLatin1 (). data ());
-	QString fileName = QFileDialog::getSaveFileName (this,
-                                                tr ("Save file ..."),
-                                                suggestedFileName + ".txt",
-                                                tr ("Text (*.txt)"));
-	return  fopen (fileName. toUtf8 (). data (), "w");
-}
 
 void	RadioInterface::new_presetIndex (int index) {
 	if (presetSelector -> currentIndex () == index)
@@ -3762,8 +3550,10 @@ int	index;
 void	RadioInterface::handle_configSetting	() {
 	if (configDisplay -> isHidden ()) 
 	   configDisplay -> show ();
-	else
+	else {
+	   theBand. hide ();
 	   configDisplay -> hide ();
+	}
 }
 
 void	RadioInterface::handle_muteTimeSetting	(int newV) {

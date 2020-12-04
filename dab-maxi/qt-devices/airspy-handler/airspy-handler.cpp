@@ -250,6 +250,7 @@ uint32_t samplerateCount;
 
 	airspyHandler::~airspyHandler() {
 	stopReader ();
+	myFrame. hide ();
 	airspySettings	-> beginGroup ("airspySettings");
 	airspySettings -> setValue ("linearity", linearitySlider -> value());
 	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());

@@ -58,6 +58,7 @@
 #include	"correlation-viewer.h"
 #include	"snr-viewer.h"
 
+#include	"findfilenames.h"
 class	QSettings;
 class	deviceHandler;
 class	audioBase;
@@ -109,12 +110,13 @@ private:
 	tiiViewer		my_tiiViewer;
 	snrViewer		my_snrViewer;
 	presetHandler		my_presetHandler;
+	bandHandler		theBand;
+	scannerTable		theTable;
+	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
 	int			serviceOrder;
 	bool			error_report;
-	bandHandler		theBand;
-	scannerTable		theTable;
 	Ui_technical_data	techData;
 	QFrame			*dataDisplay;
 	Ui_configWidget		configWidget;
@@ -162,6 +164,7 @@ private:
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
+	FILE			*scanDumpFile;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
@@ -205,15 +208,6 @@ private:
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
-	FILE			*findContentDump_fileName	(const QString &);
-	FILE			*findFrameDump_fileName	(const QString &,
-	                                                 const QString &);
-	SNDFILE			*findAudioDump_fileName	(const QString &,
-	                                                 const QString &);
-	SNDFILE			*findRawDump_fileName	(const QString &,
-	                                                 const QString &);
-	FILE			*findScanDump_FileName	();
-	FILE			*scanDumpFile;
 	void			stopScanning		(bool);
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
@@ -292,7 +286,7 @@ public slots:
 	                                                 int, const QString &);
 	void			epgTimer_timeOut	();
 #endif
-
+	void			switchVisibility	(QWidget *);
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();

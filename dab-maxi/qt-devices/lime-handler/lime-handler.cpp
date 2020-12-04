@@ -175,6 +175,7 @@ lms_info_str_t limedevices [10];
 	running. store (false);
 	while (isRunning())
 	   usleep (100);
+	myFrame. hide ();
 	limeSettings	-> beginGroup ("limeSettings");
 	limeSettings	-> setValue ("antenna", antennaList -> currentText());
 	limeSettings	-> setValue ("gain", gainSelector -> value());
