@@ -191,6 +191,20 @@ uint8_t convert (QString s) {
 	return 1;
 }
 
+#ifdef	__LOGGING__
+void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
+QString theTime	= QDateTime::currentDateTime (). toString ();
+	if (logFile == nullptr)
+	   return;
+	fprintf (logFile, "at %s: %s %s\n",
+	              theTime. toLatin1 (). data (),
+	              a1. toLatin1 (). data (), a2. toLatin1 (). data ());
+}
+#else
+void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
+	(void)a1; (void)a2;
+}
+#endif
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
@@ -298,6 +312,8 @@ uint8_t	dabBand;
 	techData. setupUi (dataDisplay);
 	techData. timeTable_button -> hide ();
 
+	epgLabel	-> hide ();
+	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (configDisplay);
 
@@ -312,6 +328,12 @@ uint8_t	dabBand;
 	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 312). toInt ());
 	dabSettings	-> endGroup ();
 //
+#ifdef	__LOGGING__
+	logFile		= nullptr;
+	QString abc	= dabSettings	-> value ("logFile", ""). toString ();
+	if (abc != "")
+	   logFile	= fopen (abc. toLatin1 (). data (), "a");
+#endif
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
 	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
@@ -408,6 +430,9 @@ uint8_t	dabBand;
 	dabBand         = t == "VHF Band III" ?  BAND_III : L_BAND;
 
 	theBand. setupChannels  (channelSelector, dabBand);
+	QString skipfileName	= 
+	               dabSettings	-> value ("skipFile", ""). toString ();
+	theBand. setup_skipList (skipfileName);
 
 	QPalette p	= ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::red);
@@ -600,6 +625,8 @@ uint8_t	dabBand;
 	currentServiceDescriptor	= nullptr;
 
 	if (inputDevice != nullptr) {
+	   LOG ("start with ",
+	            inputDevice -> deviceName (). toLatin1 (). data ());
 	   if (doStart ()) {
 	      qApp	-> installEventFilter (this);
 	      return;
@@ -610,6 +637,7 @@ uint8_t	dabBand;
 	   }
 	}
 
+	LOG ("starting without device ", "");
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
@@ -1180,7 +1208,13 @@ void	RadioInterface::TerminateProcess () {
 	dataDisplay	->  hide();
 	if (motSlides != nullptr)
 	   motSlides	-> hide ();
+	LOG ("terminating ", "");
 	usleep (1000);		// pending signals
+#ifdef	__LOGGING__
+	if (logFile != nullptr)
+	   fclose (logFile);
+	logFile	= nullptr;
+#endif
 //	everything should be halted by now
 
 	dabSettings	-> sync ();
@@ -1529,6 +1563,8 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   fprintf (stderr, "device is deleted\n");
 	   inputDevice = nullptr;
 	}
+	LOG ("selecting ", 
+	            deviceName. toLatin1 (). data ());
 	fprintf (stderr, "going for a device %s\n", deviceName. toLatin1 (). data ());
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
@@ -2117,6 +2153,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_snrLengthSelector (int)));
 	connect (configWidget. skipList_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_skipList_button ()));
+	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_skipFile_button ()));
 }
 
 void	RadioInterface::disconnectGUI() {
@@ -2193,6 +2231,8 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_snrLengthSelector (int)));
 	disconnect (configWidget. skipList_button, SIGNAL (clicked ()),
 	            this, SLOT (handle_skipList_button ()));
+	disconnect (configWidget. skipFile_button, SIGNAL (clicked ()),
+	            this, SLOT (handle_skipFile_button ()));
 }
 //
 #include <QCloseEvent>
@@ -2479,7 +2519,8 @@ QString serviceName	= s -> serviceName;
 
 	currentService		= *s;
 	currentService. valid	= false;
-
+	LOG ("start service ", serviceName. toLatin1 (). data ());
+	LOG ("service has SNR ", QString::number (snrDisplay -> value ()));
 
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
@@ -2807,6 +2848,7 @@ void	RadioInterface::stopChannel	() {
 	stop_audioDumping	();
         soundOut	-> stop ();
 	stop_muting		();
+	epgLabel	-> hide ();
 //	note framedumping - if any - was already stopped
 #ifdef	TRY_EPG
 	epgTimer. stop		();
@@ -2855,6 +2897,7 @@ void    RadioInterface::selectChannel (const QString &channel) {
 	if (!running. load ())
 	   return;
 
+	LOG ("select channel ", channel. toLatin1 (). data ());
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
 	stopScanning	(false);
@@ -3709,6 +3752,8 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         return;
 	      if (pd. DSCTy != 60)
 	         break;
+	      LOG ("hidden service started ", serv. name);
+	      epgLabel	-> show ();
 	      fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toLatin1 (). data ());
 	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
@@ -3771,5 +3816,11 @@ void	RadioInterface::handle_skipList_button () {
 	}
 	else
 	   theBand. show ();
+}
+
+void	RadioInterface::handle_skipFile_button	() {
+const QString fileName	= filenameFinder. findskipFile_fileName ();
+	theBand. saveSettings ();
+	theBand. setup_skipList (fileName);
 }
 

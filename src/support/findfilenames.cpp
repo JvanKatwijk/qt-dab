@@ -26,7 +26,7 @@
 #include	<QDebug>
 static inline
 bool    isValid (QChar c) {
-        return c. isLetter () || c. isDigit () || (c == '-');
+	return c. isLetter () || c. isDigit () || (c == '-');
 }
 
 	findfileNames::findfileNames (QSettings *s) {
@@ -68,9 +68,9 @@ QString suggestedFileName;
 	}
 
 	QString	dumper	= QDir::fromNativeSeparators (fileName);
-        int x           = dumper. lastIndexOf ("/");
-        saveDir         = dumper. remove (x, dumper. count () - x);
-        dabSettings     -> setValue ("contentDir", saveDir);
+	int x           = dumper. lastIndexOf ("/");
+	saveDir         = dumper. remove (x, dumper. count () - x);
+	dabSettings     -> setValue ("contentDir", saveDir);
 	return fileP;
 }
 
@@ -215,7 +215,7 @@ FILE	*findfileNames::findScanDump_fileName		() {
 	   return nullptr;
 
 	QString   saveDir = dabSettings -> value ("contentDir",
-                                                QDir::homePath ()). toString ();
+	                                        QDir::homePath ()). toString ();
 
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
@@ -225,12 +225,12 @@ FILE	*findfileNames::findScanDump_fileName		() {
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 	QString suggestedFileName =
-                               saveDir + "Qt-DAB-scan" + "-" + theTime + ".txt";
+	                       saveDir + "Qt-DAB-scan" + "-" + theTime + ".txt";
 
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
-                                                         "Save file ...",
-                                                         suggestedFileName,
-                                                         "Text (*.txt)");
+	                                                 "Save file ...",
+	                                                 suggestedFileName,
+	                                                 "Text (*.txt)");
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
 
@@ -244,7 +244,7 @@ FILE	*findfileNames::findSummary_fileName	() {
 	   return nullptr;
 
 	QString   saveDir = dabSettings -> value ("contentDir",
-                                                QDir::homePath ()). toString ();
+	                                        QDir::homePath ()). toString ();
 
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
@@ -254,12 +254,35 @@ FILE	*findfileNames::findSummary_fileName	() {
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 	QString suggestedFileName =
-                          saveDir + "Qt-DAB-summary" + "-" + theTime + ".txt";
+	                  saveDir + "Qt-DAB-summary" + "-" + theTime + ".txt";
 
 	QString fileName = QFileDialog::getSaveFileName (nullptr,
-                                                         "Save file ...",
-                                                         suggestedFileName,
-                                                         "Text (*.txt)");
+	                                                 "Save file ...",
+	                                                 suggestedFileName,
+	                                                 "Text (*.txt)");
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
+
+const
+QString	findfileNames::findskipFile_fileName	() {
+	QString   saveDir = dabSettings -> value ("contentDir",
+	                                        QDir::homePath ()). toString ();
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	QString suggestedFileName =
+	                  saveDir + "Qt-DAB-skipFile" + ".xml";
+
+	QString fileName =
+	   QFileDialog::getSaveFileName (nullptr,
+	                                 "Open file ...",
+	                                 suggestedFileName,
+	                                 "Xml (*.xml)", 0,
+	                                 QFileDialog::DontConfirmOverwrite);
+	fileName	= QDir::toNativeSeparators (fileName);
+	return  fileName;
+}
+
+
 

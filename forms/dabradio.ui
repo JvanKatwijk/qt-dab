@@ -425,6 +425,13 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="epgLabel">
+            <property name="text">
+             <string>EPG</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QLabel" name="alarmLabel">
             <property name="text">
              <string>Alarm</string>

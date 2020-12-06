@@ -336,6 +336,7 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
+DEFINES	+= __LOGGING__
 CONFIG		+= try-epg		# do not use
 CONFIG		+= PC
 #CONFIG		+= RPI

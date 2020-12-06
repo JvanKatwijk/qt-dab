@@ -35,6 +35,7 @@
 #include	"band-handler.h"
 #include	"dab-constants.h"
 #include	<QHeaderView>
+#include	<QDomDocument>
 #include	<stdio.h>
 
 static
@@ -110,6 +111,7 @@ dabFrequencies alternatives [100];
 FILE	*f;
 	selectedBand		= nullptr;
 	dabSettings		= s;
+	fileName 		= "";
 
 	theTable. setColumnCount (2);
 	QStringList header;
@@ -149,56 +151,152 @@ FILE	*f;
 	}
 
 	free (line);
+	alternatives [filler]. key 	= "";
 	alternatives [filler]. fKHz	= 0;
 	fclose (f);
 	selectedBand	= alternatives;
 #endif
 }
-
+//
+//	note that saving settings has to be done separately
 	bandHandler::~bandHandler () {
 	if (!theTable. isHidden ())
 	   theTable. hide ();
 }
-
-void	bandHandler::saveSettings () {
-	dabSettings	-> beginGroup ("skipTable");
-	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
-	   if (selectedBand [i]. skip)
-	      dabSettings	-> setValue (selectedBand [i]. key, 1);
-	   else
-	      dabSettings	-> remove (selectedBand [i]. key);
-	}
-	dabSettings	-> endGroup ();
-}
-
+//
+//	The main program calls this once, the combobox will be filled
 void	bandHandler::setupChannels (QComboBox *s, uint8_t band) {
 int16_t	i;
 int16_t	c	= s -> count();
 
-	if (selectedBand == nullptr)	// preset band
+	if (selectedBand == nullptr) {	// no preset band
 	   if (band == BAND_III)
 	      selectedBand = frequencies_1;
 	   else
 	      selectedBand = frequencies_2;
+	}
 
 //	clear the fields in the comboBox
 	for (i = 0; i < c; i ++) 
 	   s	-> removeItem (c - (i + 1));
-
-	dabSettings	->  beginGroup ("skipTable");
-	for (i = 0; selectedBand [i]. key != nullptr; i ++) {
+//
+//	The table elements are by default all "+";
+	for (int i = 0; selectedBand [i]. fKHz != 0; i ++)  {
 	   s -> insertItem (i, selectedBand [i]. key, QVariant (i));
-	   bool skipValue =
-	         dabSettings -> value (selectedBand [i]. key, 0). toInt () == 1;
-	   selectedBand [i]. skip = skipValue;
 	   theTable. insertRow (i);
-	   theTable. setItem (i, 0, new QTableWidgetItem (selectedBand [i]. key));
-	   theTable. setItem (i, 1, new QTableWidgetItem (
-	                selectedBand [i]. skip ? QString ("-") : QString ("+")));
+	   theTable. setItem (i, 0,
+	                   new QTableWidgetItem (selectedBand [i]. key));
+	   theTable. setItem (i, 1,
+	                   new QTableWidgetItem (QString ("+")));
 	}
-	dabSettings	-> endGroup ();
+}
+//
+//	Note that we only save the channels to be skipped
+void	bandHandler::saveSettings () {
+	if (!theTable. isHidden ())
+	   theTable. hide ();
+
+	if (fileName == "") {
+	   dabSettings	-> beginGroup ("skipTable");
+	   for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	      if (selectedBand [i]. skip)
+	         dabSettings	-> setValue (selectedBand [i]. key, 1);
+	      else
+	         dabSettings	-> remove (selectedBand [i]. key);
+	   }
+	   dabSettings	-> endGroup ();
+	}
+	else {
+	   QDomDocument skipList;
+	   QDomElement root;
+
+	   root	= skipList. createElement ("skipList");
+	   skipList. appendChild (root);
+
+	   for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	      if (!selectedBand [i]. skip)
+	         continue;
+	      QDomElement skipElement = skipList.
+	                                createElement ("BAND_ELEMENT");
+	      skipElement. setAttribute ("CHANNEL", selectedBand [i]. key);
+	      skipElement. setAttribute ("VALUE", "-");
+	      root. appendChild (skipElement);
+	   }
+
+	   QFile file (fileName);
+           if (!file. open (QIODevice::WriteOnly | QIODevice::Text))
+              return;
+
+           QTextStream stream (&file);
+           stream << skipList. toString ();
+           file. close ();
+	}
+}
+
+//
+// when setup_skipList is called, we start with blacklisting all entries
+//
+void	bandHandler::setup_skipList (const QString &fileName) {
+	disconnect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
+	            this, SLOT (cellSelected (int, int)));
+	for (int i = 0; selectedBand [i]. fKHz > 0; i ++) {
+	   selectedBand [i]. skip = false;
+	   theTable. item (i, 1) -> setText ("+");
+	}
+
+	this	-> fileName	= fileName;
+	if (fileName == "")
+	   default_skipList ();
+	else
+	   file_skipList (fileName);
+
 	connect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
 	         this, SLOT (cellSelected (int, int)));
+}
+//
+//	default setting in the ini file!!
+void	bandHandler::default_skipList () {
+	dabSettings	->  beginGroup ("skipTable");
+	for (int i = 0; selectedBand [i]. fKHz != 0; i ++) {
+	   bool skipValue =
+	         dabSettings -> value (selectedBand [i]. key, 0). toInt () == 1;
+	   if (skipValue) {
+	      selectedBand [i]. skip = true;
+	      theTable. item (i, 1) -> setText ("-");
+	   }
+	   
+	}
+	dabSettings	-> endGroup ();
+}
+
+void	bandHandler::file_skipList	(const QString &fileName) {
+QDomDocument xml_bestand;
+
+	QFile f (fileName);
+	if (f. open (QIODevice::ReadOnly)) {
+	   xml_bestand. setContent (&f);
+	   QDomElement root	= xml_bestand. documentElement ();
+	   QDomElement component	= root. firstChild (). toElement ();
+	   while (!component. isNull ()) {
+	      if (component. tagName () == "BAND_ELEMENT") {
+	         QString channel = component. attribute ("CHANNEL", "???");
+	         QString skipItem = component. attribute ("VALUE", "+");
+	         if ((channel != "???") && (skipItem == "-")) 
+	            update (channel);
+	      }
+	      component = component. nextSibling (). toElement ();
+	   }
+	}
+}
+
+void	bandHandler::update (const QString &channel) {
+	for (int i = 0; selectedBand [i]. key != nullptr; i ++)  {
+	   if (selectedBand [i]. key == channel) {
+	      selectedBand [i]. skip = true;
+	      theTable. item (i, 1) -> setText ("-");
+	      return;
+	   }
+	}
 }
 
 //	find the frequency for a given channel in a given band
@@ -265,9 +363,9 @@ int	amount_P	= 0;
 	else
            theTable. item (row, 1) -> setText ("-");
 	selectedBand [row]. skip = s2 != "-";
-	fprintf (stderr, "we zetten voor %s de zaak op %d\n",
-	              selectedBand [row]. key. toLatin1 (). data (),
-	              selectedBand [row]. skip);
+//	fprintf (stderr, "we zetten voor %s de zaak op %d\n",
+//	              selectedBand [row]. key. toLatin1 (). data (),
+//	              selectedBand [row]. skip);
 }
 
 void	bandHandler::show () {

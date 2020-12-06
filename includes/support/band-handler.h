@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017
+ *    Copyright (C) 2015 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB program
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -28,22 +29,27 @@
 #include	<QString>
 #include	<QSettings>
 #include	<QTableWidget>
+#include	<QFile>
+#include	<QtXml>
+#include	<stdio.h>
 //
 //	a simple convenience class
 //
-
 
 typedef struct {
 	QString key;
 	int	fKHz;
 	bool	skip;
 } dabFrequencies;
+
 class bandHandler: public QObject {
 Q_OBJECT
 public:
 		bandHandler	(const QString &, QSettings *);
 		~bandHandler	();
+	void    saveSettings	();
 	void	setupChannels	(QComboBox *s, uint8_t band);
+	void	setup_skipList	(const QString &);
 	int32_t Frequency	(QString Channel);
 	int	firstChannel	();
 	int	nextChannel	(int);
@@ -51,15 +57,18 @@ public:
 	void	show		();
 	void	hide		();
 	bool	isHidden	();
-	void    saveSettings	();
 
 public slots:
 	void	cellSelected	(int, int);
 private:
 	QSettings		*dabSettings;
-	int	lastOf		(dabFrequencies *);
+	QString			fileName;
+	int			lastOf			(dabFrequencies *);
 	dabFrequencies		*selectedBand;
 	QTableWidget		theTable;
+	void			default_skipList	();
+	void			file_skipList		(const QString &);
+	void			update			(const QString &);
 };
 #endif
 

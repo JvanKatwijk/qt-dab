@@ -44,5 +44,7 @@ SNDFILE *findRawDump_fileName		(const QString &deviceName,
 	                                       const QString &channelName);
 FILE	*findScanDump_fileName		();
 FILE	*findSummary_fileName		();
+const 
+QString	findskipFile_fileName		();
 };
 

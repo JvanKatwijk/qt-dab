@@ -485,16 +485,23 @@ and - the dip - when switching antennas.
 ----------------------------------------------------------------------
 
 As known, Qt-DAB provides a possibility of scanning the band. Band III
-contains 39 channels, so there are - depending on your position -
+contains 39 channels, so - depending on your position - the is
 quite a number of channels where absolutely no DAB signal is.
 
-As in **dabChannel**, Qt-DAB has a mechanism to skip specified channels.
+As in **dabChannel**, Qt-DAB has an extended mechanism to skip
+specified channels during a scan, a **skipTable**.
 The configuration widget contains a button to make the **skipTable**
 visible. The skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
 Double clicking on the field will invert its setting.
 
-Obviously, settings are maintained between program invocations.
+When DX-ing, one obviously wants to direct the antenna to different countries,
+so ideally there is a skipTable for each direction. 
+Qt-DAB supports that, the configuration widget contains a button **skipFile**,
+when touched a file selection menu appears where one can select a skipfile.
+If the file does not exist yet, it will be created.
+If one cancels the file selection, the default skipTable will be used,
+the same table that is used when no skipFile is selected.
 
 -----------------------------------------------------------------------
 # Copyright

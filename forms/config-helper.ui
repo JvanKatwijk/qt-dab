@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>332</width>
-    <height>514</height>
+    <width>343</width>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -128,9 +128,16 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="skipList_button">
+      <widget class="smallPushButton" name="skipList_button">
        <property name="text">
         <string>skipList</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="skipFile_button">
+       <property name="text">
+        <string>skipFile</string>
        </property>
       </widget>
      </item>

@@ -115,6 +115,11 @@ private:
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
+#ifdef	__LOGGING__
+	FILE			*logFile;
+#endif
+	void			LOG		(const QString &,
+	                                           const QString &);
 	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
@@ -349,13 +354,13 @@ private slots:
 	void			color_configButton	();
 //
 //	config handlers
-	void			handle_configSetting	();
-	void			handle_muteTimeSetting	(int);
-	void			handle_switchDelaySetting (int);
-	void			handle_orderAlfabetical	();
-	void			handle_orderServiceIds	();
+	void			handle_configSetting		();
+	void			handle_muteTimeSetting		(int);
+	void			handle_switchDelaySetting 	(int);
+	void			handle_orderAlfabetical		();
+	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
-	void			handle_alarmSelector	(const QString &);
+	void			handle_alarmSelector		(const QString &);
 	void			handle_setTime_button		();
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);
@@ -363,5 +368,6 @@ private slots:
 	void			handle_snrHeightSelector	(int);
 	void			handle_snrLengthSelector	(int);
 	void			handle_skipList_button		();
+	void			handle_skipFile_button		();
 };
 #endif
