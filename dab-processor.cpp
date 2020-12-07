@@ -288,6 +288,21 @@ SyncOnPhase:
 	   cLevel	= 0;
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
+	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
+	      myReader. getSamples (ofdmBuffer. data(),
+	                              T_s, coarseOffset + fineOffset);
+	      sampleCount += T_s;
+	      for (i = (int)T_u; i < (int)T_s; i ++) {
+	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
+	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
+	         cCount += 2;
+	      }
+	      my_ofdmDecoder. decode (ofdmBuffer,
+	                            ofdmSymbolCount, ibits. data());
+	      my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
+
+	   }
+	   for (int ofdmSymbolCount = 4;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
@@ -297,12 +312,6 @@ SyncOnPhase:
 	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	         cCount += 2;
 	      }
-	      if (ofdmSymbolCount < 4) {
-	         my_ofdmDecoder. decode (ofdmBuffer,
-	                            ofdmSymbolCount, ibits. data());
-	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-	      }
-
 	      if (!scanMode)
 	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
@@ -320,7 +329,7 @@ SyncOnPhase:
 	   sum /= T_null;
 	   static	float snr	= 0;
 	   snr = 0.9 * snr +
-	     0.1 * 10 * log10 ((myReader. get_sLevel() + 0.005) / sum);
+	     0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
 	   static int ccc	= 0;
 	   if (++ccc >= 2 ) {
 	      ccc = 0;

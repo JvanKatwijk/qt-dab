@@ -21,16 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 //
-//	The issue:
-//	suppose that someone wants to add some - non official -
-//	frequencies, e.g. amateur bands.
-//	Should be possible!
-//	We therefore use the "frequencies_1" and "frequencies_2"
-//	tables for initializing the "bandIII" and "LBand" tables
-//	and provide for another table for a supplied table.
 //
-//	added functions to find the first, the next and the previous
-//	in the band wrt the skipTable
+//	The band handler now manages the skipTable
 //
 #include	"band-handler.h"
 #include	"dab-constants.h"
@@ -191,7 +183,7 @@ int16_t	c	= s -> count();
 	}
 }
 //
-//	Note that we only save the channels to be skipped
+//	Note that we only save the channels that are to be skipped
 void	bandHandler::saveSettings () {
 	if (!theTable. isHidden ())
 	   theTable. hide ();
@@ -234,7 +226,7 @@ void	bandHandler::saveSettings () {
 }
 
 //
-// when setup_skipList is called, we start with blacklisting all entries
+//	when setup_skipList is called, we start with blacklisting all entries
 //
 void	bandHandler::setup_skipList (const QString &fileName) {
 	disconnect (&theTable, SIGNAL (cellDoubleClicked (int, int)),
@@ -282,14 +274,14 @@ QDomDocument xml_bestand;
 	         QString channel = component. attribute ("CHANNEL", "???");
 	         QString skipItem = component. attribute ("VALUE", "+");
 	         if ((channel != "???") && (skipItem == "-")) 
-	            update (channel);
+	            updateEntry (channel);
 	      }
 	      component = component. nextSibling (). toElement ();
 	   }
 	}
 }
 
-void	bandHandler::update (const QString &channel) {
+void	bandHandler::updateEntry (const QString &channel) {
 	for (int i = 0; selectedBand [i]. key != nullptr; i ++)  {
 	   if (selectedBand [i]. key == channel) {
 	      selectedBand [i]. skip = true;

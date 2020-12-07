@@ -86,15 +86,15 @@ bool	firstData;
 	   return;
 
 	fprintf (file_P, "\n\n\n");
-	fprintf (file_P, "%s; ensembleId %X; channel %s; frequency %d; nr services %d; time  %s; transmitters %s; %s; \n\n",
+	fprintf (file_P, "%s; %s; %X; frequency %d; transmitterId(s) %s; %s; nr services %d;%s \n\n",
+	                  currentChannel. toUtf8(). data(),
 	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,
-	                  currentChannel. toUtf8(). data(),
 	                  frequency / 1000,
-	                  Services. size (),
-	                  theTime. toUtf8(). data (),
 	                  textfor (transmitters). toLatin1 (). data (),
-	                  SNR. toLatin1 (). data ());
+	                  SNR. toLatin1 (). data (),
+	                  Services. size (),
+	                  theTime. toUtf8(). data ());
 }
 
 

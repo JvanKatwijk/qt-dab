@@ -37,16 +37,16 @@ Introduction
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
 
-While Qt-DAB provides an extensive **scan** function, 
-a separate **dab-scanner** exists as well that allows
-for a continuous scanning of selected channels in a given band. Results are 
-written in a text file, formatted for use with *LibreOffice Calc* and
-comparable programs. (Note that in **Qt-DAB-3.7** the scan function
-has an option to save detailed data in a text file, compatible with e.g.
-LibreOffice.)
+While it is not very complicated to generate an executable, for Linux-x64
+an appImage exists that will run Qt-DAB instantly, and for Windows an installer
+is available.
+
+The main difference between 3.7 and its predecessor is the introduction
+of **skipTables**. Such a table allows the specification of channels
+that can be skipped duting a scan.
 
 Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
-"command lines", from time to time I just prefer a simple command line
+"command lines", from time to time I often prefer a simple command line
 driven device. Therefore, a **terminal-DAB-xxx** version was developed, a
 simpler version, just for listening to a DAB service, making use of 
 command line
@@ -486,7 +486,7 @@ and - the dip - when switching antennas.
 
 As known, Qt-DAB provides a possibility of scanning the band. Band III
 contains 39 channels, so - depending on your position - the is
-quite a number of channels where absolutely no DAB signal is.
+quite a number of channels where no DAB signal is.
 
 As in **dabChannel**, Qt-DAB has an extended mechanism to skip
 specified channels during a scan, a **skipTable**.
@@ -494,12 +494,15 @@ The configuration widget contains a button to make the **skipTable**
 visible. The skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
 Double clicking on the field will invert its setting.
+Obviously. such a skipTable will be maintained between program invocations.
 
-When DX-ing, one obviously wants to direct the antenna to different countries,
-so ideally there is a skipTable for each direction. 
-Qt-DAB supports that, the configuration widget contains a button **skipFile**,
+When DX-ing, one wants to direct the antenna to different countries
+in different directions.
+Ideally there is a skipTable for each direction, and
+Qt-DAB supports that.
+The configuration widget contains a button **skipFile**,
 when touched a file selection menu appears where one can select a skipfile.
-If the file does not exist yet, it will be created.
+**If the file does not exist yet, it will be created.**
 If one cancels the file selection, the default skipTable will be used,
 the same table that is used when no skipFile is selected.
 

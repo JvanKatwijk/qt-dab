@@ -1695,7 +1695,7 @@ static int delayCount = 1;
 	   snrDisplay	-> display (s);
 	   if (!my_snrViewer. isHidden ()) {
 	      my_snrViewer.
-	            add_snr (10 * log10 ((sig + 0.005) / (noise + 0.005)));
+	            add_snr (20 * log10 ((sig + 0.005) / (noise + 0.005)));
 	      delayCount --;
 	      if (delayCount <= 0) {
 	         my_snrViewer. show_snr ();

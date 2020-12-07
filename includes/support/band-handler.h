@@ -68,7 +68,7 @@ private:
 	QTableWidget		theTable;
 	void			default_skipList	();
 	void			file_skipList		(const QString &);
-	void			update			(const QString &);
+	void			updateEntry		(const QString &);
 };
 #endif
 
