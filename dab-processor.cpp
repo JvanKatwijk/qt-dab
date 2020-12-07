@@ -300,8 +300,11 @@ SyncOnPhase:
 	      my_ofdmDecoder. decode (ofdmBuffer,
 	                            ofdmSymbolCount, ibits. data());
 	      my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-
+	      if (!scanMode)
+	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
+	                                                    ofdmSymbolCount);
 	   }
+
 	   for (int ofdmSymbolCount = 4;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),
@@ -313,8 +316,9 @@ SyncOnPhase:
 	         cCount += 2;
 	      }
 	      if (!scanMode)
-	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
-	                                                    ofdmSymbolCount);
+                 my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
+                                                            ofdmSymbolCount);
+
 	   }
 /**
   *	OK,  here we are at the end of the frame
