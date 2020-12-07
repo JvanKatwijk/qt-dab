@@ -27,6 +27,7 @@
 #include	<QObject>
 #include	<QFrame>
 #include	<QFileDialog>
+#include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"

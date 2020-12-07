@@ -3050,7 +3050,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   }
 	   else {  // we just continue
 	      if (cc >= channelSelector -> count ())
-	         cc = 0;
+	         cc = theBand. firstChannel ();
 //	To avoid reaction of the system on setting a different value:
 	      new_channelIndex (cc);
 
