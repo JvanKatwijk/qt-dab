@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>516</height>
+    <height>564</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -110,6 +110,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="QComboBox" name="scanmodeSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of three modes for scanning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <item>
         <property name="text">
          <string>single scan</string>
@@ -129,6 +132,9 @@
      </item>
      <item>
       <widget class="smallPushButton" name="skipList_button">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the skipList. Updates in the skipList will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>skipList</string>
        </property>
@@ -136,6 +142,9 @@
      </item>
      <item>
       <widget class="smallPushButton" name="skipFile_button">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a file for the skipList. If the file does not exist yet, it will be created and initialized with a skipList with no channels set to skip.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>skipFile</string>
        </property>
@@ -145,8 +154,21 @@
    </item>
    <item>
     <widget class="QCheckBox" name="motslideSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;MOT slides can be displayed as (small) part of the technical data widget or in a separate widget. If set, MOT slides are displayed in a separate widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>    MOT slides on separate widget</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="saveServiceSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;save on program exit the name of the current service - if any - and select this service after restarting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>    save service on exit</string>
      </property>
     </widget>
    </item>

@@ -365,6 +365,7 @@ private slots:
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);
 	void			handle_motslideSelector		(int);
+	void			handle_saveServiceSelector	(int);
 	void			handle_snrHeightSelector	(int);
 	void			handle_snrLengthSelector	(int);
 	void			handle_skipList_button		();

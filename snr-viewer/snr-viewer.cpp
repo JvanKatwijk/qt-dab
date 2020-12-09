@@ -26,6 +26,7 @@
 #include	"snr-viewer.h"
 #include	<QSettings>
 #include	<QColor>
+#include	<string.h>
 #include	"color-selector.h"
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
@@ -121,21 +122,15 @@ void	snrViewer::setHeight	(int n) {
 }
 
 void	snrViewer::setLength	(int n) {
-	if (n < plotLength) {
-	   plotLength = n;
-	   Y_Buffer. resize (n);
-	   X_axis. resize (n);
-	}
-	else
+	Y_Buffer. resize (n);
+	X_axis. resize (n);
 	if (n > plotLength) {
-	   Y_Buffer. resize (n);
-	   X_axis. resize (n);
 	   for (int i = plotLength; i < n; i ++) {
 	      Y_Buffer [i] = 0;
-	      X_axis [i] = plotLength + i;
+	      X_axis [i] = i;
 	   }
-	   plotLength = n;
 	}
+	plotLength = n;
 	dabSettings	-> beginGroup ("snrViewer");
 	dabSettings	-> setValue ("snrLength", plotLength);
 	dabSettings	-> endGroup ();
@@ -160,8 +155,8 @@ bool	snrViewer::isHidden () {
 }
 
 void	snrViewer::add_snr	(float snr) {
-	for (int i = plotLength - 1; i > 0; i --)
-	   Y_Buffer [i] = Y_Buffer [i - 1];
+	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
+	                               (plotLength - 1) * sizeof (double));
 	Y_Buffer [0]	= snr;
 #ifdef	__DUMP_SNR__
 	if (snrDumpFile. load () != nullptr)
@@ -171,7 +166,7 @@ void	snrViewer::add_snr	(float snr) {
 
 void	snrViewer::show_snr () {
 	spectrumCurve. setSamples (X_axis. data (),
-	                                Y_Buffer. data (), plotLength);
+	                           Y_Buffer. data (), plotLength);
 	plotgrid	-> replot (); 
 }
 

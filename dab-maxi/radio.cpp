@@ -282,7 +282,8 @@ uint8_t	dabBand;
 	currentService. valid	= false;
 	nextService. valid	= false;
 	bool has_presetName	=
-	              dabSettings -> value ("has-presetName", 1). toInt() != 0;
+	              dabSettings -> value ("has-presetName", 0). toInt() != 0;
+
 	if (has_presetName) {
 	   presetName		=
 	              dabSettings -> value ("presetname", ""). toString();
@@ -302,6 +303,7 @@ uint8_t	dabBand;
 	if (saveSlides != 0)
 	   set_picturePath ();
 
+	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
 
@@ -322,6 +324,8 @@ uint8_t	dabBand;
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
+	if (dabSettings -> value ("has-presetName", 0). toInt () == 1)
+	   configWidget. saveServiceSelector -> setChecked (true);
 
 	dabSettings	-> beginGroup ("snrViewer");
 	configWidget. snrHeightSelector -> setValue (dabSettings -> value ("snrHeight", 15). toInt ());
@@ -401,7 +405,6 @@ uint8_t	dabBand;
 	connect (&epgProcessor,
 	             SIGNAL (set_epgData (int, int, const QString &)),
 	         this, SLOT (set_epgData (int, int, const QString &)));
-	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((epgPath != "") && (!epgPath. endsWith ("/")))
 	   epgPath = epgPath + "/";
 //	timer for autostart epg service
@@ -2147,6 +2150,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_scanmodeSelector (int)));
 	connect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_motslideSelector (int)));
+	connect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveServiceSelector (int)));
 	connect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_snrHeightSelector (int)));
 	connect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
@@ -2225,6 +2230,8 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_scanmodeSelector (int)));
 	disconnect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_motslideSelector (int)));
+	disconnect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
+	            this, SLOT (handle_saveServiceSelector (int)));
 	disconnect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_snrHeightSelector (int)));
 	disconnect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
@@ -2521,7 +2528,7 @@ QString serviceName	= s -> serviceName;
 	currentService. valid	= false;
 	LOG ("start service ", serviceName. toLatin1 (). data ());
 	LOG ("service has SNR ", QString::number (snrDisplay -> value ()));
-
+	techData. timeTable_button -> hide ();
 	int rowCount	= model. rowCount ();
 	for (int i = 0; i < rowCount; i ++) {
 	   QString itemText =
@@ -2607,6 +2614,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	                        currentHour, currentMinute);
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
+	currentService. valid	= true;
 
 	(void)my_dabProcessor -> set_audioChannel (ad, &audioBuffer);
 	for (int i = 1; i < 10; i ++) {
@@ -3619,6 +3627,12 @@ void	RadioInterface::handle_motslideSelector		(int d) {
 	(void)d;
 	dabSettings	-> setValue ("motSlides",
 	                              configWidget. motslideSelector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_saveServiceSelector	(int d) {
+	(void)d;
+	dabSettings	-> setValue ("has-presetName",
+	                             configWidget. saveServiceSelector -> isChecked () ? 1 : 0);
 }
 
 void	RadioInterface::handle_snrHeightSelector	(int d) {
