@@ -75,8 +75,6 @@ float	Phi_k;
 	
 	connect (this, SIGNAL (showCorrelation (int, int)),
 	         mr,   SLOT   (showCorrelation (int, int)));
-	connect (this, SIGNAL (showIndex   (int)),
-	         mr,   SLOT   (showIndex   (int)));
 }
 
 	phaseReference::~phaseReference() {
@@ -131,45 +129,15 @@ std::vector<int> resultVector;
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);
 	}
-	else 
-	   resultVector. push_back (maxIndex);	
-
-	if (threshold <= 3)	//	
-	   return maxIndex;
-	for (int k = 0; k < depth; k ++) {
-	   float MMax = 0;
-	   int	lIndex = -1;
-	   for (i = T_g - 100; i < T_g / 2 + 200; i ++) {
-	      if (lbuf [i] > MMax) {
-	         MMax = lbuf [i];
-	         lIndex = i;
-	      }
-	   }
-	   if (0.7 * MMax < Max)
-	      break;
-	   if (lIndex > 0) {
-	      resultVector . push_back (lIndex);
-	      for (i = lIndex - 15; i < lIndex + 15; i ++)
-	         lbuf [i] = 0;
-	   }
-	   else
-	      break;
-	}
 
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
 	      showCorrelation (T_u / 2, T_g);
 	      displayCounter	= 0;
-	      if (resultVector. at (0) > 0) {
-	         showIndex (-1);
-	         for (i = 1; i < (int)(resultVector. size()); i ++)
-	            showIndex (resultVector. at (i));
-	         showIndex (0);
-	      }
 	   }
 	}
-	return resultVector. at (0);
+	return maxIndex;
 }
 //
 //

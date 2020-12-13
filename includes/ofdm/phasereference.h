@@ -64,7 +64,6 @@ private:
 	int32_t		displayCounter;
 signals:
 	void		showCorrelation	(int, int);
-	void		showIndex	(int);
 };
 #endif
 

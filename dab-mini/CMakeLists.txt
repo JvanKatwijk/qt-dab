@@ -318,6 +318,7 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/support/verysmallpushbutton.h
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/smallspinbox.h
+	     ../includes/support/band-handler.h
 	)
 
 	set (${objectName}_UIS

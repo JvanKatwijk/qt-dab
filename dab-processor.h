@@ -75,6 +75,7 @@ public:
 	                                             audiodata *);
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
+	int		getSubChId		(const QString &, uint32_t);
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
         QString		get_ensembleName	();

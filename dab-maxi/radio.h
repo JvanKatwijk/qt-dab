@@ -273,7 +273,6 @@ public slots:
 	void			show_motHandling	(bool);
 	void			setSyncLost		();
 	void			showCorrelation		(int, int);
-	void			showIndex		(int);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);

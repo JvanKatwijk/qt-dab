@@ -1367,6 +1367,24 @@ bool	fibDecoder::syncReached() {
 	return  ensemble -> isSynced;
 }
 
+int	fibDecoder::getSubChId	(const QString &s, uint32_t dummy_SId) {
+int serviceIndex	= findService (s);
+	fibLocker. lock();
+
+	int SId		= ensemble	-> services [serviceIndex]. SId;
+	int SCIds	= ensemble	-> services [serviceIndex]. SCIds;
+
+	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
+	if (compIndex == -1) {
+	   fibLocker. unlock ();
+	   return 2000;
+	}
+
+	int subChId = currentConfig -> serviceComps [compIndex]. subchannelId;
+	fibLocker. unlock ();
+	return subChId;
+}
+
 void	fibDecoder::dataforAudioService	(const QString &s, audiodata *ad) {
 int	serviceIndex;
 

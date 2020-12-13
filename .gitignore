@@ -2,7 +2,7 @@
 dab-maxi/linux-bin
 dab-maxi/build
 dab-maxi/Makefile
-/dab-maxi/Output
+dab-maxi/Output
 dab-mini/linux-bin
 dab-mini/Output
 dab-mini/build

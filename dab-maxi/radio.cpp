@@ -238,7 +238,6 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 int16_t	latency;
 int16_t k;
 QString h;
-QString	presetName;
 uint8_t	dabBand;
 
 	dabSettings		= Si;
@@ -279,21 +278,6 @@ uint8_t	dabBand;
 	globals. echo_depth     =
 	          dabSettings -> value ("echo_depth", 1). toInt();
 
-	currentService. valid	= false;
-	nextService. valid	= false;
-	bool has_presetName	=
-	              dabSettings -> value ("has-presetName", 0). toInt() != 0;
-
-	if (has_presetName) {
-	   presetName		=
-	              dabSettings -> value ("presetname", ""). toString();
-	   if (presetName != "") {
-	      nextService. serviceName = presetName;
-	      nextService. SId		= 0;
-	      nextService. SCIds	= 0;
-	      nextService. valid	= true;
-	   }
-	}
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
@@ -324,8 +308,21 @@ uint8_t	dabBand;
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
-	if (dabSettings -> value ("has-presetName", 0). toInt () == 1)
+
+	currentService. valid	= false;
+	nextService. valid	= false;
+
+	if (dabSettings -> value ("has-presetName", 0). toInt () != 0) {
 	   configWidget. saveServiceSelector -> setChecked (true);
+	   QString presetName		=
+	              dabSettings -> value ("presetname", ""). toString();
+	   if (presetName != "") {
+	      nextService. serviceName = presetName;
+	      nextService. SId		= 0;
+	      nextService. SCIds	= 0;
+	      nextService. valid	= true;
+	   }
+	}
 
 	dabSettings	-> beginGroup ("snrViewer");
 	configWidget. snrHeightSelector -> setValue (dabSettings -> value ("snrHeight", 15). toInt ());
@@ -366,7 +363,6 @@ uint8_t	dabBand;
                          setStyleSheet ("QLabel {background-color : red}");
 	alarmLabel		-> setText ("Alarm");
 	alarmLabel		-> hide ();
-
 /*
  */
 #ifdef	DATA_STREAMER
@@ -730,11 +726,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
 	   return;
 
-	if (currentService. valid)
-	   s	-> setValue ("presetname", currentService. serviceName);
-	else
-	   s	-> setValue ("presetname", "");
-
 	s	-> setValue ("channel", channelSelector -> currentText ());
 	s	-> setValue ("device",
 	                      deviceSelector -> currentText());
@@ -779,26 +770,12 @@ int	serviceOrder;
 	serviceId ed;
 	ed. name	= serviceName;
 	ed. SId		= SId;
-	
 	if (isMember (serviceList, ed))
 	   return;
 
+	ed. subChId	= my_dabProcessor -> getSubChId (serviceName, SId);
 	serviceOrder	=
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
-	if (serviceOrder	== SUBCH_BASED) {
-	   audiodata ad;
-	   my_dabProcessor	-> dataforAudioService (serviceName, &ad);
-	   if (ad. defined)
-	      ed. subChId	= ad. subchId;
-	   else {
-	      packetdata pd;
-	      my_dabProcessor	-> dataforPacketService (serviceName, &pd, 0);
-	      if (pd. defined)
-	         ed. subChId	= pd. subchId;
-	      else
-	         ed. subChId	= 2000;
-	   }
-	}
 
 	serviceList = insert (serviceList, ed, serviceOrder);
 	my_history -> addElement (channelSelector -> currentText (),
@@ -818,16 +795,12 @@ int	serviceOrder;
 //	number display of Qt is only 7 segments ...
 static
 QString hextoString (int v) {
-char t [4];
 QString res;
-int     i;
-	for (i = 0; i < 4; i ++) {
-	   t [3 - i] = v & 0xF;
-	   v >>= 4;
-	}
-	for (i = 0; i < 4; i ++) {
-	   QChar c = t [i] <= 9 ? (char) ('0' + t [i]) : (char)('A'+ t [i] - 10);
+	for (int i = 0; i < 4; i ++) {
+	   uint8_t t = (v & 0xF000) >> 12;
+	   QChar c = t <= 9 ? (char)('0' + t) : (char) ('A' + t - 10);
 	   res. append (c);
+	   v <<= 4;
 	}
 	return res;
 }
@@ -1480,31 +1453,19 @@ deviceHandler	*inputDevice	= nullptr;
 	   }
 	}
 	else
-	if (s == "file input (.iq)") {
+	if ((s == "file input (.iq)") || (s == "file input (.raw)")) {
+	   const char *p;
+	   if (s == "file input (.iq)")
+	      p = "iq data (*iq)";
+	   else
+	      p = "raw data (*raw)";
+	   
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath(),
-	                                                tr ("iq data (*.iq)"));
+	                                                tr (p));
 	   if (file == QString (""))
 	      return nullptr;
-	   file		= QDir::toNativeSeparators (file);
-	   try {
-	      inputDevice	= new rawFiles (file);
-	      hideButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("file not found"));
-	      return nullptr;
-	   }
-	}
-	else
-	if (s == "file input (.raw)") {
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("Open file ..."),
-	                                                QDir::homePath(),
-	                                                tr ("raw data (*.raw)"));
-//	      return nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new rawFiles (file);
@@ -1587,12 +1548,13 @@ void	RadioInterface::handle_devicewidgetButton	() {
 
         if (inputDevice -> isHidden ()) {
            inputDevice -> show ();
-	   dabSettings -> setValue ("deviceVisible", 1);
         }
         else {
            inputDevice -> hide ();
-	   dabSettings -> setValue ("deviceVisible", 0);
         }
+
+	dabSettings -> setValue ("deviceVisible",
+	                      inputDevice -> isHidden () ? 0 : 1);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1605,7 +1567,8 @@ const char *monthTable [] = {
 	"jan", "feb", "mar", "apr", "may", "jun",
 	"jul", "aug", "sep", "oct", "nov", "dec"
 };
-
+//
+//	called from the fibDecoder
 void	RadioInterface::clockTime (int year, int month, int day,
 	                                    int hours, int minutes){
 char dayString [3];
@@ -1623,7 +1586,8 @@ char minuteString [3];
 	                       QString (minuteString);
 	localTimeDisplay -> setText (result);
 }
-
+//
+//	called from the MP4 decoder
 void	RadioInterface::show_frameErrors (int s) {
 	if (!running. load ()) 
 	   return;
@@ -1632,10 +1596,12 @@ void	RadioInterface::show_frameErrors (int s) {
            p. setColor (QPalette::Highlight, Qt::red);
 	else
            p. setColor (QPalette::Highlight, Qt::green);
+
 	techData. frameError_display	-> setPalette (p);
 	techData. frameError_display	-> setValue (100 - 4 * s);
 }
-
+//
+//	called from the MP4 decoder
 void	RadioInterface::show_rsErrors (int s) {
 	if (!running. load())		// should not happen
 	   return;
@@ -1647,10 +1613,12 @@ void	RadioInterface::show_rsErrors (int s) {
 	techData. rsError_display	-> setPalette (p);
 	techData. rsError_display	-> setValue (100 - 4 * s);
 }
-	
+//
+//	called from the aac decoder
 void	RadioInterface::show_aacErrors (int s) {
 	if (!running. load ())
 	   return;
+
 	QPalette p      = techData. aacError_display -> palette();
 	if (100 - 4 * s < 80)
 	   p. setColor (QPalette::Highlight, Qt::red);
@@ -1659,10 +1627,12 @@ void	RadioInterface::show_aacErrors (int s) {
 	techData. aacError_display	-> setPalette (p);
 	techData. aacError_display	-> setValue (100 - 4 * s);
 }
-
+//
+//	called from the ficHandler
 void	RadioInterface::show_ficSuccess (bool b) {
 	if (!running. load ())	
 	   return;
+
 	if (b) 
 	   ficSuccess ++;
 
@@ -1672,26 +1642,27 @@ void	RadioInterface::show_ficSuccess (bool b) {
               p. setColor (QPalette::Highlight, Qt::red);
 	   else
 	      p. setColor (QPalette::Highlight, Qt::green);
-	   ficError_display                -> setPalette (p);
+
+	   ficError_display	-> setPalette (p);
 	   ficError_display	-> setValue (ficSuccess);
 	   total_ficError	+= 100 - ficSuccess;
 	   total_fics		+= 100;
-	   ficSuccess	= 0;
-	   ficBlocks	= 0;
+	   ficSuccess		= 0;
+	   ficBlocks		= 0;
 	}
 }
-
+//
+//	called from the PAD handler
 void	RadioInterface::show_motHandling (bool b) {
-	if (!running. load())
+	if (!running. load () || !b)
 	   return;
-	if (b) 
 	techData. motAvailable -> 
 	            setStyleSheet (b ?
 	                   "QLabel {background-color : green; color: white}":
 	                   "QLabel {background-color : red; color : white}");
 }
 	
-//	called from the ofdmDecoder, it is computed for each frame
+//	called from the dabProcessor
 void	RadioInterface::show_snr (int s, float sig, float noise) {
 static int delayCount = 1;
 	if (running. load ()) {
@@ -1708,7 +1679,7 @@ static int delayCount = 1;
 	}
 }
 
-//	just switch a color, called from the ofdmprocessor
+//	just switch a color, called from the dabprocessor
 void	RadioInterface::setSynced	(bool b) {
 	if (!running. load() || (isSynced == b))
 	   return;
@@ -1718,7 +1689,8 @@ void	RadioInterface::setSynced	(bool b) {
 	   	              "QLabel {background-color: green; color : white}":
 	   	              "QLabel {background-color: red; color : white}");
 }
-
+//
+//	called from the PAD handler
 void	RadioInterface::showLabel	(QString s) {
 	if (running. load())
 	   dynamicLabel	-> setText (s);
@@ -1794,33 +1766,28 @@ void	RadioInterface::showQuality	(float q) {
 
 	my_spectrumViewer. showQuality (q);
 }
-
+//
+//	called from the MP4 decoder
 void	RadioInterface::show_rsCorrections	(int c) {
 	if (!running)
 	   return;
 
 	techData. rsCorrections	-> display (c);
 }
-
+//
+//	called from the DAB processor
 void	RadioInterface::show_clockError	(int e) {
 	if (!running. load ())
 	   return;
 
 	my_spectrumViewer. show_clockErr (e);
 }
-
+//
+//	called from the phasesynchronizer
 void	RadioInterface::showCorrelation	(int amount, int marker) {
 	if (!running. load())
 	   return;
-
 	my_correlationViewer. showCorrelation (amount, marker);
-}
-
-void	RadioInterface::showIndex	(int ind) {
-	if (!running. load())
-	   return;
-
-	my_correlationViewer. showIndex (ind);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2541,21 +2508,25 @@ QString serviceName	= s -> serviceName;
 	      
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
 	      if (ad. defined) {
-	         currentService. valid = true;
+	         currentService. valid		= true;
 	         currentService. is_audio	= true;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
+	         dabSettings	-> setValue ("presetname", serviceName);
 	      }
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
-	         currentService. valid = true;
+	         currentService. valid		= true;
 	         currentService. is_audio	= false;
 	         start_packetService (serviceName);
+	         dabSettings	-> setValue ("presetname", "");
 	      }
-	      else
+	      else {
 	         fprintf (stderr, "%s is not clear\n",
 	                            serviceName. toLatin1 (). data ());
+	         dabSettings	-> setValue ("presetname", "");
+	      }
 	      return;
 	   }
 	}
@@ -3802,13 +3773,7 @@ void	RadioInterface::set_epgData (int SId,
 #endif
 
 void	RadioInterface::handle_timeTable	() {
-	if (!currentService. valid)
-	   return;
-
-	if (!currentService. is_audio)
-	   return;
-
-	if (my_timeTable == nullptr)
+	if (!currentService. valid || !currentService. is_audio)
 	   return;
 
 	if  (my_timeTable -> isHidden ())

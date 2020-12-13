@@ -51,7 +51,7 @@ public:
 	void		dataforAudioService	(const QString &, audiodata *);
 	void		dataforPacketService	(const QString &,
 	                                          packetdata *, int16_t);
-
+	int		getSubChId		(const QString &, uint32_t);
 	std::vector<serviceId>	getServices	(int);
 
 	QString		findService	(uint32_t, int);

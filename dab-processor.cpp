@@ -294,9 +294,10 @@ SyncOnPhase:
 	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
-	         cCount += 2;
 	      }
+	      for (int i = T_g; i < (int)T_s; i ++)
+	         cLevel += abs (ofdmBuffer [i]);
+	      cCount += T_u;
 	      my_ofdmDecoder. decode (ofdmBuffer,
 	                            ofdmSymbolCount, ibits. data());
 	      my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
@@ -312,9 +313,10 @@ SyncOnPhase:
 	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
-	         cCount += 2;
 	      }
+	      for (i = (int)T_g; i < (int)T_s; i ++) 
+	         cLevel += abs (ofdmBuffer [i]);
+	      cCount += T_u;
 	      if (!scanMode)
                  my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
                                                             ofdmSymbolCount);
@@ -428,6 +430,10 @@ bool	dabProcessor::is_audioService	(const QString &s) {
 audiodata ad;
 	my_ficHandler. dataforAudioService (s, &ad);
 	return ad. defined;
+}
+
+int	dabProcessor::getSubChId	(const QString &s, uint32_t SId) {
+	return my_ficHandler. getSubChId (s, SId);
 }
 
 bool	dabProcessor::is_packetService	(const QString &s) {
