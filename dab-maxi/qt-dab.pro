@@ -321,7 +321,7 @@ CONFIG		+= lime
 #CONFIG		+= soapy
 #CONFIG		+= pluto
 CONFIG		+= elad-device
-#CONFIG		+= elad-files		# do not use this
+CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -579,15 +579,16 @@ elad-device	{
 	FORMS		+= ./qt-devices/elad-s1-handler/elad-widget.ui
 }
 
-elad-files	{
-	DEFINES		+= HAVE_ELAD_FILES
-	DEPENDPATH	+= ./qt-devices/elad-files
-	INCLUDEPATH	+= ./qt-devices/elad-files
-	HEADERS		+= ./qt-devices/elad-files/elad-files.h
-	HEADERS		+= ./qt-devices/elad-files/elad-reader.h
-	SOURCES		+= ./qt-devices/elad-files/elad-files.cpp
-	SOURCES		+= ./qt-devices/elad-files/elad-reader.cpp
-	FORMS		+= ./qt-devices/elad-files/elad-files.ui
+colibri	{
+	DEFINES         += HAVE_COLIBRI
+	DEPENDPATH      += ./qt-devices/colibri-handler
+	INCLUDEPATH     += ./qt-devices/colibri-handler
+	HEADERS         += ./qt-devices/colibri-handler/colibri-handler.h \
+	                   ./qt-devices/colibri-handler/LibLoader.h \
+	                   ./qt-devices/colibri-handler/common.h
+	SOURCES		+= ./qt-devices/colibri-handler/colibri-handler.cpp \
+	                   ./qt-devices/colibri-handler/LibLoader.cpp
+	FORMS           += ./qt-devices/colibri-handler/colibri-widget.ui
 }
 
 send_datagram {

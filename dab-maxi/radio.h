@@ -130,8 +130,6 @@ private:
 	dabService		currentService;
 	dabService		nextService;
 
-	int			currentHour;
-	int			currentMinute;
 	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;

@@ -176,7 +176,7 @@ sdrplaySelect	*sdrplaySelector;
 	if (err != mir_sdr_Success) {
 	   fprintf (stderr, "error at SetDeviceIdx %s \n",
 	                   errorCodes (err). toLatin1(). data());
-	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
+//	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 
 	   releaseLibrary	();
 	   throw (25);

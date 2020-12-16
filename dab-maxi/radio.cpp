@@ -88,11 +88,11 @@
 #ifdef	HAVE_SOAPY
 #include	"soapy-handler.h"
 #endif
+#ifdef	HAVE_COLIBRI
+#include	"colibri-handler.h"
+#endif
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
-#endif
-#ifdef	HAVE_ELAD_FILES
-#include	"elad-files.h"
 #endif
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
@@ -247,9 +247,6 @@ uint8_t	dabBand;
 	my_dabProcessor		= nullptr;
 	isSynced		= false;
 	stereoSetting		= false;
-
-	currentHour		= -1;
-	currentMinute		= -1;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -581,6 +578,9 @@ uint8_t	dabBand;
 #ifdef	HAVE_PLUTO
 	deviceSelector	-> addItem ("pluto");
 #endif
+#ifdef	HAVE_COLIBRI
+	deviceSelector	-> addItem ("colibri");
+#endif
 #ifdef  HAVE_EXTIO
 	deviceSelector	-> addItem ("extio");
 #endif
@@ -589,9 +589,6 @@ uint8_t	dabBand;
 #endif
 #ifdef	HAVE_ELAD
 	deviceSelector	-> addItem ("elad-s1");
-#endif
-#ifdef	HAVE_ELAD_FILES
-	deviceSelector	-> addItem ("elad-files");
 #endif
 	inputDevice	= nullptr;
 	h               =
@@ -1375,6 +1372,20 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
+#ifdef	HAVE_COLIBRI
+	if (s == "colibri") {
+	   try {
+	      inputDevice = new colibriHandler (dabSettings);
+	      showButtons();
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no colibri device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
 #ifdef HAVE_RTL_TCP
 //	RTL_TCP might be working. 
 	if (s == "rtl_tcp") {
@@ -1574,8 +1585,6 @@ void	RadioInterface::clockTime (int year, int month, int day,
 char dayString [3];
 char hourString [3];
 char minuteString [3];
-	currentHour	= hours;
-	currentMinute	= minutes;
 	sprintf (dayString, "%.2d", day);
 	sprintf (hourString, "%.2d", hours);
 	sprintf (minuteString, "%.2d", minutes);
@@ -1603,7 +1612,7 @@ void	RadioInterface::show_frameErrors (int s) {
 //
 //	called from the MP4 decoder
 void	RadioInterface::show_rsErrors (int s) {
-	if (!running. load())		// should not happen
+	if (!running. load ())		// should not happen
 	   return;
 	QPalette p      = techData. rsError_display -> palette();
 	if (100 - 4 * s < 80)
@@ -1856,6 +1865,7 @@ QString defaultPath	= QDir::tempPath ();
 
 	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
 	   picturesPath. append ("/");
+
 	if (picturesPath != "") {
 	   QDir testdir (picturesPath);
 
@@ -2580,9 +2590,11 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   return;
 	}
 
+	QDateTime theDateTime	= QDateTime::currentDateTime ();
+	QTime theTime		= theDateTime. time ();
 	fprintf (stderr, "we start %s at %.2d:%.2d\n",
 	                        ad -> serviceName. toLatin1 (). data (),
-	                        currentHour, currentMinute);
+	                        theTime. hour (), theTime. minute ());
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
@@ -2984,9 +2996,7 @@ void	RadioInterface::stopScanning	(bool dump) {
         scanButton      -> setText ("scan");
 
 	my_dabProcessor	-> set_scanMode (false);
-	if (!running. load ())
-           return;
-        if (!scanning. load ())
+	if (!running. load () || !scanning. load ())
            return;
 	dynamicLabel	-> setText ("Scan ended");
         channelTimer. stop ();
