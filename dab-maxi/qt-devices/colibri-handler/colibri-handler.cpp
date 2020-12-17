@@ -27,7 +27,6 @@
 #include	<QDate>
 #include	<QLabel>
 #include	<QDebug>
-#include	<QFileDialog>
 #include	"colibri-handler.h"
 
 	colibriHandler::colibriHandler  (QSettings *s):
@@ -159,9 +158,10 @@ std::complex<float> temp [2048];
 }
 
 bool	colibriHandler::restartReader	(int32_t newFrequency) {
-	if (running. load())
+	if (running. load ())
 	   return true;		// should not happen
 
+	fprintf (stderr, "restarting at %d\n", newFrequency);
         m_loader. setFrequency (m_deskriptor, newFrequency);
 	this	-> lastFrequency	= newFrequency;
 
@@ -175,15 +175,24 @@ bool	colibriHandler::restartReader	(int32_t newFrequency) {
 void	colibriHandler::stopReader() {
 	if (!running. load())
 	   return;
+	fprintf (stderr, "stopreader (%d)\n", lastFrequency);
 	m_loader. stop (m_deskriptor);
+	running. store (false);
 }
 
 int32_t	colibriHandler::getSamples (std::complex<float> *V, int32_t size) { 
+static int teller = 0;
+	teller += size;
+	if (teller > 2560000) {
+	   fprintf (stderr, "another second of data\n");
+	   teller = 0;
+	}
 	if (iqSwitcher) {
 	   std::complex<float> xx [size];
 	   _I_Buffer. getDataFromBuffer (xx, size);
 	   for (int i = 0; i < size; i ++)
 	      V[i] = std::complex<float> (imag (xx [i]), real (xx [i]));
+	   return size;
 	}
 	else
 	   return _I_Buffer. getDataFromBuffer (V, size);
