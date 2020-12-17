@@ -29,7 +29,8 @@
 #include	<QDebug>
 #include	"colibri-handler.h"
 
-	colibriHandler::colibriHandler  (QSettings *s):
+	colibriHandler::colibriHandler  (QSettings *s,
+	                                 bool	marzano):
 	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  myFrame (nullptr) {
 	colibriSettings		= s;
@@ -77,13 +78,19 @@
 	         this, SLOT (set_gainControl (int)));
 	connect (iqSwitchButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_iqSwitcher ()));
-
+	if (marzano) {
+	   selectedRate	= 1920000;
+	}
+	else {
+	   selectedRate	= 2560000;
+	}
+	rateLabel	-> setText (QString::number (selectedRate));
 //	The sizes of the mapTables follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
 //	so we end up with buffers with 1 msec content
-	convBufferSize		= 2560000 / 1000;
+	convBufferSize		= selectedRate / 1000;
 	for (int i = 0; i < 2048; i ++) {
-	   float inVal	= float (2560000 / 1000);
+	   float inVal	= float (selectedRate / 1000);
 	   mapTable_int [i]	=  int (floor (i * (inVal / 2048.0)));
 	   mapTable_float [i]	= i * (inVal / 2048.0) - mapTable_int [i];
 	}
@@ -164,8 +171,9 @@ bool	colibriHandler::restartReader	(int32_t newFrequency) {
 	fprintf (stderr, "restarting at %d\n", newFrequency);
         m_loader. setFrequency (m_deskriptor, newFrequency);
 	this	-> lastFrequency	= newFrequency;
-
-	m_loader.start (m_deskriptor, (SampleRateIndex)Sr_2560kHz,
+	m_loader.start (m_deskriptor,
+	                selectedRate == 2560000 ? (SampleRateIndex)Sr_2560kHz:
+	                                        (SampleRateIndex)Sr_1920kHz,
                         the_callBackRx,
 	                this);
 	running. store (true);
@@ -181,12 +189,6 @@ void	colibriHandler::stopReader() {
 }
 
 int32_t	colibriHandler::getSamples (std::complex<float> *V, int32_t size) { 
-static int teller = 0;
-	teller += size;
-	if (teller > 2560000) {
-	   fprintf (stderr, "another second of data\n");
-	   teller = 0;
-	}
 	if (iqSwitcher) {
 	   std::complex<float> xx [size];
 	   _I_Buffer. getDataFromBuffer (xx, size);
@@ -207,7 +209,7 @@ void	colibriHandler::resetBuffer() {
 }
 
 int16_t	colibriHandler::bitDepth () {
-	return 12;
+	return 16;
 }
 
 QString	colibriHandler::deviceName	() {

@@ -40,7 +40,8 @@
 Q_OBJECT
 public:
 
-			colibriHandler		(QSettings *);
+			colibriHandler		(QSettings *,
+	                                         bool);
 			~colibriHandler		(void);
 	bool		restartReader		(int32_t);
 	void		stopReader		();
@@ -66,6 +67,7 @@ private:
 	LibLoader		m_loader;
 	QSettings		*colibriSettings;
 	int			sampleRate	(int);
+	int			selectedRate;
 	Descriptor		m_deskriptor;
 	std::atomic<bool>	running;
 	bool			iqSwitcher;

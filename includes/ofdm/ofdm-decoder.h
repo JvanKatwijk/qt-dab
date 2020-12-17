@@ -45,7 +45,6 @@ public:
 	void	processBlock_0		(std::vector<std::complex<float> >);
 	void	decode			(std::vector<std::complex<float> >,
 	                                 int32_t n, int16_t *);
-	int16_t	get_snr			(std::complex<float> *);
 	void	stop			();
 	void	reset			();
 private:
@@ -72,11 +71,8 @@ private:
 	std::vector<int16_t>		ibits;
 	std::complex<float>	*fft_buffer;
 	phaseTable	*phasetable;
-	int16_t		snrCount;
-	int16_t		snr;
 
 signals:
-	void		show_snr	(int);
 	void		showIQ		(int);
 	void		showQuality	(float);
 };

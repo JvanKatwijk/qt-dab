@@ -92,6 +92,7 @@ public:
 	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	 dataPort,
+	                                 bool,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
@@ -115,6 +116,7 @@ private:
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
+	bool			marzano;
 #ifdef	__LOGGING__
 	FILE			*logFile;
 #endif

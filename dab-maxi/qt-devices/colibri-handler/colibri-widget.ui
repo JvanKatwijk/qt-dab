@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>259</width>
-    <height>245</height>
+    <width>257</width>
+    <height>291</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,12 +78,10 @@
     </layout>
    </item>
    <item>
-    <widget class="QComboBox" name="rateSelector">
-     <item>
-      <property name="text">
-       <string>2056000</string>
-      </property>
-     </item>
+    <widget class="QLabel" name="rateLabel">
+     <property name="text">
+      <string>2560000</string>
+     </property>
     </widget>
    </item>
   </layout>

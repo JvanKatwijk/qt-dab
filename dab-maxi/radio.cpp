@@ -210,6 +210,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                const QString	&freqExtension,
 	                                bool		error_report,
 	                                int32_t		dataPort,
+	                                bool		marzano,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -242,6 +243,7 @@ uint8_t	dabBand;
 
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
+	this	-> marzano	= marzano;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -1375,7 +1377,7 @@ deviceHandler	*inputDevice	= nullptr;
 #ifdef	HAVE_COLIBRI
 	if (s == "colibri") {
 	   try {
-	      inputDevice = new colibriHandler (dabSettings);
+	      inputDevice = new colibriHandler (dabSettings, marzano);
 	      showButtons();
 	   }
 	   catch (int e) {

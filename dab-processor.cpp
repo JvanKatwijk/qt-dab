@@ -295,9 +295,9 @@ SyncOnPhase:
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 	      }
-	      for (int i = T_g; i < (int)T_s; i ++)
+	      for (int i = 0; i < (int)T_s; i ++)
 	         cLevel += abs (ofdmBuffer [i]);
-	      cCount += T_u;
+	      cCount += T_s;
 	      my_ofdmDecoder. decode (ofdmBuffer,
 	                            ofdmSymbolCount, ibits. data());
 	      my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
@@ -314,9 +314,9 @@ SyncOnPhase:
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 	      }
-	      for (i = (int)T_g; i < (int)T_s; i ++) 
+	      for (i = 0; i < (int)T_s; i ++) 
 	         cLevel += abs (ofdmBuffer [i]);
-	      cCount += T_u;
+	      cCount += T_s;
 	      if (!scanMode)
                  my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
                                                             ofdmSymbolCount);

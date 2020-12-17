@@ -63,11 +63,6 @@
 	this	-> T_g			= T_s - T_u;
 	fft_buffer			= my_fftHandler. getVector();
 	phaseReference			.resize (T_u);
-
-//	connect (this, SIGNAL (show_snr (int)),
-//	         mr, SLOT (show_snr (int)));
-	snrCount		= 0;
-	snr			= 0;	
 }
 
 	ofdmDecoder::~ofdmDecoder() {
@@ -86,17 +81,6 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
 	                             T_u * sizeof (std::complex<float>));
 
 	my_fftHandler. do_FFT();
-/**
-  *	The SNR is determined by looking at a segment of bins
-  *	within the signal region and bits outside.
-  *	It is just an indication
-  */
-
-	if (++snrCount > 10) {
-	   snr	= 0.8 * snr + 0.2 * get_snr (fft_buffer);
-//	   show_snr (snr);
-	   snrCount = 0;
-	}
 /**
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
@@ -281,9 +265,14 @@ int	offsb	= 0;
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? (i + T_u) : i;
 	   int index_2 = i + carriers / 2;
-	   std::complex<float> s = r [index] * conj (v [index]);
-	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
-	   offsa += index_2 * arg (s * std::complex<float> (1, -1));
+	   std::complex<float> a1 =
+	              std::complex<float> (abs (real (r [index])),
+	                                   abs (imag (r [index])));
+	   std::complex<float> a2 =
+	              std::complex<float> (abs (real (v [index])),
+	                                   abs (imag (v [index])));
+	   float s = abs (arg (a1 * conj (a2)));
+	   offsa += index * s;
 	   offsb += index_2 * index_2;
 	}
 	
@@ -291,32 +280,6 @@ int	offsb	= 0;
 	           offsa / (2 * M_PI * (float)T_s/ T_u * offsb);
 
 	fprintf (stderr, "clockOffset = %f\n", sampleClockOffset);
-}
-
-
-/**
-  *	Obsolete: we now compute the snr by looking at the 
-  *	ratio between the power of the data in the signal and the power
-  *	of the signal in the null period.
-  *	for the snr we have a full T_u wide vector, with in the middle
-  *	K carriers.
-  *	Just get the strength from the selected carriers compared
-  *	to the strength of the carriers outside that region
-  */
-int16_t	ofdmDecoder::get_snr (std::complex<float>  *v) {
-int16_t	i;
-float	noise 	= 0;
-float	signal	= 0;
-
-	for (i = -100; i < 100; i ++)
-	   noise += abs (v [(T_u / 2 + i)]);
-
-	noise	/= 200;
-	for (i =  - carriers / 4;  i <  carriers / 4; i ++)
-	   signal += abs (v [(T_u + i) % T_u]);
-	signal	/= (carriers / 2);
-
-	return 20 * log10 ((signal + 0.005) / (noise + 0.005));
 }
 
 

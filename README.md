@@ -139,7 +139,7 @@ under user control, the main widget contains a button for each..
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
-of the element. (The tooltip on the copyright label shows (a.o) the date the executable was generated.)
+of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and service. 
@@ -150,6 +150,13 @@ button for selecting the previous resp. next channel.
 To ease selection of a service, a second pair of "-" and "+" buttons
 is available, now for selecting the previous resp. the next service 
 on the list.
+
+Some general data is displayed on the top right part of the widget, 
+such as run time and current time, frequency offset and
+(overall) processor load.
+
+In the middle part, name of the ensemble and name of the selected service
+are displayed, complemented with the text of the dynamic label.
 
 Some data on the selected service - if any - is to be found on
 a separate widget, the "technical data" widget.
