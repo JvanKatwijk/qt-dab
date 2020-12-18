@@ -35,7 +35,7 @@
 	                                  myFrame (nullptr) {
 	colibriSettings		= s;
 	setupUi (&myFrame);
-	QString libName = "/home/jan/Downloads/ColibriNANO_lib/library/linux64/libcolibrinano_lib.so";
+	QString libName = "libcolibrinano_lib.so";
 	if (!m_loader. load (libName. toLatin1 () .data ())) {
            QMessageBox::critical (nullptr, "colibri",
 	                          tr("Failed to load colibrinano_lib.so"));
@@ -125,8 +125,8 @@ int32_t	colibriHandler::getVFOFrequency () {
 void	colibriHandler::set_gainControl	(int newGain) {
 float	gainValue	= -31.5 + newGain * 0.5;
 	if (gainValue <= 6) {
-           m_loader.setPream (m_deskriptor, newGain);
-	   actualGain	-> display (gainSelector -> value () * 0.5 + -31.5);
+           m_loader.setPream (m_deskriptor, gainValue);
+	   actualGain	-> display (gainValue);
 	}
 }
 
@@ -152,8 +152,8 @@ std::complex<float> temp [2048];
 	      for (int j = 0; j < 2048; j ++) {
 	         int16_t  inpBase	= p -> mapTable_int [j];
 	         float	inpRatio	= p ->  mapTable_float [j];
-                 temp [j]       = cmul (p -> convBuffer [inpBase + 1], inpRatio) +
-                                  cmul (p -> convBuffer [inpBase], 1 - inpRatio);
+                 temp [j]  = cmul (p -> convBuffer [inpBase + 1], inpRatio) +
+                             cmul (p -> convBuffer [inpBase], 1 - inpRatio);
               }
 
               p -> _I_Buffer. putDataIntoBuffer (temp, 2048);
