@@ -1679,8 +1679,7 @@ static int delayCount = 1;
 	if (running. load ()) {
 	   snrDisplay	-> display (s);
 	   if (!my_snrViewer. isHidden ()) {
-	      my_snrViewer.
-	            add_snr (20 * log10 ((sig + 0.005) / (noise + 0.005)));
+	      my_snrViewer. add_snr (sig, noise);
 	      delayCount --;
 	      if (delayCount <= 0) {
 	         my_snrViewer. show_snr ();
@@ -1733,8 +1732,10 @@ QString	tiiNumber (int n) {
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
+	if (mainId == 0xFF) 
+	   return;
 	for (int i = 0; i < transmitters. size (); i += 2) {
-	   if ((transmitters. at (i) == mainId) &&
+	   if ((transmitters. at (i) == (mainId & 0xCF)) &&
 	       (transmitters. at (i + 1) == subId)) {
 	      found = true;
 	      break;
@@ -1742,7 +1743,7 @@ bool	found	= false;
 	}
 
 	if (!found) {
-	   transmitters. append (mainId);
+	   transmitters. append (mainId & 0xCF);
 	   transmitters. append (subId);
 	}
         if (!running. load())

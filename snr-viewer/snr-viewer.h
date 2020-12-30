@@ -59,6 +59,7 @@ public:
 			~snrViewer	();
 	void		show_snr	();
 	void		add_snr		(float);
+	void		add_snr		(float, float);
 	void		setLength	(int);
 	void		setHeight	(int);
 	void		show		();
@@ -69,12 +70,14 @@ private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
 	QFrame		myFrame;
-	QwtPlotCurve	spectrumCurve;
+	QwtPlotCurve	spectrum_curve;
+	QwtPlotCurve	baseLine_curve;
 	QwtPlotGrid	grid;
 	QwtPlotPicker	*lm_picker;
 	QwtPickerMachine	*lpickerMachine;
 	std::vector<double>	X_axis;
 	std::vector<double>	Y_Buffer;
+	std::vector<double>	baseLine_Buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
 	QwtPlot		*plotgrid;

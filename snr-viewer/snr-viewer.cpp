@@ -32,7 +32,8 @@
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
 	                             myFrame (nullptr),
-	                             spectrumCurve ("") {
+	                             spectrum_curve (""),
+	                             baseLine_curve ("") {
 QString	colorString	= "black";
 	this		-> myRadioInterface	= mr;
 	this		-> dabSettings		= s;
@@ -84,10 +85,14 @@ QString	colorString	= "black";
 	connect (lm_picker, SIGNAL (selected (const QPointF &)),
 	         this, SLOT (rightMouseClick (const QPointF &)));
 
-   	spectrumCurve. setPen (QPen(curveColor, 2.0));
-	spectrumCurve. setOrientation (Qt::Horizontal);
-	spectrumCurve. setBaseline	(0);
-	spectrumCurve. attach (plotgrid);
+   	spectrum_curve. setPen (QPen(curveColor, 2.0));
+	spectrum_curve. setOrientation (Qt::Horizontal);
+	spectrum_curve. setBaseline	(0);
+	baseLine_curve. setPen (QPen (curveColor, 2.0));
+	baseLine_curve. setOrientation (Qt::Horizontal);
+	baseLine_curve. setBaseline 	(0);
+	spectrum_curve. attach (plotgrid);
+	baseLine_curve. attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         0, plotHeight);
@@ -96,6 +101,7 @@ QString	colorString	= "black";
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	X_axis.   resize (plotLength);
 	Y_Buffer. resize (plotLength);
+	baseLine_Buffer. resize (plotLength);
 	for (int i = 0; i < plotLength; i ++) {
 	   X_axis  [i] = i;
 	   Y_Buffer [i] = 0;
@@ -118,7 +124,7 @@ void	snrViewer::setHeight	(int n) {
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				              0, plotHeight);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	spectrumCurve. setBaseline  (0);
+//	spectrum_curve. setBaseline  (0);
 }
 
 void	snrViewer::setLength	(int n) {
@@ -157,7 +163,26 @@ bool	snrViewer::isHidden () {
 void	snrViewer::add_snr	(float snr) {
 	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
 	                               (plotLength - 1) * sizeof (double));
+	memmove (&(baseLine_Buffer. data () [1]),
+	                       &(baseLine_Buffer. data () [0]),
+	                               (plotLength - 1) * sizeof (double));
 	Y_Buffer [0]	= snr;
+	baseLine_Buffer [0] = 0;
+#ifdef	__DUMP_SNR__
+	if (snrDumpFile. load () != nullptr)
+	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
+#endif
+}
+
+void	snrViewer::add_snr	(float sig, float noise) {
+float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
+	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
+	                               (plotLength - 1) * sizeof (double));
+	memmove (&(baseLine_Buffer. data () [1]),
+	                       &(baseLine_Buffer. data () [0]),
+	                               (plotLength - 1) * sizeof (double));
+	Y_Buffer [0]	= snr;
+	baseLine_Buffer [0] = 0;
 #ifdef	__DUMP_SNR__
 	if (snrDumpFile. load () != nullptr)
 	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
@@ -165,8 +190,10 @@ void	snrViewer::add_snr	(float snr) {
 }
 
 void	snrViewer::show_snr () {
-	spectrumCurve. setSamples (X_axis. data (),
+	spectrum_curve. setSamples (X_axis. data (),
 	                           Y_Buffer. data (), plotLength);
+	baseLine_curve. setSamples (X_axis. data (),
+	                            baseLine_Buffer. data (), plotLength);
 	plotgrid	-> replot (); 
 }
 
@@ -206,7 +233,8 @@ int	index;
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
-	spectrumCurve. setPen (QPen(this -> curveColor, 2.0));
+	spectrum_curve. setPen (QPen(this -> curveColor, 2.0));
+	baseLine_curve. setPen (QPen(this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid. setMajPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));

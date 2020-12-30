@@ -85,7 +85,7 @@ void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
-	memcpy (phaseReference. data(), fft_buffer,
+	memcpy (phaseReference. data (), fft_buffer,
 	                   T_u * sizeof (std::complex<float>));
 }
 //
@@ -103,8 +103,6 @@ int16_t i;
 std::complex<float>	avgPoint	= std::complex<float> (0, 0);
 float		absVal			= 0;
 std::complex<float>	x [T_u];
-//float	avg	= 0;
-//float	S	= 0;
 float	nominator	= 0;
 float	denominator	= 0;
 //
@@ -126,17 +124,7 @@ float	denominator	= 0;
 	                   square (absVal - abs (imag (x [i])));
 	}
 
-	return 10 * log10 (1.0 + nominator / denominator);
-//	avg	= arg (avgPoint * conj (std::complex<float> (absVal, absVal)));
-//	for (i = 0; i < carriers; i ++) {
-//	   float f = arg (x [i] * conj (std::complex<float> (1, 1))) - avg;
-//	   f = f / M_PI * 360;
-//	   S += f * f;
-//	}
-//
-//	S /= (carriers - 1);
-//	
-//	return sqrt (S);
+	return 20 * log10 (1.0 + nominator / denominator);
 }
 /**
   *	for the other blocks of data, the first step is to go from

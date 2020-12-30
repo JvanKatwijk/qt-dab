@@ -123,10 +123,10 @@ int16_t	i;
 	            0.5 * cos (2 * M_PI * (float)i / T_u) +
 	            0.08 * cos (4 * M_PI * (float)i / T_u));
 
-	for (i = 0; i < 256; ++i)
-	    invTable [i] =  -1;
 	for (i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
+	for (i = 71; i < 256; i ++)
+	   invTable [i] = -1;
 }
 
 		TII_Detector::~TII_Detector() {
@@ -148,8 +148,6 @@ int	i;
 	my_fftHandler. do_FFT();
 
 	for (i = 0; i < T_u; i ++)
-//	   theBuffer [i] = cmul (theBuffer [i], 0.9) +
-//	                   cmul (fft_buffer [i], 0.1);
 	   theBuffer [i] += fft_buffer [i];
 }
 //
@@ -250,7 +248,7 @@ float	avgTable	[NUM_GROUPS];
 	   return 0;
 
 //	The - almost - final step is then to figure out which
-//	groups contributed, obviously only where maxIndex  > 0
+//	group contributed most, obviously only where maxIndex  > 0
 //	we start with collecting the values of the correct
 //	elements of the NUM_GROUPS groups
 
