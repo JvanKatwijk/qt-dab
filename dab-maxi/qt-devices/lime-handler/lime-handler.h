@@ -24,7 +24,7 @@
 #ifndef __LIME_HANDLER__
 #define	__LIME_HANDLER__
 
-#include	<QObject>
+#include	<QThread>
 #include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
@@ -95,7 +95,7 @@ typedef	int	(*pfn_LMS_RecvStream)(lms_stream_t *stream, void *samples,
 typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 	                               lms_stream_status_t* status);
 
-class	limeHandler: public deviceHandler, public limeWidget {
+class	limeHandler: public QThread,  public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
 			limeHandler		(QSettings *, QString &);

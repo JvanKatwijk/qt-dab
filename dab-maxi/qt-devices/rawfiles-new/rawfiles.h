@@ -23,7 +23,7 @@
 #ifndef	__RAW_FILES__
 #define	__RAW_FILES__
 
-#include	<QThread>
+#include	<QObject>
 #include	<QString>
 #include	<QFrame>
 #include	<atomic>
@@ -38,7 +38,7 @@ class	QSettings;
 class	rawReader;
 /*
  */
-class	rawFiles: public deviceHandler, public filereaderWidget {
+class	rawFiles: public QObject, public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
 

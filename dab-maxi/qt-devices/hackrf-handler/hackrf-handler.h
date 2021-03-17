@@ -79,11 +79,12 @@ typedef int	(*pfn_hackrf_si5351c_write)
 
 
 ///////////////////////////////////////////////////////////////////////////
-class	hackrfHandler: public deviceHandler, public Ui_hackrfWidget {
+class	hackrfHandler: public QObject, 
+	               public deviceHandler, public Ui_hackrfWidget {
 Q_OBJECT
 public:
 			hackrfHandler		(QSettings *, QString &);
-            ~hackrfHandler			();
+			~hackrfHandler		();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
 

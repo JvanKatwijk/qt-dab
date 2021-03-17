@@ -26,6 +26,7 @@ Table of Contents
 * [EPG-Handling](#EPG-Handling)
 * [Recording the SNR](#Recording-the-SNR)
 * [Scanning and the skip table](#Scanning-and-the-skip-table)
+* [Pluto device and fm transmission](#Pluto-device-and-fm-transmission)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
@@ -512,6 +513,37 @@ when touched a file selection menu appears where one can select a skipfile.
 **If the file does not exist yet, it will be created.**
 If one cancels the file selection, the default skipTable will be used,
 the same table that is used when no skipFile is selected.
+
+-----------------------------------------------------------------------
+# PLuto device and fm transmission
+-----------------------------------------------------------------------
+
+As (probably) known, the Adalm pluto device has receive and transmit
+capabilities. In a previous project, an extension was made to a
+dab-cmdline version using the Adalm pluto device,
+to allow the transmission on FM of a preselected
+service.
+
+As an exercise - and slightly experimental - the functionality was
+added to qt-dab.
+
+If - on configuration - pluto-rxtx is selected as device rather than
+pluto, and if pluto-rxtx is selected as device, the audio
+of the selected service, augmented with the text of the dynamic label
+encoded as RDS signal, will be transmitted on a specified frequency.
+
+As default, the frequency is 110 MHz, however, the user can specify
+the frequency (obviously within the range supported by the Adalm-Pluto)
+as command line parameter: starting the program from the command line
+with as parameter
+
+	-F XXX
+
+will instruct the software to start the
+transmitter of the Adalm pluto - if the pluto-rxtx is the selected device -
+on the given frequency (specified in KHz)
+
+![dab2fm](/dab2fm.png?raw=true)
 
 -----------------------------------------------------------------------
 # Copyright

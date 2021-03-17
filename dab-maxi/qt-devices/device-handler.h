@@ -33,7 +33,7 @@
 #include	<QThread>
 #include	<QFrame>
 
-class	deviceHandler: public QThread {
+class	deviceHandler {
 public:
 			deviceHandler	();
 virtual			~deviceHandler	();

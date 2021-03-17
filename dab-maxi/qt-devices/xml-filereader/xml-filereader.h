@@ -23,7 +23,7 @@
 #ifndef	__XML_FILEREADER__
 #define	__XML_FILEREADER__
 
-#include	<QThread>
+#include	<QObject>
 #include	<QString>
 #include	<QFrame>
 #include	<atomic>
@@ -37,7 +37,7 @@ class	xmlDescriptor;
 class	xml_Reader;
 /*
  */
-class	xml_fileReader: public deviceHandler, public Ui_xmlfile_widget {
+class	xml_fileReader: public QObject, public deviceHandler, public Ui_xmlfile_widget {
 Q_OBJECT
 public:
 				xml_fileReader	(QString);

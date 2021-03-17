@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2020
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -78,14 +78,14 @@ int32_t		dataPort	= 8888;
 int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
-bool	marzano			= false;
+int	fmFrequency		= 110000;
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "i:P:Q:A:TM")) != -1) {
+	while ((opt = getopt (argc, argv, "i:P:Q:A:TMF:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -104,7 +104,10 @@ bool	marzano			= false;
 	         break;
 
 	      case 'M':
-	         marzano	= true;
+	         break;
+
+	      case 'F':
+	         fmFrequency	= atoi (optarg);
 	         break;
 
 	      default:
@@ -140,7 +143,7 @@ bool	marzano			= false;
 	                                       freqExtension,
 	                                       error_report,
 	                                       dataPort,
-	                                       marzano
+	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
         a. exec();

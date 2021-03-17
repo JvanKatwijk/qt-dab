@@ -66,6 +66,9 @@ class	common_fft;
 class	serviceDescriptor;
 class	historyHandler;
 class	timeTableHandler;
+#ifdef	HAVE_PLUTO_RXTX
+class	dabStreamer;
+#endif
 
 #include	"ui_technical_data.h"
 #include	"ui_config-helper.h"
@@ -92,7 +95,7 @@ public:
 	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	 dataPort,
-	                                 bool,
+	                                 int,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
@@ -116,7 +119,7 @@ private:
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
-	bool			marzano;
+	int			fmFrequency;
 #ifdef	__LOGGING__
 	FILE			*logFile;
 #endif
@@ -143,6 +146,9 @@ private:
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice;
+#ifdef	HAVE_PLUTO_RXTX
+	dabStreamer		*streamerOut;
+#endif
 	textMapper		the_textMapper;
 	dabProcessor		*my_dabProcessor;
 	audioBase		*soundOut;

@@ -319,9 +319,10 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
+#CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
-CONFIG		+= elad-device
-CONFIG		+= colibri
+#CONFIG		+= elad-device
+#CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
@@ -348,7 +349,6 @@ DEFINES		+=__KEEP_GAIN_SETTINGS__
 
 # an attempt to have it run under W32 through cross compilation
 win32 {
-
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -395,6 +395,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= lime
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
+	DEFINES		+= __THREADED_BACKEND
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -425,6 +426,7 @@ CONFIG		+= faad
 #comment both out if you just want to use the "normal" way
 
 CONFIG		+= try-epg		# do not use
+DEFINES		+= __DUMP_SNR__		# for experiments only
 DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 #	devices
@@ -545,13 +547,30 @@ soapy {
 	LIBS		+= -lSoapySDR -lm
 }
 
+pluto-rxtx	{
+	DEFINES		+= HAVE_PLUTO_RXTX
+	QT		+= network
+	INCLUDEPATH	+= ./qt-devices/pluto-rxtx
+	INCLUDEPATH	+= ./dab-streamer
+	HEADERS		+= ./qt-devices/pluto-rxtx/dabFilter.h
+	HEADERS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
+	HEADERS		+= ./dab-streamer/dab-streamer.h \
+	                   ./dab-streamer/lowpass-filter.h \
+	                   ./dab-streamer/up-filter.h
+	SOURCES		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
+	SOURCES		+= ./dab-streamer/dab-streamer.cpp \
+	                   ./dab-streamer/lowpass-filter.cpp \
+	                   ./dab-streamer/up-filter.cpp
+	FORMS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
+	LIBS		+= -liio -lad9361
+}
+
 pluto	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
 	INCLUDEPATH	+= ./qt-devices/pluto-handler
-	HEADERS		+= ./qt-devices/pluto-handler/dabFilter.h
 	HEADERS		+= ./qt-devices/pluto-handler/pluto-handler.h
-	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp
+	SOURCES		+= ./qt-devices/pluto-handler/pluto-handler.cpp 
 	FORMS		+= ./qt-devices/pluto-handler/pluto-widget.ui
 	LIBS		+= -liio -lad9361
 }

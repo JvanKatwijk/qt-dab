@@ -72,7 +72,7 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler: public deviceHandler, public  Ui_dabstickWidget {
+class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *, QString &);

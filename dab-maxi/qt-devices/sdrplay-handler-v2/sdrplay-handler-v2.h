@@ -91,7 +91,8 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 
 ///////////////////////////////////////////////////////////////////////////
-class	sdrplayHandler: public deviceHandler, public Ui_sdrplayWidget {
+class	sdrplayHandler: public QObject,
+	                public deviceHandler, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
 			sdrplayHandler		(QSettings *, QString &);

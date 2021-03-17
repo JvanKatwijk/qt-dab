@@ -82,6 +82,10 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
+#ifdef	HAVE_PLUTO_RXTX
+#include	"pluto-rxtx-handler.h"
+#include	"dab-streamer.h"
+#endif
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
 #endif
@@ -210,7 +214,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                const QString	&freqExtension,
 	                                bool		error_report,
 	                                int32_t		dataPort,
-	                                bool		marzano,
+	                                int		fmFrequency,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -243,7 +247,7 @@ uint8_t	dabBand;
 
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
-	this	-> marzano	= marzano;
+	this	-> fmFrequency	= fmFrequency;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -269,7 +273,7 @@ uint8_t	dabBand;
 	globals. diff_length	=
 	          dabSettings	-> value ("diff_length", DIFF_LENGTH). toInt();
 	globals. tii_delay   =
-	          dabSettings  -> value ("tii_delay", 2). toInt();
+	          dabSettings  -> value ("tii_delay", 5). toInt();
 	if (globals. tii_delay < 2)
 	   globals. tii_delay	= 2;
 	globals. tii_depth      =
@@ -555,6 +559,9 @@ uint8_t	dabBand;
 
 //
 //	add devices to the list
+	deviceSelector	-> addItem ("file input(.raw)");
+	deviceSelector	-> addItem ("file input(.iq)");
+	deviceSelector	-> addItem ("file input(.sdr)");
 	deviceSelector	-> addItem ("xml files");
 #ifdef	HAVE_SDRPLAY_V2
 	deviceSelector	-> addItem ("sdrplay");
@@ -576,6 +583,10 @@ uint8_t	dabBand;
 #endif
 #ifdef	HAVE_LIME
 	deviceSelector	-> addItem ("limeSDR");
+#endif
+#ifdef	HAVE_PLUTO_RXTX
+	deviceSelector	-> addItem ("pluto-rxtx");
+	streamerOut	= nullptr;
 #endif
 #ifdef	HAVE_PLUTO
 	deviceSelector	-> addItem ("pluto");
@@ -1139,6 +1150,10 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	   int16_t vec [amount];
 	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
 	      audioBuffer. getDataFromBuffer (vec, amount);
+#ifdef	HAVE_PLUTO_RXTX
+	      if (streamerOut != nullptr)
+	         streamerOut	-> audioOut (vec, amount, rate);
+#endif
 	      if (!muting)
 	         soundOut	-> audioOut (vec, amount, rate);
 	   }
@@ -1171,6 +1186,10 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	alarmTimer.	stop	();
 	soundOut	-> stop ();
+#ifdef	HAVE_PLUTO_RXTX
+	if (streamerOut != nullptr)
+	   streamerOut	-> stop ();
+#endif
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor -> stop ();
 	my_presetHandler. savePresets (presetSelector);
@@ -1374,10 +1393,29 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
+#ifdef	HAVE_PLUTO_RXTX
+	if (s == "pluto-rxtx") {
+	   try {
+	      inputDevice = new plutoHandler (dabSettings,
+	                                      version, fmFrequency);
+	      showButtons();
+	      streamerOut = new dabStreamer (48000, 192000,
+	                                       (plutoHandler *)inputDevice);
+	      ((plutoHandler *)inputDevice)	-> startTransmitter (
+	                                               fmFrequency);
+	   }
+	   catch (int e) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("no pluto device found\n"));
+	      return nullptr;
+	   }
+	}
+	else
+#endif
 #ifdef	HAVE_COLIBRI
 	if (s == "colibri") {
 	   try {
-	      inputDevice = new colibriHandler (dabSettings, marzano);
+	      inputDevice = new colibriHandler (dabSettings, false);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -1466,7 +1504,7 @@ deviceHandler	*inputDevice	= nullptr;
 	   }
 	}
 	else
-	if ((s == "file input (.iq)") || (s == "file input (.raw)")) {
+	if ((s == "file input(.iq)") || (s == "file input(.raw)")) {
 	   const char *p;
 	   if (s == "file input (.iq)")
 	      p = "iq data (*iq)";
@@ -1702,6 +1740,10 @@ void	RadioInterface::setSynced	(bool b) {
 //
 //	called from the PAD handler
 void	RadioInterface::showLabel	(QString s) {
+#ifdef	HAVE_PLUTO_RXTX
+	if (streamerOut != nullptr)
+	   streamerOut -> addRds (std::string (s. toLatin1 (). data ()));
+#endif
 	if (running. load())
 	   dynamicLabel	-> setText (s);
 }
@@ -2362,6 +2404,7 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
         presetTimer. stop ();
         if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
            return;
+	fprintf (stderr, "going for %s\n", s. toLatin1 (). data ());
         localSelect (s);
 }
 
@@ -2487,6 +2530,7 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	presetTimer.	stop	();
 	channelTimer.	stop	();
 	stopScanning	(false);
+
 	stopService 	();		// if any
 
 	dabService s;
@@ -3747,16 +3791,30 @@ void	RadioInterface::epgTimer_timeOut	() {
               my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
               if ((!pd. defined) ||
                     (pd.  DSCTy == 0) || (pd. bitRate == 0)) 
-	         return;
-	      if (pd. DSCTy != 60)
-	         break;
-	      LOG ("hidden service started ", serv. name);
-	      epgLabel	-> show ();
-	      fprintf (stderr, "Starting hidden service %s\n",
+	         continue;
+	      if (pd. DSCTy == 60) {
+	         LOG ("hidden service started ", serv. name);
+	         epgLabel	-> show ();
+	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toLatin1 (). data ());
-	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
-	      break;
+	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	         break;
+	      }
 	   }
+//#ifdef	__DABDATA__
+	   else {
+	      packetdata pd;
+	      my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
+	      if ((pd. defined)  && (pd. DSCTy == 59)) {
+	         LOG ("hidden service started ", serv. name);
+	         epgLabel  -> show ();
+	         fprintf (stderr, "Starting hidden service %s\n",
+                                        serv. name. toLatin1 (). data ());
+	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+                 break;
+	      }
+	   }
+//#endif
 	}
 }
 #endif

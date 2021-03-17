@@ -24,7 +24,7 @@
 #ifndef __SDRPLAY_HANDLER_V3__
 #define	__SDRPLAY_HANDLER_V3__
 
-#include	<QObject>
+#include	<QThread>
 #include	<QFrame>
 #include	<QSettings>
 #include	<QSemaphore>
@@ -46,7 +46,7 @@ class	xml_fileWriter;
 #define GETPROCADDRESS  dlsym
 #endif
 
-class	sdrplayHandler_v3: public deviceHandler, public Ui_sdrplayWidget_v3 {
+class	sdrplayHandler_v3: public QThread, public deviceHandler, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *, QString &);

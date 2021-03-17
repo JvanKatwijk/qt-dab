@@ -23,6 +23,7 @@
 #ifndef	__WAV_FILES__
 #define	__WAV_FILES__
 
+#include	<QObject>
 #include	<QString>
 #include	<QFrame>
 #include	<sndfile.h>
@@ -34,7 +35,7 @@
 #include	"filereader-widget.h"
 #include	"wav-reader.h"
 
-class	wavFiles: public deviceHandler, public filereaderWidget {
+class	wavFiles: public QObject, public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
 			wavFiles	(QString);
