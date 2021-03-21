@@ -26,6 +26,7 @@
 
 #include	<QtNetwork>
 #include        <QMessageBox>
+#include	<QThread>
 #include        <QByteArray>
 #include	<QObject>
 #include	<QFrame>
@@ -119,7 +120,7 @@ struct stream_cfg {
         const char *rfport;
 };
 
-class	plutoHandler: public deviceHandler, public Ui_plutoWidget {
+class	plutoHandler: public QThread, public deviceHandler, public Ui_plutoWidget {
 Q_OBJECT
 public:
 			plutoHandler		(QSettings *, QString &);

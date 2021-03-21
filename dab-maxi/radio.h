@@ -119,6 +119,8 @@ private:
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
+	QString			theFont;
+	int			fontSize;
 	int			fmFrequency;
 #ifdef	__LOGGING__
 	FILE			*logFile;

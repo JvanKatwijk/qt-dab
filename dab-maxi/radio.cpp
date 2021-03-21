@@ -281,6 +281,11 @@ uint8_t	dabBand;
 	globals. echo_depth     =
 	          dabSettings -> value ("echo_depth", 1). toInt();
 
+	theFont			=
+	          dabSettings -> value ("theFont", "Times"). toString ();
+	fontSize		=
+	          dabSettings -> value ("fontSize", 12). toInt ();
+
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
@@ -795,7 +800,7 @@ int	serviceOrder;
 	   model. appendRow (new QStandardItem (serv. name));
         for (int i = 0; i < model. rowCount (); i ++) {
            model. setData (model. index (i, 0),
-                      QFont ("Cantarell", 11), Qt::FontRole);
+                      QFont (theFont, fontSize), Qt::FontRole);
         }
 
         ensembleDisplay -> setModel (&model);
@@ -1113,7 +1118,7 @@ int	serviceOrder;
 	int row = model. rowCount ();
 	for (int i = 0; i < row; i ++) {
 	   model. setData (model. index (i, 0),
-	   QFont ("Cantarell", 11), Qt::FontRole);
+	   QFont (theFont, fontSize), Qt::FontRole);
 	}
 	ensembleDisplay -> setModel (&model);
 //
@@ -1529,7 +1534,7 @@ deviceHandler	*inputDevice	= nullptr;
 	   }
 	}
 	else
-	if (s == "file input (.sdr)") {
+	if (s == "file input(.sdr)") {
 	   file		= QFileDialog::getOpenFileName (this,
 	                                                tr ("Open file ..."),
 	                                                QDir::homePath(),
@@ -2508,7 +2513,7 @@ void	RadioInterface::stopService	() {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-	         colorService (model. index (i, 0), Qt::black, 11);
+	         colorService (model. index (i, 0), Qt::black, fontSize);
 	         break;
 	      }
 	   }
@@ -2558,7 +2563,7 @@ QString serviceName	= s -> serviceName;
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
 	   if (itemText == serviceName) {
-	      colorService (model. index (i, 0), Qt::red, 15);
+	      colorService (model. index (i, 0), Qt::red, fontSize + 4);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
 	      audiodata ad;
@@ -2593,7 +2598,7 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
 	QMap <int, QVariant> vMap = model. itemData (ind);
 	vMap. insert (Qt::ForegroundRole, QVariant (QBrush (c)));
 	model. setItemData (ind, vMap);
-	model. setData (ind, QFont ("Cantarell", pt), Qt::FontRole);
+	model. setData (ind, QFont (theFont, pt), Qt::FontRole);
 }
 //
 //	This function is only used in the Gui to clear
@@ -2787,7 +2792,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, 11);
+	         colorService (model. index (i, 0), Qt::black, fontSize);
 	         if (d == FORWARD) {
 	            i = (i + 1) % serviceList. size ();
 	         }

@@ -710,21 +710,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
             <string>Input Device</string>
            </property>
           </item>
-          <item>
-           <property name="text">
-            <string>file input (.raw)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>file input (.iq)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>file input (.sdr)</string>
-           </property>
-          </item>
          </widget>
         </item>
         <item row="0" column="2" colspan="3">
