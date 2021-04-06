@@ -256,6 +256,8 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (set_xmlDump ()));
 	connect (iq_dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_iqDump ()));
+	connect (biasControl, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_biasControl (int)));
 	xmlDumper       = nullptr;
 //
 //	and for saving/restoring the gain setting:
@@ -344,6 +346,11 @@ void	rtlsdrHandler::set_autogain	(int dummy) {
 	                gainControl -> currentText (). toInt ());
 }
 //
+void	rtlsdrHandler::set_biasControl	(int dummy) {
+	(void)dummy;
+	if (rtlsdr_set_bias_tee != nullptr)
+	   rtlsdr_set_bias_tee (device, biasControl -> isChecked () ? 1 : 0);
+}
 //	correction is in Hz
 void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
 	this -> rtlsdr_set_freq_correction (device, ppm);
@@ -518,6 +525,12 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 	   return false;
 	}
 
+	rtlsdr_set_bias_tee = (pfnrtlsdr_set_bias_tee)
+	                  GETPROCADDRESS (Handle, "rtlsdr_set_bias_tee");
+
+	if (rtlsdr_set_bias_tee == nullptr)
+	   fprintf (stderr, "biasControl will not work\n");
+//	nullpointer - if function is not available - is handled
 	fprintf (stderr, "OK, functions seem to be loaded\n");
 	return true;
 }

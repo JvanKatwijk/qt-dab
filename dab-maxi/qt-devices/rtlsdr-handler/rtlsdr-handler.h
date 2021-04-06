@@ -63,6 +63,7 @@ typedef	int (*  pfnrtlsdr_read_async) (rtlsdr_dev_t *,
 	                               void *,
 	                               uint32_t,
 	                               uint32_t);
+typedef	int (*	pfnrtlsdr_set_bias_tee) (rtlsdr_dev_t *, int);
 typedef int (*  pfnrtlsdr_cancel_async) (rtlsdr_dev_t *);
 typedef int (*  pfnrtlsdr_set_direct_sampling) (rtlsdr_dev_t *, int);
 typedef uint32_t (*  pfnrtlsdr_get_device_count)();
@@ -137,10 +138,12 @@ private:
 	pfnrtlsdr_get_tuner_gain rtlsdr_get_tuner_gain;
 	pfnrtlsdr_reset_buffer rtlsdr_reset_buffer;
 	pfnrtlsdr_cancel_async rtlsdr_cancel_async;
+	pfnrtlsdr_set_bias_tee rtlsdr_set_bias_tee;
 	pfnrtlsdr_set_direct_sampling	rtlsdr_set_direct_sampling;
 	pfnrtlsdr_get_device_count rtlsdr_get_device_count;
 	pfnrtlsdr_set_freq_correction rtlsdr_set_freq_correction;
 	pfnrtlsdr_get_device_name rtlsdr_get_device_name;
+	
 signals:
 	void		new_gainIndex		(int);
 	void		new_agcSetting		(bool);
@@ -150,6 +153,7 @@ private slots:
 	void		set_ppmCorrection	(int);
 	void		set_xmlDump		();
 	void		set_iqDump		();
+	void		set_biasControl		(int);
 };
 #endif
 

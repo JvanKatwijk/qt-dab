@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>203</width>
-    <height>330</height>
+    <width>206</width>
+    <height>344</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -63,6 +63,13 @@
     <widget class="QCheckBox" name="agcControl">
      <property name="text">
       <string>autogain</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="biasControl">
+     <property name="text">
+      <string>biasT</string>
      </property>
     </widget>
    </item>

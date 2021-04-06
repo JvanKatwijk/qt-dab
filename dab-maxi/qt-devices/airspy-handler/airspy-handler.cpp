@@ -241,7 +241,7 @@ uint32_t samplerateCount;
 	         linearityDisplay, SLOT (display (int)));
 	displaySerial	-> setText (getSerial());
 	running. store (false);
-//	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
+	my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	show_tab (0);			// will set currentTab
 	dumping. store (false);
@@ -604,7 +604,6 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	           my_airspy_error_name ((airspy_error)result), result);
 	}
 }
-
 
 const char* airspyHandler::board_id_name() {
 uint8_t bid;
