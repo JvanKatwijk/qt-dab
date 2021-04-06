@@ -335,12 +335,8 @@ SyncOnPhase:
 	   sum /= T_null;
 	   static	float snr	= 0;
 	   snr = 0.9 * snr +
-	     0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
-	   static int ccc	= 0;
-	   if (++ccc >= 2 ) {
-	      ccc = 0;
-	      show_snr ((int)snr, cLevel / cCount, sum);
-	   }
+	        0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
+	   show_snr ((int)snr, cLevel / cCount, sum);
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 

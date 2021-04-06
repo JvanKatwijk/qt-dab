@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>564</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,14 +64,14 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
         <string>snr height</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <widget class="QSpinBox" name="snrHeightSelector">
        <property name="minimum">
         <number>5</number>
@@ -81,14 +81,14 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>snr Length</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QSpinBox" name="snrLengthSelector">
        <property name="minimum">
         <number>112</number>
@@ -101,6 +101,20 @@
        </property>
        <property name="value">
         <number>312</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="snrDelaySetting">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_8">
+       <property name="text">
+        <string>snr compression</string>
        </property>
       </widget>
      </item>

@@ -23,7 +23,8 @@
  */
 #ifndef __EXTIO_HANDLER__
 #define	__EXTIO_HANDLER__
-#
+
+#include	<QObject>
 #include	<QWidget>
 #include	<QComboBox>
 #include	<QString>
@@ -169,7 +170,7 @@ typedef enum {
   , extHw_modeTX  = 1
 } extHw_ModeRxTxT;
 
-class	extioHandler:public deviceHandler {
+class	extioHandler:public QObject, public deviceHandler {
 Q_OBJECT
 public:
 			extioHandler		(QSettings *);

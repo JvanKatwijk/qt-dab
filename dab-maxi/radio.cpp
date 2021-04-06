@@ -208,6 +208,7 @@ QString theTime	= QDateTime::currentDateTime (). toString ();
 void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	(void)a1; (void)a2;
 }
+
 #endif
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
@@ -316,6 +317,9 @@ uint8_t	dabBand;
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
+
+	snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
+	configWidget. snrDelaySetting -> setValue (snrDelay);
 
 	currentService. valid	= false;
 	nextService. valid	= false;
@@ -673,10 +677,10 @@ QString RadioInterface::footText () {
 void	RadioInterface::doStart (const QString &dev) {
 	(void)dev;
 	inputDevice	= setDevice	(dev);
-	if (inputDevice == nullptr) {
 //	just in case someone wants to push all those nice buttons that
 //	are now connected to erroneous constructs
 //	Some buttons should not be touched before we have a device
+	if (inputDevice == nullptr) {
 	   disconnectGUI ();
 	   return;
 	}
@@ -1718,15 +1722,21 @@ void	RadioInterface::show_motHandling (bool b) {
 	
 //	called from the dabProcessor
 void	RadioInterface::show_snr (int s, float sig, float noise) {
-static int delayCount = 1;
+static int delayCount = snrDelay;
+static	float sigValue	= 0;
+static	float noiseValue = 0;
 	if (running. load ()) {
 	   snrDisplay	-> display (s);
+	   sigValue	+= sig;
+	   noiseValue	+= noise;
 	   if (!my_snrViewer. isHidden ()) {
-	      my_snrViewer. add_snr (sig, noise);
 	      delayCount --;
 	      if (delayCount <= 0) {
+	         my_snrViewer. add_snr (sigValue, noiseValue);
 	         my_snrViewer. show_snr ();
-	         delayCount = 5;
+	         delayCount = snrDelay;
+	         sigValue	= 0;
+	         noiseValue	= 0;
 	      }
 	   }
 	}
@@ -2156,6 +2166,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_configSetting ()));
 	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_muteTimeSetting (int)));
+	connect (configWidget. snrDelaySetting, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_snrDelaySetting (int)));
 	connect (configWidget. switchDelaySetting,
 	                                 SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_switchDelaySetting (int)));
@@ -3877,5 +3889,10 @@ void	RadioInterface::handle_skipFile_button	() {
 const QString fileName	= filenameFinder. findskipFile_fileName ();
 	theBand. saveSettings ();
 	theBand. setup_skipList (fileName);
+}
+
+void	RadioInterface::handle_snrDelaySetting	(int del) {
+	snrDelay	= del;
+	dabSettings	-> setValue ("snrDelay", del);
 }
 

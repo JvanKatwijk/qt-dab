@@ -202,6 +202,7 @@ private:
 	int16_t			ficSuccess;
 	int			total_ficError;
 	int			total_fics;
+	int			snrDelay;
 	void			connectGUI		();
 	void			disconnectGUI		();
 
@@ -377,5 +378,6 @@ private slots:
 	void			handle_snrLengthSelector	(int);
 	void			handle_skipList_button		();
 	void			handle_skipFile_button		();
+	void			handle_snrDelaySetting		(int);
 };
 #endif

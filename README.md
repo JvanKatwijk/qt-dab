@@ -1,6 +1,6 @@
-# Qt-DAB-3.7 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.71 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.7 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
+Qt-DAB-3.71 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
 
 ![overview](/qt-dab-screen.png?raw=true)
 
@@ -33,7 +33,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.7** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.71** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
@@ -47,8 +47,9 @@ of **skipTables**. Such a table allows the specification of channels
 that can be skipped duting a scan.
 
 Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
-"command lines", from time to time I often prefer a simple command line
-driven device. Therefore, a **terminal-DAB-xxx** version was developed, a
+ASR-33 terminals and "command lines", I often prefer a simple command line
+over a GUI.
+Therefore, a **terminal-DAB-xxx** version was developed, a
 simpler version, just for listening to a DAB service, making use of 
 command line
 
@@ -113,7 +114,7 @@ needs 3.06 (3.07) support
 Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------
 
-Qt-DAB has a main widget and a number of  **optional**
+Qt-DAB shows a main widget and a number of  **optional**
 widgets, visible or invisible under user's control
 
   * a widget with controls for the attached device,
@@ -130,7 +131,7 @@ as some information on the quality of the decoding,
 
 Another - an eight' - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
 possibility was created to save a detailed description of the services
-in the different channels, in a format easily to process with LibreOffice
+in the different channels, in a format easy to process with LibreOffice
 or comparable programs.
 
 While the main window is **always** shown, visibility of the others is
@@ -168,7 +169,7 @@ Depending on a setting in the ".ini" file, a logo or slide, transmitted
 as Program Associated Data with the audio transmission, will be shown here or on a separate widget
 (the setting can be modified from the configuration widget).
 
-The further selectors are concentrated on the bottom part of the right side
+The other selectors are concentrated on the bottom part of the right side
 of the widget. Buttons to make scopes visible, to store input and or
 output into a file, to select input device and the audio and to
 scan and store a description of the ensemble are in that section.
@@ -469,8 +470,13 @@ a sampled DAB frame starts with a null period of app 2600 samples, followed by
 samples in the null period.
 
 For every second DAB frame, such a computation is performed, 
-so, about 5 computations per second are performed and shown. To be precise:
-each minute there are 312 computations.
+and, depending on the settings, shown.
+The configuration widget contains a spinbox that can be used to set the
+"speed" of displaying data.
+If the value "1" is chosen, the result of each snr computation is shown,
+if a value larger than "1" is chosen that number of computations will be
+averaged and the result shown.
+Each minute there are 312 computations.
 The default value for the X-axis of the display in the widget is
 therefore 312.
 
@@ -493,8 +499,8 @@ and - the dip - when switching antennas.
 ----------------------------------------------------------------------
 
 As known, Qt-DAB provides a possibility of scanning the band. Band III
-contains 39 channels, so - depending on your position - the is
-quite a number of channels where no DAB signal is.
+contains 39 channels, so - depending on your position - there is
+quite a number of channels where no DAB signal is to be found.
 
 As in **dabChannel**, Qt-DAB has an extended mechanism to skip
 specified channels during a scan, a **skipTable**.
@@ -518,7 +524,7 @@ the same table that is used when no skipFile is selected.
 # PLuto device and fm transmission
 -----------------------------------------------------------------------
 
-As (probably) known, the Adalm pluto device has receive and transmit
+As (probably) known, the **Adalm Pluto** device has receive and transmit
 capabilities. In a previous project, an extension was made to a
 dab-cmdline version using the Adalm pluto device,
 to allow the transmission on FM of a preselected
@@ -532,7 +538,7 @@ pluto, and if pluto-rxtx is selected as device, the audio
 of the selected service, augmented with the text of the dynamic label
 encoded as RDS signal, will be transmitted on a specified frequency.
 
-As default, the frequency is 110 MHz, however, the user can specify
+As default, the transmit frequency is 110 MHz, however, the user can specify
 the frequency (obviously within the range supported by the Adalm-Pluto)
 as command line parameter: starting the program from the command line
 with as parameter
