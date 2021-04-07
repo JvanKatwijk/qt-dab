@@ -138,9 +138,9 @@ private slots:
 	void		set_lna_gain		(int value);
 	void		set_mixer_gain		(int value);
 	void		set_vga_gain		(int value);
-	void		set_lna_agc		();
-	void		set_mixer_agc		();
-	void		set_rf_bias		();
+	void		set_lna_agc		(int);
+	void		set_mixer_agc		(int);
+	void		set_rf_bias		(int);
 	void		show_tab		(int);
 	void		set_xmlDump		();
 private:

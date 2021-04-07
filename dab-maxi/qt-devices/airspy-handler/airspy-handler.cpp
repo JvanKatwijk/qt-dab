@@ -199,12 +199,12 @@ uint32_t samplerateCount;
 	         this, SLOT (set_vga_gain (int)));
 	connect (mixerSlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_mixer_gain (int)));
-	connect (lnaButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_lna_agc (void)));
-	connect (mixerButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_mixer_agc (void)));
-	connect (biasButton, SIGNAL (clicked (void)),
-	         this, SLOT (set_rf_bias (void)));
+	connect (lnaButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_lna_agc (int)));
+	connect (mixerButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_mixer_agc (int)));
+	connect (biasButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_rf_bias (int)));
 	connect (tabWidget, SIGNAL (currentChanged (int)),
 	         this, SLOT (show_tab (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
@@ -224,11 +224,6 @@ uint32_t samplerateCount;
 	         sensitivitySlider, SLOT (setValue (int)));
 	connect (this, SIGNAL (new_tabSetting (int)),
 	         tabWidget, SLOT (setCurrentIndex (int)));
-	connect (this, SIGNAL (new_lnaButtonText (const QString &)),
-	         lnaButtonLabel, SLOT (setText (const QString &)));
-	connect (this, SIGNAL (new_mixerButtonText (const QString &)),
-	         mixerButtonLabel, SLOT (setText (const QString &)));
-
 	connect (this, SIGNAL (new_lnaDisplay (int)),
 	         lnaDisplay, SLOT (display (int)));
 	connect (this, SIGNAL (new_vgaDisplay (int)),
@@ -560,26 +555,24 @@ int result = my_airspy_set_vga_gain (device, vgaGain = value);
 	0=Disable LNA Automatic Gain Control
 	1=Enable LNA Automatic Gain Control
 */
-void	airspyHandler::set_lna_agc() {
-	lna_agc	= !lna_agc;
+void	airspyHandler::set_lna_agc	(int dummy) {
+	(void)dummy;
+	lna_agc	= !lnaButton	-> isChecked ();
 int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("airspy_set_lna_agc() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
-	if (lna_agc)
-	   lnaButtonLabel	-> setText ("lna agc on");
-	else
-	   lnaButtonLabel	-> setText ("lna agc");
 }
 
 /* Parameter value:
 	0=Disable MIXER Automatic Gain Control
 	1=Enable MIXER Automatic Gain Control
 */
-void	airspyHandler::set_mixer_agc() {
-	mixer_agc	= !mixer_agc;
+void	airspyHandler::set_mixer_agc	(int dummy) {
+	(void)dummy;
+	mixer_agc	= mixerButton -> isChecked ();
 
 int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 
@@ -587,16 +580,13 @@ int result = my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
 	   printf ("airspy_set_mixer_agc() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
 	}
-	if (mixer_agc)
-	   mixerButtonLabel	-> setText ("mixer agc on");
-	else
-	   mixerButtonLabel	-> setText ("mixer agc");
 }
 
 
 /* Parameter value shall be 0=Disable BiasT or 1=Enable BiasT */
-void	airspyHandler::set_rf_bias() {
-	rf_bias	= !rf_bias;
+void	airspyHandler::set_rf_bias (int dummy) {
+	(void)dummy;
+	rf_bias	= biasButton -> isChecked ();
 int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -938,6 +928,21 @@ QString theValue;
 	rf_bias			= result. at (7). toInt ();
 	tab_setting		= result. at (8). toInt ();
 
+	lnaButton	-> blockSignals (true);
+	lnaButton	-> setChecked (lna_agc);
+	usleep (1000);
+	lnaButton	-> blockSignals (false);
+
+	mixerButton	-> blockSignals (true);
+	mixerButton	-> setChecked (mixer_agc);
+	usleep	(1000);
+	mixerButton	-> blockSignals (false);
+
+	biasButton	-> blockSignals (true);
+	biasButton	-> setChecked (rf_bias);
+	usleep (1000);
+	biasButton	-> blockSignals (false);
+	
 	lnaSlider	-> blockSignals (true);
 	new_lnaGainValue	(lnaGainValue);
 	new_lnaDisplay		(lnaGainValue);
@@ -972,20 +977,6 @@ QString theValue;
 	while (sensitivitySlider -> value () != sensitivity)
 	   usleep (1000);
 	sensitivitySlider -> blockSignals (false);
-
-	lnaButton	-> blockSignals (true);
-	QString	 lnaText = lna_agc == 1 ? "lna agc on" : " lna agc";
-	new_lnaButtonText (lnaText);
-	while (lnaButtonLabel -> text () != lnaText)
-	   usleep (1000);
-	lnaButton	-> blockSignals (false);
-
-	mixerButton	-> blockSignals (true);
-	QString mixerText = mixer_agc ? "mixer agc on" : "mixer agc";
-	new_mixerButtonText (mixerText);
-	while (mixerButtonLabel -> text () != mixerText)
-	   usleep (1000);
-	mixerButton	-> blockSignals (false);
 
 	tabWidget	-> blockSignals (true);
 	new_tabSetting (tab_setting);
