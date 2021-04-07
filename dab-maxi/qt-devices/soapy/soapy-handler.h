@@ -38,7 +38,7 @@
 #include	"ui_soapy-widget.h"
 #include	"soapy-worker.h"
 
-class	soapyHandler: public deviceHandler, public Ui_soapyWidget {
+class	soapyHandler: public QObject, public deviceHandler, public Ui_soapyWidget {
 Q_OBJECT
 public:
 			soapyHandler		(QSettings *);
