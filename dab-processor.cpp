@@ -334,9 +334,20 @@ SyncOnPhase:
 	      sum += abs (ofdmBuffer [i]);
 	   sum /= T_null;
 	   static	float snr	= 0;
+	   static	float sigValue;
+	   static	float noiseValue;
+	   static	int delayCount	= 10;
 	   snr = 0.9 * snr +
 	        0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
-	   show_snr ((int)snr, cLevel / cCount, sum);
+	   sigValue	+= cLevel / cCount;
+	   noiseValue	+= sum;
+	   delayCount --;
+	   if (delayCount <= 0) {
+	      show_snr ((int)snr, sigValue, noiseValue);
+	      delayCount = snrDelay;
+	      sigValue		= 0;
+	      noiseValue	= 0;
+	   }
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 
@@ -388,6 +399,11 @@ SyncOnPhase:
 	}
 //	inputDevice	-> stopReader ();
 }
+//
+void	dabProcessor::set_snrDelay	(int d) {
+	snrDelay	= d;
+}
+
 //
 //
 void	dabProcessor::set_scanMode	(bool b) {

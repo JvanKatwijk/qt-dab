@@ -157,6 +157,7 @@ char	*scanTextTable [3] = {
 	"scan to data",
 	"scan continuously"
 };
+
 static inline
 QString scanmodeText (int e) {
 	return QString (scanTextTable [e]);
@@ -696,6 +697,7 @@ bool	RadioInterface::doStart	() {
 
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 
+	my_dabProcessor	-> set_snrDelay (snrDelay);
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
 
@@ -840,6 +842,8 @@ QString s;
 
 void	RadioInterface::handle_contentButton	() {
 ensemblePrinter	my_Printer;
+QString	utcTime		= convertTime (UTC. year, UTC. month, UTC. day,
+	                               UTC. hour, UTC. minute);
 QString	currentChannel	= channelSelector -> currentText ();
 int	frequency	= inputDevice	-> getVFOFrequency ();
 
@@ -856,7 +860,7 @@ int	frequency	= inputDevice	-> getVFOFrequency ();
 //	we asserted that my_dabProcessor exists
 	my_Printer. showEnsembleData (currentChannel,
 	                              frequency,
-	                              localTimeDisplay -> text (),
+	                              utcTime,
 	                              transmitters,
 	                              serviceList,
 	                              my_dabProcessor, fileP);
@@ -1630,7 +1634,24 @@ const char *monthTable [] = {
 //
 //	called from the fibDecoder
 void	RadioInterface::clockTime (int year, int month, int day,
-	                                    int hours, int minutes){
+	                           int hours, int minutes, int d2, int h2, int m2){
+	this	-> localTime. year	= year;
+	this	-> localTime. month	= month;
+	this	-> localTime. day	= day;
+	this	-> localTime. hour	= hours;
+	this	-> localTime. minute	= minutes;
+
+	this	-> UTC. year		= year;
+	this	-> UTC. month		= month;
+	this	-> UTC. day		= d2;
+	this	-> UTC. hour		= h2;
+	this	-> UTC. minute		= m2;
+	QString result	= convertTime (year, month, day, hours, minutes);
+	localTimeDisplay -> setText (result);
+}
+
+QString	RadioInterface::convertTime (int year, int month,
+	                             int day, int hours, int minutes) {
 char dayString [3];
 char hourString [3];
 char minuteString [3];
@@ -1642,7 +1663,7 @@ char minuteString [3];
 	                       QString (dayString) + "  " +
 	                       QString (hourString) + ":" +
 	                       QString (minuteString);
-	localTimeDisplay -> setText (result);
+	return result;
 }
 //
 //	called from the MP4 decoder
@@ -1721,25 +1742,33 @@ void	RadioInterface::show_motHandling (bool b) {
 }
 	
 //	called from the dabProcessor
-void	RadioInterface::show_snr (int s, float sig, float noise) {
-static int delayCount = snrDelay;
-static	float sigValue	= 0;
-static	float noiseValue = 0;
-	if (running. load ()) {
-	   snrDisplay	-> display (s);
-	   sigValue	+= sig;
-	   noiseValue	+= noise;
-	   if (!my_snrViewer. isHidden ()) {
-	      delayCount --;
-	      if (delayCount <= 0) {
-	         my_snrViewer. add_snr (sigValue, noiseValue);
-	         my_snrViewer. show_snr ();
-	         delayCount = snrDelay;
-	         sigValue	= 0;
-	         noiseValue	= 0;
-	      }
-	   }
+void	RadioInterface::show_snr (int s, float sigValue, float noiseValue) {
+	if (!running. load ())
+	   return;
+	snrDisplay	-> display (s);
+	if (!my_snrViewer. isHidden ()) {
+	   my_snrViewer. add_snr (sigValue, noiseValue);
+	   my_snrViewer. show_snr ();
 	}
+	
+//static int delayCount = snrDelay;
+//static	float sigValue	= 0;
+//static	float noiseValue = 0;
+//	if (running. load ()) {
+//	   snrDisplay	-> display (s);
+//	   sigValue	+= sig;
+//	   noiseValue	+= noise;
+//	   if (!my_snrViewer. isHidden ()) {
+//	      delayCount --;
+//	      if (delayCount <= 0) {
+//	         my_snrViewer. add_snr (sigValue, noiseValue);
+//	         my_snrViewer. show_snr ();
+//	         delayCount = snrDelay;
+//	         sigValue	= 0;
+//	         noiseValue	= 0;
+//	      }
+//	   }
+//	}
 }
 
 //	just switch a color, called from the dabprocessor
@@ -3195,10 +3224,13 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	   }
 	}
 	if (scanDumpFile != nullptr) {
+	   QString utcTime	= convertTime (UTC. year, UTC.month,
+	                                       UTC. day, UTC. hour, 
+	                                       UTC. minute);
 	   if (scanMode == SINGLE_SCAN)
 	      my_Printer. showEnsembleData (channelSelector -> currentText (),
 	                                    inputDevice -> getVFOFrequency (),
-		                            localTimeDisplay -> text (),
+	                                    utcTime,
 	                                    transmitters,
 	                                    serviceList,
 	                                    my_dabProcessor, scanDumpFile);
@@ -3207,7 +3239,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	      my_Printer. showSummaryData (channelSelector -> currentText (),
 	                                   inputDevice -> getVFOFrequency (),
 	                                   SNR,
-	                                   localTimeDisplay -> text (),
+	                                   utcTime,
 	                                   transmitters,
 	                                   serviceList,
 	                                   my_dabProcessor,
@@ -3893,6 +3925,8 @@ const QString fileName	= filenameFinder. findskipFile_fileName ();
 
 void	RadioInterface::handle_snrDelaySetting	(int del) {
 	snrDelay	= del;
+	if (my_dabProcessor != nullptr)
+	   my_dabProcessor -> set_snrDelay (snrDelay);
 	dabSettings	-> setValue ("snrDelay", del);
 }
 

@@ -42,8 +42,9 @@
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
-	connect (this, SIGNAL (clockTime (int, int, int, int, int)),
-	         myRadioInterface, SLOT (clockTime (int, int, int, int, int)));
+	connect (this, SIGNAL (clockTime (int, int, int, int, int, int, int, int)),
+	         myRadioInterface, SLOT (clockTime (int, int, int, int, int,
+	                                                int, int, int)));
 	connect (this, SIGNAL (changeinConfiguration ()),
 	         myRadioInterface, SLOT (changeinConfiguration ()));
 	connect (this, SIGNAL (startAnnouncement (const QString &, int)),
@@ -62,6 +63,7 @@
 	delete	currentConfig;
 	delete	ensemble;
 }
+
 //
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
@@ -1740,10 +1742,13 @@ int32_t	theTime	[6];
 	}
 
 	if (change) {
+	   int utc_day	= dateTime [2];
+	   int utc_hour	= dateTime [3];
+	   int utc_minute = dateTime [4];
 	   adjustTime (dateTime);
-//	   const QString timeString = mapTime (dateTime);
 	   emit  clockTime (dateTime [0], dateTime [1],
-	                    dateTime [2], dateTime [3], dateTime [4]);
+	                    dateTime [2], dateTime [3], dateTime [4],
+	                              utc_day, utc_hour, utc_minute);
 	}
 }
 

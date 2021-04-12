@@ -91,7 +91,9 @@ public:
 	                                             RingBuffer<int16_t> *);
 	bool		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
+	void		set_snrDelay		(int);
 private:
+	int		snrDelay;
 	int		frequency;
 	int		threshold;
 	int		totalFrames;

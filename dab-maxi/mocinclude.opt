@@ -47,9 +47,9 @@
 -I/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtXml
 -I/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtNetwork
 -I/usr/i686-w64-mingw32/sys-root/mingw/include/qt5/QtCore
--I/usr/i686-w64-mingw32/sys-root/mingw/include/c++
--I/usr/i686-w64-mingw32/sys-root/mingw/include/c++/i686-w64-mingw32
--I/usr/i686-w64-mingw32/sys-root/mingw/include/c++/backward
--I/usr/lib/gcc/i686-w64-mingw32/10.2.1/include
--I/usr/lib/gcc/i686-w64-mingw32/10.2.1/include-fixed
--I/usr/i686-w64-mingw32/sys-root/mingw/include
+-I/usr/include/c++/10
+-I/usr/include/c++/10/x86_64-redhat-linux
+-I/usr/include/c++/10/backward
+-I/usr/lib/gcc/x86_64-redhat-linux/10/include
+-I/usr/local/include
+-I/usr/include

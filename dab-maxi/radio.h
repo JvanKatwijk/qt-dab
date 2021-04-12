@@ -87,6 +87,14 @@ public:
 	bool		is_audio;
 };
 
+struct	theTime {
+	int	year;
+	int	month;
+	int	day;
+	int	hour;
+	int	minute;
+};
+
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
@@ -206,6 +214,9 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
+	struct theTime		localTime;
+	struct theTime		UTC;
+	QString			convertTime		(int, int, int, int, int);
 	void			set_buttonColors	(QPushButton *,
 	                                                 const QString &);
 	QString			footText		();
@@ -288,7 +299,9 @@ public slots:
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
-	void			clockTime		(int, int, int, int, int);
+	void			clockTime		(int, int, int,
+	                                                 int, int,
+	                                                 int, int, int);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
