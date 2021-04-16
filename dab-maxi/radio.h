@@ -277,7 +277,9 @@ public slots:
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
-	void			show_snr		(int, float, float);
+	void			show_snr		(int);
+	void			show_snr		(float, float, float,
+	                                                    float, float);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			handle_motObject	(QByteArray, QString,

@@ -62,6 +62,7 @@ public:
 	void		add_snr		(float, float);
 	void		setLength	(int);
 	void		setHeight	(int);
+	void		set_snrDelay	(int);
 	void		show		();
 	void		hide		();
 	bool		isHidden	();
@@ -77,7 +78,6 @@ private:
 	QwtPickerMachine	*lpickerMachine;
 	std::vector<double>	X_axis;
 	std::vector<double>	Y_Buffer;
-	std::vector<double>	baseLine_Buffer;
 	float		get_db		(float);
 	int16_t		displaySize;
 	QwtPlot		*plotgrid;
@@ -86,6 +86,9 @@ private:
         QColor          curveColor;
 	int		plotLength;
 	int		plotHeight;
+	int		delayCount;
+	int		delayBufferP;
+	void		addtoView		(float);
 #ifdef	__DUMP_SNR__
 	std::atomic<FILE *>	snrDumpFile;
 	void		startDumping		();

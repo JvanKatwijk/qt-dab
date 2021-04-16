@@ -120,9 +120,9 @@ std::vector<int> resultVector;
 	sum /= T_u / 2;
 //	
 	for (i = 0; i < 200; i ++) {
-	   if (lbuf [T_g - 80 + i] > Max) {
-	      maxIndex = T_g - 80 + i;
-	      Max = lbuf [T_g - 80 + i];
+	   if (lbuf [T_g - 100 + i] > Max) {
+	      maxIndex = T_g - 100 + i;
+	      Max = lbuf [T_g - 100 + i];
 	   }
 	}
 

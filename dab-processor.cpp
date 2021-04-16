@@ -91,8 +91,10 @@
 	         myRadioInterface, SLOT (showSpectrum (int)));
 	connect (this, SIGNAL (show_tii (int, int)),
 	         myRadioInterface, SLOT (show_tii (int, int)));
-	connect (this, SIGNAL (show_snr (int, float, float)),
-	         mr, SLOT (show_snr (int, float, float)));
+	connect (this, SIGNAL (show_snr (int)),
+	         mr, SLOT (show_snr (int)));
+	connect (this, SIGNAL (show_snr (float, float, float, float, float)),
+	         mr, SLOT (show_snr (float, float, float, float, float)));
 	connect (this, SIGNAL (show_clockErr (int)),
 	         mr, SLOT (show_clockError (int)));
 	my_TII_Detector. reset();
@@ -288,39 +290,23 @@ SyncOnPhase:
 	   cLevel	= 0;
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
-	        ofdmSymbolCount < 4; ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer. data(),
-	                              T_s, coarseOffset + fineOffset);
-	      sampleCount += T_s;
-	      for (i = (int)T_u; i < (int)T_s; i ++) {
-	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
-	      }
-	      for (int i = 0; i < (int)T_s; i ++)
-	         cLevel += abs (ofdmBuffer [i]);
-	      cCount += T_s;
-	      my_ofdmDecoder. decode (ofdmBuffer,
-	                            ofdmSymbolCount, ibits. data());
-	      my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-	      if (!scanMode)
-	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
-	                                                    ofdmSymbolCount);
-	   }
-
-	   for (int ofdmSymbolCount = 4;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	      myReader. getSamples (ofdmBuffer. data(),
 	                              T_s, coarseOffset + fineOffset);
 	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
+	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	      }
-	      for (i = 0; i < (int)T_s; i ++) 
-	         cLevel += abs (ofdmBuffer [i]);
-	      cCount += T_s;
+	      cCount += 2 * T_g;
+	      if (ofdmSymbolCount < 4) {
+	         my_ofdmDecoder. decode (ofdmBuffer,
+	                                 ofdmSymbolCount, ibits. data());
+	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
+	      }
 	      if (!scanMode)
-                 my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
-                                                            ofdmSymbolCount);
-
+	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
+	                                                    ofdmSymbolCount);
 	   }
 /**
   *	OK,  here we are at the end of the frame
@@ -333,21 +319,21 @@ SyncOnPhase:
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);
 	   sum /= T_null;
-	   static	float snr	= 0;
-	   static	float sigValue;
-	   static	float noiseValue;
-	   static	int delayCount	= 10;
-	   snr = 0.9 * snr +
-	        0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
-	   sigValue	+= cLevel / cCount;
-	   noiseValue	+= sum;
-	   delayCount --;
-	   if (delayCount <= 0) {
-	      show_snr ((int)snr, sigValue, noiseValue);
-	      delayCount = snrDelay;
-	      sigValue		= 0;
-	      noiseValue	= 0;
+	   static float snr	= 0;
+	   static int ccc	= 0;
+	   ccc ++;
+	   if (ccc >= 10) {
+	      ccc = 0;
+	      snr = 0.9 * snr +
+	           0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
+	      show_snr ((int)snr);
 	   }
+	   static float snrV [5];
+	   static int   snrC	= 0;
+	   snrV [snrC] = 20 * log10 ((cLevel / cCount + 0.05) / (sum + 0.05));
+	   snrC = (snrC + 1) % 5;
+	   if (snrC == 0)
+	      show_snr (snrV [0], snrV [1], snrV [2], snrV [3], snrV [4]);
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 
@@ -398,10 +384,6 @@ SyncOnPhase:
 	   ;
 	}
 //	inputDevice	-> stopReader ();
-}
-//
-void	dabProcessor::set_snrDelay	(int d) {
-	snrDelay	= d;
 }
 
 //

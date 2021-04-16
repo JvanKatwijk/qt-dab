@@ -32,8 +32,7 @@
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
 	                             myFrame (nullptr),
-	                             spectrum_curve (""),
-	                             baseLine_curve ("") {
+	                             spectrum_curve ("") {
 QString	colorString	= "black";
 	this		-> myRadioInterface	= mr;
 	this		-> dabSettings		= s;
@@ -88,11 +87,7 @@ QString	colorString	= "black";
    	spectrum_curve. setPen (QPen(curveColor, 2.0));
 	spectrum_curve. setOrientation (Qt::Horizontal);
 	spectrum_curve. setBaseline	(0);
-	baseLine_curve. setPen (QPen (curveColor, 2.0));
-	baseLine_curve. setOrientation (Qt::Horizontal);
-	baseLine_curve. setBaseline 	(0);
 	spectrum_curve. attach (plotgrid);
-	baseLine_curve. attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         0, plotHeight);
@@ -101,11 +96,12 @@ QString	colorString	= "black";
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	X_axis.   resize (plotLength);
 	Y_Buffer. resize (plotLength);
-	baseLine_Buffer. resize (plotLength);
 	for (int i = 0; i < plotLength; i ++) {
 	   X_axis  [i] = i;
 	   Y_Buffer [i] = 0;
 	}
+	delayCount	= 5;
+	delayBufferP	= 0;
 }
 
 	snrViewer::~snrViewer () {
@@ -160,29 +156,53 @@ bool	snrViewer::isHidden () {
 	return myFrame. isHidden();
 }
 
+void	snrViewer::set_snrDelay	(int d) {
+	if ((0 <= d) && (d <= 10))
+	   delayCount = d;
+	else
+	   delayCount = 5;
+	delayBufferP	= 0;
+}
+
 void	snrViewer::add_snr	(float snr) {
-	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
-	                               (plotLength - 1) * sizeof (double));
-	memmove (&(baseLine_Buffer. data () [1]),
-	                       &(baseLine_Buffer. data () [0]),
-	                               (plotLength - 1) * sizeof (double));
-	Y_Buffer [0]	= snr;
-	baseLine_Buffer [0] = 0;
+static float delayBuffer [10];
+float	sum	= 0;
+	delayBuffer [delayBufferP] = snr;
+	delayBufferP = (delayBufferP + 1) % delayCount;
+	if (delayBufferP -= 0) {
+	   for (int i = 0; i < delayCount; i ++)
+	      sum += delayBuffer [i];
+	   sum /= delayCount;
+	   addtoView (sum);
+	}
+}
+
+#define	VIEWBUFFER_SIZE 5
+void	snrViewer::addtoView (float v) {
+static float displayBuffer [VIEWBUFFER_SIZE];
+static int displayPointer = 0;
+
+	displayBuffer [displayPointer] = v;
+	displayPointer = (displayPointer + 1) % VIEWBUFFER_SIZE;
+	if (displayPointer == 0) {
+	   memmove (&(Y_Buffer. data () [VIEWBUFFER_SIZE]),
+	                   &(Y_Buffer. data () [0]),
+	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (double));
+	   for (int i = 0; i < VIEWBUFFER_SIZE; i ++)
+	      Y_Buffer [i] = displayBuffer [i];
 #ifdef	__DUMP_SNR__
-	if (snrDumpFile. load () != nullptr)
-	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
+	   if (snrDumpFile. load () != nullptr)
+	      fwrite (displayBuffer, sizeof (float), 
+	                             VIEWBUFFER_SIZE, snrDumpFile. load ());
 #endif
+	}
 }
 
 void	snrViewer::add_snr	(float sig, float noise) {
 float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
 	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
 	                               (plotLength - 1) * sizeof (double));
-	memmove (&(baseLine_Buffer. data () [1]),
-	                       &(baseLine_Buffer. data () [0]),
-	                               (plotLength - 1) * sizeof (double));
 	Y_Buffer [0]	= snr;
-	baseLine_Buffer [0] = 0;
 #ifdef	__DUMP_SNR__
 	if (snrDumpFile. load () != nullptr)
 	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
@@ -192,8 +212,6 @@ float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
 void	snrViewer::show_snr () {
 	spectrum_curve. setSamples (X_axis. data (),
 	                           Y_Buffer. data (), plotLength);
-	baseLine_curve. setSamples (X_axis. data (),
-	                            baseLine_Buffer. data (), plotLength);
 	plotgrid	-> replot (); 
 }
 
@@ -234,7 +252,6 @@ int	index;
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
 	spectrum_curve. setPen (QPen(this -> curveColor, 2.0));
-	baseLine_curve. setPen (QPen(this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid. setMajPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));

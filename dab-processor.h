@@ -91,9 +91,7 @@ public:
 	                                             RingBuffer<int16_t> *);
 	bool		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
-	void		set_snrDelay		(int);
 private:
-	int		snrDelay;
 	int		frequency;
 	int		threshold;
 	int		totalFrames;
@@ -139,7 +137,9 @@ signals:
 	void		setSyncLost		();
 	void		show_tii		(int, int);
 	void		show_Spectrum		(int);
-	void		show_snr		(int, float, float);
+	void		show_snr		(int);
+	void		show_snr		(float, float, float,
+	                                                  float, float);
 	void		show_clockErr		(int);
 };
 #endif

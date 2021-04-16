@@ -697,7 +697,7 @@ bool	RadioInterface::doStart	() {
 
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 
-	my_dabProcessor	-> set_snrDelay (snrDelay);
+	my_snrViewer. set_snrDelay (snrDelay);
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
 
@@ -1742,33 +1742,23 @@ void	RadioInterface::show_motHandling (bool b) {
 }
 	
 //	called from the dabProcessor
-void	RadioInterface::show_snr (int s, float sigValue, float noiseValue) {
+void	RadioInterface::show_snr (int s) {
 	if (!running. load ())
 	   return;
 	snrDisplay	-> display (s);
+}
+
+void	RadioInterface::show_snr (float a, float b, float c, float d, float e) {
+	if (!running. load ())
+	   return;
 	if (!my_snrViewer. isHidden ()) {
-	   my_snrViewer. add_snr (sigValue, noiseValue);
+	   my_snrViewer. add_snr (a);
+	   my_snrViewer. add_snr (b);
+	   my_snrViewer. add_snr (c);
+	   my_snrViewer. add_snr (d);
+	   my_snrViewer. add_snr (e);
 	   my_snrViewer. show_snr ();
 	}
-	
-//static int delayCount = snrDelay;
-//static	float sigValue	= 0;
-//static	float noiseValue = 0;
-//	if (running. load ()) {
-//	   snrDisplay	-> display (s);
-//	   sigValue	+= sig;
-//	   noiseValue	+= noise;
-//	   if (!my_snrViewer. isHidden ()) {
-//	      delayCount --;
-//	      if (delayCount <= 0) {
-//	         my_snrViewer. add_snr (sigValue, noiseValue);
-//	         my_snrViewer. show_snr ();
-//	         delayCount = snrDelay;
-//	         sigValue	= 0;
-//	         noiseValue	= 0;
-//	      }
-//	   }
-//	}
 }
 
 //	just switch a color, called from the dabprocessor
@@ -3925,8 +3915,7 @@ const QString fileName	= filenameFinder. findskipFile_fileName ();
 
 void	RadioInterface::handle_snrDelaySetting	(int del) {
 	snrDelay	= del;
-	if (my_dabProcessor != nullptr)
-	   my_dabProcessor -> set_snrDelay (snrDelay);
+	my_snrViewer. set_snrDelay (snrDelay);
 	dabSettings	-> setValue ("snrDelay", del);
 }
 

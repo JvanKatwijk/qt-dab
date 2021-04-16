@@ -153,7 +153,7 @@ int32_t		i;
 //	so here, bufferContent >= n
 	n	= theRig -> getSamples (v, n);
 	bufferContent -= n;
-	if (dumpfilePointer. load() != nullptr) {
+	if (dumpfilePointer. load () != nullptr) {
 	   for (i = 0; i < n; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;

@@ -73,12 +73,17 @@ static
 void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
 rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 
-	if ((theStick == nullptr) || (len != READLEN_DEFAULT))
+	if ((theStick == nullptr) || (len != READLEN_DEFAULT)) {
+	   fprintf (stderr, "%d \n", len);
 	   return;
+	}
 
-	if (theStick -> isActive)
+	if (theStick -> isActive) {
+	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < len / 2)
+	      fprintf (stderr, "xx? ");
 	   (void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
+	}
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -110,7 +115,7 @@ void	run () {
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
-	                                    _I_Buffer (4 * 1024 * 1024),
+	                                    _I_Buffer (8 * 1024 * 1024),
 	                                    myFrame (nullptr) {
 int16_t	deviceCount;
 int32_t	r;
@@ -364,8 +369,8 @@ static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;
 	amount = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++) 
-	   V [i] = std::complex<float> (mapTable [real (temp [i])],
-	                                mapTable [imag (temp [i])]);
+	   V [i] = std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                mapTable [imag (temp [i]) & 0xFF]);
 	if (xml_dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	else

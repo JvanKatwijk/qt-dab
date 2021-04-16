@@ -107,7 +107,13 @@
      <item row="3" column="1">
       <widget class="QSpinBox" name="snrDelaySetting">
        <property name="minimum">
-        <number>1</number>
+        <number>2</number>
+       </property>
+       <property name="maximum">
+        <number>10</number>
+       </property>
+       <property name="value">
+        <number>5</number>
        </property>
       </widget>
      </item>
