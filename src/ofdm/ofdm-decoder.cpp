@@ -76,7 +76,8 @@ void	ofdmDecoder::reset() {
 
 /**
   */
-void	ofdmDecoder::processBlock_0 (std::vector <std::complex<float> > buffer) {
+void	ofdmDecoder::processBlock_0 (
+	                std::vector <std::complex<float> > buffer) {
 	memcpy (fft_buffer, buffer. data(),
 	                             T_u * sizeof (std::complex<float>));
 

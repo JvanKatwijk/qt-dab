@@ -42,7 +42,7 @@
 #define	GETPROCADDRESS	dlsym
 #endif
 
-#define	READLEN_DEFAULT	8192
+#define	READLEN_DEFAULT	(2 * 8192)
 //
 //	For the callback, we do need some environment which
 //	is passed through the ctx parameter
@@ -133,8 +133,8 @@ char	manufac [256], product [256], serial [256];
 	workerHandle			= nullptr;
 	isActive		= false;
 #ifdef	__MINGW32__
-	const char *libraryString	= "rtlsdr.dll";
-	Handle		= LoadLibrary ((wchar_t *)L"rtlsdr.dll");
+	const char *libraryString	= "librtlsdr.dll";
+	Handle		= LoadLibrary ((wchar_t *)L"librtlsdr.dll");
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
 	   throw (20);

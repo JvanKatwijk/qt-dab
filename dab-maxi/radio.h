@@ -113,6 +113,7 @@ private:
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
+	RingBuffer<float>	snrBuffer;
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
@@ -210,7 +211,6 @@ private:
 	int16_t			ficSuccess;
 	int			total_ficError;
 	int			total_fics;
-	int			snrDelay;
 	void			connectGUI		();
 	void			disconnectGUI		();
 
@@ -278,8 +278,6 @@ public slots:
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
 	void			show_snr		(int);
-	void			show_snr		(float, float, float,
-	                                                    float, float);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			handle_motObject	(QByteArray, QString,

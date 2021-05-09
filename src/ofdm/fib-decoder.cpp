@@ -245,6 +245,7 @@ static	uint8_t prevChangeFlag	= 0;
 	CIFcount 		= highpart * 250 + lowpart;
 
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
+	   fprintf (stderr, "handling change\n");
 	   dabConfig 	*temp	= currentConfig;
 	   currentConfig	= nextConfig;
 	   nextConfig		= temp;

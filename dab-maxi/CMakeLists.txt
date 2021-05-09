@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-3.71)
+set (objectName qt-dab-3.72)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++11 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -396,7 +396,6 @@ endif ()
 	     ./radio.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
-	     ../includes/output/audiosink.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/phasereference.h

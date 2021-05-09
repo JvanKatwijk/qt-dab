@@ -21,7 +21,6 @@
  */
 #ifndef	__BACKEND_DECONVOLVER__
 #define	__BACKEND_DECONVOLVER__
-
 #include	"dab-constants.h"
 class	protection;
 

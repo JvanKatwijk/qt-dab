@@ -222,6 +222,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        spectrumBuffer (2 * 32768),
 	                                        iqBuffer (2 * 1536),
 	                                        tiiBuffer (32768),
+	                                        snrBuffer (512),
 	                                        responseBuffer (32768),
 	                                        frameBuffer (2 * 32768),
         	                                dataBuffer (32768),
@@ -262,6 +263,7 @@ uint8_t	dabBand;
 	globals. iqBuffer	= &iqBuffer;
 	globals. responseBuffer	= &responseBuffer;
 	globals. tiiBuffer	= &tiiBuffer;
+	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
 	latency			=
@@ -319,7 +321,7 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
-	snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
+	int snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
 	configWidget. snrDelaySetting -> setValue (snrDelay);
 
 	currentService. valid	= false;
@@ -520,8 +522,10 @@ uint8_t	dabBand;
 	         this, SLOT (color_audiodumpButton (void)));
 	connect (techData. timeTable_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_timeTable ()));
-	connect (techData. muteButton, SIGNAL (rightClicked (void)),
-	         this, SLOT (color_muteButton (void)));
+//	connect (techData. muteButton, SIGNAL (rightClicked (void)),
+//	         this, SLOT (color_muteButton (void)));
+	connect (muteButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_muteButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -697,6 +701,7 @@ bool	RadioInterface::doStart	() {
 
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 
+	int snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
 	my_snrViewer. set_snrDelay (snrDelay);
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
@@ -888,10 +893,10 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
-	                           contentType,
-	                           getContentBaseType ((MOTContentType)contentType),
-	                           name. toLatin1 (). data (), dirElement);
+//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+//	                           contentType,
+//	                           getContentBaseType ((MOTContentType)contentType),
+//	                           name. toLatin1 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -1746,19 +1751,22 @@ void	RadioInterface::show_snr (int s) {
 	if (!running. load ())
 	   return;
 	snrDisplay	-> display (s);
-}
-
-void	RadioInterface::show_snr (float a, float b, float c, float d, float e) {
-	if (!running. load ())
+	
+	if (my_snrViewer. isHidden ()) {
+	   snrBuffer. FlushRingBuffer ();
 	   return;
-	if (!my_snrViewer. isHidden ()) {
-	   my_snrViewer. add_snr (a);
-	   my_snrViewer. add_snr (b);
-	   my_snrViewer. add_snr (c);
-	   my_snrViewer. add_snr (d);
-	   my_snrViewer. add_snr (e);
-	   my_snrViewer. show_snr ();
 	}
+
+	int amount = snrBuffer. GetRingBufferReadAvailable ();
+	if (amount <= 0)
+	   return;
+
+	float ss [amount];
+	snrBuffer. getDataFromBuffer (ss, amount);
+	for (int i = 0; i < amount; i ++) {
+	   my_snrViewer. add_snr (ss [i]);
+	}
+	my_snrViewer. show_snr ();
 }
 
 //	just switch a color, called from the dabprocessor
@@ -2175,8 +2183,10 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	connect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
-	connect (techData. muteButton, SIGNAL (clicked (void)),
-	         this, SLOT (handle_muteButton (void)));
+//	connect (techData. muteButton, SIGNAL (clicked (void)),
+//	         this, SLOT (handle_muteButton (void)));
+	connect (muteButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_muteButton ()));
 
 	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
@@ -2256,7 +2266,9 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	disconnect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
-	disconnect (techData. muteButton, SIGNAL (clicked (void)),
+//	disconnect (techData. muteButton, SIGNAL (clicked (void)),
+//	         this, SLOT (handle_muteButton (void)));
+	disconnect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_muteButton (void)));
 
 	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
@@ -3324,7 +3336,8 @@ void	RadioInterface::muteButton_timeOut	() {
 	else {
            disconnect (&muteTimer, SIGNAL (timeout ()),
                        this, SLOT (muteButton_timeOut ()));
-	   setButtonFont (techData. muteButton, "mute", 10);
+//	   setButtonFont (techData. muteButton, "mute", 10);
+	   setButtonFont (muteButton, "mute", 10);
 	   stillMuting	-> hide ();
            muting = false;
 	}
@@ -3337,7 +3350,8 @@ void	RadioInterface::stop_muting		() {
 	muteTimer. stop ();
 	disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
-	setButtonFont (techData. muteButton, "mute", 10);
+//	setButtonFont (techData. muteButton, "mute", 10);
+	setButtonFont (muteButton, "mute", 10);
 	muting = false;
 	stillMuting	-> hide ();
 }
@@ -3353,7 +3367,8 @@ void	RadioInterface::handle_muteButton	() {
 	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 	muteDelay	*= 60;
         muteTimer. start (1000);
-	setButtonFont (techData. muteButton, "MUTING", 12);
+//	setButtonFont (techData. muteButton, "MUTING", 12);
+	setButtonFont (muteButton, "MUTING", 12);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
 	muting = true;
@@ -3552,7 +3567,8 @@ QString configButton_font	=
 	techData. audiodumpButton ->
 	                     setStyleSheet (temp. arg (audiodumpButton_color,
 	                                               audiodumpButton_font));
-	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
+//	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
+	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
 }
 
@@ -3626,7 +3642,8 @@ void	RadioInterface::color_audiodumpButton	()	{
 }
 
 void	RadioInterface::color_muteButton	()	{
-	set_buttonColors (techData. muteButton, MUTE_BUTTON);
+//	set_buttonColors (techData. muteButton, MUTE_BUTTON);
+	set_buttonColors (muteButton, MUTE_BUTTON);
 }
 
 void	RadioInterface::color_configButton	()	{
@@ -3914,8 +3931,7 @@ const QString fileName	= filenameFinder. findskipFile_fileName ();
 }
 
 void	RadioInterface::handle_snrDelaySetting	(int del) {
-	snrDelay	= del;
-	my_snrViewer. set_snrDelay (snrDelay);
+	my_snrViewer. set_snrDelay (del);
 	dabSettings	-> setValue ("snrDelay", del);
 }
 

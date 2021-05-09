@@ -9,8 +9,10 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
-QMAKE_CFLAGS	+=  -O4 -ffast-math
-QMAKE_CXXFLAGS	+=  -O4 -ffast-math
+#QMAKE_CFLAGS	+=  -O4 -ffast-math
+QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_CXXFLAGS	+=  -O4 -ffast-math
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -g
 #QMAKE_CXXFLAGS	+=  -g
 #QMAKE_LFLAGS	+=  -g
@@ -284,7 +286,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-3.71
+TARGET		= qt-dab-3.72
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -361,7 +363,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-3.71
+#	TARGET		= qt-dab64-3.72
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -380,7 +382,7 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= NO_SSE
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-3.71
+	TARGET		= qt-dab32-3.72
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -426,7 +428,7 @@ CONFIG		+= faad
 #comment both out if you just want to use the "normal" way
 
 CONFIG		+= try-epg		# do not use
-DEFINES		+= __DUMP_SNR__		# for experiments only
+DEFINES	+= __DUMP_SNR__		# for experiments only
 DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 #	devices

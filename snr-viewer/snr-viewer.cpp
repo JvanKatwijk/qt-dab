@@ -169,7 +169,7 @@ static float delayBuffer [10];
 float	sum	= 0;
 	delayBuffer [delayBufferP] = snr;
 	delayBufferP = (delayBufferP + 1) % delayCount;
-	if (delayBufferP -= 0) {
+	if (delayBufferP == 0) {
 	   for (int i = 0; i < delayCount; i ++)
 	      sum += delayBuffer [i];
 	   sum /= delayCount;

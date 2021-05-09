@@ -61,6 +61,7 @@
 	this	-> frequency		= 220000000;	// default
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer		= p -> tiiBuffer;
+	this	-> snrBuffer		= p -> snrBuffer;
 	this	-> T_null		= params. get_T_null();
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -93,8 +94,6 @@
 	         myRadioInterface, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_snr (int)),
 	         mr, SLOT (show_snr (int)));
-	connect (this, SIGNAL (show_snr (float, float, float, float, float)),
-	         mr, SLOT (show_snr (float, float, float, float, float)));
 	connect (this, SIGNAL (show_clockErr (int)),
 	         mr, SLOT (show_clockError (int)));
 	my_TII_Detector. reset();
@@ -319,21 +318,19 @@ SyncOnPhase:
 	   for (i = 0; i < T_null; i ++)
 	      sum += abs (ofdmBuffer [i]);
 	   sum /= T_null;
+	   if (this -> snrBuffer != nullptr) {
+	      float snrV	= 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
+	      snrBuffer -> putDataIntoBuffer (&snrV, 1);
+	   }
 	   static float snr	= 0;
 	   static int ccc	= 0;
 	   ccc ++;
-	   if (ccc >= 10) {
+	   if (ccc >= 5) {
 	      ccc = 0;
 	      snr = 0.9 * snr +
-	           0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / sum);
+	           0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / (sum + 0.005));
 	      show_snr ((int)snr);
 	   }
-	   static float snrV [5];
-	   static int   snrC	= 0;
-	   snrV [snrC] = 20 * log10 ((cLevel / cCount + 0.05) / (sum + 0.05));
-	   snrC = (snrC + 1) % 5;
-	   if (snrC == 0)
-	      show_snr (snrV [0], snrV [1], snrV [2], snrV [3], snrV [4]);
 /*
  *	The TII data is encoded in the null period of the
  *	odd frames 

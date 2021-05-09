@@ -81,6 +81,7 @@ dabService	secondService;
 	                                        spectrumBuffer (2 * 32768),
                                                 iqBuffer (2 * 1536),
                                                 tiiBuffer (32768),
+	                                        snrBuffer (512),
                                                 responseBuffer (32768),
                                                 frameBuffer (2 * 32768),
                                                 dataBuffer (32768),
@@ -104,6 +105,7 @@ QString	presetName;
 	globals. iqBuffer		= &iqBuffer;
 	globals. responseBuffer		= &responseBuffer;
 	globals. tiiBuffer		= &tiiBuffer;
+	globals. snrBuffer		= &snrBuffer;
 //
 //	frameBuffer is used for the "secondService"
 	globals. frameBuffer		= &frameBuffer;
@@ -639,6 +641,7 @@ void	RadioInterface::show_motHandling (bool b) {
 
 //	called from the ofdmDecoder, it is computed for each frame
 void	RadioInterface::show_snr (int s) {
+	snrBuffer. FlushRingBuffer ();
 	(void)s;
 }
 

@@ -73,6 +73,7 @@ private:
 	RingBuffer<std::complex<float>>  spectrumBuffer;
         RingBuffer<std::complex<float>>  iqBuffer;
         RingBuffer<std::complex<float>>  tiiBuffer;
+        RingBuffer<float>		snrBuffer;
         RingBuffer<float>       responseBuffer;
         RingBuffer<uint8_t>     frameBuffer;
         RingBuffer<uint8_t>     dataBuffer;
