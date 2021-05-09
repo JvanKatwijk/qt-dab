@@ -32,7 +32,7 @@ script:
   - ls -lh .
   - rm -rf *_autogen
   - mkdir -p appdir/usr/bin
-  - cp qt-dab-3.7  appdir/usr/bin/qt-dab
+  - cp qt-dab-*  appdir/usr/bin/qt-dab
  
   - mkdir -p appdir/usr/share/applications ; cp qt-dab.desktop appdir/usr/share/applications
   - cp qt-dab.png appdir/qt-dab.png
