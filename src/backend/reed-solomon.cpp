@@ -281,7 +281,7 @@ int16_t	deg_lambda;
 	Lambda	[0]	= 1;
 	Corrector [1]	= 1;
 //
-	while (K <= nroots) {
+	while (K < nroots) {
 	   uint8_t oldLambda [nroots];
 	   memcpy (oldLambda, Lambda, nroots * sizeof (Lambda [0]));
 //
@@ -310,6 +310,12 @@ int16_t	deg_lambda;
 	   }
 	   K += 1;
  	} // end of Berlekamp loop
+
+//	Compute final lambda
+	for (i = 0; i < nroots; i ++)
+	   Lambda [i] = myGalois. add_poly (Lambda [i],
+	                          myGalois. multiply_poly (error,
+	                                                   Corrector [i]));
 
 	for (i = 0; i < nroots; i ++) {
 	   if (Lambda [i] != 0)
