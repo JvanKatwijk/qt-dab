@@ -968,7 +968,6 @@ char		label [17];
 	serviceIndex	= findService (dataName);
 	if (serviceIndex == -1) {
 	   createService (dataName, SId, 0);
-	else 
 	} else {
 	  ensemble -> services [serviceIndex]. SCIds = 0;
 	  ensemble -> services [serviceIndex]. hasName = true;
