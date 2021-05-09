@@ -75,7 +75,8 @@ QwtInterval Interval (Qt::Axis x)const {
 double value (double x, double y) const {
 //fprintf (stderr, "x = %f, y = %f\n", x, y);
 	   x = x - left;
-	   x = x / width * datawidth;
+	   x = x / width  * (datawidth  - 1);
+	   y = y / height * (dataheight - 1);
 	   return data [(int)y * datawidth + (int)x];
 }
 
