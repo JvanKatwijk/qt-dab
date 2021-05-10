@@ -160,7 +160,7 @@ int	fmFrequency		= 110000;
 }
 
 void	setTranslator (QString Language) {
-QTranslator *Translator = new QTranslator;
+QTranslator Translator;
 
 //	German is special (as always)
 	if ((Language == "de_AT") || (Language ==  "de_CH"))
@@ -168,9 +168,9 @@ QTranslator *Translator = new QTranslator;
 //
 //	what about Dutch?
 	bool TranslatorLoaded =
-	             Translator -> load (QString(":/i18n/") + Language);
+	             Translator. load (QString(":/i18n/") + Language);
 	qDebug() << "main:" <<  "Set language" << Language;
-	QCoreApplication::installTranslator (Translator);
+	QCoreApplication::installTranslator (&Translator);
 
 	if (!TranslatorLoaded) {
 	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
