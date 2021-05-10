@@ -83,19 +83,20 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	if ((saveDir != "") && (!saveDir. endsWith ('/')))
 	   saveDir = saveDir + '/';
 
-	QString tailS	= service + "-" + theTime + ".aac";
+	QString tailS	= service + "-" + theTime;
 	for (int i = 0; i < tailS. length (); i ++)
 	   if (!isValid (tailS. at (i)))
 	      tailS. replace (i,1, '-');
 
-	QString suggestedFileName = saveDir + tailS;
+	QString suggestedFileName = saveDir + tailS + ".aac";
 	QString file = QFileDialog::getSaveFileName (nullptr,
 	                                             "Save file ...",
 	                                             suggestedFileName,
 	                                             "aac data (*.aac)");
 	if (file == QString (""))       // apparently cancelled
 	   return nullptr;
-
+	if (!file.endsWith (".aac", Qt::CaseInsensitive))
+	   file.append (".aac");
 	file		= QDir::toNativeSeparators (file);
 	FILE *theFile	= fopen (file. toLatin1 (). data (), "w+b");
 	if (theFile == nullptr) {
