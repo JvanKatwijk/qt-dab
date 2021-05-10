@@ -131,6 +131,7 @@ bool	brush;
 	delete		ourBrush;
 	delete		spectrumCurve;
 	delete		grid;
+	delete		myIQDisplay;
 	delete		myFrame;
 }
 

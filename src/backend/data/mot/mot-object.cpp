@@ -83,13 +83,34 @@ uint16_t	rawContentType = 0;
                     length = segment [pointer + 1] & 0177;
                     pointer += 2;
                  }
-	         if (paramId == 12) {
-                    int16_t i;
-                    for (i = 0; i < length - 1; i ++)
-                       name. append (segment [pointer + i + 1]);
-                 }
-                 pointer += length;
-           }
+
+	         switch (paramId) {
+	            case 12: {
+                       int16_t i;
+                       for (i = 0; i < length - 1; i ++)
+                          name. append (segment [pointer + i + 1]);
+                       }
+                       pointer += length;
+	               break;
+
+	            case 2:	// creation time
+	            case 3:	//start validity
+	            case 4:	// expiretime
+	            case 5:	// triggerTime
+	            case 6:	// version number
+	            case 7: 	// retransmission distance
+	            case 8:	// group reference
+	            case 10:	// priority
+	            case 11:	// label
+	            case 15:	// content description
+                       pointer += length;
+	               break;
+
+	            default:
+	               pointer += headerSize;	// this is so wrong!!!
+	               break;
+	         }
+              }
 	}
 }
 

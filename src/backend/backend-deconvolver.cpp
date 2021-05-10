@@ -35,7 +35,7 @@
 }
 
 	backendDeconvolver::~backendDeconvolver() {
-//	delete protectionHandler;
+	delete protectionHandler;
 }
 
 void	backendDeconvolver::deconvolve	(int16_t	*rawBits_in,
