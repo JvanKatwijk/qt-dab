@@ -103,18 +103,23 @@ int32_t	i;
 	}
 
 	int32_t		sizeinBits	=
-	              msc. size() - next - (crcFlag != 0 ? 16 : 0);
+	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
 
 	if (!transportIdFlag)
 	   return;
 
 	std::vector<uint8_t> motVector;
 	motVector. resize (sizeinBits / 8);
-	for (i = 0; i < sizeinBits / 8; i ++)
-	   motVector [i] = getBits_8 (data, next + 8 * i);
+	for (i = 0; i < sizeinBits / 8; i ++) {
+	   uint8_t t = 0;
+	   for (int j = 0; j < 8; j ++)
+	      t = (t << 1) | data [next + 8 * i + j];
+	   motVector [i] = t;
+	}
 
 	uint32_t segmentSize    = ((motVector [0] & 0x1F) << 8) |
 	                                motVector [1];
+
 	switch (groupType) {
 	   case 3:
 	      if (segmentNumber == 0) {
@@ -133,23 +138,13 @@ int32_t	i;
 
 	   case 4: {
 	         motObject *h = getHandle (transportId);
-	         if ((h == nullptr) && (segmentNumber != 0))
-	            break;
-	         if ((h == nullptr) && (segmentNumber == 0)) {
-	            h = new motObject (myRadioInterface,
-                                       false,      // not within a directory
-                                       transportId,
-                                       &motVector [2],
-                                       segmentSize,
-                                       lastFlag);
-                    setHandle (h, transportId);
-	            break;
-	         }
-
-	         h -> addBodySegment (&motVector [2],
-	                              segmentNumber,
-	                              segmentSize,
-	                              lastFlag);
+//	         if ((h == nullptr) && (segmentNumber != 0))
+//	            break;
+	         if (h != nullptr)
+	            h -> addBodySegment (&motVector [2],
+	                                 segmentNumber,
+	                                 segmentSize,
+	                                 lastFlag);
 	      }
 	      break;
 

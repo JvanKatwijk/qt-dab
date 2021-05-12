@@ -171,7 +171,7 @@ progDesc	theElement;
 	      return endPoint;
 
 	   case 0x81: {		// creation time
-//	      int time = process_474 (v, index, length);
+	      int time = process_474 (v, index, length);
 //	      fprintf (stderr, "schedule created  at %.2d:%.2d\n",
 //	                             time / 60, time % 60);
 	      return endPoint;
@@ -579,8 +579,8 @@ QString result = "";
 }
 
 void	epgDecoder::process_483	(uint8_t *v, int index, int elength) {
-	fprintf (stderr, "Version %d\n",
-	                    (v [index + 0] << 8) | v [index + 1]);
+//	fprintf (stderr, "Version %d\n",
+//	                    (v [index + 0] << 8) | v [index + 1]);
 }
 
 void	epgDecoder::record (progDesc *theElement) {

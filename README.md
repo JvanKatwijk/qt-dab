@@ -1,6 +1,6 @@
-# Qt-DAB-3.71 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
+# Qt-DAB-3.72 [![Build Status](https://travis-ci.org/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.org/JvanKatwijk/qt-dab)
 
-Qt-DAB-3.71 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini and brother dab-2 for experimenting, all built on the same set of sources.
+Qt-DAB-3.72 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![overview](/qt-dab-screen.png?raw=true)
 
@@ -33,7 +33,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-3.71** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-3.72** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
@@ -89,7 +89,7 @@ Features
    	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
-  	- SDRplay ( RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
+  	- SDRplay (RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
 	- Soapy (experimental, Linux only), 
 	- ExtIO (expertimental, Windows only),
@@ -457,14 +457,14 @@ The software is experimental though and - at least here - the times
 on the time table are two hours off.
 
 -----------------------------------------------------------------------
-Recording the SNR
+* [Recording the SNR](#Recording-the-SNR)
 -----------------------------------------------------------------------
 
 Just as an experiment, a widget was added that shows the development of the 
 SNR over time. The main purpose of the widget is to look at the
 performance of antennas. 
 
-Computation of the SNR is done with every second DAB frame. As is known,
+Computation of the SNR is done with all DAB frames. As is known,
 a sampled DAB frame starts with a null period of app 2600 samples, followed by
 76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes of the
 samples in the null period.
@@ -476,9 +476,7 @@ The configuration widget contains a spinbox that can be used to set the
 If the value "1" is chosen, the result of each snr computation is shown,
 if a value larger than "1" is chosen that number of computations will be
 averaged and the result shown.
-Each minute there are 312 computations.
-The default value for the X-axis of the display in the widget is
-therefore 312.
+The default value for the X-axis of the display in the widget is 312.
 
 As configuration option, the widget can be equipped with a **dump** button,
 touching the button will show a menu for file selection. Once a file

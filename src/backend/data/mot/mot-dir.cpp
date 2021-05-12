@@ -41,6 +41,8 @@ int16_t	i;
 	   this	-> dirSize	= dirSize;
 	   this	-> numObjects	= objects;
 	   this	-> dir_segmentSize	= segmentSize;
+	   fprintf (stderr, "dirSize %d, numObjects %d, segmentSize %d\n",
+	                             dirSize, objects, segmentSize);
 	   dir_segments		= new uint8_t [dirSize];
 	   motComponents	= new motComponentType [objects];
 	   for (i = 0; i < objects; i ++)
@@ -55,7 +57,7 @@ int	i;
 
 	for (i = 0; i < numObjects; i ++) 
 	   if (motComponents [i]. inUse)
-	      delete motComponents [i]. motSlide;
+	      delete [] motComponents [i]. motSlide;
 	delete []	motComponents;
 }
 
@@ -106,10 +108,9 @@ int16_t	i;
 	   for (i = 0; i < this -> num_dirSegments; i ++)
 	      if (!this -> marked [i])
 	         return;
+//	   yes we have all data to build up the directory
+	   analyse_theDirectory();
 	}
-//
-//	yes we have all data to build up the directory
-	analyse_theDirectory();
 }
 //
 //	This is the tough one, we collected the bits, and now
@@ -121,14 +122,13 @@ uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                             data [currentBase + 1];
 
-int16_t	i;
-
 	currentBase += 2 + extensionLength;
-	for (i = 0; i < numObjects; i ++) {
+	for (int i = 0; i < numObjects; i ++) {
 	   uint16_t transportId	= (data [currentBase] << 8) |
 	                                    data [currentBase + 1];
 	   if (transportId == 0)	// just a dummy
 	      break;
+
 	   uint8_t *segment	= &data [currentBase + 2];
 	   motObject *handle	= new motObject (myRadioInterface,
 	                                         true,

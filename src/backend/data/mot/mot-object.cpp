@@ -45,17 +45,22 @@ uint16_t	rawContentType = 0;
 	this	-> segmentSize		= -1;
 
 	headerSize     =
-             ((segment [3] & 0x0F) << 9) |
+//	   ((segment [3] & 0x0F) << 9) |
                    (segment [4] << 1) | ((segment [5] >> 7) & 0x01);
 	bodySize       =
               (segment [0] << 20) | (segment [1] << 12) |
                             (segment [2] << 4 ) | ((segment [3] & 0xF0) >> 4);
+
 // Extract the content type
+	int b	= (segment [5] >> 1) & 0x3F;
 	rawContentType  |= ((segment [5] >> 1) & 0x3F) << 8;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
 
+//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %d\n",
+//	                  headerSize, bodySize, b, transportId);
 //	we are actually only interested in the name, if any
+
         while ((uint16_t)pointer < headerSize) {
            uint8_t PLI	= (segment [pointer] & 0300) >> 6;
            uint8_t paramId = (segment [pointer] & 077);
@@ -83,7 +88,6 @@ uint16_t	rawContentType = 0;
                     length = segment [pointer + 1] & 0177;
                     pointer += 2;
                  }
-
 	         switch (paramId) {
 	            case 12: {
                        int16_t i;
@@ -94,7 +98,7 @@ uint16_t	rawContentType = 0;
 	               break;
 
 	            case 2:	// creation time
-	            case 3:	//start validity
+	            case 3:	// start validity
 	            case 4:	// expiretime
 	            case 5:	// triggerTime
 	            case 6:	// version number
@@ -160,7 +164,6 @@ int32_t i;
 	   if (motMap. find (i) == motMap. end())
 	      return;
 	}
-
 //	The motObject is (seems to be) complete
 	handleComplete();
 }
@@ -170,7 +173,7 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-
+	fprintf (stderr, "Handling complete\n");
 	handle_motObject (result, name, (int)contentType, dirElement);
 }
 
