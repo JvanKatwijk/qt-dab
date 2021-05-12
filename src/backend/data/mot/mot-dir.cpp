@@ -57,7 +57,7 @@ int	i;
 
 	for (i = 0; i < numObjects; i ++) 
 	   if (motComponents [i]. inUse)
-	      delete [] motComponents [i]. motSlide;
+	      delete motComponents [i]. motSlide;
 	delete []	motComponents;
 }
 
