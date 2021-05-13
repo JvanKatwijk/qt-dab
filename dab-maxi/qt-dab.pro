@@ -346,7 +346,6 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __DUMP_SNR__		# for experiments only
-DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 
 
@@ -430,7 +429,6 @@ CONFIG		+= faad
 
 CONFIG		+= try-epg		# do not use
 DEFINES	+= __DUMP_SNR__		# for experiments only
-DEFINES		+=__KEEP_GAIN_SETTINGS__
 }
 #	devices
 #

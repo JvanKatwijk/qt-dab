@@ -208,8 +208,12 @@ int	res;
 	         AmpEnableButton, SLOT (setChecked (bool)));
 	connect (this, SIGNAL (new_vgaValue (int)),
 		 vgaGainSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_vgaValue (int)),
+		 vgagainDisplay, SLOT (display (int)));
 	connect (this, SIGNAL (new_lnaValue (int)),
 	         lnaGainSlider, SLOT (setValue (int)));
+	connect (this, SIGNAL (new_lnaValue (int)),
+	         lnagainDisplay, SLOT (display (int)));
 	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
