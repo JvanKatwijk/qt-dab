@@ -43,22 +43,23 @@ int16_t	i;
 	   this	-> dir_segmentSize	= segmentSize;
 	   fprintf (stderr, "dirSize %d, numObjects %d, segmentSize %d\n",
 	                             dirSize, objects, segmentSize);
-	   dir_segments		= new uint8_t [dirSize];
-	   motComponents	= new motComponentType [objects];
-	   for (i = 0; i < objects; i ++)
+	   dir_segments. resize (dirSize);
+	   motComponents. resize (objects);
+	   for (i = 0; i < objects; i ++) {
 	      motComponents [i]. inUse = false;
+	      motComponents [i]. motSlide	= nullptr;
+	   }
 	   memcpy (&dir_segments [0], segment, segmentSize);
 	   marked [0] = true;
-	}
+}
 
 	motDirectory::~motDirectory() {
 int	i;
-	delete []	dir_segments;
 
 	for (i = 0; i < numObjects; i ++) 
-	   if (motComponents [i]. inUse)
-	      delete [] motComponents [i]. motSlide;
-	delete []	motComponents;
+	   if (motComponents [i]. inUse &&
+	                   (motComponents [i]. motSlide != nullptr)) 
+	      delete motComponents [i]. motSlide;
 }
 
 motObject	*motDirectory::getHandle (uint16_t transportId) {
@@ -118,18 +119,18 @@ int16_t	i;
 
 void	motDirectory::analyse_theDirectory() {
 uint32_t	currentBase	= 11;	// in bytes
-uint8_t	*data			= dir_segments;
+//uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
-	                                             data [currentBase + 1];
+	                                         dir_segments [currentBase + 1];
 
 	currentBase += 2 + extensionLength;
 	for (int i = 0; i < numObjects; i ++) {
-	   uint16_t transportId	= (data [currentBase] << 8) |
-	                                    data [currentBase + 1];
+	   uint16_t transportId	= (dir_segments [currentBase] << 8) |
+	                                    dir_segments [currentBase + 1];
 	   if (transportId == 0)	// just a dummy
 	      break;
 
-	   uint8_t *segment	= &data [currentBase + 2];
+	   uint8_t *segment	= &dir_segments [currentBase + 2];
 	   motObject *handle	= new motObject (myRadioInterface,
 	                                         true,
 	                                         transportId,

@@ -48,13 +48,14 @@ struct motTable_ {
 	motHandler::~motHandler() {
 int	i;
 
-	for (i = 0; i < 15; i ++)
+	for (i = 0; i < 15; i ++) {
 	   if (motTable [i]. orderNumber > 0) {
 	      if (motTable [i]. motSlide != nullptr) {
 	         delete motTable [i]. motSlide;
 	         motTable [i]. motSlide = nullptr;
 	      }
 	   }
+	}
 	if (theDirectory != nullptr)
 	   delete theDirectory;
 }

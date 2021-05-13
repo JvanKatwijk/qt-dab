@@ -28,6 +28,7 @@
 
 #include	"mot-object.h"
 #include	<QString>
+#include	<vector>
 class	RadioInterface;
 
 class	motDirectory {
@@ -52,7 +53,7 @@ private:
 	uint16_t	transportId;
 
 	RadioInterface	*myRadioInterface;
-	uint8_t		*dir_segments;
+	std::vector<uint8_t>	dir_segments;
 	bool		marked [512];
 	int16_t		dir_segmentSize;
 	int16_t		num_dirSegments;
@@ -63,7 +64,7 @@ private:
 	   uint16_t	transportId;
 	   motObject	*motSlide;
 	} motComponentType;
-	motComponentType	*motComponents;
+	std::vector<motComponentType>	motComponents;
 };
 
 #endif
