@@ -193,6 +193,12 @@ std::vector<uint8_t> data;		// for the local addition
 //	the size of the latest xpadfield that had a CI_flag != 0
 	if (CI_flag == 0) {
 	   if (mscGroupElement && (xpadLength > 0)) {
+
+	      if (last < xpadLength) {
+	         fprintf(stderr, "handle_variablePAD: last < xpadLength\n");
+	         return;
+	      }
+
 	      data. resize (xpadLength);
 	      for (j = 0; j < xpadLength; j ++)
 	         data [j] = b [last - j];
@@ -407,6 +413,11 @@ void	padHandler::build_MSC_segment (std::vector<uint8_t> data) {
 //	is
 int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	                                            dataGroupLength;
+
+if (size < 2) {
+	fprintf (stderr, "build_MSC_segment: data size < 2\n");
+	return;
+}
 	   
 uint8_t		groupType	=  data [0] & 0xF;
 //uint8_t	continuityIndex = (data [1] & 0xF0) >> 4;
