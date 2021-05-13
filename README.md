@@ -12,21 +12,21 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Documentation](#documentation)
-* [Presets](#presets-for-qt-dab-dabmini-and-dab-2)
-* [Colors](#Colors-for-Qt-DAB)
-* [History](maintaining-history-for-qt-dab-and-dab-2)
-* [Comment on some settings](#comment-on-some-settings)
+* [Presets](#presets-for-qt-dab)
+* [Colors](#colors-for-qt-dab)
+* [Maintaining History](#maintaining-history)
+* [Comment on some config settings](#comment-on-some--configuration-settings)
 * [Obsolete properties](#obsolete-properties)
 * [Installation on Windows](#installation-on-windows)
-* [Installation on Linux](#installation-on-linux-pc-and-rpi)
+* [Installation on Linux x64](#installation-on-linux-x64)
 * [Configuring](#configuring)
 * [Interfacing to another device](#interfacing-to-another-device)
 * [Using other bands than Band III or L Band](#using-other-bands-than-band-iii-or-l-band)
 * [xml-files and support](#xml-files-and-support)
-* [EPG-Handling](#EPG-Handling)
-* [Recording the SNR](#Recording-the-SNR)
-* [Scanning and the skip table](#Scanning-and-the-skip-table)
-* [Pluto device and fm transmission](#Pluto-device-and-fm-transmission)
+* [EPG-Handling](#epg-handling)
+* [Recording the SNR](#recording-the-snr)
+* [Scanning and the skip table](#scanning-and-the-skip-table)
+* [Pluto device and fm transmission](#pluto-device-and-fm-transmission)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
@@ -205,7 +205,7 @@ Note that the services in the preset list are encoded as
 service appears in more than one ensemble
 (as example the "Omroep West" service appears in channels 5B and 8A.)
 
-The presets are stored in an xml file, `.qt-dab-presets.xml'.
+The presets are stored in an xml file, `.qt-dab-presets.xml`.
 
 *Adding* a service to the *presets* is simply by *clicking with the right mouse
 button on the name of the service that is currently selected in the
@@ -457,7 +457,7 @@ The software is experimental though and - at least here - the times
 on the time table are two hours off.
 
 -----------------------------------------------------------------------
-* [Recording the SNR](#Recording-the-SNR)
+Recording the SNR
 -----------------------------------------------------------------------
 
 Just as an experiment, a widget was added that shows the development of the 
@@ -493,7 +493,7 @@ The picture shows the variations in the SNR when moving the antenna
 and - the dip - when switching antennas.
 
 ----------------------------------------------------------------------
-* [Scanning and the skip table](#Scanning-and-the-skip-table)
+Scanning and the skip table
 ----------------------------------------------------------------------
 
 As known, Qt-DAB provides a possibility of scanning the band. Band III
