@@ -709,12 +709,14 @@ QString	theValue	= "";
 	new_vgaValue (vgaValue);
 	while (vgaGainSlider -> value () != vgaValue)
 	   usleep (1000);
+	vgagainDisplay	-> display (vgaValue);
 	vgaGainSlider	-> blockSignals (false);
 
 	lnaGainSlider	-> blockSignals (true);
 	new_lnaValue (lnaValue);
 	while (lnaGainSlider -> value () != lnaValue)
 	   usleep (1000);
+	lnagainDisplay	-> display (lnaValue);
 	lnaGainSlider	-> blockSignals (false);
 
 	AmpEnableButton	-> blockSignals (true);

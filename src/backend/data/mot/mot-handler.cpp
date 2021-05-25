@@ -138,14 +138,14 @@ int32_t	i;
 	      break; 
 
 	   case 4: {
-	         motObject *h = getHandle (transportId);
-//	         if ((h == nullptr) && (segmentNumber != 0))
-//	            break;
-	         if (h != nullptr)
-	            h -> addBodySegment (&motVector [2],
-	                                 segmentNumber,
-	                                 segmentSize,
-	                                 lastFlag);
+	      motObject *h = getHandle (transportId);
+//	      if ((h == nullptr) && (segmentNumber != 0))
+//	         break;
+	      if (h != nullptr)
+	         h -> addBodySegment (&motVector [2],
+	                              segmentNumber,
+	                              segmentSize,
+	                              lastFlag);
 	      }
 	      break;
 
@@ -190,6 +190,7 @@ int32_t	i;
 	      break;
 
 	   default:
+	      fprintf (stderr, "mot groupType %d\n", groupType);
 	      return;
 	}
 }

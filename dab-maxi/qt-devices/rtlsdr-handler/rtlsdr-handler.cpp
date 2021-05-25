@@ -320,9 +320,8 @@ int32_t	r;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
-	rtlsdr_set_agc_mode (device, agcControl -> isChecked () ? 1 : 0);
-	rtlsdr_set_tuner_gain (device,
-	                       gainControl -> currentText (). toInt ());
+	set_autogain (agcControl -> isChecked ());
+	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
 	   r = this -> rtlsdr_reset_buffer (device);
 	   workerHandle	= new dll_driver (this);
@@ -729,6 +728,7 @@ QString	theValue	= "";
 	new_agcSetting (agc == 1);
 	while (agcControl -> isChecked () != (agc == 1))
 	   usleep (1000);
+	set_autogain (agcControl -> isChecked ());
 	agcControl	-> blockSignals (false);
 }
 

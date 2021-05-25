@@ -27,7 +27,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void init_FULL_SPIRAL() {
 }
 
-void FULL_SPIRAL_sse(int amount, int32_t  *Y, int32_t  *X, int32_t  *syms, unsigned char  *dec, int32_t  *Branchtab) {
+//void FULL_SPIRAL_sse(int amount, int32_t  *Y, int32_t  *X, int32_t  *syms, unsigned char  *dec, int32_t  *Branchtab) {
+void FULL_SPIRAL_sse(int amount, COMPUTETYPE  *Y,
+	                         COMPUTETYPE  *X, 
+	                         COMPUTETYPE  *syms, 
+	                         DECISIONTYPE  *dec,
+	                         COMPUTETYPE  *Branchtab) {
 int i9;
 //    for(i9 = 0; i9 <= amount; i9++) {
     for(i9 = 0; i9 < amount; i9++) {

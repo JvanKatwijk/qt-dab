@@ -770,12 +770,14 @@ QString	theValue	= "";
 	new_gainValue (gainValue);
 	while (gainControl -> value () != gainValue)
 	   usleep (1000);
+	set_gainControl (gainControl -> value ());
 	gainControl	-> blockSignals (false);
 
 	agcControl	-> blockSignals (true);
 	new_agcValue (agc == 1);
 	while (agcControl -> isChecked () != (agc == 1))
 	   usleep (1000);
+	set_agcControl (agcControl -> isChecked ());
 	agcControl	-> blockSignals (false);
 }
 

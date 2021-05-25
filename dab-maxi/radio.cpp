@@ -2914,6 +2914,10 @@ int	tunedFrequency	=
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", channel);
 	inputDevice		-> resetBuffer ();
+	serviceList. clear ();
+	model. clear ();
+	ensembleDisplay		-> setModel (&model);
+	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety ();

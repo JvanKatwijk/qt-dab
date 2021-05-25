@@ -583,6 +583,7 @@ int	gainValue;
 	new_gainValue (gainValue);
 	while (gainSelector -> value () != gainValue)
 	   usleep (1000);
+	actualGain	-> display (gainValue);
 	gainSelector	-> blockSignals (false);
 }
 

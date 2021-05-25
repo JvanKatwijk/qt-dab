@@ -363,9 +363,12 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 
 	if (save_gainSettings) {
 	   update_gainSettings (freq / MHz (1));
+	   set_ifgainReduction	(GRdBSelector -> value ());
 	   GRdB		= GRdBSelector		-> value ();
+	   set_lnagainReduction (lnaGainSetting -> value ());
 	   lnaState	= lnaGainSetting	-> value ();
 	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
+	   set_agcControl (agcControl -> isChecked ());
 	   agc		= agcControl	-> isChecked () ? 1 : 0;
 	}
 	err	= my_mir_sdr_StreamInit (&GRdB,
@@ -964,12 +967,15 @@ QString	theValue	= "";
 	new_GRdBValue (GRdB);
 	while (GRdBSelector -> value () != GRdB)
 	   usleep (1000);
+	set_ifgainReduction	(GRdBSelector -> value ());
 	GRdBSelector	-> blockSignals (false);
+
 	lnaGainSetting	-> blockSignals (true);
 	new_lnaValue (lnaState);
 	while (lnaGainSetting -> value () != lnaState)
 	   usleep (1000);
 	lnaGainSetting	-> blockSignals (false);
+
 	agcControl	-> blockSignals (true);
 	new_agcSetting (agc == 1);
 	while (agcControl -> isChecked () != (agc == 1))

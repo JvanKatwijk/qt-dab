@@ -366,8 +366,8 @@ int	result;
 	if (result != AIRSPY_SUCCESS ) 
 	   printf ("my_airspy_stop_rx() failed: %s (%d)\n",
 	          my_airspy_error_name ((airspy_error)result), result);
-
 	running. store (false);
+	resetBuffer ();
 }
 //
 //	Directly copied from the airspy extio dll from Andrea Montefusco
