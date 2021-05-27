@@ -125,6 +125,8 @@ private:
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	scannerTable		theTable;
+	QFrame			dataDisplay;
+	QFrame			configDisplay;
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
@@ -139,9 +141,9 @@ private:
 	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
-	QFrame			*dataDisplay;
+//	QFrame			*dataDisplay;
 	Ui_configWidget		configWidget;
-	QFrame			*configDisplay;
+//	QFrame			*configDisplay;
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;

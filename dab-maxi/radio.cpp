@@ -242,7 +242,9 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
 	                                        theTable (this),
-	                                        filenameFinder (Si) {
+	                                        filenameFinder (Si),
+	                                        dataDisplay (nullptr),
+	                                        configDisplay (nullptr) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -306,14 +308,14 @@ uint8_t	dabBand;
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
 //
-	dataDisplay	= new QFrame (nullptr);
-	techData. setupUi (dataDisplay);
+//	dataDisplay	= new QFrame (nullptr);
+	techData. setupUi (&dataDisplay);
 	techData. timeTable_button -> hide ();
 
 	epgLabel	-> hide ();
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
-	configDisplay	= new QFrame (nullptr);
-	configWidget. setupUi (configDisplay);
+//	configDisplay	= new QFrame (nullptr);
+	configWidget. setupUi (&configDisplay);
 
 	int x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
@@ -369,7 +371,7 @@ uint8_t	dabBand;
 	   configWidget. ordersubChannelIds -> setChecked (true);
 
 	motSlides		= nullptr;
-	dataDisplay		-> hide ();
+	dataDisplay. hide ();
 	stillMuting		-> hide ();
 	serviceList. clear ();
         model . clear ();
@@ -1217,7 +1219,7 @@ void	RadioInterface::TerminateProcess () {
 	stop_audioDumping	();
 	theTable. hide		();
 	theBand. hide		();
-	dataDisplay	->  hide();
+	dataDisplay. hide();
 	if (motSlides != nullptr)
 	   motSlides	-> hide ();
 	LOG ("terminating ", "");
@@ -1244,8 +1246,8 @@ void	RadioInterface::TerminateProcess () {
 	   delete	motSlides;
 	if (currentServiceDescriptor != nullptr)
 	   delete currentServiceDescriptor;
-	delete	dataDisplay;
-	delete	configDisplay;
+//	delete	dataDisplay;
+//	delete	configDisplay;
 	delete	my_history;
 	delete	my_timeTable;
 //	close();
@@ -1908,8 +1910,8 @@ void	RadioInterface::switchVisibility (QWidget *w) {
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
 	   return;
-	switchVisibility (dataDisplay);
-	if (dataDisplay -> isHidden ())
+	switchVisibility (&dataDisplay);
+	if (dataDisplay. isHidden ())
 	   my_timeTable -> hide ();
 }
 //
@@ -3687,11 +3689,11 @@ int	index;
 //	External configuration items				//////
 
 void	RadioInterface::handle_configSetting	() {
-	if (configDisplay -> isHidden ()) 
-	   configDisplay -> show ();
+	if (configDisplay . isHidden ()) 
+	   configDisplay. show ();
 	else {
 	   theBand. hide ();
-	   configDisplay -> hide ();
+	   configDisplay. hide ();
 	}
 }
 
