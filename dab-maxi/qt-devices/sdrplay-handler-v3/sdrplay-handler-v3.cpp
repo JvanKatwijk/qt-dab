@@ -864,8 +864,11 @@ ULONG APIkeyValue_length = 255;
 	                    (LPDWORD)&APIkeyValue_length);
 //	Ok, make explicit it is in the 32/64 bits section
 	   wchar_t *x =
+#ifndef __BITS64__
 	        wcscat (APIkeyValue, (wchar_t *)L"\\x86\\sdrplay_api.dll");
-//	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\sdrplay_api.dll");
+#else
+	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\sdrplay_api.dll");
+#endif
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);
