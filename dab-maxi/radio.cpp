@@ -361,6 +361,9 @@ uint8_t	dabBand;
 	if (motselectionMode)
 	   configWidget. motslideSelector -> setChecked (true);
 
+	x = dabSettings -> value ("closeDirect", 0). toInt ();
+	if (x != 0)
+	   configWidget. closeDirect -> setChecked (true);
 	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (x == ALPHA_BASED)
 	   configWidget. orderAlfabetical -> setChecked (true);
@@ -1825,7 +1828,7 @@ bool	found	= false;
 	if (mainId == 0xFF) 
 	   return;
 	for (int i = 0; i < transmitters. size (); i += 2) {
-	   if ((transmitters. at (i) == (mainId & 0xCF)) &&
+	   if ((transmitters. at (i) == (mainId & 0xFF)) &&
 	       (transmitters. at (i + 1) == subId)) {
 	      found = true;
 	      break;
@@ -1833,7 +1836,7 @@ bool	found	= false;
 	}
 
 	if (!found) {
-	   transmitters. append (mainId & 0xCF);
+	   transmitters. append (mainId & 0xFF);
 	   transmitters. append (subId);
 	}
         if (!running. load())
@@ -2319,6 +2322,13 @@ void	RadioInterface::disconnectGUI() {
 //
 #include <QCloseEvent>
 void RadioInterface::closeEvent (QCloseEvent *event) {
+	int x = configWidget. closeDirect -> isChecked () ? 1 : 0;
+	dabSettings -> setValue ("closeDirect", x);
+	if (x != 0) {
+	   TerminateProcess ();
+	   event -> accept ();
+	   return;
+	}
 
 	QMessageBox::StandardButton resultButton =
 	                QMessageBox::question (this, "dabRadio",

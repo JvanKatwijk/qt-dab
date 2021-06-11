@@ -121,10 +121,10 @@ int16_t	i;
 	for (i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
 
-//	for (i = 0; i < 70; ++i) 
-//	    invTable [table [i]] = i;
-//	for (i = 71; i < 256; i ++)
-//	   invTable [i] = -1;
+	for (i = 0; i < 70; ++i) 
+	    invTable [table [i]] = i;
+	for (i = 71; i < 256; i ++)
+	   invTable [i] = -1;
 }
 
 		TII_Detector::~TII_Detector() {
@@ -270,21 +270,21 @@ float	avgTable	[NUM_GROUPS];
 	return  maxIndex + finInd * 256;
 	
 ////	we extract the four max values as bits
-//	uint16_t pattern	= 0;
-//	for (i = 0; i < 4; i ++) {
-//	   float mmax	= 0;
-//	   int ind		= -1;
-//	   for (int k = 0; k < NUM_GROUPS; k ++) {
-//	      if (x [k] > mmax) {
-//	         mmax = x [k];
-//	         ind  = k;
-//	      }
-//	   }
-//	   if (ind != -1) {
-//	      x [ind] = 0;
-//	      pattern |= bits [ind];
-//	   }
-//	}
-//	return  maxIndex + (invTable [pattern]) * 256;
+	uint16_t pattern	= 0;
+	for (i = 0; i < 4; i ++) {
+	   float mmax	= 0;
+	   int ind		= -1;
+	   for (int k = 0; k < NUM_GROUPS; k ++) {
+	      if (x [k] > mmax) {
+	         mmax = x [k];
+	         ind  = k;
+	      }
+	   }
+	   if (ind != -1) {
+	      x [ind] = 0;
+	      pattern |= bits [ind];
+	   }
+	}
+	return  maxIndex + (invTable [pattern]) * 256;
 }
 
