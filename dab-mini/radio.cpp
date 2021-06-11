@@ -670,6 +670,9 @@ void	RadioInterface::setStereo	(bool s) {
 
 }
 
+void	RadioInterface::show_tii_spectrum () {
+}
+
 void	RadioInterface::show_tii	(int s1, int s2) {
 	(void)s1; (void)s2;
 }

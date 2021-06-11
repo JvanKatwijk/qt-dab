@@ -137,6 +137,7 @@ signals:
 	void		No_Signal_Found		();
 	void		setSyncLost		();
 	void		show_tii		(int, int);
+	void		show_tii_spectrum	();
 	void		show_Spectrum		(int);
 	void		show_snr		(int);
 	void		show_snr		(float, float, float,

@@ -54,6 +54,8 @@
 	   theProcessor = new dataProcessor (mr,
 	                                     (packetdata *)d,
 	                                     dataBuffer);
+	else
+	   theProcessor = new frameProcessor ();	// should not happen
 }
 
 

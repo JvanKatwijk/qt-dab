@@ -135,6 +135,8 @@ char	manufac [256], product [256], serial [256];
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"librtlsdr.dll");
+	if (Handle == nullptr) 
+	   Handle = LoadLibrary ((wchar_t *)L"rtlsdr.dll");
 	if (Handle == nullptr) {
 	   fprintf (stderr, "failed to open %s (%d)\n", libraryString, GetLastError());
 	   throw (20);

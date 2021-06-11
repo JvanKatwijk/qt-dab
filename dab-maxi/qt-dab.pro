@@ -363,42 +363,42 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-	TARGET		= qt-dab64-3.72
-	DEFINES		+= __BITS64__
-	DESTDIR		= /usr/shared/sdr-j-development/w64-programs/windows-dab64-qt
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
-#	LIBS		+= -liio
-#	#CONFIG		+= extio
-	CONFIG		+= airspy
-	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick
-	CONFIG		+= sdrplay-v2
-	CONFIG		+= pluto-2
-	CONFIG		+= sdrplay-v3
-#	CONFIG		+= hackrf
-#	CONFIG		+= lime
-	CONFIG		+= NO_SSE
-	DEFINES		+= __THREADED_BACKEND
-#
-#for win32, comment out the lines above
-#	TARGET		= qt-dab32-3.72
-#	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
-#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-#	CONFIG		+= extio
+#	TARGET		= qt-dab64-3.72
+#	DEFINES		+= __BITS64__
+#	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
+#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+#	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+##	LIBS		+= -liio
+##	#CONFIG		+= extio
 #	CONFIG		+= airspy
 #	CONFIG		+= rtl_tcp
 #	CONFIG		+= dabstick
 #	CONFIG		+= sdrplay-v2
-#	CONFIG		+= sdrplay-v3
-#	CONFIG		+= hackrf
-#	CONFIG		+= lime
 #	CONFIG		+= pluto-2
+#	CONFIG		+= sdrplay-v3
+##	CONFIG		+= hackrf
+##	CONFIG		+= lime
 #	CONFIG		+= NO_SSE
 #	DEFINES		+= __THREADED_BACKEND
+#
+#for win32, comment out the lines above
+	TARGET		= qt-dab32-3.72
+	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
+	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+	CONFIG		+= extio
+	CONFIG		+= airspy
+	CONFIG		+= rtl_tcp
+	CONFIG		+= dabstick
+	CONFIG		+= sdrplay-v2
+	CONFIG		+= sdrplay-v3
+	CONFIG		+= hackrf
+	CONFIG		+= lime
+	CONFIG		+= pluto-2
+	CONFIG		+= NO_SSE
+	DEFINES		+= __THREADED_BACKEND
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include

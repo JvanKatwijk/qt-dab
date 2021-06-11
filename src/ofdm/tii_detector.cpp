@@ -119,14 +119,12 @@ int16_t	i;
 	fft_buffer		= my_fftHandler. getVector();	
 	window. resize 		(T_u);
 	for (i = 0; i < T_u; i ++)
-	   window [i]  = (0.42 -
-	            0.5 * cos (2 * M_PI * (float)i / T_u) +
-	            0.08 * cos (4 * M_PI * (float)i / T_u));
+	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
 
-	for (i = 0; i < 70; ++i) 
-	    invTable [table [i]] = i;
-	for (i = 71; i < 256; i ++)
-	   invTable [i] = -1;
+//	for (i = 0; i < 70; ++i) 
+//	    invTable [table [i]] = i;
+//	for (i = 71; i < 256; i ++)
+//	   invTable [i] = -1;
 }
 
 		TII_Detector::~TII_Detector() {
@@ -224,7 +222,7 @@ float	avgTable	[NUM_GROUPS];
 //	te kunnen vinden
 	for (i = 0; i < GROUPSIZE; i ++) {
 	   for (j = 0; j < NUM_GROUPS; j ++) {
-	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
+	      if (hulpTable [j * GROUPSIZE + i] > 3 * avgTable [j]) {
 	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
 	      }
@@ -256,23 +254,37 @@ float	avgTable	[NUM_GROUPS];
 	for (i = 0; i < NUM_GROUPS; i ++) 
 	   x [i] = hulpTable [maxIndex + GROUPSIZE * i];
 //
-//	we extract the four max values as bits
-	uint16_t pattern	= 0;
-	for (i = 0; i < 4; i ++) {
-	   float mmax	= 0;
-	   int ind		= -1;
-	   for (int k = 0; k < NUM_GROUPS; k ++) {
-	      if (x [k] > mmax) {
-	         mmax = x [k];
-	         ind  = k;
-	      }
-	   }
-
-	   if (ind != -1) {
-	      x [ind] = 0;
-	      pattern |= bits [ind];
+//	find the best match
+	float mm = 0;
+	int finInd = -1;
+	for (int k = 0; k < sizeof (table); k ++) {
+	   float val = 0;
+	   for (int l = 0; l < NUM_GROUPS; l ++)
+	      if ((table [k] & bits [l]) != 0)
+	         val += x [l];
+	   if  (val > mm) {
+	      mm = val;
+	      finInd = k;
 	   }
 	}
-	return  maxIndex + (invTable [pattern]) * 256;
+	return  maxIndex + finInd * 256;
+	
+////	we extract the four max values as bits
+//	uint16_t pattern	= 0;
+//	for (i = 0; i < 4; i ++) {
+//	   float mmax	= 0;
+//	   int ind		= -1;
+//	   for (int k = 0; k < NUM_GROUPS; k ++) {
+//	      if (x [k] > mmax) {
+//	         mmax = x [k];
+//	         ind  = k;
+//	      }
+//	   }
+//	   if (ind != -1) {
+//	      x [ind] = 0;
+//	      pattern |= bits [ind];
+//	   }
+//	}
+//	return  maxIndex + (invTable [pattern]) * 256;
 }
 

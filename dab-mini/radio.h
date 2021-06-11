@@ -170,6 +170,7 @@ public slots:
 	void			showQuality		(float);
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
+	void			show_tii_spectrum	();
 	void			show_snr		(int, float, float);
 	void			closeEvent		(QCloseEvent *event);
 	void			clockTime		(int, int, int,

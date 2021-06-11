@@ -1815,6 +1815,10 @@ QString	tiiNumber (int n) {
 	return QString ("0") + QString::number (n);
 }
 
+void	RadioInterface::show_tii_spectrum	() {
+	my_tiiViewer. showSpectrum (1);
+}
+
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
@@ -1840,7 +1844,6 @@ bool	found	= false;
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
 	transmitter_coordinates	-> setText (a);
 	my_tiiViewer. showTransmitters (transmitters);
-	my_tiiViewer. showSpectrum (1);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
