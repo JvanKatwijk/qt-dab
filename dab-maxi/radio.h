@@ -93,6 +93,7 @@ struct	theTime {
 	int	day;
 	int	hour;
 	int	minute;
+	int	second;
 };
 
 class RadioInterface: public QWidget, private Ui_dabradio {
@@ -102,7 +103,8 @@ public:
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 bool,
-	                                 int32_t	 dataPort,
+	                                 int32_t	dataPort,
+	                                 int32_t	clockPort,
 	                                 int,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
@@ -167,6 +169,9 @@ private:
 	audioBase		*soundOut;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;
+#endif
+#ifdef	CLOCK_STREAMER
+	tcpServer		*clockStreamer;
 #endif
 #ifdef	TRY_EPG
 	CEPGDecoder		epgHandler;
@@ -304,7 +309,7 @@ public slots:
 	void			closeEvent		(QCloseEvent *event);
 	void			clockTime		(int, int, int,
 	                                                 int, int,
-	                                                 int, int, int);
+	                                                 int, int, int, int);
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);

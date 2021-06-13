@@ -42,9 +42,10 @@
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
-	connect (this, SIGNAL (clockTime (int, int, int, int, int, int, int, int)),
+	connect (this, SIGNAL (clockTime (int, int, int, int, int,
+	                                               int, int, int, int)),
 	         myRadioInterface, SLOT (clockTime (int, int, int, int, int,
-	                                                int, int, int)));
+	                                                int, int, int, int)));
 	connect (this, SIGNAL (changeinConfiguration ()),
 	         myRadioInterface, SLOT (changeinConfiguration ()));
 	connect (this, SIGNAL (startAnnouncement (const QString &, int)),
@@ -1742,14 +1743,18 @@ int32_t	theTime	[6];
 	   dateTime [i] = theTime [i];
 	}
 
+#ifdef	CLOCK_STREAMER
+	change = true;
+#endif
 	if (change) {
 	   int utc_day	= dateTime [2];
 	   int utc_hour	= dateTime [3];
 	   int utc_minute = dateTime [4];
+	   int utc_seconds = dateTime [5];
 	   adjustTime (dateTime);
 	   emit  clockTime (dateTime [0], dateTime [1],
 	                    dateTime [2], dateTime [3], dateTime [4],
-	                              utc_day, utc_hour, utc_minute);
+	                            utc_day, utc_hour, utc_minute, utc_seconds);
 	}
 }
 

@@ -75,6 +75,7 @@ RadioInterface  *MyRadioInterface;
 QSettings       *dabSettings;           // ini file
 QString		presetName	= PRESETS;
 int32_t		dataPort	= 8888;
+int32_t		clockPort	= 8889;
 int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
@@ -85,7 +86,7 @@ int	fmFrequency		= 110000;
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "i:P:Q:A:TMF:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -93,6 +94,10 @@ int	fmFrequency		= 110000;
 
 	      case 'P':
 	         dataPort	= atoi (optarg);
+	         break;
+
+	      case 'C':
+	         clockPort	= atoi (optarg);
 	         break;
 
 	      case 'A':
@@ -143,6 +148,7 @@ int	fmFrequency		= 110000;
 	                                       freqExtension,
 	                                       error_report,
 	                                       dataPort,
+	                                       clockPort,
 	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();

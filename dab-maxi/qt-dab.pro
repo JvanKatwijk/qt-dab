@@ -330,7 +330,6 @@ CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
-
 #to handle output of embedded an IP data stream, uncomment
 CONFIG		+= send_datagram
 
@@ -650,11 +649,11 @@ qt-audio	{
 
 datastreamer	{
 	DEFINES		+= DATA_STREAMER
+	DEFINES		+= CLOCK_STREAMER
 	INCLUDEPATH	+= ../server-thread
 	HEADERS		+= ../server-thread/tcp-server.h
 	SOURCES		+= ../server-thread/tcp-server.cpp
 }
-
 
 # for RPI use:
 RPI	{

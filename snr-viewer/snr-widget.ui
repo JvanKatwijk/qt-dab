@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>330</width>
-    <height>188</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;snr display. As well known a DAB frame starts with a so-called null period, a period where the amplitude of the transmitted  signal is (should be) zero. So, it is an excellent noise floor, and the SNR shown is computed as 10 * log10 (average amplitude from data blocks / average amplitude null period)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;snr display. As well known a DAB frame starts with a so-called null period, a period where the amplitude of the transmitted signal is (should be) zero. So, it is an excellent noise floor, and the SNR shown is computed as 20 * log10 (average amplitude from data blocks / average amplitude null period). One thing though. in many SFN's the transmitters add an encoding og the transmitter id (tii) to each second DABframe. So for uneven compressions you see the difference on SNR between the first and second frames&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>

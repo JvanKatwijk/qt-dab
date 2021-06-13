@@ -166,7 +166,7 @@ signals:
 	void		addtoEnsemble		(const QString &, int);
 	void		nameofEnsemble		(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
-	                                                 int, int, int);
+	                                                 int, int, int, int);
 	void		changeinConfiguration	();
 	void		startAnnouncement	(const QString &, int);
 	void		stopAnnouncement	(const QString &, int);

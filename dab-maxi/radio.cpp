@@ -216,6 +216,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                const QString	&freqExtension,
 	                                bool		error_report,
 	                                int32_t		dataPort,
+	                                int32_t		clockPort,
 	                                int		fmFrequency,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
@@ -389,6 +390,11 @@ uint8_t	dabBand;
 	dataStreamer		= new tcpServer (dataPort);
 #else
 	(void)dataPort;
+#endif
+#ifdef	CLOCK_STREAMER
+	clockStreamer		= new tcpServer (clockPort);
+#else
+	(void)clockPort;
 #endif
 
 //	Where do we leave the audio out?
@@ -1201,6 +1207,10 @@ void	RadioInterface::TerminateProcess () {
 	fprintf (stderr, "going to close the dataStreamer\n");
 	delete		dataStreamer;
 #endif
+#ifdef	CLOCK_STREAMER
+	fprintf (stderr, "going to close the clockstreamer\n");
+	delete	clockStreamer;
+#endif
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
@@ -1644,13 +1654,30 @@ const char *monthTable [] = {
 //
 //	called from the fibDecoder
 void	RadioInterface::clockTime (int year, int month, int day,
-	                           int hours, int minutes, int d2, int h2, int m2){
+	                           int hours, int minutes,
+	                               int d2, int h2, int m2, int seconds){
 	this	-> localTime. year	= year;
 	this	-> localTime. month	= month;
 	this	-> localTime. day	= day;
 	this	-> localTime. hour	= hours;
 	this	-> localTime. minute	= minutes;
+	this	-> localTime. second	= seconds;
 
+#ifdef	CLOCK_STREAMER
+	uint8_t	localBuffer [10];
+	localBuffer [0] = 0xFF;
+	localBuffer [1] = 0x00;
+	localBuffer [2] = 0xFF;
+	localBuffer [3] = 0x00;
+	localBuffer [4] = (year & 0xFF00) >> 8;
+	localBuffer [5] = year & 0xFF;
+	localBuffer [6] = month;
+	localBuffer [7] = day;
+	localBuffer [8] = minutes;
+	localBuffer [9] = seconds;
+	if (running. load())
+	   clockStreamer -> sendData (localBuffer, 10);
+#endif
 	this	-> UTC. year		= year;
 	this	-> UTC. month		= month;
 	this	-> UTC. day		= d2;
@@ -1828,7 +1855,7 @@ bool	found	= false;
 	if (mainId == 0xFF) 
 	   return;
 	for (int i = 0; i < transmitters. size (); i += 2) {
-	   if ((transmitters. at (i) == (mainId & 0xFF)) &&
+	   if ((transmitters. at (i) == (mainId & 0x7F)) &&
 	       (transmitters. at (i + 1) == subId)) {
 	      found = true;
 	      break;
@@ -1836,7 +1863,7 @@ bool	found	= false;
 	}
 
 	if (!found) {
-	   transmitters. append (mainId & 0xFF);
+	   transmitters. append (mainId & 0x7F);
 	   transmitters. append (subId);
 	}
         if (!running. load())
