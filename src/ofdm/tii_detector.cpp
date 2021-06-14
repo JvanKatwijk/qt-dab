@@ -125,9 +125,14 @@ int16_t	i;
 	    invTable [table [i]] = i;
 	for (i = 71; i < 256; i ++)
 	   invTable [i] = -1;
+	detectMode_new	= false;
 }
 
 		TII_Detector::~TII_Detector() {
+}
+
+void	TII_Detector::setMode	(bool b) {
+	detectMode_new = b;
 }
 
 
@@ -222,7 +227,7 @@ float	avgTable	[NUM_GROUPS];
 //	te kunnen vinden
 	for (i = 0; i < GROUPSIZE; i ++) {
 	   for (j = 0; j < NUM_GROUPS; j ++) {
-	      if (hulpTable [j * GROUPSIZE + i] > 3 * avgTable [j]) {
+	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
 	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
 	      }
@@ -255,36 +260,40 @@ float	avgTable	[NUM_GROUPS];
 	   x [i] = hulpTable [maxIndex + GROUPSIZE * i];
 //
 //	find the best match
-	float mm = 0;
 	int finInd = -1;
-	for (int k = 0; k < sizeof (table); k ++) {
-	   float val = 0;
-	   for (int l = 0; l < NUM_GROUPS; l ++)
-	      if ((table [k] & bits [l]) != 0)
-	         val += x [l];
-	   if  (val > mm) {
-	      mm = val;
-	      finInd = k;
-	   }
-	}
-	return  maxIndex + finInd * 256;
-	
-////	we extract the four max values as bits
-	uint16_t pattern	= 0;
-	for (i = 0; i < 4; i ++) {
-	   float mmax	= 0;
-	   int ind		= -1;
-	   for (int k = 0; k < NUM_GROUPS; k ++) {
-	      if (x [k] > mmax) {
-	         mmax = x [k];
-	         ind  = k;
+	if (detectMode_new) {
+	   float mm = 0;
+	   for (int k = 0; k < sizeof (table); k ++) {
+	      float val = 0;
+	      for (int l = 0; l < NUM_GROUPS; l ++)
+	         if ((table [k] & bits [l]) != 0)
+	            val += x [l];
+	      if  (val > mm) {
+	         mm = val;
+	         finInd = k;
 	      }
 	   }
-	   if (ind != -1) {
-	      x [ind] = 0;
-	      pattern |= bits [ind];
-	   }
 	}
-	return  maxIndex + (invTable [pattern]) * 256;
+	else {		// detectMode_new is false
+////	we extract the four max values as bits
+	   uint16_t pattern	= 0;
+	   for (i = 0; i < 4; i ++) {
+	      float mmax	= 0;
+	      int ind		= -1;
+	      for (int k = 0; k < NUM_GROUPS; k ++) {
+	         if (x [k] > mmax) {
+	            mmax = x [k];
+	            ind  = k;
+	         }
+	      }
+	      if (ind != -1) {
+	         x [ind] = 0;
+	         pattern |= bits [ind];
+	      }
+	   }
+	   finInd = invTable [pattern];
+	}
+
+	return  maxIndex + finInd * 256;
 }
 

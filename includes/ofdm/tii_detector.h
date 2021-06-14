@@ -33,13 +33,15 @@ class	TII_Detector {
 public:
 			TII_Detector	(uint8_t dabMode, int16_t);
 			~TII_Detector();
-	void		reset();
+	void		reset		();
+	void		setMode		(bool);
 	void		addBuffer	(std::vector<std::complex<float>>);
 	uint16_t	processNULL	();
 
 private:
 	void			collapse	(std::complex<float> *,
 	                                         float *);
+	bool			detectMode_new;
 	int16_t			depth;
 	uint8_t			invTable [256];
 	dabParams		params;

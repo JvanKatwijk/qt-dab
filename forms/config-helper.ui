@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>348</width>
-    <height>595</height>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -193,9 +193,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="tii_detectorMode">
+     <property name="text">
+      <string>    new tii detector</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="closeDirect">
      <property name="text">
-      <string>close without asking</string>
+      <string>  close without asking</string>
      </property>
     </widget>
    </item>

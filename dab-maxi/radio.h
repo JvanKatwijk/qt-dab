@@ -400,5 +400,6 @@ private slots:
 	void			handle_skipList_button		();
 	void			handle_skipFile_button		();
 	void			handle_snrDelaySetting		(int);
+	void			handle_tii_detectorMode		(int);
 };
 #endif

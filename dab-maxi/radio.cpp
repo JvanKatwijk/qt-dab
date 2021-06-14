@@ -82,12 +82,13 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
-#ifdef	HAVE_PLUTO_RXTX
-#include	"pluto-rxtx-handler.h"
-#include	"dab-streamer.h"
-#endif
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
+#elif	HAVE_PLUTO_2
+#include	"pluto-handler-2.h"
+#elif	HAVE_PLUTO_RXTX
+#include	"pluto-rxtx-handler.h"
+#include	"dab-streamer.h"
 #endif
 #ifdef	HAVE_SOAPY
 #include	"soapy-handler.h"
@@ -747,6 +748,13 @@ bool	RadioInterface::doStart	() {
 	   presetTimer. setInterval 	(switchDelay * 1000);
 	   presetTimer. start 		(switchDelay * 1000);
 	}
+
+	bool dm = dabSettings -> value ("tii_detector", 0). toInt () == 1;
+	if (dm)
+	   configWidget. tii_detectorMode -> setChecked (true);
+	my_dabProcessor -> set_tiiDetectorMode (dm);
+	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
+                    this, SLOT (handle_tii_detectorMode (int)));
 
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
@@ -1419,9 +1427,24 @@ deviceHandler	*inputDevice	= nullptr;
 	      showButtons();
 	   }
 	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
+	      switch (e) {
+	         case 22:
+	            QMessageBox::warning (this, tr ("warning"),
+	                                  tr ("failed to open libiio.dll\n"));
+	            return nullptr;
+	         case 23:
+	            QMessageBox::warning (this, tr ("warning"),
+	                                 tr ("error in loading functions\n"));
+	            return nullptr;
+	         case 24:
+	            QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no pluto device found\n"));
-	      return nullptr;
+	            return nullptr;
+	         default:
+	            QMessageBox::warning (this, tr ("Warning"),
+	                                  tr ("some else with pluto\n"));
+	            return nullptr;
+	      }
 	   }
 	}
 	else
@@ -3979,5 +4002,11 @@ const QString fileName	= filenameFinder. findskipFile_fileName ();
 void	RadioInterface::handle_snrDelaySetting	(int del) {
 	my_snrViewer. set_snrDelay (del);
 	dabSettings	-> setValue ("snrDelay", del);
+}
+
+void	RadioInterface::handle_tii_detectorMode (int d) {
+bool	b = configWidget. tii_detectorMode -> isChecked ();
+	my_dabProcessor	-> set_tiiDetectorMode (b);
+	dabSettings	-> setValue ("tii_detector", b ? 1 : 0);
 }
 

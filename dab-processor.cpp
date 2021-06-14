@@ -113,6 +113,10 @@
 	}
 }
 
+void	dabProcessor::set_tiiDetectorMode	(bool b) {
+	my_TII_Detector. setMode (b);
+}
+
 void	dabProcessor::start (int frequency) {
 	this	-> frequency	= frequency;
 	my_ficHandler. reset	();
