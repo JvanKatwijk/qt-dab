@@ -94,6 +94,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 
 	lnaState		=
 	            sdrplaySettings -> value ("sdrplay-lnastate", 4). toInt();
+
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
 

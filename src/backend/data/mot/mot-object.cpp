@@ -173,7 +173,7 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-	fprintf (stderr, "Handling complete\n");
+//	fprintf (stderr, "Handling complete\n");
 	handle_motObject (result, name, (int)contentType, dirElement);
 }
 

@@ -323,7 +323,7 @@ void	RadioInterface::addtoEnsemble (const QString &serviceName,
         int row = model. rowCount ();
         for (int i = 0; i < row; i ++) {
            model. setData (model. index (i, 0),
-                      QFont ("Cantarell", 11), Qt::FontRole);
+                      QFont ("Cantarell", 10), Qt::FontRole);
         }
 
         ensembleDisplay -> setModel (&model);
@@ -402,7 +402,7 @@ void	RadioInterface::changeinConfiguration() {
 	   int row = model. rowCount ();
 	   for (int i = 0; i < row; i ++) {
 	      model. setData (model. index (i, 0),
-	      QFont ("Cantarell", 11), Qt::FontRole);
+	      QFont ("Cantarell", 10), Qt::FontRole);
 	   }
 	   ensembleDisplay -> setModel (&model);
 //
@@ -587,7 +587,8 @@ const char *monthTable [] = {
 };
 
 void	RadioInterface::clockTime (int year, int month, int day,
-	                                    int hours, int minutes){
+	                                    int hours, int minutes,
+	                                    int d2, int h2, int m2, int sec){
 char dayString [3];
 char hourString [3];
 char minuteString [3];
@@ -887,7 +888,7 @@ void	RadioInterface::stopService	() {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText == serviceName) {
-	         colorService (model. index (i, 0), Qt::black, 11);
+	         colorService (model. index (i, 0), Qt::black, 10);
 	         break;
 	      }
 	   }
@@ -930,7 +931,7 @@ QString serviceName	= s -> serviceName;
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
 	   if (itemText == serviceName) {
-	      colorService (model. index (i, 0), Qt::red, 15);
+	      colorService (model. index (i, 0), Qt::red, 13);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
 	      if (my_dabProcessor -> is_audioService (serviceName)) {
@@ -1006,7 +1007,7 @@ void	RadioInterface::handle_prevServiceButton	() {
 	                    (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, 11);
+	         colorService (model. index (i, 0), Qt::black, 10);
 	         i = i - 1;
 	         if (i < 0)
 	            i = serviceList. size () - 1;
@@ -1044,7 +1045,7 @@ void	RadioInterface::handle_nextServiceButton	() {
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, 11);
+	         colorService (model. index (i, 0), Qt::black, 10);
 	         i = i + 1;
 	         if (i >= (int)(serviceList. size ()))
 	            i = 0;
@@ -1323,11 +1324,20 @@ uint8_t buffer [amount];
 	}
 }
 
+void    setButtonFont (QPushButton *b, QString text, int size) {
+        QFont font      = b -> font ();
+        font. setPointSize (size);
+        b               -> setFont (font);
+        b               -> setText (text);
+        b               -> update ();
+}
+
 void    RadioInterface::handle_muteButton       () {
         if (muting) {
            muteTimer. stop ();
            disconnect (&muteTimer, SIGNAL (timeout ()),
                        this, SLOT (handle_muteButton ()));
+	   setButtonFont (muteButton, "mute", 10);
            muting = false;
            return;
         }
@@ -1335,6 +1345,7 @@ void    RadioInterface::handle_muteButton       () {
         connect (&muteTimer, SIGNAL (timeout (void)),
                  this, SLOT (handle_muteButton (void)));
         muteTimer. start (muteDelay * 1000);
+        setButtonFont (muteButton, "muting", 11);
         muting = true;
 }
 

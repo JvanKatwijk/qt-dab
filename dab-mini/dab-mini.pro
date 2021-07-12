@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-TARGET		= dabMini-2.0
+TARGET		= dabMini-2.1
 QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
@@ -271,7 +271,7 @@ isEmpty(GITHASHSTRING) {
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
 #	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 #for 32 bit
-	TARGET		= dabMini-32-2.0
+	TARGET		= dabMini-32-2.1
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-mini
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib

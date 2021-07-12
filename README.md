@@ -11,6 +11,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
+* [dabMini](#dabMini)
 * [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab)
 * [Colors](#colors-for-qt-dab)
@@ -38,9 +39,9 @@ Introduction
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
 
-While it is not very complicated to generate an executable, for Linux-x64
-an appImage exists that will run Qt-DAB instantly, and for Windows an installer
-is available.
+While it is not very complicated to generate an executable for either
+Qt-DAB or dabMini, for Linux-x64 appImages exist  for both Qt-DAB and dabMini.
+For Windows an installer is available.
 
 The main difference between 3.7 and its predecessor is the introduction
 of **skipTables**. Such a table allows the specification of channels
@@ -54,6 +55,7 @@ simpler version, just for listening to a DAB service, making use of
 command line
 
 ![Qt-DAB terminal DAB](/qt-dab-terminal-dab.png?raw=true)
+
 
 For those who are nostalgic to the era of nice wooden radios with glowing tubes,
 a program exists - for the Pluto - to receive DAB and transmit a selected
@@ -182,6 +184,26 @@ of what will be recorded if a choice is made to save the output of the scan.
 
 ![Qt-DAB scan result](/qt-dab-scan-result.png?raw=true)
 
+---------------------------------------------------------------------
+dabMini
+---------------------------------------------------------------------
+
+**dabMini** is a version of the DAB decoder with a minimal GUI.
+dabMini is built from the same  sources as Qt-DAB, so
+modifications to the Qt-DAB sources are automatically applied to
+dabMini as well.
+
+![Qt-DAB dabMini](/dab-mini.png?raw=true)
+
+Other than Qt-DAB, there is no selector for the device. On program start up
+the software polls the availability of a number of devices, the first
+one that seems OK is selected.
+
+The "main" GUI contains some selectors for setting device properties,
+depending on the selected device. The picture shows the program using
+an SDRplay device, with agc not selected and selectors for if gain and
+lna state.
+
 --------------------------------------------------------------------
 Documentation
 --------------------------------------------------------------------
@@ -195,7 +217,7 @@ complete description on how to add a device to the configuration.
 ![Qt-DAB documentation](/qt-usersguide.png?raw=true)
 
 ----------------------------------------------------------------------
-Presets for Qt-DAB
+Presets for Qt-DAB and dabMini
 ----------------------------------------------------------------------
 
 A *preset* selector is available to allow storing and selecting

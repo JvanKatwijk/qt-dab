@@ -3195,8 +3195,8 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
 	      showServices ();
 	   stopChannel ();
-	   if (scanMode != SCAN_TO_DATA)
-	      cc = theBand. nextChannel (cc);
+//	   if (scanMode != SCAN_TO_DATA)
+	   cc = theBand. nextChannel (cc);
 	   if ((cc >= channelSelector -> count ()) &&
 	                               (scanMode == SINGLE_SCAN)) {
 	      stopScanning (true);
@@ -3684,7 +3684,6 @@ void	RadioInterface::color_historyButton	()	{
 void	RadioInterface::color_sourcedumpButton	()	{
 	set_buttonColors (dumpButton, DUMP_BUTTON);
 }
-
 
 void	RadioInterface::color_prevChannelButton	()	{
 	set_buttonColors (prevChannelButton, PREVCHANNEL_BUTTON);
