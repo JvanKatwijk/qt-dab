@@ -138,7 +138,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/dabdgdec_impl.h \
 	   ../includes/backend/data/journaline/newsobject.h \
 	   ../includes/backend/data/journaline/NML.h \
-#	   ../includes/output/fir-filters.h \
+	   ../includes/output/fir-filters.h \
 	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
@@ -244,6 +244,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/dabdgdec_impl.c \
 	   ../src/backend/data/journaline/newsobject.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
+	   ../src/output/fir-filters.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \

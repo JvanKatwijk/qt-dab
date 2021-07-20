@@ -32,14 +32,17 @@ int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
+	                          int filterDepth,
 	                          QString &recorderVersion):
 	                             myFrame (nullptr),
-	                             _I_Buffer (4* 1024 * 1024) {
+	                             _I_Buffer (4* 1024 * 1024),
+	                             theFilter (filterDepth, 1536000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show	();
 
+	filtering	= false;
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
         Handle          = LoadLibrary ((wchar_t *)L"LimeSuite.dll");
@@ -204,6 +207,10 @@ void	limeHandler::setAntenna		(int ind) {
 	(void)LMS_SetAntenna (theDevice, LMS_CH_RX, 0, ind);
 }
 
+void	limeHandler::set_filter		(int c) {
+	filtering	= filterSelector -> isChecked ();
+}
+
 bool	limeHandler::restartReader	(int32_t freq) {
 int	res;
 
@@ -251,9 +258,15 @@ int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 int i;
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-        for (i = 0; i < amount; i ++)
-           V [i] = std::complex<float> (real (temp [i]) / 2048.0,
-                                        imag (temp [i]) / 2048.0);
+	if (filtering)
+           for (i = 0; i < amount; i ++) 
+	      V [i] = theFilter. Pass (std::complex<float> (
+	                                         real (temp [i]) / 2048.0,
+	                                         imag (temp [i]) / 2048.0));
+	else
+           for (i = 0; i < amount; i ++)
+              V [i] = std::complex<float> (real (temp [i]) / 2048.0,
+                                           imag (temp [i]) / 2048.0);
         if (dumping. load ())
            xmlWriter -> add (temp, amount);
         return amount;

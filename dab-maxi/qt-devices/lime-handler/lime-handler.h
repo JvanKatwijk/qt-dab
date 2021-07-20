@@ -34,6 +34,7 @@
 #include	<LimeSuite.h>
 #include	"device-handler.h"
 #include	"lime-widget.h"
+#include	"fir-filters.h"
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -98,7 +99,7 @@ typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 class	limeHandler: public QThread,  public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
-			limeHandler		(QSettings *, QString &);
+			limeHandler		(QSettings *, int, QString &);
 			~limeHandler		();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
@@ -139,6 +140,8 @@ private:
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
+	bool		filtering;
+	LowPassFIR	theFilter;
 //	imported functions
 public:
 	pfn_LMS_GetDeviceList	LMS_GetDeviceList;
@@ -175,7 +178,7 @@ private slots:
 	void		setGain		(int);
 	void		setAntenna	(int);
 	void		set_xmlDump	();
-
+	void		set_filter	(int);
 public slots:
 	void		showErrors	(int, int);
 };

@@ -1409,7 +1409,10 @@ deviceHandler	*inputDevice	= nullptr;
 #ifdef	HAVE_LIME
 	if (s == "limeSDR") {
 	   try {
-	      inputDevice = new limeHandler (dabSettings, version);
+	      int filterDepth	= 
+	                  dabSettings -> value ("filterDepth", 5). toInt();
+	      inputDevice = new limeHandler (dabSettings,
+	                                     filterDepth, version);
 	      showButtons();
 	   }
 	   catch (int e) {

@@ -8,6 +8,7 @@
 #include	<QPushButton>
 #include	<QHBoxLayout>
 #include	<QVBoxLayout>
+#include	<QCheckBox>
 
 class	limeWidget {
 public:
@@ -22,6 +23,7 @@ public:
 	QLCDNumber	*overrunDisplay;
 	QLabel		*overrunLabel;
 	QPushButton	*dumpButton;
+	QCheckBox	*filterSelector;
 
 	limeWidget	() {}
 	~limeWidget	() {}
@@ -38,6 +40,7 @@ void	setupUi		(QWidget *qw) {
 	overrunDisplay	= new QLCDNumber ();
 	overrunLabel	= new QLabel	("overruns");
 	dumpButton	= new QPushButton	();
+	filterSelector	= new QCheckBox	();
 	dumpButton	-> setText ("Dump");
 	actualGain	->  setFrameShape (QFrame::NoFrame);
         actualGain	->  setSegmentStyle (QLCDNumber::Flat);
@@ -59,6 +62,7 @@ void	setupUi		(QWidget *qw) {
 	QHBoxLayout *line4	= new QHBoxLayout ();
 	line4		-> addWidget (underrunDisplay);
 	line4		-> addWidget (underrunLabel);
+	line4		-> addWidget (filterSelector);
 
 	QHBoxLayout *line5	= new QHBoxLayout ();
 	line5		-> addWidget (overrunDisplay);
