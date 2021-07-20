@@ -36,12 +36,13 @@ lms_info_str_t limedevices [10];
 	                          QString &recorderVersion):
 	                             myFrame (nullptr),
 	                             _I_Buffer (4* 1024 * 1024),
-	                             theFilter (filterDepth, 1536000 / 2, 2048000) {
+	                             theFilter (filterDepth, 1566000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show	();
 
+	fprintf (stderr, "filterDepth = %d\n", filterDepth);
 	filtering	= false;
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
@@ -168,6 +169,8 @@ lms_info_str_t limedevices [10];
 	         this, SLOT (set_xmlDump ()));
 	connect (this, SIGNAL (new_gainValue (int)),
 	         gainSelector, SLOT (setValue (int)));
+	connect (filterSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_filter (int)));
 	xmlDumper	= nullptr;
 	dumping. store (false);
 	running. store (false);
@@ -209,6 +212,7 @@ void	limeHandler::setAntenna		(int ind) {
 
 void	limeHandler::set_filter		(int c) {
 	filtering	= filterSelector -> isChecked ();
+	fprintf (stderr, "filter set %s\n", filtering ? "on" : "off");
 }
 
 bool	limeHandler::restartReader	(int32_t freq) {
@@ -256,15 +260,15 @@ void	limeHandler::stopReader() {
 
 int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
-int i;
+
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	if (filtering)
-           for (i = 0; i < amount; i ++) 
+           for (int i = 0; i < amount; i ++) 
 	      V [i] = theFilter. Pass (std::complex<float> (
 	                                         real (temp [i]) / 2048.0,
 	                                         imag (temp [i]) / 2048.0));
 	else
-           for (i = 0; i < amount; i ++)
+           for (int i = 0; i < amount; i ++)
               V [i] = std::complex<float> (real (temp [i]) / 2048.0,
                                            imag (temp [i]) / 2048.0);
         if (dumping. load ())
