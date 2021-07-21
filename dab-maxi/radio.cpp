@@ -219,6 +219,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFrequency,
+	                                FILE		*f,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -255,6 +256,7 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
+	this	-> dllText	= f;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -1839,6 +1841,7 @@ void	RadioInterface::setSynced	(bool b) {
 }
 //
 //	called from the PAD handler
+static QString lastText;
 void	RadioInterface::showLabel	(QString s) {
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut != nullptr)
@@ -1846,6 +1849,16 @@ void	RadioInterface::showLabel	(QString s) {
 #endif
 	if (running. load())
 	   dynamicLabel	-> setText (s);
+	if (dllText == nullptr)
+	   return;
+	if (s == lastText)
+	   return;
+	lastText = s;
+	QDateTime theDateTime	= QDateTime::currentDateTime ();
+	QTime theTime		= theDateTime. time ();
+	fprintf (dllText, "%.2d:%.2d:  %s\n",
+	                          theTime. hour (), theTime. minute (),
+	                                           s. toLatin1 (). data ());
 }
 
 void	RadioInterface::setStereo	(bool b) {

@@ -106,12 +106,14 @@ public:
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
+	                                 FILE		*,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
+	FILE			*dllText;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;

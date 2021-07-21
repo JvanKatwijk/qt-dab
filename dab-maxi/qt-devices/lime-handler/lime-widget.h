@@ -40,7 +40,7 @@ void	setupUi		(QWidget *qw) {
 	overrunDisplay	= new QLCDNumber ();
 	overrunLabel	= new QLabel	("overruns");
 	dumpButton	= new QPushButton	();
-	filterSelector	= new QCheckBox	();
+	filterSelector	= new QCheckBox	("filter");
 	dumpButton	-> setText ("Dump");
 	actualGain	->  setFrameShape (QFrame::NoFrame);
         actualGain	->  setSegmentStyle (QLCDNumber::Flat);
