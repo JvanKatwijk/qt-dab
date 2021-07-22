@@ -32,18 +32,22 @@ int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
-	                          int filterDepth,
 	                          QString &recorderVersion):
 	                             myFrame (nullptr),
 	                             _I_Buffer (4* 1024 * 1024),
-	                             theFilter (filterDepth, 1566000 / 2, 2048000) {
+	                             theFilter (5, 1566000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show	();
 
-	fprintf (stderr, "filterDepth = %d\n", filterDepth);
 	filtering	= false;
+
+	limeSettings	-> beginGroup ("limeSettings");
+	currentDepth	= limeSettings	-> value ("filterDepth", 5). toInt ();
+	limeSettings	-> endGroup ();
+	filterDepth	-> setValue (currentDepth);
+	theFilter. resize (currentDepth);
 #ifdef  __MINGW32__
         const char *libraryString = "LimeSuite.dll";
         Handle          = LoadLibrary ((wchar_t *)L"LimeSuite.dll");
@@ -185,6 +189,7 @@ lms_info_str_t limedevices [10];
 	limeSettings	-> beginGroup ("limeSettings");
 	limeSettings	-> setValue ("antenna", antennaList -> currentText());
 	limeSettings	-> setValue ("gain", gainSelector -> value());
+	limeSettings	-> setValue ("filterDepth", filterDepth -> value ());
 	limeSettings	-> endGroup();
 	LMS_Close (theDevice);
 }
@@ -262,11 +267,16 @@ int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-	if (filtering)
+	if (filtering) {
+	   if (filterDepth -> value () != currentDepth) {
+	      currentDepth = filterDepth -> value ();
+	      theFilter. resize (currentDepth);
+	   }
            for (int i = 0; i < amount; i ++) 
 	      V [i] = theFilter. Pass (std::complex<float> (
 	                                         real (temp [i]) / 2048.0,
 	                                         imag (temp [i]) / 2048.0));
+	}
 	else
            for (int i = 0; i < amount; i ++)
               V [i] = std::complex<float> (real (temp [i]) / 2048.0,

@@ -106,14 +106,13 @@ public:
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
-	                                 FILE		*,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
-	FILE			*dllText;
+	FILE			*dllTextFile;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
@@ -362,6 +361,8 @@ private slots:
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
 	void			alarmTimer_timeOut	();
+	void			handle_dlTextButton     ();
+
 //
 //	color handlers
 	void			color_contentButton	();
@@ -403,5 +404,6 @@ private slots:
 	void			handle_skipFile_button		();
 	void			handle_snrDelaySetting		(int);
 	void			handle_tii_detectorMode		(int);
+
 };
 #endif

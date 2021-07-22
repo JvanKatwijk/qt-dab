@@ -31,27 +31,26 @@
 
 	LowPassFIR::LowPassFIR (int16_t firsize,
 	                        int32_t Fc, int32_t fs){
-float	f	= (float)Fc / fs;
 float	sum	= 0.0;
-int16_t		i;
 float	*temp 	= (float *)alloca (firsize * sizeof (float));
 
-	filterSize	= firsize;
-	filterKernel	= new std::complex<float> [filterSize];
-	Buffer		= new std::complex<float> [filterSize];
-	ip		= 0;
+	this -> frequency	= (float)Fc / fs;
+	this -> filterSize	= firsize;
+	filterKernel.	resize (filterSize);
+	Buffer.		resize (filterSize);
+	this -> ip		= 0;
 
-	for (i = 0; i < filterSize; i ++) {
+	for (int i = 0; i < filterSize; i ++) {
 	   filterKernel [i]	= 0;
 	   Buffer [i]		= 0;
 	}
 
-	for (i = 0; i < filterSize; i ++) {
+	for (int i = 0; i < filterSize; i ++) {
 	   if (i == filterSize / 2)
-	      temp [i] = 2 * M_PI * f;
+	      temp [i] = 2 * M_PI * frequency;
 	   else 
 	      temp [i] =
-	         sin (2 * M_PI * f * (i - filterSize/2))/ (i - filterSize/2);
+	         sin (2 * M_PI * frequency * (i - filterSize/2))/ (i - filterSize/2);
 //
 //	Blackman window
 	   temp [i]  *= (0.42 -
@@ -61,13 +60,43 @@ float	*temp 	= (float *)alloca (firsize * sizeof (float));
 	   sum += temp [i];
 	}
 
-	for (i = 0; i < filterSize; i ++)
+	for (int i = 0; i < filterSize; i ++)
 	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
 }
 
 	LowPassFIR::~LowPassFIR () {
-	delete[]	filterKernel;
-	delete[]	Buffer;
+}
+
+void	LowPassFIR::resize (int newSize) {
+float	*temp 	= (float *)alloca (newSize * sizeof (float));
+float	sum = 0;
+
+	filterSize	= newSize;
+	filterKernel. resize (filterSize);
+	Buffer. resize (filterSize);
+	ip		= 0;
+
+	for (int i = 0; i < filterSize; i ++) {
+	   filterKernel [i]	= 0;
+	}
+
+	for (int i = 0; i < filterSize; i ++) {
+	   if (i == filterSize / 2)
+	      temp [i] = 2 * M_PI * frequency;
+	   else 
+	      temp [i] =
+	         sin (2 * M_PI * frequency * (i - filterSize/2))/ (i - filterSize/2);
+//
+//	Blackman window
+	   temp [i]  *= (0.42 -
+		    0.5 * cos (2 * M_PI * (float)i / filterSize) +
+		    0.08 * cos (4 * M_PI * (float)i / filterSize));
+
+	   sum += temp [i];
+	}
+
+	for (int i = 0; i < filterSize; i ++)
+	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
 }
 //
 //	we process the samples backwards rather than reversing

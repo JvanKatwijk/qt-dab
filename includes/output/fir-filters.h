@@ -29,6 +29,7 @@
 #define __FIR_LOWPASSFILTER__
 
 #include	"dab-constants.h"
+#include	<vector>
 
 class	LowPassFIR {
 public:
@@ -39,11 +40,13 @@ public:
 			~LowPassFIR (void);
 	std::complex<float>	Pass		(std::complex<float>);
 	float			Pass		(float);
+	void			resize		(int);
 private:
 	int16_t		filterSize;
-	std::complex<float>	*filterKernel;
-	std::complex<float>	*Buffer;
+	std::vector<std::complex<float>>	filterKernel;
+	std::vector<std::complex<float>>	Buffer;
 	int16_t		ip;
+	float		frequency;
 };
 
 #endif

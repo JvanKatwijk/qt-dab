@@ -99,7 +99,7 @@ typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 class	limeHandler: public QThread,  public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
-			limeHandler		(QSettings *, int, QString &);
+			limeHandler		(QSettings *, QString &);
 			~limeHandler		();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
@@ -142,6 +142,7 @@ private:
 	bool		save_gainSettings;
 	bool		filtering;
 	LowPassFIR	theFilter;
+	int		currentDepth;
 //	imported functions
 public:
 	pfn_LMS_GetDeviceList	LMS_GetDeviceList;

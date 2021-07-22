@@ -46,5 +46,6 @@ FILE	*findScanDump_fileName		();
 FILE	*findSummary_fileName		();
 const 
 QString	findskipFile_fileName		();
+QString	finddlText_fileName		();
 };
 

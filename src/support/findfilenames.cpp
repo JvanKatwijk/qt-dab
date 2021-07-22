@@ -285,5 +285,29 @@ QString	findfileNames::findskipFile_fileName	() {
 	return  fileName;
 }
 
+QString findfileNames::finddlText_fileName	() {
+QString   saveDir = dabSettings -> value ("contentDir",
+                                                QDir::homePath ()). toString ();
+QString theTime         = QDateTime::currentDateTime (). toString ();
+
+        if ((saveDir != "") && (!saveDir. endsWith ('/')))
+           saveDir = saveDir + '/';
+
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+
+        QString suggestedFileName = saveDir + "Qt-DAB-dlText"  +
+                                                  "-" + theTime + ".txt";
+	fprintf (stderr, "save file %s\n", suggestedFileName. toLatin1 (). data ());
+        QString fileName =
+           QFileDialog::getSaveFileName (nullptr,
+                                         "Open file ...",
+                                         suggestedFileName. toLatin1 (). data (),
+                                         "Text (*.txt)");
+        fileName        = QDir::toNativeSeparators (fileName);
+        return  fileName;
+}
+
 
 

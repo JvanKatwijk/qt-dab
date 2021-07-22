@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>756</width>
+    <width>642</width>
     <height>412</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-4.0</string>
+   <string>Qt-DAB-3.72</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
@@ -542,29 +542,42 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="verySmallPushButton" name="contentButton">
+        <item row="2" column="0" colspan="4">
+         <widget class="smallComboBox" name="streamoutSelector">
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
           <property name="font">
            <font>
+            <family>DejaVu Sans</family>
             <pointsize>10</pointsize>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>Audio Device</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="3" column="0">
+         <widget class="smallPushButton" name="historyButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Content</string>
+           <string>list</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1" colspan="2">
-         <widget class="verySmallPushButton" name="detailButton">
+        <item row="3" column="6" colspan="2">
+         <widget class="verySmallPushButton" name="configButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -578,30 +591,80 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Touching this button will show/hide a widget where some configuration settings can be changed. &lt;br /&gt;&lt;br /&gt;The config widget also contains a posisbility for setting an alarm like signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Detail</string>
+           <string>config</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="3" colspan="2">
-         <widget class="verySmallPushButton" name="resetButton">
+        <item row="3" column="1" colspan="3">
+         <widget class="verySmallPushButton" name="dumpButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>reset</string>
+           <string>Raw dump</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="5" colspan="2">
+        <item row="1" column="0" colspan="2">
+         <widget class="verySmallPushButton" name="devicewidgetButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for controlling the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>device</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4" colspan="2">
+         <widget class="verySmallPushButton" name="snrButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>snr viewer</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6" colspan="2">
          <widget class="verySmallPushButton" name="scanButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -625,29 +688,7 @@ the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/b
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="verySmallPushButton" name="devicewidgetButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for controlling the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>device</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1" colspan="3">
+        <item row="1" column="2" colspan="3">
          <widget class="verySmallPushButton" name="show_correlationButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -674,8 +715,8 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
           </property>
          </widget>
         </item>
-        <item row="1" column="4" colspan="2">
-         <widget class="verySmallPushButton" name="show_spectrumButton">
+        <item row="0" column="2" colspan="3">
+         <widget class="verySmallPushButton" name="detailButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -689,48 +730,14 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. &lt;br /&gt;&lt;br /&gt;Pressing it again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>spectrum</string>
+           <string>Detail</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="6">
-         <widget class="verySmallPushButton" name="show_tiiButton">
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>tii</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="smallComboBox" name="streamoutSelector">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>Audio Device</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="2" column="2" colspan="4">
+        <item row="2" column="4" colspan="4">
          <widget class="smallComboBox" name="deviceSelector">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -754,25 +761,39 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
           </item>
          </widget>
         </item>
-        <item row="2" column="6">
-         <widget class="smallPushButton" name="dllTextButton">
-          <property name="text">
-           <string>dllText</string>
+        <item row="0" column="0" colspan="2">
+         <widget class="verySmallPushButton" name="contentButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="smallPushButton" name="historyButton">
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>list</string>
+           <string>Content</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="1" colspan="2">
-         <widget class="verySmallPushButton" name="dumpButton">
+        <item row="1" column="7">
+         <widget class="verySmallPushButton" name="show_tiiButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>tii</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5" colspan="2">
+         <widget class="verySmallPushButton" name="show_spectrumButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -786,54 +807,26 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. &lt;br /&gt;&lt;br /&gt;Pressing it again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Raw dump</string>
+           <string>spectrum</string>
           </property>
          </widget>
         </item>
-        <item row="3" column="3" colspan="3">
-         <widget class="verySmallPushButton" name="snrButton">
+        <item row="0" column="5">
+         <widget class="verySmallPushButton" name="resetButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>snr viewer</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="6">
-         <widget class="verySmallPushButton" name="configButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Touching this button will show/hide a widget where some configuration settings can be changed. &lt;br /&gt;&lt;br /&gt;The config widget also contains a posisbility for setting an alarm like signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>config</string>
+           <string>reset</string>
           </property>
          </widget>
         </item>

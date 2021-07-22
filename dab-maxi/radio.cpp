@@ -219,7 +219,6 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFrequency,
-	                                FILE		*f,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -256,7 +255,7 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
-	this	-> dllText	= f;
+	this	-> dllTextFile	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -540,6 +539,8 @@ uint8_t	dabBand;
 //	         this, SLOT (color_muteButton (void)));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
+	connect (dllTextButton, SIGNAL (clicked ()),	
+	         this, SLOT (handle_dlTextButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -1229,6 +1230,8 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	alarmTimer.	stop	();
 	soundOut	-> stop ();
+	if (dllTextFile != nullptr)
+	   fclose (dllTextFile);
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut != nullptr)
 	   streamerOut	-> stop ();
@@ -1411,10 +1414,7 @@ deviceHandler	*inputDevice	= nullptr;
 #ifdef	HAVE_LIME
 	if (s == "limeSDR") {
 	   try {
-	      int filterDepth	= 
-	                  dabSettings -> value ("filterDepth", 5). toInt();
-	      inputDevice = new limeHandler (dabSettings,
-	                                     filterDepth, version);
+	      inputDevice = new limeHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
@@ -1841,7 +1841,20 @@ void	RadioInterface::setSynced	(bool b) {
 }
 //
 //	called from the PAD handler
-static QString lastText;
+static QString lastText [4];
+static int pp	= 0;
+void	add (const QString &s) {
+	lastText [pp] = s;
+	pp = (pp + 1) % 4;
+}
+
+bool	alreadyHere	(const QString &s) {
+	for (int i = 0; i < 4; i ++)
+	   if (lastText [i] == s)
+	      return true;
+	return false;
+}
+
 void	RadioInterface::showLabel	(QString s) {
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut != nullptr)
@@ -1849,14 +1862,18 @@ void	RadioInterface::showLabel	(QString s) {
 #endif
 	if (running. load())
 	   dynamicLabel	-> setText (s);
-	if (dllText == nullptr)
+	if (dllTextFile == nullptr)
 	   return;
-	if (s == lastText)
+	if (alreadyHere (s))
 	   return;
-	lastText = s;
+	add (s);
+	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-	fprintf (dllText, "%.2d:%.2d:  %s\n",
+	fprintf (dllTextFile, "%s.%s%.2d:%.2d:  %s\n",
+	                          currentChannel. toLatin1 (). data (),
+	                          currentService. serviceName.
+	                                          toLatin1 (). data (),
 	                          theTime. hour (), theTime. minute (),
 	                                           s. toLatin1 (). data ());
 }
@@ -4025,3 +4042,17 @@ bool	b = configWidget. tii_detectorMode -> isChecked ();
 	dabSettings	-> setValue ("tii_detector", b ? 1 : 0);
 }
 
+void	RadioInterface::handle_dlTextButton	() {
+	if (dllTextFile != nullptr) {
+	   fclose (dllTextFile);
+	   dllTextFile = nullptr;
+	   dllTextButton	-> setText ("dlText");
+	   return;
+	}
+
+	QString	fileName =filenameFinder. finddlText_fileName ();
+	dllTextFile	= fopen (fileName. toLatin1 (). data (), "w+");
+	if (dllTextFile	== nullptr)
+	   return;
+	dllTextButton		-> setText ("writing");
+}

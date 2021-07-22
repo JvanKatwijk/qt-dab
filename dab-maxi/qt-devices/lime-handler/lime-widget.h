@@ -24,6 +24,7 @@ public:
 	QLabel		*overrunLabel;
 	QPushButton	*dumpButton;
 	QCheckBox	*filterSelector;
+	QSpinBox	*filterDepth;
 
 	limeWidget	() {}
 	~limeWidget	() {}
@@ -41,6 +42,8 @@ void	setupUi		(QWidget *qw) {
 	overrunLabel	= new QLabel	("overruns");
 	dumpButton	= new QPushButton	();
 	filterSelector	= new QCheckBox	("filter");
+	filterDepth	= new QSpinBox	();
+	filterDepth	-> setRange (5, 25);
 	dumpButton	-> setText ("Dump");
 	actualGain	->  setFrameShape (QFrame::NoFrame);
         actualGain	->  setSegmentStyle (QLCDNumber::Flat);
@@ -67,6 +70,7 @@ void	setupUi		(QWidget *qw) {
 	QHBoxLayout *line5	= new QHBoxLayout ();
 	line5		-> addWidget (overrunDisplay);
 	line5		-> addWidget (overrunLabel);
+	line5		-> addWidget (filterDepth);
 
 	QHBoxLayout *line1	= new QHBoxLayout ();
 	line1		-> addWidget (titleLabel);

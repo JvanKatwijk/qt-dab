@@ -80,14 +80,13 @@ int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
-QString	dllFile			= "";
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:t:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -114,10 +113,6 @@ QString	dllFile			= "";
 
 	      case 'F':
 	         fmFrequency	= atoi (optarg);
-	         break;
-
-	      case 't':
-	         dllFile	= optarg;
 	         break;
 
 	      default:
@@ -148,17 +143,13 @@ QString	dllFile			= "";
 
 	a. setWindowIcon (QIcon (":/qt-dab.ico"));
 
-	FILE *f = nullptr;
-	if (dllFile != "")
-	   f = fopen (dllFile. toLatin1 (). data (), "w");
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       presets,
 	                                       freqExtension,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,
-	                                       fmFrequency,
-	                                       f
+	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
         a. exec();
@@ -171,8 +162,6 @@ QString	dllFile			= "";
 	qDebug ("It is done\n");
 	delete MyRadioInterface;
 	delete dabSettings;
-	if (f != nullptr)
-	   fclose (f);
 	return 1;
 }
 
