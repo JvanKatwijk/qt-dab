@@ -756,6 +756,9 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
         </item>
         <item row="2" column="6">
          <widget class="smallPushButton" name="dlTextButton">
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the dynamic label text, as shown on the main widget, can be stored in a file.&lt;/p&gt;&lt;p&gt;Touching this button will show a menu for selecting a (text) file. &lt;/p&gt;&lt;p&gt;The text lines are preceded by the channel, the servicename and a time indicator.&lt;/p&gt;&lt;p&gt;As usual, touching the button a second time will close the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
           <property name="text">
            <string>dlText</string>
           </property>
