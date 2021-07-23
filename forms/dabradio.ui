@@ -755,9 +755,9 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
          </widget>
         </item>
         <item row="2" column="6">
-         <widget class="smallPushButton" name="dllTextButton">
+         <widget class="smallPushButton" name="dlTextButton">
           <property name="text">
-           <string>dllText</string>
+           <string>dlText</string>
           </property>
          </widget>
         </item>

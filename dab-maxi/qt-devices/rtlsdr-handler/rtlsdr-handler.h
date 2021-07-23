@@ -35,6 +35,7 @@
 #include	<cstdio>
 #include	<atomic>
 #include	"dab-constants.h"
+#include	"fir-filters.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
@@ -121,6 +122,11 @@ private:
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
+
+	bool		filtering;
+	LowPassFIR	theFilter;
+	int		currentDepth;
+
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;
@@ -153,6 +159,7 @@ private slots:
 	void		set_ppmCorrection	(int);
 	void		set_xmlDump		();
 	void		set_iqDump		();
+	void		set_filter		(int);
 	void		set_biasControl		(int);
 };
 #endif

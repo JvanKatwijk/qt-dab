@@ -183,6 +183,7 @@ QString scanmodeText (int e) {
 #define	FRAMEDUMP_BUTTON	QString ("framedumpButton")
 #define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 #define	CONFIG_BUTTON		QString	("configButton")
+#define	DLTEXT_BUTTON		QString	("dlTextButton")
 
 static
 uint8_t convert (QString s) {
@@ -255,7 +256,7 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
-	this	-> dllTextFile	= nullptr;
+	this	-> dlTextFile	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -519,6 +520,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_sourcedumpButton (void)));
 	connect (configButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_configButton (void)));
+	connect (dlTextButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_dlTextButton (void)));
 
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_prevChannelButton (void)));
@@ -539,7 +542,7 @@ uint8_t	dabBand;
 //	         this, SLOT (color_muteButton (void)));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
-	connect (dllTextButton, SIGNAL (clicked ()),	
+	connect (dlTextButton, SIGNAL (clicked ()),	
 	         this, SLOT (handle_dlTextButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
@@ -1230,8 +1233,8 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	alarmTimer.	stop	();
 	soundOut	-> stop ();
-	if (dllTextFile != nullptr)
-	   fclose (dllTextFile);
+	if (dlTextFile != nullptr)
+	   fclose (dlTextFile);
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut != nullptr)
 	   streamerOut	-> stop ();
@@ -1862,7 +1865,7 @@ void	RadioInterface::showLabel	(QString s) {
 #endif
 	if (running. load())
 	   dynamicLabel	-> setText (s);
-	if (dllTextFile == nullptr)
+	if (dlTextFile == nullptr)
 	   return;
 	if (alreadyHere (s))
 	   return;
@@ -1870,12 +1873,12 @@ void	RadioInterface::showLabel	(QString s) {
 	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-	fprintf (dllTextFile, "%s.%s%.2d:%.2d:  %s\n",
+	fprintf (dlTextFile, "%s.%s%.2d:%.2d:  %s\n",
 	                          currentChannel. toLatin1 (). data (),
 	                          currentService. serviceName.
-	                                          toLatin1 (). data (),
+	                                          toUtf8 (). data (),
 	                          theTime. hour (), theTime. minute (),
-	                                           s. toLatin1 (). data ());
+	                                     s. toUtf8 (). data ());
 }
 
 void	RadioInterface::setStereo	(bool b) {
@@ -3622,6 +3625,12 @@ QString	configButton_color =
 QString configButton_font	=
 	   dabSettings -> value (CONFIG_BUTTON + "_font",
 	                                              "white"). toString ();
+QString	dlTextButton_color =
+	   dabSettings -> value (DLTEXT_BUTTON + "_color",
+	                                              "black"). toString ();
+QString dlTextButton_font	=
+	   dabSettings -> value (DLTEXT_BUTTON + "_font",
+	                                              "white"). toString ();
 	dabSettings	-> endGroup ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
@@ -3672,6 +3681,8 @@ QString configButton_font	=
 //	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
+	dlTextButton	-> setStyleSheet (temp. arg (dlTextButton_color,
+	                                             dlTextButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -3749,6 +3760,10 @@ void	RadioInterface::color_muteButton	()	{
 
 void	RadioInterface::color_configButton	()	{
 	set_buttonColors (configButton, CONFIG_BUTTON);
+}
+
+void	RadioInterface::color_dlTextButton	()	{
+	set_buttonColors (dlTextButton, DLTEXT_BUTTON);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -4043,16 +4058,16 @@ bool	b = configWidget. tii_detectorMode -> isChecked ();
 }
 
 void	RadioInterface::handle_dlTextButton	() {
-	if (dllTextFile != nullptr) {
-	   fclose (dllTextFile);
-	   dllTextFile = nullptr;
-	   dllTextButton	-> setText ("dlText");
+	if (dlTextFile != nullptr) {
+	   fclose (dlTextFile);
+	   dlTextFile = nullptr;
+	   dlTextButton	-> setText ("dlText");
 	   return;
 	}
 
 	QString	fileName =filenameFinder. finddlText_fileName ();
-	dllTextFile	= fopen (fileName. toLatin1 (). data (), "w+");
-	if (dllTextFile	== nullptr)
+	dlTextFile	= fopen (fileName. toLatin1 (). data (), "w+");
+	if (dlTextFile	== nullptr)
 	   return;
-	dllTextButton		-> setText ("writing");
+	dlTextButton		-> setText ("writing");
 }

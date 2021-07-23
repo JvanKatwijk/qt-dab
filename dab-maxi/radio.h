@@ -42,6 +42,7 @@
 #include        "band-handler.h"
 #include	"text-mapper.h"
 #include	"process-params.h"
+#include	"dl-cache.h"
 #include	<memory>
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
@@ -112,7 +113,8 @@ public:
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
-	FILE			*dllTextFile;
+	FILE			*dlTextFile;
+	dlCache			the_dlCache;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
@@ -384,6 +386,7 @@ private slots:
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
 	void			color_configButton	();
+	void			color_dlTextButton	();
 //
 //	config handlers
 	void			handle_configSetting		();

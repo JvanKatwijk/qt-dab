@@ -116,7 +116,8 @@ void	run () {
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
 	                                    _I_Buffer (8 * 1024 * 1024),
-	                                    myFrame (nullptr) {
+	                                    myFrame (nullptr),
+	                                    theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -129,6 +130,14 @@ char	manufac [256], product [256], serial [256];
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show();
+	filtering			= false;
+
+	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	currentDepth		= rtlsdrSettings -> value ("filterDepth", 5). toInt ();
+	rtlsdrSettings	-> endGroup ();
+	filterDepth	-> setValue (currentDepth);
+	theFilter. resize (currentDepth);
+
 	inputRate			= 2048000;
 	workerHandle			= nullptr;
 	isActive		= false;
@@ -265,6 +274,8 @@ char	manufac [256], product [256], serial [256];
 	         this, SLOT (set_iqDump ()));
 	connect (biasControl, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_biasControl (int)));
+	connect (filterSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_filter (int)));
 	xmlDumper       = nullptr;
 //
 //	and for saving/restoring the gain setting:
@@ -296,6 +307,7 @@ char	manufac [256], product [256], serial [256];
 	                              agcControl -> isChecked () ? "1" : "0");
 	rtlsdrSettings	-> setValue ("ppm_correction",
 	                              ppm_correction -> value());
+	rtlsdrSettings	-> setValue ("filterDepth", filterDepth -> value ());
 	rtlsdrSettings	-> sync();
 	rtlsdrSettings	-> endGroup();
 	
@@ -315,6 +327,10 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 	return (int32_t)(this -> rtlsdr_get_center_freq (device));
 }
 //
+void	rtlsdrHandler::set_filter	(int c) {
+      filtering       = filterSelector -> isChecked ();
+}
+
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
 int32_t	r;
 
@@ -368,10 +384,22 @@ int	amount;
 
 static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;
+
 	amount = _I_Buffer. getDataFromBuffer (temp, size);
-	for (int i = 0; i < amount; i ++) 
-	   V [i] = std::complex<float> (mapTable [real (temp [i]) & 0xFF],
-	                                mapTable [imag (temp [i]) & 0xFF]);
+	if (filtering) {
+	   if (filterDepth -> value () != currentDepth) {
+	      currentDepth = filterDepth -> value ();
+	      theFilter. resize (currentDepth);
+	   }
+	   for (int i = 0; i < amount; i ++) 
+	      V [i] =theFilter. Pass (
+                         std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                mapTable [imag (temp [i]) & 0xFF]));
+	}
+	else
+	   for (int i = 0; i < amount; i ++) 
+	      V [i] = std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                   mapTable [imag (temp [i]) & 0xFF]);
 	if (xml_dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	else

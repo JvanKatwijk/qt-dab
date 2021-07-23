@@ -35,7 +35,7 @@ lms_info_str_t limedevices [10];
 	                          QString &recorderVersion):
 	                             myFrame (nullptr),
 	                             _I_Buffer (4* 1024 * 1024),
-	                             theFilter (5, 1566000 / 2, 2048000) {
+	                             theFilter (5, 1560000 / 2, 2048000) {
 	this	-> limeSettings		= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);

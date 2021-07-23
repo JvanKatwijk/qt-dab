@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>642</width>
-    <height>407</height>
+    <width>756</width>
+    <height>412</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-3.5</string>
+   <string>Qt-DAB-4.0</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_3">
    <item>
@@ -75,7 +75,8 @@
         <item>
          <widget class="smallPushButton" name="prevServiceButton">
           <property name="toolTip">
-           <string>Select the previous service on the list of services (the previous one of the first element is the last element of the list).</string>
+           <string>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
+&lt;p&gt;Select the previous service on the list of services&lt;br /&gt;(the previous one of the first element is the last element of the list).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>-</string>
@@ -85,7 +86,7 @@
         <item>
          <widget class="smallPushButton" name="nextServiceButton">
           <property name="toolTip">
-           <string>Select the next service on the list of services (the next of the last element is the first element).</string>
+           <string>&lt;html&gt;&lt;head /&gt; &lt;body&gt;&lt;p&gt;Select the next service on the list of services &lt;br /&gt;(the next of the last element is the first element).&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>+</string>
@@ -147,6 +148,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
+           <widget class="QLCDNumber" name="stillMuting"/>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item>
              <widget class="QLabel" name="runtimeDisplay">
@@ -167,8 +171,8 @@
             <item>
              <widget class="QLabel" name="localTimeDisplay">
               <property name="toolTip">
-               <string>Local time is the time as received from the transmission. If you are running recordings, then
-it is definitely not the time on your clock.</string>
+               <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Local time is the time as received from the transmission. &lt;br /&gt;&lt;br /&gt;If you are running recordings, then
+it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="frameShape">
                <enum>QFrame::Panel</enum>
@@ -198,6 +202,13 @@ it is definitely not the time on your clock.</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="verySmallPushButton" name="muteButton">
+            <property name="text">
+             <string>mute</string>
             </property>
            </widget>
           </item>
@@ -401,13 +412,6 @@ it is definitely not the time on your clock.</string>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>FIC </string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QProgressBar" name="ficError_display">
             <property name="maximumSize">
              <size>
@@ -417,6 +421,27 @@ it is definitely not the time on your clock.</string>
             </property>
             <property name="value">
              <number>24</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>FIC </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="epgLabel">
+            <property name="text">
+             <string>EPG</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="alarmLabel">
+            <property name="text">
+             <string>Alarm</string>
             </property>
            </widget>
           </item>
@@ -517,8 +542,29 @@ it is definitely not the time on your clock.</string>
       </item>
       <item>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="2" colspan="3">
-         <widget class="smallPushButton" name="detailButton">
+        <item row="0" column="0">
+         <widget class="verySmallPushButton" name="contentButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>Content</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1" colspan="2">
+         <widget class="verySmallPushButton" name="detailButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -539,8 +585,8 @@ it is definitely not the time on your clock.</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="5">
-         <widget class="smallPushButton" name="resetButton">
+        <item row="0" column="3" colspan="2">
+         <widget class="verySmallPushButton" name="resetButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -555,8 +601,8 @@ it is definitely not the time on your clock.</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="6" colspan="2">
-         <widget class="smallPushButton" name="scanButton">
+        <item row="0" column="5" colspan="2">
+         <widget class="verySmallPushButton" name="scanButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -570,18 +616,17 @@ it is definitely not the time on your clock.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>Touching the scan button will cause the software to make a single scan over all channels in the selected band. Ensembles (and their services) found will be displayed in a separate window.
-The windows will be visible as long as the scanning mode is on (note that after completing the
-scan, i.e. the cycle from (in Mode I) channel 5A to 13F, the software will wait until the scanner
-is officlally stopped).</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching the scan button will cause the software to make a single scan over all channels. Ensembles (and their services) found will be displayed in a separate window.&lt;/p&gt;&lt;p&gt;The windows will be visible as long as the scanning mode is on &lt;br/&gt;
+(note that after completing the scan, i.e. the cycle from channel 5A to 13F, &lt;br /&gt;
+the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>Scan</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="0" colspan="2">
-         <widget class="smallPushButton" name="show_tiiButton">
+        <item row="1" column="0">
+         <widget class="verySmallPushButton" name="devicewidgetButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -595,15 +640,15 @@ is officlally stopped).</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - pushing this button will switch the spectrum display between &amp;quot;regular&amp;quot; and a spectrum showing the &amp;quot;null symbol&amp;quot; period. In the console window the pattern, main ID and sub ID of the TII will be displayed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for controlling the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>TII</string>
+           <string>device</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="2" colspan="3">
-         <widget class="smallPushButton" name="show_correlationButton">
+        <item row="1" column="1" colspan="3">
+         <widget class="verySmallPushButton" name="show_correlationButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -617,18 +662,20 @@ is officlally stopped).</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>Touching this button will show (or hide) the resulting correlation of the first datablock of the DAB
-ensemble with the values as they should be. The &quot;peaks&quot; (if any) show the samples where
-the correlation is strongest. More than one peak shows more than one transmitter within
-the reach of this receiver.</string>
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;
+Touching this button will show (or hide) the resulting correlation of the first&lt;br /&gt;
+ datablock of the DAB ensemble with the values as they should be. &lt;br /&gt;&lt;br /&gt;
+The &quot;peaks&quot; (if any) show the samples where the correlation is strongest. &lt;br /&gt;
+More than one peak shows more than one transmitter within
+the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
            <string>corr-result</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="5" colspan="2">
-         <widget class="smallPushButton" name="show_spectrumButton">
+        <item row="1" column="4" colspan="2">
+         <widget class="verySmallPushButton" name="show_spectrumButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -642,24 +689,24 @@ the reach of this receiver.</string>
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. Pressing it&lt;/p&gt;&lt;p&gt;again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. &lt;br /&gt;&lt;br /&gt;Pressing it again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>Spectrum</string>
+           <string>spectrum</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="7">
-         <widget class="smallPushButton" name="devicewidgetButton">
+        <item row="1" column="6">
+         <widget class="verySmallPushButton" name="show_tiiButton">
           <property name="toolTip">
-           <string>Hide or show the widget for device control.</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>show</string>
+           <string>tii</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0" colspan="4">
+        <item row="2" column="0" colspan="2">
          <widget class="smallComboBox" name="streamoutSelector">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
@@ -683,7 +730,7 @@ the reach of this receiver.</string>
           </item>
          </widget>
         </item>
-        <item row="2" column="4" colspan="4">
+        <item row="2" column="2" colspan="4">
          <widget class="smallComboBox" name="deviceSelector">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
@@ -705,100 +752,27 @@ the reach of this receiver.</string>
             <string>Input Device</string>
            </property>
           </item>
-          <item>
-           <property name="text">
-            <string>file input (.raw)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>file input (.iq)</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>file input (.sdr)</string>
-           </property>
-          </item>
+         </widget>
+        </item>
+        <item row="2" column="6">
+         <widget class="smallPushButton" name="dllTextButton">
+          <property name="text">
+           <string>dllText</string>
+          </property>
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="verySmallPushButton" name="historyButton">
+         <widget class="smallPushButton" name="historyButton">
           <property name="toolTip">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="text">
-           <string>xx</string>
+           <string>list</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="smallPushButton" name="contentButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a 'save as ... dialog' where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>Content</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="6" colspan="2">
-         <widget class="smallPushButton" name="audioDumpButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save audio output into a file. First push will show a menu for file selection. Push again to stop recording.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>audio dump</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="4" colspan="2">
-         <widget class="smallPushButton" name="frameDumpButton">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <family>DejaVu Sans</family>
-            <pointsize>10</pointsize>
-           </font>
-          </property>
-          <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoding of DAB+ audio services results first in the extraction of AAC frames from the input, then conversion of the AAC frames to PCM frames, and then sending these PCM frames to the soundcard. It is possible, already for a long time, to save the PCM frames into a &amp;quot;.wav&amp;quot; file,&lt;/p&gt;&lt;p&gt;It is now also possible to save the AAC frames into a file. Writing AAC frames is under control of this button. Touching it will show a menu for file selection, after selecting a file, the AAC frames will be written to this file, until the button is touched again.&lt;/p&gt;&lt;p&gt;Code for converting the aac headers to ones that can be understood by e.g. VLC is from Stefan Poeschel. All rights gratefully acknowledged&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-          </property>
-          <property name="text">
-           <string>frame dump</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1" colspan="3">
-         <widget class="smallPushButton" name="dumpButton">
+        <item row="3" column="1" colspan="2">
+         <widget class="verySmallPushButton" name="dumpButton">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -819,6 +793,50 @@ the reach of this receiver.</string>
           </property>
          </widget>
         </item>
+        <item row="3" column="3" colspan="3">
+         <widget class="verySmallPushButton" name="snrButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>snr viewer</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="6">
+         <widget class="verySmallPushButton" name="configButton">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Touching this button will show/hide a widget where some configuration settings can be changed. &lt;br /&gt;&lt;br /&gt;The config widget also contains a posisbility for setting an alarm like signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+          <property name="text">
+           <string>config</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
      </layout>
@@ -828,6 +846,11 @@ the reach of this receiver.</string>
  </widget>
  <customwidgets>
   <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header>smallpushbutton.h</header>
+  </customwidget>
+  <customwidget>
    <class>presetComboBox</class>
    <extends>QComboBox</extends>
    <header>presetcombobox.h</header>
@@ -836,11 +859,6 @@ the reach of this receiver.</string>
    <class>smallComboBox</class>
    <extends>QComboBox</extends>
    <header>smallcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>smallPushButton</class>
-   <extends>QPushButton</extends>
-   <header>smallpushbutton.h</header>
   </customwidget>
   <customwidget>
    <class>smallQListView</class>
