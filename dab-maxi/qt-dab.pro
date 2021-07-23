@@ -166,6 +166,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/alarm-selector.h \
 	   ../includes/support/time-table.h \
 	   ../includes/support/findfilenames.h \
+	   ../includes/support/dl-cache.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \

@@ -247,7 +247,8 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        theTable (this),
 	                                        filenameFinder (Si),
 	                                        dataDisplay (nullptr),
-	                                        configDisplay (nullptr) {
+	                                        configDisplay (nullptr),
+	                                        the_dlCache (5) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1844,19 +1845,6 @@ void	RadioInterface::setSynced	(bool b) {
 }
 //
 //	called from the PAD handler
-static QString lastText [4];
-static int pp	= 0;
-void	add (const QString &s) {
-	lastText [pp] = s;
-	pp = (pp + 1) % 4;
-}
-
-bool	alreadyHere	(const QString &s) {
-	for (int i = 0; i < 4; i ++)
-	   if (lastText [i] == s)
-	      return true;
-	return false;
-}
 
 void	RadioInterface::showLabel	(QString s) {
 #ifdef	HAVE_PLUTO_RXTX
@@ -1867,9 +1855,9 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 	if (dlTextFile == nullptr)
 	   return;
-	if (alreadyHere (s))
+	if (the_dlCache. isMember (s))
 	   return;
-	add (s);
+	the_dlCache. add (s);
 	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();

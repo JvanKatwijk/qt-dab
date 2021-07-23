@@ -114,7 +114,6 @@ protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
 	FILE			*dlTextFile;
-	dlCache			the_dlCache;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
@@ -132,6 +131,7 @@ private:
 	scannerTable		theTable;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
+	dlCache			the_dlCache;
 	findfileNames		filenameFinder;
 	processParams		globals;
 	QString			version;
