@@ -1737,7 +1737,7 @@ int32_t	theTime	[6];
 //
 //	take care of different time zones
 	bool	change = false;
-	for (int i = 0; i < 5; i ++) {
+	for (int i = 0; i < 6; i ++) {
 	   if (theTime [i] != dateTime [i])
 	      change = true;
 	   dateTime [i] = theTime [i];

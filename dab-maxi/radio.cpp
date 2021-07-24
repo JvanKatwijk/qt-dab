@@ -248,7 +248,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        filenameFinder (Si),
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
-	                                        the_dlCache (5) {
+	                                        the_dlCache (10) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1861,11 +1861,17 @@ void	RadioInterface::showLabel	(QString s) {
 	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-	fprintf (dlTextFile, "%s.%s%.2d:%.2d:  %s\n",
+	fprintf (dlTextFile, "%s.%s %4d-%02d-%02d %02d:%02d:%02d  %s\n",
 	                          currentChannel. toLatin1 (). data (),
 	                          currentService. serviceName.
 	                                          toUtf8 (). data (),
-	                          theTime. hour (), theTime. minute (),
+//	                          theTime. hour (), theTime. minute (),
+	                          localTime. year,
+	                          localTime. month,
+	                          localTime. day,
+	                          localTime. hour,
+	                          localTime. minute,
+	                          localTime. second,
 	                                     s. toUtf8 (). data ());
 }
 
