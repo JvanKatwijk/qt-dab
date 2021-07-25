@@ -24,6 +24,7 @@
 #include	"tii-viewer.h"
 #include	"iqdisplay.h"
 #include	<QColor>
+#include	<QPen>
 #include	"color-selector.h"
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,

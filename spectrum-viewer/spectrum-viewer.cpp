@@ -25,6 +25,7 @@
 #include	<QSettings>
 #include	"iqdisplay.h"
 #include	<QColor>
+#include	<QPen>
 #include	"color-selector.h"
 
 	spectrumViewer::spectrumViewer	(RadioInterface	*mr,
