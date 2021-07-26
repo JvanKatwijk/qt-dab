@@ -277,7 +277,7 @@ QString	findfileNames::findskipFile_fileName	() {
 
 	QString fileName =
 	   QFileDialog::getSaveFileName (nullptr,
-	                                 "Open file ...",
+	                                 "Save File",
 	                                 suggestedFileName,
 	                                 "Xml (*.xml)", 0,
 	                                 QFileDialog::DontConfirmOverwrite);
@@ -302,7 +302,7 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	fprintf (stderr, "save file %s\n", suggestedFileName. toLatin1 (). data ());
         QString fileName =
            QFileDialog::getSaveFileName (nullptr,
-                                         "Open file ...",
+                                         "Save File",
                                          suggestedFileName. toLatin1 (). data (),
                                          "Text (*.txt)");
         fileName        = QDir::toNativeSeparators (fileName);
