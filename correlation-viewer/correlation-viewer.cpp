@@ -24,6 +24,7 @@
 #include	"correlation-viewer.h"
 #include	<QSettings>
 #include	<QColor>
+#include	<QPen>
 #include	"color-selector.h"
 
 	correlationViewer::correlationViewer	(RadioInterface	*mr,

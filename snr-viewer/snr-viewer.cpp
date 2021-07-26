@@ -26,6 +26,7 @@
 #include	"snr-viewer.h"
 #include	<QSettings>
 #include	<QColor>
+#include	<QPen>
 #include	<string.h>
 #include	"color-selector.h"
 

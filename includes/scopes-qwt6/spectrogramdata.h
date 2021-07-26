@@ -52,10 +52,6 @@ public:
 	this	-> datawidth	= datawidth;
 	this	-> dataheight	= height;
 	this	-> max		= max;
-
-	setInterval (Qt::XAxis, QwtInterval (left, left + width));
-	setInterval (Qt::YAxis, QwtInterval (0, height));
-	setInterval (Qt::ZAxis, QwtInterval (0, max));
 }
 
 void	initRaster (const QRectF &x, const QSize &raster) {
@@ -63,9 +59,11 @@ void	initRaster (const QRectF &x, const QSize &raster) {
 	(void)raster;
 }
 
-QwtInterval Interval (Qt::Axis x)const {
+QwtInterval interval (Qt::Axis x) const {
 	if (x == Qt::XAxis)
 	   return QwtInterval (left, left + width);
+	if (x == Qt::YAxis)
+	   return QwtInterval (0, height);
 	return QwtInterval (0, max);
 }
 
