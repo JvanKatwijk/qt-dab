@@ -78,6 +78,7 @@ uint32_t samplerateCount;
 	          airspySettings -> value ("save_gainSettings", 1). toInt () != 0;
 	airspySettings	-> endGroup();
 
+	theFilter		= nullptr;
 	device			= nullptr;
 	serialNumber		= 0;
 #ifdef	__MINGW32__
@@ -160,7 +161,12 @@ uint32_t samplerateCount;
 	}
 	else
 	   fprintf (stderr, "selected samplerate = %d\n", selectedRate);
-
+	airspySettings    -> beginGroup ("airspySettings");
+        currentDepth    = airspySettings  -> value ("filterDepth", 5). toInt ();
+        airspySettings    -> endGroup ();
+        filterDepth     -> setValue (currentDepth);
+	theFilter	= new LowPassFIR (currentDepth, 1560000 / 2, selectedRate);
+	filtering	= false;
 	result = my_airspy_set_samplerate (device, selectedRate);
 	if (result != AIRSPY_SUCCESS) {
            printf("airspy_set_samplerate() failed: %s (%d)\n",
@@ -173,8 +179,8 @@ uint32_t samplerateCount;
 	   throw (24);
 	}
 
-	airspySettings	-> beginGroup ("airspySettings");
-	airspySettings	-> endGroup();
+//	airspySettings	-> beginGroup ("airspySettings");
+//	airspySettings	-> endGroup();
 
 //	The sizes of the mapTables follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
@@ -209,6 +215,8 @@ uint32_t samplerateCount;
 	         this, SLOT (show_tab (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
+	connect (filterSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_filter (int)));
 
 //
 //	and to restore settings, we need
@@ -246,6 +254,7 @@ uint32_t samplerateCount;
 	airspyHandler::~airspyHandler() {
 	stopReader ();
 	myFrame. hide ();
+	filtering	= false;
 	airspySettings	-> beginGroup ("airspySettings");
 	airspySettings -> setValue ("linearity", linearitySlider -> value());
 	airspySettings -> setValue ("sensitivity", sensitivitySlider -> value());
@@ -253,6 +262,7 @@ uint32_t samplerateCount;
 	airspySettings -> setValue ("mixer", mixerGain);
 	airspySettings -> setValue ("lna", lnaGain);
 	airspySettings	-> setValue ("airspyOffset", coarseOffset);
+	airspySettings	-> setValue ("filterDepth", filterDepth -> value ());
 	airspySettings	-> endGroup();
 	if (device != nullptr) {
 	   int result = my_airspy_stop_rx (device);
@@ -270,6 +280,8 @@ uint32_t samplerateCount;
 	if (Handle == nullptr) {
 	   return;	// nothing achieved earlier
 	}
+	if (theFilter != nullptr)
+	   delete theFilter;
 	my_airspy_exit();
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
@@ -294,7 +306,13 @@ int32_t	airspyHandler::getVFOFrequency() {
 }
 
 int32_t	airspyHandler::defaultFrequency() {
-	return Khz (94700);
+	return Khz (220000);
+}
+
+void	airspyHandler::set_filter	(int c) {
+	(void)c;
+	filtering	= filterSelector -> isChecked ();
+	fprintf (stderr, "filter set %s\n", filtering ? "on" : "off");
 }
 
 bool	airspyHandler::restartReader	(int32_t freq) {
@@ -397,6 +415,35 @@ int32_t  i, j;
 
 	if (dumping. load ())
 	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
+	if (filtering) {
+	   if (filterDepth -> value () != currentDepth) {
+	      currentDepth = filterDepth -> value ();
+	      theFilter -> resize (currentDepth);
+	   }
+	   for (i = 0; i < nSamples; i ++) {
+	      convBuffer [convIndex ++] = theFilter -> Pass (
+	                                     std::complex<float> (
+	                                        sbuf [2 * i] / (float)2048,
+	                                        sbuf [2 * i + 1] / (float)2048)
+	                                     );
+	      if (convIndex > convBufferSize) {
+	         for (j = 0; j < 2048; j ++) {
+	            int16_t  inpBase	= mapTable_int [j];
+	            float    inpRatio	= mapTable_float [j];
+	            temp [j]	= cmul (convBuffer [inpBase + 1], inpRatio) + 
+	                          cmul (convBuffer [inpBase], 1 - inpRatio);
+	         }
+
+	         _I_Buffer. putDataIntoBuffer (temp, 2048);
+//
+//	shift the sample at the end to the beginning, it is needed
+//	as the starting sample for the next time
+	         convBuffer [0] = convBuffer [convBufferSize];
+	         convIndex = 1;
+	      }
+	   }
+	}
+	else
 	for (i = 0; i < nSamples; i ++) {
 	   convBuffer [convIndex ++] = std::complex<float> (
 	                                     sbuf [2 * i] / (float)2048,

@@ -24,6 +24,7 @@
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
+#include	"fir-filters.h"
 #include	"device-handler.h"
 #include	"ui_airspy-widget.h"
 #ifndef	__MINGW32__
@@ -115,6 +116,9 @@ private:
 	void		record_gainSettings	(int);
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
+	LowPassFIR	*theFilter;
+	bool		filtering;
+	int		currentDepth;
 signals:
 	void		new_lnaGainValue	(int);
 	void		new_vgaGainValue	(int);
@@ -143,6 +147,7 @@ private slots:
 	void		set_rf_bias		(int);
 	void		show_tab		(int);
 	void		set_xmlDump		();
+	void		set_filter		(int);
 private:
 	bool		load_airspyFunctions	();
 //	The functions to be extracted from the dll/.so file
