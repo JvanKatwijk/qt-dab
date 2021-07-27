@@ -52,6 +52,10 @@ public:
 	this	-> datawidth	= datawidth;
 	this	-> dataheight	= height;
 	this	-> max		= max;
+	setInterval (Qt::XAxis, QwtInterval (left, left + width));
+	setInterval (Qt::YAxis, QwtInterval (0, height));
+	setInterval (Qt::ZAxis, QwtInterval (0, max));
+
 }
 
 void	initRaster (const QRectF &x, const QSize &raster) {
