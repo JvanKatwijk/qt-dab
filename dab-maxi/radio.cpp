@@ -2783,7 +2783,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
 	fprintf (stderr, "we start %s at %.2d:%.2d\n",
-	                        ad -> serviceName. toLatin1 (). data (),
+	                        ad -> serviceName. toUtf8 (). data (),
 	                        theTime. hour (), theTime. minute ());
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
