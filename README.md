@@ -571,8 +571,9 @@ service.
 As an exercise - and slightly experimental - the functionality was
 added to qt-dab.
 
-If - on configuration - pluto-rxtx is taken as device rather than
-pluto, and if pluto-rxtx is selected as device, the audio
+If - on configuration - **pluto-rxtx** is taken as device rather than
+pluto, and if pluto-rxtx is selected as (input)device on the main
+widget, the audio
 of the selected service, augmented with the text of the dynamic label
 encoded as RDS signal, will be transmitted on a specified frequency.
 
