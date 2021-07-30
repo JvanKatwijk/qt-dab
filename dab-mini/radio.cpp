@@ -918,7 +918,7 @@ QString serviceName	= s -> serviceName;
 
 	if (currentService. valid) {
 	   fprintf (stderr, "Niet verwacht, service %s is still valid\n",
-	                    currentService. serviceName. toLatin1 (). data ());
+	                    currentService. serviceName. toUtf8 (). data ());
 	   stopService ();
 	}
 
@@ -941,7 +941,7 @@ QString serviceName	= s -> serviceName;
 	      }
 	      else
 	         fprintf (stderr, "%s not supported\n",
-	                            serviceName. toLatin1 (). data ());
+	                            serviceName. toUtf8 (). data ());
 	      return;
 	   }
 	}
@@ -1087,7 +1087,7 @@ void	RadioInterface::setPresetStation () {
 	QString presetName	= nextService. serviceName;
 	for (const auto& service: serviceList) {
 	   if (service. name. contains (presetName)) {
-	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
+	      fprintf (stderr, "going to select %s\n", presetName. toUtf8 (). data ());
 	      dabService s;
 	      s. serviceName = presetName;
 	      my_dabProcessor	-> getParameters (presetName, &s. SId, &s. SCIds);
@@ -1105,7 +1105,7 @@ void	RadioInterface::setPresetStation () {
 //
 //	not found, no service selected
 	fprintf (stderr, "presetName %s not found\n",
-	                      presetName. toLatin1 (). data ());
+	                      presetName. toUtf8 (). data ());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1270,7 +1270,7 @@ audiodata ad;
               suggestedFileName. replace (i, 1, '-');
 	suggestedFileName = saveDir + suggestedFileName;
         fprintf (stderr, "suggested filename %s\n",
-                                 suggestedFileName. toLatin1 (). data ());
+                                 suggestedFileName. toUtf8 (). data ());
         QString fileName = QFileDialog::getSaveFileName (this,
                                                 tr ("Save file ..."),
                                                 suggestedFileName + ".aac",
@@ -1300,7 +1300,7 @@ void	RadioInterface::stop_secondService () {
 	if (!secondService. valid)
 	   return;
 	fprintf (stderr, "stopping second service %s\n",
-	                      secondService. serviceName.toLatin1 (). data ());
+	                      secondService. serviceName. toUtf8 (). data ());
 	audiodata ad;
 	my_dabProcessor	-> dataforAudioService (secondService. serviceName,
 	                                                      &ad);

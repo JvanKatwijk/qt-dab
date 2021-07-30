@@ -301,7 +301,7 @@ void	snrViewer::startDumping () {
 	}
 	fileName = QDir::toNativeSeparators (fileName);
 
-	FILE *file = fopen (fileName. toLatin1 (). data (), "w+b");
+	FILE *file = fopen (fileName. toUtf8 (). data (), "w+b");
 	if (file == nullptr) {
 	   QMessageBox::warning (&myFrame, tr ("Warning"),
 	                            tr ("could not open file"));

@@ -197,7 +197,7 @@ uint16_t	i;
 	      streamOutSelector -> insertItem (ocnt, so, QVariant (i));
 	      table [ocnt] = i;
 	      qDebug (" (output):item %d wordt stream %d (%s)\n", ocnt , i,
-	                      so. toLatin1 ().data ());
+	                      so. toUtf8 ().data ());
 	      ocnt ++;
 	   }
 	}
