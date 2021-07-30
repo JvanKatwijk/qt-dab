@@ -204,8 +204,8 @@ QString theTime	= QDateTime::currentDateTime (). toString ();
 	if (logFile == nullptr)
 	   return;
 	fprintf (logFile, "at %s: %s %s\n",
-	              theTime. toLatin1 (). data (),
-	              a1. toLatin1 (). data (), a2. toLatin1 (). data ());
+	              theTime. toUtf8 (). data (),
+	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
 }
 #else
 void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
@@ -355,7 +355,7 @@ uint8_t	dabBand;
 	logFile		= nullptr;
 	QString abc	= dabSettings	-> value ("logFile", ""). toString ();
 	if (abc != "")
-	   logFile	= fopen (abc. toLatin1 (). data (), "a");
+	   logFile	= fopen (abc. toUtf8 (). data (), "a");
 #endif
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -668,7 +668,7 @@ uint8_t	dabBand;
 
 	if (inputDevice != nullptr) {
 	   LOG ("start with ",
-	            inputDevice -> deviceName (). toLatin1 (). data ());
+	            inputDevice -> deviceName (). toUtf8 (). data ());
 	   if (doStart ()) {
 	      qApp	-> installEventFilter (this);
 	      return;
@@ -922,7 +922,7 @@ QString realName;
 //	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
 //	                           contentType,
 //	                           getContentBaseType ((MOTContentType)contentType),
-//	                           name. toLatin1 (). data (), dirElement);
+//	                           name. toUtf8 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -964,10 +964,10 @@ QString realName;
 	                     extract_epg (name, serviceList, ensembleId);
 	         fprintf (stderr, "currentSID = %X\n", currentSId);
 	         if (currentSId != 0) {
-	            FILE *f = fopen (name. toLatin1 (). data (), "w+b");
+	            FILE *f = fopen (name. toUtf8 (). data (), "w+b");
 	            if (f == nullptr)
 	               fprintf (stderr, "Opening %s failed\n",
-	                                      name. toLatin1 (). data ());
+	                                      name. toUtf8 (). data ());
 	
 	            fwrite (epgData. data (), 1, epgData. size (), f);
 	            fclose (f);
@@ -977,7 +977,7 @@ QString realName;
 //	         epgHandler. decode (epgData, realName);
 	      }
 //	      fprintf (stderr, "epg file %s\n",
-//	                            realName. toLatin1 (). data ());
+//	                            realName. toUtf8 (). data ());
 #endif
 	      return;
 
@@ -995,13 +995,13 @@ void	RadioInterface::save_MOTtext (QByteArray result,
 	QString textName = QDir::toNativeSeparators (filePath + name);
 	checkDir (textName);
 
-	FILE *x = fopen (textName. toLatin1 (). data (), "w+b");
+	FILE *x = fopen (textName. toUtf8 (). data (), "w+b");
 	if (x == nullptr)
 	   fprintf (stderr, "cannot write file %s\n",
-	                            textName. toLatin1 (). data ());
+	                            textName. toUtf8 (). data ());
 	else {
 	   fprintf (stderr, "going to write file %s\n",
-	                            textName. toLatin1(). data());
+	                            textName. toUtf8(). data());
 	   (void)fwrite (result. data (), 1, result.length(), x);
 	   fclose (x);
 	}
@@ -1041,13 +1041,13 @@ const char *type;
 	if (saveSlides) {
 	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
 	   checkDir (pict);
-	   FILE *x = fopen (pict. toLatin1 (). data (), "w+b");
+	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
-	                            pict. toLatin1 (). data ());
+	                            pict. toUtf8 (). data ());
 	   else {
 	      fprintf (stderr, "going to write file %s\n",
-	                            pict. toLatin1(). data());
+	                            pict. toUtf8(). data());
 	      (void)fwrite (data. data(), 1, data.length(), x);
 	      fclose (x);
 	   }
@@ -1644,8 +1644,8 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice = nullptr;
 	}
 	LOG ("selecting ", 
-	            deviceName. toLatin1 (). data ());
-	fprintf (stderr, "going for a device %s\n", deviceName. toLatin1 (). data ());
+	            deviceName. toUtf8 (). data ());
+	fprintf (stderr, "going for a device %s\n", deviceName. toUtf8 (). data ());
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
 	   inputDevice = new deviceHandler ();
@@ -1849,7 +1849,7 @@ void	RadioInterface::setSynced	(bool b) {
 void	RadioInterface::showLabel	(QString s) {
 #ifdef	HAVE_PLUTO_RXTX
 	if (streamerOut != nullptr)
-	   streamerOut -> addRds (std::string (s. toLatin1 (). data ()));
+	   streamerOut -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	if (running. load())
 	   dynamicLabel	-> setText (s);
@@ -1862,7 +1862,7 @@ void	RadioInterface::showLabel	(QString s) {
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
 	fprintf (dlTextFile, "%s.%s %4d-%02d-%02d %02d:%02d:%02d  %s\n",
-	                          currentChannel. toLatin1 (). data (),
+	                          currentChannel. toUtf8 (). data (),
 	                          currentService. serviceName.
 	                                          toUtf8 (). data (),
 //	                          theTime. hour (), theTime. minute (),
@@ -2442,7 +2442,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                             data (Qt::DisplayRole). toString ();
 	      if (currentService. serviceName != serviceName) {
 	         fprintf (stderr, "currentservice = %s (%d)\n",
-	                  currentService. serviceName. toLatin1 (). data (),
+	                  currentService. serviceName. toUtf8 (). data (),
                                         currentService. valid);
                  stopService ();
                  selectService (ensembleDisplay -> currentIndex ());
@@ -2510,7 +2510,7 @@ void	RadioInterface::startAnnouncement (const QString &name, int subChId) {
 	if (name == serviceLabel -> text ()) {
 	   serviceLabel	-> setStyleSheet ("QLabel {color : red}");
 	   fprintf (stderr, "announcement for %s (%d) starts\n",
-	                             name. toLatin1 (). data (), subChId);
+	                             name. toUtf8 (). data (), subChId);
 	}
 }
 
@@ -2523,7 +2523,7 @@ void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 	   serviceLabel ->
 	              setStyleSheet ("QLabel {color : black}");
 	   fprintf (stderr, "end for announcement service %s\n",
-	                              name. toLatin1 (). data ());
+	                              name. toUtf8 (). data ());
 	}
 }
 
@@ -2547,7 +2547,7 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
         presetTimer. stop ();
         if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
            return;
-	fprintf (stderr, "going for %s\n", s. toLatin1 (). data ());
+	fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
         localSelect (s);
 }
 
@@ -2693,7 +2693,7 @@ QString serviceName	= s -> serviceName;
 
 	currentService		= *s;
 	currentService. valid	= false;
-	LOG ("start service ", serviceName. toLatin1 (). data ());
+	LOG ("start service ", serviceName. toUtf8 (). data ());
 	LOG ("service has SNR ", QString::number (snrDisplay -> value ()));
 	techData. timeTable_button -> hide ();
 	int rowCount	= model. rowCount ();
@@ -2724,7 +2724,7 @@ QString serviceName	= s -> serviceName;
 	      }
 	      else {
 	         fprintf (stderr, "%s is not clear\n",
-	                            serviceName. toLatin1 (). data ());
+	                            serviceName. toUtf8 (). data ());
 	         dabSettings	-> setValue ("presetname", "");
 	      }
 	      return;
@@ -2796,7 +2796,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   if (pd. defined) {
 	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
-	                            pd. serviceName. toLatin1 (). data (),
+	                            pd. serviceName. toUtf8 (). data (),
 	                            pd. subchId);
 	      break;
 	   }
@@ -2976,7 +2976,7 @@ void	RadioInterface::setPresetStation () {
 	QString presetName	= nextService. serviceName;
 	for (const auto& service: serviceList) {
 	   if (service. name. contains (presetName)) {
-	      fprintf (stderr, "going to select %s\n", presetName. toLatin1 (). data ());
+	      fprintf (stderr, "going to select %s\n", presetName. toUtf8 (). data ());
 	      dabService s;
 	      s. serviceName = presetName;
 	      my_dabProcessor	-> getParameters (presetName, &s. SId, &s. SCIds);
@@ -2994,7 +2994,7 @@ void	RadioInterface::setPresetStation () {
 	nextService. valid = false;
 //
 //	not found, no service selected
-	fprintf (stderr, "presetName %s not found\n", presetName. toLatin1 (). data ());
+	fprintf (stderr, "presetName %s not found\n", presetName. toUtf8 (). data ());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3082,7 +3082,7 @@ void    RadioInterface::selectChannel (const QString &channel) {
 	if (!running. load ())
 	   return;
 
-	LOG ("select channel ", channel. toLatin1 (). data ());
+	LOG ("select channel ", channel. toUtf8 (). data ());
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
 	stopScanning	(false);
@@ -3904,7 +3904,7 @@ void	RadioInterface::handle_alarmSelector	(const QString &s) {
 	      alarmTimer. setInterval 	(60 * 1000);
 	      alarmTimer. start		(60 * 1000);
 	      fprintf (stderr, "alarm set for %s at %d %d\n",
-	                       alarmData. alarmService. toLatin1 (). data (),
+	                       alarmData. alarmService. toUtf8 (). data (),
 	                       alarmData. targetHour, alarmData. targetMinute);
 	      alarmLabel	-> show ();
 	   }
@@ -3962,7 +3962,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         LOG ("hidden service started ", serv. name);
 	         epgLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
-	                                serv. name. toLatin1 (). data ());
+	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
 	         break;
 	      }
@@ -3975,7 +3975,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         LOG ("hidden service started ", serv. name);
 	         epgLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
-                                        serv. name. toLatin1 (). data ());
+                                        serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
                  break;
 	      }
@@ -4060,7 +4060,7 @@ void	RadioInterface::handle_dlTextButton	() {
 	}
 
 	QString	fileName =filenameFinder. finddlText_fileName ();
-	dlTextFile	= fopen (fileName. toLatin1 (). data (), "w+");
+	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;
 	dlTextButton		-> setText ("writing");
