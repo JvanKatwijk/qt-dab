@@ -1855,9 +1855,11 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 	if (dlTextFile == nullptr)
 	   return;
-	if (the_dlCache. isMember (s))
+//	if (the_dlCache. isMember (s))
+//	   return;
+//	the_dlCache. add (s);
+	if (the_dlCache. addifNew (s))
 	   return;
-	the_dlCache. add (s);
 	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
