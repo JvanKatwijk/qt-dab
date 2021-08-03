@@ -24,6 +24,7 @@
 #include	"findfilenames.h"
 #include	"dab-constants.h"
 #include	<QDebug>
+#include	<QFileDialog>
 static inline
 bool    isValid (QChar c) {
 	return c. isLetter () || c. isDigit () || (c == '-');
@@ -51,10 +52,13 @@ QString suggestedFileName;
 	suggestedFileName = saveDir + "Qt-DAB-" + channel +
 	                                          "-" + theTime + ".txt";
 
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
-	                                                 "Save file ...",
-	                                                  suggestedFileName,
-	                                                  "Text (*.txt)");
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "Text (*.txt)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
 	if (fileName == "")
 	   return nullptr;
 
@@ -89,28 +93,30 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	      tailS. replace (i,1, '-');
 
 	QString suggestedFileName = saveDir + tailS + ".aac";
-	QString file = QFileDialog::getSaveFileName (nullptr,
-	                                             "Save file ...",
-	                                             suggestedFileName,
-	                                             "aac data (*.aac)");
-	if (file == QString (""))       // apparently cancelled
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "aac data (*.aac)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == QString (""))       // apparently cancelled
 	   return nullptr;
-	if (!file.endsWith (".aac", Qt::CaseInsensitive))
-	   file.append (".aac");
-	file		= QDir::toNativeSeparators (file);
-	FILE *theFile	= fopen (file. toLatin1 (). data (), "w+b");
+
+	if (!fileName.endsWith (".aac", Qt::CaseInsensitive))
+	   fileName.append (".aac");
+	fileName	= QDir::toNativeSeparators (fileName);
+	FILE *theFile	= fopen (fileName. toUtf8 (). data (), "w+b");
 	if (theFile == nullptr) {
-	   QString s = QString ("cannot open ") + file;
-	   QMessageBox::warning (nullptr, "Warning",
-	                               s. toLatin1 (). data ());
+	   QString s = QString ("cannot open ") + fileName;
+	   QMessageBox::warning (nullptr, "Warning", s. toUtf8 (). data ());
 	   return nullptr;
 	}
 
-	QString dumper	= QDir::fromNativeSeparators (file);
+	QString dumper	= QDir::fromNativeSeparators (fileName);
 	int x		= dumper. lastIndexOf ("/");
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_frameDump", saveDir);
-	
 	return theFile;
 }
 
@@ -129,27 +135,31 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	      tailS. replace (i, 1, '-');
 
 	QString suggestedFileName = saveDir + tailS + ".wav";
-	QString file = QFileDialog::getSaveFileName (nullptr,
-	                                             "Save file ...",
-	                                             suggestedFileName,
-	                                             "PCM wave file (*.wav)");
-	if (file == QString (""))
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "PCM wave file (*.wav)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == QString (""))
 	   return nullptr;
-	if (!file.endsWith (".wav", Qt::CaseInsensitive))
-	   file.append (".wav");
-	file		= QDir::toNativeSeparators (file);
+
+	if (!fileName. endsWith (".wav", Qt::CaseInsensitive))
+	   fileName.append (".wav");
+	fileName	= QDir::toNativeSeparators (fileName);
 	sf_info		-> samplerate	= 48000;
 	sf_info		-> channels	= 2;
 	sf_info		-> format	= SF_FORMAT_WAV | SF_FORMAT_PCM_16;
 
-	SNDFILE *theFile	= sf_open (file. toUtf8(). data(),
+	SNDFILE *theFile	= sf_open (fileName. toUtf8(). data(),
 	                                   SFM_WRITE, sf_info);
 	if (theFile == nullptr) {
-	   qDebug() << "Cannot open " << file. toUtf8(). data();
+	   qDebug() << "Cannot open " << fileName. toUtf8(). data();
 	   return nullptr;
 	}
 
-	QString	dumper	= QDir::fromNativeSeparators (file);
+	QString	dumper	= QDir::fromNativeSeparators (fileName);
 	int x		= dumper. lastIndexOf ("/");
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_audioDump", saveDir);
@@ -174,35 +184,38 @@ SNDFILE	*theFile;
 	QString suggestedFileName = saveDir +
 		                    deviceName + "-" +
 	                            channelName + "-" + theTime + ".sdr";
-	QString file = QFileDialog::getSaveFileName (nullptr,
-	                                             "Save file ...",
-	                                             suggestedFileName,
-	                                             "raw data (*.sdr)");
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save File",
+	                                      suggestedFileName,
+	                                      "raw data (*.sdr)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
 
-	if (file == QString (""))       // apparently cancelled
+	if (fileName == QString (""))       // apparently cancelled
 	   return nullptr;
-	if (!file.endsWith (".sdr", Qt::CaseInsensitive))
-	   file.append (".sdr");
 
-	file	= QDir::toNativeSeparators (file);
+	if (!fileName.endsWith (".sdr", Qt::CaseInsensitive))
+	   fileName.append (".sdr");
+
+	fileName	= QDir::toNativeSeparators (fileName);
 	sf_info -> samplerate   = INPUT_RATE;
 	sf_info -> channels     = 2;
 	sf_info -> format       = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-	theFile = sf_open (file. toUtf8 (). data(),
+	theFile = sf_open (fileName. toUtf8 (). data(),
 	                                   SFM_WRITE, sf_info);
 	fprintf (stderr, "the file %s is open?\n", 
-	                              file. toUtf8 (). data ());
+	                              fileName. toUtf8 (). data ());
 	if (theFile == nullptr) {
 	   fprintf (stderr, "foute boel\n");
-	   qDebug() << "cannot open " << file. toUtf8(). data();
+	   qDebug() << "cannot open " << fileName. toUtf8(). data();
 	   return nullptr;
 	}
 
-	QString dumper	= QDir::fromNativeSeparators (file);
+	QString dumper	= QDir::fromNativeSeparators (fileName);
 	int x		= dumper. lastIndexOf ("/");
 	saveDir		= dumper. remove (x, dumper. count () - x);
 	dabSettings	-> setValue ("saveDir_rawDump", saveDir);
-	fprintf (stderr, "theffile is open\n");
 	return theFile;
 }
 
@@ -228,10 +241,16 @@ FILE	*findfileNames::findScanDump_fileName		() {
 	QString suggestedFileName =
 	                       saveDir + "Qt-DAB-scan" + "-" + theTime + ".txt";
 
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
-	                                                 "Save file ...",
-	                                                 suggestedFileName,
-	                                                 "Text (*.txt)");
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "Text (*.txt)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == nullptr) // canceled?
+	   return nullptr;
+	fileName	= QDir::toNativeSeparators (fileName);
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
 
@@ -257,10 +276,16 @@ FILE	*findfileNames::findSummary_fileName	() {
 	QString suggestedFileName =
 	                  saveDir + "Qt-DAB-summary" + "-" + theTime + ".txt";
 
-	QString fileName = QFileDialog::getSaveFileName (nullptr,
-	                                                 "Save file ...",
-	                                                 suggestedFileName,
-	                                                 "Text (*.txt)");
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "Text (*.txt)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == nullptr)	// canceled ?
+	   return nullptr;
+	fileName	= QDir::toNativeSeparators (fileName);
 	return  fopen (fileName. toUtf8 (). data (), "w");
 }
 
@@ -279,8 +304,12 @@ QString	findfileNames::findskipFile_fileName	() {
 	   QFileDialog::getSaveFileName (nullptr,
 	                                 "Save File",
 	                                 suggestedFileName,
-	                                 "Xml (*.xml)", 0,
+	                                 "Xml (*.xml)", 
+	                                 Q_NULLPTR,
+	                                 QFileDialog::DontUseNativeDialog |
 	                                 QFileDialog::DontConfirmOverwrite);
+	if (fileName == nullptr)	// canceled?
+	   return nullptr;
 	fileName	= QDir::toNativeSeparators (fileName);
 	return  fileName;
 }
@@ -299,15 +328,16 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 
         QString suggestedFileName = saveDir + "Qt-DAB-dlText"  +
                                                   "-" + theTime + ".txt";
-	fprintf (stderr, "save file %s\n", suggestedFileName. toLatin1 (). data ());
         QString fileName =
            QFileDialog::getSaveFileName (nullptr,
                                          "Save File",
-                                         suggestedFileName. toLatin1 (). data (),
-                                         "Text (*.txt)");
+                                         suggestedFileName. toUtf8 (). data (),
+                                         "Text (*.txt)",
+	                                 Q_NULLPTR,
+	                                 QFileDialog::DontUseNativeDialog);
+	if (fileName == nullptr)	// canceled
+	   return nullptr;
         fileName        = QDir::toNativeSeparators (fileName);
         return  fileName;
 }
-
-
 

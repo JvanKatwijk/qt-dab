@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -152,6 +153,7 @@ int16_t	i;
 	      shortpadData. push_back (b [last - i]);
 	      still_to_go --;
 	   }
+
 //	at the end of a frame
 	   if ((still_to_go <= 0) && (shortpadData. size() > 0)) {
 	      shortpadData . push_back (0);

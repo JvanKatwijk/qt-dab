@@ -290,15 +290,17 @@ void	snrViewer::stopDumping () {
 }
 
 void	snrViewer::startDumping () {
-	QString fileName = QFileDialog::getSaveFileName (&myFrame,
-                                                         tr ("Open file ..."),
-                                                         QDir::homePath(),
-                                                         tr ("snr (*.snr)"));
-	if (fileName == QString ("")) {
-	   QMessageBox::warning (&myFrame, tr ("Warning"),
-	                            tr ("no file selected"));
+	QString fileName = QFileDialog::
+	                     getSaveFileName (&myFrame,
+                                              tr ("Open file ..."),
+                                              QDir::homePath(),
+                                              tr ("snr (*.snr)"),
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+
+	if (fileName == QString (""))  // canceled
 	   return;
-	}
+
 	fileName = QDir::toNativeSeparators (fileName);
 
 	FILE *file = fopen (fileName. toUtf8 (). data (), "w+b");
