@@ -206,7 +206,7 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
            </widget>
           </item>
           <item>
-           <widget class="verySmallPushButton" name="muteButton">
+           <widget class="smallPushButton" name="muteButton">
             <property name="text">
              <string>mute</string>
             </property>

@@ -87,6 +87,8 @@ uint32_t samplerateCount;
 #else
 	const char *libraryString = "libairspy.so";
 	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
+	if (Handle == nullptr)
+	   Handle	= dlopen ("libairspy.so.0", RTLD_LAZY);
 #endif
 
 	if (Handle == nullptr) {

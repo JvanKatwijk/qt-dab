@@ -3469,7 +3469,7 @@ void	RadioInterface::handle_muteButton	() {
 	muteDelay	*= 60;
         muteTimer. start (1000);
 //	setButtonFont (techData. muteButton, "MUTING", 12);
-	setButtonFont (muteButton, "MUTING", 12);
+	setButtonFont (muteButton, "muting", 10);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
 	muting = true;
