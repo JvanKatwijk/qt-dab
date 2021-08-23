@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>348</width>
-    <height>626</height>
+    <width>343</width>
+    <height>606</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -252,57 +252,14 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>alarm</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallSpinBox" name="alarm_hours">
-       <property name="maximum">
-        <number>23</number>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="smallSpinBox" name="alarm_minutes">
-       <property name="maximum">
-        <number>59</number>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="smallPushButton" name="setTime_button">
-       <property name="text">
-        <string>set Time</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QComboBox" name="alarmSelector">
-       <property name="toolTip">
-        <string>An alarm can be set. If the alarm time is reached, the selected service will be chosen.</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>set alarm</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>remove alarm</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-    </layout>
+    <widget class="QPushButton" name="scheduleSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an element to the schedule. First a list of services is presented from which to choose,&lt;/p&gt;&lt;p&gt;after selecting a service, a second widget will pop up and ask for the time that that&lt;/p&gt;&lt;p&gt;service should be activated.&lt;/p&gt;&lt;p&gt;Note that, since the channel may have to be changed, the actual switch will take&lt;/p&gt;&lt;p&gt;place app 15 seconds before the specified time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>add to schedule</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

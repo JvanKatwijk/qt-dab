@@ -8,6 +8,14 @@ and invisible. So, it was time for a new version number
 ![overview](/qt-dab-screen.png?raw=true)
 
 ------------------------------------------------------------------
+Most recent addition
+------------------------------------------------------------------
+
+The "alarm" function is replaced by a more complete **scheduler**,
+allowing a whole list of  schedule elements, i.e. services with
+time when to start.
+
+------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
 

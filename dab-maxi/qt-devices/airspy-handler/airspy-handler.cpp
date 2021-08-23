@@ -25,6 +25,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	"airspy-handler.h"
+#include	"airspyselect.h"
 #include	"xml-filewriter.h"
 
 static
@@ -112,7 +113,7 @@ uint32_t samplerateCount;
 	}
 //
 	strcpy (serial,"");
-	result = this -> my_airspy_init();
+	result = this -> my_airspy_init ();
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_init() failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
@@ -124,7 +125,26 @@ uint32_t samplerateCount;
 	   throw (21);
 	}
 
-	result = my_airspy_open (&device);
+	uint64_t deviceList [4];
+	int	deviceIndex;
+	int numofDevs = my_airspy_list_devices (deviceList, 4);
+	fprintf (stderr, "we have %d devices\n", numofDevs);
+	if (numofDevs == 0) {
+	   fprintf (stderr, "No devices found\n");
+	   throw (22);
+	}
+	if (numofDevs > 1) {
+           airspySelect deviceSelector;
+           for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
+              deviceSelector.
+                   addtoList (QString::number (deviceList [deviceIndex]));
+           }
+           deviceIndex = deviceSelector. QDialog::exec();
+        }
+	else
+	   deviceIndex = 0;
+	
+	result = my_airspy_open (&device, deviceList [deviceIndex]);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airpsy_open() failed: %s (%d)\n",
 	             my_airspy_error_name ((airspy_error)result), result);
@@ -487,15 +507,15 @@ int result = my_airspy_board_partid_serialno_read (device,
 //
 //	not used here
 int	airspyHandler::open() {
-int result = my_airspy_open (&device);
-
-	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_open() failed: %s (%d)\n",
-	          my_airspy_error_name((airspy_error)result), result);
-	   return -1;
-	} else {
-	   return 0;
-	}
+//int result = my_airspy_open (&device);
+//
+//	if (result != AIRSPY_SUCCESS) {
+//	   printf ("airspy_open() failed: %s (%d)\n",
+//	          my_airspy_error_name((airspy_error)result), result);
+//	   return -1;
+//	} else {
+//	   return 0;
+//	}
 }
 
 //
@@ -671,6 +691,13 @@ bool	airspyHandler::load_airspyFunctions() {
 	   return false;
 	}
 
+	my_airspy_list_devices	= (pfn_airspy_list_devices)
+	                       GETPROCADDRESS (Handle, "airspy_list_devices");
+	if (my_airspy_list_devices == nullptr) {
+	   fprintf (stderr, "Could not find airspy_list_devices\n");
+	   return false;
+	}
+	
 	my_airspy_open	= (pfn_airspy_open)
 	                       GETPROCADDRESS (Handle, "airspy_open");
 	if (my_airspy_open == nullptr) {

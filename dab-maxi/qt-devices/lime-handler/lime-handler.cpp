@@ -75,7 +75,6 @@ lms_info_str_t limedevices [10];
         }
 //
 //      From here we have a library available
-
 	int ndevs	= LMS_GetDeviceList (limedevices);
 	if (ndevs == 0) {	// no devices found
 	   throw (21);

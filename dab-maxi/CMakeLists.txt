@@ -285,7 +285,9 @@ endif ()
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
-	     ../includes/support/alarm-selector.h
+	     ../includes/support/scheduler.h
+	     ../includes/support/schedule-selector.h
+	     ../includes/support/element-selector.h
 	     ../includes/support/time-table.h
 	     ../includes/support/findfilenames.h
 	     ../includes/support/dl-cache.h
@@ -374,7 +376,9 @@ endif ()
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
 	     ../src/support/scanner-table.cpp
 	     ../src/support/color-selector.cpp
-	     ../src/support/alarm-selector.cpp
+	     ../src/support/scheduler.cpp
+	     ../src/support/schedule-selector.cpp
+	     ../src/support/element-selector.cpp
 	     ../src/support/time-table.cpp
 	     ../src/support/findfilenames.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
@@ -427,7 +431,9 @@ endif ()
 	     ../includes/support/history-handler.h
 	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
-	     ../includes/support/alarm-selector.h
+	     ../includes/support/scheduler.h
+	     ../includes/support/schedule-selector.h
+	     ../includes/support/element-selector.h
 	     ../includes/support/time-table.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 

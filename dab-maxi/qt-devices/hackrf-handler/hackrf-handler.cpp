@@ -87,18 +87,17 @@ int	res;
 	AntEnableButton -> setCheckState (isChecked ? Qt::Checked :
 	                                              Qt::Unchecked);
 	isChecked	=
-	   hackrfSettings -> value ("hack_AmpEnable", false). toBool();
+	       hackrfSettings -> value ("hack_AmpEnable", false). toBool();
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
                                                       Qt::Unchecked);
 	ppm_correction      -> setValue (
-	          hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
+	       hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
 	save_gainSettings	=
-	          hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
-
+	       hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	hackrfSettings	-> endGroup();
 
 //
-	res	= this -> hackrf_init();
+	res	= this -> hackrf_init ();
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_init:");
 	   fprintf (stderr, "%s \n",

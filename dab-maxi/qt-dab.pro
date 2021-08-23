@@ -163,7 +163,9 @@ HEADERS += ./radio.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
-	   ../includes/support/alarm-selector.h \
+	   ../includes/support/scheduler.h \
+	   ../includes/support/schedule-selector.h \
+	   ../includes/support/element-selector.h \
 	   ../includes/support/time-table.h \
 	   ../includes/support/findfilenames.h \
 	   ../includes/support/dl-cache.h \
@@ -268,7 +270,9 @@ SOURCES += ./main.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
-	   ../src/support/alarm-selector.cpp \
+	   ../src/support/scheduler.cpp \
+	   ../src/support/schedule-selector.cpp \
+	   ../src/support/element-selector.cpp \
 	   ../src/support/time-table.cpp \
 	   ../src/support/findfilenames.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
@@ -505,8 +509,10 @@ airspy {
 	INCLUDEPATH	+= ./qt-devices/airspy-handler \
 	                   ./qt-devices/airspy-handler/libairspy
 	HEADERS		+= ./qt-devices/airspy-handler/airspy-handler.h \
+	                   ./qt-devices/airspy-handler/airspyselect.h \
 	                   ./qt-devices/airspy-handler/libairspy/airspy.h
-	SOURCES		+= ./qt-devices/airspy-handler/airspy-handler.cpp
+	SOURCES		+= ./qt-devices/airspy-handler/airspy-handler.cpp \
+	                   ./qt-devices/airspy-handler/airspyselect.cpp
 	FORMS		+= ./qt-devices/airspy-handler/airspy-widget.ui
 }
 

@@ -1,6 +1,6 @@
 
-#ifndef	__ALARM_SELECTOR__
-#define	__ALARM_SELECTOR__
+#ifndef	__SCHEDULE_SELECTOR__
+#define	__SCHEDULE_SELECTOR__
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -9,11 +9,11 @@
 #include	<QStringList>
 #include	<cstdint>
 
-class	alarmSelector: public QDialog {
+class	scheduleSelector: public QDialog {
 Q_OBJECT
 public:
-			alarmSelector	();
-			~alarmSelector	();
+			scheduleSelector	();
+			~scheduleSelector	();
 	void		addtoList		(const QString &);
 private:
 	QLabel		*toptext;

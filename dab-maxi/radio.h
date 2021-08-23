@@ -60,6 +60,8 @@
 #include	"snr-viewer.h"
 
 #include	"findfilenames.h"
+
+#include	"scheduler.h"
 class	QSettings;
 class	deviceHandler;
 class	audioBase;
@@ -81,6 +83,7 @@ class	dabStreamer;
 
 class dabService {
 public:
+	QString		channel;
 	QString		serviceName;
 	uint32_t	SId;
 	int		SCIds;
@@ -138,6 +141,7 @@ private:
 	QString			theFont;
 	int			fontSize;
 	int			fmFrequency;
+	Scheduler		theScheduler;
 #ifdef	__LOGGING__
 	FILE			*logFile;
 #endif
@@ -213,7 +217,6 @@ private:
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
-	QTimer			alarmTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
 	bool			muting;
@@ -362,7 +365,7 @@ private slots:
 	void			setPresetStation	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
-	void			alarmTimer_timeOut	();
+	void			scheduler_timeOut	(const QString &);
 	void			handle_dlTextButton     ();
 
 //
@@ -395,7 +398,7 @@ private slots:
 	void			handle_orderAlfabetical		();
 	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
-	void			handle_alarmSelector		(const QString &);
+	void			handle_scheduleSelector		();
 	void			handle_setTime_button		();
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);

@@ -438,13 +438,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
             </property>
            </widget>
           </item>
-          <item>
-           <widget class="QLabel" name="alarmLabel">
-            <property name="text">
-             <string>Alarm</string>
-            </property>
-           </widget>
-          </item>
          </layout>
         </item>
         <item>

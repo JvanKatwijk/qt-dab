@@ -20,18 +20,18 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"alarm-selector.h"
+#include	"schedule-selector.h"
 #include	<cstdio>
 #include	<QVBoxLayout>
 //
-	alarmSelector::alarmSelector () {
+	scheduleSelector::scheduleSelector () {
 	toptext		= new QLabel (this);
 	toptext		-> setText ("Select a service");
 	servicesDisplay	= new QListView (this);
 	QVBoxLayout	*layOut = new QVBoxLayout;
 	layOut		-> addWidget (servicesDisplay);
 	layOut		-> addWidget (toptext);
-	setWindowTitle (tr("dongle select"));
+	setWindowTitle (tr("service select"));
 	setLayout (layOut);
 
 	services = QStringList();
@@ -42,10 +42,10 @@
 	selectedItem	= -1;
 }
 
-	alarmSelector::~alarmSelector () {
+	scheduleSelector::~scheduleSelector () {
 }
 
-void	alarmSelector::addtoList (const QString &s) {
+void	scheduleSelector::addtoList (const QString &s) {
 	services << s;
 	serviceList. setStringList (services);
 	servicesDisplay	-> setModel (&serviceList);
@@ -53,7 +53,7 @@ void	alarmSelector::addtoList (const QString &s) {
 	adjustSize();
 }
 
-void	alarmSelector::selectService (QModelIndex ind) {
+void	scheduleSelector::selectService (QModelIndex ind) {
 	QDialog::done (ind. row ());
 }
 
