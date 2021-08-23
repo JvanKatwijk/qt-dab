@@ -621,7 +621,7 @@ endif ()
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ./qt-devices/airspy-handler/airspy-handler.h
-	        ./qt-devices/airspy-handler/airspy-select.h
+	        ./qt-devices/airspy-handler/airspyselect.h
 	   )
 
 	   include_directories (
@@ -632,14 +632,14 @@ endif ()
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
 	        ./qt-devices/airspy-handler/airspy-handler.h
-	        ./qt-devices/airspy-handler/airspy-select.h
+	        ./qt-devices/airspy-handler/airspyselect.h
 	        ./qt-devices/airspy-handler/libairspy/airspy.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ./qt-devices/airspy-handler/airspy-handler.cpp
-	        ./qt-devices/airspy-handler/airspy-select.cpp
+	        ./qt-devices/airspy-handler/airspyselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_AIRSPY)
