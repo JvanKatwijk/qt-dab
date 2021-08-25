@@ -1870,12 +1870,10 @@ void	RadioInterface::showLabel	(QString s) {
 	   return;
 	QString currentChannel = channelSelector -> currentText ();
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
-	QTime theTime		= theDateTime. time ();
 	fprintf (dlTextFile, "%s.%s %4d-%02d-%02d %02d:%02d:%02d  %s\n",
 	                          currentChannel. toUtf8 (). data (),
 	                          currentService. serviceName.
 	                                          toUtf8 (). data (),
-//	                          theTime. hour (), theTime. minute (),
 	                          localTime. year,
 	                          localTime. month,
 	                          localTime. day,
@@ -2158,7 +2156,16 @@ void	RadioInterface::stop_frameDumping () {
 
 void	RadioInterface::start_frameDumping () {
 	frameDumper	=
-	     filenameFinder. findFrameDump_fileName (serviceLabel -> text ());
+	     filenameFinder. findFrameDump_fileName (serviceLabel -> text (),
+	                                                          true);
+	if (frameDumper == nullptr)
+	   return;
+	setButtonFont (techData. framedumpButton, "recording", 12);
+}
+
+void	RadioInterface::scheduled_frameDumping (const QString &s) {
+	frameDumper	=
+	     filenameFinder. findFrameDump_fileName (s, false);
 	if (frameDumper == nullptr)
 	   return;
 	setButtonFont (techData. framedumpButton, "recording", 12);
@@ -2407,6 +2414,7 @@ void	RadioInterface::disconnectGUI() {
 #include <QCloseEvent>
 void RadioInterface::closeEvent (QCloseEvent *event) {
 	int x = configWidget. closeDirect -> isChecked () ? 1 : 0;
+	fprintf (stderr, "we hebben een close event\n");
 	dabSettings -> setValue ("closeDirect", x);
 	if (x != 0) {
 	   TerminateProcess ();
@@ -2628,6 +2636,9 @@ void	RadioInterface::stopService	() {
 	   return;
 	}
 
+	if (frameDumper != nullptr) {
+	   stop_frameDumping ();
+	}
 	if (currentService. valid) {
 	   QString serviceName = currentService. serviceName;
 	   if (my_dabProcessor -> is_audioService (serviceName)) {
@@ -3864,7 +3875,11 @@ void    RadioInterface::handle_scheduleSelector	() {
 QStringList candidates;
 scheduleSelector theSelector;
 QString		scheduleService;
-	
+
+	theSelector. addtoList ("exit");
+	theSelector. addtoList ("framedump");
+	candidates	+= "exit";
+	candidates	+= "framedump";
 	for (uint16_t i = 0; i < serviceList. size (); i ++) {
 	   QString service = channelSelector -> currentText () +
 	                           ":" + serviceList. at (i). name;
@@ -3894,6 +3909,15 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	if (!running. load ())
 	   return;
 
+	if (s == "exit") {
+	   QWidget::close ();
+	   return;
+	}
+	if (s ==  "framedump") {
+	   scheduled_frameDumping (serviceLabel -> text ());
+	   return;
+	}
+	   
 	presetTimer. stop ();
 	localSelect (s);
 }

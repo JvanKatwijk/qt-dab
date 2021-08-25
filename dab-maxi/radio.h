@@ -253,6 +253,7 @@ private:
         void			stop_sourceDumping      ();
         void			start_frameDumping      ();
         void			stop_frameDumping       ();
+	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();
 	void			stopService		();
