@@ -79,7 +79,8 @@ QString suggestedFileName;
 }
 
 //
-FILE	*findfileNames::findFrameDump_fileName (const QString &service) {
+FILE	*findfileNames::findFrameDump_fileName (const QString &service,
+	                                                  bool flag) {
 QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	                                QDir::homePath ()).  toString ();
 QString theTime         = QDateTime::currentDateTime (). toString ();
@@ -93,13 +94,18 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	      tailS. replace (i,1, '-');
 
 	QString suggestedFileName = saveDir + tailS + ".aac";
-	QString fileName = QFileDialog::
-	                     getSaveFileName (nullptr,
+	QString fileName;
+	if (flag)
+	   fileName = QFileDialog::
+	                      getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
 	                                      "aac data (*.aac)",
 	                                      Q_NULLPTR,
 	                                      QFileDialog::DontUseNativeDialog);
+	else
+	   fileName = suggestedFileName;
+
 	if (fileName == QString (""))       // apparently cancelled
 	   return nullptr;
 

@@ -411,6 +411,11 @@ void	dabProcessor:: reset	(void) {
 	my_mscHandler. reset_Buffers ();
 }
 
+
+void    dabProcessor::set_tiiDetectorMode       (bool b) {
+        my_TII_Detector. setMode (b);
+}
+
 void	dabProcessor::stop	(void) {
 	my_ficHandler.  reset ();
 }

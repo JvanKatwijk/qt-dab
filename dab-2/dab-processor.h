@@ -104,6 +104,8 @@ public:
 	                                             RingBuffer<int16_t> *);
 	void		set_dataChannel		(packetdata *,
 	                                             RingBuffer<uint8_t> *);
+	void		set_tiiDetectorMode     (bool);
+
 private:
 	processParams	*theParams;
 	int		tii_counter;

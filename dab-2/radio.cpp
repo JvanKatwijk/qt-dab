@@ -15,7 +15,6 @@
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
- *
  *    You should have received a copy of the GNU General Public License
  *    along with dab-2; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -47,7 +46,8 @@
 #include	"rawfiles.h"
 #include	"xml-filereader.h"
 #include	"color-selector.h"
-#include	"alarm-selector.h"
+#include        "schedule-selector.h"
+#include        "element-selector.h"
 #include	"dab-tables.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -139,13 +139,13 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 
 static inline
 QString scanmodeText (int e) {
-        if (e == SINGLE_SCAN)
-           return QString ("single scan");
-        if (e == SCAN_TO_DATA)
-           return QString ("scan to data");
-        if (e == SCAN_CONTINUOUSLY)
-           return QString ("scan continuously");
-        return QString ("???");
+	if (e == SINGLE_SCAN)
+	   return QString ("single scan");
+	if (e == SCAN_TO_DATA)
+	   return QString ("scan to data");
+	if (e == SCAN_CONTINUOUSLY)
+	   return QString ("scan continuously");
+	return QString ("???");
 }
 
 
@@ -167,6 +167,8 @@ QString scanmodeText (int e) {
 #define	FRAMEDUMP_BUTTON	QString ("framedumpButton")
 #define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 #define	CONFIG_BUTTON		QString ("configButton")
+#define DLTEXT_BUTTON           QString ("dlTextButton")
+
 
 static
 uint8_t convert (QString s) {
@@ -205,8 +207,11 @@ uint8_t convert (QString s) {
 	                                                 this, Si,
 		                                         &tiiBuffer),
 	                                        my_presetHandler (this),
-	                                        theBand (freqExtension),
-	                                        theTable (this) {
+	                                        theBand (freqExtension, Si),
+	                                        filenameFinder (Si),
+	                                        the_dlCache (10),
+	                                        theTable (this),
+	                                        theScheduler (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -218,6 +223,7 @@ uint8_t	dabBand;
 	scanning. 		store (false);
 	isSynced		= false;
 	stereoSetting		= false;
+	dlTextFile		= nullptr;
 
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -309,16 +315,12 @@ uint8_t	dabBand;
 	model . clear ();
 	ensembleDisplay         -> setModel (&model);
 
-	alarmLabel		->
-                           setStyleSheet ("QLabel {background-color : red}");
-	alarmLabel		-> setText ("Alarm");
-	alarmLabel		-> hide ();
 /*
  */
 //	scanMode is - unfortunately - global
-        scanMode        =
-                   dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
-        configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
+	scanMode        =
+	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
+	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 
 	bool motselectionMode =
 	           dabSettings -> value ("motSlides", 0). toInt () == 1;
@@ -426,25 +428,30 @@ uint8_t	dabBand;
 	         this, SLOT (color_correlationButton (void)));
 	connect (show_spectrumButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_spectrumButton (void)));
-        connect (devicewidgetButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_devicewidgetButton ()));
-        connect (historyButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_historyButton ()));
+	connect (devicewidgetButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_devicewidgetButton ()));
+	connect (historyButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_historyButton ()));
 //	connect (dumpButton, SIGNAL (rightClicked (void)),
 //	         this, SLOT (color_sourcedumpButton (void)));
 	connect (muteButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_muteButton (void)));
+	connect (dlTextButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_dlTextButton ()));
+
 	connect (configButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_configButton (void)));
+	connect (dlTextButton, SIGNAL (rightClicked (void)),
+                 this, SLOT (color_dlTextButton (void)));
 
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_prevChannelButton (void)));
 	connect (nextChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_nextChannelButton (void)));
 	connect (prevServiceButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_prevServiceButton ()));
-        connect (nextServiceButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_nextServiceButton ()));
+	         this, SLOT (color_prevServiceButton ()));
+	connect (nextServiceButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_nextServiceButton ()));
 
 	connect (techData. framedumpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_framedumpButton (void)));
@@ -476,10 +483,6 @@ uint8_t	dabBand;
 //      timer for muting
 	muteTimer. setSingleShot (true);
 	muting          = false;
-
-	alarmTimer. setSingleShot       (true);
-        connect (&alarmTimer, SIGNAL (timeout ()),
-                 this, SLOT (alarmTimer_timeOut ()));
 
 	currentServiceDescriptor	= nullptr;
 
@@ -530,11 +533,11 @@ uint8_t	dabBand;
 	}
 
 	if (dabSettings -> value ("spectrumVisible", 0). toInt () == 1)
-           my_spectrumViewer. show ();
-        if (dabSettings -> value ("tiiVisible", 0). toInt () == 1)
-           my_tiiViewer. show ();
-        if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
-           my_correlationViewer. show ();
+	   my_spectrumViewer. show ();
+	if (dabSettings -> value ("tiiVisible", 0). toInt () == 1)
+	   my_tiiViewer. show ();
+	if (dabSettings -> value ("correlationVisible", 0). toInt () == 1)
+	   my_correlationViewer. show ();
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -607,6 +610,13 @@ bool	RadioInterface::doStart	() {
 	   presetTimer. start 		(switchDelay * 1000);
 	}
 
+	bool dm = dabSettings -> value ("tii_detector", 0). toInt () == 1;
+        if (dm)
+           configWidget. tii_detectorMode -> setChecked (true);
+        my_dabProcessor -> set_tiiDetectorMode (dm);
+        connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
+                    this, SLOT (handle_tii_detectorMode (int)));
+
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
 	return true;
@@ -648,11 +658,11 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	   s    -> setValue ("devicewidgetButton",
 	                          inputDevice -> isHidden () != 0);
 	s       -> setValue ("spectrumVisible",
-                                  my_spectrumViewer. isHidden () ? 0 : 1);
-        s       -> setValue ("tiiVisible",
-                                  my_tiiViewer. isHidden () ? 0 : 1);
-        s       -> setValue ("correlationVisible",
-                                  my_correlationViewer. isHidden () ? 0 : 1);
+	                          my_spectrumViewer. isHidden () ? 0 : 1);
+	s       -> setValue ("tiiVisible",
+	                          my_tiiViewer. isHidden () ? 0 : 1);
+	s       -> setValue ("correlationVisible",
+	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> sync();
 }
 
@@ -1237,9 +1247,9 @@ const char *type;
 	bool b = dabSettings -> value ("motSlides", 0). toInt () == 1;
 	if (!b) {
 	   if (motSlides != nullptr) {
-              delete motSlides;
-              motSlides = nullptr;
-           }
+	      delete motSlides;
+	      motSlides = nullptr;
+	   }
 
 	   int w   = techData. pictureLabel -> width ();
 	   int h   = 2 * w / 3;
@@ -1466,39 +1476,45 @@ void	RadioInterface::updateTimeDisplay() {
 
 static
 const char *monthTable [] = {
-        "jan",
-        "feb",
-        "mar",
-        "apr",
-        "may",
-        "jun",
-        "jul",
-        "aug",
-        "sep",
-        "oct",
-        "nov",
-        "dec"
+	"jan", "feb", "mar", "apr", "may", "jun",
+	"jul", "aug", "sep", "oct", "nov", "dec"
 };
+//
+//	called from the fibDecoder
+void	RadioInterface::clockTime (int year, int month, int day,
+	                           int hours, int minutes,
+	                               int d2, int h2, int m2, int seconds){
+	this	-> localTime. year	= year;
+	this	-> localTime. month	= month;
+	this	-> localTime. day	= day;
+	this	-> localTime. hour	= hours;
+	this	-> localTime. minute	= minutes;
+	this	-> localTime. second	= seconds;
 
-void	RadioInterface::clockTime	(int year, int month, int day,
-	                                        int hours, int minutes) {
+	this	-> UTC. year		= year;
+	this	-> UTC. month		= month;
+	this	-> UTC. day		= d2;
+	this	-> UTC. hour		= h2;
+	this	-> UTC. minute		= m2;
+	QString result	= convertTime (year, month, day, hours, minutes);
+	localTimeDisplay -> setText (result);
+}
+
+QString	RadioInterface::convertTime (int year, int month,
+	                             int day, int hours, int minutes) {
 char dayString [3];
 char hourString [3];
 char minuteString [3];
-        currentHour     = hours;
-        currentMinute   = minutes;
-        sprintf (dayString, "%.2d", day);
-        sprintf (hourString, "%.2d", hours);
-        sprintf (minuteString, "%.2d", minutes);
-        QString result = QString::number (year) + "-" +
-                               monthTable [month - 1] + "-" +
-                               QString (dayString) + "  " +
-                               QString (hourString) + ":" +
-                               QString (minuteString);
-
-	localTimeDisplay	-> setText (result);
+	sprintf (dayString, "%.2d", day);
+	sprintf (hourString, "%.2d", hours);
+	sprintf (minuteString, "%.2d", minutes);
+	QString result = QString::number (year) + "-" +
+	                       monthTable [month - 1] + "-" +
+	                       QString (dayString) + "  " +
+	                       QString (hourString) + ":" +
+	                       QString (minuteString);
+	return result;
 }
-
 void	RadioInterface::show_frameErrors (int s) {
 	if (running. load())
 	   techData. frameError_display	-> setValue (100 - 4 * s);
@@ -1558,9 +1574,28 @@ void	RadioInterface::setSynced	(bool b) {
 	               setStyleSheet ("QLabel {background-color : red}");
 }
 
+//	called from the PAD handler
+
 void	RadioInterface::showLabel	(QString s) {
 	if (running. load())
 	   dynamicLabel	-> setText (s);
+	if (dlTextFile == nullptr)
+	   return;
+	if (the_dlCache. addifNew (s))
+	   return;
+	QString currentChannel = channelSelector -> currentText ();
+	QDateTime theDateTime	= QDateTime::currentDateTime ();
+	fprintf (dlTextFile, "%s.%s %4d-%02d-%02d %02d:%02d:%02d  %s\n",
+	                          currentChannel. toUtf8 (). data (),
+	                          currentService. serviceName.
+	                                          toUtf8 (). data (),
+	                          localTime. year,
+	                          localTime. month,
+	                          localTime. day,
+	                          localTime. hour,
+	                          localTime. minute,
+	                          localTime. second,
+	                                     s. toUtf8 (). data ());
 }
 
 void	RadioInterface::setStereo	(bool s) {
@@ -1578,9 +1613,9 @@ void	RadioInterface::setStereo	(bool s) {
 
 static
 QString tiiNumber (int n) {
-        if (n >= 10)
-           return QString::number (n);
-        return QString ("0") + QString::number (n);
+	if (n >= 10)
+	   return QString::number (n);
+	return QString ("0") + QString::number (n);
 }
 
 void	RadioInterface::show_tii (int mainId, int subId) {
@@ -1599,8 +1634,8 @@ bool	found	= false;
 	   transmitters. append (mainId);
 	   transmitters. append (subId);
 	}
-        if (!running. load())
-           return;
+	if (!running. load())
+	   return;
 
 	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
@@ -1608,8 +1643,8 @@ bool	found	= false;
 	transmitter_coordinates	-> setText (a);
 	my_tiiViewer. showTransmitters (transmitters);
 	my_tiiViewer. showSpectrum (1);
-        if (!running. load())
-           return;
+	if (!running. load())
+	   return;
 	
 }
 
@@ -1726,11 +1761,11 @@ void	RadioInterface::handle_resetButton	() {
 /////////////////////////////////////////////////////////////////////////
 
 void    setButtonFont (QPushButton *b, QString text, int size) {
-        QFont font      = b -> font ();
-        font. setPointSize (size);
-        b               -> setFont (font);
-        b               -> setText (text);
-        b               -> update ();
+	QFont font      = b -> font ();
+	font. setPointSize (size);
+	b               -> setFont (font);
+	b               -> setText (text);
+	b               -> update ();
 }
 
 
@@ -1751,11 +1786,11 @@ void	RadioInterface::stop_audioDumping	() {
 
 void	RadioInterface::start_audioDumping () {
 audioDumper     = findAudioDump_fileName  (serviceLabel -> text (),
-                                                   localTimeDisplay -> text ());
-        if (audioDumper == nullptr)
-           return;
+	                                           localTimeDisplay -> text ());
+	if (audioDumper == nullptr)
+	   return;
 
-        setButtonFont (techData. audiodumpButton, "writing", 12);
+	setButtonFont (techData. audiodumpButton, "writing", 12);
 
 	soundOut		-> startDumping (audioDumper);
 }
@@ -1778,10 +1813,10 @@ void	RadioInterface::stop_frameDumping () {
 
 void	RadioInterface::start_frameDumping () {
 	frameDumper     = findFrameDump_fileName (serviceLabel -> text (),
-                                                  localTimeDisplay -> text ());
-        if (frameDumper == nullptr)
-           return;
-        setButtonFont (techData. framedumpButton, "recording", 12);
+	                                          localTimeDisplay -> text ());
+	if (frameDumper == nullptr)
+	   return;
+	setButtonFont (techData. framedumpButton, "recording", 12);
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -1892,11 +1927,8 @@ void	RadioInterface::connectGUI() {
 	         this, SLOT (handle_orderServiceIds ()));
 	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	         this, SLOT (handle_ordersubChannelIds ()));
-	connect (configWidget. alarmSelector,
-	                           SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_alarmSelector (const QString &)));
-	connect (configWidget. setTime_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_setTime_button ()));
+	connect (configWidget. scheduleSelector, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleSelector ()));
 	connect (configWidget. plotLengthSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_plotLengthSetting (int)));
 	connect (configWidget. scanmodeSelector,
@@ -1957,11 +1989,9 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_orderServiceIds ()));
 	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	            this, SLOT (handle_ordersubChannelIds ()));
-	disconnect (configWidget. alarmSelector,
-	                           SIGNAL (activated (const QString &)),
-	            this, SLOT (handle_alarmSelector (const QString &)));
-	disconnect (configWidget. setTime_button, SIGNAL (clicked ()),
-	            this, SLOT (handle_setTime_button ()));
+	disconnect (configWidget. scheduleSelector, SIGNAL (clicked ()),
+	            this, SLOT (handle_scheduleSelector ()));
+
 	disconnect (configWidget. plotLengthSetting,
 	                           SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_plotLengthSetting (int)));
@@ -1975,6 +2005,15 @@ void	RadioInterface::disconnectGUI() {
 //
 #include <QCloseEvent>
 void RadioInterface::closeEvent (QCloseEvent *event) {
+	int x = configWidget. closeDirect -> isChecked () ? 1 : 0;
+	dabSettings -> setValue ("closeDirect", x);
+	if (x != 0) {
+	   TerminateProcess ();
+	   event -> accept ();
+	   return;
+	}
+
+
 
 	QMessageBox::StandardButton resultButton =
 	                QMessageBox::question (this, "dabRadio",
@@ -2525,10 +2564,10 @@ int	tunedFrequency	=
 //	elements on the screen(s)
 void	RadioInterface::stopChannel	() {
 	stop_audioDumping	();
-        soundOut	-> stop ();
+	soundOut	-> stop ();
 //	note framedumping - if any - was already stopped
 	presetTimer. stop ();
-        channelTimer. stop ();
+	channelTimer. stop ();
 //
 //	The service - if any - is stopped by halting the dabProcessor
 	hide_for_safety	();	// hide some buttons
@@ -2633,7 +2672,7 @@ void	RadioInterface::startScanning	() {
 int	switchDelay;
 
 	scanMode	= dabSettings -> value ("scanMode", SINGLE_SCAN).
-                                                                     toInt ();
+	                                                             toInt ();
 
 	presetTimer. stop ();
 	channelTimer. stop ();
@@ -2661,9 +2700,9 @@ int	switchDelay;
 //      To avoid reaction of the system on setting a different value:
 	new_channelIndex (cc);
 	dynamicLabel    -> setText ("scan mode \"" +
-                                    scanmodeText (scanMode) +
-                                    "\" scanning channel " +
-                                    channelSelector -> currentText ());
+	                            scanmodeText (scanMode) +
+	                            "\" scanning channel " +
+	                            channelSelector -> currentText ());
 	scanButton      -> setText ("scanning");
 	switchDelay		=
 	                 dabSettings -> value ("switchDelay", 8). toInt ();
@@ -2680,8 +2719,8 @@ void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
-        dynamicLabel    -> setText ("Scan ended");
-        scanButton      -> setText ("scan");
+	dynamicLabel    -> setText ("Scan ended");
+	scanButton      -> setText ("scan");
 
 	my_dabProcessor -> set_scanMode (false);
 	if (!running. load ())
@@ -2734,9 +2773,9 @@ int	switchDelay;
 	               this, SLOT (channel_timeOut (void)));
 
 	      dynamicLabel -> setText ("scan mode \"" +
-                                       scanmodeText (scanMode) +
-                                       "\" scanning channel " +
-                                       channelSelector -> currentText ());
+	                               scanmodeText (scanMode) +
+	                               "\" scanning channel " +
+	                               channelSelector -> currentText ());
 	      switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	      channelTimer. start (switchDelay * 1000);
@@ -2847,20 +2886,20 @@ std::vector<serviceId> k;
 //	In those case we are sure not to have an operating
 //	dabProcessor, we hide some buttons
 void	RadioInterface::hide_for_safety () {
-        dumpButton		->	hide ();
-        techData. framedumpButton	->	hide ();
+	dumpButton		->	hide ();
+	techData. framedumpButton	->	hide ();
 	techData. audiodumpButton	->	hide ();
 	prevServiceButton	->	hide ();
-        nextServiceButton	->	hide ();
+	nextServiceButton	->	hide ();
 	contentButton		->	hide ();
 }
 
 void	RadioInterface::show_for_safety () {
-        dumpButton		->	show ();
-        techData. framedumpButton	->	show ();
+	dumpButton		->	show ();
+	techData. framedumpButton	->	show ();
 	techData. audiodumpButton	->	show ();
 	prevServiceButton	->	show ();
-        nextServiceButton	->	show ();
+	nextServiceButton	->	show ();
 	contentButton		->	show ();
 }
 
@@ -2872,11 +2911,11 @@ void	RadioInterface::muteButton_timeOut	() {
 	   return;
 	}
 	else {
-           disconnect (&muteTimer, SIGNAL (timeout ()),
-                       this, SLOT (muteButton_timeOut ()));
+	   disconnect (&muteTimer, SIGNAL (timeout ()),
+	               this, SLOT (muteButton_timeOut ()));
 	   setButtonFont (muteButton, "mute", 10);
 	   stillMuting	-> hide ();
-           muting = false;
+	   muting = false;
 	}
 }
 
@@ -2937,9 +2976,9 @@ QString theTime	= localTimeDisplay -> text ();
 	}
 
 	QString	dumper	= QDir::fromNativeSeparators (fileName);
-        int x           = dumper. lastIndexOf ("/");
-        saveDir         = dumper. remove (x, dumper. count () - x);
-        dabSettings     -> setValue ("contentDir", saveDir);
+	int x           = dumper. lastIndexOf ("/");
+	saveDir         = dumper. remove (x, dumper. count () - x);
+	dabSettings     -> setValue ("contentDir", saveDir);
 	return fileP;
 }
 
@@ -3303,8 +3342,13 @@ void	RadioInterface::color_audiodumpButton	()	{
 }
 
 void    RadioInterface::color_configButton      ()      {
-        set_buttonColors (configButton, CONFIG_BUTTON);
+	set_buttonColors (configButton, CONFIG_BUTTON);
 }
+
+void    RadioInterface::color_dlTextButton      ()      {
+        set_buttonColors (dlTextButton, DLTEXT_BUTTON);
+}
+
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
@@ -3382,92 +3426,65 @@ void	RadioInterface::handle_ordersubChannelIds	() {
 
 
 ///////////////////////////////////////////////////////////////////////////
-//	Handling alarm
-struct  {
-QString		alarmService;
-int		targetHour;
-int		targetMinute;
-} alarmData;
 
-void	RadioInterface::handle_alarmSelector	(const QString &s) {
-	alarmTimer. stop ();
-	alarmLabel	-> hide ();
+//	Handling schedule
 
-	if (s == "set alarm") {
-	   QStringList candidates;
-	   alarmSelector theSelector;
-	   for (int i = 0; i < serviceList. size (); i ++) {
-	      QString service = channelSelector -> currentText () +
+void    RadioInterface::handle_scheduleSelector	() {
+QStringList candidates;
+scheduleSelector theSelector;
+QString		scheduleService;
+	
+	for (uint16_t i = 0; i < serviceList. size (); i ++) {
+	   QString service = channelSelector -> currentText () +
 	                           ":" + serviceList. at (i). name;
-	      theSelector. addtoList (service);
-	      candidates += service;
-	   }
-	   for (int i = 1; i < presetSelector -> count (); i ++) {
-	      if (!candidates. contains (presetSelector -> itemText (i))) {
-                 theSelector.
-                      addtoList (presetSelector -> itemText (i));
-	         candidates += presetSelector -> itemText (i);
-	      }
-	   }
-
-           int selected			= theSelector. QDialog::exec ();
-//	   fprintf (stderr, "selected item %d\n", selected);
-	   alarmData. alarmService	= candidates. at (selected);
-	   alarmData. targetHour	= configWidget.
-	                                       alarm_hours -> value ();
-	   alarmData. targetMinute	= configWidget.
-	                                       alarm_minutes -> value ();
-
-	   QDateTime theDateTime	= QDateTime::currentDateTime ();
-	   QDate theDate		= theDateTime. date ();
-	   QTime theTime		= theDateTime. time ();
-	   if ((theTime. hour () > alarmData. targetHour) && (
-	          alarmData. targetHour < 12))
-	      alarmData. targetHour = alarmData. targetHour + 12;
-	   if (alarmData. targetHour * 60 + alarmData. targetMinute <
-	               theTime. hour () * 60 + theTime. minute () - 1) {
-	      QMessageBox::warning (this, tr ("Warning"),
-                             tr ("cannot set alarm in the past\n"));
-	      return;
-	   }
-	   else {
-	      alarmTimer. setSingleShot	(true);
-	      alarmTimer. setInterval 	(60 * 1000);
-	      alarmTimer. start		(60 * 1000);
-	      fprintf (stderr, "alarm set for %s at %d %d\n",
-	                       alarmData. alarmService. toLatin1 (). data (),
-	                       alarmData. targetHour, alarmData. targetMinute);
-	      alarmLabel	-> show ();
+	   theSelector. addtoList (service);
+	   candidates += service;
+	}
+	for (int i = 1; i < presetSelector -> count (); i ++) {
+	   if (!candidates. contains (presetSelector -> itemText (i))) {
+	      theSelector.
+	              addtoList (presetSelector -> itemText (i));
+	      candidates += presetSelector -> itemText (i);
 	   }
 	}
+
+	int selected		= theSelector. QDialog::exec ();
+	scheduleService		= candidates. at (selected);
+	{  elementSelector	theElementSelector (scheduleService);
+	   int	targetTime	= theElementSelector. QDialog::exec ();
+	   theScheduler. addRow (scheduleService,
+	                         targetTime / 60, 
+	                         targetTime % 60);
+	}
+	theScheduler. show ();
 }
 
-void	RadioInterface::alarmTimer_timeOut	() {
-QTime theTime = QTime::currentTime ();
-int	actualTime	= (theTime. hour () * 60 + theTime. minute ()) * 60 +
-	                                   theTime. second ();
-int	targetTime	= (alarmData. targetHour * 60 +
-	                                  alarmData. targetMinute) * 60;
-int	theDelay	= 60;	// seconds
-	alarmTimer. stop ();
-	if (actualTime >= targetTime - 20) {
-	   handle_historySelect (alarmData. alarmService);
-	   alarmLabel	-> hide ();
+void	RadioInterface::scheduler_timeOut	(const QString &s) {
+	if (!running. load ())
+	   return;
+
+	presetTimer. stop ();
+	localSelect (s);
+}
+
+
+void    RadioInterface::handle_tii_detectorMode (int d) {
+bool    b = configWidget. tii_detectorMode -> isChecked ();
+        my_dabProcessor -> set_tiiDetectorMode (b);
+        dabSettings     -> setValue ("tii_detector", b ? 1 : 0);
+}
+
+void	RadioInterface::handle_dlTextButton	() {
+	if (dlTextFile != nullptr) {
+	   fclose (dlTextFile);
+	   dlTextFile = nullptr;
+	   dlTextButton	-> setText ("dlText");
 	   return;
 	}
 
-	if (actualTime >= targetTime - 200)
-	   theDelay = 10;
-	if (actualTime >= targetTime - 40)
-	   theDelay = 1;
-	alarmTimer. setSingleShot (true);
-	alarmTimer. setInterval   (theDelay * 1000);
-	alarmTimer. start         (theDelay * 1000);
+	QString	fileName =filenameFinder. finddlText_fileName ();
+	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
+	if (dlTextFile	== nullptr)
+	   return;
+	dlTextButton		-> setText ("writing");
 }
-
-void	RadioInterface::handle_setTime_button	() {
-QTime theTime = QTime::currentTime ();
-	configWidget. alarm_hours -> setValue (theTime. hour ());
-	configWidget. alarm_minutes -> setValue (theTime. minute ());
-}
-

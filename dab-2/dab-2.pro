@@ -157,7 +157,10 @@ HEADERS += ./radio.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
-	   ../includes/support/alarm-selector.h \
+	   ../includes/support/scheduler.h \
+	   ../includes/support/schedule-selector.h \
+	   ../includes/support/element-selector.h \
+	   ../includes/support/findfilenames.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -253,7 +256,10 @@ SOURCES += ./main.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
-	   ../src/support/alarm-selector.cpp \
+	   ../src/support/scheduler.cpp \
+	   ../src/support/schedule-selector.cpp \
+	   ../src/support/element-selector.cpp \
+	   ../src/support/findfilenames.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \

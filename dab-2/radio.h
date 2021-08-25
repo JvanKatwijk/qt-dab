@@ -42,6 +42,7 @@
 #include        "band-handler.h"
 #include	"text-mapper.h"
 #include	"process-params.h"
+#include	"dl-cache.h"
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
@@ -50,6 +51,8 @@
 #include        "tii-viewer.h"
 #include	"preset-handler.h"
 #include	"scanner-table.h"
+#include	"scheduler.h"
+#include	"findfilenames.h"
 #ifdef  TRY_EPG
 #include        "epgdec.h"
 #endif
@@ -75,7 +78,16 @@ public:
 	int		SCIds;
 	bool		valid;
 };
-	
+
+struct  theTime {
+        int     year;
+        int     month;
+        int     day;
+        int     hour;
+        int     minute;
+        int     second;
+};
+
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
@@ -89,6 +101,7 @@ public:
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
+	FILE			*dlTextFile;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
@@ -102,6 +115,7 @@ private:
 	presetHandler		my_presetHandler;
 	processParams		globals;
 	QString			version;
+	Scheduler		theScheduler;
 	int			serviceOrder;
 	bandHandler		theBand;
 	scannerTable		theTable;
@@ -109,6 +123,9 @@ private:
 	QFrame			*dataDisplay;
 	Ui_configWidget		configWidget;
 	QFrame			*configDisplay;
+	dlCache			the_dlCache;
+        findfileNames           filenameFinder;
+
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
@@ -150,6 +167,12 @@ private:
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
+	struct theTime		localTime;
+	struct theTime		UTC;
+
+	QString			convertTime (int year, int month,
+	                             int day, int hours, int minutes);
+
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
 	bool			isMember (std::vector<serviceId>,
@@ -162,7 +185,6 @@ private:
 	QTimer			presetTimer;
 	QTimer			startTimer;
 	QTimer			muteTimer;
-	QTimer			alarmTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
 	bool			muting;
@@ -253,7 +275,10 @@ public slots:
 	void			showQuality		(float);
 	void			show_tii		(int, int);
 	void			closeEvent		(QCloseEvent *event);
-	void			clockTime               (int, int, int, int, int);
+	void			clockTime (int year, int month, int day,
+                                           int hours, int minutes,
+                                           int d2, int h2, int m2, int seconds);
+
 	void			startAnnouncement	(const QString &, int);
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
@@ -291,7 +316,10 @@ private slots:
 	void			setPresetStation	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
-	void			alarmTimer_timeOut	();
+	void			scheduler_timeOut	(const QString &);
+        void                    handle_dlTextButton     ();
+
+
 //
 //	color handlers
 	void			color_contentButton	();
@@ -312,6 +340,8 @@ private slots:
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
 	void			color_configButton	();
+	void			color_dlTextButton	();
+
 //
 //	config handlers
 	void			handle_configSetting	();
@@ -320,11 +350,12 @@ private slots:
 	void			handle_orderAlfabetical	();
 	void			handle_orderServiceIds	();
 	void			handle_ordersubChannelIds	();
-	void			handle_alarmSelector	(const QString &);
-	void			handle_setTime_button	();
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector	(int);
 	void			handle_motslideSelector	(int);
+	void			handle_scheduleSelector	();
+	void			handle_tii_detectorMode         (int);
+
 };
 #endif
 
