@@ -2157,7 +2157,7 @@ void	RadioInterface::stop_frameDumping () {
 void	RadioInterface::start_frameDumping () {
 	frameDumper	=
 	     filenameFinder. findFrameDump_fileName (serviceLabel -> text (),
-	                                                          true);
+	                                                              true);
 	if (frameDumper == nullptr)
 	   return;
 	setButtonFont (techData. framedumpButton, "recording", 12);
