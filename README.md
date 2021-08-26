@@ -8,12 +8,31 @@ and invisible. So, it was time for a new version number
 ![overview](/qt-dab-screen.png?raw=true)
 
 ------------------------------------------------------------------
-Most recent addition
+Most recent addition: adding a scheduler
 ------------------------------------------------------------------
 
 The "alarm" function is replaced by a more complete **scheduler**,
 allowing a whole list of  schedule elements, i.e. services with
 time when to start.
+
+The schedule list contains some predefined functions to allow
+timed recordings, either frame dumps or audio dumps, or closing the
+program.
+
+Selecting a framedump or audiodump on a specific time will start
+the frame or audiodump of the then active audio service.
+The filename of the dump is generated, using the name
+of the service and the time of the recording.
+
+Selecting any service (or selecting exit) when dumping is is progress
+will stop the dumping.
+
+![overview](/schedule.png?raw=true)
+
+In this example, Radio 4 will be selected at 15:35, an audiodump
+starts on 15:36, a framedump 15:37, and on 16:00 both dumps
+will stop and Radio 4 is selected again and on 17:00 the program
+will terminate.
 
 ------------------------------------------------------------------
 Table of Contents

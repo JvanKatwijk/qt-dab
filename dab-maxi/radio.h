@@ -249,6 +249,7 @@ private:
 	void			stopScanning		(bool);
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
+        void			scheduled_audioDumping	();
         void			start_sourceDumping     ();
         void			stop_sourceDumping      ();
         void			start_frameDumping      ();
@@ -400,7 +401,6 @@ private slots:
 	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
 	void			handle_scheduleSelector		();
-	void			handle_setTime_button		();
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);
 	void			handle_motslideSelector		(int);

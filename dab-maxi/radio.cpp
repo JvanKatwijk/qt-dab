@@ -2127,7 +2127,19 @@ void	RadioInterface::stop_audioDumping	() {
 
 void	RadioInterface::start_audioDumping () {
 	audioDumper	=
-	      filenameFinder. findAudioDump_fileName  (serviceLabel -> text ());
+	      filenameFinder.
+	           findAudioDump_fileName  (serviceLabel -> text (), true);
+	if (audioDumper == nullptr)
+	   return;
+
+	setButtonFont (techData. audiodumpButton, "writing", 12);
+	soundOut	-> startDumping (audioDumper);
+}
+
+void	RadioInterface::scheduled_audioDumping () {
+	audioDumper	=
+	      filenameFinder.
+	            findAudioDump_fileName  (serviceLabel -> text (), false);
 	if (audioDumper == nullptr)
 	   return;
 
@@ -2638,6 +2650,9 @@ void	RadioInterface::stopService	() {
 
 	if (frameDumper != nullptr) {
 	   stop_frameDumping ();
+	}
+	if (audioDumper != nullptr) {
+	   stop_audioDumping ();
 	}
 	if (currentService. valid) {
 	   QString serviceName = currentService. serviceName;
@@ -3876,10 +3891,14 @@ QStringList candidates;
 scheduleSelector theSelector;
 QString		scheduleService;
 
+	theSelector. addtoList ("nothing");
 	theSelector. addtoList ("exit");
 	theSelector. addtoList ("framedump");
+	theSelector. addtoList ("audiodump");
+	candidates	+= "nothing";
 	candidates	+= "exit";
 	candidates	+= "framedump";
+	candidates	+= "audiodump";
 	for (uint16_t i = 0; i < serviceList. size (); i ++) {
 	   QString service = channelSelector -> currentText () +
 	                           ":" + serviceList. at (i). name;
@@ -3909,12 +3928,22 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	if (!running. load ())
 	   return;
 
+	if (s == "nothing")
+	   return;
+
 	if (s == "exit") {
 	   QWidget::close ();
 	   return;
 	}
+
 	if (s ==  "framedump") {
-	   scheduled_frameDumping (serviceLabel -> text ());
+	   if (frameDumper == nullptr)
+	      scheduled_frameDumping (serviceLabel -> text ());
+	   return;
+	}
+	if (s ==  "audiodump") {
+	   if (audioDumper == nullptr)
+	      scheduled_audioDumping ();
 	   return;
 	}
 	   
@@ -3922,8 +3951,6 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	localSelect (s);
 }
 
-void	RadioInterface::handle_setTime_button	() {
-}
 //-------------------------------------------------------------------------
 //------------------------------------------------------------------------
 

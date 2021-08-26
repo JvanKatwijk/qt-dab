@@ -126,7 +126,8 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	return theFile;
 }
 
-SNDFILE	*findfileNames::findAudioDump_fileName (const QString &service) {
+SNDFILE	*findfileNames::findAudioDump_fileName (const QString &service, 
+	                                                      bool flag) {
 SF_INFO	*sf_info	= (SF_INFO *)alloca (sizeof (SF_INFO));
 QString theTime		= QDateTime::currentDateTime (). toString ();
 QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
@@ -141,13 +142,17 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	      tailS. replace (i, 1, '-');
 
 	QString suggestedFileName = saveDir + tailS + ".wav";
-	QString fileName = QFileDialog::
+	QString fileName;
+	if (flag)
+	   fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
 	                                      "PCM wave file (*.wav)",
 	                                      Q_NULLPTR,
 	                                      QFileDialog::DontUseNativeDialog);
+	else
+	   fileName = suggestedFileName;
 	if (fileName == QString (""))
 	   return nullptr;
 
