@@ -34,6 +34,18 @@ starts on 15:36, a framedump 15:37, and on 16:00 both dumps
 will stop and Radio 4 is selected again and on 17:00 the program
 will terminate.
 
+There is a possibility of passing a schedule list as parameter
+to the Qt-DAB program. This is especially useful for **unattended**
+operation, e.g. when you want a recording of the AAC data or the audio 
+data to be made on some future time when you are not available,
+of course assuming the computer is on.
+Using the "at" command in Linux, executing a simple script on the
+specified time, a script invoking Qt-DAB and passing a predefined
+schedule list to the program, this can be accomplished.
+
+The source tree contains a working example script (well, working for me),
+together with a small schedule list.
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
