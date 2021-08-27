@@ -21,6 +21,7 @@
  */
 #include	"scheduler.h"
 #include	"radio.h"
+#include	<stdio.h>
 
 #define	SWITCHTIME	15
 	Scheduler::Scheduler (RadioInterface *mr):
@@ -62,6 +63,50 @@ void	Scheduler::hide	() {
 	myWidget. hide ();
 }
 
+void	Scheduler::clear	() {
+int16_t	rows	= tableWidget -> rowCount ();
+	myWidget. hide ();
+	wakeupTimer. stop ();
+	for (int i = rows; i > 0; i --)
+	   tableWidget -> removeRow (i);
+}
+
+void	Scheduler::addExternalSchedule	(const QString &fileName) {
+FILE	*theFile	= fopen (fileName. toLatin1 (). data (), "r");
+	if (theFile == nullptr)
+	   return;
+
+	fprintf (stderr, "adding external\n");
+	char line [256];
+	char *lineP	= &line [0];
+	size_t amount	= 128;
+	while (true) {
+	   amount	= 128;
+	   fprintf (stderr, "we lussen\n");
+	   amount = getline (&lineP, &amount, theFile);
+	   fprintf (stderr, "line is %d long\n", amount);
+	   if ((int)amount <= 0)
+	      break;
+//	just to be on the safe side
+	   if (amount < 10)
+	      continue;
+	   line [amount] = 0;
+	   QStringList res = QString (line). split ("	");
+	   if (res. size () != 2)
+	      continue;
+	   QStringList t = QString (res [1]). split (":");
+	   if (t. size () != 2)
+	      continue;
+	   int hours	= t [0]. toInt ();
+	   int minutes	= t [1]. toInt ();
+	   if ((hours < 0) || (hours >= 24))
+	      continue;
+	   if ((minutes < 0) || (minutes >= 60))
+	      continue;
+	   addRow (res [0], hours, minutes);
+	}
+}
+
 void	Scheduler::addRow (const QString &name, int hours, int minutes) {
 int16_t	row	= tableWidget -> rowCount ();
 int	wakeupTime	= hours * 60 + minutes;
@@ -89,6 +134,7 @@ QString	recordTime	= QString::number (hours / 10) +
 	   this -> wakeupTime = wakeupTime;
 	   this	-> wakeupIndex = tableWidget -> rowCount () - 1;
 	};
+
 	wakeupTimer. stop ();
 	QTime current = QTime::currentTime ();
 	int64_t currentTime = current. hour () * 60 + current. minute ();
@@ -100,6 +146,7 @@ QString	recordTime	= QString::number (hours / 10) +
 	   theDelay = 1000 * theDelay;
 	wakeupTimer. setInterval (theDelay);
 	wakeupTimer. start (theDelay);
+	show ();
 }
 //
 void	Scheduler::removeRow (int row, int column) {

@@ -38,6 +38,7 @@ Q_OBJECT
 public:
 		Scheduler	(RadioInterface *);
 		~Scheduler	();
+	void	addExternalSchedule	(const QString &);
 	void	addRow		(const QString &, int, int);
 	void	show		();
 	void	hide		();
@@ -47,6 +48,7 @@ public slots:
 signals:
 	void	timeOut		(const QString &);
 private:
+	void		clear	();
 	QTimer		wakeupTimer;
 	QScrollArea	myWidget;
 	QTableWidget	*tableWidget;

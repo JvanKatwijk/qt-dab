@@ -80,13 +80,14 @@ int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
+QString	scheduleFile		= "";
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:s:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -113,6 +114,10 @@ int	fmFrequency		= 110000;
 
 	      case 'F':
 	         fmFrequency	= atoi (optarg);
+	         break;
+
+	      case 's':
+	         scheduleFile	= optarg;
 	         break;
 
 	      default:
@@ -146,6 +151,7 @@ int	fmFrequency		= 110000;
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       presets,
 	                                       freqExtension,
+	                                       scheduleFile,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,

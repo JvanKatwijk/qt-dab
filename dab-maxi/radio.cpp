@@ -217,6 +217,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
+	                                const QString	&schedule,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -259,6 +260,7 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
+	this	-> externalSchedule	= schedule;
 	this	-> dlTextFile	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
@@ -770,6 +772,8 @@ bool	RadioInterface::doStart	() {
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_tii_detectorMode (int)));
 
+	if (externalSchedule != "")
+	   theScheduler. addExternalSchedule (externalSchedule);
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
 	return true;
@@ -2582,6 +2586,14 @@ int	switchDelay;
 	   return;
 	QString channel = list. at (0);
 	QString service	= list. at (1);
+	char tt [20];
+	char *xx	= service. toLatin1 (). data ();
+	for (int i = 0; i < 16; i ++)
+	   tt [i] = ' ';
+	tt [16] = 0;
+	for (int i = 0; xx [i] != 0; i ++)
+	   tt [i] = xx [i];
+	service	= QString (tt);
 
 	stopScanning (false);
 	if (my_dabProcessor == nullptr) {

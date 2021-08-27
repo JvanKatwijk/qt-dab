@@ -106,6 +106,7 @@ public:
 		RadioInterface		(QSettings	*,
 	                                 const QString	&,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -142,6 +143,7 @@ private:
 	int			fontSize;
 	int			fmFrequency;
 	Scheduler		theScheduler;
+	QString			externalSchedule;
 #ifdef	__LOGGING__
 	FILE			*logFile;
 #endif
@@ -329,6 +331,7 @@ public slots:
 	void			epgTimer_timeOut	();
 #endif
 	void			switchVisibility	(QWidget *);
+
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();
