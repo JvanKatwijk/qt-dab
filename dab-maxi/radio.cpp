@@ -2580,21 +2580,30 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
 }
 
 void	RadioInterface::localSelect (const QString &s) {
-int	switchDelay;
 	QStringList list = s.split (":", QString::SkipEmptyParts);
-	if (list. length () != 2)
-	   return;
+        if (list. length () != 2)
+           return;
+	localSelect (list. at (0), list. at (1));
+}
+
+//
+//	From a predefined schedule list, the service names most
+//	likely are less than 16 characters
+//
+void	RadioInterface::scheduleSelect (const QString &s) {
+	QStringList list = s.split (":", QString::SkipEmptyParts);
+        if (list. length () != 2)
+           return;
 	QString channel = list. at (0);
 	QString service	= list. at (1);
-	char tt [20];
-	char *xx	= service. toLatin1 (). data ();
-	for (int i = 0; i < 16; i ++)
-	   tt [i] = ' ';
-	tt [16] = 0;
-	for (int i = 0; xx [i] != 0; i ++)
-	   tt [i] = xx [i];
-	service	= QString (tt);
+	for (int i = service. size (); i < 16; i ++)
+	   service. append (' ');
+	localSelect (channel, service);
+}
 
+void	RadioInterface::localSelect (const QString &channel,
+	                             const QString &service) {
+int	switchDelay;
 	stopScanning (false);
 	if (my_dabProcessor == nullptr) {
 	   fprintf (stderr, "Expert error 21\n");
@@ -3960,7 +3969,9 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	}
 	   
 	presetTimer. stop ();
-	localSelect (s);
+	if (scanning. load ())
+           stopScanning (false);
+	scheduleSelect (s);
 }
 
 //-------------------------------------------------------------------------

@@ -264,6 +264,9 @@ private:
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
+	void			scheduleSelect		(const QString &s);
+	void			localSelect		(const QString &,
+	                                                 const QString &);
 	void			showServices		();
 
 	bool			doStart			();
