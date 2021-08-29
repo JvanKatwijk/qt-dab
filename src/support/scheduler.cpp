@@ -21,8 +21,11 @@
  */
 #include	"scheduler.h"
 #include	"radio.h"
+#include	"dab-constants.h"
 #include	<stdio.h>
-
+#include	<iostream>
+#include	<fstream>
+#include	<string>
 #define	SWITCHTIME	15
 	Scheduler::Scheduler (RadioInterface *mr):
 	                              myWidget (nullptr) {
@@ -72,26 +75,17 @@ int16_t	rows	= tableWidget -> rowCount ();
 }
 
 void	Scheduler::addExternalSchedule	(const QString &fileName) {
-FILE	*theFile	= fopen (fileName. toLatin1 (). data (), "r");
-	if (theFile == nullptr)
-	   return;
+std::ifstream f (fileName. toLatin1 (). data ());
 
-	fprintf (stderr, "adding external\n");
-	char line [256];
-	char *lineP	= &line [0];
-	size_t amount	= 128;
+	std::string str;
+	size_t amount	= 256;
 	while (true) {
-	   amount	= 128;
-	   fprintf (stderr, "we lussen\n");
-	   amount = getline (&lineP, &amount, theFile);
-	   fprintf (stderr, "line is %d long\n", amount);
-	   if ((int)amount <= 0)
+	   if (!std::getline (f, str))
 	      break;
 //	just to be on the safe side
-	   if (amount < 10)
+	   if (str. size () < 10)
 	      continue;
-	   line [amount] = 0;
-	   QStringList res = QString (line). split ("	");
+	   QStringList res = QString::fromStdString (str). split ("	");
 	   if (res. size () != 2)
 	      continue;
 	   QStringList t = QString (res [1]). split (":");

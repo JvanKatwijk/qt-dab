@@ -252,6 +252,8 @@ private:
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
         void			scheduled_audioDumping	();
+	void			scheduled_dlTextDumping ();
+
         void			start_sourceDumping     ();
         void			stop_sourceDumping      ();
         void			start_frameDumping      ();

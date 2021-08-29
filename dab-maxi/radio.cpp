@@ -2141,6 +2141,13 @@ void	RadioInterface::start_audioDumping () {
 }
 
 void	RadioInterface::scheduled_audioDumping () {
+	if (audioDumper != nullptr) {
+	   soundOut	-> stopDumping();
+	   sf_close (audioDumper);
+	   audioDumper	= nullptr;
+	   setButtonFont (techData. audiodumpButton, "audio dump", 10);
+	   return;
+	}
 	audioDumper	=
 	      filenameFinder.
 	            findAudioDump_fileName  (serviceLabel -> text (), false);
@@ -2180,6 +2187,13 @@ void	RadioInterface::start_frameDumping () {
 }
 
 void	RadioInterface::scheduled_frameDumping (const QString &s) {
+	if (frameDumper != nullptr) {
+	   fclose (frameDumper);
+	   setButtonFont (techData. framedumpButton, "frame dump", 10);
+	   frameDumper	= nullptr;
+	   return;
+	}
+	   
 	frameDumper	=
 	     filenameFinder. findFrameDump_fileName (s, false);
 	if (frameDumper == nullptr)
@@ -2430,7 +2444,6 @@ void	RadioInterface::disconnectGUI() {
 #include <QCloseEvent>
 void RadioInterface::closeEvent (QCloseEvent *event) {
 	int x = configWidget. closeDirect -> isChecked () ? 1 : 0;
-	fprintf (stderr, "we hebben een close event\n");
 	dabSettings -> setValue ("closeDirect", x);
 	if (x != 0) {
 	   TerminateProcess ();
@@ -3916,10 +3929,12 @@ QString		scheduleService;
 	theSelector. addtoList ("exit");
 	theSelector. addtoList ("framedump");
 	theSelector. addtoList ("audiodump");
+	theSelector. addtoList ("dlText");
 	candidates	+= "nothing";
 	candidates	+= "exit";
 	candidates	+= "framedump";
 	candidates	+= "audiodump";
+	candidates	+= "dlText";
 	for (uint16_t i = 0; i < serviceList. size (); i ++) {
 	   QString service = channelSelector -> currentText () +
 	                           ":" + serviceList. at (i). name;
@@ -3953,21 +3968,26 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	   return;
 
 	if (s == "exit") {
+	   configWidget. closeDirect -> setChecked (true);
 	   QWidget::close ();
 	   return;
 	}
 
 	if (s ==  "framedump") {
-	   if (frameDumper == nullptr)
-	      scheduled_frameDumping (serviceLabel -> text ());
+	   scheduled_frameDumping (serviceLabel -> text ());
 	   return;
 	}
+
 	if (s ==  "audiodump") {
-	   if (audioDumper == nullptr)
-	      scheduled_audioDumping ();
+	   scheduled_audioDumping ();
 	   return;
 	}
-	   
+
+	if (s == "dlText") {
+	   scheduled_dlTextDumping ();
+	   return;
+	}
+
 	presetTimer. stop ();
 	if (scanning. load ())
            stopScanning (false);
@@ -4092,9 +4112,25 @@ void	RadioInterface::handle_dlTextButton	() {
 	   return;
 	}
 
-	QString	fileName =filenameFinder. finddlText_fileName ();
+	QString	fileName =filenameFinder. finddlText_fileName (true);
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;
 	dlTextButton		-> setText ("writing");
 }
+
+void	RadioInterface::scheduled_dlTextDumping () {
+	if (dlTextFile != nullptr) {
+	   fclose (dlTextFile);
+	   dlTextFile = nullptr;
+	   dlTextButton	-> setText ("dlText");
+	   return;
+	}
+
+	QString	fileName = filenameFinder. finddlText_fileName (false);
+	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
+	if (dlTextFile == nullptr)
+	   return;
+	dlTextButton		-> setText ("writing");
+}
+

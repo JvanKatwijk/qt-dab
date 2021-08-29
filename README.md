@@ -37,7 +37,7 @@ will terminate.
 There is a possibility of passing a schedule list as parameter
 to the Qt-DAB program. This is especially useful for **unattended**
 operation, e.g. when you want a recording of the AAC data or the audio 
-data to be made on some future time when you are not available,
+data to be made on some future time when you are not around,
 of course assuming the computer is on.
 Using the "at" command in Linux, executing a simple script on the
 specified time, a script invoking Qt-DAB and passing a predefined
