@@ -4,183 +4,206 @@
 <context>
     <name>RadioInterface</name>
     <message>
-        <location filename="../radio.cpp" line="1155"/>
-        <location filename="../radio.cpp" line="1322"/>
-        <location filename="../radio.cpp" line="1336"/>
-        <location filename="../radio.cpp" line="1350"/>
-        <location filename="../radio.cpp" line="1365"/>
-        <location filename="../radio.cpp" line="1379"/>
-        <location filename="../radio.cpp" line="1393"/>
-        <location filename="../radio.cpp" line="1407"/>
-        <location filename="../radio.cpp" line="1426"/>
-        <location filename="../radio.cpp" line="1440"/>
-        <location filename="../radio.cpp" line="1455"/>
-        <location filename="../radio.cpp" line="1469"/>
-        <location filename="../radio.cpp" line="1483"/>
+        <location filename="../radio.cpp" line="1192"/>
+        <location filename="../radio.cpp" line="1366"/>
+        <location filename="../radio.cpp" line="1380"/>
+        <location filename="../radio.cpp" line="1394"/>
+        <location filename="../radio.cpp" line="1409"/>
+        <location filename="../radio.cpp" line="1423"/>
+        <location filename="../radio.cpp" line="1437"/>
+        <location filename="../radio.cpp" line="1461"/>
+        <location filename="../radio.cpp" line="1465"/>
+        <location filename="../radio.cpp" line="1485"/>
         <location filename="../radio.cpp" line="1499"/>
-        <location filename="../radio.cpp" line="1519"/>
-        <location filename="../radio.cpp" line="1544"/>
-        <location filename="../radio.cpp" line="1564"/>
-        <location filename="../radio.cpp" line="2478"/>
-        <location filename="../radio.cpp" line="2497"/>
-        <location filename="../radio.cpp" line="2588"/>
-        <location filename="../radio.cpp" line="2683"/>
-        <location filename="../radio.cpp" line="2850"/>
-        <location filename="../radio.cpp" line="2872"/>
-        <location filename="../radio.cpp" line="2889"/>
-        <location filename="../radio.cpp" line="3788"/>
+        <location filename="../radio.cpp" line="1514"/>
+        <location filename="../radio.cpp" line="1528"/>
+        <location filename="../radio.cpp" line="1542"/>
+        <location filename="../radio.cpp" line="1558"/>
+        <location filename="../radio.cpp" line="1578"/>
+        <location filename="../radio.cpp" line="1603"/>
+        <location filename="../radio.cpp" line="1623"/>
+        <location filename="../radio.cpp" line="2631"/>
+        <location filename="../radio.cpp" line="2650"/>
+        <location filename="../radio.cpp" line="2747"/>
+        <location filename="../radio.cpp" line="2845"/>
+        <location filename="../radio.cpp" line="3012"/>
+        <location filename="../radio.cpp" line="3034"/>
+        <location filename="../radio.cpp" line="3051"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1366"/>
+        <location filename="../radio.cpp" line="1410"/>
         <source>Airspy or Airspy mini not found
 </source>
         <translation>Airspy oder Airspy mini nicht gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1380"/>
+        <location filename="../radio.cpp" line="1424"/>
         <source>hackrf not found
 </source>
         <translation>hackrf nicht gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1441"/>
+        <location filename="../radio.cpp" line="1453"/>
+        <location filename="../radio.cpp" line="1457"/>
+        <source>warning</source>
+        <translation>Warnung</translation>
+    </message>
+    <message>
+        <location filename="../radio.cpp" line="1454"/>
+        <source>failed to open libiio.dll
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../radio.cpp" line="1458"/>
+        <source>error in loading functions
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../radio.cpp" line="1466"/>
+        <source>some else with pluto
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../radio.cpp" line="1500"/>
         <source>no colibri device found
 </source>
         <translation>kein colibri Gerät gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1470"/>
+        <location filename="../radio.cpp" line="1529"/>
         <source>no elad device found
 </source>
         <translation>kein elad Gerät gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1484"/>
+        <location filename="../radio.cpp" line="1543"/>
         <source>no soapy device found
 </source>
         <translation>kein soapy Gerät gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2765"/>
+        <location filename="../radio.cpp" line="2927"/>
         <source>could not start this service
 </source>
         <translation>konnte diesen Service nicht starten
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="3789"/>
         <source>cannot set alarm in the past
 </source>
-        <translation>kann Alarm nicht in die Vergangenheit setzen
+        <translation type="vanished">kann Alarm nicht in die Vergangenheit setzen
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1394"/>
+        <location filename="../radio.cpp" line="1438"/>
         <source>no lime device found
 </source>
         <translation>kein lime Gerät gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1408"/>
-        <location filename="../radio.cpp" line="1427"/>
+        <location filename="../radio.cpp" line="1462"/>
+        <location filename="../radio.cpp" line="1486"/>
         <source>no pluto device found
 </source>
         <translation>kein pluto Gerät gefunden
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1500"/>
+        <location filename="../radio.cpp" line="1559"/>
         <source>extio: no luck
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1456"/>
+        <location filename="../radio.cpp" line="1515"/>
         <source>rtl_tcp: no luck
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1323"/>
-        <location filename="../radio.cpp" line="1337"/>
+        <location filename="../radio.cpp" line="1367"/>
+        <location filename="../radio.cpp" line="1381"/>
         <source>SDRplay: no library or device
 </source>
         <translation>SDRplay: keine Bibliothek oder Gerät
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1351"/>
+        <location filename="../radio.cpp" line="1395"/>
         <source>DAB stick not found! Please use one with RTL2832U or similar chipset!
 </source>
         <translation>DAB-Stick nicht gefunden! Bitte einen mit RTL2832U oder ähnlichem Chipsatz verwenden!
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1508"/>
-        <location filename="../radio.cpp" line="1533"/>
-        <location filename="../radio.cpp" line="1552"/>
+        <location filename="../radio.cpp" line="1567"/>
+        <location filename="../radio.cpp" line="1592"/>
+        <location filename="../radio.cpp" line="1611"/>
         <source>Open file ...</source>
         <translation>Datei öffnen ...</translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1510"/>
+        <location filename="../radio.cpp" line="1569"/>
         <source>xml data (*.*)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1520"/>
-        <location filename="../radio.cpp" line="1545"/>
-        <location filename="../radio.cpp" line="1565"/>
+        <location filename="../radio.cpp" line="1579"/>
+        <location filename="../radio.cpp" line="1604"/>
+        <location filename="../radio.cpp" line="1624"/>
         <source>file not found</source>
         <translation>Datei nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1156"/>
-        <location filename="../radio.cpp" line="2479"/>
-        <location filename="../radio.cpp" line="2589"/>
-        <location filename="../radio.cpp" line="2684"/>
-        <location filename="../radio.cpp" line="2851"/>
-        <location filename="../radio.cpp" line="2890"/>
+        <location filename="../radio.cpp" line="1193"/>
+        <location filename="../radio.cpp" line="2632"/>
+        <location filename="../radio.cpp" line="2748"/>
+        <location filename="../radio.cpp" line="2846"/>
+        <location filename="../radio.cpp" line="3013"/>
+        <location filename="../radio.cpp" line="3052"/>
         <source>insufficient data for this program
 </source>
         <translation>unzureichend Daten für dieses Programm
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="1554"/>
+        <location filename="../radio.cpp" line="1613"/>
         <source>raw data (*.sdr)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2758"/>
-        <location filename="../radio.cpp" line="2764"/>
+        <location filename="../radio.cpp" line="2920"/>
+        <location filename="../radio.cpp" line="2926"/>
         <source>sdr</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2759"/>
+        <location filename="../radio.cpp" line="2921"/>
         <source>still insufficient data for this service
 </source>
         <translation>Noch unzureichend Daten für diesen Service
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2498"/>
+        <location filename="../radio.cpp" line="2651"/>
         <source>Incorrect preset
 </source>
         <translation>Fehlerhafter Preset
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2873"/>
+        <location filename="../radio.cpp" line="3035"/>
         <source>Oops, ensemble not yet recognized
 select service manually
 </source>
@@ -189,7 +212,7 @@ Service bitte manuell wählen
 </translation>
     </message>
     <message>
-        <location filename="../radio.cpp" line="2320"/>
+        <location filename="../radio.cpp" line="2456"/>
         <source>Are you sure?
 </source>
         <translation>Sind Sie sicher?
@@ -197,15 +220,36 @@ Service bitte manuell wählen
     </message>
 </context>
 <context>
+    <name>Scheduler</name>
+    <message>
+        <location filename="../../src/support/scheduler.cpp" line="39"/>
+        <source>service name     </source>
+        <translation>Servicename     </translation>
+    </message>
+    <message>
+        <location filename="../../src/support/scheduler.cpp" line="39"/>
+        <source>time</source>
+        <translation>Uhrzeit</translation>
+    </message>
+</context>
+<context>
     <name>airspyHandler</name>
     <message>
-        <location filename="../qt-devices/airspy-handler/airspy-handler.cpp" line="827"/>
+        <location filename="../qt-devices/airspy-handler/airspy-handler.cpp" line="903"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/airspy-handler/airspy-handler.cpp" line="829"/>
+        <location filename="../qt-devices/airspy-handler/airspy-handler.cpp" line="905"/>
         <source>Xml (*.uff)</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>airspySelect</name>
+    <message>
+        <location filename="../qt-devices/airspy-handler/airspyselect.cpp" line="41"/>
+        <source>RSP select</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -290,12 +334,9 @@ Service bitte manuell wählen
         <source>dump</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>alarmSelector</name>
     <message>
-        <location filename="../../src/support/alarm-selector.cpp" line="34"/>
-        <source>dongle select</source>
+        <location filename="../qt-devices/airspy-handler/airspy-widget.ui" line="551"/>
+        <source>filter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -322,7 +363,7 @@ Service bitte manuell wählen
     <message>
         <location filename="../../forms/audio-description.ui" line="136"/>
         <source>bitRate</source>
-        <translation type="unfinished"></translation>
+        <translation>Bitrate</translation>
     </message>
     <message>
         <location filename="../../forms/audio-description.ui" line="94"/>
@@ -439,7 +480,7 @@ Service bitte manuell wählen
     <message>
         <location filename="../qt-devices/colibri-handler/colibri-widget.ui" line="64"/>
         <source>gain</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Verstärkung</translation>
     </message>
     <message>
         <location filename="../qt-devices/colibri-handler/colibri-widget.ui" line="83"/>
@@ -465,12 +506,12 @@ Service bitte manuell wählen
     <message>
         <location filename="../../forms/config-helper.ui" line="22"/>
         <source>mute time (in minutes)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stummschaltung (in min.)</translation>
     </message>
     <message>
         <location filename="../../forms/config-helper.ui" line="29"/>
         <source>Set here the mute time in minutes</source>
-        <translation type="unfinished"></translation>
+        <translation>Hier für die Stummschaltung die Zeit in Minuten setzen</translation>
     </message>
     <message>
         <location filename="../../forms/config-helper.ui" line="36"/>
@@ -480,7 +521,7 @@ Service bitte manuell wählen
     <message>
         <location filename="../../forms/config-helper.ui" line="43"/>
         <source>Set here the delay, when searching for data in a channel, in seconds</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Verzögerung (in Sekunden) setzen für die Suche nach einem Datenkanal</translation>
     </message>
     <message>
         <location filename="../../forms/config-helper.ui" line="50"/>
@@ -563,49 +604,60 @@ Service bitte manuell wählen
         <translation>    Service merken beim Beenden</translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="200"/>
+        <location filename="../../forms/config-helper.ui" line="198"/>
+        <source>    new tii detector</source>
+        <translation type="unfinished">    Neue TII Erkennung</translation>
+    </message>
+    <message>
+        <location filename="../../forms/config-helper.ui" line="205"/>
+        <source>  close without asking</source>
+        <translation type="unfinished">  Beenden ohne nachzufragen</translation>
+    </message>
+    <message>
+        <location filename="../../forms/config-helper.ui" line="214"/>
         <source> service order in list</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="209"/>
+        <location filename="../../forms/config-helper.ui" line="223"/>
         <source>alphabetically</source>
         <translation>alphabetisch</translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="219"/>
+        <location filename="../../forms/config-helper.ui" line="233"/>
         <source>serviceIds</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Service Ids</translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="229"/>
+        <location filename="../../forms/config-helper.ui" line="243"/>
         <source>subchannelIds</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="245"/>
-        <source>alarm</source>
-        <translation>Alarm</translation>
-    </message>
-    <message>
-        <location filename="../../forms/config-helper.ui" line="270"/>
-        <source>set Time</source>
+        <location filename="../../forms/config-helper.ui" line="257"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an element to the schedule. First a list of services is presented from which to choose,&lt;/p&gt;&lt;p&gt;after selecting a service, a second widget will pop up and ask for the time that that&lt;/p&gt;&lt;p&gt;service should be activated.&lt;/p&gt;&lt;p&gt;Note that, since the channel may have to be changed, the actual switch will take&lt;/p&gt;&lt;p&gt;place app 15 seconds before the specified time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="277"/>
+        <location filename="../../forms/config-helper.ui" line="260"/>
+        <source>add to schedule</source>
+        <translation type="unfinished">zu Aufnahmeplaner hinzufügen</translation>
+    </message>
+    <message>
+        <source>alarm</source>
+        <translation type="vanished">Alarm</translation>
+    </message>
+    <message>
         <source>An alarm can be set. If the alarm time is reached, the selected service will be chosen.</source>
-        <translation>Ein Alarm kann eingestellt werden. Fall die Alarmzeit erreicht wird, wird der ausgewählte Service verwendet.</translation>
+        <translation type="vanished">Ein Alarm kann eingestellt werden. Fall die Alarmzeit erreicht wird, wird der ausgewählte Service verwendet.</translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="281"/>
         <source>set alarm</source>
-        <translation>Alarm setzen</translation>
+        <translation type="vanished">Alarm setzen</translation>
     </message>
     <message>
-        <location filename="../../forms/config-helper.ui" line="286"/>
         <source>remove alarm</source>
-        <translation>Alarm entfernen</translation>
+        <translation type="vanished">Alarm entfernen</translation>
     </message>
 </context>
 <context>
@@ -692,12 +744,12 @@ Service bitte manuell wählen
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Falls es konfiguriert wurde, springt bei Drücken dieser Schaltfläche die Spektrumanzeige zwischen der &amp;quot;regulären&amp;quot; und des &amp;quot;Nullsymbols&amp;quot; hin und her. Auf der Konsole wird das Muster (Pattern), die main ID und die sub ID des TII ausgegeben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="572"/>
+        <location filename="../../forms/dabradio.ui" line="763"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Historiefunktion. Die Software speichert eine Liste aller bisher verwendeten Services. Ein Klick auf diesen Button zeigt (versteckt) die Liste. Bei einem Linksklick versucht die Software das ausgewählte Service abzuspielen, bei einem Rechtsklick wird der Eintrag gelöscht.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="778"/>
+        <location filename="../../forms/dabradio.ui" line="552"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This will open a &apos;save as ... dialog&apos; where you can select a file to store a description of the content of the current DAB ensemble (Audio and Data) in a text file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Das führt zu einem &quot;Speichern unter ...&quot; Dialog, wo Sie einen Dateinamen auswählen können, um den Inhalt des gerade empfangenen DAB Pakets (Audio und Daten) in eine Textdatei zu schreiben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -706,12 +758,12 @@ Service bitte manuell wählen
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um das Audio in eine Datei zu speichern. Es erscheint ein Fenster, um einen Dateinamen auszuwählen. Erneut drücken, um den Speichervorgang zu beenden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="616"/>
+        <location filename="../../forms/dabradio.ui" line="785"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to save the raw input. Pushing will cause a menu to appear where a filename can be selected. Please note the big filesizes!&lt;/p&gt;&lt;p&gt;Push again to stop recording. You can reload it by using the file input (*.sdr) option. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um die Rohdaten in eine Datei zu speichern. Es erscheint ein Fenster, um einen Dateinamen auszuwählen. Bitte beachten Sie, das sehr große Dateien entstehen werden! Erneut drücken, um den Speichervorgang zu beenden. Sie können später die erstellte *.sdr-Datei wieder laden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="619"/>
+        <location filename="../../forms/dabradio.ui" line="788"/>
         <source>Raw dump</source>
         <translation type="unfinished"></translation>
     </message>
@@ -724,22 +776,17 @@ Service bitte manuell wählen
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um einen &apos;Speichern unter ...&apos; Dialog anzuzeigen, bei dem der Inhalt (Informationen über Audio und Daten) des aktuellen DAB Ensembels in eine Textdatei geschrieben wird.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="781"/>
+        <location filename="../../forms/dabradio.ui" line="555"/>
         <source>Content</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="560"/>
+        <location filename="../../forms/dabradio.ui" line="717"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a device (channel) for the audio output. On program start up a default is chosen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wählen Sie ein Gerät für die Audioausgabe. Bei Programmstart wird die Standardeinstellung verwendet.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="20"/>
-        <source>Qt-DAB-3.72</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../forms/dabradio.ui" line="564"/>
+        <location filename="../../forms/dabradio.ui" line="721"/>
         <source>Audio Device</source>
         <translation>Audiogerät</translation>
     </message>
@@ -752,7 +799,7 @@ Service bitte manuell wählen
         <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DAB Kanal auswählen.&lt;/p&gt;&lt;p&gt;Hängt vom verwendeten DAB Frequenzband ab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="755"/>
+        <location filename="../../forms/dabradio.ui" line="741"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the input device. The devices shown are configured. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gerät wählen. Nur die angezeigten Geräte wurden konfiguriert. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -842,32 +889,32 @@ it is definitely not the time on your clock.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="788"/>
+        <location filename="../../forms/dabradio.ui" line="695"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;TII Spektrumfenster anzeigen oder verbergen&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="791"/>
+        <location filename="../../forms/dabradio.ui" line="698"/>
         <source>tii</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="810"/>
+        <location filename="../../forms/dabradio.ui" line="685"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The spectrum and the constellation of the DAB signal is shown when pressing this button. &lt;br /&gt;&lt;br /&gt;Pressing it again will cause the spectrum and constellation to be invisible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um das Spektrum und das Konstellationsdiagramm anzuzeigen. Nochmals drücken, um das Fenster wieder zu schließen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="813"/>
+        <location filename="../../forms/dabradio.ui" line="688"/>
         <source>spectrum</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="826"/>
+        <location filename="../../forms/dabradio.ui" line="590"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Für einen Reset drücken, zB um neu zu synchronisieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="829"/>
+        <location filename="../../forms/dabradio.ui" line="593"/>
         <source>reset</source>
         <translation></translation>
     </message>
@@ -887,7 +934,7 @@ the reach of this receiver.</source>
         <translation type="vanished">Drücken Sie, um das Korrelationsdiagramm anzuzeigen. Die Spitzen (falls verfügbar) zeigen die Samples mit der stärksten Korrelation. Mehrere Spitzen bedeuten, dass mehrere Sendeanlagen empfangen werden.</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="714"/>
+        <location filename="../../forms/dabradio.ui" line="666"/>
         <source>corr-result</source>
         <translation type="unfinished"></translation>
     </message>
@@ -896,7 +943,7 @@ the reach of this receiver.</source>
         <translation type="vanished">Anzeigen oder Verstecken des Gerätekontrollfensters.</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="759"/>
+        <location filename="../../forms/dabradio.ui" line="745"/>
         <source>Input Device</source>
         <translation>Eingabegerät</translation>
     </message>
@@ -951,67 +998,81 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="444"/>
         <source>Alarm</source>
-        <translation>Alarm</translation>
+        <translation type="vanished">Alarm</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="464"/>
+        <location filename="../../forms/dabradio.ui" line="457"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Label and Ensemble ID are shown here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ensemble Label und Ensemble ID werden hier gezeigt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="479"/>
+        <location filename="../../forms/dabradio.ui" line="472"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transmitter Identification Information (tii) is shown here. If more than one transmitter are being received, only the strongest will be shown.&lt;/p&gt;&lt;p&gt;Note that not all transmitters might have its own code.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Transmitter Identification Information (tii) wird hier angezeigt. Falls mehr als eine Sendeanlage empfangen wird, wird nur die stärkste angezeigt.&lt;/p&gt;&lt;p&gt;Beachten Sie, dass nicht alle Sendeanlagen ihren eigenen Code haben könnten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="501"/>
+        <location filename="../../forms/dabradio.ui" line="494"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Long label of the selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Long label des ausgewählten Services&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="524"/>
+        <location filename="../../forms/dabradio.ui" line="517"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic Labels (DLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dynamic Labels (DLS)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="575"/>
+        <location filename="../../forms/dabradio.ui" line="753"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the dynamic label text, as shown on the main widget, can be stored in a file.&lt;/p&gt;&lt;p&gt;Touching this button will show a menu for selecting a (text) file. &lt;/p&gt;&lt;p&gt;The text lines are preceded by the channel, the servicename and a time indicator.&lt;/p&gt;&lt;p&gt;As usual, touching the button a second time will close the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../forms/dabradio.ui" line="756"/>
+        <source>dlText</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../forms/dabradio.ui" line="766"/>
         <source>list</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="594"/>
+        <location filename="../../forms/dabradio.ui" line="829"/>
         <source>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Touching this button will show/hide a widget where some configuration settings can be changed. &lt;br /&gt;&lt;br /&gt;The config widget also contains a posisbility for setting an alarm like signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Drücken dieser Schaltfläche wird ein Fenster zeigen/verbergen, in der einige Konfigurationen eingestellt werden können. &lt;br /&gt;&lt;br /&gt;Das Konfigurationsfenster erlaubt auch die Einstellung eines alarmähnlichen Signals.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="597"/>
+        <location filename="../../forms/dabradio.ui" line="832"/>
         <source>config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="638"/>
+        <location filename="../../forms/dabradio.ui" line="636"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for controlling the device.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Fenster für die Gerätekontrolle anzeigen oder verbergen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="641"/>
+        <location filename="../../forms/dabradio.ui" line="20"/>
+        <source>Qt-DAB-4.1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../forms/dabradio.ui" line="639"/>
         <source>device</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="660"/>
+        <location filename="../../forms/dabradio.ui" line="807"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The snrViewer button controls a widget that - when enabled - will show the development of SNR over time. Parameters of the screen, height (the Y-axis) and the number of measurements (X-axis) can be set in the configuration widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Die Schaltfläche snrViewer öffnet ein Fenster, das - falls aktiviert - die Entwicklung des SNR über die Zeit zeigt. Parameter der Ansicht, Höhe (Y-Achse) und die Anzahl der Messungen (X-Achse) können im Konfigurationsfenster eingestellt werden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="663"/>
+        <location filename="../../forms/dabradio.ui" line="810"/>
         <source>snr viewer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="682"/>
+        <location filename="../../forms/dabradio.ui" line="612"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching the scan button will cause the software to make a single scan over all channels. Ensembles (and their services) found will be displayed in a separate window.&lt;/p&gt;&lt;p&gt;The windows will be visible as long as the scanning mode is on &lt;br/&gt;
 (note that after completing the scan, i.e. the cycle from channel 5A to 13F, &lt;br /&gt;
 the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1019,12 +1080,12 @@ the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/b
 Das Fenster bleibt sichtbar, solange der Suchlauf läuft (bitte beachten, dass nach Ende des Scans, zB im Bereich Kanal 5A bis 13F in Mode I, die Software solange pausiert, bis der Scanner nicht gestoppt wird.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="687"/>
+        <location filename="../../forms/dabradio.ui" line="617"/>
         <source>Scan</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="706"/>
+        <location filename="../../forms/dabradio.ui" line="658"/>
         <source>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;
 Touching this button will show (or hide) the resulting correlation of the first&lt;br /&gt;
  datablock of the DAB ensemble with the values as they should be. &lt;br /&gt;&lt;br /&gt;
@@ -1034,12 +1095,12 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
         <translation>&lt;html&gt;&lt;head /&gt;&lt;body&gt;&lt;p&gt;Drücken Sie, um das Korrelationsdiagramm anzuzeigen. Die Spitzen (falls verfügbar) zeigen die Samples mit der stärksten Korrelation. Mehrere Spitzen bedeuten, dass mehrere Sendeanlagen empfangen werden.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="733"/>
+        <location filename="../../forms/dabradio.ui" line="574"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button for further technical information about the selected program&lt;/p&gt;&lt;p&gt;Push again for closing the pop-up-window.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Schaltfläche drücken, um technische Information über das gewählte Programm anzuzeigen.&lt;/p&gt;&lt;p&gt;Erneut drücken, um das Fenster zu schließen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../../forms/dabradio.ui" line="736"/>
+        <location filename="../../forms/dabradio.ui" line="577"/>
         <source>Detail</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1060,32 +1121,47 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="65"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="67"/>
         <source>autogain</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="72"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="74"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DABsticks do not have much filtering. A software filter - 1560KHz wide - can be selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="77"/>
+        <source>filter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="88"/>
         <source>biasT</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="79"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="95"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the depth of the software 1560 KHz filter. Be aware that for a filter depth N N* 2048000 extra additions and complex multiplications are done&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Grad der Tiefe des 1560 KHz Filters setzen. Bitte um Beachtung: Bei Filtertiefen N N* 2048000 werden zusätzliche und komplexe Multiplikationen durchgeführt&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="110"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the rtlsdr dongle into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a &apos;Save as ...&apos; dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Speichert die Eingangsrohdaten vom rtlsdr Dongle in eine selbsterklärende Datei (mit Header im xml-Format, der die Aufnahmezeit, Containerformat, Frequenz, Empfänger, Qt-DAB-Version anzeigt)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Öffnet einen &quot;Speichern unter ...&quot; dialog. Noch einmal klicken, um die Aufnahme zu beenden.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Sehr experimentell! Die erzeugte Datei kann über die xml file Eingangsfunktion geladen werden (falls konfiguriert)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warnung: Erstellt große Dateien!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="82"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="113"/>
         <source>dump to xml file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="89"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="120"/>
         <source>dump to raw file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="96"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="127"/>
         <source>dabstick</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1105,7 +1181,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
         <translation>Verstärkung</translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="113"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-widget.ui" line="144"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device name&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gerätename&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -1134,7 +1210,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
     <message>
         <location filename="../../forms/data-description.ui" line="136"/>
         <source>bitRate</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bitrate</translation>
     </message>
     <message>
         <location filename="../../forms/data-description.ui" line="94"/>
@@ -1276,6 +1352,14 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
     </message>
 </context>
 <context>
+    <name>elementSelector</name>
+    <message>
+        <location filename="../../src/support/element-selector.cpp" line="48"/>
+        <source>time select</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>extioHandler</name>
     <message>
         <location filename="../qt-devices/extio-handler/extio-handler.cpp" line="123"/>
@@ -1356,12 +1440,12 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
 <context>
     <name>hackrfHandler</name>
     <message>
-        <location filename="../qt-devices/hackrf-handler/hackrf-handler.cpp" line="621"/>
+        <location filename="../qt-devices/hackrf-handler/hackrf-handler.cpp" line="624"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/hackrf-handler/hackrf-handler.cpp" line="623"/>
+        <location filename="../qt-devices/hackrf-handler/hackrf-handler.cpp" line="626"/>
         <source>Xml (*.uff)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1424,12 +1508,12 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
 <context>
     <name>limeHandler</name>
     <message>
-        <location filename="../qt-devices/lime-handler/lime-handler.cpp" line="515"/>
+        <location filename="../qt-devices/lime-handler/lime-handler.cpp" line="541"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/lime-handler/lime-handler.cpp" line="517"/>
+        <location filename="../qt-devices/lime-handler/lime-handler.cpp" line="543"/>
         <source>Xml (*.uff)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1463,7 +1547,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</sou
         <location filename="../qt-devices/pluto-handler-2/pluto-widget.ui" line="17"/>
         <location filename="../qt-devices/pluto-handler/pluto-widget.ui" line="17"/>
         <source>Pluto support is experimental. I do not have one so testing was limited.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Unterstützung für Pluto ist nur experimentell. Ich besitze keinen, daher ist das Testen limitiert.</translation>
     </message>
     <message>
         <location filename="../qt-devices/pluto-handler-2/pluto-widget.ui" line="25"/>
@@ -1646,7 +1730,7 @@ filter is disabled, but will be enabled by touching the button.</source>
     <message>
         <location filename="../qt-devices/rtl_tcp/rtl_tcp-widget.ui" line="132"/>
         <source> gain</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished"> Verstärkung</translation>
     </message>
     <message>
         <location filename="../qt-devices/rtl_tcp/rtl_tcp-widget.ui" line="145"/>
@@ -1656,24 +1740,24 @@ filter is disabled, but will be enabled by touching the button.</source>
     <message>
         <location filename="../qt-devices/rtl_tcp/rtl_tcp-widget.ui" line="171"/>
         <source>Offset</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Offset</translation>
     </message>
 </context>
 <context>
     <name>rtlsdrHandler</name>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="587"/>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="648"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="616"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="677"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="589"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="618"/>
         <source>raw (*.raw)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="650"/>
+        <location filename="../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp" line="679"/>
         <source>Xml (*.uff)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1683,6 +1767,14 @@ filter is disabled, but will be enabled by touching the button.</source>
     <message>
         <location filename="../../src/support/scanner-table.cpp" line="37"/>
         <source>scan result</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>scheduleSelector</name>
+    <message>
+        <location filename="../../src/support/schedule-selector.cpp" line="34"/>
+        <source>service select</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1708,18 +1800,18 @@ filter is disabled, but will be enabled by touching the button.</source>
     <message>
         <location filename="../../spectrum-viewer/scopewidget.ui" line="55"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Constellation diagram.&lt;/p&gt;&lt;/p&gt;The decoded symbols consist of a complex value, i.e. a value in a two dimensional space. Ideally, the diagram shows 4 dots, one in each quadrant. The number below the diagram (at left) shows - in dB - the deviation of the ideal position.&lt;/p&gt;&lt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Konstellationsdiagramm. Die dekodierten Symbole bestehen aus komplexen Werten, zB einem Wert in einem zweidimensionalen Raum. Idealerweise zeigt das Diagramm 4 Punkte, einen in jedem Quadranten. Die Nummer unter dem Diagramm (links) zeigt - in dB - die Abweichung zur Idealposition.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../spectrum-viewer/scopewidget.ui" line="64"/>
         <source>Quality indicator: the &quot;quality&quot; of the decoded signal is measured as Modulation Error Rate, using  the formula from section 6.9.2 of TR 101 290 Measurement guidelines for DVB.
 An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor signals give values around 0</source>
-        <translation type="unfinished"></translation>
+        <translation>Qualitätsindikator. Die Nummer zeigt die Standardphasenabweichung des dekodierten Signals wird als Modulations-Fehlerrate gemessen, gemäß der Formel von Abschnitt 6.9.2 von TF 101 290 &quot;Measurement guidelines for DVB&quot;. Ein ideales (zB synthetisches) Signal erreicht Werte über 20. Schwache Signale ergeben Werte um 0</translation>
     </message>
     <message>
         <location filename="../../spectrum-viewer/scopewidget.ui" line="72"/>
         <source>clock offset. The value indicates the number of samples too many or too few for 10 DAB frames (which is about 1 second).</source>
-        <translation type="unfinished"></translation>
+        <translation>Taktoffset. Der Wert zeigt die Anzahl der zu geringen oder zu vielen Samples auf 10 DAB Frames (ist ca. 1 Sekunde) an.</translation>
     </message>
     <message>
         <location filename="../../spectrum-viewer/scopewidget.ui" line="79"/>
@@ -1743,12 +1835,12 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
 <context>
     <name>sdrplayHandler</name>
     <message>
-        <location filename="../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp" line="885"/>
+        <location filename="../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp" line="888"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp" line="887"/>
+        <location filename="../qt-devices/sdrplay-handler-v2/sdrplay-handler-v2.cpp" line="890"/>
         <source>Xml (*.uff)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1756,12 +1848,12 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
 <context>
     <name>sdrplayHandler_v3</name>
     <message>
-        <location filename="../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp" line="333"/>
+        <location filename="../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp" line="336"/>
         <source>Save file ...</source>
         <translation>Datei speichern ...</translation>
     </message>
     <message>
-        <location filename="../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp" line="335"/>
+        <location filename="../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp" line="338"/>
         <source>Xml (*.uff)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1978,28 +2070,26 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
 <context>
     <name>snrViewer</name>
     <message>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="293"/>
+        <location filename="../../snr-viewer/snr-viewer.cpp" line="295"/>
         <source>Open file ...</source>
         <translation>Datei öffnen ...</translation>
     </message>
     <message>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="295"/>
+        <location filename="../../snr-viewer/snr-viewer.cpp" line="297"/>
         <source>snr (*.snr)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="297"/>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="305"/>
+        <location filename="../../snr-viewer/snr-viewer.cpp" line="308"/>
         <source>Warning</source>
         <translation>Warnung</translation>
     </message>
     <message>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="298"/>
         <source>no file selected</source>
-        <translation>keine Datei ausgewählt</translation>
+        <translation type="vanished">keine Datei ausgewählt</translation>
     </message>
     <message>
-        <location filename="../../snr-viewer/snr-viewer.cpp" line="306"/>
+        <location filename="../../snr-viewer/snr-viewer.cpp" line="309"/>
         <source>could not open file</source>
         <translation>Konnte Datei nicht öffnen</translation>
     </message>
@@ -2013,8 +2103,8 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
     </message>
     <message>
         <location filename="../../snr-viewer/snr-widget.ui" line="26"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;snr display. As well known a DAB frame starts with a so-called null period, a period where the amplitude of the transmitted  signal is (should be) zero. So, it is an excellent noise floor, and the SNR shown is computed as 10 * log10 (average amplitude from data blocks / average amplitude null period)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;snr display. As well known a DAB frame starts with a so-called null period, a period where the amplitude of the transmitted signal is (should be) zero. So, it is an excellent noise floor, and the SNR shown is computed as 20 * log10 (average amplitude from data blocks / average amplitude null period). One thing though. in many SFN&apos;s the transmitters add an encoding og the transmitter id (tii) to each second DABframe. So for uneven compressions you see the difference on SNR between the first and second frames&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;SNR Anzeige. Wie bekannt sein sollte, startet ein DAB Frame mit einer sogenannten Nullperiode, wo die Amplitude des übertragenen Signals 0 sein sollte. Daher ist es ein guter Rauschteppich, und das SNR wird errechnet mit 20 * log10 (durchschnittliche Amplitude der Datenblöcke / durchschnittliche Amplitude der Nullperiode). Eine Bemerkung: in vielen SFNs strahlen die Sendeanlagen eine ID (TII) jeden zweiten DAB frame aus. Für ungerade Komprimierungen sieht man den Unterschied zwischen ersten und zweiten Frame&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../snr-viewer/snr-widget.ui" line="33"/>
@@ -2137,12 +2227,12 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
     <message>
         <location filename="../../forms/technical_data.ui" line="41"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured - opens a new windows with SPI (formerly called EPG) preview.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note that this is still work in progress.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sofern konfiguriert wird ein neues Fenster mit einer SPI (vorher EPG genannt) Vorschau.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Bitte um Beachtung, dass das noch nicht fertig implementiert ist.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../forms/technical_data.ui" line="44"/>
         <source>timeTable</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../forms/technical_data.ui" line="55"/>
@@ -2244,7 +2334,7 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
     <message>
         <location filename="../../forms/technical_data.ui" line="301"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo or mono indicator. &lt;/p&gt;&lt;p&gt;Note: May not work properly in some cases.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Stereo or Mono Anzeige. &lt;/p&gt;&lt;p&gt;Hinweis: Könnte in einigen Fällen nicht richtig funktionieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../forms/technical_data.ui" line="304"/>
@@ -2254,7 +2344,7 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
     <message>
         <location filename="../../forms/technical_data.ui" line="315"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This DAB service is on FM as well. Feature only used by some DAB services.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dieser DAB Service strahlt auch auf UKW aus. Dieses Feature wird nur von wenigen DAB Services angeboten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="../../forms/technical_data.ui" line="336"/>
@@ -2299,7 +2389,7 @@ An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor si
     <message>
         <location filename="../../forms/technical_data.ui" line="401"/>
         <source>MOT Decoding</source>
-        <translation type="unfinished">MOT Dekodierung</translation>
+        <translation>MOT Dekodierung</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In EN300401 (2017) the possibility of passing transmitter coordinates through the FIC is cancelled.&lt;/p&gt;&lt;p&gt;The numbers given here are an estimate if the mainId and subId as derived from the null period.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
