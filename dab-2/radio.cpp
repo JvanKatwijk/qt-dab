@@ -3482,7 +3482,7 @@ void	RadioInterface::handle_dlTextButton	() {
 	   return;
 	}
 
-	QString	fileName =filenameFinder. finddlText_fileName ();
+	QString	fileName =filenameFinder. finddlText_fileName (true);
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;

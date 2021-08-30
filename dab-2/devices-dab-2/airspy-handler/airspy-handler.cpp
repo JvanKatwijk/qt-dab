@@ -86,6 +86,8 @@ uint32_t samplerateCount;
 #else
 	const char *libraryString = "libairspy.so";
 	Handle		= dlopen ("libairspy.so", RTLD_LAZY);
+	if (Handle == nullptr)
+           Handle       = dlopen ("libairspy.so.0", RTLD_LAZY);
 #endif
 
 	if (Handle == nullptr) {
@@ -121,7 +123,17 @@ uint32_t samplerateCount;
 	   throw (21);
 	}
 
-	result = my_airspy_open (&device);
+	uint64_t deviceList [4];
+	int	deviceIndex;
+	int numofDevs = my_airspy_list_devices (deviceList, 4);
+	fprintf (stderr, "we have %d devices\n", numofDevs);
+	if (numofDevs == 0) {
+	   fprintf (stderr, "No devices found\n");
+	   throw (22);
+	}
+	deviceIndex = 0;
+	
+	result = my_airspy_open (&device, deviceList [deviceIndex]);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airpsy_open() failed: %s (%d)\n",
 	             my_airspy_error_name ((airspy_error)result), result);
@@ -424,15 +436,16 @@ int result = my_airspy_board_partid_serialno_read (device,
 //
 //	not used here
 int	airspyHandler::open() {
-int result = my_airspy_open (&device);
-
-	if (result != AIRSPY_SUCCESS) {
-	   printf ("airspy_open() failed: %s (%d)\n",
-	          my_airspy_error_name((airspy_error)result), result);
-	   return -1;
-	} else {
-	   return 0;
-	}
+//int result = my_airspy_open (&device);
+//
+//	if (result != AIRSPY_SUCCESS) {
+//	   printf ("airspy_open() failed: %s (%d)\n",
+//	          my_airspy_error_name((airspy_error)result), result);
+//	   return -1;
+//	} else {
+//	   return 0;
+//	}
+	return 0;
 }
 
 //
@@ -604,6 +617,13 @@ bool	airspyHandler::load_airspyFunctions() {
 	   fprintf (stderr, "Could not find airspy_exit\n");
 	   return false;
 	}
+
+	my_airspy_list_devices  = (pfn_airspy_list_devices)
+                               GETPROCADDRESS (Handle, "airspy_list_devices");
+        if (my_airspy_list_devices == nullptr) {
+           fprintf (stderr, "Could not find airspy_list_devices\n");
+           return false;
+        }
 
 	my_airspy_open	= (pfn_airspy_open)
 	                       GETPROCADDRESS (Handle, "airspy_open");

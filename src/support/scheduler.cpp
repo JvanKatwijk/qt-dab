@@ -27,6 +27,7 @@
 #include	<fstream>
 #include	<string>
 #define	SWITCHTIME	15
+
 	Scheduler::Scheduler (RadioInterface *mr):
 	                              myWidget (nullptr) {
 	myWidget. resize (240, 200);
@@ -82,6 +83,7 @@ std::ifstream f (fileName. toLatin1 (). data ());
 	while (true) {
 	   if (!std::getline (f, str))
 	      break;
+
 //	just to be on the safe side
 	   if (str. size () < 10)
 	      continue;

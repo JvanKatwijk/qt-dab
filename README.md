@@ -1,50 +1,8 @@
-# Qt-DAB-4/0 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.1 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.0 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
-
-Since the original 3.71 version there were quite many changes, both visible
-and invisible. So, it was time for a new version number
+Qt-DAB-4.1 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![overview](/qt-dab-screen.png?raw=true)
-
-------------------------------------------------------------------
-Most recent addition: adding a scheduler
-------------------------------------------------------------------
-
-The "alarm" function is replaced by a more complete **scheduler**,
-allowing a whole list of  schedule elements, i.e. services with
-time when to start.
-
-The schedule list contains some predefined functions to allow
-timed recordings, either frame dumps or audio dumps, or closing the
-program.
-
-Selecting a framedump or audiodump on a specific time will start
-the frame or audiodump of the then active audio service.
-The filename of the dump is generated, using the name
-of the service and the time of the recording.
-
-Selecting any service (or selecting exit) when dumping is is progress
-will stop the dumping.
-
-![overview](/schedule.png?raw=true)
-
-In this example, Radio 4 will be selected at 15:35, an audiodump
-starts on 15:36, a framedump 15:37, and on 16:00 both dumps
-will stop and Radio 4 is selected again and on 17:00 the program
-will terminate.
-
-There is a possibility of passing a schedule list as parameter
-to the Qt-DAB program. This is especially useful for **unattended**
-operation, e.g. when you want a recording of the AAC data or the audio 
-data to be made on some future time when you are not around,
-of course assuming the computer is on.
-Using the "at" command in Linux, executing a simple script on the
-specified time, a script invoking Qt-DAB and passing a predefined
-schedule list to the program, this can be accomplished.
-
-The source tree contains a working example script (well, working for me),
-together with a small schedule list.
 
 ------------------------------------------------------------------
 Table of Contents
@@ -53,11 +11,10 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [dabMini](#dabMini)
+* [dabMini] and duoreceiver(#dabMini)
 * [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab)
 * [Colors](#colors-for-qt-dab)
-* [Maintaining History](#maintaining-history)
 * [Comment on some config settings](#comment-on-some--configuration-settings)
 * [Obsolete properties](#obsolete-properties)
 * [Installation on Windows](#installation-on-windows)
@@ -69,6 +26,7 @@ Table of Contents
 * [EPG-Handling](#epg-handling)
 * [Recording the SNR](#recording-the-snr)
 * [Scanning and the skip table](#scanning-and-the-skip-table)
+* [Scheduling option](#Scheduling-option)
 * [Pluto device and fm transmission](#pluto-device-and-fm-transmission)
 * [Copyright](#copyright)
 
@@ -76,7 +34,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.0** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-4.1** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
@@ -138,6 +96,7 @@ Features
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
   * Clean interface to add other devices, see below.
+  * Scheduling channel:service pairs, even for unattended operation
 
 Not yet or partly implemented:
 
@@ -157,26 +116,6 @@ Widgets and scopes for Qt-DAB
 
 Qt-DAB always shows a main widget; a number of  **optional**
 widgets is visible or invisible under user's control
-
-  * a widget with controls for the attached device,
-  * a widget for additional configuration settings,
-  * a widget showing the technical information of the *selected service* as well
-as some information on the quality of the decoding, 
-  * a widget showing the spectrum of the received radio signal, the constellation of the decoded signal and some quality parameters,,
-  * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
-  * a widget showing the correlations response(s) from different transmitters in the SFN,
-  * a widget showing the development - over time - of the SNR,
-  * if configured and data is detected, the time table for the current audio service
-
-![Qt-DAB totaal](/qt-dab-totaal.png?raw=true)
-
-Another - an eight' - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
-possibility was created to save a detailed description of the services
-in the different channels, in a format easy to process with LibreOffice
-or comparable programs.
-
-While the main window is **always** shown, visibility of the others is
-under user control, the main widget contains a button for each..
 
 ![Qt-DAB main widget](/qt-dab-main-widget.png?raw=true)
 
@@ -200,9 +139,7 @@ a separate widget, the "technical data" widget.
 This widget will show where the data for the
 service is to be found in the DAB frames, and how it is encoded.
 
-Depending on a setting in the ".ini" file, a logo or slide, transmitted
-as Program Associated Data with the audio transmission, will be shown here or on a separate widget
-(the setting can be modified from the configuration widget).
+![Qt-DAB main widget](/qt-dab-technical-widget.png?raw=true)
 
 Most selectors are concentrated on the bottom part of the right side
 of the widget. Buttons to make scopes visible, to store input and or
@@ -211,6 +148,29 @@ scan and store a description of the ensemble are in that section.
 
 ![qt-dan controls ](/qt-dab-main-controls.png?raw=true)
 
+Other widgets are
+
+  * a widget with controls for the attached device,
+  * a widget for additional configuration settings,
+  * a widget showing the technical information of the *selected service* as well
+as some information on the quality of the decoding, 
+  * a widget showing the spectrum of the received radio signal, the constellation of the decoded signal and some quality parameters,,
+  * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
+  * a widget showing the correlations response(s) from different transmitters in the SFN,
+  * a widget showing the development - over time - of the SNR,
+  * if configured and data is detected, the time table for the current audio service
+
+![Qt-DAB totaal](/qt-dab-totaal.png?raw=true)
+
+Another - an eight' - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
+possibility was created to save a detailed description of the services
+in the different channels, in a format easy to process with LibreOffice
+or comparable programs.
+
+Depending on a setting in the ".ini" file, a logo or slide, transmitted
+as Program Associated Data with the audio transmission, will be shown here or on a separate widget
+(the setting can be modified from the configuration widget).
+
 During *scanning*, a separate window will be shown with the results
 of the scan as shown in the picture. Note that what is shown is a *subset*
 of what will be recorded if a choice is made to save the output of the scan. 
@@ -218,11 +178,11 @@ of what will be recorded if a choice is made to save the output of the scan.
 ![Qt-DAB scan result](/qt-dab-scan-result.png?raw=true)
 
 ---------------------------------------------------------------------
-dabMini
+dabMini and duoreceiver
 ---------------------------------------------------------------------
 
 **dabMini** is a version of the DAB decoder with a minimal GUI.
-dabMini is built from the same  sources as Qt-DAB, so
+dabMini is built from the same sources as Qt-DAB, so
 modifications to the Qt-DAB sources are automatically applied to
 dabMini as well.
 
@@ -237,6 +197,14 @@ depending on the selected device. The picture shows the program using
 an SDRplay device, with agc not selected and selectors for if gain and
 lna state.
 
+**duoreceiver** is derived from dabMini and from other software for
+FM decoding. Since the SDR devices are covering both the FM broadcast
+band and BAND III, where DAB transmissions are, there were questions
+why dabMini could not be extended to cover FM transmissions as well.
+**duoreceiver** covers both bands.
+
+![overview](/duoreceiver-1.png?raw=true)
+
 --------------------------------------------------------------------
 Documentation
 --------------------------------------------------------------------
@@ -249,8 +217,6 @@ complete description on how to add a device to the configuration.
 
 ![Qt-DAB documentation](/qt-usersguide.png?raw=true)
 
-Note: the documentation is still for 3.72
-
 ----------------------------------------------------------------------
 Presets for Qt-DAB and dabMini
 ----------------------------------------------------------------------
@@ -261,15 +227,6 @@ audio service with the right hand mouse button will save the
 "channel:serviceName" pair in the preset list.
 
 The presets are stored in an xml file, `.qt-dab-presets.xml`.
-
-Clicking with the *left* mouse button on the servicename in the service
-list instructs the software to select the channel and
-select the service with that name).
-
-Of course, one is also able to *remove* an entry from the presets.
-To do this, select the entry (by putting the curson on it without
-clicking any of the mouse buttons) and press the *shift* and the *delete*
-button on the keyboard simultaneously.
 
 ----------------------------------------------------------------------
 Storing gain settings
@@ -303,37 +260,21 @@ questions will be asked: what will be the color of the display (background),
 what will be the color of the grid and what will be the color of the curve.
 
 ---------------------------------------------------------------------------
-Maintaining History
----------------------------------------------------------------------------
-
-Qt-DAB saves all service names found.
-The list of Pairs "Channel:serviceName"
-will be made (in)visible when touching the appropriate button (the
-one labeled with "list").
-
-The data in stored in a file in xml format.
-This *history* can be cleared by a click of the right mouse button.
-Clicking on a channel:servicename combination with the left
-mouse button will cause the QT-DAB software to attempt to set the channel and
-select the name.
-
----------------------------------------------------------------------------
 Comment on some  configuration settings
 -------------------------------------------------------------------------------
 
-Various settings are maintained between program invocations in a
+Many settings are maintained between program invocations in a
 so-called ".ini" file, ususally "qt-dab.ini", stored in the home directory.
-Typical settings are the channel/service combination at program termination,
-values, used to initialize the software at program start up and the colors
-for buttons and displays.
 A complete description of the settings can be found in the user's manual
 (in the subdirectory *docs*).
+Touching the **config*( button on the main widget will show (or hide)
+a widget where a number of settings can be adapted.
 
 -------------------------------------------------------------------------
 Obsolete properties
 -------------------------------------------------------------------------
 
-The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. The Qt-DAB implementation still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
+The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. Qt-DAB still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
 
 Explicitly setting the Mode and/or the Band is possible by
 including appropriate command lines in the ".qt-dab.ini" file.
@@ -350,10 +291,6 @@ For the *Band*, one will add/set a line
 Installation on Windows
 --------------------------------------------------------------------
 
-Development of Qt-DAB and related software is on Linux, 
-the cross compilation facilities of MINGW64 make it possible to
-cross compile the software for windows.
-
 For windows  **installers** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 
 The installer will also call the official installer for the dll implementing
@@ -364,16 +301,6 @@ Installation on Linux-x64
 ------------------------------------------------------------------
 
 For Linux-x64 systems, an **appImage** is available.
-
-The appImage can be found in "https://github.com/JvanKatwijk/qt-dab/releases".
-The appImage is configured for
-
-	* RTL_TCP
-	* AIRSPY
-	* SDRPLAY
-	* SDRPLAY_V3
-	* LIMESDR
-	* HACKRF
 
 Of course it is possible to generate an executable, the 
 aforementioned user's manual
@@ -393,7 +320,7 @@ For the dabMini, an appImage is available for use on an x64 based
 Linux system, and the user's manual contains a complete
 script, tested on an RPI 2 and 3.
 
-**dab-2** is experimental and not - officially - supported
+**dab-2** is experimental and **not** supported
 
 ----------------------------------------------------------------------
 Configuring 
@@ -410,16 +337,6 @@ There exist - obviously - other devices than the ones supported
 here. Interfacing another device is not very complicated,
 it might be done using the "Soapy" interface, or one might
 write a new interface class.
-
-While the handling of devices in dabMini and Qt-DAB is - apart
-from handling the user interaction - the same,
-it differs from the way device handling is done in dab-2. The description
-here relates to device interfacing in Qt-DAB (the handler for the dabMini
-differs since it lacks a separate widget for the control).
-
-Device handlers are implemented as a class, derived from
-the class *deviceHandler*. Only a few functions have to
-be implemented.
 
 A complete description of how to interface a device to Qt-DAB
 is given in the user's manual.
@@ -519,7 +436,7 @@ The software is experimental though and - at least here - the times
 on the time table are two hours off.
 
 ----------------------------------------------------------------------
-Recording the dynamic label text (new in 4.0)
+Recording the dynamic label text 
 ----------------------------------------------------------------------
 
 Touching the "dlText" button will show a menu for file selection and
@@ -538,10 +455,6 @@ As usual, touching the button a second time will close the file
 -----------------------------------------------------------------------
 Recording the SNR
 -----------------------------------------------------------------------
-
-Just as an experiment, a widget was added that shows the development of the 
-SNR over time. The main purpose of the widget is to look at the
-performance of antennas. 
 
 Computation of the SNR is done with all DAB frames. As is known,
 a sampled DAB frame starts with a null period of app 2600 samples, followed by
@@ -598,7 +511,38 @@ If one cancels the file selection, the default skipTable will be used,
 the same table that is used when no skipFile is selected.
 
 -----------------------------------------------------------------------
-# PLuto device and fm transmission
+# Scheduling option
+-----------------------------------------------------------------------
+
+The "alarm" facility is replaced by a scheduling option. 
+Touching the "add to schedule" button on the configuration widget
+will show a list of services to select from (the services in the currently
+selected channel, and the list of services in the preset list.
+A time can be linked to the selected service.
+
+As additional feature, some operations can be scheduled as well
+
+ * exit or nothing, with obvious semantics;
+ * audiodump, to schedule starting or stopping dumping the audio of the
+currently selected audio service;
+ * framedump, to schedule starting or stopping dumping the AAC segments
+of the currently selected service.
+ * dlText, to schedule starting or stopping recording the dynamic label text.
+
+Note that selecting a ddifferent audio service will automatically stop
+dumping the audiodump and the framedump activity.
+
+![scheduler](/scheduler.png?raw=true)
+
+For **Linux** there is an additional option: specifying a schedule list
+as parameter in the command line. This is especially useful for
+unattended operation.
+The sourcetree for dabMaxi contains a file "testfile" and a
+file "command.sh" that can be used as inspiration for specifying
+an unattended oprtation of Qt-DAB.
+
+-----------------------------------------------------------------------
+# Pluto device and fm transmission
 -----------------------------------------------------------------------
 
 As (probably) known, the **Adalm Pluto** device has receive and transmit
