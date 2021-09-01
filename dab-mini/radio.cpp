@@ -257,7 +257,7 @@ QString	presetName;
 QString RadioInterface::footText () {
         QString versionText = "dabMini-1.0: ";
         versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
-        versionText += "Rights of Qt, fftw, portaudio, libsamplerate gratefully acknowledged";
+        versionText += "Rights of Qt, fftw, portaudio, libsamplerate  libfaad gratefully acknowledged";
         versionText += "Rights of other contribuants gratefully acknowledged\n";
         versionText += " Build on: " + QString(__TIMESTAMP__) + QString (" ") + QString (GITHASH);
         return versionText;

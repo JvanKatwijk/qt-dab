@@ -62,8 +62,8 @@ wchar_t APIkeyValue [256];
 ULONG APIkeyValue_length = 255;
 
 	wchar_t *libname = (wchar_t *)L"mir_sdr_api.dll";
-        Handle  = LoadLibrary (libname);
-        if (Handle == NULL) {
+	Handle  = LoadLibrary (libname);
+	if (Handle == NULL) {
 	   if (RegOpenKey (HKEY_LOCAL_MACHINE,
 	                   TEXT("Software\\MiricsSDR\\API"),
 	                   &APIkey) != ERROR_SUCCESS) {
@@ -241,14 +241,14 @@ mir_sdr_ErrT    err;
 int     GRdB            = GRdBSelector  -> value ();
 int     lnaState        = lnaGainSetting -> value ();
 
-        (void)newGRdB;
+	(void)newGRdB;
 	if (!running. load ())
 	   return;
 
-        err     =  my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1, 0);
-        if (err != mir_sdr_Success)
-           fprintf (stderr, "Error at set_ifgain %s (%d %d)\n",
-                             errorCodes (err). toLatin1 (). data (),
+	err     =  my_mir_sdr_RSP_SetGr (GRdB, lnaState, 1, 0);
+	if (err != mir_sdr_Success)
+	   fprintf (stderr, "Error at set_ifgain %s (%d %d)\n",
+	                     errorCodes (err). toLatin1 (). data (),
 	                     GRdB, lnaState);
 }
 
@@ -260,29 +260,29 @@ mir_sdr_ErrT err;
 
 	if (!agcControl -> isChecked ()) {
 	   set_ifgainReduction (0);
-           return;
-        }
+	   return;
+	}
 
-        err     = my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
-                                         -30, 0, 0, 0, 0, lnaState);
-        if (err != mir_sdr_Success)
-           fprintf (stderr, "Error at set_lnagainReduction %s\n",
-                               errorCodes (err). toLatin1 (). data ());
+	err     = my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	                                 -30, 0, 0, 0, 0, lnaState);
+	if (err != mir_sdr_Success)
+	   fprintf (stderr, "Error at set_lnagainReduction %s\n",
+	                       errorCodes (err). toLatin1 (). data ());
 }
 
 void    sdrplayHandler::set_agcControl (int dummy) {
 bool agcMode    = agcControl -> isChecked ();
-        my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
-                                         mir_sdr_AGC_DISABLE,
-                               -30,
-                               0, 0, 0, 0, lnaGainSetting -> value ());
-        if (!agcMode) {
-           GRdBSelector         -> show ();
-           set_ifgainReduction (0);
-        }
-        else {
-           GRdBSelector         -> hide ();
-        }
+	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_100HZ :
+	                                 mir_sdr_AGC_DISABLE,
+	                       -30,
+	                       0, 0, 0, 0, lnaGainSetting -> value ());
+	if (!agcMode) {
+	   GRdBSelector         -> show ();
+	   set_ifgainReduction (0);
+	}
+	else {
+	   GRdBSelector         -> hide ();
+	}
 }
 
 static
@@ -353,17 +353,17 @@ int     GRdB            = GRdBSelector  -> value ();
 	   return false;
 	}
 	
-        if (agcControl -> isChecked ()) {
-           my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
-                                  -30,
-                                  0, 0, 0, 0, lnaGainSetting -> value ());
-           GRdBSelector         -> hide ();
-        }
+	if (agcControl -> isChecked ()) {
+	   my_mir_sdr_AgcControl (mir_sdr_AGC_100HZ,
+	                          -30,
+	                          0, 0, 0, 0, lnaGainSetting -> value ());
+	   GRdBSelector         -> hide ();
+	}
 	else {
-           my_mir_sdr_AgcControl (mir_sdr_AGC_DISABLE,
-                                  -30,
-                                  0, 0, 0, 0, lnaGainSetting -> value ());
-           GRdBSelector         -> show ();
+	   my_mir_sdr_AgcControl (mir_sdr_AGC_DISABLE,
+	                          -30,
+	                          0, 0, 0, 0, lnaGainSetting -> value ());
+	   GRdBSelector         -> show ();
 	}
 
 	err		= my_mir_sdr_SetDcMode (4, 1);

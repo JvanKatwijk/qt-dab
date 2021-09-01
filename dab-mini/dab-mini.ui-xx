@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>422</height>
+    <width>308</width>
+    <height>386</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -92,6 +92,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="stereoLabel">
+           <property name="text">
+            <string/>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item>
@@ -136,17 +143,28 @@ For the RTLSDR is is gain, range depending on the device</string>
         </widget>
        </item>
        <item>
-        <widget class="smallComboBox" name="channelSelector">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string>Channel selector. </string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="smallComboBox" name="channelSelector">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Channel selector. </string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="verySmallPushButton" name="muteButton">
+           <property name="text">
+            <string>mute</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <layout class="QGridLayout" name="gridLayout">
@@ -193,9 +211,12 @@ For the RTLSDR is is gain, range depending on the device</string>
         </layout>
        </item>
        <item>
-        <widget class="verySmallPushButton" name="muteButton">
-         <property name="text">
-          <string>mute</string>
+        <widget class="smallComboBox" name="streamoutSelector">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
         </widget>
        </item>
@@ -204,39 +225,18 @@ For the RTLSDR is is gain, range depending on the device</string>
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="presetComboBox" name="presetSelector">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <item>
-        <property name="text">
-         <string>Presets</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="stereoLabel">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="smallComboBox" name="streamoutSelector">
+    <widget class="presetComboBox" name="presetSelector">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <item>
+      <property name="text">
+       <string>Presets</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>

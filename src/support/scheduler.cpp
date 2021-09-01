@@ -140,6 +140,8 @@ QString	recordTime	= QString::number (hours / 10) +
 	   theDelay = 1000;	// milliseconds
 	else
 	   theDelay = 1000 * theDelay;
+	if (theDelay > 600000)
+	   theDelay = 600000;
 	wakeupTimer. setInterval (theDelay);
 	wakeupTimer. start (theDelay);
 	show ();
@@ -174,14 +176,37 @@ void	Scheduler::removeRow (int row, int column) {
 	else
 	   theDelay = 1000 * theDelay;
 
+	if (theDelay > 600000)
+	   theDelay = 600000;
 	wakeupTimer. setInterval (theDelay);
 	wakeupTimer. start (theDelay);
 }
-
+//
+//	Each 10 minutes we check the time, to avoid too large
+//	delays
 void	Scheduler::handle_timeOut () {
 QString	service	= tableWidget -> item (wakeupIndex, 0) -> text ();
-	wakeupTime	= 24 * 60 + 60;
-	removeRow (wakeupIndex, 0);
-	emit timeOut (service);
+QTime current = QTime::currentTime ();
+int64_t currentTime = current. hour () * 60 + current. minute ();
+	currentTime = 60 * currentTime + current. second ();
+
+	if (currentTime >= wakeupTime * 60 - SWITCHTIME) {
+	   wakeupTime	= 24 * 60 + 60;
+	   removeRow (wakeupIndex, 0);
+	   emit timeOut (service);
+	   return;
+	}
+
+	fprintf (stderr, "currentTime %d\n", (int)currentTime);
+	int64_t theDelay	= wakeupTime * 60 - currentTime - SWITCHTIME; // seconds
+	if (theDelay <= 0) 
+	   theDelay = 1000;	// milliseconds
+	else
+	   theDelay = 1000 * theDelay;
+
+	if (theDelay > 600000)
+	   theDelay = 600000;
+	wakeupTimer. setInterval (theDelay);
+	wakeupTimer. start (theDelay);
 }
 

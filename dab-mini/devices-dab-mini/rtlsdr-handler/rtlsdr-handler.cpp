@@ -201,7 +201,6 @@ int	i, k;
 	         gainControl, SLOT (setValue (int)));
 	connect (this, SIGNAL (new_agcValue (bool)),
 	         agcControl, SLOT (setChecked (bool)));
-
 }
 
 	rtlsdrHandler::~rtlsdrHandler	(void) {

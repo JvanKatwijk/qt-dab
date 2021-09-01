@@ -30,7 +30,7 @@
 
 QSize	smallComboBox::sizeHint ()const {
 QSize	temp = QComboBox::sizeHint ();
-	return QSize (temp. rwidth () / 4, temp. rheight () / 4);
+	return QSize (temp. rwidth () / 6, temp. rheight () / 6);
 }
 
 
