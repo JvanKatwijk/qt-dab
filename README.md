@@ -11,7 +11,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [dabMini] and duoreceiver(#dabMini)
+* [dabMini and duoreceiver](#dabMini)
 * [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab)
 * [Colors](#colors-for-qt-dab)
@@ -47,15 +47,14 @@ Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
 ASR-33 terminals and "command lines", I often prefer a simple command line
 over a GUI.
 Therefore, a **terminal-DAB-xxx** version was developed, a
-simpler version, just for listening to a DAB service, making use of 
-command line
+simpler version, just for listening to a DAB service, making use of the
+command line and curses library.
 
-![Qt-DAB terminal DAB](/qt-dab-terminal-dab.png?raw=true)
-
-For those who are nostalgic to the era of nice wooden radios with glowing tubes,
+For those who are nostalgic to the era and the sound
+of nice wooden radios with glowing tubes,
 Qt-DAB can be configured such that - using the Adalm Pluto as device -
-the audio of a selected service is transmitted on a user specified frequency
- in FM stereo with the "dynamic label" sent as RDS.
+the audio of a selected service is transmitted in FM stereo on a
+user specified frequency with the "dynamic label" sent as RDS.
 
 ------------------------------------------------------------------
 Features
@@ -64,7 +63,7 @@ Features
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
   * MOT SlideShow (SLS)
   * Dynamic Label (DLS) 
-  * Both DAB bands supported): 
+  * Both DAB bands (and user defined bands) are supported: 
   	* VHF Band III (default),
    	* L-Band (obsolete now),
 	* a user defined Band
@@ -92,7 +91,7 @@ Features
 	- Soapy (experimental, Linux only), 
 	- ExtIO (expertimental, Windows only),
 	- rtl_tcp servers.
-  *Always supported input from:
+  * Always supported input from:
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
   * Clean interface to add other devices, see below.
@@ -135,7 +134,7 @@ In the middle part, name of the ensemble and name of the selected service
 are displayed, complemented with the text of the dynamic label.
 
 Some data on the selected service - if any - can be found on
-a separate widget, the "technical data" widget. 
+a separate widget, the "Technical Data" widget (*Detail* button).
 This widget will show where the data for the
 service is to be found in the DAB frames, and how it is encoded.
 
@@ -322,6 +321,10 @@ script, tested on an RPI 2 and 3.
 
 **dab-2** is experimental and **not** supported
 
+Note that Linux allows connecting both the "pulse" and "pipewire"
+subsystem to bluetooth, making it easy to listen using a bluetooth
+connected soundbar or bluetooth connected ear- or headphomes.
+
 ----------------------------------------------------------------------
 Configuring 
 ----------------------------------------------------------------------
@@ -330,7 +333,7 @@ The  user's guide contains a detailed description of the configuration
 options (mainly choices for including or excluding a device).
 
 -----------------------------------------------------------------------
-Interfacing to another device
+Interfacing to another SDR device
 -----------------------------------------------------------------------
 
 There exist - obviously - other devices than the ones supported
@@ -514,11 +517,11 @@ the same table that is used when no skipFile is selected.
 # Scheduling option
 -----------------------------------------------------------------------
 
-The "alarm" facility is replaced by a scheduling option. 
+The "alarm" facility is replaced by a more general scheduling facility.
 Touching the "add to schedule" button on the configuration widget
 will show a list of services to select from (the services in the currently
-selected channel, and the list of services in the preset list.
-A time can be linked to the selected service.
+selected channel, and the list of services in the preset list).
+A user specified time can be linked to the selected service.
 
 As additional feature, some operations can be scheduled as well
 
@@ -536,13 +539,22 @@ dumping the audiodump and the framedump activity.
 
 For **Linux** there is an additional option: specifying a schedule list
 as parameter in the command line. This is especially useful for
-unattended operation.
+unattended operation. When I have to go out, but want to record
+something on a later time, the feauture allows starting
+Qt-DAB ad a specified time and executing the schedule commands.
+
 The sourcetree for dabMaxi contains a file "testfile" and a
 file "command.sh" that can be used as inspiration for specifying
-an unattended oprtation of Qt-DAB.
+an unattended operation of Qt-DAB.
+
+As an example
+
+   at 13:45 -f command.sh
+
+will start Qt-DAB  at 13:45 and execute the schedule commands from "testfile".
 
 -----------------------------------------------------------------------
-# Pluto device and fm transmission
+# Pluto device and stereo FM transmission
 -----------------------------------------------------------------------
 
 As (probably) known, the **Adalm Pluto** device has receive and transmit
