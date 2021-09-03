@@ -196,6 +196,9 @@ depending on the selected device. The picture shows the program using
 an SDRplay device, with agc not selected and selectors for if gain and
 lna state.
 
+Note that the most recent version of dabMini supports the dlText
+and the scheduler function as was implemented for Qt-DAB.
+
 **duoreceiver** is derived from dabMini and from other software for
 FM decoding. Since the SDR devices are covering both the FM broadcast
 band and BAND III, where DAB transmissions are, there were questions
