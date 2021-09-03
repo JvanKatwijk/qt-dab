@@ -39,7 +39,11 @@
 #include        "band-handler.h"
 #include	"text-mapper.h"
 #include	"process-params.h"
+#include	"dl-cache.h"
 #include	"preset-handler.h"
+
+#include	"findfilenames.h"
+#include	"scheduler.h"
 
 class	QSettings;
 class	virtualInput;
@@ -70,6 +74,7 @@ public:
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
+	FILE			*dlTextFile;
 	RingBuffer<std::complex<float>>  spectrumBuffer;
         RingBuffer<std::complex<float>>  iqBuffer;
         RingBuffer<std::complex<float>>  tiiBuffer;
@@ -89,6 +94,10 @@ private:
 	bandHandler		theBand;
 	QSettings		*dabSettings;
 //	std::vector<dabService>	runningServices;
+	dlCache                 the_dlCache;
+        findfileNames           filenameFinder;
+	Scheduler		theScheduler;
+
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			isSynced;
@@ -136,10 +145,15 @@ private:
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);
 	void			localSelect		(const QString &s);
+	void			scheduleSelect		(const QString &);
+	void			localSelect		(const QString &,
+	                                                 const QString &);
 	QString			filenameSuggestion 	(QString);
 	bool			doStart			();
 	void			hide_for_safety		();
 	void			show_for_safety		();
+	void			scheduled_dlTextDumping	();
+
 public slots:
 	void			set_CorrectorDisplay	(int);
 	void			addtoEnsemble		(const QString &, int);
@@ -181,6 +195,7 @@ public slots:
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
 	void			show_clockError		(int);
+	void			scheduler_timeOut	(const QString &);
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -196,6 +211,8 @@ private slots:
 	void			selectService		(QModelIndex);
 	void			setPresetStation	();
 	void			handle_muteButton	();
+	void			handle_scheduleButton	();
+	void			handle_dlTextButton	();
 };
 #endif
 

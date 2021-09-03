@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>262</width>
-    <height>422</height>
+    <width>266</width>
+    <height>426</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
@@ -193,11 +193,22 @@ For the RTLSDR is is gain, range depending on the device</string>
         </layout>
        </item>
        <item>
-        <widget class="verySmallPushButton" name="muteButton">
-         <property name="text">
-          <string>mute</string>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="verySmallPushButton" name="muteButton">
+           <property name="text">
+            <string>mute</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="verySmallPushButton" name="scheduleButton">
+           <property name="text">
+            <string>schedule</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -230,14 +241,25 @@ For the RTLSDR is is gain, range depending on the device</string>
     </layout>
    </item>
    <item>
-    <widget class="smallComboBox" name="streamoutSelector">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="smallComboBox" name="streamoutSelector">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="dlTextButton">
+       <property name="text">
+        <string>dlText</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <widget class="QLabel" name="dynamicLabel">

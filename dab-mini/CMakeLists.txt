@@ -145,7 +145,7 @@ add_definitions (-D__MSC_THREAD__)
 	           ../includes/backend/data/journaline
 	           ../includes/backend/data/mot
 	           ../includes/support
-	           ../includes/support/viterbi-jan
+#	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/scopes-qwt6
@@ -212,7 +212,7 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/support/band-handler.h
 	     ../includes/support/text-mapper.h
 	     ../includes/support/dab-tables.h
-	     ../includes/support/viterbi-jan/viterbi-handler.h
+#	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
@@ -221,6 +221,11 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/support/verysmallpushbutton.h
 	     ../includes/support/smallcombobox.h
 	     ../include/support/smallspinbox.h
+	     ../includes/support/findfilenames.h 
+             ../includes/support/scheduler.h 
+             ../includes/support/schedule-selector.h 
+             ../includes/support/element-selector.h 
+	     ../includes/support/dl-cache.h
 	     ./devices-dab-mini/device-handler.h
 	)
 
@@ -283,8 +288,12 @@ add_definitions (-D__MSC_THREAD__)
 	     ../src/support/verysmallpushbutton.cpp
 	     ../src/support/smallcombobox.cpp
 	     ../src/support/smallspinbox.cpp
-	     ../src/support/viterbi-jan/viterbi-handler.cpp
+#	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
+	     ../src/support/scheduler.cpp 
+             ../src/support/schedule-selector.cpp 
+             ../src/support/element-selector.cpp 
+             ../src/support/findfilenames.cpp 
 	     ./devices-dab-mini/device-handler.cpp
 	)
 
@@ -319,6 +328,9 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/smallspinbox.h
 	     ../includes/support/band-handler.h
+	     ../includes/support/scheduler.h
+             ../includes/support/schedule-selector.h
+             ../includes/support/element-selector.h
 	)
 
 	set (${objectName}_UIS

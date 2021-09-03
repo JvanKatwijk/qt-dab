@@ -136,6 +136,10 @@ HEADERS += ./radio.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
 	   ../includes/support/presetcombobox.h \
+	   ../includes/support/findfilenames.h \
+	   ../includes/support/scheduler.h \
+	   ../includes/support/schedule-selector.h \
+	   ../includes/support/element-selector.h \
 	   ./devices-dab-mini/device-handler.h
 
 FORMS	+= ./dab-mini.ui
@@ -205,6 +209,10 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallpushbutton.cpp \
 	   ../src/support/verysmallpushbutton.cpp \
 	   ../src/support/smallqlistview.cpp \
+	   ../src/support/scheduler.cpp \
+           ../src/support/schedule-selector.cpp \
+           ../src/support/element-selector.cpp \
+           ../src/support/findfilenames.cpp \
 	   ./devices-dab-mini/device-handler.cpp
 #
 #

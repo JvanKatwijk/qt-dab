@@ -38,6 +38,8 @@
 #include	"radio.h"
 #include	"band-handler.h"
 #include	"audiosink.h"
+#include        "schedule-selector.h"
+#include        "element-selector.h"
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
 #endif
@@ -87,7 +89,10 @@ dabService	secondService;
                                                 dataBuffer (32768),
                                                 audioBuffer (8 * 32768),
 	                                        my_presetHandler (this),
-	                                        theBand ("", Si ) {
+	                                        theBand ("", Si ),
+	                                        filenameFinder (Si),
+	                                        the_dlCache (10),
+	                                        theScheduler (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -96,6 +101,7 @@ QString	presetName;
 	dabSettings		= Si;
 	running. 		store (false);
 	scanning. 		store (false);
+	this	-> dlTextFile	= nullptr;
 //
 //	These buffers are not used here, but needed as parameter
 //	in dabProcessor
@@ -235,6 +241,11 @@ QString	presetName;
 	         this, SLOT (handle_nextChannelButton (void)));
 	connect	(prevchannelButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_prevChannelButton (void)));
+	connect (dlTextButton, SIGNAL (clicked (void)),
+                 this, SLOT (handle_dlTextButton (void)));
+	connect (scheduleButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleButton ()));
+
 //
 	h	= dabSettings -> value ("channel", "12C"). toString();
         k	= channelSelector -> findText (h);
@@ -466,6 +477,8 @@ void	RadioInterface::TerminateProcess() {
 	my_presetHandler. savePresets (presetSelector);
 
 	my_dabProcessor		-> stop();		// definitely concurrent
+	if (dlTextFile != nullptr)
+	   fclose (dlTextFile);
 	usleep (1000);		// give space to clean up pending signals
 //	everything should be halted by now
 	delete		soundOut;
@@ -651,10 +664,26 @@ void	RadioInterface::setSynced	(bool b) {
 }
 
 void	RadioInterface::showLabel	(QString s) {
-	if (running. load ()) {
-	   dynamicLabel	-> setText (s);
-	   dynamicLabel -> setWordWrap (true);
-	}
+	if (!running. load ()) 
+	   return;
+	dynamicLabel	-> setText (s);
+	dynamicLabel -> setWordWrap (true);
+
+	if (dlTextFile == nullptr)
+	   return;
+	if (the_dlCache. addifNew (s))
+	   return;
+        QString currentChannel = channelSelector -> currentText ();
+        QDateTime theDateTime   = QDateTime::currentDateTime ();
+        fprintf (dlTextFile, "%s.%s %s: %s\n",
+                                  currentChannel. toUtf8 (). data (),
+                                  currentService. serviceName.
+                                                  toUtf8 (). data (),
+	                          theDateTime.
+	                                toString ("yy-mm-dd hh:mm:ss").
+	                                      toLatin1 (). data (),
+	                          s. toLatin1 (). data ());
+	
 }
 
 void	RadioInterface::setStereo	(bool s) {
@@ -820,8 +849,27 @@ void	RadioInterface::localSelect (const QString &s) {
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 	if (list. length () != 2)
 	   return;
-	QString channel = list. at (0);
-	QString service	= list. at (1);
+	localSelect (list. at (0), list. at (1));
+}
+//
+//      From a predefined schedule list, the service names most
+//      likely are less than 16 characters
+//
+void    RadioInterface::scheduleSelect (const QString &s) {
+        QStringList list = s.split (":", QString::SkipEmptyParts);
+        if (list. length () != 2)
+           return;
+        QString channel = list. at (0);
+        QString service = list. at (1);
+        for (int i = service. size (); i < 16; i ++)
+           service. append (' ');
+	fprintf (stderr, "scheduling %s %s\n", channel. toLatin1 (). data (),
+	                                       service. toLatin1 (). data ());
+        localSelect (channel, service);
+}
+
+void	RadioInterface::localSelect (const QString &channel,
+	                             const QString &service) {
 	if (channel == channelSelector -> currentText ()) {
 	   stopService ();
 	   dabService s;
@@ -1349,3 +1397,95 @@ void    RadioInterface::handle_muteButton       () {
         muting = true;
 }
 
+///////////////////////////////////////////////////////////////////////////
+//	Handling schedule
+
+void	RadioInterface::handle_scheduleButton	() {
+QStringList candidates;
+scheduleSelector theSelector;
+QString		scheduleService;
+
+	theSelector. addtoList ("nothing");
+	theSelector. addtoList ("exit");
+	theSelector. addtoList ("dlText");
+	candidates	+= "nothing";
+	candidates	+= "exit";
+	candidates	+= "dlText";
+	for (uint16_t i = 0; i < serviceList. size (); i ++) {
+	   QString service = channelSelector -> currentText () +
+	                           ":" + serviceList. at (i). name;
+	   theSelector. addtoList (service);
+	   candidates += service;
+	}
+	for (int i = 1; i < presetSelector -> count (); i ++) {
+	   if (!candidates. contains (presetSelector -> itemText (i))) {
+	      theSelector.
+	              addtoList (presetSelector -> itemText (i));
+	      candidates += presetSelector -> itemText (i);
+	   }
+	}
+
+	int selected		= theSelector. QDialog::exec ();
+	scheduleService		= candidates. at (selected);
+	fprintf (stderr, "selected %d %s\n", selected, 
+	                            scheduleService. toLatin1 (). data ());
+	{  elementSelector	theElementSelector (scheduleService);
+	   int	targetTime	= theElementSelector. QDialog::exec ();
+	   theScheduler. addRow (scheduleService,
+	                         targetTime / 60, 
+	                         targetTime % 60);
+	}
+	theScheduler. show ();
+}
+
+void	RadioInterface::scheduler_timeOut	(const QString &s) {
+	if (!running. load ())
+	   return;
+
+	if (s == "nothing")
+	   return;
+
+	if (s == "exit") {
+	   QWidget::close ();
+	   return;
+	}
+
+	if (s == "dlText") {
+	   scheduled_dlTextDumping ();
+	   return;
+	}
+
+	presetTimer. stop ();
+	scheduleSelect (s);
+}
+
+void	RadioInterface::handle_dlTextButton	(){
+	if (dlTextFile != nullptr) {
+           fclose (dlTextFile);
+           dlTextFile = nullptr;
+           dlTextButton -> setText ("dlText");
+           return;
+        }
+
+        QString fileName =filenameFinder. finddlText_fileName (true);
+        dlTextFile      = fopen (fileName. toUtf8 (). data (), "w+");
+        if (dlTextFile  == nullptr)
+           return;
+        dlTextButton            -> setText ("writing");
+
+}
+
+void	RadioInterface::scheduled_dlTextDumping () {
+	if (dlTextFile != nullptr) {
+	   fclose (dlTextFile);
+	   dlTextFile = nullptr;
+	   dlTextButton	-> setText ("dlText");
+	   return;
+	}
+
+	QString	fileName = filenameFinder. finddlText_fileName (false);
+	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
+	if (dlTextFile == nullptr)
+	   return;
+	dlTextButton		-> setText ("writing");
+}
