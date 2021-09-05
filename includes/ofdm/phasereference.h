@@ -63,7 +63,7 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 signals:
-	void		showCorrelation	(int, int);
+	void		showCorrelation	(int, int, QVector<int>);
 };
 #endif
 

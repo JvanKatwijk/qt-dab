@@ -21,6 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #include	"phasereference.h" 
+#include	<QVector>
 #include	<cstring>
 #include	"radio.h"
 #include	<vector>
@@ -73,8 +74,8 @@ float	Phi_k;
 	   phaseDifferences [i - 1] = abs (arg (refTable [(T_u + i) % T_u] *
 	                         conj (refTable [(T_u + i + 1) % T_u])));
 	
-	connect (this, SIGNAL (showCorrelation (int, int)),
-	         mr,   SLOT   (showCorrelation (int, int)));
+	connect (this, SIGNAL (showCorrelation (int, int, QVector<int>)),
+	         mr,   SLOT   (showCorrelation (int, int, QVector<int>)));
 }
 
 	phaseReference::~phaseReference() {
@@ -119,10 +120,25 @@ std::vector<int> resultVector;
 
 	sum /= T_u / 2;
 //	
+	QVector<int> indices;
+	std::vector<float> maxValues;
 	for (i = 0; i < 200; i ++) {
 	   if (lbuf [T_g - 100 + i] > Max) {
 	      maxIndex = T_g - 100 + i;
 	      Max = lbuf [T_g - 100 + i];
+	      if (Max / sum >= threshold) {
+	         if ((indices. size () > 0) &&
+	               (indices. at (indices. size () - 1) == maxIndex - 1)) {
+	            if (maxValues. at (indices. size () - 1) < Max) {
+	               indices. replace (indices. size () - 1, maxIndex);
+	               maxValues. at (indices. size () - 1) = Max;
+	            }
+	         }
+	         else {
+	            indices. push_back (maxIndex);
+	            maxValues. push_back (Max);
+	         }
+	      }
 	   }
 	}
 
@@ -133,7 +149,7 @@ std::vector<int> resultVector;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
-	      showCorrelation (T_u / 2, T_g);
+	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
 	}

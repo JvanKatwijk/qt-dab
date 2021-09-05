@@ -1980,10 +1980,13 @@ void	RadioInterface::show_clockError	(int e) {
 }
 //
 //	called from the phasesynchronizer
-void	RadioInterface::showCorrelation	(int amount, int marker) {
+void	RadioInterface::showCorrelation	(int amount, int marker,
+	                                       QVector<int> v) {
 	if (!running. load())
 	   return;
-	my_correlationViewer. showCorrelation (amount, marker);
+	my_correlationViewer. showCorrelation (amount, marker, v);
+	QString t = "Transm " + QString::number (v. size ());
+	nrTransmitters	-> setText (t);
 }
 
 ////////////////////////////////////////////////////////////////////////////

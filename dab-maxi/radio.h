@@ -31,6 +31,7 @@
 #ifdef	_SEND_DATAGRAM_
 #include	<QUdpSocket>
 #endif
+#include	<QVector>
 #include	<QComboBox>
 #include	<QByteArray>
 #include	<QLabel>
@@ -314,7 +315,8 @@ public slots:
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
 	void			setSyncLost		();
-	void			showCorrelation		(int, int);
+	void			showCorrelation		(int, int,
+	                                                    QVector<int>);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float);

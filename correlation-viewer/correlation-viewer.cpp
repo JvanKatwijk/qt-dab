@@ -133,7 +133,8 @@ bool	correlationViewer::isHidden() {
 }
 
 static int lcount = 0;
-void	correlationViewer::showCorrelation (int32_t dots, int marker) {
+void	correlationViewer::showCorrelation (int32_t dots,
+	                                          int marker, QVector<int> &v) {
 uint16_t	i;
 float data	[dots];
 float	mmax	= 0;
@@ -173,6 +174,14 @@ float	mmax	= 0;
 	Y_values [plotLength - 1] 	= get_db (0);
 	spectrumCurve. setSamples (X_axis, Y_values, plotLength);
 	plotgrid	-> replot(); 
+	QString theText;
+	if (v. size () > 0) {
+	   theText = "Best matches at ";
+	   for (int i = 0; i < v. size (); i ++)
+	      theText += QString::number (v. at (i)) + " ";
+	}
+	theText += "Selected sample " + QString::number (marker);
+	indexDisplay -> setText (theText);
 }
 
 float	correlationViewer::get_db (float x) {

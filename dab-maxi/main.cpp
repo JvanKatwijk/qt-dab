@@ -158,6 +158,7 @@ QString	scheduleFile		= "";
 	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
+	qRegisterMetaType<QVector<int> >("QVector<int>");
         a. exec();
 /*
  *      done:

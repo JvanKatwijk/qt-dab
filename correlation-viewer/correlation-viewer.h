@@ -46,6 +46,7 @@
 #include        <qwt_picker_machine.h>
 #include        <qwt_scale_widget.h>
 #include        <QBrush>
+#include	<QVector>
 
 
 class	RadioInterface;
@@ -56,7 +57,8 @@ public:
 	                                         QSettings	*,
 	                                         RingBuffer<float> *);
 			~correlationViewer	();
-	void		showCorrelation		(int32_t, int32_t);
+	void		showCorrelation		(int32_t, int32_t,
+	                                                QVector<int> &);
 	void		showIndex		(int32_t);
 	void		show			();
 	void		hide			();

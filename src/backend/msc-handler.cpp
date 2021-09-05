@@ -143,9 +143,9 @@ int	currentBlock	= 0;
                     float ab1    = jan_abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //      we make the bits into softbits in the range -127 .. 127
-                    ibits [i]            =  - real (r1) / ab1 * 1023.0;
+                    ibits [i]            =  - (real (r1) * 127) / ab1;
                     ibits [params. get_carriers() + i]
-	                                 =  - imag (r1) / ab1 * 1023.0;
+	                                 =  - (imag (r1) * 127) / ab1;
                  }
 
 	         process_mscBlock (ibits, currentBlock);
