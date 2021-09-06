@@ -185,6 +185,7 @@ QString scanmodeText (int e) {
 #define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 #define	CONFIG_BUTTON		QString	("configButton")
 #define	DLTEXT_BUTTON		QString	("dlTextButton")
+#define	HIDE_BUTTON		QString ("hideButton")
 
 static
 uint8_t convert (QString s) {
@@ -460,6 +461,8 @@ uint8_t	dabBand;
 	         channelSelector, SLOT (setCurrentIndex (int)));
 	connect (this, SIGNAL (set_newPresetIndex (int)),
 	         presetSelector, SLOT (setCurrentIndex (int)));
+	connect (dlTextButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_dlTextButton ()));
 
 //	restore some settings from previous incarnations
 	QString t       =
@@ -531,7 +534,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_configButton (void)));
 	connect (dlTextButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_dlTextButton (void)));
-
+	connect (hideButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_hideButton (void)));
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_prevChannelButton (void)));
 	connect (nextChannelButton, SIGNAL (rightClicked (void)),
@@ -551,8 +555,6 @@ uint8_t	dabBand;
 //	         this, SLOT (color_muteButton (void)));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
-	connect (dlTextButton, SIGNAL (clicked ()),	
-	         this, SLOT (handle_dlTextButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
@@ -651,6 +653,14 @@ uint8_t	dabBand;
 	   inputDevice	= setDevice (deviceSelector -> currentText());
 	}
 
+	bool hidden	=
+	            dabSettings	-> value ("hidden", 0). toInt () != 0;
+	if (hidden) {
+	   hideButton	-> setText ("show controls");
+	   controlWidget -> hide ();	
+	}
+	connect (hideButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_hideButton ()));
 	if (inputDevice != nullptr) {
 	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
 	      inputDevice -> show ();
@@ -844,8 +854,9 @@ int	serviceOrder;
 	my_history -> addElement (channelSelector -> currentText (),
 	                                                        serviceName);
 	model. clear ();
-	for (const auto serv : serviceList)
+	for (const auto serv : serviceList) {
 	   model. appendRow (new QStandardItem (serv. name));
+	}
 	for (int i = 0; i < model. rowCount (); i ++) {
 	   model. setData (model. index (i, 0),
 	              QFont (theFont, fontSize), Qt::FontRole);
@@ -874,6 +885,11 @@ QString s;
 	if (!running. load())
 	   return;
 
+	
+	QFont font	= ensembleId -> font ();
+	font. setPointSize (13);
+	font. setBold (true);
+	ensembleId	-> setFont (font);
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
@@ -1261,7 +1277,7 @@ void	RadioInterface::TerminateProcess () {
 	theBand. hide		();
 	theScheduler. hide	();
 	configDisplay. hide	();
-	dataDisplay. hide();
+	dataDisplay. hide	();
 	if (motSlides != nullptr)
 	   motSlides	-> hide ();
 	LOG ("terminating ", "");
@@ -1863,8 +1879,10 @@ void	RadioInterface::showLabel	(QString s) {
 	if (streamerOut != nullptr)
 	   streamerOut -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
-	if (running. load())
+	if (running. load()) {
+	   dynamicLabel -> setWordWrap (true);
 	   dynamicLabel	-> setText (s);
+	}
 	if (dlTextFile == nullptr)
 	   return;
 //	if (the_dlCache. isMember (s))
@@ -2769,7 +2787,11 @@ QString serviceName	= s -> serviceName;
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
 	   if (itemText == serviceName) {
 	      colorService (model. index (i, 0), Qt::red, fontSize + 4);
-	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
+//	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
+	      QFont font = serviceLabel -> font ();
+	      font. setPointSize (16);
+	      font. setBold (true);
+	      serviceLabel	-> setFont (font);
 	      serviceLabel	-> setText (serviceName);
 	      audiodata ad;
 	      
@@ -3692,8 +3714,15 @@ QString configButton_font	=
 QString	dlTextButton_color =
 	   dabSettings -> value (DLTEXT_BUTTON + "_color",
 	                                              "black"). toString ();
+
 QString dlTextButton_font	=
 	   dabSettings -> value (DLTEXT_BUTTON + "_font",
+	                                              "white"). toString ();
+QString	hideButton_color =
+	   dabSettings -> value (HIDE_BUTTON + "_color",
+	                                              "black"). toString ();
+QString hideButton_font	=
+	   dabSettings -> value (HIDE_BUTTON + "_font",
 	                                              "white"). toString ();
 	dabSettings	-> endGroup ();
 
@@ -3747,6 +3776,8 @@ QString dlTextButton_font	=
 	                                             muteButton_font));
 	dlTextButton	-> setStyleSheet (temp. arg (dlTextButton_color,
 	                                             dlTextButton_font));
+	hideButton	-> setStyleSheet (temp. arg (hideButton_color,
+	                                             hideButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -3828,6 +3859,10 @@ void	RadioInterface::color_configButton	()	{
 
 void	RadioInterface::color_dlTextButton	()	{
 	set_buttonColors (dlTextButton, DLTEXT_BUTTON);
+}
+
+void	RadioInterface::color_hideButton	() 	{
+	set_buttonColors (hideButton, HIDE_BUTTON);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -4136,4 +4171,18 @@ void	RadioInterface::scheduled_dlTextDumping () {
 	   return;
 	dlTextButton		-> setText ("writing");
 }
+
+void	RadioInterface::handle_hideButton	() {
+	if (controlWidget -> isVisible ()) {
+	   hideButton	-> setText ("show controls");
+	   controlWidget -> hide ();	
+	   dabSettings	-> setValue ("hidden", 1);
+	}
+	else {
+	   hideButton	-> setText ("hide controls");
+	   controlWidget -> show ();
+	   dabSettings	-> setValue ("hidden", 0);
+	}
+}
+
 

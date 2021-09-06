@@ -380,6 +380,8 @@ private slots:
 	void			scheduler_timeOut	(const QString &);
 	void			handle_dlTextButton     ();
 
+	void			handle_hideButton	();
+
 //
 //	color handlers
 	void			color_contentButton	();
@@ -402,6 +404,7 @@ private slots:
 	void			color_audiodumpButton	();
 	void			color_configButton	();
 	void			color_dlTextButton	();
+	void			color_hideButton	();
 //
 //	config handlers
 	void			handle_configSetting		();
