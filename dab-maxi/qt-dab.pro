@@ -156,6 +156,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
 	   ../includes/support/smallcombobox.h \
+	   ../includes/support/normalpushbutton.h \
 	   ../includes/support/smallpushbutton.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
@@ -263,6 +264,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
 	   ../src/support/smallcombobox.cpp \
+	   ../src/support/normalpushbutton.cpp \
 	   ../src/support/smallpushbutton.cpp \
 	   ../src/support/verysmallpushbutton.cpp \
 	   ../src/support/smallqlistview.cpp \

@@ -186,6 +186,7 @@ QString scanmodeText (int e) {
 #define	CONFIG_BUTTON		QString	("configButton")
 #define	DLTEXT_BUTTON		QString	("dlTextButton")
 #define	HIDE_BUTTON		QString ("hideButton")
+#define	SCHEDULE_BUTTON		QString ("scheduleButton")
 
 static
 uint8_t convert (QString s) {
@@ -536,6 +537,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_dlTextButton (void)));
 	connect (hideButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_hideButton (void)));
+	connect (scheduleButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_scheduleButton ()));
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_prevChannelButton (void)));
 	connect (nextChannelButton, SIGNAL (rightClicked (void)),
@@ -2343,6 +2346,8 @@ void	RadioInterface::connectGUI	() {
 //	         this, SLOT (handle_muteButton (void)));
 	connect (muteButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_muteButton ()));
+	connect (scheduleButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleButton ()));
 
 	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
@@ -2362,8 +2367,6 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_orderServiceIds ()));
 	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	         this, SLOT (handle_ordersubChannelIds ()));
-	connect (configWidget. scheduleSelector, SIGNAL (clicked ()),
-	         this, SLOT (handle_scheduleSelector ()));
 	connect (configWidget. plotLengthSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_plotLengthSetting (int)));
 	connect (configWidget. scanmodeSelector,
@@ -2423,6 +2426,8 @@ void	RadioInterface::disconnectGUI() {
 //	         this, SLOT (handle_muteButton (void)));
 	disconnect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_muteButton (void)));
+	disconnect (scheduleButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_scheduleButton ()));
 
 	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectService (QModelIndex)));
@@ -2441,8 +2446,6 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_orderServiceIds ()));
 	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	            this, SLOT (handle_ordersubChannelIds ()));
-	disconnect (configWidget. scheduleSelector, SIGNAL (clicked ()),
-	            this, SLOT (handle_scheduleSelector ()));
 	disconnect (configWidget. plotLengthSetting,
 	                                         SIGNAL (valueChanged (int)),
 	            this, SLOT (handle_plotLengthSetting (int)));
@@ -3724,6 +3727,12 @@ QString	hideButton_color =
 QString hideButton_font	=
 	   dabSettings -> value (HIDE_BUTTON + "_font",
 	                                              "white"). toString ();
+QString	scheduleButton_color =
+	   dabSettings -> value (SCHEDULE_BUTTON + "_color",
+	                                              "black"). toString ();
+QString scheduleButton_font	=
+	   dabSettings -> value (SCHEDULE_BUTTON + "_font",
+	                                              "white"). toString ();
 	dabSettings	-> endGroup ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
@@ -3778,6 +3787,8 @@ QString hideButton_font	=
 	                                             dlTextButton_font));
 	hideButton	-> setStyleSheet (temp. arg (hideButton_color,
 	                                             hideButton_font));
+	scheduleButton	-> setStyleSheet (temp. arg (scheduleButton_color,
+	                                             scheduleButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -3863,6 +3874,10 @@ void	RadioInterface::color_dlTextButton	()	{
 
 void	RadioInterface::color_hideButton	() 	{
 	set_buttonColors (hideButton, HIDE_BUTTON);
+}
+
+void	RadioInterface::color_scheduleButton	() 	{
+	set_buttonColors (scheduleButton, SCHEDULE_BUTTON);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -3958,7 +3973,7 @@ void	RadioInterface::handle_ordersubChannelIds	() {
 ///////////////////////////////////////////////////////////////////////////
 //	Handling schedule
 
-void    RadioInterface::handle_scheduleSelector	() {
+void    RadioInterface::handle_scheduleButton	() {
 QStringList candidates;
 scheduleSelector theSelector;
 QString		scheduleService;

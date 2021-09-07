@@ -381,6 +381,7 @@ private slots:
 	void			handle_dlTextButton     ();
 
 	void			handle_hideButton	();
+	void			handle_scheduleButton		();
 
 //
 //	color handlers
@@ -405,6 +406,7 @@ private slots:
 	void			color_configButton	();
 	void			color_dlTextButton	();
 	void			color_hideButton	();
+	void			color_scheduleButton	();
 //
 //	config handlers
 	void			handle_configSetting		();
@@ -413,7 +415,6 @@ private slots:
 	void			handle_orderAlfabetical		();
 	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
-	void			handle_scheduleSelector		();
 	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);
 	void			handle_motslideSelector		(int);

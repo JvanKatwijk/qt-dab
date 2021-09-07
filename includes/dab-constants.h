@@ -130,10 +130,13 @@ static inline
 float	jan_abs (std::complex<float> z) {
 float	re	= real (z);
 float	im	= imag (z);
-	return (re < 0 ? -re : re) +
-	       (im < 0 ? -im : im);
+	if (re < 0) re = -re;
+	if (im < 0) im = -im;
+	if (re > im) 
+	   return re + 0.5 * im;
+	else
+	   return im + 0.5 * re;
 }
-
 
 #define		BAND_III	0100
 #define		L_BAND		0101

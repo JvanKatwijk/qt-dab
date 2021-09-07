@@ -171,7 +171,7 @@ std::complex<float> conjVector [T_u];
 	   std::complex<float>	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
 	   conjVector [index] = r1;
-	   float ab1	= jan_abs (r1);
+	   float ab1	= abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  - (real (r1) * 127) / ab1;

@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
@@ -6,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,17 +20,22 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "smallcombobox.h"
+#ifndef	__NORMAL_BUTTON__
+#define	__NORMAL_BUTTON__
+#include	<QPushButton>
+#include	<QSize>
 
-	smallComboBox::smallComboBox (QWidget *parent):
-	                                    QComboBox(parent) {
-}
-
-	smallComboBox::~smallComboBox () {}
-
-QSize	smallComboBox::sizeHint ()const {
-QSize	temp = QComboBox::sizeHint ();
-	return QSize (temp. rwidth () / 4, temp. rheight () / 4);
-}
-
+//
+//	just redefining sizeHint
+class	normalPushButton : public QPushButton {
+Q_OBJECT
+public:
+	normalPushButton	(QWidget *);
+	~normalPushButton	();
+QSize	sizeHint		()const;
+void	mousePressEvent (QMouseEvent *e);
+signals:
+void	rightClicked		();
+};
+#endif
 

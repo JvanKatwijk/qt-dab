@@ -1,4 +1,3 @@
-
 #
 /*
  *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
@@ -20,17 +19,26 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include "smallcombobox.h"
+#include "normalpushbutton.h"
+#include	<QMouseEvent>
 
-	smallComboBox::smallComboBox (QWidget *parent):
-	                                    QComboBox(parent) {
+	normalPushButton::normalPushButton (QWidget *parent):
+	                                    QPushButton (parent) {
 }
 
-	smallComboBox::~smallComboBox () {}
+	normalPushButton::~normalPushButton () {}
 
-QSize	smallComboBox::sizeHint ()const {
-QSize	temp = QComboBox::sizeHint ();
-	return QSize (temp. rwidth () / 4, temp. rheight () / 4);
+QSize	normalPushButton::sizeHint ()const {
+QSize	temp = QPushButton::sizeHint ();
+	return QSize (temp. rwidth (), 2 * temp. rheight () / 3);
+}
+
+void	normalPushButton::mousePressEvent (QMouseEvent *e) {
+	if (e -> button () == Qt::RightButton) {
+	   emit rightClicked ();
+	}
+	else
+	   emit clicked ();
 }
 
 

@@ -278,6 +278,7 @@ endif ()
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/smallqlistview.h
+	     ../includes/support/normalpushbutton.h
 	     ../includes/support/smallpushbutton.h
 	     ../includes/support/smallspinbox.h
 	     ../includes/support/verysmallpushbutton.h
@@ -368,6 +369,7 @@ endif ()
 	     ../src/support/presetcombobox.cpp
 	     ../src/support/smallqlistview.cpp
 	     ../src/support/smallspinbox.cpp
+	     ../src/support/normalpushbutton.cpp
 	     ../src/support/smallpushbutton.cpp
 	     ../src/support/verysmallpushbutton.cpp
 	     ../src/support/smallcombobox.cpp
@@ -425,6 +427,7 @@ endif ()
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/smallqlistview.h
 	     ../includes/support/smallspinbox.h
+	     ../includes/support/normalpushbutton.h
 	     ../includes/support/smallpushbutton.h
 	     ../includes/support/verysmallpushbutton.h
 	     ../includes/support/smallcombobox.h

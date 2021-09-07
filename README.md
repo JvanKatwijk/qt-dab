@@ -4,6 +4,19 @@ Qt-DAB-4.1 is software for Linux and Raspberry Pi for listening to terrestrial D
 
 ![overview](/qt-dab-screen.png?raw=true)
 
+-----------------------------------------------------------------
+------------------------------------------------------------------
+
+Note that the current "continuous build" has a version 4.11, a minor
+update. Changes
+
+ - the number of transmitters seen by the software is new mentioned
+ - the "schedule" button is now on the controls section in the main widget
+ - the section with controls on the main widget can be hidden
+
+![4.11](/screen-4.11-1.png?raw=true)
+![4.11](/screen-4.11-2.png?raw=true)
+
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
