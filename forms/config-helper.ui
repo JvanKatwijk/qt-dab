@@ -251,6 +251,16 @@
      </item>
     </layout>
    </item>
+   <item>
+    <widget class="smallPushButton" name="dlTextButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Add an element to the schedule. First a list of services is presented from which to choose,&lt;/p&gt;&lt;p&gt;after selecting a service, a second widget will pop up and ask for the time that that&lt;/p&gt;&lt;p&gt;service should be activated.&lt;/p&gt;&lt;p&gt;Note that, since the channel may have to be changed, the actual switch will take&lt;/p&gt;&lt;p&gt;place app 15 seconds before the specified time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>dlText</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>

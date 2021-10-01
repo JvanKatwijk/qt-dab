@@ -462,7 +462,7 @@ uint8_t	dabBand;
 	         channelSelector, SLOT (setCurrentIndex (int)));
 	connect (this, SIGNAL (set_newPresetIndex (int)),
 	         presetSelector, SLOT (setCurrentIndex (int)));
-	connect (dlTextButton, SIGNAL (clicked ()),
+	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_dlTextButton ()));
 
 //	restore some settings from previous incarnations
@@ -533,7 +533,7 @@ uint8_t	dabBand;
 	         this, SLOT (color_sourcedumpButton (void)));
 	connect (configButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_configButton (void)));
-	connect (dlTextButton, SIGNAL (rightClicked (void)),
+	connect (configWidget. dlTextButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_dlTextButton (void)));
 	connect (hideButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_hideButton (void)));
@@ -664,6 +664,7 @@ uint8_t	dabBand;
 	}
 	connect (hideButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_hideButton ()));
+
 	if (inputDevice != nullptr) {
 	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
 	      inputDevice -> show ();
@@ -3783,7 +3784,8 @@ QString scheduleButton_font	=
 //	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
-	dlTextButton	-> setStyleSheet (temp. arg (dlTextButton_color,
+	configWidget.
+	    dlTextButton -> setStyleSheet (temp. arg (dlTextButton_color,
 	                                             dlTextButton_font));
 	hideButton	-> setStyleSheet (temp. arg (hideButton_color,
 	                                             hideButton_font));
@@ -3869,7 +3871,7 @@ void	RadioInterface::color_configButton	()	{
 }
 
 void	RadioInterface::color_dlTextButton	()	{
-	set_buttonColors (dlTextButton, DLTEXT_BUTTON);
+	set_buttonColors (configWidget. dlTextButton, DLTEXT_BUTTON);
 }
 
 void	RadioInterface::color_hideButton	() 	{
@@ -4161,7 +4163,7 @@ void	RadioInterface::handle_dlTextButton	() {
 	if (dlTextFile != nullptr) {
 	   fclose (dlTextFile);
 	   dlTextFile = nullptr;
-	   dlTextButton	-> setText ("dlText");
+	   configWidget. dlTextButton	-> setText ("dlText");
 	   return;
 	}
 
@@ -4169,14 +4171,14 @@ void	RadioInterface::handle_dlTextButton	() {
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile	== nullptr)
 	   return;
-	dlTextButton		-> setText ("writing");
+	configWidget. dlTextButton		-> setText ("writing");
 }
 
 void	RadioInterface::scheduled_dlTextDumping () {
 	if (dlTextFile != nullptr) {
 	   fclose (dlTextFile);
 	   dlTextFile = nullptr;
-	   dlTextButton	-> setText ("dlText");
+	   configWidget. dlTextButton	-> setText ("dlText");
 	   return;
 	}
 
@@ -4184,7 +4186,7 @@ void	RadioInterface::scheduled_dlTextDumping () {
 	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
 	if (dlTextFile == nullptr)
 	   return;
-	dlTextButton		-> setText ("writing");
+	configWidget. dlTextButton	-> setText ("writing");
 }
 
 void	RadioInterface::handle_hideButton	() {

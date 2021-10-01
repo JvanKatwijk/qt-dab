@@ -111,7 +111,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/msc-handler.h \
 	   ../includes/backend/galois.h \
 	   ../includes/backend/reed-solomon.h \
-	   ../includes/backend/rscodec.h \
+#	   ../includes/backend/rscodec.h \
 	   ../includes/backend/charsets.h \
 	   ../includes/backend/firecode-checker.h \
 	   ../includes/backend/frame-processor.h \
@@ -222,7 +222,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/msc-handler.cpp \
 	   ../src/backend/galois.cpp \
 	   ../src/backend/reed-solomon.cpp \
-	   ../src/backend/rscodec.cpp \
+#	   ../src/backend/rscodec.cpp \
 	   ../src/backend/charsets.cpp \
 	   ../src/backend/firecode-checker.cpp \
 #	   ../src/backend/frame-processor.cpp \
