@@ -1,6 +1,6 @@
 # Qt-DAB-4.1 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.1 is software for Linux and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.1 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![overview](/qt-dab-screen.png?raw=true)
 
@@ -47,14 +47,14 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.1** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI, both 2 and 3.
+**Qt-DAB-4.1** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
 
 It provides an abundant amount of selectors and displays, most of
-which can be switched off, but are of interest for those who want to see aspects of the DAB signal.
+which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
 
 While it is not very complicated to generate an executable for either
-Qt-DAB or dabMini, for Linux-x64 appImages exist  for both Qt-DAB and dabMini.
-For Windows an installer is available.
+Qt-DAB or dabMini, for Linux-x64 appImages exist for both Qt-DAB and dabMini.
+For Windows installers  are available.
 
 Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
 ASR-33 terminals and "command lines", I often prefer a simple command line
@@ -75,13 +75,13 @@ Features
 
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
   * MOT SlideShow (SLS)
-  * Dynamic Label (DLS) 
+  * Dynamic Label (DLS) and the possibility of saving dynamic Labels - augmented withg chabbel and time info - in a file,
   * Both DAB bands (and user defined bands) are supported: 
   	* VHF Band III (default),
    	* L-Band (obsolete now),
 	* a user defined Band
   * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file)m
-  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time.
+  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time,
   * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
   * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type),
   * Automatic display of TII (Transmitter Identification Information) data when transmitted,
@@ -108,7 +108,7 @@ Features
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
   * Clean interface to add other devices, see below.
-  * Scheduling channel:service pairs, even for unattended operation
+  * Scheduling the start of channel:service pairs or operations as frame dump or audio dump, even for unattented operation.
 
 Not yet or partly implemented:
 
@@ -323,7 +323,7 @@ contains a complete script that can be used to install all required
 libraries, download the sources and build an executable on an Ubuntu
 (Debian) based system.
 
-Since Buster, the current system on the RPI's, has the same roots
+Since the main OS on the RPI's, has the same roots
 as Ubuntu, the script for Ubuntu can be used to install Qt-DAB
 on an RPI.
 
@@ -512,9 +512,9 @@ contains 39 channels, so - depending on your position - there is
 quite a number of channels where no DAB signal is to be found.
 
 As in **dabChannel**, Qt-DAB has an extended mechanism to skip
-specified channels during a scan, a **skipTable**.
+specified channels during a scan, a so-called **skipTable**.
 The configuration widget contains a button to make the **skipTable**
-visible. The skipTable shows all channels in the selected band, 
+visible. Such a skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
 Double clicking on the field will invert its setting.
 Obviously. such a skipTable will be maintained between program invocations.
@@ -534,7 +534,7 @@ the same table that is used when no skipFile is selected.
 -----------------------------------------------------------------------
 
 The "alarm" facility is replaced by a more general scheduling facility.
-Touching the "add to schedule" button on the configuration widget
+Touching the "add to schedule" button on the configuration widget (in 4.11 a button "schedule" on the main widget)
 will show a list of services to select from (the services in the currently
 selected channel, and the list of services in the preset list).
 A user specified time can be linked to the selected service.
@@ -548,8 +548,9 @@ currently selected audio service;
 of the currently selected service.
  * dlText, to schedule starting or stopping recording the dynamic label text.
 
-Note that selecting a ddifferent audio service will automatically stop
-dumping the audiodump and the framedump activity.
+Note that selecting a different audio service will automatically stop
+dumping the audiodump and the framedump activity, the recording of the dynamic label text
+- if selected - is not affacted.
 
 ![scheduler](/scheduler.png?raw=true)
 
@@ -582,8 +583,8 @@ service.
 As an exercise - and slightly experimental - the functionality was
 added to qt-dab.
 
-If - on configuration - **pluto-rxtx** is taken as device rather than
-pluto, and if pluto-rxtx is selected as (input)device on the main
+If - on configuration - **pluto-rxtx** is included as device rather than
+**pluto**, and if pluto-rxtx is selected as (input)device on the main
 widget, the audio
 of the selected service, augmented with the text of the dynamic label
 encoded as RDS signal, will be transmitted on a specified frequency.
