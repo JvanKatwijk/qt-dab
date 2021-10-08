@@ -25,7 +25,7 @@ Table of Contents
 * [Installation on Linux x64](#installation-on-linux-x64)
 * [Configuring](#configuring)
 * [Interfacing to another device](#Interfacing-to-another-device)
-* [Using user-specified bands(#Using-user-specified-bands)
+* [Using user-specified bands](#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
 * [EPG-Handling](#epg-handling)
 * [Recording the SNR](#recording-the-snr)
@@ -434,7 +434,7 @@ A complete description of how to interface a device to Qt-DAB
 is given in the user's manual.
 
 ------------------------------------------------------------------------
-Using user specified than Band III or L Band
+Using user specified bands
 ------------------------------------------------------------------------
 
 While it is known that the DAB transmissions are now all in Band III,
