@@ -174,8 +174,8 @@ std::complex<float> conjVector [T_u];
 	   float ab1	= abs (r1);
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
-	   ibits [i]		=  - (real (r1) * 127) / ab1;
-	   ibits [carriers + i] =  - (imag (r1) * 127) / ab1;
+	   ibits [i]		=  - (real (r1) * 255) / ab1;
+	   ibits [carriers + i] =  - (imag (r1) * 255) / ab1;
 	}
 
 //	From time to time we show the constellation of symbol 2.

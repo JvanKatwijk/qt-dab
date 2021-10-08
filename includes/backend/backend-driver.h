@@ -24,9 +24,10 @@
 #ifndef	__BACKEND_DRIVER__
 #define	__BACKEND_DRIVER__
 
+#include	<vector>
+#include	<utility>
 #include	"dab-constants.h"
 #include	"radio.h"
-#include	<vector>
 
 class	frameProcessor;
 
@@ -40,7 +41,7 @@ public:
     ~backendDriver();
 void	addtoFrame	(std::vector<uint8_t> outData);
 private:
-	frameProcessor	* theProcessor;
+	std::unique_ptr<frameProcessor> theProcessor;
 };
 
 #endif

@@ -1,21 +1,9 @@
-# Qt-DAB-4.1 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.11 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.1 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.11 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/qt-dab-screen.png?raw=true)
-
------------------------------------------------------------------
-------------------------------------------------------------------
-
-Note that the current "continuous build" has a version 4.11, a minor
-update. Changes
-
- - the number of transmitters seen by the software is new mentioned
- - the "schedule" button is now on the controls section in the main widget
- - the section with controls on the main widget can be hidden
-
+![overview](/screen-4.11-2.png?raw=true)
 ![4.11](/screen-4.11-1.png?raw=true)
-![4.11](/screen-4.11-2.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents
@@ -28,18 +16,19 @@ Table of Contents
 * [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab)
 * [Colors](#colors-for-qt-dab)
-* [Comment on some config settings](#comment-on-some-configuration-settings)
+* [Comment on some config settings](#Configuration-settings)
+* [Scanning and the skip table](#scanning-and-the-skip-table)
+* [Saving synamic label texts](#Saving-dynamic-label-texts)
+* [Scheduling option](#Scheduling-option)
 * [Obsolete properties](#Obsolete-properties)
 * [Installation on Windows](#installation-on-windows)
 * [Installation on Linux x64](#installation-on-linux-x64)
 * [Configuring](#configuring)
 * [Interfacing to another device](#Interfacing-to-another-device)
-* [Using other bands than Band III or L Band](#Using-other-bands-than-band-iii-or-l-band)
+* [Using user-specified bands(#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
 * [EPG-Handling](#epg-handling)
 * [Recording the SNR](#recording-the-snr)
-* [Scanning and the skip table](#scanning-and-the-skip-table)
-* [Scheduling option](#Scheduling-option)
 * [Pluto device and fm transmission](#pluto-device-and-fm-transmission)
 * [Copyright](#copyright)
 
@@ -47,7 +36,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.1** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+**Qt-DAB-4.11** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
@@ -86,11 +75,11 @@ Features
   * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type),
   * Automatic display of TII (Transmitter Identification Information) data when transmitted,
   * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
-  * Dumping of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files or xml file formats and playing them again later (see section on xml format),
+  * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files or xml file formats and playing them again later (see section on xml format),
   * Saving audio as uncompressed wave files,
   * Saving aac frames from DAB+ services for processing by e.g. VLC,
   * Saving the ensemble content description: audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
-  * Scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
+  * Advanced scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
   * TPEG output: when configured the data is sent to a specified ip address,
   * EPG detection and building up a time table,
@@ -129,11 +118,15 @@ Widgets and scopes for Qt-DAB
 Qt-DAB always shows a main widget; a number of  **optional**
 widgets is visible or invisible under user's control
 
-![Qt-DAB main widget](/qt-dab-main-widget.png?raw=true)
+![Qt-DAB main widget](/qt-dab-screen.png?raw=true)
 
 The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
 of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
+
+New in 4.11 is a button which determines the visibility of the control buttons.
+
+![4.11](/screen-4.11-1.png?raw=true)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.
@@ -172,22 +165,18 @@ as some information on the quality of the decoding,
   * a widget showing the development - over time - of the SNR,
   * if configured and data is detected, the time table for the current audio service
 
-![Qt-DAB totaal](/qt-dab-totaal.png?raw=true)
+![Qt-DAB totaal](/qt-dab-scan.png?raw=true)
 
-Another - an eight' - widget shows when running a *scan*; the widget will show the contents of the ensembles found in the selected channel. In 3.5 the
-possibility was created to save a detailed description of the services
+Another - an eight' - widget shows when running a *scan*; the widget 
+shows the contents of the ensembles found in the selected channels.
+Since 3.5 the
+possibility exists to save a detailed description of the services
 in the different channels, in a format easy to process with LibreOffice
 or comparable programs.
 
 Depending on a setting in the ".ini" file, a logo or slide, transmitted
 as Program Associated Data with the audio transmission, will be shown here or on a separate widget
 (the setting can be modified from the configuration widget).
-
-During *scanning*, a separate window will be shown with the results
-of the scan as shown in the picture. Note that what is shown is a *subset*
-of what will be recorded if a choice is made to save the output of the scan. 
-
-![Qt-DAB scan result](/qt-dab-scan-result.png?raw=true)
 
 ---------------------------------------------------------------------
 dabMini and duoreceiver
@@ -275,7 +264,7 @@ questions will be asked: what will be the color of the display (background),
 what will be the color of the grid and what will be the color of the curve.
 
 ---------------------------------------------------------------------------
-Comment on some  configuration settings
+Configuration settings
 -------------------------------------------------------------------------------
 
 Many settings are maintained between program invocations in a
@@ -285,12 +274,96 @@ A complete description of the settings can be found in the user's manual
 Touching the **config*( button on the main widget will show (or hide)
 a widget where a number of settings can be adapted.
 
+----------------------------------------------------------------------
+Scanning and the skip table
+----------------------------------------------------------------------
+
+As known, Qt-DAB provides a possibility of scanning the band. Band III
+contains 39 channels, so - depending on your position - there is
+quite a number of channels where no DAB signal is to be found.
+
+As in **dabChannel**, Qt-DAB has an extended mechanism to skip
+specified channels during a scan, a so-called **skipTable**.
+The configuration widget contains a button to make the **skipTable**
+visible. Such a skipTable shows all channels in the selected band, 
+each channel labeled with a field containing a "+" or a "-" sign.
+Double clicking on the field will invert its setting.
+Obviously. such a skipTable will be maintained between program invocations.
+
+When DX-ing, one wants to direct the antenna to different countries
+in different directions.
+Ideally there is a skipTable for each direction, and
+Qt-DAB supports that.
+The configuration widget contains a button **skipFile**,
+when touched a file selection menu appears where one can select a skipfile.
+**If the file does not exist yet, it will be created.**
+If one cancels the file selection, the default skipTable will be used,
+the same table that is used when no skipFile is selected.
+
+----------------------------------------------------------------------
+# Saving dynamic label texts
+----------------------------------------------------------------------
+
+Based on user requests an option is implemented to store the texts as
+emitted as dynamic label texts, into a file. The configuration widget
+contains - at the bottom - a button that - when touched - shows a
+file selection menu.
+The texts are preceded with a time indication and a service name.
+
+	12C.NPO Radio 5  2021-10-08 11:33:00  Rolling Stones - Jumpin' Jack Flash
+	12C.NPO Radio 5  2021-10-08 11:36:38  NPO Radio 5 - Arbeidsvitaminen - AVROTROS
+	12C.NPO Radio 5  2021-10-08 11:36:00  Kenny Rogers - The Gambler
+	12C.NPO Radio 5  2021-10-08 11:40:19  Fools Garden - Lemon Tree
+
+Endless repetitions are avoided in the saved text.
+
+-----------------------------------------------------------------------
+# Scheduling option
+-----------------------------------------------------------------------
+
+The "alarm" facility is replaced by a more general *scheduling* facility.
+Touching the schedule button on the on the main widget
+shows a list of services to select from (the services in the currently
+selected channel, and the list of services in the preset list).
+A user specified time can be linked to the selected service.
+
+As additional feature, some operations can be scheduled as well:
+
+ * exit or nothing, with obvious semantics;
+ * audiodump, to schedule starting or stopping dumping the audio of the
+currently selected audio service;
+ * framedump, to schedule starting or stopping dumping the AAC segments
+of the currently selected service.
+ * dlText, to schedule starting or stopping recording the dynamic label text.
+
+Note that selecting a different audio service will automatically stop
+dumping the audiodump and the framedump activity, the recording of
+the dynamic label text - if selected - is not affacted.
+
+![scheduler](/scheduler.png?raw=true)
+
+For **Linux** there is an additional option: specifying a schedule list
+as parameter in the command line for an "at" command.
+This is especially useful for
+unattended operation. When I have to go out, but want to record
+something on a later time, the feature allows starting
+Qt-DAB ad a specified time and executing the schedule commands.
+
+The sourcetree for dabMaxi contains a file "testfile" and a
+file "command.sh" that can be used as inspiration for specifying
+an unattended operation of Qt-DAB.
+
+As an example
+
+   at 13:45 -f command.sh
+
+will start Qt-DAB  at 13:45 and execute the schedule commands from "testfile".
+
 -------------------------------------------------------------------------
 Obsolete properties
 -------------------------------------------------------------------------
 
-The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III. Qt-DAB still supports these features, however, since they are obsolete, there are no controls on the GUI anymore (the control for the Mode was already removed from earlier versions). 
-
+The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III, Qt-DAB still supports these features.
 Explicitly setting the Mode and/or the Band is possible by
 including appropriate command lines in the ".qt-dab.ini" file.
 
@@ -361,7 +434,7 @@ A complete description of how to interface a device to Qt-DAB
 is given in the user's manual.
 
 ------------------------------------------------------------------------
-Using other bands than Band III or L Band
+Using user specified than Band III or L Band
 ------------------------------------------------------------------------
 
 While it is known that the DAB transmissions are now all in Band III,
@@ -502,73 +575,6 @@ in the (sub)directory **dumpviewer**.
 
 The picture shows the variations in the SNR when moving the antenna
 and - the dip - when switching antennas.
-
-----------------------------------------------------------------------
-Scanning and the skip table
-----------------------------------------------------------------------
-
-As known, Qt-DAB provides a possibility of scanning the band. Band III
-contains 39 channels, so - depending on your position - there is
-quite a number of channels where no DAB signal is to be found.
-
-As in **dabChannel**, Qt-DAB has an extended mechanism to skip
-specified channels during a scan, a so-called **skipTable**.
-The configuration widget contains a button to make the **skipTable**
-visible. Such a skipTable shows all channels in the selected band, 
-each channel labeled with a field containing a "+" or a "-" sign.
-Double clicking on the field will invert its setting.
-Obviously. such a skipTable will be maintained between program invocations.
-
-When DX-ing, one wants to direct the antenna to different countries
-in different directions.
-Ideally there is a skipTable for each direction, and
-Qt-DAB supports that.
-The configuration widget contains a button **skipFile**,
-when touched a file selection menu appears where one can select a skipfile.
-**If the file does not exist yet, it will be created.**
-If one cancels the file selection, the default skipTable will be used,
-the same table that is used when no skipFile is selected.
-
------------------------------------------------------------------------
-# Scheduling option
------------------------------------------------------------------------
-
-The "alarm" facility is replaced by a more general scheduling facility.
-Touching the "add to schedule" button on the configuration widget (in 4.11 a button "schedule" on the main widget)
-will show a list of services to select from (the services in the currently
-selected channel, and the list of services in the preset list).
-A user specified time can be linked to the selected service.
-
-As additional feature, some operations can be scheduled as well
-
- * exit or nothing, with obvious semantics;
- * audiodump, to schedule starting or stopping dumping the audio of the
-currently selected audio service;
- * framedump, to schedule starting or stopping dumping the AAC segments
-of the currently selected service.
- * dlText, to schedule starting or stopping recording the dynamic label text.
-
-Note that selecting a different audio service will automatically stop
-dumping the audiodump and the framedump activity, the recording of the dynamic label text
-- if selected - is not affacted.
-
-![scheduler](/scheduler.png?raw=true)
-
-For **Linux** there is an additional option: specifying a schedule list
-as parameter in the command line. This is especially useful for
-unattended operation. When I have to go out, but want to record
-something on a later time, the feauture allows starting
-Qt-DAB ad a specified time and executing the schedule commands.
-
-The sourcetree for dabMaxi contains a file "testfile" and a
-file "command.sh" that can be used as inspiration for specifying
-an unattended operation of Qt-DAB.
-
-As an example
-
-   at 13:45 -f command.sh
-
-will start Qt-DAB  at 13:45 and execute the schedule commands from "testfile".
 
 -----------------------------------------------------------------------
 # Pluto device and stereo FM transmission

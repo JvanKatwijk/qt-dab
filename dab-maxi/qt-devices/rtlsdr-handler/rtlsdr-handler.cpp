@@ -216,11 +216,11 @@ char	manufac [256], product [256], serial [256];
 	}
 
 	gainsCount = rtlsdr_get_tuner_gains (device, nullptr);
-	fprintf(stderr, "Supported gain values (%d): ", gainsCount);
+	fprintf (stderr, "Supported gain values (%d): ", gainsCount);
 	{  int gains [gainsCount];
 	   gainsCount	= rtlsdr_get_tuner_gains (device, gains);
 	   for (i = gainsCount; i > 0; i--) {
-	      fprintf(stderr, "%.1f ", gains [i - 1] / 10.0);
+	      fprintf (stderr, "%.1f ", gains [i - 1] / 10.0);
 	      gainControl -> addItem (QString::number (gains [i - 1]));
 	   }
 	   fprintf(stderr, "\n");

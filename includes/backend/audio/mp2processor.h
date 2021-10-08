@@ -29,12 +29,13 @@
 #ifndef __MP2PROCESSOR__
 #define	__MP2PROCESSOR__
 
+#include	<utility>
 #include	<cstdio>
 #include	<cstdint>
 #include	<cmath>
-#include	"frame-processor.h"
 #include	<QObject>
 #include	<cstdio>
+#include	"frame-processor.h"
 #include	"ringbuffer.h"
 #include	"pad-handler.h"
 
@@ -85,7 +86,8 @@ private:
 	int32_t		bit_window;
 	int32_t		bits_in_window;
 	uint8_t		*frame_pos;
-	uint8_t		*MP2frame;
+	uint8_t		* MP2frame;
+
 	int16_t		MP2framesize;
 	int16_t		MP2Header_OK;
 	int16_t		MP2headerCount;

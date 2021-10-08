@@ -151,18 +151,17 @@ sdrplaySelect	*sdrplaySelector;
 	}
 
 	if (numofDevs > 1) {
-           sdrplaySelector       = new sdrplaySelect();
+           sdrplaySelect sdrplaySelector;
            for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
 #ifndef	__MINGW32__
-              sdrplaySelector ->
+              sdrplaySelector.
                    addtoList (devDesc [deviceIndex]. DevNm);
 #else
-              sdrplaySelector ->
+              sdrplaySelector.
                    addtoList (devDesc [deviceIndex]. SerNo);
 #endif
            }
-           deviceIndex = sdrplaySelector -> QDialog::exec();
-           delete sdrplaySelector;
+           deviceIndex = sdrplaySelector. QDialog::exec();
         }
 	else
 	   deviceIndex = 0;
