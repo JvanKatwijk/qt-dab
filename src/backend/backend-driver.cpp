@@ -35,35 +35,32 @@
 	                              RingBuffer<uint8_t> *frameBuffer) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy != 077) {
-              theProcessor = make_unique<frameProcessor>
-	                                       ( mp2Processor (mr,
-	                                         d -> bitRate,
-                                                 audioBuffer,
-	                                         frameBuffer));
+              theProcessor = new mp2Processor (mr,
+	                                       d -> bitRate,
+                                               audioBuffer,
+	                                       frameBuffer);
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
-              theProcessor = make_unique<frameProcessor>
-	                                      ( mp4Processor (mr,
+              theProcessor =  new mp4Processor (mr,
 	                                        d -> bitRate,
                                                 audioBuffer,
 	                                        frameBuffer,
-	                                        d -> procMode));
+	                                        d -> procMode);
 	   }
 	}
 	else
 	if (d -> type == PACKET_SERVICE)
-	   theProcessor = make_unique<frameProcessor>
-	                                     ( dataProcessor (mr,
-	                                       (packetdata *)d,
-	                                       dataBuffer));
+	   theProcessor = new dataProcessor (mr,
+	                                     (packetdata *)d,
+	                                      dataBuffer);
 	else
-	   theProcessor = make_unique<frameProcessor> (frameProcessor ());	// should not happen
+	   theProcessor = new frameProcessor ();	// should not happen
 }
 
 
     backendDriver::~backendDriver() {
-//	delete theProcessor;
+	delete theProcessor;
 }
 
 	

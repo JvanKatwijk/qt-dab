@@ -27,9 +27,9 @@
 #include	<vector>
 #include	<utility>
 #include	"dab-constants.h"
+#include	"frame-processor.h"
 #include	"radio.h"
 
-class	frameProcessor;
 
 class	backendDriver {
 public:
@@ -41,7 +41,7 @@ public:
     ~backendDriver();
 void	addtoFrame	(std::vector<uint8_t> outData);
 private:
-	std::unique_ptr<frameProcessor> theProcessor;
+	frameProcessor	* theProcessor;
 };
 
 #endif

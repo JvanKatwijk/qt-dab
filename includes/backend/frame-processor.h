@@ -34,7 +34,9 @@ class	frameProcessor {
 public:
 		frameProcessor	()	{}
 virtual		~frameProcessor	()	{}
-virtual	void	addtoFrame	(std::vector<uint8_t>) {}
+virtual	void	addtoFrame	(std::vector<uint8_t>) {
+	fprintf (stderr, "in frameprocessor\n");
+}
 };
 #endif
 
