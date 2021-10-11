@@ -82,7 +82,6 @@ private:
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
 	int16_t		blkCount;
-	std::atomic<bool> work_to_be_done;
 	int16_t		BitsperBlock;
 	std::vector<int16_t> ibits;
 

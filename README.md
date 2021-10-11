@@ -527,23 +527,6 @@ the service, a button labeled **timeTable** .
 The software is experimental though and - at least here - the times
 on the time table are two hours off.
 
-----------------------------------------------------------------------
-Recording the dynamic label text 
-----------------------------------------------------------------------
-
-Touching the "dlText" button will show a menu for file selection and
-will instruct the software to record the text fragments sent as
-dynamic label text. The texts are prefixed with the channel, the
-name of the service and the data of recording.
-
-	9D.Omroep Zeeland   2021-07-24 16:20:00  Je luistert naar Omroep Zeeland
-	9D.Omroep Brabant   2021-07-24 16:20:00  Omroep Brabant: De Platenbeld
-	9D.RADIONL Zeeland  2021-07-24 16:21:00  RADIONL - ALTIJD AAN!
-	9D.Radio Rijnmond   2021-07-24 16:21:00  Radio Rijnmond
-	9D.Omroep Zeeland   2021-07-24 16:21:00  In heel Zeeland de eerste keus voor nieuws en muziek
-
-As usual, touching the button a second time will close the file
-
 -----------------------------------------------------------------------
 Recording the SNR
 -----------------------------------------------------------------------

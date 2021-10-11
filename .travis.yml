@@ -26,7 +26,8 @@ script:
   - # sed -i -e 's|CONFIG.*spectrum||g' qt-dab.pro
 
   - cd dab-maxi
-  - cmake . -DTRY_EPG=ON -DRTLSDR=ON -DRTL_TCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DPLUTO=ON -DCMAKE_INSTALL_PREFIX=/usr
+  - qmake
+  - # cmake . -DTRY_EPG=ON -DRTLSDR=ON -DRTL_TCP=ON  -DAIRSPY=ON -DSDRPLAY=ON -DSDRPLAY_V3=ON -DLIMESDR=ON -DHACKRF=ON -DPLUTO=ON -DCMAKE_INSTALL_PREFIX=/usr
   - make -j4
   - # sudo make DESTIDR=appdir install ; sudo chown -R $USER appdir ; find appdir/
   - ls -lh .

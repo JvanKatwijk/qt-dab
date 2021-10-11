@@ -57,7 +57,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	phaseReference	.resize (params. get_T_u());
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
-//	work_to_be_done. store (false);
 #ifdef	__MSC_THREAD__
 	command. resize (nrBlocks);
 	for (int i = 0; i < nrBlocks; i ++)
@@ -69,7 +68,6 @@ static int cifTable [] = {18, 72, 0, 36};
 }
 
 		mscHandler::~mscHandler() {
-//	work_to_be_done. store (false);
 #ifdef	__MSC_THREAD__
 	running. store (false);
 	while (isRunning())
@@ -209,7 +207,6 @@ void	mscHandler::reset_Buffers	() {
 }
 
 void	mscHandler::reset_Channel () {
-//	work_to_be_done. store (false);
 	fprintf (stderr, "channel reset: all services will be stopped\n");
 	locker. lock ();
 	for (auto const &b : theBackends) {
@@ -232,8 +229,6 @@ void	mscHandler::stopService	(descriptorType *d) {
 	      theBackends. erase (theBackends. begin () + i);
 	   }
 	}
-//	if (theBackends. size () == 0)
-//	   work_to_be_done. store (false);
 	locker. unlock ();
 }
 
@@ -253,7 +248,6 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer));
-	work_to_be_done. store (true);
 	locker. unlock();
 	return true;
 }
@@ -277,9 +271,6 @@ int16_t	currentblk;
 	if (currentblk < numberofblocksperCIF - 1) 
 	   return;
 
-//	if (!work_to_be_done. load())
-//	   return;
-
 //	OK, now we have a full CIF and it seems there is some work to
 //	be done.  We assume that the backend itself
 //	does the work in a separate thread.
@@ -287,12 +278,9 @@ int16_t	currentblk;
 	for (auto const& b: theBackends) {
 	   int16_t startAddr	= b -> startAddr;
 	   int16_t Length	= b -> Length; 
-	   if (Length > 0) {		// Length = 0? should not happen
-	      int16_t temp [Length * CUSize];
-	      memcpy (temp, &cifVector [startAddr * CUSize],
-	                           Length * CUSize * sizeof (int16_t));
-	      (void) b -> process (temp, Length * CUSize);
-	   }
+	   if (Length > 0) 		// Length = 0? should not happen
+	      (void) b -> process (&cifVector [startAddr * CUSize],
+	                                      Length * CUSize);
 	}
 	locker. unlock();
 }
