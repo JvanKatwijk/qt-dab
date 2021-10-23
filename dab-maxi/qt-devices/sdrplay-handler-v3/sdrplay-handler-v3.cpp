@@ -600,6 +600,7 @@ uint32_t                ndev;
 //
 	serial		= devs [0]. SerNo;
 	hwVersion	= devs [0]. hwVer;
+	sdrplay_api_ReasonForUpdateT notcher;
 	switch (hwVersion) {
 	   case 1:		// old RSP
 	      lna_upperBound	= 3;
@@ -607,6 +608,7 @@ uint32_t                ndev;
 	      denominator	= 2048;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
+	      notcher		= sdrplay_api_Update_None;
 	      break;
 	   case 2:		// RSP II
 	      lna_upperBound	= 8;
@@ -614,6 +616,8 @@ uint32_t                ndev;
 	      denominator	= 2048;
 	      nrBits		= 14;
 	      has_antennaSelect	= true;
+	      notcher		= sdrplay_api_Update_Rsp2_RfNotchControl;
+	      deviceParams    -> rxChannelA -> rsp2TunerParams.  rfNotchEnable = 1;
 	      break;
 	   case 3:		// RSP-DUO
 	      lna_upperBound	= 9;
@@ -621,6 +625,8 @@ uint32_t                ndev;
 	      denominator	= 2048;
 	      nrBits		= 12;
 	      has_antennaSelect	= false;
+	      notcher		= sdrplay_api_Update_RspDuo_RfNotchControl;
+	      deviceParams    -> rxChannelA -> rspDuoTunerParams.  rfNotchEnable = 1;
 	      break;
 	   case 4:		// RSPDx
 	      lna_upperBound	= 26;
@@ -636,9 +642,18 @@ uint32_t                ndev;
 	      denominator	= 8192;
 	      nrBits		= 14;
 	      has_antennaSelect	= false;
+	      notcher		= sdrplay_api_Update_Rsp1a_RfNotchControl;
+	      deviceParams    -> devParams -> rsp1aParams. rfNotchEnable = 1;
 	      break;
 	}
 
+	err = sdrplay_api_Update (chosenDevice -> dev,
+                                  chosenDevice -> tuner,
+	                          notcher,
+                                  sdrplay_api_Update_Ext1_None);
+
+	if (err != sdrplay_api_Success) 
+	   fprintf (stderr, "setting the notch failed\n");
 	set_lnabounds_signal	(0, lna_upperBound);
 	set_deviceName_signal	(deviceModel);
 	set_serial_signal	(serial);

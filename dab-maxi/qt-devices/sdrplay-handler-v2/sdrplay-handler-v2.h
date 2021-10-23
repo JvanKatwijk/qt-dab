@@ -89,6 +89,7 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_RSPII_AntennaControl) (mir_sdr_RSPII_AntennaS
 typedef mir_sdr_ErrT (*pfn_mir_sdr_rspDuo_TunerSel) (mir_sdr_rspDuo_TunerSelT);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_RSPII_RfNotchEnable) (unsigned int);
 
 ///////////////////////////////////////////////////////////////////////////
 class	sdrplayHandler: public QObject,
@@ -148,6 +149,7 @@ private:
 	pfn_mir_sdr_rspDuo_TunerSel my_mir_sdr_rspDuo_TunerSel;
 	pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
 	pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
+	pfn_mir_sdr_RSPII_RfNotchEnable my_mir_sdr_RSPII_RfNotchEnable;
 
 	QString		recorderVersion;
 	QString		deviceModel;
@@ -167,6 +169,7 @@ private:
 	bool		agcMode;
 	int16_t		nrBits;
 
+	int		lnaMax;
 	FILE		*xmlDumper;
         xml_fileWriter	*xmlWriter;
         bool		setup_xmlDump		();

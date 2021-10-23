@@ -52,9 +52,11 @@ public:
 	this	-> datawidth	= datawidth;
 	this	-> dataheight	= height;
 	this	-> max		= max;
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
 	setInterval (Qt::XAxis, QwtInterval (left, left + width));
 	setInterval (Qt::YAxis, QwtInterval (0, height));
 	setInterval (Qt::ZAxis, QwtInterval (0, max));
+#endif
 
 }
 

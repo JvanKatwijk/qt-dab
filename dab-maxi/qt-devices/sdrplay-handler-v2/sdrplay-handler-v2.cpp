@@ -106,17 +106,15 @@ sdrplaySelect	*sdrplaySelector;
 
 	connect (this, SIGNAL (new_GRdBValue (int)),
 	         GRdBSelector, SLOT (setValue (int)));
-	connect (this, SIGNAL (new_lnaValue (int)),
-	         lnaGainSetting, SLOT (setValue (int)));
 	connect (this, SIGNAL (new_agcSetting (bool)),
 	         agcControl, SLOT (setChecked (bool)));
+
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
-	coarseOffset	=
-	            sdrplaySettings -> value ("sdrplayOffset", 0). toInt();
-	new_GRdBValue (
-	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt());
-	new_lnaValue (
-	            sdrplaySettings -> value ("sdrplay-lnastate", 0). toInt());
+	int val		=
+	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt();
+	if (20 <= val && val <= 59)
+	   new_GRdBValue (val);
+
 
 	ppmControl		-> setValue (
 	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
@@ -189,6 +187,7 @@ sdrplaySelect	*sdrplaySelector;
 	      deviceModel	= "RSP-I";
 	      nrBits		= 12;
 	      denominator	= 2048;
+	      lnaMax		= 3;
 	      break;
 	   case 2:
 	      lnaGainSetting	-> setRange (0, 8);
@@ -196,11 +195,15 @@ sdrplaySelect	*sdrplaySelector;
 	      nrBits		= 14;
 	      denominator	= 8192;
 	      antennaSelector -> show();
+	      my_mir_sdr_RSPII_RfNotchEnable (1);
+	      if (err != mir_sdr_Success) 
+	         fprintf (stderr, "error %d in setting rfNotch\n", err);
 	      err = my_mir_sdr_RSPII_AntennaControl (mir_sdr_RSPII_ANTENNA_A);
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting antenna\n", err);
 	      connect (antennaSelector, SIGNAL (activated (const QString &)),
 	            this, SLOT (set_antennaSelect (const QString &)));
+	      lnaMax		= 8;
 	      break;
 	   case 3:	
 	      lnaGainSetting	-> setRange (0, 9);
@@ -213,15 +216,27 @@ sdrplaySelect	*sdrplaySelector;
 	         fprintf (stderr, "error %d in setting of rspDuo\n", err);
 	      connect (tunerSelector, SIGNAL (activated (const QString &)),
 	               this, SLOT (set_tunerSelect (const QString &)));
+	      lnaMax		= 9;
 	      break;
 	   default:
 	      lnaGainSetting	-> setRange (0, 9);
 	      deviceModel	= "RSP-Ia";
 	      nrBits		= 14;
 	      denominator	= 8192;
+	      lnaMax		= 9;
 	      break;
 	}
 
+	val	= sdrplaySettings -> value ("sdrplay-lnastate", 0). toInt();
+	if (val < 0)
+	   val = 0;
+	if (val > lnaMax)
+	   val = lnaMax;
+	fprintf (stderr, "val = %d, max = %d\n", val, lnaMax);
+	lnaGainSetting	-> setValue (val);
+	connect (this, SIGNAL (new_lnaValue (int)),
+                 lnaGainSetting, SLOT (setValue (int)));
+	
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
 	connect (debugControl, SIGNAL (stateChanged (int)),
@@ -241,7 +256,6 @@ sdrplaySelect	*sdrplaySelector;
 	stopReader();
 	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
-	sdrplaySettings	-> setValue ("sdrplayOffset", coarseOffset);
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
 	                                    GRdBSelector -> value());
@@ -733,6 +747,14 @@ bool	sdrplayHandler::loadFunctions () {
 	   return false;
 	}
 
+	my_mir_sdr_RSPII_RfNotchEnable	=
+	                               (pfn_mir_sdr_RSPII_RfNotchEnable)
+	                GETPROCADDRESS (Handle, "mir_sdr_RSPII_RfNotchEnable");
+	if (my_mir_sdr_RSPII_RfNotchEnable == nullptr) {
+	   fprintf (stderr, "Could not find mir_sdr_RSPII_RfNotchEnable\n");
+	   return false;
+	}
+
 	return true;
 }
 
@@ -962,6 +984,8 @@ QString	theValue	= "";
 	lnaState	= result. at (1). toInt ();
 	agc		= result. at (2). toInt ();
 
+	if (lnaState > lnaMax)
+	   lnaMax;
 	GRdBSelector	-> blockSignals (true);
 	new_GRdBValue (GRdB);
 	while (GRdBSelector -> value () != GRdB)

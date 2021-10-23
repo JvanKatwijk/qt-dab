@@ -108,7 +108,6 @@ uint32_t samplerateCount;
 	   FreeLibrary (Handle);
 #else
 	   dlclose (Handle);
-	
 #endif
 	}
 //

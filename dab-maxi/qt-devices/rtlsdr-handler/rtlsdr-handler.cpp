@@ -392,9 +392,9 @@ static int iqTeller	= 0;
 	      theFilter. resize (currentDepth);
 	   }
 	   for (int i = 0; i < amount; i ++) 
-	      V [i] =theFilter. Pass (
-                         std::complex<float> (mapTable [real (temp [i]) & 0xFF],
-	                                mapTable [imag (temp [i]) & 0xFF]));
+	      V [i] = theFilter. Pass (
+                       std::complex<float> (mapTable [real (temp [i]) & 0xFF],
+	                                    mapTable [imag (temp [i]) & 0xFF]));
 	}
 	else
 	   for (int i = 0; i < amount; i ++) 
