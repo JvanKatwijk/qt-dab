@@ -630,9 +630,7 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching the scan button will cause the software to make a single scan over all channels. Ensembles (and their services) found will be displayed in a separate window.&lt;/p&gt;&lt;p&gt;The windows will be visible as long as the scanning mode is on &lt;br/&gt;
-(note that after completing the scan, i.e. the cycle from channel 5A to 13F, &lt;br /&gt;
-the software will wait until the scanner is officially stopped).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows you to specify elements for the scheduler. First a list will show from which you can select an element. The list contains - apart from the names of the services in the currently selected ensemble and the preset list, a few commands. &lt;/p&gt;&lt;p&gt;Once selected, a widget  appears on which the time can be specified that the selection should take place.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Schedule</string>
@@ -771,7 +769,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            <item row="2" column="6">
             <widget class="smallPushButton" name="scanButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;the dynamic label text, as shown on the main widget, can be stored in a file.&lt;/p&gt;&lt;p&gt;Touching this button will show a menu for selecting a (text) file. &lt;/p&gt;&lt;p&gt;The text lines are preceded by the channel, the servicename and a time indicator.&lt;/p&gt;&lt;p&gt;As usual, touching the button a second time will close the file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are three different scan modes.&lt;/p&gt;&lt;p&gt;A scan over the channels until one with a detectable DAB content is detected,&lt;/p&gt;&lt;p&gt;a second mode is to scan all channels in the current band once and then stop, &lt;/p&gt;&lt;p&gt;a third mode is to continuously scan over the channels in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>scan</string>
