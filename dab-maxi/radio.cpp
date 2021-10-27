@@ -4060,6 +4060,11 @@ void	RadioInterface::epgTimer_timeOut	() {
 	for (const auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
 	       serv. name. contains (" EPG   ", Qt::CaseInsensitive) ||
+               serv. name. contains ("Spored", Qt::CaseInsensitive) ||
+               serv. name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
+               serv. name. contains ("SPI", Qt::CaseSensitive) ||
+               serv. name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+               serv. name. contains ("EPG_", Qt::CaseInsensitive) ||
 	       serv. name. startsWith ("EPG ", Qt::CaseInsensitive) ) {
 	      packetdata pd;
 	      my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
