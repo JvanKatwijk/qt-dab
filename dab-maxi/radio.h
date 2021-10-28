@@ -230,6 +230,7 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
+	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
 	QString			convertTime		(int, int, int, int, int);
@@ -338,6 +339,7 @@ public slots:
 	void			epgTimer_timeOut	();
 #endif
 	void			switchVisibility	(QWidget *);
+	void			nrServices		(int);
 
 //	Somehow, these must be connected to the GUI
 private slots:

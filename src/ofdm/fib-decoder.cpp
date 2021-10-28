@@ -52,6 +52,8 @@
 	         myRadioInterface, SLOT (startAnnouncement (const QString &, int)));
 	connect (this, SIGNAL (stopAnnouncement (const QString &, int)),
 	         myRadioInterface, SLOT (stopAnnouncement (const QString &, int)));
+	connect (this, SIGNAL (nrServices (int)),
+	         myRadioInterface, SLOT (nrServices (int)));
 
 	currentConfig	= new dabConfig();
 	nextConfig	= new dabConfig();
@@ -551,16 +553,14 @@ uint8_t CN_bit          = getBits_1 (d, 8 + 0);
 uint8_t OE_bit          = getBits_1 (d, 8 + 1);
 uint8_t PD_bit          = getBits_1 (d, 8 + 2);
 
-int     nrServices      = getBits_6 (d, used * 8);
+int     serviceCount      = getBits_6 (d, used * 8);
 int     counter         = getBits   (d, used * 8 + 6, 10);
 
 	(void)Length;
 	(void)CN_bit; (void)OE_bit; (void)PD_bit;
-#if 0
-        fprintf (stderr, "nrServices %d, count %d\n",
-                          nrServices, counter);
-#endif
-	(void)nrServices; (void)counter;
+	if (CN_bit == 0)	// only current configuration for now
+	   nrServices (serviceCount);
+	(void)counter;
 }
 
 // FIG0/8:  Service Component Global Definition (6.3.5)

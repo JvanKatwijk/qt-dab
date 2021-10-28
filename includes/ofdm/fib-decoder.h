@@ -170,6 +170,7 @@ signals:
 	void		changeinConfiguration	();
 	void		startAnnouncement	(const QString &, int);
 	void		stopAnnouncement	(const QString &, int);
+	void		nrServices		(int);
 };
 
 #endif

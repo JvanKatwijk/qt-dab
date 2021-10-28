@@ -1489,3 +1489,13 @@ void	RadioInterface::scheduled_dlTextDumping () {
 	   return;
 	dlTextButton		-> setText ("writing");
 }
+
+void	RadioInterface::nrServices	(int nr) {
+	(void)nr;	// todo
+}
+
+void	RadioInterface::showCorrelation (int x1, int x2, QVector<int> x3) {
+	(void)x1; (void)x2; (void)x3;
+}
+
+

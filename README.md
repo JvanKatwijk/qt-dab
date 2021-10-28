@@ -14,16 +14,16 @@ Table of Contents
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [dabMini and duoreceiver](#dabMini-and-duoreceiver)
 * [Documentation](#documentation)
-* [Presets](#presets-for-qt-dab)
+* [Presets](#presets-for-qt-dab-and-dab-mini)
+* [Saving dain settings](#saving-gain-settings)-
 * [Colors](#colors-for-qt-dab)
-* [Comment on some config settings](#Configuration-settings)
+* [configuration settings](#Configuration-settings)
 * [Scanning and the skip table](#scanning-and-the-skip-table)
 * [Saving synamic label texts](#Saving-dynamic-label-texts)
 * [Scheduling option](#Scheduling-option)
 * [Obsolete properties](#Obsolete-properties)
 * [Installation on Windows](#installation-on-windows)
 * [Installation on Linux x64](#installation-on-linux-x64)
-* [Configuring](#configuring)
 * [Interfacing to another device](#Interfacing-to-another-device)
 * [Using user-specified bands](#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
@@ -46,7 +46,7 @@ Qt-DAB or dabMini, for Linux-x64 appImages exist for both Qt-DAB and dabMini.
 For Windows installers  are available.
 
 Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
-ASR-33 terminals and "command lines", I often prefer a simple command line
+ASR-33 terminals and "command lines", I sometimes prefer a simple command line
 over a GUI.
 Therefore, a **terminal-DAB-xxx** version was developed, a
 simpler version, just for listening to a DAB service, making use of the
@@ -55,7 +55,7 @@ command line and curses library.
 For those who are nostalgic to the era and the sound
 of nice wooden radios with glowing tubes,
 Qt-DAB can be configured such that - using the Adalm Pluto as device -
-the audio of a selected service is transmitted in FM stereo on a
+the audio of audio services is transmitted in FM stereo on a
 user specified frequency with the "dynamic label" sent as RDS.
 
 ------------------------------------------------------------------
@@ -108,8 +108,8 @@ Not yet or partly implemented:
 
 Note:
 While the 2.13 support for SDRplay devices is able to handle
-the RSP 1, RSP II, RSP Ia and RSP duo, for handling the RSP-Dx one
-needs 3.0X support
+the RSP 1, RSP II, RSP Ia and RSP duo,
+the 3.0X support handles all SDRplay RSP's.
 
 ------------------------------------------------------------------
 Widgets and scopes for Qt-DAB
@@ -131,18 +131,20 @@ New in 4.11 is a button which determines the visibility of the control buttons.
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.
 
-To ease selection of a service, a second pair of "-" and "+" buttons is available, now for selecting the previous resp. the next service on the list.
+To ease selection of a service, a second pair of "-" and "+" buttons
+is available, now for selecting the previous resp. the next service on the list.
 
 Some general data is displayed on the top right part of the widget, 
-such as run time and current time, frequency offset and (overall) processor load.
+such as run time and current time,
+frequency offset and (overall) processor load (note that the "current time"
+is extracted from the DAB data, playing a recorded transmission shows the
+time of the transmission).
 
 In the middle part, name of the ensemble and name of the selected service
 are displayed, complemented with the text of the dynamic label.
 
 Some data on the selected service - if any - can be found on
 a separate widget, the "Technical Data" widget (*Detail* button).
-This widget will show where the data for the
-service is to be found in the DAB frames, and how it is encoded.
 
 ![Qt-DAB main widget](/qt-dab-technical-widget.png?raw=true)
 
@@ -239,8 +241,8 @@ Storing gain settings
 It is often the case that, for a particular device the optimal gain setting
 for channel X is not the same as for channel Y (assuming X != Y).
 This is especially annoying during scanning. Therefore, 
-the gain settings for each channel are recorded and used whenever
-that channel is selected.
+for each device, the gain settings for each channel are recorded
+and used whenever that channel is selected.
 
 ----------------------------------------------------------------------
 Colors for Qt-DAB
@@ -271,7 +273,7 @@ Many settings are maintained between program invocations in a
 so-called ".ini" file, ususally "qt-dab.ini", stored in the home directory.
 A complete description of the settings can be found in the user's manual
 (in the subdirectory *docs*).
-Touching the **config*( button on the main widget will show (or hide)
+Touching the **config** button on the main widget will show (or hide)
 a widget where a number of settings can be adapted.
 
 ----------------------------------------------------------------------
@@ -301,7 +303,7 @@ If one cancels the file selection, the default skipTable will be used,
 the same table that is used when no skipFile is selected.
 
 ----------------------------------------------------------------------
-# Saving dynamic label texts
+Saving dynamic label texts
 ----------------------------------------------------------------------
 
 Based on user requests an option is implemented to store the texts as
@@ -318,7 +320,7 @@ The texts are preceded with a time indication and a service name.
 Endless repetitions are avoided in the saved text.
 
 -----------------------------------------------------------------------
-# Scheduling option
+Scheduling option
 -----------------------------------------------------------------------
 
 The "alarm" facility is replaced by a more general *scheduling* facility.
@@ -408,18 +410,11 @@ For the dabMini, an appImage is available for use on an x64 based
 Linux system, and the user's manual contains a complete
 script, tested on an RPI 2 and 3.
 
-**dab-2** is experimental and **not** supported
+**dab-2** is experimental and **NOT** supported
 
 Note that Linux allows connecting both the "pulse" and "pipewire"
 subsystem to bluetooth, making it easy to listen using a bluetooth
 connected soundbar or bluetooth connected ear- or headphomes.
-
-----------------------------------------------------------------------
-Configuring 
-----------------------------------------------------------------------
-
-The  user's guide contains a detailed description of the configuration
-options (mainly choices for including or excluding a device).
 
 -----------------------------------------------------------------------
 Interfacing to another SDR device
@@ -560,7 +555,7 @@ The picture shows the variations in the SNR when moving the antenna
 and - the dip - when switching antennas.
 
 -----------------------------------------------------------------------
-# Pluto device and stereo FM transmission
+Pluto device and stereo FM transmission
 -----------------------------------------------------------------------
 
 As (probably) known, the **Adalm Pluto** device has receive and transmit
@@ -592,7 +587,7 @@ on the given frequency (specified in KHz)
 ![dab2fm](/dab2fm.png?raw=true)
 
 -----------------------------------------------------------------------
-# Copyright
+Copyright
 ------------------------------------------------------------------------
 
 	Copyright (C)  2016 .. 2021

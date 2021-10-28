@@ -196,6 +196,9 @@ public slots:
 	void			newFrame		(int);
 	void			show_clockError		(int);
 	void			scheduler_timeOut	(const QString &);
+	void			nrServices		(int);
+	void			showCorrelation		(int, int,
+	                                                   QVector<int>);
 
 //	Somehow, these must be connected to the GUI
 private slots:

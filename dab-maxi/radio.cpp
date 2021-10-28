@@ -269,6 +269,7 @@ uint8_t	dabBand;
 	my_dabProcessor		= nullptr;
 	isSynced		= false;
 	stereoSetting		= false;
+	serviceCount		= -1;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -573,13 +574,13 @@ uint8_t	dabBand;
 //	timer for scanning
 	channelTimer. setSingleShot (true);
 	channelTimer. setInterval (10000);
-	connect (&channelTimer, SIGNAL (timeout (void)),
-	         this, SLOT (channel_timeOut (void)));
+	connect (&channelTimer, SIGNAL (timeout ()),
+	         this, SLOT (channel_timeOut ()));
 //
 //	presetTimer
 	presetTimer. setSingleShot (true);
-	connect (&presetTimer, SIGNAL (timeout (void)),
-	            this, SLOT (setPresetStation (void)));
+	connect (&presetTimer, SIGNAL (timeout ()),
+	         this, SLOT (setPresetStation ()));
 //
 //	timer for muting
 	muteTimer. setSingleShot (true);
@@ -867,6 +868,8 @@ int	serviceOrder;
 	}
 
 	ensembleDisplay -> setModel (&model);
+	if (serviceCount == model.rowCount ())
+	   setPresetStation ();
 }
 //
 //	The ensembleId is written as hexadecimal, however, the 
@@ -2677,7 +2680,8 @@ int	switchDelay;
 	   return;
 	}
 
-	nextService. valid = true;
+	nextService. valid		= true;
+	nextService. channel		= channel;
 	nextService. serviceName        = service;
 	nextService. SId                = 0;
 	nextService. SCIds              = 0;
@@ -3059,15 +3063,22 @@ void	RadioInterface::setPresetStation () {
 	if (!running. load ())
 	   return;
 
+	stopScanning (false);
+	fprintf (stderr, "setPresetStation valid ? %d\n", nextService. valid);
+	if (!nextService. valid)
+	   return;
+
+	fprintf (stderr, "setPresetStation channels %s %s\n",
+	                  nextService. channel. toLatin1 (). data (),
+	                  channelSelector -> currentText (). toLatin1 (). data ());
+	if (nextService. channel != channelSelector -> currentText ())
+	   return;
+
 	if (ensembleId -> text () == QString ("")) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
 	   return;
 	}
-
-	stopScanning (false);
-	if (!nextService. valid)
-	   return;
 
 	QString presetName	= nextService. serviceName;
 	for (const auto& service: serviceList) {
@@ -3102,6 +3113,7 @@ void	RadioInterface::setPresetStation () {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
+	serviceCount		= 0;
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", channel);
 	inputDevice		-> resetBuffer ();
@@ -4207,4 +4219,7 @@ void	RadioInterface::handle_hideButton	() {
 	}
 }
 
+void	RadioInterface::nrServices	(int n) {
+	serviceCount = n;
+}
 
