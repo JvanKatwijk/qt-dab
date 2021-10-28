@@ -968,6 +968,8 @@ QString realName;
 	   case MOTBaseTypeImage:
 	      if (dirElement == 1)
 	         show_MOTlabel (result, contentType, name, dirElement);
+	      if (dirElement == 0)
+	         show_MOTlabel (result, contentType, name, dirElement);
 	      break;
 
 	   case MOTBaseTypeAudio:
