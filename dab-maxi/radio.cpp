@@ -963,7 +963,7 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeImage:
-	      if (dirElement == 0)
+	      if (dirElement == 1)
 	         show_MOTlabel (result, contentType, name, dirElement);
 	      break;
 
