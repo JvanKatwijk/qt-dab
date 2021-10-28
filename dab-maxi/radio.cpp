@@ -3062,15 +3062,11 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 void	RadioInterface::setPresetStation () {
 	if (!running. load ())
 	   return;
-
+	presetTimer. stop ();
 	stopScanning (false);
-	fprintf (stderr, "setPresetStation valid ? %d\n", nextService. valid);
 	if (!nextService. valid)
 	   return;
 
-	fprintf (stderr, "setPresetStation channels %s %s\n",
-	                  nextService. channel. toLatin1 (). data (),
-	                  channelSelector -> currentText (). toLatin1 (). data ());
 	if (nextService. channel != channelSelector -> currentText ())
 	   return;
 
