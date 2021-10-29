@@ -547,14 +547,14 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 // FIG0/7: Configuration linking information 6.4.2,
 //
 void    fibDecoder::FIG0Extension7 (uint8_t *d) {
-int16_t used    = 2;            // offset in bytes
+int16_t used		= 2;            // offset in bytes
 int16_t Length          = getBits_5 (d, 3);
 uint8_t CN_bit          = getBits_1 (d, 8 + 0);
 uint8_t OE_bit          = getBits_1 (d, 8 + 1);
 uint8_t PD_bit          = getBits_1 (d, 8 + 2);
 
-int     serviceCount      = getBits_6 (d, used * 8);
-int     counter         = getBits   (d, used * 8 + 6, 10);
+int     serviceCount	= getBits_6 (d, used * 8);
+int     counter		= getBits   (d, used * 8 + 6, 10);
 
 	(void)Length;
 	(void)CN_bit; (void)OE_bit; (void)PD_bit;

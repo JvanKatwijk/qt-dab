@@ -15,7 +15,7 @@ Table of Contents
 * [dabMini and duoreceiver](#dabMini-and-duoreceiver)
 * [Documentation](#documentation)
 * [Presets](#presets-for-qt-dab-and-dab-mini)
-* [Saving dain settings](#saving-gain-settings)-
+* [Saving gain settings](#saving-gain-settings)-
 * [Colors](#colors-for-qt-dab)
 * [configuration settings](#Configuration-settings)
 * [Scanning and the skip table](#scanning-and-the-skip-table)
