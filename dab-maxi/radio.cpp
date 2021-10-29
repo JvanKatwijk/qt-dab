@@ -1070,7 +1070,6 @@ const char *type;
 	        return;
 	}
 
-
 	if (saveSlides) {
 	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
 	   checkDir (pict);
@@ -1117,10 +1116,12 @@ const char *type;
 //	sendDatagram is triggered by the ip handler,
 void	RadioInterface::sendDatagram	(int length) {
 uint8_t localBuffer [length];
+
 	if (dataBuffer. GetRingBufferReadAvailable() < length) {
 	   fprintf (stderr, "Something went wrong\n");
 	   return;
 	}
+
 	dataBuffer. getDataFromBuffer (localBuffer, length);
 #ifdef	_SEND_DATAGRAM_
 	if (running. load()) {
