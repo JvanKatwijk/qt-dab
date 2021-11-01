@@ -47,7 +47,7 @@ bool	brush;
 	colorString	= dabSettings -> value ("gridColor",
 	                                                 "black"). toString();
 	gridColor	= QColor (colorString);
-	colorString        = dabSettings -> value ("curveColor",
+	colorString	= dabSettings -> value ("curveColor",
 	                                                 "white"). toString();
 	curveColor	= QColor (colorString);
 

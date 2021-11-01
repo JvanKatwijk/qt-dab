@@ -133,13 +133,13 @@ char	manufac [256], product [256], serial [256];
 	filtering			= false;
 
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	currentDepth		= rtlsdrSettings -> value ("filterDepth", 5). toInt ();
+	currentDepth	= rtlsdrSettings -> value ("filterDepth", 5). toInt ();
 	rtlsdrSettings	-> endGroup ();
 	filterDepth	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 
-	inputRate			= 2048000;
-	workerHandle			= nullptr;
+	inputRate		= 2048000;
+	workerHandle		= nullptr;
 	isActive		= false;
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
@@ -167,6 +167,7 @@ char	manufac [256], product [256], serial [256];
 #endif
 	   throw (21);
 	}
+
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= this -> rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
@@ -190,7 +191,7 @@ char	manufac [256], product [256], serial [256];
 	}
 //
 //	OK, now open the hardware
-	r			= this -> rtlsdr_open (&device, deviceIndex);
+	r		= this -> rtlsdr_open (&device, deviceIndex);
 	if (r < 0) {
 	   fprintf (stderr, "Opening rtlsdr device failed\n");
 #ifdef __MINGW32__
@@ -223,12 +224,12 @@ char	manufac [256], product [256], serial [256];
 	      fprintf (stderr, "%.1f ", gains [i - 1] / 10.0);
 	      gainControl -> addItem (QString::number (gains [i - 1]));
 	   }
-	   fprintf(stderr, "\n");
+	   fprintf (stderr, "\n");
 	}
 
-	rtlsdr_set_tuner_gain_mode (device, 1);
-	rtlsdr_set_agc_mode (device, 0);
 
+	rtlsdr_set_tuner_bandwidth (device, KHz (1536));
+	rtlsdr_set_tuner_gain_mode (device, 1);
 //
 //	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
@@ -240,9 +241,10 @@ char	manufac [256], product [256], serial [256];
 	                                      "autogain_on"). toString();
 	agcControl	-> setChecked (temp == "autogain_on");
 	
-	ppm_correction	-> setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
+	ppm_correction	->
+	     setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
 	save_gainSettings	=
-		rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
+	     rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	rtlsdrSettings	-> endGroup();
 
 	rtlsdr_get_usb_strings (device, manufac, product, serial);
@@ -251,8 +253,6 @@ char	manufac [256], product [256], serial [256];
 
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
-	rtlsdr_set_tuner_gain_mode (device,
-	                   agcControl -> isChecked ()? 1 : 0);
 	if (agcControl -> isChecked ())
 	   rtlsdr_set_agc_mode (device, 1);
 	else
@@ -496,10 +496,18 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 	   fprintf (stderr, "Could not find rtlsdr_get_tuner_gain\n");
 	   return false;
 	}
+
 	rtlsdr_set_center_freq	= (pfnrtlsdr_set_center_freq)
 	                     GETPROCADDRESS (Handle, "rtlsdr_set_center_freq");
 	if (rtlsdr_set_center_freq == nullptr) {
 	   fprintf (stderr, "Could not find rtlsdr_set_center_freq\n");
+	   return false;
+	}
+
+	rtlsdr_set_tuner_bandwidth	= (pfnrtlsdr_set_center_freq)
+	                     GETPROCADDRESS (Handle, "rtlsdr_set_tuner_bandwidth");
+	if (rtlsdr_set_tuner_bandwidth == nullptr) {
+	   fprintf (stderr, "Could not find rtlsdr_set_tuner_bandwidth\n");
 	   return false;
 	}
 

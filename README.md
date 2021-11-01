@@ -64,15 +64,15 @@ Features
 
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and LC-AAC) decoding
   * MOT SlideShow (SLS)
-  * Dynamic Label (DLS) and the possibility of saving dynamic Labels - augmented withg chabbel and time info - in a file,
+  * Dynamic Label (DLS) and the possibility of saving dynamic Labels - augmented with channel and time info - in a file,
   * Both DAB bands (and user defined bands) are supported: 
   	* VHF Band III (default),
    	* L-Band (obsolete now),
 	* a user defined Band
-  * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file)m
+  * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file,
   * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time,
-  * Detailed information for selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
-  * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type),
+  * Detailed information on reception and selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
+  * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type) in the service list,
   * Automatic display of TII (Transmitter Identification Information) data when transmitted,
   * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
   * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files or xml file formats and playing them again later (see section on xml format),
@@ -96,7 +96,7 @@ Features
   * Always supported input from:
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
-  * Clean interface to add other devices, see below.
+  * Clean device interface, easy to add other devices, see below.
   * Scheduling the start of channel:service pairs or operations as frame dump or audio dump, even for unattented operation.
 
 Not yet or partly implemented:
@@ -110,13 +110,15 @@ Note:
 While the 2.13 support for SDRplay devices is able to handle
 the RSP 1, RSP II, RSP Ia and RSP duo,
 the 3.0X support handles all SDRplay RSP's.
+It is recommended to use the 3.0X support library.
 
 ------------------------------------------------------------------
 Widgets and scopes for Qt-DAB
 ------------------------------------------------------------------
 
 Qt-DAB always shows a main widget; a number of  **optional**
-widgets is visible or invisible under user's control
+widgets is visible under user control.
+The while set of widgets is shown below
 
 ![Qt-DAB main widget](/qt-dab-screen.png?raw=true)
 
@@ -191,23 +193,24 @@ dabMini as well.
 
 ![Qt-DAB dabMini](/dab-mini.png?raw=true)
 
-Other than Qt-DAB, there is no selector for the device. On program start up
-the software polls the availability of the configured devices, the first
+Other than Qt-DAB, there is no device selector. On program start up
+the software polls the availability of configured devices, the first
 one that seems OK is selected.
 
-The "main" GUI contains some selectors for setting device properties,
-depending on the selected device. The picture shows the program using
-an SDRplay device, with agc not selected and selectors for if gain and
-lna state.
+The GUI contains some selectors for setting device properties,
+depending on the selected device (usually gain, lna and agc).
+The picture shows the program using
+an SDRplay device, with agc selected and a selector for
+lna state. Since the agc is selected. there is no need for the if gain selector.
 
-Note that the most recent version of dabMini supports the dlText
-and the scheduler function as was implemented for Qt-DAB.
+Current versions of dabMini supports the **dlText**
+and **scheduler function** as implemented for Qt-DAB.
 
 **duoreceiver** is derived from dabMini and from other software for
 FM decoding. Since the SDR devices are covering both the FM broadcast
 band and BAND III, where DAB transmissions are, there were questions
 why dabMini could not be extended to cover FM transmissions as well.
-**duoreceiver** covers both bands.
+**duoreceiver** covers both bands and allows easy switching between FM and DAB.
 
 ![overview](/duoreceiver-1.png?raw=true)
 
@@ -228,9 +231,11 @@ Presets for Qt-DAB and dabMini
 ----------------------------------------------------------------------
 
 A *preset* option is available to allow storing and selecting
-"favorit" services. Touching the name of the currently selected
+**favorit** services. Touching the name of the currently selected
 audio service with the right hand mouse button will save the
 "channel:serviceName" pair in the preset list.
+Obviously, selecting a service in the preset list instructs the software
+to switch to the channel for the service and the service.
 
 The presets are stored in an xml file, `.qt-dab-presets.xml`.
 
@@ -290,7 +295,7 @@ The configuration widget contains a button to make the **skipTable**
 visible. Such a skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
 Double clicking on the field will invert its setting.
-Obviously. such a skipTable will be maintained between program invocations.
+Obviously. skipTables will be maintained between program invocations.
 
 When DX-ing, one wants to direct the antenna to different countries
 in different directions.
@@ -318,13 +323,15 @@ The texts are preceded with a time indication and a service name.
 	12C.NPO Radio 5  2021-10-08 11:40:19  Fools Garden - Lemon Tree
 
 Endless repetitions are avoided in the saved text.
+If saving dynamic label texts is selected as "command" in the scheduler,
+the texts will be stored in a textfile with a generated name.
 
 -----------------------------------------------------------------------
 Scheduling option
 -----------------------------------------------------------------------
 
 The "alarm" facility is replaced by a more general *scheduling* facility.
-Touching the schedule button on the on the main widget
+Touching the schedule button on the main widget
 shows a list of services to select from (the services in the currently
 selected channel, and the list of services in the preset list).
 A user specified time can be linked to the selected service.
@@ -345,7 +352,7 @@ the dynamic label text - if selected - is not affacted.
 ![scheduler](/scheduler.png?raw=true)
 
 For **Linux** there is an additional option: specifying a schedule list
-as parameter in the command line for an "at" command.
+as parameter in the command line for an **at** command.
 This is especially useful for
 unattended operation. When I have to go out, but want to record
 something on a later time, the feature allows starting
@@ -381,7 +388,7 @@ For the *Band*, one will add/set a line
 Installation on Windows
 --------------------------------------------------------------------
 
-For windows  **installers** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
+For windows an  **installer** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
 
 The installer will also call the official installer for the dll implementing
 the 2.3 api for getting access to the SDRplay devices.
@@ -390,7 +397,9 @@ the 2.3 api for getting access to the SDRplay devices.
 Installation on Linux-x64
 ------------------------------------------------------------------
 
-For Linux-x64 systems, an **appImage** is available.
+For Linux-x64 systems, an **appImage** can be found in the releases section,
+http::github.com/JvanKatwijk/qt-dab/releases. The appImage contains
+next to the executable qt-dab program, the required libraries.
 
 Of course it is possible to generate an executable, the 
 aforementioned user's manual
@@ -404,16 +413,17 @@ on an RPI.
 
 Note that the source tree contains two variants next to the Qt-DAB program,
 a **dabMini** program, a dab decoder with a minimal interface, and **dab-2**
-an experimental variant. Both use large parts of the same sources as Qt-DAB does.
+an experimental  variant.
+Both use large parts of the same sources as Qt-DAB does.
  
-For the dabMini, an appImage is available for use on an x64 based
-Linux system, and the user's manual contains a complete
-script, tested on an RPI 2 and 3.
+For **dabMini**, an appImage is available for use on an x64 based
+Linux system. The user's manual contains a complete
+script, tested on an RPI 2 and 3 for generating an executable.
 
 **dab-2** is experimental and **NOT** supported
 
-Note that Linux allows connecting both the "pulse" and "pipewire"
-subsystem to bluetooth, making it easy to listen using a bluetooth
+Note that Linux allows connecting audio handlers as "pulse" and "pipewire"
+to bluetooth, making it easy to listen using a bluetooth
 connected soundbar or bluetooth connected ear- or headphomes.
 
 -----------------------------------------------------------------------
@@ -435,7 +445,7 @@ Using user specified bands
 While it is known that the DAB transmissions are now all in Band III,
 there are situations where it might is desirable to use other frequencies.
 If you want to experiment with a modulator, connected to an SDR device
-on different frequencies than the default one (or you want just to
+on other frequencies than the default one (or you want just to
 have a restricted number of channels from Band III or L Band), Qt-DAB
 offers a possibility to specify a list of channels to be used.
 Specify in a file a list of channels, e.g.
@@ -447,7 +457,8 @@ Specify in a file a list of channels, e.g.
 
 and pass the file on with the "-A" command line switch.
 The channel name is just any identifier, the channel frequency is
-given in KHz.
+given in KHz. Your SDR device obviously has to support the frequencies
+for these channels.
 
 -------------------------------------------------------------------------
 xml-files and support
@@ -531,8 +542,6 @@ a sampled DAB frame starts with a null period of app 2600 samples, followed by
 76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes of the
 samples in the null period.
 
-For every second DAB frame, such a computation is performed, 
-and, depending on the settings, shown.
 The configuration widget contains a spinbox that can be used to set the
 "speed" of displaying data.
 If the value "1" is chosen, the result of each snr computation is shown,
