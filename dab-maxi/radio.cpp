@@ -1928,6 +1928,15 @@ void	RadioInterface::setStereo	(bool b) {
 //	In this version we show the spectrum even when the
 //	mainId and subId did not change
 
+void	RadioInterface::show_null (int amount) {
+std::complex<float> B [amount];
+QVector<float> V (amount);
+	tiiBuffer. getDataFromBuffer (B, amount);
+	for (int i = 0; i < amount; i ++)
+	   V [i] = abs (B [i]);
+	my_tiiViewer. show_nullPeriod (V, 100);
+}
+
 static
 QString	tiiNumber (int n) {
 	if (n >= 10)
@@ -4015,8 +4024,16 @@ QString		scheduleService;
 	int selected		= theSelector. QDialog::exec ();
 	scheduleService		= candidates. at (selected);
 	{  elementSelector	theElementSelector (scheduleService);
+	   int days		= 0;
 	   int	targetTime	= theElementSelector. QDialog::exec ();
+	   QDate today = QDate::currentDate ();
+	   int dayOfYear	= today. dayOfYear ();
+	   if (targetTime < 0) {
+	      dayOfYear += 1;
+	      targetTime = - targetTime;
+	   }
 	   theScheduler. addRow (scheduleService,
+	                         dayOfYear,
 	                         targetTime / 60, 
 	                         targetTime % 60);
 	}

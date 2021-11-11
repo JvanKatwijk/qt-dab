@@ -37,6 +37,7 @@ public:
 			~elementSelector	();
 private:
 	QLabel		theService;
+	QSpinBox	dayBox;
 	QSpinBox	hourBox;
 	QSpinBox	minuteBox;
 	QCheckBox	readyBox;

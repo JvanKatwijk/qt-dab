@@ -27,6 +27,7 @@
 //
 	elementSelector::elementSelector (const QString &serviceName):
 	                                   theService (serviceName),
+	                                   dayBox (),
 	                                   hourBox (),
 	                                   minuteBox (),
 	                                   readyBox ("ready") {
@@ -34,6 +35,9 @@
 QTime currentTime = QTime::currentTime ();
 QHBoxLayout	*layOut = new QHBoxLayout ();
 
+	dayBox. setToolTip ("days ahead");
+	dayBox. setMaximum (1);
+	dayBox. setValue (0);
 	hourBox. setToolTip ("select the hour in the range 0 .. 23");
 	hourBox. setMaximum (23);
 	hourBox. setValue (currentTime. hour ());
@@ -41,10 +45,11 @@ QHBoxLayout	*layOut = new QHBoxLayout ();
 	minuteBox. setMaximum (59);
 	minuteBox. setValue (currentTime. minute ());
 	readyBox. setToolTip ("click here when time is set");
-	layOut -> addWidget (&theService);
-	layOut -> addWidget (&hourBox);
-	layOut -> addWidget (&minuteBox);
-	layOut -> addWidget (&readyBox);
+	layOut	-> addWidget (&theService);
+	layOut	-> addWidget (&dayBox);
+	layOut	-> addWidget (&hourBox);
+	layOut	-> addWidget (&minuteBox);
+	layOut	-> addWidget (&readyBox);
 	setWindowTitle (tr("time select"));
 	setLayout (layOut);
 
@@ -57,6 +62,8 @@ QHBoxLayout	*layOut = new QHBoxLayout ();
 
 void	elementSelector::collectData () {
 int	val	= hourBox. value () * 60 + minuteBox. value ();
+	if (dayBox. value () > 0)
+	   val = -val;
 	if (readyBox. isChecked ())
 	   QDialog::done (val);
 }

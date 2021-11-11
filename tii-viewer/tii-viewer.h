@@ -64,6 +64,7 @@ public:
 	void		hide			();
 	bool		isHidden		();
 	void		clear			();
+	void		show_nullPeriod		(const QVector<float> &, double);
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;

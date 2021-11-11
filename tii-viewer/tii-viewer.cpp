@@ -53,7 +53,7 @@ bool	brush;
 
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	displaySize	= dabSettings -> value ("displaySize",
-	                                                   1024).toInt();
+	                                                   512).toInt();
 	dabSettings	-> endGroup ();
 	if ((displaySize & (displaySize - 1)) != 0)
 	   displaySize = 1024;
@@ -169,11 +169,11 @@ int16_t	i, j;
 double	temp	= (double)INPUT_RATE / 2 / displaySize;
 int16_t	averageCount	= 3;
 
-	   
 	(void)amount;
 	if (tiiBuffer -> GetRingBufferReadAvailable() < spectrumSize) {
 	   return;
 	}
+
 	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
 	tiiBuffer	-> FlushRingBuffer ();
 	if (myFrame. isHidden ())
@@ -235,7 +235,8 @@ float	amp1	= amp / 100;
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + amp);
+				         get_db (0), get_db (0) + amp1 * 20);
+//				         get_db (0), get_db (0) + amp);
 //				         get_db (0), 0);
 
 	for (i = 0; i < displaySize; i ++) 
@@ -321,5 +322,43 @@ int	index;
 	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
+}
+
+static
+double	Y_values [2000] = {0};
+void	tiiViewer::show_nullPeriod (const QVector<float> &v, double  amp2) {
+double	X_axis [displaySize];
+double	amp	= AmplificationSlider -> value();
+
+
+	for (int i = 0; i < displaySize; i ++) {
+	   X_axis [i] = i * v. size () / displaySize;;
+	   double x = 0;
+	   for (int j = 0; j < v. size () / displaySize; j ++)
+	      x = abs (v [i * v. size () / displaySize + j]);
+	   Y_values [i] = x;
+	}
+
+	float Max	= 0;
+	for (int i = 0; i < displaySize; i ++)
+	   if (Y_values [i] > Max)
+	      Max = Y_values [i];
+
+	plotgrid        -> setAxisScale (QwtPlot::xBottom,
+                                         (double)X_axis [0],
+                                         X_axis [displaySize - 1]);
+        plotgrid        -> enableAxis (QwtPlot::xBottom);
+        plotgrid        -> setAxisScale (QwtPlot::yLeft,
+                                         0, Max * 2);
+//                                       get_db (0), 0);
+//	for (int i = 0; i < displaySize; i ++) 
+//	   Y_values [i] = get_db (amp * Y_values [i]); 
+
+	spectrumCurve. setBaseline (0);
+	Y_values [0]		= 0;
+	Y_values [displaySize - 1] = 0;
+
+	spectrumCurve. setSamples (X_axis, Y_values, displaySize);
+	plotgrid	-> replot(); 
 }
 

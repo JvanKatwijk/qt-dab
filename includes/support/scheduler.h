@@ -39,7 +39,7 @@ public:
 		Scheduler	(RadioInterface *);
 		~Scheduler	();
 	void	addExternalSchedule	(const QString &);
-	void	addRow		(const QString &, int, int);
+	void	addRow		(const QString &, int, int, int);
 	void	show		();
 	void	hide		();
 public slots:

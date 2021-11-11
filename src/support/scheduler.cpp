@@ -27,17 +27,24 @@
 #include	<fstream>
 #include	<string>
 #define	SWITCHTIME	15
-
+#define	MINUTES_PER_DAY	(24 * 60)
+//
+///
+//	Note
+//	In this version, we maintain time as being relative to 1 jan
+//	wakeupTime is given in minutes,
+//	currentTime is eventually computed in seconds
+//	the time difference then is in seconds and the delay in msec
 	Scheduler::Scheduler (RadioInterface *mr):
 	                              myWidget (nullptr) {
 	myWidget. resize (240, 200);
 	myWidget. setWidgetResizable(true);
 
-	tableWidget 	= new QTableWidget (0, 2);
+	tableWidget 	= new QTableWidget (0, 3);
 	tableWidget	-> setColumnWidth (0, 120);
 	myWidget. setWidget(tableWidget);
 	tableWidget 	-> setHorizontalHeaderLabels (
-	            QStringList () << tr ("service name     ") << tr ("time"));
+	            QStringList () << tr ("service name     ") << tr ("daynr") << tr ("time"));
 	connect (tableWidget, SIGNAL (cellDoubleClicked (int, int)),
 	         this, SLOT (removeRow (int, int)));
 	wakeupTimer. setSingleShot (true);
@@ -46,7 +53,7 @@
 	         this, SLOT (handle_timeOut ()));
 	connect (this, SIGNAL (timeOut (const QString &)),
 	         mr, SLOT (scheduler_timeOut (const QString &)));
-	this	-> wakeupTime = 24 * 60 + 60;
+	this	-> wakeupTime = 365 * 24 * 60;
 }
 
 	Scheduler::~Scheduler () {
@@ -77,6 +84,7 @@ int16_t	rows	= tableWidget -> rowCount ();
 
 void	Scheduler::addExternalSchedule	(const QString &fileName) {
 std::ifstream f (fileName. toLatin1 (). data ());
+QDate currentDate = QDate::currentDate ();
 
 	std::string str;
 	size_t amount	= 256;
@@ -99,21 +107,33 @@ std::ifstream f (fileName. toLatin1 (). data ());
 	      continue;
 	   if ((minutes < 0) || (minutes >= 60))
 	      continue;
-	   addRow (res [0], hours, minutes);
+	   addRow (res [0], currentDate. dayOfYear (),  hours, minutes);
 	}
 }
 
-void	Scheduler::addRow (const QString &name, int hours, int minutes) {
-int16_t	row	= tableWidget -> rowCount ();
-int	wakeupTime	= hours * 60 + minutes;
+//	To allow schedules to the next day, we compute the times
+//	relative to 1 januari
+void	Scheduler::addRow (const QString &name, int day,
+	                              int hours, int minutes) {
+int16_t	row		= tableWidget -> rowCount ();
+QDate	currentDate 	= QDate::currentDate ();
+QTime	current		= QTime::currentTime ();
+int	dayOfYear	= currentDate. dayOfYear ();
+int	wakeupTime	= hours * 60 + minutes + (day - 1) * MINUTES_PER_DAY;
 QString	recordTime	= QString::number (hours / 10) +
 	                           QString::number (hours % 10);
+int64_t currentTime	= ((dayOfYear - 1) * MINUTES_PER_DAY + current. hour () * 60 + current. minute ()) * 60 + current. second ();
 
+QDate	wakeupDate	= QDate::currentDate ();	// default
+
+	wakeupTimer. stop ();
+	if (day - currentDate. dayOfYear () > 0) {
+	   wakeupDate = wakeupDate. addDays (day - currentDate. dayOfYear ());
+	}
 	recordTime. append (":");
 	recordTime. append (QString::number (minutes / 10) +
 	                             QString::number (minutes % 10));
 
-	wakeupTimer. stop ();
 	tableWidget	-> insertRow (row);
 	QTableWidgetItem *item0	= new QTableWidgetItem;
 	item0		-> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
@@ -123,19 +143,23 @@ QString	recordTime	= QString::number (hours / 10) +
 	item1		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
 	tableWidget	-> setItem (row, 1, item1);
 
+	QTableWidgetItem *item2 = new QTableWidgetItem;
+	item2		-> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
+	tableWidget	-> setItem (row, 2, item2);
+
 	tableWidget	-> setCurrentItem (item0);
 	tableWidget	-> item (row, 0) -> setText (name);
-	tableWidget	-> item (row, 1) -> setText (recordTime);
+	tableWidget	-> item (row, 1) -> setText (QString::number (day));
+	tableWidget	-> item (row, 2) -> setText (recordTime);
 	if (wakeupTime < this -> wakeupTime) {
 	   this -> wakeupTime = wakeupTime;
 	   this	-> wakeupIndex = tableWidget -> rowCount () - 1;
 	};
 
-	wakeupTimer. stop ();
-	QTime current = QTime::currentTime ();
-	int64_t currentTime = current. hour () * 60 + current. minute ();
-	currentTime = currentTime * 60 + current. second ();
-	int theDelay	= this -> wakeupTime * 60 - currentTime - SWITCHTIME;
+	int tempDelay	= wakeupTime * 60 - currentTime;
+	fprintf (stderr, "waiting time %d hours %d minutes\n",
+	                       tempDelay / 60 / 60, tempDelay / 60 %60);
+	int theDelay	= this -> wakeupTime * 60  - currentTime - SWITCHTIME;
 	if (theDelay <= 0) 
 	   theDelay = 1000;	// milliseconds
 	else
@@ -148,29 +172,38 @@ QString	recordTime	= QString::number (hours / 10) +
 }
 //
 void	Scheduler::removeRow (int row, int column) {
+QDate	currentDate = QDate::currentDate ();
+int	dayOfYear	= currentDate. dayOfYear ();
 	(void) column;
 	wakeupTimer. stop ();
 	tableWidget	-> removeRow (row);
 	if (tableWidget -> rowCount () == 0) {
-	   wakeupTime	= 25 * 60 + 60;
+	   wakeupTime	= 365 * MINUTES_PER_DAY;
 	   wakeupTimer. stop ();
 	   hide ();
 	   return;
 	}
+//
+//	and recompute the wakeupTime
 	for (int i = 0; i < tableWidget -> rowCount (); i ++) {
-	   QString testTime = tableWidget -> item (i, 1) -> text ();
+	   QString testTime = tableWidget -> item (i, 2) -> text ();
 	   QStringList test = testTime. split (":");
 	   int hours	= test. at (0). toInt ();
 	   int minutes	= test. at (1) . toInt ();
-	   if (hours * 60 + minutes < wakeupTime) {
-	      wakeupTime = hours * 60 + minutes;
+	   int day = tableWidget -> item (i, 1) -> text (). toInt ();
+	   int targetTime = hours * 60 + minutes;
+	   targetTime += (day - 1) * MINUTES_PER_DAY;
+	   if (targetTime < wakeupTime) {
+	      wakeupTime = targetTime;
 	      wakeupIndex = i;
 	   }
 	}
+
 	QTime current = QTime::currentTime ();
-	int64_t currentTime = current. hour () * 60 + current. minute ();
-	currentTime = 60 * currentTime + current. second ();
-	int64_t theDelay	= wakeupTime * 60 - currentTime - SWITCHTIME; // seconds
+	int64_t currentTime = (dayOfYear - 1) * MINUTES_PER_DAY + current. hour () * 60 + current. minute ();
+	currentTime	= currentTime * 60 + current. second ();
+	int64_t theDelay
+	                = wakeupTime * 60 - currentTime - SWITCHTIME; // seconds
 	if (theDelay <= 0) 
 	   theDelay = 1000;	// milliseconds
 	else
@@ -188,21 +221,26 @@ void	Scheduler::handle_timeOut () {
 QString	service	= tableWidget -> item (wakeupIndex, 0) -> text ();
 QTime current = QTime::currentTime ();
 int64_t currentTime = current. hour () * 60 + current. minute ();
-	currentTime = 60 * currentTime + current. second ();
+QDate currentDate	= QDate::currentDate ();
+
+	currentTime += (currentDate. dayOfYear () - 1) * MINUTES_PER_DAY;
+//
+//	we need seconds
+	currentTime = currentTime * 60 + current. second ();
 
 	if (currentTime >= wakeupTime * 60 - SWITCHTIME) {
-	   wakeupTime	= 24 * 60 + 60;
+	   wakeupTime	= 365 * MINUTES_PER_DAY;	// minutes
 	   removeRow (wakeupIndex, 0);
 	   emit timeOut (service);
 	   return;
 	}
 
-	fprintf (stderr, "currentTime %d\n", (int)currentTime);
-	int64_t theDelay	= wakeupTime * 60 - currentTime - SWITCHTIME; // seconds
-	if (theDelay <= 0) 
+	int64_t theDelay	=
+	           wakeupTime * 60 - currentTime - SWITCHTIME; // seconds
+	if (theDelay <= 500) 
 	   theDelay = 1000;	// milliseconds
 	else
-	   theDelay = 1000 * theDelay;
+	   theDelay = 1000 * theDelay;	// in millseconds
 
 	if (theDelay > 600000)
 	   theDelay = 600000;

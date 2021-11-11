@@ -333,6 +333,7 @@ public slots:
 	void			newFrame		(int);
 
 	void			show_clockError		(int);
+	void			show_null		(int);
 #ifdef	TRY_EPG
 	void			set_epgData		(int,
 	                                                 int, const QString &);

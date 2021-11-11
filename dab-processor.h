@@ -144,6 +144,7 @@ signals:
 	void		show_snr		(float, float, float,
 	                                                  float, float);
 	void		show_clockErr		(int);
+	void		show_null		(int);
 };
 #endif
 

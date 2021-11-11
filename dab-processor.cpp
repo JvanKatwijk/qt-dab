@@ -98,6 +98,8 @@
 	         mr, SLOT (show_snr (int)));
 	connect (this, SIGNAL (show_clockErr (int)),
 	         mr, SLOT (show_clockError (int)));
+	connect (this, SIGNAL (show_null (int)),
+	         mr, SLOT (show_null (int)));
 	my_TII_Detector. reset();
 }
 
@@ -152,6 +154,8 @@ int	sampleCount	= 0;
 int	totalSamples	= 0;
 double	cLevel		= 0;
 int	cCount		= 0;
+bool dumpvlag		= false;
+QVector<std::complex<float>> tester (T_null / 2 + T_u);
 //	inputDevice	-> resetBuffer ();
 //	inputDevice	-> restartReader (frequency);
 	ibits. resize (2 * params. get_carriers());
@@ -219,6 +223,17 @@ Check_endofNULL:
 	   }
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_u, coarseOffset + fineOffset);
+#ifdef	__SHOW_BLOCK_0_
+	static int testteller = 0;
+	   testteller ++;
+	   if (testteller >=  5) {
+	      testteller = 0;
+	      for (int i = 0; i < T_u; i ++)
+	         tester [T_null / 2 + i] = ofdmBuffer [i];
+	      tiiBuffer -> putDataIntoBuffer (tester. data (), tester. size ());
+	      show_null (tester. size ());
+	   }
+#endif
 /**
   *	We now have to find the exact first sample of the non-null period.
   *	We use a correlation that will find the first sample after the
@@ -319,6 +334,10 @@ SyncOnPhase:
   */
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_null, coarseOffset + fineOffset);
+#ifdef	__SHOW_BLOCK_0_
+	   for (int i = 0; i < T_null / 2; i ++)
+	      tester [i] = ofdmBuffer [T_null / 2 + i];
+#endif
 	   sampleCount += T_null;
 	   float sum	= 0;
 	   for (i = 0; i < T_null; i ++)
@@ -341,7 +360,8 @@ SyncOnPhase:
  *	The TII data is encoded in the null period of the
  *	odd frames 
  */
-          if (params. get_dabMode () == 1) {
+#ifndef	__SHOW_BLOCK_0_
+	   if (params. get_dabMode () == 1) {
 	     if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
 	         if (++tii_counter >= tii_delay) {
@@ -358,6 +378,7 @@ SyncOnPhase:
 	         }
 	      }
 	   }
+#endif
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
