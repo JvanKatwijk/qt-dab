@@ -281,12 +281,17 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 void	Scheduler::dump (const QString &file) {
 FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 
+	fprintf (stderr, "dumpfile %s is opened %s\n",
+	                          file. toLatin1 (). data (),
+	                           dumpFile == nullptr ? "not good" : "good");
 	if (dumpFile == nullptr)
 	   return;
 
 	QString startDay     =
                      QDate::shortDayName (referenceDate. dayOfWeek ());
 
+	fprintf (stderr, " there are %d elements to be printed\n",
+	                          tableWidget -> rowCount ());
 	fprintf (dumpFile, "// dump schedule file with %d elements\n",
 	                    tableWidget -> rowCount ());
 	fprintf (dumpFile, "reference: %d %d %d\n",
@@ -294,6 +299,7 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 	                     referenceDate. month (),
 	                     referenceDate. day ());
 	for (int row = 0; row < tableWidget -> rowCount (); row ++) {
+	   fprintf (stderr, "writing a line\n");
 	   QString service	=
 	            tableWidget -> item (row, 0) -> text ();
 	   QString wakeupDay	=
@@ -312,6 +318,7 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 	                    delayDays, hours, minutes, -(delayDays + hours + minutes));
 	}
 
+	fprintf (stderr, "dumpFile will be closed\n");
 	fclose (dumpFile);
 }
 //
