@@ -34,6 +34,7 @@
 
 #define DEFAULT_INI     ".qt-dab.ini"
 #define	PRESETS		".qt-dab-presets.xml"
+#define	SCHEDULE	".qt-dab-schedule"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
@@ -80,7 +81,7 @@ int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
-QString	scheduleFile		= "";
+QString	scheduleFile		= fullPathfor (SCHEDULE);
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");

@@ -30,18 +30,20 @@
 #include	<QObject>
 #include	<QString>
 #include	<QTimer>
+#include	<QDate>
 
 class	RadioInterface;
 
 class Scheduler:public QObject {
 Q_OBJECT
 public:
-		Scheduler	(RadioInterface *);
+		Scheduler	(RadioInterface *, const QString &);
 		~Scheduler	();
-	void	addExternalSchedule	(const QString &);
 	void	addRow		(const QString &, int, int, int);
 	void	show		();
 	void	hide		();
+	void	dump		(const QString &);
+	void	read		(const QString &);
 public slots:
 	void	removeRow	(int, int);
 	void	handle_timeOut	();
@@ -54,6 +56,8 @@ private:
 	QTableWidget	*tableWidget;
 	int		wakeupTime;
 	int		wakeupIndex;
+	QDate		referenceDate;
+	QString		fileName;
 };
 
 #endif

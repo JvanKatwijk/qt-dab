@@ -34,10 +34,23 @@
 	                                   
 QTime currentTime = QTime::currentTime ();
 QHBoxLayout	*layOut = new QHBoxLayout ();
+QDate currentDate	= QDate::currentDate ();
+QDate workingDate	= currentDate;
 
+	dayBox. addItem ("today");
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
+	workingDate = workingDate. addDays (1);
+	dayBox. addItem (QDate::shortDayName (workingDate. dayOfWeek ()));
 	dayBox. setToolTip ("days ahead");
-	dayBox. setMaximum (1);
-	dayBox. setValue (0);
 	hourBox. setToolTip ("select the hour in the range 0 .. 23");
 	hourBox. setMaximum (23);
 	hourBox. setValue (currentTime. hour ());
@@ -62,8 +75,9 @@ QHBoxLayout	*layOut = new QHBoxLayout ();
 
 void	elementSelector::collectData () {
 int	val	= hourBox. value () * 60 + minuteBox. value ();
-	if (dayBox. value () > 0)
-	   val = -val;
+int	x	= dayBox. currentIndex ();
+
+	val	|= x << 16;
 	if (readyBox. isChecked ())
 	   QDialog::done (val);
 }

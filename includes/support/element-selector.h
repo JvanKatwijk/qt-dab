@@ -28,6 +28,7 @@
 #include	<QTime>
 #include	<QSpinBox>
 #include	<QCheckBox>
+#include	<QComboBox>
 #include	<cstdint>
 
 class	elementSelector: public QDialog {
@@ -37,7 +38,7 @@ public:
 			~elementSelector	();
 private:
 	QLabel		theService;
-	QSpinBox	dayBox;
+	QComboBox	dayBox;
 	QSpinBox	hourBox;
 	QSpinBox	minuteBox;
 	QCheckBox	readyBox;

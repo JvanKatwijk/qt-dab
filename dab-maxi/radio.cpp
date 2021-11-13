@@ -253,7 +253,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-	                                        theScheduler (this) {
+	                                        theScheduler (this, schedule) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -787,8 +787,6 @@ bool	RadioInterface::doStart	() {
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_tii_detectorMode (int)));
 
-	if (externalSchedule != "")
-	   theScheduler. addExternalSchedule (externalSchedule);
 	startChannel (channelSelector -> currentText ());
 	running. store (true);
 	return true;
@@ -4027,11 +4025,8 @@ QString		scheduleService;
 	   int days		= 0;
 	   int	targetTime	= theElementSelector. QDialog::exec ();
 	   QDate today = QDate::currentDate ();
-	   int dayOfYear	= today. dayOfYear ();
-	   if (targetTime < 0) {
-	      dayOfYear += 1;
-	      targetTime = - targetTime;
-	   }
+	   int dayOfYear	= (targetTime & 0XF0000) >> 16;
+	   targetTime		= targetTime & 0xFFFF;
 	   theScheduler. addRow (scheduleService,
 	                         dayOfYear,
 	                         targetTime / 60, 
