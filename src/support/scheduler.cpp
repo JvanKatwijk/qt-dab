@@ -39,6 +39,9 @@
 //	wakeupTime is given in minutes,
 //	currentTime is eventually computed in seconds
 //	the time difference then is in seconds and the delay in msec
+//
+QString  weekdays [7];
+
 	Scheduler::Scheduler (RadioInterface *mr, const QString &fileName):
 	                              myWidget (nullptr) {
 	myWidget. resize (240, 200);
@@ -60,6 +63,8 @@
 	connect (this, SIGNAL (timeOut (const QString &)),
 	         mr, SLOT (scheduler_timeOut (const QString &)));
 	this	-> wakeupTime = 365 * MINUTES_PER_DAY;
+	for (int i = 1; i <= 7; i ++)
+	   weekdays [i - 1] = QDate::shortDayName (i);
 	read (fileName);
 }
 
@@ -90,9 +95,6 @@ int16_t	rows	= tableWidget -> rowCount ();
 	   tableWidget -> removeRow (i);
 }
 
-const char *weekdays [] = {
-	"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"
-};
 
 int	dayDiff (const QString &dayRef, const QString &dayTest) {
 int index_1, index_2;
@@ -304,7 +306,11 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 	            tableWidget -> item (row, 0) -> text ();
 	   QString wakeupDay	=
 	            tableWidget -> item (row, 1) -> text ();
+	   fprintf (stderr, "computing diff %s %s\n",
+	                          startDay. toLatin1 (). data (),
+	                          wakeupDay. toLatin1 (). data ());
 	   int delayDays	= dayDiff (startDay, wakeupDay);
+	   fprintf (stderr, "delayDays = %d\n", delayDays);
 	   QString wakeupTime	=
 	            tableWidget -> item (row, 2) -> text ();
 	   QStringList t = wakeupTime . split (":");
@@ -397,7 +403,7 @@ QDate startDate;
 	      fprintf (stderr, "delayDays = %d\n", delayDays);
 	      if (testMinutes < refMinutes) 
 	         fprintf (stderr, "schedule for service %s is out of date\n",
-	                                      service);
+	                                      service. c_str ());
 	      else
 	         addRow (service. c_str (), delayDays, hour, minutes);
 	   }
