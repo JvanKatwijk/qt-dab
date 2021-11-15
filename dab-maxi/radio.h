@@ -218,7 +218,6 @@ private:
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
-	QTimer			startTimer;
 	QTimer			muteTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;

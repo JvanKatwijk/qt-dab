@@ -866,8 +866,10 @@ int	serviceOrder;
 	}
 
 	ensembleDisplay -> setModel (&model);
-	if (serviceCount == model.rowCount ())
+	if (serviceCount == model.rowCount () && !scanning) {
+	   presetTimer. stop ();
 	   setPresetStation ();
+	}
 }
 //
 //	The ensembleId is written as hexadecimal, however, the 
@@ -3116,7 +3118,7 @@ void	RadioInterface::setPresetStation () {
 void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
-	serviceCount		= 0;
+	serviceCount		= -1;
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", channel);
 	inputDevice		-> resetBuffer ();
@@ -3338,6 +3340,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   stopChannel ();
 //	   if (scanMode != SCAN_TO_DATA)
 	   cc = theBand. nextChannel (cc);
+	   fprintf (stderr, "going to channel %d\n", cc);
 	   if ((cc >= channelSelector -> count ()) &&
 	                               (scanMode == SINGLE_SCAN)) {
 	      stopScanning (true);
