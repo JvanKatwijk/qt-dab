@@ -4025,13 +4025,11 @@ QString		scheduleService;
 	int selected		= theSelector. QDialog::exec ();
 	scheduleService		= candidates. at (selected);
 	{  elementSelector	theElementSelector (scheduleService);
-	   int days		= 0;
 	   int	targetTime	= theElementSelector. QDialog::exec ();
-	   QDate today = QDate::currentDate ();
-	   int dayOfYear	= (targetTime & 0XF0000) >> 16;
+	   int delayDays	= (targetTime & 0XF0000) >> 16;
 	   targetTime		= targetTime & 0xFFFF;
 	   theScheduler. addRow (scheduleService,
-	                         dayOfYear,
+	                         delayDays,
 	                         targetTime / 60, 
 	                         targetTime % 60);
 	}
