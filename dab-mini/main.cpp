@@ -34,6 +34,7 @@
 
 #define DEFAULT_INI     ".dab-mini.ini"
 #define	PRESETS		".dab-mini-presets.xml"
+#define	SCHEDULE	".dab-mini-schedule.ini"
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
@@ -75,6 +76,7 @@ RadioInterface  *MyRadioInterface;
 // Default values
 QSettings       *dabSettings;           // ini file
 QString		presetName	= PRESETS;
+QString		scheduleName	= SCHEDULE;
 int     opt;
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
@@ -99,6 +101,10 @@ int     opt;
 	presets. append ("/");
 	presets. append (presetName);
 	presets = QDir::toNativeSeparators (presets);
+	QString schedule	= QDir::homePath ();
+	schedule. append ("/");
+	schedule. append (scheduleName);
+	schedule  = QDir::toNativeSeparators (schedule);
 
 /*
  *      Before we connect control to the gui, we have to
@@ -116,7 +122,8 @@ int     opt;
 
 	a. setWindowIcon (QIcon (":/dab-mini.ico"));
 
-	MyRadioInterface = new RadioInterface (dabSettings, presets);
+	MyRadioInterface = new RadioInterface (dabSettings,
+	                                       presets, schedule);
 	MyRadioInterface -> show();
         a. exec();
 /*
@@ -126,7 +133,7 @@ int     opt;
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-//	delete MyRadioInterface;
+	delete MyRadioInterface;
 	delete dabSettings;
 	return 1;
 }

@@ -68,6 +68,7 @@ Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
@@ -195,6 +196,7 @@ public slots:
 	void			stopAnnouncement	(const QString &, int);
 	void			newFrame		(int);
 	void			show_clockError		(int);
+	void			show_null		(int);
 	void			scheduler_timeOut	(const QString &);
 	void			nrServices		(int);
 	void			showCorrelation		(int, int,

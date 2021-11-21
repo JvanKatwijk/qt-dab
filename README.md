@@ -97,7 +97,7 @@ Features
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
   * Clean device interface, easy to add other devices, see below.
-  * Scheduling the start of channel:service pairs or operations as frame dump or audio dump, even for unattented operation.
+  * Scheduling the start of channel:service pairs or operations as frame dump or audio dump, even for days ahead
 
 Not yet or partly implemented:
 

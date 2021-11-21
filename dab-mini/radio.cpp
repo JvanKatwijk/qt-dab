@@ -78,6 +78,7 @@ dabService	secondService;
 //	not touched here
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
+	                                const QString	&schedule,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -92,7 +93,7 @@ dabService	secondService;
 	                                        theBand ("", Si ),
 	                                        filenameFinder (Si),
 	                                        the_dlCache (10),
-	                                        theScheduler (this) {
+	                                        theScheduler (this, schedule) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -479,6 +480,7 @@ void	RadioInterface::TerminateProcess() {
 	my_dabProcessor		-> stop();		// definitely concurrent
 	if (dlTextFile != nullptr)
 	   fclose (dlTextFile);
+	theScheduler. hide ();
 	usleep (1000);		// give space to clean up pending signals
 //	everything should be halted by now
 	delete		soundOut;
@@ -728,6 +730,10 @@ void	RadioInterface::show_rsCorrections	(int c) {
 }
 
 void	RadioInterface::show_clockError	(int e) {
+	(void)e;
+}
+
+void	RadioInterface::show_null	(int e) {
 	(void)e;
 }
 
@@ -1431,7 +1437,10 @@ QString		scheduleService;
 	                            scheduleService. toLatin1 (). data ());
 	{  elementSelector	theElementSelector (scheduleService);
 	   int	targetTime	= theElementSelector. QDialog::exec ();
+	   int delayDays	= (targetTime & 0xFF0000) >> 16;
+	   targetTime		= targetTime & 0xFFFF;
 	   theScheduler. addRow (scheduleService,
+	                         delayDays,
 	                         targetTime / 60, 
 	                         targetTime % 60);
 	}
