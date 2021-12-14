@@ -19,6 +19,12 @@ QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  dab-mini.ico
 RESOURCES	+= resources.qrc
 
+#
+#	For more parallel processing, uncomment the following
+#	defines
+#DEFINES	+= __MSC_THREAD__
+#DEFINES	+=  __THREADED_BACKEND
+
 TRANSLATIONS = i18n/de_DE.ts
 
 DEPENDPATH += . \

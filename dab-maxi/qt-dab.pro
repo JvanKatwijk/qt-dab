@@ -27,6 +27,12 @@ RESOURCES	+= resources.qrc
 
 TRANSLATIONS = i18n/de_DE.ts
 
+#
+#       For more parallel processing, uncomment the following
+#       defines
+#DEFINES        += __MSC_THREAD__
+#DEFINES        +=  __THREADED_BACKEND
+
 DEPENDPATH += . \
 	      ../src \
 	      ../includes \

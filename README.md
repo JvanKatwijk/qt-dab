@@ -334,7 +334,8 @@ The "alarm" facility is replaced by a more general *scheduling* facility.
 Touching the schedule button on the main widget
 shows a list of services to select from (the services in the currently
 selected channel, and the list of services in the preset list).
-A user specified time can be linked to the selected service.
+A user specified time today or the next days can be linked to the
+selected service.
 
 As additional feature, some operations can be scheduled as well:
 
@@ -351,22 +352,10 @@ the dynamic label text - if selected - is not affacted.
 
 ![scheduler](/scheduler.png?raw=true)
 
-For **Linux** there is an additional option: specifying a schedule list
-as parameter in the command line for an **at** command.
-This is especially useful for
-unattended operation. When I have to go out, but want to record
-something on a later time, the feature allows starting
-Qt-DAB ad a specified time and executing the schedule commands.
 
-The sourcetree for dabMaxi contains a file "testfile" and a
-file "command.sh" that can be used as inspiration for specifying
-an unattended operation of Qt-DAB.
-
-As an example
-
-   at 13:45 -f command.sh
-
-will start Qt-DAB  at 13:45 and execute the schedule commands from "testfile".
+Specifying a time and day is stored in a table, maintained between
+program invocations. Of course, on program (re)start. On restart
+all schedule elements on passed dates are removed.
 
 -------------------------------------------------------------------------
 Obsolete properties

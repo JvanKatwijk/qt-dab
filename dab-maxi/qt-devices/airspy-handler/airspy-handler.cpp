@@ -209,13 +209,17 @@ uint32_t samplerateCount;
 	convBufferSize		= selectedRate / 1000;
 	for (i = 0; i < 2048; i ++) {
 	   float inVal	= float (selectedRate / 1000);
-	   mapTable_int [i]	=  int (floor (i * (inVal / 2048.0)));
+	   mapTable_int [i]	= int (floor (i * (inVal / 2048.0)));
 	   mapTable_float [i]	= i * (inVal / 2048.0) - mapTable_int [i];
 	}
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
-
+//
+//	
 	tabWidget	-> setCurrentIndex (0);
+	set_vga_gain	(vgaSlider	-> value ());
+	set_lna_gain	(lnaSlider	-> value ());
+	set_mixer_gain	(mixerSlider	-> value ());
 	connect (linearitySlider, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_linearity (int)));
 	connect (sensitivitySlider, SIGNAL (valueChanged (int)),
@@ -238,7 +242,6 @@ uint32_t samplerateCount;
 	         this, SLOT (set_xmlDump ()));
 	connect (filterSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_filter (int)));
-
 //
 //	and to restore settings, we need
 	connect (this, SIGNAL (new_lnaGainValue (int)),
@@ -625,8 +628,8 @@ int result = my_airspy_set_vga_gain (device, vgaGain = value);
 */
 void	airspyHandler::set_lna_agc	(int dummy) {
 	(void)dummy;
-	lna_agc	= !lnaButton	-> isChecked ();
-int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
+	lna_agc	= lnaButton	-> isChecked ();
+	int result = my_airspy_set_lna_agc (device, lna_agc ? 1 : 0);
 
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("airspy_set_lna_agc() failed: %s (%d)\n",
