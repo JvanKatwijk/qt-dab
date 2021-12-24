@@ -64,66 +64,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>snr height</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QSpinBox" name="snrHeightSelector">
-       <property name="minimum">
-        <number>5</number>
-       </property>
-       <property name="value">
-        <number>15</number>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>snr Length</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSpinBox" name="snrLengthSelector">
-       <property name="minimum">
-        <number>112</number>
-       </property>
-       <property name="maximum">
-        <number>5000</number>
-       </property>
-       <property name="singleStep">
-        <number>50</number>
-       </property>
-       <property name="value">
-        <number>312</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSpinBox" name="snrDelaySetting">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-       <property name="value">
-        <number>5</number>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>snr compression</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>

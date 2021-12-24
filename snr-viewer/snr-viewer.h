@@ -60,9 +60,6 @@ public:
 	void		show_snr	();
 	void		add_snr		(float);
 	void		add_snr		(float, float);
-	void		setLength	(int);
-	void		setHeight	(int);
-	void		set_snrDelay	(int);
 	void		show		();
 	void		hide		();
 	bool		isHidden	();
@@ -96,9 +93,10 @@ private:
 #endif
 private slots:
         void            rightMouseClick (const QPointF &);
-#ifdef	__DUMP_SNR__
 	void		handle_snrDumpButton	();
-#endif
+	void		set_snrHeight		(int);
+	void		set_snrLength		(int);
+	void		set_snrDelay		(int);
 };
 
 #endif

@@ -41,9 +41,9 @@ QString	colorString	= "black";
 	dabSettings	-> beginGroup ("snrViewer");
 	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
 	plotHeight	= dabSettings -> value ("snrHeight", 15). toInt ();
-	         
-	colorString	= dabSettings -> value ("displayColor",
-	                                              "black"). toString();
+	delayCount	= dabSettings	-> value ("snrDelay", 5). toInt ();
+	colorString	= dabSettings -> value ("displayColor", "black").
+	                                                       toString ();
 	displayColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("gridColor",
 	                                               "white"). toString();
@@ -53,13 +53,19 @@ QString	colorString	= "black";
 	curveColor	= QColor (colorString);
 	dabSettings	-> endGroup ();
 	setupUi (&myFrame);
-#ifdef	__DUMP_SNR__
+
+	snrLengthSelector -> setValue (plotLength);
+	snrSlider	-> setValue (plotHeight);
+	snrCompressionSelector -> setValue (delayCount);
 	snrDumpFile. store (nullptr);
 	connect (snrDumpButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_snrDumpButton ()));
-#else
-	snrDumpButton 	-> hide ();
-#endif
+	connect (snrSlider, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_snrHeight (int)));
+	connect (snrCompressionSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_snrDelay (int)));
+	connect (snrLengthSelector, SIGNAL (valueChanged (int)),
+	         this, SLOT (setLength (int)));
 	plotgrid	= snrPlot;
 	plotgrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -101,46 +107,15 @@ QString	colorString	= "black";
 	   X_axis  [i] = i;
 	   Y_Buffer [i] = 0;
 	}
-	delayCount	= 5;
 	delayBufferP	= 0;
 }
 
 	snrViewer::~snrViewer () {
-#ifdef	__DUMP_SNR__
 	stopDumping 	();
-#endif
 //	delete lm_picker;
 //	delete lpickerMachine;
 }
 
-void	snrViewer::setHeight	(int n) {
-	plotHeight	= n;
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("snrHeight", n);
-	dabSettings	-> endGroup ();
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				              0, plotHeight);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-//	spectrum_curve. setBaseline  (0);
-}
-
-void	snrViewer::setLength	(int n) {
-	Y_Buffer. resize (n);
-	X_axis. resize (n);
-	if (n > plotLength) {
-	   for (int i = plotLength; i < n; i ++) {
-	      Y_Buffer [i] = 0;
-	      X_axis [i] = i;
-	   }
-	}
-	plotLength = n;
-	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("snrLength", plotLength);
-	dabSettings	-> endGroup ();
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                           0, plotLength - 1);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-}
 
 void	snrViewer::show () {
 	myFrame. show();
@@ -155,14 +130,6 @@ void	snrViewer::hide	() {
 
 bool	snrViewer::isHidden () {
 	return myFrame. isHidden();
-}
-
-void	snrViewer::set_snrDelay	(int d) {
-	if ((0 <= d) && (d <= 10))
-	   delayCount = d;
-	else
-	   delayCount = 5;
-	delayBufferP	= 0;
 }
 
 void	snrViewer::add_snr	(float snr) {
@@ -272,7 +239,6 @@ int	index;
 	plotgrid	->  setCanvasBackground (this -> displayColor);
 }
 
-#ifdef	__DUMP_SNR__
 void	snrViewer::handle_snrDumpButton () {
 	if (snrDumpFile. load () != nullptr) {
 	   stopDumping ();
@@ -312,4 +278,45 @@ void	snrViewer::startDumping () {
 	snrDumpFile. store (file);
 	snrDumpButton -> setText ("dumping");
 }
-#endif
+
+
+void	snrViewer::set_snrDelay	(int d) {
+	if ((0 <= d) && (d <= 10))
+	   delayCount = d;
+	else
+	   delayCount = 5;
+	delayBufferP	= 0;
+	dabSettings	-> beginGroup ("snrViewer");
+	dabSettings     -> setValue ("snrDelay", d);
+	dabSettings	-> endGroup ();
+
+}
+
+void	snrViewer::set_snrHeight	(int n) {
+	plotHeight	= n;
+	dabSettings	-> beginGroup ("snrViewer");
+	dabSettings	-> setValue ("snrHeight", n);
+	dabSettings	-> endGroup ();
+	plotgrid	-> setAxisScale (QwtPlot::yLeft,
+				              0, plotHeight);
+	plotgrid	-> enableAxis (QwtPlot::yLeft);
+//	spectrum_curve. setBaseline  (0);
+}
+
+void	snrViewer::set_snrLength	(int n) {
+	Y_Buffer. resize (n);
+	X_axis. resize (n);
+	if (n > plotLength) {
+	   for (int i = plotLength; i < n; i ++) {
+	      Y_Buffer [i] = 0;
+	      X_axis [i] = i;
+	   }
+	}
+	plotLength = n;
+	dabSettings	-> beginGroup ("snrViewer");
+	dabSettings	-> setValue ("snrLength", plotLength);
+	dabSettings	-> endGroup ();
+	plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                           0, plotLength - 1);
+	plotgrid	-> enableAxis (QwtPlot::xBottom);
+}

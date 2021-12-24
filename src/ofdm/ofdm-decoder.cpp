@@ -52,8 +52,8 @@
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
-	connect (this, SIGNAL (showQuality (float)),
-	         myRadioInterface, SLOT (showQuality (float)));
+	connect (this, SIGNAL (showQuality (float, float, float, float)),
+	         myRadioInterface, SLOT (showQuality (float, float, float, float)));
 //
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -185,10 +185,14 @@ std::complex<float> conjVector [T_u];
 	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
 	                                      carriers);
 	      showIQ	(carriers);
-	      showQuality		(computeQuality (conjVector));
-//	      compute_timeOffset	(fft_buffer, phaseReference. data ());
-//	      compute_clockOffset	(fft_buffer, phaseReference. data ());
-//	      compute_frequencyOffset	(fft_buffer, phaseReference. data ());
+	      float Quality	= computeQuality (conjVector);
+	      float timeOffset	= compute_timeOffset (fft_buffer,
+	                                              phaseReference. data ());
+	      float sco		= compute_clockOffset (fft_buffer,
+	                                              phaseReference. data ());
+	      float freqOffset	= compute_frequencyOffset (fft_buffer,
+	                                              phaseReference. data ());
+	      showQuality (Quality, timeOffset, sco, freqOffset);
 	      cnt = 0;
 	   }
 	}
@@ -206,7 +210,7 @@ std::complex<float> conjVector [T_u];
 //	so, with that in mind we experiment with formula 5.39
 //	and 5.40 from "OFDM Baseband Receiver Design for Wireless
 //	Communications (Chiueh and Tsai)"
-void	ofdmDecoder::compute_timeOffset (std::complex<float> *r,
+float	ofdmDecoder::compute_timeOffset (std::complex<float> *r,
 	                                      std::complex<float> *v) {
 std::complex<float> leftTerm;
 std::complex<float> rightTerm;
@@ -226,10 +230,10 @@ std::complex<float> sum	= std::complex<float> (0, 0);
 	   sum += conj (leftTerm) * rightTerm;
 	}
 
-	fprintf (stderr, "timeOffset = %f\n", arg (sum));
+	return arg (sum);
 }
 
-void	ofdmDecoder::compute_frequencyOffset (std::complex<float> *r,
+float	ofdmDecoder::compute_frequencyOffset (std::complex<float> *r,
 	                                      std::complex<float> *c) {
 
 std::complex<float> theta = std::complex<float> (0, 0);
@@ -242,12 +246,11 @@ std::complex<float> theta = std::complex<float> (0, 0);
 	   theta	+= val * std::complex<float> (1, -1);
 	}
 
-	fprintf (stderr, "frequency offset %f Hz \n",
-	                    arg (theta) / (2 * M_PI) * 2048000 / T_u);
+	return arg (theta) / (2 * M_PI) * 2048000 / T_u;
 }
 
-void	ofdmDecoder::compute_clockOffset (std::complex<float> *r,
-	                                 std::complex<float> *v) {
+float	ofdmDecoder::compute_clockOffset (std::complex<float> *r,
+	                                  std::complex<float> *v) {
 float	offsa	= 0;
 int	offsb	= 0;
 
@@ -268,7 +271,7 @@ int	offsb	= 0;
 	float sampleClockOffset = 
 	           offsa / (2 * M_PI * (float)T_s/ T_u * offsb);
 
-	fprintf (stderr, "clockOffset = %f\n", sampleClockOffset);
+	return sampleClockOffset;
 }
 
 

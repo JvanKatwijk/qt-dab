@@ -721,8 +721,10 @@ void	RadioInterface::showIQ		(int amount) {
 	(void)amount;
 }
 
-void	RadioInterface::showQuality	(float q) {
-	(void)q;
+void	RadioInterface::showQuality	(float q, float timeOffset,
+	                                 float sco, float freqOffset) {
+	(void)q; (void)timeOffset;
+	(void)sco; (void)freqOffset;
 }
 
 void	RadioInterface::show_rsCorrections	(int c) {

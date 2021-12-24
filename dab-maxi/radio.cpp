@@ -335,9 +335,6 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
-	int snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
-	configWidget. snrDelaySetting -> setValue (snrDelay);
-
 	currentService. valid	= false;
 	nextService. valid	= false;
 
@@ -361,11 +358,6 @@ uint8_t	dabBand;
 	   }
 	}
 
-	dabSettings	-> beginGroup ("snrViewer");
-	configWidget. snrHeightSelector -> setValue (dabSettings -> value ("snrHeight", 15). toInt ());
-	configWidget. snrLengthSelector -> setValue (dabSettings -> value ("snrLength", 312). toInt ());
-	dabSettings	-> endGroup ();
-//
 #ifdef	__LOGGING__
 	logFile		= nullptr;
 	QString abc	= dabSettings	-> value ("logFile", ""). toString ();
@@ -744,8 +736,6 @@ bool	RadioInterface::doStart	() {
 
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 
-	int snrDelay = dabSettings -> value ("snrDelay", 5). toInt ();
-	my_snrViewer. set_snrDelay (snrDelay);
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
 
@@ -1990,12 +1980,14 @@ void	RadioInterface::showIQ		(int amount) {
 	my_spectrumViewer. showIQ (amount);
 }
 
-void	RadioInterface::showQuality	(float q) {
+void	RadioInterface::showQuality	(float q, float timeOffset,
+	                                 float sco, float freqOffset) {
 	if (!running. load())
 	   return;
 
-	my_spectrumViewer. showQuality (q);
+	my_spectrumViewer. showQuality (q, timeOffset, sco, freqOffset);
 }
+
 //
 //	called from the MP4 decoder
 void	RadioInterface::show_rsCorrections	(int c) {
@@ -2369,8 +2361,6 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_configSetting ()));
 	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_muteTimeSetting (int)));
-	connect (configWidget. snrDelaySetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_snrDelaySetting (int)));
 	connect (configWidget. switchDelaySetting,
 	                                 SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_switchDelaySetting (int)));
@@ -2389,10 +2379,6 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_motslideSelector (int)));
 	connect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveServiceSelector (int)));
-	connect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_snrHeightSelector (int)));
-	connect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_snrLengthSelector (int)));
 	connect (configWidget. skipList_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_skipList_button ()));
 	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
@@ -2468,10 +2454,6 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_motslideSelector (int)));
 	disconnect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_saveServiceSelector (int)));
-	disconnect (configWidget. snrHeightSelector, SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_snrHeightSelector (int)));
-	disconnect (configWidget. snrLengthSelector, SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_snrLengthSelector (int)));
 	disconnect (configWidget. skipList_button, SIGNAL (clicked ()),
 	            this, SLOT (handle_skipList_button ()));
 	disconnect (configWidget. skipFile_button, SIGNAL (clicked ()),
@@ -3969,14 +3951,6 @@ void	RadioInterface::handle_saveServiceSelector	(int d) {
 	                             configWidget. saveServiceSelector -> isChecked () ? 1 : 0);
 }
 
-void	RadioInterface::handle_snrHeightSelector	(int d) {
-	my_snrViewer. setHeight (d);
-}
-
-void	RadioInterface::handle_snrLengthSelector	(int d) {
-	my_snrViewer. setLength (d);
-}
-
 void	RadioInterface::handle_orderAlfabetical		() {
 	dabSettings -> setValue ("serviceOrder", ALPHA_BASED);
 }
@@ -4172,11 +4146,6 @@ void	RadioInterface::handle_skipFile_button	() {
 const QString fileName	= filenameFinder. findskipFile_fileName ();
 	theBand. saveSettings ();
 	theBand. setup_skipList (fileName);
-}
-
-void	RadioInterface::handle_snrDelaySetting	(int del) {
-	my_snrViewer. set_snrDelay (del);
-	dabSettings	-> setValue ("snrDelay", del);
 }
 
 void	RadioInterface::handle_tii_detectorMode (int d) {

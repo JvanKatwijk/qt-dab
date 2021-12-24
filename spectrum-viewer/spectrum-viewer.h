@@ -64,7 +64,7 @@ public:
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
 	void		showIQ		(int32_t);
-	void		showQuality	(float);
+	void		showQuality	(float, float, float, float);
 	void		show_clockErr	(int);
 	void		setBitDepth	(int16_t);
 	void		show();

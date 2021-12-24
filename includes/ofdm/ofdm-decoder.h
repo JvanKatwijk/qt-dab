@@ -56,11 +56,11 @@ private:
 
 	RingBuffer<std::complex<float>> *iqBuffer;
 	float		computeQuality	(std::complex<float> *);
-        void            compute_timeOffset      (std::complex<float> *,
+        float		compute_timeOffset      (std::complex<float> *,
                                                  std::complex<float> *);
-        void            compute_clockOffset     (std::complex<float> *,
+        float		compute_clockOffset     (std::complex<float> *,
                                                  std::complex<float> *);
-        void            compute_frequencyOffset (std::complex<float> *,
+        float		compute_frequencyOffset (std::complex<float> *,
                                                  std::complex<float> *);
 	int32_t		T_s;
 	int32_t		T_u;
@@ -75,7 +75,7 @@ private:
 
 signals:
 	void		showIQ		(int);
-	void		showQuality	(float);
+	void		showQuality	(float, float, float, float);
 };
 
 #endif

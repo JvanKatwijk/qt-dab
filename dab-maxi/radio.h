@@ -319,7 +319,7 @@ public slots:
 	                                                    QVector<int>);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float);
+	void			showQuality		(float, float, float, float);
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();
@@ -421,11 +421,8 @@ private slots:
 	void			handle_scanmodeSelector		(int);
 	void			handle_motslideSelector		(int);
 	void			handle_saveServiceSelector	(int);
-	void			handle_snrHeightSelector	(int);
-	void			handle_snrLengthSelector	(int);
 	void			handle_skipList_button		();
 	void			handle_skipFile_button		();
-	void			handle_snrDelaySetting		(int);
 	void			handle_tii_detectorMode		(int);
 
 };

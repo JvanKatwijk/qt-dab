@@ -122,10 +122,10 @@ std::vector<int> resultVector;
 //	
 	QVector<int> indices;
 	std::vector<float> maxValues;
-	for (i = 0; i < 400; i ++) {
-	   if (lbuf [T_g - 200 + i] > Max) {
-	      maxIndex = T_g - 200 + i;
-	      Max = lbuf [T_g - 200 + i];
+	for (i = 0; i < 500; i ++) {
+	   if (lbuf [T_g - 250 + i] > Max) {
+	      maxIndex = T_g - 250 + i;
+	      Max = lbuf [T_g - 250 + i];
 	      if (Max / sum >= threshold) {
 	         if ((indices. size () > 0) &&
 	               (indices. at (indices. size () - 1) == maxIndex - 1)) {

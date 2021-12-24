@@ -277,9 +277,15 @@ int	scopeWidth	= scopeSlider -> value();
 	myIQDisplay -> DisplayIQ (Values, scopeWidth / avg);
 }
 
-void	spectrumViewer:: showQuality (float q) {
-	if (!myFrame -> isHidden())
-	   quality_display -> display (q);
+void	spectrumViewer:: showQuality (float q, float timeOffset,	
+	                              float sco, float freqOffset) {
+	if (myFrame -> isHidden ())
+	   return;
+
+	quality_display -> display (q);
+	timeOffsetDisplay	-> display (timeOffset);
+	scoOffsetDisplay	-> display (sco);
+	frequencyOffsetDisplay	-> display (freqOffset);
 }
 
 void	spectrumViewer::show_clockErr	(int e) {

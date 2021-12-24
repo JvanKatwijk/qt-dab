@@ -182,7 +182,7 @@ public slots:
 	void			showIndex		(int);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float);
+	void			showQuality		(float, float, float, float);
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();
