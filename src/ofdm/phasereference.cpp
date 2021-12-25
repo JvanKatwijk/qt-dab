@@ -121,7 +121,7 @@ float	lbuf [T_u / 2];
 	for (i = T_g - 250; i < T_g + 250; i ++) {
 	   if (lbuf [i] / sum > threshold)  {
 	      bool foundOne = true;
-	      for (int j = 1; j < 5; j ++) {
+	      for (int j = 1; (j < 10) && (i + j < T_g + 250); j ++) {
 	         if (lbuf [i + j] > lbuf [i]) {
 	            foundOne = false;
 	            break;
@@ -133,7 +133,7 @@ float	lbuf [T_u / 2];
 	            Max = lbuf [i];
 	            maxIndex = i;
 	         }
-	         i += 5;
+	         i += 10;
 	      }
 	   }
 	}

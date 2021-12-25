@@ -78,6 +78,11 @@ bool	brush;
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
 
+	dabSettings	-> beginGroup ("correlationViewer");
+	int lengthSetting	= dabSettings -> value ("plotLength", 3).
+	                                                       toInt ();
+	dabSettings	-> endGroup ();
+	correlationLength	-> setValue (lengthSetting);
 	connect (correlationLength, SIGNAL (valueChanged (int)),	
 	         this, SLOT (handle_correlationLength (int)));
    	spectrumCurve. setPen (QPen(curveColor, 2.0));
