@@ -98,8 +98,6 @@ int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
 float	lbuf [T_u / 2];
-float	mbuf [T_u / 2];
-std::vector<int> resultVector;
 
 	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
 	my_fftHandler. do_FFT();
@@ -114,30 +112,28 @@ std::vector<int> resultVector;
   */
 	for (i = 0; i < T_u / 2; i ++) {
 	   lbuf [i] = jan_abs (fft_buffer [i]);
-	   mbuf [i] = lbuf [i];
 	   sum	+= lbuf [i];
 	}
 
 	sum /= T_u / 2;
-//	
 	QVector<int> indices;
-	std::vector<float> maxValues;
-	for (i = 0; i < 500; i ++) {
-	   if (lbuf [T_g - 250 + i] > Max) {
-	      maxIndex = T_g - 250 + i;
-	      Max = lbuf [T_g - 250 + i];
-	      if (Max / sum >= threshold) {
-	         if ((indices. size () > 0) &&
-	               (indices. at (indices. size () - 1) == maxIndex - 1)) {
-	            if (maxValues. at (indices. size () - 1) < Max) {
-	               indices. replace (indices. size () - 1, maxIndex);
-	               maxValues. at (indices. size () - 1) = Max;
-	            }
+
+	for (i = T_g - 250; i < T_g + 250; i ++) {
+	   if (lbuf [i] / sum > threshold)  {
+	      bool foundOne = true;
+	      for (int j = 1; j < 5; j ++) {
+	         if (lbuf [i + j] > lbuf [i]) {
+	            foundOne = false;
+	            break;
 	         }
-	         else {
-	            indices. push_back (maxIndex);
-	            maxValues. push_back (Max);
+	      }
+	      if (foundOne) {
+	         indices. push_back (i);
+	         if (lbuf [i]> Max){
+	            Max = lbuf [i];
+	            maxIndex = i;
 	         }
+	         i += 5;
 	      }
 	   }
 	}
@@ -148,7 +144,7 @@ std::vector<int> resultVector;
 
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
-	      response	-> putDataIntoBuffer (mbuf, T_u / 2);
+	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
 	      showCorrelation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }

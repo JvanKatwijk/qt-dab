@@ -2007,7 +2007,7 @@ void	RadioInterface::show_clockError	(int e) {
 //
 //	called from the phasesynchronizer
 void	RadioInterface::showCorrelation	(int amount, int marker,
-	                                       QVector<int> v) {
+	                                               QVector<int> v) {
 	if (!running. load())
 	   return;
 	my_correlationViewer. showCorrelation (amount, marker, v);

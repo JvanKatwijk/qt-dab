@@ -182,7 +182,6 @@ float	mmax	= 0;
 	   for (int i = 0; i < v. size (); i ++)
 	      theText += QString::number (v. at (i)) + " ";
 	}
-//	theText += "Selected sample " + QString::number (marker);
 	indexDisplay -> setText (theText);
 }
 
