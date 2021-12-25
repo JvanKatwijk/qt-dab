@@ -81,7 +81,8 @@ private:
         QColor          curveColor;
 	int		plotLength;
 private slots:
-        void            rightMouseClick (const QPointF &);
+        void            rightMouseClick			(const QPointF &);
+	void		handle_correlationLength	(int);
 };
 
 #endif

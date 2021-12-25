@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>606</height>
+    <height>412</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,26 +41,6 @@
       <widget class="smallSpinBox" name="switchDelaySetting">
        <property name="toolTip">
         <string>Set here the delay, when searching for data in a channel, in seconds</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string> PlotLength (unit 100)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="smallSpinBox" name="plotLengthSetting">
-       <property name="minimum">
-        <number>1</number>
-       </property>
-       <property name="maximum">
-        <number>10</number>
-       </property>
-       <property name="value">
-        <number>5</number>
        </property>
       </widget>
      </item>

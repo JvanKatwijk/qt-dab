@@ -78,6 +78,8 @@ bool	brush;
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
 
+	connect (correlationLength, SIGNAL (valueChanged (int)),	
+	         this, SLOT (handle_correlationLength (int)));
    	spectrumCurve. setPen (QPen(curveColor, 2.0));
 	spectrumCurve. setOrientation (Qt::Horizontal);
 	spectrumCurve. setBaseline	(0);
@@ -144,7 +146,7 @@ float	mmax	= 0;
 	   return;
 
 	int plotLength	= dabSettings -> value ("plotLength",
-	                                             10). toInt () * 100;
+	                                             5). toInt () * 100;
 	if (plotLength > 1024)
 	   plotLength = 1024;
 	double X_axis	[plotLength];
@@ -234,5 +236,9 @@ int	index;
 	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
+}
+
+void	correlationViewer::handle_correlationLength	(int l) {
+	dabSettings -> setValue ("plotLength", l);
 }
 

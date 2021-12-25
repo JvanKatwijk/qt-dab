@@ -2370,8 +2370,6 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_orderServiceIds ()));
 	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	         this, SLOT (handle_ordersubChannelIds ()));
-	connect (configWidget. plotLengthSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_plotLengthSetting (int)));
 	connect (configWidget. scanmodeSelector,
 	                            SIGNAL (currentIndexChanged (int)),
 	         this, SLOT (handle_scanmodeSelector (int)));
@@ -2445,9 +2443,6 @@ void	RadioInterface::disconnectGUI() {
 	            this, SLOT (handle_orderServiceIds ()));
 	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
 	            this, SLOT (handle_ordersubChannelIds ()));
-	disconnect (configWidget. plotLengthSetting,
-	                                         SIGNAL (valueChanged (int)),
-	            this, SLOT (handle_plotLengthSetting (int)));
 	disconnect (configWidget. scanmodeSelector, SIGNAL (currentIndexChanged (int)),
 	            this, SLOT (handle_scanmodeSelector (int)));
 	disconnect (configWidget. motslideSelector, SIGNAL (stateChanged (int)),
@@ -3929,10 +3924,6 @@ void	RadioInterface::handle_muteTimeSetting	(int newV) {
 
 void	RadioInterface::handle_switchDelaySetting	(int newV) {
 	dabSettings	-> setValue ("switchDelay", newV);
-}
-
-void	RadioInterface::handle_plotLengthSetting	(int l) {
-	dabSettings -> setValue ("plotLength", l);
 }
 
 void	RadioInterface::handle_scanmodeSelector		(int d) {

@@ -417,7 +417,6 @@ private slots:
 	void			handle_orderAlfabetical		();
 	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
-	void			handle_plotLengthSetting	(int);
 	void			handle_scanmodeSelector		(int);
 	void			handle_motslideSelector		(int);
 	void			handle_saveServiceSelector	(int);

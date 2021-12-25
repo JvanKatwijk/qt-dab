@@ -65,7 +65,7 @@ QString	colorString	= "black";
 	connect (snrCompressionSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_snrDelay (int)));
 	connect (snrLengthSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (setLength (int)));
+	         this, SLOT (set_snrLength (int)));
 	plotgrid	= snrPlot;
 	plotgrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)

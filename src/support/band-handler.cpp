@@ -127,7 +127,7 @@ FILE	*f;
 	while ((filler < 100) && (amount > 0)) {
 	   amount = getline (&line, &amount, f);
 //	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
-	   if ((int)amount == 0) {
+	   if ((int)amount <= 0) {
 	      break;
 	   }
 	   line [amount] = 0;
@@ -136,6 +136,7 @@ FILE	*f;
 	   int res = sscanf (line, "%s %d", channelName, &freq);
 	   if (res != 2)
 	      continue;
+	   fprintf (stderr, "adding %s %d\n", channelName, freq);
 	   alternatives [filler]. key	= QString (channelName);
 	   alternatives [filler]. fKHz	= freq;
 	   alternatives [filler]. skip	= false;
