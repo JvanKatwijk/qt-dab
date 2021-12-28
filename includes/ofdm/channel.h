@@ -23,6 +23,7 @@
 #ifndef	__CHANNEL_H
 #define	__CHANNEL_H
 
+#ifdef	__WITH_JAN__
 #include	<Eigen/Dense>
 #include	<QString>
 #include	"dab-constants.h"
@@ -49,5 +50,6 @@ private:
 	std::vector<int16_t>	pilotTable;
 };
 
+#endif
 #endif
 

@@ -325,6 +325,7 @@ endif ()
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
 	     ../src/ofdm/tii_detector.cpp
+	     ../src/ofdm/channel.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/protection/protTables.cpp
 	     ../src/protection/protection.cpp
@@ -411,6 +412,7 @@ endif ()
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
 	     ../includes/ofdm/tii_detector.h
+	     ../includes/ofdm/channel.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
 	     ../includes/backend/audio/mp2processor.h

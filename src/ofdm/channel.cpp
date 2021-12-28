@@ -1,7 +1,9 @@
 
+#include	"channel.h"
+
+#ifdef	__WITH_JAN__
 #include        <Eigen/QR>
 #include        <Eigen/Dense>
-#include	"channel.h"
 
 static inline
 complex<float> createExp (float s) {
@@ -59,4 +61,5 @@ Vector  X_p  (numberofPilots);
         for (int index = 0; index < numberofPilots; index ++)
            resultRow [index] = h_td (index);
 }
+#endif
 
