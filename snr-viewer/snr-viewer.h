@@ -86,11 +86,9 @@ private:
 	int		delayCount;
 	int		delayBufferP;
 	void		addtoView		(float);
-#ifdef	__DUMP_SNR__
 	std::atomic<FILE *>	snrDumpFile;
 	void		startDumping		();
 	void		stopDumping		();
-#endif
 private slots:
         void            rightMouseClick (const QPointF &);
 	void		handle_snrDumpButton	();

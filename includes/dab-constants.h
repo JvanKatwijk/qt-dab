@@ -192,6 +192,7 @@ public:
 	int32_t	fmFrequency;
 	audiodata() {
 	   type	= AUDIO_SERVICE;
+	   fmFrequency = -1;
 	}
 };
 

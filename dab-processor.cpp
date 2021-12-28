@@ -276,6 +276,14 @@ SyncOnPhase:
 	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
 	                           T_u - ofdmBufferIndex,
 	                           coarseOffset + fineOffset);
+
+#ifdef	__WITH_JAN__
+	   static int abc = 0;
+	   if (++abc > 10) {
+	      phaseSynchronizer. estimate (ofdmBuffer);
+	      abc = 0;
+	   }
+#endif
 	   sampleCount	+= T_u;
 	   my_ofdmDecoder. processBlock_0 (ofdmBuffer);
 	   if (!scanMode)

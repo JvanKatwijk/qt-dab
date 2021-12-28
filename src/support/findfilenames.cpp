@@ -50,13 +50,13 @@ QString suggestedFileName;
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 	suggestedFileName = saveDir + "Qt-DAB-" + channel +
-	                                          "-" + theTime + ".txt";
+	                                          "-" + theTime + ".csv";
 
 	QString fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
-	                                      "Text (*.txt)",
+	                                      "csv (*.csv)",
 	                                      Q_NULLPTR,
 	                                      QFileDialog::DontUseNativeDialog);
 	if (fileName == "")

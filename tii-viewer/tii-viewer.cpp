@@ -235,7 +235,7 @@ float	amp1	= amp / 100;
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + amp1 * 20);
+				         get_db (0), get_db (0) + amp1 * 40);
 //				         get_db (0), get_db (0) + amp);
 //				         get_db (0), 0);
 

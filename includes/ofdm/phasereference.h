@@ -34,6 +34,9 @@
 #include	"process-params.h"
 #include	"ringbuffer.h"
 class	RadioInterface;
+#ifdef	__WITH_JAN__
+class	channel;
+#endif
 
 class phaseReference : public QObject, public phaseTable {
 Q_OBJECT
@@ -46,11 +49,17 @@ public:
 	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);
 //
 	float		phase			(std::vector<std::complex<float>>, int);
+#ifdef	__WITH_JAN__
+	void		estimate		(std::vector<std::complex<float>>&);
+#endif
 //	This one is used in the ofdm decoder
 	std::vector<std::complex<float>> refTable;
 private:
 	dabParams	params;
 	fftHandler	my_fftHandler;
+#ifdef	__WITH_JAN__
+	channel		*theEstimator;
+#endif
 	RingBuffer<float> *response;
 	std::vector<float> phaseDifferences;
 	int16_t		diff_length;

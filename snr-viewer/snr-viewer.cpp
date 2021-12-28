@@ -123,9 +123,7 @@ void	snrViewer::show () {
 
 void	snrViewer::hide	() {
 	myFrame. hide();
-#ifdef	__DUMP_SNR__
 	stopDumping ();
-#endif
 }
 
 bool	snrViewer::isHidden () {
@@ -158,11 +156,9 @@ static int displayPointer = 0;
 	                   (plotLength - VIEWBUFFER_SIZE) * sizeof (double));
 	   for (int i = 0; i < VIEWBUFFER_SIZE; i ++)
 	      Y_Buffer [i] = displayBuffer [i];
-#ifdef	__DUMP_SNR__
 	   if (snrDumpFile. load () != nullptr)
 	      fwrite (displayBuffer, sizeof (float), 
 	                             VIEWBUFFER_SIZE, snrDumpFile. load ());
-#endif
 	}
 }
 
@@ -171,10 +167,8 @@ float snr = 20 * log10 ((sig + 0.001) / (noise + 0.001));
 	memmove (&(Y_Buffer. data () [1]), &(Y_Buffer. data () [0]),
 	                               (plotLength - 1) * sizeof (double));
 	Y_Buffer [0]	= snr;
-#ifdef	__DUMP_SNR__
 	if (snrDumpFile. load () != nullptr)
 	   fwrite (&snr, sizeof (float), 1, snrDumpFile. load ());
-#endif
 }
 
 void	snrViewer::show_snr () {

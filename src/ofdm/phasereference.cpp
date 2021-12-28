@@ -25,6 +25,9 @@
 #include	<cstring>
 #include	"radio.h"
 #include	<vector>
+#ifdef	__WITH_JAN__
+#include	"channel.h"
+#endif
 /**
   *	\class phaseReference
   *	Implements the correlation that is used to identify
@@ -32,6 +35,9 @@
   *	the first non-null block of a frame
   *	The class inherits from the phaseTable.
   */
+
+#define	PILOTS	100
+#define	TAPS	100
 
 	phaseReference::phaseReference (RadioInterface *mr,
 	                                processParams	*p):
@@ -76,9 +82,16 @@ float	Phi_k;
 	
 	connect (this, SIGNAL (showCorrelation (int, int, QVector<int>)),
 	         mr,   SLOT   (showCorrelation (int, int, QVector<int>)));
+
+#ifdef	__WITH_JAN__
+	theEstimator	= new channel (refTable, PILOTS, TAPS);
+#endif
 }
 
 	phaseReference::~phaseReference() {
+#ifdef	__WITH_JAN__
+	delete theEstimator;
+#endif
 }
 
 /**
@@ -227,3 +240,36 @@ std::complex<float> sum = std::complex<float> (0, 0);
 	return arg (sum);
 }
 
+#ifdef	__WITH_JAN__
+void	phaseReference::estimate	(std::vector<std::complex<float>>& v) {
+std::complex<float> h_td [TAPS];
+
+	for (int i = 0; i < T_u; i ++)
+	   fft_buffer [i] = v [i];
+	
+	my_fftHandler. do_FFT();
+	theEstimator -> estimate (fft_buffer, h_td);
+
+//	float	Tau		= 0;
+//	float	teller		= 0;
+//	float	noemer		= 0;
+//	for (int i = - TAPS / 2; i < TAPS / 2; i ++) {
+//	   float h_ts = abs (h_td [TAPS / 2 + i]) * abs (h_td [TAPS / 2 + i]);
+//	   teller += i * h_ts;
+//	   noemer += h_ts;
+//	}
+//	Tau	= teller / noemer;
+//	teller	= 0;
+//	noemer	= 0;
+//
+//	for (int i = -TAPS / 2; i < TAPS / 2; i ++) {
+//	   float h_ts = abs (h_td [TAPS / 2 + i]) * abs (h_td [TAPS / 2 + i]);
+//	   teller += (i - Tau) * (i - Tau) * h_ts;
+//	   noemer += h_ts;
+//	}
+//	
+//	fprintf (stderr, "Tau = %f, rms delay spread %f\n", Tau,
+//	                                                teller / noemer);
+}
+
+#endif

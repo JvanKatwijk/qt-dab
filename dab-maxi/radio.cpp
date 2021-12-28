@@ -244,8 +244,7 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        my_tiiViewer (
 	                                                  this, Si,
 	                                                  &tiiBuffer),
-	                                        my_snrViewer (
-	                                                  this, Si),
+	                                        my_snrViewer (this, Si),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
 	                                        theTable (this),
@@ -270,6 +269,7 @@ uint8_t	dabBand;
 	isSynced		= false;
 	stereoSetting		= false;
 	serviceCount		= -1;
+	my_contentTable		= nullptr;
 //
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -882,7 +882,6 @@ QString s;
 	if (!running. load())
 	   return;
 
-	
 	QFont font	= ensembleId -> font ();
 	font. setPointSize (13);
 	font. setBold (true);
@@ -896,30 +895,23 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
-ensemblePrinter	my_Printer;
-QString	utcTime		= convertTime (UTC. year, UTC. month, UTC. day,
-	                               UTC. hour, UTC. minute);
-QString	currentChannel	= channelSelector -> currentText ();
-int	frequency	= inputDevice	-> getVFOFrequency ();
-
-	if (!running. load() || (ensembleId -> text () == QString ("")))
+	if (my_contentTable != nullptr) {
+	   my_contentTable -> hide ();
+	   delete my_contentTable;
+	   my_contentTable = nullptr;
 	   return;
-	if (scanning. load ())
-	   return;
-
-	FILE *fileP	=
-	       filenameFinder. findContentDump_fileName (currentChannel);
-	if (fileP	== nullptr)
-	   return;
-//
-//	we asserted that my_dabProcessor exists
-	my_Printer. showEnsembleData (currentChannel,
-	                              frequency,
-	                              utcTime,
-	                              transmitters,
-	                              serviceList,
-	                              my_dabProcessor, fileP);
-	fclose (fileP);
+	}
+	my_contentTable		= new contentTable (this, dabSettings);
+	QString ensemble	= my_dabProcessor -> get_ensembleName ();
+	QString channel		= channelSelector -> currentText ();
+	my_contentTable -> ensemble (ensemble, channel);
+	for (serviceId serv: serviceList) {
+	   QString serviceName = serv. name;
+           audiodata ad;
+	   my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	   my_contentTable -> add_to_Ensemble (&ad);
+	}
+	my_contentTable -> show ();
 }
 
 void	checkDir (QString &s) {
@@ -1265,6 +1257,11 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor -> stop ();
+	if (my_contentTable != nullptr) {
+	   my_contentTable -> clearTable ();
+	   my_contentTable -> hide ();
+	   delete my_contentTable;
+	}
 	my_presetHandler. savePresets (presetSelector);
 	theBand. saveSettings	();
 	stop_frameDumping	();
@@ -2518,40 +2515,40 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons() & Qt::RightButton) {
-	      audiodata ad;
-	      packetdata pd;
-	      QString serviceName =
-	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
-	      if (serviceName. at (1) == ' ')
-	         return true;
-
-	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
-	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
-	         presetData pd;
-	         pd. serviceName	= serviceName;
-	         pd. channel		= channelSelector -> currentText ();
-	         QString itemText	= pd. channel + ":" + pd. serviceName;
-	         for (int i = 0; i < presetSelector -> count (); i ++)
-	            if (presetSelector -> itemText (i) == itemText)
-	               return true;
-	         presetSelector -> addItem (itemText);
-	         return true;
-	      }
-	      
-	      if (ad. defined) {
-	         if (currentServiceDescriptor != nullptr) 
-	            delete currentServiceDescriptor;
-	         currentServiceDescriptor	= new audioDescriptor (&ad);
-	         return true;
-	      }
-
-	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-	      if (pd. defined) {
-	         if (currentServiceDescriptor != nullptr)
-	            delete currentServiceDescriptor;
-	         currentServiceDescriptor	= new dataDescriptor (&pd);
-	         return true;
-	      }
+//	      audiodata ad;
+//	      packetdata pd;
+//	      QString serviceName =
+//	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+//	      if (serviceName. at (1) == ' ')
+//	         return true;
+//
+//	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+//	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
+//	         presetData pd;
+//	         pd. serviceName	= serviceName;
+//	         pd. channel		= channelSelector -> currentText ();
+//	         QString itemText	= pd. channel + ":" + pd. serviceName;
+//	         for (int i = 0; i < presetSelector -> count (); i ++)
+//	            if (presetSelector -> itemText (i) == itemText)
+//	               return true;
+//	         presetSelector -> addItem (itemText);
+//	         return true;
+//	      }
+//	      
+//	      if (ad. defined) {
+//	         if (currentServiceDescriptor != nullptr) 
+//	            delete currentServiceDescriptor;
+//	         currentServiceDescriptor	= new audioDescriptor (&ad);
+//	         return true;
+//	      }
+//
+//	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
+//	      if (pd. defined) {
+//	         if (currentServiceDescriptor != nullptr)
+//	            delete currentServiceDescriptor;
+//	         currentServiceDescriptor	= new dataDescriptor (&pd);
+//	         return true;
+//	      }
 	   }
 	}
 
@@ -2606,6 +2603,16 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
 	localSelect (s);
 }
 
+void	RadioInterface::handle_contentSelector (const QString &s) {
+	if (!running. load ())
+           return;
+
+        presetTimer. stop ();
+        fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
+        localSelect (s);
+}
+
+
 void	RadioInterface::localSelect (const QString &s) {
 	QStringList list = s.split (":", QString::SkipEmptyParts);
         if (list. length () != 2)
@@ -2625,6 +2632,9 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 	QString service	= list. at (1);
 	for (int i = service. size (); i < 16; i ++)
 	   service. append (' ');
+
+	fprintf (stderr, "going for channel %s, service %s\n",
+	                   channel, service);
 	localSelect (channel, service);
 }
 
@@ -3124,6 +3134,11 @@ void	RadioInterface::stopChannel	() {
 	soundOut	-> stop ();
 	stop_muting		();
 	epgLabel	-> hide ();
+	if (my_contentTable != nullptr) {
+	   my_contentTable -> hide ();
+	   delete my_contentTable;
+	   my_contentTable = nullptr;
+	}
 //	note framedumping - if any - was already stopped
 #ifdef	TRY_EPG
 	epgTimer. stop		();
@@ -3776,7 +3791,6 @@ QString scheduleButton_font	=
 	techData. audiodumpButton ->
 	                     setStyleSheet (temp. arg (audiodumpButton_color,
 	                                               audiodumpButton_font));
-//	techData. muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
 	                                             muteButton_font));
 	configWidget.

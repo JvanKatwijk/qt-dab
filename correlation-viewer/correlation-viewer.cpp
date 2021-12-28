@@ -49,6 +49,8 @@ bool	brush;
 	                                                "white"). toString();
 	curveColor	= QColor (colorString);
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
+	int lengthSetting	= dabSettings -> value ("plotLength", 3).
+		                                              toInt ();
 	dabSettings	-> endGroup ();
 	setupUi (&myFrame);
 
@@ -77,11 +79,8 @@ bool	brush;
                                             Qt::RightButton);
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
-
-	dabSettings	-> beginGroup ("correlationViewer");
-	int lengthSetting	= dabSettings -> value ("plotLength", 3).
-	                                                       toInt ();
-	dabSettings	-> endGroup ();
+//
+//	set the length of the display
 	correlationLength	-> setValue (lengthSetting);
 	connect (correlationLength, SIGNAL (valueChanged (int)),	
 	         this, SLOT (handle_correlationLength (int)));
@@ -150,8 +149,10 @@ float	mmax	= 0;
 	if (myFrame. isHidden())
 	   return;
 
+	dabSettings	-> beginGroup ("correlationViewer");
 	int plotLength	= dabSettings -> value ("plotLength",
 	                                             5). toInt () * 100;
+	dabSettings	-> endGroup ();
 	if (plotLength > 1024)
 	   plotLength = 1024;
 	double X_axis	[plotLength];
@@ -243,6 +244,8 @@ int	index;
 }
 
 void	correlationViewer::handle_correlationLength	(int l) {
-	dabSettings -> setValue ("plotLength", l);
+	dabSettings	-> beginGroup ("correlationViewer");
+	dabSettings	-> setValue ("plotLength", l);
+	dabSettings	-> endGroup ();
 }
 

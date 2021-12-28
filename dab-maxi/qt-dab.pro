@@ -180,6 +180,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/time-table.h \
 	   ../includes/support/findfilenames.h \
 	   ../includes/support/dl-cache.h \
+	   ../includes/support/content-table.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -287,6 +288,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/element-selector.cpp \
 	   ../src/support/time-table.cpp \
 	   ../src/support/findfilenames.cpp \
+	   ../src/support/content-table.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
@@ -346,6 +348,7 @@ CONFIG		+= lime
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
+CONFIG		+= JAN
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -733,4 +736,10 @@ fdk-aac	{
 	LIBS		+= -lfdk-aac
 }
 
+JAN	{
+	DEFINES		+= __WITH_JAN__
+	INCLUDEPATH	+= /usr/include/eigen3
+	HEADERS		+= ../includes/ofdm/channel.h 
+	SOURCES		+= ../src/ofdm/channel.cpp
+}
 

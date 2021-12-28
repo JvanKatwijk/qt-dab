@@ -44,6 +44,7 @@
 #include	"text-mapper.h"
 #include	"process-params.h"
 #include	"dl-cache.h"
+#include	"content-table.h"
 #include	<memory>
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
@@ -145,6 +146,7 @@ private:
 	int			fmFrequency;
 	Scheduler		theScheduler;
 	QString			externalSchedule;
+	contentTable		*my_contentTable;
 #ifdef	__LOGGING__
 	FILE			*logFile;
 #endif
@@ -341,6 +343,10 @@ public slots:
 	void			switchVisibility	(QWidget *);
 	void			nrServices		(int);
 
+	void			handle_presetSelector	(const QString &);
+	void			handle_contentSelector	(const QString &);
+
+
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();
@@ -363,7 +369,6 @@ private slots:
         void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
 
-	void			handle_presetSelector	(const QString &);
 	void			handle_prevServiceButton	();
         void			handle_nextServiceButton	();
 	void			selectChannel		(const QString &);

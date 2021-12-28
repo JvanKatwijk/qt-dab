@@ -291,6 +291,7 @@ endif ()
 	     ../includes/support/element-selector.h
 	     ../includes/support/time-table.h
 	     ../includes/support/findfilenames.h
+	     ../includes/support/content-table.h
 	     ../includes/support/dl-cache.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
@@ -383,6 +384,7 @@ endif ()
 	     ../src/support/element-selector.cpp
 	     ../src/support/time-table.cpp
 	     ../src/support/findfilenames.cpp
+	     ../src/support/content-table.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
@@ -438,6 +440,7 @@ endif ()
 	     ../includes/support/schedule-selector.h
 	     ../includes/support/element-selector.h
 	     ../includes/support/time-table.h
+	     ../includes/support/content-table.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
