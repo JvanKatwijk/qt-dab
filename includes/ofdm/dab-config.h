@@ -72,6 +72,7 @@ public:
 void	reset		() {
 	namePresent	= false;
 	ecc_Present	= false;
+	countryId	= 0;
 	isSynced	= false;
 	for (int i = 0; i < 64; i ++) 
 	   services [i]. reset ();
@@ -82,6 +83,7 @@ int32_t ensembleId;
 bool    namePresent;
 bool	ecc_Present;
 uint8_t	ecc_byte;
+uint8_t	countryId;
 bool	isSynced;
 service	services [64];
 };

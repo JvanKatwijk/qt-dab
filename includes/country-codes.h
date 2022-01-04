@@ -1,6 +1,6 @@
 
-#ifndef	__COUNTRY_CODES__
-#define	__COUNTRY_CODES__
+#ifndef	__COUNTRY_CODES_H
+#define	__COUNTRY_CODES_H
 
 #include	<cstdint>
 

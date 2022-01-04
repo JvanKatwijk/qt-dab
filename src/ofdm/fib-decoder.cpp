@@ -371,7 +371,7 @@ int16_t	fibDecoder::HandleFIG0Extension2 (uint8_t *d,
 	                                  uint8_t PD_bit) {
 int16_t		bitOffset	= 8 * offset;
 int16_t		i;
-uint8_t		ecc;
+uint8_t		ecc = 0;
 uint8_t		cId;
 uint32_t	SId;
 int16_t		numberofComponents;
@@ -380,7 +380,7 @@ int16_t		numberofComponents;
 
 	if (PD_bit == 1) {		// long Sid, data
 	   ecc	= getBits_8 (d, bitOffset);	(void)ecc;
-	   cId	= getBits_4 (d, bitOffset + 1);
+	   cId	= getBits_4 (d, bitOffset + 4);
 	   SId	= getLBits  (d, bitOffset, 32);
 	   bitOffset	+= 32;
 	}
@@ -390,6 +390,7 @@ int16_t		numberofComponents;
 	   bitOffset	+= 16;
 	}
 
+	ensemble -> countryId	= cId;
 	numberofComponents	= getBits_4 (d, bitOffset + 4);
 	bitOffset	+= 8;
 
@@ -1590,11 +1591,20 @@ int32_t fibDecoder::get_CIFcount() {
 	return CIFcount;
 }
 
-uint8_t	fibDecoder::get_ecc() {
+uint8_t	fibDecoder::get_ecc	() {
 	if (ensemble -> ecc_Present)
 	   return ensemble -> ecc_byte;
 	return 0;
 }
+
+uint16_t fibDecoder::get_countryName () {
+	return (get_ecc () << 8) | get_countryId ();
+}
+
+uint8_t	fibDecoder::get_countryId () {
+	return ensemble -> countryId;
+}
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

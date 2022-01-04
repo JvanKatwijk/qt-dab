@@ -484,6 +484,10 @@ uint8_t	dabProcessor::get_ecc 		() {
 	return my_ficHandler. get_ecc();
 }
 
+uint16_t dabProcessor::get_countryName	() {
+	return my_ficHandler. get_countryName ();
+}
+
 int32_t dabProcessor::get_ensembleId	() {
 	return my_ficHandler. get_ensembleId();
 }

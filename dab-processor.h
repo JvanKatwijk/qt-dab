@@ -79,6 +79,7 @@ public:
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
         QString		get_ensembleName	();
+	uint16_t	get_countryName		();
 	void		set_epgData		(int32_t, int32_t,
 	                                                 const QString &);
 	bool		has_timeTable		(uint32_t);

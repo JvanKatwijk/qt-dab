@@ -288,29 +288,30 @@ char	manufac [256], product [256], serial [256];
 	xml_dumping. store (false);
 }
 
-	rtlsdrHandler::~rtlsdrHandler() {
+	rtlsdrHandler::~rtlsdrHandler () {
 	if (Handle == nullptr) {	// nothing achieved earlier on
 	   return;
 	}
+	stopReader	();
 	myFrame. hide ();
-	this -> rtlsdr_cancel_async (device);
+	this	-> rtlsdr_cancel_async (device);
+	this	-> rtlsdr_reset_buffer (device);
 	while (!workerHandle -> isFinished()) 
 	   usleep (100);
 	_I_Buffer. FlushRingBuffer();
 	delete	workerHandle;
-	workerHandle = nullptr;
-	stopReader	();
+	workerHandle	= nullptr;
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	rtlsdrSettings	-> setValue ("externalGain",
-	                             gainControl -> currentText());
+	                              gainControl -> currentText());
 	rtlsdrSettings	-> setValue ("autogain",
 	                              agcControl -> isChecked () ? "1" : "0");
 	rtlsdrSettings	-> setValue ("ppm_correction",
 	                              ppm_correction -> value());
 	rtlsdrSettings	-> setValue ("filterDepth", filterDepth -> value ());
-	rtlsdrSettings	-> sync();
+	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup();
-	
+	usleep (1000);
 	this		-> rtlsdr_close (device);
 #ifdef __MINGW32__
 	FreeLibrary (Handle);
@@ -382,6 +383,8 @@ int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) {
 std::complex<uint8_t> temp [size];
 int	amount;
 
+	if (!isActive)
+	   return 0;
 static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;
 
@@ -418,6 +421,8 @@ static int iqTeller	= 0;
 }
 
 int32_t	rtlsdrHandler::Samples() {
+	if (!isActive)
+	   return 0;
 	return _I_Buffer. GetRingBufferReadAvailable ();
 }
 //

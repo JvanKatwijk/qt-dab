@@ -127,7 +127,7 @@ uint16_t	motObject::get_transportId() {
 
 //      type 4 is a segment.
 //	The pad/dir software will only call this whenever it has
-//	established that the current slide has th right transportId
+//	established that the current slide has the right transportId
 //
 //	Note that segments do not need to come in in the right order
 void	motObject::addBodySegment (uint8_t	*bodySegment,

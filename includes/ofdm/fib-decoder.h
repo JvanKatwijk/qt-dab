@@ -57,6 +57,8 @@ public:
 	QString		findService	(uint32_t, int);
 	void		getParameters	(const QString &, uint32_t *, int *);
         uint8_t		get_ecc		();
+	uint16_t	get_countryName ();
+	uint8_t		get_countryId	();
 	int32_t		get_ensembleId	();
 	QString		get_ensembleName	();
 	int32_t		get_CIFcount	();	

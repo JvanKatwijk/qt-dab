@@ -1938,8 +1938,22 @@ void	RadioInterface::show_tii_spectrum	() {
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
+static int mainId_old	= -1;
+static int subId_old	= -1;
+static int eid_old	= -1;
+static bool old_trigger	= false;
+int	trigger;
+
 	if (mainId == 0xFF) 
 	   return;
+
+int	ensembleId	= my_dabProcessor -> get_ensembleId ();
+	if ((mainId == mainId_old) && (subId == subId_old))
+	   return;	// it is all there
+
+	mainId_old	= mainId;
+	subId_old	= subId;
+
 	for (int i = 0; i < transmitters. size (); i += 2) {
 	   if ((transmitters. at (i) == (mainId & 0x7F)) &&
 	       (transmitters. at (i + 1) == subId)) {
@@ -1952,11 +1966,28 @@ bool	found	= false;
 	   transmitters. append (mainId & 0x7F);
 	   transmitters. append (subId);
 	}
+
 	if (!running. load())
 	   return;
 
-	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+//	tiiHandler tii;
+//	uint16_t countryName = my_dabProcessor -> get_countryName ();
+//	QString b = tii. get_countryName (countryName);
+//
+//	if (configWidget. transmitterNames -> isChecked ()) {
+//	   uint16_t Eid = my_dabProcessor -> get_ensembleId ();
+//	   QString c = tii. get_transmitterName (countryName, Eid,
+//	                                              mainId, subId);
+//	   if (c == QString ("")) 
+//	      a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+//	   else
+//	      a = c;
+//
+//	}
+//	else 
+	   a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
+//	transmitter_country	-> setText (b);
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
 	transmitter_coordinates	-> setText (a);
 	my_tiiViewer. showTransmitters (transmitters);
@@ -2008,8 +2039,8 @@ void	RadioInterface::showCorrelation	(int amount, int marker,
 	if (!running. load())
 	   return;
 	my_correlationViewer. showCorrelation (amount, marker, v);
-	QString t = "Transm " + QString::number (v. size ());
-	nrTransmitters	-> setText (t);
+//	QString t = "Transm " + QString::number (v. size ());
+//	nrTransmitters	-> setText (t);
 }
 
 ////////////////////////////////////////////////////////////////////////////

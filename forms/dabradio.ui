@@ -462,9 +462,9 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="nrTransmitters">
+           <widget class="QLabel" name="transmitter_country">
             <property name="text">
-             <string>TextLabel</string>
+             <string> </string>
             </property>
            </widget>
           </item>

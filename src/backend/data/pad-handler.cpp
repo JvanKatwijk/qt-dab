@@ -197,7 +197,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   if (mscGroupElement && (xpadLength > 0)) {
 
 	      if (last < xpadLength - 1) {
-	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
+//	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
 	         return;
 	      }
 
@@ -267,7 +267,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   last_appType = appType;
 	   base -= length;
 	   if (base < 0 && i < CI_Index - 1) {
-	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
+//	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
 	      return;
 	   }
 	}
@@ -416,10 +416,10 @@ void	padHandler::build_MSC_segment (std::vector<uint8_t> data) {
 int32_t	size	= data. size() < (uint32_t)dataGroupLength ? data. size() :
 	                                            dataGroupLength;
 
-if (size < 2) {
-	fprintf (stderr, "build_MSC_segment: data size < 2\n");
-	return;
-}
+	if (size < 2) {
+	   fprintf (stderr, "build_MSC_segment: data size < 2\n");
+	   return;
+	}
 	   
 uint8_t		groupType	=  data [0] & 0xF;
 //uint8_t	continuityIndex = (data [1] & 0xF0) >> 4;
@@ -462,23 +462,22 @@ uint16_t	index;
 	   if ((data [index] & 0x10) != 0) { //transportid flag
 	      transportId = data [index + 1] << 8 |
 	                    data [index + 2];
+//	      fprintf (stderr, "transportId = %d\n", transportId);
 	      index += 3;
 	   }
-	   else {
+//	   else {
 //	      fprintf (stderr, "sorry no transportId\n");
-	      return;
-	   }
+//	      return;
+//	   }
 	   index += (lengthIndicator - 2);
 	}
 
-	if (transportId == 0)	// no idea wat it means
-	   return;
+//	if (transportId == 0)	// no idea wat it means
+//	   return;
 
 	uint32_t segmentSize	= ((data [index + 0] & 0x1F) << 8) |
 	                            data [index + 1];
-//	fprintf (stderr, "segmentSize = %d (transportId = %d)\n",
-//	                      segmentSize, transportId);
-//
+
 //	handling MOT in the PAD, we only deal here with type 3/4
 	switch (groupType) {
 	   case 3:
