@@ -50,6 +50,7 @@
 #include	"schedule-selector.h"
 #include	"element-selector.h"
 #include	"dab-tables.h"
+#include	"ITU_Region_1.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -1938,21 +1939,12 @@ void	RadioInterface::show_tii_spectrum	() {
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
-static int mainId_old	= -1;
-static int subId_old	= -1;
-static int eid_old	= -1;
-static bool old_trigger	= false;
-int	trigger;
 
 	if (mainId == 0xFF) 
 	   return;
 
-int	ensembleId	= my_dabProcessor -> get_ensembleId ();
-	if ((mainId == mainId_old) && (subId == subId_old))
-	   return;	// it is all there
-
-	mainId_old	= mainId;
-	subId_old	= subId;
+//	if ((mainId == mainId_old) && (subId == subId_old))
+//	   return;	// it is all there
 
 	for (int i = 0; i < transmitters. size (); i += 2) {
 	   if ((transmitters. at (i) == (mainId & 0x7F)) &&
@@ -1971,8 +1963,12 @@ int	ensembleId	= my_dabProcessor -> get_ensembleId ();
 	   return;
 
 //	tiiHandler tii;
-//	uint16_t countryName = my_dabProcessor -> get_countryName ();
-//	QString b = tii. get_countryName (countryName);
+	ensemblePrinter p;
+	uint8_t ecc_byte        = my_dabProcessor -> get_ecc();
+	int32_t ensembleId      = my_dabProcessor -> get_ensembleId();
+	uint16_t countryId	= (ensembleId >> 12) & 0xF;
+	QString country 	= find_ITU_code (ecc_byte, countryId);
+
 //
 //	if (configWidget. transmitterNames -> isChecked ()) {
 //	   uint16_t Eid = my_dabProcessor -> get_ensembleId ();
@@ -1987,7 +1983,7 @@ int	ensembleId	= my_dabProcessor -> get_ensembleId ();
 //	else 
 	   a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
-//	transmitter_country	-> setText (b);
+	transmitter_country	-> setText (country);
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
 	transmitter_coordinates	-> setText (a);
 	my_tiiViewer. showTransmitters (transmitters);

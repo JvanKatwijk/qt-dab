@@ -101,7 +101,6 @@ HEADERS += ./radio.h \
 	   ../service-description/data-descriptor.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
-	   ../includes/country-codes.h \
 	   ../includes/ofdm/timesyncer.h \
 	   ../includes/ofdm/sample-reader.h \
 	   ../includes/ofdm/ofdm-decoder.h \
@@ -181,6 +180,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/findfilenames.h \
 	   ../includes/support/dl-cache.h \
 	   ../includes/support/content-table.h \
+	   ../includes/support/ITU_Region_1.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -289,6 +289,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/time-table.cpp \
 	   ../src/support/findfilenames.cpp \
 	   ../src/support/content-table.cpp \
+	   ../src/support/ITU_Region_1.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \

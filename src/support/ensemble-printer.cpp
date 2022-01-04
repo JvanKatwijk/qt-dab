@@ -23,7 +23,8 @@
 #include	<cstdio>
 #include	<QStringList>
 #include	"ensemble-printer.h"
-#include	"country-codes.h"
+//#include	"country-codes.h"
+#include	"ITU_Region_1.h"
 #include	"dab-tables.h"
 #include	"text-mapper.h"
 #include	"dab-processor.h"
@@ -40,19 +41,6 @@ const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
 }
 
 		ensemblePrinter::~ensemblePrinter() {
-}
-
-QString		ensemblePrinter::code_to_string (uint8_t ecc,
-	                                           uint8_t countryId) {
-int16_t	i = 0;
-
-	while (countryTable [i]. ecc != 0) {
-	   if ((countryTable [i]. ecc == ecc) &&
-	       (countryTable [i]. countryId == countryId))
-	      return QString (countryTable [i]. countryName);
-	   i ++;
-	}
-	return QString ("          ");
 }
 
 static
@@ -143,7 +131,7 @@ bool	firstData;
 	   countryId = (d. SId >> 12) & 0xF;
 	   fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%s;%s;%s;%s;%s;\n",
 	                 audioService. toUtf8(). data(),
-	                 code_to_string (ecc_byte, countryId). toUtf8(). data(),
+	                 find_Country (ecc_byte, countryId). toUtf8 (). data (),
 	                 d. SId,
 	                 d. subchId,
 	                 d. startAddr,
@@ -194,7 +182,7 @@ bool	firstData;
 	      countryId = (d. SId >> (5 * 4)) & 0xF;
 	      fprintf (file_P, "%s;%s;%X;%d;%d;%d;%d;%d;%s;%d;%s;;\n",
 	                        dataService. name. toUtf8(). data(),
-	                     code_to_string (ecc_byte, countryId). toUtf8(). data(),
+	                     find_Country (ecc_byte, countryId). toUtf8 (). data (),
 	                     d. SId,
 	                     d. subchId,
 	                     d. startAddr,
