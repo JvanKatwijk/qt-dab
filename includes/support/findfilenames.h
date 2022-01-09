@@ -49,6 +49,7 @@ FILE	*findSummary_fileName		();
 const 
 QString	findskipFile_fileName		();
 QString	finddlText_fileName		(bool);
+FILE	*findLogFileName		();
 };
 
 #endif

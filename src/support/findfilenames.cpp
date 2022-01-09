@@ -51,6 +51,8 @@ QString suggestedFileName;
 	      theTime. replace (i, 1, '-');
 	suggestedFileName = saveDir + "Qt-DAB-" + channel +
 	                                          "-" + theTime + ".csv";
+	suggestedFileName        = QDir::toNativeSeparators (suggestedFileName);
+
 
 	QString fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
@@ -357,3 +359,28 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
         return  fileName;
 }
 
+FILE	* findfileNames::findLogFileName	() {
+QString   saveDir = dabSettings -> value ("contentDir",
+                                                QDir::homePath ()). toString ();
+QString theTime         = QDateTime::currentDateTime (). toString ();
+
+        if ((saveDir != "") && (!saveDir. endsWith ('/')))
+           saveDir = saveDir + '/';
+
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+
+        QString suggestedFileName = saveDir + "Qt-DAB-LOG"  +
+                                                  "-" + theTime + ".txt";
+	QString fileName = 
+              QFileDialog::getSaveFileName (nullptr,
+                                            "Save File",
+                                            suggestedFileName. toUtf8 (). data (),
+                                            "Text (*.txt)",
+	                                    Q_NULLPTR,
+	                                    QFileDialog::DontUseNativeDialog);
+	if (fileName == "")
+	   return nullptr;	
+	return fopen (fileName. toLatin1 (). data (), "w");
+}

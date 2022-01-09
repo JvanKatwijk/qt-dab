@@ -215,7 +215,7 @@ endif ()
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
 	     ../service-description/data-descriptor.h 
-             ../includes/country-codes.h
+//           ../includes/country-codes.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
              ../includes/ofdm/sample-reader.h
@@ -293,6 +293,7 @@ endif ()
 	     ../includes/support/findfilenames.h
 	     ../includes/support/content-table.h
 	     ../includes/support/dl-cache.h
+	     ../includes/support/ITU_Region_1.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -386,6 +387,7 @@ endif ()
 	     ../src/support/time-table.cpp
 	     ../src/support/findfilenames.cpp
 	     ../src/support/content-table.cpp
+	     ../src/support/ITU_Region_1.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 

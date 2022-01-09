@@ -44,6 +44,7 @@
 #include	"text-mapper.h"
 #include	"process-params.h"
 #include	"dl-cache.h"
+#include	"tii-codes.h"
 #include	"content-table.h"
 #include	<memory>
 #ifdef	DATA_STREAMER
@@ -102,6 +103,7 @@ struct	theTime {
 	int	second;
 };
 
+
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
@@ -138,18 +140,17 @@ private:
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
+	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
+	Scheduler		theScheduler;
 	processParams		globals;
 	QString			version;
 	QString			theFont;
 	int			fontSize;
 	int			fmFrequency;
-	Scheduler		theScheduler;
 	QString			externalSchedule;
 	contentTable		*my_contentTable;
-#ifdef	__LOGGING__
 	FILE			*logFile;
-#endif
 	void			LOG		(const QString &,
 	                                           const QString &);
 	int			serviceOrder;
@@ -280,6 +281,24 @@ private:
 	void			show_MOTlabel		(QByteArray, int,
                                                                   QString, int);
 	void			stop_muting		();
+	struct {
+	   float latitude;
+	   float longitude;
+	} homeAddress;
+	struct {
+	   QString	channelName;
+	   QString	ensembleName;
+	   uint32_t	Eid;
+	   bool		has_ecc;
+	   uint8_t	ecc_byte;
+	   QString	tiiFile;
+	   QString	country;
+	   QString	transmitterName;
+	   uint8_t	mainId;
+	   uint8_t	subId;
+	   bool		showTransmitters;
+	   int		nrTransmitters;
+	} channel;
 enum direction {FORWARD, BACKWARDS};
 
 	void			handle_serviceButton	(direction);
@@ -428,6 +447,6 @@ private slots:
 	void			handle_skipList_button		();
 	void			handle_skipFile_button		();
 	void			handle_tii_detectorMode		(int);
-
+	void			handle_LoggerButton		(int);
 };
 #endif

@@ -51,6 +51,7 @@
 #include	"element-selector.h"
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
+#include	"tii-codes.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -202,21 +203,6 @@ uint8_t convert (QString s) {
 	return 1;
 }
 
-#ifdef	__LOGGING__
-void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-QString theTime	= QDateTime::currentDateTime (). toString ();
-	if (logFile == nullptr)
-	   return;
-	fprintf (logFile, "at %s: %s %s\n",
-	              theTime. toUtf8 (). data (),
-	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
-}
-#else
-void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-	(void)a1; (void)a2;
-}
-
-#endif
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
@@ -249,10 +235,11 @@ void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
 	                                        theTable (this),
-	                                        filenameFinder (Si),
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
+	                                        tiiProcessor (QDir::homePath ()),
+	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
 int16_t k;
@@ -271,7 +258,7 @@ uint8_t	dabBand;
 	stereoSetting		= false;
 	serviceCount		= -1;
 	my_contentTable		= nullptr;
-//
+
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
 	globals. spectrumBuffer	= &spectrumBuffer;
@@ -305,6 +292,8 @@ uint8_t	dabBand;
 	fontSize		=
 	          dabSettings -> value ("fontSize", 12). toInt ();
 
+	homeAddress. latitude	= dabSettings -> value ("latitude", 0). toFloat ();
+	homeAddress. longitude	= dabSettings -> value ("longitude", 0). toFloat ();
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
@@ -359,12 +348,7 @@ uint8_t	dabBand;
 	   }
 	}
 
-#ifdef	__LOGGING__
 	logFile		= nullptr;
-	QString abc	= dabSettings	-> value ("logFile", ""). toString ();
-	if (abc != "")
-	   logFile	= fopen (abc. toUtf8 (). data (), "a");
-#endif
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
 	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
@@ -458,6 +442,8 @@ uint8_t	dabBand;
 	         presetSelector, SLOT (setCurrentIndex (int)));
 	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_dlTextButton ()));
+	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_LoggerButton (int)));
 
 //	restore some settings from previous incarnations
 	QString t       =
@@ -659,6 +645,9 @@ uint8_t	dabBand;
 	connect (hideButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_hideButton ()));
 
+	fprintf (stderr, "qwt version is %X \n",
+	                     (QWT_VERSION >> 8));
+
 	if (inputDevice != nullptr) {
 	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
 	      inputDevice -> show ();
@@ -680,8 +669,7 @@ uint8_t	dabBand;
 	currentServiceDescriptor	= nullptr;
 
 	if (inputDevice != nullptr) {
-	   LOG ("start with ",
-	            inputDevice -> deviceName (). toUtf8 (). data ());
+	   LOG ("start with ", inputDevice -> deviceName ());
 	   if (doStart ()) {
 	      qApp	-> installEventFilter (this);
 	      return;
@@ -793,7 +781,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	if (s == nullptr)	// cannot happen
 	   return;
 
-	s	-> setValue ("channel", channelSelector -> currentText ());
+	s	-> setValue ("channel", channel. channelName);
 	s	-> setValue ("device",
 	                      deviceSelector -> currentText());
 	s	-> setValue ("soundchannel",
@@ -845,10 +833,9 @@ int	serviceOrder;
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
 	serviceList = insert (serviceList, ed, serviceOrder);
-	my_history -> addElement (channelSelector -> currentText (),
-	                                                        serviceName);
+	my_history -> addElement (channel. channelName, serviceName);
 	model. clear ();
-	for (const auto serv : serviceList) {
+	for (auto serv : serviceList) {
 	   model. appendRow (new QStandardItem (serv. name));
 	}
 	for (int i = 0; i < model. rowCount (); i ++) {
@@ -889,8 +876,20 @@ QString s;
 	ensembleId	-> setFont (font);
 	ensembleId	-> setAlignment(Qt::AlignCenter);
 	ensembleId	-> setText (v + QString (":") + hextoString (id));
+
+	channel. ensembleName	= v;
+	channel. Eid		= id;
+	channel. tiiFile	= "";
+	channel. transmitterName	= "";
+	channel. has_ecc	= false;
+	channel. ecc_byte	= 0;
+	channel. country	= "";
+	channel. mainId	= 0;
+	channel. subId	= 0;
+	channel. nrTransmitters	= 0;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
 	   stopScanning (false);
+
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -903,9 +902,8 @@ void	RadioInterface::handle_contentButton	() {
 	   return;
 	}
 	my_contentTable		= new contentTable (this, dabSettings);
-	QString ensemble	= my_dabProcessor -> get_ensembleName ();
-	QString channel		= channelSelector -> currentText ();
-	my_contentTable -> ensemble (ensemble, channel);
+	my_contentTable -> ensemble (channel. ensembleName,
+	                             channel. channelName);
 	for (serviceId serv: serviceList) {
 	   QString serviceName = serv. name;
            audiodata ad;
@@ -1169,7 +1167,7 @@ int	serviceOrder;
 //	then we (try to) restart the service
 	serviceList	= my_dabProcessor -> getServices (serviceOrder);
 	model. clear	();
-	for (const auto serv : serviceList)
+	for (auto serv : serviceList)
 	   model. appendRow (new QStandardItem (serv. name));
 	int row = model. rowCount ();
 	for (int i = 0; i < row; i ++) {
@@ -1277,11 +1275,9 @@ void	RadioInterface::TerminateProcess () {
 	   motSlides	-> hide ();
 	LOG ("terminating ", "");
 	usleep (1000);		// pending signals
-#ifdef	__LOGGING__
 	if (logFile != nullptr)
 	   fclose (logFile);
 	logFile	= nullptr;
-#endif
 //	everything should be halted by now
 
 	dabSettings	-> sync ();
@@ -1594,7 +1590,7 @@ deviceHandler	*inputDevice	= nullptr;
 	else
 	if ((s == "file input(.iq)") || (s == "file input(.raw)")) {
 	   const char *p;
-	   if (s == "file input (.iq)")
+	   if (s == "file input(.iq)")
 	      p = "iq data (*iq)";
 	   else
 	      p = "raw data (*raw)";
@@ -1666,9 +1662,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   fprintf (stderr, "device is deleted\n");
 	   inputDevice = nullptr;
 	}
-	LOG ("selecting ", 
-	            deviceName. toUtf8 (). data ());
-	fprintf (stderr, "going for a device %s\n", deviceName. toUtf8 (). data ());
+	LOG ("selecting ", deviceName);
 	inputDevice		= setDevice (deviceName);
 	if (inputDevice == nullptr) {
 	   inputDevice = new deviceHandler ();
@@ -1885,7 +1879,7 @@ void	RadioInterface::showLabel	(QString s) {
 //	the_dlCache. add (s);
 	if (the_dlCache. addifNew (s))
 	   return;
-	QString currentChannel = channelSelector -> currentText ();
+	QString currentChannel = channel. channelName;
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	fprintf (dlTextFile, "%s.%s %4d-%02d-%02d %02d:%02d:%02d  %s\n",
 	                          currentChannel. toUtf8 (). data (),
@@ -1936,17 +1930,23 @@ void	RadioInterface::show_tii_spectrum	() {
 	my_tiiViewer. showSpectrum (1);
 }
 
+//
+//	if a tii file exists, we will look into it to see whether we
+//	can identify a transmitter. Of course, if no such file
+//	exists, we do not want to continuosly search for the
+//	transmitter
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
 
+	if ((mainId == channel. mainId) && (subId == channel. subId) &&
+	    (channel. tiiFile != "") )
+	   return;
+
 	if (mainId == 0xFF) 
 	   return;
 
-//	if ((mainId == mainId_old) && (subId == subId_old))
-//	   return;	// it is all there
-
-	for (int i = 0; i < transmitters. size (); i += 2) {
+	for (int i = 0; i < (int)(transmitters. size ()); i += 2) {
 	   if ((transmitters. at (i) == (mainId & 0x7F)) &&
 	       (transmitters. at (i + 1) == subId)) {
 	      found = true;
@@ -1962,28 +1962,55 @@ bool	found	= false;
 	if (!running. load())
 	   return;
 
-//	tiiHandler tii;
-	ensemblePrinter p;
-	uint8_t ecc_byte        = my_dabProcessor -> get_ecc();
-	int32_t ensembleId      = my_dabProcessor -> get_ensembleId();
-	uint16_t countryId	= (ensembleId >> 12) & 0xF;
-	QString country 	= find_ITU_code (ecc_byte, countryId);
+	channel. mainId	= mainId;
+	channel. subId	= subId;
 
-//
-//	if (configWidget. transmitterNames -> isChecked ()) {
-//	   uint16_t Eid = my_dabProcessor -> get_ensembleId ();
-//	   QString c = tii. get_transmitterName (countryName, Eid,
-//	                                              mainId, subId);
-//	   if (c == QString ("")) 
-//	      a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
-//	   else
-//	      a = c;
-//
-//	}
-//	else 
-	   a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+//	if - for the first time now - we see an ecc value,
+//	we check whether or not a tii files is available
+	if (!channel. has_ecc && (my_dabProcessor -> get_ecc () != 0)
+	   && (channel. tiiFile == "")) {
+	   channel. ecc_byte = my_dabProcessor -> get_ecc ();
+	   channel. tiiFile = tiiProcessor. tiiFile (channel. ecc_byte,
+	                                              channel. Eid);
+	   channel. country	= find_ITU_code (channel. ecc_byte,
+	                                         (channel. Eid >> 12) &0xF);
+	   channel. has_ecc = true;
+	   channel. transmitterName = "";
+	}
 
-	transmitter_country	-> setText (country);
+	if (logFile != nullptr) {
+	   if (channel. has_ecc && (channel. tiiFile != "")) {
+	      QString theName = tiiProcessor.
+	                            get_transmitterName (channel. tiiFile,
+	                                                 channel. Eid,
+	                                              mainId, subId);
+	      if (theName != channel. transmitterName)  {
+	         channel. transmitterName = theName;
+	         float latitude, longitude;
+	         tiiProcessor. get_coordinates (&latitude,
+	                                           &longitude, theName);
+	         LOG ("transmitter ", channel. transmitterName);
+	         LOG ("coordinates ", 
+	              QString::number (latitude) + " " +
+	              QString::number (longitude));
+	         LOG ("current SNR ", QString::number (snrDisplay -> value ()));
+	         if ((homeAddress. latitude != 0) &&
+	             (homeAddress. longitude != 0)) {
+	            int distance = tiiProcessor.
+	                               distance (latitude, longitude,
+	                                         homeAddress. latitude,
+	                                         homeAddress. longitude);
+	            LOG ("distance ", QString::number (distance));
+	         }
+	      }
+	   }
+
+	   LOG ("tii  numbers", tiiNumber (mainId) + " " + tiiNumber (subId));
+	   LOG ("country", channel. country);
+	}
+	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+
+	transmitter_country	-> setText (channel. country);
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
 	transmitter_coordinates	-> setText (a);
 	my_tiiViewer. showTransmitters (transmitters);
@@ -2035,8 +2062,10 @@ void	RadioInterface::showCorrelation	(int amount, int marker,
 	if (!running. load())
 	   return;
 	my_correlationViewer. showCorrelation (amount, marker, v);
-//	QString t = "Transm " + QString::number (v. size ());
-//	nrTransmitters	-> setText (t);
+
+	if (channel. nrTransmitters != v. size ())
+	   LOG ("nr transmitters ", QString::number (v. size ()));
+	channel. nrTransmitters = v. size ();
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -2655,17 +2684,18 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 	QStringList list = s.split (":", QString::SkipEmptyParts);
         if (list. length () != 2)
            return;
-	QString channel = list. at (0);
+	QString theChannel = list. at (0);
 	QString service	= list. at (1);
 	for (int i = service. size (); i < 16; i ++)
 	   service. append (' ');
 
 	fprintf (stderr, "going for channel %s, service %s\n",
-	                   channel, service);
-	localSelect (channel, service);
+	                   theChannel. toUtf8(). data (),
+	                   service. toUtf8 (). data ());
+	localSelect (theChannel, service);
 }
 
-void	RadioInterface::localSelect (const QString &channel,
+void	RadioInterface::localSelect (const QString &theChannel,
 	                             const QString &service) {
 int	switchDelay;
 	stopScanning (false);
@@ -2674,7 +2704,7 @@ int	switchDelay;
 	   return;
 	}
 
-	if (channel == channelSelector -> currentText ()) {
+	if (theChannel == channel. channelName) {
 	   stopService ();
 	   dabService s;
 	   my_dabProcessor -> getParameters (service, &s. SId, &s. SCIds);
@@ -2693,7 +2723,7 @@ int	switchDelay;
 //      waiting a while
 	stopChannel ();
 //      trying to start the selected service
-	int k           = channelSelector -> findText (channel);
+	int k           = channelSelector -> findText (theChannel);
 	if (k != -1) {
 	   new_channelIndex (k);
 	}
@@ -2704,7 +2734,7 @@ int	switchDelay;
 	}
 
 	nextService. valid		= true;
-	nextService. channel		= channel;
+	nextService. channel		= theChannel;
 	nextService. serviceName        = service;
 	nextService. SId                = 0;
 	nextService. SCIds              = 0;
@@ -2833,7 +2863,7 @@ QString serviceName	= s -> serviceName;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
-	         QString s = channelSelector -> currentText ();
+	         QString s = channel. channelName;
 	         s. append (":");
 	         s. append (serviceName);
 	         dabSettings	-> setValue ("presetname", s);
@@ -2867,6 +2897,7 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
 void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
+
 	if (motSlides != nullptr) {
 	   delete motSlides;
 	   motSlides = nullptr;
@@ -3090,10 +3121,10 @@ void	RadioInterface::setPresetStation () {
 	if (!nextService. valid)
 	   return;
 
-	if (nextService. channel != channelSelector -> currentText ())
+	if (nextService. channel != channel. channelName)
 	   return;
 
-	if (ensembleId -> text () == QString ("")) {
+	if (channel. Eid == 0) {
 	   QMessageBox::warning (this, tr ("Warning"),
 	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
 	   return;
@@ -3129,12 +3160,13 @@ void	RadioInterface::setPresetStation () {
 ///////////////////////////////////////////////////////////////////////////
 //	Precondition: no channel should be active
 //	
-void	RadioInterface::startChannel (const QString &channel) {
+void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
-	         theBand. Frequency (channel);
+	         theBand. Frequency (theChannel);
+	LOG ("channel starts ", theChannel);
 	serviceCount		= -1;
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
-	dabSettings		-> setValue ("channel", channel);
+	dabSettings		-> setValue ("channel", theChannel);
 	inputDevice		-> resetBuffer ();
 	serviceList. clear ();
 	model. clear ();
@@ -3142,6 +3174,13 @@ int	tunedFrequency	=
 	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
 	my_dabProcessor		-> start (tunedFrequency);
+	channel. has_ecc	= false;
+	channel. transmitterName	= "";
+	channel. ensembleName	= "";
+	channel. Eid		= 0;
+	channel. mainId		= 0;
+	channel. subId		= 0;
+	channel. channelName	= theChannel;
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3156,6 +3195,7 @@ int	tunedFrequency	=
 void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
+	LOG ("channel stops ", channel. channelName);
 	stop_sourceDumping	();
 	stop_audioDumping	();
 	soundOut	-> stop ();
@@ -3174,6 +3214,14 @@ void	RadioInterface::stopChannel	() {
 #endif
 	presetTimer. stop 	();
 	channelTimer. stop	();
+	channel. Eid		= 0;
+	channel. ensembleName	= "";
+	channel. tiiFile	= "";
+	channel. has_ecc	= false;
+	channel. transmitterName = "";
+	transmitter_country     -> setText ("");
+        transmitter_coordinates -> setText ("");
+
 //
 //	The services - if any - need to be stopped
 	hide_for_safety	();	// hide some buttons
@@ -3287,6 +3335,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	else {
 	   cc = theBand. firstChannel ();
 	}
+	LOG ("scanning starts with ", QString::number (cc));
 	scanning. store (true);
 	if (scanMode == SINGLE_SCAN)
 	   scanDumpFile	= filenameFinder. findScanDump_fileName ();
@@ -3320,7 +3369,7 @@ void	RadioInterface::stopScanning	(bool dump) {
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
 	scanButton      -> setText ("scan");
-
+	LOG ("scanning stops ", "");
 	my_dabProcessor	-> set_scanMode (false);
 	if (!running. load () || !scanning. load ())
 	   return;
@@ -3399,7 +3448,6 @@ void	RadioInterface::showServices () {
 ensemblePrinter	my_Printer;
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
-QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 
 	if (my_dabProcessor == nullptr) {	// cannot happen
 	   fprintf (stderr, "Expert error 26\n");
@@ -3407,8 +3455,8 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 	}
 	theTable. newEnsemble (" ",
 	                       channelSelector -> currentText (),
-	                       my_dabProcessor	-> get_ensembleName (),
-	                       ensembleId,
+	                       channel. ensembleName,
+	                       hextoString (channel. Eid),
 	                       SNR,
 	                       transmitters);
 	if (scanMode == SINGLE_SCAN) {
@@ -3485,7 +3533,7 @@ QString ensembleId	= hextoString (my_dabProcessor -> get_ensembleId ());
 //
 bool	RadioInterface::isMember (std::vector<serviceId> a,
 	                                     serviceId b) {
-	for (const auto serv : a)
+	for (auto serv : a)
 	   if (serv. name == b. name)
 	      return true;
 	return false;
@@ -3505,7 +3553,7 @@ std::vector<serviceId> k;
 	QString baseS		= "";
 
 	bool	inserted	= false;
-	for (const auto serv : l) {
+	for (auto serv : l) {
 	   if (!inserted) {
 	      if (order == ID_BASED) {
 	         if ((baseN <= n. SId) && (n. SId <= serv. SId)) {
@@ -4084,7 +4132,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
 	if (scanning. load ())
 	   return;
-	for (const auto serv : serviceList) {
+	for (auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
 	       serv. name. contains (" EPG   ", Qt::CaseInsensitive) ||
                serv. name. contains ("Spored", Qt::CaseInsensitive) ||
@@ -4132,7 +4180,8 @@ void	RadioInterface::epgTimer_timeOut	() {
 uint32_t RadioInterface::extract_epg (QString name,
 	                              std::vector<serviceId> serviceList,
 	                              uint32_t ensembleId) {
-	for (const auto serv : serviceList) {
+	(void)ensembleId;
+	for (auto serv : serviceList) {
 	   if (name. contains (QString::number (serv. SId, 16),
 	                          Qt::CaseInsensitive)) 
 	   
@@ -4233,3 +4282,25 @@ void	RadioInterface::nrServices	(int n) {
 	serviceCount = n;
 }
 
+void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
+QString theTime	= QDateTime::currentDateTime (). toString ();
+	if (logFile == nullptr)
+	   return;
+	fprintf (logFile, "at %s: %s %s\n",
+	              theTime. toUtf8 (). data (),
+	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
+}
+
+void	RadioInterface::handle_LoggerButton (int s) {
+	(void)s;
+
+	if (configWidget. loggerButton -> isChecked ()) {
+	   if (logFile == nullptr)
+	      logFile = filenameFinder. findLogFileName ();
+	}
+	else
+	if (logFile != nullptr) {
+	   fclose (logFile);
+	   logFile = nullptr;
+	}
+}

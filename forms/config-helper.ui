@@ -127,6 +127,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="loggerButton">
+     <property name="text">
+      <string>  logger</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label_3">

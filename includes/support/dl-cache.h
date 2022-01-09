@@ -13,6 +13,7 @@ int	size;
 #define CACHE_MASK	(CACHE_SIZE - 1)
 public:
 	dlCache	(int size) {
+	   (void)size;
 	   cache. resize (CACHE_SIZE);
 	   this	-> size	= CACHE_SIZE;
 	   p = 0;

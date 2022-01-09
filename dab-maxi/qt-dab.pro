@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 #QMAKE_CFLAGS	+=  -O4 -ffast-math
 #QMAKE_CXXFLAGS	+=  -O4 -ffast-math
@@ -181,6 +181,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/dl-cache.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
+	   ../includes/support/tii-codes.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -290,6 +291,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/findfilenames.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
+	   ../src/support/tii-codes.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
