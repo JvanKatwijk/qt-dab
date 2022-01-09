@@ -2529,25 +2529,25 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons() & Qt::RightButton) {
-//	      audiodata ad;
-//	      packetdata pd;
-//	      QString serviceName =
-//	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
-//	      if (serviceName. at (1) == ' ')
-//	         return true;
-//
-//	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
-//	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
-//	         presetData pd;
-//	         pd. serviceName	= serviceName;
-//	         pd. channel		= channelSelector -> currentText ();
-//	         QString itemText	= pd. channel + ":" + pd. serviceName;
-//	         for (int i = 0; i < presetSelector -> count (); i ++)
-//	            if (presetSelector -> itemText (i) == itemText)
-//	               return true;
-//	         presetSelector -> addItem (itemText);
-//	         return true;
-//	      }
+	      audiodata ad;
+	      packetdata pd;
+	      QString serviceName =
+	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+	      if (serviceName. at (1) == ' ')
+	         return true;
+
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
+	         presetData pd;
+	         pd. serviceName	= serviceName;
+	         pd. channel		= channelSelector -> currentText ();
+	         QString itemText	= pd. channel + ":" + pd. serviceName;
+	         for (int i = 0; i < presetSelector -> count (); i ++)
+	            if (presetSelector -> itemText (i) == itemText)
+	               return true;
+	         presetSelector -> addItem (itemText);
+	         return true;
+	      }
 //	      
 //	      if (ad. defined) {
 //	         if (currentServiceDescriptor != nullptr) 
@@ -2555,7 +2555,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 //	         currentServiceDescriptor	= new audioDescriptor (&ad);
 //	         return true;
 //	      }
-//
+
 //	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
 //	      if (pd. defined) {
 //	         if (currentServiceDescriptor != nullptr)
