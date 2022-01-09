@@ -146,6 +146,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/scheduler.h \
 	   ../includes/support/schedule-selector.h \
 	   ../includes/support/element-selector.h \
+	   ../includes/support/ITU_Region_1.h \
 	   ./devices-dab-mini/device-handler.h
 
 FORMS	+= ./dab-mini.ui
@@ -218,6 +219,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/scheduler.cpp \
            ../src/support/schedule-selector.cpp \
            ../src/support/element-selector.cpp \
+	   ../src/support/ITU_Region_1.cpp \
            ../src/support/findfilenames.cpp \
 	   ./devices-dab-mini/device-handler.cpp
 #

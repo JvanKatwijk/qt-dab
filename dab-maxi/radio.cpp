@@ -1968,20 +1968,7 @@ bool	found	= false;
 	int32_t ensembleId      = my_dabProcessor -> get_ensembleId();
 	uint16_t countryId	= (ensembleId >> 12) & 0xF;
 	QString country 	= find_ITU_code (ecc_byte, countryId);
-
-//
-//	if (configWidget. transmitterNames -> isChecked ()) {
-//	   uint16_t Eid = my_dabProcessor -> get_ensembleId ();
-//	   QString c = tii. get_transmitterName (countryName, Eid,
-//	                                              mainId, subId);
-//	   if (c == QString ("")) 
-//	      a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
-//	   else
-//	      a = c;
-//
-//	}
-//	else 
-	   a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
 	transmitter_country	-> setText (country);
 	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
