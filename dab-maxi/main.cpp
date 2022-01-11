@@ -118,7 +118,6 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	         break;
 
 	      case 's':
-	         scheduleFile	= optarg;
 	         break;
 
 	      default:

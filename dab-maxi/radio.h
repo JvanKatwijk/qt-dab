@@ -296,6 +296,7 @@ private:
 	   QString	transmitterName;
 	   uint8_t	mainId;
 	   uint8_t	subId;
+	   QString	countryName;
 	   bool		showTransmitters;
 	   int		nrTransmitters;
 	} channel;

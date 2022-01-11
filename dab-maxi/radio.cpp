@@ -645,9 +645,6 @@ uint8_t	dabBand;
 	connect (hideButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_hideButton ()));
 
-	fprintf (stderr, "qwt version is %X \n",
-	                     (QWT_VERSION >> 8));
-
 	if (inputDevice != nullptr) {
 	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
 	      inputDevice -> show ();
@@ -880,6 +877,7 @@ QString s;
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 	channel. tiiFile	= "";
+	channel. countryName	= "";
 	channel. transmitterName	= "";
 	channel. has_ecc	= false;
 	channel. ecc_byte	= 0;
@@ -1938,10 +1936,11 @@ void	RadioInterface::show_tii_spectrum	() {
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
+QString	country	= "";
 
-	if ((mainId == channel. mainId) && (subId == channel. subId) &&
-	    (channel. tiiFile != "") )
-	   return;
+//	if ((mainId == channel. mainId) && (subId == channel. subId) &&
+//	    (channel. tiiFile != "") )
+//	   return;
 
 	if (mainId == 0xFF) 
 	   return;
@@ -1962,21 +1961,31 @@ bool	found	= false;
 	if (!running. load())
 	   return;
 
+	if ((mainId != channel. mainId) ||
+	    (subId != channel. subId))
+	   LOG ("tii numbers", tiiNumber (mainId) + " " + tiiNumber (subId));
+
 	channel. mainId	= mainId;
 	channel. subId	= subId;
+
+	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
+	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
+	transmitter_coordinates	-> setText (a);
+	my_tiiViewer. showTransmitters (transmitters);
 
 //	if - for the first time now - we see an ecc value,
 //	we check whether or not a tii files is available
 	if (!channel. has_ecc && (my_dabProcessor -> get_ecc () != 0)
 	   && (channel. tiiFile == "")) {
-	   channel. ecc_byte = my_dabProcessor -> get_ecc ();
-	   channel. tiiFile = tiiProcessor. tiiFile (channel. ecc_byte,
+	   channel. ecc_byte	= my_dabProcessor -> get_ecc ();
+	   channel. tiiFile	= tiiProcessor. tiiFile (channel. ecc_byte,
 	                                              channel. Eid);
-	   channel. country	= find_ITU_code (channel. ecc_byte,
+	   country		= find_ITU_code (channel. ecc_byte,
 	                                         (channel. Eid >> 12) &0xF);
-	   channel. has_ecc = true;
+	   channel. has_ecc	= true;
 	   channel. transmitterName = "";
 	}
+
 
 	if (logFile != nullptr) {
 	   if (channel. has_ecc && (channel. tiiFile != "")) {
@@ -2005,15 +2014,13 @@ bool	found	= false;
 	      }
 	   }
 
-	   LOG ("tii  numbers", tiiNumber (mainId) + " " + tiiNumber (subId));
+	}
+	if ((country != "") && (country != channel. countryName)) {
+	   transmitter_country	-> setText (country);
+	   channel. countryName	= country;
 	   LOG ("country", channel. country);
 	}
-	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
 
-	transmitter_country	-> setText (channel. country);
-	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
-	transmitter_coordinates	-> setText (a);
-	my_tiiViewer. showTransmitters (transmitters);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -2571,25 +2578,25 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons() & Qt::RightButton) {
-//	      audiodata ad;
-//	      packetdata pd;
-//	      QString serviceName =
-//	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
-//	      if (serviceName. at (1) == ' ')
-//	         return true;
-//
-//	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
-//	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
-//	         presetData pd;
-//	         pd. serviceName	= serviceName;
-//	         pd. channel		= channelSelector -> currentText ();
-//	         QString itemText	= pd. channel + ":" + pd. serviceName;
-//	         for (int i = 0; i < presetSelector -> count (); i ++)
-//	            if (presetSelector -> itemText (i) == itemText)
-//	               return true;
-//	         presetSelector -> addItem (itemText);
-//	         return true;
-//	      }
+	      audiodata ad;
+	      packetdata pd;
+	      QString serviceName =
+	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+	      if (serviceName. at (1) == ' ')
+	         return true;
+
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
+	         presetData pd;
+	         pd. serviceName	= serviceName;
+	         pd. channel		= channelSelector -> currentText ();
+	         QString itemText	= pd. channel + ":" + pd. serviceName;
+	         for (int i = 0; i < presetSelector -> count (); i ++)
+	            if (presetSelector -> itemText (i) == itemText)
+	               return true;
+	         presetSelector -> addItem (itemText);
+	         return true;
+	      }
 //	      
 //	      if (ad. defined) {
 //	         if (currentServiceDescriptor != nullptr) 
@@ -2597,7 +2604,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 //	         currentServiceDescriptor	= new audioDescriptor (&ad);
 //	         return true;
 //	      }
-//
+
 //	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
 //	      if (pd. defined) {
 //	         if (currentServiceDescriptor != nullptr)
@@ -3369,7 +3376,8 @@ void	RadioInterface::stopScanning	(bool dump) {
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
 	scanButton      -> setText ("scan");
-	LOG ("scanning stops ", "");
+	if (scanning. load ())
+	   LOG ("scanning stops ", "");
 	my_dabProcessor	-> set_scanMode (false);
 	if (!running. load () || !scanning. load ())
 	   return;

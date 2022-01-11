@@ -31,17 +31,20 @@
 #include	<cstdlib>
 #include	<qwt_interval.h>
 #include	<QPen>
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
+//
+//	Qwt 6.2 is different from the 6.1 version, these mods
+//	seem to work
+//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
 # include	<qwt_raster_data.h>
-#else
-# include	<qwt_matrix_raster_data.h>
-#endif
+//#else
+//# include	<qwt_matrix_raster_data.h>
+//#endif
 
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
+//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
 class	SpectrogramData: public QwtRasterData {
-#else
-class	SpectrogramData: public QwtMatrixRasterData {
-#endif
+//#else
+//class	SpectrogramData: public QwtMatrixRasterData {
+//#endif
 public:
 	double	*data;		// pointer to actual data
 	int	left;		// index of left most element in raster
@@ -53,11 +56,11 @@ public:
 
 	SpectrogramData (double *data, int left, int width, int height,
 	                 int datawidth, double max):
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
+//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
         QwtRasterData () {
-#else
-        QwtMatrixRasterData () {
-#endif
+//#else
+//	QwtMatrixRasterData () {
+//#endif
 	this	-> data		= data;
 	this	-> left		= left;
 	this	-> width	= width;

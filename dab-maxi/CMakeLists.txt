@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-4.12)
+set (objectName qt-dab-4.2)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -294,6 +294,7 @@ endif ()
 	     ../includes/support/content-table.h
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
+	     ../includes/support/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -388,6 +389,7 @@ endif ()
 	     ../src/support/findfilenames.cpp
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
+	     ../src/support/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 

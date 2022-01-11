@@ -8,7 +8,7 @@ struct {
 	uint8_t countryId;
 	const char * ITU_Code;
 	const char * Country;
-} ITU_table  [] = {
+} ITU_table_1  [] = {
 {0xE0, 0x09, "ALB", "Albania"},
 {0xE0, 0x02, "ALG", "Algeria"},
 {0xE0, 0x03, "AND", "Andorra"},
@@ -83,20 +83,56 @@ struct {
 {0, 0, "", ""}
 };
 
-QString         find_ITU_code (uint8_t ecc, uint8_t countryId) {
-	for (int i = 0; ITU_table [i]. ecc != 0; i ++)
-	   if ((ITU_table [i]. ecc == ecc) &&
-	                    (ITU_table [i]. countryId == countryId))
-	      return  ITU_table [i]. ITU_Code;
+struct {
+	uint8_t ecc;
+	uint8_t countryId;
+	const char * ITU_Code;
+	const char * Country;
+} ITU_table_4  [] = {
+{0xF0, 0x0A, "AFG", "Afghanistan"},
+{0xF0, 0x09, "ARS", "Saudi Arabia"},
+{0xF0, 0x01, "acc", "Australia"},
+{0xF0, 0x02, "arn", "Australia"},
+{0xF0, 0x03, "acn", "Australia"},
+{0xF0, 0x04, "arq", "Australia"},
+{0xF0, 0x05, "arc", "Australia"},
+{0xF0, 0x06, "arw", "Australia"},
+{0xF0, 0x06, "arc", "Australia"},
+{0, 0, "", ""}
+};
 
+
+QString         find_ITU_code (uint8_t ecc, uint8_t countryId) {
+	if ((ecc >> 4) == 0xE) {
+	   for (int i = 0; ITU_table_1 [i]. ecc != 0; i ++)
+	      if ((ITU_table_1 [i]. ecc == ecc) &&
+	                    (ITU_table_1 [i]. countryId == countryId))
+	         return  ITU_table_1 [i]. ITU_Code;	
+	}
+	else
+	if ((ecc >> 4) == 0xF) {
+	   for (int i = 0; ITU_table_1 [i]. ecc != 0; i ++)
+	      if ((ITU_table_4 [i]. ecc == ecc) &&
+	                    (ITU_table_4 [i]. countryId == countryId))
+	         return  ITU_table_4 [i]. ITU_Code;
+	}
 	return "";
 }
 
 QString         find_Country (uint8_t ecc, uint8_t countryId) {
-	for (int i = 0; ITU_table [i]. ecc != 0; i ++)
-	   if ((ITU_table [i]. ecc == ecc) &&
-	                    (ITU_table [i]. countryId == countryId))
-	      return  ITU_table [i]. Country;
+	if ((ecc >> 4) == 0xE) {
+	   for (int i = 0; ITU_table_1 [i]. ecc != 0; i ++)
+	      if ((ITU_table_1 [i]. ecc == ecc) &&
+	                    (ITU_table_1 [i]. countryId == countryId))
+	         return  ITU_table_1 [i]. Country;
+	}
+	else
+	if ((ecc >> 4) == 0xF) {
+	   for (int i = 0; ITU_table_4 [i]. ecc != 0; i ++)
+	      if ((ITU_table_4 [i]. ecc == ecc) &&
+	                    (ITU_table_4 [i]. countryId == countryId))
+	         return  ITU_table_4 [i]. Country;
+	}
 
 	return "";
 }
