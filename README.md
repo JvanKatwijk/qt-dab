@@ -1,9 +1,9 @@
-# Qt-DAB-4.11 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.2 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.11 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.2 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/screen-4.11-2.png?raw=true)
-![4.11](/screen-4.11-1.png?raw=true)
+![overview](/screen-4.2-2.png?raw=true)
+![4.2](/screen-4.2-1.png?raw=true)
 
 ------------------------------------------------------------------
 Table of Contents
@@ -36,7 +36,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.11** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+**Qt-DAB-4.12** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
@@ -126,9 +126,8 @@ The buttons and other controls on the main widget are equipped with
 *tool tips* briefly explaining the (in most cases obvious) function
 of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
-New in 4.11 is a button which determines the visibility of the control buttons.
 
-![4.11](/screen-4.11-1.png?raw=true)
+![4.](/screen-4.2-2.png?raw=true)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.
@@ -171,16 +170,15 @@ as some information on the quality of the decoding,
 
 ![Qt-DAB totaal](/qt-dab-scan.png?raw=true)
 
-Another - an eight' - widget shows when running a *scan*; the widget 
+Another  widget shows when running a *scan*; the widget 
 shows the contents of the ensembles found in the selected channels.
 Since 3.5 the
 possibility exists to save a detailed description of the services
 in the different channels, in a format easy to process with LibreOffice
 or comparable programs.
 
-Depending on a setting in the ".ini" file, a logo or slide, transmitted
-as Program Associated Data with the audio transmission, will be shown here or on a separate widget
-(the setting can be modified from the configuration widget).
+Depending on a setting in configuration widget, a logo or slide, transmitted
+as Program Associated Data with the audio transmission, will be shown here or on a separate widget.
 
 ---------------------------------------------------------------------
 dabMini and duoreceiver
@@ -224,7 +222,7 @@ description of the widgets, of the values in the ".ini" file,
 on configuring for creating an executable (Linux), and even a
 complete description on how to add a device to the configuration.
 
-![Qt-DAB documentation](/qt-usersguide.png?raw=true)
+![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
 
 ----------------------------------------------------------------------
 Presets for Qt-DAB and dabMini
@@ -588,7 +586,7 @@ on the given frequency (specified in KHz)
 Copyright
 ------------------------------------------------------------------------
 
-	Copyright (C)  2016 .. 2021
+	Copyright (C)  2016 .. 2022
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 
