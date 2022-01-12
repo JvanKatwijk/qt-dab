@@ -36,7 +36,13 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.12** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+**Qt-DAB-4.2** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+
+4.2 differs in details from 4.1, apart from some technical changes (hopefully
+not seen by users), changes are that some settings are moved from the
+configuration widget to the widget the settings refers to.
+New is a "logger" setting on the configuration widget that well 
+store -when set - some information on a file.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
@@ -518,7 +524,7 @@ the service, a button labeled **timeTable** .
 ![epg data](/qt-dab-epg-data.png?raw=true)
 
 The software is experimental though and - at least here - the times
-on the time table are two hours off.
+on the time table in UTC.
 
 -----------------------------------------------------------------------
 Recording the SNR
