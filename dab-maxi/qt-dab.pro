@@ -182,6 +182,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
 	   ../includes/support/tii-codes.h \
+	   ../includes/support/coordinates.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -292,6 +293,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/tii-codes.cpp \
+	   ../src/support/coordinates.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
@@ -310,7 +312,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-4.2
+TARGET		= qt-dab-4.3
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -369,6 +371,7 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __DUMP_SNR__		# for experiments only
+CONFIG		+= loadTables
 }
 
 
@@ -386,7 +389,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-4.2
+#	TARGET		= qt-dab64-4.3
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -406,7 +409,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-4.2
+	TARGET		= qt-dab32-4.3
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -744,5 +747,10 @@ JAN	{
 	INCLUDEPATH	+= /usr/include/eigen3
 	HEADERS		+= ../includes/ofdm/channel.h 
 	SOURCES		+= ../src/ofdm/channel.cpp
+}
+
+loadTables	{
+	DEFINES		+= __LOAD_TABLES__
+	LIBS		+= -lcurl
 }
 

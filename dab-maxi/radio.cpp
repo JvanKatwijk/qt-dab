@@ -52,6 +52,7 @@
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
 #include	"tii-codes.h"
+#include	"coordinates.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -238,7 +239,7 @@ uint8_t convert (QString s) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-	                                        tiiProcessor (QDir::homePath ()),
+	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
@@ -348,6 +349,9 @@ uint8_t	dabBand;
 	   }
 	}
 
+	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
+	         this, SLOT (loadTables ()));
+	
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -434,6 +438,7 @@ uint8_t	dabBand;
 	my_history              = new historyHandler (this, historyFile);
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable	-> hide ();
+
 	connect (my_history, SIGNAL (handle_historySelect (const QString &)),
 	         this, SLOT (handle_historySelect (const QString &)));
 	connect (this, SIGNAL (set_newChannel (int)),
@@ -540,6 +545,16 @@ uint8_t	dabBand;
 	         this, SLOT (color_muteButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
+
+	connect (configWidget. tiiFileButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_tiiFileButton ()));
+	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_set_coordinatesButton ()));
+	QString tiiFileName = dabSettings -> value ("tiiFile", ""). toString ();
+	channel. tiiFile	= false;
+	if (tiiFileName != "") {
+	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
+	}
 
 //	and start the timer(s)
 //	The displaytimer is there to show the number of
@@ -876,12 +891,11 @@ QString s;
 
 	channel. ensembleName	= v;
 	channel. Eid		= id;
-	channel. tiiFile	= "";
 	channel. countryName	= "";
 	channel. transmitterName	= "";
 	channel. has_ecc	= false;
 	channel. ecc_byte	= 0;
-	channel. country	= "";
+	channel. countryName	= "";
 	channel. mainId	= 0;
 	channel. subId	= 0;
 	channel. nrTransmitters	= 0;
@@ -1937,10 +1951,7 @@ void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
 QString	country	= "";
-
-//	if ((mainId == channel. mainId) && (subId == channel. subId) &&
-//	    (channel. tiiFile != "") )
-//	   return;
+bool	tiiChange	= false;
 
 	if (mainId == 0xFF) 
 	   return;
@@ -1962,8 +1973,10 @@ QString	country	= "";
 	   return;
 
 	if ((mainId != channel. mainId) ||
-	    (subId != channel. subId))
+	    (subId != channel. subId)) {
 	   LOG ("tii numbers", tiiNumber (mainId) + " " + tiiNumber (subId));
+	   tiiChange = true;
+	}
 
 	channel. mainId	= mainId;
 	channel. subId	= subId;
@@ -1975,41 +1988,51 @@ QString	country	= "";
 
 //	if - for the first time now - we see an ecc value,
 //	we check whether or not a tii files is available
-	if (!channel. has_ecc && (my_dabProcessor -> get_ecc () != 0)
-	   && (channel. tiiFile == "")) {
+	if (!channel. has_ecc && (my_dabProcessor -> get_ecc () != 0)) {
 	   channel. ecc_byte	= my_dabProcessor -> get_ecc ();
-	   channel. tiiFile	= tiiProcessor. tiiFile (channel. ecc_byte,
-	                                              channel. Eid);
 	   country		= find_ITU_code (channel. ecc_byte,
 	                                         (channel. Eid >> 12) &0xF);
 	   channel. has_ecc	= true;
 	   channel. transmitterName = "";
 	}
 
-
-	if (logFile != nullptr) {
-	   if (channel. has_ecc && (channel. tiiFile != "")) {
-	      QString theName = tiiProcessor.
-	                            get_transmitterName (channel. tiiFile,
+	if ((logFile != nullptr) && (channel. tiiFile)) {
+	   if (tiiChange || (channel. transmitterName == ""))  {
+	      if (!tiiProcessor. is_black (channel. Eid, mainId, subId)) {
+	         QString theName = tiiProcessor.
+	                            get_transmitterName (channel. countryName,
 	                                                 channel. Eid,
-	                                              mainId, subId);
-	      if (theName != channel. transmitterName)  {
-	         channel. transmitterName = theName;
-	         float latitude, longitude;
-	         tiiProcessor. get_coordinates (&latitude,
+	                                                 mainId, subId);
+	         if (theName == "") {
+	            tiiProcessor. set_black (channel. Eid, mainId, subId);
+	            LOG ("Not found ",
+	                   QString::number (channel. Eid, 16) + " " +
+	                   QString::number (mainId) + " " +
+	                   QString::number (subId));
+	         }
+	         else
+	         if (theName != channel. transmitterName)  {
+	            channel. transmitterName = theName;
+	            float latitude, longitude;
+	            tiiProcessor. get_coordinates (&latitude,
 	                                           &longitude, theName);
-	         LOG ("transmitter ", channel. transmitterName);
-	         LOG ("coordinates ", 
-	              QString::number (latitude) + " " +
-	              QString::number (longitude));
-	         LOG ("current SNR ", QString::number (snrDisplay -> value ()));
-	         if ((homeAddress. latitude != 0) &&
-	             (homeAddress. longitude != 0)) {
-	            int distance = tiiProcessor.
+	            fprintf (stderr, "%s (%f, %f)\n",
+	                              theName. toLatin1 (). data (),
+	                              latitude, longitude);
+	            LOG ("transmitter ", channel. transmitterName);
+	            LOG ("coordinates ", 
+	                         QString::number (latitude) + " " +
+	                         QString::number (longitude));
+	            LOG ("current SNR ",
+	                     QString::number (snrDisplay -> value ()));
+	            if ((homeAddress. latitude != 0) &&
+	                (homeAddress. longitude != 0)) {
+	               int distance = tiiProcessor.
 	                               distance (latitude, longitude,
 	                                         homeAddress. latitude,
 	                                         homeAddress. longitude);
-	            LOG ("distance ", QString::number (distance));
+	               LOG ("distance ", QString::number (distance));
+	            }
 	         }
 	      }
 	   }
@@ -2018,9 +2041,8 @@ QString	country	= "";
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
 	   channel. countryName	= country;
-	   LOG ("country", channel. country);
+	   LOG ("country", channel. countryName);
 	}
-
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -2070,8 +2092,8 @@ void	RadioInterface::showCorrelation	(int amount, int marker,
 	   return;
 	my_correlationViewer. showCorrelation (amount, marker, v);
 
-	if (channel. nrTransmitters != v. size ())
-	   LOG ("nr transmitters ", QString::number (v. size ()));
+//	if (channel. nrTransmitters != v. size ())
+//	   LOG ("nr transmitters ", QString::number (v. size ()));
 	channel. nrTransmitters = v. size ();
 }
 
@@ -3223,7 +3245,6 @@ void	RadioInterface::stopChannel	() {
 	channelTimer. stop	();
 	channel. Eid		= 0;
 	channel. ensembleName	= "";
-	channel. tiiFile	= "";
 	channel. has_ecc	= false;
 	channel. transmitterName = "";
 	transmitter_country     -> setText ("");
@@ -4312,3 +4333,84 @@ void	RadioInterface::handle_LoggerButton (int s) {
 	   logFile = nullptr;
 	}
 }
+
+void	RadioInterface::handle_tiiFileButton	() {
+QString file	= QFileDialog::getOpenFileName (this,
+	                                        tr ("Open file ..."),
+	                                        QDir::homePath(),
+	                                        tr ("csv data (*.csv)"));
+	if (file != "")
+	   dabSettings	-> setValue ("tiiFile", file);
+	channel. tiiFile	= tiiProcessor. tiiFile (file);
+}
+
+void	RadioInterface::handle_set_coordinatesButton	() {
+	fprintf (stderr, "going for coord\n");
+coordinates theCoordinator (dabSettings);
+	(void)theCoordinator. QDialog::exec();
+}
+
+#ifdef	__LOAD_TABLES__
+#include	<curl/curl.h>
+#include	<string>
+
+static
+size_t	writeCallBack (void *contents, size_t size,
+	                                  size_t nmemb, void *userP) {
+	((std::string *)userP) -> append ((char *)contents, size * nmemb);
+	return size * nmemb;
+}
+
+void	RadioInterface::loadTables	 () {
+CURL	*curl;
+CURLcode	res;
+std::string readBuffer;
+QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
+
+	if (tableFile == "") {
+	   tableFile = QDir::homePath () + "/Downloads/txdata.tii";
+	   dabSettings -> setValue ("tiiFile", tableFile);
+	}
+
+	curl_global_init (CURL_GLOBAL_DEFAULT);
+	curl = curl_easy_init();
+	if(curl) {
+	   curl_easy_setopt(curl, CURLOPT_URL, 
+	             "https://www.dablist.org/qtdab/qtdab_dabtx_data.php");
+	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
+	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
+	   curl_easy_setopt (curl, CURLOPT_WRITEDATA, &readBuffer);
+/*	   Perform the request, res will get the return code */
+	   res = curl_easy_perform (curl);
+/*	   Check for errors */
+	   if (res != CURLE_OK)
+	      fprintf (stderr, "curl_easy_perform() failed: %s\n",
+                                              curl_easy_strerror(res));
+/*	   always cleanup */
+	   curl_easy_cleanup(curl);
+	}
+	curl_global_cleanup();
+
+	fprintf (stderr, "going to write %s\n", tableFile. toUtf8 (). data ());
+	FILE *outp	= fopen (tableFile. toLatin1 (). data (), "w + b");
+	if (outp == nullptr)
+	   return;
+#define	SHIFT 6
+
+	fputc (SHIFT, outp);
+	for (int i = 0; i < readBuffer. size (); i ++) {
+	   if (readBuffer [i] == '\n')
+	      fputc ('\n', outp);
+	   else
+	      fputc (readBuffer [i] + SHIFT, outp);
+	}
+	fclose (outp);
+	fprintf (stderr, "file was written\n");
+	return;
+}
+
+#else
+void	RadioInterface::loadTables	 () {}
+#endif
+
+ 

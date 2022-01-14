@@ -28,179 +28,108 @@
 #include	"dab-constants.h"
 #include	"tii-codes.h"
 #include	"ITU_Region_1.h"
+#include	<QSettings>
 
-		tiiHandler::tiiHandler	(const QString &tiiDir) {
-	this	-> tiiDir	= tiiDir;
-	if (!this -> tiiDir. endsWith ('/'))
-	   this -> tiiDir. append ('/');
-	this -> tiiDir += "tii-codes/";
+#define	SEPARATOR	';'
+#define	COUNTRY		1
+#define	CHANNEL		2
+#define	LABEL		3
+#define	EID		4
+#define	TII		5
+#define	LOCATION	6
+#define	LATITUDE	7
+#define	LONGITUDE	8
+#define	NR_COLUMNS	10
+
+		tiiHandler::tiiHandler	() {
 }
-
-		tiiHandler::~tiiHandler	() {}
+		tiiHandler::~tiiHandler	() {
+}
 //
-QString	makeName (uint8_t x, uint8_t y) {
-QString res;
-uint8_t b [4];
-	b [0]	= (x & 0xF0) >> 4;
-	b [1]	= (x & 0x0F);
-	b [2]	= (y & 0xF0) >> 4;
-	b [3]	= (y & 0x0F);
+bool	tiiHandler::tiiFile	(const QString &s) {
+bool	res = false;
+	fprintf (stderr, "we gaan %s openen\n", s. toLatin1 (). data ());
+	if (s == "") {
+	   return false;
+	}
 
-	for (int i = 0; i < 4; i ++)	
-	   if (b [i] < 10) 
-	       res. append ((char)('0' + b [i]));
-	   else
-	      res. append ((char)('A' + b [i] - 10));
+	FILE	*f	= fopen (s. toLatin1 (). data (), "r");
+	if (f != nullptr) {
+	   res = true;
+	   readFile (f);
+	   fclose (f);
+	}
 	return res;
-}
-//
-//	Germany is particular
-QString	tiiHandler::tiiFile	(uint8_t eccByte, uint16_t Eid) {
-	if ((eccByte == 0xE0) && (Eid == 0x01))
-	   Eid = 0x0D;
-QString	fileName	= tiiDir + makeName (eccByte, Eid >> 12);;
-
-	fileName.  append (".tii");
-	fileName        = QDir::toNativeSeparators (fileName);
-
-	fprintf (stderr, "looking for %s (%x %x)\n", 
-	                       fileName. toLatin1 (). data (), eccByte, Eid);
-	FILE	*file = fopen (fileName. toLatin1 (). data (), "r");
-	fprintf (stderr, "file %s can %s be opened\n",
-	                 fileName. toLatin1 (). data (),
-	                 file == nullptr ? "not" : "good");
-	if (file == nullptr)
-	   return "";
-	fclose (file);
-	return fileName;
 }
 	
 	QString tiiHandler::
-	        get_transmitterName (const QString &fileName, uint16_t Eid,
+	        get_transmitterName (const QString &country, uint16_t Eid,
                                      uint8_t mainId, uint8_t subId) {
-
 	for (int i = 0; i < (int)(cache. size ()); i ++) {
 	   if ((cache [i]. Eid == Eid) && (cache [i]. mainId == mainId) &&
 	       (cache [i]. subId == subId)) {
 	      return cache [i]. transmitterName;
 	   }
 	}
-	   
-
-	FILE *file = fopen (fileName. toLatin1 (). data (), "r");
-	fprintf (stderr, "Bij openen van %s gaat het %s\n",
-	                fileName. toLatin1 (). data (), 
-	                file == nullptr ? "fout" : "goed");
-	if (file == nullptr)
-	   return "";
-
-	char buffer [512];
-	while (fgets (buffer, 512, file) != nullptr) {
-	   if (feof (file))
-	      break;
-	   bool test;
-	   uint16_t theID;
-	   uint16_t the_tii;
-	   QString transmitterName;
-	   QStringList S = QString (buffer). split ('\t');
-	   if (S. size () < 6)
-	      continue;
-	   theID = S. at (0). toUInt (&test, 16);
-	   if (!test)
-	      continue;
-	   if (theID != Eid)
-	      continue;
-	   the_tii = S. at (1). toUInt (&test, 10);
-	   if (!test)
-	      continue;
-	   if (((the_tii / 100) == (mainId)) &&
-               (the_tii % 100) == subId) {
-	      QString latitude 	= S. at (4);
-	      QString longitude  = S. at (5);
-	      cacheElement temp;
-	      temp. Eid		= Eid;
-	      temp. mainId	= mainId;
-	      temp. subId	= subId;
-	      temp. transmitterName = S. at (2);
-	      temp. latitude	= convert (latitude);
-	      temp. longitude	= convert (longitude);
-	      cache. push_back (temp);
-	      fclose (file);
-	      return S. at (2);
-	   }
-	}
-	fclose (file);
 	return "";
 }
 
-#define	isDigit(x) (('0' <= x) && (x <= '9'))
-
 float	tiiHandler::convert (const QString &s) {
-bool	sign	= false;
-int	teller	= 0;
-
-QString	degreeString;
-QString	minuteString;
-QString secondString;
-
-int degrees, seconds, minutes;
-bool	success;
-
-	while (isDigit (s. toUtf8 (). data () [teller])) {
-	   degreeString. append (s. toUtf8 (). data () [teller]);
-	   teller ++;
-	}
-
-	if (s. toUtf8 (). data () [teller] == 0)
-	   return 0;
-	
-	teller += 2;
-	while (isDigit (s. toUtf8 (). data () [teller])) {
-           minuteString. append (s. toUtf8 (). data () [teller]);
-	   teller ++;
-	}
-
-	if (s. toUtf8 (). data () [teller] == 0)
-	   return 0;
-
-	teller ++;
-	while (isDigit (s. toUtf8 (). data () [teller])) {
-           secondString. append (s. toUtf8 (). data () [teller]);
-	   teller ++;
-	}
-
-	if (s. toUtf8 (). data () [teller] == 0)
-	   return 0;
-
-	teller ++;
-	char quadrant	= s. toUtf8 (). data () [teller];
-
-	teller ++;
-	
-	degrees	= degreeString. toUInt (&success, 10);
-	if (!success || (degrees >= 180))
-	   return 0;
-	minutes = minuteString. toUInt (&success, 10);
-	if (!success || (minutes >= 60))
-	   return 0;
-	seconds	= secondString. toUInt (&success, 10);
-	if (!success || (seconds >= 60))
-	   return 0;
-
-	switch (quadrant) {
-	   case 'N':	break;
-	   case 'E':	break;
-	   case 'W':	sign = true;
-	                break;
-	   case 'S':	sign = true;
-	                break;
-	}
-
-	float result = degrees + (float)minutes / 60 + (float) seconds / 3600;
-	fprintf (stderr, "converting %s to %f\n", s. toUtf8 (). data (),
-	                                  result);
-	return sign ? - result : result;
+bool	flag;
+float	v;
+	v = s. trimmed (). toFloat (&flag);
+	if (!flag)
+	   v = 0;
+	return v;
 }
+
+uint16_t tiiHandler::get_Eid (const QString &s) {
+bool	flag;
+uint16_t res;
+	res = s. trimmed (). toInt (&flag, 16);
+	if (!flag)
+	   res = 0;
+	return res;
+}
+
+uint8_t	tiiHandler::get_mainId (const QString &s) {
+bool flag;
+uint16_t res;
+	res = s. trimmed (). toInt (&flag);
+	if (!flag)
+	   res = 0;
+	return res / 100;
+}
+
+uint8_t tiiHandler::get_subId (const QString &s) {
+bool flag;
+uint16_t res;
+	res = s. trimmed (). toInt (&flag);
+	if (!flag)
+	   res = 0;
+	return res % 100;
+}
+
+int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
+int charp	= 0;
+int elementCount = 0;
+QString element;
+	v. resize (0);
+	while ((*b != 0) && (*b != '\n')) {
+	   if (*b == SEPARATOR) {
+	      v. push_back (element);
+	      element = "";
+	      elementCount ++;
+	      if (elementCount >= N)
+	         return N;
+	   }
+	   else
+	      element. append (*b);
+	   b ++;
+	}
+	return elementCount;
+}
+
 
 void	tiiHandler::get_coordinates (float *latitude, float * longitude,
 	                              const QString &transmitter) {
@@ -234,4 +163,65 @@ float	c = 2 * atan2 (sqrt (a), sqrt (1 - a));
 }
 
 
+void	tiiHandler::readFile (FILE *f) {
+int	count = 0; 
+char	buffer [1024];
+std::vector<QString> columnVector;
+
+	this	-> shift	= fgetc (f);
+	while (eread  (buffer, 1024, f) != nullptr) {
+	   cacheElement ed;
+	   if (feof (f))
+	      break;
+	   columnVector. resize (0);
+	   int columns = readColumns (columnVector, buffer, NR_COLUMNS);
+	   if (columns < NR_COLUMNS)
+	      continue;
+	   ed. country		= columnVector [COUNTRY]. trimmed  ();
+	   ed. Eid		= get_Eid (columnVector [EID]);
+	   ed. mainId		= get_mainId (columnVector [TII]);
+	   ed. subId		= get_subId (columnVector [TII]);
+	   ed. channel		= columnVector [CHANNEL]. trimmed ();
+	   ed. ensemble 	= columnVector [LABEL]. trimmed ();
+	   ed. transmitterName	= columnVector [LOCATION];
+	   ed. latitude		= convert (columnVector [LATITUDE]);
+	   ed. longitude	= convert (columnVector [LONGITUDE]);
+	   if (count >= cache. size ())
+	      cache. resize (cache. size () + 500);
+	   cache. at (count) = ed;
+	   count ++;
+	}
+	cache. resize (count);
+}
+
+void	tiiHandler::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
+black element;
+	element. Eid = Eid;
+	element. mainId	= mainId;
+	element. subId	= subId;
+	blackList. push_back (element);
+}
+
+bool	tiiHandler::is_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
+
+	for (int i = 0; i < blackList. size (); i ++)
+	   if ((blackList [i]. Eid == Eid) &&
+	       (blackList [i]. mainId == mainId) &&
+	       (blackList [i]. subId == subId))
+	      return true;
+	return false;
+}
+
+char	*tiiHandler::eread (char * buffer, int amount, FILE *f) {
+char	*bufferP;
+	if (fgets (buffer, amount, f) == nullptr)
+	   return nullptr;
+	bufferP	= buffer;
+	while (*bufferP != 0) {
+	   *bufferP -= shift;
+	   bufferP ++;
+	}
+	*bufferP = 0;
+	return buffer;
+}
 

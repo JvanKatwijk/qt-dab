@@ -28,6 +28,9 @@
 #include	<vector>
 
 typedef struct {
+	QString	country;
+	QString	channel;
+	QString ensemble;
 	uint16_t Eid;
 	uint8_t mainId;
 	uint8_t	subId;
@@ -36,20 +39,36 @@ typedef struct {
 	float	longitude;
 } cacheElement;
 
+typedef struct {
+	uint16_t Eid;
+	uint8_t mainId;
+	uint8_t subId;
+} black;
+
 class	tiiHandler {
 public:
-		tiiHandler	(const QString &);
+		tiiHandler	();
 		~tiiHandler	();
-	QString	tiiFile 	(uint8_t eccByte, uint16_t Cid);
+	bool	tiiFile 	(const QString &);
 	QString	get_transmitterName (const QString &,
 	                             uint16_t Eid,
 	                             uint8_t mainId, uint8_t subId);
 	void	get_coordinates	(float *, float *, const QString &);
 	int	distance	(float, float, float, float);
+	bool	is_black	(uint16_t, uint8_t, uint8_t);
+	void	set_black	(uint16_t, uint8_t, uint8_t);	
 private:
+std::vector<black> blackList;
 std::vector<cacheElement> cache;
-QString	tiiDir;
+QString	tiifileName;
 	float	convert		(const QString &);
+	uint16_t get_Eid	(const QString &);
+	uint8_t get_mainId	(const QString &);
+	uint8_t	get_subId	(const QString &);
+	int	readColumns	(std::vector<QString> &, char *, int);
+	void	readFile	(FILE *);
+	char	*eread		(char *, int, FILE *);
+	uint8_t	shift;
 };
 
 

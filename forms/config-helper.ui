@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>443</height>
+    <height>476</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -134,6 +134,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="loadTableButton">
+     <property name="text">
+      <string>load table</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <widget class="QLabel" name="label_3">
@@ -179,14 +186,32 @@
     </layout>
    </item>
    <item>
-    <widget class="smallPushButton" name="dlTextButton">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the lines of text that appear as dynamic label&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>dlText</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="smallPushButton" name="dlTextButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the lines of text that appear as dynamic label&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>dlText</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="set_coordinatesButton">
+       <property name="text">
+        <string>coordinates</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallPushButton" name="tiiFileButton">
+       <property name="text">
+        <string>tii file</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -285,19 +285,24 @@ private:
 	   float latitude;
 	   float longitude;
 	} homeAddress;
+
+	struct tiiStruct {
+	    uint8_t mainId;
+	    uint8_t subId;
+	    bool	searched_for_name;
+	};
+
 	struct {
 	   QString	channelName;
 	   QString	ensembleName;
 	   uint32_t	Eid;
 	   bool		has_ecc;
 	   uint8_t	ecc_byte;
-	   QString	tiiFile;
-	   QString	country;
+	   bool		tiiFile;
 	   QString	transmitterName;
 	   uint8_t	mainId;
 	   uint8_t	subId;
 	   QString	countryName;
-	   bool		showTransmitters;
 	   int		nrTransmitters;
 	} channel;
 enum direction {FORWARD, BACKWARDS};
@@ -449,5 +454,8 @@ private slots:
 	void			handle_skipFile_button		();
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
+	void			handle_set_coordinatesButton	();
+	void			handle_tiiFileButton		();
+	void			loadTables			();
 };
 #endif
