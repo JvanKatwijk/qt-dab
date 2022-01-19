@@ -546,8 +546,6 @@ uint8_t	dabBand;
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 
-	connect (configWidget. tiiFileButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_tiiFileButton ()));
 	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_set_coordinatesButton ()));
 	QString tiiFileName = dabSettings -> value ("tiiFile", ""). toString ();
@@ -901,7 +899,6 @@ QString s;
 	channel. nrTransmitters	= 0;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
 	   stopScanning (false);
-
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -1375,6 +1372,7 @@ QString	file;
 deviceHandler	*inputDevice	= nullptr;
 //	OK, everything quiet, now let us see what to do
 
+	channel. realChannel	= true;		// until proven otherwise
 #ifdef	HAVE_SDRPLAY_V2
 	if (s == "sdrplay") {
 	   try {
@@ -1591,6 +1589,7 @@ deviceHandler	*inputDevice	= nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new xml_fileReader (file);
+	      channel. realChannel	= false;
 	      hideButtons();
 	   }
 	   catch (int e) {
@@ -1617,6 +1616,7 @@ deviceHandler	*inputDevice	= nullptr;
 	   try {
 	      inputDevice	= new rawFiles (file);
 	      hideButtons();
+	      channel. realChannel	= false;
 	   }
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
@@ -1636,6 +1636,7 @@ deviceHandler	*inputDevice	= nullptr;
 	   file		= QDir::toNativeSeparators (file);
 	   try {
 	      inputDevice	= new wavFiles (file);
+	      channel. realChannel	= false;
 	      hideButtons();	
 	   }
 	   catch (int e) {
@@ -1996,13 +1997,17 @@ bool	tiiChange	= false;
 	   channel. transmitterName = "";
 	}
 
-	if ((logFile != nullptr) && (channel. tiiFile)) {
+	if (channel. tiiFile) {
 	   if (tiiChange || (channel. transmitterName == ""))  {
 	      if (!tiiProcessor. is_black (channel. Eid, mainId, subId)) {
-	         QString theName = tiiProcessor.
-	                            get_transmitterName (channel. countryName,
-	                                                 channel. Eid,
-	                                                 mainId, subId);
+	         QString theName =
+	                  tiiProcessor.
+	                        get_transmitterName (channel. realChannel?
+	                                                channel. channelName :
+	                                                "any",
+	                                             channel. countryName,
+	                                             channel. Eid,
+	                                             mainId, subId);
 	         if (theName == "") {
 	            tiiProcessor. set_black (channel. Eid, mainId, subId);
 	            LOG ("Not found ",
@@ -2015,9 +2020,13 @@ bool	tiiChange	= false;
 	            channel. transmitterName = theName;
 	            float latitude, longitude;
 	            tiiProcessor. get_coordinates (&latitude,
-	                                           &longitude, theName);
+	                                           &longitude,
+	                                           channel. realChannel ?
+	                                              channel. channelName :
+	                                              "any",
+	                                           theName);
 	            fprintf (stderr, "%s (%f, %f)\n",
-	                              theName. toLatin1 (). data (),
+	                              theName. toUtf8 (). data (),
 	                              latitude, longitude);
 	            LOG ("transmitter ", channel. transmitterName);
 	            LOG ("coordinates ", 
@@ -2025,18 +2034,33 @@ bool	tiiChange	= false;
 	                         QString::number (longitude));
 	            LOG ("current SNR ",
 	                     QString::number (snrDisplay -> value ()));
+	            QString labelText =  channel. transmitterName;
+//
+//	if our own position ois known, we show the distance
 	            if ((homeAddress. latitude != 0) &&
 	                (homeAddress. longitude != 0)) {
 	               int distance = tiiProcessor.
 	                               distance (latitude, longitude,
 	                                         homeAddress. latitude,
 	                                         homeAddress. longitude);
+	               int hoek	 = tiiProcessor.
+	                               corner (latitude,
+                                               longitude,
+                                               homeAddress. latitude,
+                                               homeAddress. longitude);
 	               LOG ("distance ", QString::number (distance));
+	               LOG ("corner ", QString::number (hoek));
+	               labelText +=  + " " +
+	                               QString::number (distance) + " km" +
+	                               " " + QString::number (hoek);
+	               labelText += QString::fromLatin1 (" \xb0 ");
+	               fprintf (stderr, "%s\n",
+	                                  labelText. toUtf8 (). data ());
 	            }
+	            distanceLabel -> setText (labelText);
 	         }
 	      }
 	   }
-
 	}
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
@@ -2206,7 +2230,7 @@ void	RadioInterface::stop_sourceDumping	() {
 //
 void	RadioInterface::start_sourceDumping () {
 QString deviceName	= inputDevice -> deviceName ();
-QString channelName	= channelSelector -> currentText ();
+QString channelName	= channel. channelName;
 	
 	if (scanning. load ())
 	   return;
@@ -2926,6 +2950,7 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
 void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
+//	distanceLabel			-> setText ("");
 
 	if (motSlides != nullptr) {
 	   delete motSlides;
@@ -3277,6 +3302,8 @@ void	RadioInterface::stopChannel	() {
 	   ensembleDisplay	-> setModel (&model);
 //	   ensembleDisplay	-> blockSignals (false);
 	   cleanScreen	();
+	   epgLabel		-> hide ();
+	   distanceLabel	-> setText ("");
 //	}
 }
 
@@ -4334,16 +4361,6 @@ void	RadioInterface::handle_LoggerButton (int s) {
 	}
 }
 
-void	RadioInterface::handle_tiiFileButton	() {
-QString file	= QFileDialog::getOpenFileName (this,
-	                                        tr ("Open file ..."),
-	                                        QDir::homePath(),
-	                                        tr ("csv data (*.csv)"));
-	if (file != "")
-	   dabSettings	-> setValue ("tiiFile", file);
-	channel. tiiFile	= tiiProcessor. tiiFile (file);
-}
-
 void	RadioInterface::handle_set_coordinatesButton	() {
 	fprintf (stderr, "going for coord\n");
 coordinates theCoordinator (dabSettings);
@@ -4368,15 +4385,16 @@ std::string readBuffer;
 QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 
 	if (tableFile == "") {
-	   tableFile = QDir::homePath () + "/Downloads/txdata.tii";
+	   tableFile = QDir::homePath () + "/.txdata.tii";
 	   dabSettings -> setValue ("tiiFile", tableFile);
 	}
 
 	curl_global_init (CURL_GLOBAL_DEFAULT);
 	curl = curl_easy_init();
 	if(curl) {
-	   curl_easy_setopt(curl, CURLOPT_URL, 
-	             "https://www.dablist.org/qtdab/qtdab_dabtx_data.php");
+	   curl_easy_setopt (curl, CURLOPT_URL, 
+	                     tiiProcessor. entry ("jan"). toLatin1 (). data ());
+//	             "https://www.dablist.org/qtdab/qtdab_dabtx_data.php");
 	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
 	   curl_easy_setopt (curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -4391,7 +4409,6 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	}
 	curl_global_cleanup();
 
-	fprintf (stderr, "going to write %s\n", tableFile. toUtf8 (). data ());
 	FILE *outp	= fopen (tableFile. toLatin1 (). data (), "w + b");
 	if (outp == nullptr)
 	   return;
@@ -4405,7 +4422,7 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	      fputc (readBuffer [i] + SHIFT, outp);
 	}
 	fclose (outp);
-	fprintf (stderr, "file was written\n");
+	channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
 	return;
 }
 

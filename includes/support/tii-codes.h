@@ -51,12 +51,16 @@ public:
 		~tiiHandler	();
 	bool	tiiFile 	(const QString &);
 	QString	get_transmitterName (const QString &,
+	                             const QString &,
 	                             uint16_t Eid,
 	                             uint8_t mainId, uint8_t subId);
-	void	get_coordinates	(float *, float *, const QString &);
+	void	get_coordinates	(float *, float *,
+	                         const QString &, const QString &);
 	int	distance	(float, float, float, float);
+	int	corner		(float, float, float, float);
 	bool	is_black	(uint16_t, uint8_t, uint8_t);
 	void	set_black	(uint16_t, uint8_t, uint8_t);	
+	QString	entry		(const char *);
 private:
 std::vector<black> blackList;
 std::vector<cacheElement> cache;

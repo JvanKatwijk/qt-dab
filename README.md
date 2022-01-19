@@ -1,9 +1,45 @@
-# Qt-DAB-4.2 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.3 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.2 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.3 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![overview](/screen-4.2-2.png?raw=true)
 ![4.2](/screen-4.2-1.png?raw=true)
+
+----------------------------------------------------------------------
+IMPORTANT: What is new in 4.3
+----------------------------------------------------------------------
+
+Qt-DAB-4.3 adds as configuration option, the option to show
+the name of the Tranmitter whose TII  (Transmitter Identification
+Information) as well as the distance of the receiver to that
+transmitter and the azimuth.
+
+Note that the documentation is NOT updated, and since I do not have
+time right now, it will take some time before this README and the
+manual are updated
+
+Important changes are
+a. if configured, touching the button "load table" on the configuration
+widget will load - as the name suggests - a table with TII data
+b. Touch the button "coordinates" on the configuation window to tell
+the system what the coordinates - decimal, i.e  52.0123 and 5.0456  -
+of the receiver are.
+
+If configured, the main widget will show the name of the transmitter,
+the distance and the azimuth as the pictures above show.
+
+Configuration issues
+a. the build process using CMake does NOT support the configuration
+settings required for supporting the TII data
+b. using qmake:
+
+	- install curl and its development files;
+	- uncomment "loadTables" in the ".pro" file and adapt the paths in the
+	  loadTables section
+
+NOTE THAT THE AUTOMATICALLY GENERATED APPIMAGE HAS NO SUPPORT FOR 
+SHOWING TII NAMES, USE THE ONE WITH THE 4.3 IN ITS NAME
+
 
 ------------------------------------------------------------------
 Table of Contents

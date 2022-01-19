@@ -295,6 +295,7 @@ endif ()
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/tii-codes.h
+	     ../includes/support/coordinates.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -390,6 +391,7 @@ endif ()
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/tii-codes.cpp
+	     ../src/support/coordinates.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
@@ -447,6 +449,7 @@ endif ()
 	     ../includes/support/element-selector.h
 	     ../includes/support/time-table.h
 	     ../includes/support/content-table.h
+	     ../includes/support/coordinates.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 

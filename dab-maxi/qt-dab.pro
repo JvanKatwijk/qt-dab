@@ -371,7 +371,7 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __DUMP_SNR__		# for experiments only
-CONFIG		+= loadTables
+#CONFIG		+= loadTables
 }
 
 
@@ -425,6 +425,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
+	CONFIG		+= loadTables
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -752,5 +753,6 @@ JAN	{
 loadTables	{
 	DEFINES		+= __LOAD_TABLES__
 	LIBS		+= -lcurl
+	INCLUDEPATH	+= /home/jan/curl
 }
 

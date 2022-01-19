@@ -283,34 +283,34 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 void	Scheduler::dump (const QString &file) {
 FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 
-	fprintf (stderr, "dumpfile %s is opened %s\n",
-	                          file. toLatin1 (). data (),
-	                           dumpFile == nullptr ? "not good" : "good");
+//	fprintf (stderr, "dumpfile %s is opened %s\n",
+//	                          file. toLatin1 (). data (),
+//	                           dumpFile == nullptr ? "not good" : "good");
 	if (dumpFile == nullptr)
 	   return;
 
 	QString startDay     =
                      QDate::shortDayName (referenceDate. dayOfWeek ());
 
-	fprintf (stderr, " there are %d elements to be printed\n",
-	                          tableWidget -> rowCount ());
-	fprintf (dumpFile, "// dump schedule file with %d elements\n",
-	                    tableWidget -> rowCount ());
-	fprintf (dumpFile, "reference: %d %d %d\n",
-	                     referenceDate. year (),
-	                     referenceDate. month (),
-	                     referenceDate. day ());
+//	fprintf (stderr, " there are %d elements to be printed\n",
+//	                          tableWidget -> rowCount ());
+//	fprintf (dumpFile, "// dump schedule file with %d elements\n",
+//	                    tableWidget -> rowCount ());
+//	fprintf (dumpFile, "reference: %d %d %d\n",
+//	                     referenceDate. year (),
+//	                     referenceDate. month (),
+//	                     referenceDate. day ());
 	for (int row = 0; row < tableWidget -> rowCount (); row ++) {
-	   fprintf (stderr, "writing a line\n");
+//	   fprintf (stderr, "writing a line\n");
 	   QString service	=
 	            tableWidget -> item (row, 0) -> text ();
 	   QString wakeupDay	=
 	            tableWidget -> item (row, 1) -> text ();
-	   fprintf (stderr, "computing diff %s %s\n",
-	                          startDay. toLatin1 (). data (),
-	                          wakeupDay. toLatin1 (). data ());
+//	   fprintf (stderr, "computing diff %s %s\n",
+//	                          startDay. toLatin1 (). data (),
+//	                          wakeupDay. toLatin1 (). data ());
 	   int delayDays	= dayDiff (startDay, wakeupDay);
-	   fprintf (stderr, "delayDays = %d\n", delayDays);
+//	   fprintf (stderr, "delayDays = %d\n", delayDays);
 	   QString wakeupTime	=
 	            tableWidget -> item (row, 2) -> text ();
 	   QStringList t = wakeupTime . split (":");
@@ -344,7 +344,7 @@ QDate startDate;
 	   if (!std::getline (f, str))
 	      break;
 
-	fprintf (stderr, "read a line %s\n", str.c_str ());
+//	fprintf (stderr, "read a line %s\n", str.c_str ());
 //      just to be on the safe side
            if (str. size () < 10)
               continue;
@@ -358,8 +358,8 @@ QDate startDate;
 	      sscanf (str. c_str (), "%s %d %d %d",
 	                            x, &year, &month, &day);
 	      startDate = QDate (year, month, day);
-	      fprintf (stderr, "statDate daysTo %d\n",
-	                           currentDate. daysTo (startDate));
+//	      fprintf (stderr, "statDate daysTo %d\n",
+//	                           currentDate. daysTo (startDate));
 	      if (currentDate. daysTo (startDate) <= -7) {
 	         fprintf (stderr, "too long ago, ignored\n");
 	         return;
@@ -371,7 +371,7 @@ QDate startDate;
 	      std::string service;
 	      QString temp	= QString::fromStdString (str);
 	      QStringList ss = temp. split ('|');
-	      fprintf (stderr, "split count %d\n", ss. count ());
+//	      fprintf (stderr, "split count %d\n", ss. count ());
 	      for (int i = 0; i < ss. count (); i ++)
 	         fprintf (stderr, "%s \n", ss. at (i). toLatin1 (). data ());
 	      if (ss. count () != 3)
@@ -381,7 +381,7 @@ QDate startDate;
 	      int delayDays, hour, minutes, sum;
 	      sscanf (rest. c_str (), "%d %d %d %d",
 	                    &delayDays, &hour, &minutes, &sum);
-	      fprintf (stderr, "na de scan: delayDays %d\n", delayDays);
+//	      fprintf (stderr, "na de scan: delayDays %d\n", delayDays);
 	      if (sum + delayDays + hour + minutes != 0)
 	         continue;
 //	first a simple validity check on the data
@@ -400,12 +400,12 @@ QDate startDate;
 	                           hour * MINUTES_PER_HOUR + minutes);
 	      int refMinutes	= currentTime. hour () * MINUTES_PER_HOUR +
 	                          currentTime. minute ();
-	      fprintf (stderr, "delayDays = %d\n", delayDays);
-	      if (testMinutes < refMinutes) 
-	         fprintf (stderr, "schedule for service %s is out of date\n",
-	                                      service. c_str ());
-	      else
+//	      fprintf (stderr, "delayDays = %d\n", delayDays);
+	      if (testMinutes >= refMinutes) 
 	         addRow (service. c_str (), delayDays, hour, minutes);
+//	      else
+//	         fprintf (stderr, "schedule for service %s is out of date\n",
+//	                                      service. c_str ());
 	   }
 	}
 }

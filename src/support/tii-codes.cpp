@@ -48,11 +48,11 @@
 //
 bool	tiiHandler::tiiFile	(const QString &s) {
 bool	res = false;
-	fprintf (stderr, "we gaan %s openen\n", s. toLatin1 (). data ());
 	if (s == "") {
 	   return false;
 	}
-
+	blackList. resize (0);
+	cache. resize (0);
 	FILE	*f	= fopen (s. toLatin1 (). data (), "r");
 	if (f != nullptr) {
 	   res = true;
@@ -63,15 +63,32 @@ bool	res = false;
 }
 	
 	QString tiiHandler::
-	        get_transmitterName (const QString &country, uint16_t Eid,
+	        get_transmitterName (const QString &channel,
+	                             const QString &country, uint16_t Eid,
                                      uint8_t mainId, uint8_t subId) {
 	for (int i = 0; i < (int)(cache. size ()); i ++) {
-	   if ((cache [i]. Eid == Eid) && (cache [i]. mainId == mainId) &&
+	   if (((channel == "any") || (channel == cache [i]. channel)) &&
+	       (cache [i]. Eid == Eid) && (cache [i]. mainId == mainId) &&
 	       (cache [i]. subId == subId)) {
 	      return cache [i]. transmitterName;
 	   }
 	}
 	return "";
+}
+
+void	tiiHandler::get_coordinates (float *latitude, float * longitude,
+	                             const QString &channel,
+	                             const QString &transmitter) {
+	for (int i = 0; i < cache. size (); i++) {
+	   if (((channel == "any") || (channel == cache [i]. channel)) &&
+	       (cache [i]. transmitterName == transmitter)) {
+	      *latitude = cache [i]. latitude;
+	      *longitude = cache [i]. longitude;
+	      return;
+	   }
+	}
+	*latitude	= 0;
+	*longitude	= 0;
 }
 
 float	tiiHandler::convert (const QString &s) {
@@ -112,56 +129,87 @@ uint16_t res;
 
 int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
 int charp	= 0;
+char	tb [256];
 int elementCount = 0;
 QString element;
 	v. resize (0);
 	while ((*b != 0) && (*b != '\n')) {
 	   if (*b == SEPARATOR) {
-	      v. push_back (element);
-	      element = "";
+	      tb [charp] = 0;
+	      QString ss = QString::fromUtf8 (tb);
+	      v. push_back (ss);
+	      charp = 0;
 	      elementCount ++;
 	      if (elementCount >= N)
 	         return N;
 	   }
 	   else
-	      element. append (*b);
+	      tb [charp ++] = *b;
 	   b ++;
 	}
 	return elementCount;
 }
 
 
-void	tiiHandler::get_coordinates (float *latitude, float * longitude,
-	                              const QString &transmitter) {
-	for (int i = 0; i < cache. size (); i++) {
-	   if (cache [i]. transmitterName == transmitter) {
-	      *latitude = cache [i]. latitude;
-	      *longitude = cache [i]. longitude;
-	      return;
-	   }
-	}
-	*latitude	= 0;
-	*longitude	= 0;
-}
-
 //
 //	Great circle distance (https://towardsdatascience.com/calculating-the-distance-between-two-locations-using-geocodes-1136d810e517)
-//
+//	en
+//	https://www.movable-type.co.uk/scripts/latlong.html
+//	Haversine formula applied
 int	tiiHandler::distance (float latitude1, float longitude1,
 	                      float latitude2, float longitude2) {
-double	R	= 6371 * 1000;
+double	R	= 6371;
 double	Phi1	= latitude1 * M_PI / 180;
 double	Phi2	= latitude2 * M_PI / 180;
 double	dPhi	= (latitude2 - latitude1) * M_PI / 180;
 double	dDelta	= (longitude2 - longitude1) * M_PI / 180;
 
-float	a = sin (dPhi / 2) * sin (dPhi / 2) + cos (Phi1) * cos (Phi2) *
-	     sin (dDelta / 2) * sin (dDelta / 2);
-float	c = 2 * atan2 (sqrt (a), sqrt (1 - a));
+//double	a	= sin (dPhi / 2) * sin (dPhi / 2) + cos (Phi1) * cos (Phi2) *
+//	          sin (dDelta / 2) * sin (dDelta / 2);
+//double	c	= 2 * atan2 (sqrt (a), sqrt (1 - a));
 
-	return (int)(R * c / 1000 + 0.5);
+double 	x	= dDelta * cos ((Phi1 + Phi2) / 2);
+double	y	= (Phi2 - Phi1);
+double	d	= sqrt (x * x + y * y);
+//
+//	return (int)(R * c + 0.5);
+	return (int)(R * d + 0.5);
 }
 
+int	tiiHandler::corner (float latitude1, float longitude1,
+	                    float latitude2, float longitude2) {
+bool dx_sign	= longitude1 - longitude2 > 0;
+bool dy_sign	= latitude1  - latitude2 > 0;
+double dy	= distance (latitude1, longitude2,	
+	                    latitude2, longitude2);
+double dx;
+//	if (dy_sign)
+	   dx = distance (latitude2, longitude1,
+	                  latitude2, longitude2);
+//	else
+//	   dx = distance (latitude1, longitude1,
+//	                  latitude1, longitude2);
+//double	dz	= distance (latitude1, longitude1,
+//	                    latitude2, longitude2);
+float azimuth = atan2 (dy, dx);
+//float azimuth_1	= asin (dy / dz);
+//float azimuth_2	= acos (dx / dz);
+
+	if (longitude1 == longitude2) {
+	   if (latitude1 < latitude2) 
+	      return 360;
+	   else
+	      return 0;
+	}
+
+	if (dx_sign && dy_sign)		// eerste kwadrant
+	   return (int)((M_PI / 2 - azimuth) / M_PI * 180);
+	if (dx_sign && !dy_sign)	// tweede kwadrant
+	   return (int)((M_PI / 2 + azimuth) / M_PI * 180);
+	if (!dx_sign && !dy_sign)	// derde kwadrant
+	   return (int)((3 * M_PI / 2 - azimuth) / M_PI * 180);
+	return (int)((3 * M_PI / 2 + azimuth) / M_PI * 180);
+}
 
 void	tiiHandler::readFile (FILE *f) {
 int	count = 0; 
@@ -223,5 +271,19 @@ char	*bufferP;
 	}
 	*bufferP = 0;
 	return buffer;
+}
+
+static 
+uint8_t entryLabel [] = {
+0x69, 0x75, 0x75, 0x71, 0x74, 0x3b, 0x30, 0x30, 0x78, 0x78, 0x78, 0x2f, 0x65, 0x62, 0x63, 0x6d, 0x6a, 0x74, 0x75, 0x2f, 0x70, 0x73, 0x68, 0x30, 0x72, 0x75, 0x65, 0x62, 0x63, 0x30, 0x72, 0x75, 0x65, 0x62, 0x63, 0x60, 0x65, 0x62, 0x63, 0x75, 0x79, 0x60, 0x65, 0x62, 0x75, 0x62, 0x2f, 0x71, 0x69, 0x71, 0x0};
+
+QString	tiiHandler::entry (const char *s) {
+char test [120];
+int	i;
+	for (i = 0; entryLabel [i] != 0; i ++)
+	   test[i] = entryLabel [i] - 1;
+	test [i] = 0;
+	fprintf (stderr, "%s\n", test);
+	return QString (test);
 }
 

@@ -294,6 +294,7 @@ private:
 
 	struct {
 	   QString	channelName;
+	   bool		realChannel;
 	   QString	ensembleName;
 	   uint32_t	Eid;
 	   bool		has_ecc;
@@ -455,7 +456,6 @@ private slots:
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
-	void			handle_tiiFileButton		();
 	void			loadTables			();
 };
 #endif
