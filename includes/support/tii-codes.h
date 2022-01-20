@@ -60,7 +60,9 @@ public:
 	int	corner		(float, float, float, float);
 	bool	is_black	(uint16_t, uint8_t, uint8_t);
 	void	set_black	(uint16_t, uint8_t, uint8_t);	
-	QString	entry		(const char *);
+	void	loadTable	(const QString &tf);
+	bool	valid		();
+
 private:
 std::vector<black> blackList;
 std::vector<cacheElement> cache;
@@ -73,6 +75,8 @@ QString	tiifileName;
 	void	readFile	(FILE *);
 	char	*eread		(char *, int, FILE *);
 	uint8_t	shift;
+	QString	entry		(const char *);
+	FILE	*curl_f;
 };
 
 

@@ -350,7 +350,7 @@ uint8_t	dabBand;
 	}
 
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
-	         this, SLOT (loadTables ()));
+	         this, SLOT (loadTable ()));
 	
 	logFile		= nullptr;
 	int scanMode	=
@@ -4367,67 +4367,20 @@ coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
 }
 
-#ifdef	__LOAD_TABLES__
-#include	<curl/curl.h>
-#include	<string>
-
-static
-size_t	writeCallBack (void *contents, size_t size,
-	                                  size_t nmemb, void *userP) {
-	((std::string *)userP) -> append ((char *)contents, size * nmemb);
-	return size * nmemb;
-}
-
-void	RadioInterface::loadTables	 () {
-CURL	*curl;
-CURLcode	res;
-std::string readBuffer;
+void	RadioInterface::loadTable	 () {
 QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 
 	if (tableFile == "") {
 	   tableFile = QDir::homePath () + "/.txdata.tii";
 	   dabSettings -> setValue ("tiiFile", tableFile);
 	}
-
-	curl_global_init (CURL_GLOBAL_DEFAULT);
-	curl = curl_easy_init();
-	if(curl) {
-	   curl_easy_setopt (curl, CURLOPT_URL, 
-	                     tiiProcessor. entry ("jan"). toLatin1 (). data ());
-//	             "https://www.dablist.org/qtdab/qtdab_dabtx_data.php");
-	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
-	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
-	   curl_easy_setopt (curl, CURLOPT_WRITEDATA, &readBuffer);
-/*	   Perform the request, res will get the return code */
-	   res = curl_easy_perform (curl);
-/*	   Check for errors */
-	   if (res != CURLE_OK)
-	      fprintf (stderr, "curl_easy_perform() failed: %s\n",
-                                              curl_easy_strerror(res));
-/*	   always cleanup */
-	   curl_easy_cleanup(curl);
+	tiiProcessor. loadTable (tableFile);
+	if (tiiProcessor. valid ()) {
+	   fprintf (stderr, "tablefile is loaded\n");
+	   channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
 	}
-	curl_global_cleanup();
-
-	FILE *outp	= fopen (tableFile. toLatin1 (). data (), "w + b");
-	if (outp == nullptr)
-	   return;
-#define	SHIFT 6
-
-	fputc (SHIFT, outp);
-	for (int i = 0; i < readBuffer. size (); i ++) {
-	   if (readBuffer [i] == '\n')
-	      fputc ('\n', outp);
-	   else
-	      fputc (readBuffer [i] + SHIFT, outp);
-	}
-	fclose (outp);
-	channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
-	return;
+	else
+	   channel. tiiFile = false;
 }
-
-#else
-void	RadioInterface::loadTables	 () {}
-#endif
 
  

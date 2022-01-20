@@ -384,5 +384,27 @@ uint16_t	genpoly		= 0x1021;
 	crc	= ~((msg [len] << 8) | msg [len + 1]) & 0xFFFF;
 	return (crc ^ accumulator) == 0;
 }
+
+#ifndef	__MINGW#@__
+static inline
+FILE	*curl_fopen () {
+FILE	*f = stderr;
+	stderr	= fopen ("/dev/null", "w");
+	return f;
+}
+
+static inline
+void	curl_fclose (FILE *f) {
+	fclose (stderr);
+	stderr	= f;
+}
+#else
+static inline
+void	curl_phase1 () {}
+
+static inline
+void	curl_phase2 () {}
+#endif
+
 #endif
 

@@ -371,7 +371,7 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __DUMP_SNR__		# for experiments only
-#CONFIG		+= loadTables
+CONFIG		+= loadTables
 }
 
 

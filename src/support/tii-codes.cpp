@@ -41,6 +41,9 @@
 #define	LONGITUDE	8
 #define	NR_COLUMNS	10
 
+#ifdef  __LOAD_TABLES__
+#include        <curl/curl.h>
+#endif
 		tiiHandler::tiiHandler	() {
 }
 		tiiHandler::~tiiHandler	() {
@@ -287,3 +290,68 @@ int	i;
 	return QString (test);
 }
 
+
+#ifdef	__LOAD_TABLES__
+static
+size_t  writeCallBack (void *contents, size_t size,
+                                          size_t nmemb, void *userP) {
+        ((std::string *)userP) -> append ((char *)contents, size * nmemb);
+        return size * nmemb;
+}
+
+void	tiiHandler::loadTable (const QString &tf) {
+CURL	*curl;
+CURLcode	res;
+std::string readBuffer;
+
+	curl_global_init (CURL_GLOBAL_DEFAULT);
+	curl = curl_easy_init();
+	if (curl) {
+	   curl_f	= curl_fopen ();
+	   curl_easy_setopt (curl, CURLOPT_URL, 
+	                     entry ("jan"). toLatin1 (). data ());
+	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
+	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
+	   curl_easy_setopt (curl, CURLOPT_WRITEDATA, &readBuffer);
+/*	   Perform the request, res will get the return code */
+	   res = curl_easy_perform (curl);
+/*	   Check for errors */
+	   if (res != CURLE_OK)
+	      fprintf (stderr, "curl_easy_perform() failed: %s\n",
+                                              curl_easy_strerror(res));
+/*	   always cleanup */
+	   curl_easy_cleanup (curl);
+	   curl_fclose (curl_f);
+	}
+	curl_global_cleanup();
+
+	FILE *outp	= fopen (tf. toLatin1 (). data (), "w + b");
+	if (outp == nullptr)
+	   return;
+#define	SHIFT 6
+
+	fputc (SHIFT, outp);
+	for (int i = 0; i < readBuffer. size (); i ++) {
+	   if (readBuffer [i] == '\n')
+	      fputc ('\n', outp);
+	   else
+	      fputc (readBuffer [i] + SHIFT, outp);
+	}
+	fclose (outp);
+	return;
+}
+
+bool	tiiHandler::valid	() {
+	return true;
+}
+#else
+void	tiiHandler::loadTables	(const QString &ff) {
+	(void)ff;
+	fprintf (stderr, "No name support in this version\n");
+}
+
+bool	tiiJandler::valid	() {
+	return false;
+}
+
+#endif

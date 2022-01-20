@@ -456,6 +456,6 @@ private slots:
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
-	void			loadTables			();
+	void			loadTable			();
 };
 #endif
