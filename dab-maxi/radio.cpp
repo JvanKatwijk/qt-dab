@@ -326,6 +326,9 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
+	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
+	if (b)
+	   configWidget.  utcSelector -> setChecked (true);
 	currentService. valid	= false;
 	nextService. valid	= false;
 
@@ -807,6 +810,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("snrVisible",
 	                          my_snrViewer. isHidden () ? 0 : 1);
+	s	-> setValue ("utcSelected",
+	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
 	s	-> sync();
 }
 //
@@ -1167,11 +1172,13 @@ int	serviceOrder;
 	if (currentService. valid) 
 	   s = currentService;
 	stopScanning    (false);
-	stopService     ();
+//
+	stopService	(s);
 	fprintf (stderr, "change detected\n");
 	serviceOrder	= 
 	        dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
-//
+
+	
 //	we rebuild the services list from the fib and
 //	then we (try to) restart the service
 	serviceList	= my_dabProcessor -> getServices (serviceOrder);
@@ -1186,27 +1193,20 @@ int	serviceOrder;
 	ensembleDisplay -> setModel (&model);
 //
 //	and restart the one that was running
+//	Of course, it may be disappeared
 	if (s. valid) {
-	   if (s. SCIds != 0) { // secondary service may be gone
-	      if (my_dabProcessor -> findService (s. SId, s. SCIds) ==
-	                                                   s. serviceName) {
-	         startService (&s);
-	         return;
-	      }
-	      else {
-	         s. SCIds = 0;
-	         s. serviceName =
-	               my_dabProcessor -> findService (s. SId, s. SCIds);
-	      }
-	   }
-//	checking for the main service
-	   if (s. serviceName != 
-	              my_dabProcessor -> findService (s. SId, s. SCIds)) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                     tr ("insufficient data for this program\n"));
+	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (ss != "") {
+	      startService (&s);
 	      return;
 	   }
-	   startService (&s);
+//
+//	The service is gone, it may be the subservice of another one
+	   s. SCIds = 0;
+	   s. serviceName =
+	               my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (s. serviceName != "")
+	      startService (&s);
 	}
 }
 //
@@ -2605,7 +2605,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         fprintf (stderr, "currentservice = %s (%d)\n",
 	                  currentService. serviceName. toUtf8 (). data (),
 	                                currentService. valid);
-	         stopService ();
+	         stopService (currentService);
+	         currentService. valid =  false;
 	         selectService (ensembleDisplay -> currentIndex ());
 	         stopScanning (false);
 	      }
@@ -2758,7 +2759,8 @@ int	switchDelay;
 	}
 
 	if (theChannel == channel. channelName) {
-	   stopService ();
+	   stopService (currentService);
+	   currentService. valid = false;
 	   dabService s;
 	   my_dabProcessor -> getParameters (service, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
@@ -2804,7 +2806,7 @@ int	switchDelay;
 //	handling services: stop and start
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	() {
+void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stop_muting	();
@@ -2823,33 +2825,24 @@ void	RadioInterface::stopService	() {
 	if (audioDumper != nullptr) {
 	   stop_audioDumping ();
 	}
-	if (currentService. valid) {
-	   QString serviceName = currentService. serviceName;
-	   if (my_dabProcessor -> is_audioService (serviceName)) {
-	      audiodata ad;
-	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
-	      my_dabProcessor -> stopService (&ad);
-	      soundOut	-> stop ();
-	      for (int i = 0; i < 10; i ++) {
+	if (s. valid) {
+	   my_dabProcessor -> stopService (s. subChId);
+	   if (s. is_audio) {
+	      soundOut -> stop ();
+	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
-	         my_dabProcessor -> dataforPacketService (ad. serviceName, &pd, i);
+	         my_dabProcessor -> dataforPacketService (s. serviceName, &pd, i);
 	         if (pd. defined) {
-	            my_dabProcessor -> stopService (&pd);
+	            my_dabProcessor -> stopService (pd. subchId);
 	            break;
 	         }
 	      }
-	   }
-	   else {
-	      packetdata pd;
-	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-	      if (pd. defined)
-	         my_dabProcessor -> stopService (&pd);
 	   }
 
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
-	      if (itemText == serviceName) {
+	      if (itemText == s. serviceName) {
 	         colorService (model. index (i, 0), Qt::black, fontSize);
 	         break;
 	      }
@@ -2873,7 +2866,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	channelTimer.	stop	();
 	stopScanning	(false);
 
-	stopService 	();		// if any
+	stopService 	(currentService);		// if any
+	currentService. valid = false;
 
 	dabService s;
 	s. serviceName = currentProgram;
@@ -2913,6 +2907,7 @@ QString serviceName	= s -> serviceName;
 	      if (ad. defined) {
 	         currentService. valid		= true;
 	         currentService. is_audio	= true;
+	         currentService. subChId	= ad. subchId;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
@@ -2925,6 +2920,7 @@ QString serviceName	= s -> serviceName;
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
 	         currentService. valid		= true;
 	         currentService. is_audio	= false;
+	         currentService. subChId	= ad. subchId;
 	         start_packetService (serviceName);
 	         dabSettings	-> setValue ("presetname", "");
 	      }
@@ -3133,7 +3129,8 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 
 	QString oldService	= currentService. serviceName;
 	
-	stopService  ();
+	stopService  (currentService);
+	currentService. valid = false;
 
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
@@ -4339,9 +4336,15 @@ void	RadioInterface::nrServices	(int n) {
 }
 
 void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-QString theTime	= QDateTime::currentDateTime (). toString ();
+QString theTime;
 	if (logFile == nullptr)
 	   return;
+	if (configWidget. utcSelector -> isChecked ())
+           theTime  = convertTime (UTC. year, UTC. month, UTC. day,
+	                                  UTC. hour, UTC. minute);
+	else
+	   theTime = QDateTime::currentDateTime (). toString ();
+
 	fprintf (logFile, "at %s: %s %s\n",
 	              theTime. toUtf8 (). data (),
 	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());

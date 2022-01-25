@@ -517,8 +517,14 @@ void	dabProcessor::reset_Services	() {
 }
 
 void	dabProcessor::stopService (descriptorType *d) {
+	fprintf (stderr, "function obsolete\n");
 	if (!scanMode)
-	   my_mscHandler. stopService (d);
+	   my_mscHandler. stopService (d -> subchId);
+}
+
+void	dabProcessor::stopService (int subChId) {
+	if (!scanMode)
+	   my_mscHandler. stopService (subChId);
 }
 
 bool    dabProcessor::set_audioChannel (audiodata *d,

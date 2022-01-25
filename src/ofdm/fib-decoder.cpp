@@ -261,6 +261,7 @@ static	uint8_t prevChangeFlag	= 0;
 //	if (alarmFlag)
 //	   fprintf (stderr, "serious problem\n");
 }
+
 //
 //	Subchannel organization 6.2.1
 //	FIG0 extension 1 creates a mapping between the

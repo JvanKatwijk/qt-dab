@@ -192,11 +192,11 @@ double dx;
 //	else
 //	   dx = distance (latitude1, longitude1,
 //	                  latitude1, longitude2);
-//double	dz	= distance (latitude1, longitude1,
-//	                    latitude2, longitude2);
+double	dz	= distance (latitude1, longitude1,
+	                    latitude2, longitude2);
 float azimuth = atan2 (dy, dx);
-//float azimuth_1	= asin (dy / dz);
-//float azimuth_2	= acos (dx / dz);
+float azimuth_1	= asin (dy / dz);
+float azimuth_2	= acos (dx / dz);
 
 	if (longitude1 == longitude2) {
 	   if (latitude1 < latitude2) 
@@ -205,6 +205,11 @@ float azimuth = atan2 (dy, dx);
 	      return 0;
 	}
 
+	if (dx > dy)
+	   azimuth = azimuth_1;
+	if (dy > dx)
+	   azimuth = azimuth_2;
+	   
 	if (dx_sign && dy_sign)		// eerste kwadrant
 	   return (int)((M_PI / 2 - azimuth) / M_PI * 180);
 	if (dx_sign && !dy_sign)	// tweede kwadrant

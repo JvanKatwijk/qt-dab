@@ -218,12 +218,26 @@ void	mscHandler::reset_Channel () {
 }
 
 void	mscHandler::stopService	(descriptorType *d) {
+	fprintf (stderr, "obsolete function stopService\n");
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
 	   if (b -> subChId == d -> subchId) {
 	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",
 	                                    d -> subchId);
+	      b -> stopRunning ();
+	      delete b;
+	      theBackends. erase (theBackends. begin () + i);
+	   }
+	}
+	locker. unlock ();
+}
+
+void	mscHandler::stopService	(int subchId) {
+	locker. lock ();
+	for (int i = 0; i < theBackends. size (); i ++) {
+	   Backend *b = theBackends. at (i);
+	   if (b -> subChId == subchId) {
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);
@@ -239,10 +253,12 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   if (d -> SId == theBackends. at (i) -> serviceId) {
 	      fprintf (stderr, "The service is already running\n");
-	      locker. unlock ();
-	      return false;
+	      theBackends. at (i) -> stopRunning ();
+	      delete theBackends. at (i);
+	      theBackends. erase (theBackends. begin () + i);
 	   }
 	}
+	locker. unlock ();
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     d,
 	                                     audioBuffer,
