@@ -350,12 +350,12 @@ bool	tiiHandler::valid	() {
 	return true;
 }
 #else
-void	tiiHandler::loadTables	(const QString &ff) {
+void	tiiHandler::loadTable	(const QString &ff) {
 	(void)ff;
 	fprintf (stderr, "No name support in this version\n");
 }
 
-bool	tiiJandler::valid	() {
+bool	tiiHandler::valid	() {
 	return false;
 }
 
