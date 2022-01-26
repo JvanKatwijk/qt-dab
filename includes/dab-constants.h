@@ -385,26 +385,20 @@ uint16_t	genpoly		= 0x1021;
 	return (crc ^ accumulator) == 0;
 }
 
-#ifndef	__MINGW#@__
+#define	CURLOPT_SPECIAL CURLOPT_STDERR
+
 static inline
 FILE	*curl_fopen () {
-FILE	*f = stderr;
-	stderr	= fopen ("/dev/null", "w");
-	return f;
+#ifdef	__MINGW32__
+	return fopen ("null", "w");
+#else
+	return fopen ("/dev/null", "w");
+#endif
 }
 
 static inline
 void	curl_fclose (FILE *f) {
-	fclose (stderr);
-	stderr	= f;
+	(void)f;
 }
-#else
-static inline
-void	curl_phase1 () {}
-
-static inline
-void	curl_phase2 () {}
-#endif
-
 #endif
 

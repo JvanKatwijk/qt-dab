@@ -310,6 +310,7 @@ std::string readBuffer;
 	   curl_f	= curl_fopen ();
 	   curl_easy_setopt (curl, CURLOPT_URL, 
 	                     entry ("jan"). toLatin1 (). data ());
+	   curl_easy_setopt  (curl, CURLOPT_SPECIAL, curl_f);
 	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
 	   curl_easy_setopt (curl, CURLOPT_WRITEDATA, &readBuffer);
