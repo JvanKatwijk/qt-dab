@@ -58,8 +58,8 @@ int32_t i, j;
 	this	-> protLevel		= d -> protLevel;
 	this	-> subChId		= d -> subchId;
 
-	fprintf (stderr, "starting a backend for %s (%X)\n",
-	                  serviceName. toUtf8 (). data (), serviceId);
+//	fprintf (stderr, "starting a backend for %s (%X)\n",
+//	                  serviceName. toUtf8 (). data (), serviceId);
 	interleaveData. resize (16);
 	for (i = 0; i < 16; i ++) {
 	   interleaveData [i]. resize (fragmentSize);

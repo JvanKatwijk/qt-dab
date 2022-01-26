@@ -163,6 +163,7 @@ private:
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
+	dabService		secondService;
 
 	QByteArray		transmitters;
 	int16_t			tii_delay;

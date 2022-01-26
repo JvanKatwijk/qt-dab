@@ -238,6 +238,7 @@ void	mscHandler::stopService	(int subchId) {
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
 	   if (b -> subChId == subchId) {
+	      fprintf (stderr, "stopping subchannel %d\n", subchId);
 	      b -> stopRunning ();
 	      delete b;
 	      theBackends. erase (theBackends. begin () + i);
@@ -265,6 +266,8 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	                                     dataBuffer,
 	                                     frameBuffer));
 	locker. unlock();
+	fprintf (stderr, "we have now %d backends running\n",
+	                        theBackends. size ());
 	return true;
 }
 

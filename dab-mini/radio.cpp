@@ -396,14 +396,15 @@ void	RadioInterface::handle_tdcdata (int frametype, int length) {
   *	how do we find that?
   */
 void	RadioInterface::changeinConfiguration() {
-	if (running. load ()) {
-	   dabService s;
-	   if (currentService. valid) { 
-	      s = currentService;
-	      stopService     ();
-	   }
-	   stop_secondService ();
-	   fprintf (stderr, "change detected\n");
+	if (!running. load ()) 
+	   return;
+	dabService s;
+	if (currentService. valid) { 
+	   s = currentService;
+	   stopService     (s);
+	}
+	stop_secondService ();
+	fprintf (stderr, "change detected\n");
 //
 //	we rebuild the services list from the fib and
 //	then we (try to) restart the service
@@ -419,29 +420,20 @@ void	RadioInterface::changeinConfiguration() {
 	   ensembleDisplay -> setModel (&model);
 //
 //	and restart the one that was running
-	   if (s. valid) {
-	      if (s. SCIds != 0) { // secondary service may be gone
-	         if (my_dabProcessor -> findService (s. SId, s. SCIds) ==
-	                                                   s. serviceName) {
-	            startService (&s);
-	            return;
-	         }
-	         else {
-	            s. SCIds = 0;
-	            s. serviceName =
-	                  my_dabProcessor -> findService (s. SId, s. SCIds);
-	         }
-	      }
-//	checking for the main service
-	      if (s. serviceName != 
-	                 my_dabProcessor -> findService (s. SId, s. SCIds)) {
-	         QMessageBox::warning (this, tr ("Warning"),
-                                tr ("insufficient data for this program\n"));
-                 return;
-              }
 
+	if (s. valid) {
+	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (ss != "") {
 	      startService (&s);
+	      return;
 	   }
+//
+//	The service is gone, it may be the subservice of another one
+	   s. SCIds = 0;
+	   s. serviceName =
+	               my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (s. serviceName != "")
+	      startService (&s);
 	}
 }
 //
@@ -618,6 +610,7 @@ char minuteString [3];
 	                       QString (hourString) + ":" +
 	                       QString (minuteString);
 	timeDisplay -> setText (result);
+	(void)sec;
 }
 
 //void	RadioInterface::showTime	(const QString &s) {
@@ -789,7 +782,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 //	         fprintf (stderr, "currentservice = %s (%d)\n",
 //	                       currentService. serviceName. toLatin1 (). data (),
 //	                                    currentService. valid);
-	         stopService ();	// basically redundant
+	         stopService (currentService);	// basically redundant
+	         currentService. valid = false;
 	         selectService (ensembleDisplay -> currentIndex ());
 	      }
            }
@@ -879,7 +873,8 @@ void    RadioInterface::scheduleSelect (const QString &s) {
 void	RadioInterface::localSelect (const QString &channel,
 	                             const QString &service) {
 	if (channel == channelSelector -> currentText ()) {
-	   stopService ();
+	   stopService (currentService);
+	   currentService. valid = false;
 	   dabService s;
 	   my_dabProcessor -> getParameters (service, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
@@ -927,16 +922,14 @@ void	RadioInterface::localSelect (const QString &channel,
 //	handling services: stop, select and start
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	() {
+void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	presetSelector -> setCurrentIndex (0);
 	signalTimer. stop ();
-	if (currentService. valid) {
-	   fprintf (stderr, "stopping service\n");
-	   audiodata ad;
-	   my_dabProcessor -> dataforAudioService (currentService. serviceName,
-	                                                  &ad);
-	   my_dabProcessor -> stopService (&ad);
+	if (s. valid) {
+	   fprintf (stderr, "stopping service %s (%d)\n",
+	                s. serviceName. toLatin1 (). data (), s. subChId);
+	   my_dabProcessor -> stopService (s. subChId);
 	   usleep (1000);
 	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
@@ -949,13 +942,14 @@ void	RadioInterface::stopService	() {
 	      }
 	   }
 	}
-	currentService. valid	= false;
+	s. valid	= false;
 	cleanScreen	();
 }
 //
 void	RadioInterface::selectService (QModelIndex ind) {
 QString	currentProgram = ind. data (Qt::DisplayRole). toString();
-	stopService 	();		// if any
+	stopService 	(currentService);		// if any
+	currentService. valid = false;
 
 	dabService s;
 	my_dabProcessor -> getParameters (currentProgram, &s. SId, &s. SCIds);
@@ -975,7 +969,7 @@ QString serviceName	= s -> serviceName;
 	if (currentService. valid) {
 	   fprintf (stderr, "Niet verwacht, service %s is still valid\n",
 	                    currentService. serviceName. toUtf8 (). data ());
-	   stopService ();
+	   stopService (currentService);
 	}
 
 	ficBlocks		= 0;
@@ -987,13 +981,17 @@ QString serviceName	= s -> serviceName;
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
 	   if (itemText == serviceName) {
+	      audiodata ad;
 	      colorService (model. index (i, 0), Qt::red, 13);
 	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      serviceLabel	-> setText (serviceName);
-	      if (my_dabProcessor -> is_audioService (serviceName)) {
-	         start_audioService (serviceName);
+	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
+              if (ad. defined) {
+                 currentService. valid          = true;
 	         currentService. valid = true;
 	         currentService. serviceName = serviceName;
+	         currentService. subChId	= ad. subchId;
+	         start_audioService (serviceName);
 	      }
 	      else
 	         fprintf (stderr, "%s not supported\n",
@@ -1058,7 +1056,8 @@ void	RadioInterface::handle_prevServiceButton	() {
 	QString oldService	= currentService. serviceName;
 	disconnect (prev_serviceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_prevServiceButton ()));
-	stopService  ();
+	stopService  (currentService);
+	currentService. valid	= false;
 	if ((serviceList. size () != 0) &&
 	                    (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
@@ -1097,7 +1096,8 @@ void	RadioInterface::handle_nextServiceButton	() {
 	QString oldService = currentService. serviceName;
 	disconnect (next_serviceButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_nextServiceButton ()));
-	stopService ();
+	stopService (currentService);
+	currentService. valid = false;
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
@@ -1257,7 +1257,7 @@ void	RadioInterface::No_Signal_Found () {
 //
 bool	RadioInterface::isMember (std::vector<serviceId> a,
 	                                     serviceId b) {
-	for (const auto serv : a)
+	for (auto serv : a)
 	   if (serv. name == b. name)
 	      return true;
 	return false;
@@ -1274,7 +1274,7 @@ std::vector<serviceId> k;
 	int 	baseN		= 0;
 	QString baseS		= "";
 	bool	inserted	= false;
-	for (const auto serv : l) {
+	for (auto serv : l) {
 	   if (!inserted &&
 	         (order == ID_BASED ?
 	             ((baseN < (int)n. SId) && (n. SId <= serv. SId)):
@@ -1345,6 +1345,7 @@ audiodata ad;
 
 	secondService. serviceName = s;
 	secondService. valid	= true;
+	secondService. subChId	= ad. subchId;
 	ad. procMode	= __ONLY_DATA;
 	frameBuffer. FlushRingBuffer ();
 	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
@@ -1357,10 +1358,8 @@ void	RadioInterface::stop_secondService () {
 	   return;
 	fprintf (stderr, "stopping second service %s\n",
 	                      secondService. serviceName. toUtf8 (). data ());
-	audiodata ad;
-	my_dabProcessor	-> dataforAudioService (secondService. serviceName,
-	                                                      &ad);
-	my_dabProcessor -> stopService (&ad);
+	my_dabProcessor -> stopService (secondService. subChId);
+	secondService. valid = false;
 	fclose (frameDumper);
 	frameDumper = nullptr;
 }

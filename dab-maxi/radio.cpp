@@ -331,6 +331,7 @@ uint8_t	dabBand;
 	   configWidget.  utcSelector -> setChecked (true);
 	currentService. valid	= false;
 	nextService. valid	= false;
+	secondService. valid	= false;
 
 	if (dabSettings -> value ("has-presetName", 0). toInt () != 0) {
 	   configWidget. saveServiceSelector -> setChecked (true);
@@ -843,7 +844,8 @@ int	serviceOrder;
 	if (isMember (serviceList, ed))
 	   return;
 
-	ed. subChId	= my_dabProcessor -> getSubChId (serviceName, SId);
+	ed. subChId	=
+	    my_dabProcessor -> getSubChId (serviceName, SId);
 	serviceOrder	=
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
@@ -899,8 +901,8 @@ QString s;
 	channel. has_ecc	= false;
 	channel. ecc_byte	= 0;
 	channel. countryName	= "";
-	channel. mainId	= 0;
-	channel. subId	= 0;
+	channel. mainId		= 0;
+	channel. subId		= 0;
 	channel. nrTransmitters	= 0;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
 	   stopScanning (false);
@@ -1004,8 +1006,6 @@ QString realName;
 	         }
 //	         epgHandler. decode (epgData, realName);
 	      }
-//	      fprintf (stderr, "epg file %s\n",
-//	                            realName. toUtf8 (). data ());
 #endif
 	      return;
 
@@ -1174,7 +1174,9 @@ int	serviceOrder;
 	stopScanning    (false);
 //
 	stopService	(s);
-	fprintf (stderr, "change detected\n");
+	if (secondService. valid)
+	   stopService (secondService);
+	fprintf (stderr, "change will be effected\n");
 	serviceOrder	= 
 	        dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
@@ -1192,7 +1194,25 @@ int	serviceOrder;
 	}
 	ensembleDisplay -> setModel (&model);
 //
-//	and restart the one that was running
+//	and restart the services that - may be - were running
+	if (secondService. valid) {
+	   packetdata pd;
+	   my_dabProcessor -> dataforPacketService (secondService. serviceName,
+	                                                        &pd, 0);
+	   if (pd. defined) {
+	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	      secondService. serviceName = pd. serviceName;
+              secondService. is_audio = false;
+              secondService. channel = channel. channelName;
+              secondService. SId     = pd. SId;
+              secondService. SCIds   = pd. SCIds;
+              secondService. subChId = pd. subchId;
+              secondService. valid   = true;
+	   }
+	   else
+	      secondService. valid = false;
+	}
+
 //	Of course, it may be disappeared
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
@@ -1304,8 +1324,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete	motSlides;
 	if (currentServiceDescriptor != nullptr)
 	   delete currentServiceDescriptor;
-//	delete	dataDisplay;
-//	delete	configDisplay;
 	delete	my_history;
 	delete	my_timeTable;
 //	close();
@@ -2822,9 +2840,11 @@ void	RadioInterface::stopService	(dabService &s) {
 	if (frameDumper != nullptr) {
 	   stop_frameDumping ();
 	}
+
 	if (audioDumper != nullptr) {
 	   stop_audioDumping ();
 	}
+
 	if (s. valid) {
 	   my_dabProcessor -> stopService (s. subChId);
 	   if (s. is_audio) {
@@ -2850,6 +2870,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	}
 	cleanScreen	();
 }
+//
 //
 void	RadioInterface::selectService (QModelIndex ind) {
 QString	currentProgram = ind. data (Qt::DisplayRole). toString();
@@ -2986,9 +3007,9 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-	fprintf (stderr, "we start %s at %.2d:%.2d\n",
-	                        ad -> serviceName. toUtf8 (). data (),
-	                        theTime. hour (), theTime. minute ());
+//	fprintf (stderr, "we start %s at %.2d:%.2d\n",
+//	                        ad -> serviceName. toUtf8 (). data (),
+//	                        theTime. hour (), theTime. minute ());
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
@@ -3284,6 +3305,7 @@ void	RadioInterface::stopChannel	() {
 	usleep (1000);		// may be handling pending signals?
 	currentService. valid	= false;
 	nextService. valid	= false;
+	secondService. valid	= false;
 
 //	all stopped, now look at the GUI elements
 	ficError_display	-> setValue (0);
@@ -4205,6 +4227,13 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	         secondService. serviceName = pd. serviceName;
+	         secondService. is_audio = false;
+	         secondService. channel	= channel. channelName;
+	         secondService. SId	= pd. SId;
+	         secondService. SCIds	= pd. SCIds;
+	         secondService. subChId	= pd. subchId;
+	         secondService. valid	= true;
 	         break;
 	      }
 	   }
@@ -4218,6 +4247,13 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	         secondService. serviceName = pd. serviceName;
+	         secondService. is_audio = false;
+	         secondService. channel	= channel. channelName;
+	         secondService. SId	= pd. SId;
+	         secondService. SCIds	= pd. SCIds;
+	         secondService. subChId	= pd. subchId;
+	         secondService. valid	= true;
 	         break;
 	      }
 	   }
