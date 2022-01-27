@@ -250,9 +250,11 @@ void	mscHandler::stopService	(int subchId) {
 bool	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer) {
+	fprintf (stderr, "going to open %s\n",
+	                d -> serviceName. toLatin1 (). data ());
 	locker. lock();
 	for (int i = 0; i < theBackends. size (); i ++) {
-	   if (d -> SId == theBackends. at (i) -> serviceId) {
+	   if (d -> subchId == theBackends. at (i) -> subChId) {
 	      fprintf (stderr, "The service is already running\n");
 	      theBackends. at (i) -> stopRunning ();
 	      delete theBackends. at (i);
@@ -265,7 +267,6 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer));
-	locker. unlock();
 	fprintf (stderr, "we have now %d backends running\n",
 	                        theBackends. size ());
 	return true;

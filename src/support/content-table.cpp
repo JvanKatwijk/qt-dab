@@ -89,7 +89,7 @@ QTableWidgetItem* theItem = contentWidget  -> item (row, 0);
 	   return;
         (void)column;
         QString theService = channel + ":" + theItem -> text ();
-	fprintf (stderr, "selecting %s\n", theService. toLatin1 (). data ());
+	fprintf (stderr, "selecting %s\n", theService. toUtf8 (). data ());
 	goService (theService);
 }
 

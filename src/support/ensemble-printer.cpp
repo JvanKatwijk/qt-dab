@@ -79,8 +79,8 @@ bool	firstData;
 	                  ensembleLabel. toUtf8(). data(),
 	                  ensembleId,
 	                  frequency / 1000,
-	                  textfor (transmitters). toLatin1 (). data (),
-	                  SNR. toLatin1 (). data (),
+	                  textfor (transmitters). toUtf8 (). data (),
+	                  SNR. toUtf8 (). data (),
 	                  Services. size (),
 	                  theTime. toUtf8(). data ());
 }
@@ -114,7 +114,7 @@ bool	firstData;
 	                  currentChannel. toUtf8(). data(),
 	                  frequency / 1000,
 	                  theTime. toUtf8(). data (),
-	                  textfor (transmitters). toLatin1 (). data ());
+	                  textfor (transmitters). toUtf8 (). data ());
 	                
 	fprintf (file_P, "\nAudio services\nprogram name;country;serviceId;subchannelId;start address;length (CU); bit rate;DAB/DAB+; prot level; code rate; language; program type\n\n");
 

@@ -262,7 +262,7 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 	   }
 	   service = service. trimmed ();
 	   fprintf (stderr, "we starten de service %s\n",
-	                                 service. toLatin1 (). data ());
+	                                 service. toUtf8 (). data ());
 	   emit timeOut (service);
 	   return;
 	}
@@ -281,10 +281,10 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 }
 
 void	Scheduler::dump (const QString &file) {
-FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
+FILE *dumpFile	= fopen (file. toUtf8 (). data (), "w");
 
 //	fprintf (stderr, "dumpfile %s is opened %s\n",
-//	                          file. toLatin1 (). data (),
+//	                          file. toUtf8 (). data (),
 //	                           dumpFile == nullptr ? "not good" : "good");
 	if (dumpFile == nullptr)
 	   return;
@@ -307,8 +307,8 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 	   QString wakeupDay	=
 	            tableWidget -> item (row, 1) -> text ();
 //	   fprintf (stderr, "computing diff %s %s\n",
-//	                          startDay. toLatin1 (). data (),
-//	                          wakeupDay. toLatin1 (). data ());
+//	                          startDay. toUtf8 (). data (),
+//	                          wakeupDay. toUtf8 (). data ());
 	   int delayDays	= dayDiff (startDay, wakeupDay);
 //	   fprintf (stderr, "delayDays = %d\n", delayDays);
 	   QString wakeupTime	=
@@ -320,7 +320,7 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
            int minutes  = t [1]. toInt ();
 
 	   fprintf (dumpFile, "element: | %s | %d %d %d %d\n",
-	                    service. toLatin1 (). data (),
+	                    service. toUtf8 (). data (),
 	                    delayDays, hours, minutes, -(delayDays + hours + minutes));
 	}
 
@@ -333,7 +333,7 @@ FILE *dumpFile	= fopen (file. toLatin1 (). data (), "w");
 //	was made. Of course, schedule elements in the past
 //	are ignored
 void	Scheduler::read (const QString &fileName) {
-std::ifstream f (fileName. toLatin1 (). data ());
+std::ifstream f (fileName. toUtf8 (). data ());
 QDate currentDate = QDate::currentDate ();
 QTime currentTime = QTime::currentTime ();
 QDate startDate;
@@ -373,11 +373,11 @@ QDate startDate;
 	      QStringList ss = temp. split ('|');
 //	      fprintf (stderr, "split count %d\n", ss. count ());
 	      for (int i = 0; i < ss. count (); i ++)
-	         fprintf (stderr, "%s \n", ss. at (i). toLatin1 (). data ());
+	         fprintf (stderr, "%s \n", ss. at (i). toUtf8 (). data ());
 	      if (ss. count () != 3)
 	         return;
-	      service = ss. at (1). toLatin1 (). data ();
-	      std::string rest = ss. at (2). toLatin1 (). data ();
+	      service = ss. at (1). toUtf8 (). data ();
+	      std::string rest = ss. at (2). toUtf8 (). data ();
 	      int delayDays, hour, minutes, sum;
 	      sscanf (rest. c_str (), "%d %d %d %d",
 	                    &delayDays, &hour, &minutes, &sum);

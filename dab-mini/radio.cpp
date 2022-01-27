@@ -154,7 +154,7 @@ QString	presetName;
 
 //	Where do we leave the audio out?
 	streamoutSelector	-> hide();
-// just sound out
+//	just sound out
 	soundOut		= new audioSink		(latency);
 
 	((audioSink *)soundOut)	-> setupChannels (streamoutSelector);
@@ -212,6 +212,8 @@ QString	presetName;
 
 	currentService. valid	= false;
 	nextService. valid	= false;
+	secondService. valid	= false;
+
 	bool has_presetName	=
 	              dabSettings -> value ("has-presetName", 1). toInt() != 0;
 	if (has_presetName) {
@@ -267,7 +269,7 @@ QString	presetName;
 }
 
 QString RadioInterface::footText () {
-        QString versionText = "dabMini-1.0: ";
+        QString versionText = "dabMini-2.0: ";
         versionText += "Copyright J van Katwijk, J. vanKatwijk@gmail.com\n";
         versionText += "Rights of Qt, fftw, portaudio, libsamplerate  libfaad gratefully acknowledged";
         versionText += "Rights of other contribuants gratefully acknowledged\n";
@@ -676,8 +678,8 @@ void	RadioInterface::showLabel	(QString s) {
                                                   toUtf8 (). data (),
 	                          theDateTime.
 	                                toString ("yy-mm-dd hh:mm:ss").
-	                                      toLatin1 (). data (),
-	                          s. toLatin1 (). data ());
+	                                      toUtf8 (). data (),
+	                          s. toUtf8 (). data ());
 	
 }
 
@@ -865,8 +867,8 @@ void    RadioInterface::scheduleSelect (const QString &s) {
         QString service = list. at (1);
         for (int i = service. size (); i < 16; i ++)
            service. append (' ');
-	fprintf (stderr, "scheduling %s %s\n", channel. toLatin1 (). data (),
-	                                       service. toLatin1 (). data ());
+	fprintf (stderr, "scheduling %s %s\n", channel. toUtf8 (). data (),
+	                                       service. toUtf8 (). data ());
         localSelect (channel, service);
 }
 
@@ -927,8 +929,6 @@ void	RadioInterface::stopService	(dabService &s) {
 	presetSelector -> setCurrentIndex (0);
 	signalTimer. stop ();
 	if (s. valid) {
-	   fprintf (stderr, "stopping service %s (%d)\n",
-	                s. serviceName. toLatin1 (). data (), s. subChId);
 	   my_dabProcessor -> stopService (s. subChId);
 	   usleep (1000);
 	   soundOut	-> stop ();
@@ -969,7 +969,7 @@ QString serviceName	= s -> serviceName;
 	if (currentService. valid) {
 	   fprintf (stderr, "Niet verwacht, service %s is still valid\n",
 	                    currentService. serviceName. toUtf8 (). data ());
-	   stopService (currentService);
+//	   stopService (currentService);
 	}
 
 	ficBlocks		= 0;
@@ -988,7 +988,6 @@ QString serviceName	= s -> serviceName;
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
               if (ad. defined) {
                  currentService. valid          = true;
-	         currentService. valid = true;
 	         currentService. serviceName = serviceName;
 	         currentService. subChId	= ad. subchId;
 	         start_audioService (serviceName);
@@ -1143,7 +1142,6 @@ void	RadioInterface::setPresetStation () {
 	QString presetName	= nextService. serviceName;
 	for (const auto& service: serviceList) {
 	   if (service. name. contains (presetName)) {
-	      fprintf (stderr, "going to select %s\n", presetName. toUtf8 (). data ());
 	      dabService s;
 	      s. serviceName = presetName;
 	      my_dabProcessor	-> getParameters (presetName, &s. SId, &s. SCIds);
@@ -1356,8 +1354,6 @@ void	RadioInterface::stop_secondService () {
 	   return;
 	if (!secondService. valid)
 	   return;
-	fprintf (stderr, "stopping second service %s\n",
-	                      secondService. serviceName. toUtf8 (). data ());
 	my_dabProcessor -> stopService (secondService. subChId);
 	secondService. valid = false;
 	fclose (frameDumper);
@@ -1434,8 +1430,6 @@ QString		scheduleService;
 
 	int selected		= theSelector. QDialog::exec ();
 	scheduleService		= candidates. at (selected);
-	fprintf (stderr, "selected %d %s\n", selected, 
-	                            scheduleService. toLatin1 (). data ());
 	{  elementSelector	theElementSelector (scheduleService);
 	   int	targetTime	= theElementSelector. QDialog::exec ();
 	   int delayDays	= (targetTime & 0xFF0000) >> 16;

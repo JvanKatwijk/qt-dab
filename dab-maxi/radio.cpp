@@ -250,7 +250,6 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
-	this	-> externalSchedule	= schedule;
 	this	-> dlTextFile	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
@@ -4237,7 +4236,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         break;
 	      }
 	   }
-//#ifdef	__DABDATA__
+#ifdef	__DABDATA__
 	   else {
 	      packetdata pd;
 	      my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
@@ -4257,7 +4256,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         break;
 	      }
 	   }
-//#endif
+#endif
 	}
 }
 #endif
@@ -4401,7 +4400,6 @@ void	RadioInterface::handle_LoggerButton (int s) {
 }
 
 void	RadioInterface::handle_set_coordinatesButton	() {
-	fprintf (stderr, "going for coord\n");
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
 }

@@ -149,7 +149,6 @@ private:
 	QString			theFont;
 	int			fontSize;
 	int			fmFrequency;
-	QString			externalSchedule;
 	contentTable		*my_contentTable;
 	FILE			*logFile;
 	void			LOG		(const QString &,

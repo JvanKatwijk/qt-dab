@@ -56,7 +56,7 @@ bool	res = false;
 	}
 	blackList. resize (0);
 	cache. resize (0);
-	FILE	*f	= fopen (s. toLatin1 (). data (), "r");
+	FILE	*f	= fopen (s. toUtf8 (). data (), "r");
 	if (f != nullptr) {
 	   res = true;
 	   readFile (f);
@@ -314,7 +314,7 @@ std::string readBuffer;
 	if (curl) {
 	   curl_f	= curl_fopen ();
 	   curl_easy_setopt (curl, CURLOPT_URL, 
-	                     entry ("jan"). toLatin1 (). data ());
+	                     entry ("jan"). toUtf8 (). data ());
 	   curl_easy_setopt  (curl, CURLOPT_SPECIAL, curl_f);
 	   curl_easy_setopt (curl, CURLOPT_SSL_VERIFYPEER, 0L);
 	   curl_easy_setopt (curl, CURLOPT_WRITEFUNCTION,  writeCallBack);
@@ -331,7 +331,7 @@ std::string readBuffer;
 	}
 	curl_global_cleanup();
 
-	FILE *outp	= fopen (tf. toLatin1 (). data (), "w + b");
+	FILE *outp	= fopen (tf. toUtf8 (). data (), "w + b");
 	if (outp == nullptr)
 	   return;
 #define	SHIFT 6

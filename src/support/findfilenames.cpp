@@ -382,5 +382,5 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	                                    QFileDialog::DontUseNativeDialog);
 	if (fileName == "")
 	   return nullptr;	
-	return fopen (fileName. toLatin1 (). data (), "w");
+	return fopen (fileName. toUtf8 (). data (), "w");
 }
