@@ -29,6 +29,7 @@
 #include	"tii-codes.h"
 #include	"ITU_Region_1.h"
 #include	<QSettings>
+#include	<QMessageBox>
 
 #define	SEPARATOR	';'
 #define	COUNTRY		1
@@ -209,6 +210,8 @@ size_t  writeCallBack (void *contents, size_t size,
 }
 
 void	tiiHandler::loadTable (const QString &tf) {
+	QMessageBox::warning (this, tr ("Warning"),
+                             tr ("Not implemented in this version"));
 }
 
 bool	tiiHandler::valid	() {
