@@ -181,7 +181,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/dl-cache.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
-	   ../includes/support/tii-codes.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
@@ -292,7 +291,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/findfilenames.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
-	   ../src/support/tii-codes.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
@@ -353,7 +351,8 @@ CONFIG		+= lime
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= JAN
+CONFIG		+= JAN
+#CONFIG		+= loadTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -371,7 +370,6 @@ CONFIG		+= PC
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __DUMP_SNR__		# for experiments only
-CONFIG		+= loadTables
 }
 
 
@@ -425,7 +423,8 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-	CONFIG		+= loadTables
+#	CONFIG		+= loadTables
+	CONFIG		+= JAN
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -748,11 +747,18 @@ JAN	{
 	INCLUDEPATH	+= /usr/include/eigen3
 	HEADERS		+= ../includes/ofdm/channel.h 
 	SOURCES		+= ../src/ofdm/channel.cpp
-}
-
-loadTables	{
-	DEFINES		+= __LOAD_TABLES__
 	LIBS		+= -lcurl
 	INCLUDEPATH	+= /home/jan/curl
+	INCLUDEPATH	+= ../../TII-CODES
+	HEADERS		+= ../../TII-CODES/tii-codes.h
+	SOURCES		+= ../../TII-CODES/tii-codes.cpp
 }
+
+
+loadTables	{
+	INCLUDEPATH	+= ../src/support/tii-codes
+	HEADERS		+= ../src/support/tii-codes/tii-codes.h
+	SOURCES		+= ../src/support/tii-codes/tii-codes.cpp
+}
+
 

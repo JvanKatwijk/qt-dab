@@ -51,7 +51,6 @@
 #include	"element-selector.h"
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
-#include	"tii-codes.h"
 #include	"coordinates.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -239,7 +238,9 @@ uint8_t convert (QString s) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
+#ifdef	__LOAD_TABLES__
 	                                        tiiProcessor (),
+#endif
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
@@ -2013,7 +2014,6 @@ bool	tiiChange	= false;
 	   channel. has_ecc	= true;
 	   channel. transmitterName = "";
 	}
-
 	if (channel. tiiFile) {
 	   if (tiiChange || (channel. transmitterName == ""))  {
 	      if (!tiiProcessor. is_black (channel. Eid, mainId, subId)) {
@@ -4419,5 +4419,4 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	else
 	   channel. tiiFile = false;
 }
-
  
