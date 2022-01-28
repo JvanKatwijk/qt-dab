@@ -238,9 +238,7 @@ uint8_t convert (QString s) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-#ifdef	__LOAD_TABLES__
-	                                        tiiProcessor (),
-#endif
+	                                        tiiProcessor (Si),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
@@ -293,8 +291,6 @@ uint8_t	dabBand;
 	fontSize		=
 	          dabSettings -> value ("fontSize", 12). toInt ();
 
-	homeAddress. latitude	= dabSettings -> value ("latitude", 0). toFloat ();
-	homeAddress. longitude	= dabSettings -> value ("longitude", 0). toFloat ();
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
@@ -992,7 +988,6 @@ QString realName;
 	                     my_dabProcessor -> get_ensembleId ();
 	         uint32_t currentSId =
 	                     extract_epg (name, serviceList, ensembleId);
-	         fprintf (stderr, "currentSID = %X\n", currentSId);
 	         if (currentSId != 0) {
 	            FILE *f = fopen (name. toUtf8 (). data (), "w+b");
 	            if (f == nullptr)
@@ -1961,11 +1956,6 @@ void	RadioInterface::show_tii_spectrum	() {
 	my_tiiViewer. showSpectrum (1);
 }
 
-//
-//	if a tii file exists, we will look into it to see whether we
-//	can identify a transmitter. Of course, if no such file
-//	exists, we do not want to continuosly search for the
-//	transmitter
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
@@ -2014,6 +2004,7 @@ bool	tiiChange	= false;
 	   channel. has_ecc	= true;
 	   channel. transmitterName = "";
 	}
+
 	if (channel. tiiFile) {
 	   if (tiiChange || (channel. transmitterName == ""))  {
 	      if (!tiiProcessor. is_black (channel. Eid, mainId, subId)) {
@@ -2032,15 +2023,15 @@ bool	tiiChange	= false;
 	                   QString::number (mainId) + " " +
 	                   QString::number (subId));
 	         }
-	         else
+	         else 
 	         if (theName != channel. transmitterName)  {
 	            channel. transmitterName = theName;
 	            float latitude, longitude;
 	            tiiProcessor. get_coordinates (&latitude,
 	                                           &longitude,
 	                                           channel. realChannel ?
-	                                              channel. channelName :
-	                                              "any",
+	                                               channel. channelName :
+	                                               "any",
 	                                           theName);
 	            fprintf (stderr, "%s (%f, %f)\n",
 	                              theName. toUtf8 (). data (),
@@ -2053,27 +2044,19 @@ bool	tiiChange	= false;
 	                     QString::number (snrDisplay -> value ()));
 	            QString labelText =  channel. transmitterName;
 //
-//	if our own position ois known, we show the distance
-	            if ((homeAddress. latitude != 0) &&
-	                (homeAddress. longitude != 0)) {
-	               int distance = tiiProcessor.
-	                               distance (latitude, longitude,
-	                                         homeAddress. latitude,
-	                                         homeAddress. longitude);
-	               int hoek	 = tiiProcessor.
-	                               corner (latitude,
-                                               longitude,
-                                               homeAddress. latitude,
-                                               homeAddress. longitude);
-	               LOG ("distance ", QString::number (distance));
-	               LOG ("corner ", QString::number (hoek));
-	               labelText +=  + " " +
+//	if our own position is known, we show the distance
+	            int distance = tiiProcessor.
+	                               distance (latitude, longitude);
+	            int hoek	 = tiiProcessor.
+	                               corner (latitude, longitude);
+	            LOG ("distance ", QString::number (distance));
+	            LOG ("corner ", QString::number (hoek));
+	            labelText +=  + " " +
 	                               QString::number (distance) + " km" +
 	                               " " + QString::number (hoek);
-	               labelText += QString::fromLatin1 (" \xb0 ");
-	               fprintf (stderr, "%s\n",
-	                                  labelText. toUtf8 (). data ());
-	            }
+	            labelText += QString::fromLatin1 (" \xb0 ");
+	            fprintf (stderr, "%s\n",
+	                               labelText. toUtf8 (). data ());
 	            distanceLabel -> setText (labelText);
 	         }
 	      }

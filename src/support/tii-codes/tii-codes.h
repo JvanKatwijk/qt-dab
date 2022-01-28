@@ -26,6 +26,7 @@
 #include	<QString>
 #include	<stdio.h>
 #include	<vector>
+#include	<QSettings>
 
 typedef struct {
 	QString	country;
@@ -47,7 +48,7 @@ typedef struct {
 
 class	tiiHandler {
 public:
-		tiiHandler	();
+		tiiHandler	(QSettings *);
 		~tiiHandler	();
 	bool	tiiFile 	(const QString &);
 	QString	get_transmitterName (const QString &,
@@ -56,8 +57,9 @@ public:
 	                             uint8_t mainId, uint8_t subId);
 	void	get_coordinates	(float *, float *,
 	                         const QString &, const QString &);
-	int	distance	(float, float, float, float);
-	int	corner		(float, float, float, float);
+	int	distance	(float, float);
+	void	updateHome	(float, float);
+	int	corner		(float, float);
 	bool	is_black	(uint16_t, uint8_t, uint8_t);
 	void	set_black	(uint16_t, uint8_t, uint8_t);	
 	void	loadTable	(const QString &tf);
@@ -77,6 +79,8 @@ QString	tiifileName;
 	uint8_t	shift;
 	QString	entry		(const char *);
 	FILE	*curl_f;
+	float	latitude_home;
+	float	longitude_home;
 };
 
 

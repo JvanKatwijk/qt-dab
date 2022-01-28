@@ -45,12 +45,18 @@
 #ifdef  __LOAD_TABLES__
 #include        <curl/curl.h>
 #endif
-		tiiHandler::tiiHandler	() {
+		tiiHandler::tiiHandler	(QSettings *s) {
+	(void)s;
 }
 		tiiHandler::~tiiHandler	() {
 }
+
+void	tiiHandler::updateHome	(float l1, float l2) {
+	(void)l1; (void)l2;
+}
 //
 bool	tiiHandler::tiiFile	(const QString &s) {
+	(void)s;
 	return false;
 }
 	
@@ -58,12 +64,15 @@ bool	tiiHandler::tiiFile	(const QString &s) {
 	        get_transmitterName (const QString &channel,
 	                             const QString &country, uint16_t Eid,
                                      uint8_t mainId, uint8_t subId) {
+	(void)channel; (void)country;
+	(void)Eid; (void)mainId; (void)subId;
 	return "";
 }
 
 void	tiiHandler::get_coordinates (float *latitude, float * longitude,
 	                             const QString &channel,
 	                             const QString &transmitter) {
+	(void)channel; (void)transmitter;
 	*latitude	= 0;
 	*longitude	= 0;
 }
@@ -105,6 +114,7 @@ uint16_t res;
 }
 
 int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
+	(void)v; (void)b; (void)N;
 	return 0;
 }
 
@@ -113,67 +123,18 @@ int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
 //	en
 //	https://www.movable-type.co.uk/scripts/latlong.html
 //	Haversine formula applied
-int	tiiHandler::distance (float latitude1, float longitude1,
-	                      float latitude2, float longitude2) {
-double	R	= 6371;
-double	Phi1	= latitude1 * M_PI / 180;
-double	Phi2	= latitude2 * M_PI / 180;
-double	dPhi	= (latitude2 - latitude1) * M_PI / 180;
-double	dDelta	= (longitude2 - longitude1) * M_PI / 180;
-
-//double	a	= sin (dPhi / 2) * sin (dPhi / 2) + cos (Phi1) * cos (Phi2) *
-//	          sin (dDelta / 2) * sin (dDelta / 2);
-//double	c	= 2 * atan2 (sqrt (a), sqrt (1 - a));
-
-double 	x	= dDelta * cos ((Phi1 + Phi2) / 2);
-double	y	= (Phi2 - Phi1);
-double	d	= sqrt (x * x + y * y);
-//
-//	return (int)(R * c + 0.5);
-	return (int)(R * d + 0.5);
+int	tiiHandler::distance (float latitude, float longitude) {
+	(void)latitude; (void)longitude;
+	return 0;
 }
 
-int	tiiHandler::corner (float latitude1, float longitude1,
-	                    float latitude2, float longitude2) {
-bool dx_sign	= longitude1 - longitude2 > 0;
-bool dy_sign	= latitude1  - latitude2 > 0;
-double dy	= distance (latitude1, longitude2,	
-	                    latitude2, longitude2);
-double dx;
-//	if (dy_sign)
-	   dx = distance (latitude2, longitude1,
-	                  latitude2, longitude2);
-//	else
-//	   dx = distance (latitude1, longitude1,
-//	                  latitude1, longitude2);
-double	dz	= distance (latitude1, longitude1,
-	                    latitude2, longitude2);
-float azimuth = atan2 (dy, dx);
-float azimuth_1	= asin (dy / dz);
-float azimuth_2	= acos (dx / dz);
-
-	if (longitude1 == longitude2) {
-	   if (latitude1 < latitude2) 
-	      return 360;
-	   else
-	      return 0;
-	}
-
-	if (dx > dy)
-	   azimuth = azimuth_1;
-	if (dy > dx)
-	   azimuth = azimuth_2;
-	   
-	if (dx_sign && dy_sign)		// eerste kwadrant
-	   return (int)((M_PI / 2 - azimuth) / M_PI * 180);
-	if (dx_sign && !dy_sign)	// tweede kwadrant
-	   return (int)((M_PI / 2 + azimuth) / M_PI * 180);
-	if (!dx_sign && !dy_sign)	// derde kwadrant
-	   return (int)((3 * M_PI / 2 - azimuth) / M_PI * 180);
-	return (int)((3 * M_PI / 2 + azimuth) / M_PI * 180);
+int	tiiHandler::corner (float latitude, float longitude) {
+	(void)latitude; (void)longitude;
+	return 0;
 }
 
 void	tiiHandler::readFile (FILE *f) {
+	(void)f;
 }
 
 void	tiiHandler::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
@@ -195,10 +156,12 @@ bool	tiiHandler::is_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {
 }
 
 char	*tiiHandler::eread (char * buffer, int amount, FILE *f) {
+	(void)buffer; (void)amount; (void)f;
 	return buffer;
 }
 
 QString	tiiHandler::entry (const char *s) {
+	(void)s;
 	return QString ("");
 }
 
@@ -210,8 +173,9 @@ size_t  writeCallBack (void *contents, size_t size,
 }
 
 void	tiiHandler::loadTable (const QString &tf) {
-	QMessageBox::warning (this, tr ("Warning"),
-                             tr ("Not implemented in this version"));
+	(void)tf;
+	QMessageBox::warning (nullptr, "Warning",
+                              "Not supported in this version");
 }
 
 bool	tiiHandler::valid	() {
