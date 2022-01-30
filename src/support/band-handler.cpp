@@ -115,7 +115,7 @@ FILE	*f;
 	if (a_band == QString (""))
 	   return;
 	if (a_band != QString ("")) {
-	   f = fopen (a_band. toLatin1 (). data (), "r");
+	   f = fopen (a_band. toUtf8 (). data (), "r");
 	   if (f == nullptr)
 	      return;
 	}
@@ -357,7 +357,7 @@ int	amount_P	= 0;
            theTable. item (row, 1) -> setText ("-");
 	selectedBand [row]. skip = s2 != "-";
 //	fprintf (stderr, "we zetten voor %s de zaak op %d\n",
-//	              selectedBand [row]. key. toLatin1 (). data (),
+//	              selectedBand [row]. key. toUtf8 (). data (),
 //	              selectedBand [row]. skip);
 }
 

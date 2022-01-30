@@ -88,6 +88,7 @@ public:
 //	for the mscHandler
 	void		reset_Services		();
 	void		stopService		(descriptorType *);
+	void		stopService		(int);
 	bool		set_audioChannel	(audiodata *,
 	                                             RingBuffer<int16_t> *);
 	bool		set_dataChannel		(packetdata *,

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>487</height>
+    <height>518</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -130,6 +130,13 @@
     <widget class="QCheckBox" name="loggerButton">
      <property name="text">
       <string>  logger</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="utcSelector">
+     <property name="text">
+      <string> utc Selector</string>
      </property>
     </widget>
    </item>

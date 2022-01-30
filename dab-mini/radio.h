@@ -60,7 +60,9 @@ public:
 	QString		serviceName;
 	uint32_t	SId;
 	int		SCIds;
+	int		subChId;
 	bool		valid;
+	
 };
 
 class RadioInterface: public QWidget, private Ui_dab_mini {
@@ -141,7 +143,7 @@ private:
 	void			start_audioService	(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();
-	void			stopService		();
+	void			stopService		(dabService &);
 	void			startService		(dabService *);
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);

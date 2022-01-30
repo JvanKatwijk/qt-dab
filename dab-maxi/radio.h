@@ -90,6 +90,7 @@ public:
 	QString		serviceName;
 	uint32_t	SId;
 	int		SCIds;
+	int		subChId;
 	bool		valid;
 	bool		is_audio;
 };
@@ -148,7 +149,6 @@ private:
 	QString			theFont;
 	int			fontSize;
 	int			fmFrequency;
-	QString			externalSchedule;
 	contentTable		*my_contentTable;
 	FILE			*logFile;
 	void			LOG		(const QString &,
@@ -162,6 +162,7 @@ private:
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
+	dabService		secondService;
 
 	QByteArray		transmitters;
 	int16_t			tii_delay;
@@ -265,7 +266,7 @@ private:
 	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();
-	void			stopService		();
+	void			stopService		(dabService &);
 	void			startService		(dabService *);
 	void			colorService		(QModelIndex ind,
 	                                                   QColor c, int pt);

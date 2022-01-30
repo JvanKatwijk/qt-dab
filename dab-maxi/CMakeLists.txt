@@ -194,6 +194,7 @@ endif ()
 	           ../includes/backend/data/journaline
 	           ../includes/backend/data/mot
 	           ../includes/support
+	           ../src/support/tii-codes
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
@@ -294,8 +295,8 @@ endif ()
 	     ../includes/support/content-table.h
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
-	     ../includes/support/tii-codes.h
 	     ../includes/support/coordinates.h
+	     ../src/support/tii-codes/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -390,8 +391,8 @@ endif ()
 	     ../src/support/findfilenames.cpp
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
-	     ../src/support/tii-codes.cpp
 	     ../src/support/coordinates.cpp
+	     ../src/support/tii-codes/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 

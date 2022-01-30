@@ -51,7 +51,6 @@
 #include	"element-selector.h"
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
-#include	"tii-codes.h"
 #include	"coordinates.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -239,7 +238,7 @@ uint8_t convert (QString s) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-	                                        tiiProcessor (),
+	                                        tiiProcessor (Si),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
@@ -250,7 +249,6 @@ uint8_t	dabBand;
 	dabSettings		= Si;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
-	this	-> externalSchedule	= schedule;
 	this	-> dlTextFile	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
@@ -293,8 +291,6 @@ uint8_t	dabBand;
 	fontSize		=
 	          dabSettings -> value ("fontSize", 12). toInt ();
 
-	homeAddress. latitude	= dabSettings -> value ("latitude", 0). toFloat ();
-	homeAddress. longitude	= dabSettings -> value ("longitude", 0). toFloat ();
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
@@ -326,8 +322,12 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
+	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
+	if (b)
+	   configWidget.  utcSelector -> setChecked (true);
 	currentService. valid	= false;
 	nextService. valid	= false;
+	secondService. valid	= false;
 
 	if (dabSettings -> value ("has-presetName", 0). toInt () != 0) {
 	   configWidget. saveServiceSelector -> setChecked (true);
@@ -807,6 +807,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("snrVisible",
 	                          my_snrViewer. isHidden () ? 0 : 1);
+	s	-> setValue ("utcSelected",
+	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
 	s	-> sync();
 }
 //
@@ -838,7 +840,8 @@ int	serviceOrder;
 	if (isMember (serviceList, ed))
 	   return;
 
-	ed. subChId	= my_dabProcessor -> getSubChId (serviceName, SId);
+	ed. subChId	=
+	    my_dabProcessor -> getSubChId (serviceName, SId);
 	serviceOrder	=
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
@@ -894,8 +897,8 @@ QString s;
 	channel. has_ecc	= false;
 	channel. ecc_byte	= 0;
 	channel. countryName	= "";
-	channel. mainId	= 0;
-	channel. subId	= 0;
+	channel. mainId		= 0;
+	channel. subId		= 0;
 	channel. nrTransmitters	= 0;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
 	   stopScanning (false);
@@ -985,7 +988,6 @@ QString realName;
 	                     my_dabProcessor -> get_ensembleId ();
 	         uint32_t currentSId =
 	                     extract_epg (name, serviceList, ensembleId);
-	         fprintf (stderr, "currentSID = %X\n", currentSId);
 	         if (currentSId != 0) {
 	            FILE *f = fopen (name. toUtf8 (). data (), "w+b");
 	            if (f == nullptr)
@@ -999,8 +1001,6 @@ QString realName;
 	         }
 //	         epgHandler. decode (epgData, realName);
 	      }
-//	      fprintf (stderr, "epg file %s\n",
-//	                            realName. toUtf8 (). data ());
 #endif
 	      return;
 
@@ -1167,11 +1167,15 @@ int	serviceOrder;
 	if (currentService. valid) 
 	   s = currentService;
 	stopScanning    (false);
-	stopService     ();
-	fprintf (stderr, "change detected\n");
+//
+	stopService	(s);
+	if (secondService. valid)
+	   stopService (secondService);
+	fprintf (stderr, "change will be effected\n");
 	serviceOrder	= 
 	        dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
-//
+
+	
 //	we rebuild the services list from the fib and
 //	then we (try to) restart the service
 	serviceList	= my_dabProcessor -> getServices (serviceOrder);
@@ -1185,28 +1189,39 @@ int	serviceOrder;
 	}
 	ensembleDisplay -> setModel (&model);
 //
-//	and restart the one that was running
-	if (s. valid) {
-	   if (s. SCIds != 0) { // secondary service may be gone
-	      if (my_dabProcessor -> findService (s. SId, s. SCIds) ==
-	                                                   s. serviceName) {
-	         startService (&s);
-	         return;
-	      }
-	      else {
-	         s. SCIds = 0;
-	         s. serviceName =
-	               my_dabProcessor -> findService (s. SId, s. SCIds);
-	      }
+//	and restart the services that - may be - were running
+	if (secondService. valid) {
+	   packetdata pd;
+	   my_dabProcessor -> dataforPacketService (secondService. serviceName,
+	                                                        &pd, 0);
+	   if (pd. defined) {
+	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	      secondService. serviceName = pd. serviceName;
+              secondService. is_audio = false;
+              secondService. channel = channel. channelName;
+              secondService. SId     = pd. SId;
+              secondService. SCIds   = pd. SCIds;
+              secondService. subChId = pd. subchId;
+              secondService. valid   = true;
 	   }
-//	checking for the main service
-	   if (s. serviceName != 
-	              my_dabProcessor -> findService (s. SId, s. SCIds)) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                     tr ("insufficient data for this program\n"));
+	   else
+	      secondService. valid = false;
+	}
+
+//	Of course, it may be disappeared
+	if (s. valid) {
+	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (ss != "") {
+	      startService (&s);
 	      return;
 	   }
-	   startService (&s);
+//
+//	The service is gone, it may be the subservice of another one
+	   s. SCIds = 0;
+	   s. serviceName =
+	               my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (s. serviceName != "")
+	      startService (&s);
 	}
 }
 //
@@ -1304,8 +1319,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete	motSlides;
 	if (currentServiceDescriptor != nullptr)
 	   delete currentServiceDescriptor;
-//	delete	dataDisplay;
-//	delete	configDisplay;
 	delete	my_history;
 	delete	my_timeTable;
 //	close();
@@ -1943,11 +1956,6 @@ void	RadioInterface::show_tii_spectrum	() {
 	my_tiiViewer. showSpectrum (1);
 }
 
-//
-//	if a tii file exists, we will look into it to see whether we
-//	can identify a transmitter. Of course, if no such file
-//	exists, we do not want to continuosly search for the
-//	transmitter
 void	RadioInterface::show_tii	(int mainId, int subId) {
 QString a = "Est: ";
 bool	found	= false;
@@ -2015,15 +2023,15 @@ bool	tiiChange	= false;
 	                   QString::number (mainId) + " " +
 	                   QString::number (subId));
 	         }
-	         else
+	         else 
 	         if (theName != channel. transmitterName)  {
 	            channel. transmitterName = theName;
 	            float latitude, longitude;
 	            tiiProcessor. get_coordinates (&latitude,
 	                                           &longitude,
 	                                           channel. realChannel ?
-	                                              channel. channelName :
-	                                              "any",
+	                                               channel. channelName :
+	                                               "any",
 	                                           theName);
 	            fprintf (stderr, "%s (%f, %f)\n",
 	                              theName. toUtf8 (). data (),
@@ -2036,27 +2044,19 @@ bool	tiiChange	= false;
 	                     QString::number (snrDisplay -> value ()));
 	            QString labelText =  channel. transmitterName;
 //
-//	if our own position ois known, we show the distance
-	            if ((homeAddress. latitude != 0) &&
-	                (homeAddress. longitude != 0)) {
-	               int distance = tiiProcessor.
-	                               distance (latitude, longitude,
-	                                         homeAddress. latitude,
-	                                         homeAddress. longitude);
-	               int hoek	 = tiiProcessor.
-	                               corner (latitude,
-                                               longitude,
-                                               homeAddress. latitude,
-                                               homeAddress. longitude);
-	               LOG ("distance ", QString::number (distance));
-	               LOG ("corner ", QString::number (hoek));
-	               labelText +=  + " " +
+//	if our own position is known, we show the distance
+	            int distance = tiiProcessor.
+	                               distance (latitude, longitude);
+	            int hoek	 = tiiProcessor.
+	                               corner (latitude, longitude);
+	            LOG ("distance ", QString::number (distance));
+	            LOG ("corner ", QString::number (hoek));
+	            labelText +=  + " " +
 	                               QString::number (distance) + " km" +
 	                               " " + QString::number (hoek);
-	               labelText += QString::fromLatin1 (" \xb0 ");
-	               fprintf (stderr, "%s\n",
-	                                  labelText. toUtf8 (). data ());
-	            }
+	            labelText += QString::fromLatin1 (" \xb0 ");
+	            fprintf (stderr, "%s\n",
+	                               labelText. toUtf8 (). data ());
 	            distanceLabel -> setText (labelText);
 	         }
 	      }
@@ -2605,7 +2605,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         fprintf (stderr, "currentservice = %s (%d)\n",
 	                  currentService. serviceName. toUtf8 (). data (),
 	                                currentService. valid);
-	         stopService ();
+	         stopService (currentService);
+	         currentService. valid =  false;
 	         selectService (ensembleDisplay -> currentIndex ());
 	         stopScanning (false);
 	      }
@@ -2758,7 +2759,8 @@ int	switchDelay;
 	}
 
 	if (theChannel == channel. channelName) {
-	   stopService ();
+	   stopService (currentService);
+	   currentService. valid = false;
 	   dabService s;
 	   my_dabProcessor -> getParameters (service, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
@@ -2804,7 +2806,7 @@ int	switchDelay;
 //	handling services: stop and start
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	() {
+void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stop_muting	();
@@ -2820,36 +2822,29 @@ void	RadioInterface::stopService	() {
 	if (frameDumper != nullptr) {
 	   stop_frameDumping ();
 	}
+
 	if (audioDumper != nullptr) {
 	   stop_audioDumping ();
 	}
-	if (currentService. valid) {
-	   QString serviceName = currentService. serviceName;
-	   if (my_dabProcessor -> is_audioService (serviceName)) {
-	      audiodata ad;
-	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
-	      my_dabProcessor -> stopService (&ad);
-	      soundOut	-> stop ();
-	      for (int i = 0; i < 10; i ++) {
+
+	if (s. valid) {
+	   my_dabProcessor -> stopService (s. subChId);
+	   if (s. is_audio) {
+	      soundOut -> stop ();
+	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
-	         my_dabProcessor -> dataforPacketService (ad. serviceName, &pd, i);
+	         my_dabProcessor -> dataforPacketService (s. serviceName, &pd, i);
 	         if (pd. defined) {
-	            my_dabProcessor -> stopService (&pd);
+	            my_dabProcessor -> stopService (pd. subchId);
 	            break;
 	         }
 	      }
-	   }
-	   else {
-	      packetdata pd;
-	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-	      if (pd. defined)
-	         my_dabProcessor -> stopService (&pd);
 	   }
 
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
-	      if (itemText == serviceName) {
+	      if (itemText == s. serviceName) {
 	         colorService (model. index (i, 0), Qt::black, fontSize);
 	         break;
 	      }
@@ -2857,6 +2852,7 @@ void	RadioInterface::stopService	() {
 	}
 	cleanScreen	();
 }
+//
 //
 void	RadioInterface::selectService (QModelIndex ind) {
 QString	currentProgram = ind. data (Qt::DisplayRole). toString();
@@ -2873,7 +2869,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString();
 	channelTimer.	stop	();
 	stopScanning	(false);
 
-	stopService 	();		// if any
+	stopService 	(currentService);		// if any
+	currentService. valid = false;
 
 	dabService s;
 	s. serviceName = currentProgram;
@@ -2913,6 +2910,7 @@ QString serviceName	= s -> serviceName;
 	      if (ad. defined) {
 	         currentService. valid		= true;
 	         currentService. is_audio	= true;
+	         currentService. subChId	= ad. subchId;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
@@ -2925,6 +2923,7 @@ QString serviceName	= s -> serviceName;
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
 	         currentService. valid		= true;
 	         currentService. is_audio	= false;
+	         currentService. subChId	= ad. subchId;
 	         start_packetService (serviceName);
 	         dabSettings	-> setValue ("presetname", "");
 	      }
@@ -2990,9 +2989,9 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-	fprintf (stderr, "we start %s at %.2d:%.2d\n",
-	                        ad -> serviceName. toUtf8 (). data (),
-	                        theTime. hour (), theTime. minute ());
+//	fprintf (stderr, "we start %s at %.2d:%.2d\n",
+//	                        ad -> serviceName. toUtf8 (). data (),
+//	                        theTime. hour (), theTime. minute ());
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
@@ -3133,7 +3132,8 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 
 	QString oldService	= currentService. serviceName;
 	
-	stopService  ();
+	stopService  (currentService);
+	currentService. valid = false;
 
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
@@ -3287,6 +3287,7 @@ void	RadioInterface::stopChannel	() {
 	usleep (1000);		// may be handling pending signals?
 	currentService. valid	= false;
 	nextService. valid	= false;
+	secondService. valid	= false;
 
 //	all stopped, now look at the GUI elements
 	ficError_display	-> setValue (0);
@@ -4208,10 +4209,17 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	         secondService. serviceName = pd. serviceName;
+	         secondService. is_audio = false;
+	         secondService. channel	= channel. channelName;
+	         secondService. SId	= pd. SId;
+	         secondService. SCIds	= pd. SCIds;
+	         secondService. subChId	= pd. subchId;
+	         secondService. valid	= true;
 	         break;
 	      }
 	   }
-//#ifdef	__DABDATA__
+#ifdef	__DABDATA__
 	   else {
 	      packetdata pd;
 	      my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
@@ -4221,10 +4229,17 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	         secondService. serviceName = pd. serviceName;
+	         secondService. is_audio = false;
+	         secondService. channel	= channel. channelName;
+	         secondService. SId	= pd. SId;
+	         secondService. SCIds	= pd. SCIds;
+	         secondService. subChId	= pd. subchId;
+	         secondService. valid	= true;
 	         break;
 	      }
 	   }
-//#endif
+#endif
 	}
 }
 #endif
@@ -4339,9 +4354,15 @@ void	RadioInterface::nrServices	(int n) {
 }
 
 void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-QString theTime	= QDateTime::currentDateTime (). toString ();
+QString theTime;
 	if (logFile == nullptr)
 	   return;
+	if (configWidget. utcSelector -> isChecked ())
+           theTime  = convertTime (UTC. year, UTC. month, UTC. day,
+	                                  UTC. hour, UTC. minute);
+	else
+	   theTime = QDateTime::currentDateTime (). toString ();
+
 	fprintf (logFile, "at %s: %s %s\n",
 	              theTime. toUtf8 (). data (),
 	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
@@ -4362,7 +4383,6 @@ void	RadioInterface::handle_LoggerButton (int s) {
 }
 
 void	RadioInterface::handle_set_coordinatesButton	() {
-	fprintf (stderr, "going for coord\n");
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
 }
@@ -4382,5 +4402,4 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	else
 	   channel. tiiFile = false;
 }
-
  

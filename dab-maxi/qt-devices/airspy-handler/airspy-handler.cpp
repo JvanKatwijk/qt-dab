@@ -47,13 +47,13 @@ uint32_t samplerateCount;
 	setupUi (&myFrame);
 	myFrame. show		();
 
-	airspySettings	-> beginGroup ("airspySettings");
+	airspySettings		-> beginGroup ("airspySettings");
 	int16_t temp 		= airspySettings -> value ("linearity", 10).
-	                                                          toInt();
+	                                                             toInt();
 	linearitySlider		-> setValue (temp);
 	linearityDisplay	-> display  (temp);
 	temp			= airspySettings -> value ("sensitivity", 10).
-	                                                          toInt();
+	                                                             toInt();
 	sensitivitySlider	-> setValue (temp);
 	sensitivityDisplay	-> display (temp);
 
@@ -215,7 +215,6 @@ uint32_t samplerateCount;
 	convIndex	= 0;
 	convBuffer. resize (convBufferSize + 1);
 //
-//	
 	tabWidget	-> setCurrentIndex (0);
 	set_vga_gain	(vgaSlider	-> value ());
 	set_lna_gain	(lnaSlider	-> value ());
@@ -371,6 +370,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return false;
 	}
 
+	fprintf (stderr, "currentTab %d\n", currentTab);
 	if (currentTab == 0)
 	   set_sensitivity	(sensitivitySlider -> value());
 	else 
