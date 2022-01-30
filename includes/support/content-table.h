@@ -47,7 +47,8 @@ public:
 	void	hide		();
 	bool	isVisible	();
 	void	clearTable	();
-	void	ensemble	(const QString &, const QString &);
+	void	ensemble	(const QString &,
+	                         const QString &, const QString &);
 	void	new_headline	();
 	void	add_to_Ensemble	(audiodata *);
 private:

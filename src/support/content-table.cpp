@@ -156,12 +156,14 @@ int16_t	row	= addRow ();
 }
 
 void	contentTable::ensemble		(const QString &ensembleName,
-	                                 const QString &channel) {
+	                                 const QString &channel,
+	                                 const QString &theTime) {
 	this	-> ensembleName	= ensembleName;
 	this	-> channel	= channel;
 	is_clear	= false;
 	contentWidget	-> item (0, 0) -> setText (ensembleName);
 	contentWidget	-> item (0, 1) -> setText (channel);
+	contentWidget	-> item (0, 2) -> setText (theTime);
 }
 
 void	contentTable::add_to_Ensemble	(audiodata *theDescriptor) {

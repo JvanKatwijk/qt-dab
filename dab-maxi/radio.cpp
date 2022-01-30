@@ -912,9 +912,20 @@ void	RadioInterface::handle_contentButton	() {
 	   my_contentTable = nullptr;
 	   return;
 	}
+	QString theTime;
+
+	if (configWidget. utcSelector -> isChecked ())
+	   theTime	= convertTime (UTC. year,  UTC. month,
+	                               UTC. day, UTC. hour, UTC. minute);
+	else
+	   theTime	= convertTime (localTime. year,  localTime. month,
+	                               localTime. day, localTime. hour,
+	                               localTime. minute);
+
 	my_contentTable		= new contentTable (this, dabSettings);
-	my_contentTable -> ensemble (channel. ensembleName,
-	                             channel. channelName);
+	my_contentTable		-> ensemble (channel. ensembleName,
+	                                     channel. channelName,
+	                                     theTime);
 	for (serviceId serv: serviceList) {
 	   QString serviceName = serv. name;
            audiodata ad;
