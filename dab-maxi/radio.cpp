@@ -1758,7 +1758,12 @@ void	RadioInterface::clockTime (int year, int month, int day,
 	this	-> UTC. day		= d2;
 	this	-> UTC. hour		= h2;
 	this	-> UTC. minute		= m2;
-	QString result	= convertTime (year, month, day, hours, minutes);
+	QString result;
+	if (configWidget. utcSelector -> isChecked ())
+	   result	= convertTime (year, month, day, h2, m2);
+	else
+	   result	= convertTime (year, month, day,
+	                                     hours, minutes);
 	localTimeDisplay -> setText (result);
 }
 

@@ -351,8 +351,8 @@ CONFIG		+= lime
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= JAN
-CONFIG		+= loadTables
+CONFIG		+= JAN
+#CONFIG		+= loadTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
