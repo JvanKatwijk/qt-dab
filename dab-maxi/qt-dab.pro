@@ -743,10 +743,10 @@ fdk-aac	{
 }
 
 JAN	{
-	DEFINES		+= __WITH_JAN__
-	INCLUDEPATH	+= /usr/include/eigen3
-	HEADERS		+= ../includes/ofdm/channel.h 
-	SOURCES		+= ../src/ofdm/channel.cpp
+#	DEFINES		+= __WITH_JAN__
+#	INCLUDEPATH	+= /usr/include/eigen3
+#	HEADERS		+= ../includes/ofdm/channel.h 
+#	SOURCES		+= ../src/ofdm/channel.cpp
 	LIBS		+= -lcurl
 	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES

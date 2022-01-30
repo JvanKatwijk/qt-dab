@@ -14,32 +14,18 @@ the name of the Tranmitter whose TII  (Transmitter Identification
 Information) as well as the distance of the receiver to that
 transmitter and the azimuth.
 
+Note that  - since the provider of the database has asked to keep
+the source of the database out of sight, and some "user's" are
+showing contempt to that request - I am forced to
+leave the database related code decoupled from the source tree
+(If you want to include that code, please contact me privately)
+
+The precompiled versions, i.e. the AppImage and the Windows setup
+file have the facilities compiled in.
+
 Note that the documentation is NOT updated, and since I do not have
 time right now, it will take some time before this README and the
 manual are updated
-
-Important changes are
-a. if configured, touching the button "load table" on the configuration
-widget will load - as the name suggests - a table with TII data
-b. Touch the button "coordinates" on the configuation window to tell
-the system what the coordinates - decimal, i.e  52.0123 and 5.0456  -
-of the receiver are.
-
-If configured, the main widget will show the name of the transmitter,
-the distance and the azimuth as the pictures above show.
-
-Configuration issues
-a. the build process using CMake does NOT support the configuration
-settings required for supporting the TII data
-b. using qmake:
-
-	- install curl and its development files;
-	- uncomment "loadTables" in the ".pro" file and adapt the paths in the
-	  loadTables section
-
-NOTE THAT THE AUTOMATICALLY GENERATED APPIMAGE HAS NO SUPPORT FOR 
-SHOWING TII NAMES, USE THE ONE WITH THE 4.3 IN ITS NAME
-
 
 ------------------------------------------------------------------
 Table of Contents
