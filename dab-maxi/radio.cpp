@@ -323,8 +323,7 @@ uint8_t	dabBand;
 	configWidget. switchDelaySetting -> setValue (x);
 
 	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
-	if (b)
-	   configWidget.  utcSelector -> setChecked (true);
+	configWidget.  utcSelector -> setChecked (b);
 	currentService. valid	= false;
 	nextService. valid	= false;
 	secondService. valid	= false;
@@ -807,7 +806,7 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_correlationViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("snrVisible",
 	                          my_snrViewer. isHidden () ? 0 : 1);
-	s	-> setValue ("utcSelected",
+	s	-> setValue ("utcSelector",
 	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
 	s	-> sync();
 }

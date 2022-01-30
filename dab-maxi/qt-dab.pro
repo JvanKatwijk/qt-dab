@@ -423,8 +423,8 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-	CONFIG		+= loadTables
-#	CONFIG		+= JAN
+#	CONFIG		+= loadTables
+	CONFIG		+= JAN
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
