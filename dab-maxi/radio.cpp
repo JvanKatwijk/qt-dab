@@ -238,7 +238,7 @@ uint8_t convert (QString s) {
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-	                                        tiiProcessor (Si),
+	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule) {
 int16_t	latency;
@@ -2059,23 +2059,32 @@ bool	tiiChange	= false;
 	                     QString::number (snrDisplay -> value ()));
 	            QString labelText =  channel. transmitterName;
 //
-//	if our own position is known, we show the distance
-	            int distance = tiiProcessor.
-	                               distance (latitude, longitude);
-	            int hoek	 = tiiProcessor.
-	                               corner (latitude, longitude);
-	            LOG ("distance ", QString::number (distance));
-	            LOG ("corner ", QString::number (hoek));
-	            labelText +=  + " " +
+//      if our own position is known, we show the distance
+                    float ownLatitude =
+                           dabSettings -> value ("latitude", 0). toFloat ();
+                    float ownLongitude =
+                           dabSettings -> value ("longitude", 0). toFloat ();
+                    if ((ownLatitude != 0) && (ownLongitude != 0)) {
+	               int distance = tiiProcessor.
+	                                  distance (latitude, longitude,
+	                                            ownLatitude, ownLongitude);
+	               int hoek	 = tiiProcessor.
+	                               corner (latitude, longitude,
+	                                       ownLatitude, ownLongitude);
+	               LOG ("distance ", QString::number (distance));
+	               LOG ("corner ", QString::number (hoek));
+	               labelText +=  + " " +
 	                               QString::number (distance) + " km" +
 	                               " " + QString::number (hoek);
-	            labelText += QString::fromLatin1 (" \xb0 ");
-	            fprintf (stderr, "%s\n",
+	               labelText += QString::fromLatin1 (" \xb0 ");
+	               fprintf (stderr, "%s\n",
 	                               labelText. toUtf8 (). data ());
-	            distanceLabel -> setText (labelText);
+	               distanceLabel -> setText (labelText);
+	         
 	         }
 	      }
 	   }
+	}
 	}
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
@@ -3525,7 +3534,11 @@ QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
 	   fprintf (stderr, "Expert error 26\n");
 	   return;
 	}
-	theTable. newEnsemble (" ",
+	QString ss      = convertTime (UTC. year, UTC.month,
+                                               UTC. day, UTC. hour,
+                                               UTC. minute);
+
+	theTable. newEnsemble (ss,
 	                       channelSelector -> currentText (),
 	                       channel. ensembleName,
 	                       hextoString (channel. Eid),
