@@ -2028,7 +2028,7 @@ bool	tiiChange	= false;
 	                        get_transmitterName (channel. realChannel?
 	                                                channel. channelName :
 	                                                "any",
-	                                             channel. countryName,
+//	                                             channel. countryName,
 	                                             channel. Eid,
 	                                             mainId, subId);
 	         if (theName == "") {

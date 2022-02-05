@@ -352,7 +352,9 @@ CONFIG		+= lime
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #CONFIG		+= JAN
-CONFIG		+= loadTables
+#CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
+CONFIG		+= noTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -423,8 +425,9 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-#	CONFIG		+= loadTables
-	CONFIG		+= JAN
+	CONFIG		+= noTables
+#	CONFIG		+= JAN
+#	CONFIG		+= preCompiled
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -743,10 +746,13 @@ fdk-aac	{
 }
 
 JAN	{
-#	DEFINES		+= __WITH_JAN__
-#	INCLUDEPATH	+= /usr/include/eigen3
-#	HEADERS		+= ../includes/ofdm/channel.h 
-#	SOURCES		+= ../src/ofdm/channel.cpp
+	DEFINES		+= __WITH_JAN__
+	INCLUDEPATH	+= /usr/include/eigen3
+	HEADERS		+= ../includes/ofdm/channel.h 
+	SOURCES		+= ../src/ofdm/channel.cpp
+}
+
+preCompiled {
 	LIBS		+= -lcurl
 	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
@@ -754,8 +760,13 @@ JAN	{
 	SOURCES		+= ../../TII-CODES/tii-codes.cpp
 }
 
+tiiLib	{
+	INCLUDEPATH	+= ../src/support/tii-library
+	HEADERS		+= ../src/support/tii-library/tii-codes.h
+	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
+}
 
-loadTables	{
+noTables {
 	INCLUDEPATH	+= ../src/support/tii-codes
 	HEADERS		+= ../src/support/tii-codes/tii-codes.h
 	SOURCES		+= ../src/support/tii-codes/tii-codes.cpp

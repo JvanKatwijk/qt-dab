@@ -996,15 +996,56 @@ QString theValue;
         if (result. size () != 9)        // should not happen
            return;
 
-        linearity		= result. at (0). toInt ();
-        sensitivity		= result. at (1). toInt ();
-        lnaGainValue		= result. at (2). toInt ();
-	mixerGainValue		= result. at (3). toInt ();
-	vgaGainValue		= result. at (4). toInt ();
 	lna_agc			= result. at (5). toInt ();
 	mixer_agc		= result. at (6). toInt ();
 	rf_bias			= result. at (7). toInt ();
 	tab_setting		= result. at (8). toInt ();
+	switch (tab_setting) {
+	   case 0:	// sensitivity
+              sensitivity		= result. at (1). toInt ();
+	      sensitivitySlider -> blockSignals (true);
+	      new_sensitivityValue	(sensitivity);
+	      new_sensitivityDisplay	(sensitivity);
+	      while (sensitivitySlider -> value () != sensitivity)
+	         usleep (1000);
+	      sensitivitySlider -> blockSignals (false);
+	      break;
+	   case 1:	// linearity
+              linearity		= result. at (0). toInt ();
+	      linearitySlider	-> blockSignals (true);
+	      new_linearityValue	(linearity);
+	      new_linearityDisplay	(linearity);
+	      while (linearitySlider -> value () != linearity)
+	         usleep (1000);
+	      linearitySlider	-> blockSignals (false);
+	      break;
+	   default:
+	      break;
+	}
+	lnaGainValue		= result. at (2). toInt ();
+	mixerGainValue		= result. at (3). toInt ();
+	vgaGainValue		= result. at (4). toInt ();
+
+	lnaSlider		-> blockSignals (true);
+	new_lnaGainValue	(lnaGainValue);
+	new_lnaDisplay		(lnaGainValue);
+	while (lnaSlider -> value () != lnaGainValue)
+	   usleep (1000);
+	lnaSlider		-> blockSignals (false);
+
+	vgaSlider	-> blockSignals (true);
+	new_vgaGainValue	(vgaGainValue);
+	new_vgaDisplay		(vgaGainValue);
+	while (vgaSlider -> value () != vgaGainValue)
+	   usleep (1000);
+	vgaSlider	-> blockSignals (false);
+
+	mixerSlider	-> blockSignals (true);
+	new_mixerValue	(mixerGainValue);
+	new_mixerDisplay	(mixerGainValue);
+	while (mixerSlider -> value () != mixerGainValue)
+	   usleep (1000);
+	mixerSlider	-> blockSignals (false);
 
 	lnaButton	-> blockSignals (true);
 	lnaButton	-> setChecked (lna_agc);
@@ -1020,41 +1061,6 @@ QString theValue;
 	biasButton	-> setChecked (rf_bias);
 	usleep (1000);
 	biasButton	-> blockSignals (false);
-	
-	lnaSlider	-> blockSignals (true);
-	new_lnaGainValue	(lnaGainValue);
-	new_lnaDisplay		(lnaGainValue);
-	while (lnaSlider -> value () != lnaGainValue)
-	   usleep (1000);
-	lnaSlider	-> blockSignals (false);
-
-	vgaSlider	-> blockSignals (true);
-	new_vgaGainValue	(vgaGainValue);
-	new_vgaDisplay		(vgaGainValue);
-	while (vgaSlider -> value () != vgaGainValue)
-	   usleep (1000);
-	vgaSlider	-> blockSignals (false);
-
-	mixerSlider	-> blockSignals (true);
-	new_mixerValue		(mixerGainValue);
-	new_mixerDisplay	(mixerGainValue);
-	while (mixerSlider -> value () != mixerGainValue)
-	   usleep (1000);
-	mixerSlider	-> blockSignals (false);
-
-	linearitySlider	-> blockSignals (true);
-	new_linearityValue	(linearity);
-	new_linearityDisplay	(linearity);
-	while (linearitySlider -> value () != linearity)
-	   usleep (1000);
-	linearitySlider	-> blockSignals (false);
-
-	sensitivitySlider -> blockSignals (true);
-	new_sensitivityValue	(sensitivity);
-	new_sensitivityDisplay	(sensitivity);
-	while (sensitivitySlider -> value () != sensitivity)
-	   usleep (1000);
-	sensitivitySlider -> blockSignals (false);
 
 	tabWidget	-> blockSignals (true);
 	new_tabSetting (tab_setting);

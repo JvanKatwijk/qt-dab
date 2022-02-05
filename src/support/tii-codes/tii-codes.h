@@ -52,7 +52,6 @@ public:
 		~tiiHandler	();
 	bool	tiiFile 	(const QString &);
 	QString	get_transmitterName (const QString &,
-	                             const QString &,
 	                             uint16_t Eid,
 	                             uint8_t mainId, uint8_t subId);
 	void	get_coordinates	(float *, float *,

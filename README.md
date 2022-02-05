@@ -9,19 +9,39 @@ Qt-DAB-4.3 is software for Linux, Windows and Raspberry Pi for listening to terr
 IMPORTANT: What is new in 4.3
 ----------------------------------------------------------------------
 
-Qt-DAB-4.3 adds as configuration option, the option to show
-the name of the Tranmitter whose TII  (Transmitter Identification
-Information) as well as the distance of the receiver to that
+Qt-DAB-4.3 adds as configuration option, the possibility to show
+the name of the tranmitter whose TII  (Transmitter Identification
+Information) is seen, as well as the distance of the receiver to that
 transmitter and the azimuth.
 
 Note that  - since the provider of the database has asked to keep
 the source of the database out of sight, and some "user's" are
-showing contempt to that request - I am forced to
+showing contempt to that request - I am unfortunately forced to
 leave the database related code decoupled from the source tree
-(If you want to include that code, please contact me privately)
+and the sources are only available under a restricted license.
+
+There are basically three options for building your own executable
+
+*  just compile the stuff without code for handling tii tables 
+   configure with "CONFIG += noTables", which is the default.
+
+*  configure on an x64 Linux box with "CONFIG += tiiLib".
+   To actually use the tii-tables a shared library,
+   "libtii-lib.so", which is available under a restricted
+   license, has to be installed (the functions of that
+   library will be loaded dynamically, so if "libtii-lib.so" is
+   not in the library search path, behaviour is as with the
+   previous option).
+   Note that the libtii-lib.so itself depends (a.o) on libcurl,
+   that needs to be installed for proper functioning.
+
+*  configure for "CONGIG += preCompiled", but then you will need some
+   additional source which is only available under a restricted license
+   (contact me privately for information)
 
 The precompiled versions, i.e. the AppImage and the Windows setup
-file have the facilities compiled in.
+file have the facilities compiled in, but the database used
+might be differently encoded.
 
 Note that the documentation is NOT updated, and since I do not have
 time right now, it will take some time before this README and the

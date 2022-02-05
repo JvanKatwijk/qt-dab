@@ -58,9 +58,9 @@ bool	tiiHandler::tiiFile	(const QString &s) {
 	
 	QString tiiHandler::
 	        get_transmitterName (const QString &channel,
-	                             const QString &country, uint16_t Eid,
+	                             uint16_t Eid,
                                      uint8_t mainId, uint8_t subId) {
-	(void)channel; (void)country;
+	(void)channel;
 	(void)Eid; (void)mainId; (void)subId;
 	return "";
 }
