@@ -31,11 +31,11 @@ There are basically three options for building your own executable
    license, has to be installed (the functions of that
    library will be loaded dynamically, so if "libtii-lib.so" is
    not in the library search path, behaviour is as with the
-   previous option).
+   previous option). The shared library can be found in the directory "library".
    Note that the libtii-lib.so itself depends (a.o) on libcurl,
    that needs to be installed for proper functioning.
 
-*  configure for "CONGIG += preCompiled", but then you will need some
+*  configure for "CONFIG += preCompiled", but then you will need some
    additional source which is only available under a restricted license
    (contact me privately for information)
 
