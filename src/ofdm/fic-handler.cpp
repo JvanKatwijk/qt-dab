@@ -59,7 +59,6 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficBlocks	= 0;
 	ficMissed	= 0;
 	ficRatio	= 0;
-
 	for (i = 0; i < 768; i ++) {
 	   PRBS [i] = shiftRegister [8] ^ shiftRegister [4];
 	   for (j = 8; j > 0; j --)
@@ -106,11 +105,13 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	connect (this, SIGNAL (show_ficSuccess (bool)),
 	         mr, SLOT (show_ficSuccess (bool)));
+
+	ficPointer	= 0;
+	ficDumpPointer	= nullptr;
 }
 
 		ficHandler::~ficHandler() {
 }
-
 	
 /**
   *	\brief process_ficBlock
@@ -193,11 +194,30 @@ int16_t	inputCount	= 0;
   *	was lost.
   */
 
+	static int ccc = 0;
 	for (i = ficno * 3; i < ficno * 3 + 3; i ++) {
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
 	   if (!check_CRC_bits (p, 256)) {
 	      show_ficSuccess (false);
 	      continue;
+	   }
+
+	   for (int j = 0; j < 32; j ++) {
+	      int bufferP	= ficPointer + j;
+	      ficBuffer [bufferP] = 0;
+	      for (int k = 0; k < 8; k ++) {
+	         ficBuffer [bufferP] <<= 1;
+	         ficBuffer [bufferP] |= p [8 * j + k];
+	      }
+	   }
+
+	   ficPointer += 32;
+	   if (ficPointer >= 256) {
+	      ficLocker. lock ();
+	      if (ficDumpPointer != nullptr)
+	         fwrite (ficBuffer, 1, 256, ficDumpPointer);
+	      ficLocker. unlock ();
+	      ficPointer = 0;
 	   }
 
 	   show_ficSuccess (true);
@@ -210,6 +230,18 @@ void	ficHandler::stop	() {
 
 void	ficHandler::reset	() {
 	clearEnsemble ();
+}
+
+void	ficHandler::start_ficDump	(FILE *f) {
+	if (ficDumpPointer != nullptr)
+	   return;
+	ficDumpPointer = f;
+}
+
+void	ficHandler::stop_ficDump	() {
+	ficLocker. lock ();
+	ficDumpPointer = nullptr;
+	ficLocker. unlock ();
 }
 
 

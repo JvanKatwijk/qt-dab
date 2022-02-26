@@ -37,7 +37,7 @@ Q_OBJECT
 public:
 		timeTableHandler	(RadioInterface *radio);
 		~timeTableHandler	();
-	void	addElement		(int, const QString &);
+	void	addElement		(int, const QString &, const QString &);
 	void	clear			();
 private:
 	QStringList		timeTableList;

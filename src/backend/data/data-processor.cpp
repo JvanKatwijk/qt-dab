@@ -80,6 +80,7 @@
 void	dataProcessor::addtoFrame (std::vector<uint8_t> outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
+
 	   if ((this -> DSCTy == 5) &&
 	       (this -> DGflag))	// no datagroups
 	      handleTDCAsyncstream (outV. data(), 24 * bitRate);
@@ -115,14 +116,14 @@ int16_t	address		= getBits   (data, 6, 10);
 uint16_t command	= getBits_1 (data, 16);
 int32_t	usefulLength	= getBits_7 (data, 17);
 //	if (usefulLength > 0)
-//	      fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
+//	   fprintf (stderr, "CI = %d, address = %d, usefulLength = %d\n",
 //	                       continuityIndex, address, usefulLength);
 
 	if (continuityIndex != expectedIndex) {
 	   expectedIndex = 0;
 	   return;
 	}
-//
+
 	expectedIndex = (expectedIndex + 1 ) % 4;
 	(void)command;
 
@@ -133,8 +134,8 @@ int32_t	usefulLength	= getBits_7 (data, 17);
 	if (address == 0)
 	   return;		// padding packet
 //
-//	if (packetAddress != address)	// sorry
-//	   return;
+	if (packetAddress != address)	// sorry
+	   return;
 	
 //	assemble the full MSC datagroup
 

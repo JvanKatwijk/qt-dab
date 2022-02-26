@@ -51,7 +51,7 @@
 #include	"tcp-server.h"
 #endif
 #include	"preset-handler.h"
-#include	"scanner-table.h"
+//#include	"scanner-table.h"
 #ifdef	TRY_EPG
 #include	"epgdec.h"
 #include	"epg-decoder.h"
@@ -137,7 +137,7 @@ private:
 	snrViewer		my_snrViewer;
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
-	scannerTable		theTable;
+//	scannerTable		theTable;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
@@ -150,6 +150,7 @@ private:
 	int			fontSize;
 	int			fmFrequency;
 	contentTable		*my_contentTable;
+	contentTable		*my_scanTable;
 	FILE			*logFile;
 	void			LOG		(const QString &,
 	                                           const QString &);
@@ -258,6 +259,8 @@ private:
         void			stop_audioDumping       ();
         void			scheduled_audioDumping	();
 	void			scheduled_dlTextDumping ();
+	void			scheduled_ficDumping ();
+	FILE			*ficDumpPointer;
 
         void			start_sourceDumping     ();
         void			stop_sourceDumping      ();
@@ -296,6 +299,7 @@ private:
 	struct {
 	   QString	channelName;
 	   bool		realChannel;
+	   int		frequency;
 	   QString	ensembleName;
 	   uint32_t	Eid;
 	   bool		has_ecc;
@@ -363,8 +367,9 @@ public slots:
 	void			show_clockError		(int);
 	void			show_null		(int);
 #ifdef	TRY_EPG
-	void			set_epgData		(int,
-	                                                 int, const QString &);
+	void			set_epgData		(int, int,
+	                                                 const QString &,
+	                                                 const QString &);
 	void			epgTimer_timeOut	();
 #endif
 	void			switchVisibility	(QWidget *);

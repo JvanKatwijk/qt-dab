@@ -39,13 +39,16 @@
 }
 
 void	timeTableHandler::addElement (int theTime,
-	                              const QString &theText) {
+	                              const QString &theText,
+	                              const QString &theDescr) {
 int	hours	= theTime / 60;
 int	minutes	= theTime % 60;
 char t [6];
 	sprintf (t, "%.2d:%.2d", theTime / 60, theTime % 60);
 	
-	const QString listElement = QString (t)+ " -- " + theText;
+	QString listElement = QString (t)+ " -- " + theText;
+	if (theDescr != "")
+	   listElement += " \n\t-- " + theDescr;
 	timeTableList. append (listElement);
 	displayList. setStringList (timeTableList);
 	this	-> setModel (&displayList);

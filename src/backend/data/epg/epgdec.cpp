@@ -37,6 +37,7 @@
 
 static QDomElement element (QDomDocument &doc, const tag_length_value &tlv);
 
+static int cnt	= 0;
 void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
                                              const QString &name) {
 //	clear the doc, allowing re-use 
@@ -52,8 +53,16 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
 	      fprintf (epgFile, test. toLatin1(). data());
 	      fclose (epgFile);
 	   }
-	   else
-	      fprintf (stderr, "cannot open %s\n", name. toUtf8(). data());
+	   else {
+	      QString name_2 = "epg file " + QString::number (cnt);
+	      cnt ++;
+	      epgFile = fopen (name_2. toUtf8 (). data (), "w");
+	      if (epgFile != 0) {
+	         fprintf (stderr, "filename = %s\n", name_2. toUtf8 (). data ());
+	         fprintf (epgFile, test. toLatin1 (). data ());
+	         fclose (epgFile);
+	      }
+	   }
 	}
 }
 

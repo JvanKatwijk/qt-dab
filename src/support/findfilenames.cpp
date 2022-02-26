@@ -252,13 +252,13 @@ FILE	*findfileNames::findScanDump_fileName		() {
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 	QString suggestedFileName =
-	                       saveDir + "Qt-DAB-scan" + "-" + theTime + ".txt";
+	                       saveDir + "Qt-DAB-scan" + "-" + theTime + ".csv";
 
 	QString fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
-	                                      "Text (*.txt)",
+	                                      "csv (*.csv)",
 	                                      Q_NULLPTR,
 	                                      QFileDialog::DontUseNativeDialog);
 	if (fileName == nullptr) // canceled?
@@ -287,13 +287,13 @@ FILE	*findfileNames::findSummary_fileName	() {
 	   if (!isValid (theTime. at (i)))
 	      theTime. replace (i, 1, '-');
 	QString suggestedFileName =
-	                  saveDir + "Qt-DAB-summary" + "-" + theTime + ".txt";
+	                  saveDir + "Qt-DAB-summary" + "-" + theTime + ".csv";
 
 	QString fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
-	                                      "Text (*.txt)",
+	                                      "csv (*.csv)",
 	                                      Q_NULLPTR,
 	                                      QFileDialog::DontUseNativeDialog);
 	if (fileName == nullptr)	// canceled ?
@@ -384,3 +384,20 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	   return nullptr;	
 	return fopen (fileName. toUtf8 (). data (), "w");
 }
+
+FILE	* findfileNames::find_ficDump_file	(const QString &channel) {
+QString	saveDir = dabSettings -> value ("contentDir",
+                                              QDir::homePath ()). toString ();
+QString theTime	= QDateTime::currentDateTime (). toString ();
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+
+	QString fileName = saveDir + channel  + "-" + theTime + ".fic";
+	return fopen (fileName. toUtf8 (). data (), "w+b");
+}
+

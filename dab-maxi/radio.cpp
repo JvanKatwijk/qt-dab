@@ -40,7 +40,6 @@
 #include	<vector>
 #include	"radio.h"
 #include	"band-handler.h"
-#include	"ensemble-printer.h"
 #include	"audio-descriptor.h"
 #include	"data-descriptor.h"
 #include	"rawfiles.h"
@@ -234,7 +233,7 @@ uint8_t convert (QString s) {
 	                                        my_snrViewer (this, Si),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
-	                                        theTable (this),
+//	                                        theTable (this),
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
@@ -250,6 +249,7 @@ uint8_t	dabBand;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
+	this	-> ficDumpPointer	=  nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -257,6 +257,7 @@ uint8_t	dabBand;
 	stereoSetting		= false;
 	serviceCount		= -1;
 	my_contentTable		= nullptr;
+	my_scanTable		= nullptr;
 
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
@@ -420,8 +421,10 @@ uint8_t	dabBand;
 #ifdef	TRY_EPG
 	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
 	connect (&epgProcessor,
-	             SIGNAL (set_epgData (int, int, const QString &)),
-	         this, SLOT (set_epgData (int, int, const QString &)));
+	         SIGNAL (set_epgData (int, int,
+	                              const QString &, const QString &)),
+	         this, SLOT (set_epgData (int, int,
+	                              const QString &, const QString &)));
 	if ((epgPath != "") && (!epgPath. endsWith ("/")))
 	   epgPath = epgPath + "/";
 //	timer for autostart epg service
@@ -906,6 +909,8 @@ QString s;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::handle_contentButton	() {
+QStringList s	= my_dabProcessor -> basicPrint ();
+
 	if (my_contentTable != nullptr) {
 	   my_contentTable -> hide ();
 	   delete my_contentTable;
@@ -913,7 +918,7 @@ void	RadioInterface::handle_contentButton	() {
 	   return;
 	}
 	QString theTime;
-
+	QString SNR	= "SNR " + QString::number (snrDisplay -> value ());
 	if (configWidget. utcSelector -> isChecked ())
 	   theTime	= convertTime (UTC. year,  UTC. month,
 	                               UTC. day, UTC. hour, UTC. minute);
@@ -922,16 +927,27 @@ void	RadioInterface::handle_contentButton	() {
 	                               localTime. day, localTime. hour,
 	                               localTime. minute);
 
-	my_contentTable		= new contentTable (this, dabSettings);
-	my_contentTable		-> ensemble (channel. ensembleName,
-	                                     channel. channelName,
-	                                     theTime);
-	for (serviceId serv: serviceList) {
-	   QString serviceName = serv. name;
-           audiodata ad;
-	   my_dabProcessor -> dataforAudioService (serviceName, &ad);
-	   my_contentTable -> add_to_Ensemble (&ad);
-	}
+	QString header		= channel. ensembleName + ";" +
+	                          channel. channelName  + ";" +
+                                  QString::number (channel. frequency) + ";" +
+                                  hextoString (channel. Eid) + " " + ";" +
+                                  transmitter_coordinates -> text () + " " + ";" +
+	                          theTime  + ";" +
+	                          SNR  + ";" +
+                                  QString::number (serviceList. size ()) + ";" +
+                                  distanceLabel -> text ();
+
+	my_contentTable		= new contentTable (this, dabSettings,
+	                                            channel. channelName,
+	                                            my_dabProcessor -> scanWidth ());
+	connect (my_contentTable, SIGNAL (goService (const QString &)),
+                 this, SLOT (handle_contentSelector (const QString &)));
+
+
+	my_contentTable		-> addLine (header);
+	my_contentTable		-> addLine ("\n");
+	for (int i = 0; i < s. size (); i ++) 
+	   my_contentTable	-> addLine (s. at (i));
 	my_contentTable -> show ();
 }
 
@@ -998,18 +1014,26 @@ QString realName;
 	                     my_dabProcessor -> get_ensembleId ();
 	         uint32_t currentSId =
 	                     extract_epg (name, serviceList, ensembleId);
-	         if (currentSId != 0) {
+	         if (true) {
+//	         if (currentSId != 0) {
 	            FILE *f = fopen (name. toUtf8 (). data (), "w+b");
 	            if (f == nullptr)
 	               fprintf (stderr, "Opening %s failed\n",
 	                                      name. toUtf8 (). data ());
-	
-	            fwrite (epgData. data (), 1, epgData. size (), f);
-	            fclose (f);
+	            else {
+	               fwrite (epgData. data (), 1, epgData. size (), f);
+	               fprintf (stderr, "writing epgdata to %s\n",
+	                                            name. toUtf8 (). data ());
+	               fclose (f);
+	            }
+	            int subType = 
+	                  getContentSubType ((MOTContentType)contentType);
 	            epgProcessor. process_epg (epgData. data (), 
-	                                       epgData. size (), currentSId);
+	                                       epgData. size (), currentSId,
+	                                       subType);
+
 	         }
-//	         epgHandler. decode (epgData, realName);
+	         epgHandler. decode (epgData, realName);
 	      }
 #endif
 	      return;
@@ -1295,12 +1319,17 @@ void	RadioInterface::TerminateProcess () {
 	   my_contentTable -> hide ();
 	   delete my_contentTable;
 	}
+	if (my_scanTable != nullptr) {
+	   my_scanTable	-> clearTable ();
+	   my_scanTable	-> hide ();
+	   delete my_scanTable;
+	}
 	my_presetHandler. savePresets (presetSelector);
 	theBand. saveSettings	();
 	stop_frameDumping	();
 	stop_sourceDumping	();
 	stop_audioDumping	();
-	theTable. hide		();
+//	theTable. hide		();
 	theBand. hide		();
 	theScheduler. hide	();
 	configDisplay. hide	();
@@ -2668,21 +2697,21 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         presetSelector -> addItem (itemText);
 	         return true;
 	      }
-//	      
-//	      if (ad. defined) {
-//	         if (currentServiceDescriptor != nullptr) 
-//	            delete currentServiceDescriptor;
-//	         currentServiceDescriptor	= new audioDescriptor (&ad);
-//	         return true;
-//	      }
+	      
+	      if (ad. defined) {
+	         if (currentServiceDescriptor != nullptr) 
+	            delete currentServiceDescriptor;
+	         currentServiceDescriptor	= new audioDescriptor (&ad);
+	         return true;
+	      }
 
-//	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-//	      if (pd. defined) {
-//	         if (currentServiceDescriptor != nullptr)
-//	            delete currentServiceDescriptor;
-//	         currentServiceDescriptor	= new dataDescriptor (&pd);
-//	         return true;
-//	      }
+	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
+	      if (pd. defined) {
+	         if (currentServiceDescriptor != nullptr)
+	            delete currentServiceDescriptor;
+	         currentServiceDescriptor	= new dataDescriptor (&pd);
+	         return true;
+	      }
 	   }
 	}
 
@@ -3259,6 +3288,7 @@ int	tunedFrequency	=
 	channel. mainId		= 0;
 	channel. subId		= 0;
 	channel. channelName	= theChannel;
+	channel. frequency	= tunedFrequency / 1000;
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3285,6 +3315,11 @@ void	RadioInterface::stopChannel	() {
 	   my_contentTable = nullptr;
 	}
 //	note framedumping - if any - was already stopped
+//	ficDumping - if on - is stopped
+	if (ficDumpPointer != nullptr) {
+	   my_dabProcessor -> stop_ficDump ();
+	   ficDumpPointer = nullptr;
+	}
 #ifdef	TRY_EPG
 	epgTimer. stop		();
 	techData. timeTable_button -> hide ();
@@ -3417,6 +3452,24 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	}
 	LOG ("scanning starts with ", QString::number (cc));
 	scanning. store (true);
+	if ((scanMode == SINGLE_SCAN) || (scanMode == SCAN_CONTINUOUSLY)) {
+	   if (my_scanTable == nullptr) 
+	      my_scanTable = new contentTable (this, dabSettings,
+	                                                   "scan", 
+	                                       my_dabProcessor -> scanWidth ());
+	   else
+	      my_scanTable -> clearTable ();
+	   QString topLine = QString ("ensemble") + ";"  +
+	                        "channelName" + ";" +
+	                        "frequency (KHz)" + ";" +
+	                        "Eid" + ";" +
+	                        "time" + ";" +
+	                        "tii" + ";" +
+	                        "SNR" + ";" +
+	                        "nr services" + ";";
+	   my_scanTable -> addLine (topLine);
+	   my_scanTable	-> addLine ("\n");
+	}
 	if (scanMode == SINGLE_SCAN)
 	   scanDumpFile	= filenameFinder. findScanDump_fileName ();
 	else
@@ -3438,10 +3491,10 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	channelTimer. start (switchDelay * 1000);
 
 	startChannel    (channelSelector -> currentText ());
-	if (scanMode != SCAN_TO_DATA) {
-	   theTable. clear ();
-	   theTable. show ();
-	}
+//	if (scanMode != SCAN_TO_DATA) {
+//	   theTable. clear ();
+//	   theTable. show ();
+//	}
 }
 
 void	RadioInterface::stopScanning	(bool dump) {
@@ -3458,10 +3511,11 @@ void	RadioInterface::stopScanning	(bool dump) {
 	channelTimer. stop ();
 	scanning. store (false);
 	if (scanDumpFile != nullptr) {
+	   if (my_scanTable != nullptr) 
+	      my_scanTable -> dump (scanDumpFile);
 	   fclose (scanDumpFile);
 	   scanDumpFile = nullptr;
 	}
-
 //	theTable. hide ();
 }
 
@@ -3526,7 +3580,6 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 ////////////////////////////////////////////////////////////////////////////
 	
 void	RadioInterface::showServices () {
-ensemblePrinter	my_Printer;
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
 
@@ -3534,83 +3587,43 @@ QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
 	   fprintf (stderr, "Expert error 26\n");
 	   return;
 	}
-	QString ss      = convertTime (UTC. year, UTC.month,
-                                               UTC. day, UTC. hour,
-                                               UTC. minute);
 
-	theTable. newEnsemble (ss,
-	                       channelSelector -> currentText (),
-	                       channel. ensembleName,
-	                       hextoString (channel. Eid),
-	                       SNR,
-	                       transmitters);
+	QString utcTime	= convertTime (UTC. year, UTC.month,
+	                               UTC. day, UTC. hour, 
+	                               UTC. minute);
 	if (scanMode == SINGLE_SCAN) {
-	   theTable. new_headline ();
-	   for (serviceId serv: serviceList) {
-	      QString audioService = serv. name;
-	      audiodata d;
-	      my_dabProcessor -> dataforAudioService (audioService, &d);
-	      if (!d. defined)
-	         continue;
-
-	      QString serviceId = hextoString (d. SId);
-	      QString bitRate   = QString::number (d. bitRate);
-	      QString protL     = getProtectionLevel (d. shortForm,
-	                                           d. protLevel);
-	      QString codeRate  = getCodeRate (d. shortForm,
-	                                       d. protLevel);
-	      theTable.
-	          add_to_Ensemble (audioService, serviceId,
-	                           d. ASCTy == 077 ? "DAB+ (plus)" : "DAB",
-	                           bitRate, protL, codeRate);
-	   }
-
-	   for (serviceId serv: serviceList) {
-	      QString packetService = serv. name;
-	      packetdata d;
-	      my_dabProcessor -> dataforPacketService (packetService, &d, 0);
-	      if (!d. defined)
-	         continue;
-
-	      QString soort	= d. DSCTy == 60 ? "mot data" :
-	                             d. DSCTy == 59 ? "ip data" :
-	                             d. DSCTy == 44 ? "journaline data" :
-	                             d. DSCTy ==  5 ? "tdc data" :
-	                                                "unknow data";
-	      QString serviceId;
-	      serviceId. setNum (d. SId, 16);
-	      QString bitRate   = QString::number (d. bitRate);
-	      QString protL     = getProtectionLevel (d. shortForm,
-	                                           d. protLevel);
-	      QString codeRate  = getCodeRate (d. shortForm,
-	                                    d. protLevel);
-	      theTable.
-	          add_to_Ensemble (packetService, serviceId,
-	                           soort,
-	                           bitRate, protL, codeRate);
-	   }
+	   QString headLine = channel. ensembleName + ";" +
+	                      channel. channelName + ";" +
+	                      QString::number (channel. frequency) + ";" +
+	                      hextoString (channel. Eid) + " " + ";" +
+	                      transmitter_coordinates -> text () + " " + ";" +
+	                      utcTime  + ";" +
+	                      SNR  + ";" +
+	                      QString::number (serviceList. size ()) + ";" +
+	                      distanceLabel -> text ();
+	   QStringList s = my_dabProcessor -> basicPrint ();
+	   my_scanTable -> addLine (headLine);
+	   my_scanTable -> addLine ("\n;\n");
+	   for (int i = 0; i < s. size (); i ++)
+	      my_scanTable -> addLine (s. at (i));
+	   my_scanTable -> addLine ("\n;\n;\n");
+	   my_scanTable -> show ();
 	}
-	if (scanDumpFile != nullptr) {
-	   QString utcTime	= convertTime (UTC. year, UTC.month,
-	                                       UTC. day, UTC. hour, 
-	                                       UTC. minute);
-	   if (scanMode == SINGLE_SCAN)
-	      my_Printer. showEnsembleData (channelSelector -> currentText (),
-	                                    inputDevice -> getVFOFrequency (),
-	                                    utcTime,
-	                                    transmitters,
-	                                    serviceList,
-	                                    my_dabProcessor, scanDumpFile);
-	   else
-	   if (scanMode == SCAN_CONTINUOUSLY)
-	      my_Printer. showSummaryData (channelSelector -> currentText (),
-	                                   inputDevice -> getVFOFrequency (),
-	                                   SNR,
-	                                   utcTime,
-	                                   transmitters,
-	                                   serviceList,
-	                                   my_dabProcessor,
-	                                   scanDumpFile);
+	else
+	if (scanMode == SCAN_CONTINUOUSLY) {
+	   QString headLine = channel. ensembleName + ";" +
+	                      channel. channelName  + ";" +
+	                      QString::number (channel. frequency) + ";" +
+	                      hextoString (channel. Eid) + ";" +
+	                      utcTime + ";" +
+	                      transmitter_coordinates -> text () + ";" +
+	                      SNR + ";" +
+	                      QString::number (serviceList. size ()) + ";" +
+	                      distanceLabel -> text ();
+
+	   my_scanTable -> addLine ("\n");
+	   my_scanTable -> addLine (headLine);
+	   my_scanTable	-> show ();
 	}
 }
 
@@ -4142,11 +4155,13 @@ QString		scheduleService;
 	theSelector. addtoList ("framedump");
 	theSelector. addtoList ("audiodump");
 	theSelector. addtoList ("dlText");
+	theSelector. addtoList ("ficDump");
 	candidates	+= "nothing";
 	candidates	+= "exit";
 	candidates	+= "framedump";
 	candidates	+= "audiodump";
 	candidates	+= "dlText";
+	candidates	+= "ficDump";
 	for (uint16_t i = 0; i < serviceList. size (); i ++) {
 	   QString service = channelSelector -> currentText () +
 	                           ":" + serviceList. at (i). name;
@@ -4183,7 +4198,7 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	   return;
 
 	if (s == "exit") {
-	   configWidget. closeDirect -> setChecked (true);
+	   configWidget. closeDirect	-> setChecked (true);
 	   QWidget::close ();
 	   return;
 	}
@@ -4203,10 +4218,28 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	   return;
 	}
 
+	if (s == "ficDump") {
+	   scheduled_ficDumping ();
+	   return;
+	}
+
 	presetTimer. stop ();
 	if (scanning. load ())
            stopScanning (false);
 	scheduleSelect (s);
+}
+
+void	RadioInterface::scheduled_ficDumping () {
+	if (ficDumpPointer == nullptr) {
+	   ficDumpPointer     =
+             filenameFinder. find_ficDump_file (channel. channelName);
+           if (ficDumpPointer == nullptr)
+              return;
+	   my_dabProcessor -> start_ficDump (ficDumpPointer);
+	   return;
+	}
+	my_dabProcessor	-> stop_ficDump ();
+	ficDumpPointer == nullptr;
 }
 
 //-------------------------------------------------------------------------
@@ -4289,10 +4322,12 @@ uint32_t RadioInterface::extract_epg (QString name,
 	return 0;
 }
 
-void	RadioInterface::set_epgData (int SId,
-	                             int theTime, const QString &theText) {
+void	RadioInterface::set_epgData (int SId, int theTime,
+	                             const QString &theText,
+	                             const QString &theDescr) {
 	if (my_dabProcessor != nullptr)
-	   my_dabProcessor -> set_epgData (SId, theTime, theText);
+	   my_dabProcessor -> set_epgData (SId, theTime,
+	                                   theText, theDescr);
 }
 
 #endif
@@ -4311,7 +4346,8 @@ void	RadioInterface::handle_timeTable	() {
 	           my_dabProcessor -> find_epgData (currentService. SId);
 	for (const auto& element: res)
 	   my_timeTable -> addElement (element. theTime,
-	                               element. theText);
+	                               element. theText,
+	                               element. theDescr);
 }
 
 void	RadioInterface::handle_skipList_button () {

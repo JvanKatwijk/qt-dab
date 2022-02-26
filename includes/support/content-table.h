@@ -38,29 +38,27 @@ class	RadioInterface;
 class	QSettings;
 class	audiodata;
 
-class	contentTable: QObject {
+class	contentTable: public QObject {
 Q_OBJECT
 public:
-		contentTable	(RadioInterface *, QSettings *);
+		contentTable	(RadioInterface *, QSettings *,
+	                            const QString &, int);
 		~contentTable	();
 	void	show		();
 	void	hide		();
 	bool	isVisible	();
 	void	clearTable	();
-	void	ensemble	(const QString &,
-	                         const QString &, const QString &);
-	void	new_headline	();
-	void	add_to_Ensemble	(audiodata *);
+	void	addLine		(const QString &);
+	void	dump		(FILE *);
 private:
+	QString		channel;
+	int		columns;
 	RadioInterface	*theRadio;
 	QSettings	*dabSettings;
-	textMapper	theMapper;
 	QScrollArea	*myWidget;
 	QTableWidget	*contentWidget;
 	int16_t		addRow	();
 	bool		is_clear;
-	QString		ensembleName;
-	QString		channel;
 private slots:
 	void		selectService	(int, int);
 	void		dump		(int, int);

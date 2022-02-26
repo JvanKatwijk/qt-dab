@@ -120,7 +120,6 @@ int32_t	i;
 
 	uint32_t segmentSize    = ((motVector [0] & 0x1F) << 8) |
 	                                motVector [1];
-
 	switch (groupType) {
 	   case 3:
 	      if (segmentNumber == 0) {

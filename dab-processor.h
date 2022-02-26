@@ -81,10 +81,15 @@ public:
         QString		get_ensembleName	();
 	uint16_t	get_countryName		();
 	void		set_epgData		(int32_t, int32_t,
-	                                                 const QString &);
+	                                         const QString &,
+	                                         const QString &);
 	bool		has_timeTable		(uint32_t);
 	std::vector<epgElement>	find_epgData		(uint32_t);
-//
+
+	QStringList	basicPrint		();
+	int		scanWidth		();
+	void		start_ficDump		(FILE *);
+	void		stop_ficDump		();
 //	for the mscHandler
 	void		reset_Services		();
 	void		stopService		(descriptorType *);

@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-4.3)
+set (objectName qt-dab-4.35)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -194,7 +194,7 @@ endif ()
 	           ../includes/backend/data/journaline
 	           ../includes/backend/data/mot
 	           ../includes/support
-	           ../src/support/tii-codes
+	           ../src/support/tii-library
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
@@ -273,7 +273,6 @@ endif ()
 	     ../includes/support/band-handler.h
 	     ../includes/support/text-mapper.h
 	     ../includes/support/dab-tables.h
-	     ../includes/support/ensemble-printer.h
 	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
 	     ../includes/support/preset-handler.h
@@ -285,7 +284,6 @@ endif ()
 	     ../includes/support/verysmallpushbutton.h
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
-	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h
@@ -296,7 +294,7 @@ endif ()
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
-	     ../src/support/tii-codes/tii-codes.h
+	     ../src/support/tii-library/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -370,7 +368,6 @@ endif ()
 	     ../src/support/band-handler.cpp
 	     ../src/support/text-mapper.cpp
 	     ../src/support/dab-tables.cpp
-	     ../src/support/ensemble-printer.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
 	     ../src/support/smallqlistview.cpp
@@ -382,7 +379,6 @@ endif ()
 	     ../src/support/history-handler.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
-	     ../src/support/scanner-table.cpp
 	     ../src/support/color-selector.cpp
 	     ../src/support/scheduler.cpp
 	     ../src/support/schedule-selector.cpp
@@ -392,7 +388,7 @@ endif ()
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
-	     ../src/support/tii-codes/tii-codes.cpp
+	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 
@@ -443,7 +439,6 @@ endif ()
 	     ../includes/support/verysmallpushbutton.h
 	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
-	     ../includes/support/scanner-table.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h

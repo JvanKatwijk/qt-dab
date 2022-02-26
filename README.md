@@ -1,51 +1,10 @@
-# Qt-DAB-4.3 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.35 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.3 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.35 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/screen-4.2-2.png?raw=true)
-![4.2](/screen-4.2-1.png?raw=true)
+![overview](/screen-4.35.png?raw=true)
+[4.35](/screen-4.351.png?raw=true)
 
-----------------------------------------------------------------------
-IMPORTANT: What is new in 4.3
-----------------------------------------------------------------------
-
-Qt-DAB-4.3 adds as configuration option, the possibility to show
-the name of the tranmitter whose TII  (Transmitter Identification
-Information) is seen, as well as the distance of the receiver to that
-transmitter and the azimuth.
-
-Note that  - since the provider of the database has asked to keep
-the source of the database out of sight, and some "user's" are
-showing contempt to that request - I am unfortunately forced to
-leave the database related code decoupled from the source tree
-and the sources are only available under a restricted license.
-
-There are basically three options for building your own executable
-
-*  just compile the stuff without code for handling tii tables 
-   configure with "CONFIG += noTables", which is the default.
-
-*  configure on an x64 Linux box with "CONFIG += tiiLib".
-   To actually use the tii-tables a shared library,
-   "libtii-lib.so", which is available under a restricted
-   license, has to be installed (the functions of that
-   library will be loaded dynamically, so if "libtii-lib.so" is
-   not in the library search path, behaviour is as with the
-   previous option).
-   Note that the libtii-lib.so itself depends (a.o) on libcurl,
-   that needs to be installed for proper functioning.
-
-*  configure for "CONGIG += preCompiled", but then you will need some
-   additional source which is only available under a restricted license
-   (contact me privately for information)
-
-The precompiled versions, i.e. the AppImage and the Windows setup
-file have the facilities compiled in, but the database used
-might be differently encoded.
-
-Note that the documentation is NOT updated, and since I do not have
-time right now, it will take some time before this README and the
-manual are updated
 
 ------------------------------------------------------------------
 Table of Contents
@@ -78,13 +37,7 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.2** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
-
-4.2 differs in details from 4.1, apart from some technical changes (hopefully
-not seen by users), changes are that some settings are moved from the
-configuration widget to the widget the settings refers to.
-New is a "logger" setting on the configuration widget that well 
-store -when set - some information on a file.
+**Qt-DAB-4.35** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
@@ -122,6 +75,7 @@ Features
   * Detailed information on reception and selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
   * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type) in the service list,
   * Automatic display of TII (Transmitter Identification Information) data when transmitted,
+  * If configured, the TII data is mapped upon a transmitter's name,
   * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
   * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files or xml file formats and playing them again later (see section on xml format),
   * Saving audio as uncompressed wave files,
@@ -175,7 +129,7 @@ The buttons and other controls on the main widget are equipped with
 of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
 
-![4.](/screen-4.2-2.png?raw=true)
+![4.](/mainwidget.png?raw=true)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.
@@ -223,7 +177,7 @@ shows the contents of the ensembles found in the selected channels.
 Since 3.5 the
 possibility exists to save a detailed description of the services
 in the different channels, in a format easy to process with LibreOffice
-or comparable programs.
+or comparable programs (a csv file).
 
 Depending on a setting in configuration widget, a logo or slide, transmitted
 as Program Associated Data with the audio transmission, will be shown here or on a separate widget.
@@ -436,30 +390,38 @@ For Linux-x64 systems, an **appImage** can be found in the releases section,
 http::github.com/JvanKatwijk/qt-dab/releases. The appImage contains
 next to the executable qt-dab program, the required libraries.
 
+The precompiled versions, i.e. the AppImage and the Windows setup
+file have the facilities compiled in, but the database used
+might be differently encoded.
+
 Of course it is possible to generate an executable, the 
 aforementioned user's manual
 contains a complete script that can be used to install all required
 libraries, download the sources and build an executable on an Ubuntu
 (Debian) based system.
 
-Since the main OS on the RPI's, has the same roots
-as Ubuntu, the script for Ubuntu can be used to install Qt-DAB
-on an RPI.
+Qt-DAB-4.30 added as configuration option, the possibility to show
+the name of the tranmitter whose TII  (Transmitter Identification
+Information) is seen, as well as the distance of the receiver to that
+transmitter and the azimuth.
 
-Note that the source tree contains two variants next to the Qt-DAB program,
-a **dabMini** program, a dab decoder with a minimal interface, and **dab-2**
-an experimental  variant.
-Both use large parts of the same sources as Qt-DAB does.
- 
-For **dabMini**, an appImage is available for use on an x64 based
-Linux system. The user's manual contains a complete
-script, tested on an RPI 2 and 3 for generating an executable.
+Note that  - since the provider of the database has asked to keep
+the source of the database out of sight, and some "user's" are
+showing contempt to that request - I am unfortunately forced to
+leave the database related code decoupled from the source tree
+and the sources are only available under a restricted license.
+A library in binary formar, containing the functionality, is available for use
+under Linux-x64 and RPI's 
 
-**dab-2** is experimental and **NOT** supported
+The default for compilation is with  "CONFIG += tiiLib".
+On start up, Qt-DAB will look for the library "libtii-lib.so",
+and - if found - will load the functions from that library.
+If no library is found, Qt-DAB will function without being able to
+map TII data onto transmitter names.
 
-Note that Linux allows connecting audio handlers as "pulse" and "pipewire"
-to bluetooth, making it easy to listen using a bluetooth
-connected soundbar or bluetooth connected ear- or headphomes.
+The alternative is to configure for "CONGIG += preCompiled",
+but then you will need some additional source which is only available
+under a restricted license (contact me privately for information)
 
 -----------------------------------------------------------------------
 Interfacing to another SDR device

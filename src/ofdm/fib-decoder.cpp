@@ -31,6 +31,9 @@
 #include	"charsets.h"
 #include	"dab-config.h"
 #include	"fib-table.h"
+#include	<QStringList>
+#include	"text-mapper.h"
+#include	"dab-tables.h"
 //
 //
 	fibDecoder::fibDecoder (RadioInterface *mr) {
@@ -641,7 +644,7 @@ int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
 	                                   uint8_t CN_bit,
 	                                   uint8_t OE_bit,
 	                                   uint8_t pdBit) {
-int16_t	bitOffset		= used * 8;
+int16_t	bitOffset	= used * 8;
 uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
 uint16_t	SCIds;
 int16_t		NoApplications;
@@ -664,6 +667,11 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   if (serviceIndex == -1)
 	      continue;
 
+//	   if (getBits (d, bitOffset + 16, 8) == 1)
+//	      fprintf (stderr, "%s has a 1\n",
+//	               ensemble -> services [serviceIndex]. serviceLabel.
+//	                                 toLatin1 (). data ());
+	      
 	   int compIndex =
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {
@@ -1208,6 +1216,7 @@ int	i;
 	}
 	return -1;
 }
+
 int	fibDecoder::findService	 (uint32_t SId) {
 int	i;
 	for (i = 0; i < 64; i ++) {
@@ -1770,7 +1779,8 @@ int32_t	theTime	[6];
 }
 
 void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime, 
-	                            const QString theText) {
+	                         const QString &theText,
+	                         const QString &theDescr) {
 	for (int i = 0; i < 64; i ++) {
            if (ensemble -> services [i]. inUse &&
                ensemble -> services [i]. SId == SId) {
@@ -1778,12 +1788,14 @@ void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime,
 	      for (uint16_t j = 0; j < S -> epgData. size (); j ++) {
 	         if (S -> epgData. at (j). theTime == theTime)  {
 	            S -> epgData.at (j). theText = theText;
+	            S -> epgData.at (j). theDescr = theDescr;
 	            return;	
 	         }
 	      }
 	      epgElement ep;
 	      ep. theTime	= theTime;
 	      ep. theText	= theText;
+	      ep. theDescr	= theDescr;
 	      S -> epgData. push_back (ep);
 	      return;
 	   }
@@ -1826,5 +1838,244 @@ std::vector<epgElement> res;
 
 	res = s -> epgData;
 	return res;
+}
+
+
+//	the generic print function generates - using the component descriptors
+//	as index - a QStringList as a model for a csv file
+//
+//	header for audio services
+//	serviceName
+//	serviceId
+//	subChannel
+//	startAddress
+//	length (in CU's)
+//	DAB or DAB+
+//	prot level
+//	code rate
+//	bitrate
+//	language
+//	program type
+//	alternative fm frequency
+//
+//	header for data services
+//	serviceName
+//	serviceId
+//	subChannel
+//	startAddress
+//	length
+//	prot level
+//	code rate
+//	appType
+//	FEC
+//	packet address
+//	comp nr
+
+QStringList	fibDecoder::basicPrint () {
+QStringList out;
+	bool hasContents = false;
+	for (int i = 0; i < 64; i ++) {
+	   if (currentConfig -> serviceComps [i]. inUse) {
+	      if (currentConfig -> serviceComps [i]. TMid != 0) // audio
+	         continue;
+	      if (!hasContents) 
+	         out << audioHeader ();
+	      hasContents = true;
+	      out << audioData (i);
+	   }
+	}
+	hasContents = false;
+	for (int i = 0; i < 64; i ++) {
+	   if (currentConfig -> serviceComps [i]. inUse) {
+	      if (currentConfig -> serviceComps [i]. TMid != 3) // packet
+	         continue;
+	      if (!hasContents) {
+	         out << "\n\n";
+	         out << packetHeader ();
+	      }
+	      hasContents = true;
+	      out << packetData (i);
+	   }
+	}
+	return out;
+}
+//
+//
+QString	fibDecoder::serviceName		(int index) { 
+int sid	= currentConfig -> serviceComps [index]. SId;
+int serviceIndex	= findService (sid);
+	if (serviceIndex != -1)
+	   return ensemble -> services [serviceIndex]. serviceLabel;
+	return "";
+}
+
+QString	fibDecoder::serviceIdOf		(int index) { 
+	return QString::number (currentConfig -> serviceComps [index]. SId, 16);
+}
+
+QString	fibDecoder::subChannelOf 	(int index) {
+	return QString::number (currentConfig -> serviceComps [index]. subchannelId);
+}
+
+QString	fibDecoder::startAddressOf 	(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+int startAddr	= currentConfig -> subChannels [subChannel]. startAddr;
+	return QString::number (startAddr);
+}
+
+QString	fibDecoder::lengthOf 		(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+int Length	= currentConfig -> subChannels [subChannel]. Length;
+	return QString::number (Length);
+}
+
+QString	fibDecoder::protLevelOf 	(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+bool	shortForm	= currentConfig -> subChannels [subChannel]. shortForm;
+int	protLevel	= currentConfig -> subChannels [subChannel]. protLevel;
+	return getProtectionLevel (shortForm, protLevel);
+}
+
+QString	fibDecoder::codeRateOf 		(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+bool	shortForm	= currentConfig -> subChannels [subChannel]. shortForm;
+int	protLevel	= currentConfig -> subChannels [subChannel]. protLevel;
+	return getCodeRate (shortForm, protLevel);
+}
+
+QString	fibDecoder::bitRateOf		(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+int bitRate	= currentConfig -> subChannels [subChannel]. bitRate;
+	return QString::number (bitRate);
+}
+
+QString	fibDecoder::dabType 		(int index) {
+int dabType	= currentConfig -> serviceComps [index]. ASCTy;
+	return dabType == 077 ? "DAB+" : "DAB";
+}
+
+QString	fibDecoder::languageOf 		(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+int language	= currentConfig -> subChannels [subChannel]. language;
+textMapper theMapper;
+
+	return theMapper. get_programm_language_string (language);
+}
+
+QString	fibDecoder::programTypeOf	(int index) {
+int sid = currentConfig -> serviceComps [index]. SId;
+int serviceIndex        = findService (sid);
+int programType		=  ensemble -> services [serviceIndex]. programType;
+textMapper theMapper;
+
+	return theMapper. get_programm_type_string (programType);
+}
+
+QString	fibDecoder::fmFreqOf		(int index) {
+int sid	= currentConfig -> serviceComps [index]. SId;
+int serviceIndex	= findService (sid);
+	return ensemble -> services [serviceIndex]. fmFrequency != -1 ?
+              QString::number (ensemble -> services [serviceIndex].fmFrequency):
+	                                      "    ";
+}
+
+QString	fibDecoder::appTypeOf		(int index) {
+int appType	=   currentConfig -> serviceComps [index]. appType;
+	return QString::number (appType);
+}
+
+QString	fibDecoder::FEC_scheme		(int index) {
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+int FEC_scheme	= currentConfig -> subChannels [subChannel]. FEC_scheme;
+	return QString::number (FEC_scheme);
+}
+
+QString	fibDecoder::packetAddress	(int index) {
+int packetAddr = currentConfig -> serviceComps [index]. packetAddress;
+	return QString::number (packetAddr);
+}
+
+QString	fibDecoder::DSCTy		(int index) {
+int DSCTy	= currentConfig -> serviceComps [index]. DSCTy;
+	switch (DSCTy) {
+	   case 60 :
+	      return  "mot data";
+	   case 59:
+	      return "ip data";
+	   case 44 :
+	      return  "journaline data";
+	   case  5 :
+	      return  "tdc data";
+	   default:
+	      return "unknow data";
+	}
+}
+//
+QString	fibDecoder::audioHeader		() {
+	return	QString ("serviceName") + ";" +
+	        "serviceId" + ";" +
+		"subChannel" + ";" +
+		"start address (CU's)" + ";" +
+		"length (CU's)" + ";" +
+		"protection" + ";" +
+		"code rate" + ";" +
+	        "bitrate" + ";" +
+		"dab type" + ";" +
+		"language" + ";" +
+		"program type" + ";" +
+		"fm freq" + ";";
+}
+
+QString	fibDecoder::audioData		(int index) {
+	return QString (serviceName (index)) + ";" +
+	       serviceIdOf (index) + ";" +
+	       subChannelOf (index) + ";" +
+	       startAddressOf (index) + ";" +
+	       lengthOf (index) + ";" +
+	       protLevelOf (index) + ";" +
+	       codeRateOf (index) + ";" +
+	       bitRateOf (index) + ";" +
+	       dabType (index) + ";" +
+	       languageOf (index) + ";" +
+	       programTypeOf (index) + ";" +
+	       fmFreqOf (index) + ";";
+}
+//
+QString	fibDecoder::packetHeader		() {
+	return	QString ("serviceName") + ";" +
+	        "serviceId" + ";" + 
+		"subChannel" + ";" +
+		"start address" + ";" +
+		"length" + ";" +
+		"protection" + ";" +
+		"code rate" + ";" +
+	        "appType" + ";" +
+	        "FEC_scheme" + ";" +
+	        "packetAddress" + ";" +
+	        "DSCTy" + ";";
+}
+
+QString	fibDecoder::packetData	(int index) {
+	return serviceName (index) + ";" +
+	       serviceIdOf (index) + ";" +
+	       subChannelOf (index) + ";" +
+	       startAddressOf (index) + ";" +
+	       lengthOf (index) + ";" +
+	       protLevelOf (index) + ";" +
+	       codeRateOf (index) + ";" +
+	       appTypeOf (index) + ";" +
+	       FEC_scheme (index) + ";" +
+	       packetAddress (index) + ";" +
+	       DSCTy (index) + ";";
+}
+//
+//	We terminate the sequences with a ";", so that is why the
+//	actual number is 1 smaller
+int	fibDecoder::scanWidth	() {
+QString s1	= audioHeader ();
+QString s2	= packetHeader ();
+QStringList l1 = s1. split (";");
+QStringList l2 = s2. split (";");
+	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
 }
 

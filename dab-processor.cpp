@@ -496,9 +496,10 @@ QString dabProcessor::get_ensembleName	() {
 	return my_ficHandler. get_ensembleName();
 }
 
-void	dabProcessor::set_epgData	(int SId,
-	                                 int32_t theTime, const QString &s) {
-	my_ficHandler. set_epgData (SId, theTime, s);
+void	dabProcessor::set_epgData	(int SId, int32_t theTime,
+	                                 const QString &s,
+	                                 const QString &d) {
+	my_ficHandler. set_epgData (SId, theTime, s, d);
 }
 
 bool	dabProcessor::has_timeTable	(uint32_t SId) {
@@ -509,6 +510,13 @@ std::vector<epgElement>	dabProcessor::find_epgData	(uint32_t SId) {
 	return my_ficHandler. find_epgData (SId);
 }
 
+QStringList dabProcessor::basicPrint	() {
+	return my_ficHandler. basicPrint ();
+}
+
+int	dabProcessor::scanWidth		() {
+	return my_ficHandler. scanWidth ();
+}
 //
 //	for the mscHandler:
 void	dabProcessor::reset_Services	() {
@@ -552,7 +560,7 @@ void	dabProcessor::stopDumping() {
 }
 
 bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
-    switch (p -> get_dabMode()) {
+	switch (p -> get_dabMode()) {
 	   default:
 	   case 1:
 	      return (cf & 07) >= 4;
@@ -562,5 +570,13 @@ bool	dabProcessor::wasSecond (int16_t cf, dabParams *p) {
 	   case 4:
 	      return (cf & 03) >= 2;
 	}
+}
+
+void	dabProcessor::start_ficDump	(FILE *f) {
+	my_ficHandler. start_ficDump (f);
+}
+
+void	dabProcessor::stop_ficDump	() {
+	my_ficHandler. stop_ficDump ();
 }
 

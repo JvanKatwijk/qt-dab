@@ -20,8 +20,7 @@
  *    along with Qt-TAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__EPG_DECODER__
-#define	__EPG_DECODER__
+
 
 #include	<QObject>
 #include	<stdio.h>
@@ -35,9 +34,13 @@ public:
 	QString		shortName;
 	QString		mediumName;
 	QString		longName;
+	QString		shortDescription;
+	QString		longDescription;
 	int		startTime;
+	int		stopTime;
 	progDesc	() {
 	   startTime	= -1;
+	   stopTime	= -1;
 	}
 	void	clean		() {
 	   startTime	= -1;
@@ -45,6 +48,8 @@ public:
 	   mediumName	= "";
 	   shortName	= "";
 	   ident	= "";
+	   shortDescription	= "";
+	   longDescription	= "";
 	}
 	   
 };
@@ -52,43 +57,77 @@ public:
 class	epgDecoder: public QObject {
 Q_OBJECT
 public:
-			epgDecoder		();
-			~epgDecoder		();
 
-	int		process_epg		(uint8_t *, int, uint32_t);
+		epgDecoder	();
+		~epgDecoder	();
+
+int	process_epg	(uint8_t *v, int e_length,
+	                 uint32_t SId, int subType);
 private:
-	uint32_t	SId;
-	QString		stringTable [20];
-	int		getBit			(uint8_t *, int);
-	uint32_t	getBits			(uint8_t *, int, int);
+	uint32_t        SId;
+        QString         stringTable [20];
+	int		subType;
+	int	getBit			(uint8_t *v, int bitnr);
+	uint32_t getBits		(uint8_t *v, int bitnr, int length);
+	int	process_programGroups	(uint8_t *v, int index);
+	int	process_programGroup	(uint8_t *v, int index);
+	int	process_schedule	(uint8_t *v, int index);
+	int	process_program		(uint8_t *v, int index);
+	int	process_scope		(uint8_t *v, int index);
+	int	process_serviceScope	(uint8_t *v, int index);
+	int	process_mediaDescription (uint8_t *v, int index, progDesc *);
+	int	process_ensemble	(uint8_t *v, int index);
+	int	process_service		(uint8_t *v, int index);
+	int	process_location	(uint8_t *v, int index, progDesc *);
+	int	process_bearer		(uint8_t *v, int index);
+	int	process_geoLocation	(uint8_t *v, int index);
+	int	process_programmeEvent	(uint8_t *v, int index);
+	int	process_onDemand	(uint8_t *v, int index);
+	int	process_genre		(uint8_t *v, int index, progDesc *);
+	int	process_keyWords	(uint8_t *v, int index);
+	int	process_link		(uint8_t *v, int index);
+	int	process_shortName	(uint8_t *v, int index, progDesc *);
+	int	process_mediumName	(uint8_t *v, int index, progDesc *);
+	int	process_longName	(uint8_t *v, int index, progDesc *);
+	int	process_shortDescription (uint8_t *v, int index, progDesc *);
+	int	process_longDescription (uint8_t *v, int index, progDesc *);
+	int	process_multiMedia	(uint8_t *v, int index);
+	int	process_radiodns	(uint8_t *v, int index);
+	int	process_time		(uint8_t *v, int index, int *);
+	int	process_relativeTime	(uint8_t *v, int index);
+	int	process_memberOf	(uint8_t *v, int index);
+	int	process_presentationTime (uint8_t *v, int index);
+	int	process_acquisitionTime (uint8_t *v, int index);
 
-	int		process_epgElement	(uint8_t *, int);
-	int		schedule_element	(uint8_t *, int);
-	int		programme_element	(uint8_t *, int, progDesc *);
-	int		process_mediaDescription	(uint8_t *, int);
-	int		process_location	(uint8_t *, int, progDesc *);
-	int		location_element	(uint8_t *, int, progDesc *);
-	int		time_element		(uint8_t *, int);
-	int		genre_element		(uint8_t *, int);
-	int		bearer_element		(uint8_t *, int);
-	int		multimedia		(uint8_t *, int);
+	int	process_country		(uint8_t *v, int index);
+	int	process_point		(uint8_t *v, int index);
+	int	process_polygon		(uint8_t *v, int index);
+//
+	int	process_412		(uint8_t *v, int index);
+	int	process_440		(uint8_t *v, int index);
+	int	process_46		(uint8_t *v, int index);
+	int	process_471		(uint8_t *v, int index);
+	int	process_472		(uint8_t *v, int index);
+	int	process_473		(uint8_t *v, int index);
+	int	process_474		(uint8_t *v, int index, int *);
+	int	process_475		(uint8_t *v, int index);
+	int	process_476		(uint8_t *v, int index);
+	int	process_481		(uint8_t *v, int index);
+	int	process_482		(uint8_t *v, int index);
+	int	process_483		(uint8_t *v, int index);
+	int	process_484		(uint8_t *v, int index);
+	int	process_485		(uint8_t *v, int index);
+	int	process_4171		(uint8_t *v, int index);
 
-	void		process_tokens		(uint8_t *, int, int);
-	int		process_token		(uint8_t *, int);
-	void		process_45		(uint8_t *, int, int);
-	void		process_46		(uint8_t *, int, int);
-	QString		process_471		(uint8_t *, int, int);
-	void		process_472		(uint8_t *, int, int);
-	void		process_473		(uint8_t *, int, int);
-	int		process_474		(uint8_t *, int, int);
-	void		process_475		(uint8_t *, int, int);
-	void		process_476		(uint8_t *, int, int);
-	QString		process_481		(uint8_t *, int, int);
-	void		process_483		(uint8_t *, int, int);
-	void		record			(progDesc *);
+	int	process_tokenTable	(uint8_t *v, int index);
+	int	process_token		(uint8_t *v, int index);
+	int	process_defaultLanguage	(uint8_t *v, int index);
+	int	process_obsolete	(uint8_t *v, int index);
+
+	void	record			(progDesc *);
 signals:
-	void		set_epgData		(int, int, const QString &);
+	void	set_epgData		(int, int,
+	                                 const QString &,
+	                                 const QString &);
 };
-
-#endif
 

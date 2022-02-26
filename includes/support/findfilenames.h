@@ -50,6 +50,7 @@ const
 QString	findskipFile_fileName		();
 QString	finddlText_fileName		(bool);
 FILE	*findLogFileName		();
+FILE	*find_ficDump_file		(const QString &);
 };
 
 #endif

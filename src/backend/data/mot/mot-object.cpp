@@ -116,6 +116,8 @@ uint16_t	rawContentType = 0;
 	         }
               }
 	}
+
+//	fprintf (stderr, "creating mot object %x\n", transportId);
 }
 
 	motObject::~motObject() {
@@ -173,7 +175,8 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-//	fprintf (stderr, "Handling complete\n");
+//	fprintf (stderr, "Handling complete %s, type %d\n", name,
+//	                                                  (int)contentType);
 	handle_motObject (result, name, (int)contentType, dirElement);
 }
 

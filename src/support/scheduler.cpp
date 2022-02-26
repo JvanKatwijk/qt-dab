@@ -283,9 +283,9 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 void	Scheduler::dump (const QString &file) {
 FILE *dumpFile	= fopen (file. toUtf8 (). data (), "w");
 
-//	fprintf (stderr, "dumpfile %s is opened %s\n",
-//	                          file. toUtf8 (). data (),
-//	                           dumpFile == nullptr ? "not good" : "good");
+	fprintf (stderr, "dumpfile %s is opened %s\n",
+	                          file. toUtf8 (). data (),
+	                           dumpFile == nullptr ? "not good" : "good");
 	if (dumpFile == nullptr)
 	   return;
 
@@ -294,12 +294,12 @@ FILE *dumpFile	= fopen (file. toUtf8 (). data (), "w");
 
 //	fprintf (stderr, " there are %d elements to be printed\n",
 //	                          tableWidget -> rowCount ());
-//	fprintf (dumpFile, "// dump schedule file with %d elements\n",
-//	                    tableWidget -> rowCount ());
-//	fprintf (dumpFile, "reference: %d %d %d\n",
-//	                     referenceDate. year (),
-//	                     referenceDate. month (),
-//	                     referenceDate. day ());
+	fprintf (dumpFile, "// dump schedule file with %d elements\n",
+	                    tableWidget -> rowCount ());
+	fprintf (dumpFile, "reference: %d %d %d\n",
+	                     referenceDate. year (),
+	                     referenceDate. month (),
+	                     referenceDate. day ());
 	for (int row = 0; row < tableWidget -> rowCount (); row ++) {
 //	   fprintf (stderr, "writing a line\n");
 	   QString service	=

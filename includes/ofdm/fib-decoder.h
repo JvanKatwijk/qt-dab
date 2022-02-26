@@ -62,11 +62,14 @@ public:
 	int32_t		get_ensembleId	();
 	QString		get_ensembleName	();
 	int32_t		get_CIFcount	();	
-	void		set_epgData	(uint32_t, int32_t, const QString);
+	void		set_epgData	(uint32_t, int32_t,
+	                                 const QString &, const QString &);
 	std::vector<epgElement> get_timeTable	(uint32_t);
 	std::vector<epgElement> get_timeTable	(const QString &);
 	bool		has_timeTable	(uint32_t SId);
 	std::vector<epgElement>	find_epgData	(uint32_t);
+	QStringList	basicPrint 		();
+	int		scanWidth		();
 protected:
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
@@ -164,6 +167,27 @@ private:
 	QMutex		fibLocker;
 	int		CIFcount;
 
+	QString		serviceName		(int index);
+	QString		serviceIdOf		(int index);
+	QString		subChannelOf		(int index);
+	QString		startAddressOf		(int index);
+	QString		lengthOf 		(int index);
+	QString		protLevelOf		(int index);
+	QString		codeRateOf 		(int index);
+	QString		bitRateOf 		(int index);
+	QString		dabType 		(int index);
+	QString		languageOf 		(int index);
+	QString		programTypeOf		(int index);
+	QString		fmFreqOf		(int index);
+	QString		appTypeOf		(int index);
+	QString		FEC_scheme		(int index);
+	QString		packetAddress		(int index);
+	QString		DSCTy			(int index);
+//
+	QString		audioHeader		();
+	QString		packetHeader		();
+	QString		audioData		(int index);
+	QString		packetData		(int index);
 signals:
 	void		addtoEnsemble		(const QString &, int);
 	void		nameofEnsemble		(int, const QString &);

@@ -27,14 +27,25 @@
 #include	"dab-constants.h"
 #include	"findfilenames.h"
 
+static
+const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5", "3/4"};
+static
+const char *eep_Arates [] = {nullptr, "1/4",  "3/8", "1/2", "3/4"};
+static
+const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
+
 	contentTable::contentTable (RadioInterface *theRadio, 
-	                                        QSettings *s) {
+	                                        QSettings *s,
+	                                        const QString &channel,
+	                                        int cols) {
 	this	-> theRadio	= theRadio;
 	this	-> dabSettings	= s;
+	this	-> channel	= channel;
+	this	-> columns	= cols;
 	myWidget        = new QScrollArea (NULL);
         myWidget        -> resize (200, 200);
         myWidget        -> setWidgetResizable(true);
-        contentWidget	= new QTableWidget (0, 7);
+        contentWidget	= new QTableWidget (0, cols);
 	contentWidget	-> setColumnWidth (0, 150);
 	contentWidget	-> setColumnWidth (4, 150);
         myWidget	-> setWidget (contentWidget);
@@ -45,12 +56,10 @@
                  this, SLOT (selectService (int, int)));
 	connect (contentWidget, SIGNAL (cellDoubleClicked (int, int)),
                  this, SLOT (dump (int, int)));
-	connect (this, SIGNAL (goService (const QString &)),
-                theRadio, SLOT (handle_contentSelector (const QString &)));
+//	connect (this, SIGNAL (goService (const QString &)),
+//	         theRadio, SLOT (handle_contentSelector (const QString &)));
 
 	addRow ();	// for the ensemble name
-	new_headline ();
-	is_clear	= true;
 }
 
 	contentTable::~contentTable () {
@@ -61,13 +70,9 @@
 
 void	contentTable::clearTable	() {
 int	rows	= contentWidget -> rowCount ();
-	if (is_clear)
-	   return;
 	for (int i = rows; i > 0; i --) 
 	   contentWidget -> removeRow (i - 1);
 	addRow ();	// for the ensemble name
-	new_headline ();
-	is_clear	= true;
 }
 
 void	contentTable::show	() {
@@ -88,7 +93,7 @@ QTableWidgetItem* theItem = contentWidget  -> item (row, 0);
 	if (row < 2)
 	   return;
         (void)column;
-        QString theService = channel + ":" + theItem -> text ();
+        QString theService = theItem -> text ();
 	fprintf (stderr, "selecting %s\n", theService. toUtf8 (). data ());
 	goService (theService);
 }
@@ -110,93 +115,38 @@ FILE	*dumpFile 	= filenameFinder. findContentDump_fileName (channel);
 	fclose (dumpFile);
 }
 
+void	contentTable::dump	(FILE * dumpFilePointer) {
+	if (dumpFilePointer == nullptr)
+	   return;
+	for (int i = 0; i < contentWidget -> rowCount (); i ++) {
+	   for (int j = 0; j < contentWidget -> columnCount (); j ++) {
+	      QString t = contentWidget -> item (i, j) -> text ();
+	      fprintf (dumpFilePointer, "%s;", t. toUtf8 (). data ());
+	   }
+	   fprintf (dumpFilePointer, "\n");
+	}
+}
+
 int16_t	contentTable::addRow () {
 int16_t row	= contentWidget -> rowCount ();
 
         contentWidget     -> insertRow (row);
-        QTableWidgetItem *item0 = new QTableWidgetItem;
-        item0           -> setTextAlignment (Qt::AlignLeft |Qt::AlignVCenter);
-        contentWidget     -> setItem (row, 0, item0);
 
-        QTableWidgetItem *item1 = new QTableWidgetItem;
-        item1           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        contentWidget     -> setItem (row, 1, item1);
-
-        QTableWidgetItem *item2 = new QTableWidgetItem;
-        item2           -> setTextAlignment (Qt::AlignRight |Qt::AlignVCenter);
-        contentWidget    -> setItem (row, 2, item2);
-
-        QTableWidgetItem *item3 = new QTableWidgetItem;
-        item3           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        contentWidget    -> setItem (row, 3, item3);
-
-        QTableWidgetItem *item4 = new QTableWidgetItem;
-        item4           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        contentWidget    -> setItem (row, 4, item4);
-
-        QTableWidgetItem *item5 = new QTableWidgetItem;
-        item5           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        contentWidget    -> setItem (row, 5, item5);
-
-        QTableWidgetItem *item6 = new QTableWidgetItem;
-        item6           -> setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
-        contentWidget    -> setItem (row, 6, item6);
+	for (int i = 0; i < columns; i ++) {
+           QTableWidgetItem *item0 = new QTableWidgetItem;
+           item0           -> setTextAlignment (Qt::AlignLeft |
+	                                                Qt::AlignVCenter);
+           contentWidget     -> setItem (row, i, item0);
+	}
 	return row;
 }
 
-void	contentTable::new_headline	() {
-int16_t	row	= addRow ();
-	contentWidget	-> item (row, 0) -> setText ("serviceName");
-	contentWidget	-> item (row, 1) -> setText ("serviceId");
-	contentWidget	-> item (row, 2) -> setText ("type ");
-	contentWidget	-> item (row, 3) -> setText ("bitRate ");
-	contentWidget	-> item (row, 4) -> setText ("programType");
-	contentWidget	-> item (row, 5) -> setText ("Language");
-	contentWidget	-> item (row, 6) -> setText ("fm frequency");
-}
+void	contentTable::addLine (const QString &s) {
+int	row	= addRow ();
+QStringList h	= s. split (";");
 
-void	contentTable::ensemble		(const QString &ensembleName,
-	                                 const QString &channel,
-	                                 const QString &theTime) {
-	this	-> ensembleName	= ensembleName;
-	this	-> channel	= channel;
-	is_clear	= false;
-	contentWidget	-> item (0, 0) -> setText (ensembleName);
-	contentWidget	-> item (0, 1) -> setText (channel);
-	contentWidget	-> item (0, 2) -> setText (theTime);
-}
-
-void	contentTable::add_to_Ensemble	(audiodata *theDescriptor) {
-QString serviceName;
-QString serviceId;
-QString dabType;
-QString bitRate;
-QString programType;
-QString Language;
-
-	if (theDescriptor-> type != AUDIO_SERVICE)
-	   return;
-
-	is_clear	= false;
-	int16_t	row = addRow ();
-
-	serviceName	= theDescriptor -> serviceName;
-	contentWidget	-> item (row, 0) -> setText (serviceName);
-	serviceId	= QString::number (theDescriptor -> SId, 16);
-	contentWidget	-> item (row, 1) -> setText (serviceId);
-	dabType		= (theDescriptor) -> ASCTy == 077 ?
-	                                          "DAB+" : "DAB";
-	contentWidget	-> item (row, 2) -> setText (dabType);
-	bitRate		= QString::number (theDescriptor -> bitRate);
-	contentWidget	-> item (row, 3) -> setText (bitRate);
-	programType	= theMapper. get_programm_type_string (
-	                   (theDescriptor) -> programType);
-	contentWidget	-> item (row, 4) -> setText (programType);
-	Language	= theMapper.get_programm_language_string (
-	                   (theDescriptor) -> language);
-	contentWidget	-> item (row, 5) -> setText (Language);
-	if (theDescriptor -> fmFrequency != -1)
-	   contentWidget -> item (row, 6) -> setText (QString::number (
-	                    theDescriptor -> fmFrequency));
+	for (int i = 0; i < h. size (); i ++)
+	   if (i < columns) 		// just for safety
+	      contentWidget -> item (row, i) -> setText (h. at (i));
 }
 

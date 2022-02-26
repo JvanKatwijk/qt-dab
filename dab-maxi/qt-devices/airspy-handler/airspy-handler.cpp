@@ -346,15 +346,10 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return true;
 
 	vfoFrequency	= freq;
-	if (save_gainSettings) {
+	if (save_gainSettings) 
 	   update_gainSettings (freq / MHz (1));
-	   set_vga_gain		(vgaSlider -> value ());
-	   set_lna_gain		(lnaSlider -> value ());
-	   set_mixer_gain	(mixerSlider -> value ());
-	   my_airspy_set_lna_agc	(device, lna_agc ? 1 : 0);
-	   my_airspy_set_mixer_agc (device, mixer_agc ? 1 : 0);
-	   my_airspy_set_rf_bias	(device, rf_bias ? 1 : 0);
-	}
+//
+//	sliders are now set,
 	result = my_airspy_set_freq (device, freq);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -370,7 +365,17 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   return false;
 	}
 
+	result = my_airspy_start_rx (device,
+	            (airspy_sample_block_cb_fn)callback, this);
+	if (result != AIRSPY_SUCCESS) {
+	   printf ("my_airspy_start_rx() failed: %s (%d)\n",
+	         my_airspy_error_name((airspy_error)result), result);
+	   return false;
+	}
 	fprintf (stderr, "currentTab %d\n", currentTab);
+	my_airspy_set_lna_agc	(device, lna_agc ? 1 : 0);
+	my_airspy_set_mixer_agc	(device, mixer_agc ? 1 : 0);
+	my_airspy_set_rf_bias	(device, rf_bias ? 1 : 0);
 	if (currentTab == 0)
 	   set_sensitivity	(sensitivitySlider -> value());
 	else 
@@ -382,13 +387,6 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   set_lna_gain		(lnaGain);
 	}
 	
-	result = my_airspy_start_rx (device,
-	            (airspy_sample_block_cb_fn)callback, this);
-	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_start_rx() failed: %s (%d)\n",
-	         my_airspy_error_name((airspy_error)result), result);
-	   return false;
-	}
 //
 	running. store (true);
 	return true;
@@ -518,6 +516,7 @@ int	airspyHandler::open() {
 //	} else {
 //	   return 0;
 //	}
+	return 0;
 }
 
 //
@@ -613,6 +612,8 @@ int result = my_airspy_set_mixer_gain (device, mixerGain = value);
 void	airspyHandler::set_vga_gain (int value) {
 int result = my_airspy_set_vga_gain (device, vgaGain = value);
 
+	fprintf (stderr, "vgaGain %d, result %d\n",
+	                             vgaGain, result);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("airspy_set_vga_gain() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
@@ -1025,7 +1026,8 @@ QString theValue;
 	lnaGainValue		= result. at (2). toInt ();
 	mixerGainValue		= result. at (3). toInt ();
 	vgaGainValue		= result. at (4). toInt ();
-
+//
+//	setting sliders should not lead to signals
 	lnaSlider		-> blockSignals (true);
 	new_lnaGainValue	(lnaGainValue);
 	new_lnaDisplay		(lnaGainValue);
@@ -1033,12 +1035,6 @@ QString theValue;
 	   usleep (1000);
 	lnaSlider		-> blockSignals (false);
 
-	vgaSlider	-> blockSignals (true);
-	new_vgaGainValue	(vgaGainValue);
-	new_vgaDisplay		(vgaGainValue);
-	while (vgaSlider -> value () != vgaGainValue)
-	   usleep (1000);
-	vgaSlider	-> blockSignals (false);
 
 	mixerSlider	-> blockSignals (true);
 	new_mixerValue	(mixerGainValue);
@@ -1061,6 +1057,13 @@ QString theValue;
 	biasButton	-> setChecked (rf_bias);
 	usleep (1000);
 	biasButton	-> blockSignals (false);
+
+	vgaSlider	-> blockSignals (true);
+	new_vgaGainValue	(vgaGainValue);
+	new_vgaDisplay		(vgaGainValue);
+	while (vgaSlider -> value () != vgaGainValue)
+	   usleep (1000);
+	vgaSlider	-> blockSignals (false);
 
 	tabWidget	-> blockSignals (true);
 	new_tabSetting (tab_setting);

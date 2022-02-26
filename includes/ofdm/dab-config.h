@@ -99,6 +99,7 @@ void	reset		() {
 	inUse	= false;
 	language	= 0;
 	FEC_scheme	= 0;
+	SCIds		= 0;
 }
 bool		inUse;
 int32_t		SubChId;

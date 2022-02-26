@@ -81,6 +81,7 @@ using namespace std;
 typedef struct {
         int     theTime;
         QString theText;
+	QString	theDescr;
 } epgElement;
 
 class serviceId {
@@ -385,20 +386,4 @@ uint16_t	genpoly		= 0x1021;
 	return (crc ^ accumulator) == 0;
 }
 
-#define	CURLOPT_SPECIAL CURLOPT_STDERR
-
-static inline
-FILE	*curl_fopen () {
-#ifdef	__MINGW32__
-	return fopen ("null", "w");
-#else
-	return fopen ("/dev/null", "w");
 #endif
-}
-
-static inline
-void	curl_fclose (FILE *f) {
-	(void)f;
-}
-#endif
-

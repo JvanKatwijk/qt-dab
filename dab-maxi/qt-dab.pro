@@ -156,12 +156,10 @@ HEADERS += ./radio.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
            ../includes/support/fft-handler.h \
 	   ../includes/support/ringbuffer.h \
-#	   ../includes/support/Xtan2.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
 	   ../includes/support/text-mapper.h \
 	   ../includes/support/dab-tables.h \
-	   ../includes/support/ensemble-printer.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
 	   ../includes/support/smallcombobox.h \
@@ -171,7 +169,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/smallqlistview.h \
 	   ../includes/support/smallspinbox.h \
 	   ../includes/support/history-handler.h \
-	   ../includes/support/scanner-table.h \
 	   ../includes/support/color-selector.h \
 	   ../includes/support/scheduler.h \
 	   ../includes/support/schedule-selector.h \
@@ -267,12 +264,10 @@ SOURCES += ./main.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
            ../src/support/fft-handler.cpp \
-#	   ../src/support/Xtan2.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
 	   ../src/support/text-mapper.cpp \
 	   ../src/support/dab-tables.cpp \
-	   ../src/support/ensemble-printer.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
 	   ../src/support/smallcombobox.cpp \
@@ -282,7 +277,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/smallqlistview.cpp \
 	   ../src/support/smallspinbox.cpp \
 	   ../src/support/history-handler.cpp \
-	   ../src/support/scanner-table.cpp \
 	   ../src/support/color-selector.cpp \
 	   ../src/support/scheduler.cpp \
 	   ../src/support/schedule-selector.cpp \
@@ -310,7 +304,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-4.3
+TARGET		= qt-dab-4.35
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -352,9 +346,9 @@ CONFIG		+= lime
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #CONFIG		+= JAN
-#CONFIG		+= preCompiled
+CONFIG		+= preCompiled
 #CONFIG		+= tiiLib
-CONFIG		+= noTables
+#CONFIG		+= noTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -389,7 +383,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-4.3
+#	TARGET		= qt-dab64-4.35
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -409,7 +403,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-4.3
+	TARGET		= qt-dab32-4.35
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -425,9 +419,9 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-	CONFIG		+= noTables
+#	CONFIG		+= noTables
 #	CONFIG		+= JAN
-#	CONFIG		+= preCompiled
+	CONFIG		+= preCompiled
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include

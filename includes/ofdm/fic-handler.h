@@ -27,13 +27,15 @@
 #ifndef	__FIC_HANDLER__
 #define	__FIC_HANDLER__
 
+#include	<QObject>
+#include	<QMutex>
 #include	<cstdio>
 #include	<cstdint>
 #include	<vector>
 #include	"viterbi-spiral.h"
-#include	<QObject>
 #include	"dab-params.h"
 #include	"fib-decoder.h"
+
 
 
 class	RadioInterface;
@@ -47,7 +49,8 @@ public:
 	void	process_ficBlock	(std::vector<int16_t>, int16_t);
 	void	stop			();
 	void	reset			();
-	
+	void	start_ficDump		(FILE *);
+	void	stop_ficDump		();
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;
@@ -64,6 +67,10 @@ private:
 	int16_t		ficRatio;
 	uint16_t	convState;
 	uint8_t		PRBS		[768];
+	FILE		*ficDumpPointer;
+	QMutex          ficLocker;
+	uint8_t		ficBuffer [256];
+	int		ficPointer;
 //	uint8_t		shiftRegister	[9];
 signals:
 	void		show_ficSuccess	(bool);
