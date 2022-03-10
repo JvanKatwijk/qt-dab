@@ -37,7 +37,6 @@
 #include	"fib-decoder.h"
 
 
-
 class	RadioInterface;
 class	dabParams;
 
@@ -46,7 +45,8 @@ Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler();
-	void	process_ficBlock	(std::vector<int16_t>, int16_t);
+	void	process_ficBlock	(std::vector<int16_t> &,
+	                                 int16_t);
 	void	stop			();
 	void	reset			();
 	void	start_ficDump		(FILE *);

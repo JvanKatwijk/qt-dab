@@ -1,63 +1,42 @@
-/*****************************************************************************
- * Copyright (C) 2018 Shie Erlich <krusader@users.sourceforge.net>           *
- * Copyright (C) 2018 Rafi Yanai <krusader@users.sourceforge.net>            *
- * Copyright (C) 2018 Krusader Krew [https://krusader.org]                   *
- *                                                                           *
- * This file is part of Krusader [https://krusader.org].                     *
- *                                                                           *
- * Krusader is free software: you can redistribute it and/or modify          *
- * it under the terms of the GNU General Public License as published by      *
- * the Free Software Foundation, either version 2 of the License, or         *
- * (at your option) any later version.                                       *
- *                                                                           *
- * Krusader is distributed in the hope that it will be useful,               *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of            *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             *
- * GNU General Public License for more details.                              *
- *                                                                           *
- * You should have received a copy of the GNU General Public License         *
- * along with Krusader.  If not, see [http://www.gnu.org/licenses/].         *
- *****************************************************************************/
+#
+/*
+ *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ *    Jan van Katwijk (J.vanKatwijk@gmail.com)
+ *    Lazy Chair Computing
+ *
+ *    This file is part of the Qt-DAB 
+ *
+ *    Qt-DAB is free software; you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation; either version 2 of the License, or
+ *    (at your option) any later version.
+ *
+ *    Qt-DAB is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with Qt-DAB; if not, write to the Free Software
+ *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 #ifndef	__PRESET_COMBOBOX__
 #define	__PRESET_COMBOBOX__
 
 #include	<QEvent>
 #include	<QComboBox>
 #include	<QSize>
+#include	<QMouseEvent>
 
-class KHBoxEventFilter : public QObject {
-Q_OBJECT
-public:
-	explicit KHBoxEventFilter(QObject *parent = nullptr):
-	                                            QObject(parent) {}
-protected:
-	bool eventFilter(QObject *obj, QEvent *event) override;
-};
-
-//! An event filter for the popup list of a presetComboBox, e.g.
-// it deletes the current item when the user presses Shift+Del
-class KHBoxListEventFilter : public QObject {
-Q_OBJECT
-public:
-    explicit KHBoxListEventFilter (QObject *parent = nullptr):
-	                                             QObject(parent) {}
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event) override;
-};
-
-//! A specialized version of a QComboBox, e.g. it deletes the current item when the user presses Shift+Del
+//	A specialized version of a QComboBox, e.g. it deletes
+//	the current item when the user uses the right mouse button
 class presetComboBox : public QComboBox {
 Q_OBJECT
 
 public:
 	explicit presetComboBox(QWidget *parent = nullptr);
-
 	QSize	sizeHint	()const;
-protected:
-	KHBoxEventFilter boxEF;
-	KHBoxListEventFilter listEF;
-	void	mouseDoubleClickEvent	(QMouseEvent *e);
+	bool	eventFilter (QObject *o, QEvent *e);
 };
 
 #endif 

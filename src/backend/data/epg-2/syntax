@@ -1,0 +1,207 @@
+
+
+epg (0x02) : tokenTable (0x04) 
+	     programmeGroups (0x20)
+	     schedule (0x21)
+	     defaultLanguage (0x06)
+
+serviceInformation (0x03): tokenTable (0x04)
+	    defaultLanguage (0x06)
+	    ensemble (0x26) 
+	    service (0x28)
+
+	   version	(0x80)		// 4.8.3
+	   creationTime (0x81)		// 4.7.4
+	   originator	(0x82)		// 4.4.0
+	   serviceProvider (0x83) 	// 4.4.0
+
+programGroups (0x20): programGroup (0x23)
+	   version (0x80)		// 4.8.3
+	   creationTime (0x81)		// 4.7.4
+	   originator (0x82)		// 4.4.0
+
+programGroup (0x23): shortName (0x10)
+	      mediumName (0x11)
+	      longName (0x12)
+	      mediaDescription (0x13)
+	      genre (0x14)
+	      keywords (0x16)
+	      memberof (0x17)
+	      link (0x18)
+	      programGroups (0x20)
+
+	      id (0x80)			// 4.7.1
+	      shortId (0x81)		// 4.7.2
+	      version (0x82)		// 4.8.3
+	      type (0x83)		// 4.6
+	      numofItems (0x84)		// 4.8.4
+
+schedule (0x21): program (0x1C)
+	      scope (0x24)
+
+	      version (0x80)		// 4.8.3
+	      creationtime (0x81)	// 4.7.4
+	      originator (0x82)		// 4.4.0
+
+shortName (0x10):
+
+mediumname (0x11) :
+
+longName (0x12):
+
+mediaDescription (0x13): 
+
+genre (0x14):
+
+keywords (0x15):
+
+memberof (0x17):
+
+link (0x18): 
+
+program (0x1C): shortName (0x10)
+	   mediumName (0x11)
+	   longName (0x12)
+	   mediaDescription (0x13)
+	   genre (0x14)
+	   keywords (0x16)
+	   memberOf (0x17)
+	   link (0x18)
+	   location (0x19)
+	   onDemand (0x36)
+	   programmeEvent (0x2E)
+
+	id (0x80)			// 4.7.1
+	shortId (0x81)			// 4.7.2
+	version (0x82)			// 4.8.3
+	recommendation (0x83)		// 4.6
+	broadcast (0x84)		// 4.6
+	xml:lang (0x86)			// 4.8.1
+
+scope (0x24): serviceScope (0x25)
+	   startTime (0x80)		// 4.7.4
+	   stopTime  (0x81)		// 4.7.4
+
+serviceScope (0x25):
+	   id (0x80)			// 4.7.6
+
+mediaDescription (0x13): shortDescription (0x1A)
+	       longDescription (0x1B)
+	      multiMedia (0x2B)
+	      
+ensemble (0x26): shortName (0x10)
+	      mediumName (0x11)
+	      longName (0x12)
+	      mediaDescription (0x13)
+	      keywords (0x16)
+	      link (0x18)
+	      service (0x28)
+
+	   id (0x80)		// 4.17.1
+
+service (0x28):	shortName (0x10)
+	      mediumName (0x11)
+	      longName (0x12)
+	      mediaDescription (0x13)
+	      genre (0x14)
+	      keyWords (0x16)
+	      bearer (0x29)
+	      radiodns (0x31)
+	      geolocation (0x32)
+
+	      version (0x80)	// 4.8.3
+
+location (0x19): time (0x2C)
+	       bearer (0x2D)
+	       relativeTime (0x2F)
+
+bearer (0x29):	geolocation (0x32)
+
+geoLocation (0x32):	country (0x33)
+	        point (0x34)
+	        polygon (0x35)
+
+programmeEvent (0x2E): shortName (0x10)
+	         mediumName (0x11)
+	         longName (0x12)
+	         mediaDescription (0x13)
+	         genre (0x14)
+	         keywords (0x16)
+	         memberOf (0x17)
+	         link (0x18)
+	         location (0x19)
+	         onDemand (0x36)
+
+	      id (0x80)				// 4.7.1
+	      shortId (0x81)			// 4.7.2
+	      version (0x82)			// 4.8.3
+	      recommendation (0x83)		// 4.6
+	      broadcast (0x84)			// 4.6
+	      xml:lang (0x86)			// 4.8.1
+
+
+onDemand (0x36): bearer (0x29)
+	         presentationTime (0x37)
+	         acquisitionTime (0x38)
+
+genre (0x14)	: href (0x80)	// 4.12
+	          type (0x81)	// 4.6
+
+keywords (0x15): xml:lang (0x80)	// 4.8.1
+
+link (0x17)	: uri (0x80)		// 4.4.0
+	          mimeValue (0x81)	// 4.7.3
+	          xml_lang (0x82)	// 4.8.1
+	          description (0x83)	// 4.4.0
+	          expiryTime (0x84)	// 4.7.4
+
+shortName:	xml:lang (0x80)		// 4.8.1
+
+mediumName:	xml:lang (0x80)		// 4.8.1
+
+longName:	xml:lang (0x80)		// 4.8.1
+
+shortDescription:	xml:lang (0x80)	// 4.8.1
+
+longDescription:	xml:lang (0x80)	// 4.8.1
+
+multimedia:	mimeValue (0x80)	// 4.7.3
+	        xml_lang  (0x81)	// 4.8.1
+	        uri (0x82)		// 4.4.0
+	        type (0x83)		// 4.6
+	        width (0x84)		// 4.8.5
+	        heigth (0x85)		// 4.8.5
+
+bearer:		id (0x80)		// 4.7.6
+	        url (0x82)		// 4.4.0
+
+geolocation:	xml:id	(0x80)		// 4.4.0
+	        ref  (0x81)		// 4.4.0
+
+
+radiodns (0x31)	fqdn (0x80)		// 4.4.0
+	        serviceIdentifier (0x81)	// 4.4.0
+
+time (0x2C):	time (0x80)		// 4.7.4
+	        duration (0x81)		// 4.7.5
+	        actualTime (0x82)	// 4.7.4
+	        actualDuration (0x83)	// 4.7.5
+
+relativeTime:	time (0x80)		// 4.7.4
+	        duration (0x81)		// 4.7.5
+	        actualTime (0x82)	// 4.7.4
+	        actualDuration (0x83)	// 4.7.5
+
+memberOf:	Id (0x80)		// 4.7.1
+	        shortId (0x81)		// 4.7.2
+	        Index (0x83)		// 4.8.2
+
+presentationTime:
+	        start (0x80)		// 4.7.4
+	        end   (0x81)		// 4.7.4
+	        duration (0x82)		// 4.7.5
+
+acquisitionTime:
+	        start (0x80)		// 4.7.4
+	        end   (0x81)		// 4.7.4
+

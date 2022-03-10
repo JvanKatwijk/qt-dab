@@ -127,7 +127,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   *	The function is called with a blkno. This should be 1, 2 or 3
   *	for each time 2304 bits are in, we call process_ficInput
   */
-void	ficHandler::process_ficBlock (std::vector<int16_t> data,
+void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
 	                              int16_t blkno) {
 int32_t	i;
 
@@ -203,22 +203,18 @@ int16_t	inputCount	= 0;
 	   }
 
 	   for (int j = 0; j < 32; j ++) {
-	      int bufferP	= ficPointer + j;
-	      ficBuffer [bufferP] = 0;
+	      ficBuffer [j] = 0;
 	      for (int k = 0; k < 8; k ++) {
-	         ficBuffer [bufferP] <<= 1;
-	         ficBuffer [bufferP] |= p [8 * j + k];
+	         ficBuffer [j] <<= 1;
+	         ficBuffer [j] &= 0xFE;
+	         ficBuffer [j] |= p [8 * j + k] ? 1 : 0;
 	      }
 	   }
 
-	   ficPointer += 32;
-	   if (ficPointer >= 256) {
-	      ficLocker. lock ();
-	      if (ficDumpPointer != nullptr)
-	         fwrite (ficBuffer, 1, 256, ficDumpPointer);
-	      ficLocker. unlock ();
-	      ficPointer = 0;
-	   }
+	   ficLocker. lock ();
+	   if (ficDumpPointer != nullptr) 
+	      fwrite (ficBuffer, 1, 32, ficDumpPointer);
+	   ficLocker. unlock ();
 
 	   show_ficSuccess (true);
 	   fibDecoder::process_FIB (p, ficno);

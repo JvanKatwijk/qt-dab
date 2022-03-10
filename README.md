@@ -5,7 +5,6 @@ Qt-DAB-4.35 is software for Linux, Windows and Raspberry Pi for listening to ter
 ![overview](/screen-4.35.png?raw=true)
 [4.35](/screen-4.351.png?raw=true)
 
-
 ------------------------------------------------------------------
 Table of Contents
 ------------------------------------------------------------------
@@ -238,6 +237,8 @@ Obviously, selecting a service in the preset list instructs the software
 to switch to the channel for the service and the service.
 
 The presets are stored in an xml file, `.qt-dab-presets.xml`.
+Removing an entry in the presetlist is by **right-clicking with the
+mouse** on the entry.
 
 ----------------------------------------------------------------------
 Storing gain settings
