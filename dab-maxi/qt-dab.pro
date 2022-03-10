@@ -346,8 +346,8 @@ CONFIG		+= lime
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #CONFIG		+= JAN
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #CONFIG		+= noTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
