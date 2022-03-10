@@ -241,6 +241,7 @@ private:
 	void			set_buttonColors	(QPushButton *,
 	                                                 const QString &);
 	QString			footText		();
+	QString			presetText		();
 	void			cleanScreen		();
 	void			set_picturePath		();
 	void			dumpControlState	(QSettings *);

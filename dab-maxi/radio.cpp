@@ -547,6 +547,7 @@ uint8_t	dabBand;
 	         this, SLOT (color_muteButton ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
+	presetSelector	-> setToolTip (presetText ());
 
 	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_set_coordinatesButton ()));
@@ -696,6 +697,10 @@ uint8_t	dabBand;
 	connect (deviceSelector, SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
+}
+
+QString	RadioInterface::presetText () {
+return QString ("In version 4.35 the way elements are removed from the presets is changed. Just click with the right mouse button on the text of the item and the item will be removed from the presetList");
 }
 
 QString RadioInterface::footText () {
