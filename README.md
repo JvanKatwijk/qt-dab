@@ -3,7 +3,7 @@
 Qt-DAB-4.351 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![overview](/screen-4.3511.png?raw=true)
-[4.35](/screen-4.351.png?raw=true)
+![4.35](/screen-4.351.png?raw=true)
 
 ------------------------------------------------------------------
 Latest gadget
@@ -164,7 +164,7 @@ The buttons and other controls on the main widget are equipped with
 of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
 
-![4.](/mainwidget.png?raw=true)
+![4.](/screen-4.351.png?raw=true)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.
