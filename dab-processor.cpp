@@ -524,29 +524,33 @@ void	dabProcessor::reset_Services	() {
 	   my_mscHandler. reset_Channel ();
 }
 
-void	dabProcessor::stopService (descriptorType *d) {
+void	dabProcessor::stopService (descriptorType *d, int flag) {
 	fprintf (stderr, "function obsolete\n");
 	if (!scanMode)
-	   my_mscHandler. stopService (d -> subchId);
+	   my_mscHandler. stopService (d -> subchId, flag);
 }
 
-void	dabProcessor::stopService (int subChId) {
+void	dabProcessor::stopService (int subChId, int flag) {
 	if (!scanMode)
-	   my_mscHandler. stopService (subChId);
+	   my_mscHandler. stopService (subChId, flag);
 }
 
 bool    dabProcessor::set_audioChannel (audiodata *d,
-	                                      RingBuffer<int16_t> *b) {
+	                                RingBuffer<int16_t> *b,
+	                                FILE *dump, int flag) {
 	if (!scanMode)
-	   return my_mscHandler. set_Channel (d, b, (RingBuffer<uint8_t> *)nullptr);
+	   return my_mscHandler. set_Channel (d, b,
+	                         (RingBuffer<uint8_t> *)nullptr, dump, flag);
 	else
 	   return false;
 }
 
 bool    dabProcessor::set_dataChannel (packetdata *d,
-	                                      RingBuffer<uint8_t> *b) {
+	                               RingBuffer<uint8_t> *b, int flag) {
 	if (!scanMode)
-	   return my_mscHandler. set_Channel (d, (RingBuffer<int16_t> *)nullptr, b);
+	   return my_mscHandler. set_Channel (d,
+	                     (RingBuffer<int16_t> *)nullptr, b,
+	                      nullptr, flag);
 	else
 	   return false;
 }

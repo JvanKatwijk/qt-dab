@@ -1,9 +1,45 @@
-# Qt-DAB-4.35 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.351 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.35 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.351 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/screen-4.35.png?raw=true)
+![overview](/screen-4.3511.png?raw=true)
 [4.35](/screen-4.351.png?raw=true)
+
+------------------------------------------------------------------
+Latest gadget
+------------------------------------------------------------------
+
+One of the things on the todo list was making use of the possibility
+of running more than a single "back-end", i.e. decoding more than
+just a single service at the same time. While there was a solution
+for running the EPG (Electronic Program Guide) as background service,
+the way it was implemented was rather ad-hoc.
+
+So, now this version supports the notion of background service,
+i.e. a service, selectable by the user, running in the background.
+To keep things simple, an audio service, running in the background,
+should be a DAB+ service, and its output is an AAC file (the user
+may give a filename, a reasonable suggestion for the name is given.
+
+The services running in the background show in a green, italic font
+in the list of services.
+
+Selecting a service for running in the background is by clicking
+with the right hand mouse button on the service name in the list,
+then a fileselection menu appears. After selecting an outputfile
+the service will start.
+
+Stopping a background service is automatically on a change of channel,
+and by - again - clicking with the right hand mouse button on the
+name.
+
+The figures show that the services "NPO Radio2", "NPO 3FM" and "NPO EPG"
+are running in the background.
+
+Note that EPG services are selected automatically, mouse clicking on
+the name of such a service has no effect.
+
+Note that the "feature" is not yet described in the manual.
 
 ------------------------------------------------------------------
 Table of Contents

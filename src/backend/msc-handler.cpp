@@ -217,12 +217,12 @@ void	mscHandler::reset_Channel () {
 	locker. unlock ();
 }
 
-void	mscHandler::stopService	(descriptorType *d) {
+void	mscHandler::stopService	(descriptorType *d, int flag) {
 	fprintf (stderr, "obsolete function stopService\n");
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
-	   if (b -> subChId == d -> subchId) {
+	   if ((b -> subChId == d -> subchId) && (b -> borf == flag)) {
 	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",
 	                                    d -> subchId);
 	      b -> stopRunning ();
@@ -233,11 +233,11 @@ void	mscHandler::stopService	(descriptorType *d) {
 	locker. unlock ();
 }
 
-void	mscHandler::stopService	(int subchId) {
+void	mscHandler::stopService	(int subchId, int flag) {
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
-	   if (b -> subChId == subchId) {
+	   if ((b -> subChId == subchId) && (b -> borf == flag)) {
 	      fprintf (stderr, "stopping subchannel %d\n", subchId);
 	      b -> stopRunning ();
 	      delete b;
@@ -249,24 +249,26 @@ void	mscHandler::stopService	(int subchId) {
 
 bool	mscHandler::set_Channel (descriptorType *d,
 	                         RingBuffer<int16_t> *audioBuffer,
-	                         RingBuffer<uint8_t> *dataBuffer) {
+	                         RingBuffer<uint8_t> *dataBuffer,
+	                         FILE *dump, int flag) {
 	fprintf (stderr, "going to open %s\n",
 	                d -> serviceName. toLatin1 (). data ());
-	locker. lock();
-	for (int i = 0; i < theBackends. size (); i ++) {
-	   if (d -> subchId == theBackends. at (i) -> subChId) {
-	      fprintf (stderr, "The service is already running\n");
-	      theBackends. at (i) -> stopRunning ();
-	      delete theBackends. at (i);
-	      theBackends. erase (theBackends. begin () + i);
-	   }
-	}
-	locker. unlock ();
+//	locker. lock();
+//	for (int i = 0; i < theBackends. size (); i ++) {
+//	   if (d -> subchId == theBackends. at (i) -> subChId) {
+//	      fprintf (stderr, "The service is already running\n");
+//	      theBackends. at (i) -> stopRunning ();
+//	      delete theBackends. at (i);
+//	      theBackends. erase (theBackends. begin () + i);
+//	   }
+//	}
+//	locker. unlock ();
 	theBackends. push_back (new Backend (myRadioInterface,
 	                                     d,
 	                                     audioBuffer,
 	                                     dataBuffer,
-	                                     frameBuffer));
+	                                     frameBuffer,
+	                                     dump, flag));
 	fprintf (stderr, "we have now %d backends running\n",
 	                        theBackends. size ());
 	return true;

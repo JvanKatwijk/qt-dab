@@ -54,7 +54,7 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *,
 	                                 RingBuffer<uint8_t> *,
-	                                 uint8_t procMode = 1);
+	                                 FILE *);
 			~mp4Processor();
 	void		addtoFrame	(std::vector<uint8_t>);
 private:
@@ -66,6 +66,7 @@ private:
                                      uint8_t	*data,
                                      std::vector<uint8_t> &fileBuffer);
 
+	FILE		*dump;
 	uint8_t		procMode;
 	int16_t		superFramesize;
 	int16_t		blockFillIndex;

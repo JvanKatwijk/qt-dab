@@ -92,12 +92,13 @@ public:
 	void		stop_ficDump		();
 //	for the mscHandler
 	void		reset_Services		();
-	void		stopService		(descriptorType *);
-	void		stopService		(int);
+	void		stopService		(descriptorType *, int);
+	void		stopService		(int, int);
 	bool		set_audioChannel	(audiodata *,
-	                                             RingBuffer<int16_t> *);
+	                                         RingBuffer<int16_t> *,
+	                                         FILE *, int);
 	bool		set_dataChannel		(packetdata *,
-	                                             RingBuffer<uint8_t> *);
+	                                         RingBuffer<uint8_t> *, int);
 	void		set_tiiDetectorMode	(bool);
 private:
 	int		frequency;

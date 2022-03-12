@@ -59,12 +59,13 @@ public:
 	void		process_Msc		(std::complex<float> *, int);
 	bool		set_Channel		(descriptorType *,
 	                                           RingBuffer<int16_t> *,
-	                                           RingBuffer<uint8_t> *);
+	                                           RingBuffer<uint8_t> *,
+	                                           FILE *, int);
 //
 //	
 	void		reset_Channel		();
-	void		stopService		(descriptorType *);
-	void		stopService		(int);
+	void		stopService		(descriptorType *, int);
+	void		stopService		(int, int);
 	void		reset_Buffers		();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);

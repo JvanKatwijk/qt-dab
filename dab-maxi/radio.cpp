@@ -327,7 +327,6 @@ uint8_t	dabBand;
 	configWidget.  utcSelector -> setChecked (b);
 	currentService. valid	= false;
 	nextService. valid	= false;
-	secondService. valid	= false;
 
 	if (dabSettings -> value ("has-presetName", 0). toInt () != 0) {
 	   configWidget. saveServiceSelector -> setChecked (true);
@@ -1208,8 +1207,14 @@ int	serviceOrder;
 	stopScanning    (false);
 //
 	stopService	(s);
-	if (secondService. valid)
-	   stopService (secondService);
+//
+//	we stop all secondary services as well, but we maintain theer
+//	description, file descriptors remain of course
+//
+	for (int i = 0; i < backgroundServices. size (); i ++)
+	   my_dabProcessor -> stopService (backgroundServices. at (i). subChId,
+	                                   BACK_GROUND);
+
 	fprintf (stderr, "change will be effected\n");
 	serviceOrder	= 
 	        dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
@@ -1228,25 +1233,6 @@ int	serviceOrder;
 	}
 	ensembleDisplay -> setModel (&model);
 //
-//	and restart the services that - may be - were running
-	if (secondService. valid) {
-	   packetdata pd;
-	   my_dabProcessor -> dataforPacketService (secondService. serviceName,
-	                                                        &pd, 0);
-	   if (pd. defined) {
-	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
-	      secondService. serviceName = pd. serviceName;
-              secondService. is_audio = false;
-              secondService. channel = channel. channelName;
-              secondService. SId     = pd. SId;
-              secondService. SCIds   = pd. SCIds;
-              secondService. subChId = pd. subchId;
-              secondService. valid   = true;
-	   }
-	   else
-	      secondService. valid = false;
-	}
-
 //	Of course, it may be disappeared
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
@@ -1261,6 +1247,42 @@ int	serviceOrder;
 	               my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (s. serviceName != "")
 	      startService (&s);
+	}
+//
+//	we also have to restart all background services,
+	for (int i = 0; i < backgroundServices. size (); i ++) {
+	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
+	   if (ss == "") {	// it is gone, close the file if any
+	      if (backgroundServices. at (i). fd != nullptr)
+	         fclose (backgroundServices. at (i). fd);
+	      backgroundServices. erase
+	                        (backgroundServices. begin () + i);
+	   }
+	   else {	// (re)start the service
+	      if (my_dabProcessor -> is_audioService (ss)) {
+	         audiodata ad;
+	         FILE *f = backgroundServices. at (i). fd;
+	         my_dabProcessor -> dataforAudioService (ss, &ad);
+	         my_dabProcessor -> 
+                           set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
+                 backgroundServices. at (i). subChId     = ad. subchId;
+	      }
+	      else {
+	         packetdata pd;
+	         my_dabProcessor -> dataforPacketService (ss, &pd, 0);
+	         my_dabProcessor -> 
+                           set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
+                 backgroundServices. at (i). subChId     = pd. subchId;
+	      }
+	      for (int j = 0; j < model. rowCount (); j ++) {
+	         QString itemText =
+                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
+	         if (itemText == ss) {
+	            colorService (model. index (j, 0), Qt::green,
+	                                fontSize + 2, true);
+	         }
+	      }
+	   }
 	}
 }
 //
@@ -2687,6 +2709,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      packetdata pd;
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+	      serviceName = serviceName. right (16);
 	      if (serviceName. at (1) == ' ')
 	         return true;
 
@@ -2702,21 +2725,71 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         presetSelector -> addItem (itemText);
 	         return true;
 	      }
-	      
-	      if (ad. defined) {
-	         if (currentServiceDescriptor != nullptr) 
-	            delete currentServiceDescriptor;
-	         currentServiceDescriptor	= new audioDescriptor (&ad);
-	         return true;
-	      }
 
-	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-	      if (pd. defined) {
-	         if (currentServiceDescriptor != nullptr)
-	            delete currentServiceDescriptor;
-	         currentServiceDescriptor	= new dataDescriptor (&pd);
+	      if ((ad. defined) && (ad. ASCTy == 077)) {
+	         for (int i = 0; i < backgroundServices. size (); i ++) {
+	            if (backgroundServices. at (i). serviceName ==
+	                                                      serviceName) {
+	                my_dabProcessor -> stopService (ad. subchId,
+	                                                      BACK_GROUND);
+	                if (backgroundServices. at (i). fd != nullptr)
+	                   fclose (backgroundServices. at (i). fd);
+	                backgroundServices. erase
+	                        (backgroundServices. begin () + i);
+	                fprintf (stderr, "Background %s gestopt\n",
+	                                     serviceName. toUtf8 (). data ());
+
+	                for (int j = 0; j < model. rowCount (); j ++) {
+                            QString itemText =
+                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
+                           if (itemText == serviceName) {
+                              colorService (model. index (j, 0), Qt::black, fontSize);
+	                   }
+	                }
+	                return true;
+	            }
+	         }
+	         FILE *f =
+	            filenameFinder. findFrameDump_fileName (serviceName, true);
+	         if (f == nullptr)
+	            return true;
+
+	         (void)my_dabProcessor ->
+	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);
+	         
+	         dabService s;
+	         s. channel	= ad. channel;
+	         s. serviceName	= ad. serviceName;
+	         s. SId		= ad. SId;
+	         s. SCIds	= ad. SCIds;
+	         s. subChId	= ad. subchId;
+	         s. fd		= f;
+	         backgroundServices. push_back (s);
+	         for (int j = 0; j < model. rowCount (); j ++) {
+	             QString itemText =
+                       model. index (j, 0). data (Qt::DisplayRole). toString ();
+	               if (itemText == s. serviceName) {
+	                  colorService (model. index (j, 0),
+	                                       Qt::green, fontSize + 2, true);
+	               }
+		 }
 	         return true;
 	      }
+//	      
+//	      if (ad. defined) {
+//	         if (currentServiceDescriptor != nullptr) 
+//	            delete currentServiceDescriptor;
+//	         currentServiceDescriptor	= new audioDescriptor (&ad);
+//	         return true;
+//	      }
+//
+//	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
+//	      if (pd. defined) {
+//	         if (currentServiceDescriptor != nullptr)
+//	            delete currentServiceDescriptor;
+//	         currentServiceDescriptor	= new dataDescriptor (&pd);
+//	         return true;
+//	      }
 	   }
 	}
 
@@ -2886,14 +2959,14 @@ void	RadioInterface::stopService	(dabService &s) {
 	}
 
 	if (s. valid) {
-	   my_dabProcessor -> stopService (s. subChId);
+	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
 	      soundOut -> stop ();
 	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
 	         my_dabProcessor -> dataforPacketService (s. serviceName, &pd, i);
 	         if (pd. defined) {
-	            my_dabProcessor -> stopService (pd. subchId);
+	            my_dabProcessor -> stopService (pd. subchId, FORE_GROUND);
 	            break;
 	         }
 	      }
@@ -2913,7 +2986,8 @@ void	RadioInterface::stopService	(dabService &s) {
 //
 //
 void	RadioInterface::selectService (QModelIndex ind) {
-QString	currentProgram = ind. data (Qt::DisplayRole). toString();
+QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
+
 	if (!running. load ())
 	   return;
 
@@ -2954,9 +3028,15 @@ QString serviceName	= s -> serviceName;
 	for (int i = 0; i < rowCount; i ++) {
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
-	   if (itemText == serviceName) {
+	   for (int j = 0; j < backgroundServices. size (); j ++)
+	      if (backgroundServices. at (j). serviceName == itemText)
+	         colorService (model. index (i, 0), Qt::green, fontSize + 2, true);
+	}
+	for (int i = 0; i < rowCount; i ++) {
+	   QString itemText =
+	           model. index (i, 0). data (Qt::DisplayRole). toString ();
+	   if (itemText ==  serviceName) {
 	      colorService (model. index (i, 0), Qt::red, fontSize + 4);
-//	      serviceLabel	-> setStyleSheet ("QLabel {color : black}");
 	      QFont font = serviceLabel -> font ();
 	      font. setPointSize (16);
 	      font. setBold (true);
@@ -2995,11 +3075,12 @@ QString serviceName	= s -> serviceName;
 	}
 }
 
-void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt) {
+void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt,
+	                                                         bool italic) {
 	QMap <int, QVariant> vMap = model. itemData (ind);
 	vMap. insert (Qt::ForegroundRole, QVariant (QBrush (c)));
 	model. setItemData (ind, vMap);
-	model. setData (ind, QFont (theFont, pt), Qt::FontRole);
+	model. setData (ind, QFont (theFont, pt, -1, italic), Qt::FontRole);
 }
 //
 //	This function is only used in the Gui to clear
@@ -3054,12 +3135,13 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
 
-	(void)my_dabProcessor -> set_audioChannel (ad, &audioBuffer);
+	(void)my_dabProcessor -> set_audioChannel (ad, &audioBuffer,
+	                                            nullptr, FORE_GROUND);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
 	   my_dabProcessor -> dataforPacketService (ad -> serviceName, &pd, i);
 	   if (pd. defined) {
-	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
+	      my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
 	                            pd. serviceName. toUtf8 (). data (),
 	                            pd. subchId);
@@ -3120,7 +3202,7 @@ packetdata pd;
 	   return;
 	}
 
-	if (!my_dabProcessor -> set_dataChannel (&pd, &dataBuffer)) {
+	if (!my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
 	   return;
@@ -3309,6 +3391,20 @@ void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
 	LOG ("channel stops ", channel. channelName);
+	fprintf (stderr, "we have now as background services\n");
+	for (int i = 0; i < backgroundServices. size (); i ++)
+	   fprintf (stderr, "%s (%d)\n",
+	                 backgroundServices. at (i). serviceName. toLatin1 (). data (),
+	                 backgroundServices. at (i). subChId);
+	
+	for (int i = 0; i < backgroundServices. size (); i ++) {
+	   dabService s =  backgroundServices. at (i);
+	   my_dabProcessor -> stopService (s. subChId, BACK_GROUND);
+	   if (s. fd != nullptr)
+	      fclose (s. fd);
+	}
+	backgroundServices. clear ();
+	   
 	stop_sourceDumping	();
 	stop_audioDumping	();
 	soundOut	-> stop ();
@@ -3351,7 +3447,6 @@ void	RadioInterface::stopChannel	() {
 	usleep (1000);		// may be handling pending signals?
 	currentService. valid	= false;
 	nextService. valid	= false;
-	secondService. valid	= false;
 
 //	all stopped, now look at the GUI elements
 	ficError_display	-> setValue (0);
@@ -4274,15 +4369,25 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         epgLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
-	         secondService. serviceName = pd. serviceName;
-	         secondService. is_audio = false;
-	         secondService. channel	= channel. channelName;
-	         secondService. SId	= pd. SId;
-	         secondService. SCIds	= pd. SCIds;
-	         secondService. subChId	= pd. subchId;
-	         secondService. valid	= true;
-	         break;
+	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         dabService s;
+                 s. channel     = pd. channel;
+                 s. serviceName = pd. serviceName;
+                 s. SId         = pd. SId;
+                 s. SCIds       = pd. SCIds;
+                 s. subChId     = pd. subchId;
+                 s. fd          = nullptr;
+                 backgroundServices. push_back (s);
+
+	         for (int j = 0; j < model. rowCount (); j ++) {
+                    QString itemText =
+                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
+                    if (itemText == pd. serviceName) {
+                       colorService (model. index (j, 0), Qt::green,
+                                        fontSize + 2, true);
+	               break;
+                    }
+	         }
 	      }
 	   }
 #ifdef	__DABDATA__
@@ -4294,14 +4399,15 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         epgLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer);
-	         secondService. serviceName = pd. serviceName;
-	         secondService. is_audio = false;
-	         secondService. channel	= channel. channelName;
-	         secondService. SId	= pd. SId;
-	         secondService. SCIds	= pd. SCIds;
-	         secondService. subChId	= pd. subchId;
-	         secondService. valid	= true;
+	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         dabService s;
+                 s. channel     = channel. channelName;
+                 s. serviceName = pd. serviceName;
+                 s. SId         = pd. SId;
+                 s. SCIds       = pd. SCIds;
+                 s. subChId     = pd. subchId;
+                 s. fd          = nullptr;
+                 backgroundServices. push_back (s);
 	         break;
 	      }
 	   }

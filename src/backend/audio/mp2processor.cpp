@@ -221,8 +221,7 @@ struct quantizer_spec quantizer_table [17] = {
 
 	mp2Processor::mp2Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<int16_t> *buffer,
-	                            RingBuffer<uint8_t> *frameBuffer):
+	                            RingBuffer<int16_t> *buffer):
 	                                my_padhandler (mr) {
 int16_t	i, j;
 int16_t *nPtr = &N [0][0];
@@ -281,13 +280,13 @@ void	mp2Processor::setSamplerate (int32_t rate) {
 ////////////////////////////////////////////////////////////////////////////////
 
 int32_t	mp2Processor::mp2sampleRate	(uint8_t *frame) {
-    if (!frame)
-        return 0;
-    if (( frame[0]         != 0xFF)   // no valid syncword?
-    ||  ((frame[1] & 0xF6) != 0xF4)   // no MPEG-1/2 Audio Layer II?
-    ||  ((frame[2] - 0x10) >= 0xE0))  // invalid bitrate?
-        return 0;
-    return sample_rates[(((frame[1] & 0x08) >> 1) ^ 4)  // MPEG-1/2 switch
+	if (!frame)
+	   return 0;
+	if (( frame[0]         != 0xFF)   // no valid syncword?
+	    ||  ((frame[1] & 0xF6) != 0xF4)   // no MPEG-1/2 Audio Layer II?
+	    ||  ((frame[2] - 0x10) >= 0xE0))  // invalid bitrate?
+	   return 0;
+	return sample_rates[(((frame[1] & 0x08) >> 1) ^ 4)  // MPEG-1/2 switch
                       + ((frame[2] >> 2) & 3)];         // actual rate
 }
 
@@ -302,7 +301,6 @@ int table_idx = quant_lut_step3 [b2_table][sb];
     table_idx = quant_lut_step4 [table_idx & 15] [get_bits(table_idx >> 4)];
     return table_idx ? (&quantizer_table[table_idx - 1]) : nullptr;
 }
-
 
 void 	mp2Processor::read_samples (struct quantizer_spec *q,
 	                            int scalefactor, int *sample) {

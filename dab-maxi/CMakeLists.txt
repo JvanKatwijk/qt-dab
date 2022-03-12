@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-4.35)
+set (objectName qt-dab-4.351)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -88,9 +88,9 @@ if (DEFINED DATA_STREAMER)
 	set(DATA_STREAMER true)
 endif ()
 
-if (DEFINED TRY_EPG)
+#if (DEFINED TRY_EPG)
 	set(TRY_EPG true)
-endif ()
+#endif ()
 
 if (DEFINED VITERBI_SSE)
 	set(VITERBI_SSE true)

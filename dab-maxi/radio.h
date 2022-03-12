@@ -93,6 +93,7 @@ public:
 	int		subChId;
 	bool		valid;
 	bool		is_audio;
+	FILE		*fd;
 };
 
 struct	theTime {
@@ -103,7 +104,6 @@ struct	theTime {
 	int	minute;
 	int	second;
 };
-
 
 class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
@@ -137,7 +137,6 @@ private:
 	snrViewer		my_snrViewer;
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
-//	scannerTable		theTable;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
@@ -157,20 +156,17 @@ private:
 	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
-//	QFrame			*dataDisplay;
 	Ui_configWidget		configWidget;
-//	QFrame			*configDisplay;
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
-	dabService		secondService;
-
+//	dabService		secondService;
+	std::vector<dabService> backgroundServices;
 	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	serviceDescriptor	*currentServiceDescriptor;
 	QLabel			*motSlides;
-//	std::vector<int>	secondariesVector;
 	bool			isSynced;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
@@ -273,7 +269,8 @@ private:
 	void			stopService		(dabService &);
 	void			startService		(dabService *);
 	void			colorService		(QModelIndex ind,
-	                                                   QColor c, int pt);
+	                                                 QColor c, int pt,
+	                                                 bool italic = false);
 	void			localSelect		(const QString &s);
 	void			scheduleSelect		(const QString &s);
 	void			localSelect		(const QString &,

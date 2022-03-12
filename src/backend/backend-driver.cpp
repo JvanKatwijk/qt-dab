@@ -32,13 +32,13 @@
 	                              descriptorType *d,
 	                              RingBuffer<int16_t> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
-	                              RingBuffer<uint8_t> *frameBuffer) {
+	                              RingBuffer<uint8_t> *frameBuffer,
+	                              FILE *dump) {
 	if (d -> type == AUDIO_SERVICE) {
 	   if (((audiodata *)d) -> ASCTy != 077) {
               theProcessor = new mp2Processor (mr,
 	                                       d -> bitRate,
-                                               audioBuffer,
-	                                       frameBuffer);
+                                               audioBuffer);
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
@@ -46,14 +46,14 @@
 	                                        d -> bitRate,
                                                 audioBuffer,
 	                                        frameBuffer,
-	                                        d -> procMode);
+	                                        dump);
 	   }
 	}
 	else
 	if (d -> type == PACKET_SERVICE)
 	   theProcessor = new dataProcessor (mr,
 	                                     (packetdata *)d,
-	                                      dataBuffer);
+	                                     dataBuffer);
 	else
 	   theProcessor = new frameProcessor ();	// should not happen
 }

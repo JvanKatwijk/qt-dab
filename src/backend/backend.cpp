@@ -34,14 +34,15 @@
 	                         descriptorType	*d,
 	                         RingBuffer<int16_t> *audiobuffer,
 	                         RingBuffer<uint8_t> *databuffer,	
-	                         RingBuffer<uint8_t> *frameBuffer):
+	                         RingBuffer<uint8_t> *frameBuffer,
+	                         FILE *dump, int flag):
 	                                    deconvolver (d),
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,
 	                                            audiobuffer,
 	                                            databuffer,
-	                                            frameBuffer) 
+	                                            frameBuffer, dump) 
 #ifdef	__THREADED_BACKEND
 	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 
@@ -57,6 +58,7 @@ int32_t i, j;
 	this	-> shortForm		= d -> shortForm;
 	this	-> protLevel		= d -> protLevel;
 	this	-> subChId		= d -> subchId;
+	this	-> borf			= flag;
 
 //	fprintf (stderr, "starting a backend for %s (%X) %d\n",
 //	                  serviceName. toUtf8 (). data (),

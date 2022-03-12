@@ -48,7 +48,7 @@ public:
 	                 descriptorType	*d,
 	                 RingBuffer<int16_t> *,
 	                 RingBuffer<uint8_t> *,
-	                 RingBuffer<uint8_t> *);
+	                 RingBuffer<uint8_t> *, FILE *, int);
 		~Backend();
 	int32_t	process		(int16_t *, int16_t);
 	void	stopRunning();
@@ -62,6 +62,8 @@ public:
 	int16_t		bitRate;
 	int16_t		subChId;
 	QString		serviceName;
+	int		borf;
+	FILE		*dump;
 private:
 	backendDeconvolver	deconvolver;
 	std::vector<uint8_t>	outV;

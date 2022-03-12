@@ -47,13 +47,13 @@
 	                            int16_t		bitRate,
 	                            RingBuffer<int16_t> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
-	                            uint8_t		procMode)
-	                               :my_padhandler (mr),
+	                            FILE		*dump):
+	                                my_padhandler (mr),
  	                                my_rsDecoder (8, 0435, 0, 1, 10) {
 
 	myRadioInterface	= mr;
 	this	-> frameBuffer	= frameBuffer;
-	this	-> procMode	= procMode;
+	this	-> dump		= dump;
 	connect (this, SIGNAL (show_frameErrors (int)),
 	         mr, SLOT (show_frameErrors (int)));
 	connect (this, SIGNAL (show_rsErrors (int)),
@@ -285,20 +285,22 @@ stream_parms    streamParameters;
 	                                aac_frame_length)) {
 //
 //	firs prepare dumping
-	      if ((procMode == __BOTH) || (procMode == __ONLY_DATA)) {
-	         std::vector<uint8_t> fileBuffer;
-	         int segmentSize =
+	      std::vector<uint8_t> fileBuffer;
+	      int segmentSize =
 	              build_aacFile (aac_frame_length,
 	                             &streamParameters,
 	                             &(outVector. data () [au_start [i]]),
 	                             fileBuffer);
+	      if (dump == nullptr) {
 	         frameBuffer -> putDataIntoBuffer (fileBuffer. data (),
 	                                                  segmentSize);
 	         newFrame (segmentSize);
 	      }
+	      else
+	         fwrite (fileBuffer. data (), 1, segmentSize, dump);
 
-	      if ((procMode == __BOTH) || (procMode == __ONLY_SOUND)) {
 //	first handle the pad data if any
+	      if (dump == nullptr) {
 	         if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
 	            int16_t count = outVector [au_start [i] + 1];
 	            uint8_t buffer [count];
@@ -310,12 +312,6 @@ stream_parms    streamParameters;
 //
 //	then handle the audio
 #ifdef	__WITH_FDK_AAC__
-	         std::vector<uint8_t> fileBuffer;
-	         int segmentSize =
-	              build_aacFile (aac_frame_length,
-	                             &streamParameters,
-	                             &(outVector. data () [au_start [i]]),
-	                             fileBuffer);
 	         tmp = aacDecoder -> MP42PCM (&streamParameters, 
 	                                      fileBuffer. data (), 
 	                                      segmentSize);
@@ -332,6 +328,7 @@ stream_parms    streamParameters;
 #endif
 	         emit isStereo ((streamParameters. aacChannelMode == 1) ||
 	                        (streamParameters. psFlag == 1));
+
 	         if (tmp <= 0) 
 	            aacErrors ++;
 	         if (++aacFrames > 25) {
@@ -344,10 +341,10 @@ stream_parms    streamParameters;
 	   else {
 	      fprintf (stderr, "CRC failure with dab+ frame %d (%d)\n",
 	                                          i, num_aus);
+	   }
 //
 //	what would happen if the errors were in the 10 parity bytes
 //	rather than in the 110 payload bytes?
-	   }
 	}
 	return true;
 }

@@ -929,7 +929,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	presetSelector -> setCurrentIndex (0);
 	signalTimer. stop ();
 	if (s. valid) {
-	   my_dabProcessor -> stopService (s. subChId);
+	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
 	   usleep (1000);
 	   soundOut	-> stop ();
 	   QString serviceName = currentService. serviceName;
@@ -1031,8 +1031,8 @@ audiodata ad;
 	serviceLabel -> setText (serviceName);
 	serviceLabel -> setAlignment(Qt::AlignLeft);
 
-	ad. procMode	= __ONLY_SOUND;
-	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
+//	ad. procMode	= __ONLY_SOUND;
+	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer, nullptr, FORE_GROUND );
 //	activate sound
 	soundOut -> restart ();
 }
@@ -1307,46 +1307,47 @@ bool    isValid (QChar c) {
 void	RadioInterface::start_secondService	(const QString &s) {
 audiodata ad;
 
-	my_dabProcessor	-> dataforAudioService (s, &ad);
-	if (!ad. defined)
-	   return;
-	QString saveDir		= QDir::homePath ();
-	if ((saveDir != "") && (!saveDir. endsWith ('/')))
-           saveDir = saveDir + '/';
-
-        QString theTime = timeDisplay -> text ();
-        QString suggestedFileName =
-	                    secondService. serviceName + 
-	                    channelSelector -> currentText () +
-                            "-" + theTime;
-        for (int i = 0; i < suggestedFileName. length (); i ++)
-           if (!isValid (suggestedFileName. at (i)))
-              suggestedFileName. replace (i, 1, '-');
-	suggestedFileName = saveDir + suggestedFileName;
-        fprintf (stderr, "suggested filename %s\n",
-                                 suggestedFileName. toUtf8 (). data ());
-        QString fileName = QFileDialog::getSaveFileName (this,
-                                                tr ("Save file ..."),
-                                                suggestedFileName + ".aac",
-                                                tr ("aac (*.aac)"));
-        if (fileName == "")
-           return;
-
-	fileName        = QDir::toNativeSeparators (fileName);
-	frameDumper	= fopen (fileName. toUtf8(). data(), "w");
-
-        if (frameDumper == nullptr) {
-           fprintf (stderr, "Could not open file %s\n",
-                                      fileName. toUtf8(). data());
-           return;
-        }
-
-	secondService. serviceName = s;
-	secondService. valid	= true;
-	secondService. subChId	= ad. subchId;
-	ad. procMode	= __ONLY_DATA;
-	frameBuffer. FlushRingBuffer ();
-	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
+	return;
+//	my_dabProcessor	-> dataforAudioService (s, &ad);
+//	if (!ad. defined)
+//	   return;
+//	QString saveDir		= QDir::homePath ();
+//	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+//           saveDir = saveDir + '/';
+//
+//        QString theTime = timeDisplay -> text ();
+//        QString suggestedFileName =
+//	                    secondService. serviceName + 
+//	                    channelSelector -> currentText () +
+//                            "-" + theTime;
+//        for (int i = 0; i < suggestedFileName. length (); i ++)
+//           if (!isValid (suggestedFileName. at (i)))
+//              suggestedFileName. replace (i, 1, '-');
+//	suggestedFileName = saveDir + suggestedFileName;
+//        fprintf (stderr, "suggested filename %s\n",
+//                                 suggestedFileName. toUtf8 (). data ());
+//        QString fileName = QFileDialog::getSaveFileName (this,
+//                                                tr ("Save file ..."),
+//                                                suggestedFileName + ".aac",
+//                                                tr ("aac (*.aac)"));
+//        if (fileName == "")
+//           return;
+//
+//	fileName        = QDir::toNativeSeparators (fileName);
+//	frameDumper	= fopen (fileName. toUtf8(). data(), "w");
+//
+//        if (frameDumper == nullptr) {
+//           fprintf (stderr, "Could not open file %s\n",
+//                                      fileName. toUtf8(). data());
+//           return;
+//        }
+//
+//	secondService. serviceName = s;
+//	secondService. valid	= true;
+//	secondService. subChId	= ad. subchId;
+//	ad. procMode	= __ONLY_DATA;
+//	frameBuffer. FlushRingBuffer ();
+//	my_dabProcessor -> set_audioChannel (&ad, &audioBuffer);
 }
 
 void	RadioInterface::stop_secondService () {
@@ -1354,7 +1355,7 @@ void	RadioInterface::stop_secondService () {
 	   return;
 	if (!secondService. valid)
 	   return;
-	my_dabProcessor -> stopService (secondService. subChId);
+//	my_dabProcessor -> stopService (secondService. subChId);
 	secondService. valid = false;
 	fclose (frameDumper);
 	frameDumper = nullptr;
