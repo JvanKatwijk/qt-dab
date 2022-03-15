@@ -107,7 +107,6 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/phasereference.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
-#	   ../includes/ofdm/tii_table.h \
 	   ../includes/ofdm/tii_detector.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
@@ -120,7 +119,6 @@ HEADERS += ./radio.h \
 	   ../includes/backend/msc-handler.h \
 	   ../includes/backend/galois.h \
 	   ../includes/backend/reed-solomon.h \
-#	   ../includes/backend/rscodec.h \
 	   ../includes/backend/charsets.h \
 	   ../includes/backend/firecode-checker.h \
 	   ../includes/backend/frame-processor.h \
@@ -158,7 +156,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
-	   ../includes/support/text-mapper.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
@@ -187,7 +184,6 @@ HEADERS += ./radio.h \
 	   ../snr-viewer/snr-viewer.h \
 	   ./qt-devices/device-handler.h \
 	   ./qt-devices/xml-filewriter.h \
-#	   ./qt-devices/filereader-widget.h \
 	   ./qt-devices/rawfiles-new/rawfiles.h \
 	   ./qt-devices/rawfiles-new/raw-reader.h \
            ./qt-devices/wavfiles-new/wavfiles.h \
@@ -220,7 +216,6 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/phasereference.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
-#	   ../src/ofdm/tii_table.cpp \
 	   ../src/ofdm/tii_detector.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
@@ -231,10 +226,8 @@ SOURCES += ./main.cpp \
 	   ../src/backend/msc-handler.cpp \
 	   ../src/backend/galois.cpp \
 	   ../src/backend/reed-solomon.cpp \
-#	   ../src/backend/rscodec.cpp \
 	   ../src/backend/charsets.cpp \
 	   ../src/backend/firecode-checker.cpp \
-#	   ../src/backend/frame-processor.cpp \
 	   ../src/backend/backend.cpp \
            ../src/backend/backend-driver.cpp \
            ../src/backend/backend-deconvolver.cpp \
@@ -243,7 +236,6 @@ SOURCES += ./main.cpp \
 	   ../src/backend/audio/bitWriter.cpp \
 	   ../src/backend/data/pad-handler.cpp \
 	   ../src/backend/data/data-processor.cpp \
-#	   ../src/backend/data/virtual-datahandler.cpp \
 	   ../src/backend/data/tdc-datahandler.cpp \
 	   ../src/backend/data/ip-datahandler.cpp \
 	   ../src/backend/data/mot/mot-handler.cpp \
@@ -266,7 +258,6 @@ SOURCES += ./main.cpp \
            ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
-	   ../src/support/text-mapper.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
@@ -332,7 +323,7 @@ LIBS		+= -lqwt-qt5
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
-CONFIG		+= sdrplay-v3		# pretty experimental
+CONFIG		+= sdrplay-v3	
 CONFIG		+= dabstick
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
@@ -348,11 +339,10 @@ CONFIG		+= faad
 #CONFIG		+= JAN
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
-#CONFIG		+= noTables
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
-CONFIG		+= send_datagram
+#CONFIG		+= send_datagram
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
@@ -360,14 +350,14 @@ CONFIG		+= send_datagram
 #CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
-DEFINES	+= __LOGGING__
-CONFIG		+= try-epg		# do not use
+CONFIG		+= try-epg		
 CONFIG		+= PC
+#CONFIG		+= NO_SSE
 #CONFIG		+= RPI
 #DEFINES	+= SHOW_MISSING
+DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
 }
-
 
 # an attempt to have it run under W32 through cross compilation
 win32 {
@@ -419,9 +409,9 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-#	CONFIG		+= noTables
 #	CONFIG		+= JAN
-	CONFIG		+= preCompiled
+#	CONFIG		+= preCompiled
+	CONFIG		+= tiiLib
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -760,7 +750,7 @@ tiiLib	{
 	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
 }
 
-noTables {
+basic	{
 	INCLUDEPATH	+= ../src/support/tii-codes
 	HEADERS		+= ../src/support/tii-codes/tii-codes.h
 	SOURCES		+= ../src/support/tii-codes/tii-codes.cpp

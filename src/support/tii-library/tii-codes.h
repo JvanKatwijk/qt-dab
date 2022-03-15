@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2022
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,19 +27,28 @@
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 
+typedef struct {
+	QString	country;
+	QString	channel;
+	QString ensemble;
+	uint16_t Eid;
+	uint8_t mainId;
+	uint8_t	subId;
+	QString transmitterName;
+	float	latitude;
+	float	longitude;
+} cacheElement;
+
+typedef struct {
+	uint16_t Eid;
+	uint8_t mainId;
+	uint8_t subId;
+} black;
+
 //	DLL and ".so" function prototypes
 typedef void	*(*init_tii_P)	();
 typedef void	(*close_tii_P)	(void *);
-typedef bool	(*tiiFileP)	(void *, const std::string &);
-typedef void	(*loadTableP)	(void *, const std::string &);
-typedef	std::string	(*get_transmitterNameP) (void *, const std::string &,
-	                                         uint16_t, uint8_t, uint8_t);
-typedef	void	(*get_coordinatesP) (void *, float *, float *,
-	                                  const std::string &, const std::string &);
-typedef	int	(*distanceP)	(void *, float, float, float, float);
-typedef int	(*cornerP)	(void *, float, float, float, float);
-typedef bool	(*is_blackP)	(void *, uint16_t, uint8_t, uint8_t);
-typedef void	(*set_blackP)	(void *, uint16_t, uint8_t, uint8_t);
+typedef void	(*loadTable_P)	(void *, const std::string &);
 
 class	tiiHandler {
 public:
@@ -49,27 +58,34 @@ public:
 	QString	get_transmitterName	(const QString &,
 	                                 uint16_t, uint8_t, uint8_t);
 	void	get_coordinates	(float *, float *, const QString &, const QString &);
-        int     distance        (float, float, float, float);
+        int     distance_2	(float, float, float, float);
+        int	distance	(float, float, float, float);
         int     corner          (float, float, float, float);
         bool    is_black        (uint16_t, uint8_t, uint8_t);
         void    set_black       (uint16_t, uint8_t, uint8_t);
         void    loadTable       (const QString &tf);
         bool    valid           ();
 private:
+std::vector<black> blackList;
+std::vector<cacheElement> cache;
+QString tiifileName;
+
 	void	*handler;
+
+	float	convert		(const QString &);
+        uint16_t get_Eid        (const QString &);
+        uint8_t get_mainId      (const QString &);
+        uint8_t get_subId       (const QString &);
+        int     readColumns     (std::vector<QString> &, char *, int);
+        void    readFile        (FILE *);
+        char    *eread          (char *, int, FILE *);
+        uint8_t shift;
 
 	HINSTANCE	Handle;
 	bool		loadFunctions	();
 	init_tii_P	init_tii_L;
 	close_tii_P	close_tii_L;
-	tiiFileP	tiiFileL;
-	loadTableP	loadTableL;
-	get_transmitterNameP get_transmitterNameL;
-	get_coordinatesP	get_coordinatesL;
-	distanceP	distanceL;
-	cornerP		cornerL;
-	is_blackP	is_blackL;
-	set_blackP	set_blackL;
+	loadTable_P	loadTable_L;
 };
 #endif
 

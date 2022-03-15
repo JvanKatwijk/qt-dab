@@ -1969,11 +1969,9 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel -> setWordWrap (true);
 	   dynamicLabel	-> setText (s);
 	}
+//	if we dtText is ON, some work is still to be done
 	if (dlTextFile == nullptr)
 	   return;
-//	if (the_dlCache. isMember (s))
-//	   return;
-//	the_dlCache. add (s);
 	if (the_dlCache. addifNew (s))
 	   return;
 	QString currentChannel = channel. channelName;
@@ -2137,10 +2135,10 @@ bool	tiiChange	= false;
 	                               labelText. toUtf8 (). data ());
 	               distanceLabel -> setText (labelText);
 	         
+	            }
 	         }
 	      }
 	   }
-	}
 	}
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
@@ -2195,9 +2193,6 @@ void	RadioInterface::showCorrelation	(int amount, int marker,
 	if (!running. load())
 	   return;
 	my_correlationViewer. showCorrelation (amount, marker, v);
-
-//	if (channel. nrTransmitters != v. size ())
-//	   LOG ("nr transmitters ", QString::number (v. size ()));
 	channel. nrTransmitters = v. size ();
 }
 
@@ -2964,21 +2959,35 @@ void	RadioInterface::stopService	(dabService &s) {
 	      soundOut -> stop ();
 	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
-	         my_dabProcessor -> dataforPacketService (s. serviceName, &pd, i);
+	         my_dabProcessor -> dataforPacketService (s. serviceName,
+	                                                        &pd, i);
 	         if (pd. defined) {
 	            my_dabProcessor -> stopService (pd. subchId, FORE_GROUND);
 	            break;
 	         }
 	      }
 	   }
-
+//
+//	The name of the service - on stopping it - will be - normally -
+//	made back again in the service list. An exception is when another
+//	instance of the service runs as background process, then the
+//	name should be made green, italic
 	   for (int i = 0; i < model. rowCount (); i ++) {
 	      QString itemText =
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
-	      if (itemText == s. serviceName) {
-	         colorService (model. index (i, 0), Qt::black, fontSize);
-	         break;
-	      }
+	      if (itemText != s. serviceName) 
+	         continue;
+	      for (int j = 0; j < backgroundServices. size (); j ++) {
+	         if (backgroundServices. at (j). serviceName ==
+	                                              s. serviceName) {
+	            colorService (model. index (i, 0),
+	                          Qt::green, fontSize + 2, true);
+	           cleanScreen ();
+	           return;
+	         }
+	      }	// ok, service is not background as well
+	      colorService (model. index (i, 0), Qt::black, fontSize);
+	      break;
 	   }
 	}
 	cleanScreen	();
@@ -3024,14 +3033,9 @@ QString serviceName	= s -> serviceName;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
 	LOG ("service has SNR ", QString::number (snrDisplay -> value ()));
 	techData. timeTable_button -> hide ();
+//
+//	mark the selected service in the service list
 	int rowCount	= model. rowCount ();
-	for (int i = 0; i < rowCount; i ++) {
-	   QString itemText =
-	           model. index (i, 0). data (Qt::DisplayRole). toString ();
-	   for (int j = 0; j < backgroundServices. size (); j ++)
-	      if (backgroundServices. at (j). serviceName == itemText)
-	         colorService (model. index (i, 0), Qt::green, fontSize + 2, true);
-	}
 	for (int i = 0; i < rowCount; i ++) {
 	   QString itemText =
 	           model. index (i, 0). data (Qt::DisplayRole). toString ();
@@ -3128,9 +3132,6 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 	QTime theTime		= theDateTime. time ();
-//	fprintf (stderr, "we start %s at %.2d:%.2d\n",
-//	                        ad -> serviceName. toUtf8 (). data (),
-//	                        theTime. hour (), theTime. minute ());
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
@@ -3175,9 +3176,10 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	                                              ad -> protLevel));
 	techData. language ->
 	        setText (getLanguage (ad -> language));
-	techData. programType ->
-	   setText (the_textMapper.
-	               get_programm_type_string (ad -> programType));
+	techData. programType -> 
+	   setText (getProgramType (ad -> programType));
+//	   setText (the_textMapper.
+//	               get_programm_type_string (ad -> programType));
 	if (ad -> fmFrequency == -1) {
 	   techData. fmFrequency	-> hide ();
 	   techData. fmLabel		-> hide	();
@@ -3202,7 +3204,8 @@ packetdata pd;
 	   return;
 	}
 
-	if (!my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND)) {
+	if (!my_dabProcessor -> set_dataChannel (&pd,
+	                                         &dataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
 	   return;

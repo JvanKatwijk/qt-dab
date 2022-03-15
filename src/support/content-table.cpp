@@ -27,12 +27,12 @@
 #include	"dab-constants.h"
 #include	"findfilenames.h"
 
-static
-const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5", "3/4"};
-static
-const char *eep_Arates [] = {nullptr, "1/4",  "3/8", "1/2", "3/4"};
-static
-const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
+//static
+//const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5", "3/4"};
+//static
+//const char *eep_Arates [] = {nullptr, "1/4",  "3/8", "1/2", "3/4"};
+//static
+//const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
 
 	contentTable::contentTable (RadioInterface *theRadio, 
 	                                        QSettings *s,

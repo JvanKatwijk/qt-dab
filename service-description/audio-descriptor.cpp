@@ -44,8 +44,7 @@
 	dabType      -> setText (ad -> ASCTy == 077 ? "DAB+" : "DAB");
 	Language     -> setText (getLanguage (ad -> language));
 	programType  ->
-	   setText (the_textMapper.
-	               get_programm_type_string (ad -> programType));
+	   setText (getProgramType (ad -> programType));
 	if (ad -> fmFrequency == -1) {
 	   fmLabel	-> hide();
 	   fmFrequency	-> hide();

@@ -194,7 +194,7 @@ endif ()
 	           ../includes/backend/data/journaline
 	           ../includes/backend/data/mot
 	           ../includes/support
-	           ../src/support/tii-library
+	           ../src/support/tii-codes
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
@@ -271,7 +271,6 @@ endif ()
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
 	     ../includes/support/band-handler.h
-	     ../includes/support/text-mapper.h
 	     ../includes/support/dab-tables.h
 	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
@@ -294,7 +293,7 @@ endif ()
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
-	     ../src/support/tii-library/tii-codes.h
+	     ../src/support/tii-codes/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../spectrum-viewer/spectrum-viewer.h 
 	     ../correlation-viewer/correlation-viewer.h 
@@ -366,7 +365,6 @@ endif ()
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
-	     ../src/support/text-mapper.cpp
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
@@ -388,7 +386,7 @@ endif ()
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
-	     ../src/support/tii-library/tii-codes.cpp
+	     ../src/support/tii-codes/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../spectrum-viewer/spectrum-viewer.cpp 
 	     ../correlation-viewer/correlation-viewer.cpp 

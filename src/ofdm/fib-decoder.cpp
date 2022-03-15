@@ -32,7 +32,7 @@
 #include	"dab-config.h"
 #include	"fib-table.h"
 #include	<QStringList>
-#include	"text-mapper.h"
+//#include	"text-mapper.h"
 #include	"dab-tables.h"
 //
 //
@@ -640,7 +640,8 @@ uint8_t	PD_bit		= getBits_1 (d, 8 + 2);
 	while (used < Length) 
 	   used = HandleFIG0Extension13 (d, used, CN_bit, OE_bit, PD_bit);
 }
-
+//
+//	section 6.3.6 User application Data
 int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
 	                                   int16_t used,
 	                                   uint8_t CN_bit,
@@ -669,11 +670,7 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   if (serviceIndex == -1)
 	      continue;
 
-//	   if (getBits (d, bitOffset + 16, 8) == 1)
-//	      fprintf (stderr, "%s has a 1\n",
-//	               ensemble -> services [serviceIndex]. serviceLabel.
-//	                                 toLatin1 (). data ());
-	      
+//	   fprintf (stderr, "appTYpe = %x\n", appType);
 	   int compIndex =
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {
@@ -1959,18 +1956,20 @@ int dabType	= currentConfig -> serviceComps [index]. ASCTy;
 QString	fibDecoder::languageOf 		(int index) {
 int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
 int language	= currentConfig -> subChannels [subChannel]. language;
-textMapper theMapper;
+//textMapper theMapper;
 
-	return theMapper. get_programm_language_string (language);
+	return  getLanguage (language);
+//	return theMapper. get_programm_language_string (language);
 }
 
 QString	fibDecoder::programTypeOf	(int index) {
 int sid = currentConfig -> serviceComps [index]. SId;
 int serviceIndex        = findService (sid);
 int programType		=  ensemble -> services [serviceIndex]. programType;
-textMapper theMapper;
+//textMapper theMapper;
 
-	return theMapper. get_programm_type_string (programType);
+	return getProgramType (programType);
+//	return theMapper. get_programm_type_string (programType);
 }
 
 QString	fibDecoder::fmFreqOf		(int index) {

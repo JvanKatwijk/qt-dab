@@ -478,7 +478,9 @@ int16_t	i = 0;
 }
 
 //	from Table 12
-const char *getProgramType_Not_NorthAmerica (int16_t programType) {
+//
+//const char *getProgramType_Not_NorthAmerica (int16_t programType) {
+const char *getProgramType (int16_t programType) {
 
 	switch (programType) {
 	   case 0:     return "No programme type";
@@ -556,52 +558,52 @@ const char *getProgramType_For_NorthAmerica (int16_t programType) {
 	}
 }
 
-const char *getProgramType (bool gotInterTabId,
-	                    uint8_t interTabId, int16_t programType) {
-	if (gotInterTabId &&  (interTabId == 1))
-	   return getProgramType_Not_NorthAmerica (programType);
-	else
-	if (gotInterTabId && (interTabId == 2))
-	   return getProgramType_For_NorthAmerica (programType);
-	else {
-	   switch (programType) {
-	      case 0:     return "unknown programme type 0";
-	      case 1:     return "unknown programme type 1";
-	      case 2:     return "unknown programme type 2";
-	      case 3:     return "unknown programme type 3";
-	      case 4:     return "unknown programme type 4";
-	      case 5:     return "unknown programme type 5";
-	      case 6:     return "unknown programme type 6";
-	      case 7:     return "unknown programme type 7";
-	      case 8:     return "unknown programme type 8";
-	      case 9:     return "unknown programme type 9";
-	      case 10:    return "unknown programme type 10";
-	      case 11:    return "unknown programme type 11";
-	      case 12:    return "unknown programme type 12";
-	      case 13:    return "unknown programme type 13";
-	      case 14:    return "unknown programme type 14";
-	      case 15:    return "unknown programme type 15";
-	      case 16:    return "unknown programme type 16";
-	      case 17:    return "unknown programme type 17";
-	      case 18:    return "unknown programme type 18";
-	      case 19:    return "unknown programme type 19";
-	      case 20:    return "unknown programme type 20";
-	      case 21:    return "unknown programme type 21";
-	      case 22:    return "unknown programme type 22";
-	      case 23:    return "unknown programme type 23";
-	      case 24:    return "unknown programme type 24";
-	      case 25:    return "unknown programme type 25";
-	      case 26:    return "unknown programme type 26";
-	      case 27:    return "unknown programme type 27";
-	      case 28:    return "unknown programme type 28";
-	      case 29:    return "unknown programme type 29";
-	      case 30:    return "unknown programme type 30";
-	      case 31:    return "unknown programme type 31";
-	      default:    return "unknown programme type";
-	   }
-	}
-	return "unknown programme type";
-}
+//const char *getProgramType (bool gotInterTabId,
+//	                    uint8_t interTabId, int16_t programType) {
+//	if (gotInterTabId &&  (interTabId == 1))
+//	   return getProgramType_Not_NorthAmerica (programType);
+//	else
+//	if (gotInterTabId && (interTabId == 2))
+//	   return getProgramType_For_NorthAmerica (programType);
+//	else {
+//	   switch (programType) {
+//	      case 0:     return "unknown programme type 0";
+//	      case 1:     return "unknown programme type 1";
+//	      case 2:     return "unknown programme type 2";
+//	      case 3:     return "unknown programme type 3";
+//	      case 4:     return "unknown programme type 4";
+//	      case 5:     return "unknown programme type 5";
+//	      case 6:     return "unknown programme type 6";
+//	      case 7:     return "unknown programme type 7";
+//	      case 8:     return "unknown programme type 8";
+//	      case 9:     return "unknown programme type 9";
+//	      case 10:    return "unknown programme type 10";
+//	      case 11:    return "unknown programme type 11";
+//	      case 12:    return "unknown programme type 12";
+//	      case 13:    return "unknown programme type 13";
+//	      case 14:    return "unknown programme type 14";
+//	      case 15:    return "unknown programme type 15";
+//	      case 16:    return "unknown programme type 16";
+//	      case 17:    return "unknown programme type 17";
+//	      case 18:    return "unknown programme type 18";
+//	      case 19:    return "unknown programme type 19";
+//	      case 20:    return "unknown programme type 20";
+//	      case 21:    return "unknown programme type 21";
+//	      case 22:    return "unknown programme type 22";
+//	      case 23:    return "unknown programme type 23";
+//	      case 24:    return "unknown programme type 24";
+//	      case 25:    return "unknown programme type 25";
+//	      case 26:    return "unknown programme type 26";
+//	      case 27:    return "unknown programme type 27";
+//	      case 28:    return "unknown programme type 28";
+//	      case 29:    return "unknown programme type 29";
+//	      case 30:    return "unknown programme type 30";
+//	      case 31:    return "unknown programme type 31";
+//	      default:    return "unknown programme type";
+//	   }
+//	}
+//	return "unknown programme type";
+//}
 
 //	11-bit from HandleFIG0Extension13, see ETSI TS 101 756 table 16
 const char *getUserApplicationType (int16_t appType) {

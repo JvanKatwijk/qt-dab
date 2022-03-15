@@ -8,7 +8,7 @@
 #include        "dab-constants.h"
 #include	"service-descriptor.h"
 #include        "ui_audio-description.h"
-#include	"text-mapper.h"
+#include	"dab-tables.h"
 
 class	audioDescriptor : public serviceDescriptor, public Ui_audioDescription {
 public:
@@ -16,7 +16,6 @@ public:
 		~audioDescriptor();
 private:
 	QFrame	myFrame;
-	textMapper      the_textMapper;
 };
 
 #endif

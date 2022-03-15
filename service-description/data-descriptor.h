@@ -8,7 +8,6 @@
 #include        "dab-constants.h"
 #include	"service-descriptor.h"
 #include        "ui_data-description.h"
-#include	"text-mapper.h"
 
 class	dataDescriptor : public serviceDescriptor, public Ui_dataDescription {
 public:
@@ -16,7 +15,6 @@ public:
 		~dataDescriptor();
 private:
 	QFrame	myFrame;
-	textMapper      the_textMapper;
 };
 
 #endif

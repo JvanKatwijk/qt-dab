@@ -2,44 +2,75 @@
 
 Qt-DAB-4.351 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/screen-4.3511.png?raw=true)
-![4.35](/screen-4.351.png?raw=true)
+![overview](/screen-4.351.png?raw=true)
+![4.4](/screen-4.3511.png?raw=true)
 
-------------------------------------------------------------------
-Latest gadget
-------------------------------------------------------------------
+----------------------------------------------------------------
+Building an executable for qt-dab: a few notes
+----------------------------------------------------------------
 
-One of the things on the todo list was making use of the possibility
-of running more than a single "back-end", i.e. decoding more than
-just a single service at the same time. While there was a solution
-for running the EPG (Electronic Program Guide) as background service,
-the way it was implemented was rather ad-hoc.
+Qhile for Linux-x64 and Windows there are precompiled versions, there
+may be reasons to build an executable. Building an executable is not
+very complicated,  it is described in detail in the manual.
+Since it is customary to avoid reading a manual, here are the
+basic steps for the build process.
 
-So, now this version supports the notion of background service,
-i.e. a service, selectable by the user, running in the background.
-To keep things simple, an audio service, running in the background,
-should be a DAB+ service, and its output is an AAC file (the user
-may give a filename, a reasonable suggestion for the name is given.
+Step 1:	
 
-The services running in the background show in a green, italic font
-in the list of services.
+	Install required libraries, see section 5.5.3 (page 29) of the manual.
+	It turns out that in recent versions of Debian (and related) distributions
+	the lib *qt5-default* does not exist as as separate library.
+	It seems to be part of another of the qt5 packages that is installed.
+	Be aware that different distributions store qt files on different
+	locations, adapt the INCLUDEPATH setting in the ".pro" file if needed.
 
-Selecting a service for running in the background is by clicking
-with the right hand mouse button on the service name in the list,
-then a fileselection menu appears. After selecting an outputfile
-the service will start.
+Step 2:
 
-Stopping a background service is automatically on a change of channel,
-and by - again - clicking with the right hand mouse button on the
-name.
+	While there are dozens of configuration options, take note of the
+	following ones:
 
-The figures show that the services "NPO Radio2", "NPO 3FM" and "NPO EPG"
-are running in the background.
+	for devices "pluto", "pluto-rxtx" and "soapy" software should have
+	been installed, so leave them commented out when not available.
+	For other devices, e.g. sdrplay, airspy, etc, configuration does not
+	require availability of the drivers (of course using the device does)
 
-Note that EPG services are selected automatically, mouse clicking on
-the name of such a service has no effect.
+	For X64 PC's one may choose the option "CONFIG+=PC" (for selecting SSE
+	instructions). If unsure, use "CONFIG+=NO_SSE".
 
-Note that the "feature" is not yet described in the manual.
+	For letting the software show the transmitter and the azimuth,
+	choose  "CONFIG += tiiLib".
+
+step 3:
+
+	run qmake (variants of the name are qt5-qmake, qmake-qt5)
+	which generates a Makefile and then run "Make". 
+
+step 4:
+
+	Install the file "tiiFile.zip" (after unpacking) in the user's home
+	directory (filename .txdata.tii). The file contains the
+	database data for finding the transmitter's name and location.
+	If the file cannot be found, Qt-DAB will just function without
+	showing the names.
+
+	If running on an x64 PC or *bullseye* on the RPI you might consider
+	to install *libtii-lib.so* in "usr/local/lib" from "dab-maxi/library".
+	Note however that that that library needs "curl" to be installed
+	and source code for *libtii-lib.so* is not free.
+	*libtii-lib.so* contains functionality for uploading
+	a new database version (the "load" button on the configuration widget).
+	If Qt-DAB cannot find the library, it will just function without
+	the additional functionality.
+
+Note:
+
+	Building a version on a fresh install of "bullseye" on the RPI gave
+	a version that wouldn't run: The *Qt_PLUGIN_PATH* was not set.
+	Setting it as given below solved - for me - the problem
+
+	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
+	export QT_PLUGIN_PATH=$Qt_5/plugins
+  
 
 ------------------------------------------------------------------
 Table of Contents
@@ -57,9 +88,8 @@ Table of Contents
 * [Scanning and the skip table](#scanning-and-the-skip-table)
 * [Saving synamic label texts](#Saving-dynamic-label-texts)
 * [Scheduling option](#Scheduling-option)
-* [Obsolete properties](#Obsolete-properties)
-* [Installation on Windows](#installation-on-windows)
-* [Installation on Linux x64](#installation-on-linux-x64)
+* [Installation on Windows](#Installation-on-windows)
+* [Installation on Linux x64](#Installation-on-linux-x64)
 * [Interfacing to another device](#Interfacing-to-another-device)
 * [Using user-specified bands](#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
@@ -72,27 +102,10 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.35** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+**Qt-DAB-4.351** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
 
 It provides an abundant amount of selectors and displays, most of
 which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
-
-While it is not very complicated to generate an executable for either
-Qt-DAB or dabMini, for Linux-x64 appImages exist for both Qt-DAB and dabMini.
-For Windows installers  are available.
-
-Qt-DAB makes extensive use of a GUI. Personally, grown up in the time of
-ASR-33 terminals and "command lines", I sometimes prefer a simple command line
-over a GUI.
-Therefore, a **terminal-DAB-xxx** version was developed, a
-simpler version, just for listening to a DAB service, making use of the
-command line and curses library.
-
-For those who are nostalgic to the era and the sound
-of nice wooden radios with glowing tubes,
-Qt-DAB can be configured such that - using the Adalm Pluto as device -
-the audio of audio services is transmitted in FM stereo on a
-user specified frequency with the "dynamic label" sent as RDS.
 
 ------------------------------------------------------------------
 Features
@@ -120,21 +133,23 @@ Features
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
   * TPEG output: when configured the data is sent to a specified ip address,
   * EPG detection and building up a time table,
-  * Supports configuration as input device:
-	- Adalm Pluto,
+  * Supports as input device:
    	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
   	- SDRplay (RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
+	- Adalm Pluto,
 	- Soapy (experimental, Linux only), 
 	- ExtIO (expertimental, Windows only),
 	- rtl_tcp servers.
   * Always supported input from:
    	- prerecorded dump (*.raw, *.iq and *.sdr),
 	- xml format files.
-  * Clean device interface, easy to add other devices, see below.
-  * Scheduling the start of channel:service pairs or operations as frame dump or audio dump, even for days ahead
+  * Clean device interface, easy to add other devices.
+  * Scheduling the start of (channel:service) pairs or operations as frame dump or audio dump, even for days ahead.
+  * Showing the name of the transmitter received as well as the distance to the receiver and the azimuth.
+  * background services. Since 4.351 it is possible to run an arbitray number of DAB+ audioservices (from the current ensemble) as background service with the output sent to a file.
 
 Not yet or partly implemented:
 
@@ -155,7 +170,7 @@ Widgets and scopes for Qt-DAB
 
 Qt-DAB always shows a main widget; a number of  **optional**
 widgets is visible under user control.
-The while set of widgets is shown below
+The whole set of widgets is shown below
 
 ![Qt-DAB main widget](/qt-dab-screen.png?raw=true)
 
@@ -228,9 +243,9 @@ dabMini as well.
 
 ![Qt-DAB dabMini](/dab-mini.png?raw=true)
 
-Other than Qt-DAB, there is no device selector. On program start up
-the software polls the availability of configured devices, the first
-one that seems OK is selected.
+Other than Qt-DAB, there is *no* device selector. On program start up
+the software polls the configured devices, the first one that seems OK
+is selected.
 
 The GUI contains some selectors for setting device properties,
 depending on the selected device (usually gain, lna and agc).
@@ -290,12 +305,8 @@ and used whenever that channel is selected.
 Colors for Qt-DAB
 ----------------------------------------------------------------------
 
-Setting colors is rather personal, that is why Qt-DAB provides
-the possibility of setting a color to buttons and displays.
-(in total there are 20 push buttons, 18 on the main GUI, 2 on the
-technical data widget).
-
-To ease life a little, selecting a color setting for a button is
+There are 20 push buttons, 18 on the main GUI, 2 on the
+technical data widget. Selecting a color setting for a button is
 now made easy: right clock with the mouse on the button, and a
 small menu appears on which the color for the button can be
 selected (one of a predefined list), and next a similar menu appears
@@ -326,8 +337,8 @@ As known, Qt-DAB provides a possibility of scanning the band. Band III
 contains 39 channels, so - depending on your position - there is
 quite a number of channels where no DAB signal is to be found.
 
-As in **dabChannel**, Qt-DAB has an extended mechanism to skip
-specified channels during a scan, a so-called **skipTable**.
+Qt-DAB has an extended mechanism to skip specified channels during a scan,
+a so-called **skipTable**.
 The configuration widget contains a button to make the **skipTable**
 visible. Such a skipTable shows all channels in the selected band, 
 each channel labeled with a field containing a "+" or a "-" sign.
@@ -336,8 +347,6 @@ Obviously. skipTables will be maintained between program invocations.
 
 When DX-ing, one wants to direct the antenna to different countries
 in different directions.
-Ideally there is a skipTable for each direction, and
-Qt-DAB supports that.
 The configuration widget contains a button **skipFile**,
 when touched a file selection menu appears where one can select a skipfile.
 **If the file does not exist yet, it will be created.**
@@ -389,26 +398,9 @@ the dynamic label text - if selected - is not affacted.
 
 ![scheduler](/scheduler.png?raw=true)
 
-
 Specifying a time and day is stored in a table, maintained between
-program invocations. Of course, on program (re)start. On restart
+program invocations.  On restart
 all schedule elements on passed dates are removed.
-
--------------------------------------------------------------------------
-Obsolete properties
--------------------------------------------------------------------------
-
-The current DAB standard eliminated the support for Modes other than Mode 1 and Bands other than VHF Band III, Qt-DAB still supports these features.
-Explicitly setting the Mode and/or the Band is possible by
-including appropriate command lines in the ".qt-dab.ini" file.
-
-For the *Mode*, one will add/set a line
-
-	dabMode=Mode x, where x is either 1, 2 or 4
-
-For the *Band*, one will add/set a line
-
-	dabBand=band, where band is either VHF Band III or L_Band
 
 ------------------------------------------------------------------
 Installation on Windows
@@ -427,38 +419,8 @@ For Linux-x64 systems, an **appImage** can be found in the releases section,
 http::github.com/JvanKatwijk/qt-dab/releases. The appImage contains
 next to the executable qt-dab program, the required libraries.
 
-The precompiled versions, i.e. the AppImage and the Windows setup
-file have the facilities compiled in, but the database used
-might be differently encoded.
-
-Of course it is possible to generate an executable, the 
-aforementioned user's manual
-contains a complete script that can be used to install all required
-libraries, download the sources and build an executable on an Ubuntu
-(Debian) based system.
-
-Qt-DAB-4.30 added as configuration option, the possibility to show
-the name of the tranmitter whose TII  (Transmitter Identification
-Information) is seen, as well as the distance of the receiver to that
-transmitter and the azimuth.
-
-Note that  - since the provider of the database has asked to keep
-the source of the database out of sight, and some "user's" are
-showing contempt to that request - I am unfortunately forced to
-leave the database related code decoupled from the source tree
-and the sources are only available under a restricted license.
-A library in binary formar, containing the functionality, is available for use
-under Linux-x64 and RPI's 
-
-The default for compilation is with  "CONFIG += tiiLib".
-On start up, Qt-DAB will look for the library "libtii-lib.so",
-and - if found - will load the functions from that library.
-If no library is found, Qt-DAB will function without being able to
-map TII data onto transmitter names.
-
-The alternative is to configure for "CONGIG += preCompiled",
-but then you will need some additional source which is only available
-under a restricted license (contact me privately for information)
+Of course it is possible to generate an executable,  the manual
+contains a complete script for Ubuntu type Linux versions.
 
 -----------------------------------------------------------------------
 Interfacing to another SDR device
@@ -478,10 +440,6 @@ Using user specified bands
 
 While it is known that the DAB transmissions are now all in Band III,
 there are situations where it might is desirable to use other frequencies.
-If you want to experiment with a modulator, connected to an SDR device
-on other frequencies than the default one (or you want just to
-have a restricted number of channels from Band III or L Band), Qt-DAB
-offers a possibility to specify a list of channels to be used.
 Specify in a file a list of channels, e.g.
 
 	jan	227360
@@ -548,11 +506,8 @@ data emitted by the Hackrf device.
 EPG-Handling
 ----------------------------------------------------------------------
 
-In Qt-DAB a first step is made to implement support for
-EPG (Electronic Program Guide).
-
 In the current implementation, an EPG Handler is automatically started
-whenever within an ensemble a service is recognized as carrier of
+as backgroujnd service whenever a service is recognized as carrier of
 EPG data.
 The handler will collect information about the program guides for the
 various services, and when collected, allow the user to view it
@@ -571,18 +526,12 @@ on the time table in UTC.
 Recording the SNR
 -----------------------------------------------------------------------
 
-Computation of the SNR is done with all DAB frames. As is known,
-a sampled DAB frame starts with a null period of app 2600 samples, followed by
-76 blocks (each about 2500 samples) with data. SNR is computed as the ratio between the amplitudes in the data blocks and the amplitudes of the
+A sampled DAB frame starts with a null period of app 2600 samples, followed by
+76 blocks (each about 2500 samples) with data. SNR is computed as
+the ratio between the amplitudes in the data blocks and the amplitudes of the
 samples in the null period.
 
-The configuration widget contains a spinbox that can be used to set the
-"speed" of displaying data.
-If the value "1" is chosen, the result of each snr computation is shown,
-if a value larger than "1" is chosen that number of computations will be
-averaged and the result shown.
-The default value for the X-axis of the display in the widget is 312.
-
+The development of the SNR over time can be made visible in the SNR widget.
 As configuration option, the widget can be equipped with a **dump** button,
 touching the button will show a menu for file selection. Once a file
 is selected, the results of the computations are not only shown, but recorded

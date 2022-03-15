@@ -41,7 +41,6 @@
 #include	"dab-processor.h"
 #include	"ringbuffer.h"
 #include        "band-handler.h"
-#include	"text-mapper.h"
 #include	"process-params.h"
 #include	"dl-cache.h"
 #include	"tii-codes.h"
@@ -175,7 +174,7 @@ private:
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut;
 #endif
-	textMapper		the_textMapper;
+//	textMapper		the_textMapper;
 	dabProcessor		*my_dabProcessor;
 	audioBase		*soundOut;
 #ifdef	DATA_STREAMER

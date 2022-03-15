@@ -56,6 +56,7 @@ public:
 	                             uint8_t mainId, uint8_t subId);
 	void	get_coordinates	(float *, float *,
 	                         const QString &, const QString &);
+	int	distance_2	(float, float, float, float);
 	int	distance	(float, float, float, float);
 	int	corner		(float, float, float, float);
 	bool	is_black	(uint16_t, uint8_t, uint8_t);
