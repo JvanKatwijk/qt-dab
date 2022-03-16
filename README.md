@@ -9,7 +9,7 @@ Qt-DAB-4.351 is software for Linux, Windows and Raspberry Pi for listening to te
 Building an executable for qt-dab: a few notes
 ----------------------------------------------------------------
 
-Qhile for Linux-x64 and Windows there are precompiled versions, there
+While for Linux-x64 and Windows there are precompiled versions, there
 may be reasons to build an executable. Building an executable is not
 very complicated,  it is described in detail in the manual.
 Since it is customary to avoid reading a manual, here are the
@@ -71,6 +71,35 @@ Note:
 	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
 	export QT_PLUGIN_PATH=$Qt_5/plugins
   
+
+-----------------------------------------------------------------
+Difference between 4.351 and previous versions
+-----------------------------------------------------------------
+
+Since some time the EPG handling in Qt-DAB was automatic, i.e.
+on selecting a channel, the software looked for a service providing
+an EPG and started that in the background.
+
+The implementation was rather ad hoc, and the difference between 4.351
+and previous versions is that in 4.351 more general notion of
+"background service" is implemented.
+
+By clicking with the right hand mouse button on a DAB+ service (not the
+currently selected one) that service is started as background service,
+a file menu appears with a reasonable name suggestion where the
+sound output will be written to.
+Clicking again with the right hand mouse button on the service name
+will stop the background service. Obviously, on changing the channel
+the background services will be stopped as well.
+
+There is no limit to the amount of background services, obviously
+running background services takes some processing power, and there is
+no objection to selecting a service, running in the background, as
+foreground service: the background service will just continue.
+
+The names of the services in the service list, running in the background are 
+indicated by a **green italic** font (see the pictures at the top)
+
 
 ------------------------------------------------------------------
 Table of Contents
