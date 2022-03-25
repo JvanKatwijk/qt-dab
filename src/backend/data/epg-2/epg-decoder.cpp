@@ -138,6 +138,11 @@ int	index	= 0;
 
 	      case 0x83:	// serviceProvider
 	         index	= process_440 (v, index);
+	         break;
+
+	      default:
+	         fprintf (stderr, "%x unsupported tag\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -180,7 +185,8 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
-	         fprintf (stderr, " in programGroups we missed %x\n", v [index]);
+	         fprintf (stderr, "in programGroups we missed %x\n",
+	                                                       v [index]);
 	         return endPoint;
 	    }
 	}
@@ -206,7 +212,7 @@ progDesc p;
 
 	p. clean ();
 	while (index < endPoint) {
-//	   fprintf (stderr, "In process_programmeGroup tag %x\n", v [index]);
+	   fprintf (stderr, "In process_programmeGroup tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index = process_shortName (v, index, &p);
@@ -265,7 +271,8 @@ progDesc p;
 	         break;
 
 	      default:
-	         fprintf (stderr, " in programGroup we missed %x\n", v [index]);
+	         fprintf (stderr,
+	         	  "in programGroup we missed %x\n", v [index]);
 	         return endPoint;
 	   }
 	}
@@ -291,7 +298,7 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
-//	   fprintf (stderr, "in process_schedule with tag %x\n", v [index]);
+	   fprintf (stderr, "in process_schedule with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x1C:
 	         index	= process_program (v, index);
@@ -314,7 +321,7 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
-	         fprintf (stderr, " in schedule missed %x\n", v [index]);
+	         fprintf (stderr, "in schedule missed %x\n", v [index]);
 	         return endPoint;
 	   }
 	}
@@ -341,7 +348,7 @@ progDesc theElement;
 
 	theElement. clean ();
 	while (index < endPoint) {
-//	   fprintf (stderr, "in process_programme with tag %x\n", v [index]);
+	   fprintf (stderr, "in process_programme with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, &theElement);
@@ -452,6 +459,10 @@ int length	= v [index + 1];
 	      case 0x81:	// stop time
 	         index	= process_474 (v, index, nullptr);
 	         break;
+
+	      default:
+	         fprintf (stderr, "%x in scope not handled\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -475,7 +486,7 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
-//	   fprintf (stderr, "in serviceScope with tag %x\n", v [index]);
+	   fprintf (stderr, "in serviceScope with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476 (v, index);
@@ -483,6 +494,7 @@ int length	= v [index + 1];
 
 	      default:
 	         fprintf (stderr, "in process_serviceScope %d\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -521,6 +533,7 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+	         fprintf (stderr, "%d not handled in mediaDescription\n");
 	         return endPoint;
 	   }
 	}
@@ -545,7 +558,7 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
-//	   fprintf (stderr, "in process_ensemble we have %x\n", v [index]);
+	   fprintf (stderr, "in process_ensemble we have %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, nullptr);
@@ -580,7 +593,8 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
-	         fprintf (stderr, "Process_ensemble: We cannot deal with %x\n", v [index]);
+	         fprintf (stderr,
+	         	  "Process_ensemble: %x\n", v [index]);
 	         return endPoint;
 	   }
 	}
@@ -645,6 +659,11 @@ int length	= v [index + 1];
 	      case 0x80:	// version
 	         index	= process_483 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                   "%x not handled in service desc\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -682,6 +701,11 @@ int length	= v [index + 1];
 	      case 0x2F:	// relativeTime
 	         process_relativeTime (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not handled in processLocation\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -717,6 +741,11 @@ int length	= v [index + 1];
 	      case 0x82:	// url
 	         index	= process_440 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported as bearer\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -760,6 +789,11 @@ int length	= v [index + 1];
 	      case 0x81:	// ref
 	         index	= process_440 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in geolocation\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -847,6 +881,11 @@ int length	= v [index + 1];
 	      case 0x86:	// xml:lang
 	         index	= process_481 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in programmeEvent\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -882,6 +921,11 @@ int length	= v [index + 1];
 	      case 0x38:	// acquisitionTime
 	         index	= process_acquisitionTime (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x not supported in onDemand\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -915,6 +959,11 @@ int length	= v [index + 1];
 	      case 0x81:	// type
 	         index	= process_46 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in genre\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -944,7 +993,8 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
-//	         fprintf (stderr, "in process_keyWords with %d\n", v [index]);
+	         fprintf (stderr,
+	         	  "in process_keyWords with %x\n", v [index]);
 	         return endPoint;
 	   }
 	}
@@ -989,6 +1039,11 @@ int length	= v [index + 1];
 	      case 0x84:	// expiryTime
 	         index	= process_474 (v, index, nullptr);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in link\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1197,6 +1252,11 @@ int length	= v [index + 1];
 	      case 0x85:
 	         index	= process_485 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x not supported in multimedia\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1228,6 +1288,11 @@ int length	= v [index + 1];
 	      case 0x81:	// serviceIdentifier
 	         index	= process_440 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x has no support in radiodns\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1266,6 +1331,11 @@ int length	= v [index + 1];
 	      case 0x83:	// actual duration
 	         index	= process_475 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in timespec\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1305,6 +1375,11 @@ int length	= v [index + 1];
 	      case 0x83:	// actual duration
 	         index	= process_475 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x not supported in relative time\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1340,6 +1415,11 @@ int length	= v [index + 1];
 	      case 0x82:	// Index
 	         index	= process_482 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x not supported in member-of\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1375,6 +1455,11 @@ int length	= v [index + 1];
 	      case 0x82:	// duration
 	         index	= process_475 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	         	  "%x not supported in presentation time\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1410,6 +1495,11 @@ int length	= v [index + 1];
 	      case 0x82:	// duration
 	         index	= process_475 (v, index);
 	         break;
+
+	      default:
+	         fprintf (stderr,
+	                  "%x not supported in acquisition time\n", v [index]);
+	         return endPoint;
 	   }
 	}
 	return endPoint;
@@ -1647,7 +1737,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int duration	= (v [index] << 8) | v [index + 1];
-//	fprintf (stderr, "duration %d (%d)\n", duration / 60, duration % 60); 
+	fprintf (stderr, "duration %d (%d)\n", duration / 60, duration % 60); 
 	return index + length;
 }
 
@@ -1694,7 +1784,7 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
-//	fprintf (stderr, "481 returns %d\n", index + length);
+	fprintf (stderr, "481 returns %d\n", index + length);
 	return index + length;
 }
 
@@ -1750,7 +1840,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int numbers = (v [index] << 8) | v [index + 1];
-//	fprintf (stderr, "484 says %d elements\n", numbers);
+	fprintf (stderr, "484 says %d elements\n", numbers);
 	return index + length;
 }
 
@@ -1840,7 +1930,7 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-//	fprintf (stderr, "default language with length %d\n", length);
+	fprintf (stderr, "default language with length %d\n", length);
 	return index + length;
 }
 
