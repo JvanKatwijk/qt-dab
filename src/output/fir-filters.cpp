@@ -35,9 +35,9 @@ float	*temp 	= (float *)alloca (firsize * sizeof (float));
 
 	this -> frequency	= (float)Fc / fs;
 	this -> filterSize	= firsize;
+	this -> ip		= 0;
 	filterKernel.	resize (filterSize);
 	Buffer.		resize (filterSize);
-	this -> ip		= 0;
 
 	for (int i = 0; i < filterSize; i ++) {
 	   filterKernel [i]	= 0;
@@ -61,9 +61,15 @@ float	*temp 	= (float *)alloca (firsize * sizeof (float));
 
 	for (int i = 0; i < filterSize; i ++)
 	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
+	fprintf (stderr, "Buffersize = %d, filterSize %d\n",
+	                    Buffer. size (), filterSize);
 }
 
 	LowPassFIR::~LowPassFIR () {
+}
+
+int	LowPassFIR::theSize	() {
+	return Buffer. size ();
 }
 
 void	LowPassFIR::resize (int newSize) {

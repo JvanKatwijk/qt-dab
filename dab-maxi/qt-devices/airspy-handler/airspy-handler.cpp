@@ -980,9 +980,9 @@ int     sensitivity;
 int     lnaGainValue;
 int     mixerGainValue;
 int     vgaGainValue;
-int	lna_agc_setting;
-int	mixer_agc_setting;
-int	rf_bias_setting;
+//int	lna_agc_setting;
+//int	mixer_agc_setting;
+//int	rf_bias_setting;
 int	tab_setting;
 QString theValue;
 

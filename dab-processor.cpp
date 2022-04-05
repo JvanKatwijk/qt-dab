@@ -584,3 +584,7 @@ void	dabProcessor::stop_ficDump	() {
 	my_ficHandler. stop_ficDump ();
 }
 
+uint32_t dabProcessor::julianDate	()  {
+	return my_ficHandler. julianDate ();
+}
+

@@ -33,7 +33,6 @@
 #include	<QString>
 #include	<QByteArray>
 
-//#include	"text-mapper.h"
 class	RadioInterface;
 class	QSettings;
 class	audiodata;

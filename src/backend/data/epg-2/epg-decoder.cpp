@@ -24,10 +24,11 @@
 #include	<stdint.h>
 #include	<stdlib.h>
 #include	"epg-decoder.h"
+#include	<QDate>
 
 #define	EPG_TAG			0X02
 #define	SERVICE_TAG		0X03
-
+#define	__EPG_TRACE__		1
 //
 	epgDecoder::epgDecoder	() {
 }
@@ -56,7 +57,7 @@ uint16_t res	= 0;
 }
 
 int	epgDecoder::process_epg	(uint8_t *v, int e_length,
-	                         uint32_t SId, int subType) {
+	                         uint32_t SId, int subType, uint32_t theDay) {
 int	ind	= 0;
 uint8_t	tag	= v [0];
 int length	= v [1];
@@ -64,6 +65,7 @@ int	index	= 0;
 
 	this	-> SId	= SId;
 	this	-> subType	= subType;
+	this	-> julianDate	= theDay;
 	if ((v [0] != EPG_TAG) && (v [0] != SERVICE_TAG))
 	   return e_length;
 
@@ -104,6 +106,9 @@ int	index	= 0;
 	            break;
 
 	         default:
+#ifdef	__EPG_TRACE__
+	            fprintf (stderr, "in EPG tag %x missing\n", v [index]);
+#endif
 	            return endPoint;
 	      }
 	   }
@@ -141,7 +146,9 @@ int	index	= 0;
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr, "%x unsupported tag\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -185,8 +192,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE
 	         fprintf (stderr, "in programGroups we missed %x\n",
 	                                                       v [index]);
+#endif
 	         return endPoint;
 	    }
 	}
@@ -212,7 +221,6 @@ progDesc p;
 
 	p. clean ();
 	while (index < endPoint) {
-	   fprintf (stderr, "In process_programmeGroup tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index = process_shortName (v, index, &p);
@@ -262,17 +270,19 @@ progDesc p;
 	         index	= process_483 (v, index);
 	         break;
 
-	      case 0x83:	// type
-	         index	= process_46 (v, index);
-	         break;
+//	      case 0x83:	// type
+//	         index	= process_46 (v, index);
+//	         break;
 
-	      case 0x84:	// number of items
-	         index	= process_484 (v, index);
-	         break;
+//	      case 0x84:	// number of items
+//	         index	= process_484 (v, index);
+//	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "in programGroup we missed %x\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -282,6 +292,7 @@ progDesc p;
 
 int	epgDecoder::process_schedule (uint8_t *v, int index) {
 int length	= v [index + 1];
+progDesc p;
 
 	if (length == 0XFE) {
 	   length = (v [index + 2] << 8) | v [index + 3];
@@ -298,14 +309,13 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
-	   fprintf (stderr, "in process_schedule with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x1C:
-	         index	= process_program (v, index);
+	         index	= process_program (v, index, nullptr);
 	         break;
 
 	      case 0x24:	// scope
-	         index = process_scope (v, index);
+	         index = process_scope (v, index, &p);
 	         break;
 
 	      case 0x80:	// version
@@ -321,14 +331,17 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr, "in schedule missed %x\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
+//	record (&p);
 	return endPoint;
 }
 
-int	epgDecoder::process_program (uint8_t *v, int index) {
+int	epgDecoder::process_program (uint8_t *v, int index, progDesc *p) {
 int length	= v [index + 1];
 progDesc theElement;
 
@@ -346,9 +359,7 @@ progDesc theElement;
 
 	int endPoint	= index + length;
 
-	theElement. clean ();
 	while (index < endPoint) {
-	   fprintf (stderr, "in process_programme with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, &theElement);
@@ -419,7 +430,9 @@ progDesc theElement;
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr, "In programme we missed %x\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -427,7 +440,7 @@ progDesc theElement;
 	return endPoint;
 }
 
-int	epgDecoder::process_scope (uint8_t *v, int index) {
+int	epgDecoder::process_scope (uint8_t *v, int index, progDesc *p) {
 int length	= v [index + 1];
 
 	if (length == 0XFE) {
@@ -443,7 +456,6 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
 	while (index < endPoint) {
 	   int startTime;
 	   int stopTime;
@@ -453,15 +465,17 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x80:	// start time
-	         index	= process_474 (v, index,  nullptr);
+	         index	= process_474 (v, index, &p -> startTime);
 	         break;
 
 	      case 0x81:	// stop time
-	         index	= process_474 (v, index, nullptr);
+	         index	= process_474 (v, index, &p -> stopTime);
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr, "%x in scope not handled\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -484,16 +498,20 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
+	return endPoint;
+//
+//	Untested function
 
 	while (index < endPoint) {
-	   fprintf (stderr, "in serviceScope with tag %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476 (v, index);
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr, "in process_serviceScope %d\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -517,7 +535,6 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x1A:	// shortDescription
@@ -533,7 +550,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
-	         fprintf (stderr, "%d not handled in mediaDescription\n");
+#ifdef	__EPG_TRACE__
+	         fprintf (stderr, "%x not handled in mediaDescription\n",
+	                                                      v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -558,7 +578,6 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
-	   fprintf (stderr, "in process_ensemble we have %x\n", v [index]);
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, nullptr);
@@ -593,8 +612,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
-	         	  "Process_ensemble: %x\n", v [index]);
+	         	  "Process_ensemble: missing handle %x\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -661,8 +682,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                   "%x not handled in service desc\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -703,8 +726,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not handled in processLocation\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -727,7 +752,9 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+	return endPoint;
+//
+//	Thius function is not tested
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x32:	// geolocation
@@ -743,8 +770,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported as bearer\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -767,7 +796,9 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+	return endPoint;
+//
+//	Thus function is not tested
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x33:	//  country
@@ -791,8 +822,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in geolocation\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -883,8 +916,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in programmeEvent\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -923,8 +958,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x not supported in onDemand\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -949,20 +986,22 @@ int length	= v [index + 1];
 	int endPoint	= index + length;
 	if (p == nullptr)
 	   return endPoint;
-	
+
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80:	// href
 	         index	= process_412 (v, index);
-	         break;
+	         return endPoint;
 
 	      case 0x81:	// type
 	         index	= process_46 (v, index);
-	         break;
+	         return endPoint;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in genre\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -986,6 +1025,9 @@ int length	= v [index + 1];
 
 	int endPoint	= index + length;
 
+	return endPoint;
+//
+//	This function is not tested
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80:	// xml:lang
@@ -993,8 +1035,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "in process_keyWords with %x\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1017,7 +1061,10 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+//
+//	this function is not tested
+//
+	int t;
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80:	// uri
@@ -1037,12 +1084,15 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x84:	// expiryTime
-	         index	= process_474 (v, index, nullptr);
+	         index	= process_474 (v, index, &t);
+	         fprintf (stderr, "expiry time = %d\n", t);
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in link\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1068,15 +1118,24 @@ int length	= v [index + 1];
 	if (p == nullptr)
 	   return endPoint;
 
-	if (v [index + 1] == 1) {
-	   p -> shortName = stringTable [v [index + 2]]. toLatin1 (). data ();
-	   return endPoint;
-	}
-	char t [255];
-	for (int i = 0; i < length; i ++)
-	   t [i] =  v [index + i + 2];
-	t [length] = 0;
-	p -> shortName = QString::fromUtf8 (t);
+        while (index < endPoint) {
+           switch (v [index]) {
+              case 0x80:
+                 index = process_481 (v, index);
+                 break;
+
+	      case 0x01:
+	         p -> shortName	= getCData (v, index, length);	
+	         return endPoint;
+
+              default:
+                 fprintf (stderr, "unknown in shortName %x\n", v [index]);
+                 p -> shortName = "";
+                 return endPoint;
+           }
+        }
+
+	p -> shortName	= "error";
 	return endPoint;
 }
 
@@ -1099,15 +1158,23 @@ int length	= v [index + 1];
 	if (p == nullptr)
 	   return endPoint;
 
-	if (v [index + 1] == 1) {
-	   p -> mediumName = stringTable [v [index + 2]]. toLatin1 (). data ();
-	   return endPoint;
+	while (index < endPoint) {
+	   switch (v [index]) {
+	      case 0x80:
+	         index = process_481 (v, index);
+	         break;
+
+	      case 0x01:
+	         p -> mediumName = getCData (v, index, length);
+	         return endPoint;
+
+	      default:
+	         fprintf (stderr, "unknown in medium name %x\n", v [index]);
+	         p -> mediumName = "";
+	         return endPoint;
+	   }
 	}
-	char t [255];
-	for (int i = 0; i < length; i ++)
-	   t [i] =  v [index + i + 2];
-	t [length] = 0;
-	p -> mediumName = QString::fromUtf8 (t);
+	p -> mediumName = "error";
 	return endPoint;
 }
 
@@ -1130,15 +1197,23 @@ int length	= v [index + 1];
 	if (p == nullptr)
 	   return endPoint;
 
-	if (v [index + 1] == 1) {
-	   p -> longName = stringTable [v [index + 2]]. toLatin1 (). data ();
-	   return endPoint;
+	while (index < endPoint) {
+	   switch (v [index]) {
+	      case 0x80:
+	         index = process_481 (v, index);
+	         break;
+
+	      case 0x01:
+	         p -> longName = getCData (v, index, length);
+	         return endPoint;
+
+	      default:
+	         fprintf (stderr, "unknown in long name %x\n", v [index]);
+	         p -> longName = "";
+	         return endPoint;
+	   }
 	}
-	char t [255];
-	for (int i = 0; i < length; i ++)
-	  t [i] = v [index + i + 2];
-	t [length] = 0;
-	p -> longName = QString::fromUtf8 (t);
+	p -> longName	= "error";
 	return endPoint;
 }
 
@@ -1163,17 +1238,23 @@ int length	= v [index + 1];
 	if (p == nullptr)
 	   return endPoint;
 
-	if (v [index + 1] == 1) {
-	   p -> shortDescription =
-	            stringTable [v [index + 2]]. toLatin1 (). data ();
-	   return endPoint;
-	}
+	while (index < endPoint) {
+	   switch (v [index]) {
+	      case 0x80:
+	         index = process_481 (v, index);
+	         break;
 
-	char t [511];
-	for (int i = 0; i < length; i ++)
-	   t [i] = v [index + i + 2];
-	t [length] = 0;
-	p  -> shortDescription = QString::fromUtf8 (t);
+	      case 0x01:
+	         p -> shortDescription = getCData (v, index, length);
+	         return endPoint;
+
+	      default:
+	         fprintf (stderr, "unknown in shortDescription %x\n", v [index]);
+	         p -> shortDescription = "";
+	         return endPoint;
+	   }
+	}
+	p -> shortDescription = "error";
 	return endPoint;
 }
 
@@ -1197,16 +1278,24 @@ int length	= v [index + 1];
 	if (p == nullptr)
 	   return endPoint;
 
-	if (v [index + 1] == 1) {
-	   p -> longDescription =
-	            stringTable [v [index + 2]]. toLatin1 (). data ();
-	   return endPoint;
+	while (index < endPoint) {
+	   switch (v [index]) {
+	      case 0x80:
+	         index = process_481 (v, index);
+	         break;
+
+	      case 0x01:
+	         p -> longDescription = getCData (v, index, length);
+	         return endPoint;
+
+	      default:
+	         fprintf (stderr, "unknown in long Description %x\n",
+	                                                       v [index]);
+	         p -> longDescription = "";
+	         return endPoint;
+	   }
 	}
-	char t [511];
-	for (int i = 0; i < length; i ++)
-	   t [i] = v [index + i + 2];
-	t [length] = 0;
-	p -> longDescription = QString::fromUtf8 (t);
+	p -> longDescription = "error";
 	return endPoint;
 }
 
@@ -1226,7 +1315,8 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+//
+//	This function is not tested
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80:	// mimevalue	
@@ -1237,7 +1327,7 @@ int length	= v [index + 1];
 	         index	= process_481 (v, index);
 	         break;
 
-	      case 0x82:	// uri
+	      case 0x82:	// url
 	         index	= process_440 (v, index);
 	         break;
 
@@ -1254,8 +1344,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x not supported in multimedia\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1278,7 +1370,8 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+//
+//	The function is untested
 	while (index < endPoint) {
 	   switch (v [index]) {
 	      case 0x80:	// fqdn
@@ -1290,8 +1383,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x has no support in radiodns\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1333,8 +1428,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in timespec\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1377,8 +1474,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x not supported in relative time\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1417,8 +1516,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x not supported in member-of\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1457,8 +1558,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	         	  "%x not supported in presentation time\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1497,8 +1600,10 @@ int length	= v [index + 1];
 	         break;
 
 	      default:
+#ifdef	__EPG_TRACE__
 	         fprintf (stderr,
 	                  "%x not supported in acquisition time\n", v [index]);
+#endif
 	         return endPoint;
 	   }
 	}
@@ -1571,19 +1676,8 @@ int length	= v [index + 1];
 //
 int	epgDecoder::process_412	(uint8_t *v, int index) {
 int length	= v [index + 1];
-
-	if (length == 0XFE) {
-	   length = (v [index + 2] << 8) | v [index + 3];
-	   index += 4;
-	}
-	else
-	if (length == 0XFF) {
-	   length = (v [index + 2] << 16) | (v [index + 3] << 8) | v [index + 4];
-	   index += 5;
-	}
-	else
-	   index += 2;
-
+//
+//	This function is incomplete and its value should be ignored
 	return index + length;
 }
 
@@ -1702,6 +1796,17 @@ int     ltoBase;
 
 	if (t == nullptr)
 	   return endPoint;
+
+
+	uint32_t	date	= getBits (v, 8 * index + 1, 17);
+	if (julianDate != date) {
+//	   fprintf (stderr, "%d vs schedule date %d\n",
+//	                       julianDate, date);
+	   *t = -1;
+	   return endPoint;
+	}
+//
+//	we need to know whether it is today or not
 	ltoFlag	= getBit (v, 8 * index + 19);
 	utcFlag	= getBit (v, 8 * index + 20);
 
@@ -1737,7 +1842,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int duration	= (v [index] << 8) | v [index + 1];
-	fprintf (stderr, "duration %d (%d)\n", duration / 60, duration % 60); 
+//	fprintf (stderr, "duration %d (%d)\n", duration / 60, duration % 60); 
 	return index + length;
 }
 
@@ -1784,7 +1889,7 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
-	fprintf (stderr, "481 returns %d\n", index + length);
+//	fprintf (stderr, "481 returns %d\n", index + length);
 	return index + length;
 }
 
@@ -1821,6 +1926,8 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+	int numbers = (v [index] << 8) | v [index + 1];
+	fprintf (stderr, "Version %d\n", numbers);
 	return index + length;
 }
 
@@ -1840,7 +1947,7 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int numbers = (v [index] << 8) | v [index + 1];
-	fprintf (stderr, "484 says %d elements\n", numbers);
+//	fprintf (stderr, "484 says %d elements\n", numbers);
 	return index + length;
 }
 
@@ -1903,11 +2010,23 @@ int length	= v [index + 1];
 }
 
 int	epgDecoder::process_token (uint8_t *v, int index) {
-uint8_t tag	= v [index];
+int	tag	= v [index];
 int	length	= v [index + 1];
-char	text [length + 1];
 
-	index += 2;
+	if (length == 0XFE) {
+	   length = (v [index + 2] << 8) | v [index + 3];
+	   index += 4;
+	}
+	else
+	if (length == 0XFF) {
+	   length = (v [index + 2] << 16) |
+	                     (v [index + 3] << 8) | v [index + 4];
+	   index += 5;
+	}
+	else
+	   index += 2;
+
+	char	text [length + 1];
 	for (int i = 0; i < length; i ++)
 	   text [i] = v [index + i];
 	text [length] = 0;
@@ -1930,7 +2049,7 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	fprintf (stderr, "default language with length %d\n", length);
+//	fprintf (stderr, "default language with length %d\n", length);
 	return index + length;
 }
 
@@ -1955,14 +2074,48 @@ int length	= v [index + 1];
 void	epgDecoder::record (progDesc *theElement) {
 	if (theElement -> startTime == -1)
 	   return;
-	
+
 	if ((theElement -> mediumName == QString ("")) &&
+	    (theElement -> shortName  == QString ("")) &&
 	    (theElement -> longName   == QString ("")))
 	   return;
 
 	set_epgData (this -> SId, theElement -> startTime,
 	             theElement -> longName != QString ("") ?
 	                 theElement -> longName:
-	                 theElement -> mediumName,
+	             theElement -> mediumName != QString ("") ?
+	                 theElement -> mediumName :
+	                 theElement -> shortName,
 	             theElement -> shortDescription);
 }
+
+QString	epgDecoder::getCData	(uint8_t *v, int index, int eLength) {
+int length;
+	if (v [index] != 0x1)
+	   return "";
+
+	if (v [index + 1] == 1) {
+	   return stringTable [v [index + 2]];
+	}
+
+	length = v [index + 1];
+	if (length == 0XFE) {
+	   length = (v [index + 2] << 8) | v [index + 3];
+	   index += 4;
+	}
+	else
+	if (length == 0XFF) {
+	   length = (v [index + 2] << 16) | (v [index + 3] << 8) | v [index + 4];
+	   index += 5;
+	}
+	else
+	   index += 2;
+
+	char text [length + 1];
+	for (int i = 0; i < length; i ++)
+	   text [i] = v [index + i];
+	text [length] = 0;
+	return QString::fromUtf8 (text);
+
+}
+

@@ -37,15 +37,16 @@ public:
 	                            int32_t, 	// cutoff frequency
 	                            int32_t	// samplerate
 	                           );
-			~LowPassFIR (void);
+			~LowPassFIR ();
 	std::complex<float>	Pass		(std::complex<float>);
 	float			Pass		(float);
 	void			resize		(int);
+	int			theSize		();
 private:
 	int16_t		filterSize;
+	int16_t		ip;
 	std::vector<std::complex<float>>	filterKernel;
 	std::vector<std::complex<float>>	Buffer;
-	int16_t		ip;
 	float		frequency;
 };
 

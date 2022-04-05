@@ -4,39 +4,38 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the dab streamer
+ *    This file is part of Qt-DAB
  *
- *    dab streamer is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    dab streamer is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with dab-streamer; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *	rds encoding is heavily based on the "fmstation"
  *	from Jan Roemisch (github.com/maxx23), all rights acknowledged
  */
 
-#ifndef __DAB_STREAMER__
-#define __DAB_STREAMER__
+#ifndef __DAB_STREAMER_H
+#define __DAB_STREAMER_H
 
 #include	<thread>
 #include	<stdint.h>
 #include	<stdio.h>
-//#include	<sndfile.h>
 #include	<complex>
 #include	<atomic>
 #include	"ringbuffer.h"
 #include	"audio-base.h"
 #include	"ringbuffer.h"
-#include	"lowpass-filter.h"
+#include	"fir-filters.h"
 #include	<string>
 
 class	plutoHandler;
@@ -139,9 +138,9 @@ public:
 	void	addRds			(const std::string);
 	void	stop			(void);
 private:
+	LowPassFIR	lowPassFilter;
 	RingBuffer<float> pcmBuffer;
 	RingBuffer<char>  rdsBuffer;
-	LowPassFIR	lowPassFilter;
 	void		run			(void);
 	std::thread	threadHandle;
 	int		inRate;

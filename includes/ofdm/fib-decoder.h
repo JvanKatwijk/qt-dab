@@ -62,6 +62,7 @@ public:
 	int32_t		get_ensembleId	();
 	QString		get_ensembleName	();
 	int32_t		get_CIFcount	();	
+	uint32_t	julianDate	();
 	void		set_epgData	(uint32_t, int32_t,
 	                                 const QString &, const QString &);
 	std::vector<epgElement> get_timeTable	(uint32_t);
@@ -166,7 +167,7 @@ private:
 	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
-
+	uint32_t	mjd;			// julianDate
 	QString		serviceName		(int index);
 	QString		serviceIdOf		(int index);
 	QString		subChannelOf		(int index);

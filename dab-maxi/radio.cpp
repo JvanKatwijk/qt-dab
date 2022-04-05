@@ -350,7 +350,7 @@ uint8_t	dabBand;
 
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
-	
+
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -364,6 +364,11 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("closeDirect", 0). toInt ();
 	if (x != 0)
 	   configWidget. closeDirect -> setChecked (true);
+
+	x = dabSettings -> value ("epg2xml", 0). toInt ();
+	if (x != 0)
+	   configWidget. epg2xmlSelector -> setChecked (true);
+
 	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (x == ALPHA_BASED)
 	   configWidget. orderAlfabetical -> setChecked (true);
@@ -699,7 +704,7 @@ uint8_t	dabBand;
 }
 
 QString	RadioInterface::presetText () {
-return QString ("In version 4.35 the way elements are removed from the presets is changed. Just click with the right mouse button on the text of the item and the item will be removed from the presetList");
+	return QString ("In version 4.35 the way elements are removed from the presets is changed. Just click with the right mouse button on the text of the item and the item will be removed from the presetList");
 }
 
 QString RadioInterface::footText () {
@@ -815,6 +820,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	                          my_snrViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("utcSelector",
 	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
+	s	-> setValue ("epg2xml",
+	                          configWidget. epg2xmlSelector -> isChecked () ? 1 : 0);
 	s	-> sync();
 }
 //
@@ -1018,26 +1025,17 @@ QString realName;
 	                     my_dabProcessor -> get_ensembleId ();
 	         uint32_t currentSId =
 	                     extract_epg (name, serviceList, ensembleId);
-	         if (true) {
-//	         if (currentSId != 0) {
-	            FILE *f = fopen (name. toUtf8 (). data (), "w+b");
-	            if (f == nullptr)
-	               fprintf (stderr, "Opening %s failed\n",
-	                                      name. toUtf8 (). data ());
-	            else {
-	               fwrite (epgData. data (), 1, epgData. size (), f);
-	               fprintf (stderr, "writing epgdata to %s\n",
-	                                            name. toUtf8 (). data ());
-	               fclose (f);
-	            }
-	            int subType = 
+	         uint32_t julianDate	=
+	                     my_dabProcessor -> julianDate ();
+	         int subType = 
 	                  getContentSubType ((MOTContentType)contentType);
-	            epgProcessor. process_epg (epgData. data (), 
+	         epgProcessor. process_epg (epgData. data (), 
 	                                       epgData. size (), currentSId,
-	                                       subType);
-
-	         }
-	         epgHandler. decode (epgData, realName);
+	                                       subType,
+	                                       julianDate);
+	         if (configWidget. epg2xmlSelector -> isChecked ())
+	            epgHandler. decode (epgData, name);
+//	         epgHandler. decode (epgData, realName);
 	      }
 #endif
 	      return;

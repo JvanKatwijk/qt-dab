@@ -62,18 +62,19 @@ public:
 		~epgDecoder	();
 
 int	process_epg	(uint8_t *v, int e_length,
-	                 uint32_t SId, int subType);
+	                 uint32_t SId, int subType, uint32_t theDay);
 private:
 	uint32_t        SId;
         QString         stringTable [20];
 	int		subType;
+	uint32_t	julianDate;
 	int	getBit			(uint8_t *v, int bitnr);
 	uint32_t getBits		(uint8_t *v, int bitnr, int length);
 	int	process_programGroups	(uint8_t *v, int index);
 	int	process_programGroup	(uint8_t *v, int index);
 	int	process_schedule	(uint8_t *v, int index);
-	int	process_program		(uint8_t *v, int index);
-	int	process_scope		(uint8_t *v, int index);
+	int	process_program		(uint8_t *v, int index, progDesc *);
+	int	process_scope		(uint8_t *v, int index, progDesc *);
 	int	process_serviceScope	(uint8_t *v, int index);
 	int	process_mediaDescription (uint8_t *v, int index, progDesc *);
 	int	process_ensemble	(uint8_t *v, int index);
@@ -125,6 +126,7 @@ private:
 	int	process_obsolete	(uint8_t *v, int index);
 
 	void	record			(progDesc *);
+	QString	getCData		(uint8_t *v, int index, int elength);
 signals:
 	void	set_epgData		(int, int,
 	                                 const QString &,

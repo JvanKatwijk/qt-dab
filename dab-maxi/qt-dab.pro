@@ -329,9 +329,10 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= soapy
+CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 #CONFIG		+= colibri
 CONFIG		+= faad
@@ -406,12 +407,14 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
+#	CONFIG		+= pluto
+#	CONFIG		+= pluto-rxtx
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
 #	CONFIG		+= JAN
-#	CONFIG		+= preCompiled
-	CONFIG		+= tiiLib
+	CONFIG		+= preCompiled
+#	CONFIG		+= tiiLib
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
@@ -571,12 +574,10 @@ pluto-rxtx	{
 	INCLUDEPATH	+= ./dab-streamer
 	HEADERS		+= ./qt-devices/pluto-rxtx/dabFilter.h
 	HEADERS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
-	HEADERS		+= ./dab-streamer/dab-streamer.h \
-	                   ./dab-streamer/lowpass-filter.h \
+	HEADERS		+= ./dab-streamer/dab-streamer.h 
 	                   ./dab-streamer/up-filter.h
 	SOURCES		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
 	SOURCES		+= ./dab-streamer/dab-streamer.cpp \
-	                   ./dab-streamer/lowpass-filter.cpp \
 	                   ./dab-streamer/up-filter.cpp
 	FORMS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
 	LIBS		+= -liio -lad9361

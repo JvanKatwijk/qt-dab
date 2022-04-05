@@ -70,7 +70,6 @@ Note:
 
 	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
 	export QT_PLUGIN_PATH=$Qt_5/plugins
-  
 
 -----------------------------------------------------------------
 Difference between 4.351 and previous versions
@@ -580,19 +579,15 @@ Pluto device and stereo FM transmission
 -----------------------------------------------------------------------
 
 As (probably) known, the **Adalm Pluto** device has receive and transmit
-capabilities. In a previous project, an extension was made to a
-dab-cmdline version using the Adalm pluto device,
-to allow the transmission on FM of a preselected
-service.
+capabilities.  For configuring pluto there are three options:
 
-As an exercise - and slightly experimental - the functionality was
-added to qt-dab.
+ * pluto, whichn requires the support libraries to be installed;
 
-If - on configuration - **pluto-rxtx** is included as device rather than
-**pluto**, and if pluto-rxtx is selected as (input)device on the main
-widget, the audio
-of the selected service, augmented with the text of the dynamic label
-encoded as RDS signal, will be transmitted on a specified frequency.
+ * pluto-2, which - as most other device handlers - will try to read in the required functions from the library when selected, and
+
+ * pluto-rxtx, which supports transmitting the audio as received from a DAB sevrice in FM stereo on a user specified frequency. It requires the libad9361 and libiio to be installed.
+
+The precompiled versions were configured with "pluto-2".
 
 As default, the transmit frequency is 110 MHz, however, the user can specify
 the frequency (obviously within the range supported by the Adalm-Pluto)

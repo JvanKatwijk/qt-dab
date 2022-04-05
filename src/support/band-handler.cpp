@@ -123,13 +123,15 @@ FILE	*f;
 //	OK we have a file with - hopefully - some input
 	size_t	amount		= 128;
 	int filler		= 0;
-	char *line 	= new char [256];
+	char *line 		= new char [512];
 	while ((filler < 100) && (amount > 0)) {
 	   amount = getline (&line, &amount, f);
 //	   fprintf (stderr, "%s (%d)\n", line, (int)amount);
-	   if ((int)amount <= 0) {
+	   if ((int)amount <= 0) {	// eof detected
 	      break;
 	   }
+	   if (((int)amount < 8) || ((int) amount > 128)) // ?????
+	      continue;
 	   line [amount] = 0;
 	   char channelName [128];
 	   int freq;

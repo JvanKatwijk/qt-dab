@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>518</height>
+    <height>549</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,6 +114,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="tii_detectorMode">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;a second implementation of the tii decoder can be selected here. The decoder &amp;quot;sees&amp;quot; more tii data, but also more erroneous data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>    new tii detector</string>
      </property>
@@ -121,6 +124,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="closeDirect">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>  close without asking</string>
      </property>
@@ -128,6 +134,9 @@
    </item>
    <item>
     <widget class="QCheckBox" name="loggerButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometime one wants to see what was done, the logger just dumps some data into a file, showing the selections made.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>  logger</string>
      </property>
@@ -135,13 +144,29 @@
    </item>
    <item>
     <widget class="QCheckBox" name="utcSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you want to see UTC in the logs select this one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string> utc Selector</string>
      </property>
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="epg2xmlSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG detector has two components, one collecting data to present as &amp;quot;time table&amp;quot; for today,&lt;/p&gt;&lt;p&gt;the other one - using a library written by Julian Cable from the BBC - to generate textual xml.&lt;/p&gt;&lt;p&gt;If selected, the xml will be generated. Note howevet that we encountered at least one example&lt;/p&gt;&lt;p&gt;here the library generating the textual xml causes a crash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string> epg to xml</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QPushButton" name="loadTableButton">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button instructs the software to (try to) load a so-called tii table, a table with the&lt;/p&gt;&lt;p&gt;encodings of tii data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>load table</string>
      </property>

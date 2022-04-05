@@ -62,6 +62,7 @@
 	nextConfig	= new dabConfig();
 	ensemble	= new ensembleDescriptor();
 	CIFcount	= 0;
+	mjd		= 0;
 }
 	
 	fibDecoder::~fibDecoder() {
@@ -70,8 +71,8 @@
 	delete	ensemble;
 }
 
-static
-uint8_t bits [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
+//static
+//uint8_t bits [] = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
 //	FIB's are segments of 256 bits. When here, we already
 //	passed the crc and we start unpacking into FIGs
@@ -529,6 +530,7 @@ uint8_t	lsFlag	= getBits_1 (d, bitOffset);
 int16_t language;
 dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
+	(void)OE_bit; (void)PD_bit;
 	if (lsFlag == 0) {	// short form
 	   if (getBits_1 (d, bitOffset + 1) == 0) {
 	      int16_t subChId	= getBits_6 (d, bitOffset + 2);
@@ -655,6 +657,7 @@ int16_t		i;
 int16_t		appType;
 dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 
+	(void)OE_bit;
 	bitOffset	+= pdBit == 1 ? 32 : 16;
 	SCIds		= getBits_4 (d, bitOffset);
 	NoApplications	= getBits_4 (d, bitOffset + 4);
@@ -1334,7 +1337,7 @@ void	fibDecoder::setCluster (dabConfig *localBase, int clusterId,
 	if (!syncReached ())
 	   return;
 	Cluster *myCluster = getCluster (localBase, clusterId);
-	if (myCluster == NULL)
+	if (myCluster == nullptr)
 	   return;
 	if (myCluster -> flags != asuFlags) {
 //	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
@@ -1383,6 +1386,8 @@ bool	fibDecoder::syncReached() {
 
 int	fibDecoder::getSubChId	(const QString &s, uint32_t dummy_SId) {
 int serviceIndex	= findService (s);
+
+	(void)dummy_SId;
 	fibLocker. lock();
 
 	int SId		= ensemble	-> services [serviceIndex]. SId;
@@ -1542,11 +1547,12 @@ std::vector<serviceId> k;
 	int 	baseN		= 0;
 	QString baseS		= "";
 	bool	inserted	= false;
-	for (const auto serv : l) {
+	for (const auto  &serv : l) {
 	   if (!inserted &&
 	         (order == ID_BASED ?
-	             ((baseN < n. SId) && (n. SId <= serv. SId)):
-	             ((baseS < n. name) && (n. name < serv. name)))) {
+	             ((baseN < (int) n. SId) &&
+	                               ((int)n. SId <= (int) (&serv) -> SId)):
+	             ((baseS < n. name) && (n. name < (&serv) -> name)))) {
 	      k. push_back (n);
 	      inserted = true;
 	   }
@@ -1722,7 +1728,8 @@ void	adjustTime (int32_t *dateTime) {
 //	Michael Hoehn
 void fibDecoder::FIG0Extension10 (uint8_t *dd) {
 int16_t		offset = 16;
-int32_t		mjd	= getLBits (dd, offset + 1, 17);
+this	->	mjd	= getLBits (dd, offset + 1, 17);
+
 //	Modified Julian Date (recompute according to wikipedia)
 int32_t J	= mjd + 2400001;
 int32_t j	= J + 32044;
@@ -1783,6 +1790,7 @@ void	fibDecoder::set_epgData	(uint32_t SId, int32_t theTime,
 	for (int i = 0; i < 64; i ++) {
            if (ensemble -> services [i]. inUse &&
                ensemble -> services [i]. SId == SId) {
+	   
 	      service *S = &(ensemble -> services [i]);
 	      for (uint16_t j = 0; j < S -> epgData. size (); j ++) {
 	         if (S -> epgData. at (j). theTime == theTime)  {
@@ -1888,6 +1896,8 @@ QStringList out;
 	   if (currentConfig -> serviceComps [i]. inUse) {
 	      if (currentConfig -> serviceComps [i]. TMid != 3) // packet
 	         continue;
+	      if (subChannelOf (i) == "")
+	         continue;
 	      if (!hasContents) {
 	         out << "\n\n";
 	         out << packetHeader ();
@@ -1913,7 +1923,10 @@ QString	fibDecoder::serviceIdOf		(int index) {
 }
 
 QString	fibDecoder::subChannelOf 	(int index) {
-	return QString::number (currentConfig -> serviceComps [index]. subchannelId);
+int subChannel	= currentConfig -> serviceComps [index]. subchannelId;
+	if (subChannel < 0)
+	   return "";
+	return QString::number (subChannel);
 }
 
 QString	fibDecoder::startAddressOf 	(int index) {
@@ -2078,5 +2091,9 @@ QString s2	= packetHeader ();
 QStringList l1 = s1. split (";");
 QStringList l2 = s2. split (";");
 	return l1. size () >= l2. size () ? l1. size () -1 : l2. size () - 1;
+}
+
+uint32_t	fibDecoder::julianDate	() {
+	return mjd;
 }
 

@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computer
  *
- *    This file is part of dab-2-fm
+ *    This file is part of Qt-DAB
  *
- *    dab-2-fm is free software; you can redistribute it and/or modify
+ *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    dab-2-fm is distributed in the hope that it will be useful,
+ *    Qt-DAB is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with dab-2-fm; if not, write to the Free Software
+ *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *      rds encoding is heavily based on the "fmstation"
@@ -29,8 +29,6 @@
 #include        <signal.h>
 #include        <stdlib.h>
 #include        <stdint.h>
-//#include	<sndfile.h>
-//#include	<samplerate.h>
 #include	<math.h>
 #include	<atomic>
 #include	<sys/time.h>
@@ -50,10 +48,9 @@ struct timeval  tv;
 		dabStreamer::dabStreamer (int		inRate,
 	                                  int		outRate,
 	                                  plutoHandler	*generator):
+	                                    lowPassFilter (11, 15000, inRate),
 	                                    pcmBuffer (8 * 32768),
-	                                    rdsBuffer (256),
-	                                    lowPassFilter (11, 15000, inRate) {
-
+	                                    rdsBuffer (2 * 256) {
 	this	-> inRate		= inRate;
 	this	-> outRate		= outRate;
 	this	-> generator		= generator;
@@ -112,7 +109,7 @@ void	dabStreamer::audioOutput (float *v, int amount) {
 float lBuffer [2 * amount];
 
 	while (pcmBuffer. GetRingBufferWriteAvailable () < 2 * amount)
-	   usleep (400);
+	   usleep (1000);
 	for (int i = 0; i < amount; i ++) {
 	   std::complex<float> x = std::complex<float> (v [2 * i],
 	                                                v [2 * i + 1]);
@@ -171,10 +168,11 @@ uint64_t        nextStop;
 
 	   while (running. load () && 
 	        (pcmBuffer. GetRingBufferReadAvailable () < inRate / 10)) {
-	      std::complex<float> filler [48];
-	      memset (filler, 0, 48 * sizeof (std::complex<float>));
-	      usleep (1000);
+//	      std::complex<float> filler [48];
+//	      memset (filler, 0, 48 * sizeof (std::complex<float>));
+	      usleep (10000);
 	   }
+
 	   if (!running. load ())
 	      break;
 	   readCount	= pcmBuffer. getDataFromBuffer (lBuf, inRate / 10);
@@ -249,10 +247,6 @@ int	i;
 	   double	symclk		= sinTable [ind_4];
 	   double bit_d	= 0;
 
-//#define MANCH_ENCODE(clk, bit) (((clk ^ bit) << 1) | ((clk ^ 0x1 ^ bit)))
-
-//#define NRZ(in)  (double)(((int)((in) & 0x1) << 1) - 1)
-
 	   if ((symclk_p <= 0) && (symclk > 0)) {
 	      e		= group -> bits [bpos]^ prev_e;
 	      m		= MANCH_ENCODE (symclk_b, e);
@@ -280,7 +274,6 @@ int	i;
 //
 //	sound elements are preempted
 	      samp_s		= preemp (samp_s);
-
 	      double lpr	= (samp_s.l + samp_s.r);
 	      double lmr	= (samp_s.l - samp_s.r);
 
@@ -307,7 +300,12 @@ int	i;
 	   if (nextPhase < 0)
 	      nextPhase += 2 * M_PI;
 	   int index	= nextPhase / (2 * M_PI) * outRate;
-	   generator -> sendSample (oscillatorTable [index]);
+//
+//	there might be an issue with the resulting index, nextPhase
+//	may be nan, inf, or just too large
+	   int aa	= index % outRate;
+	   if (aa == index)
+	      generator -> sendSample (oscillatorTable [index]);
 	   pos++;
 	}
 }

@@ -43,7 +43,7 @@ char*	get_ch_name (const char* type, int id) {
 	return tmpstr;
 }
 
-enum iodev { RX, TX };
+enum iodev {RX, TX};
 
 int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
 int ret = iio_device_attr_write_bool (dev,
@@ -191,13 +191,21 @@ int	ret;
 	return true;
 }
 
+
+extern "C" {
+int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
+                                                  unsigned long rate, unsigned long Fpass,
+                                                  unsigned long Fstop, unsigned long wnom_tx,
+                                                  unsigned long wnom_rx);
+}
+
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion,
 	                             int	fmFrequency):
 	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024),
 	                                  _O_Buffer (4 * 1024 * 1024),
-	                                  theFilter (13, 192000, FM_RATE) {
+	                                  theFilter (21, 192000, FM_RATE) {
 	
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -810,7 +818,7 @@ struct  iio_channel *lo_channel;
 
 	this	-> fmFrequency	= freq * KHz (1);
 	get_lo_chan (ctx, TX, &lo_channel);
-	tx_cfg. lo_hz   = this	-> frequency;
+	tx_cfg. lo_hz   = this	-> fmFrequency;
 	int ret = iio_channel_attr_write_longlong
 	                             (lo_channel,
 	                                   "frequency", tx_cfg. lo_hz);
