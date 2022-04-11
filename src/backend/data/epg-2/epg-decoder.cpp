@@ -63,7 +63,8 @@ uint8_t	tag	= v [0];
 int length	= v [1];
 int	index	= 0;
 
-	this	-> SId	= SId;
+//	fprintf (stderr, "epg module is starting to process input\n");
+	this	-> SId		= SId;
 	this	-> subType	= subType;
 	this	-> julianDate	= theDay;
 	if ((v [0] != EPG_TAG) && (v [0] != SERVICE_TAG))
@@ -1809,6 +1810,7 @@ int     ltoBase;
 //	we need to know whether it is today or not
 	ltoFlag	= getBit (v, 8 * index + 19);
 	utcFlag	= getBit (v, 8 * index + 20);
+	ltoBase	= utcFlag == 1 ? 48 : 32;
 
 	hours   = getBits (v, 8 * index + 21, 5);
 	minutes = getBits (v, 8 * index + 26, 6);

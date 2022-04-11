@@ -1276,7 +1276,7 @@ int	serviceOrder;
 	         QString itemText =
                                    model. index (j, 0). data (Qt::DisplayRole). toString ();
 	         if (itemText == ss) {
-	            colorService (model. index (j, 0), Qt::green,
+	            colorService (model. index (j, 0), Qt::blue,
 	                                fontSize + 2, true);
 	         }
 	      }
@@ -2763,7 +2763,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
                        model. index (j, 0). data (Qt::DisplayRole). toString ();
 	               if (itemText == s. serviceName) {
 	                  colorService (model. index (j, 0),
-	                                       Qt::green, fontSize + 2, true);
+	                                       Qt::blue, fontSize + 2, true);
 	               }
 		 }
 	         return true;
@@ -2979,7 +2979,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	         if (backgroundServices. at (j). serviceName ==
 	                                              s. serviceName) {
 	            colorService (model. index (i, 0),
-	                          Qt::green, fontSize + 2, true);
+	                          Qt::blue, fontSize + 2, true);
 	           cleanScreen ();
 	           return;
 	         }
@@ -3061,9 +3061,11 @@ QString serviceName	= s -> serviceName;
 	      }
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
+	         packetdata pd;
+	         my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
 	         currentService. valid		= true;
 	         currentService. is_audio	= false;
-	         currentService. subChId	= ad. subchId;
+	         currentService. subChId	= pd. subchId;
 	         start_packetService (serviceName);
 	         dabSettings	-> setValue ("presetname", "");
 	      }
@@ -4384,7 +4386,7 @@ void	RadioInterface::epgTimer_timeOut	() {
                     QString itemText =
                                    model. index (j, 0). data (Qt::DisplayRole). toString ();
                     if (itemText == pd. serviceName) {
-                       colorService (model. index (j, 0), Qt::green,
+                       colorService (model. index (j, 0), Qt::blue,
                                         fontSize + 2, true);
 	               break;
                     }
