@@ -48,11 +48,32 @@ char t [6];
 	if (theTime >= 24 * 60)
 	   theTime -= 24 * 60;
 	sprintf (t, "%.2d:%.2d", theTime / 60, theTime % 60);
-	
-	QString listElement = QString (t)+ " -- " + theText;
+	timeTableList. append (QString (t) + " -- " + theText);
+
+	QString listElement;
 	if (theDescr != "")
-	   listElement += " \n\t-- " + theDescr;
-	timeTableList. append (listElement);
+	   listElement = " \n\t-- " + theDescr;
+	bool tooLong = false;
+	if  (listElement. size () > 70) {
+	   int breaker = listElement. indexOf (' ', 69);
+	   tooLong = true;
+	   QString L = listElement. left (breaker);
+	   listElement = listElement. mid (breaker, -1);
+	   timeTableList. append (L);
+	   while (listElement. size () > 70) {
+	      breaker = listElement. indexOf (' ', 60);
+	      if (breaker < 0)
+	         break;
+	      QString L2 = listElement. left (breaker);
+	      listElement = listElement. mid (breaker, -1);
+	      timeTableList. append ("\t   " + L2);
+	   }
+	}
+	if (tooLong)
+	   timeTableList. append ("\t    " + listElement + "\n");
+	else
+	   timeTableList. append (listElement + "\n");
+	
 	displayList. setStringList (timeTableList);
 	this	-> setModel (&displayList);
 }
