@@ -1035,7 +1035,6 @@ QString realName;
 	                                       julianDate);
 	         if (configWidget. epg2xmlSelector -> isChecked ())
 	            epgHandler. decode (epgData, name);
-//	         epgHandler. decode (epgData, realName);
 	      }
 #endif
 	      return;

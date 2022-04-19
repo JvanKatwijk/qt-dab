@@ -2113,11 +2113,18 @@ int length;
 	else
 	   index += 2;
 
-	char text [length + 1];
-	for (int i = 0; i < length; i ++)
-	   text [i] = v [index + i];
-	text [length] = 0;
+	char text [512];
+	int fillPointer = 0;
+	for (int i = 0; i < length; i ++) {
+	   if (v [index + i] < 0x16) {
+	      char *p = stringTable [v [index + i]]. toUtf8 (). data ();
+	      while (*p != 0) 
+	         text [fillPointer ++] = *p++;
+	   }
+	   else
+	      text [fillPointer ++] = v [index + i];
+	}
+	text [fillPointer] = 0;
 	return QString::fromUtf8 (text);
-
 }
 
