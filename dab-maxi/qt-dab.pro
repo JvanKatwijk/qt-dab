@@ -33,6 +33,9 @@ TRANSLATIONS = i18n/de_DE.ts
 #DEFINES        += __MSC_THREAD__
 #DEFINES        +=  __THREADED_BACKEND
 
+#For showing trace output
+#DEFINES	+= __EPG_TRACE__  
+
 DEPENDPATH += . \
 	      ../src \
 	      ../includes \

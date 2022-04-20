@@ -28,7 +28,6 @@
 
 #define	EPG_TAG			0X02
 #define	SERVICE_TAG		0X03
-#define	__EPG_TRACE__		1
 //
 	epgDecoder::epgDecoder	() {
 }
@@ -63,7 +62,9 @@ uint8_t	tag	= v [0];
 int length	= v [1];
 int	index	= 0;
 
-//	fprintf (stderr, "epg module is starting to process input\n");
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "epg module is starting to process input for %x\n",SId);
+#endif
 	this	-> SId		= SId;
 	this	-> subType	= subType;
 	this	-> julianDate	= theDay;
@@ -82,9 +83,16 @@ int	index	= 0;
 	else
 	   index	= 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "Length for %x is %d\n",
+	                               v [0], length);
+#endif
 	int endPoint	= index + length;
 	if (tag == EPG_TAG) {
 	   while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	      fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	      switch (v [index]) {
 	         case 0x04:		// process tokenTable
 	            index = process_tokenTable (v, index);
@@ -117,6 +125,9 @@ int	index	= 0;
 	}
 	
 	if (tag == SERVICE_TAG)	{	// superfluous test
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x06:	// default language
 	         index = process_defaultLanguage (v, index);
@@ -173,8 +184,13 @@ int length	= v [index + 1];
 	   index += 2;
 
 	int endPoint	= index + length;
-
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_programGroups has length %d\n", length);
+#endif
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x23:	// programGroup
 	         index	= process_programGroup (v, index);
@@ -218,10 +234,16 @@ progDesc p;
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "processing program group length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	p. clean ();
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index = process_shortName (v, index, &p);
@@ -307,9 +329,16 @@ progDesc p;
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process schedule with length %d\n", length);
+#endif
+	
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x1C:
 	         index	= process_program (v, index, nullptr);
@@ -358,9 +387,15 @@ progDesc theElement;
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_program with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, &theElement);
@@ -456,8 +491,14 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_scope with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   int startTime;
 	   int stopTime;
 	   switch (v [index]) {
@@ -498,12 +539,17 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_servicescope with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	return endPoint;
 //
 //	Untested function
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_476 (v, index);
@@ -535,8 +581,14 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_mediaDescription with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x1A:	// shortDescription
 	         index	= process_shortDescription (v, index, p);
@@ -576,9 +628,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_ensemble with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, nullptr);
@@ -638,9 +696,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_service with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, nullptr);
@@ -708,11 +772,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_location with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Not handled now\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x2C:	// time	
 	         index	= process_time	(v, index, &p -> startTime);
@@ -752,11 +826,17 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_bearer with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	return endPoint;
+//	return endPoint;
 //
 //	Thius function is not tested
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x32:	// geolocation
 	         index	= process_geoLocation (v, index);
@@ -796,11 +876,19 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_geolocation with length %d\n", length);
+#endif
 	int endPoint	= index + length;
+#ifndef	__EPG_TRACE__
 	return endPoint;
+#endif
 //
 //	Thus function is not tested
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x33:	//  country
 	         index	= process_country (v, index);
@@ -848,9 +936,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "in process_programEvent with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x10:	// shortName
 	         index	= process_shortName (v, index, nullptr);
@@ -942,9 +1036,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_onDemand with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x29:	// bearer
 	         index	= process_bearer (v, index);
@@ -984,11 +1084,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_genre with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Not further processed\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// href
 	         index	= process_412 (v, index);
@@ -1024,12 +1134,19 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_keyWords with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-
+#ifndef	__EPG_TRACE__
 	return endPoint;
+#endif
 //
 //	This function is not tested
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// xml:lang
 	         index	= process_481 (v, index);
@@ -1061,12 +1178,18 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_link qwith length %d\n", length);
+#endif
 	int endPoint	= index + length;
 //
 //	this function is not tested
 //
 	int t;
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// uri
 	         index	= process_440 (v, index);
@@ -1115,11 +1238,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_shortName with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "not further handled\n");
+#endif
 	   return endPoint;
+	}
 
         while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
            switch (v [index]) {
               case 0x80:
                  index = process_481 (v, index);
@@ -1155,11 +1288,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_mediumName with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Not handled in this context\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:
 	         index = process_481 (v, index);
@@ -1194,11 +1337,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_longName with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "Not handled in this context\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:
 	         index = process_481 (v, index);
@@ -1233,13 +1386,22 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
-
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "processs_shortName with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "not handled in this context\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:
 	         index = process_481 (v, index);
@@ -1275,11 +1437,21 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_longDescription with length %d\n", length);
+#endif
 	int endPoint	= index + length;
-	if (p == nullptr)
+	if (p == nullptr) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "not handled in this context\n");
+#endif
 	   return endPoint;
+	}
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:
 	         index = process_481 (v, index);
@@ -1315,10 +1487,17 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_multiMedia with length %d\n", length);
+#endif
+
 	int endPoint	= index + length;
 //
 //	This function is not tested
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// mimevalue	
 	         index	= process_473 (v, index);
@@ -1370,10 +1549,16 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_radiodns with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 //
 //	The function is untested
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// fqdn
 	         index	= process_440 (v, index);
@@ -1409,8 +1594,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_time with length %d\n", length);
+#endif
 	int endPoint	= index + length;
+
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// time
 	         index	= process_474 (v, index, t);
@@ -1454,9 +1646,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_relativeTime with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// time
 	         index	= process_474 (v, index, nullptr);
@@ -1500,9 +1698,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_memberOf with length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// id
 	         index	= process_471 (v, index);
@@ -1542,9 +1746,15 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_presentationTime with length %d\n",  length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// start
 	         index	= process_474 (v, index, nullptr);
@@ -1583,10 +1793,15 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
-
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_acquisitionTime length %d\n", length);
+#endif
 	int endPoint	= index + length;
 
 	while (index < endPoint) {
+#ifdef	__EPG_TRACE__
+	   fprintf (stderr, "encountering node %x\n", v [index]);
+#endif
 	   switch (v [index]) {
 	      case 0x80:	// start
 	         index	= process_474 (v, index, nullptr);
@@ -1626,6 +1841,10 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_country length %d (not further handled)\n",
+	                                                 length);
+#endif
 	int endPoint	= index + length;
 	return endPoint;
 }
@@ -1645,6 +1864,11 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_point length %d (not further handled)\n",
+	                                                 length);
+#endif
+
 	int endPoint	= index + length;
 	return endPoint;
 }
@@ -1663,6 +1887,11 @@ int length	= v [index + 1];
 	}
 	else
 	   index += 2;
+
+#ifdef	__EPG_TRACE__
+	fprintf (stderr, "process_polygon length %d (not further handled)\n",
+	                                                 length);
+#endif
 
 	int endPoint	= index + length;
 	return endPoint;
