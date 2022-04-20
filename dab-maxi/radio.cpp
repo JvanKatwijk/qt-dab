@@ -979,7 +979,7 @@ QString	dir;
 }
 
 void	RadioInterface::handle_motObject (QByteArray result,
-	                                  QString name,
+	                                  QString objectName,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
@@ -992,11 +992,11 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeText:
-	      save_MOTtext (result, contentType, name);
+	      save_MOTtext (result, contentType, objectName);
 	      break;
 
 	   case MOTBaseTypeImage:
-	      show_MOTlabel (result, contentType, name, dirElement);
+	      show_MOTlabel (result, contentType, objectName, dirElement);
 	      break;
 
 	   case MOTBaseTypeAudio:
@@ -1015,16 +1015,16 @@ QString realName;
 #ifdef	TRY_EPG
 	      if (epgPath == "")
 	         return;
-	      if (name == QString (""))
-	         name = "epg file";
-	      name  = QDir::toNativeSeparators (epgPath + name);
-	      checkDir (name);
+	      if (objectName == QString (""))
+	         objectName = "epg file";
+	      objectName  = QDir::toNativeSeparators (epgPath + objectName);
+	      checkDir (objectName);
 	      {  std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
 	         uint32_t ensembleId =
 	                     my_dabProcessor -> get_ensembleId ();
 	         uint32_t currentSId =
-	                     extract_epg (name, serviceList, ensembleId);
+	                     extract_epg (objectName, serviceList, ensembleId);
 	         uint32_t julianDate	=
 	                     my_dabProcessor -> julianDate ();
 	         int subType = 
@@ -1034,7 +1034,7 @@ QString realName;
 	                                       subType,
 	                                       julianDate);
 	         if (configWidget. epg2xmlSelector -> isChecked ())
-	            epgHandler. decode (epgData, name);
+	            epgHandler. decode (epgData, objectName);
 	      }
 #endif
 	      return;
@@ -4446,6 +4446,7 @@ void	RadioInterface::set_epgData (int SId, int theTime,
 #endif
 
 void	RadioInterface::handle_timeTable	() {
+int	epgWidth;
 	if (!currentService. valid || !currentService. is_audio)
 	   return;
 
@@ -4455,10 +4456,14 @@ void	RadioInterface::handle_timeTable	() {
 	   my_timeTable -> hide ();
 
 	my_timeTable	-> clear ();
+	epgWidth	= dabSettings -> value ("epgWidth", 70). toInt ();
+	if (epgWidth < 50)
+	   epgWidth = 50;
 	std::vector<epgElement> res =
 	           my_dabProcessor -> find_epgData (currentService. SId);
 	for (const auto& element: res)
 	   my_timeTable -> addElement (element. theTime,
+	                               epgWidth,
 	                               element. theText,
 	                               element. theDescr);
 }

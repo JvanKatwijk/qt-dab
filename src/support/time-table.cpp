@@ -39,6 +39,7 @@
 }
 
 void	timeTableHandler::addElement (int theTime,
+	                              int	epgWidth,
 	                              const QString &theText,
 	                              const QString &theDescr) {
 int	hours	= theTime / 60;
@@ -54,19 +55,21 @@ char t [6];
 	if (theDescr != "")
 	   listElement = " \n\t-- " + theDescr;
 	bool tooLong = false;
-	if  (listElement. size () > 70) {
-	   int breaker = listElement. indexOf (' ', 69);
-	   tooLong = true;
-	   QString L = listElement. left (breaker);
-	   listElement = listElement. mid (breaker, -1);
-	   timeTableList. append (L);
-	   while (listElement. size () > 70) {
-	      breaker = listElement. indexOf (' ', 60);
-	      if (breaker < 0)
-	         break;
-	      QString L2 = listElement. left (breaker);
+	if  (listElement. size () > epgWidth) {
+	   int breaker = listElement. indexOf (' ', epgWidth - 10);
+	   if (breaker > 0) {
+	      tooLong = true;
+	      QString L = listElement. left (breaker);
 	      listElement = listElement. mid (breaker, -1);
-	      timeTableList. append ("\t   " + L2);
+	      timeTableList. append (L);
+	      while (listElement. size () > epgWidth) {
+	         breaker = listElement. indexOf (' ', epgWidth - 10);
+	         if (breaker < 0)
+	         break;
+	         QString L2 = listElement. left (breaker);
+	         listElement = listElement. mid (breaker, -1);
+	         timeTableList. append ("\t   " + L2);
+	      }
 	   }
 	}
 	if (tooLong)
