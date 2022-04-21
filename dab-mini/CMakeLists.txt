@@ -210,7 +210,7 @@ add_definitions (-D__MSC_THREAD__)
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
 	     ../includes/support/band-handler.h
-	     ../includes/support/text-mapper.h
+#	     ../includes/support/text-mapper.h
 	     ../includes/support/dab-tables.h
 #	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
@@ -279,7 +279,7 @@ add_definitions (-D__MSC_THREAD__)
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
-	     ../src/support/text-mapper.cpp
+#	     ../src/support/text-mapper.cpp
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp

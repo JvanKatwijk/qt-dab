@@ -58,7 +58,6 @@
 
 	this	-> myRadioInterface	= mr;
 	this	-> inputDevice		= inputDevice;
-	this	-> frequency		= 220000000;	// default
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer		= p -> tiiBuffer;
 	this	-> snrBuffer		= p -> snrBuffer;
@@ -119,8 +118,7 @@ void	dabProcessor::set_tiiDetectorMode	(bool b) {
 	my_TII_Detector. setMode (b);
 }
 
-void	dabProcessor::start (int frequency) {
-	this	-> frequency	= frequency;
+void	dabProcessor::start () {
 	my_ficHandler. reset	();
 	transmitters. clear ();
 	if (!scanMode)
@@ -156,8 +154,6 @@ double	cLevel		= 0;
 int	cCount		= 0;
 bool dumpvlag		= false;
 QVector<std::complex<float>> tester (T_null / 2 + T_u);
-//	inputDevice	-> resetBuffer ();
-//	inputDevice	-> restartReader (frequency);
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;

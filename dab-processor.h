@@ -56,7 +56,8 @@ public:
 	                         deviceHandler *,
 	                         processParams *);
 		~dabProcessor			();
-	void		start			(int32_t);
+	void		start			();
+//	void		start			(int32_t);
 	void		stop			();
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		();
@@ -101,7 +102,6 @@ public:
 	                                         RingBuffer<uint8_t> *, int);
 	void		set_tiiDetectorMode	(bool);
 private:
-	int		frequency;
 	int		threshold;
 	int		totalFrames;
 	int		goodFrames;

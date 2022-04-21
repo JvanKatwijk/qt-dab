@@ -37,7 +37,7 @@
 #include	"dab-processor.h"
 #include	"ringbuffer.h"
 #include        "band-handler.h"
-#include	"text-mapper.h"
+//#include	"text-mapper.h"
 #include	"process-params.h"
 #include	"dl-cache.h"
 #include	"preset-handler.h"
@@ -109,7 +109,7 @@ private:
 	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice;
 	deviceHandler		*findDevice ();
-	textMapper		the_textMapper;
+//	textMapper		the_textMapper;
 	dabProcessor		*my_dabProcessor;
 	audioBase		*soundOut;
 	QString			picturesPath;

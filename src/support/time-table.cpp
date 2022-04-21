@@ -54,6 +54,7 @@ char t [6];
 	QString listElement;
 	if (theDescr != "")
 	   listElement = " \n\t-- " + theDescr;
+
 	bool tooLong = false;
 	if  (listElement. size () > epgWidth) {
 	   int breaker = listElement. indexOf (' ', epgWidth - 10);

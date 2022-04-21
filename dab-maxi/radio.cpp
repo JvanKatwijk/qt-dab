@@ -3369,7 +3369,8 @@ int	tunedFrequency	=
 	ensembleDisplay		-> setModel (&model);
 	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
-	my_dabProcessor		-> start (tunedFrequency);
+	my_dabProcessor		-> start ();
+//	my_dabProcessor		-> start (tunedFrequency);
 	channel. has_ecc	= false;
 	channel. transmitterName	= "";
 	channel. ensembleName	= "";
@@ -4242,7 +4243,6 @@ void	RadioInterface::handle_orderServiceIds		() {
 void	RadioInterface::handle_ordersubChannelIds	() {
 	dabSettings -> setValue ("serviceOrder", SUBCH_BASED);
 }
-
 	                                                 
 ///////////////////////////////////////////////////////////////////////////
 //	Handling schedule

@@ -132,7 +132,7 @@ HEADERS += ./radio.h \
 #	   ../includes/support/Xtan2.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
-	   ../includes/support/text-mapper.h \
+#	   ../includes/support/text-mapper.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/smallcombobox.h \
@@ -205,7 +205,7 @@ SOURCES += ./main.cpp \
 #	   ../src/support/Xtan2.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
-	   ../src/support/text-mapper.cpp \
+#	   ../src/support/text-mapper.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \

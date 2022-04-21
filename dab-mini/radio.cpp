@@ -1171,7 +1171,8 @@ void	RadioInterface::startChannel (const QString &channel) {
 int	tunedFrequency	=
 	         theBand. Frequency (channel);
 	inputDevice		-> restartReader (tunedFrequency);
-	my_dabProcessor		-> start (tunedFrequency);
+	my_dabProcessor		-> start ();
+//	my_dabProcessor		-> start (tunedFrequency);
 	show_for_safety	();
 }
 //

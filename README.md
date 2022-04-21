@@ -97,7 +97,7 @@ no objection to selecting a service, running in the background, as
 foreground service: the background service will just continue.
 
 The names of the services in the service list, running in the background are 
-indicated by a **green italic** font (see the pictures at the top)
+indicated by a **blue italic** font (other than on the pictures at the top)
 
 
 ------------------------------------------------------------------
@@ -109,10 +109,10 @@ Table of Contents
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [dabMini and duoreceiver](#dabMini-and-duoreceiver)
 * [Documentation](#documentation)
+* [configuration settings](#Configuration-settings)
 * [Presets](#presets-for-qt-dab-and-dab-mini)
 * [Saving gain settings](#saving-gain-settings)-
 * [Colors](#colors-for-qt-dab)
-* [configuration settings](#Configuration-settings)
 * [Scanning and the skip table](#scanning-and-the-skip-table)
 * [Saving synamic label texts](#Saving-dynamic-label-texts)
 * [Scheduling option](#Scheduling-option)
@@ -304,11 +304,22 @@ complete description on how to add a device to the configuration.
 
 ![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
 
+---------------------------------------------------------------------------
+Configuration settings
+-------------------------------------------------------------------------------
+
+Many settings are maintained between program invocations in a
+so-called ".ini" file, ususally "qt-dab.ini", stored in the home directory.
+A complete description of the settings can be found in the user's manual
+(in the subdirectory *docs*).
+Touching the **config** button on the main widget will show (or hide)
+a widget where a number of settings can be adapted.
+
 ----------------------------------------------------------------------
 Presets for Qt-DAB and dabMini
 ----------------------------------------------------------------------
 
-A *preset* option is available to allow storing and selecting
+A *preset* option is available to handle selection of
 **favorit** services. Touching the name of the currently selected
 audio service with the right hand mouse button will save the
 "channel:serviceName" pair in the preset list.
@@ -323,11 +334,10 @@ mouse** on the entry.
 Storing gain settings
 ----------------------------------------------------------------------
 
-It is often the case that, for a particular device the optimal gain setting
-for channel X is not the same as for channel Y (assuming X != Y).
-This is especially annoying during scanning. Therefore, 
-for each device, the gain settings for each channel are recorded
-and used whenever that channel is selected.
+In each configuration, Each channel for each device has its
+optimal gain setting. That is why the ".ini" file stores the
+gain settings per device per channel and - obviously - restores
+it when selecting a channel.
 
 ----------------------------------------------------------------------
 Colors for Qt-DAB
@@ -345,17 +355,6 @@ The settings are saved in the ".ini" file.
 For setting the colors on the scopes, right click on the scope. Three
 questions will be asked: what will be the color of the display (background),
 what will be the color of the grid and what will be the color of the curve.
-
----------------------------------------------------------------------------
-Configuration settings
--------------------------------------------------------------------------------
-
-Many settings are maintained between program invocations in a
-so-called ".ini" file, ususally "qt-dab.ini", stored in the home directory.
-A complete description of the settings can be found in the user's manual
-(in the subdirectory *docs*).
-Touching the **config** button on the main widget will show (or hide)
-a widget where a number of settings can be adapted.
 
 ----------------------------------------------------------------------
 Scanning and the skip table
