@@ -2342,18 +2342,17 @@ int length;
 	else
 	   index += 2;
 
-	char text [512];
-	int fillPointer = 0;
+	std::vector<char> text;
 	for (int i = 0; i < length; i ++) {
 	   if (v [index + i] < 0x16) {
 	      char *p = stringTable [v [index + i]]. toUtf8 (). data ();
 	      while (*p != 0) 
-	         text [fillPointer ++] = *p++;
+	         text. push_back (*p++);
 	   }
 	   else
-	      text [fillPointer ++] = v [index + i];
+	      text. push_back (v [index + i]);
 	}
-	text [fillPointer] = 0;
-	return QString::fromUtf8 (text);
+	text. push_back (0);
+	return QString::fromUtf8 (text. data ());
 }
 
