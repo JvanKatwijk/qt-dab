@@ -524,6 +524,12 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
           <verstretch>5</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>414</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="font">
          <font>
           <family>DejaVu Sans</family>
