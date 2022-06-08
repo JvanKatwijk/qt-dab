@@ -2,7 +2,7 @@
 
 Qt-DAB-4.4 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![4.4](/screen-4.4.png?raw=true)
+![4.4](/qt-dab-maps.png?raw=true)
 
 ----------------------------------------------------------------
 What is new in Qt-DAB 4.4
