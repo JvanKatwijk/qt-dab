@@ -1,9 +1,38 @@
-# Qt-DAB-4.351 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.4 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.351 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.4 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![overview](/screen-4.351.png?raw=true)
-![4.4](/screen-4.3511.png?raw=true)
+![4.4](/screen-4.4.png?raw=true)
+
+----------------------------------------------------------------
+What is new in Qt-DAB 4.4
+----------------------------------------------------------------
+
+I was completely bored with searching on a map where the transmitter
+location was that was detected by the Qt-DAB software.
+So, I modified the http handler and the map from the 1090 software
+(all rights acknowledged) and added a map feauture.
+
+Of course, the map extension only makes sense if the previous extension,
+transforming TII data into readbable transmitter information, is on.
+
+To aid in adjusting the map, the map is selected such that the
+center of the map is on the "home" coordinates that you gave
+to compute distances etc.
+
+So, if the software detects that the TII to transmitter info is 
+part of the implementation, a button shows on the main widget, with
+which the map service can be switched on and off.
+
+Important note: where to find the map.
+The software searches for a file named "qt-map.html" (as said, a
+modified version of the map in the 1090 software).  The safest
+location - i.e. which is always part of the service - is the 
+"home" directory.
+
+Especially, if one uses the AppImage, the software will search in
+the hoe directory for this file.
+If the file cannot be found, well, then there is no map!
 
 ----------------------------------------------------------------
 Building an executable for qt-dab: a few notes
@@ -70,35 +99,6 @@ Note:
 
 	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
 	export QT_PLUGIN_PATH=$Qt_5/plugins
-
------------------------------------------------------------------
-Difference between 4.351 and previous versions
------------------------------------------------------------------
-
-Since some time the EPG handling in Qt-DAB was automatic, i.e.
-on selecting a channel, the software looked for a service providing
-an EPG and started that in the background.
-
-The implementation was rather ad hoc, and the difference between 4.351
-and previous versions is that in 4.351 more general notion of
-"background service" is implemented.
-
-By clicking with the right hand mouse button on a DAB+ service (not the
-currently selected one) that service is started as background service,
-a file menu appears with a reasonable name suggestion where the
-sound output will be written to.
-Clicking again with the right hand mouse button on the service name
-will stop the background service. Obviously, on changing the channel
-the background services will be stopped as well.
-
-There is no limit to the amount of background services, obviously
-running background services takes some processing power, and there is
-no objection to selecting a service, running in the background, as
-foreground service: the background service will just continue.
-
-The names of the services in the service list, running in the background are 
-indicated by a **blue italic** font (other than on the pictures at the top)
-
 
 ------------------------------------------------------------------
 Table of Contents
@@ -207,7 +207,7 @@ The buttons and other controls on the main widget are equipped with
 of the element (the tooltip on the copyright label shows (a.o) the date the executable was generated.)
 
 
-![4.](/screen-4.351.png?raw=true)
+![4.](/qt-dab-screen-2.png?raw=true)
 
 The elements in the **left part** of the widget, below the list of services,
  are concerned with selecting a channel and a service. To ease operation the channel selector is augmented with a "-" and a "+" button for selecting the previous resp. next channel.

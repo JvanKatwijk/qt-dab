@@ -206,6 +206,7 @@ uint8_t convert (QString s) {
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
+	                                const QString	&mapFile,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -246,6 +247,7 @@ QString h;
 uint8_t	dabBand;
 
 	dabSettings		= Si;
+	this	-> mapFile	= mapFile;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
@@ -258,7 +260,7 @@ uint8_t	dabBand;
 	serviceCount		= -1;
 	my_contentTable		= nullptr;
 	my_scanTable		= nullptr;
-
+	mapHandler		= nullptr;
 //	"globals" is introduced to reduce the number of parameters
 //	for the dabProcessor
 	globals. spectrumBuffer	= &spectrumBuffer;
@@ -296,6 +298,7 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
+	httpPort		= dabSettings -> value ("httpPort", 8080). toInt ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 	if (saveSlides != 0)
@@ -348,6 +351,12 @@ uint8_t	dabBand;
 	   }
 	}
 
+	channel. targetPos	= std::complex<float> (0, 0);
+	float local_lat		=
+	             dabSettings -> value ("latitude", 0). toFloat ();
+	float local_lon		=
+	             dabSettings -> value ("longitude", 0). toFloat ();
+	channel. localPos	= std::complex<float> (local_lat, local_lon);
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
 
@@ -455,6 +464,8 @@ uint8_t	dabBand;
 	         this, SLOT (handle_dlTextButton ()));
 	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_LoggerButton (int)));
+	connect (httpButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_httpButton ()));
 
 //	restore some settings from previous incarnations
 	QString t       =
@@ -559,6 +570,8 @@ uint8_t	dabBand;
 	channel. tiiFile	= false;
 	if (tiiFileName != "") {
 	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
+	   if (!channel. tiiFile)
+	      httpButton -> hide ();
 	}
 
 //	and start the timer(s)
@@ -1208,7 +1221,7 @@ int	serviceOrder;
 //	we stop all secondary services as well, but we maintain theer
 //	description, file descriptors remain of course
 //
-	for (int i = 0; i < backgroundServices. size (); i ++)
+	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
 	   my_dabProcessor -> stopService (backgroundServices. at (i). subChId,
 	                                   BACK_GROUND);
 
@@ -1247,7 +1260,7 @@ int	serviceOrder;
 	}
 //
 //	we also have to restart all background services,
-	for (int i = 0; i < backgroundServices. size (); i ++) {
+	for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (ss == "") {	// it is gone, close the file if any
 	      if (backgroundServices. at (i). fd != nullptr)
@@ -1323,6 +1336,8 @@ void	RadioInterface::TerminateProcess () {
 	fprintf (stderr, "going to close the clockstreamer\n");
 	delete	clockStreamer;
 #endif
+	if (mapHandler != nullptr)
+	   mapHandler ->  stop ();
 	displayTimer.	stop	();
 	channelTimer.	stop	();
 	presetTimer.	stop	();
@@ -2099,9 +2114,11 @@ bool	tiiChange	= false;
 	                                               channel. channelName :
 	                                               "any",
 	                                           theName);
-	            fprintf (stderr, "%s (%f, %f)\n",
-	                              theName. toUtf8 (). data (),
-	                              latitude, longitude);
+	            channel. targetPos	= std::complex<float> (latitude,
+	                                                       longitude);
+	            if (mapHandler != nullptr)
+	               mapHandler -> putData (channel. targetPos, 
+	                                           channel. transmitterName);
 	            LOG ("transmitter ", channel. transmitterName);
 	            LOG ("coordinates ", 
 	                         QString::number (latitude) + " " +
@@ -2111,10 +2128,8 @@ bool	tiiChange	= false;
 	            QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
-                    float ownLatitude =
-                           dabSettings -> value ("latitude", 0). toFloat ();
-                    float ownLongitude =
-                           dabSettings -> value ("longitude", 0). toFloat ();
+                    float ownLatitude = real (channel. localPos);
+                    float ownLongitude = imag (channel. localPos);
                     if ((ownLatitude != 0) && (ownLongitude != 0)) {
 	               int distance = tiiProcessor.
 	                                  distance (latitude, longitude,
@@ -2719,7 +2734,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      }
 
 	      if ((ad. defined) && (ad. ASCTy == 077)) {
-	         for (int i = 0; i < backgroundServices. size (); i ++) {
+	         for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	            if (backgroundServices. at (i). serviceName ==
 	                                                      serviceName) {
 	                my_dabProcessor -> stopService (ad. subchId,
@@ -2974,7 +2989,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	          model. index (i, 0). data (Qt::DisplayRole). toString ();
 	      if (itemText != s. serviceName) 
 	         continue;
-	      for (int j = 0; j < backgroundServices. size (); j ++) {
+	      for (uint16_t j = 0; j < backgroundServices. size (); j ++) {
 	         if (backgroundServices. at (j). serviceName ==
 	                                              s. serviceName) {
 	            colorService (model. index (i, 0),
@@ -3130,7 +3145,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	}
 
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
-	QTime theTime		= theDateTime. time ();
+//	QTime theTime		= theDateTime. time ();
 	serviceLabel -> setAlignment(Qt::AlignCenter);
 	serviceLabel -> setText (ad -> serviceName);
 	currentService. valid	= true;
@@ -3379,6 +3394,9 @@ int	tunedFrequency	=
 	channel. subId		= 0;
 	channel. channelName	= theChannel;
 	channel. frequency	= tunedFrequency / 1000;
+	channel. targetPos	= std::complex<float> (0, 0);
+	if (mapHandler != nullptr)
+	   mapHandler -> putData (channel. targetPos, "");
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3395,12 +3413,12 @@ void	RadioInterface::stopChannel	() {
 	   return;
 	LOG ("channel stops ", channel. channelName);
 	fprintf (stderr, "we have now as background services\n");
-	for (int i = 0; i < backgroundServices. size (); i ++)
+	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
 	   fprintf (stderr, "%s (%d)\n",
 	                 backgroundServices. at (i). serviceName. toLatin1 (). data (),
 	                 backgroundServices. at (i). subChId);
 	
-	for (int i = 0; i < backgroundServices. size (); i ++) {
+	for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	   dabService s =  backgroundServices. at (i);
 	   my_dabProcessor -> stopService (s. subChId, BACK_GROUND);
 	   if (s. fd != nullptr)
@@ -3435,6 +3453,9 @@ void	RadioInterface::stopChannel	() {
 	channel. ensembleName	= "";
 	channel. has_ecc	= false;
 	channel. transmitterName = "";
+	channel. targetPos	= std::complex<float> (0, 0);
+	if (mapHandler != nullptr)
+	   mapHandler -> putData (channel. targetPos, "");
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4341,7 +4362,7 @@ void	RadioInterface::scheduled_ficDumping () {
 	   return;
 	}
 	my_dabProcessor	-> stop_ficDump ();
-	ficDumpPointer == nullptr;
+	ficDumpPointer = nullptr;
 }
 
 //-------------------------------------------------------------------------
@@ -4484,6 +4505,7 @@ const QString fileName	= filenameFinder. findskipFile_fileName ();
 
 void	RadioInterface::handle_tii_detectorMode (int d) {
 bool	b = configWidget. tii_detectorMode -> isChecked ();
+	(void)d;
 	my_dabProcessor	-> set_tiiDetectorMode (b);
 	dabSettings	-> setValue ("tii_detector", b ? 1 : 0);
 }
@@ -4567,6 +4589,11 @@ void	RadioInterface::handle_LoggerButton (int s) {
 void	RadioInterface::handle_set_coordinatesButton	() {
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
+	float local_lat		=
+	             dabSettings -> value ("latitude", 0). toFloat ();
+	float local_lon		=
+	             dabSettings -> value ("longitude", 0). toFloat ();
+	channel. localPos	= std::complex<float> (local_lat, local_lon);
 }
 
 void	RadioInterface::loadTable	 () {
@@ -4584,4 +4611,38 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	else
 	   channel. tiiFile = false;
 }
- 
+//
+//	ensure that we only get a handler if we have a start location
+void	RadioInterface::handle_httpButton	() {
+	if (real (channel. localPos) == 0)
+	   return;
+
+	if (mapHandler == nullptr)  {
+	   mapHandler = new httpHandler (this,
+	                                 this -> httpPort,
+	                                 channel. localPos,
+	                                 mapFile);
+	   if (mapHandler != nullptr)
+	      httpButton -> setText ("http-on");
+	}
+	else {
+	   locker. lock ();
+	   delete mapHandler;
+	   mapHandler = nullptr;
+	   locker. unlock ();
+	   httpButton	-> setText ("http");
+	}
+}
+
+void	RadioInterface::http_terminate	() {
+	locker. lock ();
+	if (mapHandler != nullptr) {
+	   delete mapHandler;
+	   mapHandler = nullptr;
+	}
+	locker. unlock ();
+	httpButton -> setText ("http");
+}
+
+	   
+	  

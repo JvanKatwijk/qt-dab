@@ -46,6 +46,7 @@
 #include	"tii-codes.h"
 #include	"content-table.h"
 #include	<memory>
+#include	<mutex>
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
@@ -64,6 +65,8 @@
 #include	"findfilenames.h"
 
 #include	"scheduler.h"
+
+#include	"http-handler.h"
 class	QSettings;
 class	deviceHandler;
 class	audioBase;
@@ -111,6 +114,7 @@ public:
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -142,6 +146,8 @@ private:
 	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
+	httpHandler		*mapHandler;
+	QString			mapFile;
 	processParams		globals;
 	QString			version;
 	QString			theFont;
@@ -200,6 +206,7 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
+	int			httpPort;
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
@@ -307,6 +314,8 @@ private:
 	   uint8_t	subId;
 	   QString	countryName;
 	   int		nrTransmitters;
+	   std::complex<float> localPos;
+	   std::complex<float> targetPos;
 	} channel;
 enum direction {FORWARD, BACKWARDS};
 
@@ -318,6 +327,7 @@ enum direction {FORWARD, BACKWARDS};
         void                    new_presetIndex         (int);
         void                    new_channelIndex        (int);
 
+	std::mutex		locker;
 signals:
 	void                    set_newChannel		(int);
         void                    set_newPresetIndex      (int);
@@ -374,7 +384,8 @@ public slots:
 
 	void			handle_presetSelector	(const QString &);
 	void			handle_contentSelector	(const QString &);
-
+	
+	void			http_terminate		();
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -417,7 +428,8 @@ private slots:
 	void			handle_dlTextButton     ();
 
 	void			handle_hideButton	();
-	void			handle_scheduleButton		();
+	void			handle_scheduleButton	();
+	void			handle_httpButton	();
 
 //
 //	color handlers

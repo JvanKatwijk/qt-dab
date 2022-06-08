@@ -277,7 +277,7 @@ ppmRequest r (ppm);
 }
 
 void	sdrplayHandler_v3::set_antennaSelect	(const QString &s) {
-//	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' : 'B'));
+	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' : 'B'));
 }
 
 void	sdrplayHandler_v3::set_xmlDump () {

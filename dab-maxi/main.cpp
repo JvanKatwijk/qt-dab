@@ -31,7 +31,6 @@
 #include        <unistd.h>
 #include        "dab-constants.h"
 #include        "radio.h"
-
 #define DEFAULT_INI     ".qt-dab.ini"
 #define	PRESETS		".qt-dab-presets.xml"
 #define	SCHEDULE	".qt-dab-schedule"
@@ -82,13 +81,14 @@ QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
+QString	mapFile			= "./qt-map.html";
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TMF:s:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -111,6 +111,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	         break;
 
 	      case 'M':
+	         mapFile	= QString (optarg);
 	         break;
 
 	      case 'F':
@@ -145,19 +146,20 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	QString locale = QLocale::system(). name();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (locale);
-
 	a. setWindowIcon (QIcon (":/qt-dab.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       presets,
 	                                       freqExtension,
 	                                       scheduleFile,
+	                                       mapFile,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,
 	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
+
 	qRegisterMetaType<QVector<int> >("QVector<int>");
         a. exec();
 /*
