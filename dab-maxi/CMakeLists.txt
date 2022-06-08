@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-4.351)
+set (objectName qt-dab-4.4)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -212,6 +212,7 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
+	     ./http-handler.h
 	     ../dab-processor.h
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
@@ -315,6 +316,7 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./http-handler.cpp
 	     ../dab-processor.cpp
 	     ../service-description/audio-descriptor.cpp
 	     ../service-description/data-descriptor.cpp
@@ -405,6 +407,7 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
+	      ./http-handler.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
 	     ../includes/ofdm/sample-reader.h
