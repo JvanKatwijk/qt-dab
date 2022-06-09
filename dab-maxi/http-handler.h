@@ -58,7 +58,8 @@ private:
 	std::string	mapFile;
 	std::atomic<bool>	running;
 	std::thread	threadHandle;
-	std::string     theMap		(const std::string &fileName,
+//	std::string     theMap		(const std::string &fileName,
+	std::string     theMap		(
 	                                 std::complex<float> address);
 	std::string	coordinatesToJson (httpData &t);
 	httpData	transmitter;

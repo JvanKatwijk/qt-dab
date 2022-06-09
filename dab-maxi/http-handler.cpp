@@ -42,6 +42,8 @@
 #include	"http-handler.h"
 #include	"radio.h"
 
+#include	"converted_map.cpp"
+
 	httpHandler::httpHandler (RadioInterface *parent, int port,
 	                          std::complex<float> address,
 	                          const QString &mapFile) {
@@ -159,7 +161,8 @@ std::string	ctype;
 	         }
 	      }
 	      else {
-	         content	= theMap (mapFile, homeAddress);
+	         content	= theMap (homeAddress);
+//	         content	= theMap (mapFile, homeAddress);
 	         ctype		= "text/html;charset=utf-8";
 	      }
 
@@ -322,7 +325,8 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	         }
 	      }
 	      else {
-	         content	= theMap (mapFile, homeAddress);
+	         content	= theMap (homeAddress);
+//	         content	= theMap (mapFile, homeAddress);
 	         ctype		= "text/html;charset=utf-8";
 	      }
 //	Create the header 
@@ -362,27 +366,73 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 }
 #endif
 
-std::string	httpHandler::theMap (const std::string &fileName,
-	                                    std::complex<float> homeAddress) {
+//std::string	httpHandler::theMap (const char *mapFile,
+//	                             std::complex<float> homeAddress) {
+//FILE	*fd;
+//std::string res;
+//int	bodySize;
+//char	*body;
+//std::string latitude	= std::to_string (real (homeAddress));
+//std::string longitude	= std::to_string (imag (homeAddress));
+//int cc;
+//	fd	=  fopen (fileName. c_str (), "r");
+//	if (fd == nullptr) {
+//	   fprintf (stderr, "%s not found\n", fileName. c_str ());
+//	   return fileName + " not found ";
+//	}
+//	fseek (fd, 0L, SEEK_END);
+//	bodySize	= ftell (fd);
+//	fseek (fd, 0L, SEEK_SET);
+//        body =  (char *)malloc (bodySize + 40);
+//	int teller	= 0;
+//	int params	= 0;
+//	while ((cc = fgetc (fd)) > 0) {
+//	   if (cc == '$') {
+//	      if (params == 0) {
+//	         for (int i = 0; latitude. c_str () [i] != 0; i ++)
+//	            if (latitude. c_str () [i] == ',')
+//	               body [teller ++] = '.';
+//	            else
+//	               body [teller ++] = latitude. c_str () [i];
+//	         params ++;
+//	         continue;
+//	      }
+//	      if (params == 1) {
+//	         for (int i = 0; longitude. c_str () [i] != 0; i ++)
+//	            if (longitude. c_str () [i] == ',')
+//	               body [teller ++] = '.';
+//	            else
+//	            body [teller ++] = longitude. c_str () [i];
+//	         params ++;
+//	         continue;
+//	      }
+//	   }
+//	   body [teller ++] = (char)cc;
+//	}
+//	body [teller ++] = 0;
+////	fread (body, 1, bodySize, fd);
+//        fclose (fd);
+//	res	= std::string (body);
+//	free (body);
+//	return res;
+//}
+
+std::string	httpHandler::theMap (std::complex<float> homeAddress) {
 FILE	*fd;
 std::string res;
 int	bodySize;
 char	*body;
 std::string latitude	= std::to_string (real (homeAddress));
 std::string longitude	= std::to_string (imag (homeAddress));
-int cc;
-	fd	=  fopen (fileName. c_str (), "r");
-	if (fd == nullptr) {
-	   fprintf (stderr, "%s not found\n", fileName. c_str ());
-	   return fileName + " not found ";
-	}
-	fseek (fd, 0L, SEEK_END);
-	bodySize	= ftell (fd);
-	fseek (fd, 0L, SEEK_SET);
+int	index		= 0;
+int	cc;
+
+	bodySize	= sizeof (qt_map);
         body =  (char *)malloc (bodySize + 40);
 	int teller	= 0;
 	int params	= 0;
-	while ((cc = fgetc (fd)) > 0) {
+	while (qt_map [index] != 0) {
+	   cc =  (char)(qt_map [index]);
 	   if (cc == '$') {
 	      if (params == 0) {
 	         for (int i = 0; latitude. c_str () [i] != 0; i ++)
@@ -391,8 +441,8 @@ int cc;
 	            else
 	               body [teller ++] = latitude. c_str () [i];
 	         params ++;
-	         continue;
 	      }
+	      else
 	      if (params == 1) {
 	         for (int i = 0; longitude. c_str () [i] != 0; i ++)
 	            if (longitude. c_str () [i] == ',')
@@ -400,15 +450,17 @@ int cc;
 	            else
 	            body [teller ++] = longitude. c_str () [i];
 	         params ++;
-	         continue;
 	      }
+	      else
+	         body [teller ++] = (char)cc;
 	   }
-	   body [teller ++] = (char)cc;
+	   else
+	      body [teller ++] = (char)cc;
+	   index ++;
 	}
 	body [teller ++] = 0;
-//	fread (body, 1, bodySize, fd);
-        fclose (fd);
 	res	= std::string (body);
+	fprintf (stderr, "The map :\n%s\n", res. c_str ());
 	free (body);
 	return res;
 }

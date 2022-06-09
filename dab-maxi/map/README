@@ -1,0 +1,11 @@
+
+The http handler now includes an encoded version of the html file
+containing the "map" data.
+
+You can build your own version by
+a. first creating an executable of the small program here
+   g++ -o converter mapConverter.cpp
+b. executing ./converter qt-map.html converted_map.cpp
+
+The converted map will be included in the http handler
+

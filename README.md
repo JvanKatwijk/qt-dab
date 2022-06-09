@@ -24,15 +24,8 @@ So, if the software detects that the TII to transmitter info is
 part of the implementation, a button shows on the main widget, with
 which the map service can be switched on and off.
 
-Important note: where to find the map.
-The software searches for a file named "qt-map.html" (as said, a
-modified version of the map in the 1090 software).  The safest
-location - i.e. which is always part of the service - is the 
-"home" directory.
-
-Especially, if one uses the AppImage, the software will search in
-the hoe directory for this file.
-If the file cannot be found, well, then there is no map!
+The html/javascript text of the map file is now encoded as numbers
+and included in a table in the sources.
 
 ----------------------------------------------------------------
 Building an executable for qt-dab: a few notes
