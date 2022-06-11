@@ -206,7 +206,6 @@ uint8_t convert (QString s) {
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
-	                                const QString	&mapFile,
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
@@ -247,7 +246,6 @@ QString h;
 uint8_t	dabBand;
 
 	dabSettings		= Si;
-	this	-> mapFile	= mapFile;
 	this	-> error_report	= error_report;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
@@ -4620,8 +4618,7 @@ void	RadioInterface::handle_httpButton	() {
 	if (mapHandler == nullptr)  {
 	   mapHandler = new httpHandler (this,
 	                                 this -> httpPort,
-	                                 channel. localPos,
-	                                 mapFile);
+	                                 channel. localPos);
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}

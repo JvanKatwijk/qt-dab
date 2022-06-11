@@ -81,7 +81,6 @@ QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
-QString	mapFile			= "./qt-map.html";
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
@@ -111,7 +110,6 @@ QString	mapFile			= "./qt-map.html";
 	         break;
 
 	      case 'M':
-	         mapFile	= QString (optarg);
 	         break;
 
 	      case 'F':
@@ -152,7 +150,6 @@ QString	mapFile			= "./qt-map.html";
 	                                       presets,
 	                                       freqExtension,
 	                                       scheduleFile,
-	                                       mapFile,
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,

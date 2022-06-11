@@ -45,19 +45,10 @@
 #include	"converted_map.cpp"
 
 	httpHandler::httpHandler (RadioInterface *parent, int port,
-	                          std::complex<float> address,
-	                          const QString &mapFile) {
+	                          std::complex<float> address) {
 	this	-> parent	= parent;
 	this	-> homeAddress	= address;
 	this	-> port		= port;
-	this	-> mapFile	= mapFile. toStdString ();
-	FILE *f			= fopen (this -> mapFile. c_str (), "r");
-	if (f != nullptr)
-	   fclose (f);
-	else {
-           std::string PathFile = getenv ("HOME");
-	   this -> mapFile = PathFile + "/qt-map.html";
-	}
 	this	-> running. store (false);
 	connect (this, SIGNAL (terminating ()),
 	         parent, SLOT (http_terminate ()));
@@ -162,7 +153,6 @@ std::string	ctype;
 	      }
 	      else {
 	         content	= theMap (homeAddress);
-//	         content	= theMap (mapFile, homeAddress);
 	         ctype		= "text/html;charset=utf-8";
 	      }
 
@@ -326,7 +316,6 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	      }
 	      else {
 	         content	= theMap (homeAddress);
-//	         content	= theMap (mapFile, homeAddress);
 	         ctype		= "text/html;charset=utf-8";
 	      }
 //	Create the header 
@@ -365,57 +354,6 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	emit	terminating ();
 }
 #endif
-
-//std::string	httpHandler::theMap (const char *mapFile,
-//	                             std::complex<float> homeAddress) {
-//FILE	*fd;
-//std::string res;
-//int	bodySize;
-//char	*body;
-//std::string latitude	= std::to_string (real (homeAddress));
-//std::string longitude	= std::to_string (imag (homeAddress));
-//int cc;
-//	fd	=  fopen (fileName. c_str (), "r");
-//	if (fd == nullptr) {
-//	   fprintf (stderr, "%s not found\n", fileName. c_str ());
-//	   return fileName + " not found ";
-//	}
-//	fseek (fd, 0L, SEEK_END);
-//	bodySize	= ftell (fd);
-//	fseek (fd, 0L, SEEK_SET);
-//        body =  (char *)malloc (bodySize + 40);
-//	int teller	= 0;
-//	int params	= 0;
-//	while ((cc = fgetc (fd)) > 0) {
-//	   if (cc == '$') {
-//	      if (params == 0) {
-//	         for (int i = 0; latitude. c_str () [i] != 0; i ++)
-//	            if (latitude. c_str () [i] == ',')
-//	               body [teller ++] = '.';
-//	            else
-//	               body [teller ++] = latitude. c_str () [i];
-//	         params ++;
-//	         continue;
-//	      }
-//	      if (params == 1) {
-//	         for (int i = 0; longitude. c_str () [i] != 0; i ++)
-//	            if (longitude. c_str () [i] == ',')
-//	               body [teller ++] = '.';
-//	            else
-//	            body [teller ++] = longitude. c_str () [i];
-//	         params ++;
-//	         continue;
-//	      }
-//	   }
-//	   body [teller ++] = (char)cc;
-//	}
-//	body [teller ++] = 0;
-////	fread (body, 1, bodySize, fd);
-//        fclose (fd);
-//	res	= std::string (body);
-//	free (body);
-//	return res;
-//}
 
 std::string	httpHandler::theMap (std::complex<float> homeAddress) {
 FILE	*fd;

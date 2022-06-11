@@ -114,7 +114,6 @@ public:
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
-	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -147,7 +146,6 @@ private:
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	httpHandler		*mapHandler;
-	QString			mapFile;
 	processParams		globals;
 	QString			version;
 	QString			theFont;

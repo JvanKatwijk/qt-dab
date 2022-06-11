@@ -43,8 +43,7 @@ class	httpHandler: public QObject {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
-	                         int port, std::complex<float> address,
-	                         const QString &);
+	                         int port, std::complex<float> address);
 		~httpHandler	();
 	void	start		();
 	void	stop		();
@@ -55,7 +54,6 @@ private:
 	RadioInterface		*parent;
 	int		port;
 	std::complex<float> homeAddress;
-	std::string	mapFile;
 	std::atomic<bool>	running;
 	std::thread	threadHandle;
 //	std::string     theMap		(const std::string &fileName,
