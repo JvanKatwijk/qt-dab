@@ -213,10 +213,10 @@ struct addrinfo hints;
 	}
 
 	ZeroMemory(&hints, sizeof(hints));
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_protocol = IPPROTO_TCP;
-	hints.ai_flags	= AI_PASSIVE;
+	hints.ai_family		= AF_INET;
+	hints.ai_socktype	= SOCK_STREAM;
+	hints.ai_protocol	= IPPROTO_TCP;
+	hints.ai_flags		= AI_PASSIVE;
 
 //	Resolve the server address and port
 	iResult = getaddrinfo (NULL, "8080", &hints, &result);
@@ -250,6 +250,7 @@ struct addrinfo hints;
 	freeaddrinfo (result);
 
 	running. store (true);
+
 	listen (ListenSocket, 5);
 	while (running. load ()) {
 	   ClientSocket = accept (ListenSocket, NULL, NULL);
@@ -294,7 +295,7 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	         keepalive = strstr (buffer, "Connection: keep-alive") != NULL;
 
 	/* Identify the URL. */
-	      char *p = strchr (buffer,' ');
+	      char *p = strchr (buffer, ' ');
 	      if (p == NULL) 
 	         break;
 	      url = ++p; // Now this should point to the requested URL. 
@@ -312,6 +313,7 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	         if (content != "") {
 	            ctype	= "application/json;charset=utf-8";
 	            jsonUpdate	= true;
+	            fprintf (stderr, "%s will be sent\n", content. c_str ());
 	         }
 	      }
 	      else {

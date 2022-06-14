@@ -12,9 +12,8 @@ I was completely bored with searching on a map where the transmitter
 location was that was detected by the Qt-DAB software.
 So, I modified the http handler and the map from the 1090 software
 (all rights acknowledged) and added a map feauture.
-
-Of course, the map extension only makes sense if the previous extension,
-transforming TII data into readbable transmitter information, is on.
+(Of course, the map extension only makes sense if the previous extension,
+transforming TII data into readbable transmitter information, is on.)
 
 To aid in adjusting the map, the map is selected such that the
 center of the map is on the "home" coordinates that you gave
@@ -26,6 +25,8 @@ which the map service can be switched on and off.
 
 The html/javascript text of the map file is now encoded as numbers
 and included in a table in the sources.
+A separate program exists to transform the "javascript/html" into
+such a table.
 
 ----------------------------------------------------------------
 Building an executable for qt-dab: a few notes
