@@ -34,7 +34,7 @@ int	element;
 	if (teller != 0) 
 	   fprintf (fout, "\n\t 0};\n");
 	else
-	   fprintf (fout, "0}\n");
+	   fprintf (fout, "0};\n");
 	fclose (fout);
 }
 

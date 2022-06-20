@@ -37,6 +37,9 @@
 	      font-size:14px;
 	      color:#333;
 	   }
+	   .coloring {
+	      color: red
+	   }
 	</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -59,9 +62,11 @@
 
 	   function getIconForTransmitter () {
 	      var he = document. createElement ("P");
-	      he.innerHTML = '*';
+//	      he.innerHTML = '*';
+
 	      var selhtml = '';
-	      he = '<div style="font-size :0.7rem"> &#x26AB</div>';
+//	      he = '<div style="font-size :1.1rem"> &#x25A3</div>';
+	      he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
 //	      he = '<div style="'+selhtml+'"> &#x26AB</div>';
 	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
 	      return icon;
@@ -103,11 +108,14 @@
 	            Transmitters [transmitterIndex] = target;
 	            transmitterIndex ++;
 
+	            let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
+	            let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + '--' +
+	                          target. lon +  '</span>';
 	            let xx = document. getElementById ('selinfo');
-	            xx. innerHTML += target. channel + ':' +
+	            xx. innerHTML += newChannel + '=>' +
 	                             target. name    + '<br>' +
-	                             target. lat     + ' ' +
-	                             target. lon     +'<br>';
+	                             coords + '<br>';
 	            let yy = document. getElementById ('selCount');
 	            yy. innerHTML = 'number of transmitters ' + transmitterIndex;
 	         }
