@@ -234,6 +234,7 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
+	QString			browserAddress;
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
@@ -326,6 +327,8 @@ enum direction {FORWARD, BACKWARDS};
         void                    new_channelIndex        (int);
 
 	std::mutex		locker;
+	bool			autoBrowser_on;
+	bool			transmitterTags_on;
 signals:
 	void                    set_newChannel		(int);
         void                    set_newPresetIndex      (int);
@@ -384,6 +387,9 @@ public slots:
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
+
+	void			handle_autoBrowser	();
+        void			handle_transmitterTags	();;
 
 //	Somehow, these must be connected to the GUI
 private slots:

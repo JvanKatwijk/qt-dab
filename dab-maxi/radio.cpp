@@ -302,6 +302,10 @@ uint8_t	dabBand;
 	if (saveSlides != 0)
 	   set_picturePath ();
 
+	browserAddress		=
+	                  dabSettings -> value ("browserAddress",
+	                                "http://localhost:8080"). toString ();
+	
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
@@ -385,6 +389,17 @@ uint8_t	dabBand;
 	else
 	   configWidget. ordersubChannelIds -> setChecked (true);
 
+	connect (configWidget. autoBrowser, SIGNAL (clicked ()),
+	         this, SLOT (handle_autoBrowser      ()));
+	connect (configWidget. transmitterTags, SIGNAL (clicked ()),	
+	         this, SLOT (handle_transmitterTags  ()));
+
+	b = dabSettings -> value ("autoBrowser", 1). toInt () == 1;
+	autoBrowser_on		= b;
+	configWidget. autoBrowser -> setText (b ? "browser auto" : "browser man");
+	b	= dabSettings -> value ("transmitterTags", 0). toInt () == 1;
+	transmitterTags_on	= b;
+	configWidget. transmitterTags -> setText (b ? "all transm" : "local transm");
 	motSlides		= nullptr;
 	dataDisplay. hide ();
 	stillMuting		-> hide ();
@@ -568,8 +583,11 @@ uint8_t	dabBand;
 	channel. tiiFile	= false;
 	if (tiiFileName != "") {
 	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
-	   if (!channel. tiiFile)
+	   if (!channel. tiiFile) {
 	      httpButton -> hide ();
+	      configWidget. autoBrowser -> hide ();
+	      configWidget. transmitterTags -> hide ();
+	   }
 	}
 
 //	and start the timer(s)
@@ -2116,7 +2134,8 @@ bool	tiiChange	= false;
 	                                                       longitude);
 	            if (mapHandler != nullptr)
 	               mapHandler -> putData (channel. targetPos, 
-	                                           channel. transmitterName);
+	                                      channel. transmitterName,
+	                                      channel. channelName);
 	            LOG ("transmitter ", channel. transmitterName);
 	            LOG ("coordinates ", 
 	                         QString::number (latitude) + " " +
@@ -3393,8 +3412,8 @@ int	tunedFrequency	=
 	channel. channelName	= theChannel;
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
-	if (mapHandler != nullptr)
-	   mapHandler -> putData (channel. targetPos, "");
+	if (!transmitterTags_on  && (mapHandler != nullptr))
+	   mapHandler -> putData (channel. targetPos, "", "");
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3452,8 +3471,8 @@ void	RadioInterface::stopChannel	() {
 	channel. has_ecc	= false;
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
-	if (mapHandler != nullptr)
-	   mapHandler -> putData (channel. targetPos, "");
+	if (!transmitterTags_on && (mapHandler != nullptr))
+	   mapHandler -> putData (channel. targetPos, "", "");
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4618,7 +4637,9 @@ void	RadioInterface::handle_httpButton	() {
 	if (mapHandler == nullptr)  {
 	   mapHandler = new httpHandler (this,
 	                                 this -> httpPort,
-	                                 channel. localPos);
+	                                 channel. localPos,
+	                                 autoBrowser_on,
+	                                 browserAddress);
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
@@ -4641,5 +4662,20 @@ void	RadioInterface::http_terminate	() {
 	httpButton -> setText ("http");
 }
 
-	   
-	  
+void	RadioInterface::handle_autoBrowser      () {
+	autoBrowser_on = !autoBrowser_on;
+	configWidget. autoBrowser ->
+	           setText (autoBrowser_on ? "browser auto" : "browser man");
+	dabSettings -> setValue ("autoBrowser", autoBrowser_on ? 1 : 0);
+}
+
+void	RadioInterface::handle_transmitterTags  () {
+	transmitterTags_on = !transmitterTags_on;
+	configWidget. transmitterTags ->
+	           setText (transmitterTags_on ? "all transm" : "local transm");
+	dabSettings -> setValue ("transmitterTags", transmitterTags_on  ? 1 : 0);
+	channel. targetPos	= std::complex<float> (0, 0);
+	if (!transmitterTags_on)
+	   mapHandler -> putData (channel. targetPos, "", "");
+}
+

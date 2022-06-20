@@ -36,32 +36,41 @@ class	RadioInterface;
 
 typedef struct {
 	std::complex<float> coords;
-	QString name;
+	QString transmitterName;
+	QString channelName;
 } httpData;
 
 class	httpHandler: public QObject {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
-	                         int port, std::complex<float> address);
+	                         int port,
+	                         std::complex<float> address,
+	                         bool	autoBrowse,
+	                         const QString &browserAddress);
 		~httpHandler	();
 	void	start		();
 	void	stop		();
 	void	run		();
 	void	putData		(std::complex<float>target,
-	                         QString name);
+	                         QString transmittername,
+	                         QString channelName);
 private:
 	RadioInterface		*parent;
 	int		port;
 	std::complex<float> homeAddress;
+#ifdef	__MINGW32__
+	std::wstring	browserAddress;
+#else
+	std::string	browserAddress;
+#endif
 	std::atomic<bool>	running;
 	std::thread	threadHandle;
-//	std::string     theMap		(const std::string &fileName,
-	std::string     theMap		(
-	                                 std::complex<float> address);
-	std::string	coordinatesToJson (httpData &t);
-	httpData	transmitter;
+	std::string     theMap		(std::complex<float> address);
+	std::string	coordinatesToJson (std::vector<httpData> &t);
+	std::vector<httpData>	transmitterList;
 	std::mutex	locker;
+	bool		autoBrowse;
 signals:
 	void		terminating	();
 };

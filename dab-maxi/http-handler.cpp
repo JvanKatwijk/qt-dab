@@ -42,13 +42,21 @@
 #include	"http-handler.h"
 #include	"radio.h"
 
-#include	"converted_map.cpp"
+#include	"converted_map.h"
 
 	httpHandler::httpHandler (RadioInterface *parent, int port,
-	                          std::complex<float> address) {
+	                          std::complex<float> address,
+	                          bool autoBrowse,
+	                          const QString &browserAddress) {
 	this	-> parent	= parent;
-	this	-> homeAddress	= address;
 	this	-> port		= port;
+	this	-> homeAddress	= address;
+	this	-> autoBrowse	= autoBrowse;
+#ifdef	__MINGW32__
+	this	-> browserAddress	= browserAddress. toStdWString ();
+#else
+	this	-> browserAddress	= browserAddress. toStdString ();
+#endif
 	this	-> running. store (false);
 	connect (this, SIGNAL (terminating ()),
 	         parent, SLOT (http_terminate ()));
@@ -64,6 +72,15 @@
 
 void	httpHandler::start	() {
 	threadHandle = std::thread (&httpHandler::run, this);
+	if (!autoBrowse)
+	   return;
+#ifdef	__MINGW32__
+	ShellExecute (NULL, L"open", browserAddress. c_str (),
+	                                       NULL, NULL, SW_SHOWNORMAL);
+#else
+	std::string x = "xdg-open " + browserAddress;
+	system (x. c_str ());
+#endif
 }
 
 void	httpHandler::stop	() {
@@ -78,46 +95,50 @@ void	httpHandler::run	() {
 char	buffer [4096];
 bool	keepalive;
 char	*url;
-int one = 1, ListenSocket;
+int one = 1, ClientSocket, ListenSocket;
 struct sockaddr_in svr_addr, cli_addr;
 std::string	content;
 std::string	ctype;
 
 	running. store (true);
 	socklen_t sin_len = sizeof (cli_addr);
-	int sock = socket (AF_INET, SOCK_STREAM, 0);
-	if (sock < 0) {
+	ListenSocket = socket (AF_INET, SOCK_STREAM, 0);
+	if (ListenSocket < 0) {
 	   running. store (false);
 	   terminating ();
 	   return;
 	}
 
-	int flags	= fcntl (sock, F_GETFL);
-	fcntl (sock, F_SETFL, flags | O_NONBLOCK);
-	setsockopt (sock, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
+	int flags	= fcntl (ListenSocket, F_GETFL);
+	fcntl (ListenSocket, F_SETFL, flags | O_NONBLOCK);
+	setsockopt (ListenSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	svr_addr.sin_family = AF_INET;
 	svr_addr.sin_addr.s_addr = INADDR_ANY;
 	svr_addr.sin_port = htons (port);
  
-	if (bind(sock, (struct sockaddr *) &svr_addr,
-	                                  sizeof(svr_addr)) == -1) {
-	   close (sock);
+	if (bind (ListenSocket, (struct sockaddr *) &svr_addr,
+	                                  sizeof (svr_addr)) == -1) {
+	   close (ListenSocket);
 	   running. store (false);
 	   terminating ();
 	   return;
 	}
+//
+//	Now, we are listening to port 8080, ready to accept a
+//	socket for anyone who needs us
 
-	listen (sock, 5);
+	listen (ListenSocket, 5);
 	while (running. load ()) {
-	   ListenSocket = accept (sock,
+	   ClientSocket = accept (ListenSocket,
 	                    (struct sockaddr *) &cli_addr, &sin_len);
-	   if (ListenSocket == -1) {
+	   if (ClientSocket == -1) {
 	      usleep (2000000);
 	      continue;
 	   }
-
+//
+//	someone needs us, let us see what (s)he wants
 	   while (running. load ()) {
-	      if (read (ListenSocket, buffer, 4096) < 0) {
+	      if (read (ClientSocket, buffer, 4096) < 0) {
 	         running. store (false);
 	         break;
 	      }
@@ -131,7 +152,7 @@ std::string	ctype;
 	         keepalive = strstr (buffer, "Connection: keep-alive") != NULL;
 
 /*	Identify the URL. */
-	      char *p = strchr (buffer,' ');
+	      char *p = strchr (buffer, ' ');
 	      if (p == NULL) 
 	         break;
 	      url = ++p; // Now this should point to the requested URL. 
@@ -145,7 +166,7 @@ std::string	ctype;
 //	 "/data.json" -> Our ajax request to update planes. */
 	      bool jsonUpdate	= false;
 	      if (strstr (url, "/data.json")) {
-	         content	= coordinatesToJson (transmitter);
+	         content	= coordinatesToJson (transmitterList);
 	         if (content != "") {
 	            ctype	= "application/json;charset=utf-8";
 	            jsonUpdate	= true;
@@ -176,8 +197,8 @@ std::string	ctype;
 //	         fprintf (stderr, "%s\n", content. c_str ());
 	      }
 //	and send the reply
-	      if (write (ListenSocket, hdr, hdrlen) != hdrlen ||
-	          write (ListenSocket, content. c_str (),
+	      if (write (ClientSocket, hdr, hdrlen) != hdrlen ||
+	          write (ClientSocket, content. c_str (),
 	                          content. size ()) != content. size ())  {
 //	         fprintf (stderr, "WRITE PROBLEM\n");
 //	         break;
@@ -186,7 +207,7 @@ std::string	ctype;
 	}
 	fprintf (stderr, "mapServer quits\n");
 	close (ListenSocket);
-	close (sock);
+	close (ClientSocket);
 	emit terminating ();
 }
 #else
@@ -212,7 +233,7 @@ struct addrinfo hints;
 	   return;
 	}
 
-	ZeroMemory(&hints, sizeof(hints));
+	ZeroMemory (&hints, sizeof(hints));
 	hints.ai_family		= AF_INET;
 	hints.ai_socktype	= SOCK_STREAM;
 	hints.ai_protocol	= IPPROTO_TCP;
@@ -235,6 +256,8 @@ struct addrinfo hints;
 	   terminating ();
 	   return;
 	}
+	unsigned long mode = 1;
+	ioctlsocket (ListenSocket, FIONBIO, &mode);
 
 // Setup the TCP listening socket
 	iResult = bind (ListenSocket, result -> ai_addr,
@@ -255,9 +278,8 @@ struct addrinfo hints;
 	while (running. load ()) {
 	   ClientSocket = accept (ListenSocket, NULL, NULL);
 	   if (ClientSocket == -1)  {
-	      running. store (false);
-	      terminating ();
-	      return;
+	      usleep (2000000);
+	      continue;
 	   }
 	   
 	   while (running. load ()) {
@@ -309,11 +331,11 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 //	 "/data.json" -> Our ajax request to update transmitters. */
 	      bool jsonUpdate	= false;
 	      if (strstr (url, "/data.json")) {
-	         content	= coordinatesToJson (transmitter);
+	         content	= coordinatesToJson (transmitterList);
 	         if (content != "") {
 	            ctype	= "application/json;charset=utf-8";
 	            jsonUpdate	= true;
-	            fprintf (stderr, "%s will be sent\n", content. c_str ());
+//	            fprintf (stderr, "%s will be sent\n", content. c_str ());
 	         }
 	      }
 	      else {
@@ -334,7 +356,6 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	               keepalive ? "keep-alive" : "close",
 	               (int)(strlen (content. c_str ())));
 	      int hdrlen = strlen (hdr);
-//		  parent->show_text(std::string(hdr));
 //	      if (jsonUpdate) {
 //	         parent -> show_text (std::string ("Json update requested\n"));
 //	         parent -> show_text (content);
@@ -358,7 +379,6 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 #endif
 
 std::string	httpHandler::theMap (std::complex<float> homeAddress) {
-FILE	*fd;
 std::string res;
 int	bodySize;
 char	*body;
@@ -400,7 +420,7 @@ int	cc;
 	}
 	body [teller ++] = 0;
 	res	= std::string (body);
-	fprintf (stderr, "The map :\n%s\n", res. c_str ());
+//	fprintf (stderr, "The map :\n%s\n", res. c_str ());
 	free (body);
 	return res;
 }
@@ -417,32 +437,54 @@ std::string s = std::to_string (f);
         return std::string (temp);
 }
 
-std::string httpHandler::coordinatesToJson (httpData &t) {
+std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
 std::complex<float> home;
 std::complex<float> target = std::complex<float> (0, 0);
 char buf [512];
 QString Jsontxt;
 
-	locker. lock ();
-	home	= t. coords;
-	locker. unlock ();
+	if (t. size () == 0)
+	   return "";
 	Jsontxt += "[\n";
+	locker. lock ();
 //	the Target
 	snprintf (buf, 512, 
-	          "{\"lat\":%s, \"lon\":%s, \"name\":\"%s\"}",
-	           dotNumber (real (home)). c_str (),
-	           dotNumber (imag (home)). c_str (),
-	           t. name. toLatin1 (). data ());
+	          "{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\"}",
+	           dotNumber (real (t [0]. coords)). c_str (),
+	           dotNumber (imag (t [0]. coords)). c_str (),
+	           t [0]. transmitterName. toUtf8 (). data (),
+	           t [0]. channelName. toUtf8 (). data ());
+	
 	Jsontxt += QString (buf);
-	Jsontxt += "]\n";
+	for (int i = 1; i < t. size (); i ++) {
+	   snprintf (buf, 512, 
+	          ",\n{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\"}",
+	            dotNumber (real (t [i]. coords)). c_str (),
+	            dotNumber (imag (t [i]. coords)). c_str (),
+	            t [i]. transmitterName. toUtf8 (). data (),
+	            t [i]. channelName. toUtf8 (). data ());
+	   Jsontxt += QString (buf);
+	}
+	t. resize (0);
+	locker. unlock ();
+	Jsontxt += "\n]\n";
+//	fprintf (stderr, "Json = %s\n", Jsontxt. toLatin1 (). data ());
 	return Jsontxt. toStdString ();
 }
 
 void	httpHandler::putData	(std::complex<float> target,
-	                                 QString name) {
+	                         QString transmitterName,
+	                         QString channelName) {
+	for (int i = 0; i < transmitterList. size (); i ++)
+	   if (transmitterList [i]. coords == target)
+	      return;
+	     
+	httpData t;
+	t. coords		= target;
+	t. transmitterName	= transmitterName;
+	t. channelName		= channelName;
 	locker. lock ();
-	transmitter. coords = target;
-	transmitter. name = name;
+	transmitterList. push_back (t);
 	locker. unlock ();
 }
 

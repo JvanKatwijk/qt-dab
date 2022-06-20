@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>549</height>
+    <height>609</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -233,6 +233,24 @@
       <widget class="smallPushButton" name="set_coordinatesButton">
        <property name="text">
         <string>coordinates</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="autoBrowser">
+       <property name="text">
+        <string>autobrowser</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="transmitterTags">
+       <property name="text">
+        <string>all transmitters</string>
        </property>
       </widget>
      </item>

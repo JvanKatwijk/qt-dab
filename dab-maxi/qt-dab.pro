@@ -769,6 +769,7 @@ mapserver {
 	DEPENDPATH	+= httpserver
 	INCLUDEPATH	+= httpserver
 	HEADERS		+= http-handler.h
+	HEADERS		+= converted_map.h
 	SOURCES		+= http-handler.cpp
 }
 

@@ -213,6 +213,7 @@ endif ()
 	set (${objectName}_HDRS
 	     ./radio.h
 	     ./http-handler.h
+	     ./converted_map.h
 	     ../dab-processor.h
 	     ../service-description/service-descriptor.h 
 	     ../service-description/audio-descriptor.h 
