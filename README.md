@@ -1,12 +1,14 @@
-# Qt-DAB-4.4 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-4.4.1 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
 Qt-DAB-4.4 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
 ![4.4](/qt-dab-maps.png?raw=true)
 
 ----------------------------------------------------------------
-What is new in Qt-DAB 4.4
+What is new in Qt-DAB 4.4.1
 ----------------------------------------------------------------
+
+The difference between 4.4.1 and 4.4 is is the map handling.
 
 I was completely bored with searching on a map where the transmitter
 location was that was detected by the Qt-DAB software.

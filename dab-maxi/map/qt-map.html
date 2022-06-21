@@ -98,6 +98,9 @@
 	               let icon = getIconForTransmitter (0);
 	               let target = Transmitters [i];
 	               let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
+	               targetMarker.
+	                    addEventListener ('click',
+	                                       function () { selectTransmitterCallback (target);});
 	               Transmitters [i]. marker = targetMarker;
 	            }
 	         }
@@ -120,7 +123,9 @@
 	            target. marker = targetMarker;
 	            Transmitters [transmitterIndex] = target;
 	            transmitterIndex ++;
-
+	            target. marker.
+	                    addEventListener ('click',
+	                                       function () { selectTransmitterCallback (target);});
 	            let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	            let coords = '<span style=\"font-style: italic;\">' +
 	                          target. lat + '--' +
@@ -156,9 +161,17 @@
 	   }, 2000);
 	}
 
-	function selectTransmitterCallback (name) {
-	   let xx = document. getElementById ('selinfo');
-	   xx. innerHTML = name +'<br>';
+	function selectTransmitterCallback (target) {
+	   let xx = document. getElementById ('selected');
+	   let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
+	   let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + '--' +
+	                          target. lon +  '</span>';
+	   xx. innerHTML = 'Selected:  ' + '<br>' +
+	                    newChannel + '=>' +
+	                    target. name    + '<br>' +
+	                    coords + '<br>' +
+	                    'Distance to home ' + target. dist + 'km<br>';
 	}
 
 </script>
@@ -170,6 +183,7 @@
 	   <h1>Qt-DAB</h1>
 	   <p id="selinfo"></p>
 	   <p id="selCount"></p>
+	   <p id="selected"></p>
 	</div>
 	</div>
   </body>

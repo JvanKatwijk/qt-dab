@@ -309,9 +309,10 @@ uint8_t	dabBand;
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
-
+	setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
+	QWidget::raise ();
 //
 //	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (&dataDisplay);
@@ -2132,10 +2133,6 @@ bool	tiiChange	= false;
 	                                           theName);
 	            channel. targetPos	= std::complex<float> (latitude,
 	                                                       longitude);
-	            if (mapHandler != nullptr)
-	               mapHandler -> putData (channel. targetPos, 
-	                                      channel. transmitterName,
-	                                      channel. channelName);
 	            LOG ("transmitter ", channel. transmitterName);
 	            LOG ("coordinates ", 
 	                         QString::number (latitude) + " " +
@@ -2151,6 +2148,11 @@ bool	tiiChange	= false;
 	               int distance = tiiProcessor.
 	                                  distance (latitude, longitude,
 	                                            ownLatitude, ownLongitude);
+	            if (mapHandler != nullptr)
+	               mapHandler -> putData (channel. targetPos, 
+	                                      channel. transmitterName,
+	                                      channel. channelName,
+	                                      distance);
 	               int hoek	 = tiiProcessor.
 	                               corner (latitude, longitude,
 	                                       ownLatitude, ownLongitude);
@@ -3413,10 +3415,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (!transmitterTags_on  && (mapHandler != nullptr))
-	   mapHandler -> putData (std::complex<float> (0, 0), "", "");
+	   mapHandler -> putData (std::complex<float> (0, 0), "", "", 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (std::complex<float>(-1, -1), "", "");
+	   mapHandler -> putData (std::complex<float>(-1, -1), "", "", 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3475,7 +3477,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (!transmitterTags_on && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "");
+	   mapHandler -> putData (channel. targetPos, "", "", 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4678,7 +4680,7 @@ void	RadioInterface::handle_transmitterTags  () {
 	           setText (transmitterTags_on ? "all transm" : "local transm");
 	dabSettings -> setValue ("transmitterTags", transmitterTags_on  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
-	if (!transmitterTags_on)
-	   mapHandler -> putData (channel. targetPos, "", "");
+	if ((!transmitterTags_on) && (mapHandler != nullptr))
+	   mapHandler -> putData (channel. targetPos, "", "", 0);
 }
 
