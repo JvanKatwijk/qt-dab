@@ -60,13 +60,16 @@
 	      return icon;
 	   }
 
-	   function getIconForTransmitter () {
+	   function getIconForTransmitter (key) {
 	      var he = document. createElement ("P");
 //	      he.innerHTML = '*';
 
 	      var selhtml = '';
-//	      he = '<div style="font-size :1.1rem"> &#x25A3</div>';
-	      he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
+	      if (key == 0)
+	         he = '<div style="font-size :1.2rem"> &#x2724</div>';
+//	         he = '<div style="font-size :1.1rem"> &#x25A3</div>';
+	      else
+	         he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
 //	      he = '<div style="'+selhtml+'"> &#x26AB</div>';
 	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
 	      return icon;
@@ -88,6 +91,16 @@
 	            yy. innerHTML =
 	                 'number of transmitters ' + transmitterIndex;
 	         }
+	         else
+	         if (data [t]. lat == -1) {
+	            for (var i = 0; i < transmitterIndex; i ++) {
+	               Map. removeLayer (Transmitters [i]. marker);
+	               let icon = getIconForTransmitter (0);
+	               let target = Transmitters [i];
+	               let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
+	               Transmitters [i]. marker = targetMarker;
+	            }
+	         }
 	         else {
 	            let target = data [t];
 	            var alreadyThere = false;
@@ -102,7 +115,7 @@
 
 	            if (alreadyThere)
 	               continue;
-	            let icon = getIconForTransmitter ();
+	            let icon = getIconForTransmitter (1);
 	            let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
 	            target. marker = targetMarker;
 	            Transmitters [transmitterIndex] = target;

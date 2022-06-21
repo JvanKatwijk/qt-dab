@@ -3413,7 +3413,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (!transmitterTags_on  && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "");
+	   mapHandler -> putData (std::complex<float> (0, 0), "", "");
+	else
+	if (mapHandler != nullptr)
+	   mapHandler -> putData (std::complex<float>(-1, -1), "", "");
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
