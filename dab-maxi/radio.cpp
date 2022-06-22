@@ -2148,14 +2148,14 @@ bool	tiiChange	= false;
 	               int distance = tiiProcessor.
 	                                  distance (latitude, longitude,
 	                                            ownLatitude, ownLongitude);
+	               int hoek	 = tiiProcessor.
+	                               corner (latitude, longitude,
+	                                       ownLatitude, ownLongitude);
 	            if (mapHandler != nullptr)
 	               mapHandler -> putData (channel. targetPos, 
 	                                      channel. transmitterName,
 	                                      channel. channelName,
-	                                      distance);
-	               int hoek	 = tiiProcessor.
-	                               corner (latitude, longitude,
-	                                       ownLatitude, ownLongitude);
+	                                      distance, hoek);
 	               LOG ("distance ", QString::number (distance));
 	               LOG ("corner ", QString::number (hoek));
 	               labelText +=  + " " +
@@ -3415,10 +3415,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (!transmitterTags_on  && (mapHandler != nullptr))
-	   mapHandler -> putData (std::complex<float> (0, 0), "", "", 0);
+	   mapHandler -> putData (std::complex<float> (0, 0), "", "", 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (std::complex<float>(-1, -1), "", "", 0);
+	   mapHandler -> putData (std::complex<float>(-1, -1), "", "", 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3477,7 +3477,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (!transmitterTags_on && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "", 0);
+	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4681,6 +4681,6 @@ void	RadioInterface::handle_transmitterTags  () {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_on  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((!transmitterTags_on) && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "", 0);
+	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
 }
 

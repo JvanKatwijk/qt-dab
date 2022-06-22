@@ -94,14 +94,17 @@
 	         else
 	         if (data [t]. lat == -1) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
-	               Map. removeLayer (Transmitters [i]. marker);
-	               let icon = getIconForTransmitter (0);
-	               let target = Transmitters [i];
-	               let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
-	               targetMarker.
-	                    addEventListener ('click',
+	               if (Transmitters [i]. status == true) {
+	                  Transmitters [i]. status = false;
+	                  Map. removeLayer (Transmitters [i]. marker);
+	                  let icon = getIconForTransmitter (0);
+	                  let target = Transmitters [i];
+	                  let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
+	                  targetMarker.
+	                       addEventListener ('click',
 	                                       function () { selectTransmitterCallback (target);});
-	               Transmitters [i]. marker = targetMarker;
+	                  Transmitters [i]. marker = targetMarker;
+	               }
 	            }
 	         }
 	         else {
@@ -121,6 +124,7 @@
 	            let icon = getIconForTransmitter (1);
 	            let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
 	            target. marker = targetMarker;
+	            target. status = true;
 	            Transmitters [transmitterIndex] = target;
 	            transmitterIndex ++;
 	            target. marker.
@@ -133,7 +137,10 @@
 	            let xx = document. getElementById ('selinfo');
 	            xx. innerHTML += newChannel + '=>' +
 	                             target. name    + '<br>' +
-	                             coords + '<br>';
+	                             coords + '<br>' +
+	                             'Distance to home ' +
+	                             target. dist + 'km ' + 
+	                             target. azimuth + '&#xb0' + '<br><br>';
 	            let yy = document. getElementById ('selCount');
 	            yy. innerHTML = 'number of transmitters ' + transmitterIndex;
 	         }
@@ -171,7 +178,8 @@
 	                    newChannel + '=>' +
 	                    target. name    + '<br>' +
 	                    coords + '<br>' +
-	                    'Distance to home ' + target. dist + 'km<br>';
+	                    'Distance to home ' + target. dist + 'km ' +
+	                             target. azimuth + '&#xb0' + '<br>';
 	}
 
 </script>
@@ -181,9 +189,9 @@
 	<div id="info">
 	<div>
 	   <h1>Qt-DAB</h1>
-	   <p id="selinfo"></p>
-	   <p id="selCount"></p>
 	   <p id="selected"></p>
+	   <p id="selCount"></p>
+	   <p id="selinfo"></p>
 	</div>
 	</div>
   </body>

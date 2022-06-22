@@ -449,22 +449,22 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512, 
-	          "{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d}",
+	          "{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
 	           dotNumber (real (t [0]. coords)). c_str (),
 	           dotNumber (imag (t [0]. coords)). c_str (),
 	           t [0]. transmitterName. toUtf8 (). data (),
 	           t [0]. channelName. toUtf8 (). data (),
-	           t [0]. distance);
+	           t [0]. distance, t [0]. azimuth);
 	
 	Jsontxt += QString (buf);
 	for (int i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512, 
-	          ",\n{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d}",
+	          ",\n{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
 	            dotNumber (real (t [i]. coords)). c_str (),
 	            dotNumber (imag (t [i]. coords)). c_str (),
 	            t [i]. transmitterName. toUtf8 (). data (),
 	            t [i]. channelName. toUtf8 (). data (),
-	            t [i]. distance);
+	            t [i]. distance, t [i]. azimuth);
 	   Jsontxt += QString (buf);
 	}
 	t. resize (0);
@@ -477,7 +477,8 @@ QString Jsontxt;
 void	httpHandler::putData	(std::complex<float> target,
 	                         QString transmitterName,
 	                         QString channelName,
-	                         int distance) {
+	                         int distance,
+	                         int azimuth) {
 	for (int i = 0; i < transmitterList. size (); i ++)
 	   if (transmitterList [i]. coords == target)
 	      return;
@@ -487,6 +488,7 @@ void	httpHandler::putData	(std::complex<float> target,
 	t. transmitterName	= transmitterName;
 	t. channelName		= channelName;
 	t. distance		= distance;
+	t. azimuth		= azimuth;
 	locker. lock ();
 	transmitterList. push_back (t);
 	locker. unlock ();

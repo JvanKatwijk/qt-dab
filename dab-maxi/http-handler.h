@@ -39,6 +39,7 @@ typedef struct {
 	QString transmitterName;
 	QString channelName;
 	int	distance;
+	int	azimuth;
 } httpData;
 
 class	httpHandler: public QObject {
@@ -55,7 +56,8 @@ public:
 	void	run		();
 	void	putData		(std::complex<float>target,
 	                         QString transmittername,
-	                         QString channelName, int distance);
+	                         QString channelName,
+	                         int distance, int azimuth);
 private:
 	RadioInterface		*parent;
 	int		port;
