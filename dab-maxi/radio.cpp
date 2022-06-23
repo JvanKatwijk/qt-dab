@@ -309,11 +309,13 @@ uint8_t	dabBand;
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
-	setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
+//
+//	set on top or not? checked at start up
+	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
+	   setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
+
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
-	QWidget::raise ();
-//
 //	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (&dataDisplay);
 	techData. timeTable_button -> hide ();
@@ -322,6 +324,10 @@ uint8_t	dabBand;
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 //	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (&configDisplay);
+//
+//	Now we can set the checkbox as saved in the settings
+	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
+	   configWidget.  onTop -> setChecked (true);
 
 	int x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
@@ -363,6 +369,8 @@ uint8_t	dabBand;
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
 
+	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_onTop (int)));
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -390,17 +398,17 @@ uint8_t	dabBand;
 	else
 	   configWidget. ordersubChannelIds -> setChecked (true);
 
-	connect (configWidget. autoBrowser, SIGNAL (clicked ()),
-	         this, SLOT (handle_autoBrowser      ()));
-	connect (configWidget. transmitterTags, SIGNAL (clicked ()),	
-	         this, SLOT (handle_transmitterTags  ()));
+	if (dabSettings -> value ("autoBrowser", 1). toInt () == 1)
+	   configWidget. autoBrowser -> setChecked (true);
+	if (dabSettings -> value ("transmitterTags", 1). toInt () == 1)
+	   configWidget. transmitterTags -> setChecked (true);
+	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_autoBrowser      (int)));
+	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
+	         this, SLOT (handle_transmitterTags  (int)));
 
-	b = dabSettings -> value ("autoBrowser", 1). toInt () == 1;
-	autoBrowser_on		= b;
-	configWidget. autoBrowser -> setText (b ? "browser auto" : "browser man");
-	b	= dabSettings -> value ("transmitterTags", 0). toInt () == 1;
-	transmitterTags_on	= b;
-	configWidget. transmitterTags -> setText (b ? "all transm" : "local transm");
+	autoBrowser_off		= configWidget. autoBrowser -> isChecked ();
+	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
 	motSlides		= nullptr;
 	dataDisplay. hide ();
 	stillMuting		-> hide ();
@@ -586,8 +594,6 @@ uint8_t	dabBand;
 	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
 	   if (!channel. tiiFile) {
 	      httpButton -> hide ();
-	      configWidget. autoBrowser -> hide ();
-	      configWidget. transmitterTags -> hide ();
 	   }
 	}
 
@@ -3414,7 +3420,7 @@ int	tunedFrequency	=
 	channel. channelName	= theChannel;
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
-	if (!transmitterTags_on  && (mapHandler != nullptr))
+	if (transmitterTags_local  && (mapHandler != nullptr))
 	   mapHandler -> putData (std::complex<float> (0, 0), "", "", 0, 0);
 	else
 	if (mapHandler != nullptr)
@@ -3476,7 +3482,7 @@ void	RadioInterface::stopChannel	() {
 	channel. has_ecc	= false;
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
-	if (!transmitterTags_on && (mapHandler != nullptr))
+	if (transmitterTags_local && (mapHandler != nullptr))
 	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
@@ -4643,7 +4649,7 @@ void	RadioInterface::handle_httpButton	() {
 	   mapHandler = new httpHandler (this,
 	                                 this -> httpPort,
 	                                 channel. localPos,
-	                                 autoBrowser_on,
+	                                 autoBrowser_off,
 	                                 browserAddress);
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
@@ -4667,20 +4673,26 @@ void	RadioInterface::http_terminate	() {
 	httpButton -> setText ("http");
 }
 
-void	RadioInterface::handle_autoBrowser      () {
-	autoBrowser_on = !autoBrowser_on;
-	configWidget. autoBrowser ->
-	           setText (autoBrowser_on ? "browser auto" : "browser man");
-	dabSettings -> setValue ("autoBrowser", autoBrowser_on ? 1 : 0);
+void	RadioInterface::handle_autoBrowser	(int d) {
+	(void)d;
+	autoBrowser_off = configWidget. autoBrowser -> isChecked ();
+	dabSettings -> setValue ("autoBrowser", autoBrowser_off ? 1 : 0);
 }
 
-void	RadioInterface::handle_transmitterTags  () {
-	transmitterTags_on = !transmitterTags_on;
-	configWidget. transmitterTags ->
-	           setText (transmitterTags_on ? "all transm" : "local transm");
-	dabSettings -> setValue ("transmitterTags", transmitterTags_on  ? 1 : 0);
+void	RadioInterface::handle_transmitterTags  (int d) {
+	(void)d;
+	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
+	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
-	if ((!transmitterTags_on) && (mapHandler != nullptr))
+	if ((transmitterTags_local) && (mapHandler != nullptr))
 	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
+}
+
+void	RadioInterface::handle_onTop	(int d) {
+bool onTop = false;
+	(void)d;
+	if (configWidget. onTop -> isChecked ())
+	   onTop = true;
+	dabSettings -> setValue ("onTop", onTop ? 1 : 0);
 }
 

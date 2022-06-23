@@ -73,7 +73,7 @@ private:
 	std::string	coordinatesToJson (std::vector<httpData> &t);
 	std::vector<httpData>	transmitterList;
 	std::mutex	locker;
-	bool		autoBrowse;
+	bool		autoBrowser_off;
 signals:
 	void		terminating	();
 };

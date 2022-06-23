@@ -46,12 +46,12 @@
 
 	httpHandler::httpHandler (RadioInterface *parent, int port,
 	                          std::complex<float> address,
-	                          bool autoBrowse,
+	                          bool autoBrowser_off,
 	                          const QString &browserAddress) {
 	this	-> parent	= parent;
 	this	-> port		= port;
 	this	-> homeAddress	= address;
-	this	-> autoBrowse	= autoBrowse;
+	this	-> autoBrowser_off	= autoBrowser_off;
 #ifdef	__MINGW32__
 	this	-> browserAddress	= browserAddress. toStdWString ();
 #else
@@ -72,7 +72,7 @@
 
 void	httpHandler::start	() {
 	threadHandle = std::thread (&httpHandler::run, this);
-	if (!autoBrowse)
+	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
 	ShellExecute (NULL, L"open", browserAddress. c_str (),

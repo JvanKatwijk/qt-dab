@@ -327,8 +327,8 @@ enum direction {FORWARD, BACKWARDS};
         void                    new_channelIndex        (int);
 
 	std::mutex		locker;
-	bool			autoBrowser_on;
-	bool			transmitterTags_on;
+	bool			autoBrowser_off;
+	bool			transmitterTags_local;
 signals:
 	void                    set_newChannel		(int);
         void                    set_newPresetIndex      (int);
@@ -388,8 +388,6 @@ public slots:
 	
 	void			http_terminate		();
 
-	void			handle_autoBrowser	();
-        void			handle_transmitterTags	();;
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -434,6 +432,9 @@ private slots:
 	void			handle_hideButton	();
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
+	void			handle_onTop		(int);
+	void			handle_autoBrowser	(int);
+        void			handle_transmitterTags	(int);
 
 //
 //	color handlers
