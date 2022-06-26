@@ -240,6 +240,7 @@ struct addrinfo hints;
 	hints.ai_flags		= AI_PASSIVE;
 
 //	Resolve the server address and port
+	
 	iResult = getaddrinfo (NULL, "8080", &hints, &result);
 	if (iResult != 0 ) {
            WSACleanup();
@@ -449,22 +450,26 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512, 
-	          "{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	          "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	           t [0]. type,
 	           dotNumber (real (t [0]. coords)). c_str (),
 	           dotNumber (imag (t [0]. coords)). c_str (),
 	           t [0]. transmitterName. toUtf8 (). data (),
 	           t [0]. channelName. toUtf8 (). data (),
-	           t [0]. distance, t [0]. azimuth);
+	           t [0]. distance,
+	           t [0]. azimuth);
 	
 	Jsontxt += QString (buf);
 	for (int i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512, 
-	          ",\n{\"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	          ",\n{\"ttype\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	            t [i]. type,
 	            dotNumber (real (t [i]. coords)). c_str (),
 	            dotNumber (imag (t [i]. coords)). c_str (),
 	            t [i]. transmitterName. toUtf8 (). data (),
 	            t [i]. channelName. toUtf8 (). data (),
-	            t [i]. distance, t [i]. azimuth);
+	            t [i]. distance,
+	            t [i]. azimuth);
 	   Jsontxt += QString (buf);
 	}
 	t. resize (0);
@@ -474,7 +479,8 @@ QString Jsontxt;
 	return Jsontxt. toStdString ();
 }
 
-void	httpHandler::putData	(std::complex<float> target,
+void	httpHandler::putData	(uint8_t	type,
+	                         std::complex<float> target,
 	                         QString transmitterName,
 	                         QString channelName,
 	                         int distance,
@@ -484,6 +490,7 @@ void	httpHandler::putData	(std::complex<float> target,
 	      return;
 	     
 	httpData t;
+	t. type			= type;
 	t. coords		= target;
 	t. transmitterName	= transmitterName;
 	t. channelName		= channelName;

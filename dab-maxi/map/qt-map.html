@@ -51,6 +51,11 @@
 	   var Transmitters = {};
 	   var transmitterIndex	= 0;
 
+	   const MAP_RESET	= 0;
+	   const MAP_FRAME	= 1;
+	   const MAP_MAX_TRANS	= 2;
+	   const MAP_NORM_TRANS = 3;
+
 	   function getIconForHome () {
 	      var he = document. createElement ("P");
 	      he.innerHTML = '*';
@@ -78,7 +83,7 @@
 	   function fetchData () {
 	      $.getJSON ('/data.json', function (data) {
 	      for (var t = 0; t < data. length; t ++) {
-	         if (data [t]. lat == 0) {
+	         if (data [t]. type == MAP_RESET) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               Map. removeLayer (Transmitters [i]. marker);
 	               delete Transmitters [i];
@@ -90,9 +95,11 @@
 	            let yy = document. getElementById ('selCount');
 	            yy. innerHTML =
 	                 'number of transmitters ' + transmitterIndex;
+	            let zz = document. getElementById ('distance');
+                    zz. innerHTML = '';
 	         }
 	         else
-	         if (data [t]. lat == -1) {
+	         if (data [t]. type == MAP_FRAME) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               if (Transmitters [i]. status == true) {
 	                  Transmitters [i]. status = false;
@@ -121,6 +128,7 @@
 
 	            if (alreadyThere)
 	               continue;
+	            let firstOne = transmitterIndex == 0;
 	            let icon = getIconForTransmitter (1);
 	            let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
 	            target. marker = targetMarker;
@@ -135,14 +143,28 @@
 	                          target. lat + '--' +
 	                          target. lon +  '</span>';
 	            let xx = document. getElementById ('selinfo');
+	            if (firstOne)
+	               xx. innerHTML = 
+	                     '<span style=\"font-weight:bold;">' + 'the Transmitters <br>' + '</span>';
 	            xx. innerHTML += newChannel + '=>' +
 	                             target. name    + '<br>' +
 	                             coords + '<br>' +
 	                             'Distance to home ' +
-	                             target. dist + 'km ' + 
+	                                  target. dist + 'km ' + 
 	                             target. azimuth + '&#xb0' + '<br><br>';
 	            let yy = document. getElementById ('selCount');
-	            yy. innerHTML = 'number of transmitters ' + transmitterIndex;
+	            yy. innerHTML = '<span style=\"font-weight:bold;">' + 'Number of transmitters' + '</span>' + ' ' + transmitterIndex + '<br>';
+
+	            if (target. type == MAP_MAX_TRANS) {
+	               let aa = document. getElementById ('distance');
+	               aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Largest distance by <br>' + '</span>' +
+	                                 newChannel + '=>' +
+	                                 target. name    + '<br>' +
+	                                 coords + '<br>' +
+	                                 'Distance maximal ' +
+	                                        target. dist + 'km ' + 
+	                                 target. azimuth + '&#xb0' + '<br><br>';
+	            }
 	         }
 	      }
 	   });
@@ -174,12 +196,12 @@
 	   let coords = '<span style=\"font-style: italic;\">' +
 	                          target. lat + '--' +
 	                          target. lon +  '</span>';
-	   xx. innerHTML = 'Selected:  ' + '<br>' +
+	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
 	                    newChannel + '=>' +
 	                    target. name    + '<br>' +
 	                    coords + '<br>' +
 	                    'Distance to home ' + target. dist + 'km ' +
-	                             target. azimuth + '&#xb0' + '<br>';
+	                             target. azimuth + '&#xb0' + '<br></p>'
 	}
 
 </script>
@@ -191,6 +213,7 @@
 	   <h1>Qt-DAB</h1>
 	   <p id="selected"></p>
 	   <p id="selCount"></p>
+	   <p id="distance"></p>
 	   <p id="selinfo"></p>
 	</div>
 	</div>

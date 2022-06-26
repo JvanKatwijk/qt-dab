@@ -35,6 +35,7 @@
 class	RadioInterface;
 
 typedef struct {
+	uint8_t	type;
 	std::complex<float> coords;
 	QString transmitterName;
 	QString channelName;
@@ -54,7 +55,8 @@ public:
 	void	start		();
 	void	stop		();
 	void	run		();
-	void	putData		(std::complex<float>target,
+	void	putData		(uint8_t	type,
+	                         std::complex<float>target,
 	                         QString transmittername,
 	                         QString channelName,
 	                         int distance, int azimuth);

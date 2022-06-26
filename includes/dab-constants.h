@@ -65,7 +65,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"4.4.1"
+#define	CURRENT_VERSION	"4.4.2"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -77,6 +77,10 @@ using namespace std;
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
 
+#define		MAP_RESET	0
+#define		MAP_FRAME	1
+#define		MAP_MAX_TRANS	2
+#define		MAP_NORM_TRANS	3
 
 typedef struct {
         int     theTime;

@@ -256,6 +256,7 @@ uint8_t	dabBand;
 	isSynced		= false;
 	stereoSetting		= false;
 	serviceCount		= -1;
+	maxDistance		= -1;
 	my_contentTable		= nullptr;
 	my_scanTable		= nullptr;
 	mapHandler		= nullptr;
@@ -2148,6 +2149,7 @@ bool	tiiChange	= false;
 	            QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
+//
                     float ownLatitude = real (channel. localPos);
                     float ownLongitude = imag (channel. localPos);
                     if ((ownLatitude != 0) && (ownLongitude != 0)) {
@@ -2157,11 +2159,25 @@ bool	tiiChange	= false;
 	               int hoek	 = tiiProcessor.
 	                               corner (latitude, longitude,
 	                                       ownLatitude, ownLongitude);
-	            if (mapHandler != nullptr)
-	               mapHandler -> putData (channel. targetPos, 
-	                                      channel. transmitterName,
-	                                      channel. channelName,
-	                                      distance, hoek);
+//	see if we have a map
+	               if (mapHandler != nullptr) {
+	                  if ((!transmitterTags_local) &&
+	                                   (distance > maxDistance)) { 
+	                     maxDistance = distance;
+	                     mapHandler -> putData (MAP_MAX_TRANS,
+	                                            channel. targetPos, 
+	                                            channel. transmitterName,
+	                                            channel. channelName,
+	                                            distance, hoek);
+	                  }
+	                  else
+	                     mapHandler -> putData (MAP_NORM_TRANS,
+	                                            channel. targetPos, 
+	                                            channel. transmitterName,
+	                                            channel. channelName,
+	                                            distance, hoek);
+	               }
+
 	               LOG ("distance ", QString::number (distance));
 	               LOG ("corner ", QString::number (hoek));
 	               labelText +=  + " " +
@@ -3421,10 +3437,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (std::complex<float> (0, 0), "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (std::complex<float>(-1, -1), "", "", 0, 0);
+	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3483,7 +3499,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4681,11 +4697,12 @@ void	RadioInterface::handle_autoBrowser	(int d) {
 
 void	RadioInterface::handle_transmitterTags  (int d) {
 	(void)d;
+	maxDistance = -1;
 	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (channel. targetPos, "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0);
 }
 
 void	RadioInterface::handle_onTop	(int d) {

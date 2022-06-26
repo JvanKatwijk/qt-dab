@@ -163,6 +163,7 @@ private:
 	QSettings		*dabSettings;
 	dabService		currentService;
 	dabService		nextService;
+	int			maxDistance;
 //	dabService		secondService;
 	std::vector<dabService> backgroundServices;
 	QByteArray		transmitters;
