@@ -508,14 +508,14 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
          </widget>
         </item>
         <item>
-         <widget class="smallPushButton" name="hideButton">
+         <widget class="QPushButton" name="hideButton">
           <property name="text">
            <string>hide</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="smallPushButton" name="httpButton">
+         <widget class="QPushButton" name="httpButton">
           <property name="text">
            <string>http</string>
           </property>
