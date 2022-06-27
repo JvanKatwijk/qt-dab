@@ -2110,94 +2110,97 @@ bool	tiiChange	= false;
 	   channel. transmitterName = "";
 	}
 
-	if (channel. tiiFile) {
-	   if (tiiChange || (channel. transmitterName == ""))  {
-	      if (!tiiProcessor. is_black (channel. Eid, mainId, subId)) {
-	         QString theName =
-	                  tiiProcessor.
-	                        get_transmitterName (channel. realChannel?
-	                                                channel. channelName :
-	                                                "any",
-//	                                             channel. countryName,
-	                                             channel. Eid,
-	                                             mainId, subId);
-	         if (theName == "") {
-	            tiiProcessor. set_black (channel. Eid, mainId, subId);
-	            LOG ("Not found ",
-	                   QString::number (channel. Eid, 16) + " " +
-	                   QString::number (mainId) + " " +
-	                   QString::number (subId));
-	         }
-	         else 
-	         if (theName != channel. transmitterName)  {
-	            channel. transmitterName = theName;
-	            float latitude, longitude;
-	            tiiProcessor. get_coordinates (&latitude,
-	                                           &longitude,
-	                                           channel. realChannel ?
-	                                               channel. channelName :
-	                                               "any",
-	                                           theName);
-	            channel. targetPos	= std::complex<float> (latitude,
-	                                                       longitude);
-	            LOG ("transmitter ", channel. transmitterName);
-	            LOG ("coordinates ", 
-	                         QString::number (latitude) + " " +
-	                         QString::number (longitude));
-	            LOG ("current SNR ",
-	                     QString::number (snrDisplay -> value ()));
-	            QString labelText =  channel. transmitterName;
-//
-//      if our own position is known, we show the distance
-//
-                    float ownLatitude = real (channel. localPos);
-                    float ownLongitude = imag (channel. localPos);
-                    if ((ownLatitude != 0) && (ownLongitude != 0)) {
-	               int distance = tiiProcessor.
-	                                  distance (latitude, longitude,
-	                                            ownLatitude, ownLongitude);
-	               int hoek	 = tiiProcessor.
-	                               corner (latitude, longitude,
-	                                       ownLatitude, ownLongitude);
-//	see if we have a map
-	               if (mapHandler != nullptr) {
-	                  if ((!transmitterTags_local) &&
-	                                   (distance > maxDistance)) { 
-	                     maxDistance = distance;
-	                     mapHandler -> putData (MAP_MAX_TRANS,
-	                                            channel. targetPos, 
-	                                            channel. transmitterName,
-	                                            channel. channelName,
-	                                            distance, hoek);
-	                  }
-	                  else
-	                     mapHandler -> putData (MAP_NORM_TRANS,
-	                                            channel. targetPos, 
-	                                            channel. transmitterName,
-	                                            channel. channelName,
-	                                            distance, hoek);
-	               }
-
-	               LOG ("distance ", QString::number (distance));
-	               LOG ("corner ", QString::number (hoek));
-	               labelText +=  + " " +
-	                               QString::number (distance) + " km" +
-	                               " " + QString::number (hoek);
-	               labelText += QString::fromLatin1 (" \xb0 ");
-	               fprintf (stderr, "%s\n",
-	                               labelText. toUtf8 (). data ());
-	               distanceLabel -> setText (labelText);
-	         
-	            }
-	         }
-	      }
-	   }
-	}
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
 	   channel. countryName	= country;
 	   LOG ("country", channel. countryName);
 	}
+
+	if (!channel. tiiFile) 
+	   return;
+
+	if (!(tiiChange || (channel. transmitterName == "")))
+	   return;
+
+	if (tiiProcessor. is_black (channel. Eid, mainId, subId)) 
+	   return;
+
+	QString theName =
+	         tiiProcessor. get_transmitterName (channel. realChannel?
+	                                               channel. channelName :
+	                                               "any",
+//	                                            channel. countryName,
+	                                            channel. Eid,
+	                                            mainId, subId);
+	if (theName == "") {
+	   tiiProcessor. set_black (channel. Eid, mainId, subId);
+	   LOG ("Not found ", QString::number (channel. Eid, 16) + " " +
+	                      QString::number (mainId) + " " +
+	                      QString::number (subId));
+	   return;
+	}
+
+	if (theName == channel. transmitterName) // already there
+	   return;
+
+	channel. transmitterName = theName;
+	float latitude, longitude;
+	tiiProcessor. get_coordinates (&latitude, &longitude,
+	                               channel. realChannel ?
+	                                  channel. channelName :
+	                                  "any",
+	                               theName);
+	channel. targetPos	= std::complex<float> (latitude, longitude);
+	LOG ("transmitter ", channel. transmitterName);
+	LOG ("coordinates ", QString::number (latitude) + " " +
+	                        QString::number (longitude));
+	LOG ("current SNR ", QString::number (snrDisplay -> value ()));
+	QString labelText =  channel. transmitterName;
+//
+//      if our own position is known, we show the distance
+//
+	float ownLatitude	= real (channel. localPos);
+	float ownLongitude	= imag (channel. localPos);
+
+	if ((ownLatitude == 0) || (ownLongitude == 0))
+	   return;
+
+	int distance	= tiiProcessor. distance (latitude,
+	                                          longitude,
+	                                          ownLatitude,
+	                                          ownLongitude);
+	int hoek	 = tiiProcessor.  corner (latitude,
+	                                          longitude,
+	                                          ownLatitude,
+	                                          ownLongitude);
+	LOG ("distance ", QString::number (distance));
+	LOG ("corner ", QString::number (hoek));
+	labelText +=  + " " + QString::number (distance) + " km" +
+	                               " " + QString::number (hoek);
+	labelText += QString::fromLatin1 (" \xb0 ");
+	fprintf (stderr, "%s\n", labelText. toUtf8 (). data ());
+	distanceLabel -> setText (labelText);
+
+//	see if we have a map
+	if (mapHandler == nullptr) 
+	   return;
+
+	uint8_t key = MAP_NORM_TRANS;
+	if ((!transmitterTags_local) && (distance > maxDistance)) { 
+	   maxDistance = distance;
+	   key = MAP_MAX_TRANS;
+	}
+//
+//	to be certain, we check
+	if (channel. targetPos == std::complex<float> (0, 0) ||
+	                                  (distance == 0) || (hoek == 0))
+	   return;
+
+	mapHandler -> putData (key,
+	                       channel. targetPos, 
+	                       channel. transmitterName,
+	                       channel. channelName,
+	                       distance, hoek);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {

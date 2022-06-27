@@ -1,8 +1,8 @@
 # Qt-DAB-4.4.2 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.4-2is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
+Qt-DAB-4.4-2 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
 
-![4.4](/qt-dab-maps.png?raw=true)
+![4.4](/qt-dab-screen.png?raw=true)
 
 ----------------------------------------------------------------
 What is new in Qt-DAB 4.4.2

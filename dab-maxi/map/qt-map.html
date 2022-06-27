@@ -116,6 +116,8 @@
 	         }
 	         else {
 	            let target = data [t];
+	            if (target. distance == 0)	// should not happen
+	               continue;
 	            var alreadyThere = false;
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               if ((Transmitters [i]. lat == target. lat) &&
@@ -145,7 +147,7 @@
 	            let xx = document. getElementById ('selinfo');
 	            if (firstOne)
 	               xx. innerHTML = 
-	                     '<span style=\"font-weight:bold;">' + 'the Transmitters <br>' + '</span>';
+	                     '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
 	            xx. innerHTML += newChannel + '=>' +
 	                             target. name    + '<br>' +
 	                             coords + '<br>' +
@@ -157,11 +159,11 @@
 
 	            if (target. type == MAP_MAX_TRANS) {
 	               let aa = document. getElementById ('distance');
-	               aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Largest distance by <br>' + '</span>' +
+	               aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
 	                                 newChannel + '=>' +
 	                                 target. name    + '<br>' +
 	                                 coords + '<br>' +
-	                                 'Distance maximal ' +
+	                                 'Distance to home ' +
 	                                        target. dist + 'km ' + 
 	                                 target. azimuth + '&#xb0' + '<br><br>';
 	            }
@@ -187,7 +189,7 @@
 /* Setup our timer to poll from the server. */
 	   window.setInterval(function () {
 	      fetchData ();
-	   }, 2000);
+	   }, 3000);
 	}
 
 	function selectTransmitterCallback (target) {
