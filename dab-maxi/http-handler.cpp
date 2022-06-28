@@ -63,6 +63,7 @@
 	start ();
 }
 
+
 	httpHandler::~httpHandler	() {
 	if (running. load ()) {
 	   running. store (false);
@@ -437,7 +438,7 @@ std::string s = std::to_string (f);
         temp [s. size ()] = 0;
         return std::string (temp);
 }
-
+//
 std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
 std::complex<float> home;
 std::complex<float> target = std::complex<float> (0, 0);
@@ -458,11 +459,12 @@ QString Jsontxt;
 	           t [0]. channelName. toUtf8 (). data (),
 	           t [0]. distance,
 	           t [0]. azimuth);
-	
 	Jsontxt += QString (buf);
+//
+//	
 	for (int i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512, 
-	          ",\n{\"ttype\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	          ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
 	            t [i]. type,
 	            dotNumber (real (t [i]. coords)). c_str (),
 	            dotNumber (imag (t [i]. coords)). c_str (),

@@ -80,7 +80,7 @@ using namespace std;
 #define		MAP_RESET	0
 #define		MAP_FRAME	1
 #define		MAP_MAX_TRANS	2
-#define		MAP_NORM_TRANS	3
+#define		MAP_NORM_TRANS	4
 
 typedef struct {
         int     theTime;

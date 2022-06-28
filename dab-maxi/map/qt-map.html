@@ -54,7 +54,7 @@
 	   const MAP_RESET	= 0;
 	   const MAP_FRAME	= 1;
 	   const MAP_MAX_TRANS	= 2;
-	   const MAP_NORM_TRANS = 3;
+	   const MAP_NORM_TRANS = 4;
 
 	   function getIconForHome () {
 	      var he = document. createElement ("P");
@@ -82,8 +82,10 @@
 
 	   function fetchData () {
 	      $.getJSON ('/data.json', function (data) {
+	      let ttt = document. getElementById ('current');
 	      for (var t = 0; t < data. length; t ++) {
-	         if (data [t]. type == MAP_RESET) {
+	         let target = data [t];
+	         if (target. type == MAP_RESET) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               Map. removeLayer (Transmitters [i]. marker);
 	               delete Transmitters [i];
@@ -97,50 +99,54 @@
 	                 'number of transmitters ' + transmitterIndex;
 	            let zz = document. getElementById ('distance');
                     zz. innerHTML = '';
+	            continue;
 	         }
 	         else
-	         if (data [t]. type == MAP_FRAME) {
+	         if (target. type == MAP_FRAME) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               if (Transmitters [i]. status == true) {
 	                  Transmitters [i]. status = false;
 	                  Map. removeLayer (Transmitters [i]. marker);
 	                  let icon = getIconForTransmitter (0);
-	                  let target = Transmitters [i];
-	                  let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
-	                  targetMarker.
+	                  let element = Transmitters [i];
+	                  let elementMarker = L.marker ([element.lat,
+	                                                element.lon], {icon: icon}).addTo(Map);
+	                  elementMarker.
 	                       addEventListener ('click',
-	                                       function () { selectTransmitterCallback (target);});
-	                  Transmitters [i]. marker = targetMarker;
+	                                       function () { selectTransmitterCallback (element);});
+	                  Transmitters [i]. marker = elementMarker;
 	               }
 	            }
+	            continue;
 	         }
-	         else {
-	            let target = data [t];
-	            if (target. distance == 0)	// should not happen
-	               continue;
+	         else 
+	         if ((target. type == MAP_MAX_TRANS) ||
+	                                 (target. type == MAP_NORM_TRANS)) {
 	            var alreadyThere = false;
-	            for (var i = 0; i < transmitterIndex; i ++) {
-	               if ((Transmitters [i]. lat == target. lat) &&
-	                   (Transmitters [i]. lon == target. lon) &&
-	                   (Transmitters [i]. channel == target. channel)) {
+	            for (var j = 0; j < transmitterIndex; j ++) {
+	               if ((Transmitters [j]. lat == target. lat) &&
+	                   (Transmitters [j]. lon == target. lon) &&
+	                   (Transmitters [j]. channel == target. channel)) {
 	                  alreadyThere = true;
 	                  break;
 	               }
 	            }
-
-	            if (alreadyThere)
+	            if (alreadyThere) {
 	               continue;
+	            }
+
 	            let firstOne = transmitterIndex == 0;
 	            let icon = getIconForTransmitter (1);
-	            let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
+	            let targetMarker = L. marker([target.lat, target.lon],
+	                                            {icon: icon}) .addTo(Map);
 	            target. marker = targetMarker;
 	            target. status = true;
-	            Transmitters [transmitterIndex] = target;
-	            transmitterIndex ++;
 	            target. marker.
 	                    addEventListener ('click',
 	                                       function () { selectTransmitterCallback (target);});
 	            let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
+	            Transmitters [transmitterIndex] = target;
+	            transmitterIndex ++;
 	            let coords = '<span style=\"font-style: italic;\">' +
 	                          target. lat + '--' +
 	                          target. lon +  '</span>';
@@ -189,7 +195,7 @@
 /* Setup our timer to poll from the server. */
 	   window.setInterval(function () {
 	      fetchData ();
-	   }, 3000);
+	   }, 2000);
 	}
 
 	function selectTransmitterCallback (target) {
@@ -217,6 +223,7 @@
 	   <p id="selCount"></p>
 	   <p id="distance"></p>
 	   <p id="selinfo"></p>
+	   <p id="current"></p>
 	</div>
 	</div>
   </body>

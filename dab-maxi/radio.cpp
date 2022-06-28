@@ -4670,6 +4670,7 @@ void	RadioInterface::handle_httpButton	() {
 	                                 channel. localPos,
 	                                 autoBrowser_off,
 	                                 browserAddress);
+	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
