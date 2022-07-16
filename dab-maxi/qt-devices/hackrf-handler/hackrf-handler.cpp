@@ -47,24 +47,24 @@ int	res;
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
-        const char *libraryString = "libhackrf.dll";
+	const char *libraryString = "libhackrf.dll";
 #elif __linux__
-        const char *libraryString = "libhackrf.so.0";
+	const char *libraryString = "libhackrf.so.0";
 #elif __APPLE__
-        const char *libraryString = "libhackrf.dylib";
+	const char *libraryString = "libhackrf.dylib";
 #endif
-        phandle = new QLibrary(libraryString);
-        phandle->load();
+	phandle = new QLibrary(libraryString);
+	phandle->load();
 
-	if (!phandle->isLoaded()) {
+	if (!phandle -> isLoaded ()) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 	   throw (20);
 	}
 
-        if (!load_hackrfFunctions ()) {
-           delete phandle;
-           throw (21);
-        }
+	if (!load_hackrfFunctions ()) {
+	   delete phandle;
+	   throw (21);
+	}
 //
 //	From here we have a library available
 
@@ -84,7 +84,7 @@ int	res;
 	isChecked	=
 	       hackrfSettings -> value ("hack_AmpEnable", false). toBool();
 	AmpEnableButton	-> setCheckState (isChecked ? Qt::Checked : 
-                                                      Qt::Unchecked);
+	                                              Qt::Unchecked);
 	ppm_correction      -> setValue (
 	       hackrfSettings -> value ("hack_ppmCorrection", 0). toInt());
 	save_gainSettings	=
@@ -138,7 +138,7 @@ int	res;
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
 	   fprintf (stderr, "%s \n",
-                        this -> hackrf_error_name (hackrf_error (res)));
+	                this -> hackrf_error_name (hackrf_error (res)));
 	   throw (26);
 	}
 
@@ -155,7 +155,7 @@ int	res;
 	if (res != HACKRF_SUCCESS) {
 	   fprintf (stderr, "Problem with hackrf_si5351c_read: ");
 	   fprintf (stderr, "%s \n",
-                     this -> hackrf_error_name (hackrf_error (res)));
+	             this -> hackrf_error_name (hackrf_error (res)));
 	   throw (28);
 	}
 
@@ -413,12 +413,12 @@ int	res;
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-        for (int i = 0; i < amount; i ++)
-           V [i] = std::complex<float> (real (temp [i]) / 127.0,
-                                        imag (temp [i]) / 127.0);
-        if (dumping. load ())
-           xmlWriter -> add (temp, amount);
-        return amount;
+	for (int i = 0; i < amount; i ++)
+	   V [i] = std::complex<float> (real (temp [i]) / 127.0,
+	                                imag (temp [i]) / 127.0);
+	if (dumping. load ())
+	   xmlWriter -> add (temp, amount);
+	return amount;
 
 }
 
@@ -441,134 +441,145 @@ QString	hackrfHandler::deviceName	() {
 bool	hackrfHandler::load_hackrfFunctions() {
 //
 //	link the required procedures
-    this -> hackrf_init	= (pfn_hackrf_init) phandle->resolve("hackrf_init");
+	this -> hackrf_init	=
+	                (pfn_hackrf_init) phandle -> resolve ("hackrf_init");
 	if (this -> hackrf_init == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_init\n");
 	   return false;
 	}
 
-    this -> hackrf_open	= (pfn_hackrf_open)
-                           phandle->resolve("hackrf_open");
+	this -> hackrf_open	=
+	                (pfn_hackrf_open) phandle -> resolve  ("hackrf_open");
 	if (this -> hackrf_open == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_open\n");
 	   return false;
 	}
 
-    this -> hackrf_close	= (pfn_hackrf_close)
-                           phandle->resolve("hackrf_close");
+	this -> hackrf_close	=
+	                (pfn_hackrf_close) phandle -> resolve ("hackrf_close");
 	if (this -> hackrf_close == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_close\n");
 	   return false;
 	}
 
-    this -> hackrf_exit	= (pfn_hackrf_exit)
-                           phandle->resolve("hackrf_exit");
+	this -> hackrf_exit	=
+	                (pfn_hackrf_exit) phandle -> resolve ("hackrf_exit");
 	if (this -> hackrf_exit == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_exit\n");
 	   return false;
 	}
 
-    this -> hackrf_start_rx	= (pfn_hackrf_start_rx)
-                           phandle->resolve("hackrf_start_rx");
+	this -> hackrf_start_rx	=
+	                (pfn_hackrf_start_rx) phandle -> resolve ("hackrf_start_rx");
 	if (this -> hackrf_start_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_start_rx\n");
 	   return false;
 	}
 
-    this -> hackrf_stop_rx	= (pfn_hackrf_stop_rx)
-                           phandle->resolve("hackrf_stop_rx");
+	this -> hackrf_stop_rx	=
+	                (pfn_hackrf_stop_rx) phandle -> resolve ("hackrf_stop_rx");
 	if (this -> hackrf_stop_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_stop_rx\n");
 	   return false;
 	}
 
-    this -> hackrf_device_list	= (pfn_hackrf_device_list)
-                           phandle->resolve("hackrf_device_list");
+	this -> hackrf_device_list	=
+	                (pfn_hackrf_device_list) phandle -> resolve ("hackrf_device_list");
 	if (this -> hackrf_device_list == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_device_list\n");
 	   return false;
 	}
 
-    this -> hackrf_set_baseband_filter_bandwidth	=
-                          (pfn_hackrf_set_baseband_filter_bandwidth)
-                          phandle->resolve("hackrf_set_baseband_filter_bandwidth");
+	this -> hackrf_set_baseband_filter_bandwidth	=
+	               (pfn_hackrf_set_baseband_filter_bandwidth)
+	                  phandle -> resolve ("hackrf_set_baseband_filter_bandwidth");
 	if (this -> hackrf_set_baseband_filter_bandwidth == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_baseband_filter_bandwidth\n");
 	   return false;
 	}
 
-    this -> hackrf_set_lna_gain	= (pfn_hackrf_set_lna_gain)
-                           phandle->resolve("hackrf_set_lna_gain");
+	this -> hackrf_set_lna_gain	=
+	               (pfn_hackrf_set_lna_gain)
+	                   phandle -> resolve ("hackrf_set_lna_gain");
 	if (this -> hackrf_set_lna_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_lna_gain\n");
 	   return false;
 	}
 
-    this -> hackrf_set_vga_gain	= (pfn_hackrf_set_vga_gain)
-                           phandle->resolve("hackrf_set_vga_gain");
+	this -> hackrf_set_vga_gain	=
+	               (pfn_hackrf_set_vga_gain)
+	                   phandle -> resolve ("hackrf_set_vga_gain");
 	if (this -> hackrf_set_vga_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_vga_gain\n");
 	   return false;
 	}
 
-    this -> hackrf_set_freq	= (pfn_hackrf_set_freq)
-                           phandle->resolve("hackrf_set_freq");
+	this -> hackrf_set_freq	=
+	               (pfn_hackrf_set_freq) phandle -> resolve ("hackrf_set_freq");
 	if (this -> hackrf_set_freq == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_freq\n");
 	   return false;
 	}
 
-    this -> hackrf_set_sample_rate	= (pfn_hackrf_set_sample_rate)
-                           phandle->resolve("hackrf_set_sample_rate");
+	this -> hackrf_set_sample_rate	=
+	               (pfn_hackrf_set_sample_rate)
+	                   phandle -> resolve ("hackrf_set_sample_rate");
 	if (this -> hackrf_set_sample_rate == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_sample_rate\n");
 	   return false;
 	}
 
-    this -> hackrf_is_streaming	= (pfn_hackrf_is_streaming)
-                           phandle->resolve("hackrf_is_streaming");
+	this -> hackrf_is_streaming	=
+	               (pfn_hackrf_is_streaming)
+	                   phandle -> resolve ("hackrf_is_streaming");
 	if (this -> hackrf_is_streaming == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_is_streaming\n");
 	   return false;
 	}
 
-    this -> hackrf_error_name	= (pfn_hackrf_error_name)
-                           phandle->resolve("hackrf_error_name");
+	this -> hackrf_error_name	=
+	               (pfn_hackrf_error_name)
+	                   phandle -> resolve ("hackrf_error_name");
 	if (this -> hackrf_error_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_error_name\n");
 	   return false;
 	}
 
-    this -> hackrf_usb_board_id_name = (pfn_hackrf_usb_board_id_name)
-                           phandle->resolve("hackrf_usb_board_id_name");
+	this -> hackrf_usb_board_id_name =
+	               (pfn_hackrf_usb_board_id_name)
+	                   phandle -> resolve ("hackrf_usb_board_id_name");
 	if (this -> hackrf_usb_board_id_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_usb_board_id_name\n");
 	   return false;
 	}
 // Aggiunta Fabio
-	this -> hackrf_set_antenna_enable = (pfn_hackrf_set_antenna_enable)
-                      phandle->resolve("hackrf_set_antenna_enable");
+	this -> hackrf_set_antenna_enable =
+	              (pfn_hackrf_set_antenna_enable)
+	                     phandle -> resolve ("hackrf_set_antenna_enable");
 	if (this -> hackrf_set_antenna_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_antenna_enable\n");
 	   return false;
 	}
 
-	this -> hackrf_set_amp_enable = (pfn_hackrf_set_amp_enable)
-                      phandle->resolve("hackrf_set_amp_enable");
+	this -> hackrf_set_amp_enable =
+	              (pfn_hackrf_set_amp_enable)
+	                    phandle -> resolve ("hackrf_set_amp_enable");
 	if (this -> hackrf_set_amp_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_amp_enable\n");
 	   return false;
 	}
 
-	this -> hackrf_si5351c_read = (pfn_hackrf_si5351c_read)
-                     phandle->resolve("hackrf_si5351c_read");
+	this -> hackrf_si5351c_read =
+	              (pfn_hackrf_si5351c_read)
+	                      phandle -> resolve ("hackrf_si5351c_read");
 	if (this -> hackrf_si5351c_read == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_read\n");
 	   return false;
 	}
 
-	this -> hackrf_si5351c_write = (pfn_hackrf_si5351c_write)
-                     phandle->resolve("hackrf_si5351c_write");
+	this -> hackrf_si5351c_write =
+	              (pfn_hackrf_si5351c_write)
+	                      phandle -> resolve("hackrf_si5351c_write");
 	if (this -> hackrf_si5351c_write == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_write\n");
 	   return false;
@@ -599,9 +610,9 @@ bool	hackrfHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
 QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
-                                           QDir::homePath ()). toString ();
-        if ((saveDir != "") && (!saveDir. endsWith ("/")))
-           saveDir += "/";
+	                                   QDir::homePath ()). toString ();
+	if ((saveDir != "") && (!saveDir. endsWith ("/")))
+	   saveDir += "/";
 
 	QString channel		= hackrfSettings -> value ("channel", "xx").
 	                                                   toString ();
@@ -610,15 +621,15 @@ QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
 	for (int i = 0; i < timeString. length (); i ++)
 	   if (!isValid (timeString. at (i)))
 	      timeString. replace (i, 1, '-');
-        QString suggestedFileName =
-                    saveDir + "hackrf" + "-" + channel +  "-" + timeString;
+	QString suggestedFileName =
+	            saveDir + "hackrf" + "-" + channel +  "-" + timeString;
 	QString fileName =
 	           QFileDialog::getSaveFileName (nullptr,
 	                                         tr ("Save file ..."),
 	                                         suggestedFileName + ".uff",
 	                                         tr ("Xml (*.uff)"));
-        fileName        = QDir::toNativeSeparators (fileName);
-        xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
+	fileName        = QDir::toNativeSeparators (fileName);
+	xmlDumper	= fopen (fileName. toUtf8(). data(), "w");
 	if (xmlDumper == nullptr)
 	   return false;
 	
@@ -634,8 +645,8 @@ QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
 
 	QString	dumper	= QDir::fromNativeSeparators (fileName);
 	int x		= dumper. lastIndexOf ("/");
-        saveDir		= dumper. remove (x, dumper. count () - x);
-        hackrfSettings	-> setValue ("saveDir_xmlDump", saveDir);
+	saveDir		= dumper. remove (x, dumper. count () - x);
+	hackrfSettings	-> setValue ("saveDir_xmlDump", saveDir);
 
 	return true;
 }
@@ -676,8 +687,8 @@ QString theValue;
 	theValue	+= QString::number (lnaValue) + ":";
 	theValue	+= QString::number (ampEnable);
 	hackrfSettings  -> beginGroup ("hackrfSettings");
-        hackrfSettings	-> setValue (QString::number (freq), theValue);
-        hackrfSettings -> endGroup ();
+	hackrfSettings	-> setValue (QString::number (freq), theValue);
+	hackrfSettings -> endGroup ();
 }
 
 void	hackrfHandler::update_gainSettings	(int freq) {

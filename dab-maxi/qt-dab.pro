@@ -354,17 +354,17 @@ CONFIG		+= qwt
 #CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick
 CONFIG		+= rtl_tcp
-#CONFIG		+= airspy
+CONFIG		+= airspy
 CONFIG		+= hackrf
-#CONFIG		+= lime
+CONFIG		+= lime
 #CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
-#CONFIG		+= pluto-2
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 #CONFIG		+= colibri
-#CONFIG		+= faad
-CONFIG		+= fdk-aac
+CONFIG		+= faad
+#CONFIG		+= fdk-aac
 #CONFIG		+= JAN
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
@@ -749,7 +749,7 @@ faad	{
 	DEFINES		+= __WITH_FAAD__
 	HEADERS		+= ../includes/backend/audio/faad-decoder.h 
 	SOURCES		+= ../src/backend/audio/faad-decoder.cpp 
-	PKGCONFIG	+= faad2
+	LIBS		+= -lfaad
 }
 
 fdk-aac	{
