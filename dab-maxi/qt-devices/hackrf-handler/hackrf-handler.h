@@ -36,6 +36,7 @@
 #include	"device-handler.h"
 #include	"ui_hackrf-widget.h"
 #include	"libhackrf/hackrf.h"
+#include	<QLibrary>
 
 typedef int (*hackrf_sample_block_cb_fn)(hackrf_transfer *transfer);
 
@@ -137,7 +138,7 @@ private:
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
-	HINSTANCE		Handle;
+	QLibrary*		phandle;
 
 	FILE			*xmlDumper;
         xml_fileWriter		*xmlWriter;

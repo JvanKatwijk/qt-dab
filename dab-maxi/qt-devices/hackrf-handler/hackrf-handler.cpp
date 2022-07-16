@@ -48,26 +48,21 @@ int	res;
 
 #ifdef  __MINGW32__
         const char *libraryString = "libhackrf.dll";
-        Handle          = LoadLibrary ((wchar_t *)L"libhackrf.dll");
-#elif  __clang__
-        const char *libraryString = "/opt/local/lib/libhackrf.dylib";
-        Handle = dlopen(libraryString,RTLD_NOW);
-#else
+#elif __linux__
         const char *libraryString = "libhackrf.so.0";
-        Handle          = dlopen (libraryString, RTLD_NOW);
+#elif __APPLE__
+        const char *libraryString = "libhackrf.dylib";
 #endif
+        phandle = new QLibrary(libraryString);
+        phandle->load();
 
-	if (Handle == nullptr) {
+	if (!phandle->isLoaded()) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 	   throw (20);
 	}
 
-        if (!load_hackrfFunctions()) {
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
+        if (!load_hackrfFunctions ()) {
+           delete phandle;
            throw (21);
         }
 //
@@ -446,136 +441,134 @@ QString	hackrfHandler::deviceName	() {
 bool	hackrfHandler::load_hackrfFunctions() {
 //
 //	link the required procedures
-	this -> hackrf_init	= (pfn_hackrf_init)
-	                       GETPROCADDRESS (Handle, "hackrf_init");
+    this -> hackrf_init	= (pfn_hackrf_init) phandle->resolve("hackrf_init");
 	if (this -> hackrf_init == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_init\n");
 	   return false;
 	}
 
-	this -> hackrf_open	= (pfn_hackrf_open)
-	                       GETPROCADDRESS (Handle, "hackrf_open");
+    this -> hackrf_open	= (pfn_hackrf_open)
+                           phandle->resolve("hackrf_open");
 	if (this -> hackrf_open == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_open\n");
 	   return false;
 	}
 
-	this -> hackrf_close	= (pfn_hackrf_close)
-	                       GETPROCADDRESS (Handle, "hackrf_close");
+    this -> hackrf_close	= (pfn_hackrf_close)
+                           phandle->resolve("hackrf_close");
 	if (this -> hackrf_close == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_close\n");
 	   return false;
 	}
 
-	this -> hackrf_exit	= (pfn_hackrf_exit)
-	                       GETPROCADDRESS (Handle, "hackrf_exit");
+    this -> hackrf_exit	= (pfn_hackrf_exit)
+                           phandle->resolve("hackrf_exit");
 	if (this -> hackrf_exit == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_exit\n");
 	   return false;
 	}
 
-	this -> hackrf_start_rx	= (pfn_hackrf_start_rx)
-	                       GETPROCADDRESS (Handle, "hackrf_start_rx");
+    this -> hackrf_start_rx	= (pfn_hackrf_start_rx)
+                           phandle->resolve("hackrf_start_rx");
 	if (this -> hackrf_start_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_start_rx\n");
 	   return false;
 	}
 
-	this -> hackrf_stop_rx	= (pfn_hackrf_stop_rx)
-	                       GETPROCADDRESS (Handle, "hackrf_stop_rx");
+    this -> hackrf_stop_rx	= (pfn_hackrf_stop_rx)
+                           phandle->resolve("hackrf_stop_rx");
 	if (this -> hackrf_stop_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_stop_rx\n");
 	   return false;
 	}
 
-	this -> hackrf_device_list	= (pfn_hackrf_device_list)
-	                       GETPROCADDRESS (Handle, "hackrf_device_list");
+    this -> hackrf_device_list	= (pfn_hackrf_device_list)
+                           phandle->resolve("hackrf_device_list");
 	if (this -> hackrf_device_list == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_device_list\n");
 	   return false;
 	}
 
-	this -> hackrf_set_baseband_filter_bandwidth	=
-	                      (pfn_hackrf_set_baseband_filter_bandwidth)
-	                      GETPROCADDRESS (Handle,
-	                         "hackrf_set_baseband_filter_bandwidth");
+    this -> hackrf_set_baseband_filter_bandwidth	=
+                          (pfn_hackrf_set_baseband_filter_bandwidth)
+                          phandle->resolve("hackrf_set_baseband_filter_bandwidth");
 	if (this -> hackrf_set_baseband_filter_bandwidth == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_baseband_filter_bandwidth\n");
 	   return false;
 	}
 
-	this -> hackrf_set_lna_gain	= (pfn_hackrf_set_lna_gain)
-	                       GETPROCADDRESS (Handle, "hackrf_set_lna_gain");
+    this -> hackrf_set_lna_gain	= (pfn_hackrf_set_lna_gain)
+                           phandle->resolve("hackrf_set_lna_gain");
 	if (this -> hackrf_set_lna_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_lna_gain\n");
 	   return false;
 	}
 
-	this -> hackrf_set_vga_gain	= (pfn_hackrf_set_vga_gain)
-	                       GETPROCADDRESS (Handle, "hackrf_set_vga_gain");
+    this -> hackrf_set_vga_gain	= (pfn_hackrf_set_vga_gain)
+                           phandle->resolve("hackrf_set_vga_gain");
 	if (this -> hackrf_set_vga_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_vga_gain\n");
 	   return false;
 	}
 
-	this -> hackrf_set_freq	= (pfn_hackrf_set_freq)
-	                       GETPROCADDRESS (Handle, "hackrf_set_freq");
+    this -> hackrf_set_freq	= (pfn_hackrf_set_freq)
+                           phandle->resolve("hackrf_set_freq");
 	if (this -> hackrf_set_freq == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_freq\n");
 	   return false;
 	}
 
-	this -> hackrf_set_sample_rate	= (pfn_hackrf_set_sample_rate)
-	                       GETPROCADDRESS (Handle, "hackrf_set_sample_rate");
+    this -> hackrf_set_sample_rate	= (pfn_hackrf_set_sample_rate)
+                           phandle->resolve("hackrf_set_sample_rate");
 	if (this -> hackrf_set_sample_rate == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_sample_rate\n");
 	   return false;
 	}
 
-	this -> hackrf_is_streaming	= (pfn_hackrf_is_streaming)
-	                       GETPROCADDRESS (Handle, "hackrf_is_streaming");
+    this -> hackrf_is_streaming	= (pfn_hackrf_is_streaming)
+                           phandle->resolve("hackrf_is_streaming");
 	if (this -> hackrf_is_streaming == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_is_streaming\n");
 	   return false;
 	}
 
-	this -> hackrf_error_name	= (pfn_hackrf_error_name)
-	                       GETPROCADDRESS (Handle, "hackrf_error_name");
+    this -> hackrf_error_name	= (pfn_hackrf_error_name)
+                           phandle->resolve("hackrf_error_name");
 	if (this -> hackrf_error_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_error_name\n");
 	   return false;
 	}
 
-	this -> hackrf_usb_board_id_name = (pfn_hackrf_usb_board_id_name)
-	                       GETPROCADDRESS (Handle, "hackrf_usb_board_id_name");
+    this -> hackrf_usb_board_id_name = (pfn_hackrf_usb_board_id_name)
+                           phandle->resolve("hackrf_usb_board_id_name");
 	if (this -> hackrf_usb_board_id_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_usb_board_id_name\n");
 	   return false;
 	}
 // Aggiunta Fabio
 	this -> hackrf_set_antenna_enable = (pfn_hackrf_set_antenna_enable)
-	                  GETPROCADDRESS (Handle, "hackrf_set_antenna_enable");
+                      phandle->resolve("hackrf_set_antenna_enable");
 	if (this -> hackrf_set_antenna_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_antenna_enable\n");
 	   return false;
 	}
 
 	this -> hackrf_set_amp_enable = (pfn_hackrf_set_amp_enable)
-	                  GETPROCADDRESS (Handle, "hackrf_set_amp_enable");
+                      phandle->resolve("hackrf_set_amp_enable");
 	if (this -> hackrf_set_amp_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_amp_enable\n");
 	   return false;
 	}
 
 	this -> hackrf_si5351c_read = (pfn_hackrf_si5351c_read)
-	                 GETPROCADDRESS (Handle, "hackrf_si5351c_read");
+                     phandle->resolve("hackrf_si5351c_read");
 	if (this -> hackrf_si5351c_read == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_read\n");
 	   return false;
 	}
 
 	this -> hackrf_si5351c_write = (pfn_hackrf_si5351c_write)
-	                 GETPROCADDRESS (Handle, "hackrf_si5351c_write");
+                     phandle->resolve("hackrf_si5351c_write");
 	if (this -> hackrf_si5351c_write == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_write\n");
 	   return false;
