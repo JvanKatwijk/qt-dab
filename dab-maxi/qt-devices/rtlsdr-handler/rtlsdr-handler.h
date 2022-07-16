@@ -39,6 +39,7 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
+#include    <QLibrary>
 class	dll_driver;
 class	xml_fileWriter;
 //
@@ -105,7 +106,7 @@ private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
-	HINSTANCE	Handle;
+    QLibrary*	phandle;
 	dll_driver	*workerHandle;
 	int32_t		lastFrequency;
 	int16_t		gainsCount;

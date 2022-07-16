@@ -626,8 +626,10 @@ uint8_t	dabBand;
 	muting		= false;
 //
 	QPalette lcdPalette;
+#ifndef __MAC__
 	lcdPalette. setColor (QPalette::Background, Qt::white);
 	lcdPalette. setColor (QPalette::Base, Qt::black);
+#endif
 	snrDisplay		-> setPalette (lcdPalette);
 	snrDisplay		-> setAutoFillBackground (true);
 	frequencyDisplay	-> setPalette (lcdPalette);
