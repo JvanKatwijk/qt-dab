@@ -60,6 +60,9 @@ Step 2:
 
 	for devices "pluto", "pluto-rxtx" and "soapy" software should have
 	been installed, so leave them commented out when not available.
+	Note that "pluto-2" can be compiled in: when the device is
+	selected, it will (try to) read in the functions of the device
+	library.
 	For other devices, e.g. sdrplay, airspy, etc, configuration does not
 	require availability of the drivers (of course using the device does)
 

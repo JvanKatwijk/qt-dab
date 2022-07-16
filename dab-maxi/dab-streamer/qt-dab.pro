@@ -164,7 +164,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/presetcombobox.h \
 	   ../includes/support/smallcombobox.h \
 	   ../includes/support/normalpushbutton.h \
-	   ../includes/support/newpushbutton.h \
 	   ../includes/support/smallpushbutton.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
@@ -180,7 +179,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
 	   ../includes/support/coordinates.h \
-	   ../includes/support/bandpass-filter.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../spectrum-viewer/spectrum-viewer.h \
@@ -268,7 +266,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/presetcombobox.cpp \
 	   ../src/support/smallcombobox.cpp \
 	   ../src/support/normalpushbutton.cpp \
-	   ../src/support/newpushbutton.cpp \
 	   ../src/support/smallpushbutton.cpp \
 	   ../src/support/verysmallpushbutton.cpp \
 	   ../src/support/smallqlistview.cpp \
@@ -283,7 +280,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/coordinates.cpp \
-	   ../src/support/bandpass-filter.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../spectrum-viewer/spectrum-viewer.cpp \
 	   ../correlation-viewer/correlation-viewer.cpp \
@@ -585,12 +581,12 @@ pluto-rxtx	{
 	HEADERS		+= ./qt-devices/pluto-rxtx/dabFilter.h
 	HEADERS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
 	HEADERS		+= ./dab-streamer/dab-streamer.h 
-	HEADERS		+= ./dab-streamer/up-filter.h
+	                   ./dab-streamer/up-filter.h
 	SOURCES		+= ./qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
 	SOURCES		+= ./dab-streamer/dab-streamer.cpp \
 	                   ./dab-streamer/up-filter.cpp
 	FORMS		+= ./qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
-#	LIBS		+= -liio -lad9361
+	LIBS		+= -liio -lad9361
 }
 
 pluto	{

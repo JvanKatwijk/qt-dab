@@ -48,7 +48,13 @@ struct timeval  tv;
 		dabStreamer::dabStreamer (int		inRate,
 	                                  int		outRate,
 	                                  plutoHandler	*generator):
-	                                    lowPassFilter (11, 15000, inRate),
+	                                    lowPassFilter (21, 13000, inRate),
+	                                    lmrFilter	  (25, 38000 - 12000,
+	                                                       38000 + 12000,
+	                                                       outRate),
+	                                    rdsFilter     (45,   57000 - 1500,
+	                                                         57000 + 1500,
+	                                                         outRate),
 	                                    pcmBuffer (8 * 32768),
 	                                    rdsBuffer (2 * 256) {
 	this	-> inRate		= inRate;
@@ -127,7 +133,10 @@ void	dabStreamer::addRds (const std::string v) {
 	messageIn. store (true);
 }
 
-void	dabStreamer::run (void) {
+void	dabStreamer::addName (const std::string n) {
+}
+
+void	dabStreamer::run () {
 int32_t outputLimit     = 2 * outRate / 5;	// in single values
 upFilter	theFilter (15, inRate, outRate);
 uint64_t        nextStop;
@@ -243,7 +252,7 @@ int	i;
 	   int	ind_4	= (int)(((int64_t)pos * 19000 / 16) % outRate);
 	   double	pilot		= sinTable [ind_1];
 	   double	carrier		= sinTable [ind_2];
-	   double	rds_carrier	= sinTable [ind_3];
+	   double	rds_carrier	= 4.0 * sinTable [ind_3];
 	   double	symclk		= sinTable [ind_4];
 	   double bit_d	= 0;
 
@@ -283,8 +292,9 @@ int	i;
 	      float sym		= lowPass (fabs (symclk) * bit_d);
 	      sample		= 0.50	* lpr +
 	                          0.05	* pilot +
-	                          0.40	* lmr * carrier + 
-	                          11.00	* sym * rds_carrier;
+	                          0.35	* lmr * carrier + 
+//	                          lmrFilter. Pass (0.85	* lmr * carrier) + 
+	                          10 * sym * rds_carrier;
 
 	      symclk_p	= symclk;
 	   }
@@ -294,7 +304,7 @@ int	i;
 	   else
 	      sample	= preemp (samp_s.l);
 
-	   nextPhase += 10 * sample;
+	   nextPhase += 5 * sample;
 	   if (nextPhase >= 2 * M_PI)
 	      nextPhase -= 2 * M_PI;
 	   if (nextPhase < 0)
@@ -304,8 +314,8 @@ int	i;
 //	there might be an issue with the resulting index, nextPhase
 //	may be nan, inf, or just too large
 	   int aa	= index % outRate;
-	   if (aa == index)
-	      generator -> sendSample (oscillatorTable [index]);
+	   if ((0 <= aa) && (aa < outRate))
+	      generator -> sendSample (oscillatorTable [aa], sample);
 	   pos++;
 	}
 }

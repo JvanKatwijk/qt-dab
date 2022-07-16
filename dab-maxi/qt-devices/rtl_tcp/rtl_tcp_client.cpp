@@ -35,10 +35,12 @@
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
 	rtl_tcp_client::rtl_tcp_client	(QSettings *s):
-	   myFrame (nullptr) {
+	                                    myFrame (nullptr) {
 	remoteSettings		= s;
 
 	setupUi (&myFrame);
+	myFrame. show		();
+	myFrame. hide		();
 	myFrame. show		();
 
     //	setting the defaults and constants
@@ -59,7 +61,7 @@
 	connected	= false;
 	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
-
+//
 	connect (tcp_connect, SIGNAL (clicked (void)),
 	         this, SLOT (wantConnect (void)));
 	connect (tcp_disconnect, SIGNAL (clicked (void)),
@@ -70,7 +72,7 @@
 	         this, SLOT (set_fCorrection (int)));
 	connect (khzOffset, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_Offset (int)));
-	state	-> setText ("waiting to start");
+	theState	-> setText ("waiting to start");
 }
 
 	rtl_tcp_client::~rtl_tcp_client() {
@@ -118,7 +120,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	hostLineEdit	-> setInputMask ("000.000.000.000");
 //	Setting default IP address
 	hostLineEdit	-> show();
-	state	-> setText ("Enter IP address, \nthen press return");
+	theState	-> setText ("Enter IP address, \nthen press return");
 	connect (hostLineEdit, SIGNAL (returnPressed (void)),
 	         this, SLOT (setConnection (void)));
 }
@@ -145,7 +147,7 @@ QHostAddress theAddress	= QHostAddress (s);
 	sendRate (theRate);
 	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
 	toServer. waitForBytesWritten();
-	state -> setText ("Connected");
+	theState -> setText ("Connected");
 	connected	= true;
 }
 
@@ -192,7 +194,7 @@ void	rtl_tcp_client::stopReader() {
 //	size: still in I/Q pairs, but we have to convert the data from
 //	uint8_t to DSPCOMPLEX *
 int32_t	rtl_tcp_client::getSamples (std::complex<float> *V, int32_t size) { 
-int32_t	amount;
+int32_t	amount =  0;
 	amount = _I_Buffer	-> getDataFromBuffer (V, size);
 	return amount;
 }
@@ -296,8 +298,7 @@ void	rtl_tcp_client::setDisconnect() {
 	   toServer. close();
 	}
 	connected	= false;
-	connectedLabel	-> setText (" ");
-	state		-> setText ("disconnected");
+	theState	-> setText ("disconnected");
 }
 
 void	rtl_tcp_client::set_Offset	(int32_t o) {
@@ -310,7 +311,7 @@ void	rtl_tcp_client::show		() {
 }
 
 void	rtl_tcp_client::hide		() {
-	myFrame. hide ();
+//	myFrame. hide ();
 }
 
 bool	rtl_tcp_client::isHidden	() {

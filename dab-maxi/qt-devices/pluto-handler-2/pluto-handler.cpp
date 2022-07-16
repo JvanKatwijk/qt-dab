@@ -272,12 +272,14 @@ int	ret;
 	   throw (24);
 	}
 //
-
+	
 	if (iio_context_get_devices_count (ctx) <= 0) {
 	   fprintf (stderr, "no devices, fatal");
 	   throw (25);
 	}
 
+//	
+	
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
 	   fprintf (stderr, "No RX device found\n");

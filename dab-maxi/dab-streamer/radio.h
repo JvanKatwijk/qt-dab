@@ -459,9 +459,8 @@ private slots:
 	void			color_audiodumpButton	();
 	void			color_configButton	();
 	void			color_dlTextButton	();
-	void			color_scheduleButton	();
 	void			color_hideButton	();
-	void			color_httpButton	();
+	void			color_scheduleButton	();
 //
 //	config handlers
 	void			handle_configSetting		();

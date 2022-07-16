@@ -36,6 +36,7 @@
 #include	"audio-base.h"
 #include	"ringbuffer.h"
 #include	"fir-filters.h"
+#include	"bandpass-filter.h"
 #include	<string>
 
 class	plutoHandler;
@@ -136,9 +137,12 @@ public:
 		~dabStreamer		(void);
 	void	audioOutput		(float *, int);
 	void	addRds			(const std::string);
+	void	addName			(const std::string);
 	void	stop			(void);
 private:
 	LowPassFIR	lowPassFilter;
+	BandPassFIR	lmrFilter;
+	BandPassFIR	rdsFilter;
 	RingBuffer<float> pcmBuffer;
 	RingBuffer<char>  rdsBuffer;
 	void		run			(void);

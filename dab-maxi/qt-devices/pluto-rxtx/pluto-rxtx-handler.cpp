@@ -31,7 +31,7 @@
 #include	"xml-filewriter.h"
 //
 //	Description for the fir-filter is here:
-#include	"ad9361.h"
+//#include	"ad9361.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -43,9 +43,9 @@ char*	get_ch_name (const char* type, int id) {
 	return tmpstr;
 }
 
-enum iodev {RX, TX};
 
-int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
+int	plutoHandler::
+	ad9361_set_trx_fir_enable (struct iio_device *dev, int enable) {
 int ret = iio_device_attr_write_bool (dev,
 	                              "in_out_voltage_filter_fir_en",
 	                              !!enable);
@@ -56,7 +56,8 @@ int ret = iio_device_attr_write_bool (dev,
 	return ret;
 }
 
-int	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
+int	plutoHandler::
+	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
 bool value;
 
 	int ret = iio_device_attr_read_bool (dev,
@@ -73,17 +74,16 @@ bool value;
 	return ret;
 }
 
-
 /* returns ad9361 phy device */
-static
-struct iio_device* get_ad9361_phy (struct iio_context *ctx) {
+struct iio_device* plutoHandler::
+	               get_ad9361_phy (struct iio_context *ctx) {
 struct iio_device *dev = iio_context_find_device (ctx, "ad9361-phy");
 	return dev;
 }
 
 /* finds AD9361 streaming IIO devices */
-static
-bool get_ad9361_stream_dev (struct iio_context *ctx,
+bool 	plutoHandler::
+	               get_ad9361_stream_dev (struct iio_context *ctx,
 	                    enum iodev d, struct iio_device **dev) {
 	switch (d) {
 	case TX:
@@ -100,8 +100,8 @@ bool get_ad9361_stream_dev (struct iio_context *ctx,
 }
 
 /* finds AD9361 streaming IIO channels */
-static
-bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
+bool 	plutoHandler::
+	          get_ad9361_stream_ch (struct iio_context *ctx,
 	                   enum iodev d, struct iio_device *dev,
 	                   int chid, struct iio_channel **chn) {
 	*chn = iio_device_find_channel (dev,
@@ -115,8 +115,8 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 }
 
 /* finds AD9361 phy IIO configuration channel with id chid */
-static
-bool	get_phy_chan (struct iio_context *ctx,
+bool	plutoHandler::
+	          get_phy_chan (struct iio_context *ctx,
 	              enum iodev d, int chid, struct iio_channel **chn) {
 	switch (d) {
 	   case RX:
@@ -137,8 +137,8 @@ bool	get_phy_chan (struct iio_context *ctx,
 }
 
 /* finds AD9361 local oscillator IIO configuration channels */
-static
-bool	get_lo_chan (struct iio_context *ctx,
+bool	plutoHandler::
+	           get_lo_chan (struct iio_context *ctx,
 	             enum iodev d, struct iio_channel **chn) {
 // LO chan is always output, i.e. true
 	switch (d) {
@@ -160,7 +160,8 @@ bool	get_lo_chan (struct iio_context *ctx,
 }
 
 /* applies streaming configuration through IIO */
-bool cfg_ad9361_streaming_ch (struct iio_context *ctx,
+bool	plutoHandler::
+	        cfg_ad9361_streaming_ch (struct iio_context *ctx,
 	                      struct stream_cfg *cfg,
 	                      enum iodev type, int chid) {
 struct iio_channel *chn = NULL;
@@ -192,12 +193,12 @@ int	ret;
 }
 
 
-extern "C" {
-int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
-                                                  unsigned long rate, unsigned long Fpass,
-                                                  unsigned long Fstop, unsigned long wnom_tx,
-                                                  unsigned long wnom_rx);
-}
+//extern "C" {
+//int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
+//                                                  unsigned long rate, unsigned long Fpass,
+//                                                  unsigned long Fstop, unsigned long wnom_tx,
+//                                                  unsigned long wnom_rx);
+//}
 
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion,
@@ -214,6 +215,31 @@ int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
 	this	-> fmFrequency		= fmFrequency * KHz (1);
 	setupUi (&myFrame);
 	myFrame. show	();
+
+#ifdef	__MINGW32__
+	wchar_t *libname = (wchar_t *)L"libiio.dll";
+        Handle  = LoadLibrary (libname);
+	if (Handle == NULL) {
+	  fprintf (stderr, "Failed to libiio.dll\n");
+	  throw (22);
+	}
+#else
+	Handle		= dlopen ("libiio.so", RTLD_NOW);
+	if (Handle == NULL) {
+	   fprintf (stderr,  "%s", "we could not load libiio.so");
+	   throw (23);
+	}
+#endif
+
+	bool success			= loadFunctions ();
+	if (!success) {
+#ifdef __MINGW32__
+           FreeLibrary (Handle);
+#else
+           dlclose (Handle);
+#endif
+           throw (23);
+        }
 
 	this	-> ctx			= nullptr;
 	this    -> rxbuf                = nullptr;
@@ -391,6 +417,8 @@ int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
 	         gainControl, SLOT (setValue (int)));
 	connect (this, SIGNAL (new_agcValue (bool)),
 	         agcControl, SLOT (setChecked (bool)));
+	connect (this, SIGNAL (showSignal (float)),
+	         this, SLOT (handleSignal (float)));
 //	set up for interpolator
 	float	denominator	= float (DAB_RATE) / DIVIDER;
 	float inVal		= float (RX_RATE) / DIVIDER;
@@ -407,16 +435,51 @@ int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
 	int enabled;
 //
 //	go for the filter
-	(void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
-	                                                 RX_RATE,
-	                                                 1540000 / 2,
-	                                                 1.1 * 1540000 / 2,
-	                                                 1920000,
-	                                                 1536000);
+//	(void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
+//	                                                 RX_RATE,
+//	                                                 1540000 / 2,
+//	                                                 1.1 * 1540000 / 2,
+//	                                                 1920000,
+//	                                                 1536000);
 //	and enable it
 	filterButton	-> setText ("filter off");
 	connected	= true;
 	state -> setText ("ready to go");
+//	set up for the display
+	fftBuffer	= (std::complex<float> *)fftwf_malloc (4096 * sizeof (fftwf_complex));
+	plan    = fftwf_plan_dft_1d (4096,
+                                    reinterpret_cast <fftwf_complex *>(fftBuffer),
+                                    reinterpret_cast <fftwf_complex *>(fftBuffer),
+                                    FFTW_FORWARD, FFTW_ESTIMATE);
+
+        plotgrid        = transmittedSignal;
+        plotgrid        -> setCanvasBackground (QColor("black"));
+	gridColor	= QColor ("white");
+	curveColor	= QColor ("white");
+
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
+#else
+	grid. setMajorPen (QPen(gridColor, 0, Qt::DotLine));
+#endif
+	grid. enableXMin (true);
+	grid. enableYMin (true);
+#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
+	grid. setMinPen (QPen(gridColor, 0, Qt::DotLine));
+#else
+	grid. setMinorPen (QPen(gridColor, 0, Qt::DotLine));
+#endif
+	grid. attach (plotgrid);
+   	spectrumCurve. setPen (QPen(curveColor, 2.0));
+	spectrumCurve. setOrientation (Qt::Horizontal);
+	spectrumCurve.  setBaseline	(get_db (0));
+	spectrumCurve. attach (plotgrid);
+	plotgrid        -> enableAxis (QwtPlot::yLeft);
+
+	for (int i = 0; i < 4096; i ++)
+	   window [i] =
+	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (4096 - 1)) +
+                       0.08 * cos ((4.0 * M_PI * i) / (4096 - 1));
 }
 
 	plutoHandler::~plutoHandler() {
@@ -437,7 +500,6 @@ int ad9361_set_bb_rate_custom_filter_manual(struct iio_device *dev,
 	iio_context_destroy (ctx);
 }
 //
-
 void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
 int	ret;
 struct iio_channel *lo_channel;
@@ -874,11 +936,261 @@ int	sourceSize	= bufferLength / (2 * sizeof (int16_t));
 	}
 }
 
-void    plutoHandler::sendSample        (std::complex<float> v) {
+void    plutoHandler::sendSample        (std::complex<float> v, float s) {
 std::complex<float> buf [FM_RATE / 192000];
 	if (!transmitting. load ())
 	   return;
+	showSignal (s);
 	theFilter. Filter (v, buf);
 	_O_Buffer. putDataIntoBuffer (buf, FM_RATE / 192000);
 }
 
+bool	plutoHandler::loadFunctions	() {
+
+	connect (this, SIGNAL (showSignal (float)),
+	         this, SLOT (handleSignal (float)));
+	iio_device_find_channel = (pfn_iio_device_find_channel)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_find_channel");
+	if (iio_device_find_channel == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_find_channel");
+	   return false;
+	}
+	iio_create_default_context = (pfn_iio_create_default_context)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_create_default_context");
+	if (iio_create_default_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_default_context");
+	   return false;
+	}
+	iio_create_local_context = (pfn_iio_create_local_context)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_create_local_context");
+	if (iio_create_local_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_local_context");
+	   return false;
+	}
+	iio_create_network_context = (pfn_iio_create_network_context)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_create_network_context");
+	if (iio_create_network_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_network_context");
+	   return false;
+	}
+	iio_context_get_name = (pfn_iio_context_get_name)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_context_get_name");
+	if (iio_context_get_name == nullptr) {
+	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
+	   return false;
+	}
+	iio_context_get_devices_count = (pfn_iio_context_get_devices_count)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_context_get_devices_count");
+	if (iio_context_get_devices_count == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_get_devices_count");
+	   return false;
+	}
+	iio_context_find_device = (pfn_iio_context_find_device)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_context_find_device");
+	if (iio_context_find_device == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_find_device");
+	   return false;
+	}
+
+	iio_device_attr_read_bool = (pfn_iio_device_attr_read_bool)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_attr_read_bool");
+	if (iio_device_attr_read_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_read_bool");
+	   return false;
+	}
+	iio_device_attr_write_bool = (pfn_iio_device_attr_write_bool)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_attr_write_bool");
+	if (iio_device_attr_write_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_bool");
+	   return false;
+	}
+
+	iio_channel_attr_read_bool = (pfn_iio_channel_attr_read_bool)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_channel_attr_read_bool");
+	if (iio_channel_attr_read_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_read_bool");
+	   return false;
+	}
+	iio_channel_attr_write_bool = (pfn_iio_channel_attr_write_bool)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_channel_attr_write_bool");
+	if (iio_channel_attr_write_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_bool");
+	   return false;
+	}
+	iio_channel_enable = (pfn_iio_channel_enable)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_channel_enable");
+	if (iio_channel_enable == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_enable");
+	   return false;
+	}
+	iio_channel_attr_write = (pfn_iio_channel_attr_write)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_channel_attr_write");
+	if (iio_channel_attr_write == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write");
+	   return false;
+	}
+	iio_channel_attr_write_longlong = (pfn_iio_channel_attr_write_longlong)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_channel_attr_write_longlong");
+	if (iio_channel_attr_write_longlong == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_longlong");
+	   return false;
+	}
+
+	iio_device_attr_write_longlong = (pfn_iio_device_attr_write_longlong)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_attr_write_longlong");
+	if (iio_device_attr_write_longlong == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_longlong");
+	   return false;
+	}
+
+	iio_device_attr_write_raw = (pfn_iio_device_attr_write_raw)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_attr_write_raw");
+	if (iio_device_attr_write_raw == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_raw");
+	   return false;
+	}
+
+	iio_device_create_buffer = (pfn_iio_device_create_buffer)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_device_create_buffer");
+	if (iio_device_create_buffer == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_create_buffer");
+	   return false;
+	}
+	iio_buffer_set_blocking_mode = (pfn_iio_buffer_set_blocking_mode)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_set_blocking_mode");
+	if (iio_buffer_set_blocking_mode == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_set_blocking_mode");
+	   return false;
+	}
+	iio_buffer_destroy = (pfn_iio_buffer_destroy)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_destroy");
+	if (iio_buffer_destroy == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_destroy");
+	   return false;
+	}
+	iio_context_destroy = (pfn_iio_context_destroy)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_context_destroy");
+	if (iio_context_destroy == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_destroy");
+	   return false;
+	}
+
+	iio_buffer_refill = (pfn_iio_buffer_refill)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_refill");
+	if (iio_buffer_refill == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_refill");
+	   return false;
+	}
+	iio_buffer_start = (pfn_iio_buffer_start)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_start");
+	if (iio_buffer_start == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_start");
+	   return false;
+	}
+	iio_buffer_step = (pfn_iio_buffer_step)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_step");
+	if (iio_buffer_step == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_step");
+	   return false;
+	}
+	iio_buffer_end = (pfn_iio_buffer_end)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_end");
+	if (iio_buffer_end == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_end");
+	   return false;
+	}
+	iio_buffer_push = (pfn_iio_buffer_push)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_push");
+	if (iio_buffer_push == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_push");
+	   return false;
+	}
+	iio_buffer_first = (pfn_iio_buffer_first)
+	                           GETPROCADDRESS (this -> Handle,
+	                                           "iio_buffer_first");
+	if (iio_buffer_first == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_first");
+	   return false;
+	}
+	return true;
+}
+
+void	plutoHandler::handleSignal (float s) {
+static float buffer [4096];
+static int bufferP	= 0;
+static int bufferC	= 0;
+
+	buffer [bufferP] = s;
+	bufferP ++;
+	if (bufferP >= 4096) {
+	   bufferP = 0;
+	   bufferC ++;
+	   if (bufferC >= 10) {
+	      bufferC = 0;
+	      showBuffer (buffer);
+	   }
+	}
+}
+
+void	plutoHandler::showBuffer (float *b) {
+static double X_axis [1024];
+static double Y_values [1024];
+static double endV [1024] = {0};
+
+	for (int i = 0; i < 4096; i ++)
+	   fftBuffer [i] = std::complex<float> (b [i] * window [i], 0);
+
+	fftwf_execute (plan);
+	
+	for (int i = 0; i < 1024; i ++)
+	   X_axis [i] = i * 96 / 1024;
+
+	for (int i = 0; i < 1024; i ++) 
+	   Y_values [i] = abs (fftBuffer [i]);
+
+	for (int i = 0; i < 1024; i ++)
+	   if (!isnan (Y_values [i]) && !isinf (Y_values [i]))
+	      endV [i] = 0.1 * get_db (Y_values [i]) + 0.9 * endV [i];
+
+	float max	= -100;
+	for (int i = 0; i < 1024; i ++)
+	   if (endV [i] > max)
+	      max = endV [i];
+
+	plotgrid	-> setAxisScale (QwtPlot::xBottom,
+	                                 X_axis [0], X_axis [1023]);
+	plotgrid	-> enableAxis (QwtPlot::xBottom);
+	plotgrid	-> setAxisScale (QwtPlot::yLeft,
+	                                 get_db (0), get_db (max + 40));
+	plotgrid	-> enableAxis (QwtPlot::yLeft);
+	spectrumCurve. setSamples (X_axis, endV, 1024);
+	plotgrid	-> replot();
+}
+	
+	
+	

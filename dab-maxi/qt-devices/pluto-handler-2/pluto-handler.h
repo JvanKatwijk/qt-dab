@@ -47,10 +47,11 @@
 class	xml_fileWriter;
 
 #ifndef	PLUTO_RATE
-#define	PLUTO_RATE	2100000
+#define	PLUTO_RATE	2112000
 #define	DAB_RATE	2048000
 #define	DIVIDER		1000
 #define	CONV_SIZE	(PLUTO_RATE / DIVIDER)
+#define	FM_RATE		2112000
 #endif
 
 enum iodev { RX, TX };
@@ -108,6 +109,7 @@ typedef int  (*pfn_iio_buffer_set_blocking_mode)(struct iio_buffer *buf,
 typedef void (*pfn_iio_buffer_destroy) (struct iio_buffer *buf);
 typedef void (*pfn_iio_context_destroy) (struct iio_context *ctx);
 typedef ssize_t (*pfn_iio_buffer_refill) (struct iio_buffer *buf);
+typedef ptrdiff_t (*pfn_iio_buffer_start) (const struct iio_buffer *buf);
 typedef ptrdiff_t (*pfn_iio_buffer_step) (const struct iio_buffer *buf);
 typedef void * (*pfn_iio_buffer_end)(const struct iio_buffer *buf);
 typedef void * (*pfn_iio_buffer_first)(const struct iio_buffer *buf,
@@ -120,7 +122,8 @@ struct stream_cfg {
         const char *rfport;
 };
 
-class	plutoHandler: public QThread, public deviceHandler, public Ui_plutoWidget {
+class	plutoHandler: public QThread, public deviceHandler,
+	                                     public Ui_plutoWidget {
 Q_OBJECT
 public:
 			plutoHandler		(QSettings *, QString &);

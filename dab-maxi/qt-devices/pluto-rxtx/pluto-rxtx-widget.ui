@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>324</width>
-    <height>295</height>
+    <width>443</width>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -118,8 +118,25 @@ filter is disabled, but will be enabled by touching the button.</string>
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QwtPlot" name="transmittedSignal">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>151</height>
+      </size>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QwtPlot</class>
+   <extends>QFrame</extends>
+   <header>qwt_plot.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

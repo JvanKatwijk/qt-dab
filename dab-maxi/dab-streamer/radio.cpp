@@ -187,7 +187,6 @@ QString scanmodeText (int e) {
 #define	CONFIG_BUTTON		QString	("configButton")
 #define	DLTEXT_BUTTON		QString	("dlTextButton")
 #define	HIDE_BUTTON		QString ("hideButton")
-#define	HTTP_BUTTON		QString ("httpButton")
 #define	SCHEDULE_BUTTON		QString ("scheduleButton")
 
 static
@@ -563,8 +562,6 @@ uint8_t	dabBand;
 	         this, SLOT (color_dlTextButton (void)));
 	connect (hideButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_hideButton (void)));
-	connect (httpButton, SIGNAL (rightClicked (void)),
-	         this, SLOT (color_httpButton (void)));
 	connect (scheduleButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_scheduleButton ()));
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
@@ -3119,10 +3116,6 @@ QString serviceName	= s -> serviceName;
 	         s. append (":");
 	         s. append (serviceName);
 	         dabSettings	-> setValue ("presetname", s);
-#ifdef	HAVE_PLUTO_RXTX
-	        if (streamerOut != nullptr)
-	           streamerOut -> addRds (std::string (serviceName. toUtf8 (). data ()));
-#endif
 	      }
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
@@ -4089,12 +4082,6 @@ QString	hideButton_color =
 QString hideButton_font	=
 	   dabSettings -> value (HIDE_BUTTON + "_font",
 	                                              "white"). toString ();
-QString	httpButton_color =
-	   dabSettings -> value (HTTP_BUTTON + "_color",
-	                                              "black"). toString ();
-QString httpButton_font	=
-	   dabSettings -> value (HTTP_BUTTON + "_font",
-	                                              "white"). toString ();
 QString	scheduleButton_color =
 	   dabSettings -> value (SCHEDULE_BUTTON + "_color",
 	                                              "black"). toString ();
@@ -4242,10 +4229,6 @@ void	RadioInterface::color_dlTextButton	()	{
 
 void	RadioInterface::color_hideButton	() 	{
 	set_buttonColors (hideButton, HIDE_BUTTON);
-}
-
-void	RadioInterface::color_httpButton	() 	{
-	set_buttonColors (httpButton, HTTP_BUTTON);
 }
 
 void	RadioInterface::color_scheduleButton	() 	{

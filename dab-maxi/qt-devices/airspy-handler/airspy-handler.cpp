@@ -274,7 +274,7 @@ uint32_t samplerateCount;
 	xmlDumper	= nullptr;
 }
 
-	airspyHandler::~airspyHandler() {
+	airspyHandler::~airspyHandler () {
 	stopReader ();
 	myFrame. hide ();
 	filtering	= false;

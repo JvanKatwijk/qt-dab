@@ -508,14 +508,14 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="hideButton">
+         <widget class="newPushButton" name="hideButton">
           <property name="text">
            <string>hide</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="httpButton">
+         <widget class="newPushButton" name="httpButton">
           <property name="text">
            <string>http</string>
           </property>
@@ -907,6 +907,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
    <class>verySmallPushButton</class>
    <extends>QPushButton</extends>
    <header>verysmallpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>newPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">newpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
