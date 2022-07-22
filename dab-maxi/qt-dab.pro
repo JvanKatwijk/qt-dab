@@ -350,8 +350,8 @@ CONFIG		+= qwt
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
-#CONFIG		+= sdrplay-v2
-#CONFIG		+= sdrplay-v3
+CONFIG		+= sdrplay-v2
+CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy

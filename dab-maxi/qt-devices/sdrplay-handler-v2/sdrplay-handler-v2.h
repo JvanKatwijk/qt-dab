@@ -33,6 +33,7 @@
 #include	"device-handler.h"
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
+#include	<QLibrary>
 
 typedef void (*mir_sdr_StreamCallback_t)(int16_t	*xi,
 	                                 int16_t	*xq,
@@ -165,7 +166,7 @@ private:
 	int32_t		vfoFrequency;
 	bool		libraryLoaded;
 	std::atomic<bool>	running;
-	HINSTANCE	Handle;
+	QLibrary	*pHandle;
 	bool		agcMode;
 	int16_t		nrBits;
 

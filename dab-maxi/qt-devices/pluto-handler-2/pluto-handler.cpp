@@ -198,29 +198,28 @@ int	ret;
 	myFrame. show	();
 
 #ifdef	__MINGW32__
-	wchar_t *libname = (wchar_t *)L"libiio.dll";
-        Handle  = LoadLibrary (libname);
-	if (Handle == NULL) {
-	  fprintf (stderr, "Failed to libiio.dll\n");
-	  throw (22);
-	}
+	const char * libName = "libiio.dll";
 #else
-	Handle		= dlopen ("libiio.so", RTLD_NOW);
-	if (Handle == NULL) {
-	   fprintf (stderr,  "%s", "we could not load libiio.so");
-	   throw (23);
-	}
+	const char * libName= "libiio.so";
 #endif
+
+	pHandle		= new QLibrary (libName);
+	if (pHandle == nullptr) {
+	   fprintf (stderr, " could not load %s\n", libName);
+	   throw (21);
+	}
+
+	pHandle -> load ();
+	if (!pHandle -> isLoaded ()) {
+	   fprintf (stderr, "Failed to open %s\n", libName);
+	   throw (22);
+	}
 
 	bool success			= loadFunctions ();
 	if (!success) {
-#ifdef __MINGW32__
-           FreeLibrary (Handle);
-#else
-           dlclose (Handle);
-#endif
-           throw (23);
-        }
+	   delete pHandle;
+	   throw (21);
+	}
 
 	this	-> ctx			= nullptr;
 	this	-> rxbuf		= nullptr;
@@ -279,7 +278,6 @@ int	ret;
 	}
 
 //	
-	
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
 	   fprintf (stderr, "No RX device found\n");
@@ -397,11 +395,7 @@ int	ret;
 	ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
-#ifdef __MINGW32__
-	FreeLibrary (Handle);
-#else
-	dlclose (Handle);
-#endif
+	delete pHandle;
 }
 //
 
@@ -785,176 +779,193 @@ QString	theValue	= "";
 
 bool	plutoHandler::loadFunctions	() {
 
-	iio_device_find_channel = (pfn_iio_device_find_channel)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_find_channel");
+	iio_device_find_channel =
+	           (pfn_iio_device_find_channel)
+	                    pHandle -> resolve ("iio_device_find_channel");
 	if (iio_device_find_channel == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_find_channel");
 	   return false;
 	}
-	iio_create_default_context = (pfn_iio_create_default_context)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_create_default_context");
+
+	iio_create_default_context =
+	            (pfn_iio_create_default_context)
+	                    pHandle -> resolve ("iio_create_default_context");
 	if (iio_create_default_context == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_create_default_context");
 	   return false;
 	}
-	iio_create_local_context = (pfn_iio_create_local_context)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_create_local_context");
+
+	iio_create_local_context =
+	            (pfn_iio_create_local_context)
+	                    pHandle -> resolve ("iio_create_local_context");
 	if (iio_create_local_context == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_create_local_context");
 	   return false;
 	}
-	iio_create_network_context = (pfn_iio_create_network_context)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_create_network_context");
+
+	iio_create_network_context =
+	            (pfn_iio_create_network_context)
+	                    pHandle -> resolve ("iio_create_network_context");
 	if (iio_create_network_context == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_create_network_context");
 	   return false;
 	}
-	iio_context_get_name = (pfn_iio_context_get_name)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_context_get_name");
+
+	iio_context_get_name =
+	            (pfn_iio_context_get_name)
+	                    pHandle -> resolve ("iio_context_get_name");
 	if (iio_context_get_name == nullptr) {
 	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
 	   return false;
 	}
-	iio_context_get_devices_count = (pfn_iio_context_get_devices_count)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_context_get_devices_count");
+
+	iio_context_get_devices_count =
+	            (pfn_iio_context_get_devices_count)
+	                    pHandle -> resolve ("iio_context_get_devices_count");
 	if (iio_context_get_devices_count == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_context_get_devices_count");
 	   return false;
 	}
-	iio_context_find_device = (pfn_iio_context_find_device)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_context_find_device");
+
+	iio_context_find_device =
+	             (pfn_iio_context_find_device)
+	                    pHandle -> resolve ("iio_context_find_device");
 	if (iio_context_find_device == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_context_find_device");
 	   return false;
 	}
 
-	iio_device_attr_read_bool = (pfn_iio_device_attr_read_bool)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_attr_read_bool");
+	iio_device_attr_read_bool =
+	             (pfn_iio_device_attr_read_bool)
+	                      pHandle -> resolve ("iio_device_attr_read_bool");
 	if (iio_device_attr_read_bool == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_attr_read_bool");
 	   return false;
 	}
-	iio_device_attr_write_bool = (pfn_iio_device_attr_write_bool)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_attr_write_bool");
+
+	iio_device_attr_write_bool =
+	             (pfn_iio_device_attr_write_bool)
+	                      pHandle -> resolve ("iio_device_attr_write_bool");
 	if (iio_device_attr_write_bool == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_bool");
 	   return false;
 	}
 
-	iio_channel_attr_read_bool = (pfn_iio_channel_attr_read_bool)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_channel_attr_read_bool");
+	iio_channel_attr_read_bool =
+	             (pfn_iio_channel_attr_read_bool)
+	                      pHandle -> resolve ("iio_channel_attr_read_bool");
 	if (iio_channel_attr_read_bool == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_read_bool");
 	   return false;
 	}
-	iio_channel_attr_write_bool = (pfn_iio_channel_attr_write_bool)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_channel_attr_write_bool");
+
+	iio_channel_attr_write_bool =
+	             (pfn_iio_channel_attr_write_bool)
+	                      pHandle -> resolve ("iio_channel_attr_write_bool");
 	if (iio_channel_attr_write_bool == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_bool");
 	   return false;
 	}
-	iio_channel_enable = (pfn_iio_channel_enable)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_channel_enable");
+
+	iio_channel_enable =
+	             (pfn_iio_channel_enable)
+	                      pHandle -> resolve ("iio_channel_enable");
 	if (iio_channel_enable == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_channel_enable");
 	   return false;
 	}
-	iio_channel_attr_write = (pfn_iio_channel_attr_write)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_channel_attr_write");
+
+	iio_channel_attr_write =
+	              (pfn_iio_channel_attr_write)
+	                      pHandle -> resolve ("iio_channel_attr_write");
 	if (iio_channel_attr_write == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write");
 	   return false;
 	}
-	iio_channel_attr_write_longlong = (pfn_iio_channel_attr_write_longlong)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_channel_attr_write_longlong");
+
+	iio_channel_attr_write_longlong =
+	              (pfn_iio_channel_attr_write_longlong)
+	                       pHandle -> resolve ("iio_channel_attr_write_longlong");
 	if (iio_channel_attr_write_longlong == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_longlong");
 	   return false;
 	}
 
-	iio_device_attr_write_longlong = (pfn_iio_device_attr_write_longlong)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_attr_write_longlong");
+	iio_device_attr_write_longlong =
+	               (pfn_iio_device_attr_write_longlong)
+	                        pHandle -> resolve ("iio_device_attr_write_longlong");
 	if (iio_device_attr_write_longlong == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_longlong");
 	   return false;
 	}
 
-	iio_device_attr_write_raw = (pfn_iio_device_attr_write_raw)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_attr_write_raw");
+	iio_device_attr_write_raw =
+	               (pfn_iio_device_attr_write_raw)
+	                         pHandle -> resolve ("iio_device_attr_write_raw");
 	if (iio_device_attr_write_raw == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_raw");
 	   return false;
 	}
 
-	iio_device_create_buffer = (pfn_iio_device_create_buffer)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_device_create_buffer");
+	iio_device_create_buffer =
+	               (pfn_iio_device_create_buffer)
+	                         pHandle -> resolve ("iio_device_create_buffer");
 	if (iio_device_create_buffer == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_device_create_buffer");
 	   return false;
 	}
-	iio_buffer_set_blocking_mode = (pfn_iio_buffer_set_blocking_mode)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_set_blocking_mode");
+
+	iio_buffer_set_blocking_mode =
+	               (pfn_iio_buffer_set_blocking_mode)
+	                         pHandle -> resolve ("iio_buffer_set_blocking_mode");
 	if (iio_buffer_set_blocking_mode == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_set_blocking_mode");
 	   return false;
 	}
-	iio_buffer_destroy = (pfn_iio_buffer_destroy)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_destroy");
+
+	iio_buffer_destroy =
+	               (pfn_iio_buffer_destroy)
+	                         pHandle -> resolve ("iio_buffer_destroy");
 	if (iio_buffer_destroy == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_destroy");
 	   return false;
 	}
-	iio_context_destroy = (pfn_iio_context_destroy)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_context_destroy");
+
+	iio_context_destroy =
+	               (pfn_iio_context_destroy)
+	                         pHandle -> resolve ("iio_context_destroy");
 	if (iio_context_destroy == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_context_destroy");
 	   return false;
 	}
 
-	iio_buffer_refill = (pfn_iio_buffer_refill)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_refill");
+	iio_buffer_refill =
+	               (pfn_iio_buffer_refill)
+	                         pHandle -> resolve ("iio_buffer_refill");
 	if (iio_buffer_refill == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_refill");
 	   return false;
 	}
-	iio_buffer_step = (pfn_iio_buffer_step)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_step");
+
+	iio_buffer_step =
+	               (pfn_iio_buffer_step)
+	                         pHandle -> resolve ("iio_buffer_step");
 	if (iio_buffer_step == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_step");
 	   return false;
 	}
-	iio_buffer_end = (pfn_iio_buffer_end)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_end");
+
+	iio_buffer_end =
+	               (pfn_iio_buffer_end)
+	                          pHandle -> resolve ("iio_buffer_end");
 	if (iio_buffer_end == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_end");
 	   return false;
 	}
-	iio_buffer_first = (pfn_iio_buffer_first)
-	                           GETPROCADDRESS (this -> Handle,
-	                                           "iio_buffer_first");
+
+	iio_buffer_first =
+	               (pfn_iio_buffer_first)
+	                          pHandle -> resolve ("iio_buffer_first");
 	if (iio_buffer_first == nullptr) {
 	   fprintf (stderr, "could not load %s\n", "iio_buffer_first");
 	   return false;

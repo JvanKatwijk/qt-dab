@@ -37,12 +37,13 @@
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_pluto-widget.h"
+#include	<QLibrary>
 
-#ifdef __MINGW32__
-#define GETPROCADDRESS  GetProcAddress
-#else
-#define GETPROCADDRESS  dlsym
-#endif
+//#ifdef __MINGW32__
+//#define GETPROCADDRESS  GetProcAddress
+//#else
+//#define GETPROCADDRESS  dlsym
+//#endif
 
 class	xml_fileWriter;
 
@@ -144,7 +145,7 @@ public:
 	QString		deviceName		();
 private:
 	bool			loadFunctions	();
-	HINSTANCE		Handle;
+	QLibrary		*pHandle;
 	QFrame			myFrame;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	QSettings		*plutoSettings;

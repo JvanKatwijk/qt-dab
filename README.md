@@ -5,6 +5,10 @@ Qt-DAB-4.4-2 is software for Linux, Windows and Raspberry Pi for listening to te
 ![4.4](/qt-dab-screen.png?raw=true)
 
 ----------------------------------------------------------------
+
+Thanks to Richard Huber, Qt-DAB can be compiled on the Mac
+
+----------------------------------------------------------------
 What is new in Qt-DAB 4.4.2
 ----------------------------------------------------------------
 
@@ -71,6 +75,9 @@ Step 2:
 
 	For letting the software show the transmitter and the azimuth,
 	choose  "CONFIG += tiiLib".
+
+	Note that the file "converted_map.h" is a generated file that contains
+	a binary version of the HTML/javascript code for the server.
 
 step 3:
 
