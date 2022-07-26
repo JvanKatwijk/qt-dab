@@ -94,8 +94,8 @@ private:
 	sdrplay_api_CallbackFnsT        cbFns;
 	sdrplay_api_RxChannelParamsT    *chParams;
 
-	bool				failFlag;
-	bool			successFlag;
+	std::atomic<bool>	failFlag;
+	std::atomic<bool>	successFlag;
 	int			denominator;
 	std::atomic<bool>       threadRuns;
 	void			run			();
@@ -126,6 +126,7 @@ private:
 	HINSTANCE		fetchLibrary		();
 	void			releaseLibrary		();
 	bool			loadFunctions		();
+	int			errorCode;
 signals:
 	void			new_GRdBValue		(int);
 	void			new_lnaValue		(int);

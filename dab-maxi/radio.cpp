@@ -648,11 +648,11 @@ uint8_t	dabBand;
 	deviceSelector	-> addItem ("file input(.iq)");
 	deviceSelector	-> addItem ("file input(.sdr)");
 	deviceSelector	-> addItem ("xml files");
-#ifdef	HAVE_SDRPLAY_V2
+#ifdef	HAVE_SDRPLAY_V3
 	deviceSelector	-> addItem ("sdrplay");
 #endif
-#ifdef	HAVE_SDRPLAY_V3
-	deviceSelector	-> addItem ("sdrplay-v3");
+#ifdef	HAVE_SDRPLAY_V2
+	deviceSelector	-> addItem ("sdrplay-v2");
 #endif
 #ifdef	HAVE_RTLSDR
 	deviceSelector	-> addItem ("dabstick");
@@ -1494,28 +1494,91 @@ deviceHandler	*inputDevice	= nullptr;
 
 	channel. realChannel	= true;		// until proven otherwise
 #ifdef	HAVE_SDRPLAY_V2
-	if (s == "sdrplay") {
+	if (s == "sdrplay-v2") {
+#ifdef	__MINGW32__
+	   QMessageBox::warning (this, tr ("Warning"),
+	                            tr ("If SDRuno is installed with drivers 3.10,\nV2.13 drivers will not work anymore, choose \"sdrplay\" instead\n"));
+#endif
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings, version);
 	      showButtons();
 	   }
 	   catch (int e) {
+	      std::string s;
+	      switch (e) {
+	         case 23:
+	            s = "could not fetch library";
+	            break;
+	         case 24:
+	            s = "one or more library functions could not be loaded";
+	            break;
+	         case 25:
+	         case 26:
+	            s = "Error in API version";
+	            break;
+	         case 27:
+	            s = "Could not detect a device\n";
+	            break;
+	         case 28:
+	            s = "Could not set the device";
+	            break;
+	         default:
+	            s = "Unidentified error";
+	      }
+	      s = "SDRplay: " + s + "\n";
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
+	                               tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
 	else
 #endif
 #ifdef	HAVE_SDRPLAY_V3
-	if (s == "sdrplay-v3") {
+	if (s == "sdrplay") {
 	   try {
 	      inputDevice	= new sdrplayHandler_v3 (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (int errorCode) {
+	      std::string errorString;
+	      switch (errorCode) {
+	         case 1:
+	            errorString = "Could not fetch library";
+	            break;
+	         case 2:
+	            errorString = "error in fetching functions from library";
+	            break;
+	         case 3:
+	            errorString = "sdrplay_api_Open failed";
+	            break;
+	         case 4:
+	            errorString = "could not open sdrplay_api_ApiVersion";
+	            break;
+	         case 5:
+	            errorString = "API versions do not match";
+	            break;
+	         case 6:
+	            errorString = "sdrplay_api_GetDevices failed";
+	            break;
+	         case 7:
+	            errorString = "no valid device found";
+	            break;
+	         case 8:
+	            errorString = "sdrplay_api_SelectDevice failed";
+	            break;
+	         case 9:
+	            errorString = "sdrplay_api_GetDeviceParams failed";
+	            break;
+	         case 10:
+	            errorString = "sdrplay_api+GetDeviceParams returns null";
+	            break;
+	         default:
+	            errorString = "unidentified error with sdrplay device";
+	            break;
+	      }
+	      
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
+	                               tr (errorString. c_str ()));
 	      return nullptr;
 	   }
 	}

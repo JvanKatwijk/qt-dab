@@ -82,6 +82,7 @@ uint32_t samplerateCount;
 	theFilter		= nullptr;
 	device			= nullptr;
 	serialNumber		= 0;
+
 #ifdef	__MINGW32__
 	const char *libraryString = "airspy.dll";
 	Handle		= LoadLibrary ((wchar_t *)L"airspy.dll");
@@ -100,15 +101,9 @@ uint32_t samplerateCount;
 	   throw (20);
 	}
 
-	libraryLoaded	= true;
-
 	if (!load_airspyFunctions()) {
 	   fprintf (stderr, "problem in loading functions\n");
-#ifdef __MINGW32__
-	   FreeLibrary (Handle);
-#else
-	   dlclose (Handle);
-#endif
+	   releaseLibrary ();
 	}
 //
 	strcpy (serial,"");
@@ -116,11 +111,7 @@ uint32_t samplerateCount;
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_init() failed: %s (%d)\n",
 	             my_airspy_error_name((airspy_error)result), result);
-#ifdef __MINGW32__
-	   FreeLibrary (Handle);
-#else
-	   dlclose (Handle);
-#endif
+	   releaseLibrary ();
 	   throw (21);
 	}
 
@@ -130,6 +121,7 @@ uint32_t samplerateCount;
 	fprintf (stderr, "we have %d devices\n", numofDevs);
 	if (numofDevs == 0) {
 	   fprintf (stderr, "No devices found\n");
+	   releaseLibrary ();
 	   throw (22);
 	}
 	if (numofDevs > 1) {
@@ -147,11 +139,7 @@ uint32_t samplerateCount;
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airpsy_open() failed: %s (%d)\n",
 	             my_airspy_error_name ((airspy_error)result), result);
-#ifdef __MINGW32__
-	   FreeLibrary (Handle);
-#else
-	   dlclose (Handle);
-#endif
+	   releaseLibrary ();
 	   throw (22);
 	}
 
@@ -173,11 +161,7 @@ uint32_t samplerateCount;
 
 	if (selectedRate == 0) {
 	   fprintf (stderr, "Sorry. cannot help you\n");
-#ifdef __MINGW32__
-	   FreeLibrary (Handle);
-#else
-	   dlclose (Handle);
-#endif
+	   releaseLibrary ();
 	   throw (23);
 	}
 	else
@@ -192,11 +176,7 @@ uint32_t samplerateCount;
 	if (result != AIRSPY_SUCCESS) {
            printf("airspy_set_samplerate() failed: %s (%d)\n",
 	             my_airspy_error_name ((enum airspy_error)result), result);
-#ifdef __MINGW32__
-	   FreeLibrary (Handle);
-#else
-	   dlclose (Handle);
-#endif
+	   releaseLibrary ();
 	   throw (24);
 	}
 
@@ -300,17 +280,10 @@ uint32_t samplerateCount;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
-	if (Handle == nullptr) {
-	   return;	// nothing achieved earlier
-	}
 	if (theFilter != nullptr)
 	   delete theFilter;
 	my_airspy_exit();
-#ifdef __MINGW32__
-	FreeLibrary (Handle);
-#else
-	dlclose (Handle);
-#endif
+	releaseLibrary ();
 err:;
 }
 
@@ -676,7 +649,15 @@ uint8_t bid;
 	   return "UNKNOWN";
 }
 //
-//
+void    airspyHandler::releaseLibrary  () {
+#ifdef __MINGW32__
+        FreeLibrary (Handle);
+#else
+        dlclose (Handle);
+#endif
+}
+
+
 bool	airspyHandler::load_airspyFunctions() {
 //
 //	link the required procedures

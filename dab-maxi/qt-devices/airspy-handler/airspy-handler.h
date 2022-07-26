@@ -32,8 +32,11 @@
 #else
 #include	"libairspy/airspy.h"
 #endif
+//#include	<QLibrary>;
 
-	class	xml_fileWriter;
+class	xml_fileWriter;
+
+
 extern "C"  {
  typedef int (*pfn_airspy_init)();
  typedef int (*pfn_airspy_exit)();
@@ -180,8 +183,8 @@ private:
 //
 	HINSTANCE	Handle_usb;
 	HINSTANCE	Handle;
-	bool		libraryLoaded;
 	bool		success;
+	void		releaseLibrary	();
 	std::atomic<bool>	running;
 	bool		lna_agc;
 	bool		mixer_agc;

@@ -125,15 +125,16 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	vfoFrequency	= MHz (220);
 	theGain		= -1;
 	debugControl	-> hide ();
-	failFlag	= false;
-	successFlag	= false;
+	failFlag. store (false);
+	successFlag. store (false);
+	errorCode	= 0;
 	start ();
-	while (!failFlag && !successFlag)
+	while (!failFlag. load () && !successFlag. load () && isRunning ())
 	   usleep (1000);
-	if (failFlag) {
+	if (failFlag. load ()) {
 	   while (isRunning ())
 	      usleep (1000);
-	   throw (21);
+	   throw (errorCode);
 	}
 	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
 }
@@ -218,7 +219,11 @@ QString	sdrplayHandler_v3::deviceName	() {
 ///////////////////////////////////////////////////////////////////////////
 //	Handling the GUI
 //////////////////////////////////////////////////////////////////////
-
+//
+//	Since the daemon is not threadproof, we have to package the
+//	actual interface into its own thread.
+//	Communication with that thread is synchronous!
+//
 void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
 	lnaGainSetting	-> setRange (low, high);
 	lnaGRdBDisplay	->
@@ -234,7 +239,8 @@ void	sdrplayHandler_v3::set_serial	(const QString& s) {
 }
 
 void	sdrplayHandler_v3::set_apiVersion (float version) {
-	api_version	-> display (version);
+QString v = QString::number (version, 'r', 2);
+	api_version	-> display (v);
 }
 
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
@@ -390,7 +396,6 @@ void    StreamACallback (short *xi, short *xq,
                          void *cbContext) {
 sdrplayHandler_v3 *p	= static_cast<sdrplayHandler_v3 *> (cbContext);
 std::complex<int16_t> localBuf [numSamples];
-static int teller	= 0;
 
 	(void)params;
 	if (reset)
@@ -479,15 +484,17 @@ uint32_t                ndev;
 
 	Handle			= fetchLibrary ();
 	if (Handle == nullptr) {
-	   failFlag	= true;
+	   failFlag. store (true);
+	   errorCode	= 1;
 	   return;
 	}
 
 //	load the functions
 	bool success	= loadFunctions ();
 	if (!success) {
-	   failFlag	= true;
+	   failFlag. store (true);
 	   releaseLibrary ();
+	   errorCode	= 2;
 	   return;
         }
 	fprintf (stderr, "functions loaded\n");
@@ -497,8 +504,9 @@ uint32_t                ndev;
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_Open failed %s\n",
 	                          sdrplay_api_GetErrorString (err));
-	   failFlag	= true;
+	   failFlag. store (true);
 	   releaseLibrary ();
+	   errorCode	= 3;
 	   return;
 	}
 
@@ -509,6 +517,7 @@ uint32_t                ndev;
         if (err  != sdrplay_api_Success) {
            fprintf (stderr, "sdrplay_api_ApiVersion failed %s\n",
                                      sdrplay_api_GetErrorString (err));
+	   errorCode	= 4;
 	   goto closeAPI;
         }
 
@@ -516,6 +525,7 @@ uint32_t                ndev;
 //	if (apiVersion < (SDRPLAY_API_VERSION - 0.01)) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
+	   errorCode	= 5;
 	   goto closeAPI;
 	}
 	
@@ -528,12 +538,14 @@ uint32_t                ndev;
 	   if (err != sdrplay_api_Success) {
 	      fprintf (stderr, "sdrplay_api_GetDevices failed %s\n",
 	                      sdrplay_api_GetErrorString (err));
+	      errorCode		= 6;
 	      goto unlockDevice_closeAPI;
 	   }
 	}
 
 	if (ndev == 0) {
 	   fprintf (stderr, "no valid device found\n");
+	   errorCode	= 7;
 	   goto unlockDevice_closeAPI;
 	}
 
@@ -543,6 +555,7 @@ uint32_t                ndev;
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_SelectDevice failed %s\n",
 	                         sdrplay_api_GetErrorString (err));
+	   errorCode	= 8;
 	   goto unlockDevice_closeAPI;
 	}
 //
@@ -557,11 +570,13 @@ uint32_t                ndev;
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_GetDeviceParams failed %s\n",
 	                         sdrplay_api_GetErrorString (err));
+	   errorCode	= 9;
 	   goto closeAPI;
 	}
 
 	if (deviceParams == nullptr) {
 	   fprintf (stderr, "sdrplay_api_GetDeviceParams return null as par\n");
+	   errorCode = 10;
 	   goto closeAPI;
 	}
 //
@@ -595,6 +610,7 @@ uint32_t                ndev;
 	if (err != sdrplay_api_Success) {
 	   fprintf (stderr, "sdrplay_api_Init failed %s\n",
                                        sdrplay_api_GetErrorString (err));
+	   errorCode	= 11;
 	   goto unlockDevice_closeAPI;
 	}
 //
@@ -660,7 +676,7 @@ uint32_t                ndev;
 	set_apiVersion_signal	(apiVersion);
 	set_antennaSelect_signal (has_antennaSelect);
 	threadRuns. store (true);	// it seems we can do some work
-	successFlag	= true;
+	successFlag. store (true);
 
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
@@ -842,7 +858,7 @@ normal_exit:
 unlockDevice_closeAPI:
 	sdrplay_api_UnlockDeviceApi	();
 closeAPI:	
-	failFlag	= true;
+	failFlag. store (true);
 	sdrplay_api_ReleaseDevice       (chosenDevice);
         sdrplay_api_Close               ();
 	releaseLibrary	();
@@ -888,6 +904,11 @@ ULONG APIkeyValue_length = 255;
 	   RegCloseKey(APIkey);
 
 	   Handle	= LoadLibrary (x);
+	   if (Handle == nullptr) {
+	      const wchar_t *y =
+	              L"C:\\Program Files\\SDRplay\\API\\x86\\sdrplay_api.dll";
+	      Handle	= LoadLibrary (y);
+	   }
 	   if (Handle == nullptr) {
 	      fprintf (stderr, "Failed to open sdrplay_api.dll\n");
 	      return nullptr;

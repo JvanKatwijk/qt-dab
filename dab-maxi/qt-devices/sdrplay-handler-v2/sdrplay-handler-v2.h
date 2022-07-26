@@ -166,7 +166,7 @@ private:
 	int32_t		vfoFrequency;
 	bool		libraryLoaded;
 	std::atomic<bool>	running;
-	QLibrary	*pHandle;
+	HINSTANCE	Handle;
 	bool		agcMode;
 	int16_t		nrBits;
 

@@ -106,7 +106,7 @@ private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
-    QLibrary*	phandle;
+	QLibrary*	phandle;
 	dll_driver	*workerHandle;
 	int32_t		lastFrequency;
 	int16_t		gainsCount;
