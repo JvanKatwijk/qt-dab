@@ -104,12 +104,12 @@
 
 	dabProcessor::~dabProcessor() {
 	   if (isRunning()) {
-	   myReader. setRunning (false);
+	      myReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
-	   msleep (100);
-	   while (isRunning()) {
-	      usleep (100);
+	      msleep (100);
+	      while (isRunning()) {
+	         usleep (100);
 	   }
 	}
 }

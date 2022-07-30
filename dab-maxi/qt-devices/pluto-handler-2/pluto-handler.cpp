@@ -284,13 +284,17 @@ int	ret;
 	   throw (27);
 	}
 
+	struct iio_channel *chn;
+	fprintf (stderr, "switching off TX\n");
+	if (get_phy_chan (ctx, TX, 0, &chn)) 
+	   iio_channel_attr_write_longlong (chn, "powerdown", 1);
+
 	fprintf (stderr, "* Configuring AD9361 for streaming\n");
 	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
 	   fprintf (stderr, "RX port 0 not found\n");
 	   throw (28);
 	}
 
-	struct iio_channel *chn;
 	if (get_phy_chan (ctx, RX, 0, &chn)) {
 	   int ret;
 	   if (agcMode)

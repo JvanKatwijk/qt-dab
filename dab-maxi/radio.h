@@ -158,6 +158,7 @@ private:
 	                                           const QString &);
 	int			serviceOrder;
 	bool			error_report;
+	std::atomic<bool>	serving_a_channel;
 	Ui_technical_data	techData;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;

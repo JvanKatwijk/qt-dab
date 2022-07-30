@@ -270,6 +270,7 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
+	serving_a_channel.  store (false);
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -888,6 +889,8 @@ int	serviceOrder;
 	if (!running. load())
 	   return;
 
+	if (!serving_a_channel. load ())
+	   return;
 	(void)SId;
 	serviceId ed;
 	ed. name	= serviceName;
@@ -3500,7 +3503,10 @@ int	tunedFrequency	=
 	ensembleDisplay		-> setModel (&model);
 	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
+	serving_a_channel. store (true);
+	fprintf (stderr, "serving the channel is set to true\n");
 	my_dabProcessor		-> start ();
+	
 //	my_dabProcessor		-> start (tunedFrequency);
 	channel. has_ecc	= false;
 	channel. transmitterName	= "";
@@ -3561,6 +3567,8 @@ void	RadioInterface::stopChannel	() {
 	   my_dabProcessor -> stop_ficDump ();
 	   ficDumpPointer = nullptr;
 	}
+	serving_a_channel. store (false);
+	fprintf (stderr, "serving the channel is set to false\n");
 #ifdef	TRY_EPG
 	epgTimer. stop		();
 	techData. timeTable_button -> hide ();

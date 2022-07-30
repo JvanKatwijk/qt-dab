@@ -140,11 +140,11 @@ Table of Contents
 Introduction
 ------------------------------------------------------------------
 
-**Qt-DAB-4.351** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up.
+**Qt-DAB-4.4** is a rich implementation of a DAB decoder for use on Linux and Windows based PC's, including some ARM based boards, such as the Raspberry PI 2 and up. It can be used with a variety of SDR devices, including DABsticks,
+all models of the SDRplay, AIRspy etc.
 
-It provides an abundant amount of selectors and displays, most of
-which can be switched off, but are of interest for those who want to see aspects of the DAB signal and want to be in control.
-
+Precompiled versions for Linux-x64 (AppImage) and Windows (an installer)
+are available. 
 ------------------------------------------------------------------
 Features
 ------------------------------------------------------------------
@@ -158,14 +158,14 @@ Features
 	* a user defined Band
   * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the ".ini" file,
   * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time,
+  * automatic reconfiguration of services,
   * Detailed information on reception and selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
-  * Detailed information for *other* services by right-clicking on their name (bitrate, subchannel ID, used CU's protection level, program type) in the service list,
-  * Automatic display of TII (Transmitter Identification Information) data when transmitted,
   * If configured, the TII data is mapped upon a transmitter's name,
+  and  display of TII (Transmitter Identification Information) data when transmitted,
+  * Possibility of displaying a map with position(s) of received transmitter(s),
   * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
   * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into \* sdr files or xml file formats and playing them again later (see section on xml format),
-  * Saving audio as uncompressed wave files,
-  * Saving aac frames from DAB+ services for processing by e.g. VLC,
+  * Saving audio as uncompressed wave files, and Saving aac frames from DAB+ services for processing by e.g. VLC,
   * Saving the ensemble content description: audio and data streams, including almost all technical data) into a text file readable by e.g *LibreOfficeCalc*
   * Advanced scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
   * ip output: when configured the ip data - if selected - is sent to a specificied ip address (default: 127.0.0.1:8888),
@@ -189,9 +189,8 @@ Features
   * Showing the name of the transmitter received as well as the distance to the receiver and the azimuth.
   * background services. Since 4.351 it is possible to run an arbitray number of DAB+ audioservices (from the current ensemble) as background service with the output sent to a file.
 
-Not yet or partly implemented:
+Partly implemented:
 
-  * DMB (Audio and Video)
   * TPEG: when configured, TPEG messages are being sent to a TCP port; sources for a simple client are part of the source distribution.
   * Journaline (an untested Journaline implementation is part of the sources).
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
