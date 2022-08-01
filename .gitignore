@@ -1,8 +1,12 @@
 .qmake.stash
-dab-maxi/linux-bin
-dab-maxi/build
-dab-maxi/Makefile
-dab-maxi/Output
+qt-dab-4/linux-bin
+qt-dab-4/build
+qt-dab-4/Makefile
+qt-dab-4/Output
+qt-dab-5/linux-bin
+qt-dab-5/build
+qt-dab-5/Makefile
+qt-dab-5/Output
 dab-mini/linux-bin
 dab-mini/Output
 dab-mini/build

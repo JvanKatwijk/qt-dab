@@ -188,6 +188,8 @@ QString scanmodeText (int e) {
 #define	HIDE_BUTTON		QString ("hideButton")
 #define	HTTP_BUTTON		QString ("httpButton")
 #define	SCHEDULE_BUTTON		QString ("scheduleButton")
+#define	SET_COORDINATES_BUTTON	QString ("set_coordinatesButton")
+#define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
 
 static
 uint8_t convert (QString s) {
@@ -558,6 +560,10 @@ uint8_t	dabBand;
 	         this, SLOT (color_httpButton (void)));
 	connect (configWidget. scheduleButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_scheduleButton ()));
+	connect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_set_coordinatesButton ()));
+	connect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_loadTableButton ()));
 	connect	(prevChannelButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_prevChannelButton (void)));
 	connect (nextChannelButton, SIGNAL (rightClicked (void)),
@@ -4107,60 +4113,117 @@ QString	scheduleButton_color =
 QString scheduleButton_font	=
 	   dabSettings -> value (SCHEDULE_BUTTON + "_font",
 	                                              "white"). toString ();
+QString	set_coordinatesButton_color =
+	   dabSettings -> value (SET_COORDINATES_BUTTON + "_color",
+	                                              "white"). toString ();
+QString set_coordinatesButton_font	=
+	   dabSettings -> value (SET_COORDINATES_BUTTON + "_font",
+	                                              "black"). toString ();
+	
+QString	loadTableButton_color =
+	   dabSettings -> value (LOAD_TABLE_BUTTON + "_color",
+	                                              "white"). toString ();
+QString loadTableButton_font	=
+	   dabSettings -> value (LOAD_TABLE_BUTTON + "_font",
+	                                              "black"). toString ();
 	dabSettings	-> endGroup ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	configWidget. contentButton	-> setStyleSheet (temp. arg (contentButton_color,
-	                                             contentButton_font));
-	detailButton	-> setStyleSheet (temp. arg (detailButton_color,
-	                                             detailButton_font));
-	configWidget. resetButton	-> setStyleSheet (temp. arg (resetButton_color,	
-	                                             resetButton_font));
-	scanButton	-> setStyleSheet (temp. arg (scanButton_color,
-	                                             scanButton_font));
+	configWidget. contentButton	->
+	              setStyleSheet (temp. arg (contentButton_color,
+	                                        contentButton_font));
 
-	configWidget. show_tiiButton	-> setStyleSheet (temp. arg (tiiButton_color,
-	                                             tiiButton_font));
-	configWidget. show_correlationButton
-	                -> setStyleSheet (temp. arg (correlationButton_color,
-	                                              correlationButton_font));
-	configWidget. show_spectrumButton
-	                -> setStyleSheet (temp. arg (spectrumButton_color,
-	                                             spectrumButton_font));
-	configWidget. snrButton	-> setStyleSheet (temp. arg (snrButton_color,
-	                                             snrButton_font));
-	configWidget. devicewidgetButton -> setStyleSheet (temp. arg (devicewidgetButton_color,
-	                                                devicewidgetButton_font));
+	configWidget.  resetButton ->
+	              setStyleSheet (temp. arg (resetButton_color,	
+	                                        resetButton_font));
 
-	historyButton	-> setStyleSheet (temp. arg (historyButton_color,
-	                                             historyButton_font));
-	configWidget. dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
-	                                             dumpButton_font));
+	configWidget. show_tiiButton	->
+	              setStyleSheet (temp. arg (tiiButton_color,
+	                                        tiiButton_font));
 
-	prevChannelButton -> setStyleSheet (temp. arg (prevChannelButton_color,
-	                                               prevChannelButton_font));
-	nextChannelButton -> setStyleSheet (temp. arg (nextChannelButton_color,
-	                                               nextChannelButton_font));
-	prevServiceButton -> setStyleSheet (temp. arg (prevServiceButton_color,
-	                                               prevServiceButton_font));
-	nextServiceButton -> setStyleSheet (temp. arg (nextServiceButton_color,
-	                                               nextServiceButton_font));
+	configWidget. show_correlationButton ->
+	              setStyleSheet (temp. arg (correlationButton_color,
+	                                        correlationButton_font));
+
+	configWidget. show_spectrumButton ->
+	              setStyleSheet (temp. arg (spectrumButton_color,
+	                                        spectrumButton_font));
+
+	configWidget. snrButton	->
+	              setStyleSheet (temp. arg (snrButton_color,
+	                                        snrButton_font));
+
+	configWidget. devicewidgetButton ->
+	              setStyleSheet (temp. arg (devicewidgetButton_color,
+	                                        devicewidgetButton_font));
+
+	configWidget. dlTextButton ->
+	              setStyleSheet (temp. arg (dlTextButton_color,
+	                                        dlTextButton_font));
+
+	configWidget. dumpButton ->
+	              setStyleSheet (temp. arg (dumpButton_color,
+	                                        dumpButton_font));
+	configWidget. scheduleButton ->
+	              setStyleSheet (temp. arg (scheduleButton_color,
+	                                        scheduleButton_font));
+
+	configWidget. set_coordinatesButton ->
+	              setStyleSheet (temp. arg (set_coordinatesButton_color,
+	                                        set_coordinatesButton_font));
+
+	configWidget. loadTableButton ->
+	              setStyleSheet (temp. arg (loadTableButton_color,
+	                                        loadTableButton_font));
+
+	muteButton	->
+	              setStyleSheet (temp. arg (muteButton_color,
+	                                        muteButton_font));
+
+	historyButton	->
+	              setStyleSheet (temp. arg (historyButton_color,
+	                                        historyButton_font));
+
+	scanButton	->
+	              setStyleSheet (temp. arg (scanButton_color,
+	                                        scanButton_font));
+
+
+	hideButton	->
+	              setStyleSheet (temp. arg (hideButton_color,
+	                                        hideButton_font));
+
+	httpButton	->
+	              setStyleSheet (temp. arg (httpButton_color,
+	                                        httpButton_font));
+
+	detailButton	->
+	              setStyleSheet (temp. arg (detailButton_color,
+	                                        detailButton_font));
+
+	prevChannelButton ->
+	              setStyleSheet (temp. arg (prevChannelButton_color,
+	                                        prevChannelButton_font));
+
+	nextChannelButton ->
+	              setStyleSheet (temp. arg (nextChannelButton_color,
+	                                        nextChannelButton_font));
+
+	prevServiceButton ->
+	              setStyleSheet (temp. arg (prevServiceButton_color,
+	                                        prevServiceButton_font));
+
+	nextServiceButton ->
+	              setStyleSheet (temp. arg (nextServiceButton_color,
+	                                        nextServiceButton_font));
 
 	techData. framedumpButton ->
-	                     setStyleSheet (temp. arg (framedumpButton_color,
-	                                               framedumpButton_font));
+	              setStyleSheet (temp. arg (framedumpButton_color,
+	                                        framedumpButton_font));
+
 	techData. audiodumpButton ->
-	                     setStyleSheet (temp. arg (audiodumpButton_color,
-	                                               audiodumpButton_font));
-	muteButton	-> setStyleSheet (temp. arg (muteButton_color,
-	                                             muteButton_font));
-	configWidget.
-	    dlTextButton -> setStyleSheet (temp. arg (dlTextButton_color,
-	                                             dlTextButton_font));
-	hideButton	-> setStyleSheet (temp. arg (hideButton_color,
-	                                             hideButton_font));
-	configWidget. scheduleButton	-> setStyleSheet (temp. arg (scheduleButton_color,
-	                                             scheduleButton_font));
+	              setStyleSheet (temp. arg (audiodumpButton_color,
+	                                        audiodumpButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -4255,6 +4318,15 @@ void	RadioInterface::color_scheduleButton	() 	{
 	set_buttonColors (configWidget. scheduleButton, SCHEDULE_BUTTON);
 }
 
+void	RadioInterface::color_set_coordinatesButton	() 	{
+	set_buttonColors (configWidget. set_coordinatesButton,
+	                                          SET_COORDINATES_BUTTON);
+}
+
+void	RadioInterface::color_loadTableButton	() 	{
+	set_buttonColors (configWidget. loadTableButton, LOAD_TABLE_BUTTON);
+}
+
 void	RadioInterface::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
 colorSelector *selector;
@@ -4282,6 +4354,12 @@ int	index;
 	dabSettings	-> setValue (buttonColor, baseColor);
 	dabSettings	-> setValue (buttonFont, textColor);
 	dabSettings	-> endGroup ();
+
+	fprintf (stderr, "%s -> %s, %s -> %s\n",
+	                buttonColor. toLatin1 (). data (),
+	                baseColor. toLatin1 (). data (),
+	                buttonFont. toLatin1 (). data (),
+	                textColor. toLatin1 (). data ());
 }
 
 /////////////////////////////////////////////////////////////////////////

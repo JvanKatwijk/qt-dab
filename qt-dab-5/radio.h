@@ -457,6 +457,8 @@ private slots:
 	void			color_scheduleButton	();
 	void			color_hideButton	();
 	void			color_httpButton	();
+	void			color_set_coordinatesButton     ();
+	void			color_loadTableButton   ();
 //
 //	config handlers
 	void			handle_configSetting		();
