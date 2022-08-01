@@ -166,6 +166,8 @@ int16_t	i;
 int16_t	viterbiBlock [3072 + 24] = {0};
 int16_t	inputCount	= 0;
 
+	if (!running. load ())
+	   return;
 //	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
 
 	for (i = 0; i < 3072 + 24; i ++)
@@ -222,10 +224,13 @@ int16_t	inputCount	= 0;
 }
 
 void	ficHandler::stop	() {
+	clearEnsemble ();
+	running. store (false);
 }
 
-void	ficHandler::reset	() {
-	clearEnsemble ();
+void	ficHandler::restart	() {
+	clearEnsemble	();
+	running. store (true);
 }
 
 void	ficHandler::start_ficDump	(FILE *f) {

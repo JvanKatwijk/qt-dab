@@ -50,6 +50,7 @@ basic steps for the build process.
 
 Step 1:	
 
+	Note that the sources for 4.4.2 are now in the subdirectory qt-dab-4
 	Install required libraries, see section 5.5.3 (page 29) of the manual.
 	It turns out that in recent versions of Debian (and related) distributions
 	the lib *qt5-default* does not exist as as separate library.

@@ -32,6 +32,7 @@
 #include	<cstdio>
 #include	<cstdint>
 #include	<vector>
+#include	<atomic>
 #include	"viterbi-spiral.h"
 #include	"dab-params.h"
 #include	"fib-decoder.h"
@@ -48,7 +49,7 @@ public:
 	void	process_ficBlock	(std::vector<int16_t> &,
 	                                 int16_t);
 	void	stop			();
-	void	reset			();
+	void	restart			();
 	void	start_ficDump		(FILE *);
 	void	stop_ficDump		();
 private:
@@ -71,6 +72,7 @@ private:
 	QMutex          ficLocker;
 	uint8_t		ficBuffer [256];
 	int		ficPointer;
+	std::atomic<bool> running;
 //	uint8_t		shiftRegister	[9];
 signals:
 	void		show_ficSuccess	(bool);

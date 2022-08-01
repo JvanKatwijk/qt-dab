@@ -119,7 +119,7 @@ void	dabProcessor::set_tiiDetectorMode	(bool b) {
 }
 
 void	dabProcessor::start () {
-	my_ficHandler. reset	();
+	my_ficHandler. restart	();
 	transmitters. clear ();
 	if (!scanMode)
 	   my_mscHandler. reset_Channel ();
@@ -128,6 +128,7 @@ void	dabProcessor::start () {
 
 void	dabProcessor::stop	() {
 	myReader. setRunning (false);
+	my_ficHandler. stop ();
 	while (isRunning ())
 	   wait ();
 	usleep (10000);
