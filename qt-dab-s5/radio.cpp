@@ -185,7 +185,7 @@ QString scanmodeText (int e) {
 #define	FRAMEDUMP_BUTTON	QString ("framedumpButton")
 #define	AUDIODUMP_BUTTON	QString ("audiodumpButton")
 #define	DLTEXT_BUTTON		QString	("dlTextButton")
-#define	HIDE_BUTTON		QString ("hideButton")
+#define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
 #define	SCHEDULE_BUTTON		QString ("scheduleButton")
 #define	SET_COORDINATES_BUTTON	QString ("set_coordinatesButton")
@@ -554,8 +554,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_sourcedumpButton (void)));
 	connect (configWidget. dlTextButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_dlTextButton (void)));
-	connect (hideButton, SIGNAL (rightClicked (void)),
-	         this, SLOT (color_hideButton (void)));
+	connect (configButton, SIGNAL (rightClicked (void)),
+	         this, SLOT (color_configButton (void)));
 	connect (httpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_httpButton (void)));
 	connect (configWidget. scheduleButton, SIGNAL (rightClicked ()),
@@ -695,11 +695,16 @@ uint8_t	dabBand;
 	bool hidden	=
 	            dabSettings	-> value ("hidden", 0). toInt () != 0;
 	if (hidden) {
-	   hideButton	-> setText ("show controls");
-	  configDisplay. hide ();	
+	   configButton	-> setText ("show controls");
+	   configDisplay. hide ();	
 	}
-	connect (hideButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_hideButton ()));
+	else {
+	   configButton -> setText ("hide controls");
+	   configDisplay. show ();
+	}
+
+	connect (configButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_configButton ()));
 
 	if (inputDevice != nullptr) {
 	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
@@ -732,8 +737,8 @@ uint8_t	dabBand;
 	      inputDevice	= nullptr;
 	   }
 	}
-	if (hidden) {
-	   hideButton	-> setText ("hide controls");
+	if (hidden) { 	// make it visible
+	   configButton	-> setText ("hide controls");
 	   dabSettings	-> setValue ("hidden", 0);
 	}
 	configDisplay. show ();
@@ -4095,11 +4100,11 @@ QString	dlTextButton_color =
 QString dlTextButton_font	=
 	   dabSettings -> value (DLTEXT_BUTTON + "_font",
 	                                              "white"). toString ();
-QString	hideButton_color =
-	   dabSettings -> value (HIDE_BUTTON + "_color",
+QString	configButton_color =
+	   dabSettings -> value (CONFIG_BUTTON + "_color",
 	                                              "black"). toString ();
-QString hideButton_font	=
-	   dabSettings -> value (HIDE_BUTTON + "_font",
+QString configButton_font	=
+	   dabSettings -> value (CONFIG_BUTTON + "_font",
 	                                              "white"). toString ();
 QString	httpButton_color =
 	   dabSettings -> value (HTTP_BUTTON + "_color",
@@ -4189,9 +4194,9 @@ QString loadTableButton_font	=
 	                                        scanButton_font));
 
 
-	hideButton	->
-	              setStyleSheet (temp. arg (hideButton_color,
-	                                        hideButton_font));
+	configButton	->
+	              setStyleSheet (temp. arg (configButton_color,
+	                                        configButton_font));
 
 	httpButton	->
 	              setStyleSheet (temp. arg (httpButton_color,
@@ -4299,15 +4304,12 @@ void	RadioInterface::color_muteButton	()	{
 	set_buttonColors (muteButton, MUTE_BUTTON);
 }
 
-void	RadioInterface::color_configButton	()	{
-}
-
 void	RadioInterface::color_dlTextButton	()	{
 	set_buttonColors (configWidget. dlTextButton, DLTEXT_BUTTON);
 }
 
-void	RadioInterface::color_hideButton	() 	{
-	set_buttonColors (hideButton, HIDE_BUTTON);
+void	RadioInterface::color_configButton	() 	{
+	set_buttonColors (configButton, CONFIG_BUTTON);
 }
 
 void	RadioInterface::color_httpButton	() 	{
@@ -4364,15 +4366,6 @@ int	index;
 
 /////////////////////////////////////////////////////////////////////////
 //	External configuration items				//////
-
-void	RadioInterface::handle_configSetting	() {
-	if (configDisplay . isHidden ()) 
-	   configDisplay. show ();
-	else {
-	   theBand. hide ();
-	   configDisplay. hide ();
-	}
-}
 
 void	RadioInterface::handle_muteTimeSetting	(int newV) {
 	dabSettings	-> setValue ("muteTime", newV);
@@ -4674,14 +4667,14 @@ void	RadioInterface::scheduled_dlTextDumping () {
 	configWidget. dlTextButton	-> setText ("writing");
 }
 
-void	RadioInterface::handle_hideButton	() {
+void	RadioInterface::handle_configButton	() {
 	if (!configDisplay. isHidden ()) {
-	   hideButton	-> setText ("show controls");
+	   configButton	-> setText ("show controls");
 	   configDisplay. hide ();	
 	   dabSettings	-> setValue ("hidden", 1);
 	}
 	else {
-	   hideButton	-> setText ("hide controls");
+	   configButton	-> setText ("hide controls");
 	   configDisplay. show ();
 	   dabSettings	-> setValue ("hidden", 0);
 	}

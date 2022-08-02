@@ -425,7 +425,7 @@ private slots:
 	void			scheduler_timeOut	(const QString &);
 	void			handle_dlTextButton     ();
 
-	void			handle_hideButton	();
+	void			handle_configButton	();
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
 	void			handle_onTop		(int);
@@ -452,16 +452,14 @@ private slots:
 	void			color_nextServiceButton	();
 	void			color_framedumpButton	();
 	void			color_audiodumpButton	();
-	void			color_configButton	();
 	void			color_dlTextButton	();
 	void			color_scheduleButton	();
-	void			color_hideButton	();
+	void			color_configButton	();
 	void			color_httpButton	();
 	void			color_set_coordinatesButton     ();
 	void			color_loadTableButton   ();
 //
 //	config handlers
-	void			handle_configSetting		();
 	void			handle_muteTimeSetting		(int);
 	void			handle_switchDelaySetting 	(int);
 	void			handle_orderAlfabetical		();
