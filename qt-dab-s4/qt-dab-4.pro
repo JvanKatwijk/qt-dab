@@ -68,7 +68,7 @@ DEPENDPATH += . \
 	      ../tii-viewer \
 	      ../snr-viewer \
 	      ../qt-devices \
-	      .,/qt-devices/rawfiles-new \
+	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new\
 	      ../qt-devices/xml-filereader 
 

@@ -51,16 +51,18 @@ Q_OBJECT
 public:
 	IQDisplay		(QwtPlot *, int16_t);
 	~IQDisplay();
-void	DisplayIQ		(std::complex<float> *, float);
+void	DisplayIQ		(std::complex<float> *, int, float);
 private:
 	int32_t			x_amount;
 	std::vector<double>	plotData;
 	std::vector<double>	plot2;
-	std::vector<complex<float> > Points;
+//	std::vector<complex<int> > Points;
+//	std::complex<int> 	*Points;
 	QwtPlot			*plotgrid;
 	int			_OutputRate;
 	int			Radius;
 	int			CycleCount;
+	void			setPoint	(int, int, int);
 private slots:
 };
 #endif

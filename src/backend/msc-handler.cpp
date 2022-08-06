@@ -185,7 +185,7 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 
 	   process_mscBlock (ibits, blkno);
 	}
-	memcpy (phaseReference. data(), fft_buffer,
+	memcpy (phaseReference. data (), fft_buffer,
 	        params. get_T_u() * sizeof (std::complex<float>));
 }
 #endif

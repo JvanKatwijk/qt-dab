@@ -25,7 +25,7 @@ QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
 
-TRANSLATIONS = i18n/de_DE.ts
+TRANSLATIONS = ../i18n/de_DE.ts
 
 #
 #       For more parallel processing, uncomment the following

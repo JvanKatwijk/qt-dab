@@ -121,7 +121,8 @@ bool	brush;
 	              0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
 	setBitDepth	(12);
 
-	myIQDisplay	= new IQDisplay (iqDisplay, 256);
+	myIQDisplay	= new IQDisplay (iqDisplay, 512);
+//	myIQDisplay	= new IQDisplay (iqDisplay, 256);
 }
 
 	spectrumViewer::~spectrumViewer() {
@@ -274,7 +275,8 @@ int	scopeWidth	= scopeSlider -> value();
 	}
 
 	avg	/= t;
-	myIQDisplay -> DisplayIQ (Values, scopeWidth / avg);
+	myIQDisplay -> DisplayIQ (Values, 512, scopeWidth / avg);
+//	myIQDisplay -> DisplayIQ (Values, amount, scopeWidth / avg);
 }
 
 void	spectrumViewer:: showQuality (float q, float timeOffset,	

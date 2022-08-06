@@ -26,6 +26,7 @@
  *	iq circle plotter
  */
 SpectrogramData	*IQData	= nullptr;
+static std::complex<int> Points [512];
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
 	                                QwtPlotSpectrogram() {
@@ -34,11 +35,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	setRenderThreadCount	(1);
 	Radius		= 100;
 	plotgrid	= plot;
-	x_amount	= x;
+	x_amount	= 512;
 	CycleCount	= 0;
-	Points. resize (x_amount);
-	for (int i = 0; i < x_amount; i ++)
-	   Points [i] = std::complex<float> (0, 0);
 	this		-> setColorMap (colorMap);
 	plotData. resize (2 * Radius * 2 * Radius);
 	plot2.	  resize (2 * Radius * 2 * Radius);
@@ -50,6 +48,8 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	                                       2 * Radius,
 	                                       2 * Radius,
 	                                       50.0);
+	for (int i = 0; i < x_amount; i ++)
+	   Points [i] = std::complex<int> (0, 0);
 	this		-> setData (IQData);
 	plot		-> enableAxis (QwtPlot::xBottom, false);
 	plot		-> enableAxis (QwtPlot::yLeft, false);
@@ -62,15 +62,21 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 //	delete		IQData;
 }
 
-void	IQDisplay::DisplayIQ (std::complex<float> *z, float scale) {
-int16_t	i;
+void	IQDisplay::setPoint (int x, int y, int val) {
+	plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = val;
+}
 
-	for (i = 0; i < x_amount; i ++) {
+void	IQDisplay::DisplayIQ (std::complex<float> *z,
+	                             int amount, float scale) {
+//
+//	clean the screen
+	for (int i = 0; i < amount; i ++) {
 	   int a	= real (Points [i]);
 	   int b	= imag (Points [i]);
-	   plotData [(a + Radius - 1) * 2 * Radius + b + Radius - 1] = 0;
+	   setPoint (a, b, 0);
 	}
-	for (i = 0; i < x_amount; i ++) {
+
+	for (int i = 0; i < amount; i ++) {
            int x = (int)(scale * real (z [i]));
            int y = (int)(scale * imag (z [i]));
 
@@ -84,15 +90,15 @@ int16_t	i;
 	   if (y <= - Radius)
 	      y = -(Radius - 1);
 
-	   Points [i] = std::complex<float> (x, y);
-	   plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = 100;
+	   Points [i] = std::complex<int> (x, y);
+	   setPoint (x, y, 100);
 	}
 
-	memcpy (plot2. data(), plotData. data(),
+	memcpy (plot2. data(), plotData. data (),
 	        2 * 2 * Radius * Radius * sizeof (double));
 	this		-> detach();
 	this		-> setData	(IQData);
 	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	this		-> attach     (plotgrid);
-	plotgrid	-> replot();
+	plotgrid	-> replot ();
 }
