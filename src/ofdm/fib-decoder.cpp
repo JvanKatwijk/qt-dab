@@ -40,8 +40,8 @@
 	myRadioInterface	= mr;
 	memset (dateTime, 0, sizeof (dateTime));
 
-	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
-	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
+//	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
+//	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
 	connect (this, SIGNAL (nameofEnsemble (int, const QString &)),
 	         myRadioInterface,
 	                    SLOT (nameofEnsemble (int, const QString &)));
@@ -1373,7 +1373,24 @@ Cluster	*fibDecoder::getCluster (dabConfig *localBase, int16_t clusterId) {
 //	Implementation of API functions
 //
 void	fibDecoder::clearEnsemble() {
+	
 	fibLocker. lock();
+}
+
+void	fibDecoder::connect_channel () {
+	fibLocker. lock();
+	currentConfig	-> reset ();
+	nextConfig	-> reset ();
+	ensemble	-> reset ();
+	connect (this, SIGNAL (addtoEnsemble (const QString &, int)),
+	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
+	fibLocker. unlock();
+}
+
+void	fibDecoder::disconnect_channel () {
+	fibLocker. lock ();
+	disconnect (this, SIGNAL (addtoEnsemble (const QString &, int)),
+	         myRadioInterface, SLOT (addtoEnsemble (const QString &, int)));
 	currentConfig	-> reset ();
 	nextConfig	-> reset ();
 	ensemble	-> reset ();

@@ -1,14 +1,6 @@
 # Qt-DAB-4.4.2 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-Qt-DAB-4.4-2 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+). Qt-DAB is accompanied by its little sister dabMini, built on the same set of sources.
-
-![4.4](/qt-dab-4a.png?raw=true)
-![4.4](/qt-dab-4b.png?raw=true)
-![4.5](/qt-dab-5.png?raw=true)
-
-----------------------------------------------------------------
-
-Thanks to Richard Huber, Qt-DAB can be compiled on the Mac
+Qt-DAB-4.4-2 is software for Linux, Windows and Raspberry Pi for listening to terrestrial Digital Audio Broadcasting (DAB and DAB+).
 
 ---------------------------------------------------------------
 qt-dab-4 and qt-dab-5, same functionality, different GUI
@@ -24,7 +16,16 @@ widget and shift everything, not needed for simple interaction
 to the configuration widget (which is now called configuration and control)
 
 dabMini, i.e. the small version for just listening to a service,
-will be obsolete soon.
+is obsolete, the source can be found as subdirectory in the "obsolete"
+directory.
+
+![4.4](/qt-dab-4a.png?raw=true)
+![4.4](/qt-dab-4b.png?raw=true)
+![4.5](/qt-dab-5.png?raw=true)
+
+----------------------------------------------------------------
+
+Thanks to Richard Huber, Qt-DAB can be compiled on the Mac
 
 -----------------------------------------------------------------
 A note on showing a map
@@ -42,7 +43,7 @@ The configuration (configuration/control) widget contains a selector
 for switching this off, so that one might choose his/hers own browser.
 
 The feature will not work if
- * handling the TII database is not installed on the system, and
+ * handling the TII database is not installed on the system, and/or
  * you did not provide your "home" coordinates.
 
 The latter is easily done by touching the button "coordinates" on the
@@ -62,9 +63,10 @@ Step 1:
 
 	Note that the sources for 4.4.2 are now in the subdirectory qt-dab-s4
 	and for qt-dab-5.0 in the subdirectory qt-dab-s5
-	Install required libraries, see section 5.5.3 (page 29) of the manual.
-	It turns out that in recent versions of Debian (and related) distributions
-	the lib *qt5-default* does not exist as as separate library.
+	Install required libraries, see section 5.5.3 (page 29)
+	of the manual for 4.4.
+	Note: It turns out that in recent versions of Debian (and related)		distributions the lib *qt5-default* does not exist as as
+	separate library.
 	It seems to be part of another of the qt5 packages that is installed.
 	Be aware that different distributions store qt files on different
 	locations, adapt the INCLUDEPATH setting in the ".pro" file if needed.
@@ -74,19 +76,17 @@ Step 2:
 	While there are dozens of configuration options, take note of the
 	following ones:
 
-	for devices "pluto", "pluto-rxtx" and "soapy" software should have
+	for "soapy" software should have
 	been installed, so leave them commented out when not available.
-	Note that "pluto-2" can be compiled in: when the device is
-	selected, it will (try to) read in the functions of the device
-	library.
-	For other devices, e.g. sdrplay, airspy, etc, configuration does not
-	require availability of the drivers (of course using the device does)
+	Note that "pluto-2" can be compiled in: as the other support programs,
+	when the device is selected, the support program  will (try to)
+	read in the functions of the device library.
 
 	For X64 PC's one may choose the option "CONFIG+=PC" (for selecting SSE
 	instructions). If unsure, use "CONFIG+=NO_SSE".
 
 	For letting the software show the transmitter and the azimuth,
-	choose  "CONFIG += tiiLib".
+	choose  "CONFIG += tiiLib" (see step 4).
 
 	Note that the file "converted_map.h" is a generated file that contains
 	a binary version of the HTML/javascript code for the server.
@@ -101,8 +101,8 @@ step 4:
 	Install the file "tiiFile.zip" (after unpacking) in the user's home
 	directory (filename .txdata.tii). The file contains the
 	database data for finding the transmitter's name and location.
-	If the file cannot be found, Qt-DAB will just function without
-	showing the names.
+	If Qt-DAB cannot find the file, Qt-DAB will just function without
+	showing the names and withut "maps" option.
 
 	If running on an x64 PC or *bullseye* on the RPI you might consider
 	to install *libtii-lib.so* in "usr/local/lib" from "dab-maxi/library".
@@ -135,7 +135,6 @@ Table of Contents
 * [Interfacing to another device](#Interfacing-to-another-device)
 * [Using user-specified bands](#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
-* [Pluto device and fm transmission](#pluto-device-and-fm-transmission)
 * [Copyright](#copyright)
 
 ------------------------------------------------------------------
@@ -245,8 +244,9 @@ as Program Associated Data with the audio transmission, will be shown here or on
 Documentation
 --------------------------------------------------------------------
 
-An extensive "user's guide" - in pdf format - can be found in the "docs"
-section of the source tree. The documentation contains a complete
+An extensive "user's guide" - in pdf format - for the 4.4 version
+can be found in the "docs" section of the source tree.
+The documentation contains a complete
 description of the widgets, of the values in the ".ini" file,
 on configuring for creating an executable (Linux), and even a
 complete description on how to add a device to the configuration.
@@ -352,34 +352,6 @@ data in the data block.
 
 The picture shows the reader when reading a file, generated from raw
 data emitted by the Hackrf device.
-
------------------------------------------------------------------------
-Pluto device and stereo FM transmission
------------------------------------------------------------------------
-
-As (probably) known, the **Adalm Pluto** device has receive and transmit
-capabilities.  For configuring pluto there are three options:
-
- * pluto, whichn requires the support libraries to be installed;
-
- * pluto-2, which - as most other device handlers - will try to read in the required functions from the library when selected, and
-
- * pluto-rxtx, which supports transmitting the audio as received from a DAB sevrice in FM stereo on a user specified frequency. It requires the libad9361 and libiio to be installed.
-
-The precompiled versions were configured with "pluto-2".
-
-As default, the transmit frequency is 110 MHz, however, the user can specify
-the frequency (obviously within the range supported by the Adalm-Pluto)
-as command line parameter: starting the program from the command line
-with as parameter
-
-	-F XXX
-
-will instruct the software to start the
-transmitter of the Adalm pluto - if the pluto-rxtx is the selected device -
-on the given frequency (specified in KHz)
-
-![dab2fm](/dab2fm.png?raw=true)
 
 -----------------------------------------------------------------------
 Copyright

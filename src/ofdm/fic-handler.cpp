@@ -224,12 +224,14 @@ int16_t	inputCount	= 0;
 }
 
 void	ficHandler::stop	() {
-	clearEnsemble ();
+	disconnect_channel	();
+//	clearEnsemble	();
 	running. store (false);
 }
 
 void	ficHandler::restart	() {
-	clearEnsemble	();
+//	clearEnsemble	();
+	connect_channel	();
 	running. store (true);
 }
 

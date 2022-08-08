@@ -47,6 +47,8 @@ public:
 			~fibDecoder		();
 
 	void		clearEnsemble		();
+	void		connect_channel		();
+	void		disconnect_channel	();
 	bool		syncReached		();
 	void		dataforAudioService	(const QString &, audiodata *);
 	void		dataforPacketService	(const QString &,

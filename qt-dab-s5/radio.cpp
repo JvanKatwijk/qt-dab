@@ -40,8 +40,6 @@
 #include	<vector>
 #include	"radio.h"
 #include	"band-handler.h"
-#include	"audio-descriptor.h"
-#include	"data-descriptor.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
@@ -254,6 +252,7 @@ uint8_t	dabBand;
 	this	-> ficDumpPointer	=  nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
+	handling_channel.	store (false);
 	my_dabProcessor		= nullptr;
 	isSynced		= false;
 	stereoSetting		= false;
@@ -271,7 +270,6 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
-	serving_a_channel.  store (false);
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -624,7 +622,11 @@ uint8_t	dabBand;
 //
 	QPalette lcdPalette;
 #ifndef __MAC__
+#if QT_VERSION >= 0x060000
+	lcdPalette. setColor (QPalette::Window, Qt::white);
+#else
 	lcdPalette. setColor (QPalette::Background, Qt::white);
+#endif
 	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
 	configWidget. snrDisplay	-> setPalette (lcdPalette);
@@ -724,7 +726,6 @@ uint8_t	dabBand;
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
-	currentServiceDescriptor	= nullptr;
 
 	if (inputDevice != nullptr) {
 	   LOG ("start with ", inputDevice -> deviceName ());
@@ -891,7 +892,7 @@ int	serviceOrder;
 	if (!running. load())
 	   return;
 
-	if (!serving_a_channel. load ())
+	if (!handling_channel. load ())
 	   return;
 	(void)SId;
 	serviceId ed;
@@ -1410,8 +1411,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete	inputDevice;
 
 	delete		soundOut;
-	if (currentServiceDescriptor != nullptr)
-	   delete currentServiceDescriptor;
 	delete	my_history;
 	delete	my_timeTable;
 //	close();
@@ -2861,21 +2860,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 		 }
 	         return true;
 	      }
-//	      
-//	      if (ad. defined) {
-//	         if (currentServiceDescriptor != nullptr) 
-//	            delete currentServiceDescriptor;
-//	         currentServiceDescriptor	= new audioDescriptor (&ad);
-//	         return true;
-//	      }
-//
-//	      my_dabProcessor -> dataforPacketService (serviceName, &pd, 0);
-//	      if (pd. defined) {
-//	         if (currentServiceDescriptor != nullptr)
-//	            delete currentServiceDescriptor;
-//	         currentServiceDescriptor	= new dataDescriptor (&pd);
-//	         return true;
-//	      }
 	   }
 	}
 
@@ -2941,7 +2925,11 @@ void	RadioInterface::handle_contentSelector (const QString &s) {
 
 
 void	RadioInterface::localSelect (const QString &s) {
+#if QT_VERSION >= 0x060000
+	QStringList list = s.split (":", Qt::SkipEmptyParts);
+#else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
+#endif
         if (list. length () != 2)
            return;
 	localSelect (list. at (0), list. at (1));
@@ -2952,7 +2940,11 @@ void	RadioInterface::localSelect (const QString &s) {
 //	likely are less than 16 characters
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
+#if QT_VERSION >= 0x060000
+	QStringList list = s.split (":", Qt::SkipEmptyParts);
+#else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
+#endif
         if (list. length () != 2)
            return;
 	QString theChannel = list. at (0);
@@ -3464,10 +3456,8 @@ int	tunedFrequency	=
 	ensembleDisplay		-> setModel (&model);
 	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
-	serving_a_channel. store (true);
+	handling_channel. store (true);
 	my_dabProcessor		-> start ();
-	
-//	my_dabProcessor		-> start (tunedFrequency);
 	channel. has_ecc	= false;
 	channel. transmitterName	= "";
 	channel. ensembleName	= "";
@@ -3494,6 +3484,7 @@ int	tunedFrequency	=
 void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
+	handling_channel. store (false);
 	LOG ("channel stops ", channel. channelName);
 	fprintf (stderr, "we have now as background services\n");
 	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
@@ -3511,8 +3502,8 @@ void	RadioInterface::stopChannel	() {
 	   
 	stop_sourceDumping	();
 	stop_audioDumping	();
-	soundOut	-> stop ();
 	stop_muting		();
+	soundOut	-> stop ();
 	configWidget. EPGLabel	-> hide ();
 	if (my_contentTable != nullptr) {
 	   my_contentTable -> hide ();
@@ -3525,11 +3516,12 @@ void	RadioInterface::stopChannel	() {
 	   my_dabProcessor -> stop_ficDump ();
 	   ficDumpPointer = nullptr;
 	}
-	serving_a_channel. store (false);
-	fprintf (stderr, "serving the channel is set to false\n");
 	epgTimer. stop		();
 	techData. timeTable_button -> hide ();
 	my_timeTable	-> hide ();
+
+	my_dabProcessor		-> stop ();
+	inputDevice		-> stopReader ();
 	presetTimer. stop 	();
 	channelTimer. stop	();
 	channel. Eid		= 0;
@@ -3541,12 +3533,8 @@ void	RadioInterface::stopChannel	() {
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
-
 //
-//	The services - if any - need to be stopped
 	hide_for_safety	();	// hide some buttons
-	my_dabProcessor		-> stop ();
-	inputDevice		-> stopReader ();
 	my_tiiViewer. clear();
 	QCoreApplication::processEvents ();
 //

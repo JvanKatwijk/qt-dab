@@ -39,7 +39,6 @@ TRANSLATIONS = ../i18n/de_DE.ts
 DEPENDPATH += . \
 	      ../src \
 	      ../includes \
-	      ../service-description \
 	      ../src/ofdm \
 	      ../src/protection \
 	      ../src/backend \
@@ -63,10 +62,11 @@ DEPENDPATH += . \
 	      ../includes/output \
 	      ../includes/support \
 	      ../includes/scopes-qwt6 \
-              ../spectrum-viewer \
-	      ../correlation-viewer \
-	      ../tii-viewer \
-	      ../snr-viewer \
+	      ../viewers \
+              ../viewers/spectrum-viewer \
+	      ../viewers/correlation-viewer \
+	      ../viewers/tii-viewer \
+	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new\
@@ -76,7 +76,6 @@ INCLUDEPATH += . \
 	      ../ \
 	      ../src \
 	      ../includes \
-	      ../service-description \
 	      ../includes/protection \
 	      ../includes/ofdm \
 	      ../includes/backend \
@@ -91,10 +90,11 @@ INCLUDEPATH += . \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
-              ../spectrum-viewer \
-	      ../correlation-viewer \
-	      ../tii-viewer \
-	      ../snr-viewer \
+	      ../viewers \
+              ../viewers/spectrum-viewer \
+	      ../viewers/correlation-viewer \
+	      ../viewers/tii-viewer \
+	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new \
@@ -103,9 +103,6 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ../dab-processor.h \
-	   ../service-description/service-descriptor.h \
-	   ../service-description/audio-descriptor.h \
-	   ../service-description/data-descriptor.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
 	   ../includes/ofdm/timesyncer.h \
@@ -188,10 +185,10 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
-	   ../spectrum-viewer/spectrum-viewer.h \
-	   ../correlation-viewer/correlation-viewer.h \
-	   ../tii-viewer/tii-viewer.h \
-	   ../snr-viewer/snr-viewer.h \
+	   ../viewers/spectrum-viewer/spectrum-viewer.h \
+	   ../viewers/correlation-viewer/correlation-viewer.h \
+	   ../viewers/tii-viewer/tii-viewer.h \
+	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/xml-filewriter.h \
 	   ../qt-devices/rawfiles-new/rawfiles.h \
@@ -210,16 +207,14 @@ FORMS	+= ./forms-v4/audio-description.ui
 FORMS	+= ./forms-v4/data-description.ui
 #FORMS	+= ../qt-devices/filereader-widget.ui 
 FORMS	+= ../qt-devices/xml-filereader/xmlfiles.ui
-FORMS	+= ../spectrum-viewer/scopewidget.ui
-FORMS	+= ../correlation-viewer/correlation-widget.ui
-FORMS	+= ../tii-viewer/tii-widget.ui
-FORMS	+= ../snr-viewer/snr-widget.ui
+FORMS	+= ../viewers/spectrum-viewer/scopewidget.ui
+FORMS	+= ../viewers/correlation-viewer/correlation-widget.ui
+FORMS	+= ../viewers/tii-viewer/tii-widget.ui
+FORMS	+= ../viewers//snr-viewer/snr-widget.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ../dab-processor.cpp \
-	   ../service-description/audio-descriptor.cpp \
-	   ../service-description/data-descriptor.cpp \
 	   ../src/ofdm/timesyncer.cpp \
 	   ../src/ofdm/sample-reader.cpp \
 	   ../src/ofdm/ofdm-decoder.cpp \
@@ -292,10 +287,10 @@ SOURCES += ./main.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
-	   ../spectrum-viewer/spectrum-viewer.cpp \
-	   ../correlation-viewer/correlation-viewer.cpp \
-	   ../tii-viewer/tii-viewer.cpp \
-	   ../snr-viewer/snr-viewer.cpp \
+	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
+	   ../viewers/correlation-viewer/correlation-viewer.cpp \
+	   ../viewers/tii-viewer/tii-viewer.cpp \
+	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
 	   ../qt-devices/rawfiles-new/rawfiles.cpp \
@@ -345,11 +340,10 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
-CONFIG		+= pluto-rxtx
+#CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
-#CONFIG		+= pluto-2
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
-#CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #CONFIG		+= JAN
@@ -585,16 +579,16 @@ pluto-rxtx	{
 	DEFINES		+= HAVE_PLUTO_RXTX
 	QT		+= network
 	INCLUDEPATH	+= ../qt-devices/pluto-rxtx
-	INCLUDEPATH	+= ../dab-streamer
+	INCLUDEPATH	+= ../qt-devices/pluto-rxtx/dab-streamer
 	HEADERS		+= ../qt-devices/pluto-rxtx/dabFilter.h
 	HEADERS		+= ../qt-devices/pluto-rxtx/pluto-rxtx-handler.h 
-	HEADERS		+= ../dab-streamer/dab-streamer.h 
-	                   ../dab-streamer/up-filter.h
+	HEADERS		+= ../qt-devices/pluto-rxtx/dab-streamer/dab-streamer.h 
+	HEADERS		+= ../qt-devices/pluto-rxtx/dab-streamer/up-filter.h
 	SOURCES		+= ../qt-devices/pluto-rxtx/pluto-rxtx-handler.cpp 
-	SOURCES		+= ../dab-streamer/dab-streamer.cpp \
-	                   ../dab-streamer/up-filter.cpp
+	SOURCES		+= ../qt-devices/pluto-rxtx/dab-streamer/dab-streamer.cpp
+	SOURCES		+= ../qt-devices/pluto-rxtx//dab-streamer/up-filter.cpp
 	FORMS		+= ../qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
-	LIBS		+= -liio -lad9361
+#	LIBS		+= -liio -lad9361
 }
 
 pluto	{

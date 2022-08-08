@@ -69,7 +69,6 @@ class	QSettings;
 class	deviceHandler;
 class	audioBase;
 class	common_fft;
-class	serviceDescriptor;
 class	historyHandler;
 class	timeTableHandler;
 #ifdef	HAVE_PLUTO_RXTX
@@ -156,7 +155,6 @@ private:
 	                                           const QString &);
 	int			serviceOrder;
 	bool			error_report;
-	std::atomic<bool>	serving_a_channel;
 	Ui_technical_data	techData;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;
@@ -168,12 +166,12 @@ private:
 	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
-	serviceDescriptor	*currentServiceDescriptor;
 	QLabel			*motSlides;
 	bool			isSynced;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
+	std::atomic<bool>	handling_channel;
 	deviceHandler		*inputDevice;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut;

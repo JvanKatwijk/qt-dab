@@ -180,7 +180,6 @@ endif ()
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           .
 	           ..
-	           ../service-description
 	           ../includes
 	           ../includes/ofdm
 	           ../includes/protection
@@ -197,10 +196,11 @@ endif ()
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/scopes-qwt6
-	           ../spectrum-viewer
-	           ../correlation-viewer
-	           ../tii-viewer
-	           ../snr-viewer
+	           ../viewers
+	           ../viewers/spectrum-viewer
+	           ../viewers/correlation-viewer
+	           ../viewers/tii-viewer
+	           ../viewers/snr-viewer
 	           ../qt-devices
 	           ../qt-devices/rawfiles-new
 	           ../qt-devices/wavfiles-new
@@ -211,9 +211,6 @@ endif ()
 	set (${objectName}_HDRS
 	     ./radio.h
 	     ../dab-processor.h
-	     ../service-description/service-descriptor.h 
-	     ../service-description/audio-descriptor.h 
-	     ../service-description/data-descriptor.h 
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
              ../includes/ofdm/sample-reader.h
@@ -297,10 +294,10 @@ endif ()
 	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-codes/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
-	     ../spectrum-viewer/spectrum-viewer.h 
-	     ../correlation-viewer/correlation-viewer.h 
-	     ../tii-viewer/tii-viewer.h
-	     ../snr-viewer/snr-viewer.h
+	     ../viewers/spectrum-viewer/spectrum-viewer.h 
+	     ../viewers/correlation-viewer/correlation-viewer.h 
+	     ../viewers/tii-viewer/tii-viewer.h
+	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/xml-filewriter.h
 	     ../qt-devices/rawfiles-new/rawfiles.h
@@ -318,8 +315,6 @@ endif ()
 	     ./main.cpp
 	     ./radio.cpp
 	     ../dab-processor.cpp
-	     ../service-description/audio-descriptor.cpp
-	     ../service-description/data-descriptor.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
 	     ../src/ofdm/phasereference.cpp
@@ -394,10 +389,10 @@ endif ()
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-codes/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
-	     ../spectrum-viewer/spectrum-viewer.cpp 
-	     ../correlation-viewer/correlation-viewer.cpp 
-	     ../tii-viewer/tii-viewer.cpp
-	     ../snr-viewer/snr-viewer.cpp
+	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
+	     ../viewers/correlation-viewer/correlation-viewer.cpp 
+	     ../viewers/tii-viewer/tii-viewer.cpp
+	     ../viewers/snr-viewer/snr-viewer.cpp
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/xml-filewriter.cpp
 	     ../qt-devices/rawfiles-new/rawfiles.cpp
@@ -454,10 +449,10 @@ endif ()
 	     ../includes/support/coordinates.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/iqdisplay.h
-	     ../spectrum-viewer/spectrum-viewer.h 
-	     ../correlation-viewer/correlation-viewer.h 
- 	     ../tii-viewer/tii-viewer.h
- 	     ../snr-viewer/snr-viewer.h
+	     ../viewers/spectrum-viewer/spectrum-viewer.h 
+	     ../viewers/correlation-viewer/correlation-viewer.h 
+ 	     ../viewers/tii-viewer/tii-viewer.h
+ 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/rawfiles-new/rawfiles.h
 	     ../qt-devices/rawfiles-new/raw-reader.h
 	     ../qt-devices/wavfiles-new/wavfiles.h
@@ -471,12 +466,10 @@ endif ()
 	     ./forms-v4/dabradio-4.ui
 	     ./forms-v4/technical_data.ui
 	     ./forms-v4/config-helper.ui
-	     ./forms-v4/audio-description.ui
-	     ./forms-v4/data-description.ui
-	     ../spectrum-viewer/scopewidget.ui
-	     ../correlation-viewer/correlation-widget.ui
-	     ../tii-viewer/tii-widget.ui
-	     ../snr-viewer/snr-widget.ui
+	     ../viewers/spectrum-viewer/scopewidget.ui
+	     ../viewers/correlation-viewer/correlation-widget.ui
+	     ../viewers/tii-viewer/tii-widget.ui
+	     ../viewers/snr-viewer/snr-widget.ui
 	     ../qt-devices/xml-filereader/xmlfiles.ui
 	   )
 
