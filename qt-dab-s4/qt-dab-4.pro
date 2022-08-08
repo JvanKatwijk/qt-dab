@@ -316,19 +316,47 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
+mac {
+ DESTDIR      = ./mac-bin
+  PKG_CONFIG = /usr/local/bin/pkg-config
+  QT_CONFIG       -= no-pkg-config
+}
+
 CONFIG		+= link_pkgconfig
 PKGCONFIG	+= fftw3f 
 PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
+!mac {
+LIBS      	+= -ldl
+}
+PKGCONFIG	+= portaudio-2.0
+PKGCONFIG	+= zlib
+PKGCONFIG	+= sndfile
+PKGCONFIG	+= samplerate
 INCLUDEPATH	+= /usr/local/include
-INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-LIBS		+= -lportaudio
-LIBS		+= -lz -ldl
+!mac {
+INCLUDEPATH	+= /usr/local/include
 #correct this for the correct path to the qwt6 library on your system
 #LIBS		+= -lqwt
-LIBS		+= -lqwt-qt5
+#LIBS		+= -lqwt-qt5
+}
+
+#mac {
+# Should be possible to make on non Macs as well.
+# qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
+CONFIG		+= qwt
+#}
+
+#
+#INCLUDEPATH	+= /usr/local/include
+#INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+#LIBS		+= -lportaudio
+#LIBS		+= -lz -ldl
+##correct this for the correct path to the qwt6 library on your system
+##LIBS		+= -lqwt
+#LIBS		+= -lqwt-qt5
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)

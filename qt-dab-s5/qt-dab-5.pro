@@ -320,9 +320,9 @@ isEmpty(GITHASHSTRING) {
 mac {
   DESTDIR      = ./mac-bin
   PKG_CONFIG = /usr/local/bin/pkg-config
+  QT_CONFIG	-= no-pkg-config
 }
 
-QT_CONFIG	-= no-pkg-config
 CONFIG		+= link_pkgconfig
 PKGCONFIG	+= fftw3f 
 PKGCONFIG	+= sndfile
