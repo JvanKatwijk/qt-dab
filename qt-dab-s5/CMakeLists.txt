@@ -178,7 +178,7 @@ endif ()
 	           ${QT5Widgets_INCLUDES}
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
-	           .
+	           ./pauzeslide
 	           ..
 	           ../includes
 	           ../includes/ofdm
@@ -191,7 +191,7 @@ endif ()
 	           ../includes/backend/data/epg-2
 	           ../includes/backend/data/epg
 	           ../includes/support
-	           ../src/support/tii-codes
+	           ../src/support/tii-library
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
@@ -210,6 +210,7 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
+	     ./pauzeslide/pauzeslide.h
 	     ../dab-processor.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
@@ -292,7 +293,7 @@ endif ()
 	     ../includes/support/coordinates.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
-	     ../src/support/tii-codes/tii-codes.h
+	     ../src/support/tii-library/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/correlation-viewer/correlation-viewer.h 
@@ -387,7 +388,7 @@ endif ()
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
 	     ../src/support/http-handler.cpp
-	     ../src/support/tii-codes/tii-codes.cpp
+	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
 	     ../viewers/correlation-viewer/correlation-viewer.cpp 

@@ -343,14 +343,12 @@ int	ret;
 	      fprintf (stderr, "setting agc/gain did not work\n");
 	}
 
-	if (get_phy_chan (ctx, TX, 0, &chn)) {
-           int ret;
-           ret = iio_channel_attr_write_longlong (chn,
+        int ret;
+        ret = iio_channel_attr_write_longlong (chn,
                                                      "hardwaregain",
                                                      0);
-           if (ret < 0)
-              fprintf (stderr, "setting transmit gain did not work\n");
-        }
+        if (ret < 0)
+           fprintf (stderr, "setting transmit gain did not work\n");
         else
            fprintf (stderr, "cound not obtain TX channel\n");
 
@@ -413,6 +411,9 @@ int	ret;
 	connect (filterButton, SIGNAL (clicked ()),
 	         this, SLOT (set_filter ()));
 
+	connect (freqSetter, SIGNAL (valueChanged (int)),
+	         this, SLOT (set_fmFrequency (int)));
+
 	connect (this, SIGNAL (new_gainValue (int)),
 	         gainControl, SLOT (setValue (int)));
 	connect (this, SIGNAL (new_agcValue (bool)),
@@ -446,8 +447,8 @@ int	ret;
 	connected	= true;
 	state -> setText ("ready to go");
 //	set up for the display
-	fftBuffer	= (std::complex<float> *)fftwf_malloc (4096 * sizeof (fftwf_complex));
-	plan    = fftwf_plan_dft_1d (4096,
+	fftBuffer	= (std::complex<float> *)fftwf_malloc (8192 * sizeof (fftwf_complex));
+	plan    = fftwf_plan_dft_1d (8192,
                                     reinterpret_cast <fftwf_complex *>(fftBuffer),
                                     reinterpret_cast <fftwf_complex *>(fftBuffer),
                                     FFTW_FORWARD, FFTW_ESTIMATE);
@@ -476,10 +477,10 @@ int	ret;
 	spectrumCurve. attach (plotgrid);
 	plotgrid        -> enableAxis (QwtPlot::yLeft);
 
-	for (int i = 0; i < 4096; i ++)
+	for (int i = 0; i < 8192; i ++)
 	   window [i] =
-	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (4096 - 1)) +
-                       0.08 * cos ((4.0 * M_PI * i) / (4096 - 1));
+	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (8192 - 1)) +
+                       0.08 * cos ((4.0 * M_PI * i) / (8192 - 1));
 }
 
 	plutoHandler::~plutoHandler() {
@@ -875,6 +876,20 @@ QString	theValue	= "";
 	agcControl	-> blockSignals (false);
 }
 
+void	plutoHandler::set_fmFrequency (int32_t freq) {
+struct  iio_channel *lo_channel;
+	get_lo_chan (ctx, TX, &lo_channel);
+        tx_cfg. lo_hz   = this  -> fmFrequency;
+	this -> fmFrequency = freq * KHz (1);
+	  int ret = iio_channel_attr_write_longlong
+                                     (lo_channel,
+                                           "frequency", tx_cfg. lo_hz);
+        if (ret < 0) {
+           fprintf (stderr, "error in selected frequency\n");
+           return;
+        }
+}
+	
 void    plutoHandler::startTransmitter  (int32_t freq) {
 struct  iio_channel *lo_channel;
 
@@ -1141,16 +1156,16 @@ bool	plutoHandler::loadFunctions	() {
 }
 
 void	plutoHandler::handleSignal (float s) {
-static float buffer [4096];
+static float buffer [8192];
 static int bufferP	= 0;
 static int bufferC	= 0;
 
 	buffer [bufferP] = s;
 	bufferP ++;
-	if (bufferP >= 4096) {
+	if (bufferP >= 8192) {
 	   bufferP = 0;
 	   bufferC ++;
-	   if (bufferC >= 10) {
+	   if (bufferC >= 4) {
 	      bufferC = 0;
 	      showBuffer (buffer);
 	   }
@@ -1158,39 +1173,38 @@ static int bufferC	= 0;
 }
 
 void	plutoHandler::showBuffer (float *b) {
-static double X_axis [1024];
-static double Y_values [1024];
-static double endV [1024] = {0};
+static double X_axis [2048];
+static double Y_values [2048];
+static double endV [2048] = {0};
 
-	for (int i = 0; i < 4096; i ++)
+	for (int i = 0; i < 8192; i ++)
 	   fftBuffer [i] = std::complex<float> (b [i] * window [i], 0);
 
 	fftwf_execute (plan);
 	
-	for (int i = 0; i < 1024; i ++)
-	   X_axis [i] = i * 96 / 1024;
+	for (int i = 0; i < 2048; i ++)
+	   X_axis [i] = i * 96 / 2048;
 
-	for (int i = 0; i < 1024; i ++) 
+	for (int i = 0; i < 2048; i ++) 
 	   Y_values [i] = abs (fftBuffer [i]);
 
-	for (int i = 0; i < 1024; i ++)
+	for (int i = 0; i < 2048; i ++)
 	   if (!isnan (Y_values [i]) && !isinf (Y_values [i]))
 	      endV [i] = 0.1 * get_db (Y_values [i]) + 0.9 * endV [i];
 
 	float max	= -100;
-	for (int i = 0; i < 1024; i ++)
+	for (int i = 0; i < 2048; i ++)
 	   if (endV [i] > max)
 	      max = endV [i];
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-	                                 X_axis [0], X_axis [1023]);
+	                                 X_axis [0], X_axis [2047]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 	                                 get_db (0), get_db (max + 40));
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	spectrumCurve. setSamples (X_axis, endV, 1024);
+	spectrumCurve. setSamples (X_axis, endV, 2048);
 	plotgrid	-> replot();
 }
-	
 	
 	

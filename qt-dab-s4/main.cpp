@@ -30,6 +30,8 @@
 #include	<QDebug>
 #include        <unistd.h>
 #include        "dab-constants.h"
+#include        <qwt_interval.h>
+
 #include        "radio.h"
 #define DEFAULT_INI     ".qt-dab.ini"
 #define	PRESETS		".qt-dab-presets.xml"
@@ -79,7 +81,7 @@ int32_t		clockPort	= 8889;
 int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
-int	fmFrequency		= 110000;
+int	fmFrequency		= 108000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
@@ -124,6 +126,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	   }
 	}
 
+	fprintf (stderr, "compiled with QWT %X\n", QWT_VERSION);
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
 
 	QString presets = QDir::homePath();

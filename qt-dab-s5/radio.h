@@ -152,7 +152,7 @@ private:
 	contentTable		*my_scanTable;
 	FILE			*logFile;
 	void			LOG		(const QString &,
-	                                           const QString &);
+	                                         const QString &);
 	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
@@ -213,6 +213,7 @@ private:
 	  	                insert   (std::vector<serviceId>,
 	                                  serviceId, int);
 
+	void			show_pauzeSlide	();
 	QStringList		soundChannels;
 	QTimer			displayTimer;
 	QTimer			channelTimer;

@@ -371,7 +371,7 @@ QDate startDate;
 	      std::string service;
 	      QString temp	= QString::fromStdString (str);
 	      QStringList ss = temp. split ('|');
-//	      fprintf (stderr, "split count %d\n", ss. count ());
+	      fprintf (stderr, "split count %d\n", ss. count ());
 	      for (int i = 0; i < ss. count (); i ++)
 	         fprintf (stderr, "%s \n", ss. at (i). toUtf8 (). data ());
 	      if (ss. count () != 3)
@@ -381,7 +381,6 @@ QDate startDate;
 	      int delayDays, hour, minutes, sum;
 	      sscanf (rest. c_str (), "%d %d %d %d",
 	                    &delayDays, &hour, &minutes, &sum);
-//	      fprintf (stderr, "na de scan: delayDays %d\n", delayDays);
 	      if (sum + delayDays + hour + minutes != 0)
 	         continue;
 //	first a simple validity check on the data
@@ -400,12 +399,8 @@ QDate startDate;
 	                           hour * MINUTES_PER_HOUR + minutes);
 	      int refMinutes	= currentTime. hour () * MINUTES_PER_HOUR +
 	                          currentTime. minute ();
-//	      fprintf (stderr, "delayDays = %d\n", delayDays);
 	      if (testMinutes >= refMinutes) 
 	         addRow (service. c_str (), delayDays, hour, minutes);
-//	      else
-//	         fprintf (stderr, "schedule for service %s is out of date\n",
-//	                                      service. c_str ());
 	   }
 	}
 }

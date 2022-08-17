@@ -37,6 +37,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #DEFINES	+= __EPG_TRACE__  
 
 DEPENDPATH += . \
+	      ./pauzeslide \
 	      ../src \
 	      ../includes \
 	      ../src/ofdm \
@@ -73,6 +74,7 @@ DEPENDPATH += . \
 	      ../qt-devices/xml-filereader 
 
 INCLUDEPATH += . \
+	       ./pauzeslide/ \
 	      ../ \
 	      ../src \
 	      ../includes \
@@ -102,6 +104,7 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
+	   ./pauzeslide/pauzeslide.h \
 	   ../dab-processor.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
@@ -361,9 +364,9 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
-CONFIG		+= pluto-rxtx
+#CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
-#CONFIG		+= pluto-2
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 #CONFIG		+= colibri
 CONFIG		+= faad

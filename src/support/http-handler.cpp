@@ -451,27 +451,29 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%f}",
 	       t [0]. type,
 	       dotNumber (real (t [0]. coords)). c_str (),
 	       dotNumber (imag (t [0]. coords)). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. distance,
-	       t [0]. azimuth);
+	       t [0]. azimuth,
+	       t [0]. power);
 	Jsontxt += QString (buf);
 //
 //
 	for (unsigned long i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512,
-	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d}",
+	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%f}",
 	        t [i]. type,
 	        dotNumber (real (t [i]. coords)). c_str (),
 	        dotNumber (imag (t [i]. coords)). c_str (),
 	        t [i]. transmitterName. toUtf8 (). data (),
 	        t [i]. channelName. toUtf8 (). data (),
 	        t [i]. distance,
-	        t [i]. azimuth);
+	        t [i]. azimuth,
+	        t [i]. power);
 	   Jsontxt += QString (buf);
 	}
 	t. resize (0);
@@ -486,7 +488,8 @@ void	httpHandler::putData	(uint8_t	type,
 	                         QString transmitterName,
 	                         QString channelName,
 	                         int distance,
-	                         int azimuth) {
+	                         int azimuth,
+	                         float power) {
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
 	   if (transmitterList [i]. coords == target)
 	      return;
@@ -498,6 +501,7 @@ void	httpHandler::putData	(uint8_t	type,
 	t. channelName		= channelName;
 	t. distance		= distance;
 	t. azimuth		= azimuth;
+	t. power		= power;
 	locker. lock ();
 	transmitterList. push_back (t);
 	locker. unlock ();

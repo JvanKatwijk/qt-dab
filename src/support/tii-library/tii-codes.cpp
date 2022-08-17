@@ -39,7 +39,8 @@
 #define	LOCATION	6
 #define	LATITUDE	7
 #define	LONGITUDE	8
-#define	NR_COLUMNS	10
+#define	POWER		13
+#define	NR_COLUMNS	14
 
 #ifdef __MINGW32__
 #define GETPROCADDRESS  GetProcAddress
@@ -109,6 +110,7 @@ QString	tiiHandler::get_transmitterName     (const QString & channel,
 }
 
 void    tiiHandler::get_coordinates (float *latitude, float * longitude,
+	                             float *power,
 	                             const QString &channel,
 	                             const QString &transmitter) {
 	for (int i = 0; i < (int)(cache. size ()); i++) {
@@ -116,6 +118,7 @@ void    tiiHandler::get_coordinates (float *latitude, float * longitude,
 	       (cache [i]. transmitterName == transmitter)) {
 	      *latitude = cache [i]. latitude;
 	      *longitude = cache [i]. longitude;
+	      *power	= cache [i]. power;
 	      return;
 	   }
 	}
@@ -265,6 +268,7 @@ std::vector<QString> columnVector;
 	   ed. transmitterName	= columnVector [LOCATION];
 	   ed. latitude		= convert (columnVector [LATITUDE]);
 	   ed. longitude	= convert (columnVector [LONGITUDE]);
+	   ed. power		= convert (columnVector [POWER]);
 	   if (count >= cache. size ())
 	      cache. resize (cache. size () + 500);
 	   cache. at (count) = ed;

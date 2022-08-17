@@ -74,6 +74,11 @@
 	         he = '<div style="font-size :1.2rem"> &#x2724</div>';
 //	         he = '<div style="font-size :1.1rem"> &#x25A3</div>';
 	      else
+	      if (key == 1)
+//	         he = '<div style="font-size :1.2rem"> &#x🏁</div>';
+	         he = '<div style="font-size :1.4rem"> &#x1F3C1</div>';
+//	         he = '<div style="font-size :1.2rem"> &#x1F197</div>';
+	      else
 	         he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
 //	      he = '<div style="'+selhtml+'"> &#x26AB</div>';
 	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
@@ -104,6 +109,8 @@
 	         else
 	         if (target. type == MAP_FRAME) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
+	               if (Transmitters [i]. furthest)
+	                  continue;
 	               if (Transmitters [i]. status == true) {
 	                  Transmitters [i]. status = false;
 	                  Map. removeLayer (Transmitters [i]. marker);
@@ -134,13 +141,35 @@
 	            if (alreadyThere) {
 	               continue;
 	            }
-
+//
+//	if the current "new" element has the largest distance
+//	to "home", unmark the previous one (if any)
+	            if (target. type == MAP_MAX_TRANS) {
+	               for (var i = 0; i < transmitterIndex; i ++) {
+	                  if (Transmitters [i]. furthest == true) {
+	                     Transmitters [i]. furthest = false;
+	                     Map. removeLayer (Transmitters [i]. marker);
+	                     let icon = getIconForTransmitter (0);
+	                     let element = Transmitters [i];
+	                     let elementMarker = L.marker ([element.lat,
+	                                                element.lon], {icon: icon}).addTo(Map);
+	                     elementMarker.
+	                          addEventListener ('click',
+	                                       function () { selectTransmitterCallback (element);});
+	                     Transmitters [i]. marker = elementMarker;
+	                     break;
+	                  }
+	               }
+	            }
 	            let firstOne = transmitterIndex == 0;
-	            let icon = getIconForTransmitter (1);
+	            target. furthest = target. type == MAP_MAX_TRANS;
+	            let icon = getIconForTransmitter (
+	                                    target. furthest ? 1 : 2);
 	            let targetMarker = L. marker([target.lat, target.lon],
 	                                            {icon: icon}) .addTo(Map);
 	            target. marker = targetMarker;
 	            target. status = true;
+	
 	            target. marker.
 	                    addEventListener ('click',
 	                                       function () { selectTransmitterCallback (target);});
@@ -155,7 +184,8 @@
 	               xx. innerHTML = 
 	                     '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
 	            xx. innerHTML += newChannel + '=>' +
-	                             target. name    + '<br>' +
+	                             target. name + ' (' +
+	                               target. power. toFixed (2) + ' kW)' + '<br>' +
 	                             coords + '<br>' +
 	                             'Distance to home ' +
 	                                  target. dist + 'km ' + 
@@ -167,7 +197,8 @@
 	               let aa = document. getElementById ('distance');
 	               aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
 	                                 newChannel + '=>' +
-	                                 target. name    + '<br>' +
+	                                 target. name  + ' (' +
+	                                   target. power. toFixed (2) + ' kW)' + '<br>' +
 	                                 coords + '<br>' +
 	                                 'Distance to home ' +
 	                                        target. dist + 'km ' + 
@@ -206,7 +237,8 @@
 	                          target. lon +  '</span>';
 	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
 	                    newChannel + '=>' +
-	                    target. name    + '<br>' +
+	                    target. name +  ' (' +
+	                          target. power. toFixed (2) + ' kW)' + '<br>' +
 	                    coords + '<br>' +
 	                    'Distance to home ' + target. dist + 'km ' +
 	                             target. azimuth + '&#xb0' + '<br></p>'

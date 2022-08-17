@@ -190,8 +190,8 @@ private:
 	QColor			gridColor;
         QColor			curveColor;
 
-	float		window	[4096];
-	QwtPlot         *plotgrid	= nullptr;
+	float		window	[8192];
+	QwtPlot         *plotgrid;
 	std::complex<float>*	fftBuffer;
         fftwf_plan      plan;
 
@@ -316,6 +316,7 @@ private slots:
 	void		set_filter		();
 	void		set_xmlDump		();
 	void		handleSignal		(float);
+	void		set_fmFrequency		(int);
 private:		// for the display
 
 };

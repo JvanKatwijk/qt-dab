@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>443</width>
-    <height>439</height>
+    <width>394</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,22 @@
        </property>
        <property name="value">
         <number>33</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="freqSetter">
+       <property name="minimum">
+        <number>100000</number>
+       </property>
+       <property name="maximum">
+        <number>144000</number>
+       </property>
+       <property name="singleStep">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>108000</number>
        </property>
       </widget>
      </item>

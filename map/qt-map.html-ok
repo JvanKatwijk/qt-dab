@@ -4,6 +4,7 @@
   <head>
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
      <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
+	<link rel="icon" href="data:,">
 	<style type="text/css">
 	   html { height: 100% }
 	   body { height: 100%; margin: 0; padding: 0 }
@@ -36,6 +37,9 @@
 	      font-size:14px;
 	      color:#333;
 	   }
+	   .coloring {
+	      color: red
+	   }
 	</style>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -47,20 +51,35 @@
 	   var Transmitters = {};
 	   var transmitterIndex	= 0;
 
+	   const MAP_RESET	= 0;
+	   const MAP_FRAME	= 1;
+	   const MAP_MAX_TRANS	= 2;
+	   const MAP_NORM_TRANS = 4;
+
 	   function getIconForHome () {
 	      var he = document. createElement ("P");
 	      he.innerHTML = '*';
 	      var selhtml = '';
 	      he = '<div style="font-size:1rem">&#x2B55</div>';
-	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
+	      var icon = L.divIcon ({html: he, className: 'home-icon'});
 	      return icon;
 	   }
 
-	   function getIconForTransmitter () {
+	   function getIconForTransmitter (key) {
 	      var he = document. createElement ("P");
-	      he.innerHTML = '*';
+//	      he.innerHTML = '*';
+
 	      var selhtml = '';
-	      he = '<div style="font-size :1rem"> &#x26AB</div>';
+	      if (key == 0)
+	         he = '<div style="font-size :1.2rem"> &#x2724</div>';
+//	         he = '<div style="font-size :1.1rem"> &#x25A3</div>';
+	      else
+	      if (key == 1)
+//	         he = '<div style="font-size :1.2rem"> &#x🏁</div>';
+	         he = '<div style="font-size :1.4rem"> &#x1F3C1</div>';
+//	         he = '<div style="font-size :1.2rem"> &#x1F197</div>';
+	      else
+	         he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
 //	      he = '<div style="'+selhtml+'"> &#x26AB</div>';
 	      var icon = L.divIcon ({html: he, className: 'transmitter-icon'});
 	      return icon;
@@ -68,8 +87,10 @@
 
 	   function fetchData () {
 	      $.getJSON ('/data.json', function (data) {
-	      if (data. length > 0) {
-	         if (data [0]. lat == 0) {
+	      let ttt = document. getElementById ('current');
+	      for (var t = 0; t < data. length; t ++) {
+	         let target = data [t];
+	         if (target. type == MAP_RESET) {
 	            for (var i = 0; i < transmitterIndex; i ++) {
 	               Map. removeLayer (Transmitters [i]. marker);
 	               delete Transmitters [i];
@@ -78,25 +99,109 @@
 	            transmitterIndex = 0;
 	            let xx = document. getElementById ('selinfo');
 	            xx . innerHTML = ' ';
-
+	            let yy = document. getElementById ('selCount');
+	            yy. innerHTML =
+	                 'number of transmitters ' + transmitterIndex;
+	            let zz = document. getElementById ('distance');
+                    zz. innerHTML = '';
+	            continue;
 	         }
-	         else {
-	            let target = data [0];
-	            for (var i = 0; i < transmitterIndex; i ++) 
-	               if ((Transmitters [i]. lat == target. lat) &&
-	                   (Transmitters [i]. lon == target. lon))
-	                  return;
-
-	            let icon = getIconForTransmitter ();
-	            let targetMarker = L.marker([target.lat, target.lon], {icon: icon}).addTo(Map);
+	         else
+	         if (target. type == MAP_FRAME) {
+	            for (var i = 0; i < transmitterIndex; i ++) {
+	               if (Transmitters [i]. furthest)
+	                  continue;
+	               if (Transmitters [i]. status == true) {
+	                  Transmitters [i]. status = false;
+	                  Map. removeLayer (Transmitters [i]. marker);
+	                  let icon = getIconForTransmitter (0);
+	                  let element = Transmitters [i];
+	                  let elementMarker = L.marker ([element.lat,
+	                                                element.lon], {icon: icon}).addTo(Map);
+	                  elementMarker.
+	                       addEventListener ('click',
+	                                       function () { selectTransmitterCallback (element);});
+	                  Transmitters [i]. marker = elementMarker;
+	               }
+	            }
+	            continue;
+	         }
+	         else 
+	         if ((target. type == MAP_MAX_TRANS) ||
+	                                 (target. type == MAP_NORM_TRANS)) {
+	            var alreadyThere = false;
+	            for (var j = 0; j < transmitterIndex; j ++) {
+	               if ((Transmitters [j]. lat == target. lat) &&
+	                   (Transmitters [j]. lon == target. lon) &&
+	                   (Transmitters [j]. channel == target. channel)) {
+	                  alreadyThere = true;
+	                  break;
+	               }
+	            }
+	            if (alreadyThere) {
+	               continue;
+	            }
+//
+//	if the current "new" element has the largest distance
+//	to "home", unmark the previous one (if any)
+	            if (target. type == MAP_MAX_TRANS) {
+	               for (var i = 0; i < transmitterIndex; i ++) {
+	                  if (Transmitters [i]. furthest == true) {
+	                     Transmitters [i]. furthest = false;
+	                     Map. removeLayer (Transmitters [i]. marker);
+	                     let icon = getIconForTransmitter (0);
+	                     let element = Transmitters [i];
+	                     let elementMarker = L.marker ([element.lat,
+	                                                element.lon], {icon: icon}).addTo(Map);
+	                     elementMarker.
+	                          addEventListener ('click',
+	                                       function () { selectTransmitterCallback (element);});
+	                     Transmitters [i]. marker = elementMarker;
+	                     break;
+	                  }
+	               }
+	            }
+	            let firstOne = transmitterIndex == 0;
+	            target. furthest = target. type == MAP_MAX_TRANS;
+	            let icon = getIconForTransmitter (
+	                                    target. furthest ? 1 : 2);
+	            let targetMarker = L. marker([target.lat, target.lon],
+	                                            {icon: icon}) .addTo(Map);
 	            target. marker = targetMarker;
-//	            target. on ('click',
-//	                         selectTransmitterCallback (target. name));
+	            target. status = true;
+	
+	            target. marker.
+	                    addEventListener ('click',
+	                                       function () { selectTransmitterCallback (target);});
+	            let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	            Transmitters [transmitterIndex] = target;
 	            transmitterIndex ++;
+	            let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + '--' +
+	                          target. lon +  '</span>';
 	            let xx = document. getElementById ('selinfo');
-	            xx . innerHTML += target. name + '<br>'+
-	                              target. lat + ' ' + target. lon + '<br>';
+	            if (firstOne)
+	               xx. innerHTML = 
+	                     '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
+	            xx. innerHTML += newChannel + '=>' +
+	                             target. name    + '<br>' +
+	                             coords + '<br>' +
+	                             'Distance to home ' +
+	                                  target. dist + 'km ' + 
+	                             target. azimuth + '&#xb0' + '<br><br>';
+	            let yy = document. getElementById ('selCount');
+	            yy. innerHTML = '<span style=\"font-weight:bold;">' + 'Number of transmitters' + '</span>' + ' ' + transmitterIndex + '<br>';
+
+	            if (target. type == MAP_MAX_TRANS) {
+	               let aa = document. getElementById ('distance');
+	               aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
+	                                 newChannel + '=>' +
+	                                 target. name    + '<br>' +
+	                                 coords + '<br>' +
+	                                 'Distance to home ' +
+	                                        target. dist + 'km ' + 
+	                                 target. azimuth + '&#xb0' + '<br><br>';
+	            }
 	         }
 	      }
 	   });
@@ -119,27 +224,23 @@
 /* Setup our timer to poll from the server. */
 	   window.setInterval(function () {
 	      fetchData ();
-//	      showData ();
-	   }, 100);
+	   }, 2000);
 	}
 
-	function selectTransmitterCallback (name) {
-	   let xx = document. getElementById ('selinfo');
-	   xx. innerHTML = name +'<br>';
+	function selectTransmitterCallback (target) {
+	   let xx = document. getElementById ('selected');
+	   let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
+	   let coords = '<span style=\"font-style: italic;\">' +
+	                          target. lat + '--' +
+	                          target. lon +  '</span>';
+	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
+	                    newChannel + '=>' +
+	                    target. name    + '<br>' +
+	                    coords + '<br>' +
+	                    'Distance to home ' + target. dist + 'km ' +
+	                             target. azimuth + '&#xb0' + '<br></p>'
 	}
 
-	function showData () {
-	   let xx = document. getElementById ('selinfo');
-	   var html = 'On screen now ' + transmitterIndex + '<br>';
-	   for (var i = 0; i < transmitterIndex; i ++) {
-//	      let target = transmitters [i];
-//	      html += target. name + '<br>';
-//	      html += target. lat + ' ' + target. lon + '<br>';
-	      html += i + '<br>';
-	   }
-	   xx. innerHTML = html;
-	}
-	   
 </script>
 </head>
 	<body onload="initialize()">
@@ -147,7 +248,11 @@
 	<div id="info">
 	<div>
 	   <h1>Qt-DAB</h1>
+	   <p id="selected"></p>
+	   <p id="selCount"></p>
+	   <p id="distance"></p>
 	   <p id="selinfo"></p>
+	   <p id="current"></p>
 	</div>
 	</div>
   </body>

@@ -105,6 +105,7 @@
 #include	"history-handler.h"
 #include	"time-table.h"
 
+#include	"pauzeslide.h"
 #ifdef	__MINGW32__
 #include <windows.h>
 
@@ -233,7 +234,6 @@ uint8_t convert (QString s) {
 	                                        my_snrViewer (this, Si),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
-//	                                        theTable (this),
 	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
@@ -301,8 +301,6 @@ uint8_t	dabBand;
 	httpPort		= dabSettings -> value ("httpPort", 8080). toInt ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
-//	if (saveSlides != 0)
-//	   set_picturePath ();
 
 	browserAddress		=
 	                  dabSettings -> value ("browserAddress",
@@ -361,7 +359,6 @@ uint8_t	dabBand;
 	      nextService. valid	= true;
 	   }
 	}
-
 	channel. targetPos	= std::complex<float> (0, 0);
 	float local_lat		=
 	             dabSettings -> value ("latitude", 0). toFloat ();
@@ -595,6 +592,8 @@ uint8_t	dabBand;
 	      httpButton -> hide ();
 	   }
 	}
+
+	show_pauzeSlide ();
 
 //	and start the timer(s)
 //	The displaytimer is there to show the number of
@@ -2190,8 +2189,8 @@ bool	tiiChange	= false;
 	   return;
 
 	channel. transmitterName = theName;
-	float latitude, longitude;
-	tiiProcessor. get_coordinates (&latitude, &longitude,
+	float latitude, longitude, power;
+	tiiProcessor. get_coordinates (&latitude, &longitude, &power,
 	                               channel. realChannel ?
 	                                  channel. channelName :
 	                                  "any",
@@ -2246,7 +2245,7 @@ bool	tiiChange	= false;
 	                       channel. targetPos, 
 	                       channel. transmitterName,
 	                       channel. channelName,
-	                       distance, hoek);
+	                       distance, hoek, power);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -3035,7 +3034,6 @@ void	RadioInterface::stopService	(dabService &s) {
 	if (audioDumper != nullptr) {
 	   stop_audioDumping ();
 	}
-	pictureLabel	-> setText ("No Picture");
 	if (s. valid) {
 	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
@@ -3073,6 +3071,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	      break;
 	   }
 	}
+	show_pauzeSlide ();
 	cleanScreen	();
 }
 //
@@ -3468,10 +3467,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0);
+	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3488,7 +3487,7 @@ void	RadioInterface::stopChannel	() {
 	LOG ("channel stops ", channel. channelName);
 	fprintf (stderr, "we have now as background services\n");
 	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
-	   fprintf (stderr, "%s (%d)\n",
+	   fprintf (stderr, " service %d %s (%d)\n", i,
 	                 backgroundServices. at (i). serviceName. toLatin1 (). data (),
 	                 backgroundServices. at (i). subChId);
 	
@@ -3522,6 +3521,7 @@ void	RadioInterface::stopChannel	() {
 
 	my_dabProcessor		-> stop ();
 	inputDevice		-> stopReader ();
+	show_pauzeSlide ();
 	presetTimer. stop 	();
 	channelTimer. stop	();
 	channel. Eid		= 0;
@@ -3530,7 +3530,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 //
@@ -4349,11 +4349,11 @@ int	index;
 	dabSettings	-> setValue (buttonFont, textColor);
 	dabSettings	-> endGroup ();
 
-	fprintf (stderr, "%s -> %s, %s -> %s\n",
-	                buttonColor. toLatin1 (). data (),
-	                baseColor. toLatin1 (). data (),
-	                buttonFont. toLatin1 (). data (),
-	                textColor. toLatin1 (). data ());
+//	fprintf (stderr, "%s -> %s, %s -> %s\n",
+//	                buttonColor. toLatin1 (). data (),
+//	                baseColor. toLatin1 (). data (),
+//	                buttonFont. toLatin1 (). data (),
+//	                textColor. toLatin1 (). data ());
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -4778,7 +4778,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0);
 }
 
 void	RadioInterface::handle_onTop	(int d) {
@@ -4787,5 +4787,21 @@ bool onTop = false;
 	if (configWidget. onTop -> isChecked ())
 	   onTop = true;
 	dabSettings -> setValue ("onTop", onTop ? 1 : 0);
+}
+
+void	RadioInterface::show_pauzeSlide () {
+QPixmap p;
+QByteArray theSlide;
+	
+	theSlide. resize (sizeof (pauzeSlide));
+	for (int i = 0; i < sizeof (pauzeSlide); i ++)
+	   theSlide [i] = pauzeSlide [i];
+	p. loadFromData (theSlide, "png");
+	int w   = 400;
+	int h   = 2 * w / 3.5;
+	pictureLabel	-> setAlignment(Qt::AlignCenter);
+	pictureLabel ->
+	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
+	pictureLabel -> show ();
 }
 
