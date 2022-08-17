@@ -2890,7 +2890,7 @@ void	RadioInterface::handle_contentSelector (const QString &s) {
 
 
 void	RadioInterface::localSelect (const QString &s) {
-#if QT_VERSION >= 0x06000
+#if QT_VERSION >= 0x060000
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -2905,7 +2905,7 @@ void	RadioInterface::localSelect (const QString &s) {
 //	likely are less than 16 characters
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
-#if QT_VERSION >= 0x06000
+#if QT_VERSION >= 0x060000
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
