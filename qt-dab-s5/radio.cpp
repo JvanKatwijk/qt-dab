@@ -1165,7 +1165,7 @@ const char *type;
 	QPixmap p;
 	p. loadFromData (data, type);
 	int w   = 400;
-	int h   = 2 * w / 3;
+	int h   = 2 * w / 3.5;
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
@@ -2185,8 +2185,8 @@ bool	tiiChange	= false;
 	   return;
 	}
 
-	if (theName == channel. transmitterName) // already there
-	   return;
+//	if (theName == channel. transmitterName) // already there
+//	   return;
 
 	channel. transmitterName = theName;
 	float latitude, longitude, power;
@@ -4724,11 +4724,15 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	}
 	tiiProcessor. loadTable (tableFile);
 	if (tiiProcessor. valid ()) {
-	   fprintf (stderr, "tablefile is loaded\n");
+	   QMessageBox::information (this, tr ("success"),
+	                            tr ("Loading and installing database complete\n"));
 	   channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
 	}
-	else
+	else {
+	   QMessageBox::information (this, tr ("fail"),
+	                            tr ("Loading database failed\n"));
 	   channel. tiiFile = false;
+	}
 }
 //
 //	ensure that we only get a handler if we have a start location
