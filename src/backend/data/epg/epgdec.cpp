@@ -49,8 +49,8 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
 	   QString test = doc. toString();
 	   FILE *epgFile = fopen (name. toUtf8(). data (), "w");
 	   if (epgFile != nullptr) {
-	      fprintf (stderr, "filename = %s\n", name. toUtf8(). data());
-	      fprintf (epgFile, test. toLatin1(). data());
+	      fprintf (stderr, "filename = %s\n", name. toUtf8 (). data());
+	      fprintf (epgFile, "%s", test. toLatin1 (). data());
 	      fclose (epgFile);
 	   }
 	   else {
@@ -58,8 +58,9 @@ void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
 	      cnt ++;
 	      epgFile = fopen (name_2. toUtf8 (). data (), "w");
 	      if (epgFile != 0) {
-	         fprintf (stderr, "filename = %s\n", name_2. toUtf8 (). data ());
-	         fprintf (epgFile, test. toLatin1 (). data ());
+	         fprintf (stderr, "filename = %s\n",
+	                            name_2. toUtf8 (). data ());
+	         fprintf (epgFile, "%s", test. toLatin1 (). data ());
 	         fclose (epgFile);
 	      }
 	   }

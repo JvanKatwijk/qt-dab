@@ -237,7 +237,7 @@
 	         if (Transmitters [i]. current) {
 	            Transmitters [i]. current = false;
 	            if (Transmitters [i]. furthest)
-	               break;	// had to "current" icon
+	               break;	// had no "current" icon
 	            Map. removeLayer (Transmitters [i]. marker);
 	            var icon = getIconForTransmitter (ICON_CURRENT);
 	            if (Transmitters. status)	// current frame
@@ -263,19 +263,19 @@
                      (Transmitters [j]. channel == target. channel)) {
 	            Transmitters [j]. current = true;
 
-	            if (Transmitters [j]. furthest)
-	               return;
-	            Map. removeLayer (Transmitters [j]. marker);
-	            var icon = getIconForTransmitter (ICON_CURRENT);
-	            let element = Transmitters [j];
+	            if (!Transmitters [j]. furthest) {
+	               Map. removeLayer (Transmitters [j]. marker);
+	               var icon = getIconForTransmitter (ICON_CURRENT);
+	               let element = Transmitters [j];
 	            
-	            let elementMarker =
-	                    L.marker ([element.lat, element.lon],
+	               let elementMarker =
+	                       L.marker ([element.lat, element.lon],
 	                              {icon: icon}).addTo(Map);
-	            elementMarker.
-	                    addEventListener ('click',
+	               elementMarker.
+	                       addEventListener ('click',
 	                                       function () { selectTransmitterCallback (element);});
-	            Transmitters [j]. marker = elementMarker;
+	               Transmitters [j]. marker = elementMarker;
+	            }
 	            let xx = document. getElementById ('testing');
 	            xx. innerHTML = 
 	              '<span style=\"font-weight:bold;">' + 'Current : ' + target. name + '<br>' + '</span>';
