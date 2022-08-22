@@ -39,6 +39,7 @@ typedef struct {
 	std::complex<float> coords;
 	QString transmitterName;
 	QString channelName;
+	int	ttiId;
 	int	distance;
 	int	azimuth;
 	float	power;
@@ -60,6 +61,7 @@ public:
 	                         std::complex<float>target,
 	                         QString transmittername,
 	                         QString channelName,
+	                         int ttiId,
 	                         int distance, int azimuth, float power);
 private:
 	RadioInterface		*parent;

@@ -2199,6 +2199,7 @@ bool	tiiChange	= false;
 	                       channel. targetPos, 
 	                       channel. transmitterName,
 	                       channel. channelName,
+	                       channel. mainId * 100 + channel. subId,
 	                       distance, hoek, power);
 }
 
@@ -3432,10 +3433,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0, 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3492,7 +3493,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
         transmitter_coordinates -> setText ("");
 
@@ -4693,7 +4694,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
 }
 
 void	RadioInterface::handle_onTop	(int d) {

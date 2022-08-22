@@ -57,9 +57,9 @@
 	   const MAP_NORM_TRANS = 4;
 	   const MAP_CURRENT 	= 8;
 
-	   const ICON_TOPFRAME		= 2;
 	   const ICON_OTHERFRAME	= 0;
 	   const ICON_FURTHEST		= 1;
+	   const ICON_TOPFRAME		= 2;
 	   const ICON_CURRENT		= 3;
 
 	   function getIconForHome () {
@@ -78,18 +78,13 @@
 	      var selhtml = '';
 	      if (key == ICON_OTHERFRAME)
 	         he = '<div style="font-size :1.5rem;"> &#x1F4CC</div>';
-//	         he = '<div style="font-size :1.2rem"> &#x2724</div>';
-//	         he = '<div style="font-size :1.1rem"> &#x25A3</div>';
 	      else
 	      if (key == ICON_FURTHEST)
 //	         he = '<div style="font-size :1.2rem"> &#x🏁</div>';
 	         he = '<div style="font-size :1.4rem"> &#x1F3C1</div>';
-//	         he = '<div style="font-size :1.2rem"> &#x1F197</div>';
 	      else
 	      if (key == ICON_TOPFRAME)
-//	         he = '<div style="font-size :1.2rem"> &#x2724</div>';
 	         he = '<div style="font-size :0.7rem;"> &#x26AB</div>';
-//	         he = '<div style="'+selhtml+'"> &#x26AB</div>';
 	      else	// ICON_CURRENT
 	         he = '<div style="font-size :1.4rem;"> &#x1F6A9</div>';
 	      
@@ -229,18 +224,19 @@
 	      showTransmitterAtSideBar (target, firstOne);
 	   }
 
-//	the CURRENT changed, so we have to restore the old
-//	marker for the previous current - if any - that is
-//	slightly complicated since there are several options
-	   function updateCurrent (target) {
+	   function clearCurrent () {
 	      for (var i = 0; i < transmitterIndex; i ++) {
 	         if (Transmitters [i]. current) {
 	            Transmitters [i]. current = false;
 	            if (Transmitters [i]. furthest)
 	               break;	// had no "current" icon
 	            Map. removeLayer (Transmitters [i]. marker);
+
 	            var icon = getIconForTransmitter (ICON_CURRENT);
-	            if (Transmitters. status)	// current frame
+	            if (Transmitters [i]. furthest)
+	               icon = getIconForTransmitter (ICON_FURTHEST)
+	            else
+	            if (Transmitters [i]. status)	// current frame
 	               icon = getIconForTransmitter (ICON_TOPFRAME);
 	            else
 	               icon = getIconForTransmitter (ICON_OTHERFRAME);
@@ -256,13 +252,18 @@
 	            break;
 	         }
 	      }
-
+	   }
+//	the CURRENT changed, so we have to restore the old
+//	marker for the previous current - if any - that is
+//	slightly complicated since there are several options
+	   function updateCurrent (target) {
 	      for (var j = 0; j < transmitterIndex; j ++) {
                  if ((Transmitters [j]. lat == target. lat) &&
                      (Transmitters [j]. lon == target. lon) &&
-                     (Transmitters [j]. channel == target. channel)) {
+	             (Transmitters [j]. channel == target. channel)) {
 	            Transmitters [j]. current = true;
-
+//
+//	recall that "furthest" positions do not show a "current" icon
 	            if (!Transmitters [j]. furthest) {
 	               Map. removeLayer (Transmitters [j]. marker);
 	               var icon = getIconForTransmitter (ICON_CURRENT);
@@ -283,7 +284,7 @@
 	         }
 	      }
 	   }
-	
+
 	   function fetchData () {
 	      $.getJSON ('/data.json', function (data) {
 	         let ttt = document. getElementById ('current');
@@ -307,15 +308,16 @@
 	               if (!((target. type == MAP_MAX_TRANS) ||
 	                                 (target. type == MAP_NORM_TRANS))) 
 	                  continue;
-
+//
 	               if (seenAlready (target)) {
+	                  clearCurrent ();
 	                  updateCurrent (target);
 	                  continue;
 	               }
 	               else {
 	                  if (target. type == MAP_MAX_TRANS) 
 	                     clearPreviousFurthest ();
-//
+	                  clearCurrent ();
 	                  addTransmitter (target);
 	               }
 	            }
