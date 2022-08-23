@@ -97,7 +97,8 @@
 	         Map. removeLayer (Transmitters [i]. marker);
 	         delete Transmitters [i];
 	      }
-	      Transmitters = {}
+
+	      Transmitters = {};
 	      transmitterIndex = 0;
 	      let xx = document. getElementById ('selinfo');
 	      xx . innerHTML = ' ';
@@ -175,7 +176,7 @@
 	              '<span style=\"font-weight:bold;">' + 'Transmitters <br>' + '</span>';
 	      xx. innerHTML += newChannel + '=>' +
 	                       target. name + ' (' +
-	                       target. power. toFixed (2) + ' kW)' + '<br>' +
+	                       (target. power/ 100.0).toFixed (2) + ' kW)' + '<br>' +
 	                       coords + '<br>' +
 	                       'Distance to home ' +
 	                                  target. dist + 'km ' + 
@@ -189,7 +190,7 @@
 	         aa. innerHTML  = '<span style=\"font-weight:bold;">' + 'Furthest distance by <br>' + '</span>' +
 	                       target. channel + '=>' +
 	                       target. name  + ' (' +
-	                       target. power. toFixed (2) + ' kW)' + '<br>' +
+	                       (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
 	                       coords + '<br>' +
 	                       'Distance to home ' +
 	                       target. dist + 'km ' + 
@@ -234,7 +235,7 @@
 
 	            var icon = getIconForTransmitter (ICON_CURRENT);
 	            if (Transmitters [i]. furthest)
-	               icon = getIconForTransmitter (ICON_FURTHEST)
+	               icon = getIconForTransmitter (ICON_FURTHEST);
 	            else
 	            if (Transmitters [i]. status)	// current frame
 	               icon = getIconForTransmitter (ICON_TOPFRAME);
@@ -309,15 +310,14 @@
 	                                 (target. type == MAP_NORM_TRANS))) 
 	                  continue;
 //
+	               clearCurrent ();	// always good
 	               if (seenAlready (target)) {
-	                  clearCurrent ();
 	                  updateCurrent (target);
 	                  continue;
 	               }
 	               else {
 	                  if (target. type == MAP_MAX_TRANS) 
 	                     clearPreviousFurthest ();
-	                  clearCurrent ();
 	                  addTransmitter (target);
 	               }
 	            }
@@ -354,7 +354,7 @@
 	   xx. innerHTML = '<p style=\"padding: 10px; border:2px solid black;\">' + 'Selected:  ' + '<br>' +
 	                    newChannel + '=>' +
 	                    target. name +  ' (' +
-	                          target. power. toFixed (2) + ' kW)' + '<br>' +
+	                          (target. power / 100.0). toFixed (2) + ' kW)' + '<br>' +
 	                    coords + '<br>' +
 	                    'Distance to home ' + target. dist + 'km ' +
 	                             target. azimuth + '&#xb0' + '<br></p>'

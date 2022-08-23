@@ -3499,7 +3499,8 @@ void	RadioInterface::stopChannel	() {
 	      fclose (s. fd);
 	}
 	backgroundServices. clear ();
-	   
+	inputDevice		-> stopReader ();
+	my_dabProcessor		-> stop ();
 	stop_sourceDumping	();
 	stop_audioDumping	();
 	stop_muting		();
@@ -3520,8 +3521,6 @@ void	RadioInterface::stopChannel	() {
 	techData. timeTable_button -> hide ();
 	my_timeTable	-> hide ();
 
-	my_dabProcessor		-> stop ();
-	inputDevice		-> stopReader ();
 	show_pauzeSlide ();
 	presetTimer. stop 	();
 	channelTimer. stop	();

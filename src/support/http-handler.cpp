@@ -451,31 +451,29 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"ttiId\":%d, \"dist\":%d, \"azimuth\":%d, \"power\":%f}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
 	       t [0]. type,
 	       dotNumber (real (t [0]. coords)). c_str (),
 	       dotNumber (imag (t [0]. coords)). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
-	       t [0]. ttiId,
 	       t [0]. distance,
 	       t [0]. azimuth,
-	       t [0]. power);
+	       (int)(t [0]. power * 100));
 	Jsontxt += QString (buf);
 //
 //
 	for (unsigned long i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512,
-	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"ttiId\":%d, \"dist\":%d, \"azimuth\":%d, \"power\":%f}",
+	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
 	        t [i]. type,
 	        dotNumber (real (t [i]. coords)). c_str (),
 	        dotNumber (imag (t [i]. coords)). c_str (),
 	        t [i]. transmitterName. toUtf8 (). data (),
 	        t [i]. channelName. toUtf8 (). data (),
-	        t [i]. ttiId,
 	        t [i]. distance,
 	        t [i]. azimuth,
-	        t [i]. power);
+	        (int)(t [i]. power * 100));
 	   Jsontxt += QString (buf);
 	}
 	t. resize (0);
