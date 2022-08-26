@@ -296,7 +296,7 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
-	httpPort		= dabSettings -> value ("httpPort", 8080). toInt ();
+	mapPort		= dabSettings -> value ("mapPort", 8080). toString ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 	if (saveSlides != 0)
@@ -304,7 +304,7 @@ uint8_t	dabBand;
 
 	browserAddress		=
 	                  dabSettings -> value ("browserAddress",
-	                                "http://localhost:8080"). toString ();
+	                                "http://localhost"). toString ();
 	
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
@@ -453,7 +453,8 @@ uint8_t	dabBand;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
-	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
+	epgPath		= dabSettings -> value ("epgPath", QDir::tempPath ()). toString ();
+//	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
 	connect (&epgProcessor,
 	         SIGNAL (set_epgData (int, int,
 	                              const QString &, const QString &)),
@@ -886,7 +887,8 @@ int	serviceOrder;
 	if (!running. load())
 	   return;
 
-	if (!handling_channel)
+	if (!handling_channel. load () || 
+	             (my_dabProcessor -> getSubChId (serviceName, SId) == -1))
 	   return;
 	(void)SId;
 	serviceId ed;
@@ -4654,7 +4656,7 @@ void	RadioInterface::handle_httpButton	() {
 
 	if (mapHandler == nullptr)  {
 	   mapHandler = new httpHandler (this,
-	                                 this -> httpPort,
+	                                 this -> mapPort,
 	                                 channel. localPos,
 	                                 autoBrowser_off,
 	                                 browserAddress);

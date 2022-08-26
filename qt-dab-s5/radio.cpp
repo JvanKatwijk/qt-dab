@@ -82,9 +82,7 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
-#ifdef	HAVE_PLUTO
-#include	"pluto-handler.h"
-#elif	HAVE_PLUTO_2
+#ifdef	HAVE_PLUTO_2
 #include	"pluto-handler-2.h"
 #elif	HAVE_PLUTO_RXTX
 #include	"pluto-rxtx-handler.h"
@@ -92,9 +90,6 @@
 #endif
 #ifdef	HAVE_SOAPY
 #include	"soapy-handler.h"
-#endif
-#ifdef	HAVE_COLIBRI
-#include	"colibri-handler.h"
 #endif
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
@@ -298,13 +293,13 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
-	httpPort		= dabSettings -> value ("httpPort", 8080). toInt ();
+	httpPort		= dabSettings -> value ("httpPort", 8085). toString ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 
 	browserAddress		=
 	                  dabSettings -> value ("browserAddress",
-	                                "http://localhost:8080"). toString ();
+	                                "http://localhost"). toString ();
 	
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
@@ -447,7 +442,9 @@ uint8_t	dabBand;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
-	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
+//
+	epgPath		= dabSettings -> value ("epgPath", QDir::tempPath ()). toString ();
+//	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
 	connect (&epgProcessor,
 	         SIGNAL (set_epgData (int, int,
 	                              const QString &, const QString &)),
@@ -671,7 +668,7 @@ uint8_t	dabBand;
 #ifdef	HAVE_PLUTO_RXTX
 	configWidget. deviceSelector	-> addItem ("pluto-rxtx");
 	streamerOut	= nullptr;
-#elif	HAVE_PLUTO
+#elif	HAVE_PLUTO_2
 	configWidget. deviceSelector	-> addItem ("pluto");
 #endif
 #ifdef  HAVE_EXTIO
@@ -891,7 +888,8 @@ int	serviceOrder;
 	if (!running. load())
 	   return;
 
-	if (!handling_channel. load ())
+	if (!handling_channel. load () || 
+	           (my_dabProcessor -> getSubChId (serviceName, SId) < 0))
 	   return;
 	(void)SId;
 	serviceId ed;
@@ -1625,7 +1623,7 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_PLUTO
+#ifdef	HAVE_PLUTO_2
 	if (s == "pluto") {
 	   try {
 	      inputDevice = new plutoHandler (dabSettings, version);
@@ -1668,20 +1666,6 @@ deviceHandler	*inputDevice	= nullptr;
 	   catch (int e) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no pluto device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_COLIBRI
-	if (s == "colibri") {
-	   try {
-	      inputDevice = new colibriHandler (dabSettings, false);
-	      showButtons();
-	   }
-	   catch (int e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no colibri device found\n"));
 	      return nullptr;
 	   }
 	}
@@ -4693,7 +4677,6 @@ QString theTime;
 
 void	RadioInterface::handle_LoggerButton (int s) {
 	(void)s;
-
 	if (configWidget. loggerButton -> isChecked ()) {
 	   if (logFile == nullptr)
 	      logFile = filenameFinder. findLogFileName ();

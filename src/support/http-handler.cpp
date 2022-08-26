@@ -44,18 +44,22 @@
 
 #include	"converted_map.h"
 
-    httpHandler::httpHandler (RadioInterface *parent, int port,
-	                      std::complex<float> address,
-	                      bool autoBrowser_off,
-	                      const QString &browserAddress) {
-    this	-> parent	= parent;
-    this	-> port		= port;
-    this	-> homeAddress	= address;
-    this	-> autoBrowser_off	= autoBrowser_off;
+	httpHandler::httpHandler (RadioInterface *parent,
+	                          const QString & mapPort,
+	                          std::complex<float> address,
+	                          bool autoBrowser_off,
+	                          const QString &browserAddress) {
+	this	-> parent	= parent;
+	this	-> mapPort	= mapPort;
+	this	-> homeAddress	= address;
+	this	-> autoBrowser_off	= autoBrowser_off;
+	QString temp = browserAddress + ":" + mapPort;
+	fprintf (stderr, "broweserAddress  %s\n",
+	                             temp. toLatin1 (). data ());
 #ifdef	__MINGW32__
-    this	-> browserAddress	= browserAddress. toStdWString ();
+    this	-> browserAddress	= temp. toStdWString ();
 #else
-    this	-> browserAddress	= browserAddress. toStdString ();
+    this	-> browserAddress	= temp. toStdString ();
 #endif
     this	-> running. store (false);
     connect (this, SIGNAL (terminating ()),
@@ -115,7 +119,7 @@ std::string	ctype;
 	setsockopt (ListenSocket, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(int));
 	svr_addr.sin_family = AF_INET;
 	svr_addr.sin_addr.s_addr = INADDR_ANY;
-	svr_addr.sin_port = htons (port);
+	svr_addr.sin_port = htons (mapPort. toInt ());
 
 	if (::bind (ListenSocket, (struct sockaddr *) &svr_addr,
 	                                   sizeof (svr_addr)) == -1) {
@@ -125,7 +129,7 @@ std::string	ctype;
 	   return;
 	}
 //
-//	Now, we are listening to port 8080, ready to accept a
+//	Now, we are listening to port XXXX, ready to accept a
 //	socket for anyone who needs us
 
 	::listen (ListenSocket, 5);
@@ -242,7 +246,8 @@ struct addrinfo hints;
 
 //	Resolve the server address and port
 
-	iResult = getaddrinfo (NULL, "8080", &hints, &result);
+	iResult = getaddrinfo (NULL, mapPort. toLatin1 (). data (),
+	                                               &hints, &result);
 	if (iResult != 0 ) {
 	       WSACleanup();
 	   terminating ();

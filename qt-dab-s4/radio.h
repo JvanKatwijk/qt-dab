@@ -200,7 +200,6 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	int			httpPort;
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
@@ -231,6 +230,7 @@ private:
 	void			disconnectGUI		();
 
 	QString			browserAddress;
+	QString			mapPort;
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;

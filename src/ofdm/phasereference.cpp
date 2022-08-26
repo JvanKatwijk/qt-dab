@@ -162,6 +162,7 @@ float	lbuf [T_u / 2];
 	      displayCounter	= 0;
 	   }
 	}
+	
 	return maxIndex;
 }
 //

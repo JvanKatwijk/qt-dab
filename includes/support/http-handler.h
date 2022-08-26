@@ -49,7 +49,7 @@ class	httpHandler: public QObject {
 Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
-	                         int port,
+	                         const QString &mapPort,
 	                         std::complex<float> address,
 	                         bool	autoBrowse,
 	                         const QString &browserAddress);
@@ -65,7 +65,7 @@ public:
 	                         int distance, int azimuth, float power);
 private:
 	RadioInterface		*parent;
-	int		port;
+	QString			mapPort;
 	std::complex<float> homeAddress;
 #ifdef	__MINGW32__
 	std::wstring	browserAddress;

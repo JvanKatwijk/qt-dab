@@ -1413,7 +1413,7 @@ int serviceIndex	= findService (s);
 	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
 	if (compIndex == -1) {
 	   fibLocker. unlock ();
-	   return 2000;
+	   return -1;
 	}
 
 	int subChId = currentConfig -> serviceComps [compIndex]. subchannelId;

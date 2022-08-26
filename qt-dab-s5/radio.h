@@ -198,7 +198,7 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	int			httpPort;
+	QString			httpPort;
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
