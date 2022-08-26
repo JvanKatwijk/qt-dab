@@ -293,7 +293,7 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
-	httpPort		= dabSettings -> value ("httpPort", 8085). toString ();
+	mapPort		= dabSettings -> value ("mapPort", 8080). toString ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 
@@ -4725,7 +4725,7 @@ void	RadioInterface::handle_httpButton	() {
 
 	if (mapHandler == nullptr)  {
 	   mapHandler = new httpHandler (this,
-	                                 this -> httpPort,
+	                                 this -> mapPort,
 	                                 channel. localPos,
 	                                 autoBrowser_off,
 	                                 browserAddress);
