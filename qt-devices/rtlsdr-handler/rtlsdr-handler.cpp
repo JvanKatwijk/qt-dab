@@ -78,12 +78,14 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	   return;
 	}
 
-	if (theStick -> isActive) {
+	if (theStick -> isActive. load ()) {
 	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < len / 2)
 	      fprintf (stderr, "xx? ");
 	   (void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
 	}
+	else
+	   theStick -> gotIt. store (true);
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -140,7 +142,8 @@ char	manufac [256], product [256], serial [256];
 
 	inputRate		= 2048000;
 	workerHandle		= nullptr;
-	isActive		= false;
+	isActive. store (false);
+	gotIt. store (false);
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
 #elif __linux__
@@ -308,7 +311,7 @@ void	rtlsdrHandler::set_filter	(int c) {
 }
 
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
-int32_t	r;
+	_I_Buffer. FlushRingBuffer();
 
 	(void)(this -> rtlsdr_set_center_freq (device, freq));
 	if (save_gainSettings)
@@ -317,15 +320,19 @@ int32_t	r;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
-	   r = this -> rtlsdr_reset_buffer (device);
+	   (void)this -> rtlsdr_reset_buffer (device);
 	   workerHandle	= new dll_driver (this);
 	}
-	isActive	= true;
+	isActive. store (true);
+	gotIt. store (false);
 	return true;
 }
 
 void	rtlsdrHandler::stopReader () {
-	isActive	= false;
+	gotIt. store (false);
+	isActive. store (false);
+	while (!gotIt. load ())
+	   usleep (500);
 	_I_Buffer. FlushRingBuffer();
 	close_xmlDump ();
 	if (save_gainSettings)
@@ -358,7 +365,7 @@ int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) {
 std::complex<uint8_t> temp [size];
 int	amount;
 
-	if (!isActive)
+	if (!isActive. load ())
 	   return 0;
 static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;
@@ -395,8 +402,8 @@ static int iqTeller	= 0;
 	return amount;
 }
 
-int32_t	rtlsdrHandler::Samples() {
-	if (!isActive)
+int32_t	rtlsdrHandler::Samples () {
+	if (!isActive. load ())
 	   return 0;
 	return _I_Buffer. GetRingBufferReadAvailable ();
 }

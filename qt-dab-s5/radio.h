@@ -198,7 +198,6 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	QString			mapPort;
 	SNDFILE                 *rawDumper;
         FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
@@ -229,7 +228,6 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
-	QString			browserAddress;
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
@@ -470,6 +468,7 @@ private slots:
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
+	void			handle_portSelector		();
 	void			loadTable			();
 };
 #endif

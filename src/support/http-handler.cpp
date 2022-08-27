@@ -46,33 +46,31 @@
 
 	httpHandler::httpHandler (RadioInterface *parent,
 	                          const QString & mapPort,
-	                          std::complex<float> address,
-	                          bool autoBrowser_off,
-	                          const QString &browserAddress) {
+	                          const QString &browserAddress,
+	                          std::complex<float> homeAddress,
+	                          bool autoBrowser_off) {
 	this	-> parent	= parent;
 	this	-> mapPort	= mapPort;
-	this	-> homeAddress	= address;
+	QString temp		= browserAddress + ":" + mapPort;
+	this	-> homeAddress	= homeAddress;
 	this	-> autoBrowser_off	= autoBrowser_off;
-	QString temp = browserAddress + ":" + mapPort;
-	fprintf (stderr, "broweserAddress  %s\n",
-	                             temp. toLatin1 (). data ());
 #ifdef	__MINGW32__
-    this	-> browserAddress	= temp. toStdWString ();
+	this	-> browserAddress	= temp. toStdWString ();
 #else
-    this	-> browserAddress	= temp. toStdString ();
+	this	-> browserAddress	= temp. toStdString ();
 #endif
-    this	-> running. store (false);
-    connect (this, SIGNAL (terminating ()),
+	this	-> running. store (false);
+	connect (this, SIGNAL (terminating ()),
 	     parent, SLOT (http_terminate ()));
-    start ();
+	start ();
 }
 
 
-    httpHandler::~httpHandler	() {
-    if (running. load ()) {
-       running. store (false);
-       threadHandle. join ();
-    }
+	httpHandler::~httpHandler	() {
+	if (running. load ()) {
+	   running. store (false);
+	   threadHandle. join ();
+	}
 }
 
 void	httpHandler::start	() {

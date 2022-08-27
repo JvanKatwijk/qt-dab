@@ -193,14 +193,25 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="loadTableButton">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button instructs the software to (try to) load a so-called tii table, a table with the&lt;/p&gt;&lt;p&gt;encodings of tii data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string>load table</string>
-     </property>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="loadTableButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button instructs the software to (try to) load a so-called tii table, a table with the&lt;/p&gt;&lt;p&gt;encodings of tii data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>load table</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="portSelector">
+       <property name="text">
+        <string>port select</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">

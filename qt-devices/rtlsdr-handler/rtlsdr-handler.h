@@ -100,7 +100,8 @@ public:
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*device;
-	bool		isActive;
+	std::atomic<bool>	isActive;
+	std::atomic<bool>	gotIt;
 private:
 	QFrame		myFrame;
 	QSettings	*rtlsdrSettings;

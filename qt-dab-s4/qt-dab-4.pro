@@ -183,6 +183,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
 	   ../includes/support/coordinates.h \
+	   ../includes/support/mapport.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../viewers/spectrum-viewer/spectrum-viewer.h \
@@ -286,6 +287,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/coordinates.cpp \
+	   ../src/support/mapport.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/correlation-viewer/correlation-viewer.cpp \

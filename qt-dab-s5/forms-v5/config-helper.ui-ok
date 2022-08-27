@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
-    <height>445</height>
+    <width>635</width>
+    <height>438</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -567,13 +567,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
         </widget>
        </item>
       </layout>
-     </item>
-     <item>
-      <widget class="smallPushButton" name="portSelector">
-       <property name="text">
-        <string>port</string>
-       </property>
-      </widget>
      </item>
     </layout>
    </item>

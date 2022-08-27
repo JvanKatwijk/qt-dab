@@ -50,9 +50,9 @@ Q_OBJECT
 public:
 		httpHandler	(RadioInterface *,
 	                         const QString &mapPort,
+	                         const QString &browserAddress,
 	                         std::complex<float> address,
-	                         bool	autoBrowse,
-	                         const QString &browserAddress);
+	                         bool	autoBrowse);
 		~httpHandler	();
 	void	start		();
 	void	stop		();

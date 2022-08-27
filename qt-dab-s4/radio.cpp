@@ -49,6 +49,7 @@
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
+#include	"mapport.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -296,16 +297,11 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
-	mapPort		= dabSettings -> value ("mapPort", 8080). toString ();
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
 	if (saveSlides != 0)
 	   set_picturePath ();
 
-	browserAddress		=
-	                  dabSettings -> value ("browserAddress",
-	                                "http://localhost"). toString ();
-	
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
@@ -585,6 +581,8 @@ uint8_t	dabBand;
 	copyrightLabel	-> setToolTip (footText ());
 	presetSelector	-> setToolTip (presetText ());
 
+	connect (configWidget. portSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_portSelector ()));
 	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_set_coordinatesButton ()));
 	QString tiiFileName = dabSettings -> value ("tiiFile", ""). toString ();
@@ -4636,6 +4634,7 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	   tableFile = QDir::homePath () + "/.txdata.tii";
 	   dabSettings -> setValue ("tiiFile", tableFile);
 	}
+
 	tiiProcessor. loadTable (tableFile);
 	if (tiiProcessor. valid ()) {
 	   QMessageBox::information (this, tr ("success"),
@@ -4655,11 +4654,17 @@ void	RadioInterface::handle_httpButton	() {
 	   return;
 
 	if (mapHandler == nullptr)  {
+	   QString browserAddress          =
+                          dabSettings -> value ("browserAddress",
+                                        "http://localhost"). toString ();
+	   QString mapPort		=
+	                  dabSettings -> value ("mapPort", 8080). toString ();
+
 	   mapHandler = new httpHandler (this,
-	                                 this -> mapPort,
+	                                 mapPort,
+	                                 browserAddress,
 	                                 channel. localPos,
-	                                 autoBrowser_off,
-	                                 browserAddress);
+	                                 autoBrowser_off);
 	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
@@ -4706,4 +4711,10 @@ bool onTop = false;
 	   onTop = true;
 	dabSettings -> setValue ("onTop", onTop ? 1 : 0);
 }
+
+void    RadioInterface::handle_portSelector () {
+mapPortHandler theHandler (dabSettings);
+        (void)theHandler. QDialog::exec();
+}
+
 

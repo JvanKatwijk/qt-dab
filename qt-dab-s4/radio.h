@@ -229,8 +229,6 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
-	QString			browserAddress;
-	QString			mapPort;
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
@@ -470,6 +468,7 @@ private slots:
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
+	void			handle_portSelector		();
 	void			loadTable			();
 };
 #endif
