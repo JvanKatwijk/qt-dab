@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>605</width>
-    <height>445</height>
+    <width>608</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -280,7 +280,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set in the configuration that - rather than showing all ttransmitters on a map - only the transmitters that are seen for the currrent channel are made visible.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>show transmitters of current channel</string>
+          <string>current channel transmitters</string>
          </property>
         </widget>
        </item>
@@ -504,76 +504,72 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_8">
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <widget class="smallComboBox" name="scanmodeSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of three modes for scanning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <item>
-        <widget class="smallComboBox" name="streamoutSelector">
-         <property name="maximumSize">
-          <size>
-           <width>162</width>
-           <height>16777215</height>
-          </size>
-         </property>
-        </widget>
+        <property name="text">
+         <string>single scan</string>
+        </property>
        </item>
        <item>
-        <widget class="smallComboBox" name="deviceSelector"/>
+        <property name="text">
+         <string>scan to data</string>
+        </property>
        </item>
-      </layout>
+       <item>
+        <property name="text">
+         <string>continuous</string>
+        </property>
+       </item>
+      </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QComboBox" name="scanmodeSelector">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of three modes for scanning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>single scan</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>scan to data</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>continuous</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallPushButton" name="skipList_button">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the skipList. Updates in the skipList will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>skipList</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="smallPushButton" name="skipFile_button">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a file for the skipList. If the file does not exist yet, it will be created and initialized with a skipList with no channels set to skip.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>skipFile</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QPushButton" name="skipList_button">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the skipList. Updates in the skipList will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>skipList</string>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="smallPushButton" name="portSelector">
+      <widget class="QPushButton" name="skipFile_button">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a file for the skipList. If the file does not exist yet, it will be created and initialized with a skipList with no channels set to skip.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>skipFile</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="portSelector">
        <property name="text">
         <string>port</string>
        </property>
       </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="smallComboBox" name="streamoutSelector">
+       <property name="maximumSize">
+        <size>
+         <width>162</width>
+         <height>16777215</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="smallComboBox" name="deviceSelector"/>
      </item>
     </layout>
    </item>

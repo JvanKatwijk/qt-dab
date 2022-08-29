@@ -36,6 +36,7 @@
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
 
+//#define	__X_VERSION_ 1
 #ifdef	__MINGW32__
 #define	GETPROCADDRESS	GetProcAddress
 #else
@@ -84,8 +85,6 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	   (void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
 	}
-	else
-	   theStick -> gotIt. store (true);
 }
 //
 //	for handling the events in libusb, we need a controlthread
@@ -143,7 +142,6 @@ char	manufac [256], product [256], serial [256];
 	inputRate		= 2048000;
 	workerHandle		= nullptr;
 	isActive. store (false);
-	gotIt. store (false);
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
 #elif __linux__
@@ -274,15 +272,19 @@ char	manufac [256], product [256], serial [256];
 	if (phandle == nullptr) {	// nothing achieved earlier on
 	   return;
 	}
-	stopReader	();
 	myFrame. hide ();
+	stopReader	();
+#ifndef	__X_VERSION_
 	this	-> rtlsdr_cancel_async (device);
 	this	-> rtlsdr_reset_buffer (device);
-	while (!workerHandle -> isFinished()) 
-	   usleep (100);
-	_I_Buffer. FlushRingBuffer();
-	delete	workerHandle;
-	workerHandle	= nullptr;
+	if (workerHandle != nullptr) {
+	   while (!workerHandle -> isFinished()) 
+	      usleep (200);
+	   _I_Buffer. FlushRingBuffer();
+	   delete	workerHandle;
+	   workerHandle	= nullptr;
+	}
+#endif
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	rtlsdrSettings	-> setValue ("externalGain",
 	                              gainControl -> currentText());
@@ -324,16 +326,24 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 	   workerHandle	= new dll_driver (this);
 	}
 	isActive. store (true);
-	gotIt. store (false);
 	return true;
 }
 
 void	rtlsdrHandler::stopReader () {
-	gotIt. store (false);
 	isActive. store (false);
-	while (!gotIt. load ())
-	   usleep (500);
+#ifdef	__X_VERSION_
+	this    -> rtlsdr_cancel_async (device);
+        this    -> rtlsdr_reset_buffer (device);
+	if (workerHandle != nullptr) {
+           while (!workerHandle -> isFinished())
+              usleep (100);
+           _I_Buffer. FlushRingBuffer();
+           delete  workerHandle;
+           workerHandle    = nullptr;
+	}
+#else
 	_I_Buffer. FlushRingBuffer();
+#endif
 	close_xmlDump ();
 	if (save_gainSettings)
 	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (device)) / MHz (1));
@@ -364,11 +374,11 @@ void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
 int32_t	rtlsdrHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<uint8_t> temp [size];
 int	amount;
+static uint8_t dumpBuffer [4096];
+static int iqTeller	= 0;
 
 	if (!isActive. load ())
 	   return 0;
-static uint8_t dumpBuffer [4096];
-static int iqTeller	= 0;
 
 	amount = _I_Buffer. getDataFromBuffer (temp, size);
 	if (filtering) {
