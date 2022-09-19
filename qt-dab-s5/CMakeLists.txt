@@ -291,6 +291,7 @@ endif ()
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
+	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-library/tii-codes.h
@@ -387,6 +388,7 @@ endif ()
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
+	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
@@ -448,6 +450,7 @@ endif ()
 	     ../includes/support/time-table.h
 	     ../includes/support/content-table.h
 	     ../includes/support/coordinates.h
+	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
