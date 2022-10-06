@@ -209,6 +209,7 @@ uint8_t convert (QString s) {
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFrequency,
+	                                bool		epgFlag,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -249,6 +250,7 @@ uint8_t	dabBand;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
 	this	-> ficDumpPointer	=  nullptr;
+	this	-> epgFlag	= epgFlag;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -4406,6 +4408,8 @@ void	RadioInterface::scheduled_ficDumping () {
 
 void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
+	if (!epgFlag)
+	   return;
 	if (scanning. load ())
 	   return;
 	for (auto serv : serviceList) {

@@ -268,7 +268,8 @@ bool	mscHandler::set_Channel (descriptorType *d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer,
-	                                     dump, flag));
+	                                     dump,
+	                                     flag));
 	fprintf (stderr, "we have now %d backends running\n",
 	                        theBackends. size ());
 	return true;

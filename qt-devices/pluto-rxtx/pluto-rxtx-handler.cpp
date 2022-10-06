@@ -349,8 +349,8 @@ int	ret;
                                                      0);
         if (ret < 0)
            fprintf (stderr, "setting transmit gain did not work\n");
-        else
-           fprintf (stderr, "cound not obtain TX channel\n");
+//	else
+//	   fprintf (stderr, "cound not obtain TX channel\n");
 
         if (!cfg_ad9361_streaming_ch (ctx, &tx_cfg, TX, 0)) {
            fprintf (stderr, "TX port 0 not found");

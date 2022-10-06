@@ -115,6 +115,7 @@ public:
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
+	                                 bool,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
@@ -143,6 +144,7 @@ private:
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	httpHandler		*mapHandler;
+	bool			epgFlag;
 	processParams		globals;
 	QString			version;
 	QString			theFont;

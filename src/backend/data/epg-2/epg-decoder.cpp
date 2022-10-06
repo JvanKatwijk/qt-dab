@@ -2322,6 +2322,7 @@ void	epgDecoder::record (progDesc *theElement) {
 
 QString	epgDecoder::getCData	(uint8_t *v, int index, int eLength) {
 int length;
+
 	if (v [index] != 0x1)
 	   return "";
 
