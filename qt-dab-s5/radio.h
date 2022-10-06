@@ -115,7 +115,6 @@ public:
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
 	                                 int,
-	                                 bool,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 

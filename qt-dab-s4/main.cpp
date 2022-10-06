@@ -83,17 +83,14 @@ QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 108000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
-bool	epgFlag			= true;
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "EC:i:P:Q:A:TM:F:s:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
-	      case 'E':
-	         epgFlag	= false;
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
 	         break;
@@ -159,8 +156,7 @@ bool	epgFlag			= true;
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,
-	                                       fmFrequency,
-	                                       epgFlag
+	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
 

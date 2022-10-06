@@ -207,7 +207,6 @@ uint8_t convert (QString s) {
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFrequency,
-	                                bool		epgFlag,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -247,7 +246,6 @@ uint8_t	dabBand;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
 	this	-> ficDumpPointer	= nullptr;
-	this	-> epgFlag		= epgFlag;
 	running. 		store (false);
 	scanning. 		store (false);
 	handling_channel.	store (false);
@@ -268,6 +266,8 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
+	epgFlag			=
+	                  dabSettings -> value ("epgFlag", 1). toInt () == 1;
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 

@@ -250,7 +250,6 @@ uint8_t	dabBand;
 	this	-> fmFrequency	= fmFrequency;
 	this	-> dlTextFile	= nullptr;
 	this	-> ficDumpPointer	=  nullptr;
-	this	-> epgFlag	= epgFlag;
 	running. 		store (false);
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
@@ -270,6 +269,8 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
+	epgFlag			=
+	                  dabSettings -> value ("epgFlag", 1). toInt () == 1;
 	handling_channel. store (false);
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();

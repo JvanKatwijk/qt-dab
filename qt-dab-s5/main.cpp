@@ -77,7 +77,6 @@ QString		presetName	= PRESETS;
 int32_t		dataPort	= 8888;
 int32_t		clockPort	= 8889;
 int     opt;
-bool		epgFlag		= true;
 QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
@@ -88,12 +87,8 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "EC:i:P:Q:A:TM:F:s:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
-
-	      case 'E':
-	         epgFlag = false;
-	         break;
 
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
@@ -159,8 +154,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,
-	                                       fmFrequency,
-	                                       epgFlag
+	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
 
