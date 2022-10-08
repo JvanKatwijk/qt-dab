@@ -209,7 +209,6 @@ uint8_t convert (QString s) {
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
 	                                int		fmFrequency,
-	                                bool		epgFlag,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
 	                                        spectrumBuffer (2 * 32768),
@@ -269,8 +268,6 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
-	epgFlag			=
-	                  dabSettings -> value ("epgFlag", 1). toInt () == 1;
 	handling_channel. store (false);
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
@@ -4409,7 +4406,7 @@ void	RadioInterface::scheduled_ficDumping () {
 
 void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
-	if (!epgFlag)
+	if (dabSettings -> value ("epgFlag", 0). toInt () != 1)
 	   return;
 	if (scanning. load ())
 	   return;

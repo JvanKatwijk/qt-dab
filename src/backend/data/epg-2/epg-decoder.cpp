@@ -68,6 +68,9 @@ int	index	= 0;
 	this	-> SId		= SId;
 	this	-> subType	= subType;
 	this	-> julianDate	= theDay;
+	for (int i = 0; i < 20; i ++)
+	   stringTable [i] = " ";
+
 	if ((v [0] != EPG_TAG) && (v [0] != SERVICE_TAG))
 	   return e_length;
 
@@ -1250,6 +1253,7 @@ int length	= v [index + 1];
 	}
 
         while (index < endPoint) {
+	   QString tt;
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
@@ -1259,7 +1263,8 @@ int length	= v [index + 1];
                  break;
 
 	      case 0x01:
-	         p -> shortName	= getCData (v, index, length);	
+	         tt	= getCData (v, index, length);	
+	         p -> shortName	= tt;	
 	         return endPoint;
 
               default:
@@ -1300,6 +1305,7 @@ int length	= v [index + 1];
 	}
 
 	while (index < endPoint) {
+	   QString tt;
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
@@ -1309,7 +1315,8 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x01:
-	         p -> mediumName = getCData (v, index, length);
+	         tt = getCData (v, index, length);
+	         p -> mediumName = tt;
 	         return endPoint;
 
 	      default:
@@ -1349,6 +1356,7 @@ int length	= v [index + 1];
 	}
 
 	while (index < endPoint) {
+	   QString tt;
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
@@ -1358,7 +1366,8 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x01:
-	         p -> longName = getCData (v, index, length);
+	         tt = getCData (v, index, length);
+	         p -> longName = tt;
 	         return endPoint;
 
 	      default:
@@ -1399,6 +1408,7 @@ int length	= v [index + 1];
 	}
 
 	while (index < endPoint) {
+	   QString tt;
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
@@ -1408,7 +1418,8 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x01:
-	         p -> shortDescription = getCData (v, index, length);
+	         tt = getCData (v, index, length);
+	         p -> shortDescription = tt;
 	         return endPoint;
 
 	      default:
@@ -1449,6 +1460,7 @@ int length	= v [index + 1];
 	}
 
 	while (index < endPoint) {
+	   QString tt;
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
@@ -1458,7 +1470,8 @@ int length	= v [index + 1];
 	         break;
 
 	      case 0x01:
-	         p -> longDescription = getCData (v, index, length);
+	         tt = getCData (v, index, length);
+	         p -> longDescription = tt;
 	         return endPoint;
 
 	      default:
@@ -2261,7 +2274,10 @@ int	length	= v [index + 1];
 	for (int i = 0; i < length; i ++)
 	   text [i] = v [index + i];
 	text [length] = 0;
-	stringTable [tag] = QString::fromUtf8 (text);
+	if (0 <= tag && tag <= 16) {
+//	   fprintf (stderr, "adding %s to %d in stringTable\n", text, tag);
+	   stringTable [tag] = QString::fromUtf8 (text);
+	}
 	return index + length;
 }
 
@@ -2327,7 +2343,10 @@ int length;
 	   return "";
 
 	if (v [index + 1] == 1) {
-	   return stringTable [v [index + 2]];
+	   if (v [index + 2] < 16)
+	      return stringTable [v [index + 2]];
+	   else
+	      return "";
 	}
 
 	length = v [index + 1];
@@ -2345,15 +2364,20 @@ int length;
 
 	std::vector<char> text;
 	for (int i = 0; i < length; i ++) {
-	   if (v [index + i] < 0x16) {
-	      char *p = stringTable [v [index + i]]. toUtf8 (). data ();
-	      while (*p != 0) 
-	         text. push_back (*p++);
+	   if (v [index + i] < 16) {
+	      for (int k = 0;
+	           stringTable [v [index + i]]. toUtf8 (). data () [k] != 0;
+	           k ++) {
+	         char c = stringTable [v [index + i]]. toUtf8 (). data () [k];
+	         text. push_back (c);
+	      }
 	   }
 	   else
 	      text. push_back (v [index + i]);
 	}
+
 	text. push_back (0);
-	return QString::fromUtf8 (text. data ());
+	QString tt =  QString::fromUtf8 (text. data ());
+	return tt;
 }
 

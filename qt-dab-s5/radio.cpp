@@ -266,8 +266,6 @@ uint8_t	dabBand;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
-	epgFlag			=
-	                  dabSettings -> value ("epgFlag", 1). toInt () == 1;
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
 
@@ -321,6 +319,9 @@ uint8_t	dabBand;
 	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
 	   configWidget.  onTop -> setChecked (true);
 
+	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
+	   configWidget. epgSelector -> setChecked (true);
+
 	configWidget. EPGLabel	-> hide ();
 	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	int x = dabSettings -> value ("muteTime", 2). toInt ();
@@ -364,6 +365,10 @@ uint8_t	dabBand;
 
 	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_onTop (int)));
+
+	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_epgSelector (int)));
+
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -4480,7 +4485,8 @@ void	RadioInterface::scheduled_ficDumping () {
 
 void	RadioInterface::epgTimer_timeOut	() {
 	epgTimer. stop ();
-	if (!epgFlag)
+	
+	if (dabSettings   -> value ("epgFlag", 0). toInt () != 1)
 	   return;
 	if (scanning. load ())
 	   return;
@@ -4804,5 +4810,10 @@ QByteArray theSlide;
 void	RadioInterface::handle_portSelector () {
 mapPortHandler theHandler (dabSettings);
         (void)theHandler. QDialog::exec();
+}
+
+void	RadioInterface::handle_epgSelector	(int x) {
+	dabSettings -> setValue ("epgFlag", 
+	                         configWidget. epgSelector -> isChecked () ? 1 : 0);
 }
 

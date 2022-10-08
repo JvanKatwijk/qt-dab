@@ -168,6 +168,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/presetcombobox.h \
 	   ../includes/support/smallcombobox.h \
 	   ../includes/support/newpushbutton.h \
+	   ../includes/support/normalpushbutton.h \
 	   ../includes/support/smallpushbutton.h \
 	   ../includes/support/verysmallpushbutton.h \
 	   ../includes/support/smallqlistview.h \
