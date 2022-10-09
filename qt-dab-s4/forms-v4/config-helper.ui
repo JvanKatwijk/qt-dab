@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>666</height>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,6 +149,16 @@
      </property>
      <property name="text">
       <string> utc Selector</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="epgSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Settings this instructs the software to automtically start an EPG service in an ensemble&lt;/p&gt;&lt;p&gt;when the ensemble is detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>start epg automatic</string>
      </property>
     </widget>
    </item>

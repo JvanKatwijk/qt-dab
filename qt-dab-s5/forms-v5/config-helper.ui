@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
-    <height>520</height>
+    <width>590</width>
+    <height>496</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -246,6 +246,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="epgSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>epg automatic</string>
          </property>

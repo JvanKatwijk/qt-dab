@@ -427,6 +427,7 @@ private slots:
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
 	void			handle_onTop		(int);
+	void			handle_epgSelector	(int);
 	void			handle_autoBrowser	(int);
         void			handle_transmitterTags	(int);
 

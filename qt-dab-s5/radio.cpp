@@ -992,19 +992,19 @@ QStringList s	= my_dabProcessor -> basicPrint ();
 
 	QString header		= channel. ensembleName + ";" +
 	                          channel. channelName  + ";" +
-                                  QString::number (channel. frequency) + ";" +
-                                  hextoString (channel. Eid) + " " + ";" +
-                                  transmitter_coordinates -> text () + " " + ";" +
+	                          QString::number (channel. frequency) + ";" +
+	                          hextoString (channel. Eid) + " " + ";" +
+	                          transmitter_coordinates -> text () + " " + ";" +
 	                          theTime  + ";" +
 	                          SNR  + ";" +
-                                  QString::number (serviceList. size ()) + ";" +
-                                  distanceLabel -> text ();
+	                          QString::number (serviceList. size ()) + ";" +
+	                          distanceLabel -> text ();
 
 	my_contentTable		= new contentTable (this, dabSettings,
 	                                            channel. channelName,
 	                                            my_dabProcessor -> scanWidth ());
 	connect (my_contentTable, SIGNAL (goService (const QString &)),
-                 this, SLOT (handle_contentSelector (const QString &)));
+	         this, SLOT (handle_contentSelector (const QString &)));
 
 
 	my_contentTable		-> addLine (header);
@@ -1300,19 +1300,19 @@ int	serviceOrder;
 	         FILE *f = backgroundServices. at (i). fd;
 	         my_dabProcessor -> dataforAudioService (ss, &ad);
 	         my_dabProcessor -> 
-                           set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
-                 backgroundServices. at (i). subChId     = ad. subchId;
+	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
+	         backgroundServices. at (i). subChId     = ad. subchId;
 	      }
 	      else {
 	         packetdata pd;
 	         my_dabProcessor -> dataforPacketService (ss, &pd, 0);
 	         my_dabProcessor -> 
-                           set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
-                 backgroundServices. at (i). subChId     = pd. subchId;
+	                   set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
+	         backgroundServices. at (i). subChId     = pd. subchId;
 	      }
 	      for (int j = 0; j < model. rowCount (); j ++) {
 	         QString itemText =
-                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
+	                           model. index (j, 0). data (Qt::DisplayRole). toString ();
 	         if (itemText == ss) {
 	            colorService (model. index (j, 0), Qt::blue,
 	                                fontSize + 2, true);
@@ -2816,10 +2816,10 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                                     serviceName. toUtf8 (). data ());
 
 	                for (int j = 0; j < model. rowCount (); j ++) {
-                            QString itemText =
-                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
-                           if (itemText == serviceName) {
-                              colorService (model. index (j, 0), Qt::black, fontSize);
+	                    QString itemText =
+	                           model. index (j, 0). data (Qt::DisplayRole). toString ();
+	                   if (itemText == serviceName) {
+	                      colorService (model. index (j, 0), Qt::black, fontSize);
 	                   }
 	                }
 	                return true;
@@ -2843,7 +2843,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         backgroundServices. push_back (s);
 	         for (int j = 0; j < model. rowCount (); j ++) {
 	             QString itemText =
-                       model. index (j, 0). data (Qt::DisplayRole). toString ();
+	               model. index (j, 0). data (Qt::DisplayRole). toString ();
 	               if (itemText == s. serviceName) {
 	                  colorService (model. index (j, 0),
 	                                       Qt::blue, fontSize + 2, true);
@@ -2907,11 +2907,11 @@ void    RadioInterface::handle_presetSelector (const QString &s) {
 
 void	RadioInterface::handle_contentSelector (const QString &s) {
 	if (!running. load ())
-           return;
+	   return;
 
-        presetTimer. stop ();
-        fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
-        localSelect (s);
+	presetTimer. stop ();
+	fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
+	localSelect (s);
 }
 
 
@@ -2921,8 +2921,8 @@ void	RadioInterface::localSelect (const QString &s) {
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 #endif
-        if (list. length () != 2)
-           return;
+	if (list. length () != 2)
+	   return;
 	localSelect (list. at (0), list. at (1));
 }
 
@@ -2936,8 +2936,8 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
 #endif
-        if (list. length () != 2)
-           return;
+	if (list. length () != 2)
+	   return;
 	QString theChannel = list. at (0);
 	QString service	= list. at (1);
 	for (int i = service. size (); i < 16; i ++)
@@ -3523,7 +3523,7 @@ void	RadioInterface::stopChannel	() {
 	if (transmitterTags_local && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
-        transmitter_coordinates -> setText ("");
+	transmitter_coordinates -> setText ("");
 //
 	hide_for_safety	();	// hide some buttons
 	my_tiiViewer. clear();
@@ -4463,16 +4463,16 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 
 	presetTimer. stop ();
 	if (scanning. load ())
-           stopScanning (false);
+	   stopScanning (false);
 	scheduleSelect (s);
 }
 
 void	RadioInterface::scheduled_ficDumping () {
 	if (ficDumpPointer == nullptr) {
 	   ficDumpPointer     =
-             filenameFinder. find_ficDump_file (channel. channelName);
-           if (ficDumpPointer == nullptr)
-              return;
+	     filenameFinder. find_ficDump_file (channel. channelName);
+	   if (ficDumpPointer == nullptr)
+	      return;
 	   my_dabProcessor -> start_ficDump (ficDumpPointer);
 	   return;
 	}
@@ -4493,11 +4493,11 @@ void	RadioInterface::epgTimer_timeOut	() {
 	for (auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
 	       serv. name. contains (" EPG   ", Qt::CaseInsensitive) ||
-               serv. name. contains ("Spored", Qt::CaseInsensitive) ||
-               serv. name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
-               serv. name. contains ("SPI", Qt::CaseSensitive) ||
-               serv. name. contains ("BBC Guide", Qt::CaseInsensitive) ||
-               serv. name. contains ("EPG_", Qt::CaseInsensitive) ||
+	       serv. name. contains ("Spored", Qt::CaseInsensitive) ||
+	       serv. name. contains ("NivaaEPG", Qt::CaseInsensitive) ||
+	       serv. name. contains ("SPI", Qt::CaseSensitive) ||
+	       serv. name. contains ("BBC Guide", Qt::CaseInsensitive) ||
+	       serv. name. contains ("EPG_", Qt::CaseInsensitive) ||
 	       serv. name. startsWith ("EPG ", Qt::CaseInsensitive) ) {
 	      packetdata pd;
 	      my_dabProcessor -> dataforPacketService (serv. name, &pd, 0);
@@ -4511,22 +4511,22 @@ void	RadioInterface::epgTimer_timeOut	() {
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
-                 s. channel     = pd. channel;
-                 s. serviceName = pd. serviceName;
-                 s. SId         = pd. SId;
-                 s. SCIds       = pd. SCIds;
-                 s. subChId     = pd. subchId;
-                 s. fd          = nullptr;
-                 backgroundServices. push_back (s);
+	         s. channel     = pd. channel;
+	         s. serviceName = pd. serviceName;
+	         s. SId         = pd. SId;
+	         s. SCIds       = pd. SCIds;
+	         s. subChId     = pd. subchId;
+	         s. fd          = nullptr;
+	         backgroundServices. push_back (s);
 
 	         for (int j = 0; j < model. rowCount (); j ++) {
-                    QString itemText =
-                                   model. index (j, 0). data (Qt::DisplayRole). toString ();
-                    if (itemText == pd. serviceName) {
-                       colorService (model. index (j, 0), Qt::blue,
-                                        fontSize + 2, true);
+	            QString itemText =
+	                           model. index (j, 0). data (Qt::DisplayRole). toString ();
+	            if (itemText == pd. serviceName) {
+	               colorService (model. index (j, 0), Qt::blue,
+	                                fontSize + 2, true);
 	               break;
-                    }
+	            }
 	         }
 	      }
 	   }
@@ -4541,13 +4541,13 @@ void	RadioInterface::epgTimer_timeOut	() {
 	                                serv. name. toUtf8 (). data ());
 	         my_dabProcessor -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
-                 s. channel     = channel. channelName;
-                 s. serviceName = pd. serviceName;
-                 s. SId         = pd. SId;
-                 s. SCIds       = pd. SCIds;
-                 s. subChId     = pd. subchId;
-                 s. fd          = nullptr;
-                 backgroundServices. push_back (s);
+	         s. channel     = channel. channelName;
+	         s. serviceName = pd. serviceName;
+	         s. SId         = pd. SId;
+	         s. SCIds       = pd. SCIds;
+	         s. subChId     = pd. subchId;
+	         s. fd          = nullptr;
+	         backgroundServices. push_back (s);
 	         break;
 	      }
 	   }
@@ -4675,7 +4675,7 @@ QString theTime;
 	if (logFile == nullptr)
 	   return;
 	if (configWidget. utcSelector -> isChecked ())
-           theTime  = convertTime (UTC. year, UTC. month, UTC. day,
+	   theTime  = convertTime (UTC. year, UTC. month, UTC. day,
 	                                  UTC. hour, UTC. minute);
 	else
 	   theTime = QDateTime::currentDateTime (). toString ();
@@ -4809,10 +4809,11 @@ QByteArray theSlide;
 
 void	RadioInterface::handle_portSelector () {
 mapPortHandler theHandler (dabSettings);
-        (void)theHandler. QDialog::exec();
+	(void)theHandler. QDialog::exec();
 }
 
 void	RadioInterface::handle_epgSelector	(int x) {
+	(void)x;
 	dabSettings -> setValue ("epgFlag", 
 	                         configWidget. epgSelector -> isChecked () ? 1 : 0);
 }
