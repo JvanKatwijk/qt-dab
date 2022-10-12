@@ -52,6 +52,7 @@ public:
 	                         const QString &mapPort,
 	                         const QString &browserAddress,
 	                         std::complex<float> address,
+	                         const QString &saveName,
 	                         bool	autoBrowse);
 		~httpHandler	();
 	void	start		();
@@ -64,9 +65,13 @@ public:
 	                         int ttiId,
 	                         int distance, int azimuth, float power);
 private:
+	FILE			*saveFile;
+	QString			*saveName;
 	RadioInterface		*parent;
 	QString			mapPort;
 	std::complex<float> homeAddress;
+	std::vector<httpData> transmitterVector;
+
 #ifdef	__MINGW32__
 	std::wstring	browserAddress;
 #else

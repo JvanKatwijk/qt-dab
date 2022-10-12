@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>675</height>
+    <height>706</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -199,6 +199,16 @@
      </property>
      <property name="text">
       <string>show transmitters of current channel</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="transmSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is set, transmitter data, that is visible on the map, is saved in a &amp;quot;.csv&amp;quot; file.&lt;/p&gt;&lt;p&gt;On starting the http handler, a file menu is shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>save transmitter data</string>
      </property>
     </widget>
    </item>

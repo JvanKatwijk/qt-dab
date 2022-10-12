@@ -240,7 +240,6 @@ private:
 	QString			footText		();
 	QString			presetText		();
 	void			cleanScreen		();
-	void			set_picturePath		();
 	void			dumpControlState	(QSettings *);
 	void			hideButtons		();
 	void			showButtons		();
@@ -249,6 +248,8 @@ private:
 	historyHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 //
+	QString			checkDir		(const QString);
+
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
@@ -428,6 +429,7 @@ private slots:
 	void			handle_httpButton	();
 	void			handle_onTop		(int);
 	void			handle_epgSelector	(int);
+	void			handle_transmSelector	(int);
 	void			handle_autoBrowser	(int);
         void			handle_transmitterTags	(int);
 

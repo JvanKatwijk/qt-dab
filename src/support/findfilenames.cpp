@@ -401,3 +401,32 @@ QString theTime	= QDateTime::currentDateTime (). toString ();
 	return fopen (fileName. toUtf8 (). data (), "w+b");
 }
 
+QString	findfileNames::findMaps_fileName () {
+QString	saveDir		= dabSettings -> value ("contentDir",
+	                                        QDir::homePath ()). toString ();
+QString theTime         = QDateTime::currentDateTime (). toString ();
+QString suggestedFileName;
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	for (int i = 0; i < theTime. length (); i ++)
+	   if (!isValid (theTime. at (i)))
+	      theTime. replace (i, 1, '-');
+	suggestedFileName = saveDir + "Qt-DAB-Transmitters" +
+	                                          "-" + theTime + ".csv";
+	suggestedFileName        = QDir::toNativeSeparators (suggestedFileName);
+
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "txt (*.txt)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == "")
+	   return "";
+
+	return QDir::toNativeSeparators (fileName);
+}
+

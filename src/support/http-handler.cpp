@@ -48,6 +48,7 @@
 	                          const QString & mapPort,
 	                          const QString &browserAddress,
 	                          std::complex<float> homeAddress,
+	                          const QString &saveName,
 	                          bool autoBrowser_off) {
 	this	-> parent	= parent;
 	this	-> mapPort	= mapPort;
@@ -62,15 +63,24 @@
 	this	-> running. store (false);
 	connect (this, SIGNAL (terminating ()),
 	     parent, SLOT (http_terminate ()));
+	saveFile	= fopen (saveName. toUtf8 (). data (), "w");
+	if (saveFile != nullptr) {
+	   fprintf (saveFile, "Home location; %f; %f\n\n", 
+	                                   real (homeAddress), imag (homeAddress));
+	   fprintf (saveFile, "channel; latitude; longitude;transmitter; mainId; subId; distance; azimuth; power\n\n");
+	}
+
+	transmitterVector. resize (0);
 	start ();
 }
-
 
 	httpHandler::~httpHandler	() {
 	if (running. load ()) {
 	   running. store (false);
 	   threadHandle. join ();
 	}
+	if (saveFile != nullptr)
+	   fclose (saveFile);
 }
 
 void	httpHandler::start	() {
@@ -498,6 +508,7 @@ void	httpHandler::putData	(uint8_t	type,
 	   if (transmitterList [i]. coords == target)
 	      return;
 
+	   
 	httpData t;
 	t. type			= type;
 	t. coords		= target;
@@ -507,8 +518,26 @@ void	httpHandler::putData	(uint8_t	type,
 	t. distance		= distance;
 	t. azimuth		= azimuth;
 	t. power		= power;
+
 	locker. lock ();
 	transmitterList. push_back (t);
 	locker. unlock ();
+
+	for (int i = 0; i < transmitterVector. size (); i ++) {
+	   if ((transmitterVector. at (i). transmitterName == transmitterName) &&
+	       (transmitterVector. at (i). channelName == channelName))
+	      return;
+	}
+	
+	if ((saveFile != nullptr)  &&
+	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
+	   fprintf (saveFile, "%s; %f; %f; %s; %d; %d; %d; %d; %f\n",
+	                      channelName. toUtf8 (). data (),
+	                      real (target), imag (target),
+	                      transmitterName. toUtf8 (). data (),
+	                      ttiId / 100, ttiId % 100,
+	                      distance, azimuth, power);
+	   transmitterVector. push_back (t);
+	}
 }
 

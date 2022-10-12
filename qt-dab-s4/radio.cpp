@@ -299,8 +299,6 @@ uint8_t	dabBand;
 #endif
 //
 	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
-	if (saveSlides != 0)
-	   set_picturePath ();
 
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
@@ -324,6 +322,9 @@ uint8_t	dabBand;
 //	Now we can set the checkbox as saved in the settings
 	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
 	   configWidget.  onTop -> setChecked (true);
+
+	if (dabSettings -> value ("saveLocations", 0). toInt () == 1)
+	   configWidget. transmSelector -> setChecked (true);
 
 	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
 	   configWidget. epgSelector -> setChecked (true);
@@ -374,6 +375,9 @@ uint8_t	dabBand;
 	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_epgSelector (int)));
 
+	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_transmSelector (int)));
+
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -403,6 +407,7 @@ uint8_t	dabBand;
 
 	if (dabSettings -> value ("autoBrowser", 1). toInt () == 1)
 	   configWidget. autoBrowser -> setChecked (true);
+
 	if (dabSettings -> value ("transmitterTags", 1). toInt () == 1)
 	   configWidget. transmitterTags -> setChecked (true);
 	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
@@ -456,15 +461,30 @@ uint8_t	dabBand;
 	   ((audioSink *)soundOut)	-> selectDefaultDevice();
 #endif
 //
-	epgPath		= dabSettings -> value ("epgPath", QDir::tempPath ()). toString ();
-//	epgPath		= dabSettings -> value ("epgPath", "/tmp"). toString ();
+#ifndef	__MINGW32__
+	picturesPath	= checkDir (QDir::tempPath ());
+#else
+	picturesPath	=  checkDir (QDir::homePath ());
+#endif
+	picturesPath	+= "Qt-DAB-files/";
+	picturesPath	= dabSettings -> value ("picturesPath",
+	                                          picturesPath). toString ();
+	picturesPath	= checkDir (picturesPath);
+
+#ifndef	__MINGW32__
+	epgPath		= checkDir (QDir::tempPath ());
+#else
+	epgPath		= checkDir (QDir::homePath ());
+#endif
+	epgPath		+= "Qt-DAB-files/";
+	epgPath		= dabSettings -> value ("epgPath", epgPath). toString ();
+	epgPath		= checkDir (epgPath);
 	connect (&epgProcessor,
 	         SIGNAL (set_epgData (int, int,
 	                              const QString &, const QString &)),
 	         this, SLOT (set_epgData (int, int,
 	                              const QString &, const QString &)));
-	if ((epgPath != "") && (!epgPath. endsWith ("/")))
-	   epgPath = epgPath + "/";
+
 //	timer for autostart epg service
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, SIGNAL (timeout ()),
@@ -1011,20 +1031,16 @@ QStringList s	= my_dabProcessor -> basicPrint ();
 	my_contentTable -> show ();
 }
 
-void	checkDir (QString &s) {
-int16_t	ind	= s. lastIndexOf (QChar ('/'));
-int16_t	i;
-QString	dir;
+QString	RadioInterface::checkDir (const QString s) {
+QString	dir =  s;
 
-	if (ind == -1)		// no slash, no directory
-	   return;
-
-	for (i = 0; i < ind; i ++)
-	   dir. append (s [i]);
+	if (!dir. endsWith (QChar ('/')))
+	   dir += QChar ('/');
 
 	if (QDir (dir). exists())
-	   return;
+	   return dir;
 	QDir(). mkpath (dir);
+	return dir;
 }
 
 void	RadioInterface::handle_motObject (QByteArray result,
@@ -1063,11 +1079,17 @@ QString realName;
 	   case  MOTBaseTypeApplication: 	// epg data
 	      if (epgPath == "")
 	         return;
+
 	      if (objectName == QString (""))
 	         objectName = "epg file";
-	      objectName  = QDir::toNativeSeparators (epgPath + objectName);
-	      checkDir (objectName);
-	      {  std::vector<uint8_t> epgData (result. begin(),
+	      objectName  = epgPath + objectName;
+
+	      {  QString temp = objectName;
+	         temp = temp. left (temp. lastIndexOf (QChar ('/')));
+	         if (!QDir (temp). exists ())
+	            QDir (). mkpath (temp);
+
+	         std::vector<uint8_t> epgData (result. begin(),
 	                                                  result. end());
 	         uint32_t ensembleId =
 	                     my_dabProcessor -> get_ensembleId ();
@@ -1078,11 +1100,12 @@ QString realName;
 	         int subType = 
 	                  getContentSubType ((MOTContentType)contentType);
 	         epgProcessor. process_epg (epgData. data (), 
-	                                       epgData. size (), currentSId,
-	                                       subType,
-	                                       julianDate);
+	                                    epgData. size (), currentSId,
+	                                    subType,
+	                                    julianDate);
 	         if (configWidget. epg2xmlSelector -> isChecked ())
-	            epgHandler. decode (epgData, objectName);
+	            epgHandler. decode (epgData,
+	                         QDir::toNativeSeparators (objectName));
 	      }
 	      return;
 
@@ -1141,11 +1164,18 @@ const char *type;
 	   default:
 	        return;
 	}
-
-	if (saveSlides) {
-	   QString pict = QDir::toNativeSeparators (picturesPath + pictureName);
-	   checkDir (pict);
-	   FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
+//
+//	While we know that "picturesPath is either "" or a path to an existing
+//	directory. However, the pictureName may contain parts of a pathname
+//	so a check is required
+	if (saveSlides && (picturesPath != "")) {
+	   QString pict = picturesPath + pictureName;
+	   QString temp = pict;
+           temp = temp. left (temp. lastIndexOf (QChar ('/')));
+           if (!QDir (temp). exists())
+              QDir (). mkpath (temp);
+	   pict 	= QDir::toNativeSeparators (pict);
+           FILE *x = fopen (pict. toUtf8 (). data (), "w+b");
 	   if (x == nullptr)
 	      fprintf (stderr, "cannot write file %s\n",
 	                            pict. toUtf8 (). data ());
@@ -2310,28 +2340,6 @@ void	RadioInterface::hideButtons		() {
 }
 
 void	RadioInterface::setSyncLost	() {
-}
-
-void	RadioInterface::set_picturePath		() {
-QString defaultPath	= QDir::tempPath ();
-
-	if (defaultPath. endsWith ("/"))
-	   defaultPath. append ("qt-pictures/");
-	else
-	   defaultPath. append ("/qt-pictures/");
-
-	picturesPath	=
-	        dabSettings	-> value ("pictures", defaultPath). toString();
-
-	if ((picturesPath != "") && (!picturesPath. endsWith ("/")))
-	   picturesPath. append ("/");
-
-	if (picturesPath != "") {
-	   QDir testdir (picturesPath);
-
-	   if (!testdir. exists())
-	      testdir. mkdir (picturesPath);
-	}
 }
 
 void	RadioInterface::handle_resetButton	() {
@@ -4669,10 +4677,17 @@ void	RadioInterface::handle_httpButton	() {
 	   QString mapPort		=
 	                  dabSettings -> value ("mapPort", 8080). toString ();
 
+	   QString mapFile;
+	   if (dabSettings -> value ("saveLocations", 0). toInt () == 1)
+	      mapFile = filenameFinder. findMaps_fileName ();
+	   else
+	      mapFile = "";
+
 	   mapHandler = new httpHandler (this,
 	                                 mapPort,
 	                                 browserAddress,
 	                                 channel. localPos,
+	                                 mapFile,
 	                                 autoBrowser_off);
 	   maxDistance = -1;
 	   if (mapHandler != nullptr)
@@ -4730,5 +4745,11 @@ void	RadioInterface::handle_epgSelector	(int x) {
 	(void)x;
 	dabSettings -> setValue ("epgFlag",
 	                         configWidget. epgSelector -> isChecked () ? 1 : 0);
+}
+
+void    RadioInterface::handle_transmSelector   (int x) {
+        (void)x;
+        dabSettings -> setValue ("saveLocations",
+                                 configWidget. transmSelector -> isChecked () ? 1 : 0);
 }
 
