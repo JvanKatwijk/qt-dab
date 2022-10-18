@@ -92,6 +92,10 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_SetDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_ReleaseDeviceIdx) (unsigned int);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_RSPII_RfNotchEnable) (unsigned int);
 
+typedef mir_sdr_ErrT (*pfn_mir_sdr_RSPII_BiasTControl)(unsigned int enable);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_rsp1a_BiasT)(int enable);
+typedef mir_sdr_ErrT (*pfn_mir_sdr_rspDuo_BiasT)(int enable);
+
 ///////////////////////////////////////////////////////////////////////////
 class	sdrplayHandler: public QObject,
 	                public deviceHandler, public Ui_sdrplayWidget {
@@ -144,13 +148,27 @@ private:
 	pfn_mir_sdr_SetPpm	my_mir_sdr_SetPpm;
 	pfn_mir_sdr_DebugEnable	my_mir_sdr_DebugEnable;
 	pfn_mir_sdr_GetDevices  my_mir_sdr_GetDevices;
-	pfn_mir_sdr_GetCurrentGain my_mir_sdr_GetCurrentGain;
-	pfn_mir_sdr_GetHwVersion my_mir_sdr_GetHwVersion;
-	pfn_mir_sdr_RSPII_AntennaControl my_mir_sdr_RSPII_AntennaControl;
-	pfn_mir_sdr_rspDuo_TunerSel my_mir_sdr_rspDuo_TunerSel;
-	pfn_mir_sdr_SetDeviceIdx my_mir_sdr_SetDeviceIdx;
-	pfn_mir_sdr_ReleaseDeviceIdx my_mir_sdr_ReleaseDeviceIdx;
-	pfn_mir_sdr_RSPII_RfNotchEnable my_mir_sdr_RSPII_RfNotchEnable;
+	pfn_mir_sdr_GetCurrentGain
+	                        my_mir_sdr_GetCurrentGain;
+	pfn_mir_sdr_GetHwVersion
+	                        my_mir_sdr_GetHwVersion;
+	pfn_mir_sdr_RSPII_AntennaControl
+	                        my_mir_sdr_RSPII_AntennaControl;
+	pfn_mir_sdr_rspDuo_TunerSel
+	                        my_mir_sdr_rspDuo_TunerSel;
+	pfn_mir_sdr_SetDeviceIdx
+	                        my_mir_sdr_SetDeviceIdx;
+	pfn_mir_sdr_ReleaseDeviceIdx
+	                        my_mir_sdr_ReleaseDeviceIdx;
+	pfn_mir_sdr_RSPII_RfNotchEnable
+	                        my_mir_sdr_RSPII_RfNotchEnable;
+
+	pfn_mir_sdr_RSPII_BiasTControl
+	                        my_mir_sdr_RSPII_BiasTControl;
+	pfn_mir_sdr_rsp1a_BiasT
+	                        my_mir_sdr_rsp1a_BiasT;
+	pfn_mir_sdr_rspDuo_BiasT
+	                        my_mir_sdr_rspDuo_BiasT;
 
 	QString		recorderVersion;
 	QString		deviceModel;
@@ -194,6 +212,7 @@ private slots:
 	void		set_tunerSelect		(const QString &);
 	void		set_xmlDump		();
 	void		voidSignal		(int);
+	void		biasT_selectorHandler	(int);
 };
 #endif
 

@@ -37,6 +37,7 @@
 #define LNA_REQUEST             0107
 #define ANTENNASELECT_REQUEST   0110
 #define GAINVALUE_REQUEST	0111
+#define	BIAS_T_REQUEST		0112
 
 #include	<QSemaphore>
 
@@ -145,6 +146,16 @@ public:
         ~gainvalueRequest     () {}
 };
 
+class	biasT_Request: public generalCommand {
+public:
+	int	biasT_value;
+	biasT_Request (int biasT_value):
+	            generalCommand (BIAS_T_REQUEST) {
+	   this -> biasT_value = biasT_value;
+	}
+	~biasT_Request	() {}
+};
+	
 class	antennaRequest: public generalCommand {
 public:
 	int	antenna;

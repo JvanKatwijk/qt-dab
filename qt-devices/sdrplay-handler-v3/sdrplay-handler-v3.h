@@ -127,6 +127,8 @@ private:
 	void			releaseLibrary		();
 	bool			loadFunctions		();
 	int			errorCode;
+
+	void			set_biasValue		(int);
 signals:
 	void			new_GRdBValue		(int);
 	void			new_lnaValue		(int);
@@ -137,6 +139,7 @@ private slots:
 	void			set_agcControl		(int);
 	void			set_ppmControl		(int);
 	void			set_antennaSelect	(const QString &);
+	void			set_biasT		(int);
 public slots:
 	void			set_lnabounds		(int, int);
 	void			set_deviceName		(const QString &);

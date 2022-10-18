@@ -349,14 +349,10 @@ uint8_t	dabBand;
 	      if (ss. size () == 2) {
 	         nextService. channel	= ss. at (0);
 	         nextService. serviceName = ss. at (1);
+	         nextService. SId	= 0;
+	         nextService. SCIds	= 0;
+	         nextService. valid	= true;
 	      }
-	      else {
-	         nextService. channel = "";
-	         nextService. serviceName = presetName;
-	      }
-	      nextService. SId		= 0;
-	      nextService. SCIds	= 0;
-	      nextService. valid	= true;
 	   }
 	}
 
@@ -3120,10 +3116,14 @@ QString serviceName	= s -> serviceName;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
-	         QString s = channel. channelName;
-	         s. append (":");
-	         s. append (serviceName);
-	         dabSettings	-> setValue ("presetname", s);
+	         QString s = channel. channelName + ":" + serviceName;
+	         if (dabSettings -> value ("has-presetName", 0).
+	                                                   toInt () == 1) {
+	            QString s = channel. channelName + ":" + serviceName;
+                    dabSettings -> setValue ("presetname", s);
+	         }
+                 else 
+                    dabSettings -> setValue ("presetname", "");
 	      }
 	      else
 	      if (my_dabProcessor -> is_packetService (serviceName)) {
@@ -3133,7 +3133,6 @@ QString serviceName	= s -> serviceName;
 	         currentService. is_audio	= false;
 	         currentService. subChId	= pd. subchId;
 	         start_packetService (serviceName);
-	         dabSettings	-> setValue ("presetname", "");
 	      }
 	      else {
 	         fprintf (stderr, "%s is not clear\n",

@@ -197,7 +197,7 @@
        <item>
         <widget class="QCheckBox" name="saveServiceSelector">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;save on program exit the name of the current service - if any - and select this service after restarting.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;save service on exit&amp;quot;  selector instructs the software -when set - to save the channel:service combination (audio services only) and on program restart automatically switch to the  channel and start the service.&lt;/p&gt;&lt;p&gt;Note that is the service cannot be found, a warning will be shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>    save service on exit</string>

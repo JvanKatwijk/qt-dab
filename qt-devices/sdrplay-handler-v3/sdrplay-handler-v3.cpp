@@ -108,6 +108,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	   gainsliderLabel      -> hide ();
 	}
 
+	
 //	and be prepared for future changes in the settings
 	connect (GRdBSelector, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ifgainReduction (int)));
@@ -121,7 +122,6 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	         this, SLOT (set_antennaSelect (const QString &)));
 	connect (dumpButton, SIGNAL (clicked ()),
                  this, SLOT (set_xmlDump ()));
-
 	vfoFrequency	= MHz (220);
 	theGain		= -1;
 	debugControl	-> hide ();
@@ -136,6 +136,7 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 	      usleep (1000);
 	   throw (errorCode);
 	}
+	
 	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
 }
 
@@ -280,6 +281,14 @@ agcRequest r (agcMode, 30);
 void	sdrplayHandler_v3::set_ppmControl (int ppm) {
 ppmRequest r (ppm);
         messageHandler (&r);
+}
+
+void	sdrplayHandler_v3::set_biasT (int v) {
+biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
+
+	messageHandler (&r);
+	sdrplaySettings -> setValue ("biasT_selector",
+	                              biasT_selector -> isChecked () ? 1 : 0);
 }
 
 void	sdrplayHandler_v3::set_antennaSelect	(const QString &s) {
@@ -478,6 +487,8 @@ uint32_t                ndev;
 	         this, SLOT (set_apiVersion (float)));
 	connect (this, SIGNAL (set_antennaSelect_signal (bool)),
 	         this, SLOT (set_antennaSelect (bool)));
+	connect (biasT_selector, SIGNAL (stateChanged (int)),
+	         this, SLOT (set_biasT (int)));
 
 	denominator		= 2048;		// default
 	nrBits			= 12;		// default
@@ -589,7 +600,9 @@ uint32_t                ndev;
 //
 //	these will change:
 	chParams	-> tunerParams. rfFreq. rfHz    = 220000000.0;
-	chParams	-> tunerParams. gain.gRdB	= 30;
+	chParams	-> tunerParams. gain.gRdB	= 
+	                                    GRdBSelector -> value ();
+
 	chParams	-> tunerParams. gain.LNAstate	= lnaState;
 	chParams	-> ctrlParams.agc.enable = sdrplay_api_AGC_DISABLE;
 	if (agcMode) {
@@ -651,6 +664,7 @@ uint32_t                ndev;
 	      nrBits		= 14;
 	      has_antennaSelect	= true;
 	      break;
+
 	   default:
 	   case 255:		// RSP-1A
 	      lna_upperBound	= 9;
@@ -670,13 +684,23 @@ uint32_t                ndev;
 
 	if (err != sdrplay_api_Success) 
 	   fprintf (stderr, "setting the notch failed\n");
-	set_lnabounds_signal	(0, lna_upperBound);
-	set_deviceName_signal	(deviceModel);
-	set_serial_signal	(serial);
-	set_apiVersion_signal	(apiVersion);
-	set_antennaSelect_signal (has_antennaSelect);
+	set_lnabounds_signal		(0, lna_upperBound);
+	set_deviceName_signal		(deviceModel);
+	set_serial_signal		(serial);
+	set_apiVersion_signal		(apiVersion);
+	set_antennaSelect_signal 	(has_antennaSelect);
 	threadRuns. store (true);	// it seems we can do some work
+//
+//	The state of the successFlag is polled 
 	successFlag. store (true);
+
+//
+//	before we really (re)start we set - if needed - the biasT,
+//	which is too complex to have  it done inline
+	if (sdrplaySettings -> value ("biasT_selector", 0). toInt () != 0) {
+	   biasT_selector -> setChecked (true);
+	   set_biasValue (1);
+	}
 
 	while (threadRuns. load ()) {
 	   while (!serverjobs. tryAcquire (1, 1000))
@@ -780,6 +804,15 @@ uint32_t                ndev;
 	         break;
 	      }
 
+	      case BIAS_T_REQUEST: {
+	         biasT_Request *p = (biasT_Request *)(server_queue. front ());
+	         set_biasValue (p -> biasT_value);
+	         server_queue. pop ();
+	         p -> result = true;
+	         p -> waiter. release (1);
+	         break;
+	      }
+	         
 	      case LNA_REQUEST: {
 	         lnaRequest *p = (lnaRequest *)(server_queue. front ());
 	         server_queue. pop ();
@@ -829,9 +862,11 @@ uint32_t                ndev;
 	      }
 
 	      default:		// cannot happen
+	         fprintf (stderr, "Helemaal fout\n");
 	         break;
 	   }
 	}
+
 
 normal_exit:
 	err = sdrplay_api_Uninit	(chosenDevice -> dev);
@@ -1052,5 +1087,70 @@ void	sdrplayHandler_v3::hide		() {
 
 bool	sdrplayHandler_v3::isHidden	() {
 	return myFrame. isHidden ();
+}
+
+void	sdrplayHandler_v3::set_biasValue (int biasT_value) {
+int err	= sdrplay_api_GetDeviceParams (chosenDevice -> dev, &deviceParams);
+sdrplay_api_RxChannelParamsT *channelParams =
+	                                 deviceParams -> rxChannelA;
+sdrplay_api_ReasonForUpdateT updateValue;
+
+	switch (hwVersion) {
+	   case SDRPLAY_RSP1_ID:
+	      return;;			// no BiasT support
+
+	   case SDRPLAY_RSP1A_ID: {
+	      sdrplay_api_Rsp1aTunerParamsT *rsp1aTunerParams;
+	      rsp1aTunerParams	= &(channelParams -> rsp1aTunerParams);
+	      rsp1aTunerParams -> biasTEnable = biasT_value;
+	      updateValue	= sdrplay_api_Update_Rsp1a_BiasTControl;
+	      (void) sdrplay_api_Update (chosenDevice -> dev,
+                                         chosenDevice -> tuner,
+	                                 updateValue,
+                                         sdrplay_api_Update_Ext1_None);
+	   }
+	   return;
+
+	   case SDRPLAY_RSP2_ID: {
+	      sdrplay_api_Rsp2TunerParamsT *rsp2TunerParams;
+	      rsp2TunerParams	= &(channelParams -> rsp2TunerParams);
+	      rsp2TunerParams -> biasTEnable = biasT_value;
+	      updateValue	= sdrplay_api_Update_Rsp2_BiasTControl;
+	      (void) sdrplay_api_Update (chosenDevice -> dev,
+                                         chosenDevice -> tuner,
+	                                 updateValue,
+                                         sdrplay_api_Update_Ext1_None);
+	   }
+	   return;
+
+	   case SDRPLAY_RSPduo_ID: {
+	      sdrplay_api_RspDuoTunerParamsT *rspDuoTunerParams;
+	      rspDuoTunerParams = &(channelParams -> rspDuoTunerParams);
+	      rspDuoTunerParams -> biasTEnable = biasT_value;
+	      updateValue	= sdrplay_api_Update_RspDuo_BiasTControl;
+	      (void) sdrplay_api_Update (chosenDevice -> dev,
+                                         chosenDevice -> tuner,
+	                                 updateValue,
+                                         sdrplay_api_Update_Ext1_None);
+	   }
+	   return;
+//
+//	Unfortunately, Dx is different from the others
+	   case SDRPLAY_RSPdx_ID: {
+	      sdrplay_api_DevParamsT *xxx;
+	      sdrplay_api_RspDxParamsT *rspDxParams;
+	      xxx = deviceParams -> devParams;
+	      rspDxParams	= &(xxx -> rspDxParams);
+	      rspDxParams	-> biasTEnable = biasT_value;
+	      (void) sdrplay_api_Update (chosenDevice -> dev,
+	                                 chosenDevice -> tuner,
+	                                 sdrplay_api_Update_None,
+	               	                 sdrplay_api_Update_RspDx_BiasTControl);
+	   }
+	   return;
+
+	   default:
+	      return;
+	}
 }
 

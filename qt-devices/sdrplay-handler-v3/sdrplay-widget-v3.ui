@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>411</width>
-    <height>272</height>
+    <width>408</width>
+    <height>266</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -136,6 +136,13 @@
        </property>
        <property name="text">
         <string>ppm control</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="biasT_selector">
+       <property name="text">
+        <string>biasT</string>
        </property>
       </widget>
      </item>

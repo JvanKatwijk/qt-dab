@@ -241,10 +241,10 @@ int16_t k;
 QString h;
 uint8_t	dabBand;
 
-	dabSettings		= Si;
-	this	-> error_report	= error_report;
-	this	-> fmFrequency	= fmFrequency;
-	this	-> dlTextFile	= nullptr;
+	dabSettings			= Si;
+	this	-> error_report		= error_report;
+	this	-> fmFrequency		= fmFrequency;
+	this	-> dlTextFile		= nullptr;
 	this	-> ficDumpPointer	= nullptr;
 	running. 		store (false);
 	scanning. 		store (false);
@@ -3134,10 +3134,13 @@ QString serviceName	= s -> serviceName;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
 	         start_audioService (&ad);
-	         QString s = channel. channelName;
-	         s. append (":");
-	         s. append (serviceName);
-	         dabSettings	-> setValue ("presetname", s);
+	         if (dabSettings -> value ("has-presetName", 0).
+	                                                   toInt () == 1) {
+	            QString s = channel. channelName + ":" + serviceName;
+	            dabSettings	-> setValue ("presetname", s);
+	         }
+	         else 
+	            dabSettings	-> setValue ("presetname", "");
 #ifdef	HAVE_PLUTO_RXTX
 	        if (streamerOut != nullptr)
 	           streamerOut -> addRds (std::string (serviceName. toUtf8 (). data ()));
@@ -3151,7 +3154,6 @@ QString serviceName	= s -> serviceName;
 	         currentService. is_audio	= false;
 	         currentService. subChId	= pd. subchId;
 	         start_packetService (serviceName);
-	         dabSettings	-> setValue ("presetname", "");
 	      }
 	      else {
 	         fprintf (stderr, "%s is not clear\n",

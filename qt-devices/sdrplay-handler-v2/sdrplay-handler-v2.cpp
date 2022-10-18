@@ -231,7 +231,12 @@ sdrplaySelect	*sdrplaySelector;
 	lnaGainSetting	-> setValue (val);
 	connect (this, SIGNAL (new_lnaValue (int)),
                  lnaGainSetting, SLOT (setValue (int)));
-	
+
+	val	= sdrplaySettings -> value ("biasT_selector", 0). toInt ();
+	if (val != 0) {
+	   biasT_selector -> setChecked (true);
+	   biasT_selectorHandler (1);
+	}
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
 	connect (debugControl, SIGNAL (stateChanged (int)),
@@ -240,6 +245,8 @@ sdrplaySelect	*sdrplaySelector;
 	         this, SLOT (set_ppmControl (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
+	connect (biasT_selector, SIGNAL (stateChanged (int)),
+	         this, SLOT (biasT_selectorHandler (int)));
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
 	xmlDumper	= nullptr;
@@ -700,7 +707,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_DCoffsetIQimbalanceControl	=
-	            (pfn_mir_sdr_DCoffsetIQimbalanceControl)
+	          (pfn_mir_sdr_DCoffsetIQimbalanceControl)
 	                GETPROCADDRESS (Handle, "mir_sdr_DCoffsetIQimbalanceControl");
 	if (my_mir_sdr_DCoffsetIQimbalanceControl == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_DCoffsetIQimbalanceControl\n");
@@ -708,7 +715,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_ResetUpdateFlags	=
-	            (pfn_mir_sdr_ResetUpdateFlags)
+	          (pfn_mir_sdr_ResetUpdateFlags)
 	                GETPROCADDRESS (Handle, "mir_sdr_ResetUpdateFlags");
 	if (my_mir_sdr_ResetUpdateFlags == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_ResetUpdateFlags\n");
@@ -716,7 +723,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_GetDevices		=
-	            (pfn_mir_sdr_GetDevices)
+	          (pfn_mir_sdr_GetDevices)
 	                GETPROCADDRESS (Handle, "mir_sdr_GetDevices");
 	if (my_mir_sdr_GetDevices == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_GetDevices");
@@ -724,7 +731,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_GetCurrentGain	=
-	            (pfn_mir_sdr_GetCurrentGain)
+	          (pfn_mir_sdr_GetCurrentGain)
 	                GETPROCADDRESS (Handle, "mir_sdr_GetCurrentGain");
 	if (my_mir_sdr_GetCurrentGain == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_GetCurrentGain");
@@ -732,7 +739,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_GetHwVersion	=
-	            (pfn_mir_sdr_GetHwVersion)
+	          (pfn_mir_sdr_GetHwVersion)
 	                GETPROCADDRESS (Handle, "mir_sdr_GetHwVersion");
 	if (my_mir_sdr_GetHwVersion == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_GetHwVersion");
@@ -740,7 +747,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_RSPII_AntennaControl	=
-	            (pfn_mir_sdr_RSPII_AntennaControl)
+	          (pfn_mir_sdr_RSPII_AntennaControl)
 	                GETPROCADDRESS (Handle, "mir_sdr_RSPII_AntennaControl");
 	if (my_mir_sdr_RSPII_AntennaControl == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_RSPII_AntennaControl");
@@ -748,7 +755,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_SetDeviceIdx	=
-	            (pfn_mir_sdr_SetDeviceIdx)
+	          (pfn_mir_sdr_SetDeviceIdx)
 	                GETPROCADDRESS (Handle, "mir_sdr_SetDeviceIdx");
 	if (my_mir_sdr_SetDeviceIdx == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_SetDeviceIdx");
@@ -756,7 +763,7 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_ReleaseDeviceIdx	=
-	            (pfn_mir_sdr_ReleaseDeviceIdx)
+	          (pfn_mir_sdr_ReleaseDeviceIdx)
 	                GETPROCADDRESS (Handle, "mir_sdr_ReleaseDeviceIdx");
 	if (my_mir_sdr_ReleaseDeviceIdx == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_ReleaseDeviceIdx");
@@ -764,10 +771,34 @@ bool	sdrplayHandler::loadFunctions () {
 	}
 
 	my_mir_sdr_RSPII_RfNotchEnable	=
-	           (pfn_mir_sdr_RSPII_RfNotchEnable)
+	          (pfn_mir_sdr_RSPII_RfNotchEnable)
 	                GETPROCADDRESS (Handle, "mir_sdr_RSPII_RfNotchEnable");
 	if (my_mir_sdr_RSPII_RfNotchEnable == nullptr) {
 	   fprintf (stderr, "Could not find mir_sdr_RSPII_RfNotchEnable\n");
+	   return false;
+	}
+
+	my_mir_sdr_RSPII_BiasTControl =
+	          (pfn_mir_sdr_RSPII_BiasTControl)
+	                GETPROCADDRESS (Handle,  "mir_sdr_RSPII_BiasTControl");
+	if (my_mir_sdr_RSPII_BiasTControl == nullptr) {
+	   fprintf (stderr, "Could not find mir_sdr_RSPII_BiasTControl\n");
+	   return false;
+	}
+
+	my_mir_sdr_rsp1a_BiasT =
+	          (pfn_mir_sdr_rsp1a_BiasT)
+	               GETPROCADDRESS (Handle, "mir_sdr_rsp1a_BiasT");
+	if (my_mir_sdr_rsp1a_BiasT == nullptr) {
+	   fprintf (stderr, "Could not find mir_sdr_rsp1a_BiasT\n");
+	   return false;
+	}
+
+	my_mir_sdr_rspDuo_BiasT =
+	          (pfn_mir_sdr_rspDuo_BiasT)
+	               GETPROCADDRESS (Handle, "mir_sdr_rspDuo_BiasT");
+	if (my_mir_sdr_rspDuo_BiasT == nullptr) {
+	   fprintf (stderr, "Could not find mir_sdr_rspDuo_BiasT\n");
 	   return false;
 	}
 
@@ -1021,3 +1052,23 @@ QString	theValue	= "";
 	   usleep (1000);
 	agcControl	-> blockSignals (false);
 }
+
+void	sdrplayHandler::biasT_selectorHandler (int k) {
+bool setting = biasT_selector -> isChecked ();
+	sdrplaySettings -> setValue ("biasT_selector", setting ? 1 : 0);
+	switch (hwVersion) {
+	   case 1:		// old RSP
+	      return;		// no support for biasT
+	   case 2:		// RSP 2
+	      my_mir_sdr_RSPII_BiasTControl (setting? 1 : 0);
+	      return;
+	   case 3:		// RSP duo
+	      my_mir_sdr_rspDuo_BiasT (setting ? 1 : 0);
+	      return;
+	   default:		// RSP1a
+	      my_mir_sdr_rsp1a_BiasT (setting ? 1 : 0);
+	      return;
+	}
+}
+
+	
