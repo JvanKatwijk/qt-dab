@@ -348,6 +348,11 @@
          <string>Antenna A</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>Antenna B</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

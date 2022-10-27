@@ -143,7 +143,6 @@ private:
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	httpHandler		*mapHandler;
-	bool			epgFlag;
 	processParams		globals;
 	QString			version;
 	QString			theFont;
@@ -154,7 +153,6 @@ private:
 	FILE			*logFile;
 	void			LOG		(const QString &,
 	                                         const QString &);
-	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
 	Ui_configWidget		configWidget;
@@ -221,7 +219,6 @@ private:
 	QTimer			muteTimer;
 	int			muteDelay;
 	int32_t			numberofSeconds;
-	bool			muting;
 	int16_t			ficBlocks;
 	int16_t			ficSuccess;
 	int			total_ficError;
@@ -323,7 +320,6 @@ private:
         void                    new_channelIndex        (int);
 
 	std::mutex		locker;
-	bool			autoBrowser_off;
 	bool			transmitterTags_local;
 signals:
 	void                    set_newChannel		(int);
@@ -473,6 +469,7 @@ private slots:
 	void			handle_portSelector		();
 	void			handle_epgSelector		(int);
 	void			handle_transmSelector		(int);
+	void			handle_saveSlides		(int);
 	void			loadTable			();
 };
 #endif

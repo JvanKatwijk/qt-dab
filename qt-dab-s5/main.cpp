@@ -141,6 +141,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 #endif
 
 	QApplication a (argc, argv);
+	fprintf (stderr, "Working on %s\n", QApplication::applicationDirPath (). toLatin1 (). data ());
 //	setting the language
 	QString locale = QLocale::system(). name();
 	qDebug() << "main:" <<  "Detected system language" << locale;

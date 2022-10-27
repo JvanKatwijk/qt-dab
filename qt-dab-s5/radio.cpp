@@ -295,8 +295,6 @@ uint8_t	dabBand;
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
 //
-	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
-
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if (filePath != "")
 	   filePath = checkDir (filePath);
@@ -323,6 +321,9 @@ uint8_t	dabBand;
 
 	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
 	   configWidget. epgSelector -> setChecked (true);
+
+	if (dabSettings -> value ("saveSlides", 0). toInt () == 1)
+	   configWidget. saveSlides -> setChecked (true);
 
 	configWidget. EPGLabel	-> hide ();
 	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
@@ -374,6 +375,9 @@ uint8_t	dabBand;
 	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
 
+	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveSlides (int)));
+
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -406,7 +410,6 @@ uint8_t	dabBand;
 	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
 	         this, SLOT (handle_transmitterTags  (int)));
 
-	autoBrowser_off		= configWidget. autoBrowser -> isChecked ();
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
 	dataDisplay. hide ();
 	stillMuting		-> hide ();
@@ -639,7 +642,6 @@ uint8_t	dabBand;
 //
 //	timer for muting
 	muteTimer. setSingleShot (true);
-	muting		= false;
 //
 	QPalette lcdPalette;
 #ifndef __MAC__
@@ -1167,7 +1169,8 @@ const char *type;
 	        return;
 	}
 
-	if (saveSlides && (picturesPath != "")) {
+	if (configWidget. saveSlides  -> isChecked () 
+	                               && (picturesPath != "")) {
 	   QString pict = picturesPath + pictureName;
 	   QString temp = pict;
 	   temp = temp. left (temp. lastIndexOf (QChar ('/')));
@@ -1360,7 +1363,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	      if (streamerOut != nullptr)
 	         streamerOut	-> audioOut (vec, amount, rate);
 #endif
-	      if (!muting)
+	      if (!muteTimer. isActive ())
 	         soundOut	-> audioOut (vec, amount, rate);
 	   }
 	}
@@ -2258,10 +2261,16 @@ bool	tiiChange	= false;
 	                                  (distance == 0) || (hoek == 0))
 	   return;
 
+	QDateTime theTime = 
+	   configWidget.  utcSelector -> isChecked () ?
+	                  QDateTime::currentDateTimeUtc () :
+	                  QDateTime::currentDateTime ();
+
 	mapHandler -> putData (key,
 	                       channel. targetPos, 
 	                       channel. transmitterName,
 	                       channel. channelName,
+	                       theTime. toString (Qt::TextDate),
 	                       channel. mainId * 100 + channel. subId,
 	                       distance, hoek, power);
 }
@@ -3465,10 +3474,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", "", 0, 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", "", 0, 0, 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3527,7 +3536,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
 	transmitter_coordinates -> setText ("");
 //
@@ -3904,15 +3913,13 @@ void	RadioInterface::muteButton_timeOut	() {
 	else {
 	   disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
-//	   setButtonFont (techData. muteButton, "mute", 10);
 	   setButtonFont (muteButton, "mute", 10);
 	   stillMuting	-> hide ();
-	   muting = false;
 	}
 }
 
 void	RadioInterface::stop_muting		() {
-	if (!muting) 
+	if (!muteTimer. isActive ()) 
 	   return;
 
 	muteTimer. stop ();
@@ -3920,12 +3927,11 @@ void	RadioInterface::stop_muting		() {
 	               this, SLOT (muteButton_timeOut ()));
 //	setButtonFont (techData. muteButton, "mute", 10);
 	setButtonFont (muteButton, "mute", 10);
-	muting = false;
 	stillMuting	-> hide ();
 }
 
 void	RadioInterface::handle_muteButton	() {
-	if (muting) {
+	if (muteTimer. isActive ()) {
 	   stop_muting ();
 	   return;
 	}
@@ -3939,7 +3945,6 @@ void	RadioInterface::handle_muteButton	() {
 	setButtonFont (muteButton, "muting", 10);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
-	muting = true;
 }
 //
 
@@ -4756,7 +4761,7 @@ void	RadioInterface::handle_httpButton	() {
 	                                 browserAddress,
 	                                 channel. localPos,
 	                                 mapFile,
-	                                 autoBrowser_off);
+	                                 dabSettings -> value ("autoBrowser", 1). toInt () == 1);
 	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
@@ -4782,8 +4787,8 @@ void	RadioInterface::http_terminate	() {
 
 void	RadioInterface::handle_autoBrowser	(int d) {
 	(void)d;
-	autoBrowser_off = configWidget. autoBrowser -> isChecked ();
-	dabSettings -> setValue ("autoBrowser", autoBrowser_off ? 1 : 0);
+	dabSettings -> setValue ("autoBrowser", 
+	               configWidget. autoBrowser -> isChecked () ? 1 : 0);
 }
 
 void	RadioInterface::handle_transmitterTags  (int d) {
@@ -4793,7 +4798,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0,0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
 }
 
 void	RadioInterface::handle_onTop	(int d) {
@@ -4835,5 +4840,11 @@ void	RadioInterface::handle_transmSelector	(int x) {
 	(void)x;
 	dabSettings -> setValue ("saveLocations",
 	                         configWidget. transmSelector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_saveSlides	(int x) {
+	(void)x;
+	dabSettings -> setValue ("saveSlides", 
+	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
 }
 

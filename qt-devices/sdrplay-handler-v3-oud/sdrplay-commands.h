@@ -30,12 +30,14 @@
 #define RESTART_REQUEST         0100
 #define STOP_REQUEST            0101
 #define SETFREQUENCY_REQUEST	0102
-#define AGC_REQUEST             0103
-#define GRDB_REQUEST            0104
-#define PPM_REQUEST             0105
-#define LNA_REQUEST             0106
-#define ANTENNASELECT_REQUEST   0107
-#define	BIAS_T_REQUEST		0110
+#define	GETFREQUENCY_REQUEST	0103
+#define AGC_REQUEST             0104
+#define GRDB_REQUEST            0105
+#define PPM_REQUEST             0106
+#define LNA_REQUEST             0107
+#define ANTENNASELECT_REQUEST   0110
+#define GAINVALUE_REQUEST	0111
+#define	BIAS_T_REQUEST		0112
 
 #include	<QSemaphore>
 
@@ -53,11 +55,11 @@ public:
 
 class	restartRequest: public generalCommand {
 public:
-	int	freq;
+	int	frequency;
 	bool	result;
 	restartRequest (int newFrequency):
 	   generalCommand (RESTART_REQUEST) {
-	   this	-> freq = newFrequency;
+	   this	-> frequency = newFrequency;
 	}
 
 	~restartRequest	() {}
@@ -74,13 +76,23 @@ public:
 
 class set_frequencyRequest: public generalCommand {
 public:
-	int freq;
+	int frequency;
 	set_frequencyRequest (int newFreq):
 	   generalCommand (SETFREQUENCY_REQUEST) {
-	   this	-> freq = newFreq;
+	   this	-> frequency = newFreq;
 	}
 
 	~set_frequencyRequest	() {}
+};
+
+class get_frequencyRequest: public generalCommand {
+public:
+	int frequency;
+	get_frequencyRequest () :
+	   generalCommand (GETFREQUENCY_REQUEST) {
+	}
+
+	~get_frequencyRequest	() {}
 };
 
 class agcRequest: public generalCommand {
@@ -125,6 +137,25 @@ public:
 	~lnaRequest	() {}
 };
 
+class	gainvalueRequest: public generalCommand {
+public: 
+        int	gainValue;
+        gainvalueRequest ():
+                    generalCommand (GAINVALUE_REQUEST) {
+        }
+        ~gainvalueRequest     () {}
+};
+
+class	biasT_Request: public generalCommand {
+public:
+	int	biasT_value;
+	biasT_Request (int biasT_value):
+	            generalCommand (BIAS_T_REQUEST) {
+	   this -> biasT_value = biasT_value;
+	}
+	~biasT_Request	() {}
+};
+	
 class	antennaRequest: public generalCommand {
 public:
 	int	antenna;
@@ -135,15 +166,5 @@ public:
 	~antennaRequest	() {}
 };
 
-class	biasT_Request: public generalCommand {
-public:
-	bool	checked;
-	biasT_Request (bool biasT_value):
-	            generalCommand (BIAS_T_REQUEST) {
-	   this -> checked = biasT_value;
-	}
-	~biasT_Request	() {}
-};
-	
 #endif
 

@@ -474,6 +474,7 @@ private slots:
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
 	void			handle_portSelector		();
+	void			handle_saveSlides		(int);
 	void			loadTable			();
 };
 #endif

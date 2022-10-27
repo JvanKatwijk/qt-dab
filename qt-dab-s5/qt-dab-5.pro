@@ -360,7 +360,7 @@ CONFIG		+= qwt
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= dabstick
+CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
@@ -439,7 +439,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick
+	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
@@ -486,15 +486,27 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 #	devices
 #
 #	dabstick
-dabstick {
+dabstick-win {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler
-	HEADERS		+= ../qt-devices/rtlsdr-handler/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler/rtlsdr-widget.ui
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
+	LIBS      	+= -llibrtlsdr
+}
+
+dabstick-linux {
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
+	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
 #
@@ -518,9 +530,19 @@ sdrplay-v3 {
 	DEPENDPATH	+= ../qt-devices/sdrplay-handler-v3
 	INCLUDEPATH	+= ../qt-devices/sdrplay-handler-v3 \
 	                   ../qt-devices/sdrplay-handler-v3/include
-	HEADERS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
-	                   ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h 
-	SOURCES		+= ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp 
+        HEADERS         += ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
+                           ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
+	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
+	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
+        SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
 }
 #

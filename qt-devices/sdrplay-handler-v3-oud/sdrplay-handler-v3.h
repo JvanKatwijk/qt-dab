@@ -37,7 +37,6 @@
 #include	"ui_sdrplay-widget-v3.h"
 #include	<sdrplay_api.h>
 
-class	Rsp_device;
 class	generalCommand;
 class	xml_fileWriter;
 
@@ -72,11 +71,8 @@ public:
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
 	std::atomic<bool>	receiverRuns;
 	int		theGain;
-	sdrplay_api_CallbackFnsT	cbFns;
-
 private:
 	QFrame				myFrame;
-public:
 	sdrplay_api_Open_t              sdrplay_api_Open;
 	sdrplay_api_Close_t             sdrplay_api_Close;
 	sdrplay_api_ApiVersion_t        sdrplay_api_ApiVersion;
@@ -94,9 +90,10 @@ public:
 	sdrplay_api_Update_t            sdrplay_api_Update;
 
 	sdrplay_api_DeviceT             *chosenDevice;
-	Rsp_device		*theRsp;
+	sdrplay_api_DeviceParamsT       *deviceParams;
+	sdrplay_api_CallbackFnsT        cbFns;
+	sdrplay_api_RxChannelParamsT    *chParams;
 
-	int			inputRate;
 	std::atomic<bool>	failFlag;
 	std::atomic<bool>	successFlag;
 	int			denominator;
@@ -116,11 +113,9 @@ public:
 	QString			serial;
 	bool			has_antennaSelect;
 	QString			deviceModel;
-	int			GRdBValue;
 	int			lnaState;
 	int			ppmValue;
 	HINSTANCE		Handle;
-	bool			biasT;
 	FILE			*xmlDumper;
 	xml_fileWriter		*xmlWriter;
 	bool			setup_xmlDump		();
@@ -133,6 +128,7 @@ public:
 	bool			loadFunctions		();
 	int			errorCode;
 
+	void			set_biasValue		(int);
 signals:
 	void			new_GRdBValue		(int);
 	void			new_lnaValue		(int);
@@ -142,18 +138,16 @@ private slots:
 	void			set_lnagainReduction	(int);
 	void			set_agcControl		(int);
 	void			set_ppmControl		(int);
-	void			set_selectAntenna	(const QString &);
+	void			set_antennaSelect	(const QString &);
 	void			set_biasT		(int);
 public slots:
 	void			set_lnabounds		(int, int);
-	void			set_nrBits		(int);
 	void			set_deviceName		(const QString &);
 	void			set_serial		(const QString &);
 	void			set_apiVersion		(float);
-	void			set_antennaSelect	(int);
+	void			set_antennaSelect	(bool);
 	void			show_tunerSelector	(bool);
 	void			set_xmlDump		();
-	void			show_lnaGain		(int);
 signals:
 	void			set_lnabounds_signal	(int, int);
 	void			set_deviceName_signal	(const QString &);

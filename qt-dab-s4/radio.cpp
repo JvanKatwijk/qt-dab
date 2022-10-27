@@ -298,8 +298,6 @@ uint8_t	dabBand;
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
 //
-	saveSlides	= dabSettings -> value ("saveSlides", 1). toInt();
-
 	filePath	= dabSettings -> value ("filePath", ""). toString ();
 	if ((filePath != "") && (!filePath. endsWith ("/")))
 	   filePath = filePath + "/";
@@ -335,8 +333,12 @@ uint8_t	dabBand;
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
-	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
-	configWidget.  utcSelector -> setChecked (b);
+	if (dabSettings	-> value ("utcSelector", 0). toInt () == 1)
+	   configWidget.  utcSelector -> setChecked (true);
+
+	if (dabSettings -> value ("saveSlides", 0). toInt () == 1)
+	   configWidget. saveSlides -> setChecked (true);
+
 	currentService. valid	= false;
 	nextService. valid	= false;
 
@@ -373,6 +375,9 @@ uint8_t	dabBand;
 
 	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
+
+	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveSlides (int)));
 
 	logFile		= nullptr;
 	int scanMode	=
@@ -1164,7 +1169,7 @@ const char *type;
 //	While we know that "picturesPath is either "" or a path to an existing
 //	directory. However, the pictureName may contain parts of a pathname
 //	so a check is required
-	if (saveSlides && (picturesPath != "")) {
+	if (configWidget. saveSlides -> isChecked ()  && (picturesPath != "")) {
 	   QString pict = picturesPath + pictureName;
 	   QString temp = pict;
            temp = temp. left (temp. lastIndexOf (QChar ('/')));
@@ -2228,12 +2233,17 @@ bool	tiiChange	= false;
 	                                  (distance == 0) || (hoek == 0))
 	   return;
 
-	mapHandler -> putData (key,
-	                       channel. targetPos, 
-	                       channel. transmitterName,
-	                       channel. channelName,
-	                       channel. mainId * 100 + channel. subId,
-	                       distance, hoek, power);
+	QDateTime theTime =
+           configWidget.  utcSelector -> isChecked () ?
+                          QDateTime::currentDateTimeUtc () :
+                          QDateTime::currentDateTime ();
+        mapHandler -> putData (key,
+                               channel. targetPos,
+                               channel. transmitterName,
+                               channel. channelName,
+                               theTime. toString (Qt::TextDate),
+                               channel. mainId * 100 + channel. subId,
+                               distance, hoek, power);
 }
 
 void	RadioInterface::showSpectrum	(int32_t amount) {
@@ -3447,10 +3457,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "","", 0, 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", "", 0, 0, 0, 0);
 	show_for_safety ();
 	int	switchDelay	=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -3507,7 +3517,7 @@ void	RadioInterface::stopChannel	() {
 	channel. transmitterName = "";
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
 	transmitter_coordinates -> setText ("");
 
@@ -4724,7 +4734,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 }
 
 void	RadioInterface::handle_onTop	(int d) {
@@ -4750,5 +4760,11 @@ void    RadioInterface::handle_transmSelector   (int x) {
         (void)x;
         dabSettings -> setValue ("saveLocations",
                                  configWidget. transmSelector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_saveSlides	(int x) {
+	(void)x;
+	dabSettings -> setValue ("saveSlides",
+	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
 }
 

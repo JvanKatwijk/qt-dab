@@ -67,7 +67,7 @@
 	if (saveFile != nullptr) {
 	   fprintf (saveFile, "Home location; %f; %f\n\n", 
 	                                   real (homeAddress), imag (homeAddress));
-	   fprintf (saveFile, "channel; latitude; longitude;transmitter; mainId; subId; distance; azimuth; power\n\n");
+	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power\n\n");
 	}
 
 	transmitterVector. resize (0);
@@ -464,12 +464,13 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
 	       t [0]. type,
 	       dotNumber (real (t [0]. coords)). c_str (),
 	       dotNumber (imag (t [0]. coords)). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
+	       t [0]. dateTime. toUtf8 (). data (),
 	       t [0]. distance,
 	       t [0]. azimuth,
 	       (int)(t [0]. power * 100));
@@ -478,12 +479,13 @@ QString Jsontxt;
 //
 	for (unsigned long i = 1; i < t. size (); i ++) {
 	   snprintf (buf, 512,
-	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
+	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\",  \"dist\":%d, \"azimuth\":%d, \"power\":%d, }",
 	        t [i]. type,
 	        dotNumber (real (t [i]. coords)). c_str (),
 	        dotNumber (imag (t [i]. coords)). c_str (),
 	        t [i]. transmitterName. toUtf8 (). data (),
 	        t [i]. channelName. toUtf8 (). data (),
+	        t [i]. dateTime. toUtf8 (). data (),
 	        t [i]. distance,
 	        t [i]. azimuth,
 	        (int)(t [i]. power * 100));
@@ -500,6 +502,7 @@ void	httpHandler::putData	(uint8_t	type,
 	                         std::complex<float> target,
 	                         QString transmitterName,
 	                         QString channelName,
+	                         QString dateTime,
 	                         int ttiId,
 	                         int distance,
 	                         int azimuth,
@@ -514,6 +517,7 @@ void	httpHandler::putData	(uint8_t	type,
 	t. coords		= target;
 	t. transmitterName	= transmitterName;
 	t. channelName		= channelName;
+	t. dateTime		= dateTime;
 	t. ttiId		= ttiId;
 	t. distance		= distance;
 	t. azimuth		= azimuth;
@@ -531,10 +535,11 @@ void	httpHandler::putData	(uint8_t	type,
 	
 	if ((saveFile != nullptr)  &&
 	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
-	   fprintf (saveFile, "%s; %f; %f; %s; %d; %d; %d; %d; %f\n",
+	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f\n",
 	                      channelName. toUtf8 (). data (),
 	                      real (target), imag (target),
 	                      transmitterName. toUtf8 (). data (),
+	                      t. dateTime. toUtf8 (). data (),
 	                      ttiId / 100, ttiId % 100,
 	                      distance, azimuth, power);
 	   transmitterVector. push_back (t);
