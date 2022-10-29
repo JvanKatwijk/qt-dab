@@ -598,6 +598,12 @@ endif ()
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
+	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
 	   )
 
 	   include_directories (
@@ -610,16 +616,25 @@ endif ()
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h
 	        ../qt-devices/sdrplay-handler-v3/include/sdrplay_api.h
+	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
            )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
+                ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp 
+	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	   )
 
 	 add_definitions (-DHAVE_SDRPLAY_V3)
 	endif (SDRPLAY)
-
 	if (AIRSPY)
 #           find_package(LibAIRSPY)
 #           if (NOT LIBAIRSPY_FOUND)
