@@ -537,6 +537,9 @@
      <height>31</height>
     </rect>
    </property>
+   <property name="minimum">
+    <number>5</number>
+   </property>
   </widget>
   <widget class="QCheckBox" name="filterSelector">
    <property name="geometry">

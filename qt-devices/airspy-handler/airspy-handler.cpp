@@ -657,7 +657,6 @@ void    airspyHandler::releaseLibrary  () {
 #endif
 }
 
-
 bool	airspyHandler::load_airspyFunctions() {
 //
 //	link the required procedures

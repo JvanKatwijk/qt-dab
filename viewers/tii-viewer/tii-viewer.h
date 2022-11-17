@@ -30,6 +30,7 @@
 #include	<QFrame>
 #include	<QObject>
 #include	<QByteArray>
+
 #include	<fftw3.h>
 #include	"ui_tii-widget.h"
 #include	"ringbuffer.h"
