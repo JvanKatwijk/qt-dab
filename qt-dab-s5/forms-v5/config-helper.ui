@@ -146,51 +146,7 @@
         </layout>
        </item>
        <item>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="epgSelector">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>epg automatic</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QCheckBox" name="epg2xmlSelector">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG detector has two components, one collecting data to present as &amp;quot;time table&amp;quot; for today,&lt;/p&gt;&lt;p&gt;the other one - using a library written by Julian Cable from the BBC - to generate textual xml.&lt;/p&gt;&lt;p&gt;If selected, the xml will be generated. Note howevet that we encountered at least one example&lt;/p&gt;&lt;p&gt;here the library generating the textual xml causes a crash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string> epg to xml</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QCheckBox" name="saveSlides">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, slides (pictures) appearing during transmissions are being saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>save slides</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1" colspan="2">
-          <widget class="QCheckBox" name="transmSelector">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this is set, the transmitter descriptions visible on the map are also stored in a &amp;quot;.csv&amp;quot;  file,&lt;/p&gt;&lt;p&gt;On starting the httpHandler, a file selection menu will appear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>save transmitters</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QLabel" name="label_3">
            <property name="text">
@@ -199,11 +155,11 @@
           </widget>
          </item>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QVBoxLayout" name="verticalLayout">
            <item>
             <widget class="QRadioButton" name="orderAlfabetical">
              <property name="text">
-              <string>alpha</string>
+              <string>alphabetically</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup</string>
@@ -223,7 +179,7 @@
            <item>
             <widget class="QRadioButton" name="ordersubChannelIds">
              <property name="text">
-              <string>subChId</string>
+              <string>subchannelIds</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">buttonGroup</string>
@@ -285,6 +241,26 @@
          </property>
          <property name="text">
           <string> utc Selector</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="epgSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>epg automatic</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="epg2xmlSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The EPG detector has two components, one collecting data to present as &amp;quot;time table&amp;quot; for today,&lt;/p&gt;&lt;p&gt;the other one - using a library written by Julian Cable from the BBC - to generate textual xml.&lt;/p&gt;&lt;p&gt;If selected, the xml will be generated. Note howevet that we encountered at least one example&lt;/p&gt;&lt;p&gt;here the library generating the textual xml causes a crash.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string> epg to xml</string>
          </property>
         </widget>
        </item>
@@ -592,6 +568,26 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QCheckBox" name="saveSlides">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, slides (pictures) appearing during transmissions are being saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save slides</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="transmSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this is set, the transmitter descriptions visible on the map are also stored in a &amp;quot;.csv&amp;quot;  file,&lt;/p&gt;&lt;p&gt;On starting the httpHandler, a file selection menu will appear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>save transmitters</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="smallComboBox" name="streamoutSelector">
        <property name="maximumSize">

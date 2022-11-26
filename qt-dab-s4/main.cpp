@@ -40,6 +40,15 @@
 #define	GITHASH	"      "
 #endif
 
+static const QString styleSheet_1 =
+//	#include "./stylesheets/Adaptic.qss"
+	#include "./stylesheets/Combinear.qss"
+;
+
+static const QString styleSheet_2 =
+	#include "./stylesheets/Adaptic.qss"
+//	#include "./stylesheets/Combinear.qss"
+;
 QString fullPathfor (QString v) {
 QString fileName;
 
@@ -143,6 +152,8 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 #endif
 
 	QApplication a (argc, argv);
+	a.setStyleSheet (styleSheet_1);
+
 //	setting the language
 	QString locale = QLocale::system(). name();
 	qDebug() << "main:" <<  "Detected system language" << locale;

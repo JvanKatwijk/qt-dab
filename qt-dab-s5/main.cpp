@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -37,6 +37,17 @@
 #ifndef	GITHASH
 #define	GITHASH	"      "
 #endif
+
+
+static const QString styleSheet_1 =
+//	#include "./stylesheets/Adaptic.qss"
+	#include "./stylesheets/Combinear.qss"
+;
+
+static const QString styleSheet_2 =
+	#include "./stylesheets/Adaptic.qss"
+//	#include "./stylesheets/Combinear.qss"
+;
 
 QString fullPathfor (QString v) {
 QString fileName;
@@ -141,9 +152,9 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 #endif
 
 	QApplication a (argc, argv);
-	fprintf (stderr, "Working on %s\n", QApplication::applicationDirPath (). toLatin1 (). data ());
+	a.setStyleSheet (styleSheet_1);
 //	setting the language
-	QString locale = QLocale::system(). name();
+	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (locale);
 	a. setWindowIcon (QIcon ("./qt-dab-5.ico"));
