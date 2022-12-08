@@ -150,15 +150,13 @@ run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates 
 Step 4
 -----------------------------------------------------------------
 
-Unpack `tiiFile.zip` (after unpacking) in the user's home directory (filename .txdata.tii). The file contains the database data for finding the transmitter's name and location. If Qt-DAB cannot find the file, Qt-DAB will just function without showing the names and without "maps" option.
+Unpack file `.txdata.tii` (which contains the database data for finding the transmitter's name and location) from `tiiFile.zip` into the user's home directory. If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
 
 If running on an x64 PC or *bullseye* on the RPI you might consider to install `libtii-lib.so` in `/usr/local/lib` from `dab-maxi/library`.
 
-:information_source: Note however that that that library needs "curl" to be installed and source code for `libtii-lib.so` is not free. `libtii-lib.so` contains functionality for uploading a new database version (the "load" button on the configuration widget). If Qt-DAB cannot find the library, it will just function without the additional functionality.
+:information_source: Note however that this library needs `curl` to be installed and source code for `libtii-lib.so` is not free. `libtii-lib.so` contains functionality for uploading a new database version (the "load" button on the configuration widget). If Qt-DAB cannot find the library, it will just function without the additional functionality.
 
-:information_source: Note:
-
-	Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
+:information_source: Note: Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
 
 ```
 	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
@@ -168,7 +166,7 @@ If running on an x64 PC or *bullseye* on the RPI you might consider to install `
 Widgets and scopes for Qt-DAB
 =================================================================
 
-Qt-DAB always shows a main widget; a number of  **optional** widgets is visible under user control.
+Qt-DAB always shows a main widget; a number of **optional** widgets is visible under user control.
 
 Controls, in V4 on the main widget, were in V5 moved to the configuration and control widget.
 
