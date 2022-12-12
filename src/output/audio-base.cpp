@@ -30,20 +30,20 @@
  *	someone else will handle the PCM samples, all made
  *	on a rate of 48000
  */
-	audioBase::audioBase():
-	                              converter_16 (16000, 48000, 2 * 1600),
-	                              converter_24 (24000, 48000, 2 * 2400),
-	                              converter_32 (32000, 48000, 2 * 3200) {
+	audioBase::audioBase ():
+	                       converter_16 (16000, 48000, 2 * 1600),
+	                       converter_24 (24000, 48000, 2 * 2400),
+	                       converter_32 (32000, 48000, 2 * 3200) {
 	dumpFile		= nullptr;
 }
 
-	audioBase::~audioBase() {
+	audioBase::~audioBase () {
 }
 
-void	audioBase::restart() {
+void	audioBase::restart () {
 }
 
-void	audioBase::stop() {
+void	audioBase::stop () {
 }
 //
 //	This one is a hack for handling different baudrates coming from

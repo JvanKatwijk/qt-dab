@@ -31,7 +31,7 @@
 
 QSize	verySmallPushButton::sizeHint ()const {
 QSize	temp = QPushButton::sizeHint ();
-	return QSize (temp. rwidth () / 3, 2 * temp. rheight () / 3);
+	return QSize (temp. rwidth () / 3, 3 * temp. rheight () / 3);
 }
 
 

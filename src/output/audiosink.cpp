@@ -56,7 +56,7 @@ int32_t	i;
 	ostream		= nullptr;
 }
 
-	audioSink::~audioSink() {
+	audioSink::~audioSink () {
 	if ((ostream != nullptr) && !Pa_IsStreamStopped (ostream)) {
 	   paCallbackReturn = paAbort;
 	   (void) Pa_AbortStream (ostream);
@@ -141,7 +141,7 @@ int16_t	outputDevice;
 	return true;
 }
 
-void	audioSink::restart() {
+void	audioSink::restart () {
 PaError err;
 
 	if (!Pa_IsStreamStopped (ostream))
@@ -154,7 +154,7 @@ PaError err;
 	   writerRunning	= true;
 }
 
-void	audioSink::stop() {
+void	audioSink::stop () {
 	if (Pa_IsStreamStopped (ostream))
 	   return;
 
@@ -217,6 +217,10 @@ int32_t	h	= theMissed;
 }
 
 void	audioSink::audioOutput	(float *b, int32_t amount) {
+	if (_O_Buffer. GetRingBufferWriteAvailable () < 2 * amount) {
+	   fprintf (stderr, "%d\n",
+	        2 * amount - _O_Buffer. GetRingBufferReadAvailable ());
+	 }
 	_O_Buffer. putDataIntoBuffer (b, 2 * amount);
 }
 

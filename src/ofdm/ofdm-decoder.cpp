@@ -68,10 +68,10 @@
 	ofdmDecoder::~ofdmDecoder() {
 }
 //
-void	ofdmDecoder::stop() {
+void	ofdmDecoder::stop () {
 }
 
-void	ofdmDecoder::reset() {
+void	ofdmDecoder::reset () {
 }
 
 /**

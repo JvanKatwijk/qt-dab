@@ -607,7 +607,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -627,6 +626,11 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -645,7 +649,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -667,7 +670,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -689,7 +691,7 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
+               <family>Cantarell</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -716,7 +718,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
+               <family>Cantarell</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -730,6 +732,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            </item>
            <item row="1" column="6">
             <widget class="verySmallPushButton" name="show_tiiButton">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -748,7 +755,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
+               <family>Cantarell</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -772,7 +779,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
+               <family>Cantarell</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -788,6 +795,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            </item>
            <item row="2" column="6">
             <widget class="smallPushButton" name="scanButton">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are three different scan modes.&lt;/p&gt;&lt;p&gt;A scan over the channels until one with a detectable DAB content is detected,&lt;/p&gt;&lt;p&gt;a second mode is to scan all channels in the current band once and then stop, &lt;/p&gt;&lt;p&gt;a third mode is to continuously scan over the channels in the current band.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -798,6 +810,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
            </item>
            <item row="3" column="0">
             <widget class="smallPushButton" name="historyButton">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -816,7 +833,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -838,7 +854,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
                <pointsize>10</pointsize>
               </font>
              </property>
@@ -860,7 +875,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
              </property>
              <property name="font">
               <font>
-               <family>DejaVu Sans</family>
+               <family>Cantarell</family>
                <pointsize>10</pointsize>
               </font>
              </property>

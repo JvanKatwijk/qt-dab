@@ -30,7 +30,8 @@
 
 QSize	smallPushButton::sizeHint ()const {
 QSize	temp = QPushButton::sizeHint ();
-	return QSize (2 * temp. rwidth () / 3, 2 * temp. rheight () / 3);
+	return QSize (2 * temp. rwidth () / 3, temp. rheight ());
+//	return QSize (2 * temp. rwidth () / 3, 2 * temp. rheight () / 3);
 }
 
 void	smallPushButton::mousePressEvent (QMouseEvent *e) {

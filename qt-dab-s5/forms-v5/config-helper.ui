@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>590</width>
-    <height>496</height>
+    <width>633</width>
+    <height>497</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -310,7 +310,7 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
+         <family>Cantarell</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -345,6 +345,11 @@
      </item>
      <item row="0" column="2">
       <widget class="smallPushButton" name="dlTextButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the lines of text that appear as dynamic label&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -360,6 +365,11 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
        </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Push this button to reset, i.e. restart synchronization.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -379,7 +389,7 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
+         <family>Cantarell</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -393,6 +403,11 @@
      </item>
      <item row="0" column="5">
       <widget class="smallPushButton" name="set_coordinatesButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>coordinates</string>
        </property>
@@ -408,7 +423,7 @@
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
+         <family>Cantarell</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -435,7 +450,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
+         <family>Cantarell</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -457,7 +472,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
+         <family>Cantarell</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -471,6 +486,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item row="1" column="3">
       <widget class="smallPushButton" name="show_tiiButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the widget for showing the tii spectrum&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -489,7 +509,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
        </property>
        <property name="font">
         <font>
-         <family>DejaVu Sans</family>
          <pointsize>10</pointsize>
         </font>
        </property>
@@ -503,6 +522,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item row="1" column="5">
       <widget class="smallPushButton" name="loadTableButton">
+       <property name="font">
+        <font>
+         <pointsize>10</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button instructs the software to (try to) load a so-called tii table, a table with the&lt;/p&gt;&lt;p&gt;encodings of tii data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -517,6 +541,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
       <widget class="smallComboBox" name="scanmodeSelector">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of three modes for scanning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -539,6 +568,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item>
       <widget class="QPushButton" name="skipList_button">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the skipList. Updates in the skipList will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -549,6 +583,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item>
       <widget class="QPushButton" name="skipFile_button">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a file for the skipList. If the file does not exist yet, it will be created and initialized with a skipList with no channels set to skip.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -559,6 +598,11 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item>
       <widget class="QPushButton" name="portSelector">
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+        </font>
+       </property>
        <property name="text">
         <string>port</string>
        </property>

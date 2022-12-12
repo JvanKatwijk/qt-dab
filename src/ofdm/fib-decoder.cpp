@@ -650,6 +650,8 @@ int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
 	                                   uint8_t OE_bit,
 	                                   uint8_t pdBit) {
 int16_t	bitOffset	= used * 8;
+//	fprintf (stderr, "FIG13: pdBit = %d, bitOffset = %d\n",
+//	                     pdBit, bitOffset);
 uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
 uint16_t	SCIds;
 int16_t		NoApplications;
@@ -661,7 +663,7 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	bitOffset	+= pdBit == 1 ? 32 : 16;
 	SCIds		= getBits_4 (d, bitOffset);
 	NoApplications	= getBits_4 (d, bitOffset + 4);
-	bitOffset += 8;
+	bitOffset	+= 8;
 
 	int serviceIndex = findService (SId);
 
