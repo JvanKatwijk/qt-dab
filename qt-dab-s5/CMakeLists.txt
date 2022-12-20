@@ -10,6 +10,9 @@ endif()
 #set (CMAKE_INSTALL_PREFIX /usr/local/bin)
 
 #	modify if you want
+#	Note that since there are always problems with the rtlsdr interface
+#	under Windows we split the rtlsdr interface into two versions
+#	one for Linux and one for Window
 
 if(MINGW)
     add_definitions ( -municode)
@@ -64,8 +67,12 @@ if(DEFINED SDRPLAY)
 	set(SDRPLAY true)
 endif ()
 
-if(DEFINED RTLSDR)
-	set(RTLSDR true)
+if(DEFINED RTLSDR_LINUX)
+	set(RTLSDR_LINUX true)
+endif ()
+
+if(DEFINED RTLSDR_WIN)
+	set(RTLSDR_WIN true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -761,34 +768,67 @@ endif ()
 	   add_definitions (-DHAVE_LIME)
 	endif (LIMESDR)
 
-	if (RTLSDR)
+	if (RTLSDR_LINUX)
 	   set (${objectName}_UIS
                 ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler/rtlsdr-widget.ui
+                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
            )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/rtlsdr-handler/
+	        ../qt-devices/rtlsdr-handler-linux/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler/rtl-sdr_export.h
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler/rtl-dongleselect.cpp
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	   )
+
+	   add_definitions (-DHAVE_RTLSDR)
+	endif()
+
+	if (RTLSDR_WIN)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
+	   )
+
+	   include_directories (
+	        ../qt-devices/rtlsdr-handler-win/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-win/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-win/rtl-sdr_export.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)

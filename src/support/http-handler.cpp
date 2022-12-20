@@ -53,7 +53,7 @@
 	this	-> parent	= parent;
 	this	-> mapPort	= mapPort;
 	QString temp		= browserAddress + ":" + mapPort;
-	this	-> homeAddress	= homeAddress;
+		this	-> homeAddress	= homeAddress;
 	this	-> autoBrowser_off	= autoBrowser_off;
 #ifdef	__MINGW32__
 	this	-> browserAddress	= temp. toStdWString ();
@@ -157,20 +157,20 @@ std::string	ctype;
 	      }
 
 //	      fprintf (stderr, "Buffer - %s\n", buffer);
-	      int httpver = (strstr (buffer, "HTTP/1.1") != NULL) ? 11 : 10;
+	      int httpver = (strstr (buffer, "HTTP/1.1") != nullptr) ? 11 : 10;
 	      if (httpver == 11)
 //	HTTP 1.1 defaults to keep-alive, unless close is specified.
-	         keepalive = strstr (buffer, "Connection: close") == NULL;
+	         keepalive = strstr (buffer, "Connection: close") == nullptr;
 	      else // httpver == 10
-	         keepalive = strstr (buffer, "Connection: keep-alive") != NULL;
+	         keepalive = strstr (buffer, "Connection: keep-alive") != nullptr;
 
 /*	Identify the URL. */
 	      char *p = strchr (buffer, ' ');
-	      if (p == NULL)
+	      if (p == nullptr)
 	         break;
 	      url = ++p; // Now this should point to the requested URL.
 	      p = strchr (p, ' ');
-	      if (p == NULL)
+	      if (p == nullptr)
 	         break;
 	      *p = '\0';
 
