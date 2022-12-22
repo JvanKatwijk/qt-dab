@@ -104,6 +104,8 @@
 	         this, SLOT (set_selectAntenna (const QString &)));
 	connect (dumpButton, SIGNAL (clicked ()),
                  this, SLOT (set_xmlDump ()));
+	connect (biasT_selector, SIGNAL (stateChanged (int)),	
+	         this, SLOT (set_biasT (int)));
 
 	vfoFrequency	= MHz (220);
 	theGain		= -1;
