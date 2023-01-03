@@ -295,10 +295,6 @@ uint8_t	dabBand;
 	port			= dabSettings -> value ("port", 8888). toInt();
 #endif
 //
-	filePath	= dabSettings -> value ("filePath", ""). toString ();
-	if (filePath != "")
-	   filePath = checkDir (filePath);
-//
 //	set on top or not? checked at start up
 	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
 	   setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
@@ -463,6 +459,11 @@ uint8_t	dabBand;
 	picturesPath	= dabSettings -> value ("picturesPath",
 	                                          picturesPath). toString ();
 	picturesPath	= checkDir (picturesPath);
+	filePath	= dabSettings -> value ("filePath", 
+	                                           picturesPath). toString ();
+	if (filePath != "")
+	   filePath = checkDir (filePath);
+//
 
 #ifndef	__MINGW32__
 	epgPath		= checkDir (QDir::tempPath ());
@@ -1051,10 +1052,11 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-//	fprintf (stderr, "handle_MOT: type %x (%x), name %s dir = %d\n",
+//	fprintf (stderr, "handle_MOT: type %x (%x %x), name %s dir = %d\n",
 //	                           contentType,
 //	                           getContentBaseType ((MOTContentType)contentType),
-//	                           name. toUtf8 (). data (), dirElement);
+//	                           getContentSubType ((MOTContentType)contentType),
+//	                           objectName. toUtf8 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -1074,6 +1076,7 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeTransport:
+	      save_MOTObject (result, objectName);
 	      break;
 
 	   case MOTBaseTypeSystem:
@@ -1119,7 +1122,7 @@ QString realName;
 	}
 }
 
-void	RadioInterface::save_MOTtext (QByteArray result,
+void	RadioInterface::save_MOTtext (QByteArray &result,
 	                              int contentType,  QString name) {
 	(void)contentType;
 	if (filePath == "")
@@ -1139,8 +1142,21 @@ void	RadioInterface::save_MOTtext (QByteArray result,
 	}
 }
 
+void	RadioInterface::save_MOTObject (QByteArray  &result,
+	                                  QString name) {
+	if (filePath == "")
+	   return;
+
+	if (name == "") {
+	   static int counter	= 0;
+	   name = "motObject_" + QString::number (counter);
+	   counter ++;
+	}
+	save_MOTtext (result, 5, name);
+}
+
 //	MOT slide, to show
-void	RadioInterface::show_MOTlabel	(QByteArray data,
+void	RadioInterface::show_MOTlabel	(QByteArray  &data,
 	                                 int contentType,
 	                                 QString pictureName,
 	                                 int dirs) {

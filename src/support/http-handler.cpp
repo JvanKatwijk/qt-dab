@@ -88,8 +88,8 @@ void	httpHandler::start	() {
 	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
-	ShellExecute (NULL, L"open", browserAddress. c_str (),
-	                                   NULL, NULL, SW_SHOWNORMAL);
+	ShellExecute (nullptr, L"open", browserAddress. c_str (),
+	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else
 	std::string x = "xdg-open " + browserAddress;
 	system (x. c_str ());
@@ -238,7 +238,7 @@ int	iResult;
 SOCKET	ListenSocket	= INVALID_SOCKET;
 SOCKET	ClientSocket	= INVALID_SOCKET;
 
-struct addrinfo *result = NULL;
+struct addrinfo *result = nullptr;
 struct addrinfo hints;
 
 	if (WSAStartup (MAKEWORD (2, 2), &wsa) != 0) {
@@ -254,7 +254,7 @@ struct addrinfo hints;
 
 //	Resolve the server address and port
 
-	iResult = getaddrinfo (NULL, mapPort. toLatin1 (). data (),
+	iResult = getaddrinfo (nullptr, mapPort. toLatin1 (). data (),
 	                                               &hints, &result);
 	if (iResult != 0 ) {
 	       WSACleanup();
@@ -291,7 +291,7 @@ struct addrinfo hints;
 
 	listen (ListenSocket, 5);
 	while (running. load ()) {
-	   ClientSocket = accept (ListenSocket, NULL, NULL);
+	   ClientSocket = accept (ListenSocket, nullptr, nullptr);
 	   if (ClientSocket == -1)  {
 	      usleep (2000000);
 	      continue;
@@ -324,20 +324,20 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	         goto L1;
 	      }
 
-	      int httpver = (strstr (buffer, "HTTP/1.1") != NULL) ? 11 : 10;
+	      int httpver = (strstr (buffer, "HTTP/1.1") != nullptr) ? 11 : 10;
 	      if (httpver == 11)
 //	HTTP 1.1 defaults to keep-alive, unless close is specified.
-	         keepalive = strstr (buffer, "Connection: close") == NULL;
+	         keepalive = strstr (buffer, "Connection: close") == nullptr;
 	      else // httpver == 10
-	         keepalive = strstr (buffer, "Connection: keep-alive") != NULL;
+	         keepalive = strstr (buffer, "Connection: keep-alive") != nullptr;
 
 	/* Identify the URL. */
 	      char *p = strchr (buffer, ' ');
-	      if (p == NULL)
+	      if (p == nullptr)
 	         break;
 	      url = ++p; // Now this should point to the requested URL.
 	      p = strchr (p, ' ');
-	      if (p == NULL)
+	      if (p == nullptr)
 	         break;
 	      *p = '\0';
 

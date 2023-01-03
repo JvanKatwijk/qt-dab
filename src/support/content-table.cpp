@@ -42,7 +42,7 @@
 	this	-> dabSettings	= s;
 	this	-> channel	= channel;
 	this	-> columns	= cols;
-	myWidget        = new QScrollArea (NULL);
+	myWidget        = new QScrollArea (nullptr);
         myWidget        -> resize (200, 200);
         myWidget        -> setWidgetResizable(true);
         contentWidget	= new QTableWidget (0, cols);

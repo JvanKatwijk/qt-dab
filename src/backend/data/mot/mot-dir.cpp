@@ -41,8 +41,8 @@ int16_t	i;
 	   this	-> dirSize	= dirSize;
 	   this	-> numObjects	= objects;
 	   this	-> dir_segmentSize	= segmentSize;
-	   fprintf (stderr, "dirSize %d, numObjects %d, segmentSize %d\n",
-	                             dirSize, objects, segmentSize);
+//	   fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
+//	                             transportId, dirSize, objects, segmentSize);
 	   dir_segments. resize (dirSize);
 	   motComponents. resize (objects);
 	   for (i = 0; i < objects; i ++) {
@@ -51,9 +51,12 @@ int16_t	i;
 	   }
 	   memcpy (&dir_segments [0], segment, segmentSize);
 	   marked [0] = true;
+	   if (segmentSize >= dirSize)
+	      analyse_theDirectory();
+	   
 }
 
-	motDirectory::~motDirectory() {
+	motDirectory::~motDirectory () {
 int	i;
 
 	for (i = 0; i < numObjects; i ++) 
@@ -93,6 +96,7 @@ void	motDirectory::directorySegment (uint16_t transportId,
 	                                bool	lastSegment) {
 int16_t	i;
 
+//	fprintf (stderr, "adding dir segment %d\n", segmentNumber);
 	if (this -> transportId != transportId)
 	   return;
 	if (this -> marked [segmentNumber])
@@ -117,19 +121,21 @@ int16_t	i;
 //	This is the tough one, we collected the bits, and now
 //	we need to extract the "motObject"s from it
 
-void	motDirectory::analyse_theDirectory() {
+void	motDirectory::analyse_theDirectory () {
 uint32_t	currentBase	= 11;	// in bytes
 //uint8_t	*data			= dir_segments;
 uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         dir_segments [currentBase + 1];
 
 	currentBase += 2 + extensionLength;
+//	fprintf (stderr, "directory with transportId %d\n", transportId); 
 	for (int i = 0; i < numObjects; i ++) {
 	   uint16_t transportId	= (dir_segments [currentBase] << 8) |
 	                                    dir_segments [currentBase + 1];
 	   if (transportId == 0)	// just a dummy
 	      break;
 
+//	   fprintf (stderr, "motObject with transportId %d and \n", transportId);
 	   uint8_t *segment	= &dir_segments [currentBase + 2];
 	   motObject *handle	= new motObject (myRadioInterface,
 	                                         true,
@@ -138,6 +144,7 @@ uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         -1,
 	                                         false);
 
+	   
 	   currentBase		+= 2 + handle -> get_headerSize();
 	   setHandle (handle, transportId);
 	}

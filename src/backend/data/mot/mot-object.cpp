@@ -57,8 +57,9 @@ uint16_t	rawContentType = 0;
 	rawContentType	|= ((segment [5] & 0x01) << 8) | segment [6];
 	contentType = static_cast<MOTContentType>(rawContentType);
 
-//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %d\n",
-//	                  headerSize, bodySize, b, transportId);
+//	fprintf (stderr, "headerSize %d, bodySize %d. contentType %d, transportId %d, segmentSize %d, lastFlag %d\n",
+//	                  headerSize, bodySize, b, transportId,
+//	                  segmentSize, lastFlag);
 //	we are actually only interested in the name, if any
 
         while ((uint16_t)pointer < headerSize) {
@@ -120,7 +121,7 @@ uint16_t	rawContentType = 0;
 //	fprintf (stderr, "creating mot object %x\n", transportId);
 }
 
-	motObject::~motObject() {
+	motObject::~motObject () {
 }
 
 uint16_t	motObject::get_transportId() {
@@ -138,6 +139,8 @@ void	motObject::addBodySegment (uint8_t	*bodySegment,
 	                           bool		lastFlag) {
 int32_t i;
 
+//	fprintf (stderr, "adding segment %d (size %d)\n", segmentNumber,
+//	                                                  segmentSize);
 	if ((segmentNumber < 0) || (segmentNumber >= 8192))
 	   return;
 
@@ -167,7 +170,7 @@ int32_t i;
 	      return;
 	}
 //	The motObject is (seems to be) complete
-	handleComplete();
+	handleComplete ();
 }
 
 
@@ -175,8 +178,11 @@ void	motObject::handleComplete	() {
 QByteArray result;
 	for (const auto &it : motMap)
 	   result. append (it. second);
-//	fprintf (stderr, "Handling complete %s, type %d\n", name,
+//	fprintf (stderr,
+//	"Handling complete %s, type %d\n", name. toLatin1 (). data (),
 //	                                                  (int)contentType);
+	if (name == "")
+	   name = QString::number (get_transportId ());
 	handle_motObject (result, name, (int)contentType, dirElement);
 }
 

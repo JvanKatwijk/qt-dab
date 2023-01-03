@@ -32,14 +32,14 @@ struct motTable_ {
 	uint16_t	transportId;
 	int32_t		orderNumber;
 	motObject	*motSlide;
-} motTable [15];
+} motTable [55];
 
 	motHandler::motHandler (RadioInterface *mr) {
 	myRadioInterface	= mr;
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
-	for (int i = 0; i < 15; i ++) {
+	for (int i = 0; i < 55; i ++) {
 	   motTable [i]. orderNumber	= -1;
 	   motTable [i]. motSlide	= nullptr;
 	}
@@ -48,7 +48,7 @@ struct motTable_ {
 	motHandler::~motHandler() {
 int	i;
 
-	for (i = 0; i < 15; i ++) {
+	for (i = 0; i < 55; i ++) {
 	   if (motTable [i]. orderNumber > 0) {
 	      if (motTable [i]. motSlide != nullptr) {
 	         delete motTable [i]. motSlide;
@@ -103,7 +103,7 @@ int32_t	i;
 	   next	+= lengthInd * 8;
 	}
 
-	int32_t		sizeinBits	=
+	int32_t	 sizeinBits	=
 	              msc. size () - next - (crcFlag != 0 ? 16 : 0);
 
 	if (!transportIdFlag)
@@ -138,8 +138,15 @@ int32_t	i;
 
 	   case 4: {
 	      motObject *h = getHandle (transportId);
-//	      if ((h == nullptr) && (segmentNumber != 0))
-//	         break;
+	      if (h == nullptr) {
+	         h = new motObject (myRadioInterface,
+	                            false,	// not within a directory
+	                            transportId,
+	                            &motVector [2],	
+	                            segmentSize,
+	                            lastFlag);
+	         setHandle (h, transportId);
+	      }
 	      if (h != nullptr)
 	         h -> addBodySegment (&motVector [2],
 	                              segmentNumber,
@@ -151,7 +158,7 @@ int32_t	i;
 	   case 6:
 	      if (segmentNumber == 0) { 	// MOT directory
 	         if (theDirectory != nullptr)
-	            if (theDirectory -> get_transportId() == transportId)
+	            if (theDirectory -> get_transportId () == transportId)
 	               break;	// already existing
 
 	         if (theDirectory != nullptr)	// an old one, replace it

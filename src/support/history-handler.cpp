@@ -32,7 +32,7 @@
 #include	<QFile>
 
 	historyHandler::historyHandler	(RadioInterface *radio,
-	                                 QString fileName):QListView (NULL) {
+	                                 QString fileName):QListView (nullptr) {
 	this	-> radio	= radio;
 	this	-> fileName	= fileName;
 	QDomDocument xmlBOM;

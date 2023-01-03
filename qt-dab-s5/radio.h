@@ -275,9 +275,12 @@ private:
 	void			showServices		();
 
 	bool			doStart			();
-	void			save_MOTtext		(QByteArray, int,
+	void			save_MOTObject		(QByteArray &,
+	                                                          QString);
+
+	void			save_MOTtext		(QByteArray &, int,
                                                                  QString);
-	void			show_MOTlabel		(QByteArray, int,
+	void			show_MOTlabel		(QByteArray &, int,
                                                                   QString, int);
 	void			stop_muting		();
 	struct {

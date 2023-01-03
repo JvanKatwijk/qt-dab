@@ -807,7 +807,7 @@ dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   if (!syncReached ())
 	      return;
 	   Cluster *myCluster = getCluster (localBase, clusterId);
-	   if (myCluster == NULL) {	// should not happen
+	   if (myCluster == nullptr) {	// should not happen
 //	      fprintf (stderr, "cluster fout\n");
 	      return;
 	   }

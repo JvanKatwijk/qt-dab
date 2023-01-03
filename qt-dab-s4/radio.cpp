@@ -1072,6 +1072,7 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeTransport:
+	      save_MOTObject (result, objectName);
 	      break;
 
 	   case MOTBaseTypeSystem:
@@ -1115,7 +1116,7 @@ QString realName;
 	}
 }
 
-void	RadioInterface::save_MOTtext (QByteArray result,
+void	RadioInterface::save_MOTtext (QByteArray  &result,
 	                              int contentType,  QString name) {
 	(void)contentType;
 	if (filePath == "")
@@ -1136,8 +1137,21 @@ void	RadioInterface::save_MOTtext (QByteArray result,
 	}
 }
 
+void	RadioInterface::save_MOTObject (QByteArray  &result,
+	                                  QString name) {
+	if (filePath == "")
+	   return;
+
+	if (name == "") {
+	   static int counter	= 0;
+	   name = "motObject_" + QString::number (counter);
+	   counter ++;
+	}
+	save_MOTtext (result, 5, name);
+}
+
 //	MOT slide, to show
-void	RadioInterface::show_MOTlabel	(QByteArray data,
+void	RadioInterface::show_MOTlabel	(QByteArray  &data,
 	                                 int contentType,
 	                                 QString pictureName,
 	                                 int dirs) {
