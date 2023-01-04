@@ -567,6 +567,7 @@ int     counter		= getBits   (d, used * 8 + 6, 10);
 
 	(void)Length;
 	(void)CN_bit; (void)OE_bit; (void)PD_bit;
+	fprintf (stderr, "services : %d\n", serviceCount);
 	if (CN_bit == 0)	// only current configuration for now
 	   nrServices (serviceCount);
 	(void)counter;

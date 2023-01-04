@@ -140,7 +140,7 @@ private:
 	bool		correctionNeeded;
 	std::vector<std::complex<float>	>ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
-virtual	void		run();
+virtual	void		run			();
 signals:
 	void		setSynced		(bool);
 	void		No_Signal_Found		();

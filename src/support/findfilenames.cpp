@@ -82,7 +82,7 @@ QString suggestedFileName;
 
 //
 FILE	*findfileNames::findFrameDump_fileName (const QString &service,
-	                                                  bool flag) {
+	                                                      bool flag) {
 QString	saveDir	= dabSettings -> value ("saveDir_frameDump",
 	                                QDir::homePath ()).  toString ();
 QString theTime         = QDateTime::currentDateTime (). toString ();
@@ -93,7 +93,7 @@ QString theTime         = QDateTime::currentDateTime (). toString ();
 	QString tailS	= service + "-" + theTime;
 	for (int i = 0; i < tailS. length (); i ++)
 	   if (!isValid (tailS. at (i)))
-	      tailS. replace (i,1, '-');
+	      tailS. replace (i, 1, '-');
 
 	QString suggestedFileName = saveDir + tailS + ".aac";
 	QString fileName;

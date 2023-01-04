@@ -2796,8 +2796,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
 	      serviceName = serviceName. right (16);
-	      if (serviceName. at (1) == ' ')
-	         return true;
+//	      if (serviceName. at (1) == ' ')
+//	         return true;
 
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
 	      if (ad. defined && (serviceLabel -> text () == serviceName)) {

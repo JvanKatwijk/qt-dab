@@ -2813,11 +2813,10 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      audiodata ad;
 	      packetdata pd;
 	      QString serviceName =
-	           this -> ensembleDisplay -> indexAt (ev -> pos()). data().toString();
+	           this -> ensembleDisplay -> indexAt (ev -> pos()). data ().toString();
 	      serviceName = serviceName. right (16);
-	      if (serviceName. at (1) == ' ')
-	         return true;
-
+//	      if (serviceName. at (1) == ' ')
+//	         return true;
 	      my_dabProcessor -> dataforAudioService (serviceName, &ad);
 	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
 	         presetData pd;
@@ -2835,6 +2834,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	            if (backgroundServices. at (i). serviceName ==
 	                                                      serviceName) {
+	               fprintf (stderr, "Hiero\n");
 	                my_dabProcessor -> stopService (ad. subchId,
 	                                                      BACK_GROUND);
 	                if (backgroundServices. at (i). fd != nullptr)
