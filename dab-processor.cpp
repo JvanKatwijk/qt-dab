@@ -327,14 +327,17 @@ SyncOnPhase:
 	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	      }
 	      cCount += 2 * T_g;
-	      if (ofdmSymbolCount <= 3) {
-	         my_ofdmDecoder. decode (ofdmBuffer,
-	                                 ofdmSymbolCount, ibits. data());
-	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-	      }	
-	      if (!scanMode && eti_on)
+
+	      if ((ofdmSymbolCount <= 3) || eti_on)
+	         my_ofdmDecoder. decode (ofdmBuffer, ofdmSymbolCount, ibits);
+
+
+	      if (ofdmSymbolCount <= 3)
+	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount)
+;
+	      if (eti_on) 
 	         my_etiGenerator. processBlock (ibits, ofdmSymbolCount);
-	      else
+
 	      if (!scanMode)
 	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);

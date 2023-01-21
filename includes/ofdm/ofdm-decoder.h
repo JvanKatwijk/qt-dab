@@ -45,7 +45,7 @@ public:
 		~ofdmDecoder();
 	void	processBlock_0		(std::vector<std::complex<float> >);
 	void	decode			(std::vector<std::complex<float> >,
-	                                 int32_t n, int16_t *);
+	                                 int32_t n, std::vector<int16_t> &);
 	void	stop			();
 	void	reset			();
 private:

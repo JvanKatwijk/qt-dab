@@ -136,7 +136,7 @@ float	denominator	= 0;
 
 static	int	cnt	= 0;
 void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
-	                     int32_t blkno, int16_t *ibits) {
+	                     int32_t blkno, std::vector<int16_t> &ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
 

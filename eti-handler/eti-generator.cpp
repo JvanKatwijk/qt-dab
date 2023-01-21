@@ -84,11 +84,11 @@ uint8_t	theVector [6144];
 //	amount of cycles, the eti-generation is done in a different thread
 //	Note CIF counts from 0 .. 3
 //
-		etiGenerator::etiGenerator	(uint8_t	dabMode,
-	                                         ficHandler	*my_ficHandler):
+		etiGenerator::etiGenerator	(uint8_t   dabMode,
+	                                        ficHandler *my_ficHandler):
 	                                            params (dabMode) {
 	this	-> my_ficHandler	= my_ficHandler;
-	
+
 	index_Out		= 0;
 	BitsperBlock		= 2 * params. get_carriers ();
 	numberofblocksperCIF	= 18;	// mode I
@@ -133,8 +133,8 @@ void	etiGenerator::newFrame	() {
 //
 //	we ensure that when starting, we start with a 
 //	block 1
-void	etiGenerator::processBlock	(std::vector<int16_t> &softBits,
-	                                      int blkno) {
+void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
+	                                                      int blkno) {
 
 	if (!running && (etiFile != nullptr) && (blkno == 1))
 	   running = true;
@@ -144,6 +144,7 @@ void	etiGenerator::processBlock	(std::vector<int16_t> &softBits,
 
 	if (blkno < 4)
 	   return;
+
 	if (blkno == 4) {	// import fibBits
 	   my_ficHandler -> get_fibBits (fibBits);
 	   for (int i = 0; i < 4; i ++) {
@@ -159,13 +160,13 @@ void	etiGenerator::processBlock	(std::vector<int16_t> &softBits,
 	   }
 	   Minor	= 0;
 	   my_ficHandler -> get_CIFcount  (&CIFCount_hi, &CIFCount_lo);
-	   return;
 	}
-//
-//	adding the MSC blocks
-	int CIF_index	= (blkno - 5) % numberofblocksperCIF;
-	memcpy (&cif_In [CIF_index * BitsperBlock], softBits. data (),
-	                       BitsperBlock * sizeof (int16_t));
+//	
+//	adding the MSC blocks. Blocks 5 .. 76 are "transformed"
+//	into the "soft" bits arrays
+	int CIF_index	= (blkno - 4) % numberofblocksperCIF;
+	memcpy (&cif_In [CIF_index * BitsperBlock],
+	                   ibits. data (), BitsperBlock * sizeof (int16_t));
 	if (CIF_index == numberofblocksperCIF - 1) {
 	   for (int i = 0; i < 3072 * 18; i++) {
 	      int index = interleaveMap [i & 017];
@@ -185,7 +186,8 @@ void	etiGenerator::processBlock	(std::vector<int16_t> &softBits,
 //	Otherwise, it becomes serious
 	   if ((CIFCount_hi < 0) || (CIFCount_lo < 0))
 	      return;
-
+//
+//	3 steps, init the vector, add the fib and add the CIF content
 	   int offset	= init_eti (theVector, CIFCount_hi,
 	                                               CIFCount_lo, Minor);
 	   int base	= offset;
@@ -219,10 +221,10 @@ void	etiGenerator::processBlock	(std::vector<int16_t> &softBits,
 	   memset (&theVector [offset], 0x55, 6144 - offset);
 	   if (etiFile != nullptr)
 	      fwrite (theVector, 1, 6144, etiFile);
-	}
 //	at the end, go for a new eti vector
-	index_Out	= (index_Out + 1) & 017;
-	Minor ++;
+	   index_Out	= (index_Out + 1) & 017;
+	   Minor ++;
+	}
 }
 
 //	Copied  from dabtools:
@@ -231,7 +233,6 @@ int32_t	etiGenerator::init_eti (uint8_t* eti,
 	                        int16_t CIFCount_lo,
 	                        int16_t minor) {
 int	fillPointer = 0;
-int	j;
 channel_data data;
 
 	CIFCount_lo += minor;
@@ -258,13 +259,13 @@ channel_data data;
 	   eti [fillPointer ++] = 0x3a;
 	   eti [fillPointer ++] = 0xb6;
 	}
-//	LIDATA()
+//	LIDATA ()
 //	FC()
 	eti [fillPointer ++]	= CIFCount_lo; // FCT from CIFCount_lo
 	int FICF	= 1;			// FIC present in MST
 	int NST		= 0;			// number of streams
 	int FL		= 0;			// Frame Length
-	for (j = 0; j < 64; j++) {
+	for (int j = 0; j < 64; j++) {
 	   my_ficHandler -> get_channelInfo (&data, j);
 	   if (data. in_use) {
 	      NST++;
@@ -284,7 +285,7 @@ channel_data data;
 //	Now for each of the streams in the FIC we add information
 //	on how to get it
 //	STC ()
-	for (j = 0; j < 64; j++) {
+	for (int j = 0; j < 64; j++) {
 	   my_ficHandler -> get_channelInfo (&data, j);
 	   if (data. in_use) {
 	      int SCID	= data. id;
@@ -332,6 +333,7 @@ public:
 	int	size;
 	uint8_t	*output;
 };
+
 int32_t	etiGenerator::process_CIF (int16_t *input,
 	                           uint8_t *output, int32_t offset) {
 uint8_t	shiftRegister [9];
@@ -381,14 +383,11 @@ std::vector<parameter *> theParameters;
 static void	process_subCh (int nr, parameter *p,
 	                       protection *prot,
 	                       uint8_t *desc) {
-	// ERROR CORRECTION
-	// uint8_t outVector [24 * p -> bitRate];
 	std::unique_ptr<uint8_t[]> outVector{ new uint8_t[24 * p->bitRate] };
 	if (!outVector) {
-		std::cerr << "process_subCh - alloc fail";
-		return;
+	   std::cerr << "process_subCh - alloc fail";
+	   return;
 	}
-	// END ERROR CORRECTION
 int	j, k;
 
 	memset (outVector.get(), 0, sizeof(uint8_t) * 24 * p -> bitRate);
@@ -397,7 +396,7 @@ int	j, k;
 	                                 p -> size * CUSize,
 	                                 outVector.get());
 //
-	for (j = 0; j < 24 *p -> bitRate; j ++) {
+	for (j = 0; j < 24 * p -> bitRate; j ++) {
 	   outVector [j] ^= desc [j];
         }
 //
@@ -414,30 +413,26 @@ int	j, k;
 void	etiGenerator::process_subCh (int nr, parameter *p,
 	                             protection *prot,
 	                             uint8_t *desc) {
-	// ERROR CORRECTION
-	// uint8_t outVector [24 * p -> bitRate];
 	std::unique_ptr<uint8_t[]> outVector { new uint8_t[24 * p->bitRate] };
 	if (!outVector) {
 	   std::cerr << "process_subCh - alloc fail";
 	   return;
 	}
-	// END ERROR CORRECTION
-int	j, k;
 
-	memset (outVector.get(), 0, sizeof(uint8_t) * 24 * p -> bitRate);
+	memset (outVector.get(), 0, sizeof (uint8_t) * 24 * p -> bitRate);
 
 	prot -> deconvolve (&p -> input [p -> start_cu * CUSize],
 	                                 p -> size * CUSize,
 	                                 outVector.get());
 //
-	for (j = 0; j < 24 *p -> bitRate; j ++) {
+	for (int j = 0; j < 24 *p -> bitRate; j ++) {
 	   outVector [j] ^= desc [j];
         }
 //
 //	and the storage:
-	for (j = 0; j < 24 * p -> bitRate / 8; j ++) {
+	for (int j = 0; j < 24 * p -> bitRate / 8; j ++) {
 	   int temp = 0;
-	   for (k = 0; k < 8; k ++)
+	   for (int k = 0; k < 8; k ++)
 	      temp = (temp << 1) | (outVector [j * 8 + k] & 01);
 	   p -> output [j] = temp;
 	}
@@ -448,6 +443,7 @@ void	etiGenerator::postProcess (uint8_t *theVector, int32_t offset){
 }
 
 bool	etiGenerator::start_etiGenerator	(const QString &f) {
+	reset ();
 	etiFile	= fopen (f. toUtf8 (). data (), "w");
 	return etiFile != nullptr;
 }

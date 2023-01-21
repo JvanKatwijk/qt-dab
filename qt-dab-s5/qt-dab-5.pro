@@ -774,7 +774,7 @@ JAN	{
 
 preCompiled {
 	LIBS		+= -lcurl
-	INCLUDEPATH	+= /home/jan/curl
+#	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
 	HEADERS		+= ../../TII-CODES/tii-codes.h
 	SOURCES		+= ../../TII-CODES/tii-codes.cpp

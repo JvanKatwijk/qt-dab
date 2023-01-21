@@ -246,6 +246,8 @@ private:
 	historyHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 
+	void			start_etiHandler	();
+	void			stop_etiHandler		();
 	QString			checkDir		(const QString);
 //
 	void			start_audioService	(audiodata *);

@@ -3523,6 +3523,7 @@ void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
 	handling_channel. store (false);
+	stop_etiHandler	();
 	LOG ("channel stops ", channel. channelName);
 	fprintf (stderr, "we have now as background services\n");
 	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
@@ -4890,12 +4891,24 @@ void	RadioInterface::handle_etiHandler	() {
 	if (my_dabProcessor == nullptr)	// should not happen
 	   return;
 
-	if (etiActive) {
-	   my_dabProcessor -> stop_etiGenerator ();
-	   etiActive = false;
-	   scanButton	-> setText ("eti");
+	if (etiActive)
+	   stop_etiHandler ();
+	else
+	   start_etiHandler ();
+}
+
+void	RadioInterface::stop_etiHandler () {
+	if (!etiActive) 
 	   return;
-	}
+
+	my_dabProcessor -> stop_etiGenerator ();
+	etiActive = false;
+	scanButton	-> setText ("eti");
+}
+
+void	RadioInterface::start_etiHandler () {
+	if (etiActive)
+	   return;
 
 	QString etiFile		= QFileDialog::getSaveFileName (this,
 	                                                tr ("Open file ..."),
@@ -4904,8 +4917,8 @@ void	RadioInterface::handle_etiHandler	() {
 	if (etiFile == QString (""))
 	   return;
 	etiFile		= QDir::toNativeSeparators (etiFile);
-	etiActive	= my_dabProcessor	-> start_etiGenerator (etiFile);
-	if (etiActive)
+	etiActive	= my_dabProcessor -> start_etiGenerator (etiFile);
+	if (etiActive) 
 	   scanButton -> setText ("eti runs");
 }
 

@@ -69,7 +69,8 @@ public:
                                          ficHandler     *my_ficHandler);
 		~etiGenerator		();
 	void	newFrame		();
-	void	processBlock		(std::vector<int16_t> &fbits, int blkno);
+	void	processBlock		(std::vector<int16_t> &fbits,
+	                                                        int blkno);
 	void	reset			();
 	bool	start_etiGenerator	(const QString &);
 	void	stop_etiGenerator	();
