@@ -54,7 +54,9 @@
 	                                 my_ofdmDecoder (mr, 
 	                                                 p -> dabMode,
 	                                                 inputDevice -> bitDepth(),
-	                                                 p -> iqBuffer) {
+	                                                 p -> iqBuffer),
+	                                 my_etiGenerator (p -> dabMode,
+	                                                  &my_ficHandler) {
 
 	this	-> myRadioInterface	= mr;
 	this	-> inputDevice		= inputDevice;
@@ -73,6 +75,7 @@
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
 
+	this	-> eti_on		= false;
 	ofdmBuffer. resize (2 * T_s);
 	fineOffset			= 0;	
 	coarseOffset			= 0;	
@@ -324,11 +327,14 @@ SyncOnPhase:
 	         cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	      }
 	      cCount += 2 * T_g;
-	      if (ofdmSymbolCount < 4) {
+	      if (ofdmSymbolCount <= 3) {
 	         my_ofdmDecoder. decode (ofdmBuffer,
 	                                 ofdmSymbolCount, ibits. data());
 	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-	      }
+	      }	
+	      if (!scanMode && eti_on)
+	         my_etiGenerator. processBlock (ibits, ofdmSymbolCount);
+	      else
 	      if (!scanMode)
 	         my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
@@ -583,5 +589,20 @@ void	dabProcessor::stop_ficDump	() {
 
 uint32_t dabProcessor::julianDate	()  {
 	return my_ficHandler. julianDate ();
+}
+
+bool	dabProcessor::start_etiGenerator	(const QString &s) {
+	if (my_etiGenerator. start_etiGenerator (s))
+	   eti_on	= true;
+	return eti_on;
+}
+
+void	dabProcessor::stop_etiGenerator		() {
+	my_etiGenerator. stop_etiGenerator ();
+	eti_on		= false;
+}
+
+void	dabProcessor::reset_etiGenerator	() {
+	my_etiGenerator. reset ();
 }
 

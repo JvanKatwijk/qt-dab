@@ -43,6 +43,7 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"tii_detector.h"
+#include	"eti-generator.h"
 //
 
 class	RadioInterface;
@@ -61,6 +62,9 @@ public:
 	void		stop			();
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		();
+	bool		start_etiGenerator	(const QString &);
+	void		stop_etiGenerator	();
+	void		reset_etiGenerator	();
 	void		set_scanMode		(bool);
 	void		getFrameQuality		(int *, int*, int *);
 //
@@ -115,7 +119,8 @@ private:
 	RingBuffer<float>	*snrBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;
-
+	etiGenerator	my_etiGenerator;
+	bool		eti_on;
 	sampleReader	myReader;
 	RadioInterface	*myRadioInterface;
 	ficHandler	my_ficHandler;

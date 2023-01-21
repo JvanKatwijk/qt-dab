@@ -251,6 +251,8 @@ static	uint8_t prevChangeFlag	= 0;
 	(void)alarmFlag;
 	occurrenceChange        = getBits_8 (d, 16 + 32);
 	(void)occurrenceChange;
+	CIFcount_hi		= highpart;
+	CIFcount_lo		= lowpart;
 	CIFcount 		= highpart * 250 + lowpart;
 
 	if ((changeFlag == 0) && (prevChangeFlag == 3)) {
@@ -1626,6 +1628,11 @@ int32_t fibDecoder::get_CIFcount() {
 	return CIFcount;
 }
 
+void	fibDecoder::get_CIFcount (int16_t *h, int16_t *l) {
+	*h	= CIFcount_hi;
+	*l	= CIFcount_lo;
+}
+
 uint8_t	fibDecoder::get_ecc	() {
 	if (ensemble -> ecc_Present)
 	   return ensemble -> ecc_byte;
@@ -2115,5 +2122,15 @@ QStringList l2 = s2. split (";");
 
 uint32_t	fibDecoder::julianDate	() {
 	return mjd;
+}
+
+void	fibDecoder::get_channelInfo (channel_data *d, int n) {
+        d       -> in_use	= currentConfig -> subChannels [n]. inUse;
+        d       -> id		= currentConfig -> subChannels [n]. SubChId;
+        d       -> start_cu	= currentConfig -> subChannels [n]. startAddr;
+        d       -> protlev	= currentConfig -> subChannels [n]. protLevel; 
+        d       -> size		= currentConfig -> subChannels [n]. Length;
+        d       -> bitrate	= currentConfig -> subChannels [n]. bitRate;
+        d       -> uepFlag	= currentConfig -> subChannels [n]. shortForm;
 }
 

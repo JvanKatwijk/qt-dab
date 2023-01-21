@@ -114,6 +114,7 @@ public:
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
+	                                 bool,
 	                                 int,
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
@@ -137,6 +138,7 @@ private:
 	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QFrame			dataDisplay;
+	bool			eti_prepared;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
 	tiiHandler		tiiProcessor;
@@ -154,6 +156,7 @@ private:
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
+	bool			etiActive;
 	Ui_technical_data	techData;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;
@@ -389,6 +392,7 @@ private slots:
 	void			handle_detailButton	();
 	void			handle_resetButton	();
 	void			handle_scanButton	();
+	void			handle_etiHandler	();
 
 	void			handle_tiiButton	();
 	void			handle_snrButton	();

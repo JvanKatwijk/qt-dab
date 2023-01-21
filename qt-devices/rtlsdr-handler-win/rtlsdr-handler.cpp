@@ -112,9 +112,9 @@ void	run () {
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
-	                                    _I_Buffer (8 * 1024 * 1024),
-	                                    myFrame (nullptr),
-	                                    theFilter (5, 1560000 / 2, 2048000) {
+	                                 _I_Buffer (8 * 1024 * 1024),
+	                                 myFrame (nullptr),
+	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;

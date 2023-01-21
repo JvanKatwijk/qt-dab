@@ -206,6 +206,7 @@ uint8_t convert (QString s) {
 	                                bool		error_report,
 	                                int32_t		dataPort,
 	                                int32_t		clockPort,
+	                                bool		eti_prepared,
 	                                int		fmFrequency,
 	                                QWidget		*parent):
 	                                        QWidget (parent),
@@ -243,6 +244,7 @@ uint8_t	dabBand;
 
 	dabSettings			= Si;
 	this	-> error_report		= error_report;
+	this	-> eti_prepared		= eti_prepared;
 	this	-> fmFrequency		= fmFrequency;
 	this	-> dlTextFile		= nullptr;
 	this	-> ficDumpPointer	= nullptr;
@@ -619,6 +621,7 @@ uint8_t	dabBand;
 	   }
 	}
 
+	etiActive	= false;
 	show_pauzeSlide ();
 
 //	and start the timer(s)
@@ -1285,9 +1288,9 @@ int	serviceOrder;
 	dabService s;
 	if (currentService. valid) 
 	   s = currentService;
+	stopService	(s);
 	stopScanning    (false);
 //
-	stopService	(s);
 //
 //	we stop all secondary services as well, but we maintain theer
 //	description, file descriptors remain of course
@@ -1314,6 +1317,9 @@ int	serviceOrder;
 	}
 	ensembleDisplay -> setModel (&model);
 //
+	if (etiActive)
+	   my_dabProcessor -> reset_etiGenerator ();
+
 //	Of course, it may be disappeared
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
@@ -2620,8 +2626,14 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_detailButton ()));
 	connect (configWidget. resetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_resetButton ()));
-	connect	(scanButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanButton ()));
+	if (eti_prepared) {
+	   connect (scanButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_etiHandler ()));
+	   scanButton	-> setText ("eti");
+	}
+	else
+	   connect (scanButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_scanButton ()));
 	connect (configWidget. show_tiiButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_tiiButton ()));
 	connect (configWidget. show_correlationButton, SIGNAL (clicked ()),
@@ -2687,10 +2699,14 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_detailButton ()));
 	disconnect (configWidget. resetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_resetButton ()));
-	disconnect (scanButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanButton ()));
+	if (eti_prepared)
+	   disconnect (scanButton, SIGNAL (clicked ()),
+	               this, SLOT (handle_etiHandler ()));
+	else
+	   disconnect (scanButton, SIGNAL (clicked ()),
+	               this, SLOT (handle_scanButton ()));
 	disconnect (configWidget. show_tiiButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_tiiButton ()));
+	               this, SLOT (handle_tiiButton ()));
 	disconnect (configWidget. show_correlationButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_correlationButton ()));
 	disconnect (configWidget. show_spectrumButton, SIGNAL (clicked ()),
@@ -3713,6 +3729,8 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 }
 
 void	RadioInterface::stopScanning	(bool dump) {
+	if (eti_prepared)
+	   return;
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
@@ -4862,5 +4880,32 @@ void	RadioInterface::handle_saveSlides	(int x) {
 	(void)x;
 	dabSettings -> setValue ("saveSlides", 
 	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
+}
+
+//////////////////////////////////////////////////////////////////////////
+//	Experimental: handling eti
+/////////////////////////////////////////////////////////////////////////
+
+void	RadioInterface::handle_etiHandler	() {
+	if (my_dabProcessor == nullptr)	// should not happen
+	   return;
+
+	if (etiActive) {
+	   my_dabProcessor -> stop_etiGenerator ();
+	   etiActive = false;
+	   scanButton	-> setText ("eti");
+	   return;
+	}
+
+	QString etiFile		= QFileDialog::getSaveFileName (this,
+	                                                tr ("Open file ..."),
+	                                                QDir::homePath(),
+	                                                tr ("eti (*.eti)"));
+	if (etiFile == QString (""))
+	   return;
+	etiFile		= QDir::toNativeSeparators (etiFile);
+	etiActive	= my_dabProcessor	-> start_etiGenerator (etiFile);
+	if (etiActive)
+	   scanButton -> setText ("eti runs");
 }
 

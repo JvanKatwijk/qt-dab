@@ -83,8 +83,8 @@ using namespace std;
 #define		MAP_NORM_TRANS	4
 
 typedef struct {
-        int     theTime;
-        QString theText;
+	int     theTime;
+	QString theText;
 	QString	theDescr;
 } epgElement;
 
@@ -198,6 +198,17 @@ public:
 	}
 };
 
+typedef struct {
+	bool    in_use;
+	int16_t id;
+	int16_t start_cu;
+	uint8_t uepFlag;
+	int16_t protlev;
+	int16_t size;
+	int16_t bitrate;
+	int16_t ASCTy; 
+} channel_data;
+ 
 
 //	just some locals
 //

@@ -115,9 +115,9 @@ void	run () {
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
-	                                    _I_Buffer (8 * 1024 * 1024),
-	                                    myFrame (nullptr),
-	                                    theFilter (5, 1560000 / 2, 2048000) {
+	                                 _I_Buffer (8 * 1024 * 1024),
+	                                 myFrame (nullptr),
+	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;
 int16_t	deviceIndex;
@@ -149,14 +149,14 @@ char	manufac [256], product [256], serial [256];
     const char *libraryString	= "librtlsdr.dylib";
 #endif
 	phandle = new QLibrary (libraryString);
-	phandle -> load();
+	phandle -> load ();
 
 	if (!phandle -> isLoaded ()) {
 	   fprintf (stderr, "failed to open %s\n", libraryString);
 	   throw (20);
 	}
 
-	if (!load_rtlFunctions()) {
+	if (!load_rtlFunctions ()) {
 	   delete (phandle);
 	   throw (21);
 	}
@@ -268,10 +268,6 @@ char	manufac [256], product [256], serial [256];
 }
 
 	rtlsdrHandler::~rtlsdrHandler() {
-	if (phandle == nullptr) {	// nothing achieved earlier on
-	   return;
-	}
-	
 	fprintf (stderr, "closing on freq %d\n",
 	               (int32_t)(this -> rtlsdr_get_center_freq (theDevice)));
 	stopReader	();
@@ -321,15 +317,17 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 }
 
 void	rtlsdrHandler::stopReader () {
+	if (workerHandle == nullptr)
+	   return;
 	isActive. store (false);
 	this    -> rtlsdr_cancel_async (theDevice);
-        this    -> rtlsdr_reset_buffer (theDevice);
+	this    -> rtlsdr_reset_buffer (theDevice);
 	if (workerHandle != nullptr) {
-           while (!workerHandle -> isFinished())
-              usleep (100);
-           _I_Buffer. FlushRingBuffer();
-           delete  workerHandle;
-           workerHandle    = nullptr;
+	   while (!workerHandle -> isFinished())
+	      usleep (100);
+	   _I_Buffer. FlushRingBuffer();
+	   delete  workerHandle;
+	   workerHandle    = nullptr;
 	}
 	close_xmlDump ();
 	if (save_gainSettings)

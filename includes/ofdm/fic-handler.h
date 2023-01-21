@@ -24,8 +24,8 @@
 /*
  * 	FIC data
  */
-#ifndef	__FIC_HANDLER__
-#define	__FIC_HANDLER__
+#ifndef	__FIC_HANDLER_H
+#define	__FIC_HANDLER_H
 
 #include	<QObject>
 #include	<QMutex>
@@ -46,18 +46,19 @@ Q_OBJECT
 public:
 		ficHandler		(RadioInterface *, uint8_t);
 		~ficHandler();
-	void	process_ficBlock	(std::vector<int16_t> &,
-	                                 int16_t);
+	void	process_ficBlock	(std::vector<int16_t> &, int16_t);
 	void	stop			();
 	void	restart			();
 	void	start_ficDump		(FILE *);
 	void	stop_ficDump		();
+	void	get_fibBits		(uint8_t *);
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;
 	uint8_t		bitBuffer_out	[768];
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];
+	uint8_t		fibBits		[4 * 768];
 
 	void		process_ficInput	(int16_t);
 	int16_t		index;

@@ -187,6 +187,9 @@ int16_t	inputCount	= 0;
   */
 	for (i = 0; i < 768; i ++)
 	   bitBuffer_out [i] ^= PRBS [i];
+
+	for (i = 0; i < 768; i ++)
+	   fibBits [ficno * 768 + i] = bitBuffer_out [i];
 /**
   *	each of the fib blocks is protected by a crc
   *	(we know that there are three fib blocks each time we are here)
@@ -248,3 +251,7 @@ void	ficHandler::stop_ficDump	() {
 }
 
 
+void	ficHandler::get_fibBits		(uint8_t *v) {
+	for (int i = 0; i < 4 * 768; i ++)
+	   v [i] = fibBits [i];
+}

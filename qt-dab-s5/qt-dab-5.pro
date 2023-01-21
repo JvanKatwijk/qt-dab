@@ -38,6 +38,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 
 DEPENDPATH += . \
 	      ./pauzeslide \
+	      ../eti-handler \
 	      ../src \
 	      ../includes \
 	      ../src/ofdm \
@@ -72,10 +73,12 @@ DEPENDPATH += . \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new\
 	      ../qt-devices/xml-filereader 
+	      
 
 INCLUDEPATH += . \
 	       ./pauzeslide/ \
 	      ../ \
+	      ../eti-handler \
 	      ../src \
 	      ../includes \
 	      ../includes/protection \
@@ -106,6 +109,7 @@ INCLUDEPATH += . \
 HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
 	   ../dab-processor.h \
+	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
 	   ../includes/ofdm/timesyncer.h \
@@ -220,6 +224,7 @@ FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ../dab-processor.cpp \
+	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
 	   ../src/ofdm/sample-reader.cpp \
 	   ../src/ofdm/ofdm-decoder.cpp \

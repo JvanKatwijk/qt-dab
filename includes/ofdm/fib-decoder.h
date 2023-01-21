@@ -56,17 +56,21 @@ public:
 	int		getSubChId		(const QString &, uint32_t);
 	std::vector<serviceId>	getServices	(int);
 
-	QString		findService	(uint32_t, int);
-	void		getParameters	(const QString &, uint32_t *, int *);
-        uint8_t		get_ecc		();
-	uint16_t	get_countryName ();
-	uint8_t		get_countryId	();
-	int32_t		get_ensembleId	();
+	QString		findService		(uint32_t, int);
+	void		getParameters		(const QString &,
+	                                           uint32_t *, int *);
+        uint8_t		get_ecc			();
+	uint16_t	get_countryName 	();
+	uint8_t		get_countryId		();
+	int32_t		get_ensembleId		();
 	QString		get_ensembleName	();
-	int32_t		get_CIFcount	();	
-	uint32_t	julianDate	();
-	void		set_epgData	(uint32_t, int32_t,
-	                                 const QString &, const QString &);
+	void		get_channelInfo		(channel_data *, int);
+	int32_t		get_CIFcount		();	
+	void		get_CIFcount		(int16_t *, int16_t *);
+	uint32_t	julianDate		();
+	void		set_epgData		(uint32_t, int32_t,
+	                                         const QString &,
+	                                             const QString &);
 	std::vector<epgElement> get_timeTable	(uint32_t);
 	std::vector<epgElement> get_timeTable	(const QString &);
 	bool		has_timeTable	(uint32_t SId);
@@ -169,6 +173,8 @@ private:
 	int32_t		dateTime [8];
 	QMutex		fibLocker;
 	int		CIFcount;
+	int16_t		CIFcount_hi;
+	int16_t		CIFcount_lo;
 	uint32_t	mjd;			// julianDate
 	QString		serviceName		(int index);
 	QString		serviceIdOf		(int index);
