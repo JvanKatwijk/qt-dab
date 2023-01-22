@@ -212,6 +212,7 @@ endif ()
 	           ../qt-devices/rawfiles-new
 	           ../qt-devices/wavfiles-new
 	           ../qt-devices/xml-filereader
+	           ../eti-handler
 	           /usr/include/
 	)
 
@@ -219,6 +220,7 @@ endif ()
 	     ./radio.h
 	     ./pauzeslide/pauzeslide.h
 	     ../dab-processor.h
+	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
              ../includes/ofdm/sample-reader.h
@@ -324,6 +326,7 @@ endif ()
 	     ./main.cpp
 	     ./radio.cpp
 	     ../dab-processor.cpp
+	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
 	     ../src/ofdm/phasereference.cpp

@@ -37,22 +37,21 @@
 class	findfileNames {
 	QSettings	*dabSettings;
 public:
-	findfileNames			(QSettings *);
-	~findfileNames			();
-FILE	*findContentDump_fileName	(const QString &channel);
-FILE	*findFrameDump_fileName		(const QString &service, bool);
-SNDFILE	*findAudioDump_fileName		(const QString &service, bool);
-SNDFILE *findRawDump_fileName		(const QString &deviceName,
-	                                       const QString &channelName);
-FILE	*findScanDump_fileName		();
-FILE	*findSummary_fileName		();
-const 
-QString	findskipFile_fileName		();
-QString	finddlText_fileName		(bool);
-FILE	*findLogFileName		();
-FILE	*find_ficDump_file		(const QString &);
-QString findMaps_fileName		();
-
+		findfileNames			(QSettings *);
+		~findfileNames			();
+	FILE	*findContentDump_fileName	(const QString &channel);
+	FILE	*findFrameDump_fileName		(const QString &service, bool);
+	SNDFILE	*findAudioDump_fileName		(const QString &service, bool);
+	SNDFILE *findRawDump_fileName		(const QString &deviceName,
+	                                       	 const QString &channelName);
+	FILE	*findScanDump_fileName		();
+	FILE	*findSummary_fileName		();
+const	QString	findskipFile_fileName		();
+	QString	finddlText_fileName		(bool);
+	FILE	*findLogFileName		();
+	FILE	*find_ficDump_file		(const QString &);
+	QString findMaps_fileName		();
+	QString	find_eti_fileName		(const QString &, const QString &);
 };
 
 #endif

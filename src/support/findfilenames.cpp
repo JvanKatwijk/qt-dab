@@ -430,3 +430,32 @@ QString suggestedFileName;
 	return QDir::toNativeSeparators (fileName);
 }
 
+QString	findfileNames::find_eti_fileName (const QString &ensemble,
+	                                  const QString &channelName) {
+QString	saveDir	 = dabSettings -> value ("contentDir",
+	                                   QDir::homePath ()). toString ();
+QString theTime         = QDateTime::currentDateTime (). toString ();
+QString suggestedFileName;
+
+	if ((saveDir != "") && (!saveDir. endsWith ('/')))
+	   saveDir = saveDir + '/';
+
+	suggestedFileName	= saveDir + channelName + "-" +
+	                                 ensemble. trimmed () + "-" + theTime + ".eti";
+	for (int i = 0; i < suggestedFileName. length (); i ++)
+	   if (!isValid (suggestedFileName. at (i)))
+	      theTime. replace (i, 1, '-');
+	suggestedFileName	= QDir::toNativeSeparators (suggestedFileName);
+
+	QString fileName = QFileDialog::
+	                     getSaveFileName (nullptr,
+	                                      "Save file ...",
+	                                      suggestedFileName,
+	                                      "eti (*.eti)",
+	                                      Q_NULLPTR,
+	                                      QFileDialog::DontUseNativeDialog);
+	if (fileName == "")
+	   return "";
+
+	return QDir::toNativeSeparators (fileName);
+}

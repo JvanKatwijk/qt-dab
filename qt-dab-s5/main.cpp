@@ -91,7 +91,6 @@ int     opt;
 QString freqExtension		= "";
 bool	error_report		= false;
 int	fmFrequency		= 110000;
-bool	eti_prepared		= false;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
 
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
@@ -99,7 +98,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	QCoreApplication::setApplicationName ("qt-dab");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
-	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:EF:s:")) != -1) {
+	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
 
 	      case 'i':
@@ -120,10 +119,6 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	
 	      case 'T':
 	         error_report	= true;
-	         break;
-
-	      case 'E':
-	         eti_prepared	= true;
 	         break;
 
 	      case 'F':
@@ -168,7 +163,6 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	                                       error_report,
 	                                       dataPort,
 	                                       clockPort,
-	                                       eti_prepared,
 	                                       fmFrequency
                                                );
 	MyRadioInterface -> show();
