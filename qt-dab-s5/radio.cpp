@@ -832,7 +832,7 @@ bool	RadioInterface::doStart	() {
 	connect (presetSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_presetSelector (const QString &)));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (selectChannel (const QString &)));
+	         this, SLOT (handle_channelSelector (const QString &)));
 //
 //	Just to be sure we disconnect here.
 //	It would have been helpful to have a function
@@ -3598,7 +3598,7 @@ void	RadioInterface::stopChannel	() {
 //	next- and previous channel buttons
 /////////////////////////////////////////////////////////////////////////
 
-void    RadioInterface::selectChannel (const QString &channel) {
+void    RadioInterface::handle_channelSelector (const QString &channel) {
 	if (!running. load ())
 	   return;
 

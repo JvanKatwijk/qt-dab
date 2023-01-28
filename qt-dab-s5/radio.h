@@ -410,7 +410,7 @@ private slots:
 
 	void			handle_prevServiceButton	();
         void			handle_nextServiceButton	();
-	void			selectChannel		(const QString &);
+	void			handle_channelSelector		(const QString &);
 	void			handle_nextChannelButton();
 	void			handle_prevChannelButton();
 
