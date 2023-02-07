@@ -298,7 +298,7 @@ int result = my_airspy_set_freq (device, nf);
 }
 
 int32_t	airspyHandler::getVFOFrequency() {
-	return lastFrequency;
+	return vfoFrequency;
 }
 
 int32_t	airspyHandler::defaultFrequency() {
