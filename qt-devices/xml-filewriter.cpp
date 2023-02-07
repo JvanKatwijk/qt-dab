@@ -141,7 +141,7 @@ QDomElement root	= theTree. createElement ("SDR");
 	char help [256];
 	strcpy (help, asctime (timeinfo));
 	help [strlen (help)] = 0;	// get rid of \n
-	theTime. setAttribute ("Value", asctime (timeinfo));
+	theTime. setAttribute ("Value", QDateTime::currentDateTimeUtc().toString("yyyy-MM-dd hh:mm:ss"));
 	root. appendChild (theTime);
 	QDomElement theSample = theTree. createElement ("Sample");
 	QDomElement theRate   = theTree. createElement ("Samplerate");
@@ -169,7 +169,7 @@ QDomElement root	= theTree. createElement ("SDR");
 	QDomElement theFrequency	= theTree. createElement ("Frequency");	
 	theFrequency. setAttribute ("Value", 
 	                                 QString::number (frequency / 1000));
-	theFrequency. setAttribute ("Unit", "KHz");
+	theFrequency. setAttribute ("Unit", "kHz");
 	theDataBlock. appendChild (theFrequency);
 	QDomElement theModulation	= theTree. createElement ("Modulation");
 	theModulation. setAttribute ("Value", "DAB");
