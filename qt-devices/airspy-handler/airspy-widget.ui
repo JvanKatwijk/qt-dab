@@ -474,7 +474,7 @@
     <widget class="QCheckBox" name="biasButton">
      <property name="geometry">
       <rect>
-       <x>220</x>
+       <x>200</x>
        <y>121</y>
        <width>101</width>
        <height>21</height>
