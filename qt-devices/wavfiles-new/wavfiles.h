@@ -47,6 +47,7 @@ public:
 	void		show		();	
 	void		hide		();
 	bool		isHidden	();
+	bool		isFileInput	();
 private:
 	QFrame		myFrame;
 	QString		fileName;

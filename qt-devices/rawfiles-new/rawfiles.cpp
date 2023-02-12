@@ -127,4 +127,7 @@ bool	rawFiles::isHidden	() {
 	return myFrame. isHidden ();
 }
 
+bool	rawFiles::isFileInput	() {
+	return true;
+}
 

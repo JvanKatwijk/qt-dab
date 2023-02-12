@@ -168,3 +168,7 @@ bool	xml_fileReader::isHidden	() {
 	return myFrame. isHidden ();
 }
 
+bool	xml_fileReader::isFileInput	() {
+	return true;
+}
+

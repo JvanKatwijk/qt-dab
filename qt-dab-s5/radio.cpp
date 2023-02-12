@@ -4913,6 +4913,9 @@ void	RadioInterface::start_etiHandler () {
 
 void	RadioInterface::handle_eti_activeSelector (int k) {
 bool setting	= configWidget. eti_activeSelector	-> isChecked ();
+	if (inputDevice == nullptr)
+	   return;
+
 	if (setting) {
 	   stopScanning (false);	
 	   disconnect (scanButton, SIGNAL (clicked ()),
@@ -4920,6 +4923,8 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   connect (scanButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_etiHandler ()));
 	   scanButton	-> setText ("eti");
+	   if (inputDevice -> isFileInput ())	// restore the button' visibility
+	      scanButton -> show ();
 	   return;
 	}
 //	otherwise, disconnect the eti handling and reconnect scan
@@ -4930,5 +4935,7 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	connect (scanButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_scanButton ()));
 	scanButton      -> setText ("scan");
+	if (inputDevice -> isFileInput ())	// hide the button now
+	   scanButton -> hide ();
 }
 

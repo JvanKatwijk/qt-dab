@@ -49,6 +49,7 @@ virtual		void	hide		();
 virtual		void	show		();
 virtual		bool	isHidden	();
 virtual		QString deviceName	();
+virtual		bool	isFileInput	();
 //
 protected:
 		int32_t	lastFrequency;

@@ -72,3 +72,7 @@ QString	deviceHandler::deviceName	() {
 	return "";
 }
 
+bool	deviceHandler::isFileInput	() {
+	return false;
+}
+

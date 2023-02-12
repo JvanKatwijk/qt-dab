@@ -51,6 +51,7 @@ public:
 	void			hide		();
 	void			show		();
 	bool			isHidden	();
+	bool			isFileInput	();
 private:
 	QFrame			myFrame;
 	std::atomic<bool>	running;
