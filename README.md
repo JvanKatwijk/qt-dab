@@ -108,7 +108,7 @@ on a separate widget is not needed.
 ![4.4](/qt-dab-4-config-widget.png?raw=true)
 
 The functionality of the versions is (almost) the same, version 5.1 has
-- most users will not use it - the possibility of generating "eti" files.
+(most users will not use it though) the possibility of generating "eti" files.
 If there is serious interest for adding the feature to the Qt-DAB-4 interface,
 then let me know.
 
