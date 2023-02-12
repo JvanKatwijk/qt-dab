@@ -109,6 +109,8 @@ int16_t	i;
 	   charSet       = b [last - 2] & 0x0F;
 	   uint8_t AcTy  = CI & 037;	// application type
 
+	   if (firstSegment)
+	      dynamicLabelText. clear ();
 	   switch (AcTy) {
 	      default:
 	         break;
@@ -121,7 +123,7 @@ int16_t	i;
 	            segmentNumber   = b [last - 2] >> 4;
 	            if (dynamicLabelText. size() > 0)
 	               showLabel (dynamicLabelText);
-	            dynamicLabelText. clear();
+	            dynamicLabelText. clear ();
 	         }
 	         still_to_go     = b [last - 1] & 0x0F;
 	         shortpadData. resize (0);

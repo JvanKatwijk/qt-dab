@@ -20,8 +20,8 @@
  *    along with dab-scanner; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__CONTENT_TABLE__
-#define	__CONTENT_TABLE__
+#ifndef	__CONTENT_TABLE_H
+#define	__CONTENT_TABLE_H
 
 #include	<QWidget>
 #include	<QObject>

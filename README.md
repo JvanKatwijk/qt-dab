@@ -1,4 +1,4 @@
-# Qt-DAB-4.4.2 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-5 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
 **Qt-DAB-4** and **Qt-DAB-5** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
@@ -78,26 +78,43 @@ Partly implemented:
   * Other bands than used for terrestrial broadcasting in Europe (like DAB over cable)
 
 :information_source: Note:
-While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, RSP Ia and RSP duo, the 3.0X support handles all SDRplay RSP's. It is recommended to use the 3.0X support library.
+While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, RSP Ia and RSP duo, the 3.0X support handles all SDRplay RSP's. It is recommended to use the 3.0X support library. Note further that when - on Windows - a 3.10 (or higher) library is installed (e.g. by installing SDRuno), the 2.13 library is not reachable.
 
 
-qt-dab-4 and qt-dab-5, same functionality, different GUI
+qt-dab-4 and qt-dab-5, (almost) same functionality, different GUI
 =================================================================
 
-Next to **Qt-DAB-4** a version with a different GUI is built, **Qt-DAB-5**. While the naming suggests Qt-DAB-5 being a successor, the two versions share all sources for processing the data, and differ only in their appearance.
+Qt-DAB is in two versions, a version 4 and a version 5.
 
-The basic idea was to limit the number of controls on the main widget and shift everything, not needed for simple interaction to the configuration widget (which is now called configuration and control)
+The basic idea behing Qt-5 is to limit the number of controls on the main widget and shift everything, not needed for simple interaction to the configuration widget (which is now called configuration and control)
+Both versions of Qt-DAB are built from (mostly) the same set of sources,
+the GUI and the software interfacing the GUI to the rest of the program.
+
 
 **dabMini**, i.e. the small version for just listening to a service, is obsolete, the source can be found as subdirectory in the "obsolete" directory.
 
-![4.4](/qt-dab-4.png?raw=true)
-![4.5](/qt-dab-5.png?raw=true)
+![5.1](/qt-dab-5-main-widget.png?raw=true)
+![4.4](/qt-dab-4-main-widget.png?raw=true)
 
+Of course, the configuration and control widget in Qt-DAB-5 is larger
+and contains more settings than the configuration and control widget
+for Qt-DAB-4.
 
+Since the Qt-DAB-5 main widget shows the station labels (if any),
+the option - available in Qt-DAB-4 - for displaying the station labels
+on a separate widget is not needed.
 
+![5.1](/qt-dab-5-config-widget.png?raw=true)
+![4.4](/qt-dab-4-config-widget.png?raw=true)
 
+The functionality of the versions is (almost) the same, version 5.1 has
+- most users will not use it - the possibility of generating "eti" files.
+If there is serious interest for adding the feature to the Qt-DAB-4 interface,
+then let me know.
+
+----------------------------------------------------------------------
 A note on showing a map
-=================================================================
+---------------------------------------------------------------------
 
 ![4.4](/qt-dab-maps.png?raw=true)
 

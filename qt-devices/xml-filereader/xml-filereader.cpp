@@ -151,7 +151,9 @@ int	xml_fileReader::getVFOFrequency	() {
 void	xml_fileReader::handle_continuousButton () {
 	if (theReader == nullptr)
 	   return;
-	theReader -> handle_continuousButton ();
+	bool cont = theReader -> handle_continuousButton ();
+	continuousButton -> setText (cont ? "continuous ON" :
+	                                    "continuous off");
 }
 
 void	xml_fileReader::show	() {

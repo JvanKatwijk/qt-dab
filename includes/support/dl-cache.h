@@ -1,14 +1,14 @@
 
-#ifndef	__DL_CACHE__
-#define	__DL_CACHE__
+#ifndef	__DL_CACHE_H
+#define	__DL_CACHE_H
 
 #include	<QString>
 #include	<vector>
 class	dlCache {
 private:
-std::vector<QString> cache;
-int	p;
-int	size;
+   std::vector<QString> cache;
+   int	p;
+   int	size;
 #define	CACHE_SIZE	16
 #define CACHE_MASK	(CACHE_SIZE - 1)
 public:

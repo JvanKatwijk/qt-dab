@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef	__XML_READER__
-#define	__XML_READER__
+#ifndef	__XML_READER_H
+#define	__XML_READER_H
 
 #include	<QThread>
 #include	<QMessageBox>
@@ -46,7 +46,7 @@ public:
 	                            RingBuffer<std::complex<float>> *b);
 			~xml_Reader	();
 	void		stopReader	();
-	void		handle_continuousButton	();
+	bool		handle_continuousButton	();
 private:
 	std::atomic<bool>	continuous;
 	FILE		*file;

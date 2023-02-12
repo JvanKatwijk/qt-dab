@@ -442,9 +442,10 @@ QString suggestedFileName;
 
 	suggestedFileName	= saveDir + channelName + "-" +
 	                                 ensemble. trimmed () + "-" + theTime + ".eti";
-	for (int i = 0; i < suggestedFileName. length (); i ++)
+	for (int i = 0; i < suggestedFileName. length (); i ++) 
 	   if (!isValid (suggestedFileName. at (i)))
-	      theTime. replace (i, 1, '-');
+	      suggestedFileName. replace (i, 1, '-');
+	
 	suggestedFileName	= QDir::toNativeSeparators (suggestedFileName);
 
 	QString fileName = QFileDialog::

@@ -101,9 +101,9 @@ int	samplesRead	= 0;
 uint64_t	nextStop;
 int	startPoint	= filePointer;
 
+	running. store (true);
 	fseek (file, filePointer, SEEK_SET);
 	nextStop = currentTime ();
-	running. store (true);
 	for (int blocks = 0; blocks < fd -> nrBlocks; blocks ++) {
 	   samplesToRead	= compute_nrSamples (file, blocks);
 	   fprintf (stderr, "samples to read %d\n", samplesToRead);
@@ -145,10 +145,9 @@ int	startPoint	= filePointer;
 	}
 }
 
-void	xml_Reader::handle_continuousButton  () {
+bool	xml_Reader::handle_continuousButton  () {
 	continuous. store (!continuous. load ());
-	fprintf (stderr, "continuous is %s\n",
-	              continuous.load () ? "on" : "off");
+	return continuous. load ();
 }
 
 int	xml_Reader::compute_nrSamples (FILE *f, int blockNumber) {
