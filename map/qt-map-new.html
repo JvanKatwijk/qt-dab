@@ -51,11 +51,11 @@
 	   var Transmitters = {};
 	   var transmitterIndex	= 0;
 
-	   const MAP_RESET	= 0;
-	   const MAP_FRAME	= 1;
-	   const MAP_MAX_TRANS	= 2;
-	   const MAP_NORM_TRANS = 4;
-	   const MAP_CURRENT 	= 8;
+	   const MAP_RESET		= 0;
+	   const MAP_FRAME		= 1;
+	   const MAP_MAX_TRANS		= 2;
+	   const MAP_NORM_TRANS 	= 4;
+	   const MAP_CURRENT 		= 8;
 
 	   const ICON_OTHERFRAME	= 0;
 	   const ICON_FURTHEST		= 1;
@@ -168,7 +168,7 @@
 	   function showTransmitterAtSideBar (target, firstOne) {
 	      let newChannel = '<span style=\"font-weight:bold;font-size:120%\">' + target. channel + '</span>';
 	      let coords = '<span style=\"font-style: italic;\">' +
-	                          target. lat + '--' +
+	                          target. lat + ' ' +
 	                          target. lon +  '</span>';
 	      let xx = document. getElementById ('selinfo');
 	      if (firstOne)

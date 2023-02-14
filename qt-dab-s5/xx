@@ -1,0 +1,4478 @@
+(null)
+(null)
+ALSA lib pcm_dmix.c:999:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm.c:2664:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2664:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2664:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm_route.c:877:(find_matching_chmap) Found no matching channel map
+ALSA lib pcm_dmix.c:999:(snd_pcm_dmix_open) unable to open slave
+Suggested size for outputbuffer = 0
+stream opened
+stream started
+tiiFile is /home/jan/.txdata.tii
+fileLength = 876085248
+Period = 8000
+channel reset: all services will be stopped
+presetName NPO Radio 2      not found
+Starting hidden service BR EPG          
+going to open BR EPG          
+we have now 1 backends running
+Handling complete , type 7937
+Handling complete , type 7937
+Handling complete , type 9473
+Handling complete , type 14593
+Handling complete , type 7937
+Handling complete , type 7937
+Handling complete , type 10753
+Handling complete , type 2305
+Handling complete w20220330dd313c0.EHB, type 1793
+epg module is starting to process input for d313
+Length for 2 is 713
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 642
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 52
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 19
+encountering node 1a
+processs_shortName with length 17
+encountering node 1
+encountering node 1c
+in process_program with length 103
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 42
+encountering node 1a
+processs_shortName with length 40
+encountering node 1
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 61
+encountering node 81
+encountering node 11
+process_mediumName with length 8
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 29
+encountering node 1a
+processs_shortName with length 27
+encountering node 1
+encountering node 1c
+in process_program with length 75
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 22
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+encountering node 1c
+in process_program with length 108
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 30
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 58
+encountering node 81
+encountering node 11
+process_mediumName with length 12
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 22
+encountering node 1a
+processs_shortName with length 20
+encountering node 1
+encountering node 1c
+in process_program with length 70
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220330dd313c0.EHB
+Handling complete w20220330dd317c0.EHB, type 1793
+epg module is starting to process input for d317
+Length for 2 is 1010
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 916
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 225
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 23
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 235
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 32
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 168
+encountering node 1a
+processs_shortName with length 166
+encountering node 1
+encountering node 1c
+in process_program with length 226
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 24
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220330dd317c0.EHB
+Handling complete w20220330ddf15c0.EHB, type 1793
+epg module is starting to process input for df15
+Length for 2 is 741
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 694
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 90
+encountering node 81
+encountering node 11
+process_mediumName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 51
+encountering node 1a
+processs_shortName with length 49
+encountering node 1
+encountering node 1c
+in process_program with length 33
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 202
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 4
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+encountering node 1c
+in process_program with length 131
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 51
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 45
+encountering node 1a
+processs_shortName with length 43
+encountering node 1
+encountering node 14
+process_genre with length 4
+encountering node 80
+encountering node 1c
+in process_program with length 202
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 4
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220330ddf15c0.EHB
+Handling complete w20220331ddf15c0.EHB, type 1793
+epg module is starting to process input for df15
+Length for 2 is 442
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 414
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 55
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 11
+encountering node 1a
+processs_shortName with length 9
+encountering node 1
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 90
+encountering node 81
+encountering node 11
+process_mediumName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 51
+encountering node 1a
+processs_shortName with length 49
+encountering node 1
+encountering node 1c
+in process_program with length 33
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 202
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 4
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220331ddf15c0.EHB
+Handling complete w20220401dd313c0.EHB, type 1793
+epg module is starting to process input for d313
+Length for 2 is 714
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 643
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 56
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 103
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 42
+encountering node 1a
+processs_shortName with length 40
+encountering node 1
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 61
+encountering node 81
+encountering node 11
+process_mediumName with length 8
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 29
+encountering node 1a
+processs_shortName with length 27
+encountering node 1
+encountering node 1c
+in process_program with length 75
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 22
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+encountering node 1c
+in process_program with length 118
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 40
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 56
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 21
+encountering node 1a
+processs_shortName with length 19
+encountering node 1
+encountering node 1c
+in process_program with length 59
+encountering node 81
+encountering node 11
+process_mediumName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 21
+encountering node 1a
+processs_shortName with length 19
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220401dd313c0.EHB
+Handling complete w20220401dd314c0.EHB, type 1793
+epg module is starting to process input for d314
+Length for 2 is 2798
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 2555
+encountering node 24
+in process_scope with length 34
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 88
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 24
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 22
+encountering node 1a
+processs_shortName with length 20
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 234
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 235
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 26
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 236
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 28
+encountering node 1a
+processs_shortName with length 26
+encountering node 1
+encountering node 1c
+in process_program with length 31
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 79
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 26
+encountering node 1a
+processs_shortName with length 24
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 93
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 40
+encountering node 1a
+processs_shortName with length 38
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 217
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 168
+encountering node 1a
+processs_shortName with length 166
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 78
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 28
+encountering node 1a
+processs_shortName with length 26
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 84
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 30
+encountering node 1a
+processs_shortName with length 28
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 99
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 44
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 26
+encountering node 1a
+processs_shortName with length 24
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 164
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 113
+encountering node 1a
+processs_shortName with length 111
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 80
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 31
+encountering node 1a
+processs_shortName with length 29
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220401dd314c0.EHB
+Handling complete w20220401dd316c0.EHB, type 1793
+epg module is starting to process input for d316
+Length for 2 is 1328
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1255
+encountering node 24
+in process_scope with length 44
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 27
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 193
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 140
+encountering node 1a
+processs_shortName with length 138
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 166
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 114
+encountering node 1a
+processs_shortName with length 112
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 81
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 47
+encountering node 1a
+processs_shortName with length 45
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 147
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 90
+encountering node 1a
+processs_shortName with length 88
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 91
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 39
+encountering node 1a
+processs_shortName with length 37
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 27
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220401dd316c0.EHB
+Handling complete w20220401dd317c0.EHB, type 1793
+epg module is starting to process input for d317
+Length for 2 is 1010
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 916
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 225
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 23
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 235
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 32
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 168
+encountering node 1a
+processs_shortName with length 166
+encountering node 1
+encountering node 1c
+in process_program with length 226
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 12
+process_longName with length 24
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220401dd317c0.EHB
+Handling complete w20220401ddf15c0.EHB, type 1793
+epg module is starting to process input for df15
+Length for 2 is 442
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 414
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 55
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 11
+encountering node 1a
+processs_shortName with length 9
+encountering node 1
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 90
+encountering node 81
+encountering node 11
+process_mediumName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 51
+encountering node 1a
+processs_shortName with length 49
+encountering node 1
+encountering node 1c
+in process_program with length 33
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 202
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 4
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220401ddf15c0.EHB
+Handling complete w20220402dd317c0.EHB, type 1793
+epg module is starting to process input for d317
+Length for 2 is 707
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 654
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 226
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 20
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 200
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220402dd317c0.EHB
+Handling complete w20220402dd811c0.EHB, type 1793
+epg module is starting to process input for d811
+Length for 2 is 1417
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1273
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 41
+encountering node 1a
+processs_shortName with length 39
+encountering node 1
+encountering node 1c
+in process_program with length 196
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 148
+encountering node 1a
+processs_shortName with length 146
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 53
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 81
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 14
+process_genre with length 4
+encountering node 80
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 87
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 22
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 14
+process_genre with length 4
+encountering node 80
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 50
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 92
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 36
+encountering node 1a
+processs_shortName with length 34
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220402dd811c0.EHB
+Handling complete w20220403dd316c0.EHB, type 1793
+epg module is starting to process input for d316
+Length for 2 is 1326
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1239
+encountering node 24
+in process_scope with length 44
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 106
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 32
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 32
+encountering node 1a
+processs_shortName with length 30
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 36
+encountering node 1a
+processs_shortName with length 34
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 70
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 10
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 31
+encountering node 1a
+processs_shortName with length 29
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 108
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 62
+encountering node 1a
+processs_shortName with length 60
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 87
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 47
+encountering node 1a
+processs_shortName with length 45
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 187
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 30
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 114
+encountering node 1a
+processs_shortName with length 112
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 38
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 106
+encountering node 81
+encountering node 11
+process_mediumName with length 16
+encountering node 1
+encountering node 12
+process_longName with length 32
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 32
+encountering node 1a
+processs_shortName with length 30
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220403dd316c0.EHB
+Handling complete w20220403dd317c0.EHB, type 1793
+epg module is starting to process input for d317
+Length for 2 is 700
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 647
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 219
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 169
+encountering node 1a
+processs_shortName with length 167
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+encountering node 1c
+in process_program with length 200
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 167
+encountering node 1a
+processs_shortName with length 165
+encountering node 1
+encountering node 1c
+in process_program with length 64
+encountering node 81
+encountering node 11
+process_mediumName with length 5
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 35
+encountering node 1a
+processs_shortName with length 33
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220403dd317c0.EHB
+eof gehad
+Handling complete w20220403dd811c0.EHB, type 1793
+epg module is starting to process input for d811
+Length for 2 is 1897
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1735
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 41
+encountering node 1a
+processs_shortName with length 39
+encountering node 1
+encountering node 1c
+in process_program with length 92
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 36
+encountering node 1a
+processs_shortName with length 34
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 139
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 91
+encountering node 1a
+processs_shortName with length 89
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 84
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 22
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 79
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 11
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 39
+encountering node 1a
+processs_shortName with length 37
+encountering node 1
+encountering node 1c
+in process_program with length 80
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 10
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 41
+encountering node 1a
+processs_shortName with length 39
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 53
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 75
+encountering node 81
+encountering node 11
+process_mediumName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 32
+encountering node 1a
+processs_shortName with length 30
+encountering node 1
+encountering node 1c
+in process_program with length 79
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 42
+encountering node 1a
+processs_shortName with length 40
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 21
+encountering node 1a
+processs_shortName with length 19
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 75
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 51
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 92
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 39
+encountering node 1a
+processs_shortName with length 37
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 120
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 72
+encountering node 1a
+processs_shortName with length 70
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220403dd811c0.EHB
+Handling complete w20220404dd313c0.EHB, type 1793
+epg module is starting to process input for d313
+Length for 2 is 712
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 641
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 55
+encountering node 81
+encountering node 11
+process_mediumName with length 9
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 22
+encountering node 1a
+processs_shortName with length 20
+encountering node 1
+encountering node 1c
+in process_program with length 103
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 42
+encountering node 1a
+processs_shortName with length 40
+encountering node 1
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 55
+encountering node 81
+encountering node 11
+process_mediumName with length 8
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 23
+encountering node 1a
+processs_shortName with length 21
+encountering node 1
+encountering node 1c
+in process_program with length 71
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 22
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 116
+encountering node 81
+encountering node 11
+process_mediumName with length 17
+encountering node 1
+encountering node 12
+process_longName with length 30
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 43
+encountering node 1a
+processs_shortName with length 41
+encountering node 1
+encountering node 1c
+in process_program with length 56
+encountering node 81
+encountering node 11
+process_mediumName with length 12
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 70
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220404dd313c0.EHB
+Handling complete w20220404dd316c0.EHB, type 1793
+epg module is starting to process input for d316
+Length for 2 is 1328
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1255
+encountering node 24
+in process_scope with length 44
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 27
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 193
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 140
+encountering node 1a
+processs_shortName with length 138
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 166
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 114
+encountering node 1a
+processs_shortName with length 112
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 81
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 47
+encountering node 1a
+processs_shortName with length 45
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 147
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 21
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 90
+encountering node 1a
+processs_shortName with length 88
+encountering node 1
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 91
+encountering node 81
+encountering node 11
+process_mediumName with length 10
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 39
+encountering node 1a
+processs_shortName with length 37
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 89
+encountering node 81
+encountering node 11
+process_mediumName with length 11
+encountering node 1
+encountering node 12
+process_longName with length 27
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220404dd316c0.EHB
+Handling complete w20220404dd811c0.EHB, type 1793
+epg module is starting to process input for d811
+Length for 2 is 1775
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 1563
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 76
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 41
+encountering node 1a
+processs_shortName with length 39
+encountering node 1
+encountering node 1c
+in process_program with length 165
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 117
+encountering node 1a
+processs_shortName with length 115
+encountering node 1
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 73
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 19
+encountering node 1a
+processs_shortName with length 17
+encountering node 1
+encountering node 1c
+in process_program with length 69
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 31
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 77
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 98
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 20
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 39
+encountering node 1a
+processs_shortName with length 37
+encountering node 1
+encountering node 1c
+in process_program with length 69
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 31
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 83
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+encountering node 1c
+in process_program with length 69
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 31
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 80
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 23
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 18
+encountering node 1a
+processs_shortName with length 16
+encountering node 1
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 121
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 68
+encountering node 1a
+processs_shortName with length 66
+encountering node 1
+encountering node 1c
+in process_program with length 57
+encountering node 81
+encountering node 11
+process_mediumName with length 7
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 120
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 72
+encountering node 1a
+processs_shortName with length 70
+encountering node 1
+filename = /tmp/Qt-DAB-files/w20220404dd811c0.EHB
+Handling complete w20220404ddf16c0.EHB, type 1793
+epg module is starting to process input for df16
+Length for 2 is 2426
+encountering node 4
+encountering node 6
+encountering node 21
+in process schedule with length 2174
+encountering node 24
+in process_scope with length 24
+encountering node 80
+encountering node 81
+encountering node 25
+in process_servicescope with length 8
+encountering node 80
+encountering node 1c
+in process_program with length 40
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 6
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 92
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 34
+encountering node 1a
+processs_shortName with length 32
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 70
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 33
+encountering node 1a
+processs_shortName with length 31
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 67
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 30
+encountering node 1a
+processs_shortName with length 28
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 91
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 32
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 20
+encountering node 1a
+processs_shortName with length 18
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 118
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 23
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 56
+encountering node 1a
+processs_shortName with length 54
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 85
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 14
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 32
+encountering node 1a
+processs_shortName with length 30
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 88
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 86
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 16
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 31
+encountering node 1a
+processs_shortName with length 29
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 91
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 18
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 34
+encountering node 1a
+processs_shortName with length 32
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 96
+encountering node 81
+encountering node 11
+process_mediumName with length 14
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 31
+encountering node 1a
+processs_shortName with length 29
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 88
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 30
+encountering node 1a
+processs_shortName with length 28
+encountering node 1
+encountering node 1c
+in process_program with length 74
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 37
+encountering node 1a
+processs_shortName with length 35
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 83
+encountering node 81
+encountering node 11
+process_mediumName with length 12
+encountering node 1
+encountering node 12
+process_longName with length 20
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 25
+encountering node 1a
+processs_shortName with length 23
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 87
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 17
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 31
+encountering node 1a
+processs_shortName with length 29
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 88
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 25
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 13
+in process_mediaDescription with length 24
+encountering node 1a
+processs_shortName with length 22
+encountering node 1
+encountering node 1c
+in process_program with length 49
+encountering node 81
+encountering node 11
+process_mediumName with length 3
+encountering node 1
+encountering node 12
+process_longName with length 15
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+encountering node 14
+process_genre with length 5
+encountering node 80
+encountering node 1c
+in process_program with length 56
+encountering node 81
+encountering node 11
+process_mediumName with length 13
+encountering node 1
+encountering node 12
+process_longName with length 19
+encountering node 1
+encountering node 19
+in process_location with length 13
+encountering node 2c
+process_time with length 11
+encountering node 80
+encountering node 81
+filename = /tmp/Qt-DAB-files/w20220404ddf16c0.EHB
+going to open BR Heimat       
+we have now 2 backends running
+taak voor replay eindigt hier
+.. end the radio silences
+back in main program
+radioInterface is deleted
+dumpfile /home/jan/.qt-dab-schedule.ini is opened good
+dumpFile will be closed

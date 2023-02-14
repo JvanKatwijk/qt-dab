@@ -1056,11 +1056,13 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-//	fprintf (stderr, "handle_MOT: type %x (%x %x), name %s dir = %d\n",
-//	                           contentType,
-//	                           getContentBaseType ((MOTContentType)contentType),
-//	                           getContentSubType ((MOTContentType)contentType),
-//	                           objectName. toUtf8 (). data (), dirElement);
+#ifdef	XXX
+	fprintf (stderr, "handle_MOT: type %x (%x %x), name %s dir = %d\n",
+	                           contentType,
+	                           getContentBaseType ((MOTContentType)contentType),
+	                           getContentSubType ((MOTContentType)contentType),
+	                           objectName. toUtf8 (). data (), dirElement);
+#endif
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;

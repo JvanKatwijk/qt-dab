@@ -26,6 +26,7 @@
 #include	"epg-decoder.h"
 #include	<QDate>
 
+//#define	 __EPG_TRACE__
 #define	EPG_TAG			0X02
 #define	SERVICE_TAG		0X03
 //
