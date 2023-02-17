@@ -65,7 +65,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"5.1"
+#define	CURRENT_VERSION	"5.2"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -93,11 +93,15 @@ public:
 	QString		name;
 	uint32_t	SId;
 	uint16_t	subChId;
+	bool		isAudio;
+	int16_t		programType;
+        QString		channel;        // just for presets
+
 };
 //	order by id order by name
 #define ID_BASED        1
-#define ALPHA_BASED     0
 #define	SUBCH_BASED	2
+#define	ALPHA_BASED	3
 
 //
 //	40 up shows good results

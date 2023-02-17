@@ -50,6 +50,7 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
+#include	"audio-display.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -301,11 +302,11 @@ uint8_t	dabBand;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
-//	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (&dataDisplay);
 	techData. timeTable_button -> hide ();
 
-//	configDisplay	= new QFrame (nullptr);
+	myAudioDisplay	= new audioDisplay (this, techData. audio,
+	                                    dabSettings);
 	configWidget. setupUi (&configDisplay);
 //
 //	Now we can set the checkbox as saved in the settings
@@ -517,8 +518,6 @@ uint8_t	dabBand;
 	QPalette p	= configWidget. ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::red);
 	configWidget. ficError_display		-> setPalette (p);
-	techData. stereoLabel		->
-	                   setStyleSheet ("QLabel {background-color : red}");
 	p. setColor (QPalette::Highlight, Qt::green);
 	techData. frameError_display	-> setPalette (p);
 	techData. rsError_display	-> setPalette (p);
@@ -540,9 +539,6 @@ uint8_t	dabBand;
 	total_fics		= 0;
 //	syncedLabel		->
 //	        setStyleSheet ("QLabel {background-color : red; color: white}");
-	techData. stereoLabel		->
-	        setStyleSheet ("QLabel {background-color : red}");
-//
 	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 	my_presetHandler. loadPresets (presetFile, presetSelector);
@@ -1056,13 +1052,11 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  int contentType, bool dirElement) {
 QString realName;
 
-#ifdef	XXX
-	fprintf (stderr, "handle_MOT: type %x (%x %x), name %s dir = %d\n",
-	                           contentType,
-	                           getContentBaseType ((MOTContentType)contentType),
-	                           getContentSubType ((MOTContentType)contentType),
-	                           objectName. toUtf8 (). data (), dirElement);
-#endif
+//	fprintf (stderr, "handle_MOT: type %x (%x %x), name %s dir = %d\n",
+//	                           contentType,
+//	                           getContentBaseType ((MOTContentType)contentType),
+//	                           getContentSubType ((MOTContentType)contentType),
+//	                           objectName. toUtf8 (). data (), dirElement);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -1388,6 +1382,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	      if (streamerOut != nullptr)
 	         streamerOut	-> audioOut (vec, amount, rate);
 #endif
+	      myAudioDisplay -> createSpectrum (vec, amount, rate);
 	      if (!muteTimer. isActive ())
 	         soundOut	-> audioOut (vec, amount, rate);
 	   }
@@ -1431,16 +1426,19 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor -> stop ();
+	delete myAudioDisplay;
 	if (my_contentTable != nullptr) {
 	   my_contentTable -> clearTable ();
 	   my_contentTable -> hide ();
 	   delete my_contentTable;
 	}
+
 	if (my_scanTable != nullptr) {
 	   my_scanTable	-> clearTable ();
 	   my_scanTable	-> hide ();
 	   delete my_scanTable;
 	}
+
 	my_presetHandler. savePresets (presetSelector);
 	theBand. saveSettings	();
 	stop_frameDumping	();
@@ -2121,10 +2119,10 @@ void	RadioInterface::setStereo	(bool b) {
 	if (stereoSetting == b)
 	   return;
 	
-	techData. stereoLabel	-> setStyleSheet (b ?
+	stereoLabel	-> setStyleSheet (b ?
 	   	         "QLabel {background-color: green; color : white}":
 	   	         "QLabel {background-color: red; color : white}");
-	techData. stereoLabel	-> setText (b ? "stereo" : "mono");
+	stereoLabel	-> setText (b ? "stereo" : "mono");
 	stereoSetting = b;
 }
 //
@@ -3214,10 +3212,12 @@ void	RadioInterface::cleanScreen	() {
 	dynamicLabel			-> setText ("");
 //	distanceLabel			-> setText ("");
 
-	new_presetIndex (0);
-	techData. stereoLabel	-> setStyleSheet (
+	stereoLabel	-> setStyleSheet (
 	   	         "QLabel {background-color: red; color : black}");
-	techData. stereoLabel	-> setText ("");
+	stereoLabel	-> setText ("");
+	programTypeLabel -> setText ("");
+
+	new_presetIndex (0);
 	stereoSetting			= false;
 	techData. rsCorrections		-> display (0);
 	techData. frameError_display	-> setValue (0);
@@ -3231,7 +3231,6 @@ void	RadioInterface::cleanScreen	() {
 	techData. uepField		-> setText (QString (""));
 	techData. ASCTy			-> setText (QString (""));
 	techData. language		-> setText (QString (""));
-	techData. programType		-> setText (QString (""));
 	techData. motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 	setStereo	(false);
@@ -3268,6 +3267,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	}
 //	activate sound
 	soundOut -> restart ();
+	programTypeLabel ->   setText (getProgramType (ad -> programType));
 //	show service related data
 	techData. programName		-> setText (ad -> serviceName);
 	techData. serviceIdDisplay	-> display (ad -> SId);
@@ -3293,10 +3293,6 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	                                              ad -> protLevel));
 	techData. language ->
 	        setText (getLanguage (ad -> language));
-	techData. programType -> 
-	   setText (getProgramType (ad -> programType));
-//	   setText (the_textMapper.
-//	               get_programm_type_string (ad -> programType));
 	if (ad -> fmFrequency == -1) {
 	   techData. fmFrequency	-> hide ();
 	   techData. fmLabel		-> hide	();

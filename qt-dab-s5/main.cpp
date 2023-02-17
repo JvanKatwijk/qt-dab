@@ -76,7 +76,7 @@ QString fileName;
 	return fileName;
 }
 
-void    setTranslator (QString Language);
+void    setTranslator (QTranslator *, QString Language);
 
 int     main (int argc, char **argv) {
 QString initFileName = fullPathfor (QString (DEFAULT_INI));
@@ -93,6 +93,7 @@ bool	error_report		= false;
 int	fmFrequency		= 110000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
 
+QTranslator	theTranslator;
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
 	QCoreApplication::setApplicationName ("qt-dab");
@@ -153,7 +154,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 //	setting the language
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
-	setTranslator (locale);
+	setTranslator (&theTranslator, locale);
 	a. setWindowIcon (QIcon ("./qt-dab-5.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
@@ -181,20 +182,19 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	return 1;
 }
 
-void	setTranslator (QString Language) {
-QTranslator *Translator = new QTranslator;
+void	setTranslator (QTranslator *theTranslator, QString Language) {
 
 //	German is special (as always)
 	if ((Language == "de_AT") || (Language ==  "de_CH"))
 	   Language = "de_DE";
 //
 //	what about Dutch?
-	bool TranslatorLoaded =
-	             Translator -> load (QString(":/i18n/") + Language);
+	bool translatorLoaded =
+	             theTranslator -> load (QString(":/i18n/") + Language);
 	qDebug() << "main:" <<  "Set language" << Language;
-	QCoreApplication::installTranslator (Translator);
+	QCoreApplication::installTranslator (theTranslator);
 
-	if (!TranslatorLoaded) {
+	if (!translatorLoaded) {
 	   qDebug() << "main:" <<  "Error while loading language specifics" << Language << "use English \"en_GB\" instead";
 	   Language = "en_GB";
 	}

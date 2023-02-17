@@ -194,6 +194,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
+	   ../includes/scopes-qwt6/audio-display.h \
 	   ../viewers/spectrum-viewer/spectrum-viewer.h \
 	   ../viewers/correlation-viewer/correlation-viewer.h \
 	   ../viewers/tii-viewer/tii-viewer.h \
@@ -298,6 +299,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
+	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/correlation-viewer/correlation-viewer.cpp \
 	   ../viewers/tii-viewer/tii-viewer.cpp \
@@ -315,7 +317,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-5.1
+TARGET		= qt-dab-5.2
 exists  {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -415,7 +417,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-5.1
+#	TARGET		= qt-dab64-5.2
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -435,7 +437,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-5.1
+	TARGET		= qt-dab32-5.2
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

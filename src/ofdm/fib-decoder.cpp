@@ -678,7 +678,6 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   if (serviceIndex == -1)
 	      continue;
 
-//	   fprintf (stderr, "appTYpe = %x\n", appType);
 	   int compIndex =
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {
@@ -1119,6 +1118,8 @@ int	serviceIndex	= findService (SId);
 	if (serviceIndex == -1)
 	   return;
 
+	if (ensemble -> services [serviceIndex]. programType == 0)
+	   return;
 	if (!base -> subChannels [subChId]. inUse)
 	   return;
 
@@ -1149,9 +1150,8 @@ int	serviceIndex	= findService (SId);
 	   base	-> serviceComps [firstFree]. ASCTy		= ASCTy;
 	   base	-> serviceComps [firstFree]. inUse		= true;
 	   ensemble -> services [serviceIndex]. SCIds		= 0;
-	   if (showFlag) {
-	      addtoEnsemble (dataName, SId);
-	   }
+
+	   addtoEnsemble (dataName, SId);
 	}
 	ensemble -> services [serviceIndex]. is_shown	= true;
 }
