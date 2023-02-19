@@ -50,7 +50,7 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
-#include	"audio-display.h"
+#include	"techdata.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -231,12 +231,12 @@ uint8_t convert (QString s) {
 	                                        my_snrViewer (this, Si),
 	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
-	                                        dataDisplay (nullptr),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
 	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
-	                                        theScheduler (this, schedule) {
+	                                        theScheduler (this, schedule),
+	                                        theTechData (16 * 32768) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -302,11 +302,8 @@ uint8_t	dabBand;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
-	techData. setupUi (&dataDisplay);
-	techData. timeTable_button -> hide ();
+	theTechWindow	= new techData (this, dabSettings, &theTechData);
 
-	myAudioDisplay	= new audioDisplay (this, techData. audio,
-	                                    dabSettings);
 	configWidget. setupUi (&configDisplay);
 //
 //	Now we can set the checkbox as saved in the settings
@@ -408,7 +405,7 @@ uint8_t	dabBand;
 	         this, SLOT (handle_transmitterTags  (int)));
 
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
-	dataDisplay. hide ();
+	theTechWindow  -> hide ();
 	stillMuting		-> hide ();
 	serviceList. clear ();
 	model . clear ();
@@ -519,16 +516,6 @@ uint8_t	dabBand;
 	p. setColor (QPalette::Highlight, Qt::red);
 	configWidget. ficError_display		-> setPalette (p);
 	p. setColor (QPalette::Highlight, Qt::green);
-	techData. frameError_display	-> setPalette (p);
-	techData. rsError_display	-> setPalette (p);
-	techData. aacError_display	-> setPalette (p);
-	techData. rsError_display	-> hide();
-	techData. aacError_display	-> hide();
-	techData. motAvailable		-> 
-	                   setStyleSheet ("QLabel {background-color : red}");
-	techData. fmLabel		-> hide();
-	techData. fmFrequency		-> hide();
-//
 //
 	audioDumper		= nullptr;
 	rawDumper		= nullptr;
@@ -587,14 +574,8 @@ uint8_t	dabBand;
 	connect (nextServiceButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_nextServiceButton ()));
 
-	connect (techData. framedumpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_framedumpButton ()));
-	connect (techData. audiodumpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_audiodumpButton ()));
-	connect (techData. timeTable_button, SIGNAL (clicked ()),
+	connect (theTechWindow, SIGNAL (handle_timeTable ()),
 	         this, SLOT (handle_timeTable ()));
-//	connect (techData. muteButton, SIGNAL (rightClicked ()),
-//	         this, SLOT (color_muteButton ()));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
 	
@@ -834,14 +815,16 @@ bool	RadioInterface::doStart	() {
 //	It would have been helpful to have a function
 //	testing whether or not a connection exists, we need a kind
 //	of "reset"
-	disconnect (configWidget. deviceSelector, SIGNAL (activated (const QString &)),
+	disconnect (configWidget. deviceSelector,
+	                               SIGNAL (activated (const QString &)),
 	            this, SLOT (doStart (const QString &)));
-	disconnect (configWidget. deviceSelector, SIGNAL (activated (const QString &)),
+	disconnect (configWidget. deviceSelector,
+	                              SIGNAL (activated (const QString &)),
 	            this,  SLOT (newDevice (const QString &)));
-	connect (configWidget. deviceSelector, SIGNAL (activated (const QString &)),
+	connect (configWidget. deviceSelector,
+	                              SIGNAL (activated (const QString &)),
 	         this, SLOT (newDevice (const QString &)));
 //
-//	secondariesVector. resize (0);	
 	if (nextService. valid) {
 	   int switchDelay		=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
@@ -1382,7 +1365,8 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	      if (streamerOut != nullptr)
 	         streamerOut	-> audioOut (vec, amount, rate);
 #endif
-	      myAudioDisplay -> createSpectrum (vec, amount, rate);
+	      theTechData. putDataIntoBuffer (vec, amount);
+	      theTechWindow	-> audioDataAvailable (amount, rate);
 	      if (!muteTimer. isActive ())
 	         soundOut	-> audioOut (vec, amount, rate);
 	   }
@@ -1426,7 +1410,8 @@ void	RadioInterface::TerminateProcess () {
 #endif
 	if (my_dabProcessor != nullptr)
 	   my_dabProcessor -> stop ();
-	delete myAudioDisplay;
+	theTechWindow	-> hide ();
+	delete theTechWindow;
 	if (my_contentTable != nullptr) {
 	   my_contentTable -> clearTable ();
 	   my_contentTable -> hide ();
@@ -1448,7 +1433,6 @@ void	RadioInterface::TerminateProcess () {
 	theBand. hide		();
 	theScheduler. hide	();
 	configDisplay. hide	();
-	dataDisplay. hide	();
 	LOG ("terminating ", "");
 	usleep (1000);		// pending signals
 	if (logFile != nullptr)
@@ -1984,27 +1968,14 @@ char minuteString [3];
 void	RadioInterface::show_frameErrors (int s) {
 	if (!running. load ()) 
 	   return;
-	QPalette p      = techData. frameError_display -> palette();
-	if (100 - 4 * s < 80)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-
-	techData. frameError_display	-> setPalette (p);
-	techData. frameError_display	-> setValue (100 - 4 * s);
+	theTechWindow -> show_frameErrors (s);
 }
 //
 //	called from the MP4 decoder
 void	RadioInterface::show_rsErrors (int s) {
 	if (!running. load ())		// should not happen
 	   return;
-	QPalette p      = techData. rsError_display -> palette();
-	if (100 - 4 * s < 80)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-	techData. rsError_display	-> setPalette (p);
-	techData. rsError_display	-> setValue (100 - 4 * s);
+	theTechWindow	-> show_rsErrors (s);
 }
 //
 //	called from the aac decoder
@@ -2012,13 +1983,7 @@ void	RadioInterface::show_aacErrors (int s) {
 	if (!running. load ())
 	   return;
 
-	QPalette p      = techData. aacError_display -> palette();
-	if (100 - 4 * s < 80)
-	   p. setColor (QPalette::Highlight, Qt::red);
-	else
-	   p. setColor (QPalette::Highlight, Qt::green);
-	techData. aacError_display	-> setPalette (p);
-	techData. aacError_display	-> setValue (100 - 4 * s);
+	theTechWindow	-> show_aacErrors (s);
 }
 //
 //	called from the ficHandler
@@ -2049,10 +2014,7 @@ void	RadioInterface::show_ficSuccess (bool b) {
 void	RadioInterface::show_motHandling (bool b) {
 	if (!running. load () || !b)
 	   return;
-	techData. motAvailable -> 
-	            setStyleSheet (b ?
-	                   "QLabel {background-color : green; color: white}":
-	                   "QLabel {background-color : red; color : white}");
+	theTechWindow	-> show_motHandling (b);
 }
 	
 //	called from the dabProcessor
@@ -2327,7 +2289,7 @@ void	RadioInterface::show_rsCorrections	(int c) {
 	if (!running)
 	   return;
 
-	techData. rsCorrections	-> display (c);
+	theTechWindow -> show_rsCorrections (c);
 }
 //
 //	called from the DAB processor
@@ -2369,9 +2331,10 @@ void	RadioInterface::switchVisibility (QWidget *w) {
 void	RadioInterface::handle_detailButton	() {
 	if (!running. load ())
 	   return;
-	switchVisibility (&dataDisplay);
-	if (dataDisplay. isHidden ())
-	   my_timeTable -> hide ();
+	if (theTechWindow -> isHidden ())
+	   theTechWindow -> show ();
+	else
+	   theTechWindow -> hide ();
 }
 //
 //	Whenever the input device is a file, some functions,
@@ -2458,45 +2421,6 @@ void	RadioInterface::handle_sourcedumpButton () {
 	   start_sourceDumping ();
 }
 
-void	RadioInterface::stop_audioDumping	() {
-	if (audioDumper == nullptr)
-	   return;
-
-	soundOut	-> stopDumping();
-	sf_close (audioDumper);
-	audioDumper	= nullptr;
-	setButtonFont (techData. audiodumpButton, "audio dump", 10);
-}
-
-void	RadioInterface::start_audioDumping () {
-	audioDumper	=
-	      filenameFinder.
-	           findAudioDump_fileName  (serviceLabel -> text (), true);
-	if (audioDumper == nullptr)
-	   return;
-
-	setButtonFont (techData. audiodumpButton, "writing", 12);
-	soundOut	-> startDumping (audioDumper);
-}
-
-void	RadioInterface::scheduled_audioDumping () {
-	if (audioDumper != nullptr) {
-	   soundOut	-> stopDumping();
-	   sf_close (audioDumper);
-	   audioDumper	= nullptr;
-	   setButtonFont (techData. audiodumpButton, "audio dump", 10);
-	   return;
-	}
-	audioDumper	=
-	      filenameFinder.
-	            findAudioDump_fileName  (serviceLabel -> text (), false);
-	if (audioDumper == nullptr)
-	   return;
-
-	setButtonFont (techData. audiodumpButton, "writing", 12);
-	soundOut	-> startDumping (audioDumper);
-}
-
 void	RadioInterface::handle_audiodumpButton () {
 	if (!running. load () || scanning. load ())
 	   return;
@@ -2507,12 +2431,62 @@ void	RadioInterface::handle_audiodumpButton () {
 	   start_audioDumping ();
 }
 
+void	RadioInterface::stop_audioDumping	() {
+	if (audioDumper == nullptr)
+	   return;
+
+	soundOut	-> stopDumping();
+	sf_close (audioDumper);
+	audioDumper	= nullptr;
+	theTechWindow	-> audiodumpButton_text ("audio dump", 10);
+}
+
+void	RadioInterface::start_audioDumping () {
+	audioDumper	=
+	      filenameFinder.
+	           findAudioDump_fileName  (serviceLabel -> text (), true);
+	if (audioDumper == nullptr)
+	   return;
+
+	theTechWindow	-> audiodumpButton_text ("writing", 12);
+	soundOut	-> startDumping (audioDumper);
+}
+
+void	RadioInterface::scheduled_audioDumping () {
+	if (audioDumper != nullptr) {
+	   soundOut	-> stopDumping();
+	   sf_close (audioDumper);
+	   audioDumper	= nullptr;
+	   theTechWindow	-> audiodumpButton_text ("audio dump", 10);
+	   return;
+	}
+	audioDumper	=
+	      filenameFinder.
+	            findAudioDump_fileName  (serviceLabel -> text (), false);
+	if (audioDumper == nullptr)
+	   return;
+
+	theTechWindow	-> audiodumpButton_text ("writing", 12);
+	soundOut	-> startDumping (audioDumper);
+}
+
+void	RadioInterface::handle_framedumpButton () {
+	if (!running. load () || scanning. load ())
+	   return;
+
+	fprintf (stderr, "signal gehad\n");
+	if (frameDumper != nullptr) 
+	   stop_frameDumping ();
+	else
+	   start_frameDumping ();
+}
+
 void	RadioInterface::stop_frameDumping () {
 	if (frameDumper == nullptr)
 	   return;
 
 	fclose (frameDumper);
-	setButtonFont (techData. framedumpButton, "frame dump", 10);
+	theTechWindow ->  framedumpButton_text ("frame dump", 10);
 	frameDumper	= nullptr;
 }
 
@@ -2522,13 +2496,13 @@ void	RadioInterface::start_frameDumping () {
 	                                                              true);
 	if (frameDumper == nullptr)
 	   return;
-	setButtonFont (techData. framedumpButton, "recording", 12);
+	theTechWindow ->  framedumpButton_text ("recording", 12);
 }
 
 void	RadioInterface::scheduled_frameDumping (const QString &s) {
 	if (frameDumper != nullptr) {
 	   fclose (frameDumper);
-	   setButtonFont (techData. framedumpButton, "frame dump", 10);
+	   theTechWindow ->  framedumpButton_text ("frame dump", 10);
 	   frameDumper	= nullptr;
 	   return;
 	}
@@ -2537,18 +2511,11 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 	     filenameFinder. findFrameDump_fileName (s, false);
 	if (frameDumper == nullptr)
 	   return;
-	setButtonFont (techData. framedumpButton, "recording", 12);
+	theTechWindow ->  framedumpButton_text ("recording", 12);
 }
-
-void	RadioInterface::handle_framedumpButton () {
-	if (!running. load () || scanning. load ())
-	   return;
-
-	if (frameDumper != nullptr) 
-	   stop_frameDumping ();
-	else
-	   start_frameDumping ();
-}
+//----------------------------------------------------------------------
+//	End of section on dumping
+//----------------------------------------------------------------------
 //
 //	called from the mp4 handler, using a signal
 void    RadioInterface::newFrame        (int amount) {
@@ -2653,9 +2620,9 @@ void	RadioInterface::connectGUI	() {
 	connect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
 
-	connect (techData. audiodumpButton, SIGNAL (clicked ()),
+	connect (theTechWindow, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
-	connect (techData. framedumpButton, SIGNAL (clicked ()),
+	connect (theTechWindow, SIGNAL (handle_frameDumping ()),
 	         this, SLOT (handle_framedumpButton ()));
 	connect (muteButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_muteButton ()));
@@ -2719,9 +2686,9 @@ void	RadioInterface::disconnectGUI() {
 	disconnect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
 
-	disconnect (techData. audiodumpButton, SIGNAL (clicked ()),
+	disconnect (theTechWindow, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
-	disconnect (techData. framedumpButton, SIGNAL (clicked ()),
+	disconnect (theTechWindow, SIGNAL (handle_frameDumping ()),
 	         this, SLOT (handle_framedumpButton ()));
 	disconnect (muteButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_muteButton ()));
@@ -2841,7 +2808,6 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	            if (backgroundServices. at (i). serviceName ==
 	                                                      serviceName) {
-	               fprintf (stderr, "Hiero\n");
 	                my_dabProcessor -> stopService (ad. subchId,
 	                                                      BACK_GROUND);
 	                if (backgroundServices. at (i). fd != nullptr)
@@ -2919,38 +2885,41 @@ void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 
 ////////////////////////////////////////////////////////////////////////
 //
-//	preset selection, either from presets or from history
+//	selection, either direct, from presets,  from history or schedule
 ////////////////////////////////////////////////////////////////////////
 
-void    RadioInterface::handle_historySelect (const QString &s) {
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
-	localSelect (s);
+//
+//	Regular selection, straight for the service list
+void	RadioInterface::selectService (QModelIndex ind) {
+QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
+	localSelect (channel. channelName, currentProgram);
 }
-
+//
+//	selecting from the preset list
 void    RadioInterface::handle_presetSelector (const QString &s) {
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
 	if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
 	   return;
-	fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
 	localSelect (s);
 }
-
+//
+//	selecting from the history list, which is essential
+//	the same as handling form the preset list
+void    RadioInterface::handle_historySelect (const QString &s) {
+	localSelect (s);
+}
+//
+//	selecting from a content description
 void	RadioInterface::handle_contentSelector (const QString &s) {
-	if (!running. load ())
-	   return;
-
-	presetTimer. stop ();
-	fprintf (stderr, "going for %s\n", s. toUtf8 (). data ());
 	localSelect (s);
 }
-
-
+//
+//	From a predefined schedule list, the service names most
+//	likely are less than 16 characters
+//
+void	RadioInterface::scheduleSelect (const QString &s) {
+	localSelect (s);
+}
+//
 void	RadioInterface::localSelect (const QString &s) {
 #if QT_VERSION >= 0x060000
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
@@ -2962,43 +2931,25 @@ void	RadioInterface::localSelect (const QString &s) {
 	localSelect (list. at (0), list. at (1));
 }
 
-//
-//	From a predefined schedule list, the service names most
-//	likely are less than 16 characters
-//
-void	RadioInterface::scheduleSelect (const QString &s) {
-#if QT_VERSION >= 0x060000
-	QStringList list = s.split (":", Qt::SkipEmptyParts);
-#else
-	QStringList list = s.split (":", QString::SkipEmptyParts);
-#endif
-	if (list. length () != 2)
-	   return;
-	QString theChannel = list. at (0);
-	QString service	= list. at (1);
-	for (int i = service. size (); i < 16; i ++)
-	   service. append (' ');
-
-	fprintf (stderr, "going for channel %s, service %s\n",
-	                   theChannel. toUtf8(). data (),
-	                   service. toUtf8 (). data ());
-	localSelect (theChannel, service);
-}
-
 void	RadioInterface::localSelect (const QString &theChannel,
 	                             const QString &service) {
 int	switchDelay;
-	stopScanning (false);
-	if (my_dabProcessor == nullptr) {
-	   fprintf (stderr, "Expert error 21\n");
+QString serviceName	= service;
+
+	if (my_dabProcessor == nullptr)	// should not happen
 	   return;
-	}
+
+	presetTimer. stop ();
+	stopScanning (false);
+	stopService (currentService);
+
+	for (int i = service. size (); i < 16; i ++)
+	   serviceName. push_back (' ');
 
 	if (theChannel == channel. channelName) {
-	   stopService (currentService);
 	   currentService. valid = false;
 	   dabService s;
-	   my_dabProcessor -> getParameters (service, &s. SId, &s. SCIds);
+	   my_dabProcessor -> getParameters (serviceName, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                         tr ("insufficient data for this program\n"));
@@ -3010,10 +2961,11 @@ int	switchDelay;
 	}
 //
 //	The hard part is stopping the current service,
+//	quitting the current channel,
 //      selecting a new channel,
 //      waiting a while
 	stopChannel ();
-//      trying to start the selected service
+//      and start the new channel first
 	int k           = channelSelector -> findText (theChannel);
 	if (k != -1) {
 	   new_channelIndex (k);
@@ -3023,10 +2975,11 @@ int	switchDelay;
 	                               tr ("Incorrect preset\n"));
 	   return;
 	}
-
+//
+//	prepare the service, start the new channel and wait
 	nextService. valid		= true;
 	nextService. channel		= theChannel;
-	nextService. serviceName        = service;
+	nextService. serviceName        = serviceName;
 	nextService. SId                = 0;
 	nextService. SCIds              = 0;
 	presetTimer. setSingleShot (true);
@@ -3039,7 +2992,6 @@ int	switchDelay;
 
 ////////////////////////////////////////////////////////////////////////////
 //
-//	handling services: stop and start
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::stopService	(dabService &s) {
@@ -3047,14 +2999,13 @@ void	RadioInterface::stopService	(dabService &s) {
 	channelTimer. stop ();
 	stop_muting	();
 
-	techData. timeTable_button -> hide ();
-	my_timeTable	-> hide ();
 
 	if (my_dabProcessor == nullptr) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
 	}
 
+//	stop "dumpers"
 	if (frameDumper != nullptr) {
 	   stop_frameDumping ();
 	}
@@ -3062,6 +3013,11 @@ void	RadioInterface::stopService	(dabService &s) {
 	if (audioDumper != nullptr) {
 	   stop_audioDumping ();
 	}
+
+//	and clean up the technical widget
+	theTechWindow	-> cleanUp ();
+//
+//	stop "secondary services" - if any - as well
 	if (s. valid) {
 	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
@@ -3104,37 +3060,6 @@ void	RadioInterface::stopService	(dabService &s) {
 }
 //
 //
-void	RadioInterface::selectService (QModelIndex ind) {
-QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
-
-	if (!running. load ())
-	   return;
-
-	if (my_dabProcessor == nullptr) {	// should/can not happen
-	   fprintf (stderr, "Expert error 7\n");
-	   fprintf (stderr, "no service should be visible\n");
-	   return;
-	}
-
-	presetTimer.	stop	();
-	channelTimer.	stop	();
-	stopScanning	(false);
-
-	stopService 	(currentService);		// if any
-	currentService. valid = false;
-
-	dabService s;
-	s. serviceName = currentProgram;
-	my_dabProcessor -> getParameters (currentProgram, &s. SId, &s. SCIds);
-	if (s. SId == 0) {
-	   QMessageBox::warning (this, tr ("Warning"),
- 	                         tr ("insufficient data for this program\n"));	
-	   return;
-	}
-
-	startService (&s);
-}
-//
 void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
@@ -3142,7 +3067,6 @@ QString serviceName	= s -> serviceName;
 	currentService. valid	= false;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
 	LOG ("service has SNR ", QString::number (configWidget. snrDisplay -> value ()));
-	techData. timeTable_button -> hide ();
 //
 //	mark the selected service in the service list
 	int rowCount	= model. rowCount ();
@@ -3164,7 +3088,8 @@ QString serviceName	= s -> serviceName;
 	         currentService. is_audio	= true;
 	         currentService. subChId	= ad. subchId;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
-	            techData. timeTable_button -> show ();
+	            theTechWindow -> show_timetableButton (true);
+
 	         start_audioService (&ad);
 	         if (dabSettings -> value ("has-presetName", 0).
 	                                                   toInt () == 1) {
@@ -3205,37 +3130,6 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt,
 	model. setData (ind, QFont (theFont, pt, -1, italic), Qt::FontRole);
 }
 //
-//	This function is only used in the Gui to clear
-//	the details of a selected service
-void	RadioInterface::cleanScreen	() {
-	serviceLabel			-> setText ("");
-	dynamicLabel			-> setText ("");
-//	distanceLabel			-> setText ("");
-
-	stereoLabel	-> setStyleSheet (
-	   	         "QLabel {background-color: red; color : black}");
-	stereoLabel	-> setText ("");
-	programTypeLabel -> setText ("");
-
-	new_presetIndex (0);
-	stereoSetting			= false;
-	techData. rsCorrections		-> display (0);
-	techData. frameError_display	-> setValue (0);
-	techData. rsError_display	-> setValue (0);
-	techData. aacError_display	-> setValue (0);
-	techData. programName		-> setText (QString (""));
-	techData. bitrateDisplay	-> display (0);
-	techData. startAddressDisplay	-> display (0);
-	techData. lengthDisplay		-> display (0);
-	techData. subChIdDisplay	-> display (0);
-	techData. uepField		-> setText (QString (""));
-	techData. ASCTy			-> setText (QString (""));
-	techData. language		-> setText (QString (""));
-	techData. motAvailable		-> 
-	               setStyleSheet ("QLabel {background-color : red}");
-	setStereo	(false);
-}
-
 void	RadioInterface::start_audioService (audiodata *ad) {
 	if (!ad ->  defined) {
 	   QMessageBox::warning (this, tr ("Warning"),
@@ -3269,41 +3163,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	soundOut -> restart ();
 	programTypeLabel ->   setText (getProgramType (ad -> programType));
 //	show service related data
-	techData. programName		-> setText (ad -> serviceName);
-	techData. serviceIdDisplay	-> display (ad -> SId);
-	techData. bitrateDisplay 	-> display (ad -> bitRate);
-	techData. startAddressDisplay 	-> display (ad -> startAddr);
-	techData. lengthDisplay		-> display (ad -> length);
-	techData. subChIdDisplay 	-> display (ad -> subchId);
-	QString protL	= getProtectionLevel (ad -> shortForm,
-	                                         ad -> protLevel);
-	techData. uepField		-> setText (protL);
-	techData. ASCTy			-> setText (ad -> ASCTy == 077 ?
-	                                                  "DAB+" : "DAB");
-	if (ad -> ASCTy == 077) {
-	   techData. rsError_display	-> show ();
-	   techData. aacError_display	-> show ();
-	}
-	else {
-	   techData. rsError_display	-> hide	();
-	   techData. aacError_display	-> hide ();
-	}
-	techData. codeRate ->
-	             setText (getCodeRate (ad -> shortForm,
-	                                              ad -> protLevel));
-	techData. language ->
-	        setText (getLanguage (ad -> language));
-	if (ad -> fmFrequency == -1) {
-	   techData. fmFrequency	-> hide ();
-	   techData. fmLabel		-> hide	();
-	}
-	else {
-	   techData. fmLabel		-> show ();
-	   techData. fmFrequency	-> show ();
-	   QString f = QString::number (ad -> fmFrequency);
-	   f. append (" Khz");
-	   techData. fmFrequency	-> setText (f);
-	}
+	theTechWindow	-> show_serviceData 	(ad);
 }
 
 void	RadioInterface::start_packetService (const QString &s) {
@@ -3352,6 +3212,23 @@ packetdata pd;
 	      showLabel (QString ("Journaline"));
 	      break;
 	}
+}
+
+//	This function is only used in the Gui to clear
+//	the details of a selected service
+void	RadioInterface::cleanScreen	() {
+	serviceLabel			-> setText ("");
+	dynamicLabel			-> setText ("");
+	theTechWindow			-> cleanUp ();
+	stereoLabel	-> setStyleSheet (
+	   	         "QLabel {background-color: red; color : black}");
+	stereoLabel	-> setText ("");
+	programTypeLabel -> setText ("");
+
+	new_presetIndex (0);
+	stereoSetting		= false;
+	theTechWindow	-> cleanUp ();
+	setStereo	(false);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -3481,16 +3358,10 @@ int	tunedFrequency	=
 	serviceList. clear ();
 	model. clear ();
 	ensembleDisplay		-> setModel (&model);
-	cleanScreen	();
 	inputDevice		-> restartReader (tunedFrequency);
 	handling_channel. store (true);
 	my_dabProcessor		-> start ();
-	channel. has_ecc	= false;
-	channel. transmitterName	= "";
-	channel. ensembleName	= "";
-	channel. Eid		= 0;
-	channel. mainId		= 0;
-	channel. subId		= 0;
+	channel. cleanChannel ();
 	channel. channelName	= theChannel;
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
@@ -3546,16 +3417,12 @@ void	RadioInterface::stopChannel	() {
 	   ficDumpPointer = nullptr;
 	}
 	epgTimer. stop		();
-	techData. timeTable_button -> hide ();
-	my_timeTable	-> hide ();
+	theTechWindow	-> cleanUp ();
 
 	show_pauzeSlide ();
 	presetTimer. stop 	();
 	channelTimer. stop	();
-	channel. Eid		= 0;
-	channel. ensembleName	= "";
-	channel. has_ecc	= false;
-	channel. transmitterName = "";
+	channel. cleanChannel	();
 	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
@@ -3907,8 +3774,6 @@ std::vector<serviceId> k;
 //	dabProcessor, we hide some buttons
 void	RadioInterface::hide_for_safety () {
 	configWidget. dumpButton		->	hide ();
-	techData. framedumpButton	->	hide ();
-	techData. audiodumpButton	->	hide ();
 	prevServiceButton	->	hide ();
 	nextServiceButton	->	hide ();
 	configWidget. contentButton		->	hide ();
@@ -3916,8 +3781,6 @@ void	RadioInterface::hide_for_safety () {
 
 void	RadioInterface::show_for_safety () {
 	configWidget. dumpButton	->	show ();
-	techData. framedumpButton	->	show ();
-	techData. audiodumpButton	->	show ();
 	prevServiceButton	->	show ();
 	nextServiceButton	->	show ();
 	configWidget. contentButton		->	show ();
@@ -3945,7 +3808,6 @@ void	RadioInterface::stop_muting		() {
 	muteTimer. stop ();
 	disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
-//	setButtonFont (techData. muteButton, "mute", 10);
 	setButtonFont (muteButton, "mute", 10);
 	stillMuting	-> hide ();
 }
@@ -3961,7 +3823,6 @@ void	RadioInterface::handle_muteButton	() {
 	muteDelay	= dabSettings -> value ("muteTime", 2). toInt ();
 	muteDelay	*= 60;
 	muteTimer. start (1000);
-//	setButtonFont (techData. muteButton, "MUTING", 12);
 	setButtonFont (muteButton, "muting", 10);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
@@ -4236,13 +4097,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (nextServiceButton_color,
 	                                        nextServiceButton_font));
 
-	techData. framedumpButton ->
-	              setStyleSheet (temp. arg (framedumpButton_color,
-	                                        framedumpButton_font));
-
-	techData. audiodumpButton ->
-	              setStyleSheet (temp. arg (audiodumpButton_color,
-	                                        audiodumpButton_font));
 }
 
 void	RadioInterface::color_contentButton	() {
@@ -4305,16 +4159,7 @@ void	RadioInterface::color_nextServiceButton	()	{
 	set_buttonColors (nextServiceButton, NEXTSERVICE_BUTTON);
 }
 
-void	RadioInterface::color_framedumpButton	()	{
-	set_buttonColors (techData. framedumpButton, FRAMEDUMP_BUTTON);
-}
-
-void	RadioInterface::color_audiodumpButton	()	{
-	set_buttonColors (techData. audiodumpButton, AUDIODUMP_BUTTON);
-}
-
 void	RadioInterface::color_muteButton	()	{
-//	set_buttonColors (techData. muteButton, MUTE_BUTTON);
 	set_buttonColors (muteButton, MUTE_BUTTON);
 }
 
@@ -4614,11 +4459,6 @@ void	RadioInterface::handle_timeTable	() {
 int	epgWidth;
 	if (!currentService. valid || !currentService. is_audio)
 	   return;
-
-	if  (my_timeTable -> isHidden ())
-	   my_timeTable -> show ();
-	else
-	   my_timeTable -> hide ();
 
 	my_timeTable	-> clear ();
 	epgWidth	= dabSettings -> value ("epgWidth", 70). toInt ();

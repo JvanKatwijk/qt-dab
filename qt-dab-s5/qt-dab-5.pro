@@ -38,6 +38,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 
 DEPENDPATH += . \
 	      ./pauzeslide \
+	      ./support \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -77,6 +78,7 @@ DEPENDPATH += . \
 
 INCLUDEPATH += . \
 	       ./pauzeslide/ \
+	       ./support \
 	      ../ \
 	      ../eti-handler \
 	      ../src \
@@ -108,6 +110,7 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
+	   ./support/techdata.h \
 	   ../dab-processor.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
@@ -224,6 +227,7 @@ FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
+	   ./support/techdata.cpp \
 	   ../dab-processor.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \

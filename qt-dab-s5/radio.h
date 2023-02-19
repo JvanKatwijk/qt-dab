@@ -76,7 +76,7 @@ class	audioDisplay;
 class	dabStreamer;
 #endif
 
-#include	"ui_technical_data.h"
+class techData;
 #include	"ui_config-helper.h"
 
 /*
@@ -103,6 +103,41 @@ struct	theTime {
 	int	hour;
 	int	minute;
 	int	second;
+};
+
+class	channelDescriptor {
+public:
+	channelDescriptor () {
+}
+	~channelDescriptor () {
+}
+
+	QString		channelName;
+	bool		realChannel;
+	int		frequency;
+	QString		ensembleName;
+	uint8_t		mainId;
+	uint8_t		subId;
+	uint32_t	Eid;
+	bool		has_ecc;
+	uint8_t		ecc_byte;
+	bool		tiiFile;
+	QString		transmitterName;
+	QString		countryName;
+	int		nrTransmitters;
+	std::complex<float> localPos;
+	std::complex<float> targetPos;
+
+	void	cleanChannel () {
+	channelName	= "";
+	realChannel	= true;
+	frequency	= -1;
+	ensembleName	=  "";
+	mainId		= 0;
+	subId		= 0;
+	Eid		= 0;
+	has_ecc		= false;
+}
 };
 
 class RadioInterface: public QWidget, private Ui_dabradio {
@@ -143,7 +178,7 @@ private:
 	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
-	audioDisplay		*myAudioDisplay;
+	RingBuffer<int16_t>	theTechData;
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -153,11 +188,12 @@ private:
 	contentTable		*my_contentTable;
 	contentTable		*my_scanTable;
 	FILE			*logFile;
+	channelDescriptor	channel;
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
 	bool			etiActive;
-	Ui_technical_data	techData;
+	techData		*theTechWindow;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;
 	dabService		currentService;
@@ -288,34 +324,17 @@ private:
 	void			show_MOTlabel		(QByteArray &, int,
                                                                   QString, int);
 	void			stop_muting		();
-	struct {
-	   float latitude;
-	   float longitude;
-	} homeAddress;
+//	struct {
+//	   float latitude;
+//	   float longitude;
+//	} homeAddress;
 
 	struct tiiStruct {
-	    uint8_t mainId;
-	    uint8_t subId;
+	    uint8_t	mainId;
+	    uint8_t	subId;
 	    bool	searched_for_name;
 	};
 
-	struct {
-	   QString	channelName;
-	   bool		realChannel;
-	   int		frequency;
-	   QString	ensembleName;
-	   uint32_t	Eid;
-	   bool		has_ecc;
-	   uint8_t	ecc_byte;
-	   bool		tiiFile;
-	   QString	transmitterName;
-	   uint8_t	mainId;
-	   uint8_t	subId;
-	   QString	countryName;
-	   int		nrTransmitters;
-	   std::complex<float> localPos;
-	   std::complex<float> targetPos;
-	} channel;
 
 	enum direction {FORWARD, BACKWARDS};
 
@@ -453,8 +472,6 @@ private slots:
 	void			color_nextChannelButton	();
 	void			color_prevServiceButton	();
 	void			color_nextServiceButton	();
-	void			color_framedumpButton	();
-	void			color_audiodumpButton	();
 	void			color_dlTextButton	();
 	void			color_scheduleButton	();
 	void			color_configButton	();
