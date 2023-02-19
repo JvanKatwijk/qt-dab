@@ -58,7 +58,6 @@ uint16_t res	= 0;
 
 int	epgDecoder::process_epg	(uint8_t *v, int e_length,
 	                         uint32_t SId, int subType, uint32_t theDay) {
-int	ind	= 0;
 uint8_t	tag	= v [0];
 int length	= v [1];
 int	index	= 0;
@@ -175,6 +174,7 @@ int	epgDecoder::process_programGroups (uint8_t *v, int index) {
 uint8_t	tag	= v [index];
 int length	= v [index + 1];
 
+	(void)tag;
 	if (length == 0XFE) {
 	   length = (v [index + 2] << 8) | v [index + 3];
 	   index += 4;
@@ -379,6 +379,7 @@ int	epgDecoder::process_program (uint8_t *v, int index, progDesc *p) {
 int length	= v [index + 1];
 progDesc theElement;
 
+	(void)p;
 	if (length == 0XFE) {
 	   length = (v [index + 2] << 8) | v [index + 3];
 	   index += 4;
@@ -503,8 +504,6 @@ int length	= v [index + 1];
 #ifdef	__EPG_TRACE__
 	   fprintf (stderr, "encountering node %x\n", v [index]);
 #endif
-	   int startTime;
-	   int stopTime;
 	   switch (v [index]) {
 	      case 0x25:	// serviceScope
 	         index	= process_serviceScope (v, index);

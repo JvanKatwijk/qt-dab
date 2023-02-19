@@ -700,6 +700,7 @@ double rJulDate, rF;
 	iZ = (uint32_t) (rJulDate + (double) 0.5);
 	rF = (rJulDate + (double) 0.5) - iZ;
 
+	(void)rF;
 //	2. If Z < 2299161, take A = Z
 //	If Z >= 2299161, calculate alpha = INT((Z-1867216.25)/36524.25)
 //	and A = Z + 1 + alpha - INT(alpha/4).

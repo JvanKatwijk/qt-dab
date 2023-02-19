@@ -68,14 +68,18 @@ private:
 	double		displayBuffer [512];
 	std::complex<float>	*spectrumBuffer;
 	float		Window [4 * 512];
+	QwtPlotPicker   *lm_picker;
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
-
+	bool		brush;
 	fftwf_plan	plan;
 	void		ViewSpectrum		(double *, double *, double, int);
 	float		get_db 			(float);
 	int32_t		normalizer;
+private slots:
+        void            rightMouseClick (const QPointF &);
 };
+
 #endif
 
