@@ -93,7 +93,7 @@ the GUI and the software interfacing the GUI to the rest of the program.
 
 **dabMini**, i.e. the small version for just listening to a service, is obsolete, the source can be found as subdirectory in the "obsolete" directory.
 
-![5.1](/qt-dab-5-main-widget.png?raw=true)
+![5.2](/qt-dab-5-main-widget.png?raw=true)
 ![4.4](/qt-dab-4-main-widget.png?raw=true)
 
 Of course, the configuration and control widget in Qt-DAB-5 is larger
@@ -104,13 +104,18 @@ Since the Qt-DAB-5 main widget shows the station labels (if any),
 the option - available in Qt-DAB-4 - for displaying the station labels
 on a separate widget is not needed.
 
-![5.1](/qt-dab-5-config-widget.png?raw=true)
+![5.2](/qt-dab-5-config-widget.png?raw=true)
 ![4.4](/qt-dab-4-config-widget.png?raw=true)
 
 The functionality of the versions is (almost) the same, version 5.1 has
 (most users will not use it though) the possibility of generating "eti" files.
 If there is serious interest for adding the feature to the Qt-DAB-4 interface,
 then let me know.
+
+The Qt-DAB-5.2 version has a slightly modified "technical window", 
+it now contains a small spectrum display of the audio output.
+
+![5.2](/qt-dab-5-technical-widget.png?raw=true)
 
 ----------------------------------------------------------------------
 A note on showing a map
