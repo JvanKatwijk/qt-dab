@@ -114,10 +114,14 @@ public:
 
 	QString		channelName;
 	bool		realChannel;
+	int		serviceCount;
 	int		frequency;
 	QString		ensembleName;
 	uint8_t		mainId;
 	uint8_t		subId;
+	std::vector<dabService> backgroundServices;
+	dabService	currentService;
+	dabService	nextService;
 	uint32_t	Eid;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
@@ -129,8 +133,8 @@ public:
 	std::complex<float> targetPos;
 
 	void	cleanChannel () {
-	channelName	= "";
 	realChannel	= true;
+	serviceCount	= -1;
 	frequency	= -1;
 	ensembleName	=  "";
 	mainId		= 0;
@@ -196,15 +200,10 @@ private:
 	techData		*theTechWindow;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;
-	dabService		currentService;
-	dabService		nextService;
 	int			maxDistance;
-//	dabService		secondService;
-	std::vector<dabService> backgroundServices;
 	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
-	bool			isSynced;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
@@ -441,7 +440,7 @@ private slots:
 	void			channel_timeOut		();
 
 	void			selectService		(QModelIndex);
-	void			setPresetStation	();
+	void			setPresetService	();
 	void			handle_muteButton	();
 	void			muteButton_timeOut	();
 	void			scheduler_timeOut	(const QString &);

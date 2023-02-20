@@ -72,6 +72,7 @@ class	audioBase;
 class	common_fft;
 class	historyHandler;
 class	timeTableHandler;
+class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
 class	dabStreamer;
 #endif
@@ -143,6 +144,7 @@ private:
 	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
+	audioDisplay		*the_audioDisplay;
 	httpHandler		*mapHandler;
 	bool			epgFlag;
 	processParams		globals;

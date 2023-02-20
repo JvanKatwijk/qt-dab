@@ -50,6 +50,7 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
+#include	"audio-display.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -312,9 +313,11 @@ uint8_t	dabBand;
 	techData. setupUi (&dataDisplay);
 	techData. timeTable_button -> hide ();
 
+	the_audioDisplay	= new audioDisplay (this,
+	                                            techData. audiospectrum,
+	                                            dabSettings);
 	epgLabel	-> hide ();
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
-//	configDisplay	= new QFrame (nullptr);
 	configWidget. setupUi (&configDisplay);
 //
 //	Now we can set the checkbox as saved in the settings
@@ -775,8 +778,8 @@ QString	RadioInterface::presetText () {
 }
 
 QString RadioInterface::footText () {
-	version			= QString (CURRENT_VERSION);
-	QString versionText = "Qt-DAB-version: " + QString(CURRENT_VERSION) + "\n";
+	version			= QString ("4.5");
+	QString versionText = "Qt-DAB-version: " + QString ("4.5") + "\n";
 	versionText += "Built on " + QString(__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH) + "\n";
 	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
 	versionText += "Rights of Qt, fftw, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
@@ -1387,6 +1390,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	      if (streamerOut != nullptr)
 	         streamerOut	-> audioOut (vec, amount, rate);
 #endif
+	      the_audioDisplay	-> createSpectrum (vec, amount, rate);
 	      if (!muting)
 	         soundOut	-> audioOut (vec, amount, rate);
 	   }
@@ -1435,6 +1439,7 @@ void	RadioInterface::TerminateProcess () {
 	   my_contentTable -> hide ();
 	   delete my_contentTable;
 	}
+	delete the_audioDisplay;
 	if (my_scanTable != nullptr) {
 	   my_scanTable	-> clearTable ();
 	   my_scanTable	-> hide ();
@@ -2619,8 +2624,6 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	connect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
-//	connect (techData. muteButton, SIGNAL (clicked (void)),
-//	         this, SLOT (handle_muteButton (void)));
 	connect (muteButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_muteButton ()));
 	connect (scheduleButton, SIGNAL (clicked ()),
@@ -2691,8 +2694,6 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_audiodumpButton (void)));
 	disconnect (techData. framedumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_framedumpButton (void)));
-//	disconnect (techData. muteButton, SIGNAL (clicked (void)),
-//	         this, SLOT (handle_muteButton (void)));
 	disconnect (muteButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_muteButton (void)));
 	disconnect (scheduleButton, SIGNAL (clicked ()),
