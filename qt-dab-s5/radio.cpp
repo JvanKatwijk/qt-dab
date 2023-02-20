@@ -3197,8 +3197,8 @@ void	RadioInterface::cleanScreen	() {
 	serviceLabel			-> setText ("");
 	dynamicLabel			-> setText ("");
 	theTechWindow			-> cleanUp ();
-	stereoLabel	-> setStyleSheet (
-	   	         "QLabel {background-color: red; color : black}");
+//	stereoLabel	-> setStyleSheet (
+//	   	         "QLabel {background-color: red; color : black}");
 	stereoLabel	-> setText ("");
 	programTypeLabel -> setText ("");
 
