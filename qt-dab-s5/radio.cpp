@@ -3357,7 +3357,6 @@ void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
 	handling_channel. store (false);
-	stopScanning	(false);
 	stop_etiHandler	();
 	LOG ("channel stops ", channel. channelName);
 //
