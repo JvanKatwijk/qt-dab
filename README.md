@@ -90,7 +90,6 @@ The basic idea behing Qt-5 is to limit the number of controls on the main widget
 Both versions of Qt-DAB are built from (mostly) the same set of sources,
 the GUI and the software interfacing the GUI to the rest of the program.
 
-
 **dabMini**, i.e. the small version for just listening to a service, is obsolete, the source can be found as subdirectory in the "obsolete" directory.
 
 ![5.2](/qt-dab-5-main-widget.png?raw=true)
@@ -104,8 +103,8 @@ Since the Qt-DAB-5 main widget shows the station labels (if any),
 the option - available in Qt-DAB-4 - for displaying the station labels
 on a separate widget is not needed.
 
+![4.5](/qt-dab-4-config-widget.png?raw=true)
 ![5.2](/qt-dab-5-config-widget.png?raw=true)
-![4.4](/qt-dab-4-config-widget.png?raw=true)
 
 The functionality of the versions is (almost) the same, version 5.1 has
 (most users will not use it though) the possibility of generating "eti" files.
@@ -115,6 +114,7 @@ then let me know.
 The Qt-DAB-5.2 version has a slightly modified "technical window", 
 it now contains a small spectrum display of the audio output.
 
+![4.5](/qt-dab-4-technical-widget.png?raw=true)
 ![5.2](/qt-dab-5-technical-widget.png?raw=true)
 
 ----------------------------------------------------------------------
