@@ -52,8 +52,8 @@
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
-	connect (this, SIGNAL (showQuality (float, float, float, float)),
-	         myRadioInterface, SLOT (showQuality (float, float, float, float)));
+	connect (this, SIGNAL (showQuality (float, float, float)),
+	         myRadioInterface, SLOT (showQuality (float, float, float)));
 //
 	this	-> T_s			= params. get_T_s();
 	this	-> T_u			= params. get_T_u();
@@ -65,7 +65,7 @@
 	phaseReference			.resize (T_u);
 }
 
-	ofdmDecoder::~ofdmDecoder() {
+	ofdmDecoder::~ofdmDecoder	() {
 }
 //
 void	ofdmDecoder::stop () {
@@ -125,7 +125,7 @@ float	denominator	= 0;
 	                   square (absVal - abs (imag (x [i])));
 	}
 
-	return 20 * log10 (1.0 + nominator / denominator);
+	return 10 * log10 (1.0 + nominator / denominator);
 }
 /**
   *	for the other blocks of data, the first step is to go from
@@ -186,13 +186,11 @@ std::complex<float> conjVector [T_u];
 	                                      carriers);
 	      showIQ	(carriers);
 	      float Quality	= computeQuality (conjVector);
-	      float timeOffset	= compute_timeOffset (fft_buffer,
-	                                              phaseReference. data ());
-	      float sco		= compute_clockOffset (fft_buffer,
+	      float timeOffset		= compute_timeOffset (fft_buffer,
 	                                              phaseReference. data ());
 	      float freqOffset	= compute_frequencyOffset (fft_buffer,
 	                                              phaseReference. data ());
-	      showQuality (Quality, timeOffset, sco, freqOffset);
+	      showQuality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
 	   }
 	}

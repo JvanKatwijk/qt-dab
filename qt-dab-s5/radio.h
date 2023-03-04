@@ -131,7 +131,7 @@ public:
 	int		nrTransmitters;
 	std::complex<float> localPos;
 	std::complex<float> targetPos;
-
+	int		snr;
 	void	cleanChannel () {
 	realChannel	= true;
 	serviceCount	= -1;
@@ -141,6 +141,7 @@ public:
 	subId		= 0;
 	Eid		= 0;
 	has_ecc		= false;
+	snr		= 0;
 }
 };
 
@@ -250,7 +251,6 @@ private:
 	                                  serviceId, int);
 
 	void			show_pauzeSlide	();
-	QStringList		soundChannels;
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
@@ -287,8 +287,8 @@ private:
 //
 	void			start_audioService	(audiodata *);
 	void			start_packetService	(const QString &);
-	void			startScanning		();
-	void			stopScanning		(bool);
+	void			start_scanning		();
+	void			stop_scanning		(bool);
         void			start_audioDumping      ();
         void			stop_audioDumping       ();
         void			scheduled_audioDumping	();
@@ -301,10 +301,10 @@ private:
         void			start_frameDumping      ();
         void			stop_frameDumping       ();
 	void			scheduled_frameDumping	(const QString &);
-	void			startChannel		(const QString &);
-	void			stopChannel		();
-	void			stopService		(dabService &);
-	void			startService		(dabService *);
+	void			start_channel		(const QString &);
+	void			stop_channel		();
+	void			stop_service		(dabService &);
+	void			start_service		(dabService *);
 	void			colorService		(QModelIndex ind,
 	                                                 QColor c, int pt,
 	                                                 bool italic = false);
@@ -378,7 +378,8 @@ public slots:
 	                                                      QVector<int>);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float, float, float, float);
+	void			showQuality		(float, float, float);
+
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();

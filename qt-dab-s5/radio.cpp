@@ -326,7 +326,7 @@ uint8_t	dabBand;
 	configWidget.  utcSelector -> setChecked (b);
 	channel. currentService. valid	= false;
 	channel. nextService. valid	= false;
-
+	channel. serviceCount		= -1;
 	if (dabSettings -> value ("has-presetName", 0). toInt () != 0) {
 	   configWidget. saveServiceSelector -> setChecked (true);
 	   QString presetName		=
@@ -602,7 +602,7 @@ uint8_t	dabBand;
 	         this, SLOT (updateTimeDisplay ()));
 	displayTimer. start (1000);
 	numberofSeconds		= 0;
-//
+
 //	timer for scanning
 	channelTimer. setSingleShot (true);
 	channelTimer. setInterval (10000);
@@ -626,14 +626,10 @@ uint8_t	dabBand;
 #endif
 	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
-	configWidget. snrDisplay	-> setPalette (lcdPalette);
-	configWidget. snrDisplay	-> setAutoFillBackground (true);
 	configWidget. frequencyDisplay	-> setPalette (lcdPalette);
 	configWidget. frequencyDisplay	-> setAutoFillBackground (true);
 	configWidget. cpuMonitor	-> setPalette (lcdPalette);
 	configWidget. cpuMonitor	-> setAutoFillBackground (true);
-	configWidget. correctorDisplay	-> setPalette (lcdPalette);
-	configWidget. correctorDisplay	-> setAutoFillBackground (true);
 	set_Colors ();
 	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
 	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
@@ -786,7 +782,6 @@ bool	RadioInterface::doStart	() {
 	}
 	else
 	   channelSelector -> setCurrentIndex (0);
-
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 
 //	Some buttons should not be touched before we have a device
@@ -832,7 +827,7 @@ bool	RadioInterface::doStart	() {
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_tii_detectorMode (int)));
 
-	startChannel (channelSelector -> currentText ());
+	start_channel (channelSelector -> currentText ());
 	running. store (true);
 	return true;
 }
@@ -872,7 +867,8 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 //	
 //	a slot called by the ofdmprocessor
 void	RadioInterface::set_CorrectorDisplay (int v) {
-	configWidget. correctorDisplay	-> display (v);
+	if (!my_spectrumViewer. isHidden ())
+	   my_spectrumViewer. show_correction (v);
 }
 //
 //	might be called when scanning only
@@ -950,7 +946,7 @@ QString s;
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
-	   stopScanning (false);
+	   stop_scanning (false);
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -965,7 +961,7 @@ QStringList s	= my_dabProcessor -> basicPrint ();
 	   return;
 	}
 	QString theTime;
-	QString SNR	= "SNR " + QString::number (configWidget. snrDisplay -> value ());
+	QString SNR	= "SNR " + QString::number (channel. snr);
 	if (configWidget. utcSelector -> isChecked ())
 	   theTime	= convertTime (UTC. year,  UTC. month,
 	                               UTC. day, UTC. hour, UTC. minute);
@@ -1243,15 +1239,15 @@ int	serviceOrder;
 	dabService s;
 	if (channel. currentService. valid) 
 	   s = channel. currentService;
-	stopService	(s);
-	stopScanning    (false);
+	stop_service	(s);
+	stop_scanning    (false);
 //
 //
 //	we stop all secondary services as well, but we maintain theer
 //	description, file descriptors remain of course
 //
 	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++)
-	   my_dabProcessor -> stopService (channel. backgroundServices. at (i). subChId,
+	   my_dabProcessor -> stop_service (channel. backgroundServices. at (i). subChId,
 	                                   BACK_GROUND);
 
 	fprintf (stderr, "change will be effected\n");
@@ -1279,7 +1275,7 @@ int	serviceOrder;
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (ss != "") {
-	      startService (&s);
+	      start_service (&s);
 	      return;
 	   }
 //
@@ -1288,7 +1284,7 @@ int	serviceOrder;
 	   s. serviceName =
 	               my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (s. serviceName != "")
-	      startService (&s);
+	      start_service (&s);
 	}
 //
 //	we also have to restart all background services,
@@ -1359,7 +1355,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   */
 void	RadioInterface::TerminateProcess () {
 	if (scanning. load ())
-	   stopScanning (false);
+	   stop_scanning (false);
 	running. store	(false);
 	dumpControlState (dabSettings);
 	hideButtons	();
@@ -1838,7 +1834,8 @@ deviceHandler	*inputDevice	= nullptr;
 void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
 	running. store (false);
-	stopChannel	();
+	stop_scanning	(false);
+	stop_channel	();
 	disconnectGUI	();
 	if (inputDevice != nullptr) {
 	   delete inputDevice;
@@ -1997,7 +1994,10 @@ void	RadioInterface::show_motHandling (bool b) {
 void	RadioInterface::show_snr (int s) {
 	if (!running. load ())
 	   return;
-	configWidget. snrDisplay	-> display (s);
+
+	channel. snr	= s;
+	if (!my_spectrumViewer. isHidden ())
+	   my_spectrumViewer. show_snr (s);
 	
 	if (my_snrViewer. isHidden ()) {
 	   snrBuffer. FlushRingBuffer ();
@@ -2180,7 +2180,7 @@ bool	tiiChange	= false;
 	LOG ("transmitter ", channel. transmitterName);
 	LOG ("coordinates ", QString::number (latitude) + " " +
 	                        QString::number (longitude));
-	LOG ("current SNR ", QString::number (configWidget. snrDisplay -> value ()));
+	LOG ("current SNR ", QString::number (channel. snr));
 	QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
@@ -2251,12 +2251,12 @@ void	RadioInterface::showIQ		(int amount) {
 	my_spectrumViewer. showIQ (amount);
 }
 
-void	RadioInterface::showQuality	(float q, float timeOffset,
+void	RadioInterface::showQuality	(float q, 
 	                                 float sco, float freqOffset) {
 	if (!running. load())
 	   return;
 
-	my_spectrumViewer. showQuality (q, timeOffset, sco, freqOffset);
+	my_spectrumViewer. showQuality (q, sco, freqOffset);
 }
 
 //
@@ -2342,9 +2342,9 @@ void	RadioInterface::setSyncLost	() {
 void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
-
-	stopChannel ();
-	startChannel	(channelSelector -> currentText ());
+	stop_scanning (false);
+	stop_channel ();
+	start_channel	(channelSelector -> currentText ());
 }
 //
 ////////////////////////////////////////////////////////////////////////
@@ -2741,10 +2741,9 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                  channel. currentService.
 	                                 serviceName. toUtf8 (). data (),
 	                                channel. currentService. valid);
-	         stopService (channel. currentService);
+	         stop_service (channel. currentService);
 	         channel. currentService. valid =  false;
 	         selectService (ensembleDisplay -> currentIndex ());
-	         stopScanning (false);
 	      }
 	   }
 	}
@@ -2786,7 +2785,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                  i < channel. backgroundServices. size (); i ++) {
 	            if (channel. backgroundServices. at (i). serviceName ==
 	                                                      serviceName) {
-	                my_dabProcessor -> stopService (ad. subchId,
+	                my_dabProcessor -> stop_service (ad. subchId,
 	                                                      BACK_GROUND);
 	                if (channel. backgroundServices. at (i). fd != nullptr)
 	                   fclose (channel. backgroundServices. at (i). fd);
@@ -2916,8 +2915,8 @@ QString serviceName	= service;
 	   return;
 
 	presetTimer. stop ();
-	stopScanning (false);
-	stopService (channel. currentService);
+	stop_scanning (false);
+	stop_service (channel. currentService);
 
 	for (int i = service. size (); i < 16; i ++)
 	   serviceName. push_back (' ');
@@ -2932,7 +2931,7 @@ QString serviceName	= service;
 	      return;
 	   }
 	   s. serviceName = service;
-	   startService (&s);
+	   start_service (&s);
 	   return;
 	}
 //
@@ -2940,7 +2939,7 @@ QString serviceName	= service;
 //	quitting the current channel,
 //      selecting a new channel,
 //      waiting a while
-	stopChannel ();
+	stop_channel ();
 //      and start the new channel first
 	int k           = channelSelector -> findText (theChannel);
 	if (k != -1) {
@@ -2963,14 +2962,14 @@ QString serviceName	= service;
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	presetTimer. setInterval (switchDelay * 1000);
 	presetTimer. start (switchDelay * 1000);
-	startChannel    (channelSelector -> currentText ());
+	start_channel    (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stopService	(dabService &s) {
+void	RadioInterface::stop_service	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stop_muting	();
@@ -2995,7 +2994,7 @@ void	RadioInterface::stopService	(dabService &s) {
 //
 //	stop "secondary services" - if any - as well
 	if (s. valid) {
-	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
+	   my_dabProcessor -> stop_service (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
 	      soundOut -> stop ();
 	      for (int i = 0; i < 5; i ++) {
@@ -3003,7 +3002,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	         my_dabProcessor -> dataforPacketService (s. serviceName,
 	                                                        &pd, i);
 	         if (pd. defined) {
-	            my_dabProcessor -> stopService (pd. subchId, FORE_GROUND);
+	            my_dabProcessor -> stop_service (pd. subchId, FORE_GROUND);
 	            break;
 	         }
 	      }
@@ -3037,13 +3036,13 @@ void	RadioInterface::stopService	(dabService &s) {
 }
 //
 //
-void	RadioInterface::startService (dabService *s) {
+void	RadioInterface::start_service (dabService *s) {
 QString serviceName	= s -> serviceName;
 
 	channel. currentService		= *s;
 	channel. currentService. valid	= false;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
-	LOG ("service has SNR ", QString::number (configWidget. snrDisplay -> value ()));
+	LOG ("service has SNR ", QString::number (channel. snr));
 //
 //	mark the selected service in the service list
 	int rowCount	= model. rowCount ();
@@ -3235,14 +3234,14 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	   return;
 
 	presetTimer. stop ();
+	stop_scanning (false);
 	channel. nextService. valid	= false;
-	stopScanning (false);
 	if (!channel. currentService. valid)
 	   return;
 
 	QString oldService	= channel. currentService. serviceName;
 	
-	stopService  (channel. currentService);
+	stop_service  (channel. currentService);
 	channel. currentService. valid = false;
 
 	if ((serviceList. size () != 0) && (oldService != "")) {
@@ -3265,7 +3264,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	            break;
 	         }
 	         s. serviceName = serviceList. at (i). name;
-	         startService (&s);
+	         start_service (&s);
 	         break;
 	      }
 	   }
@@ -3286,7 +3285,7 @@ void	RadioInterface::setPresetService () {
 	   return;
 
 	presetTimer. stop ();
-	stopScanning (false);
+	stop_scanning (false);
 	if (!channel. nextService. valid)
 	   return;
 
@@ -3313,7 +3312,7 @@ void	RadioInterface::setPresetService () {
 	}
 
 	channel. nextService. valid = false;
-	startService (&s);
+	start_service (&s);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3322,7 +3321,7 @@ void	RadioInterface::setPresetService () {
 ///////////////////////////////////////////////////////////////////////////
 //	Precondition: no channel should be active
 //	
-void	RadioInterface::startChannel (const QString &theChannel) {
+void	RadioInterface::start_channel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theBand. Frequency (theChannel);
 	LOG ("channel starts ", theChannel);
@@ -3336,6 +3335,7 @@ int	tunedFrequency	=
 	handling_channel. store (true);
 	my_dabProcessor		-> start ();
 	channel. cleanChannel ();
+	channel. serviceCount	= -1;
 	channel. channelName	= theChannel;
 	channel. frequency	= tunedFrequency / 1000;
 	channel. targetPos	= std::complex<float> (0, 0);
@@ -3353,7 +3353,7 @@ int	tunedFrequency	=
 //
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
-void	RadioInterface::stopChannel	() {
+void	RadioInterface::stop_channel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
 	handling_channel. store (false);
@@ -3362,10 +3362,10 @@ void	RadioInterface::stopChannel	() {
 //
 //	forst, stop services in fore and background
 	if (channel. currentService. valid)
-	   stopService (channel. currentService);
+	   stop_service (channel. currentService);
 	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++) {
 	   dabService s =  channel. backgroundServices. at (i);
-	   my_dabProcessor -> stopService (s. subChId, BACK_GROUND);
+	   my_dabProcessor -> stop_service (s. subChId, BACK_GROUND);
 	   if (s. fd != nullptr)
 	      fclose (s. fd);
 	}
@@ -3443,8 +3443,9 @@ void    RadioInterface::handle_channelSelector (const QString &channel) {
 	LOG ("select channel ", channel. toUtf8 (). data ());
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
-	stopChannel	();
-	startChannel	(channel);
+	stop_scanning	(false);
+	stop_channel	();
+	start_channel	(channel);
 }
 
 void	RadioInterface::handle_nextChannelButton () {
@@ -3471,10 +3472,10 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 	   abort ();
 	}
 
-	stopScanning (false);
-	stopChannel	();
+	stop_scanning (false);
+	stop_channel	();
 	new_channelIndex (currentChannel);
-	startChannel (channelSelector -> currentText ());
+	start_channel (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -3486,12 +3487,12 @@ void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
 	if (scanning. load ()) 
-	   stopScanning (false);
+	   stop_scanning (false);
 	else
-	   startScanning ();
+	   start_scanning ();
 }
 
-void	RadioInterface::startScanning	() {
+void	RadioInterface::start_scanning	() {
 int	switchDelay;
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	presetTimer. stop ();
@@ -3500,7 +3501,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	         this, SLOT (No_Signal_Found ()));
 	new_presetIndex (0);
-	stopChannel     ();
+	stop_channel     ();
 	int  cc      = channelSelector -> currentIndex ();
 	if (scanMode == SCAN_TO_DATA) {
 	   cc ++;
@@ -3551,10 +3552,15 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	channelTimer. start (switchDelay * 1000);
 
-	startChannel    (channelSelector -> currentText ());
+	start_channel    (channelSelector -> currentText ());
 }
-
-void	RadioInterface::stopScanning	(bool dump) {
+//
+//	stop_scanning is called
+//	1. when the scanbutton is touched during scanning
+//	2. on user selection of a service or a channel select
+//	3. on device selection
+//	4. on handling a reset
+void	RadioInterface::stop_scanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
@@ -3595,12 +3601,12 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   int	cc	= channelSelector -> currentIndex ();
 	   if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
 	      showServices ();
-	   stopChannel ();
+	   stop_channel ();
 	   cc = theBand. nextChannel (cc);
 	   fprintf (stderr, "going to channel %d\n", cc);
 	   if ((cc >= channelSelector -> count ()) &&
 	                               (scanMode == SINGLE_SCAN)) {
-	      stopScanning (true);
+	      stop_scanning (true);
 	   }
 	   else {  // we just continue
 	      if (cc >= channelSelector -> count ())
@@ -3620,12 +3626,12 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	      switchDelay	= 
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	      channelTimer. start (switchDelay * 1000);
-	      startChannel (channelSelector -> currentText ());
+	      start_channel (channelSelector -> currentText ());
 	   }
 	}
 	else
 	if (scanning. load ()) 
-	   stopScanning (false);
+	   stop_scanning (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -3635,7 +3641,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	
 void	RadioInterface::showServices () {
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
-QString SNR 		= "SNR " + QString::number (configWidget. snrDisplay -> value ());
+QString SNR 		= "SNR " + QString::number (channel. snr);
 
 	if (my_dabProcessor == nullptr) {	// cannot happen
 	   fprintf (stderr, "Expert error 26\n");
@@ -4297,7 +4303,7 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 
 	presetTimer. stop ();
 	if (scanning. load ())
-	   stopScanning (false);
+	   stop_scanning (false);
 	scheduleSelect (s);
 }
 
@@ -4717,7 +4723,7 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   return;
 
 	if (setting) {
-	   stopScanning (false);	
+	   stop_scanning (false);	
 	   disconnect (scanButton, SIGNAL (clicked ()),
 	               this, SLOT (handle_scanButton ()));
 	   connect (scanButton, SIGNAL (clicked ()),

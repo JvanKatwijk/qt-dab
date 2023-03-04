@@ -219,43 +219,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
           <item>
            <layout class="QFormLayout" name="formLayout_2">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="font">
-               <font>
-                <pointsize>11</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>SNR: </string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLCDNumber" name="snrDisplay">
-              <property name="font">
-               <font>
-                <pointsize>8</pointsize>
-                <underline>false</underline>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A Signal to Noise (SNR) indicator&lt;/p&gt;&lt;p&gt;In general: higher is better. But do not take the value as a serious measure of the SNR. The value is computed ad ration between the signal strength overall amd the signal strength during the null period of a DAB frame.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Panel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <property name="digitCount">
-               <number>6</number>
-              </property>
-              <property name="segmentStyle">
-               <enum>QLCDNumber::Flat</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
              <widget class="QLabel" name="label_6">
               <property name="font">
                <font>
@@ -263,12 +226,12 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                </font>
               </property>
               <property name="text">
-               <string>Offset [Hz]:</string>
+               <string>Frequency</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QLCDNumber" name="correctorDisplay">
+            <item row="0" column="1">
+             <widget class="QLCDNumber" name="frequencyDisplay">
               <property name="font">
                <font>
                 <pointsize>8</pointsize>
@@ -296,37 +259,13 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
           <item>
            <layout class="QFormLayout" name="formLayout">
             <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="label_3">
               <property name="text">
-               <string>Frequency:</string>
+               <string>CPU load (%):</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLCDNumber" name="frequencyDisplay">
-              <property name="font">
-               <font>
-                <pointsize>12</pointsize>
-               </font>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frequency in MHz (only available from live sources)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="frameShape">
-               <enum>QFrame::Panel</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Sunken</enum>
-              </property>
-              <property name="digitCount">
-               <number>7</number>
-              </property>
-              <property name="segmentStyle">
-               <enum>QLCDNumber::Flat</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
              <widget class="QLCDNumber" name="cpuMonitor">
               <property name="toolTip">
                <string>The total load on the processor, not just from running this application.</string>
@@ -342,13 +281,6 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
               </property>
               <property name="segmentStyle">
                <enum>QLCDNumber::Flat</enum>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>CPU load (%):</string>
               </property>
              </widget>
             </item>

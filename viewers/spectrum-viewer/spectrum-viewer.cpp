@@ -31,38 +31,20 @@
 	spectrumViewer::spectrumViewer	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings,
 	                                 RingBuffer<std::complex<float>> *sbuffer,
-	                                 RingBuffer<std::complex<float>>* ibuffer) {
+	                                 RingBuffer<std::complex<float>>* ibuffer):
+	                                 myFrame (nullptr) {
 int16_t	i;
-QString	colorString	= "black";
-bool	brush;
 
 	this	-> myRadioInterface	= mr;
 	this	-> dabSettings		= dabSettings;
 	this	-> spectrumBuffer	= sbuffer;
 	this	-> iqBuffer		= ibuffer;
 
-	dabSettings	-> beginGroup ("spectrumViewer");
-	colorString	= dabSettings -> value ("displayColor",
-	                                           "black"). toString();
-	displayColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("gridColor",
-	                                           "white"). toString();
-	gridColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("curveColor",
-	                                            "white"). toString();
-	curveColor	= QColor (colorString);
-	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
-	displaySize	= dabSettings -> value ("displaySize", 1024).toInt();
-	dabSettings	-> endGroup ();
-	if ((displaySize & (displaySize - 1)) != 0)
-	   displaySize = 1024;
-	this	-> myFrame		= new QFrame (nullptr);
-	setupUi (this -> myFrame);
-
-	this	-> myFrame	-> hide();
-	displayBuffer. resize (displaySize);
-	memset (displayBuffer. data(), 0, displaySize * sizeof (double));
-	this	-> spectrumSize	= 4 * displaySize;
+	setupUi (&myFrame);
+	myFrame. hide();
+	displayBuffer. resize (256);
+	displaySize	= 256;
+	spectrumSize	= 4 * displaySize;
 	spectrum		= (std::complex<float> *)
 	               fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
         plan    = fftwf_plan_dft_1d (spectrumSize,
@@ -70,76 +52,30 @@ bool	brush;
                                   reinterpret_cast <fftwf_complex *>(spectrum),
                                   FFTW_FORWARD, FFTW_ESTIMATE);
 	
-	plotgrid		= dabScope;
-	plotgrid		-> setCanvasBackground (displayColor);
-	grid			= new QwtPlotGrid;
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMajPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid	-> setMajorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid	-> enableXMin (true);
-	grid	-> enableYMin (true);
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid	-> setMinPen (QPen(gridColor, 0, Qt::DotLine));
-#else
-	grid	-> setMinorPen (QPen(gridColor, 0, Qt::DotLine));
-#endif
-	grid	-> attach (plotgrid);
-
-	lm_picker	= new QwtPlotPicker (dabScope -> canvas ());
-	QwtPickerMachine *lpickerMachine =
-                             new QwtPickerClickPointMachine ();
-
-	lm_picker       -> setStateMachine (lpickerMachine);
-        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
-                                            Qt::RightButton);
-        connect (lm_picker, SIGNAL (selected (const QPointF&)),
-                 this, SLOT (rightMouseClick (const QPointF &)));
-
-	spectrumCurve	= new QwtPlotCurve ("");
-	spectrumCurve   -> setPen (QPen(curveColor, 2.0));
-	spectrumCurve	-> setOrientation (Qt::Horizontal);
-	spectrumCurve	-> setBaseline	(get_db (0));
-
-	ourBrush	= new QBrush (curveColor);
-	ourBrush	-> setStyle (Qt::Dense3Pattern);
-	if (brush)
-	   spectrumCurve	-> setBrush (*ourBrush);
-	spectrumCurve	-> attach (plotgrid);
-	
-	Marker		= new QwtPlotMarker();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::red));
-	Marker		-> attach (plotgrid);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-
 	Window. resize (spectrumSize);
 	for (i = 0; i < spectrumSize; i ++) 
 	   Window [i] =
 	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
 	              0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
-	setBitDepth	(12);
-
+	mySpectrumScope	= new spectrumScope (dabScope, 256, dabSettings);
+	myWaterfallScope	= new waterfallScope (dabWaterfall, 256, 50);
 	myIQDisplay	= new IQDisplay (iqDisplay, 512);
+	setBitDepth	(12);
 //	myIQDisplay	= new IQDisplay (iqDisplay, 256);
 }
 
 	spectrumViewer::~spectrumViewer() {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
-	myFrame		-> hide();
-	delete		Marker;
-	delete		ourBrush;
-	delete		spectrumCurve;
-	delete		grid;
+	myFrame. hide();
 	delete		myIQDisplay;
-	delete		myFrame;
+	delete		mySpectrumScope;
 }
 
 void	spectrumViewer::showSpectrum	(int32_t amount, int32_t vfoFrequency) {
 double	X_axis [displaySize];
 double	Y_values [displaySize];
+double	Y2_values [displaySize];
 int16_t	i, j;
 double	temp	= (double)INPUT_RATE / 2 / displaySize;
 int16_t	averageCount	= 5;
@@ -150,7 +86,7 @@ int16_t	averageCount	= 5;
 
 	spectrumBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
 	spectrumBuffer	-> FlushRingBuffer();
-	if (myFrame	-> isHidden()) {
+	if (myFrame. isHidden()) {
 	   spectrumBuffer	-> FlushRingBuffer();
 	   return;
 	}
@@ -198,37 +134,15 @@ int16_t	averageCount	= 5;
 	}
 
 	memcpy (Y_values,
-	        displayBuffer. data(), displaySize * sizeof (double));
-	ViewSpectrum (X_axis, Y_values,
-	              scopeAmplification -> value(),
+	        displayBuffer. data (), displaySize * sizeof (double));
+	memcpy (Y2_values,
+	        displayBuffer. data (), displaySize * sizeof (double));
+	mySpectrumScope	-> showSpectrum (X_axis, Y_values,
+	              scopeAmplification -> value (),
 	              vfoFrequency / 1000);
-}
-
-void	spectrumViewer::ViewSpectrum (double *X_axis,
-		                       double *Y1_value,
-	                               double amp,
-	                               int32_t marker) {
-uint16_t	i;
-float	amp1	= amp / 100;
-
-	amp		= amp / 100.0 * (- get_db (0));
-	plotgrid	-> setAxisScale (QwtPlot::xBottom,
-				         (double)X_axis [0],
-				         X_axis [displaySize - 1]);
-	plotgrid	-> enableAxis (QwtPlot::xBottom);
-	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + amp);
-//				         get_db (0), 0);
-	for (i = 0; i < displaySize; i ++) 
-	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
-
-	spectrumCurve	-> setBaseline (get_db (0));
-	Y1_value [0]		= get_db (0);
-	Y1_value [displaySize - 1] = get_db (0);
-
-	spectrumCurve	-> setSamples (X_axis, Y1_value, displaySize);
-	Marker		-> setXValue (marker);
-	plotgrid	-> replot(); 
+	myWaterfallScope -> display (X_axis, Y2_values, 
+	              dabWaterfallAmplitude -> value (), 
+	              vfoFrequency / 1000);
 }
 
 float	spectrumViewer::get_db (float x) {
@@ -243,18 +157,20 @@ void	spectrumViewer::setBitDepth	(int16_t d) {
 	normalizer	= 1;
 	while (-- d > 0) 
 	   normalizer <<= 1;
+
+	mySpectrumScope	-> setBitDepth (normalizer);
 }
 
-void	spectrumViewer::show() {
-	myFrame	-> show();
+void	spectrumViewer::show () {
+	myFrame. show ();
 }
 
-void	spectrumViewer::hide() {
-	myFrame	-> hide();
+void	spectrumViewer::hide () {
+	myFrame. hide ();
 }
 
-bool	spectrumViewer::isHidden() {
-	return myFrame -> isHidden();
+bool	spectrumViewer::isHidden () {
+	return myFrame. isHidden ();
 }
 
 void	spectrumViewer::showIQ	(int amount) {
@@ -265,7 +181,7 @@ double	avg	= 0;
 int	scopeWidth	= scopeSlider -> value();
 
 	t = iqBuffer -> getDataFromBuffer (Values, amount);
-	if (myFrame -> isHidden())
+	if (myFrame. isHidden())
 	   return;
 
 	for (i = 0; i < t; i ++) {
@@ -280,18 +196,29 @@ int	scopeWidth	= scopeSlider -> value();
 }
 
 void	spectrumViewer:: showQuality (float q, float timeOffset,	
-	                              float sco, float freqOffset) {
-	if (myFrame -> isHidden ())
+	                              float freqOffset) {
+	if (myFrame. isHidden ())
 	   return;
 
 	quality_display -> display (q);
 	timeOffsetDisplay	-> display (timeOffset);
-	scoOffsetDisplay	-> display (sco);
 	frequencyOffsetDisplay	-> display (freqOffset);
 }
 
+void	spectrumViewer::show_snr	(float snr) {
+	if (myFrame. isHidden ())
+	   return;
+	snrDisplay		-> display (snr);
+}
+
+void	spectrumViewer::show_correction	(int c) {
+	if (myFrame. isHidden ())
+	   return;
+	correctorDisplay	-> display (c);
+}
+
 void	spectrumViewer::show_clockErr	(int e) {
-	if (!myFrame -> isHidden ())
+	if (!myFrame. isHidden ())
 	   clockError -> display (e);
 }
 

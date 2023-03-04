@@ -658,14 +658,10 @@ uint8_t	dabBand;
 #endif
 	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
-	snrDisplay		-> setPalette (lcdPalette);
-	snrDisplay		-> setAutoFillBackground (true);
 	frequencyDisplay	-> setPalette (lcdPalette);
 	frequencyDisplay	-> setAutoFillBackground (true);
 	cpuMonitor		-> setPalette (lcdPalette);
 	cpuMonitor		-> setAutoFillBackground (true);
-	correctorDisplay	-> setPalette (lcdPalette);
-	correctorDisplay	-> setAutoFillBackground (true);
 	set_Colors ();
 	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
 	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
@@ -899,7 +895,10 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 //	
 //	a slot called by the ofdmprocessor
 void	RadioInterface::set_CorrectorDisplay (int v) {
-	correctorDisplay	-> display (v);
+//	correctorDisplay	-> display (v);
+	if (!my_spectrumViewer. isHidden ())
+	   my_spectrumViewer. show_correction (v);
+
 }
 //
 //	might be called when scanning only
@@ -1002,7 +1001,7 @@ QStringList s	= my_dabProcessor -> basicPrint ();
 	   return;
 	}
 	QString theTime;
-	QString SNR	= "SNR " + QString::number (snrDisplay -> value ());
+	QString SNR	= "SNR " + QString::number (currentSNR);
 	if (configWidget. utcSelector -> isChecked ())
 	   theTime	= convertTime (UTC. year,  UTC. month,
 	                               UTC. day, UTC. hour, UTC. minute);
@@ -1304,7 +1303,7 @@ int	serviceOrder;
 //	description, file descriptors remain of course
 //
 	for (uint16_t i = 0; i < backgroundServices. size (); i ++)
-	   my_dabProcessor -> stopService (backgroundServices. at (i). subChId,
+	   my_dabProcessor -> stop_service (backgroundServices. at (i). subChId,
 	                                   BACK_GROUND);
 
 	fprintf (stderr, "change will be effected\n");
@@ -2020,7 +2019,10 @@ void	RadioInterface::show_motHandling (bool b) {
 void	RadioInterface::show_snr (int s) {
 	if (!running. load ())
 	   return;
-	snrDisplay	-> display (s);
+	currentSNR	= s;
+
+	if (!my_spectrumViewer. isHidden ())
+           my_spectrumViewer. show_snr (s);     
 	
 	if (my_snrViewer. isHidden ()) {
 	   snrBuffer. FlushRingBuffer ();
@@ -2210,7 +2212,7 @@ bool	tiiChange	= false;
 	LOG ("transmitter ", channel. transmitterName);
 	LOG ("coordinates ", QString::number (latitude) + " " +
 	                        QString::number (longitude));
-	LOG ("current SNR ", QString::number (snrDisplay -> value ()));
+	LOG ("current SNR ", QString::number (currentSNR));
 	QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
@@ -2280,12 +2282,12 @@ void	RadioInterface::showIQ		(int amount) {
 	my_spectrumViewer. showIQ (amount);
 }
 
-void	RadioInterface::showQuality	(float q, float timeOffset,
-	                                 float sco, float freqOffset) {
+void	RadioInterface::showQuality	(float q, 
+	                                 float timeOffset, float freqOffset) {
 	if (!running. load())
 	   return;
 
-	my_spectrumViewer. showQuality (q, timeOffset, sco, freqOffset);
+	my_spectrumViewer. showQuality (q, timeOffset, freqOffset);
 }
 
 //
@@ -2817,7 +2819,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	            if (backgroundServices. at (i). serviceName ==
 	                                                      serviceName) {
-	                my_dabProcessor -> stopService (ad. subchId,
+	                my_dabProcessor -> stop_service (ad. subchId,
 	                                                      BACK_GROUND);
 	                if (backgroundServices. at (i). fd != nullptr)
 	                   fclose (backgroundServices. at (i). fd);
@@ -3039,7 +3041,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	}
 
 	if (s. valid) {
-	   my_dabProcessor -> stopService (s. subChId, FORE_GROUND);
+	   my_dabProcessor -> stop_service (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
 	      soundOut -> stop ();
 	      for (int i = 0; i < 5; i ++) {
@@ -3047,7 +3049,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	         my_dabProcessor -> dataforPacketService (s. serviceName,
 	                                                        &pd, i);
 	         if (pd. defined) {
-	            my_dabProcessor -> stopService (pd. subchId, FORE_GROUND);
+	            my_dabProcessor -> stop_service (pd. subchId, FORE_GROUND);
 	            break;
 	         }
 	      }
@@ -3116,7 +3118,7 @@ QString serviceName	= s -> serviceName;
 	currentService		= *s;
 	currentService. valid	= false;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
-	LOG ("service has SNR ", QString::number (snrDisplay -> value ()));
+	LOG ("service has SNR ", QString::number (currentSNR));
 	techData. timeTable_button -> hide ();
 //
 //	mark the selected service in the service list
@@ -3498,7 +3500,7 @@ void	RadioInterface::stopChannel	() {
 	
 	for (uint16_t i = 0; i < backgroundServices. size (); i ++) {
 	   dabService s =  backgroundServices. at (i);
-	   my_dabProcessor -> stopService (s. subChId, BACK_GROUND);
+	   my_dabProcessor -> stop_service (s. subChId, BACK_GROUND);
 	   if (s. fd != nullptr)
 	      fclose (s. fd);
 	}
@@ -3780,7 +3782,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	
 void	RadioInterface::showServices () {
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
-QString SNR 		= "SNR " + QString::number (snrDisplay -> value ());
+QString SNR 		= "SNR " + QString::number (currentSNR);
 
 	if (my_dabProcessor == nullptr) {	// cannot happen
 	   fprintf (stderr, "Expert error 26\n");

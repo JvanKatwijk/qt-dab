@@ -227,7 +227,7 @@ sdrplaySelect	*sdrplaySelector;
 	   val = 0;
 	if (val > lnaMax)
 	   val = lnaMax;
-	fprintf (stderr, "val = %d, max = %d\n", val, lnaMax);
+//	fprintf (stderr, "val = %d, max = %d\n", val, lnaMax);
 	lnaGainSetting	-> setValue (val);
 	connect (this, SIGNAL (new_lnaValue (int)),
                  lnaGainSetting, SLOT (setValue (int)));

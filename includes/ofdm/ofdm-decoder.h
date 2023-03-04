@@ -75,7 +75,7 @@ private:
 
 signals:
 	void		showIQ		(int);
-	void		showQuality	(float, float, float, float);
+	void		showQuality	(float, float, float);
 };
 
 #endif

@@ -64,8 +64,8 @@ public:
 //
 //	
 	void		reset_Channel		();
-	void		stopService		(descriptorType *, int);
-	void		stopService		(int, int);
+	void		stop_service		(descriptorType *, int);
+	void		stop_service		(int, int);
 	void		reset_Buffers		();
 private:
 	void		process_mscBlock	(std::vector<int16_t>, int16_t);

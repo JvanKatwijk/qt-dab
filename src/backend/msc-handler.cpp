@@ -217,7 +217,7 @@ void	mscHandler::reset_Channel () {
 	locker. unlock ();
 }
 
-void	mscHandler::stopService	(descriptorType *d, int flag) {
+void	mscHandler::stop_service	(descriptorType *d, int flag) {
 	fprintf (stderr, "obsolete function stopService\n");
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
@@ -233,7 +233,7 @@ void	mscHandler::stopService	(descriptorType *d, int flag) {
 	locker. unlock ();
 }
 
-void	mscHandler::stopService	(int subchId, int flag) {
+void	mscHandler::stop_service	(int subchId, int flag) {
 	locker. lock ();
 	for (int i = 0; i < theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);

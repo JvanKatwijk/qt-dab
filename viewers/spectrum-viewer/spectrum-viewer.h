@@ -50,6 +50,8 @@
 #include        <QBrush>
 #include        <QTimer>
 
+#include	"spectrum-scope.h"
+#include	"waterfall-scope.h"
 
 class	RadioInterface;
 class	QSettings;
@@ -64,13 +66,16 @@ public:
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
 	void		showIQ		(int32_t);
-	void		showQuality	(float, float, float, float);
+	void		showQuality	(float, float, float);
+	void		show_snr	(float);
 	void		show_clockErr	(int);
+	void		show_correction	(int);
 	void		setBitDepth	(int16_t);
 	void		show();
 	void		hide();
 	bool		isHidden();
 private:
+	QFrame		myFrame;
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
 	RingBuffer<std::complex<float>>	*spectrumBuffer;
@@ -86,7 +91,6 @@ private:
 	std::vector<double>	displayBuffer;
 	std::vector<float>	Window;
 	fftwf_plan	plan;
-	QFrame		*myFrame;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;
@@ -98,6 +102,8 @@ private:
 	int32_t		normalizer;
 
 	IQDisplay	*myIQDisplay;
+	spectrumScope	*mySpectrumScope;
+	waterfallScope	*myWaterfallScope;
 private slots:
 	void		rightMouseClick		(const QPointF &);
 };

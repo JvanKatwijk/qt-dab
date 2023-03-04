@@ -233,6 +233,7 @@ private:
 	void			connectGUI		();
 	void			disconnectGUI		();
 
+	int			currentSNR;
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
@@ -361,7 +362,7 @@ public slots:
 	                                                      QVector<int>);
 	void			showSpectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float, float, float, float);
+	void			showQuality		(float, float, float);
 	void			show_rsCorrections	(int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();

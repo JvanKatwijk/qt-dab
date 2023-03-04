@@ -97,8 +97,8 @@ public:
 	void		stop_ficDump		();
 //	for the mscHandler
 	void		reset_Services		();
-	void		stopService		(descriptorType *, int);
-	void		stopService		(int, int);
+	void		stop_service		(descriptorType *, int);
+	void		stop_service		(int, int);
 	bool		set_audioChannel	(audiodata *,
 	                                         RingBuffer<int16_t> *,
 	                                         FILE *, int);

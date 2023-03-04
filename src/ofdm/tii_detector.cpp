@@ -121,10 +121,10 @@ int16_t	i;
 	for (i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
 
+	for (i = 0; i < 256; i ++)
+	   invTable [i] = -1;
 	for (i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
-	for (i = 71; i < 256; i ++)
-	   invTable [i] = -1;
 	detectMode_new	= false;
 }
 
@@ -177,6 +177,9 @@ int	i;
 static
 uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 
+//
+//	We determine first the offset of the "best fit", the offset
+//	indicates the subId
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
 uint16_t	TII_Detector::processNULL () {
@@ -234,6 +237,7 @@ float	avgTable	[NUM_GROUPS];
 	   }
 	}
 
+
 //	we extract from this result the highest values that
 //	meet the constraint of 4 values being sufficiently high
 	float	maxTable	= 0;
@@ -258,7 +262,7 @@ float	avgTable	[NUM_GROUPS];
 	float x [NUM_GROUPS];
 	for (i = 0; i < NUM_GROUPS; i ++) 
 	   x [i] = hulpTable [maxIndex + GROUPSIZE * i];
-//
+
 //	find the best match
 	int finInd = -1;
 	if (detectMode_new) {
@@ -292,6 +296,7 @@ float	avgTable	[NUM_GROUPS];
 	      }
 	   }
 	   finInd = invTable [pattern];
+//	   fprintf (stderr, "MaxIndex %d, bitPatterm %x\n", maxIndex, pattern);
 	}
 
 	return  maxIndex + finInd * 256;
