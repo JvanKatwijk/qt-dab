@@ -49,6 +49,11 @@ static const QString styleSheet_2 =
 //	#include "./stylesheets/Combinear.qss"
 ;
 
+static const QString styleSheet_3 =
+	#include "./stylesheets/Fibers.qss"
+;
+
+
 QString fullPathfor (QString v) {
 QString fileName;
 

@@ -42,7 +42,7 @@
 #include	"msc-handler.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
-#include	"tii_detector.h"
+#include	"tii-detector.h"
 #include	"eti-generator.h"
 //
 
@@ -66,7 +66,7 @@ public:
 	void		stop_etiGenerator	();
 	void		reset_etiGenerator	();
 	void		set_scanMode		(bool);
-	void		getFrameQuality		(int *, int*, int *);
+	void		get_frameQuality	(int *, int*, int *);
 //
 //	inheriting from our delegates
 //	for the ficHandler:

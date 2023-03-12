@@ -432,7 +432,7 @@ void	dabProcessor::set_scanMode	(bool b) {
 	attempts	= 0;
 }
 
-void	dabProcessor::getFrameQuality	(int	*totalFrames,
+void	dabProcessor::get_frameQuality	(int	*totalFrames,
 	                                 int	*goodFrames,
 	                                 int	*badFrames) {
 	*totalFrames		= this	-> totalFrames;
@@ -459,14 +459,15 @@ std::vector<serviceId>	dabProcessor::getServices	(int n) {
 	return my_ficHandler. getServices (n);
 }
 
+int	dabProcessor::getSubChId	(const QString &s,
+	                                          uint32_t SId) {
+	return my_ficHandler. getSubChId (s, SId);
+}
+
 bool	dabProcessor::is_audioService	(const QString &s) {
 audiodata ad;
 	my_ficHandler. dataforAudioService (s, &ad);
 	return ad. defined;
-}
-
-int	dabProcessor::getSubChId	(const QString &s, uint32_t SId) {
-	return my_ficHandler. getSubChId (s, SId);
 }
 
 bool	dabProcessor::is_packetService	(const QString &s) {

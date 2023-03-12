@@ -87,12 +87,7 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock();
-	      if (dumpFile != nullptr)
-	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock();
-
-	      audioOutput (buffer, result);
+	      audioReady (buffer, result);
 	   }
 }
 
@@ -114,12 +109,7 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock();
-	      if (dumpFile != nullptr)
-	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock();
-
-	      audioOutput (buffer, result);
+	      audioReady (buffer, result);
 	   }
 }
 
@@ -141,12 +131,6 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
-	      myLocker. lock();
-	      if (dumpFile != nullptr)
-	         sf_writef_float (dumpFile, (float *)buffer, result);
-	      myLocker. unlock();
-//	      fprintf (stderr, "result %d\n", result);
-	      audioOutput (buffer, result);
 	   }
 	}
 }
@@ -160,11 +144,7 @@ int32_t	i;
 	   buffer [2 * i + 1]	= V [2 * i + 1] / 32767.0;
 	}
 
-	myLocker. lock();
-	if (dumpFile != nullptr)
-	   sf_writef_float (dumpFile, (float *)buffer, amount);
-	myLocker. unlock();
-	audioOutput (buffer, amount);
+	audioReady (buffer, amount);
 }
 //
 //	we ensure that no one is fiddling with the dumpfile
@@ -181,6 +161,13 @@ void	audioBase::stopDumping() {
 	myLocker. unlock();
 }
 
+void	audioBase::audioReady	(float *buffer, int amount) {
+	myLocker. lock();
+	if (dumpFile != nullptr)
+	   sf_writef_float (dumpFile, (float *)buffer, amount);
+	myLocker. unlock();
+	audioOutput (buffer, amount);
+}
 //
 //	The audioOut function is the one that really should be
 //	reimplemented in the offsprings of this class

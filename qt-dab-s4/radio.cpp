@@ -1517,9 +1517,9 @@ void	RadioInterface::updateTimeDisplay() {
 	   int	totalFrames;
 	   int	goodFrames;
 	   int	badFrames;
-	   my_dabProcessor	-> getFrameQuality (&totalFrames,
-	                                            &goodFrames,
-	                                            &badFrames);
+	   my_dabProcessor	-> get_frameQuality (&totalFrames,
+	                                             &goodFrames,
+	                                             &badFrames);
 	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
 	                     totalFrames, goodFrames, badFrames,
 	                                            total_ficError * 100.0 / total_fics);

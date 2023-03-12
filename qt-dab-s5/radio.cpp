@@ -721,7 +721,6 @@ uint8_t	dabBand;
 //	we wait until one is selected
 
 	if (inputDevice != nullptr) {
-	   LOG ("start with ", inputDevice -> deviceName ());
 	   if (doStart ()) {
 	      qApp	-> installEventFilter (this);
 	      return;
@@ -736,8 +735,8 @@ uint8_t	dabBand;
 	   dabSettings	-> setValue ("hidden", 0);
 	}
 	configDisplay. show ();
-	LOG ("starting without device ", "");
-	connect (configWidget. deviceSelector, SIGNAL (activated (const QString &)),
+	connect (configWidget. deviceSelector,
+	                               SIGNAL (activated (const QString &)),
 	         this,  SLOT (doStart (const QString &)));
 	qApp	-> installEventFilter (this);
 }
@@ -753,6 +752,7 @@ QString RadioInterface::footText () {
 	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
 	versionText += "Rights of Qt, fftw, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
 	versionText += "Rights of developers of RTLSDR library, SDRplay libraries, AIRspy library and others gratefully acknowledged\n";
+	versionText += "Copyright of DevSec Studio for the skin, made available under an MIT license, is gratefully acknowledged";
 	versionText += "Rights of other contributors gratefully acknowledged";
 	return versionText;
 }
@@ -827,7 +827,7 @@ bool	RadioInterface::doStart	() {
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	            this, SLOT (handle_tii_detectorMode (int)));
 
-	start_channel (channelSelector -> currentText ());
+	startChannel (channelSelector -> currentText ());
 	running. store (true);
 	return true;
 }
@@ -946,7 +946,7 @@ QString s;
 	channel. ensembleName	= v;
 	channel. Eid		= id;
 	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
-	   stop_scanning (false);
+	   stopScanning (false);
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -1118,6 +1118,7 @@ const char *type;
 	if (!running. load() || (pictureName == QString ("")))
 	   return;
 
+	(void)dirs;
 	switch (static_cast<MOTContentType>(contentType)) {
 	   case MOTCTImageGIF:
 	      type = "GIF";
@@ -1239,8 +1240,8 @@ int	serviceOrder;
 	dabService s;
 	if (channel. currentService. valid) 
 	   s = channel. currentService;
-	stop_service	(s);
-	stop_scanning    (false);
+	stopService	(s);
+	stopScanning    (false);
 //
 //
 //	we stop all secondary services as well, but we maintain theer
@@ -1275,7 +1276,7 @@ int	serviceOrder;
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (ss != "") {
-	      start_service (&s);
+	      startService (&s);
 	      return;
 	   }
 //
@@ -1284,7 +1285,7 @@ int	serviceOrder;
 	   s. serviceName =
 	               my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (s. serviceName != "")
-	      start_service (&s);
+	      startService (&s);
 	}
 //
 //	we also have to restart all background services,
@@ -1355,7 +1356,7 @@ void	RadioInterface::newAudio	(int amount, int rate) {
   */
 void	RadioInterface::TerminateProcess () {
 	if (scanning. load ())
-	   stop_scanning (false);
+	   stopScanning (false);
 	running. store	(false);
 	dumpControlState (dabSettings);
 	hideButtons	();
@@ -1398,9 +1399,9 @@ void	RadioInterface::TerminateProcess () {
 
 	my_presetHandler. savePresets (presetSelector);
 	theBand. saveSettings	();
-	stop_frameDumping	();
-	stop_sourceDumping	();
-	stop_audioDumping	();
+	stopFramedumping	();
+	stopSourcedumping	();
+	stopAudiodumping	();
 //	theTable. hide		();
 	theBand. hide		();
 	theScheduler. hide	();
@@ -1464,9 +1465,9 @@ void	RadioInterface::updateTimeDisplay() {
 	   int	totalFrames;
 	   int	goodFrames;
 	   int	badFrames;
-	   my_dabProcessor	-> getFrameQuality (&totalFrames,
-	                                            &goodFrames,
-	                                            &badFrames);
+	   my_dabProcessor	-> get_frameQuality (&totalFrames,
+	                                             &goodFrames,
+	                                             &badFrames);
 	   fprintf (stderr, "total %d, good %d bad %d ficRatio %f\n",
 	                     totalFrames, goodFrames, badFrames,
 	                                            total_ficError * 100.0 / total_fics);
@@ -1834,8 +1835,8 @@ deviceHandler	*inputDevice	= nullptr;
 void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
 	running. store (false);
-	stop_scanning	(false);
-	stop_channel	();
+	stopScanning	(false);
+	stopChannel	();
 	disconnectGUI	();
 	if (inputDevice != nullptr) {
 	   delete inputDevice;
@@ -2342,9 +2343,9 @@ void	RadioInterface::setSyncLost	() {
 void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
-	stop_scanning (false);
-	stop_channel ();
-	start_channel	(channelSelector -> currentText ());
+	stopScanning (false);
+	stopChannel ();
+	startChannel	(channelSelector -> currentText ());
 }
 //
 ////////////////////////////////////////////////////////////////////////
@@ -2361,17 +2362,18 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> update ();
 }
 
-void	RadioInterface::stop_sourceDumping	() {
+void	RadioInterface::stopSourcedumping	() {
 	if (rawDumper == nullptr) 
 	   return;
 
+	LOG ("source dump stops ", "");
 	my_dabProcessor	-> stopDumping();
 	sf_close (rawDumper);
 	rawDumper	= nullptr;
 	setButtonFont (configWidget. dumpButton, "Raw dump", 10);
 }
 //
-void	RadioInterface::start_sourceDumping () {
+void	RadioInterface::startSourcedumping () {
 QString deviceName	= inputDevice -> deviceName ();
 QString channelName	= channel. channelName;
 	
@@ -2382,7 +2384,7 @@ QString channelName	= channel. channelName;
 	         filenameFinder. findRawDump_fileName (deviceName, channelName);
 	if (rawDumper == nullptr)
 	   return;
-
+	LOG ("source dump starts ", channelName);
 	setButtonFont (configWidget. dumpButton, "writing", 12);
 	my_dabProcessor -> startDumping (rawDumper);
 }
@@ -2392,9 +2394,9 @@ void	RadioInterface::handle_sourcedumpButton () {
 	   return;
 
 	if (rawDumper != nullptr)
-	   stop_sourceDumping ();
+	   stopSourcedumping ();
 	else
-	   start_sourceDumping ();
+	   startSourcedumping ();
 }
 
 void	RadioInterface::handle_audiodumpButton () {
@@ -2402,28 +2404,30 @@ void	RadioInterface::handle_audiodumpButton () {
 	   return;
 
 	if (audioDumper != nullptr) 
-	   stop_audioDumping ();	
+	   stopAudiodumping ();	
 	else
-	   start_audioDumping ();
+	   startAudiodumping ();
 }
 
-void	RadioInterface::stop_audioDumping	() {
+void	RadioInterface::stopAudiodumping	() {
 	if (audioDumper == nullptr)
 	   return;
 
+	LOG ("audiodump stops", "");
 	soundOut	-> stopDumping();
 	sf_close (audioDumper);
 	audioDumper	= nullptr;
 	theTechWindow	-> audiodumpButton_text ("audio dump", 10);
 }
 
-void	RadioInterface::start_audioDumping () {
+void	RadioInterface::startAudiodumping () {
 	audioDumper	=
 	      filenameFinder.
 	           findAudioDump_fileName  (serviceLabel -> text (), true);
 	if (audioDumper == nullptr)
 	   return;
 
+	LOG ("audiodump starts ", serviceLabel -> text ());
 	theTechWindow	-> audiodumpButton_text ("writing", 12);
 	soundOut	-> startDumping (audioDumper);
 }
@@ -2433,6 +2437,7 @@ void	RadioInterface::scheduled_audioDumping () {
 	   soundOut	-> stopDumping();
 	   sf_close (audioDumper);
 	   audioDumper	= nullptr;
+	   LOG ("scheduled audio dump stops ", serviceLabel -> text ());
 	   theTechWindow	-> audiodumpButton_text ("audio dump", 10);
 	   return;
 	}
@@ -2442,6 +2447,7 @@ void	RadioInterface::scheduled_audioDumping () {
 	if (audioDumper == nullptr)
 	   return;
 
+	LOG ("scheduled audio dump starts ", serviceLabel -> text ());
 	theTechWindow	-> audiodumpButton_text ("writing", 12);
 	soundOut	-> startDumping (audioDumper);
 }
@@ -2450,14 +2456,13 @@ void	RadioInterface::handle_framedumpButton () {
 	if (!running. load () || scanning. load ())
 	   return;
 
-	fprintf (stderr, "signal gehad\n");
 	if (frameDumper != nullptr) 
-	   stop_frameDumping ();
+	   stopFramedumping ();
 	else
-	   start_frameDumping ();
+	   startFramedumping ();
 }
 
-void	RadioInterface::stop_frameDumping () {
+void	RadioInterface::stopFramedumping () {
 	if (frameDumper == nullptr)
 	   return;
 
@@ -2466,7 +2471,7 @@ void	RadioInterface::stop_frameDumping () {
 	frameDumper	= nullptr;
 }
 
-void	RadioInterface::start_frameDumping () {
+void	RadioInterface::startFramedumping () {
 	frameDumper	=
 	     filenameFinder. findFrameDump_fileName (serviceLabel -> text (),
 	                                                              true);
@@ -2741,7 +2746,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                  channel. currentService.
 	                                 serviceName. toUtf8 (). data (),
 	                                channel. currentService. valid);
-	         stop_service (channel. currentService);
+	         stopService (channel. currentService);
 	         channel. currentService. valid =  false;
 	         selectService (ensembleDisplay -> currentIndex ());
 	      }
@@ -2915,8 +2920,8 @@ QString serviceName	= service;
 	   return;
 
 	presetTimer. stop ();
-	stop_scanning (false);
-	stop_service (channel. currentService);
+	stopScanning (false);
+	stopService (channel. currentService);
 
 	for (int i = service. size (); i < 16; i ++)
 	   serviceName. push_back (' ');
@@ -2931,7 +2936,7 @@ QString serviceName	= service;
 	      return;
 	   }
 	   s. serviceName = service;
-	   start_service (&s);
+	   startService (&s);
 	   return;
 	}
 //
@@ -2939,7 +2944,7 @@ QString serviceName	= service;
 //	quitting the current channel,
 //      selecting a new channel,
 //      waiting a while
-	stop_channel ();
+	stopChannel ();
 //      and start the new channel first
 	int k           = channelSelector -> findText (theChannel);
 	if (k != -1) {
@@ -2962,14 +2967,14 @@ QString serviceName	= service;
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	presetTimer. setInterval (switchDelay * 1000);
 	presetTimer. start (switchDelay * 1000);
-	start_channel    (channelSelector -> currentText ());
+	startChannel    (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////////
 //
 ///////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface::stop_service	(dabService &s) {
+void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stop_muting	();
@@ -2982,11 +2987,11 @@ void	RadioInterface::stop_service	(dabService &s) {
 
 //	stop "dumpers"
 	if (frameDumper != nullptr) {
-	   stop_frameDumping ();
+	   stopFramedumping ();
 	}
 
 	if (audioDumper != nullptr) {
-	   stop_audioDumping ();
+	   stopAudiodumping ();
 	}
 
 //	and clean up the technical widget
@@ -3036,7 +3041,7 @@ void	RadioInterface::stop_service	(dabService &s) {
 }
 //
 //
-void	RadioInterface::start_service (dabService *s) {
+void	RadioInterface::startService (dabService *s) {
 QString serviceName	= s -> serviceName;
 
 	channel. currentService		= *s;
@@ -3066,7 +3071,7 @@ QString serviceName	= s -> serviceName;
 	         if (my_dabProcessor -> has_timeTable (ad. SId))
 	            theTechWindow -> show_timetableButton (true);
 
-	         start_audioService (&ad);
+	         startAudioservice (&ad);
 	         if (dabSettings -> value ("has-presetName", 0).
 	                                                   toInt () == 1) {
 	            QString s = channel. channelName + ":" + serviceName;
@@ -3086,7 +3091,7 @@ QString serviceName	= s -> serviceName;
 	         channel. currentService. valid		= true;
 	         channel. currentService. is_audio	= false;
 	         channel. currentService. subChId	= pd. subchId;
-	         start_packetService (serviceName);
+	         startPacketservice (serviceName);
 	      }
 	      else {
 	         fprintf (stderr, "%s is not clear\n",
@@ -3106,7 +3111,7 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt,
 	model. setData (ind, QFont (theFont, pt, -1, italic), Qt::FontRole);
 }
 //
-void	RadioInterface::start_audioService (audiodata *ad) {
+void	RadioInterface::startAudioservice (audiodata *ad) {
 	if (!ad ->  defined) {
 	   QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));
@@ -3142,7 +3147,7 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	theTechWindow	-> show_serviceData 	(ad);
 }
 
-void	RadioInterface::start_packetService (const QString &s) {
+void	RadioInterface::startPacketservice (const QString &s) {
 packetdata pd;
 
 	my_dabProcessor -> dataforPacketService (s, &pd, 0);
@@ -3234,14 +3239,14 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	   return;
 
 	presetTimer. stop ();
-	stop_scanning (false);
+	stopScanning (false);
 	channel. nextService. valid	= false;
 	if (!channel. currentService. valid)
 	   return;
 
 	QString oldService	= channel. currentService. serviceName;
 	
-	stop_service  (channel. currentService);
+	stopService  (channel. currentService);
 	channel. currentService. valid = false;
 
 	if ((serviceList. size () != 0) && (oldService != "")) {
@@ -3264,7 +3269,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	            break;
 	         }
 	         s. serviceName = serviceList. at (i). name;
-	         start_service (&s);
+	         startService (&s);
 	         break;
 	      }
 	   }
@@ -3285,7 +3290,7 @@ void	RadioInterface::setPresetService () {
 	   return;
 
 	presetTimer. stop ();
-	stop_scanning (false);
+	stopScanning (false);
 	if (!channel. nextService. valid)
 	   return;
 
@@ -3312,7 +3317,7 @@ void	RadioInterface::setPresetService () {
 	}
 
 	channel. nextService. valid = false;
-	start_service (&s);
+	startService (&s);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3321,7 +3326,7 @@ void	RadioInterface::setPresetService () {
 ///////////////////////////////////////////////////////////////////////////
 //	Precondition: no channel should be active
 //	
-void	RadioInterface::start_channel (const QString &theChannel) {
+void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theBand. Frequency (theChannel);
 	LOG ("channel starts ", theChannel);
@@ -3353,7 +3358,7 @@ int	tunedFrequency	=
 //
 //	apart from stopping the reader, a lot of administration
 //	is to be done.
-void	RadioInterface::stop_channel	() {
+void	RadioInterface::stopChannel	() {
 	if (inputDevice == nullptr)		// should not happen
 	   return;
 	handling_channel. store (false);
@@ -3362,7 +3367,7 @@ void	RadioInterface::stop_channel	() {
 //
 //	forst, stop services in fore and background
 	if (channel. currentService. valid)
-	   stop_service (channel. currentService);
+	   stopService (channel. currentService);
 	for (uint16_t i = 0; i < channel. backgroundServices. size (); i ++) {
 	   dabService s =  channel. backgroundServices. at (i);
 	   my_dabProcessor -> stop_service (s. subChId, BACK_GROUND);
@@ -3374,7 +3379,7 @@ void	RadioInterface::stop_channel	() {
 	inputDevice		-> stopReader ();
 	my_dabProcessor		-> stop ();
 //
-	stop_sourceDumping	();
+	stopSourcedumping	();
 	soundOut	-> stop ();
 
 	configWidget. EPGLabel	-> hide ();
@@ -3443,9 +3448,9 @@ void    RadioInterface::handle_channelSelector (const QString &channel) {
 	LOG ("select channel ", channel. toUtf8 (). data ());
 	presetTimer. stop ();
 	presetSelector		-> setCurrentIndex (0);
-	stop_scanning	(false);
-	stop_channel	();
-	start_channel	(channel);
+	stopScanning	(false);
+	stopChannel	();
+	startChannel	(channel);
 }
 
 void	RadioInterface::handle_nextChannelButton () {
@@ -3472,10 +3477,10 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 	   abort ();
 	}
 
-	stop_scanning (false);
-	stop_channel	();
+	stopScanning (false);
+	stopChannel	();
 	new_channelIndex (currentChannel);
-	start_channel (channelSelector -> currentText ());
+	startChannel (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -3487,12 +3492,12 @@ void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
 	if (scanning. load ()) 
-	   stop_scanning (false);
+	   stopScanning (false);
 	else
-	   start_scanning ();
+	   startScanning ();
 }
 
-void	RadioInterface::start_scanning	() {
+void	RadioInterface::startScanning	() {
 int	switchDelay;
 int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	presetTimer. stop ();
@@ -3501,7 +3506,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	         this, SLOT (No_Signal_Found ()));
 	new_presetIndex (0);
-	stop_channel     ();
+	stopChannel     ();
 	int  cc      = channelSelector -> currentIndex ();
 	if (scanMode == SCAN_TO_DATA) {
 	   cc ++;
@@ -3552,7 +3557,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	channelTimer. start (switchDelay * 1000);
 
-	start_channel    (channelSelector -> currentText ());
+	startChannel    (channelSelector -> currentText ());
 }
 //
 //	stop_scanning is called
@@ -3560,7 +3565,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 //	2. on user selection of a service or a channel select
 //	3. on device selection
 //	4. on handling a reset
-void	RadioInterface::stop_scanning	(bool dump) {
+void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
@@ -3601,12 +3606,12 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   int	cc	= channelSelector -> currentIndex ();
 	   if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
 	      showServices ();
-	   stop_channel ();
+	   stopChannel ();
 	   cc = theBand. nextChannel (cc);
 	   fprintf (stderr, "going to channel %d\n", cc);
 	   if ((cc >= channelSelector -> count ()) &&
 	                               (scanMode == SINGLE_SCAN)) {
-	      stop_scanning (true);
+	      stopScanning (true);
 	   }
 	   else {  // we just continue
 	      if (cc >= channelSelector -> count ())
@@ -3626,12 +3631,12 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	      switchDelay	= 
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	      channelTimer. start (switchDelay * 1000);
-	      start_channel (channelSelector -> currentText ());
+	      startChannel (channelSelector -> currentText ());
 	   }
 	}
 	else
 	if (scanning. load ()) 
-	   stop_scanning (false);
+	   stopScanning (false);
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -4276,7 +4281,7 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	   return;
 
 	if (s == "exit") {
-	   configWidget. closeDirect	-> setChecked (true);
+	   configWidget. closeDirect -> setChecked (true);
 	   QWidget::close ();
 	   return;
 	}
@@ -4303,7 +4308,7 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 
 	presetTimer. stop ();
 	if (scanning. load ())
-	   stop_scanning (false);
+	   stopScanning (false);
 	scheduleSelect (s);
 }
 
@@ -4527,8 +4532,13 @@ QString theTime;
 void	RadioInterface::handle_LoggerButton (int s) {
 	(void)s;
 	if (configWidget. loggerButton -> isChecked ()) {
-	   if (logFile == nullptr)
-	      logFile = filenameFinder. findLogFileName ();
+	   if (logFile != nullptr) {
+	      fprintf (stderr, "should not happen (logfile)\n");
+	      return;
+	   }
+	   logFile = filenameFinder. findLogFileName ();
+	   if (logFile != nullptr)
+	      LOG ("Log started with ", inputDevice -> deviceName ());
 	}
 	else
 	if (logFile != nullptr) {
@@ -4712,6 +4722,7 @@ void	RadioInterface::start_etiHandler () {
 	                                find_eti_fileName (channel. ensembleName, channel. channelName);
 	if (etiFile == QString (""))
 	   return;
+	LOG ("etiHandler started", etiFile);
 	etiActive	= my_dabProcessor -> start_etiGenerator (etiFile);
 	if (etiActive) 
 	   scanButton -> setText ("eti runs");
@@ -4723,7 +4734,7 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   return;
 
 	if (setting) {
-	   stop_scanning (false);	
+	   stopScanning (false);	
 	   disconnect (scanButton, SIGNAL (clicked ()),
 	               this, SLOT (handle_scanButton ()));
 	   connect (scanButton, SIGNAL (clicked ()),

@@ -114,7 +114,7 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/phasereference.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
-	   ../includes/ofdm/tii_detector.h \
+	   ../includes/ofdm/tii-detector.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \

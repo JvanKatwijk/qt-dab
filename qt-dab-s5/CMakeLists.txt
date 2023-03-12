@@ -232,7 +232,7 @@ endif ()
 	     ../includes/ofdm/dab-config.h
 	     ../includes/ofdm/fib-table.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii_detector.h
+	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/timesyncer.h
 	     ../includes/protection/protTables.h
 	     ../includes/protection/protection.h

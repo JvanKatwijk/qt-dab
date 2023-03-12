@@ -106,26 +106,24 @@ float		absVal			= 0;
 std::complex<float>	x [T_u];
 float	nominator	= 0;
 float	denominator	= 0;
+	float aa	= 0;
 //
 //	since we do not equalize, we have a kind of "fake"
 //	reference point. We know that the ideal point 
 //	is (x, x, where x = abs (I, Q) / sqrt (2);
 
 	for (i = 0; i < carriers; i ++) {
-	   x [i]	= std::complex<float> (abs (real (v [T_u / 2 - carriers / 2 + i])), abs (imag (v [T_u / 2 - carriers / 2 + i])));
-	   avgPoint	+= x [i];
+	   aa	+= abs (v [i]);
 	}
-
-	avgPoint	= cdiv (avgPoint, carriers);
-	absVal		= abs (avgPoint) / sqrt (2);
+	absVal		= aa / carriers / sqrt (2);
 
 	for (i = 0; i < carriers; i ++) {
 	   nominator	+= square (absVal) + square (absVal);
-	   denominator	+= square (absVal - abs (real (x [i]))) +
-	                   square (absVal - abs (imag (x [i])));
+	   denominator	+= square (abs (absVal - abs (real (v [i])))) +
+	                   square (abs (absVal - abs (imag (v [i]))));
 	}
 
-	return 10 * log10 (1.0 + nominator / denominator);
+	return 10 * log10 (0.0010 + nominator / denominator);
 }
 /**
   *	for the other blocks of data, the first step is to go from
@@ -186,7 +184,7 @@ std::complex<float> conjVector [T_u];
 	                                      carriers);
 	      showIQ	(carriers);
 	      float Quality	= computeQuality (conjVector);
-	      float timeOffset		= compute_timeOffset (fft_buffer,
+	      float timeOffset	= compute_timeOffset (fft_buffer,
 	                                              phaseReference. data ());
 	      float freqOffset	= compute_frequencyOffset (fft_buffer,
 	                                              phaseReference. data ());

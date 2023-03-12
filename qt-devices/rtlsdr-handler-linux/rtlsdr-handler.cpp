@@ -207,7 +207,8 @@ char	manufac [256], product [256], serial [256];
 	   fprintf (stderr, "\n");
 	}
 
-	rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
+	if (rtlsdr_set_tuner_bandwidth != nullptr
+	   rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
 //	See what the saved values are and restore the GUI settings
@@ -491,14 +492,6 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 	   return false;
 	}
 
-	rtlsdr_set_tuner_bandwidth	=
-	            (pfnrtlsdr_set_center_freq)
-	                phandle -> resolve ("rtlsdr_set_tuner_bandwidth");
-	if (rtlsdr_set_tuner_bandwidth == nullptr) {
-	   fprintf (stderr, "Could not find rtlsdr_set_tuner_bandwidth\n");
-	   return false;
-	}
-
 	rtlsdr_get_center_freq	=
 	            (pfnrtlsdr_get_center_freq)
 	                phandle -> resolve ("rtlsdr_get_center_freq");
@@ -561,6 +554,14 @@ bool	rtlsdrHandler::load_rtlFunctions() {
 	if (rtlsdr_get_device_name == nullptr) {
 	   fprintf (stderr, "Could not find rtlsdr_get_device_name\n");
 	   return false;
+	}
+
+	rtlsdr_set_tuner_bandwidth	=
+	            (pfnrtlsdr_set_center_freq)
+	                phandle -> resolve ("rtlsdr_set_tuner_bandwidth");
+	if (rtlsdr_set_tuner_bandwidth == nullptr) {
+	   fprintf (stderr, "no support for tuner bandwidth\n");
+//	   nullpointer - if function is not available - is handled
 	}
 
 	rtlsdr_set_bias_tee =

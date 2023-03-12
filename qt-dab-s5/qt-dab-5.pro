@@ -121,7 +121,7 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/phasereference.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
-	   ../includes/ofdm/tii_detector.h \
+	   ../includes/ofdm/tii-detector.h \
 	   ../includes/ofdm/fic-handler.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
@@ -238,7 +238,7 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/phasereference.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
-	   ../src/ofdm/tii_detector.cpp \
+	   ../src/ofdm/tii-detector.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/protection/protTables.cpp \

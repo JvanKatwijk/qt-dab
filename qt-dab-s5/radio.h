@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __RADIO__
-#define __RADIO__
+#ifndef __RADIO_H
+#define __RADIO_H
 
 #include	"dab-constants.h"
 #include	<QMainWindow>
@@ -285,26 +285,26 @@ private:
 	void			stop_etiHandler		();
 	QString			checkDir		(const QString);
 //
-	void			start_audioService	(audiodata *);
-	void			start_packetService	(const QString &);
-	void			start_scanning		();
-	void			stop_scanning		(bool);
-        void			start_audioDumping      ();
-        void			stop_audioDumping       ();
+	void			startAudioservice	(audiodata *);
+	void			startPacketservice	(const QString &);
+	void			startScanning		();
+	void			stopScanning		(bool);
+        void			startAudiodumping      ();
+        void			stopAudiodumping       ();
         void			scheduled_audioDumping	();
 	void			scheduled_dlTextDumping ();
 	void			scheduled_ficDumping ();
 	FILE			*ficDumpPointer;
 
-        void			start_sourceDumping     ();
-        void			stop_sourceDumping      ();
-        void			start_frameDumping      ();
-        void			stop_frameDumping       ();
+        void			startSourcedumping     ();
+        void			stopSourcedumping      ();
+        void			startFramedumping      ();
+        void			stopFramedumping       ();
 	void			scheduled_frameDumping	(const QString &);
-	void			start_channel		(const QString &);
-	void			stop_channel		();
-	void			stop_service		(dabService &);
-	void			start_service		(dabService *);
+	void			startChannel		(const QString &);
+	void			stopChannel		();
+	void			stopService		(dabService &);
+	void			startService		(dabService *);
 	void			colorService		(QModelIndex ind,
 	                                                 QColor c, int pt,
 	                                                 bool italic = false);

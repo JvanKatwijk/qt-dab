@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __AUDIO_BASE__
-#define	__AUDIO_BASE__
+#ifndef __AUDIO_BASE_H
+#define	__AUDIO_BASE_H
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<samplerate.h>
@@ -35,19 +36,20 @@
 class	audioBase: public QObject {
 Q_OBJECT
 public:
-			audioBase();
-virtual			~audioBase();
-virtual	void		stop			(void);
-virtual	void		restart();
+			audioBase		();
+virtual			~audioBase		();
+virtual	void		stop			();
+virtual	void		restart			();
 //
 	void		audioOut		(int16_t *, int32_t, int);
 	void		startDumping		(SNDFILE *);
-	void		stopDumping();
+	void		stopDumping		();
 private:
 	void		audioOut_16000		(int16_t *, int32_t);
 	void		audioOut_24000		(int16_t *, int32_t);
 	void		audioOut_32000		(int16_t *, int32_t);
 	void		audioOut_48000		(int16_t *, int32_t);
+	void		audioReady		(float *, int32_t);
 	newConverter	converter_16;
 	newConverter	converter_24;
 	newConverter	converter_32;
