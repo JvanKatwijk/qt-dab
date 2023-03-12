@@ -207,7 +207,7 @@ char	manufac [256], product [256], serial [256];
 	   fprintf (stderr, "\n");
 	}
 
-	if (rtlsdr_set_tuner_bandwidth != nullptr
+	if (rtlsdr_set_tuner_bandwidth != nullptr)
 	   rtlsdr_set_tuner_bandwidth (theDevice, KHz (1536));
 	rtlsdr_set_tuner_gain_mode (theDevice, 1);
 //
