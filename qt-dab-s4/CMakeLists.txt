@@ -332,7 +332,7 @@ endif ()
 	     ../src/ofdm/freq-interleaver.cpp
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
-	     ../src/ofdm/tii_detector.cpp
+	     ../src/ofdm/tii-detector.cpp
 	     ../src/ofdm/channel.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/protection/protTables.cpp
@@ -424,7 +424,7 @@ endif ()
 	     ../includes/ofdm/phasereference.h
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii_detector.h
+	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/channel.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h

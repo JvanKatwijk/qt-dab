@@ -230,7 +230,7 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/phasereference.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
-	   ../src/ofdm/tii_detector.cpp \
+	   ../src/ofdm/tii-detector.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
 	   ../src/protection/protTables.cpp \

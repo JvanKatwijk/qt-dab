@@ -11,16 +11,16 @@ CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 #QMAKE_CFLAGS	+=  -O4 -ffast-math
 #QMAKE_CXXFLAGS	+=  -O4 -ffast-math
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-QMAKE_CFLAGS	+=  -g -fsanitize=address
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
@@ -389,8 +389,8 @@ CONFIG		+= pluto-rxtx
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
 #CONFIG		+= JAN
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
