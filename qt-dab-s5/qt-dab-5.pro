@@ -796,13 +796,6 @@ tiiLib	{
 	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
 }
 
-basic	{
-	INCLUDEPATH	+= ../src/support/tii-codes
-	HEADERS		+= ../src/support/tii-codes/tii-codes.h
-	SOURCES		+= ../src/support/tii-codes/tii-codes.cpp
-}
-
-
 mapserver {
 	DEFINES		+= __HAVE_MAP_SERVER__
 	HEADERS		+= ../includes/support/http-handler.h

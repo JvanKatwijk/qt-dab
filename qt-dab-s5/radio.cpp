@@ -1339,6 +1339,12 @@ void	RadioInterface::newAudio	(int amount, int rate) {
 	         streamerOut	-> audioOut (vec, amount, rate);
 #endif
 	      theTechData. putDataIntoBuffer (vec, amount);
+static int aaa = 0;
+	      aaa ++;
+	      if (aaa > 1000) {
+	         aaa = 0;
+	         fprintf (stderr, "rate - %d\n", rate);
+	      }
 	      theTechWindow	-> audioDataAvailable (amount, rate);
 	      if (!muteTimer. isActive ())
 	         soundOut	-> audioOut (vec, amount, rate);

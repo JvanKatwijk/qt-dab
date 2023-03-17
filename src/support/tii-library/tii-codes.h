@@ -58,8 +58,8 @@ public:
 	bool	tiiFile		(const QString &);
 	QString	get_transmitterName	(const QString &,
 	                                 uint16_t, uint8_t, uint8_t);
-	void	get_coordinates	(float *, float *,
-	                         float *, const QString &, const QString &);
+	void	get_coordinates	(float *, float *, float *,
+	                         const QString &, const QString &);
         int     distance_2	(float, float, float, float);
         int	distance	(float, float, float, float);
         int     corner          (float, float, float, float);

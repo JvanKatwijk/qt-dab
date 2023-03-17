@@ -131,6 +131,7 @@ int32_t	result;
 	         buffer [2 * j + 1] = imag (outputBuffer [j]);
 	      }
 	   
+	      audioReady (buffer, result);
 	   }
 	}
 }
