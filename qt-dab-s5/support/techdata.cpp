@@ -41,6 +41,7 @@
 	this	-> audioData	= audioData;
 
 	setupUi (&myFrame);
+	formLayout -> setLabelAlignment (Qt::AlignLeft);
 	myFrame. hide ();
 	timeTable_button	-> hide ();
 	the_audioDisplay	= new audioDisplay (mr, audio, dabSettings);
@@ -106,6 +107,7 @@ void	techData::cleanUp	() {
 	motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
 	timeTable_button	-> hide ();
+	audioRate		-> display (0);
 }
 
 void	techData::show_serviceData	(audiodata *ad) {
@@ -321,3 +323,6 @@ void	techData::audiodumpButton_text	(const QString &text, int size) {
 	audiodumpButton	-> update ();
 }
 
+void	techData::showRate	(int rate) {
+	audioRate	-> display (rate);
+}

@@ -194,6 +194,7 @@ HEADERS += ./radio.h \
 	   ../viewers/spectrum-viewer/spectrum-viewer.h \
 	   ../viewers/spectrum-viewer/spectrum-scope.h \
            ../viewers/spectrum-viewer/waterfall-scope.h \
+           ../viewers/spectrum-viewer/null-scope.h \
 	   ../viewers/correlation-viewer/correlation-viewer.h \
 	   ../viewers/tii-viewer/tii-viewer.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
@@ -301,6 +302,7 @@ SOURCES += ./main.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/spectrum-viewer/spectrum-scope.cpp \
            ../viewers/spectrum-viewer/waterfall-scope.cpp \
+           ../viewers/spectrum-viewer/null-scope.cpp \
 	   ../viewers/correlation-viewer/correlation-viewer.cpp \
 	   ../viewers/tii-viewer/tii-viewer.cpp \
 	   ../viewers/snr-viewer/snr-viewer.cpp \

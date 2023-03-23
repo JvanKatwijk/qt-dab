@@ -62,6 +62,7 @@
 	this	-> inputDevice		= inputDevice;
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer		= p -> tiiBuffer;
+	this	-> nullBuffer		= p -> nullBuffer;
 	this	-> snrBuffer		= p -> snrBuffer;
 	this	-> T_null		= params. get_T_null();
 	this	-> T_s			= params. get_T_s();
@@ -131,10 +132,10 @@ void	dabProcessor::start () {
 
 void	dabProcessor::stop	() {
 	myReader. setRunning (false);
-	my_ficHandler. stop ();
 	while (isRunning ())
 	   wait ();
 	usleep (10000);
+	my_ficHandler. stop ();
 }
 /***
    *	\brief run
@@ -157,7 +158,9 @@ int	totalSamples	= 0;
 double	cLevel		= 0;
 int	cCount		= 0;
 bool dumpvlag		= false;
-QVector<std::complex<float>> tester (T_null / 2 + T_u);
+bool	null_shower;
+
+QVector<std::complex<float>> tester (T_u / 2);
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
@@ -215,25 +218,26 @@ notSynced:
 Check_endofNULL:
 	   totalFrames ++;
 	   frameCount ++;
+	   null_shower	= false;
 	   totalSamples	+= sampleCount;
 	   if (frameCount > 10) {
 	      show_clockErr (totalSamples - frameCount * 196608);
 	      totalSamples = 0;
 	      frameCount = 0;
+	      null_shower = true;
+	   }
+	   if (null_shower) {
+	      for (int i = 0; i < T_u / 4; i ++)
+	         tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	   }
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_u, coarseOffset + fineOffset);
-#ifdef	__SHOW_BLOCK_0_
-	static int testteller = 0;
-	   testteller ++;
-	   if (testteller >=  5) {
-	      testteller = 0;
-	      for (int i = 0; i < T_u; i ++)
-	         tester [T_null / 2 + i] = ofdmBuffer [i];
-	      tiiBuffer -> putDataIntoBuffer (tester. data (), tester. size ());
-	      show_null (tester. size ());
+	   if (null_shower) {
+	      for (int i = 0; i < T_u / 4; i ++)
+	         tester [1 * T_u / 4 + i] = ofdmBuffer [i];
+	      nullBuffer -> putDataIntoBuffer (tester. data (), T_u / 2);
+	      show_null (T_u / 2);
 	   }
-#endif
 /**
   *	We now have to find the exact first sample of the non-null period.
   *	We use a correlation that will find the first sample after the
@@ -348,10 +352,6 @@ SyncOnPhase:
   */
 	   myReader. getSamples (ofdmBuffer. data(),
 	                         T_null, coarseOffset + fineOffset);
-#ifdef	__SHOW_BLOCK_0_
-	   for (int i = 0; i < T_null / 2; i ++)
-	      tester [i] = ofdmBuffer [T_null / 2 + i];
-#endif
 	   sampleCount += T_null;
 	   float sum	= 0;
 	   for (i = 0; i < T_null; i ++)

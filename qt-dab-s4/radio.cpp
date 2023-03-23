@@ -215,6 +215,7 @@ uint8_t convert (QString s) {
 	                                        spectrumBuffer (2 * 32768),
 	                                        iqBuffer (2 * 1536),
 	                                        tiiBuffer (32768),
+	                                        nullBuffer (32768),
 	                                        snrBuffer (512),
 	                                        responseBuffer (32768),
 	                                        frameBuffer (2 * 32768),
@@ -266,6 +267,7 @@ uint8_t	dabBand;
 	globals. iqBuffer	= &iqBuffer;
 	globals. responseBuffer	= &responseBuffer;
 	globals. tiiBuffer	= &tiiBuffer;
+	globals. nullBuffer	= &nullBuffer;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
@@ -2102,10 +2104,12 @@ void	RadioInterface::setStereo	(bool b) {
 void	RadioInterface::show_null (int amount) {
 std::complex<float> B [amount];
 QVector<float> V (amount);
-	tiiBuffer. getDataFromBuffer (B, amount);
+	nullBuffer. getDataFromBuffer (B, amount);
+	if (my_spectrumViewer. isHidden ())
+	   return;
 	for (int i = 0; i < amount; i ++)
 	   V [i] = abs (B [i]);
-	my_tiiViewer. show_nullPeriod (V, 100);
+	my_spectrumViewer. show_nullPeriod (V. data (), amount);
 }
 
 static

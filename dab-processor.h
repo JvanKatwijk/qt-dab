@@ -116,6 +116,7 @@ private:
 	deviceHandler	*inputDevice;
 	dabParams	params;
 	RingBuffer<std::complex<float> > *tiiBuffer;
+	RingBuffer<std::complex<float> > *nullBuffer;
 	RingBuffer<float>	*snrBuffer;
 	int16_t		tii_delay;
 	int16_t		tii_counter;

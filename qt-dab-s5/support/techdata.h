@@ -79,6 +79,7 @@ public slots:
 	void		show_uep		(int, int);
 	void		show_codeRate		(int, int);
 	void		show_fm			(int);
+	void		showRate		(int);
 
 	void		audioDataAvailable	(int, int);
 

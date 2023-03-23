@@ -52,6 +52,7 @@
 
 #include	"spectrum-scope.h"
 #include	"waterfall-scope.h"
+#include	"null-scope.h"
 
 class	RadioInterface;
 class	QSettings;
@@ -66,14 +67,15 @@ public:
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
 	void		showIQ		(int32_t);
+	void		show_nullPeriod	(float *, int);
 	void		showQuality	(float, float, float);
 	void		show_snr	(float);
 	void		show_clockErr	(int);
 	void		show_correction	(int);
 	void		setBitDepth	(int16_t);
-	void		show();
-	void		hide();
-	bool		isHidden();
+	void		show		();
+	void		hide		();
+	bool		isHidden	();
 private:
 	QFrame		myFrame;
 	RadioInterface	*myRadioInterface;
@@ -104,6 +106,7 @@ private:
 	IQDisplay	*myIQDisplay;
 	spectrumScope	*mySpectrumScope;
 	waterfallScope	*myWaterfallScope;
+	nullScope	*myNullScope;
 private slots:
 	void		rightMouseClick		(const QPointF &);
 };

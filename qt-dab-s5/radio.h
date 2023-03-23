@@ -65,6 +65,7 @@
 #include	"scheduler.h"
 
 #include	"http-handler.h"
+
 class	QSettings;
 class	deviceHandler;
 class	audioBase;
@@ -94,6 +95,7 @@ public:
 	bool		valid;
 	bool		is_audio;
 	FILE		*fd;
+	FILE		*frameDumper;
 };
 
 struct	theTime {
@@ -114,6 +116,7 @@ public:
 
 	QString		channelName;
 	bool		realChannel;
+	bool		etiActive;
 	int		serviceCount;
 	int		frequency;
 	QString		ensembleName;
@@ -132,16 +135,26 @@ public:
 	std::complex<float> localPos;
 	std::complex<float> targetPos;
 	int		snr;
+	int		maxDistance;
+	QByteArray	transmitters;
+
 	void	cleanChannel () {
 	realChannel	= true;
 	serviceCount	= -1;
 	frequency	= -1;
 	ensembleName	=  "";
+	nrTransmitters	= 0;
+	countryName	= "";
+	targetPos	= std::complex<float> (0, 0);
 	mainId		= 0;
 	subId		= 0;
 	Eid		= 0;
 	has_ecc		= false;
 	snr		= 0;
+	maxDistance	= -1;
+	transmitters. resize (0);
+	currentService. frameDumper	= nullptr;
+	nextService. frameDumper	= nullptr;
 }
 };
 
@@ -166,6 +179,7 @@ private:
 	RingBuffer<std::complex<float>>  spectrumBuffer;
 	RingBuffer<std::complex<float>>  iqBuffer;
 	RingBuffer<std::complex<float>>  tiiBuffer;
+	RingBuffer<std::complex<float>>  nullBuffer;
 	RingBuffer<float>	snrBuffer;
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
@@ -197,18 +211,14 @@ private:
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
-	bool			etiActive;
 	techData		*theTechWindow;
 	Ui_configWidget		configWidget;
 	QSettings		*dabSettings;
-	int			maxDistance;
-	QByteArray		transmitters;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
-	std::atomic<bool>	handling_channel;
 	deviceHandler		*inputDevice;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut;
@@ -237,7 +247,6 @@ private:
 	int32_t			port;
 #endif
 	SNDFILE                 *rawDumper;
-        FILE                    *frameDumper;
         SNDFILE                 *audioDumper;
 	FILE			*scanDumpFile;
 	void			set_Colors		();
@@ -273,7 +282,6 @@ private:
 	QString			footText		();
 	QString			presetText		();
 	void			cleanScreen		();
-	void			dumpControlState	(QSettings *);
 	void			hideButtons		();
 	void			showButtons		();
 	deviceHandler		*setDevice		(const QString &);
@@ -323,16 +331,6 @@ private:
 	void			show_MOTlabel		(QByteArray &, int,
                                                                   QString, int);
 	void			stop_muting		();
-//	struct {
-//	   float latitude;
-//	   float longitude;
-//	} homeAddress;
-
-	struct tiiStruct {
-	    uint8_t	mainId;
-	    uint8_t	subId;
-	    bool	searched_for_name;
-	};
 
 
 	enum direction {FORWARD, BACKWARDS};
@@ -347,6 +345,9 @@ private:
 
 	std::mutex		locker;
 	bool			transmitterTags_local;
+	void			colorServiceName (const QString &s,
+                                                  QColor color, int fS, bool);
+
 signals:
 	void                    set_newChannel		(int);
         void                    set_newPresetIndex      (int);

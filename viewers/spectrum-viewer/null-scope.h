@@ -1,7 +1,5 @@
-
-
-#ifndef	__SPECTRUM_SCOPE_H
-#define	__SPECTRUM_SCOPE_H
+#ifndef	__NULL_SCOPE_H
+#define	__NULL_SCOPE_H
 
 #include        "dab-constants.h"
 #include	<QObject>
@@ -23,39 +21,25 @@
 class	RadioInterface;
 class	QSettings;
 
-class	spectrumScope: public QObject {
+class	nullScope: public QObject {
 Q_OBJECT
 public:
-		spectrumScope	(QwtPlot *,
+		nullScope	(QwtPlot *,
 	                         int,
 	                         QSettings *);
-		~spectrumScope	();
-	void	showSpectrum	(double *, double *, int, int);
-	void	setBitDepth	(int);
+		~nullScope	();
+	void	show_nullPeriod	(float *, int);
 
 private:
 
 	QwtPlotCurve	spectrumCurve;
 	QSettings	*dabSettings;
-	QwtPlotPicker	*lm_picker;
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
 
-	int		normalizer;
-	double		X_axis	[256];
-	double		Y_value	[256];
-	int16_t		displaySize;
-	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;
-	QwtPlotGrid	*grid_2;
-	int32_t		indexforMarker;
-	void		ViewSpectrum		(double *, double *, double, int);
-	float		get_db			(float);
-	
-private slots:
-	void		rightMouseClick		(const QPointF &);
 };
 
 #endif

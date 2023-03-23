@@ -11,16 +11,16 @@ CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 #QMAKE_CFLAGS	+=  -O4 -ffast-math
 #QMAKE_CXXFLAGS	+=  -O4 -ffast-math
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
@@ -201,6 +201,7 @@ HEADERS += ./radio.h \
 	   ../viewers/spectrum-viewer/spectrum-viewer.h \
 	   ../viewers/spectrum-viewer/spectrum-scope.h \
 	   ../viewers/spectrum-viewer/waterfall-scope.h \
+	   ../viewers/spectrum-viewer/null-scope.h \
 	   ../viewers/correlation-viewer/correlation-viewer.h \
 	   ../viewers/tii-viewer/tii-viewer.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
@@ -309,6 +310,7 @@ SOURCES += ./main.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/spectrum-viewer/spectrum-scope.cpp \
 	   ../viewers/spectrum-viewer/waterfall-scope.cpp \
+	   ../viewers/spectrum-viewer/null-scope.cpp \
 	   ../viewers/correlation-viewer/correlation-viewer.cpp \
 	   ../viewers/tii-viewer/tii-viewer.cpp \
 	   ../viewers/snr-viewer/snr-viewer.cpp \
@@ -325,7 +327,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-5.2
+TARGET		= qt-dab-5.3
 exists  {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -425,7 +427,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-5.2
+#	TARGET		= qt-dab64-5.3
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -445,7 +447,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-5.2
+	TARGET		= qt-dab32-5.3
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

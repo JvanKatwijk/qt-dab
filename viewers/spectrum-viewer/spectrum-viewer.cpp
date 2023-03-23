@@ -60,16 +60,18 @@ int16_t	i;
 	mySpectrumScope	= new spectrumScope (dabScope, 256, dabSettings);
 	myWaterfallScope	= new waterfallScope (dabWaterfall, 256, 50);
 	myIQDisplay	= new IQDisplay (iqDisplay, 512);
+	myNullScope	= new nullScope	(nullDisplay, 256, dabSettings);
 	setBitDepth	(12);
-//	myIQDisplay	= new IQDisplay (iqDisplay, 256);
 }
 
-	spectrumViewer::~spectrumViewer() {
+	spectrumViewer::~spectrumViewer () {
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
 	myFrame. hide();
 	delete		myIQDisplay;
 	delete		mySpectrumScope;
+	delete		myWaterfallScope;
+	delete		myNullScope;
 }
 
 void	spectrumViewer::showSpectrum	(int32_t amount, int32_t vfoFrequency) {
@@ -222,6 +224,10 @@ void	spectrumViewer::show_clockErr	(int e) {
 	   clockError -> display (e);
 }
 
+void	spectrumViewer::show_nullPeriod	(float *v, int amount) {
+	myNullScope	-> show_nullPeriod (v, amount);
+}
+
 void	spectrumViewer::rightMouseClick	(const QPointF &point) {
 colorSelector *selector;
 int	index;
@@ -258,7 +264,7 @@ int	index;
 	grid		-> setMajPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #else
-	grid		-> setMajorPen (QPen(this -> gridColor, 0,
+	grid		-> setMajorPen (QPen (this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #endif
 	grid		-> enableXMin (true);

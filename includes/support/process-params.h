@@ -19,6 +19,7 @@ public:
 	RingBuffer<std::complex<float>> * spectrumBuffer;
 	RingBuffer<std::complex<float>> * iqBuffer;
 	RingBuffer<std::complex<float>> * tiiBuffer;
+	RingBuffer<std::complex<float>> * nullBuffer;
 	RingBuffer<float>		* snrBuffer;
 	RingBuffer<uint8_t> *frameBuffer;
 };
