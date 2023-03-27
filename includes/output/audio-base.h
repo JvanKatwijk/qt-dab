@@ -44,6 +44,7 @@ virtual	void		restart			();
 	void		audioOut		(int16_t *, int32_t, int);
 	void		startDumping		(SNDFILE *);
 	void		stopDumping		();
+virtual	bool		hasMissed		();
 private:
 	void		audioOut_16000		(int16_t *, int32_t);
 	void		audioOut_24000		(int16_t *, int32_t);

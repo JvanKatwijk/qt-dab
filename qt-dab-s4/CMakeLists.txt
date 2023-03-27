@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-4.4.2)
+set (objectName qt-dab-4.6)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -303,6 +303,7 @@ endif ()
 	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-library/tii-codes.h
 	     ../includes/scopes-qwt6/iqdisplay.h
+	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/spectrum-viewer/spectrum-scope.h 
 	     ../viewers/spectrum-viewer/waterfall-scope.h 
@@ -403,6 +404,7 @@ endif ()
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/iqdisplay.cpp 
+	     ../src/scopes-qwt6/audio-display.cpp
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
 	     ../viewers/spectrum-viewer/spectrum-scope.cpp 
 	     ../viewers/spectrum-viewer/waterfall-scope.cpp 
@@ -467,7 +469,11 @@ endif ()
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/iqdisplay.h
+	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
+             ../viewers/spectrum-viewer/spectrum-scope.h 
+             ../viewers/spectrum-viewer/waterfall-scope.h 
+             ../viewers/spectrum-viewer/null-scope.h 
 	     ../viewers/correlation-viewer/correlation-viewer.h 
  	     ../viewers/tii-viewer/tii-viewer.h
  	     ../viewers/snr-viewer/snr-viewer.h

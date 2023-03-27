@@ -446,8 +446,12 @@ uint8_t	dabBand;
 	streamoutSelector	-> hide();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
+	techData. missersLabel		-> hide ();
+	techDataa. missersDisplay	-> hide ();
 #elif	QT_AUDIO
 	soundOut		= new Qt_Audio();
+	techData. missersLabel		-> hide ();
+	techDataa. missersDisplay	-> hide ();
 #else
 //	just sound out
 	soundOut		= new audioSink		(latency);
@@ -776,8 +780,8 @@ QString	RadioInterface::presetText () {
 }
 
 QString RadioInterface::footText () {
-	version			= QString ("4.5");
-	QString versionText = "Qt-DAB-version: " + QString ("4.5") + "\n";
+	version			= QString ("4.6");
+	QString versionText = "Qt-DAB-version: " + QString ("4.6") + "\n";
 	versionText += "Built on " + QString(__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH) + "\n";
 	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
 	versionText += "Rights of Qt, fftw, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
@@ -1383,18 +1387,27 @@ int	serviceOrder;
 //	signals, we trigger this function at most 10 times a second
 //
 void	RadioInterface::newAudio	(int amount, int rate) {
-	if (running. load ()) {
-	   int16_t vec [amount];
-	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
-	      audioBuffer. getDataFromBuffer (vec, amount);
-#ifdef	HAVE_PLUTO_RXTX
-	      if (streamerOut != nullptr)
-	         streamerOut	-> audioOut (vec, amount, rate);
-#endif
-	      the_audioDisplay	-> createSpectrum (vec, amount, rate);
-	      if (!muting)
-	         soundOut	-> audioOut (vec, amount, rate);
+	if (!running. load ())
+	   return;
+
+static int teller	= 0;
+	if (!dataDisplay. isHidden ()) {
+	   teller ++;
+	   if (teller > 10) {
+	      teller = 0;
+	      techData. rateDisplay -> display (rate);
 	   }
+	}
+	int16_t vec [amount];
+	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+	   audioBuffer. getDataFromBuffer (vec, amount);
+#ifdef	HAVE_PLUTO_RXTX
+	   if (streamerOut != nullptr)
+	      streamerOut	-> audioOut (vec, amount, rate);
+#endif
+	   the_audioDisplay	-> createSpectrum (vec, amount, rate);
+	   if (!muting)
+	      soundOut	-> audioOut (vec, amount, rate);
 	}
 }
 //
@@ -1514,6 +1527,12 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (my_dabProcessor == nullptr)
 	   return;
+
+	if (soundOut -> hasMissed ()) {
+           int xxx = ((audioSink *)soundOut) -> missed ();
+           if (!dataDisplay. isHidden ())
+              techData. missersDisplay -> display (xxx);
+        }
 
 	if (error_report && (numberofSeconds % 10) == 0) {
 	   int	totalFrames;

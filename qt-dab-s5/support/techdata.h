@@ -81,6 +81,8 @@ public slots:
 	void		show_fm			(int);
 	void		showRate		(int);
 
+	void		hideMissed		();
+	void		showMissed		(int);
 	void		audioDataAvailable	(int, int);
 
 	void		framedumpButton_text	(const QString &s, int);

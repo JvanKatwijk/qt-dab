@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -28,6 +25,7 @@
 #ifndef __AUDIO_SINK
 #define	__AUDIO_SINK
 #include	<QString>
+#include	<vector>
 #include	"dab-constants.h"
 #include	<portaudio.h>
 #include	<cstdio>
@@ -40,13 +38,14 @@ class	audioSink  : public audioBase {
 Q_OBJECT
 public:
 	                audioSink		(int16_t);
-			~audioSink();
+			~audioSink		();
 	bool		setupChannels		(QComboBox *);
-	void		stop();
+	void		stop			();
 	void		restart			(void);
 	bool		selectDevice		(int16_t);
-	bool		selectDefaultDevice();
-	int32_t		missed();
+	bool		selectDefaultDevice	();
+	int32_t		missed			();
+	bool		hasMissed		();
 private:
 	int16_t		numberofDevices();
 	QString		outputChannelwithRate	(int16_t, int32_t);
@@ -69,7 +68,9 @@ private:
 	RingBuffer<float>	_O_Buffer;
 	PaStreamParameters	outputParameters;
 
-	int16_t		*outTable;
+	int		theMissed;
+	int		totalSamples;
+	std::vector<int16_t>	outTable;
 	QStringList	*InterfaceList;
 protected:
 static	int		paCallback_o	(const void	*input,

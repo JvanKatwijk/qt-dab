@@ -422,12 +422,13 @@ uint8_t	dabBand;
 	configWidget. streamoutSelector	-> hide();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
+	theTechWindow		-> hideMisssed		();
 #elif	QT_AUDIO
 	soundOut		= new Qt_Audio();
+	theTechWindow		-> hideMisssed		();
 #else
 //	just sound out
 	soundOut		= new audioSink		(latency);
-
 	((audioSink *)soundOut)	-> setupChannels (configWidget. streamoutSelector);
 	configWidget. streamoutSelector	-> show();
 	bool err;
@@ -1306,28 +1307,29 @@ int	serviceOrder;
 //	signals, we trigger this function at most 10 times a second
 //
 void	RadioInterface::newAudio	(int amount, int rate) {
-	if (running. load ()) {
+	if (!running. load ())
+	   return;
+
 static int teller	= 0;
-	   if (!theTechWindow -> isHidden ()) {
-	      teller ++;
-	      if (teller > 10) {
-	         teller = 0;
-	         theTechWindow	->  showRate (rate);
-	      }
+	if (!theTechWindow -> isHidden ()) {
+	   teller ++;
+	   if (teller > 10) {
+	      teller = 0;
+	      theTechWindow	->  showRate (rate);
 	   }
-	   int16_t vec [amount];
-	   while (audioBuffer. GetRingBufferReadAvailable() > amount) {
-	      audioBuffer. getDataFromBuffer (vec, amount);
-	      if (!muteTimer. isActive ())
-	         soundOut	-> audioOut (vec, amount, rate);
+	}
+	int16_t vec [amount];
+	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+	   audioBuffer. getDataFromBuffer (vec, amount);
+	   if (!muteTimer. isActive ())
+	      soundOut	-> audioOut (vec, amount, rate);
 #ifdef	HAVE_PLUTO_RXTX
-	      if (streamerOut != nullptr)
-	         streamerOut	-> audioOut (vec, amount, rate);
+	   if (streamerOut != nullptr)
+	      streamerOut	-> audioOut (vec, amount, rate);
 #endif
-	      if (!theTechWindow -> isHidden ()) {
-	         theTechData. putDataIntoBuffer (vec, amount);
-	         theTechWindow	-> audioDataAvailable (amount, rate);
-	      }
+	   if (!theTechWindow -> isHidden ()) {
+	      theTechData. putDataIntoBuffer (vec, amount);
+	      theTechWindow	-> audioDataAvailable (amount, rate);
 	   }
 	}
 }
@@ -1451,7 +1453,11 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (my_dabProcessor == nullptr)
 	   return;
-
+	if (soundOut -> hasMissed ()) {
+	   int xxx = ((audioSink *)soundOut) -> missed ();
+	   if (!theTechWindow -> isHidden ()) 
+	      theTechWindow -> showMissed (xxx);
+	}
 	if (error_report && (numberofSeconds % 10) == 0) {
 	   int	totalFrames;
 	   int	goodFrames;

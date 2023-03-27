@@ -50,10 +50,12 @@ int32_t	i;
 	   qDebug ("Api %d is %s\n", i, Pa_GetHostApiInfo (i) -> name);
 
 	numofDevices	= Pa_GetDeviceCount();
-	outTable	= new int16_t [numofDevices + 1];
+	outTable. resize (numofDevices + 1);
 	for (i = 0; i < numofDevices; i ++)
 	   outTable [i] = -1;
 	ostream		= nullptr;
+	theMissed	= 0;
+	totalSamples	= 0;
 }
 
 	audioSink::~audioSink () {
@@ -70,8 +72,6 @@ int32_t	i;
 
 	if (portAudio)
 	   Pa_Terminate();
-
-	delete[] outTable;
 }
 
 bool	audioSink::selectDevice (int16_t idx) {
@@ -182,7 +182,6 @@ PaStreamParameters *outputParameters =
 /*
  * 	... and the callback
  */
-static	int	theMissed	= 0;
 
 int	audioSink::paCallback_o (
 		const void*			inputBuffer,
@@ -202,7 +201,8 @@ uint32_t	i;
 	if (ud -> paCallbackReturn == paContinue) {
 	   outB = &((reinterpret_cast < audioSink *> (userData)) -> _O_Buffer);
 	   actualSize = outB -> getDataFromBuffer (outp, 2 * framesPerBuffer);
-	   theMissed += 2 * framesPerBuffer - actualSize;
+	   ud -> theMissed	+= 2 * framesPerBuffer - actualSize;
+	   ud -> totalSamples	+= 2 * framesPerBuffer;
 	   for (i = actualSize; i < 2 * framesPerBuffer; i ++)
 	      outp [i] = 0;
 	}
@@ -210,10 +210,15 @@ uint32_t	i;
 	return ud -> paCallbackReturn;
 }
 
-int32_t	audioSink::missed() {
-int32_t	h	= theMissed;
-	theMissed = 0;
-	return h / 2;
+bool	audioSink::hasMissed	() {
+	return true;
+}
+
+int32_t	audioSink::missed	() {
+int32_t	h	= 100 - (theMissed * 100) / totalSamples;
+	theMissed	= 0;
+	totalSamples	= 0;
+	return h;
 }
 
 void	audioSink::audioOutput	(float *b, int32_t amount) {

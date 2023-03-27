@@ -186,6 +186,7 @@ endif ()
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           ./pauzeslide
+	           ./support
 	           ..
 	           ../includes
 	           ../includes/ofdm
@@ -329,6 +330,7 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./support/techdata.cpp
 	     ../dab-processor.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -338,7 +340,7 @@ endif ()
 	     ../src/ofdm/freq-interleaver.cpp
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
-	     ../src/ofdm/tii_detector.cpp
+	     ../src/ofdm/tii-detector.cpp
 	     ../src/ofdm/channel.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/protection/protTables.cpp
@@ -427,6 +429,7 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
+	     ./support/techdata.h
 	     ../dab-processor.h
 	     ../includes/output/audio-base.h
 	     ../includes/ofdm/sample-reader.h
@@ -434,7 +437,7 @@ endif ()
 	     ../includes/ofdm/phasereference.h
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
-	     ../includes/ofdm/tii_detector.h
+	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/channel.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
@@ -471,7 +474,11 @@ endif ()
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/iqdisplay.h
+	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
+	     ../viewers/spectrum-viewer/spectrum-scope.h 
+	     ../viewers/spectrum-viewer/waterfall-scope.h 
+	     ../viewers/spectrum-viewer/null-scope.h 
 	     ../viewers/correlation-viewer/correlation-viewer.h 
  	     ../viewers/tii-viewer/tii-viewer.h
  	     ../viewers/snr-viewer/snr-viewer.h

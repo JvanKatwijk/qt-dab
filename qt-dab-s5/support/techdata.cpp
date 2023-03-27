@@ -326,3 +326,14 @@ void	techData::audiodumpButton_text	(const QString &text, int size) {
 void	techData::showRate	(int rate) {
 	audioRate	-> display (rate);
 }
+
+void	techData::showMissed	(int missed) {
+	missedSamples	-> display (missed);
+}
+
+void	techData::hideMissed	() {
+	missedLabel	-> hide ();
+	missedSamples	-> hide ();
+}
+
+

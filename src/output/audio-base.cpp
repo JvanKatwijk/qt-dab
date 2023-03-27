@@ -178,3 +178,7 @@ void	audioBase::audioOutput	(float *v, int32_t amount) {
 	(void)amount;
 }
 
+bool	audioBase::hasMissed	() {
+	return false;
+}
+
