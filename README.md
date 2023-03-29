@@ -113,9 +113,19 @@ then let me know.
 
 The Qt-DAB-5.2 version has a slightly modified "technical window", 
 it now contains a small spectrum display of the audio output.
+Both versions have additional the *audiorate* of the audio service
+(note that all rates are converted into an audiorate of 48000),
+and the success percentage of the audio.
 
-![4.5](/qt-dab-4-technical-widget.png?raw=true)
-![5.2](/qt-dab-5-technical-widget.png?raw=true)
+![4.6](/4.6-technical-widget.png?raw=true)
+![5.3](/5.3-technical-widget.png?raw=true)
+
+In the versions 5.3 and 4.6 the spectrum scope now shows - next to
+the spectrum of the data in the selected channel, the waterfall of the spectrum
+and - in the time domain - the border between the NULL period and
+the first data block.
+
+![5.3](/5.3-spectrum-widget.png?raw=true)
 
 ----------------------------------------------------------------------
 A note on showing a map

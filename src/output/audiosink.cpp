@@ -55,7 +55,7 @@ int32_t	i;
 	   outTable [i] = -1;
 	ostream		= nullptr;
 	theMissed	= 0;
-	totalSamples	= 0;
+	totalSamples	= 1;
 }
 
 	audioSink::~audioSink () {
@@ -148,9 +148,10 @@ PaError err;
 	   return;
 
 	_O_Buffer. FlushRingBuffer();
+	totalSamples	= 1;
 	paCallbackReturn = paContinue;
 	err = Pa_StartStream (ostream);
-	if (err == paNoError)
+	if (err == paNoError) 
 	   writerRunning	= true;
 }
 
@@ -215,9 +216,11 @@ bool	audioSink::hasMissed	() {
 }
 
 int32_t	audioSink::missed	() {
+	if (totalSamples == 0)
+	   fprintf (stderr, "HELP\n");
 int32_t	h	= 100 - (theMissed * 100) / totalSamples;
 	theMissed	= 0;
-	totalSamples	= 0;
+	totalSamples	= 1;
 	return h;
 }
 
