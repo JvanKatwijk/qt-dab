@@ -135,7 +135,6 @@ public:
 	std::complex<float> localPos;
 	std::complex<float> targetPos;
 	int		snr;
-	int		maxDistance;
 	QByteArray	transmitters;
 
 	void	cleanChannel () {
@@ -151,7 +150,6 @@ public:
 	Eid		= 0;
 	has_ecc		= false;
 	snr		= 0;
-	maxDistance	= -1;
 	transmitters. resize (0);
 	currentService. frameDumper	= nullptr;
 	nextService. frameDumper	= nullptr;
@@ -208,6 +206,7 @@ private:
 	contentTable		*my_scanTable;
 	FILE			*logFile;
 	channelDescriptor	channel;
+	int			maxDistance;
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;

@@ -2281,6 +2281,7 @@ bool	tiiChange	= false;
            configWidget.  utcSelector -> isChecked () ?
                           QDateTime::currentDateTimeUtc () :
                           QDateTime::currentDateTime ();
+
         mapHandler -> putData (key,
                                channel. targetPos,
                                channel. transmitterName,

@@ -250,6 +250,7 @@ uint8_t	dabBand;
 	scanning. 		store (false);
 	my_dabProcessor		= nullptr;
 	stereoSetting		= false;
+	maxDistance		= -1;
 	my_contentTable		= nullptr;
 	my_scanTable		= nullptr;
 	mapHandler		= nullptr;
@@ -2208,8 +2209,8 @@ bool	tiiChange	= false;
 	   return;
 
 	uint8_t key = MAP_NORM_TRANS;
-	if ((!transmitterTags_local) && (distance > channel. maxDistance)) { 
-	   channel. maxDistance = distance;
+	if ((!transmitterTags_local) && (distance > maxDistance)) { 
+	   maxDistance = distance;
 	   key = MAP_MAX_TRANS;
 	}
 //
@@ -4584,7 +4585,7 @@ void	RadioInterface::handle_httpButton	() {
 	                                 channel. localPos,
 	                                 mapFile,
 	                                 dabSettings -> value ("autoBrowser", 1). toInt () == 1);
-	   channel. maxDistance = -1;
+	   maxDistance = -1;
 	   if (mapHandler != nullptr)
 	      httpButton -> setText ("http-on");
 	}
@@ -4615,7 +4616,7 @@ void	RadioInterface::handle_autoBrowser	(int d) {
 
 void	RadioInterface::handle_transmitterTags  (int d) {
 	(void)d;
-	channel. maxDistance = -1;
+	maxDistance = -1;
 	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= std::complex<float> (0, 0);
