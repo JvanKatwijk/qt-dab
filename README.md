@@ -153,9 +153,9 @@ While for Linux-x64 and Windows there are precompiled versions, there may be rea
 Step 1
 -----------------------------------------------------------------
 
-- :information_source: Note that the sources for 4.4.2 are now in the subdirectory `qt-dab-s4` and for qt-dab-5.0 in the subdirectory `qt-dab-s5` 
+- :information_source: Note that the sources for 4.4.x are now in the subdirectory `qt-dab-s4` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
 - Install required libraries, see section 5.5.3 (page 29) of the manual for 4.4.
-- :information_source: Note: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
+* :infoirmation: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
 - It seems to be part of another of the qt5 packages that is installed.
 - Be aware that different distributions store qt files on different locations, adapt the INCLUDEPATH setting in the `.pro` file if needed.
 
@@ -164,7 +164,9 @@ Step 2
 
 While there are dozens of configuration options, take note of the following ones:
 
-For "soapy" software should have been installed, so leave them commented out when not available.
+* Note on configuring DABsticks (i.e. RTLSDR type devices). The Windows support library does not seem to be able to handle continuous closing and opening the device, something that normally is done on changing a channel. Therefore separate versions of the RTLSDR interface library is made, one special for Windows, and a normal one for Linux. 
+
+ * For including "soapy" in the configuration, soapy  software should have been installed, so leave them commented out when not available. iF
 
 :information_source: Note that "pluto-2" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
 
