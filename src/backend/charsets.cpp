@@ -71,8 +71,8 @@ QString s;
 uint16_t length = 0;
 uint16_t i;
 
-          if(size == -1)
-            length = strlen(buffer);
+          if (size == -1)
+            length = strlen (buffer);
           else
             length = size;
 
@@ -87,9 +87,9 @@ uint16_t i;
 
 	   case EbuLatin:
 	   default:
-	      s = QString();
+	      s = QString ();
 	      for (i = 0; i < length; i++) {
-	         s [i] = QChar (ebuLatinToUcs2 [((uint8_t*) buffer)[i]]);
+	         s. append (QChar (ebuLatinToUcs2 [((uint8_t*) buffer)[i]]));
 	      }
 	}
 
