@@ -1118,8 +1118,8 @@ int	serviceIndex	= findService (SId);
 	if (serviceIndex == -1)
 	   return;
 
-	if (ensemble -> services [serviceIndex]. programType == 0)
-	   return;
+//	if (ensemble -> services [serviceIndex]. programType == 0)
+//	   return;
 	if (!base -> subChannels [subChId]. inUse)
 	   return;
 
@@ -1135,6 +1135,7 @@ int	serviceIndex	= findService (SId);
 	      return;
 	}
 
+	
 	QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
 	if (ensemble -> services [serviceIndex]. is_shown)
 	   showFlag = false;
@@ -1285,6 +1286,7 @@ void	fibDecoder::createService (QString name, uint32_t SId, int SCIds) {
 	   ensemble	-> services [i]. serviceLabel	= name;
 	   ensemble	-> services [i]. SId		= SId;
 	   ensemble	-> services [i]. SCIds		= SCIds;
+	   fprintf (stderr, "creating service %s\n", name. toUtf8 (). data ());
 	   return;
 	}
 }

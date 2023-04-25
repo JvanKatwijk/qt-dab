@@ -157,7 +157,6 @@ int	sampleCount	= 0;
 int	totalSamples	= 0;
 double	cLevel		= 0;
 int	cCount		= 0;
-bool dumpvlag		= false;
 bool	null_shower;
 
 QVector<std::complex<float>> tester (T_u / 2);
@@ -337,8 +336,7 @@ SyncOnPhase:
 
 
 	      if (ofdmSymbolCount <= 3)
-	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount)
-;
+	         my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
 	      if (eti_on) 
 	         my_etiGenerator. processBlock (ibits, ofdmSymbolCount);
 
@@ -374,7 +372,6 @@ SyncOnPhase:
  *	The TII data is encoded in the null period of the
  *	odd frames 
  */
-#ifndef	__SHOW_BLOCK_0_
 	   if (params. get_dabMode () == 1) {
 	     if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
 	         my_TII_Detector. addBuffer (ofdmBuffer);
@@ -392,7 +389,6 @@ SyncOnPhase:
 	         }
 	      }
 	   }
-#endif
 /**
   *	The first sample to be found for the next frame should be T_g
   *	samples ahead. Before going for the next frame, we
