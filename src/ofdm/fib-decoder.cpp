@@ -1286,7 +1286,6 @@ void	fibDecoder::createService (QString name, uint32_t SId, int SCIds) {
 	   ensemble	-> services [i]. serviceLabel	= name;
 	   ensemble	-> services [i]. SId		= SId;
 	   ensemble	-> services [i]. SCIds		= SCIds;
-	   fprintf (stderr, "creating service %s\n", name. toUtf8 (). data ());
 	   return;
 	}
 }
