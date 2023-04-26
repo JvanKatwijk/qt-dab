@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>624</width>
+    <width>629</width>
     <height>464</height>
    </rect>
   </property>
@@ -247,7 +247,7 @@ it is definitely not the time on your clock.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
                <enum>QFrame::Sunken</enum>
               </property>
               <property name="digitCount">
-               <number>6</number>
+               <number>7</number>
               </property>
               <property name="segmentStyle">
                <enum>QLCDNumber::Flat</enum>
