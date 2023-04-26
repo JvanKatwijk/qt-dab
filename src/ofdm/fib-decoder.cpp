@@ -982,6 +982,8 @@ char		label [17];
 	QString dataName = toQStringUsingCharset (
 	                                  (const char *) label,
 	                                  (CharacterSet) charSet);
+	for (int i = dataName. length (); i < 16; i ++)
+	   dataName. append (' ');
 	serviceIndex	= findService (dataName);
 	if (serviceIndex == -1) {
 	   createService (dataName, SId, 0);

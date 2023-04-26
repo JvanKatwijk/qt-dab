@@ -3127,6 +3127,8 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
 	dabService s;
 	s. serviceName = currentProgram;
 	my_dabProcessor -> getParameters (currentProgram, &s. SId, &s. SCIds);
+	fprintf (stderr, "selecting %s with %X\n",
+	                      currentProgram. toUtf8 (). data (), s. SId);
 	if (s. SId == 0) {
 	   QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));	
