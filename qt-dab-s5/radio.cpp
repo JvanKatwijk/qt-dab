@@ -1815,10 +1815,12 @@ deviceHandler	*inputDevice	= nullptr;
 	   fprintf (stderr, "unknown device, failing\n");
 	   return nullptr;
 	}
+	
 //
 //	It took some code, but it seems we have a device
 	my_spectrumViewer. setBitDepth (inputDevice -> bitDepth());
-//
+
+	dabSettings	-> setValue ("device", s);
 //	do we want to see the widget for device control?
 	if (dabSettings -> value ("deviceVisible", 0). toInt ()) {
 	   inputDevice  -> show ();

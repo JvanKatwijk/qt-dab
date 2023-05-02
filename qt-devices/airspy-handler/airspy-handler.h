@@ -118,29 +118,12 @@ private:
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
 	int		vfoFrequency;
-	void		record_gainSettings	(int);
-	void		update_gainSettings	(int);
-	bool		save_gainSettings;
+	void		record_gainSettings	(int, int);
+	void		restore_gainSliders	(int, int);
+	void		restore_gainSettings	(int);
 	LowPassFIR	*theFilter;
 	bool		filtering;
 	int		currentDepth;
-signals:
-	void		new_lnaGainValue	(int);
-	void		new_vgaGainValue	(int);
-	void		new_mixerValue		(int);
-	void		new_linearityValue	(int);
-	void		new_sensitivityValue	(int);
-	void		new_tabSetting		(int);
-
-	void		new_lnaButtonText	(const QString &);
-	void		new_mixerButtonText	(const QString &);
-
-	void		new_lnaDisplay		(int);
-	void		new_vgaDisplay		(int);
-	void		new_mixerDisplay	(int);
-	void		new_sensitivityDisplay	(int);
-	void		new_linearityDisplay	(int);
-	
 private slots:
 	void		set_linearity		(int value);
 	void		set_sensitivity		(int value);
@@ -150,9 +133,11 @@ private slots:
 	void		set_lna_agc		(int);
 	void		set_mixer_agc		(int);
 	void		set_rf_bias		(int);
-	void		show_tab		(int);
+	void		switch_tab		(int);
 	void		set_xmlDump		();
 	void		set_filter		(int);
+signals:
+	void		new_tabSetting		(int);
 private:
 	bool		load_airspyFunctions	();
 //	The functions to be extracted from the dll/.so file
