@@ -76,3 +76,12 @@ bool	deviceHandler::isFileInput	() {
 	return false;
 }
 
+QPoint	deviceHandler::get_coords	() {
+	return QPoint (0, 0);
+}
+
+void	deviceHandler::moveTo		(QPoint p) {
+	(void)p;
+}
+
+

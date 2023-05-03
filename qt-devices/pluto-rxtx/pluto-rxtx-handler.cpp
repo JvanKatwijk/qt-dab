@@ -213,8 +213,13 @@ int	ret;
 	if (fmFrequency == 0)
 	   fmFrequency = 110000;
 	this	-> fmFrequency		= fmFrequency * KHz (1);
-	setupUi (&myFrame);
-	myFrame. show	();
+	plutoSettings -> beginGroup ("plutoSettings");
+        int x   = plutoSettings -> value ("position-x", 100). toInt ();
+        int y   = plutoSettings -> value ("position-y", 100). toInt ();
+        plutoSettings -> endGroup ();
+        setupUi (&myFrame);
+        myFrame. move (QPoint (x, y));
+        myFrame. show ();
 
 #ifdef	__MINGW32__
 	wchar_t *libname = (wchar_t *)L"libiio.dll";
@@ -486,6 +491,10 @@ int	ret;
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
 	plutoSettings	-> beginGroup ("plutoSettings");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        plutoSettings -> setValue ("position-x", pos. x ());
+        plutoSettings -> setValue ("position-y", pos. y ());
+
 	plutoSettings	-> setValue ("pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);
 	plutoSettings	-> setValue ("pluto-gain", 

@@ -42,7 +42,13 @@
 int	res;
 	hackrfSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	setupUi (&myFrame);
+	hackrfSettings -> beginGroup ("hackrfSettings");
+        int x   = hackrfSettings -> value ("position-x", 100). toInt ();
+        int y   = hackrfSettings -> value ("position-y", 100). toInt ();
+        hackrfSettings -> endGroup ();
+        setupUi (&myFrame);
+        myFrame. move (QPoint (x, y));
+
 	myFrame. show	();
 	this	-> inputRate		= Khz (2048);
 
@@ -217,6 +223,10 @@ int	res;
 	stopReader();
 	myFrame. hide ();
 	hackrfSettings	-> beginGroup ("hackrfSettings");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        hackrfSettings -> setValue ("position-x", pos. x ());
+        hackrfSettings -> setValue ("position-y", pos. y ());
+
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaGainSlider -> value());
 	hackrfSettings -> setValue ("hack_vgaGain",

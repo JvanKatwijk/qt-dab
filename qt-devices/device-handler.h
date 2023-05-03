@@ -32,6 +32,8 @@
 #include	<QObject>
 #include	<QThread>
 #include	<QFrame>
+#include	<QPoint>
+
 
 class	deviceHandler {
 public:
@@ -50,6 +52,8 @@ virtual		void	show		();
 virtual		bool	isHidden	();
 virtual		QString deviceName	();
 virtual		bool	isFileInput	();
+virtual		QPoint	get_coords	();
+virtual		void	moveTo		(QPoint);
 //
 protected:
 		int32_t	lastFrequency;

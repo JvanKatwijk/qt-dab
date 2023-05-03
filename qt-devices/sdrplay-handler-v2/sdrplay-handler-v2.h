@@ -25,6 +25,7 @@
 #define	__SDRPLAY_HANDLER__
 
 #include	<QObject>
+#include	<QPoint>
 #include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
@@ -119,6 +120,9 @@ public:
 	void		show			();
 	void		hide			();
 	bool		isHidden		();
+
+	QPoint		get_coords		();
+	void		moveTo			(QPoint);
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;

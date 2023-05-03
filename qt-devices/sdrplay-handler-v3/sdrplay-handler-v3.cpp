@@ -48,10 +48,16 @@
 	                                          _I_Buffer (4 * 1024 * 1024),
 	                                          myFrame (nullptr) {
 	sdrplaySettings			= s;
-	this	-> recorderVersion	= recorderVersion;
 	inputRate			= 2048000;
-	setupUi (&myFrame);
+	this	-> recorderVersion	= recorderVersion;
+	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
+        int x   = sdrplaySettings -> value ("position-x", 100). toInt ();
+        int y   = sdrplaySettings -> value ("position-y", 100). toInt ();
+        sdrplaySettings -> endGroup ();
+        setupUi (&myFrame);
+        myFrame. move (QPoint (x, y));
 	myFrame. show	();
+
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	nrBits			= 12;	// default
@@ -132,6 +138,10 @@
 //	thread should be stopped by now
 	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0)); 
+        sdrplaySettings -> setValue ("position-x", pos. x ());
+        sdrplaySettings -> setValue ("position-y", pos. y ());
+
 	sdrplaySettings -> setValue ("sdrplay-ppm",
 	                                           ppmControl -> value ());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",

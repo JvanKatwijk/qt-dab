@@ -299,7 +299,15 @@ uint8_t	dabBand;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
+	int x	= dabSettings -> value ("mainWidget-x", 100). toInt ();
+	int y	= dabSettings -> value ("mainWidget-y", 100). toInt ();
+	this	-> move (QPoint (x, y));
+
 	configWidget. setupUi (&configDisplay);
+	x	= dabSettings -> value ("configWidget-x", 200). toInt ();
+	y	= dabSettings -> value ("configWidget-y", 200). toInt ();
+	configDisplay. move (QPoint (x, y));
+
 	theTechWindow	= new techData (this, dabSettings, &theTechData);
 //
 //	Now we can set the checkbox as saved in the settings
@@ -317,7 +325,7 @@ uint8_t	dabBand;
 
 	configWidget. EPGLabel	-> hide ();
 	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
-	int x = dabSettings -> value ("muteTime", 2). toInt ();
+	x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
@@ -1348,6 +1356,15 @@ void	RadioInterface::TerminateProcess () {
 	   stopScanning (false);
 	running. store	(false);
 	hideButtons	();
+
+	QPoint pos	= this -> mapToGlobal (QPoint (0, 0));
+	dabSettings	-> setValue ("mainWidget-x", pos. x ());
+	dabSettings	-> setValue ("mainWidget-y", pos. y ());
+
+	pos	= configDisplay. mapToGlobal (QPoint (0, 0));
+	dabSettings	-> setValue ("configWidget-x", pos. x ());
+	dabSettings	-> setValue ("configWidget-y", pos. y ());
+	
 //
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");

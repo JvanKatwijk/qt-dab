@@ -68,8 +68,13 @@ sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
+	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	int x	= sdrplaySettings -> value ("position-x", 100). toInt ();
+	int y	= sdrplaySettings -> value ("position-y", 100). toInt ();
+	sdrplaySettings	-> endGroup ();
 	setupUi (&myFrame);
-	myFrame. show();
+	myFrame. move (QPoint (x, y));
+	myFrame. show ();
 	antennaSelector		-> hide();
 	tunerSelector		-> hide();
 	this	-> inputRate	= Khz (2048);
@@ -258,6 +263,9 @@ sdrplaySelect	*sdrplaySelector;
 	stopReader();
 	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
+	QPoint	pos	= myFrame. mapToGlobal (QPoint (0, 0));
+	sdrplaySettings	-> setValue ("position-x", pos. x ());
+	sdrplaySettings	-> setValue ("position-y", pos. y ());
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
 	                                    GRdBSelector -> value());
@@ -1071,4 +1079,11 @@ bool setting = biasT_selector -> isChecked ();
 	}
 }
 
-	
+QPoint	sdrplayHandler::get_coords	() {
+	return myFrame. mapToGlobal (QPoint (0, 0));
+}
+
+void	sdrplayHandler::moveTo		(QPoint p) {
+	myFrame. move (p);
+}
+

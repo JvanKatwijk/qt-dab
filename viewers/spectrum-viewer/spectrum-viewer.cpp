@@ -40,7 +40,15 @@ int16_t	i;
 	this	-> spectrumBuffer	= sbuffer;
 	this	-> iqBuffer		= ibuffer;
 
-	setupUi (&myFrame);
+	dabSettings	-> beginGroup ("spectrumViewer");
+	int x   = dabSettings -> value ("position-x", 100). toInt ();
+        int y   = dabSettings -> value ("position-y", 100). toInt ();
+	int w	= dabSettings -> value ("width", 150). toInt ();
+	int h	= dabSettings -> value ("height", 120). toInt ();
+        dabSettings -> endGroup ();
+        setupUi (&myFrame);
+	myFrame. resize (QSize (w, h));
+        myFrame. move (QPoint (x, y));
 	myFrame. hide();
 	displayBuffer. resize (256);
 	displaySize	= 256;
@@ -65,6 +73,14 @@ int16_t	i;
 }
 
 	spectrumViewer::~spectrumViewer () {
+	dabSettings	-> beginGroup ("spectrumViewer");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        dabSettings	-> setValue ("position-x", pos. x ());
+        dabSettings	-> setValue ("position-y", pos. y ());
+	QSize size	= myFrame. frameSize ();
+	dabSettings	-> setValue ("width", size. width ());
+	dabSettings	-> setValue ("height", size. height ());
+	dabSettings	-> endGroup ();
 	fftwf_destroy_plan (plan);
 	fftwf_free	(spectrum);
 	myFrame. hide();

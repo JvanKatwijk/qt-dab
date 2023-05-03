@@ -128,7 +128,13 @@ char	manufac [256], product [256], serial [256];
 
 	rtlsdrSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
-	setupUi (&myFrame);
+	rtlsdrSettings		-> beginGroup ("rtlsdrSettings");
+	int x   = rtlsdrSettings -> value ("position-x", 100). toInt ();
+        int y   = rtlsdrSettings -> value ("position-y", 100). toInt ();
+        rtlsdrSettings -> endGroup ();
+        setupUi (&myFrame);
+        myFrame. move (QPoint (x, y));
+
 	myFrame. show();
 	filtering			= false;
 
@@ -273,6 +279,10 @@ char	manufac [256], product [256], serial [256];
 	               (int32_t)(this -> rtlsdr_get_center_freq (theDevice)));
 	stopReader	();
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        rtlsdrSettings -> setValue ("position-x", pos. x ());
+        rtlsdrSettings -> setValue ("position-y", pos. y ());
+
 	rtlsdrSettings	-> setValue ("externalGain",
 	                              gainControl -> currentText());
 	rtlsdrSettings	-> setValue ("autogain",

@@ -40,7 +40,13 @@
 	dabSettings		= s;
 	this	-> audioData	= audioData;
 
-	setupUi (&myFrame);
+	dabSettings -> beginGroup ("techDataSettings");
+        int x   = dabSettings -> value ("position-x", 100). toInt ();
+        int y   = dabSettings -> value ("position-y", 100). toInt ();
+        dabSettings -> endGroup ();
+        setupUi (&myFrame);
+        myFrame. move (QPoint (x, y));
+
 	formLayout -> setLabelAlignment (Qt::AlignLeft);
 	myFrame. hide ();
 	timeTable_button	-> hide ();
@@ -87,6 +93,11 @@
 
 		techData::~techData	() {
 	myFrame. hide ();
+	dabSettings -> beginGroup ("techDataSettings");
+        QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        dabSettings	-> setValue ("position-x", pos. x ());
+        dabSettings	-> setValue ("position-y", pos. y ());
+	dabSettings	-> endGroup ();
 	delete the_audioDisplay;
 }
 

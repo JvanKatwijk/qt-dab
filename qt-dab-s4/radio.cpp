@@ -311,8 +311,18 @@ uint8_t	dabBand;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
+	int x   = dabSettings -> value ("mainWidget-x", 100). toInt (); 
+        int y   = dabSettings -> value ("mainWidget-y", 100). toInt ();
+        this    -> move (QPoint (x, y));
+
 //	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (&dataDisplay);
+	dabSettings	-> beginGroup ("techDataSettings");
+	x	= dabSettings	-> value ("position-x", 300). toInt ();
+	y	= dabSettings	-> value ("position-y", 300). toInt ();
+	dabSettings	-> endGroup ();
+	dataDisplay. move (QPoint (x, y));
+
 	techData. timeTable_button -> hide ();
 
 	the_audioDisplay	= new audioDisplay (this,
@@ -321,6 +331,9 @@ uint8_t	dabBand;
 	epgLabel	-> hide ();
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	configWidget. setupUi (&configDisplay);
+	x       = dabSettings -> value ("configWidget-x", 200). toInt ();
+        y       = dabSettings -> value ("configWidget-y", 200). toInt ();
+        configDisplay. move (QPoint (x, y));
 //
 //	Now we can set the checkbox as saved in the settings
 	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
@@ -332,7 +345,7 @@ uint8_t	dabBand;
 	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
 	   configWidget. epgSelector -> setChecked (true);
 
-	int x = dabSettings -> value ("muteTime", 2). toInt ();
+	x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
 	x = dabSettings -> value ("switchDelay", 8). toInt ();
@@ -1423,8 +1436,24 @@ void	RadioInterface::TerminateProcess () {
 	if (scanning. load ())
 	   stopScanning (false);
 	running. store	(false);
+
+	QPoint pos      = this -> mapToGlobal (QPoint (0, 0));
+        dabSettings     -> setValue ("mainWidget-x", pos. x ());
+        dabSettings     -> setValue ("mainWidget-y", pos. y ());
+
+        pos		= configDisplay. mapToGlobal (QPoint (0, 0));
+        dabSettings     -> setValue ("configWidget-x", pos. x ());
+        dabSettings     -> setValue ("configWidget-y", pos. y ());
+
+	pos		= dataDisplay. mapToGlobal (QPoint (0, 0));
+	dabSettings	-> beginGroup ("techDataSettings");
+        dabSettings     -> setValue ("position-x", pos. x ());
+        dabSettings     -> setValue ("position-y", pos. y ());
+	dabSettings	-> endGroup ();
+	
 	dumpControlState (dabSettings);
 	hideButtons	();
+
 #ifdef	DATA_STREAMER
 	fprintf (stderr, "going to close the dataStreamer\n");
 	delete		dataStreamer;

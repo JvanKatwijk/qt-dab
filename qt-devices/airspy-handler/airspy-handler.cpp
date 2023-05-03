@@ -21,6 +21,7 @@
 #define	GETPROCADDRESS	dlsym
 #endif
 
+#include	<QPoint>
 #include	<QFileDialog>
 #include	<QTime>
 #include	<QDate>
@@ -44,7 +45,13 @@ uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
+
+	airspySettings	-> beginGroup ("airspySettings");
+	int	x	= airspySettings -> value ("position-x", 100). toInt ();
+	int	y	= airspySettings -> value ("position-y", 100). toInt ();
+	airspySettings	-> endGroup ();
 	setupUi (&myFrame);
+	myFrame. move (QPoint (x, y));
 	myFrame. show		();
 //
 //	Since we have different tabs, with different sliders for
@@ -210,6 +217,10 @@ uint32_t samplerateCount;
 	myFrame. hide ();
 	filtering	= false;
 	airspySettings	-> beginGroup ("airspySettings");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        airspySettings -> setValue ("position-x", pos. x ());
+        airspySettings -> setValue ("position-y", pos. y ());
+
 	airspySettings	-> setValue ("tabSettings",
 	                                   tabWidget -> currentIndex ());
 	airspySettings	-> endGroup ();
