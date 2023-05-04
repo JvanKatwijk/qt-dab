@@ -306,6 +306,9 @@ uint8_t	dabBand;
 	configWidget. setupUi (&configDisplay);
 	x	= dabSettings -> value ("configWidget-x", 200). toInt ();
 	y	= dabSettings -> value ("configWidget-y", 200). toInt ();
+	int wi	= dabSettings -> value ("configWidget-w", 200). toInt ();
+	int he	= dabSettings -> value ("configWidget-h", 150). toInt ();
+	configDisplay. resize (QSize (wi, he));
 	configDisplay. move (QPoint (x, y));
 
 	theTechWindow	= new techData (this, dabSettings, &theTechData);
@@ -1364,6 +1367,9 @@ void	RadioInterface::TerminateProcess () {
 	pos	= configDisplay. mapToGlobal (QPoint (0, 0));
 	dabSettings	-> setValue ("configWidget-x", pos. x ());
 	dabSettings	-> setValue ("configWidget-y", pos. y ());
+	QSize size	= configDisplay. frameSize ();
+	dabSettings	-> setValue ("configWidget-w", size. width ());
+	dabSettings	-> setValue ("configWidget-h", size. height ());
 	
 //
 #ifdef	DATA_STREAMER

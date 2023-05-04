@@ -51,8 +51,16 @@ bool	brush;
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	int lengthSetting	= dabSettings -> value ("plotLength", 3).
 		                                              toInt ();
+
+        int x   = dabSettings -> value ("position-x", 100). toInt ();
+        int y   = dabSettings -> value ("position-y", 100). toInt ();
+        int w   = dabSettings -> value ("width", 50). toInt ();
+        int h   = dabSettings -> value ("height", 30). toInt ();
 	dabSettings	-> endGroup ();
 	setupUi (&myFrame);
+
+	myFrame. resize (QSize (w, h));
+	myFrame. move (QPoint (x, y));
 
 	plotgrid			= impulseGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
@@ -97,6 +105,14 @@ bool	brush;
 }
 
 	correlationViewer::~correlationViewer() {
+	dabSettings	-> beginGroup ("CorrelationViewer");
+	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
+        dabSettings	-> setValue ("position-x", pos. x ());
+        dabSettings	-> setValue ("position-y", pos. y ());
+	QSize size	= myFrame. frameSize ();
+	dabSettings	-> setValue ("width", size. width ());
+	dabSettings	-> setValue ("height", size. height ());
+	dabSettings	-> endGroup ();
 	myFrame. hide();
 }
 

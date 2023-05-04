@@ -1929,7 +1929,7 @@ QStringList out;
 	      if (subChannelOf (i) == "")
 	         continue;
 	      if (!hasContents) {
-	         out << "\n\n";
+	         out << "\n";
 	         out << packetHeader ();
 	      }
 	      hasContents = true;
