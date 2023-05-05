@@ -313,7 +313,11 @@ uint8_t	dabBand;
 	setupUi (this);
 	int x   = dabSettings -> value ("mainWidget-x", 100). toInt (); 
         int y   = dabSettings -> value ("mainWidget-y", 100). toInt ();
+	int wi  = dabSettings -> value ("main-widget-w", 300). toInt ();
+	int he  = dabSettings -> value ("main-widget-h", 200). toInt ();
+        this    -> resize (QSize (wi, he));
         this    -> move (QPoint (x, y));
+
 
 //	dataDisplay	= new QFrame (nullptr);
 	techData. setupUi (&dataDisplay);
@@ -1438,17 +1442,38 @@ void	RadioInterface::TerminateProcess () {
 	running. store	(false);
 
 	QPoint pos      = this -> mapToGlobal (QPoint (0, 0));
-        dabSettings     -> setValue ("mainWidget-x", pos. x ());
-        dabSettings     -> setValue ("mainWidget-y", pos. y ());
+	int	x	= dabSettings -> value ("mainWidget-x", 100). toInt ();
+	int	y	= dabSettings -> value ("mainWidget-y", 100). toInt ();
+	if (pos. x () > x + 5)
+	   x = pos. x ();
+	if (pos. y () > y + 31)
+	   y = pos. y ();
+        dabSettings     -> setValue ("mainWidget-x", x);
+        dabSettings     -> setValue ("mainWidget-y", y);
+	QSize size      = this -> size ();
+        dabSettings     -> setValue ("mainwidget-w", size. width ());
+        dabSettings     -> setValue ("mainwidget-h", size. height ());
 
         pos		= configDisplay. mapToGlobal (QPoint (0, 0));
-        dabSettings     -> setValue ("configWidget-x", pos. x ());
-        dabSettings     -> setValue ("configWidget-y", pos. y ());
+	x		= dabSettings -> value ("configWidget-x", 0). toInt ();
+	y		= dabSettings -> value ("configWidget-y", 0). toInt ();
+	if (pos. x () > x + 5)
+	   x = pos. x ();
+	if (pos. y () > y + 31)
+	   y = pos. y ();
+        dabSettings     -> setValue ("configWidget-x", x);
+        dabSettings     -> setValue ("configWidget-y", y);
 
 	pos		= dataDisplay. mapToGlobal (QPoint (0, 0));
 	dabSettings	-> beginGroup ("techDataSettings");
-        dabSettings     -> setValue ("position-x", pos. x ());
-        dabSettings     -> setValue ("position-y", pos. y ());
+	x		= dabSettings -> value ("position-x", 0). toInt ();
+	y		= dabSettings -> value ("position-y", 0). toInt ();
+	if (pos. x () > x + 5)
+	   x = pos. x ();
+	if (pos. y () > y + 31)
+	   y = pos. y ();
+        dabSettings     -> setValue ("position-x", x);
+        dabSettings     -> setValue ("position-y", y);
 	dabSettings	-> endGroup ();
 	
 	dumpControlState (dabSettings);
@@ -3877,7 +3902,7 @@ QString SNR 		= "SNR " + QString::number (currentSNR);
 	                      QString::number (serviceList. size ()) + ";" +
 	                      distanceLabel -> text ();
 
-	   my_scanTable -> addLine ("\n");
+//	   my_scanTable -> addLine ("\n");
 	   my_scanTable -> addLine (headLine);
 	   my_scanTable	-> show ();
 	}

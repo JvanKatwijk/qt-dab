@@ -93,10 +93,16 @@
 
 		techData::~techData	() {
 	myFrame. hide ();
-	dabSettings -> beginGroup ("techDataSettings");
+	dabSettings	-> beginGroup ("techDataSettings");
         QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        dabSettings	-> setValue ("position-x", pos. x ());
-        dabSettings	-> setValue ("position-y", pos. y ());
+	int x		= dabSettings -> value ("position-x", 0). toInt ();
+	int y		= dabSettings -> value ("position-y", 0). toInt ();
+	if (pos. x () > x + 5)
+	   x = pos. x ();
+	if (pos. y () > y + 35)
+	   y = pos. y ();
+        dabSettings	-> setValue ("position-x", x);
+        dabSettings	-> setValue ("position-y", y);
 	dabSettings	-> endGroup ();
 	delete the_audioDisplay;
 }

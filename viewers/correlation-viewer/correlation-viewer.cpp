@@ -105,11 +105,17 @@ bool	brush;
 }
 
 	correlationViewer::~correlationViewer() {
-	dabSettings	-> beginGroup ("CorrelationViewer");
+	dabSettings	-> beginGroup ("correlationViewer");
 	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        dabSettings	-> setValue ("position-x", pos. x ());
-        dabSettings	-> setValue ("position-y", pos. y ());
-	QSize size	= myFrame. frameSize ();
+	int x		= dabSettings -> value ("position-x", 0). toInt ();
+	int y		= dabSettings -> value ("position-y", 0). toInt ();
+	if (pos. x () > x + 5)
+	   x = pos. x ();
+	if (pos. y () > y + 35)
+	   x = pos. y ();
+        dabSettings	-> setValue ("position-x", x);
+        dabSettings	-> setValue ("position-y", y);
+	QSize size	= myFrame. size ();
 	dabSettings	-> setValue ("width", size. width ());
 	dabSettings	-> setValue ("height", size. height ());
 	dabSettings	-> endGroup ();

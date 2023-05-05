@@ -328,7 +328,7 @@ SOURCES += ./main.cpp \
 unix {
 DESTDIR		= ./linux-bin
 TARGET		= qt-dab-5.3
-exists  {
+exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
        message("Current git hash = $$GITHASHSTRING")
