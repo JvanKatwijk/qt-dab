@@ -1441,39 +1441,17 @@ void	RadioInterface::TerminateProcess () {
 	   stopScanning (false);
 	running. store	(false);
 
-	QPoint pos      = this -> mapToGlobal (QPoint (0, 0));
-	int	x	= dabSettings -> value ("mainWidget-x", 100). toInt ();
-	int	y	= dabSettings -> value ("mainWidget-y", 100). toInt ();
-	if (pos. x () > x + 5)
-	   x = pos. x ();
-	if (pos. y () > y + 31)
-	   y = pos. y ();
-        dabSettings     -> setValue ("mainWidget-x", x);
-        dabSettings     -> setValue ("mainWidget-y", y);
+        dabSettings     -> setValue ("mainWidget-x", this -> pos (). x ());
+        dabSettings     -> setValue ("mainWidget-y", this -> pos (). y ());
 	QSize size      = this -> size ();
         dabSettings     -> setValue ("mainwidget-w", size. width ());
         dabSettings     -> setValue ("mainwidget-h", size. height ());
 
-        pos		= configDisplay. mapToGlobal (QPoint (0, 0));
-	x		= dabSettings -> value ("configWidget-x", 0). toInt ();
-	y		= dabSettings -> value ("configWidget-y", 0). toInt ();
-	if (pos. x () > x + 5)
-	   x = pos. x ();
-	if (pos. y () > y + 31)
-	   y = pos. y ();
-        dabSettings     -> setValue ("configWidget-x", x);
-        dabSettings     -> setValue ("configWidget-y", y);
+        dabSettings     -> setValue ("configWidget-x", configDisplay. pos (). x ());
+        dabSettings     -> setValue ("configWidget-y", configDisplay. pos (). y ());
 
-	pos		= dataDisplay. mapToGlobal (QPoint (0, 0));
-	dabSettings	-> beginGroup ("techDataSettings");
-	x		= dabSettings -> value ("position-x", 0). toInt ();
-	y		= dabSettings -> value ("position-y", 0). toInt ();
-	if (pos. x () > x + 5)
-	   x = pos. x ();
-	if (pos. y () > y + 31)
-	   y = pos. y ();
-        dabSettings     -> setValue ("position-x", x);
-        dabSettings     -> setValue ("position-y", y);
+        dabSettings     -> setValue ("position-x", dataDisplay. pos (). x ());
+        dabSettings     -> setValue ("position-y", dataDisplay. pos (). y ());
 	dabSettings	-> endGroup ();
 	
 	dumpControlState (dabSettings);

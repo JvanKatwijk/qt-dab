@@ -78,15 +78,8 @@ int16_t	i;
 
 	spectrumViewer::~spectrumViewer () {
 	dabSettings	-> beginGroup ("spectrumViewer");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-	int x		= dabSettings -> value ("position-x", 100). toInt ();
-	int y		= dabSettings -> value ("position-y", 100). toInt ();
-	if (pos. x () > x + 5)
-	   x = pos. x ();
-	if (pos. y () > y + 35)
-	   y = pos. y ();
-        dabSettings	-> setValue ("position-x", pos. x ());
-        dabSettings	-> setValue ("position-y", pos. y ());
+        dabSettings	-> setValue ("position-x", myFrame. pos (). x ());
+        dabSettings	-> setValue ("position-y", myFrame. pos (). y ());
 
 	QSize size	= myFrame. size ();
 	dabSettings	-> setValue ("width", size. width ());

@@ -132,15 +132,8 @@ bool	brush;
 
 	tiiViewer::~tiiViewer() {
 	dabSettings	-> beginGroup ("tiiViewer");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-	int x		= dabSettings -> value ("position-x", 0). toInt ();
-	int y		= dabSettings -> value ("position-y", 0). toInt ();
-	if (pos. x () > x + 5)
-	   x = pos. x ();
-	if (pos. y () > y + 35)
-	   x = pos. y ();
-        dabSettings	-> setValue ("position-x", x);
-        dabSettings	-> setValue ("position-y", y);
+        dabSettings	-> setValue ("position-x", myFrame. pos (). x ());
+        dabSettings	-> setValue ("position-y", myFrame. pos (). y ());
 	QSize size	= myFrame. size ();
 	dabSettings	-> setValue ("width", size. width ());
 	dabSettings	-> setValue ("height", size. height ());
