@@ -491,9 +491,8 @@ int	ret;
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
 	plutoSettings	-> beginGroup ("plutoSettings");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        plutoSettings -> setValue ("position-x", pos. x ());
-        plutoSettings -> setValue ("position-y", pos. y ());
+        plutoSettings -> setValue ("position-x", myFrame. pos (). x ());
+        plutoSettings -> setValue ("position-y", myFrame. pos (). y ());
 
 	plutoSettings	-> setValue ("pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);

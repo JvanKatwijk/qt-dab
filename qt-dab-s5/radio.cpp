@@ -415,7 +415,7 @@ uint8_t	dabBand;
 	         this, SLOT (handle_transmitterTags  (int)));
 
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
-	theTechWindow 		-> hide ();
+	theTechWindow 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
 	serviceList. clear ();
 	model . clear ();
@@ -437,10 +437,10 @@ uint8_t	dabBand;
 	configWidget. streamoutSelector	-> hide();
 #ifdef	TCP_STREAMER
 	soundOut		= new tcpStreamer	(20040);
-	theTechWindow		-> hideMisssed		();
+	theTechWindow		-> hide		();
 #elif	QT_AUDIO
 	soundOut		= new Qt_Audio();
-	theTechWindow		-> hideMisssed		();
+	theTechWindow		-> hide		();
 #else
 //	just sound out
 	soundOut		= new audioSink		(latency);
@@ -733,6 +733,8 @@ uint8_t	dabBand;
 	   my_correlationViewer. show ();
 	if (dabSettings -> value ("snrVisible", 0). toInt () == 1)
 	   my_snrViewer. show ();
+	if (dabSettings -> value ("techDataVisible", 0). toInt () == 1)
+	   theTechWindow -> show ();
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -2338,6 +2340,8 @@ void	RadioInterface::handle_detailButton	() {
 	   theTechWindow -> show ();
 	else
 	   theTechWindow -> hide ();
+	dabSettings -> setValue ("techDataVisible",
+	                     theTechWindow -> isHidden () ? 0 : 1);
 }
 //
 //	Whenever the input device is a file, some functions,

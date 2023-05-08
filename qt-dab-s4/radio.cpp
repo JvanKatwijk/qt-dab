@@ -324,7 +324,10 @@ uint8_t	dabBand;
 	dabSettings	-> beginGroup ("techDataSettings");
 	x	= dabSettings	-> value ("position-x", 300). toInt ();
 	y	= dabSettings	-> value ("position-y", 300). toInt ();
+	wi	= dabSettings	-> value ("techData-4-w", 300). toInt ();
+	he	= dabSettings	-> value ("techData-4-h", 200). toInt ();
 	dabSettings	-> endGroup ();
+        dataDisplay. resize (QSize (wi, he));
 	dataDisplay. move (QPoint (x, y));
 
 	techData. timeTable_button -> hide ();
@@ -335,8 +338,11 @@ uint8_t	dabBand;
 	epgLabel	-> hide ();
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	configWidget. setupUi (&configDisplay);
-	x       = dabSettings -> value ("configWidget-x", 200). toInt ();
-        y       = dabSettings -> value ("configWidget-y", 200). toInt ();
+	x       = dabSettings	-> value ("configWidget-x", 200). toInt ();
+        y       = dabSettings	-> value ("configWidget-y", 200). toInt ();
+	wi	= dabSettings	-> value ("config-4-w", 300). toInt ();
+	he	= dabSettings	-> value ("config-4-h", 200). toInt ();
+        configDisplay. resize (QSize (wi, he));
         configDisplay. move (QPoint (x, y));
 //
 //	Now we can set the checkbox as saved in the settings
@@ -769,6 +775,11 @@ uint8_t	dabBand;
 	   my_correlationViewer. show ();
 	if (dabSettings -> value ("snrVisible", 0). toInt () == 1)
 	   my_snrViewer. show ();
+	if (dabSettings -> value  ("techDataVisible", 0). toInt () == 1)
+	   dataDisplay. show ();
+	if (dabSettings -> value ("configVisible", 0). toInt () != 0) {
+	   configDisplay. show ();
+	}
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -897,16 +908,6 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 	s	-> setValue ("soundchannel",
 	                               streamoutSelector -> currentText());
 	if (inputDevice != nullptr)
-	   s    -> setValue ("deviceVisible",
-	                          inputDevice -> isHidden () ? 0 : 1);
-	s	-> setValue ("spectrumVisible",
-	                          my_spectrumViewer. isHidden () ? 0 : 1);
-	s	-> setValue ("tiiVisible",
-	                          my_tiiViewer. isHidden () ? 0 : 1);
-	s	-> setValue ("correlationVisible",
-	                          my_correlationViewer. isHidden () ? 0 : 1);
-	s	-> setValue ("snrVisible",
-	                          my_snrViewer. isHidden () ? 0 : 1);
 	s	-> setValue ("utcSelector",
 	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
 	s	-> setValue ("epg2xml",
@@ -1447,11 +1448,21 @@ void	RadioInterface::TerminateProcess () {
         dabSettings     -> setValue ("mainwidget-w", size. width ());
         dabSettings     -> setValue ("mainwidget-h", size. height ());
 
-        dabSettings     -> setValue ("configWidget-x", configDisplay. pos (). x ());
-        dabSettings     -> setValue ("configWidget-y", configDisplay. pos (). y ());
+        dabSettings     -> setValue ("configWidget-x",
+	                                      configDisplay. pos (). x ());
+        dabSettings     -> setValue ("configWidget-y",
+	                                      configDisplay. pos (). y ());
+	dabSettings	-> setValue ("config-4-w",
+	                                      configDisplay. width ());
+	dabSettings	-> setValue ("config-4-h",
+	                                      configDisplay. height ());
 
+	dabSettings	-> endGroup ();
+	dabSettings	-> beginGroup ("techDataSettings");
         dabSettings     -> setValue ("position-x", dataDisplay. pos (). x ());
         dabSettings     -> setValue ("position-y", dataDisplay. pos (). y ());
+	dabSettings	-> setValue ("techData-4-w", dataDisplay. width ());
+	dabSettings	-> setValue ("techData-4-h", dataDisplay. height ());
 	dabSettings	-> endGroup ();
 	
 	dumpControlState (dabSettings);
@@ -2397,6 +2408,8 @@ void	RadioInterface::handle_detailButton	() {
 	switchVisibility (&dataDisplay);
 	if (dataDisplay. isHidden ())
 	   my_timeTable -> hide ();
+	dabSettings	-> setValue ("techDataVisible",
+                                  dataDisplay. isHidden () ? 0 : 1);
 }
 //
 //	Whenever the input device is a file, some functions,
@@ -2599,6 +2612,7 @@ void	RadioInterface::handle_tiiButton	() {
 	   my_tiiViewer. show();
 	else
 	   my_tiiViewer. hide();
+	dabSettings -> setValue ("tiiVisible", my_tiiViewer. isHidden () ? 0 : 1);
 }
 
 void	RadioInterface::handle_correlationButton	() {
@@ -2609,6 +2623,8 @@ void	RadioInterface::handle_correlationButton	() {
 	   my_correlationViewer. show();
 	else
 	   my_correlationViewer. hide();
+	dabSettings -> setValue ("correlationVisible",
+	                          my_correlationViewer. isHidden () ? 0 : 1);
 }
 
 void	RadioInterface::handle_spectrumButton	() {
@@ -2619,6 +2635,8 @@ void	RadioInterface::handle_spectrumButton	() {
 	   my_spectrumViewer. show ();
 	else
 	   my_spectrumViewer. hide ();
+	dabSettings -> setValue ("spectrumVisible",
+	                          my_spectrumViewer. isHidden () ? 0 : 1);
 }
 
 void	RadioInterface::handle_snrButton	() {
@@ -2629,6 +2647,8 @@ void	RadioInterface::handle_snrButton	() {
 	   my_snrViewer. show ();
 	else
 	   my_snrViewer. hide ();
+	dabSettings -> setValue ("snrVisible",
+	                          my_snrViewer. isHidden () ? 0 : 1);
 }
 
 void    RadioInterface::handle_historyButton    () {
@@ -4362,6 +4382,8 @@ void	RadioInterface::handle_configSetting	() {
 	   theBand. hide ();
 	   configDisplay. hide ();
 	}
+	dabSettings	-> setValue ("configVisible", 
+	                          configDisplay. isHidden () ? 0 : 1);
 }
 
 void	RadioInterface::handle_muteTimeSetting	(int newV) {

@@ -42,9 +42,17 @@
 	this	-> dabSettings	= s;
 	this	-> channel	= channel;
 	this	-> columns	= cols;
+	dabSettings	-> beginGroup ("contentTable");
+	int x		= dabSettings -> value ("position-x", 200). toInt ();
+	int y		= dabSettings -> value ("position-y", 200). toInt ();
+	int wi		= dabSettings -> value ("table-width", 200). toInt ();
+	int hi		= dabSettings -> value ("table-height", 200). toInt ();
 	myWidget        = new QScrollArea (nullptr);
-        myWidget        -> resize (200, 200);
+        myWidget        -> resize (wi, hi);
         myWidget        -> setWidgetResizable(true);
+	myWidget	-> move (x, y);
+	dabSettings	-> endGroup ();
+	
         contentWidget	= new QTableWidget (0, cols);
 	contentWidget	-> setColumnWidth (0, 150);
 	contentWidget	-> setColumnWidth (4, 150);
@@ -63,6 +71,12 @@
 }
 
 	contentTable::~contentTable () {
+	dabSettings	-> beginGroup ("contentTable");
+	dabSettings	-> setValue ("position-x", myWidget -> pos (). x ());
+	dabSettings	-> setValue ("position-y", myWidget -> pos (). y ());
+	dabSettings	-> setValue ("table-width", myWidget ->  width ());
+	dabSettings	-> setValue ("table-height", myWidget -> height ());
+	dabSettings	-> endGroup ();
 	clearTable ();
         delete  contentWidget;
         delete  myWidget;

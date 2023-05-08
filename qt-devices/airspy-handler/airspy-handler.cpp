@@ -217,9 +217,8 @@ uint32_t samplerateCount;
 	myFrame. hide ();
 	filtering	= false;
 	airspySettings	-> beginGroup ("airspySettings");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        airspySettings -> setValue ("position-x", pos. x ());
-        airspySettings -> setValue ("position-y", pos. y ());
+        airspySettings -> setValue ("position-x", myFrame. pos (). x ());
+        airspySettings -> setValue ("position-y", myFrame. pos (). y ());
 
 	airspySettings	-> setValue ("tabSettings",
 	                                   tabWidget -> currentIndex ());

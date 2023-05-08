@@ -263,9 +263,8 @@ sdrplaySelect	*sdrplaySelector;
 	stopReader();
 	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings");
-	QPoint	pos	= myFrame. mapToGlobal (QPoint (0, 0));
-	sdrplaySettings	-> setValue ("position-x", pos. x ());
-	sdrplaySettings	-> setValue ("position-y", pos. y ());
+	sdrplaySettings	-> setValue ("position-x", myFrame. pos (). x ());
+	sdrplaySettings	-> setValue ("position-y", myFrame. pos (). y ());
 	sdrplaySettings -> setValue ("sdrplay-ppm", ppmControl -> value());
 	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
 	                                    GRdBSelector -> value());

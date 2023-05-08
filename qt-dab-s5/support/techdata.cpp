@@ -40,12 +40,15 @@
 	dabSettings		= s;
 	this	-> audioData	= audioData;
 
+        setupUi (&myFrame);
 	dabSettings -> beginGroup ("techDataSettings");
         int x   = dabSettings -> value ("position-x", 100). toInt ();
         int y   = dabSettings -> value ("position-y", 100). toInt ();
+	int wi	= dabSettings -> value ("width", 100). toInt ();
+	int he	= dabSettings -> value ("height", 100). toInt ();
         dabSettings -> endGroup ();
-        setupUi (&myFrame);
         myFrame. move (QPoint (x, y));
+	myFrame. resize (QSize (wi, he));
 
 	formLayout -> setLabelAlignment (Qt::AlignLeft);
 	myFrame. hide ();
@@ -92,11 +95,13 @@
 }
 
 		techData::~techData	() {
-	myFrame. hide ();
 	dabSettings	-> beginGroup ("techDataSettings");
         dabSettings	-> setValue ("position-x", myFrame. pos (). x ());
         dabSettings	-> setValue ("position-y", myFrame. pos (). y ());
+	dabSettings	-> setValue ("width", myFrame. width ());
+	dabSettings	-> setValue ("height", myFrame. height ());
 	dabSettings	-> endGroup ();
+	myFrame. hide ();
 	delete the_audioDisplay;
 }
 

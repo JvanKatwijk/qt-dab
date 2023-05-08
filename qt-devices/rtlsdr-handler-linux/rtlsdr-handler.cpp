@@ -279,9 +279,8 @@ char	manufac [256], product [256], serial [256];
 	               (int32_t)(this -> rtlsdr_get_center_freq (theDevice)));
 	stopReader	();
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        rtlsdrSettings -> setValue ("position-x", pos. x ());
-        rtlsdrSettings -> setValue ("position-y", pos. y ());
+        rtlsdrSettings -> setValue ("position-x", myFrame. pos (). x ());
+        rtlsdrSettings -> setValue ("position-y", myFrame. pos (). y ());
 
 	rtlsdrSettings	-> setValue ("externalGain",
 	                              gainControl -> currentText());

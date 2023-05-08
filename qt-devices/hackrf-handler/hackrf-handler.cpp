@@ -223,9 +223,8 @@ int	res;
 	stopReader();
 	myFrame. hide ();
 	hackrfSettings	-> beginGroup ("hackrfSettings");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0));
-        hackrfSettings -> setValue ("position-x", pos. x ());
-        hackrfSettings -> setValue ("position-y", pos. y ());
+        hackrfSettings -> setValue ("position-x", myFrame. pos (). x ());
+        hackrfSettings -> setValue ("position-y", myFrame. pos (). y ());
 
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaGainSlider -> value());

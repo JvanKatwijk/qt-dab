@@ -138,9 +138,8 @@
 //	thread should be stopped by now
 	myFrame. hide ();
 	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
-	QPoint  pos     = myFrame. mapToGlobal (QPoint (0, 0)); 
-        sdrplaySettings -> setValue ("position-x", pos. x ());
-        sdrplaySettings -> setValue ("position-y", pos. y ());
+        sdrplaySettings -> setValue ("position-x", myFrame. pos (). x ());
+        sdrplaySettings -> setValue ("position-y", myFrame. pos (). y ());
 
 	sdrplaySettings -> setValue ("sdrplay-ppm",
 	                                           ppmControl -> value ());
