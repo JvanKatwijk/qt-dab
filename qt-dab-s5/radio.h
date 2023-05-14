@@ -235,7 +235,7 @@ private:
 	QString			epgPath;
 	QTimer			epgTimer;
 	uint32_t		extract_epg (QString,
-                                             std::vector<serviceId> serviceList,
+                                             std::vector<serviceId> &serviceList,
 	                                     uint32_t);
 	bool			saveSlides;
 	QString			picturesPath;
@@ -252,10 +252,10 @@ private:
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
-	bool			isMember (std::vector<serviceId>,
+	bool			isMember (std::vector<serviceId> &, 
 	                                       serviceId);
 	std::vector<serviceId>
-	  	                insert   (std::vector<serviceId>,
+	  	                insert   (std::vector<serviceId> &,
 	                                  serviceId, int);
 
 	void			show_pauzeSlide	();

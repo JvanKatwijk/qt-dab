@@ -44,11 +44,11 @@ public:
 			phaseReference 		(RadioInterface *,
 	                                         processParams *);
 			~phaseReference();
-	int32_t		findIndex		(std::vector<std::complex<float>>, int);
-	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
-	float		estimate_FrequencyOffset (std::vector<std::complex<float>>);
+	int32_t		findIndex		(std::vector<std::complex<float>>&, int);
+	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>&);
+//	float		estimate_FrequencyOffset (std::vector<std::complex<float>> &);
 //
-	float		phase			(std::vector<std::complex<float>>, int);
+	float		phase			(std::vector<std::complex<float>>&, int);
 #ifdef	__WITH_JAN__
 	void		estimate		(std::vector<std::complex<float>>&);
 #endif

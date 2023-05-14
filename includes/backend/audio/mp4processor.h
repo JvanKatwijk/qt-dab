@@ -56,7 +56,7 @@ public:
 	                                 RingBuffer<uint8_t> *,
 	                                 FILE *);
 			~mp4Processor();
-	void		addtoFrame	(std::vector<uint8_t>);
+	void		addtoFrame	(std::vector<uint8_t> &);
 private:
 	RadioInterface	*myRadioInterface;
 	padHandler	my_padhandler;

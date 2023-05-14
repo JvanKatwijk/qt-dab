@@ -104,7 +104,7 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v,
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> &v,
 	                           int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
@@ -170,7 +170,8 @@ float	lbuf [T_u / 2];
 //	an approach that works fine is to correlate the phasedifferences
 //	between subsequent carriers
 #define	SEARCH_RANGE	(2 * 35)
-int16_t	phaseReference::estimate_CarrierOffset (std::vector<std::complex<float>> v) {
+int16_t	phaseReference::
+	     estimate_CarrierOffset (std::vector<std::complex<float>> &v) {
 int16_t	i, j, index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
@@ -218,20 +219,21 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 //	reference block.
 //	The values are reasonably close to the values computed
 //	on the fly
-#define	LLENGTH	100
-float	phaseReference::estimate_FrequencyOffset (std::vector <std::complex<float>> v) {
-int16_t	i;
-float pd	= 0;
+//#define	LLENGTH	100
+//float	phaseReference::
+//	      estimate_FrequencyOffset (std::vector <std::complex<float>> v) {
+//int16_t	i;
+//float pd	= 0;
+//
+//	for (i = - LLENGTH / 2 ; i < LLENGTH / 2; i ++) {
+//	   std::complex<float> a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
+//	   std::complex<float> a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
+//	   pd += arg (a2) - arg (a1);
+//	}
+//	return pd / LLENGTH;
+//}
 
-	for (i = - LLENGTH / 2 ; i < LLENGTH / 2; i ++) {
-	   std::complex<float> a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
-	   std::complex<float> a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
-	   pd += arg (a2) - arg (a1);
-	}
-	return pd / LLENGTH;
-}
-
-float	phaseReference::phase (std::vector<complex<float>> v, int Ts) {
+float	phaseReference::phase (std::vector<complex<float>> &v, int Ts) {
 std::complex<float> sum = std::complex<float> (0, 0);
 
 	for (int i = 0; i < Ts; i ++)

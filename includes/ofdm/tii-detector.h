@@ -35,7 +35,7 @@ public:
 			~TII_Detector();
 	void		reset		();
 	void		setMode		(bool);
-	void		addBuffer	(std::vector<std::complex<float>>);
+	void		addBuffer	(std::vector<std::complex<float>> &);
 	uint16_t	processNULL	();
 
 private:

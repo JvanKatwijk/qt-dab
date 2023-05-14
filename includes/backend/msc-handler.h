@@ -68,7 +68,8 @@ public:
 	void		stop_service		(int, int);
 	void		reset_Buffers		();
 private:
-	void		process_mscBlock	(std::vector<int16_t>, int16_t);
+	void		process_mscBlock	(std::vector<int16_t> &,
+	                                                  int16_t);
 	RadioInterface	*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;

@@ -63,8 +63,8 @@
 	delete theProcessor;
 }
 
-	
-void	backendDriver::addtoFrame (std::vector<uint8_t>	theData) {
+//
+void	backendDriver::addtoFrame (std::vector<uint8_t>	 &theData) {
 	theProcessor	-> addtoFrame (theData);
 }
 

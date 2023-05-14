@@ -143,7 +143,7 @@ void	TII_Detector::reset() {
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
+void	TII_Detector::addBuffer (std::vector<std::complex<float>> &v) {
 int	i;
 
 	for (i = 0; i < T_u; i ++)

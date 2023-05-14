@@ -283,7 +283,7 @@ bool	mscHandler::set_Channel (descriptorType *d,
 //	gui thread, so some locking is added
 //
 
-void	mscHandler::process_mscBlock	(std::vector<int16_t> fbits,
+void	mscHandler::process_mscBlock	(std::vector<int16_t> &fbits,
 	                                 int16_t blkno) { 
 int16_t	currentblk;
 

@@ -80,7 +80,7 @@ public:
 protected:
 	void	process_FIB		(uint8_t *, uint16_t);
 private:
-	std::vector<serviceId> insert (std::vector<serviceId> l,
+	std::vector<serviceId> insert (std::vector<serviceId> &l,
                                           serviceId n, int order);
 	RadioInterface	*myRadioInterface;
 	dabConfig	*currentConfig;

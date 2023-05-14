@@ -3707,7 +3707,7 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 
 /////////////////////////////////////////////////////////////////////
 //
-bool	RadioInterface::isMember (std::vector<serviceId> a,
+bool	RadioInterface::isMember (std::vector<serviceId> &a,
 	                                     serviceId b) {
 	for (auto serv : a)
 	   if (serv. name == b. name)
@@ -3716,7 +3716,7 @@ bool	RadioInterface::isMember (std::vector<serviceId> a,
 }
 
 std::vector<serviceId>
-	RadioInterface::insert (std::vector<serviceId> l,
+	RadioInterface::insert (std::vector<serviceId> &l,
 	                        serviceId n, int order) {
 std::vector<serviceId> k;
 
@@ -4424,7 +4424,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 //------------------------------------------------------------------------
 
 uint32_t RadioInterface::extract_epg (QString name,
-	                              std::vector<serviceId> serviceList,
+	                              std::vector<serviceId>  &serviceList,
 	                              uint32_t ensembleId) {
 	(void)ensembleId;
 	for (auto serv : serviceList) {

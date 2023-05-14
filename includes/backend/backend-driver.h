@@ -40,7 +40,7 @@ public:
 	                 RingBuffer<uint8_t> *,
 	                 FILE *);
 	~backendDriver();
-void	addtoFrame	(std::vector<uint8_t> outData);
+void	addtoFrame	(std::vector<uint8_t> &outData);
 private:
 	frameProcessor	* theProcessor;
 };

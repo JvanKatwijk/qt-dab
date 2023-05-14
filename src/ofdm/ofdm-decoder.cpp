@@ -77,7 +77,7 @@ void	ofdmDecoder::reset () {
 /**
   */
 void	ofdmDecoder::processBlock_0 (
-	                std::vector <std::complex<float> > buffer) {
+	                std::vector <std::complex<float> > &buffer) {
 	memcpy (fft_buffer, buffer. data(),
 	                             T_u * sizeof (std::complex<float>));
 
@@ -133,7 +133,7 @@ float	denominator	= 0;
   */
 
 static	int	cnt	= 0;
-void	ofdmDecoder::decode (std::vector <std::complex<float>> buffer,
+void	ofdmDecoder::decode (std::vector <std::complex<float>> &buffer,
 	                     int32_t blkno, std::vector<int16_t> &ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
