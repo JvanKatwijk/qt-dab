@@ -77,25 +77,21 @@ uint32_t samplerateCount;
 #endif
 
 	if (Handle == nullptr) {
-	   fprintf (stderr, "failed to open %s\n", libraryString);
-#ifndef	__MINGW32__
-	   fprintf (stderr, "Error = %s\n", dlerror());
-#endif
-	   throw (20);
+	   throw (std::string ("failed to open ") + std::string (libraryString));
 	}
 
 	if (!load_airspyFunctions()) {
 	   fprintf (stderr, "problem in loading functions\n");
 	   releaseLibrary ();
+	   throw (std::string ("one or more library functions could not be loaded"));
 	}
 //
 	strcpy (serial,"");
 	result = this -> my_airspy_init ();
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_init() failed: %s (%d)\n",
-	             my_airspy_error_name((airspy_error)result), result);
 	   releaseLibrary ();
-	   throw (21);
+	   throw (std::string ("airspy init failed ") +
+	             std::string (my_airspy_error_name ((airspy_error)result)));
 	}
 
 	uint64_t deviceList [4];
@@ -105,8 +101,9 @@ uint32_t samplerateCount;
 	if (numofDevs == 0) {
 	   fprintf (stderr, "No devices found\n");
 	   releaseLibrary ();
-	   throw (22);
+	   throw (std::string ("No airspy device was detected"));
 	}
+
 	if (numofDevs > 1) {
            airspySelect deviceSelector;
            for (deviceIndex = 0; deviceIndex < (int)numofDevs; deviceIndex ++) {
@@ -120,10 +117,9 @@ uint32_t samplerateCount;
 	
 	result = my_airspy_open (&device, deviceList [deviceIndex]);
 	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airpsy_open() failed: %s (%d)\n",
-	             my_airspy_error_name ((airspy_error)result), result);
 	   releaseLibrary ();
-	   throw (22);
+	   throw (std::string ("airspy_open failed ") +
+	          std::string (my_airspy_error_name ((airspy_error)result)));
 	}
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
@@ -143,9 +139,8 @@ uint32_t samplerateCount;
 	}
 
 	if (selectedRate == 0) {
-	   fprintf (stderr, "Sorry. cannot help you\n");
 	   releaseLibrary ();
-	   throw (23);
+	   throw (std::string ("Cannot handle the samplerates"));
 	}
 	else
 	   fprintf (stderr, "selected samplerate = %d\n", selectedRate);
@@ -159,10 +154,9 @@ uint32_t samplerateCount;
 	filtering	= false;
 	result = my_airspy_set_samplerate (device, selectedRate);
 	if (result != AIRSPY_SUCCESS) {
-           printf("airspy_set_samplerate() failed: %s (%d)\n",
-	             my_airspy_error_name ((enum airspy_error)result), result);
 	   releaseLibrary ();
-	   throw (24);
+           throw (std::string ("airspy_set_samplerate() failed ") +
+	             std::string (my_airspy_error_name ((enum airspy_error)result)));
 	}
 
 

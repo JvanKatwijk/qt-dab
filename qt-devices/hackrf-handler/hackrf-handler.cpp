@@ -63,13 +63,13 @@ int	res;
 	phandle->load();
 
 	if (!phandle -> isLoaded ()) {
-	   fprintf (stderr, "failed to open %s\n", libraryString);
-	   throw (20);
+	   throw (std::string ("failed to open ") +
+	                                std::string (libraryString));
 	}
 
 	if (!load_hackrfFunctions ()) {
 	   delete phandle;
-	   throw (21);
+	   throw (std::string ("could not find one or more library functions"));
 	}
 //
 //	From here we have a library available
@@ -100,77 +100,50 @@ int	res;
 //
 	res	= this -> hackrf_init ();
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_init:");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   throw (21);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
+
 	}
 
 	res	= this	-> hackrf_open (&theDevice);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_open:");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   throw (22);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_sample_rate (theDevice, 2048000.0);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_samplerate:");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   throw (23);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_baseband_filter_bandwidth (theDevice,
 	                                                        1750000);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_bw:");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   throw (24);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_freq (theDevice, 220000000);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_freq: ");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   throw (25);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
-
 
 	res = this -> hackrf_set_antenna_enable (theDevice, 1);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
-	   fprintf (stderr, "%s \n",
-	                this -> hackrf_error_name (hackrf_error (res)));
-	   throw (26);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res = this -> hackrf_set_amp_enable (theDevice, 1);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_antenna_enable: ");
-	   fprintf (stderr, "%s \n",
-	                this -> hackrf_error_name (hackrf_error (res)));
-	   throw (27);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	uint16_t regValue;
 	res = this -> hackrf_si5351c_read (theDevice, 162, &regValue);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_si5351c_read: ");
-	   fprintf (stderr, "%s \n",
-	             this -> hackrf_error_name (hackrf_error (res)));
-	   throw (28);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
 	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_si5351c_write: ");
-	   fprintf (stderr, "%s \n",
-	              this -> hackrf_error_name (hackrf_error (res)));
-	   throw (29);
+	   throw (std::string (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	setLNAGain	(lnaGainSlider		-> value());

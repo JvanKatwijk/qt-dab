@@ -384,7 +384,6 @@ CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 CONFIG		+= pluto-rxtx
-#CONFIG		+= pluto
 #CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 CONFIG		+= faad

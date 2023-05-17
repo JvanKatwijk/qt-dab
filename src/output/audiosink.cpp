@@ -147,7 +147,7 @@ PaError err;
 	if (!Pa_IsStreamStopped (ostream))
 	   return;
 
-	_O_Buffer. FlushRingBuffer();
+	_O_Buffer. FlushRingBuffer ();
 	totalSamples	= 1;
 	paCallbackReturn = paContinue;
 	err = Pa_StartStream (ostream);
@@ -159,11 +159,12 @@ void	audioSink::stop () {
 	if (Pa_IsStreamStopped (ostream))
 	   return;
 
-	paCallbackReturn	= paAbort;
+//	paCallbackReturn	= paAbort;
 	(void)Pa_StopStream	(ostream);
 	while (!Pa_IsStreamStopped (ostream))
 	   Pa_Sleep (1);
 	writerRunning		= false;
+	_O_Buffer. FlushRingBuffer ();
 }
 //
 //	helper

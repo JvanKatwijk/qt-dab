@@ -225,14 +225,12 @@ int	ret;
 	wchar_t *libname = (wchar_t *)L"libiio.dll";
         Handle  = LoadLibrary (libname);
 	if (Handle == NULL) {
-	  fprintf (stderr, "Failed to libiio.dll\n");
-	  throw (22);
+	  throw (std::string ("Failed to libiio.dll"));
 	}
 #else
 	Handle		= dlopen ("libiio.so", RTLD_NOW);
 	if (Handle == NULL) {
-	   fprintf (stderr,  "%s", "we could not load libiio.so");
-	   throw (23);
+	   throw (std::string ("we could not load libiio.so"));
 	}
 #endif
 
@@ -243,7 +241,7 @@ int	ret;
 #else
            dlclose (Handle);
 #endif
-           throw (23);
+	   throw (std::string ("could load all required lib functions"));
         }
 
 	this	-> ctx			= nullptr;
@@ -301,31 +299,26 @@ int	ret;
 	}
 
 	if (ctx == nullptr) {
-	   fprintf (stderr, "No pluto found, fatal\n");
-	   throw (24);
+	   throw (std::string ("No pluto device detected"));
 	}
 //
 
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   fprintf (stderr, "no devices, fatal");
-	   throw (25);
+	   throw (std::string ("no pluto devices detected"));
 	}
 
 	if (!get_ad9361_stream_dev (ctx, TX, &tx)) {
-           fprintf (stderr, "No TX device found\n");
-           throw (26);
+           throw (std::string ("No TX device found"));
         }
 
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
-	   fprintf (stderr, "No RX device found\n");
-	   throw (27);
+	   throw (std::string ("No RX device found"));
 	}
 
 	fprintf (stderr, "* Configuring AD9361 for streaming\n");
 	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
-	   fprintf (stderr, "RX port 0 not found\n");
-	   throw (28);
+	   throw (std::string ("RX port 0 not found"));
 	}
 
 	struct iio_channel *chn;
@@ -359,28 +352,24 @@ int	ret;
 
         if (!cfg_ad9361_streaming_ch (ctx, &tx_cfg, TX, 0)) {
            fprintf (stderr, "TX port 0 not found");
-           throw (29);
+	   throw (std::string ("TX port 0 not found"));
         }
 
 	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
-	   fprintf (stderr, "RX chan i not found");
-	   throw (30);
+	   throw (std::string ("RX  I channel not found"));
 	}
 	
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
-	   fprintf (stderr,"RX chan q not found");
-	   throw (31);
+	   throw (std::string ("RX Q  channel not found"));
 	}
 
 	if (!get_ad9361_stream_ch (ctx, TX, tx, 0, &tx0_i)) {
-           fprintf (stderr, "TX chan i not found");
-           throw (32);
+           throw (std::string ("TX chan i not found"));
         }
 
         if (!get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q)) {
-           fprintf (stderr, "TX chan q not found");
-           throw (33);
+           throw (std::string ("TX chan q not found"));
         }
 
 	iio_channel_enable (rx0_i);
@@ -391,16 +380,14 @@ int	ret;
 
 	rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
-	   fprintf (stderr, "could not create RX buffer, fatal");
 	   iio_context_destroy (ctx);
-	   throw (35);
+	   throw (std::string ("could not create RX buffer"));
 	}
 
 	txbuf = iio_device_create_buffer (tx, 1024*1024, false);
 	if (txbuf == nullptr) {
-	   fprintf (stderr, "could not create RX buffer, fatal");
 	   iio_context_destroy (ctx);
-	   throw (35);
+	   throw (std::string ("could not create TX buffer"));
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);

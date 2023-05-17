@@ -1613,9 +1613,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new sdrplayHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
+	                               tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
@@ -1627,9 +1627,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new sdrplayHandler_v3 (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("SDRplay: no library or device\n"));
+	                               tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
@@ -1641,10 +1641,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new rtlsdrHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("DAB stick not found! Please use one with RTL2832U or similar chipset!\n"));
-	      fprintf (stderr, "error = %d\n", e);
+	                           tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
@@ -1656,9 +1655,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new airspyHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("Airspy or Airspy mini not found\n"));
+	                           tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
@@ -1670,9 +1669,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new hackrfHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("hackrf not found\n"));
+	                           tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
@@ -1684,39 +1683,24 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new limeHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no lime device found\n"));
+	                                  tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}
 	else
 #endif
-#ifdef	HAVE_PLUTO
+#ifdef	HAVE_PLUTO_2
 	if (s == "pluto") {
 	   try {
 	      inputDevice = new plutoHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (int e) {
-	      switch (e) {
-	         case 22:
-	            QMessageBox::warning (this, tr ("warning"),
-	                                  tr ("failed to open libiio.dll\n"));
-	            return nullptr;
-	         case 23:
-	            QMessageBox::warning (this, tr ("warning"),
-	                                 tr ("error in loading functions\n"));
-	            return nullptr;
-	         case 24:
-	            QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no pluto device found\n"));
-	            return nullptr;
-	         default:
-	            QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("some else with pluto\n"));
-	            return nullptr;
-	      }
+	   catch (std::string s) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                                  tr (s. c_str ()));
+	      return nullptr;
 	   }
 	}
 	else
@@ -1732,9 +1716,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      ((plutoHandler *)inputDevice)	-> startTransmitter (
 	                                               fmFrequency);
 	   }
-	   catch (int e) {
+	   catch (std::string s) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no pluto device found\n"));
+	                                  tr (s. c_str ()));
 	      return nullptr;
 	   }
 	}

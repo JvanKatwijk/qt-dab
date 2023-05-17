@@ -147,8 +147,7 @@ char	manufac [256], product [256], serial [256];
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
-	   fprintf (stderr, "No devices found\n");
-	   throw (22);
+	   throw (std::string ("No device found\n"));
 	}
 
 	deviceIndex = 0;	// default
@@ -164,16 +163,14 @@ char	manufac [256], product [256], serial [256];
 //	OK, now open the hardware
 	r		=  rtlsdr_open (&theDevice, deviceIndex);
 	if (r < 0) {
-	   fprintf (stderr, "Opening rtlsdr device failed\n");
-	   throw (23);
+	   throw (std::string ("Opening rtlsdr device failed"));
 	}
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
 	deviceVersion	-> setText (deviceModel);
 	r		= rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
-	   fprintf (stderr, "Setting samplerate failed\n");
-	   throw (24);
+	   throw (std::string ("Setting samplerate failed\n"));
 	}
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);

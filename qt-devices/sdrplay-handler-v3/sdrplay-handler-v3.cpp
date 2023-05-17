@@ -43,6 +43,34 @@
 #define SDRPLAY_RSPduo_ 3
 #define SDRPLAY_RSPdx_  4
 
+std::string errorMessage (int errorCode) {
+	switch (errorCode) {
+	   case 1:
+	      return std::string ("Could not fetch library");
+	   case 2:
+	      return std::string ("error in fetching functions from library");
+	   case 3:
+	      return std::string ("sdrplay_api_Open failed");
+	   case 4:
+	      return std::string ("could not open sdrplay_api_ApiVersion");
+	   case 5:
+	      return std::string ("API versions do not match");
+	   case 6:
+	      return std::string ("sdrplay_api_GetDevices failed");
+	   case 7:
+	      return std::string ("no valid SDRplay device found");
+	   case 8:
+	      return std::string ("sdrplay_api_SelectDevice failed");
+	   case 9:
+	      return std::string ("sdrplay_api_GetDeviceParams failed");
+	   case 10:
+	      return std::string ("sdrplay_api+GetDeviceParams returns null");
+	   default:
+	      return std::string ("unidentified error with sdrplay device");
+	}
+	return "";
+}
+
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
 	                                       QString &recorderVersion):
 	                                          _I_Buffer (4 * 1024 * 1024),
@@ -125,7 +153,7 @@
 	if (failFlag. load ()) {
 	   while (isRunning ())
 	      usleep (1000);
-	   throw (errorCode);
+	   throw (errorMessage (errorCode));
 	}
 	
 	fprintf (stderr, "setup sdrplay v3 seems successfull\n");

@@ -205,20 +205,18 @@ int	ret;
 
 	pHandle		= new QLibrary (libName);
 	if (pHandle == nullptr) {
-	   fprintf (stderr, " could not load %s\n", libName);
-	   throw (21);
+	   throw (std::string ("could not load ) + std::string (libName));
 	}
 
 	pHandle -> load ();
 	if (!pHandle -> isLoaded ()) {
-	   fprintf (stderr, "Failed to open %s\n", libName);
-	   throw (22);
+	   throw (std::string ("Failed to open ") + std::string (libName));
 	}
 
 	bool success			= loadFunctions ();
 	if (!success) {
 	   delete pHandle;
-	   throw (21);
+	   throw (std::string ("could not load all required lib functions"));
 	}
 
 	this	-> ctx			= nullptr;
@@ -268,20 +266,17 @@ int	ret;
 
 	if (ctx == nullptr) {
 	   fprintf (stderr, "No pluto found, fatal\n");
-	   throw (24);
+	   throw (std::string ("No pluto device detected"));
 	}
 //
 	
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   fprintf (stderr, "no devices, fatal");
-	   throw (25);
+	   throw (std::string ("no pluto device detected"));
 	}
-
 //	
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
-	   fprintf (stderr, "No RX device found\n");
-	   throw (27);
+	   throw (std::string ("No RX device found"));
 	}
 
 	struct iio_channel *chn;
@@ -291,8 +286,7 @@ int	ret;
 
 	fprintf (stderr, "* Configuring AD9361 for streaming\n");
 	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
-	   fprintf (stderr, "RX port 0 not found\n");
-	   throw (28);
+	   throw (std::string ("RX port 0 not found"));
 	}
 
 	if (get_phy_chan (ctx, RX, 0, &chn)) {
@@ -311,18 +305,16 @@ int	ret;
 	   }
 
 	   if (ret < 0)
-	      fprintf (stderr, "setting agc/gain did not work\n");
+	      throw (std::string ("setting agc/gain did not work"));
 	}
 
 	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
-	   fprintf (stderr, "RX chan i not found");
-	   throw (30);
+	   throw (std::string ("RX I channel not found"));
 	}
 	
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
-	   fprintf (stderr,"RX chan q not found");
-	   throw (31);
+	   throw (std::string ("RX  Q channel not found"));
 	}
 	
         iio_channel_enable (rx0_i);
@@ -330,9 +322,8 @@ int	ret;
 
         rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
-	   fprintf (stderr, "could not create RX buffer, fatal");
 	   iio_context_destroy (ctx);
-	   throw (35);
+	   throw (std::string ("could not create RX buffer"));
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);

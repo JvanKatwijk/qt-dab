@@ -81,23 +81,20 @@ sdrplaySelect	*sdrplaySelector;
 
 	bool success	= fetchLibrary ();
 	if (!success) 
-	   throw (23);
+	   throw (std::string ("could not fetch library\n"));
 	success = loadFunctions();
 	if (!success) {
 	   releaseLibrary ();
-	   throw (24);
+	   throw (std::string ("one or more library functions could not be loaded"));
 	}
 
 	err		= my_mir_sdr_ApiVersion (&ver);
 	if (err != mir_sdr_Success) {
-	   fprintf (stderr, "error at ApiVersion %s\n",
-	                 errorCodes (err). toLatin1(). data());
-	   throw (25);
+	   throw (std::string ("could not detect version of library\n"));
 	}
 	
 	if (ver < 2.13) {
-	   fprintf (stderr, "sorry, library too old\n");
-	   throw (26);
+	   throw (std::string ("library too old\n"));
 	}
 
 	api_version	-> display (ver);
@@ -140,13 +137,12 @@ sdrplaySelect	*sdrplaySelector;
 	   fprintf (stderr, "error at GetDevices %s \n",
 	                   errorCodes (err). toLatin1(). data());
 
-	   throw (27);
+	   throw (std::string (errorCodes (err). toLatin1 (). data ()));
 	}
 
 	if (numofDevs == 0) {
 	   releaseLibrary ();
-	   fprintf (stderr, "Sorry, no device found\n");
-	   throw (27);
+	   throw (std::string ("No device could be detected\n"));
 	}
 
 	if (numofDevs > 1) {
@@ -176,7 +172,7 @@ sdrplaySelect	*sdrplaySelector;
 	                   errorCodes (err). toLatin1(). data());
 //	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	   releaseLibrary ();
-	   throw (28);
+	   throw (std::string ("device parameters could not be set\n"));
 	}
 //
 //	we know we are only in the frequency range 175 .. 230 Mhz,
