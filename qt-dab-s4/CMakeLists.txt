@@ -312,6 +312,7 @@ endif ()
 	     ../viewers/tii-viewer/tii-viewer.h
 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
+	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
 	     ../qt-devices/rawfiles-new/rawfiles.h
 	     ../qt-devices/rawfiles-new/raw-reader.h

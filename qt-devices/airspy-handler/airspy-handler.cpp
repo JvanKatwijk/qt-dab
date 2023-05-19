@@ -28,6 +28,7 @@
 #include	"airspy-handler.h"
 #include	"airspyselect.h"
 #include	"xml-filewriter.h"
+#include	"device-exceptions.h"
 
 static
 const	int	EXTIO_NS	=  8192;
@@ -77,21 +78,22 @@ uint32_t samplerateCount;
 #endif
 
 	if (Handle == nullptr) {
-	   throw (std::string ("failed to open ") + std::string (libraryString));
+	   throw (new airspy_exception ("failed to open " +
+	                               std::string (libraryString)));
 	}
 
 	if (!load_airspyFunctions()) {
 	   fprintf (stderr, "problem in loading functions\n");
 	   releaseLibrary ();
-	   throw (std::string ("one or more library functions could not be loaded"));
+	   throw (new airspy_exception ("one or more library functions could not be loaded"));
 	}
 //
 	strcpy (serial,"");
 	result = this -> my_airspy_init ();
 	if (result != AIRSPY_SUCCESS) {
 	   releaseLibrary ();
-	   throw (std::string ("airspy init failed ") +
-	             std::string (my_airspy_error_name ((airspy_error)result)));
+	   throw (new airspy_exception (
+	             my_airspy_error_name ((airspy_error)result)));
 	}
 
 	uint64_t deviceList [4];
@@ -101,7 +103,7 @@ uint32_t samplerateCount;
 	if (numofDevs == 0) {
 	   fprintf (stderr, "No devices found\n");
 	   releaseLibrary ();
-	   throw (std::string ("No airspy device was detected"));
+	   throw (new airspy_exception ("No airspy device was detected"));
 	}
 
 	if (numofDevs > 1) {
@@ -118,8 +120,8 @@ uint32_t samplerateCount;
 	result = my_airspy_open (&device, deviceList [deviceIndex]);
 	if (result != AIRSPY_SUCCESS) {
 	   releaseLibrary ();
-	   throw (std::string ("airspy_open failed ") +
-	          std::string (my_airspy_error_name ((airspy_error)result)));
+	   throw (new airspy_exception (
+	                      my_airspy_error_name ((airspy_error)result)));
 	}
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
@@ -140,7 +142,7 @@ uint32_t samplerateCount;
 
 	if (selectedRate == 0) {
 	   releaseLibrary ();
-	   throw (std::string ("Cannot handle the samplerates"));
+	   throw (new airspy_exception ("Cannot handle the samplerates"));
 	}
 	else
 	   fprintf (stderr, "selected samplerate = %d\n", selectedRate);
@@ -155,8 +157,8 @@ uint32_t samplerateCount;
 	result = my_airspy_set_samplerate (device, selectedRate);
 	if (result != AIRSPY_SUCCESS) {
 	   releaseLibrary ();
-           throw (std::string ("airspy_set_samplerate() failed ") +
-	             std::string (my_airspy_error_name ((enum airspy_error)result)));
+           throw (new airspy_exception (
+	             my_airspy_error_name ((enum airspy_error)result)));
 	}
 
 

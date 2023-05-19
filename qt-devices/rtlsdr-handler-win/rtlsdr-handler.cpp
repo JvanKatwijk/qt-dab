@@ -35,7 +35,7 @@
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
-
+#include	"device-exceptions.h"
 //#define	__X_VERSION_ 1
 
 #define	READLEN_DEFAULT	(4 * 8192)
@@ -147,7 +147,7 @@ char	manufac [256], product [256], serial [256];
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
-	   throw (std::string ("No device found\n"));
+	   throw (new rtlsdr_exception ("No device found\n"));
 	}
 
 	deviceIndex = 0;	// default
@@ -163,14 +163,14 @@ char	manufac [256], product [256], serial [256];
 //	OK, now open the hardware
 	r		=  rtlsdr_open (&theDevice, deviceIndex);
 	if (r < 0) {
-	   throw (std::string ("Opening rtlsdr device failed"));
+	   throw (new rtlsdr_exception ("Opening rtlsdr device failed"));
 	}
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
 	deviceVersion	-> setText (deviceModel);
 	r		= rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
-	   throw (std::string ("Setting samplerate failed\n"));
+	   throw (new rtlsdr_exception ("Setting samplerate failed\n"));
 	}
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);

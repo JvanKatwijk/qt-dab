@@ -29,6 +29,7 @@
 #include	<QFileDialog>
 #include	"pluto-rxtx-handler.h"
 #include	"xml-filewriter.h"
+#include	"device-exceptions.h"
 //
 //	Description for the fir-filter is here:
 //#include	"ad9361.h"
@@ -42,7 +43,6 @@ char*	get_ch_name (const char* type, int id) {
 	snprintf (tmpstr, sizeof(tmpstr), "%s%d", type, id);
 	return tmpstr;
 }
-
 
 int	plutoHandler::
 	ad9361_set_trx_fir_enable (struct iio_device *dev, int enable) {
@@ -225,12 +225,12 @@ int	ret;
 	wchar_t *libname = (wchar_t *)L"libiio.dll";
         Handle  = LoadLibrary (libname);
 	if (Handle == NULL) {
-	  throw (std::string ("Failed to libiio.dll"));
+	  throw (new pluto_exception ("Failed to libiio.dll"));
 	}
 #else
 	Handle		= dlopen ("libiio.so", RTLD_NOW);
 	if (Handle == NULL) {
-	   throw (std::string ("we could not load libiio.so"));
+	   throw (new pluto_exception ("we could not load libiio.so"));
 	}
 #endif
 
@@ -241,7 +241,7 @@ int	ret;
 #else
            dlclose (Handle);
 #endif
-	   throw (std::string ("could load all required lib functions"));
+	   throw (new pluto_exception ("could load all required lib functions"));
         }
 
 	this	-> ctx			= nullptr;
@@ -299,26 +299,26 @@ int	ret;
 	}
 
 	if (ctx == nullptr) {
-	   throw (std::string ("No pluto device detected"));
+	   throw (new pluto_exception ("No pluto device detected"));
 	}
 //
 
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   throw (std::string ("no pluto devices detected"));
+	   throw (new pluto_exception ("no pluto devices detected"));
 	}
 
 	if (!get_ad9361_stream_dev (ctx, TX, &tx)) {
-           throw (std::string ("No TX device found"));
+           throw (new pluto_exception ("No TX device found"));
         }
 
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
-	   throw (std::string ("No RX device found"));
+	   throw (new pluto_exception ("No RX device found"));
 	}
 
 	fprintf (stderr, "* Configuring AD9361 for streaming\n");
 	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
-	   throw (std::string ("RX port 0 not found"));
+	   throw (new pluto_exception ("RX port 0 not found"));
 	}
 
 	struct iio_channel *chn;
@@ -352,24 +352,24 @@ int	ret;
 
         if (!cfg_ad9361_streaming_ch (ctx, &tx_cfg, TX, 0)) {
            fprintf (stderr, "TX port 0 not found");
-	   throw (std::string ("TX port 0 not found"));
+	   throw (new pluto_exception ("TX port 0 not found"));
         }
 
 	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
-	   throw (std::string ("RX  I channel not found"));
+	   throw (new pluto_exception ("RX  I channel not found"));
 	}
 	
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
-	   throw (std::string ("RX Q  channel not found"));
+	   throw (new pluto_exception ("RX Q  channel not found"));
 	}
 
 	if (!get_ad9361_stream_ch (ctx, TX, tx, 0, &tx0_i)) {
-           throw (std::string ("TX chan i not found"));
+           throw (new pluto_exception ("TX chan i not found"));
         }
 
         if (!get_ad9361_stream_ch(ctx, TX, tx, 1, &tx0_q)) {
-           throw (std::string ("TX chan q not found"));
+           throw (new pluto_exception ("TX chan q not found"));
         }
 
 	iio_channel_enable (rx0_i);
@@ -381,13 +381,13 @@ int	ret;
 	rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
 	   iio_context_destroy (ctx);
-	   throw (std::string ("could not create RX buffer"));
+	   throw (new pluto_exception ("could not create RX buffer"));
 	}
 
 	txbuf = iio_device_create_buffer (tx, 1024*1024, false);
 	if (txbuf == nullptr) {
 	   iio_context_destroy (ctx);
-	   throw (std::string ("could not create TX buffer"));
+	   throw (new pluto_exception ("could not create TX buffer"));
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);

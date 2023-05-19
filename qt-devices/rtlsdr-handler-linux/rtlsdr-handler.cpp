@@ -35,6 +35,7 @@
 #include	"rtl-dongleselect.h"
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
+#include	"device-exceptions.h"
 
 #ifdef	__MINGW32__
 #define	GETPROCADDRESS	GetProcAddress
@@ -158,19 +159,19 @@ char	manufac [256], product [256], serial [256];
 	phandle -> load ();
 
 	if (!phandle -> isLoaded ()) {
-	   throw (std::string ("failed to open ") + std::string (libraryString));
+	   throw (new rtlsdr_exception (std::string ("failed to open ") + std::string (libraryString)));
 	}
 
 	if (!load_rtlFunctions ()) {
 	   delete (phandle);
-	   throw (std::string ("could not load one or more library functions"));
+	   throw (new rtlsdr_exception ("could not load one or more library functions"));
 	}
 
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= this -> rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
 	   delete (phandle);
-	   throw (std::string ("No rtlsdr device found"));
+	   throw (new rtlsdr_exception ("No rtlsdr device found"));
 	}
 
 	deviceIndex = 0;	// default
@@ -187,7 +188,7 @@ char	manufac [256], product [256], serial [256];
 	r		= this -> rtlsdr_open (&theDevice, deviceIndex);
 	if (r < 0) {
 	   delete phandle;
-	   throw (std::string ("Opening rtlsdr device failed"));
+	   throw (new rtlsdr_exception ("Opening rtlsdr device failed"));
 	}
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
@@ -195,7 +196,7 @@ char	manufac [256], product [256], serial [256];
 	r		= this -> rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
 	   delete phandle;
-	   throw (std::string ("Setting samplerate for rtlsdr failed"));
+	   throw (new rtlsdr_exception ("Setting samplerate for rtlsdr failed"));
 	}
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);

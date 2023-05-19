@@ -1528,9 +1528,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new sdrplayHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (s. c_str ()));
+	                               tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1556,9 +1556,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new rtlsdrHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1570,9 +1570,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new airspyHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1584,9 +1584,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new hackrfHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1598,9 +1598,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new limeHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1612,9 +1612,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new plutoHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}
@@ -1631,9 +1631,9 @@ deviceHandler	*inputDevice	= nullptr;
 	      ((plutoHandler *)inputDevice)	-> startTransmitter (
 	                                               fmFrequency);
 	   }
-	   catch (std::string s) {
+	   catch (std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr (s. c_str ()));
+	                           tr (ex. what ()));
 	      return nullptr;
 	   }
 	}

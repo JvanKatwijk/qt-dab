@@ -31,7 +31,9 @@
 #include	<QFileDialog>
 #include	<QDir>
 #include	"rtl_tcp_client.h"
-//
+
+#include	"device-exceptions.h"
+
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
 	rtl_tcp_client::rtl_tcp_client	(QSettings *s):

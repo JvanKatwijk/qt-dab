@@ -23,7 +23,7 @@
 #include	<sys/time.h>
 #include	"wav-reader.h"
 #include	"wavfiles.h"
-
+#include	"device-exceptions.h"
 
 #define	BUFFERSIZE	32768
 static inline
