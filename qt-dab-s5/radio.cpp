@@ -1270,7 +1270,7 @@ int	serviceOrder;
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (ss != "") {
-	      startService (&s);
+	      startService (s);
 	      return;
 	   }
 //
@@ -1279,7 +1279,7 @@ int	serviceOrder;
 	   s. serviceName =
 	               my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (s. serviceName != "")
-	      startService (&s);
+	      startService (s);
 	}
 //
 //	we also have to restart all background services,
@@ -2899,7 +2899,7 @@ QString serviceName	= service;
 	      return;
 	   }
 	   s. serviceName = service;
-	   startService (&s);
+	   startService (s);
 	   return;
 	}
 //
@@ -3004,10 +3004,10 @@ void	RadioInterface::stopService	(dabService &s) {
 }
 //
 //
-void	RadioInterface::startService (dabService *s) {
-QString serviceName	= s -> serviceName;
+void	RadioInterface::startService (dabService &s) {
+QString serviceName	= s. serviceName;
 
-	channel. currentService		= *s;
+	channel. currentService		= s;
 	channel. currentService. frameDumper	= nullptr;
 	channel. currentService. valid	= false;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
@@ -3213,7 +3213,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	            break;
 	         }
 	         s. serviceName = serviceList. at (i). name;
-	         startService (&s);
+	         startService (s);
 	         break;
 	      }
 	   }
@@ -3261,7 +3261,7 @@ void	RadioInterface::setPresetService () {
 	}
 
 	channel. nextService. valid = false;
-	startService (&s);
+	startService (s);
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -3633,7 +3633,7 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 
 /////////////////////////////////////////////////////////////////////
 //
-bool	RadioInterface::isMember (std::vector<serviceId> &a,
+bool	RadioInterface::isMember (const std::vector<serviceId> &a,
 	                                     serviceId b) {
 	for (auto serv : a)
 	   if (serv. name == b. name)

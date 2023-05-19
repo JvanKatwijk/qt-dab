@@ -273,7 +273,7 @@ private:
 	void			startChannel		(const QString &);
 	void			stopChannel		();
 	void			stopService		(dabService &);
-	void			startService		(dabService *);
+	void			startService		(dabService &);
 	void			colorService		(QModelIndex ind,
 	                                                 QColor c, int pt,
 	                                                 bool italic = false);

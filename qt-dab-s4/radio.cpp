@@ -1352,7 +1352,7 @@ int	serviceOrder;
 	if (s. valid) {
 	   QString ss = my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (ss != "") {
-	      startService (&s);
+	      startService (s);
 	      return;
 	   }
 //
@@ -1361,7 +1361,7 @@ int	serviceOrder;
 	   s. serviceName =
 	               my_dabProcessor -> findService (s. SId, s. SCIds);
 	   if (s. serviceName != "")
-	      startService (&s);
+	      startService (s);
 	}
 //
 //	we also have to restart all background services,
@@ -3043,7 +3043,7 @@ int	switchDelay;
 	      return;
 	   }
 	   s. serviceName = service;
-	   startService (&s);
+	   startService (s);
 	   return;
 	}
 //
@@ -3172,13 +3172,13 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
 	   return;
 	}
 
-	startService (&s);
+	startService (s);
 }
 //
-void	RadioInterface::startService (dabService *s) {
-QString serviceName	= s -> serviceName;
+void	RadioInterface::startService (dabService &s) {
+QString serviceName	= s. serviceName;
 
-	currentService		= *s;
+	currentService		= s;
 	currentService. valid	= false;
 	LOG ("start service ", serviceName. toUtf8 (). data ());
 	LOG ("service has SNR ", QString::number (currentSNR));
@@ -3453,7 +3453,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	            break;
 	         }
 	         s. serviceName = serviceList. at (i). name;
-	         startService (&s);
+	         startService (s);
 	         break;
 	      }
 	   }
@@ -3496,7 +3496,7 @@ void	RadioInterface::setPresetStation () {
 	      }
 
 	      s. serviceName = presetName;
-	      startService (&s);
+	      startService (s);
 	      return;
 	   }
 	}

@@ -183,7 +183,7 @@ private:
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
 	RingBuffer<int16_t>	audioBuffer;
-        spectrumViewer		my_spectrumViewer;
+	spectrumViewer		my_spectrumViewer;
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
 	snrViewer		my_snrViewer;
@@ -235,7 +235,7 @@ private:
 	QString			epgPath;
 	QTimer			epgTimer;
 	uint32_t		extract_epg (QString,
-                                             std::vector<serviceId> &serviceList,
+	                                     std::vector<serviceId> &serviceList,
 	                                     uint32_t);
 	bool			saveSlides;
 	QString			picturesPath;
@@ -246,13 +246,13 @@ private:
 	int32_t			port;
 #endif
 	SNDFILE                 *rawDumper;
-        SNDFILE                 *audioDumper;
+	SNDFILE                 *audioDumper;
 	FILE			*scanDumpFile;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
-	bool			isMember (std::vector<serviceId> &, 
+	bool			isMember (const std::vector<serviceId> &, 
 	                                       serviceId);
 	std::vector<serviceId>
 	  	                insert   (std::vector<serviceId> &,
@@ -296,22 +296,22 @@ private:
 	void			startPacketservice	(const QString &);
 	void			startScanning		();
 	void			stopScanning		(bool);
-        void			startAudiodumping      ();
-        void			stopAudiodumping       ();
-        void			scheduled_audioDumping	();
+	void			startAudiodumping	();
+	void			stopAudiodumping	();
+	void			scheduled_audioDumping	();
 	void			scheduled_dlTextDumping ();
 	void			scheduled_ficDumping ();
 	FILE			*ficDumpPointer;
 
-        void			startSourcedumping     ();
-        void			stopSourcedumping      ();
-        void			startFramedumping      ();
-        void			stopFramedumping       ();
+	void			startSourcedumping     ();
+	void			stopSourcedumping      ();
+	void			startFramedumping      ();
+	void			stopFramedumping       ();
 	void			scheduled_frameDumping	(const QString &);
 	void			startChannel		(const QString &);
 	void			stopChannel		();
 	void			stopService		(dabService &);
-	void			startService		(dabService *);
+	void			startService		(dabService &);
 	void			colorService		(QModelIndex ind,
 	                                                 QColor c, int pt,
 	                                                 bool italic = false);
@@ -326,9 +326,9 @@ private:
 	                                                          QString);
 
 	void			save_MOTtext		(QByteArray &, int,
-                                                                 QString);
+	                                                         QString);
 	void			show_MOTlabel		(QByteArray &, int,
-                                                                  QString, int);
+	                                                          QString, int);
 	void			stop_muting		();
 
 
@@ -339,17 +339,17 @@ private:
 	void			show_for_safety		();
 //
 //	short hands
-        void                    new_presetIndex         (int);
-        void                    new_channelIndex        (int);
+	void                    new_presetIndex         (int);
+	void                    new_channelIndex        (int);
 
 	std::mutex		locker;
 	bool			transmitterTags_local;
 	void			colorServiceName (const QString &s,
-                                                  QColor color, int fS, bool);
+	                                          QColor color, int fS, bool);
 
 signals:
 	void                    set_newChannel		(int);
-        void                    set_newPresetIndex      (int);
+	void                    set_newPresetIndex      (int);
 
 public slots:
 	void			set_CorrectorDisplay	(int);
@@ -425,12 +425,12 @@ private slots:
 	void			newDevice		(const QString &);
 
 	void			handle_historyButton	();
-        void			handle_sourcedumpButton	();
-        void			handle_framedumpButton	();
+	void			handle_sourcedumpButton	();
+	void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
 
 	void			handle_prevServiceButton	();
-        void			handle_nextServiceButton	();
+	void			handle_nextServiceButton	();
 	void			handle_channelSelector		(const QString &);
 	void			handle_nextChannelButton();
 	void			handle_prevChannelButton();
@@ -452,7 +452,7 @@ private slots:
 	void			handle_httpButton	();
 	void			handle_onTop		(int);
 	void			handle_autoBrowser	(int);
-        void			handle_transmitterTags	(int);
+	void			handle_transmitterTags	(int);
 
 //
 //	color handlers
