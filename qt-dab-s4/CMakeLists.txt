@@ -144,12 +144,6 @@ endif ()
 	include_directories ( ${QWT_INCLUDE_DIRS})
 	list(APPEND extraLibs ${QWT_LIBRARIES})
 
-        find_package(FFTW3f)
-        if (NOT FFTW3F_FOUND)
-            message(FATAL_ERROR "please install FFTW3")
-        endif ()
-
-
         find_package(zlib)
 	if (NOT ZLIB_FOUND)
             message(FATAL_ERROR "please install libz")
@@ -186,6 +180,7 @@ endif ()
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           .
 	           ..
+	           ../fft
 	           ../includes
 	           ../includes/ofdm
 	           ../includes/protection
@@ -198,6 +193,7 @@ endif ()
 	           ../includes/backend/data/epg
 	           ../includes/support
 	           ../src/support/tii-library
+	           ../includes/support/buttons
 	           ../includes/support/viterbi-jan
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
@@ -218,6 +214,10 @@ endif ()
 	set (${objectName}_HDRS
 	     ./radio.h
 	     ../dab-processor.h
+	     ../fft/kiss_fft.h 
+	     ../fft/kiss_fftr.h 
+	     ../fft/_kiss_fft_guts.h 
+	     ../fft/fft-handler.h 
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
@@ -270,7 +270,8 @@ endif ()
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/newconverter.h
-	     ../includes/support/fft-handler.h
+	     ../includes/support/fft-complex.h
+	     ../includes/support/fft-complex.h
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
@@ -281,12 +282,6 @@ endif ()
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/smallqlistview.h
-	     ../includes/support/normalpushbutton.h
-	     ../includes/support/newpushbutton.h
-	     ../includes/support/smallpushbutton.h
-	     ../includes/support/smallspinbox.h
-	     ../includes/support/verysmallpushbutton.h
-	     ../includes/support/smallcombobox.h
 	     ../includes/support/history-handler.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
@@ -302,6 +297,13 @@ endif ()
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-library/tii-codes.h
+	     ../includes/support/buttons/smallcombobox.h
+             ../includes/support/buttons/newpushbutton.h
+             ../includes/support/buttons/normalpushbutton.h
+             ../includes/support/buttons/smallpushbutton.h
+             ../includes/support/buttons/verysmallpushbutton.h
+             ../includes/support/buttons/smallqlistview.h
+             ../includes/support/buttons/smallspinbox.h
 	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
@@ -329,6 +331,9 @@ endif ()
 	     ./main.cpp
 	     ./radio.cpp
 	     ../dab-processor.cpp
+	     ../fft/kiss_fft.c 
+	     ../fft/kiss_fftr.c 
+	     ../fft/fft-handler.cpp 
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
@@ -375,20 +380,20 @@ endif ()
 	     ../src/output/audio-base.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
-	     ../src/support/fft-handler.cpp
+	     ../src/support/fft-complex.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
-	     ../src/support/smallqlistview.cpp
-	     ../src/support/smallspinbox.cpp
-	     ../src/support/normalpushbutton.cpp
-	     ../src/support/newpushbutton.cpp
-	     ../src/support/smallpushbutton.cpp
-	     ../src/support/verysmallpushbutton.cpp
-	     ../src/support/smallcombobox.cpp
+	     ../src/support/buttons/smallcombobox.cpp 
+             ../src/support/buttons/newpushbutton.cpp 
+             ../src/support/buttons/normalpushbutton.cpp 
+             ../src/support/buttons/smallpushbutton.cpp
+             ../src/support/buttons/verysmallpushbutton.cpp
+             ../src/support/buttons/smallqlistview.cpp
+             ../src/support/buttons/smallspinbox.cpp 
 	     ../src/support/history-handler.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
@@ -452,13 +457,13 @@ endif ()
 	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
-	     ../includes/support/smallqlistview.h
-	     ../includes/support/smallspinbox.h
-	     ../includes/support/normalpushbutton.h
-	     ../includes/support/newpushbutton.h
-	     ../includes/support/smallpushbutton.h
-	     ../includes/support/verysmallpushbutton.h
-	     ../includes/support/smallcombobox.h
+	     ../includes/support/buttons/smallcombobox.h
+             ../includes/support/buttons/newpushbutton.h
+             ../includes/support/buttons/normalpushbutton.h
+             ../includes/support/buttons/smallpushbutton.h 
+             ../includes/support/buttons/verysmallpushbutton.h
+             ../includes/support/buttons/smallqlistview.h
+             ../includes/support/buttons/smallspinbox.h
 	     ../includes/support/history-handler.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
@@ -968,7 +973,6 @@ endif ()
 	          ${QT5Widgets_INCLUDES}
 	          ${QT_QTCORE_INCLUDE_DIR}
 	          ${QT_QTGUI_INCLUDE_DIR}
-	          ${FFTW_INCLUDE_DIRS}
 	          ${PORTAUDIO_INCLUDE_DIRS}
 	          ${FAAD_INCLUDE_DIRS}
 	          ${SNDFILES_INCLUDE_DIRS}
@@ -990,7 +994,6 @@ endif ()
 	                       Qt5::Network
 	                       Qt5::Xml
 	                       ${RTLTCP_lib}
-	                       ${FFTW3F_LIBRARIES}
 	                       ${extraLibs}
 	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}

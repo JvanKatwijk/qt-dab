@@ -40,8 +40,8 @@ static int cifTable [] = {18, 72, 0, 36};
 	                                 uint8_t	dabMode,
 	                                 RingBuffer<uint8_t> *frameBuffer) :
 	                                       params (dabMode),
-	                                       my_fftHandler (dabMode),
-	                                       myMapper (dabMode)
+	                                       myMapper (dabMode),
+	                                       fft (params. get_T_u (), false)
 #ifdef	__MSC_THREAD__
 	                                       ,bufferSpace (params. get_L())
 #endif		                            
@@ -53,7 +53,6 @@ static int cifTable [] = {18, 72, 0, 36};
 	ibits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
 
-	fft_buffer		= my_fftHandler. getVector();
 	phaseReference	.resize (params. get_T_u());
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
@@ -113,6 +112,8 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 void    mscHandler::run () {
 int	currentBlock	= 0;
 
+std::complex<float> fft_buffer [T_u];
+
 	if (running. load ()) {
 	   fprintf (stderr, "already running\n");
 	   return;
@@ -129,7 +130,7 @@ int	currentBlock	= 0;
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
-	      my_fftHandler. do_FFT();
+	      fft. fft (fft_buffer);
               if (currentBlock >= 4) {
                  for (int i = 0; i < params. get_carriers(); i ++) {
                     int16_t      index   = myMapper. mapIn (i);
@@ -160,14 +161,16 @@ int	currentBlock	= 0;
 }
 #else
 void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
+std::complex<float> fft_buffer [params. get_T_u ()];;
 	if (blkno < 3)
 	   return;
+	
 	memcpy (fft_buffer, b,
-	                 params. get_T_u() * sizeof (std::complex<float>));
+	                 params. get_T_u () * sizeof (std::complex<float>));
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
-	my_fftHandler. do_FFT();
+	fft. fft (fft_buffer);
 	if (blkno >= 4) {
 	   for (int i = 0; i < params. get_carriers(); i ++) {
 	      int16_t      index   = myMapper. mapIn (i);

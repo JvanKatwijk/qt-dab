@@ -28,11 +28,13 @@
 #include	<QPen>
 #include	"color-selector.h"
 
+
 	spectrumViewer::spectrumViewer	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings,
 	                                 RingBuffer<std::complex<float>> *sbuffer,
 	                                 RingBuffer<std::complex<float>>* ibuffer):
-	                                 myFrame (nullptr) {
+	                                 myFrame (nullptr),
+	                                 fft (SP_SPECTRUMSIZE, false) {
 int16_t	i;
 
 	this	-> myRadioInterface	= mr;
@@ -54,23 +56,15 @@ int16_t	i;
 	fprintf (stderr, "spectrumViewer gezet op %d %d, staat op %d %d\n",
 	                                x, y, pos. x (), pos. y ());
 	myFrame. hide();
-	displayBuffer. resize (256);
-	displaySize	= 256;
-	spectrumSize	= 4 * displaySize;
-	spectrum		= (std::complex<float> *)
-	               fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
-        plan    = fftwf_plan_dft_1d (spectrumSize,
-                                  reinterpret_cast <fftwf_complex *>(spectrum),
-                                  reinterpret_cast <fftwf_complex *>(spectrum),
-                                  FFTW_FORWARD, FFTW_ESTIMATE);
-	
-	Window. resize (spectrumSize);
-	for (i = 0; i < spectrumSize; i ++) 
+	for (i = 0; i < SP_SPECTRUMSIZE; i ++) 
 	   Window [i] =
-	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
-	              0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
-	mySpectrumScope	= new spectrumScope (dabScope, 256, dabSettings);
-	myWaterfallScope	= new waterfallScope (dabWaterfall, 256, 50);
+	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (SP_SPECTRUMSIZE - 1)) +
+	              0.08 * cos ((4.0 * M_PI * i) / (SP_SPECTRUMSIZE - 1));
+
+	mySpectrumScope	= new spectrumScope (dabScope,
+	                                     SP_DISPLAYSIZE, dabSettings);
+	myWaterfallScope	= new waterfallScope (dabWaterfall,
+	                                     SP_DISPLAYSIZE, 50);
 	myIQDisplay	= new IQDisplay (iqDisplay, 512);
 	myNullScope	= new nullScope	(nullDisplay, 256, dabSettings);
 	setBitDepth	(12);
@@ -85,8 +79,6 @@ int16_t	i;
 	dabSettings	-> setValue ("width", size. width ());
 	dabSettings	-> setValue ("height", size. height ());
 	dabSettings	-> endGroup ();
-	fftwf_destroy_plan (plan);
-	fftwf_free	(spectrum);
 	myFrame. hide();
 	delete		myIQDisplay;
 	delete		mySpectrumScope;
@@ -95,18 +87,17 @@ int16_t	i;
 }
 
 void	spectrumViewer::showSpectrum	(int32_t amount, int32_t vfoFrequency) {
-double	X_axis [displaySize];
-double	Y_values [displaySize];
-double	Y2_values [displaySize];
-int16_t	i, j;
-double	temp	= (double)INPUT_RATE / 2 / displaySize;
+double	X_axis [SP_DISPLAYSIZE];
+double	Y_values [SP_DISPLAYSIZE];
+double	Y2_values [SP_DISPLAYSIZE];
+double	temp	= (double)INPUT_RATE / 2 / SP_DISPLAYSIZE;
 int16_t	averageCount	= 5;
 	   
 	(void)amount;
-	if (spectrumBuffer -> GetRingBufferReadAvailable() < spectrumSize)
+	if (spectrumBuffer -> GetRingBufferReadAvailable() < SP_SPECTRUMSIZE)
 	   return;
 
-	spectrumBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
+	spectrumBuffer	-> getDataFromBuffer (spectrum, SP_SPECTRUMSIZE);
 	spectrumBuffer	-> FlushRingBuffer();
 	if (myFrame. isHidden()) {
 	   spectrumBuffer	-> FlushRingBuffer();
@@ -114,39 +105,39 @@ int16_t	averageCount	= 5;
 	}
 
 //	first X axis labels
-	for (i = 0; i < displaySize; i ++)
+	for (int i = 0; i < SP_DISPLAYSIZE; i ++)
 	   X_axis [i] = 
 	         ((double)vfoFrequency - (double)(INPUT_RATE / 2) +
 	          (double)((i) * (double) 2 * temp)) / ((double)1000);
 //
 //	and window it
 //	get the buffer data
-	for (i = 0; i < spectrumSize; i ++)
+	for (int i = 0; i < SP_SPECTRUMSIZE; i ++)
 	   if (std::isnan (abs (spectrum [i])) ||
 	                 std::isinf (abs (spectrum [i])))
 	      spectrum [i] = std::complex<float> (0, 0);
 	   else
 	      spectrum [i] = cmul (spectrum [i], Window [i]);
 
-	fftwf_execute (plan);
+	fft. fft (spectrum);
 //
-//	and map the spectrumSize values onto displaySize elements
-	for (i = 0; i < displaySize / 2; i ++) {
+//	and map the SP_SPECTRUMSIZE values onto SP_DISPLAYSIZE elements
+	for (int i = 0; i < SP_DISPLAYSIZE / 2; i ++) {
 	   double f	= 0;
-	   for (j = 0; j < spectrumSize / displaySize; j ++)
-	      f += abs (spectrum [spectrumSize / displaySize * i + j]);
+	   for (int j = 0; j < SP_SPECTRUMSIZE / SP_DISPLAYSIZE; j ++)
+	      f += abs (spectrum [SP_SPECTRUMSIZE / SP_DISPLAYSIZE * i + j]);
 
-	   Y_values [displaySize / 2 + i] = 
-                                 f / (spectrumSize / displaySize);
+	   Y_values [SP_DISPLAYSIZE / 2 + i] = 
+                                 f / (SP_SPECTRUMSIZE / SP_DISPLAYSIZE);
 	   f = 0;
-	   for (j = 0; j < spectrumSize / displaySize; j ++)
-	      f += abs (spectrum [spectrumSize / 2 +
-	                             spectrumSize / displaySize * i + j]);
-	   Y_values [i] = f / (spectrumSize / displaySize);
+	   for (int j = 0; j < SP_SPECTRUMSIZE / SP_DISPLAYSIZE; j ++)
+	      f += abs (spectrum [SP_SPECTRUMSIZE / 2 +
+	                             SP_SPECTRUMSIZE / SP_DISPLAYSIZE * i + j]);
+	   Y_values [i] = f / (SP_SPECTRUMSIZE / SP_DISPLAYSIZE);
 	}
 //
 //	average the image a little.
-	for (i = 0; i < displaySize; i ++) {
+	for (int i = 0; i < SP_DISPLAYSIZE; i ++) {
 	   if (std::isnan (Y_values [i]) || std::isinf (Y_values [i]))
 	      continue;
 
@@ -156,9 +147,9 @@ int16_t	averageCount	= 5;
 	}
 
 	memcpy (Y_values,
-	        displayBuffer. data (), displaySize * sizeof (double));
+	        displayBuffer, SP_DISPLAYSIZE * sizeof (double));
 	memcpy (Y2_values,
-	        displayBuffer. data (), displaySize * sizeof (double));
+	        displayBuffer, SP_DISPLAYSIZE * sizeof (double));
 	mySpectrumScope	-> showSpectrum (X_axis, Y_values,
 	              scopeAmplification -> value (),
 	              vfoFrequency / 1000);

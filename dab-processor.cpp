@@ -196,7 +196,7 @@ notSynced:
 	      case NO_END_OF_DIP_FOUND:
 	         goto notSynced;
 	   }
-	   myReader. getSamples (ofdmBuffer. data(),
+	   myReader. getSamples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset);
 /**
   *	Looking for the first sample of the T_u part of the sync block.
@@ -225,11 +225,13 @@ Check_endofNULL:
 	      frameCount = 0;
 	      null_shower = true;
 	   }
+
 	   if (null_shower) {
 	      for (int i = 0; i < T_u / 4; i ++)
 	         tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	   }
-	   myReader. getSamples (ofdmBuffer. data(),
+
+	   myReader. getSamples (ofdmBuffer, 0,
 	                         T_u, coarseOffset + fineOffset);
 	   if (null_shower) {
 	      for (int i = 0; i < T_u / 4; i ++)
@@ -276,9 +278,10 @@ SyncOnPhase:
   *	We read the missing samples in the ofdm buffer
   */
 	   setSynced (true);
-	   myReader. getSamples (&((ofdmBuffer. data()) [ofdmBufferIndex]),
-	                           T_u - ofdmBufferIndex,
-	                           coarseOffset + fineOffset);
+	   myReader. getSamples (ofdmBuffer,
+	                         ofdmBufferIndex,
+	                         T_u - ofdmBufferIndex,
+	                         coarseOffset + fineOffset);
 
 #ifdef	__WITH_JAN__
 	   static int abc = 0;
@@ -322,8 +325,8 @@ SyncOnPhase:
 	   FreqCorr	= std::complex<float> (0, 0);
 	   for (int ofdmSymbolCount = 1;
 	        ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	      myReader. getSamples (ofdmBuffer. data(),
-	                              T_s, coarseOffset + fineOffset);
+	      myReader. getSamples (ofdmBuffer, 0,
+	                            T_s, coarseOffset + fineOffset);
 	      sampleCount += T_s;
 	      for (i = (int)T_u; i < (int)T_s; i ++) {
 	         FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
@@ -348,7 +351,7 @@ SyncOnPhase:
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	   myReader. getSamples (ofdmBuffer. data(),
+	   myReader. getSamples (ofdmBuffer, 0,
 	                         T_null, coarseOffset + fineOffset);
 	   sampleCount += T_null;
 	   float sum	= 0;

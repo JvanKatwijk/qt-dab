@@ -53,7 +53,8 @@ public:
 		void	setRunning	(bool b);
 		float	get_sLevel	();
 		std::complex<float> getSample	(int32_t);
-	        void	getSamples	(std::complex<float> *v,
+	        void	getSamples	(std::vector<std::complex<float>> &v,
+	                                 int index,
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
 	        void	stopDumping();

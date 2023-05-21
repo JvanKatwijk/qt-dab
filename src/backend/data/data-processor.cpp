@@ -78,7 +78,7 @@
 }
 
 
-void	dataProcessor::addtoFrame (std::vector<uint8_t>  &outV) {
+void	dataProcessor::addtoFrame (std::vector<uint8_t>  outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
 

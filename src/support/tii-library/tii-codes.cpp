@@ -180,7 +180,7 @@ double dy	= distance (latitude1, longitude2,
 	else
 	   dx = distance (latitude2, longitude1,
 	                  latitude2, longitude2);
-float azimuth = atan2 (dy, dx);
+	float azimuth = atan2 (dy, dx);
 	   
 	if (dx_sign && dy_sign)		// eerste kwadrant
 	   return (int)((M_PI / 2 - azimuth) / M_PI * 180);
@@ -245,6 +245,7 @@ uint16_t res;
 	   res = 0;
 	return res % 100;
 }
+
 void	tiiHandler::readFile (FILE *f) {
 int	count = 0; 
 char	buffer [1024];

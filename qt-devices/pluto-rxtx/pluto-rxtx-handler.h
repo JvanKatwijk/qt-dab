@@ -35,7 +35,6 @@
 #include	"ringbuffer.h"
 #include	"device-handler.h"
 #include	"ui_pluto-rxtx-widget.h"
-#include        <fftw3.h>
 #include        <qwt.h>
 #include        <qwt_plot.h>
 #include        <qwt_plot_marker.h>
@@ -193,7 +192,6 @@ private:
 	float		window	[8192];
 	QwtPlot         *plotgrid;
 	std::complex<float>*	fftBuffer;
-        fftwf_plan      plan;
 
 	void		showBuffer		(float *);
 //      configuration items

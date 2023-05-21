@@ -64,13 +64,13 @@ int	res;
 	phandle->load();
 
 	if (!phandle -> isLoaded ()) {
-	   throw (new hackrf_exception ("failed to open " +
+	   throw (hackrf_exception ("failed to open " +
 	                                std::string (libraryString)));
 	}
 
 	if (!load_hackrfFunctions ()) {
 	   delete phandle;
-	   throw (new hackrf_exception ("could not find one or more library functions"));
+	   throw (hackrf_exception ("could not find one or more library functions"));
 	}
 //
 //	From here we have a library available
@@ -101,50 +101,50 @@ int	res;
 //
 	res	= this -> hackrf_init ();
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 
 	}
 
 	res	= this	-> hackrf_open (&theDevice);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_sample_rate (theDevice, 2048000.0);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_baseband_filter_bandwidth (theDevice,
 	                                                        1750000);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res	= this -> hackrf_set_freq (theDevice, 220000000);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res = this -> hackrf_set_antenna_enable (theDevice, 1);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res = this -> hackrf_set_amp_enable (theDevice, 1);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	uint16_t regValue;
 	res = this -> hackrf_si5351c_read (theDevice, 162, &regValue);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
 	if (res != HACKRF_SUCCESS) {
-	   throw (new hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	setLNAGain	(lnaGainSlider		-> value());

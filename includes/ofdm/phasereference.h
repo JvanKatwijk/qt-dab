@@ -37,26 +37,24 @@ class	RadioInterface;
 #ifdef	__WITH_JAN__
 class	channel;
 #endif
+#include	"fft-handler.h"
 
 class phaseReference : public QObject, public phaseTable {
 Q_OBJECT
 public:
 			phaseReference 		(RadioInterface *,
 	                                         processParams *);
-			~phaseReference();
-	int32_t		findIndex		(std::vector<std::complex<float>>&, int);
-	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>&);
-//	float		estimate_FrequencyOffset (std::vector<std::complex<float>> &);
-//
+			~phaseReference		();
+	int32_t		findIndex		(std::vector<std::complex<float>>, int);
+	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
 	float		phase			(std::vector<std::complex<float>>&, int);
 #ifdef	__WITH_JAN__
-	void		estimate		(std::vector<std::complex<float>>&);
+	void		estimate		(std::vector<std::complex<float>>);
 #endif
 //	This one is used in the ofdm decoder
 	std::vector<std::complex<float>> refTable;
 private:
 	dabParams	params;
-	fftHandler	my_fftHandler;
 #ifdef	__WITH_JAN__
 	channel		*theEstimator;
 #endif
@@ -68,10 +66,13 @@ private:
 	int32_t		T_g;
 	int16_t		carriers;
 
-	std::complex<float>	*fft_buffer;
 	int32_t		fft_counter;
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
+
+	fftHandler	fft_forward;
+	fftHandler	fft_backwards;
+
 signals:
 	void		showCorrelation	(int, int, QVector<int>);
 };

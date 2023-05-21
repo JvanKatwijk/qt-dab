@@ -26,7 +26,7 @@
 
 #include	<cstdint>
 #include	"dab-params.h"
-#include	"fft-handler.h"
+#include	<complex>
 #include	<vector>
 
 class	TII_Detector {
@@ -35,7 +35,7 @@ public:
 			~TII_Detector();
 	void		reset		();
 	void		setMode		(bool);
-	void		addBuffer	(std::vector<std::complex<float>> &);
+	void		addBuffer	(std::vector<std::complex<float>>);
 	uint16_t	processNULL	();
 
 private:
@@ -45,11 +45,9 @@ private:
 	int16_t			depth;
 	uint8_t			invTable [256];
 	dabParams		params;
-	fftHandler		my_fftHandler;
 	int16_t			T_u;
 	int16_t			carriers;
-	std::complex<float>	*fft_buffer;
-	std::vector<complex<float> >	theBuffer;
+	std::vector<std::complex<float> >	theBuffer;
 	std::vector<float>	window;
 };
 

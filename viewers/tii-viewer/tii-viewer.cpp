@@ -26,12 +26,14 @@
 #include	<QColor>
 #include	<QPen>
 #include	"color-selector.h"
+#include	"fft-complex.h"
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
 	                         QSettings	*dabSettings,
 	                         RingBuffer<std::complex<float>> *sbuffer):
 	                              myFrame (nullptr),
-	                              spectrumCurve ("") {
+	                              spectrumCurve (""),
+	                              fft (TII_SPECTRUMSIZE, false) {
 int16_t	i;
 QString	colorString	= "black";
 bool	brush;
@@ -52,11 +54,7 @@ bool	brush;
 	curveColor	= QColor (colorString);
 
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
-	displaySize	= dabSettings -> value ("displaySize",
-	                                                   512).toInt();
 
-	if ((displaySize & (displaySize - 1)) != 0)
-	   displaySize = 1024;
 	int x   = dabSettings -> value ("position-x", 100). toInt ();
         int y   = dabSettings -> value ("position-y", 100). toInt ();
 	int w	= dabSettings -> value ("width", 150). toInt ();
@@ -67,15 +65,7 @@ bool	brush;
         myFrame. move (QPoint (x, y));
 
 	myFrame. hide();
-	displayBuffer. resize (displaySize);
-	memset (displayBuffer. data (), 0, displaySize * sizeof (double));
-	this	-> spectrumSize	= 2 * displaySize;
-	spectrum		= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
-        plan    = fftwf_plan_dft_1d (spectrumSize,
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
-                                    reinterpret_cast <fftwf_complex *>(spectrum),
-                                    FFTW_FORWARD, FFTW_ESTIMATE);
-	
+	memset (displayBuffer, 0, TII_DISPLAYSIZE * sizeof (double));
 	plotgrid	= tiiGrid;
 	plotgrid	-> setCanvasBackground (displayColor);
 //	grid		= new QwtPlotGrid;
@@ -122,11 +112,10 @@ bool	brush;
 	Marker		-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 
-	Window. resize (spectrumSize);
-	for (i = 0; i < spectrumSize; i ++) 
+	for (i = 0; i < TII_SPECTRUMSIZE; i ++) 
 	   Window [i] =
-	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +
-	              0.08 * cos ((4.0 * M_PI * i) / (spectrumSize - 1));
+	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (TII_SPECTRUMSIZE - 1)) +
+	              0.08 * cos ((4.0 * M_PI * i) / (TII_SPECTRUMSIZE - 1));
 	setBitDepth	(12);
 }
 
@@ -138,15 +127,12 @@ bool	brush;
 	dabSettings	-> setValue ("width", size. width ());
 	dabSettings	-> setValue ("height", size. height ());
 	dabSettings	-> endGroup ();
-	fftwf_destroy_plan (plan);
-	fftwf_free	(spectrum);
 	myFrame. hide();
 	delete		Marker;
 //	delete		ourBrush;
 }
 
 void	tiiViewer::clear() {
-	transmitterDisplay	-> setText (" ");
 }
 
 static
@@ -176,51 +162,51 @@ void	tiiViewer::showTransmitters	(QByteArray transmitters) {
 }
 
 void	tiiViewer::showSpectrum	(int32_t amount) {
-double	X_axis [displaySize];
-double	Y_values [displaySize];
+double	X_axis [TII_DISPLAYSIZE];
+double	Y_values [TII_DISPLAYSIZE];
 int16_t	i, j;
-double	temp	= (double)INPUT_RATE / 2 / displaySize;
+double	temp	= (double)INPUT_RATE / 2 / TII_DISPLAYSIZE;
 int16_t	averageCount	= 3;
 
 	(void)amount;
-	if (tiiBuffer -> GetRingBufferReadAvailable() < spectrumSize) {
+	if (tiiBuffer -> GetRingBufferReadAvailable() < TII_SPECTRUMSIZE) {
 	   return;
 	}
 
-	tiiBuffer	-> getDataFromBuffer (spectrum, spectrumSize);
+	tiiBuffer	-> getDataFromBuffer (spectrumBuffer, TII_SPECTRUMSIZE);
 	tiiBuffer	-> FlushRingBuffer ();
 	if (myFrame. isHidden ())
 	   return;
 //	and window it
 //	first X axis labels
-	for (i = 0; i < displaySize; i ++)
+	for (i = 0; i < TII_DISPLAYSIZE; i ++)
 	   X_axis [i] = 
 	         ((double)0 - (double)(INPUT_RATE / 2) +
 	          (double)((i) * (double) 2 * temp)) / ((double)1000);
 //
 //	get the buffer data
-	for (i = 0; i < spectrumSize; i ++)
-	   spectrum [i] = cmul (spectrum [i], Window [i]);
+	for (i = 0; i < TII_SPECTRUMSIZE; i ++)
+	   spectrumBuffer [i] = cmul (spectrumBuffer [i], Window [i]);
 
-	fftwf_execute (plan);
+	fft. fft (spectrumBuffer);
 //
-//	and map the spectrumSize values onto displaySize elements
-	for (i = 0; i < displaySize / 2; i ++) {
+//	and map the TII_SPECTRUMSIZE values onto TII_DISPLAYSIZE elements
+	for (i = 0; i < TII_DISPLAYSIZE / 2; i ++) {
 	   double f	= 0;
-	   for (j = 0; j < spectrumSize / displaySize; j ++)
-	      f += abs (spectrum [spectrumSize / displaySize * i + j]);
+	   for (j = 0; j < TII_SPECTRUMSIZE / TII_DISPLAYSIZE; j ++)
+	      f += abs (spectrumBuffer [TII_SPECTRUMSIZE / TII_DISPLAYSIZE * i + j]);
 
-	   Y_values [displaySize / 2 + i] = 
-                                 f / (spectrumSize / displaySize);
+	   Y_values [TII_DISPLAYSIZE / 2 + i] = 
+                                 f / (TII_SPECTRUMSIZE / TII_DISPLAYSIZE);
 	   f = 0;
-	   for (j = 0; j < spectrumSize / displaySize; j ++)
-	      f += abs (spectrum [spectrumSize / 2 +
-	                             spectrumSize / displaySize * i + j]);
-	   Y_values [i] = f / (spectrumSize / displaySize);
+	   for (j = 0; j < TII_SPECTRUMSIZE / TII_DISPLAYSIZE; j ++)
+	      f += abs (spectrumBuffer [TII_SPECTRUMSIZE / 2 +
+	                             TII_SPECTRUMSIZE / TII_DISPLAYSIZE * i + j]);
+	   Y_values [i] = f / (TII_SPECTRUMSIZE / TII_DISPLAYSIZE);
 	}
 //
 //	average the image a little.
-	for (i = 0; i < displaySize; i ++) {
+	for (i = 0; i < TII_DISPLAYSIZE; i ++) {
 	   if (std::isnan (Y_values [i]) || std::isinf (Y_values [i]))
 	      continue;
 	   displayBuffer [i] = 
@@ -228,8 +214,7 @@ int16_t	averageCount	= 3;
 	           1.0f / averageCount * Y_values [i];
 	}
 
-	memcpy (Y_values,
-	        displayBuffer. data(), displaySize * sizeof (double));
+	memcpy (Y_values, displayBuffer, TII_DISPLAYSIZE * sizeof (double));
 	ViewSpectrum (X_axis, Y_values,
 	              AmplificationSlider -> value(),
 	              0 / 1000);
@@ -245,21 +230,21 @@ float	amp1	= amp / 100;
 	amp		= amp / 50.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
-				         X_axis [displaySize - 1]);
+				         X_axis [TII_DISPLAYSIZE - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         get_db (0), get_db (0) + amp1 * 40);
 //				         get_db (0), get_db (0) + amp);
 //				         get_db (0), 0);
 
-	for (i = 0; i < displaySize; i ++) 
+	for (i = 0; i < TII_DISPLAYSIZE; i ++) 
 	   Y1_value [i] = get_db (amp1 * Y1_value [i]); 
 
 	spectrumCurve. setBaseline (get_db (0));
 	Y1_value [0]		= get_db (0);
-	Y1_value [displaySize - 1] = get_db (0);
+	Y1_value [TII_DISPLAYSIZE - 1] = get_db (0);
 
-	spectrumCurve. setSamples (X_axis, Y1_value, displaySize);
+	spectrumCurve. setSamples (X_axis, Y1_value, TII_DISPLAYSIZE);
 	Marker		-> setXValue (marker);
 	plotgrid	-> replot(); 
 }
@@ -340,38 +325,38 @@ int	index;
 static
 double	Y_values [2000] = {0};
 void	tiiViewer::show_nullPeriod (const QVector<float> &v, double  amp2) {
-double	X_axis [displaySize];
+double	X_axis [TII_DISPLAYSIZE];
 double	amp	= AmplificationSlider -> value();
 
 
-	for (int i = 0; i < displaySize; i ++) {
-	   X_axis [i] = i * v. size () / displaySize;;
+	for (int i = 0; i < TII_DISPLAYSIZE; i ++) {
+	   X_axis [i] = i * v. size () / TII_DISPLAYSIZE;;
 	   double x = 0;
-	   for (int j = 0; j < v. size () / displaySize; j ++)
-	      x = abs (v [i * v. size () / displaySize + j]);
+	   for (int j = 0; j < v. size () / TII_DISPLAYSIZE; j ++)
+	      x = abs (v [i * v. size () / TII_DISPLAYSIZE + j]);
 	   Y_values [i] = x;
 	}
 
 	float Max	= 0;
-	for (int i = 0; i < displaySize; i ++)
+	for (int i = 0; i < TII_DISPLAYSIZE; i ++)
 	   if (Y_values [i] > Max)
 	      Max = Y_values [i];
 
 	plotgrid        -> setAxisScale (QwtPlot::xBottom,
                                          (double)X_axis [0],
-                                         X_axis [displaySize - 1]);
+                                         X_axis [TII_DISPLAYSIZE - 1]);
         plotgrid        -> enableAxis (QwtPlot::xBottom);
         plotgrid        -> setAxisScale (QwtPlot::yLeft,
                                          0, Max * 2);
 //                                       get_db (0), 0);
-//	for (int i = 0; i < displaySize; i ++) 
+//	for (int i = 0; i < TII_DISPLAYSIZE; i ++) 
 //	   Y_values [i] = get_db (amp * Y_values [i]); 
 
 	spectrumCurve. setBaseline (0);
 	Y_values [0]		= 0;
-	Y_values [displaySize - 1] = 0;
+	Y_values [TII_DISPLAYSIZE - 1] = 0;
 
-	spectrumCurve. setSamples (X_axis, Y_values, displaySize);
+	spectrumCurve. setSamples (X_axis, Y_values, TII_DISPLAYSIZE);
 	plotgrid	-> replot(); 
 }
 

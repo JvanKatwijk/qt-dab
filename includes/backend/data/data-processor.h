@@ -44,7 +44,7 @@ public:
 	                 packetdata	*pd,
 	                 RingBuffer<uint8_t>	*dataBuffer);
 	~dataProcessor();
-void	addtoFrame	(std::vector<uint8_t> &);
+void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;

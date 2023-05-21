@@ -25,13 +25,15 @@
 #ifndef		__TII_VIEWER__
 #define		__TII_VIEWER__
 
+#define		TII_DISPLAYSIZE		512
+#define		TII_SPECTRUMSIZE	1024
+
 #include	<QSettings>
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<QObject>
 #include	<QByteArray>
 
-#include	<fftw3.h>
 #include	"ui_tii-widget.h"
 #include	"ringbuffer.h"
 #include	<qwt.h>
@@ -48,6 +50,8 @@
 #include        <qwt_picker_machine.h>
 #include        <qwt_scale_widget.h>
 #include        <QBrush>
+
+#include	"fft-handler.h"
 
 class	RadioInterface;
 
@@ -73,17 +77,15 @@ private:
 	QwtPlotCurve	spectrumCurve;
 	QwtPlotGrid	grid;
 	RingBuffer<std::complex<float>>	*tiiBuffer;
-	int16_t		displaySize;
-	int16_t		spectrumSize;
-	std::complex<float>	*spectrum;
-	std::vector<double>	displayBuffer;
-	std::vector<float>	Window;
 	QwtPlotPicker	*lm_picker;
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
 
-	fftwf_plan	plan;
+	fftHandler	fft;
+	double		displayBuffer [TII_DISPLAYSIZE];
+	std::complex<float> spectrumBuffer [TII_SPECTRUMSIZE];
+	float		Window [TII_SPECTRUMSIZE];
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
 //	QBrush		*ourBrush;

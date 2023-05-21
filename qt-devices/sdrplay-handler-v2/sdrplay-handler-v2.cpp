@@ -82,16 +82,16 @@ sdrplaySelect	*sdrplaySelector;
 
 	bool success	= fetchLibrary ();
 	if (!success) 
-	   throw (new sdrplay_2_exception ("mir_sdr_api could not be found"));
+	   throw (sdrplay_2_exception ("mir_sdr_api could not be found"));
 	success = loadFunctions();
 	if (!success) {
 	   releaseLibrary ();
-	   throw (new sdrplay_2_exception ("function in mir_sdr_api not found"));
+	   throw (sdrplay_2_exception ("function in mir_sdr_api not found"));
 	}
 
 	err		= my_mir_sdr_ApiVersion (&ver);
 	if (ver < 2.13) {
-	   throw (new sdrplay_2_exception ("Library version too old"));
+	   throw (sdrplay_2_exception ("Library version too old"));
 	}
 
 	api_version	-> display (ver);
@@ -134,12 +134,12 @@ sdrplaySelect	*sdrplaySelector;
 	   fprintf (stderr, "error at GetDevices %s \n",
 	                   errorCodes (err). toLatin1(). data());
 
-	   throw (new sdrplay_2_exception (errorCodes (err). toStdString ()));
+	   throw (sdrplay_2_exception (errorCodes (err). toStdString ()));
 	}
 
 	if (numofDevs == 0) {
 	   releaseLibrary ();
-	   throw (new sdrplay_2_exception ("No sdrplay device found"));
+	   throw (sdrplay_2_exception ("No devices found"));
 	}
 
 	if (numofDevs > 1) {
@@ -169,7 +169,7 @@ sdrplaySelect	*sdrplaySelector;
 	                   errorCodes (err). toLatin1(). data());
 //	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
 	   releaseLibrary ();
-	   throw (new sdrplay_2_exception ("error in setting device parameters"));
+	   throw (sdrplay_2_exception ("error in setting device parameters"));
 	}
 //
 //	we know we are only in the frequency range 175 .. 230 Mhz,

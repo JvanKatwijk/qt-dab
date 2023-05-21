@@ -9,11 +9,15 @@ QT		+= widgets xml
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
+win32 {
 QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+}
+unix {
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+}
 
 #QMAKE_CFLAGS	+=  -g
 #QMAKE_CXXFLAGS	+=  -g
@@ -39,6 +43,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 DEPENDPATH += . \
 	      ./pauzeslide \
 	      ./support \
+	      ../fft \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -51,6 +56,7 @@ DEPENDPATH += . \
 	      ../src/backend/data/journaline \
 	      ../src/output \
 	      ../src/support \
+	      ../src/support/buttons \
 	      ../src/support/viterbi-jan \
 	      ../src/support/viterbi-spiral \
 	      ../includes/ofdm \
@@ -64,6 +70,7 @@ DEPENDPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../includes/support/buttons \
 	      ../includes/scopes-qwt6 \
 	      ../viewers \
               ../viewers/spectrum-viewer \
@@ -80,6 +87,7 @@ INCLUDEPATH += . \
 	       ./pauzeslide/ \
 	       ./support \
 	      ../ \
+	      ../fft \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -94,6 +102,7 @@ INCLUDEPATH += . \
 	      ../includes/backend/data/epg-2 \
 	      ../includes/output \
 	      ../includes/support \
+	      ../includes/support/buttons \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
@@ -112,6 +121,10 @@ HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
 	   ../dab-processor.h \
+	   ../fft/kiss_fft.h \
+	   ../fft/kiss_fftr.h \
+	   ../fft/_kiss_fft_guts.h \
+	   ../fft/fft-handler.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
@@ -166,22 +179,16 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/process-params.h \
+	   ../includes/support/fft-complex.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
-           ../includes/support/fft-handler.h \
+#           ../includes/support/fft-handler.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
-	   ../includes/support/smallcombobox.h \
-	   ../includes/support/normalpushbutton.h \
-	   ../includes/support/newpushbutton.h \
-	   ../includes/support/smallpushbutton.h \
-	   ../includes/support/verysmallpushbutton.h \
-	   ../includes/support/smallqlistview.h \
-	   ../includes/support/smallspinbox.h \
 	   ../includes/support/history-handler.h \
 	   ../includes/support/color-selector.h \
 	   ../includes/support/scheduler.h \
@@ -195,6 +202,13 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/bandpass-filter.h \
+	   ../includes/support/buttons/smallcombobox.h \
+	   ../includes/support/buttons/newpushbutton.h \
+	   ../includes/support/buttons/normalpushbutton.h \
+	   ../includes/support/buttons/smallpushbutton.h \
+	   ../includes/support/buttons/verysmallpushbutton.h \
+	   ../includes/support/buttons/smallqlistview.h \
+	   ../includes/support/buttons/smallspinbox.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../includes/scopes-qwt6/audio-display.h \
@@ -206,7 +220,7 @@ HEADERS += ./radio.h \
 	   ../viewers/tii-viewer/tii-viewer.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
-	   ../qt-devices/device-exceptions \
+	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
 	   ../qt-devices/rawfiles-new/rawfiles.h \
 	   ../qt-devices/rawfiles-new/raw-reader.h \
@@ -232,6 +246,9 @@ FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+	   ../fft/kiss_fft.c \
+	   ../fft/kiss_fftr.c \
+	   ../fft/fft-handler.cpp \
 	   ../dab-processor.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -279,21 +296,15 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
+	   ../src/support/fft-complex.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
-           ../src/support/fft-handler.cpp \
+#           ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
-	   ../src/support/smallcombobox.cpp \
-	   ../src/support/normalpushbutton.cpp \
-	   ../src/support/newpushbutton.cpp \
-	   ../src/support/smallpushbutton.cpp \
-	   ../src/support/verysmallpushbutton.cpp \
-	   ../src/support/smallqlistview.cpp \
-	   ../src/support/smallspinbox.cpp \
 	   ../src/support/history-handler.cpp \
 	   ../src/support/color-selector.cpp \
 	   ../src/support/scheduler.cpp \
@@ -306,6 +317,13 @@ SOURCES += ./main.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/bandpass-filter.cpp \
+	   ../src/support/buttons/smallcombobox.cpp \
+	   ../src/support/buttons/newpushbutton.cpp \
+	   ../src/support/buttons/normalpushbutton.cpp \
+	   ../src/support/buttons/smallpushbutton.cpp \
+	   ../src/support/buttons/verysmallpushbutton.cpp \
+	   ../src/support/buttons/smallqlistview.cpp \
+	   ../src/support/buttons/smallspinbox.cpp \
 	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
@@ -347,7 +365,6 @@ mac {
 }
 
 CONFIG		+= link_pkgconfig
-PKGCONFIG	+= fftw3f 
 PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
@@ -473,7 +490,6 @@ isEmpty(GITHASHSTRING) {
 #
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
-LIBS		+= -lfftw3f -lfftw3
 LIBS		+= -lportaudio
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate

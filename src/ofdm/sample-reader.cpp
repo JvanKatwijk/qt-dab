@@ -132,10 +132,11 @@ std::complex<float> temp;
 	return temp;
 }
 
-void	sampleReader::getSamples (std::complex<float>  *v,
+void	sampleReader::getSamples (std::vector<std::complex<float>>  &v,
+	                          int index,
 	                          int32_t n, int32_t phaseOffset) {
 int32_t		i;
-
+std::complex<float> buffer [n];
 	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;
@@ -151,7 +152,7 @@ int32_t		i;
 	   throw 20;
 //
 //	so here, bufferContent >= n
-	n	= theRig -> getSamples (v, n);
+	n	= theRig -> getSamples (buffer, n);
 	bufferContent -= n;
 	if (dumpfilePointer. load () != nullptr) {
 	   for (i = 0; i < n; i ++) {
@@ -174,7 +175,7 @@ int32_t		i;
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 	   if (localCounter < bufferSize)
 	      localBuffer [localCounter ++]     = v [i];
-	   v [i]	*= oscillatorTable [currentPhase];
+	   v  [index + i]	= buffer [i] * oscillatorTable [currentPhase];
 	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
 	}
 

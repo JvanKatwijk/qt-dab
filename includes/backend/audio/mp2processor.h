@@ -58,7 +58,7 @@ public:
 	                                 int16_t,
 	                                 RingBuffer<int16_t> *);
 			~mp2Processor();
-	void		addtoFrame	(std::vector<uint8_t> &);
+	void		addtoFrame	(std::vector<uint8_t>);
 
 private:
 	RadioInterface	*myRadioInterface;

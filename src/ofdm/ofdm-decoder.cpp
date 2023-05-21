@@ -33,7 +33,6 @@
 #include	"msc-handler.h"
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
-
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -46,8 +45,8 @@
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<std::complex<float>> *iqBuffer) :
 	                                    params (dabMode),
-	                                    my_fftHandler (dabMode),
-	                                    myMapper (dabMode) {
+	                                    myMapper (dabMode),
+	                                    fft (params. get_T_u (), false) {
 	this	-> myRadioInterface	= mr;
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
@@ -55,13 +54,12 @@
 	connect (this, SIGNAL (showQuality (float, float, float)),
 	         myRadioInterface, SLOT (showQuality (float, float, float)));
 //
-	this	-> T_s			= params. get_T_s();
-	this	-> T_u			= params. get_T_u();
-	this	-> nrBlocks		= params. get_L();
-	this	-> carriers		= params. get_carriers();
+	this	-> T_s			= params. get_T_s	();
+	this	-> T_u			= params. get_T_u	();
+	this	-> nrBlocks		= params. get_L		();
+	this	-> carriers		= params. get_carriers	();
 
 	this	-> T_g			= T_s - T_u;
-	fft_buffer			= my_fftHandler. getVector();
 	phaseReference			.resize (T_u);
 }
 
@@ -77,16 +75,13 @@ void	ofdmDecoder::reset () {
 /**
   */
 void	ofdmDecoder::processBlock_0 (
-	                std::vector <std::complex<float> > &buffer) {
-	memcpy (fft_buffer, buffer. data(),
-	                             T_u * sizeof (std::complex<float>));
-
-	my_fftHandler. do_FFT();
+	                std::vector <std::complex<float> > buffer) {
+	fft. fft (buffer);
 /**
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
-	memcpy (phaseReference. data (), fft_buffer,
+	memcpy (phaseReference. data (), buffer. data (),
 	                   T_u * sizeof (std::complex<float>));
 }
 //
@@ -137,7 +132,7 @@ void	ofdmDecoder::decode (std::vector <std::complex<float>> &buffer,
 	                     int32_t blkno, std::vector<int16_t> &ibits) {
 int16_t	i;
 std::complex<float> conjVector [T_u];
-
+std::complex<float> fft_buffer [T_u];
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
@@ -145,7 +140,7 @@ std::complex<float> conjVector [T_u];
 /**
   *	first step: do the FFT
   */
-	my_fftHandler. do_FFT();
+	fft. fft (fft_buffer);
 /**
   *	a little optimization: we do not interchange the
   *	positive/negative frequencies to their right positions.

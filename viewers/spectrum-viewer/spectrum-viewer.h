@@ -32,7 +32,6 @@
 #include        "dab-constants.h"
 #include	<QFrame>
 #include	<QObject>
-#include	<fftw3.h>
 #include	"ui_scopewidget.h"
 #include	"ringbuffer.h"
 #include	<qwt.h>
@@ -54,6 +53,10 @@
 #include	"waterfall-scope.h"
 #include	"null-scope.h"
 
+#define	SP_DISPLAYSIZE	512
+#define	SP_SPECTRUMSIZE	2048
+
+#include	"fft-handler.h"
 class	RadioInterface;
 class	QSettings;
 class	IQDisplay;
@@ -87,12 +90,10 @@ private:
 	QColor		gridColor;
 	QColor		curveColor;
 
-	int16_t		displaySize;
-	int16_t		spectrumSize;
-	std::complex<float>	*spectrum;
-	std::vector<double>	displayBuffer;
-	std::vector<float>	Window;
-	fftwf_plan	plan;
+	fftHandler	fft;
+	std::complex<float>	spectrum [SP_SPECTRUMSIZE];
+	double			displayBuffer [SP_DISPLAYSIZE];
+	float		Window [SP_SPECTRUMSIZE];;
 	QwtPlotMarker	*Marker;
 	QwtPlot		*plotgrid;
 	QwtPlotGrid	*grid;

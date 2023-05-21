@@ -102,6 +102,7 @@
 #include	"history-handler.h"
 #include	"time-table.h"
 
+#include	"device-exceptions.h"
 #include	"pauzeslide.h"
 #ifdef	__MINGW32__
 #include <windows.h>
@@ -1528,9 +1529,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new sdrplayHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("sdrplay-v2 fails"));
 	      return nullptr;
 	   }
 	}
@@ -1542,9 +1548,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new sdrplayHandler_v3 (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::string s) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (s. c_str ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (... ) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("sdrplay v3 fails"));
 	      return nullptr;
 	   }
 	}
@@ -1556,9 +1567,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new rtlsdrHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &ex) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (ex. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("rtlsdr device fails"));
 	      return nullptr;
 	   }
 	}
@@ -1570,9 +1586,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new airspyHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("airspy device fails"));
 	      return nullptr;
 	   }
 	}
@@ -1584,9 +1605,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new hackrfHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("hackrf device fails"));
 	      return nullptr;
 	   }
 	}
@@ -1598,9 +1624,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new limeHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("lime device fails"));
 	      return nullptr;
 	   }
 	}
@@ -1612,9 +1643,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new plutoHandler (dabSettings, version);
 	      showButtons();
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("pluto device fails"));
 	      return nullptr;
 	   }
 	}
@@ -1631,9 +1667,14 @@ deviceHandler	*inputDevice	= nullptr;
 	      ((plutoHandler *)inputDevice)	-> startTransmitter (
 	                                               fmFrequency);
 	   }
-	   catch (std::exception &ex) {
+	   catch (const std::exception &e) {
 	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr (ex. what ()));
+	                               tr (e. what ()));
+	      return nullptr;
+	   }
+	   catch (...) {
+	      QMessageBox::warning (this, tr ("Warning"),
+	                           tr ("pluto device fails"));
 	      return nullptr;
 	   }
 	}
@@ -2027,6 +2068,8 @@ void	RadioInterface::show_null (int amount) {
 std::complex<float> B [amount];
 QVector<float> V (amount);
 	nullBuffer. getDataFromBuffer (B, amount);
+	if (my_spectrumViewer. isHidden ())
+	   return;
 	for (int i = 0; i < amount; i ++)
 	   V [i] = abs (B [i]);
 	my_spectrumViewer. show_nullPeriod (V. data (), amount);
@@ -2209,7 +2252,8 @@ void	RadioInterface::showQuality	(float q,
 	if (!running. load())
 	   return;
 
-	my_spectrumViewer. showQuality (q, sco, freqOffset);
+	if (!my_spectrumViewer. isHidden ())
+	   my_spectrumViewer. showQuality (q, sco, freqOffset);
 }
 //
 //	called from the MP4 decoder
@@ -2224,8 +2268,8 @@ void	RadioInterface::show_rsCorrections	(int c) {
 void	RadioInterface::show_clockError	(int e) {
 	if (!running. load ())
 	   return;
-
-	my_spectrumViewer. show_clockErr (e);
+	if (!my_spectrumViewer. isHidden ())
+	   my_spectrumViewer. show_clockErr (e);
 }
 //
 //	called from the phasesynchronizer

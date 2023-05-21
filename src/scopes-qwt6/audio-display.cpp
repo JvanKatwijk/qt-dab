@@ -29,7 +29,8 @@
 	audioDisplay::audioDisplay  (RadioInterface	*mr,
 	                             QwtPlot		*plotGrid,
 	                             QSettings		*dabSettings):
-	                              spectrumCurve ("") {
+	                              spectrumCurve (""),
+	                              fft (2048, false) {
 int16_t	i;
 QString	colorString;
 
@@ -43,12 +44,7 @@ QString	colorString;
 
 	for (int i = 0; i < displaySize; i ++)
 	   displayBuffer [i] = 0;
-	spectrumBuffer	= (std::complex<float> *)fftwf_malloc (sizeof (fftwf_complex) * spectrumSize);
-        plan    = fftwf_plan_dft_1d (spectrumSize,
-                                    reinterpret_cast <fftwf_complex *>(spectrumBuffer),
-                                    reinterpret_cast <fftwf_complex *>(spectrumBuffer),
-                                    FFTW_FORWARD, FFTW_ESTIMATE);
-	
+	spectrumBuffer		= new std::complex<float> [spectrumSize];
 	dabSettings	-> beginGroup ("audioDisplay");
 	colorString	= dabSettings -> value ("displayColor",
 	                                                 "black"). toString();
@@ -106,8 +102,7 @@ QString	colorString;
 }
 
 	audioDisplay::~audioDisplay () {
-	fftwf_destroy_plan (plan);
-	fftwf_free	(spectrumBuffer);
+	delete	spectrumBuffer;
 }
 
 
@@ -131,7 +126,7 @@ int16_t	averageCount	= 3;
 	for (i = 0; i < spectrumSize; i ++)
 	   spectrumBuffer [i] = cmul (spectrumBuffer [i], Window [i]);
 
-	fftwf_execute (plan);
+	fft. fft (spectrumBuffer);
 //
 //	first X axis labels
 	for (i = 0; i < displaySize; i ++)

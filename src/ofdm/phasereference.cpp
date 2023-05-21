@@ -43,7 +43,8 @@
 	                                processParams	*p):
 	                                     phaseTable (p -> dabMode),
 	                                     params (p -> dabMode),
-	                                     my_fftHandler (p -> dabMode) {
+	                                     fft_forward (params. get_T_u (), false),
+	                                     fft_backwards (params. get_T_u (), true) {
 int32_t	i;
 float	Phi_k;
 
@@ -57,7 +58,6 @@ float	Phi_k;
 	
 	refTable.		resize (T_u);
 	phaseDifferences.       resize (diff_length);
-	fft_buffer		= my_fftHandler. getVector();
 
 	framesperSecond		= 2048000 / params. get_T_F();
 	displayCounter		= 0;
@@ -88,7 +88,7 @@ float	Phi_k;
 #endif
 }
 
-	phaseReference::~phaseReference() {
+	phaseReference::~phaseReference () {
 #ifdef	__WITH_JAN__
 	delete theEstimator;
 #endif
@@ -104,7 +104,7 @@ float	Phi_k;
   *	looking for.
   */
 
-int32_t	phaseReference::findIndex (std::vector <std::complex<float>> &v,
+int32_t	phaseReference::findIndex (std::vector <std::complex<float>> v,
 	                           int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
@@ -112,19 +112,19 @@ float	sum		= 0;
 float	Max		= -1000;
 float	lbuf [T_u / 2];
 
-	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
-	my_fftHandler. do_FFT();
+	fft_forward. fft (v);
 //
 //	into the frequency domain, now correlate
 	for (i = 0; i < T_u; i ++) 
-	   fft_buffer [i] *= conj (refTable [i]);
+	   v [i] = v [i] * conj (refTable [i]);
+
 //	and, again, back into the time domain
-	my_fftHandler. do_IFFT();
+	fft_backwards. fft (v);
 /**
   *	We compute the average and the max signal values
   */
 	for (i = 0; i < T_u / 2; i ++) {
-	   lbuf [i] = jan_abs (fft_buffer [i]);
+	   lbuf [i] = jan_abs (v[i]);
 	   sum	+= lbuf [i];
 	}
 
@@ -171,17 +171,17 @@ float	lbuf [T_u / 2];
 //	between subsequent carriers
 #define	SEARCH_RANGE	(2 * 35)
 int16_t	phaseReference::
-	     estimate_CarrierOffset (std::vector<std::complex<float>> &v) {
+	     estimate_CarrierOffset (std::vector<std::complex<float>> v) {
 int16_t	i, j, index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
-	memcpy (fft_buffer, v. data (), T_u * sizeof (std::complex<float>));
-	my_fftHandler. do_FFT();
+	fft_forward. fft (v);
 
 	for (i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
-	      abs (arg (fft_buffer [i % T_u] * conj (fft_buffer [(i + 1) % T_u])));
+	      abs (arg (v [i % T_u] *
+	                      conj (v [(i + 1) % T_u])));
 	}
 
 	float	Mmin	= 1000;
@@ -213,25 +213,6 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 	   return 100;
 	return index_1 - T_u; 
 }
-//	An alternative way to compute the small frequency offset
-//	is to look at the phase offset of subsequent carriers
-//	in block 0, compared to the values as computed from the
-//	reference block.
-//	The values are reasonably close to the values computed
-//	on the fly
-//#define	LLENGTH	100
-//float	phaseReference::
-//	      estimate_FrequencyOffset (std::vector <std::complex<float>> v) {
-//int16_t	i;
-//float pd	= 0;
-//
-//	for (i = - LLENGTH / 2 ; i < LLENGTH / 2; i ++) {
-//	   std::complex<float> a1 = refTable [(T_u + i) % T_u] * conj (refTable [(T_u + i + 1) % T_u]);
-//	   std::complex<float> a2 = fft_buffer [(T_u + i) % T_u] * conj (fft_buffer [(T_u + i + 1) % T_u]);
-//	   pd += arg (a2) - arg (a1);
-//	}
-//	return pd / LLENGTH;
-//}
 
 float	phaseReference::phase (std::vector<complex<float>> &v, int Ts) {
 std::complex<float> sum = std::complex<float> (0, 0);
@@ -243,14 +224,11 @@ std::complex<float> sum = std::complex<float> (0, 0);
 }
 
 #ifdef	__WITH_JAN__
-void	phaseReference::estimate	(std::vector<std::complex<float>>& v) {
+void	phaseReference::estimate	(std::vector<std::complex<float>> v) {
 std::complex<float> h_td [TAPS];
 
-	for (int i = 0; i < T_u; i ++)
-	   fft_buffer [i] = v [i];
-	
-	my_fftHandler. do_FFT();
-	theEstimator -> estimate (fft_buffer, h_td);
+	fft_forward. fft (v);
+	theEstimator -> estimate (v, h_td);
 
 //	float	Tau		= 0;
 //	float	teller		= 0;

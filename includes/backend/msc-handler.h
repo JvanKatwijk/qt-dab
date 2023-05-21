@@ -37,11 +37,11 @@
 #include	<vector>
 #include	"dab-constants.h"
 #include	"dab-params.h"
-#include        "fft-handler.h"
 #include        "ringbuffer.h"
 #include        "phasetable.h"
 #include        "freq-interleaver.h"
 
+#include	"fft-handler.h"
 class	RadioInterface;
 class	Backend;
 
@@ -58,9 +58,9 @@ public:
 	void		processBlock_0		(std::complex<float> *);
 	void		process_Msc		(std::complex<float> *, int);
 	bool		set_Channel		(descriptorType *,
-	                                           RingBuffer<int16_t> *,
-	                                           RingBuffer<uint8_t> *,
-	                                           FILE *, int);
+	                                         RingBuffer<int16_t> *,
+	                                         RingBuffer<uint8_t> *,
+	                                         FILE *, int);
 //
 //	
 	void		reset_Channel		();
@@ -74,13 +74,12 @@ private:
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
 	dabParams	params;
-	fftHandler      my_fftHandler;
-	std::complex<float>     *fft_buffer;
 	std::vector<complex<float>>     phaseReference;
 
         interLeaver     myMapper;
 	QMutex		locker;
 	bool		audioService;
+	fftHandler	fft;
 	std::vector<Backend *>theBackends;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;

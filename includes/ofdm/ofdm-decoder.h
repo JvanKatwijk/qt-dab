@@ -27,11 +27,11 @@
 #include	<QObject>
 #include	<vector>
 #include	<cstdint>
-#include	"fft-handler.h"
 #include	"ringbuffer.h"
 #include	"phasetable.h"
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
+#include	"fft-handler.h"
 
 class	RadioInterface;
 
@@ -42,18 +42,17 @@ public:
 	                                 uint8_t,
 	                                 int16_t,
 	                                 RingBuffer<std::complex<float>> * iqBuffer = nullptr);
-		~ofdmDecoder();
-	void	processBlock_0		(std::vector<std::complex<float> > &);
-	void	decode			(std::vector<std::complex<float> > &,
+		~ofdmDecoder		();
+	void	processBlock_0		(std::vector<std::complex<float> >);
+	void	decode			(std::vector<std::complex<float>> &,
 	                                 int32_t n, std::vector<int16_t> &);
 	void	stop			();
 	void	reset			();
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
-	fftHandler	my_fftHandler;
 	interLeaver     myMapper;
-
+	fftHandler	fft;
 	RingBuffer<std::complex<float>> *iqBuffer;
 	float		computeQuality	(std::complex<float> *);
         float		compute_timeOffset      (std::complex<float> *,
@@ -70,7 +69,6 @@ private:
 	int16_t		getMiddle();
 	std::vector<complex<float>>	phaseReference;
 	std::vector<int16_t>		ibits;
-	std::complex<float>	*fft_buffer;
 	phaseTable	*phasetable;
 
 signals:

@@ -30,7 +30,6 @@
 #include	<QFrame>
 #include	<QObject>
 
-#include	<fftw3.h>
 #include	<qwt.h>
 #include	<qwt_plot.h>
 #include	<qwt_plot_marker.h>
@@ -46,6 +45,7 @@
 #include        <qwt_scale_widget.h>
 #include        <QBrush>
 
+#include	"fft-handler.h"
 class	RadioInterface;
 
 class	audioDisplay: public QObject {
@@ -68,12 +68,12 @@ private:
 	double		displayBuffer [512];
 	std::complex<float>	*spectrumBuffer;
 	float		Window [4 * 512];
+	fftHandler	fft;
 	QwtPlotPicker   *lm_picker;
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
 	bool		brush;
-	fftwf_plan	plan;
 	void		ViewSpectrum		(double *, double *, double, int);
 	float		get_db 			(float);
 	int32_t		normalizer;

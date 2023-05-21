@@ -24,6 +24,8 @@
 #include	"tii-detector.h"
 #include	<cstdio>
 #include	<cinttypes>
+#include	<cstring>
+#include	"fft-complex.h"
 //
 
 static
@@ -108,15 +110,13 @@ uint8_t table [] = {
 
 
 		TII_Detector::TII_Detector (uint8_t dabMode, int16_t depth):
-	                                    params (dabMode),
-	                                    my_fftHandler (dabMode) {
+	                                    params (dabMode) {
 int16_t	i;
 
 	this	-> depth	= depth;
 	this	-> T_u		= params. get_T_u();
 	carriers		= params. get_carriers();
 	theBuffer. resize	(T_u);
-	fft_buffer		= my_fftHandler. getVector();	
 	window. resize 		(T_u);
 	for (i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
@@ -128,7 +128,7 @@ int16_t	i;
 	detectMode_new	= false;
 }
 
-		TII_Detector::~TII_Detector() {
+		TII_Detector::~TII_Detector () {
 }
 
 void	TII_Detector::setMode	(bool b) {
@@ -136,25 +136,25 @@ void	TII_Detector::setMode	(bool b) {
 }
 
 
-void	TII_Detector::reset() {
+void	TII_Detector::reset	() {
 	for (int i = 0; i < T_u; i ++)
 	   theBuffer [i] = std::complex<float> (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<std::complex<float>> &v) {
+void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
 int	i;
 
 	for (i = 0; i < T_u; i ++)
-	   fft_buffer [i] = cmul (v [i], window [i]);
-	my_fftHandler. do_FFT();
+	   v [i] = v [i] * window [i];
+	Fft_transform (v. data (), T_u, false);
 
 	for (i = 0; i < T_u; i ++)
-	   theBuffer [i] += fft_buffer [i];
+	   theBuffer [i] += v [i];
 }
 //
-//	Note that the input is fft output, not yet reodered
+//	Note that the input is fft output, not yet reordered
 void	TII_Detector::collapse (std::complex<float> *inVec, float *outVec) {
 int	i;
 	for (i = 0; i < carriers / 8; i ++) {	
