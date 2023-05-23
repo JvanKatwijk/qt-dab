@@ -290,3 +290,7 @@ int	index;
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
 
+void	spectrumViewer::showFrequency (float f) {
+	frequencyDisplay	-> display (f);
+}
+

@@ -28,6 +28,11 @@
 #include	"fft-complex.h"
 //
 
+
+#ifndef M_PI
+# define M_PI           3.14159265358979323846  /* pi */
+#endif
+
 static
 uint8_t table [] = {
 	0017,		// 0 0 0 0 1 1 1 1		0

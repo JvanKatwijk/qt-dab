@@ -2344,10 +2344,11 @@ void	RadioInterface::showQuality	(float q,
 
 //
 //	called from the MP4 decoder
-void	RadioInterface::show_rsCorrections	(int c) {
+void	RadioInterface::show_rsCorrections	(int c, int ec) {
 	if (!running)
 	   return;
 
+	(void)ec;
 	techData. rsCorrections	-> display (c);
 }
 //
@@ -3518,6 +3519,7 @@ int	tunedFrequency	=
 	LOG ("channel starts ", theChannel);
 	serviceCount		= -1;
 	frequencyDisplay	-> display (tunedFrequency / 1000000.0);
+	my_spectrumViewer. showFrequency (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", theChannel);
 	inputDevice		-> resetBuffer ();
 	serviceList. clear ();

@@ -74,6 +74,7 @@ private:
 	int16_t         frameCount;
         int16_t         frameErrors;
         int16_t         rsErrors;
+        int16_t		crcErrors;
         int16_t         aacErrors;
         int16_t         aacFrames;
         int16_t         successFrames;
@@ -100,7 +101,7 @@ signals:
 	void		show_aacErrors			(int);
 	void		isStereo			(bool);
 	void		newFrame			(int);
-	void		show_rsCorrections		(int);
+	void		show_rsCorrections		(int, int);
 };
 
 #endif

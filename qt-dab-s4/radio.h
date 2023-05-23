@@ -364,7 +364,7 @@ public slots:
 	void			showSpectrum		(int);
 	void			showIQ			(int);
 	void			showQuality		(float, float, float);
-	void			show_rsCorrections	(int);
+	void			show_rsCorrections	(int, int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();
 	void			closeEvent		(QCloseEvent *event);

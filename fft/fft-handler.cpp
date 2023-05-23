@@ -7,7 +7,7 @@
 	this	-> size		= size;
 	fftVector_in            = new kiss_fft_cpx [size];
         fftVector_out           = new kiss_fft_cpx [size];
-        plan			= kiss_fft_alloc (size, dir, 0, 0);
+        plan			= kiss_fft_alloc (size, dir, nullptr, nullptr);
 }
 
 	fftHandler::~fftHandler	() {

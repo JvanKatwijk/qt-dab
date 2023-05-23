@@ -671,9 +671,6 @@ uint8_t	dabBand;
 #ifdef	HAVE_HACKRF
 	configWidget. deviceSelector	-> addItem ("hackrf");
 #endif
-#ifdef	HAVE_SOAPY
-	configWidget. deviceSelector	-> addItem ("soapy");
-#endif
 #ifdef	HAVE_LIME
 	configWidget. deviceSelector	-> addItem ("limeSDR");
 #endif
@@ -683,11 +680,14 @@ uint8_t	dabBand;
 #elif	HAVE_PLUTO_2
 	configWidget. deviceSelector	-> addItem ("pluto");
 #endif
-#ifdef  HAVE_EXTIO
-	configWidget. deviceSelector	-> addItem ("extio");
-#endif
 #ifdef	HAVE_RTL_TCP
 	configWidget. deviceSelector	-> addItem ("rtl_tcp");
+#endif
+#ifdef	HAVE_SOAPY
+	configWidget. deviceSelector	-> addItem ("soapy");
+#endif
+#ifdef  HAVE_EXTIO
+	configWidget. deviceSelector	-> addItem ("extio");
 #endif
 #ifdef	HAVE_ELAD
 	configWidget. deviceSelector	-> addItem ("elad-s1");
@@ -770,7 +770,7 @@ QString RadioInterface::footText () {
 	QString versionText = "Qt-DAB-version: " + QString(CURRENT_VERSION) + "\n";
 	versionText += "Built on " + QString(__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH) + "\n";
 	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
-	versionText += "Rights of Qt, fftw, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
+	versionText += "Rights of Qt, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
 	versionText += "Rights of developers of RTLSDR library, SDRplay libraries, AIRspy library and others gratefully acknowledged\n";
 	versionText += "Copyright of DevSec Studio for the skin, made available under an MIT license, is gratefully acknowledged";
 	versionText += "Rights of other contributors gratefully acknowledged";
@@ -803,14 +803,14 @@ bool	RadioInterface::doStart	() {
 	my_dabProcessor	= new dabProcessor  (this, inputDevice, &globals);
 	channel. cleanChannel ();
 
-//	Some hidden buttons can be makde visible now
+//	Some hidden buttons can be made visible now
 	connectGUI ();
 
 	if (dabSettings -> value ("showDeviceWidget", 0).  toInt () != 0)
 	   inputDevice -> show ();
 
-//	we avoided up till now connecting the channel selector
-//	to the slot since that function does a lot more that we
+//	we avoided till now connecting the channel selector
+//	to the slot since that function does a lot more, things we
 //	do not want here
 	connect (presetSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_presetSelector (const QString &)));
@@ -1687,7 +1687,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new rtl_tcp_client (dabSettings);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                           tr ("rtl_tcp: no luck\n") );
 	      return nullptr;
@@ -1701,7 +1701,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new eladHandler (dabSettings);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no elad device found\n"));
 	      return nullptr;
@@ -1715,7 +1715,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice	= new soapyHandler (dabSettings);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                                  tr ("no soapy device found\n"));
 	      return nullptr;
@@ -1731,7 +1731,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      inputDevice = new extioHandler (dabSettings);
 	      showButtons();
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                            tr ("extio: no luck\n") );
 	      return nullptr;
@@ -1752,7 +1752,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      channel. realChannel	= false;
 	      hideButtons();
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
 	      return nullptr;
@@ -1779,7 +1779,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      hideButtons();
 	      channel. realChannel	= false;
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
 	      return nullptr;
@@ -1800,7 +1800,7 @@ deviceHandler	*inputDevice	= nullptr;
 	      channel. realChannel	= false;
 	      hideButtons ();	
 	   }
-	   catch (int e) {
+	   catch (...) {
 	      QMessageBox::warning (this, tr ("Warning"),
 	                               tr ("file not found"));
 	      return nullptr;
@@ -2257,11 +2257,11 @@ void	RadioInterface::showQuality	(float q,
 }
 //
 //	called from the MP4 decoder
-void	RadioInterface::show_rsCorrections	(int c) {
+void	RadioInterface::show_rsCorrections	(int c, int ec) {
 	if (!running)
 	   return;
 	if (!theTechWindow -> isHidden ())
-	   theTechWindow -> show_rsCorrections (c);
+	   theTechWindow -> show_rsCorrections (c, ec);
 }
 //
 //	called from the DAB processor
@@ -3319,6 +3319,7 @@ int	tunedFrequency	=
 	         theBand. Frequency (theChannel);
 	LOG ("channel starts ", theChannel);
 	configWidget. frequencyDisplay	-> display (tunedFrequency / 1000000.0);
+	my_spectrumViewer. showFrequency (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", theChannel);
 	inputDevice		-> resetBuffer ();
 	serviceList. clear ();

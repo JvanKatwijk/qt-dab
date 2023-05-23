@@ -206,18 +206,18 @@ int	ret;
 
 	pHandle		= new QLibrary (libName);
 	if (pHandle == nullptr) {
-	   throw (pluto_exception ("could not load " + std::string (libName));
+	   throw pluto_exception ("could not load " + std::string (libName));
 	}
 
 	pHandle -> load ();
 	if (!pHandle -> isLoaded ()) {
-	   throw (pluto_exception ("Failed to open " + std::string (libName));
+	   throw pluto_exception ("Failed to open " + std::string (libName));
 	}
 
 	bool success			= loadFunctions ();
 	if (!success) {
 	   delete pHandle;
-	   throw (pluto_exception ("could not load all required lib functions"));
+	   throw pluto_exception ("could not load all required lib functions");
 	}
 
 	this	-> ctx			= nullptr;

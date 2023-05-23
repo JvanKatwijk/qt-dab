@@ -183,8 +183,9 @@ void	techData::show_rsErrors		(int e) {
 	rsError_display	-> setValue (100 - 4 * e);
 }
 
-void	techData::show_rsCorrections	(int c) {
+void	techData::show_rsCorrections	(int c, int ec) {
 	rsCorrections -> display (c);
+	ecCorrections -> display (ec);
 }
 
 void	techData::show_motHandling	(bool b) {

@@ -64,8 +64,8 @@
 	         mr, SLOT (setStereo (bool)));
 	connect (this, SIGNAL (newFrame (int)),
 	         mr, SLOT (newFrame (int)));
-	connect (this, SIGNAL (show_rsCorrections (int)),
-	         mr, SLOT (show_rsCorrections (int)));
+	connect (this, SIGNAL (show_rsCorrections (int, int)),
+	         mr, SLOT (show_rsCorrections (int, int)));
 #ifdef	__WITH_FDK_AAC__
 	aacDecoder		= new fdkAAC (mr, b);
 #else
@@ -77,14 +77,15 @@
 	RSDims			= bitRate / 8;
 	frameBytes. resize (RSDims * 120);	// input
 	outVector . resize (RSDims * 110);
-	blockFillIndex	= 0;
-	blocksInBuffer	= 0;
-	frameCount	= 0;
-	frameErrors	= 0;
-	aacErrors	= 0;
-	aacFrames	= 0;
-	successFrames	= 0;
-	rsErrors	= 0;
+	blockFillIndex		= 0;
+	blocksInBuffer		= 0;
+	frameCount		= 0;
+	frameErrors		= 0;
+	aacErrors		= 0;
+	crcErrors		= 0;
+	aacFrames		= 0;
+	successFrames		= 0;
+	rsErrors		= 0;
 	totalCorrections	= 0;
 	goodFrames		= 0;
 }
@@ -188,8 +189,9 @@ stream_parms    streamParameters;
 	   totalCorrections += ler;
 	   goodFrames ++;
 	   if (goodFrames >= 100) {
-	      show_rsCorrections (totalCorrections);
+	      show_rsCorrections (totalCorrections, crcErrors);
 	      totalCorrections = 0;
+	      crcErrors =  0;
 	      goodFrames = 0;
 	   }
 
@@ -338,8 +340,7 @@ stream_parms    streamParameters;
 	      }
 	   }
 	   else {
-	      fprintf (stderr, "CRC failure with dab+ frame %d (%d)\n",
-	                                          i, num_aus);
+	      crcErrors ++;
 	   }
 //
 //	what would happen if the errors were in the 10 parity bytes

@@ -69,6 +69,7 @@ public:
 	                                 RingBuffer<std::complex<float>> *);
 			~spectrumViewer();
 	void		showSpectrum	(int32_t, int32_t);
+	void		showFrequency	(float);
 	void		showIQ		(int32_t);
 	void		show_nullPeriod	(float *, int);
 	void		showQuality	(float, float, float);
