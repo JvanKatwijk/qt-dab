@@ -53,7 +53,7 @@
 	this	-> parent	= parent;
 	this	-> mapPort	= mapPort;
 	QString temp		= browserAddress + ":" + mapPort;
-		this	-> homeAddress	= homeAddress;
+	this	-> homeAddress	= homeAddress;
 	this	-> autoBrowser_off	= autoBrowser_off;
 #ifdef	__MINGW32__
 	this	-> browserAddress	= temp. toStdWString ();
@@ -61,6 +61,7 @@
 	this	-> browserAddress	= temp. toStdString ();
 #endif
 	this	-> running. store (false);
+
 	connect (this, SIGNAL (terminating ()),
 	     parent, SLOT (http_terminate ()));
 	saveFile	= fopen (saveName. toUtf8 (). data (), "w");

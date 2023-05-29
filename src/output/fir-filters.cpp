@@ -22,16 +22,13 @@
  */
 
 #include	"fir-filters.h"
-#ifndef	__MINGW32__
-#include	"alloca.h"
-#endif
 
-//FIR LowPass
+//	FIR LowPass
 
 	LowPassFIR::LowPassFIR (int16_t firsize,
 	                        int32_t Fc, int32_t fs){
 float	sum	= 0.0;
-float	*temp 	= (float *)alloca (firsize * sizeof (float));
+float	temp [firsize];
 
 	this -> frequency	= (float)Fc / fs;
 	this -> filterSize	= firsize;
@@ -41,7 +38,7 @@ float	*temp 	= (float *)alloca (firsize * sizeof (float));
 
 	for (int i = 0; i < filterSize; i ++) {
 	   filterKernel [i]	= 0;
-	   Buffer [i]		= 0;
+	   Buffer [i]		= std::complex<float> (0, 0);
 	}
 
 	for (int i = 0; i < filterSize; i ++) {
@@ -60,9 +57,7 @@ float	*temp 	= (float *)alloca (firsize * sizeof (float));
 	}
 
 	for (int i = 0; i < filterSize; i ++)
-	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
-	fprintf (stderr, "Buffersize = %d, filterSize %d\n",
-	                    Buffer. size (), filterSize);
+	   filterKernel [i] = temp [i] / sum;
 }
 
 	LowPassFIR::~LowPassFIR () {
@@ -101,9 +96,9 @@ float	sum = 0;
 	}
 
 	for (int i = 0; i < filterSize; i ++)
-	   filterKernel [i] = std::complex<float> (temp [i] / sum, 0);
+	   filterKernel [i] = temp [i] / sum;
 }
-//
+
 //	we process the samples backwards rather than reversing
 //	the kernel
 std::complex<float>	LowPassFIR::Pass (std::complex<float> z) {
@@ -122,20 +117,11 @@ std::complex<float>	tmp	= 0;
 	return tmp;
 }
 
-float LowPassFIR::Pass (float v) {
+float	LowPassFIR::Pass (float v) {
 int16_t		i;
 float	tmp	= 0;
 
-	Buffer [ip] = std::complex<float> (v, 0);
-	for (i = 0; i < filterSize; i ++) {
-	   int16_t index = ip - i;
-	   if (index < 0)
-	      index += filterSize;
-	   tmp += real (Buffer [index]) * real (filterKernel [i]);
-	}
-
-	ip = (ip + 1) % filterSize;
-	return tmp;
+	return real (Pass (std::complex<float> (v, 0)));
 }
 
 

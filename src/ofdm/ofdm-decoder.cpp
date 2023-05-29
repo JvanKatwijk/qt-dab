@@ -95,30 +95,27 @@ float square (float v) {
 }
 
 float	ofdmDecoder::computeQuality (std::complex<float> *v) {
-int16_t i;
-std::complex<float>	avgPoint	= std::complex<float> (0, 0);
+std::complex<float> XX  [T_u];
 float		absVal			= 0;
-std::complex<float>	x [T_u];
 float	nominator	= 0;
 float	denominator	= 0;
-	float aa	= 0;
+float	aa	= 0;
 //
 //	since we do not equalize, we have a kind of "fake"
-//	reference point. We know that the ideal point 
-//	is (x, x, where x = abs (I, Q) / sqrt (2);
-
-	for (i = 0; i < carriers; i ++) {
-	   aa	+= abs (v [i]);
+//	reference point.
+//
+//	The key parameter here is the phase offset, so we compute the
+//	std deviation of the phases rather than the computation
+//	from the Modulation Error Ratio as specified in Tr 101 290
+//
+	for (int i = 0; i < carriers; i ++)
+	   XX [i] = std::complex<float> (abs (real (v [i])), abs (imag (v [i])));
+	for (int i = 0; i < carriers; i ++) {
+	   float x1 = arg (XX [T_u / 2 - carriers / 2 + i] *
+	                                   std::complex<float> (1, -1));
+	   nominator += x1 * x1;
 	}
-	absVal		= aa / carriers / sqrt (2);
-
-	for (i = 0; i < carriers; i ++) {
-	   nominator	+= square (absVal) + square (absVal);
-	   denominator	+= square (abs (absVal - abs (real (v [i])))) +
-	                   square (abs (absVal - abs (imag (v [i]))));
-	}
-
-	return 10 * log10 (0.0010 + nominator / denominator);
+	return sqrt (nominator / carriers) / (M_PI / 4) * 10;
 }
 /**
   *	for the other blocks of data, the first step is to go from

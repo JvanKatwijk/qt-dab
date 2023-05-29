@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -34,7 +35,6 @@
 	eep_protection::eep_protection (int16_t bitRate,
 	                                int16_t protLevel):
 	                                     protection (bitRate, protLevel) {
-int16_t	i, j;
 int16_t	viterbiCounter	= 0;
 int16_t	L1 = 0,
         L2 = 0;
@@ -119,16 +119,16 @@ int8_t	*PI1, *PI2, *PI_X;
 //	with a pair of tuples
 //	(L1, PI1), (L2, PI2)
 //
-	for (i = 0; i < L1; i ++) {
-	   for (j = 0; j < 128; j ++) {
+	for (int i = 0; i < L1; i ++) {
+	   for (int j = 0; j < 128; j ++) {
 	      if (PI1 [j % 32] != 0) 
 	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;	
 	   }
 	}
 
-	for (i = 0; i < L2; i ++) {
-	   for (j = 0; j < 128; j ++) {
+	for (int i = 0; i < L2; i ++) {
+	   for (int j = 0; j < 128; j ++) {
 	      if (PI2 [j % 32] != 0) 
 	         indexTable [viterbiCounter] = true;
 	      viterbiCounter ++;	
@@ -136,7 +136,7 @@ int8_t	*PI1, *PI2, *PI_X;
 	}
 //	we had a final block of 24 bits  with puncturing according to PI_X
 //	This block constitues the 6 * 4 bits of the register itself.
-	for (i = 0; i < 24; i ++) {
+	for (int i = 0; i < 24; i ++) {
 	   if (PI_X [i] != 0) 
 	      indexTable [viterbiCounter] = true;
 	   viterbiCounter ++;
@@ -150,13 +150,12 @@ bool	eep_protection::deconvolve (int16_t *v,
 	                            int32_t size,
 	                            uint8_t *outBuffer) {
 
-int16_t	i;
 int16_t	inputCounter	= 0;
 	(void)size;			// size was known already
 
 	memset (viterbiBlock. data(), 0,
 	                 (outSize * 4 + 24) * sizeof (int16_t)); 
-	for (i = 0; i < outSize * 4 + 24; i ++) 
+	for (int i = 0; i < outSize * 4 + 24; i ++) 
 	   if (indexTable [i])
 	      viterbiBlock [i] = v [inputCounter ++];
 	

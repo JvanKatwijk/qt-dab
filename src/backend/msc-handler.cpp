@@ -112,7 +112,7 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 void    mscHandler::run () {
 int	currentBlock	= 0;
 
-std::complex<float> fft_buffer [T_u];
+std::complex<float> fft_buffer [params. get_T_u()];
 
 	if (running. load ()) {
 	   fprintf (stderr, "already running\n");

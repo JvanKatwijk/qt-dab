@@ -19,9 +19,9 @@ QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
-#QMAKE_CFLAGS	+=  -g
-#QMAKE_CXXFLAGS	+=  -g
-#QMAKE_LFLAGS	+=  -g
+#QMAKE_CFLAGS	+=  -pg
+#QMAKE_CXXFLAGS	+=  -pg
+#QMAKE_LFLAGS	+=  -pg
 #QMAKE_CFLAGS	+=  -g -fsanitize=address
 #QMAKE_CXXFLAGS	+=  -g -fsanitize=address
 #QMAKE_LFLAGS	+=  -g -fsanitize=address
@@ -29,13 +29,18 @@ QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
 
+#
+#	choose one of the FFT handler. If none is selected
+#	a default function is used.
+CONFIG		+= fftw_fft
+#CONFIG		+= kiss_fft
 TRANSLATIONS = ../i18n/de_DE.ts
 
 #
 #       For more parallel processing, uncomment the following
 #       defines
-#DEFINES        += __MSC_THREAD__
-#DEFINES        +=  __THREADED_BACKEND
+DEFINES        += __MSC_THREAD__
+DEFINES        +=  __THREADED_BACKEND
 
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
@@ -121,10 +126,8 @@ HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
 	   ../dab-processor.h \
-	   ../fft/kiss_fft.h \
-	   ../fft/kiss_fftr.h \
-	   ../fft/_kiss_fft_guts.h \
 	   ../fft/fft-handler.h \
+	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
@@ -179,7 +182,6 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/process-params.h \
-	   ../includes/support/fft-complex.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 #           ../includes/support/fft-handler.h \
@@ -246,9 +248,8 @@ FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
-	   ../fft/kiss_fft.c \
-	   ../fft/kiss_fftr.c \
 	   ../fft/fft-handler.cpp \
+	   ../fft/fft-complex.cpp \
 	   ../dab-processor.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -296,7 +297,6 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
-	   ../src/support/fft-complex.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 #           ../src/support/fft-handler.cpp \
@@ -494,6 +494,7 @@ LIBS		+= -lportaudio
 LIBS		+= -lsndfile
 LIBS		+= -lsamplerate
 LIBS		+= -lole32
+LIBS		+= -lfftw3f
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
@@ -823,4 +824,18 @@ mapserver {
 }
 
 
-	
+kiss_fft {
+	DEFINES		+= __KISS_FFT__
+	HEADERS		+= ../fft/kiss_fft.h \
+	                   ../fft/kiss_fftr.h \
+	                   ../fft/_kiss_fft_guts.h 
+	SOURCES		+= ../fft/kiss_fft.c \
+	                   ../fft/kiss_fftr.c \
+}
+
+fftw_fft {
+	DEFINES		+= __FFTW3__
+	PKGCONFIG	+= fftw3
+	LIBS		+= -lfftw3f
+}
+

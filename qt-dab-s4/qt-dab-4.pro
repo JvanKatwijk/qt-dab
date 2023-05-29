@@ -25,6 +25,12 @@ QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-4.ico
 RESOURCES	+= resources.qrc
 
+#
+#	choose one of the FFT handlers, if none is selected
+#	a default function is used
+#CONFIG		+= fftw_fft
+#CONFIG		+= kiss_fft
+
 TRANSLATIONS = ../i18n/de_DE.ts
 
 #
@@ -110,10 +116,8 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ../dab-processor.h \
-	   ../fft/kiss_fft.h \
-           ../fft/kiss_fftr.h \
-           ../fft/_kiss_fft_guts.h \
            ../fft/fft-handler.h \
+	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
 	   ../includes/mot-content-types.h \
@@ -168,7 +172,6 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/process-params.h \
-	   ../includes/support/fft-complex.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
@@ -234,9 +237,8 @@ FORMS	+= ../viewers//snr-viewer/snr-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ../dab-processor.cpp \
-	   ../fft/kiss_fft.c \
-           ../fft/kiss_fftr.c \
            ../fft/fft-handler.cpp \
+	   ../fft/fft-complex.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
 	   ../src/ofdm/sample-reader.cpp \
@@ -283,7 +285,6 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
-	   ../src/support/fft-complex.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/dab-params.cpp \
@@ -352,6 +353,7 @@ mac {
 
 CONFIG		+= link_pkgconfig
 PKGCONFIG	+= sndfile
+PKGCONFIG	+= fftw3
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
@@ -822,5 +824,17 @@ mapserver {
 
 }
 
+kiss_fft {
+        DEFINES         += __KISS_FFT__
+        HEADERS         += ../fft/kiss_fft.h \
+                           ../fft/kiss_fftr.h \
+                           ../fft/_kiss_fft_guts.h
+        SOURCES         += ../fft/kiss_fft.c \
+                           ../fft/kiss_fftr.c \
+}
 
-	
+fftw_fft {
+        DEFINES         += __FFTW3__
+        PKGCONFIG       += fftw3
+        LIBS            += -lfftw3f
+}

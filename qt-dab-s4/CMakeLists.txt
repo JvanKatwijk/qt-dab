@@ -19,7 +19,9 @@ if(MINGW)
 #   add_definitions (-DSSE_AVAILABLE)
 endif()
 
-IF(EXISTS (".git") AND IS_DIRECTORY (".git"))
+add_definitions (-D__FFTW3__)
+
+IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git" AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
    execute_process (
       COMMAND git rev-parse --short HEAD
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -144,6 +146,13 @@ endif ()
 	include_directories ( ${QWT_INCLUDE_DIRS})
 	list(APPEND extraLibs ${QWT_LIBRARIES})
 
+        find_package(FFTW3f)
+        if (NOT FFTW3F_FOUND)
+            message(FATAL_ERROR "please install FFTW3")
+        endif ()
+        include_directories ( ${FFTW_INCLUDE_DIRS})
+        list(APPEND extraLibs ${FFTW3F_LIBRARIES})
+
         find_package(zlib)
 	if (NOT ZLIB_FOUND)
             message(FATAL_ERROR "please install libz")
@@ -214,10 +223,8 @@ endif ()
 	set (${objectName}_HDRS
 	     ./radio.h
 	     ../dab-processor.h
-	     ../fft/kiss_fft.h 
-	     ../fft/kiss_fftr.h 
-	     ../fft/_kiss_fft_guts.h 
 	     ../fft/fft-handler.h 
+	     ../fft/fft-complex.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
@@ -270,8 +277,6 @@ endif ()
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/newconverter.h
-	     ../includes/support/fft-complex.h
-	     ../includes/support/fft-complex.h
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
@@ -331,9 +336,8 @@ endif ()
 	     ./main.cpp
 	     ./radio.cpp
 	     ../dab-processor.cpp
-	     ../fft/kiss_fft.c 
-	     ../fft/kiss_fftr.c 
 	     ../fft/fft-handler.cpp 
+	     ../fft/fft-complex.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
@@ -380,7 +384,6 @@ endif ()
 	     ../src/output/audio-base.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
-	     ../src/support/fft-complex.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp

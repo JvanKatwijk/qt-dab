@@ -172,12 +172,12 @@ float	lbuf [T_u / 2];
 #define	SEARCH_RANGE	(2 * 35)
 int16_t	phaseReference::
 	     estimate_CarrierOffset (std::vector<std::complex<float>> v) {
-int16_t	i, j, index_1 = 100, index_2 = 100;
+int16_t index_1 = 100, index_2 = 100;
 float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
 	fft_forward. fft (v);
 
-	for (i = T_u - SEARCH_RANGE / 2;
+	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2 + diff_length; i ++) {
 	   computedDiffs [i - (T_u - SEARCH_RANGE / 2)] =
 	      abs (arg (v [i % T_u] *
@@ -186,12 +186,12 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 
 	float	Mmin	= 1000;
 	float	Mmax	= 0;
-	for (i = T_u - SEARCH_RANGE / 2;
+	for (int i = T_u - SEARCH_RANGE / 2;
 	     i < T_u + SEARCH_RANGE / 2; i ++) {
 	   float sum	= 0;
 	   float sum2	= 0;
 
-	   for (j = 1; j < diff_length; j ++) {
+	   for (int j = 1; j < diff_length; j ++) {
 	      if (phaseDifferences [j - 1] < 0.1) {
 	         sum += computedDiffs [i - (T_u - SEARCH_RANGE / 2) + j];
 	      }
@@ -229,27 +229,5 @@ std::complex<float> h_td [TAPS];
 
 	fft_forward. fft (v);
 	theEstimator -> estimate (v, h_td);
-
-//	float	Tau		= 0;
-//	float	teller		= 0;
-//	float	noemer		= 0;
-//	for (int i = - TAPS / 2; i < TAPS / 2; i ++) {
-//	   float h_ts = abs (h_td [TAPS / 2 + i]) * abs (h_td [TAPS / 2 + i]);
-//	   teller += i * h_ts;
-//	   noemer += h_ts;
-//	}
-//	Tau	= teller / noemer;
-//	teller	= 0;
-//	noemer	= 0;
-//
-//	for (int i = -TAPS / 2; i < TAPS / 2; i ++) {
-//	   float h_ts = abs (h_td [TAPS / 2 + i]) * abs (h_td [TAPS / 2 + i]);
-//	   teller += (i - Tau) * (i - Tau) * h_ts;
-//	   noemer += h_ts;
-//	}
-//	
-//	fprintf (stderr, "Tau = %f, rms delay spread %f\n", Tau,
-//	                                                teller / noemer);
 }
-
 #endif

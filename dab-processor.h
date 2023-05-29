@@ -25,7 +25,7 @@
 #define	__DAB_PROCESSOR__
 /*
  *	dabProcessor is the embodying of all functionality related
- *	to the actal DAB processing.
+ *	to the actual DAB processing.
  */
 #include	"dab-constants.h"
 #include	<QThread>
@@ -95,6 +95,7 @@ public:
 	int		scanWidth		();
 	void		start_ficDump		(FILE *);
 	void		stop_ficDump		();
+
 //	for the mscHandler
 	void		reset_Services		();
 	void		stop_service		(descriptorType *, int);

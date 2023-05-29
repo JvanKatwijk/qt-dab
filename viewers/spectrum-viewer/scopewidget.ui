@@ -283,7 +283,7 @@
        <item row="5" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Modulation error</string>
+          <string>std deviation</string>
          </property>
         </widget>
        </item>
@@ -296,8 +296,7 @@
           </font>
          </property>
          <property name="toolTip">
-          <string>Quality indicator: the &quot;quality&quot; of the decoded signal is measured as Modulation Error Rate, using  the formula from section 6.9.2 of TR 101 290 Measurement guidelines for DVB.
-An &quot;ideal&quot; (i.e. synthetic) signal reaches a value of over 20. Poor signals give values around 0</string>
+          <string>Quality indicator: rather than the Modulation Error as specified in Tr 101 290, we merely look at the std deviation of the phases of the DAB signal, since the information is encoded in phases (phase differences) </string>
          </property>
          <property name="frameShape">
           <enum>QFrame::NoFrame</enum>

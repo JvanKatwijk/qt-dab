@@ -332,6 +332,8 @@ int16_t	i;
 sdrplayHandler	*p	= static_cast<sdrplayHandler *> (cbContext);
 std::complex<int16_t> localBuf [numSamples];
 
+	if (hwRemoved)
+	   fprintf (stderr, "Hardware removed\n");
 	if (reset || hwRemoved)
 	   return;
 	for (i = 0; i <  (int)numSamples; i ++)

@@ -43,6 +43,8 @@
 #define SDRPLAY_RSPduo_ 3
 #define SDRPLAY_RSPdx_  4
 
+#include	"device-exceptions.h"
+
 std::string errorMessage (int errorCode) {
 	switch (errorCode) {
 	   case 1:
@@ -153,7 +155,7 @@ std::string errorMessage (int errorCode) {
 	if (failFlag. load ()) {
 	   while (isRunning ())
 	      usleep (1000);
-	   throw (errorMessage (errorCode));
+	   throw sdrplay_3_exception (errorMessage (errorCode));
 	}
 	
 	fprintf (stderr, "setup sdrplay v3 seems successfull\n");
