@@ -125,7 +125,14 @@ the spectrum of the data in the selected channel, the waterfall of the spectrum
 and - in the time domain - the border between the NULL period and
 the first data block.
 
-![5.3](/5.3-spectrum-widget.png?raw=true)
+![5.3](/ideal-signal.png?raw=true)
+![5.3](/real-signal.png?raw=true)
+
+The right hand side numbers give some information on the (quality) of
+the signal. In the "ideal" signal, the constellation diagram shows 4
+dots, one in each quadrant, in general, the signal will be less ideal.
+The "std deviation" indicator tells the standard deviation of the
+dots in the conestallation diagram. Lower is better.
 
 ----------------------------------------------------------------------
 A note on showing a map
@@ -202,18 +209,10 @@ Widgets and scopes for Qt-DAB
 
 Qt-DAB always shows a main widget; a number of **optional** widgets is visible under user control.
 
-Controls, in V4 on the main widget, were in V5 moved to the configuration and control widget.
-
-Some data on the selected service - if any - can be found on a separate widget, the "Technical Data" widget (*Detail* button).
-
-![Qt-DAB main widget](/qt-dab-technical-widget.png?raw=true)
-
-Other widgets are
+Apart from the widgets, already shown, there are
 
   * a configuration widget (V4) or a configuration and control widget (V5)
   * a widget with controls for the attached device,
-  * a widget for additional configuration settings,
-  * a widget showing the spectrum of the received radio signal, the constellation of the decoded signal and some quality parameters,,
   * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
   * a widget showing the correlations response(s) from different transmitters in the SFN,
   * a widget showing the development - over time - of the SNR,

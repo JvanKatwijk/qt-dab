@@ -108,13 +108,18 @@ float	aa	= 0;
 //	std deviation of the phases rather than the computation
 //	from the Modulation Error Ratio as specified in Tr 101 290
 //
-	for (int i = 0; i < carriers; i ++)
-	   XX [i] = std::complex<float> (abs (real (v [i])), abs (imag (v [i])));
+	std::complex<float> middle = std::complex<float> (0, 0);
 	for (int i = 0; i < carriers; i ++) {
-	   float x1 = arg (XX [T_u / 2 - carriers / 2 + i] *
-	                                   std::complex<float> (1, -1));
+	   XX [i] = std::complex<float> (abs (real (v [i])),
+	                                         abs (imag (v [i])));
+	   middle += XX [i];
+	}
+	middle	= conj (middle);
+	for (int i = 0; i < carriers; i ++) {
+	   float x1 = arg (XX [T_u / 2 - carriers / 2 + i] * middle);
 	   nominator += x1 * x1;
 	}
+//	fprintf (stderr, "%f \n", arg (middle * std::complex<float> (0, 1))  / (2 * M_PI) * 360);
 	return sqrt (nominator / carriers) / (M_PI / 4) * 10;
 }
 /**
