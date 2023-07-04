@@ -3076,6 +3076,7 @@ QString serviceName	= s. serviceName;
 	font. setBold (true);
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setText (serviceName);
+	dynamicLabel	-> setText ("");
 	audiodata ad;
 	     
 	my_dabProcessor -> dataforAudioService (serviceName, &ad);

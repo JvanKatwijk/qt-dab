@@ -313,7 +313,6 @@ stream_parms    streamParameters;
 	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
 	         }
 	         else  {// no PAD data, so no synamic labe;
-	            show_emptyLabel ("");
 	         }
 //
 //	then handle the audio
