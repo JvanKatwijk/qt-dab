@@ -41,7 +41,7 @@ class	contentTable: public QObject {
 Q_OBJECT
 public:
 		contentTable	(RadioInterface *, QSettings *,
-	                            const QString &, int);
+	                                         const QString &, int);
 		~contentTable	();
 	void	show		();
 	void	hide		();
@@ -49,6 +49,8 @@ public:
 	void	clearTable	();
 	void	addLine		(const QString &);
 	void	dump		(FILE *);
+
+	void	upload		();
 private:
 	QString		channel;
 	int		columns;

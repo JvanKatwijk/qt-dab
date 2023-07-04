@@ -143,23 +143,6 @@ int8_t	*PI1, *PI2, *PI_X;
 	}
 }
 
-	eep_protection::~eep_protection() {
-}
-
-bool	eep_protection::deconvolve (int16_t *v,
-	                            int32_t size,
-	                            uint8_t *outBuffer) {
-
-int16_t	inputCounter	= 0;
-	(void)size;			// size was known already
-
-	memset (viterbiBlock. data(), 0,
-	                 (outSize * 4 + 24) * sizeof (int16_t)); 
-	for (int i = 0; i < outSize * 4 + 24; i ++) 
-	   if (indexTable [i])
-	      viterbiBlock [i] = v [inputCounter ++];
-	
-	viterbiSpiral::deconvolve (viterbiBlock. data(), outBuffer);
-	return true;
+	eep_protection::~eep_protection	() {
 }
 

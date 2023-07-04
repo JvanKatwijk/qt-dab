@@ -826,7 +826,7 @@ ULONG APIkeyValue_length = 255;
 #else
 	        wcscat (APIkeyValue, (wchar_t *)L"\\x64\\sdrplay_api.dll");
 #endif
-	   RegCloseKey(APIkey);
+	   RegCloseKey (APIkey);
 
 	   Handle	= LoadLibrary (x);
 	   if (Handle == nullptr) {

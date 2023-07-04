@@ -50,6 +50,7 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
+#include	"upload.h"
 #include	"techdata.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
@@ -383,6 +384,10 @@ uint8_t	dabBand;
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
 
+#ifndef	_UPLOAD_SCAN_RESULT_
+	configWidget. autoUpload_Selector -> hide ();
+#endif
+
 	logFile		= nullptr;
 	int scanMode	=
 	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
@@ -606,8 +611,8 @@ uint8_t	dabBand;
 
 	connect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_eti_activeSelector (int)));
-
 	channel. etiActive	= false;
+
 	show_pauzeSlide ();
 
 //	and start the timer(s)
@@ -987,6 +992,10 @@ QStringList s	= my_dabProcessor -> basicPrint ();
 	for (int i = 0; i < s. size (); i ++) 
 	   my_contentTable	-> addLine (s. at (i));
 	my_contentTable -> show ();
+#ifdef  _UPLOAD_SCAN_RESULT_
+	if (configWidget. autoUpload_Selector -> isChecked ())
+	   my_contentTable -> upload ();
+#endif
 }
 
 QString	RadioInterface::checkDir (const QString s) {
@@ -2024,9 +2033,9 @@ void	RadioInterface::setSynced	(bool b) {
 //
 //	called from the PAD handler
 
-void	RadioInterface::showLabel	(QString s) {
+void	RadioInterface::showLabel	(const QString &s) {
 #ifdef	HAVE_PLUTO_RXTX
-	if (streamerOut != nullptr)
+	if ((streamerOut != nullptr) && (s != ""))
 	   streamerOut -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	if (running. load()) {
@@ -2034,7 +2043,7 @@ void	RadioInterface::showLabel	(QString s) {
 	   dynamicLabel	-> setText (s);
 	}
 //	if we dtText is ON, some work is still to be done
-	if ((dlTextFile == nullptr) || (the_dlCache. addifNew (s)))
+	if ((s == "") || (dlTextFile == nullptr) || (the_dlCache. addifNew (s)))
 	   return;
 
 	QString currentChannel = channel. channelName;
@@ -3327,6 +3336,7 @@ int	tunedFrequency	=
 	ensembleDisplay		-> setModel (&model);
 	inputDevice		-> restartReader (tunedFrequency);
 	channel. cleanChannel ();
+	distanceLabel		-> setText ("");
 	channel. channelName	= theChannel;
 	dabSettings		-> setValue ("channel", theChannel);
 	channel. frequency	= tunedFrequency / 1000;
@@ -3363,6 +3373,7 @@ void	RadioInterface::stopChannel	() {
 	}
 	channel. backgroundServices. clear ();
 
+	distanceLabel	-> setText ("");
 	stopSourcedumping	();
 	soundOut	-> stop ();
 //
@@ -3507,14 +3518,14 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	      my_scanTable = new contentTable (this, dabSettings,
 	                                                   "scan", 
 	                                       my_dabProcessor -> scanWidth ());
-	   else
+	   else					// should not happen
 	      my_scanTable -> clearTable ();
 	   QString topLine = QString ("ensemble") + ";"  +
 	                        "channelName" + ";" +
 	                        "frequency (KHz)" + ";" +
 	                        "Eid" + ";" +
-	                        "time" + ";" +
 	                        "tii" + ";" +
+	                        "time" + ";" +
 	                        "SNR" + ";" +
 	                        "nr services" + ";";
 	   my_scanTable -> addLine (topLine);
@@ -3540,7 +3551,6 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	switchDelay		=
 	                  dabSettings -> value ("switchDelay", 8). toInt ();
 	channelTimer. start (switchDelay * 1000);
-
 	startChannel    (channelSelector -> currentText ());
 }
 //
@@ -3553,19 +3563,27 @@ void	RadioInterface::stopScanning	(bool dump) {
 	disconnect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
 	            this, SLOT (No_Signal_Found ()));
 	(void)dump;
+	if (my_scanTable == nullptr)
+	   return;		// should not happen
 	if (scanning. load ()) {
 	   scanButton      -> setText ("scan");
 	   LOG ("scanning stops ", "");
 	   my_dabProcessor	-> set_scanMode (false);
-	   dynamicLabel	-> setText ("Scan ended");
 	   channelTimer. stop ();
 	   scanning. store (false);
 	   if (scanDumpFile != nullptr) {
-	      if (my_scanTable != nullptr) 
-	         my_scanTable -> dump (scanDumpFile);
+	      my_scanTable -> dump (scanDumpFile);
 	      fclose (scanDumpFile);
 	      scanDumpFile = nullptr;
 	   }
+	   int scanMode	= configWidget. scanmodeSelector -> currentIndex ();
+#ifdef	_UPLOAD_SCAN_RESULT_
+	   if (configWidget. autoUpload_Selector -> isChecked ())
+	      my_scanTable -> upload ();
+#endif
+	   delete my_scanTable;
+	   my_scanTable	= nullptr;
+	   dynamicLabel	-> setText ("Scan ended");
 	}
 }
 
@@ -3586,41 +3604,50 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	disconnect (&channelTimer, SIGNAL (timeout ()),
 	            this, SLOT (channel_timeOut ()));
 
-	if (running. load () && scanning. load ()) {
-	   int	cc	= channelSelector -> currentIndex ();
-	   if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
-	      showServices ();
-	   stopChannel ();
-	   cc = theBand. nextChannel (cc);
-	   fprintf (stderr, "going to channel %d\n", cc);
-	   if ((cc >= channelSelector -> count ()) &&
-	                               (scanMode == SINGLE_SCAN)) {
-	      stopScanning (true);
-	   }
-	   else {  // we just continue
-	      if (cc >= channelSelector -> count ())
-	         cc = theBand. firstChannel ();
-//	To avoid reaction of the system on setting a different value:
-	      new_channelIndex (cc);
-
-	      connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
-	               this, SLOT (No_Signal_Found ()));
-	      connect (&channelTimer, SIGNAL (timeout ()),
-	               this, SLOT (channel_timeOut ()));
-
-	      dynamicLabel -> setText ("scan mode \"" +
-	                               scanmodeText (scanMode) +
-	                               "\" scanning channel " +
-	                               channelSelector -> currentText ());
-	      switchDelay	= 
-	                  dabSettings -> value ("switchDelay", 8). toInt ();
-	      channelTimer. start (switchDelay * 1000);
-	      startChannel (channelSelector -> currentText ());
-	   }
-	}
-	else
-	if (scanning. load ()) 
+	if (!scanning. load ())
+	   return;
+//
+//	from here we know that we are dealing with scanning
+	if (!running. load ()) {
+//	   channeltimer should not have been disconnected
+	   connect (&channelTimer, SIGNAL (timeout ()),
+	            this, SLOT (channel_timeOut ()));
 	   stopScanning (false);
+	   return;
+	}
+
+	int	cc	= channelSelector -> currentIndex ();
+	if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
+	   showServices ();
+	stopChannel ();
+	cc = theBand. nextChannel (cc);
+	fprintf (stderr, "going to channel %d\n", cc);
+	if ((cc >= channelSelector -> count ()) &&
+	                               (scanMode == SINGLE_SCAN)) {
+	   connect (&channelTimer, SIGNAL (timeout ()),
+	            this, SLOT (channel_timeOut ()));
+	   stopScanning (true);
+	}
+	else {  // we just continue
+	   if (cc >= channelSelector -> count ())
+	       cc = theBand. firstChannel ();
+//	To avoid reaction of the system on setting a different value:
+	   new_channelIndex (cc);
+
+	   connect (my_dabProcessor, SIGNAL (No_Signal_Found ()),
+	            this, SLOT (No_Signal_Found ()));
+	   connect (&channelTimer, SIGNAL (timeout ()),
+	            this, SLOT (channel_timeOut ()));
+
+	   dynamicLabel -> setText ("scan mode \"" +
+	                             scanmodeText (scanMode) +
+	                             "\" scanning channel " +
+	                             channelSelector -> currentText ());
+	   switchDelay	= 
+	               dabSettings -> value ("switchDelay", 8). toInt ();
+	   channelTimer. start (switchDelay * 1000);
+	   startChannel (channelSelector -> currentText ());
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////

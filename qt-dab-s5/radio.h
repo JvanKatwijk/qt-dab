@@ -361,7 +361,7 @@ public slots:
 	void			show_ficSuccess		(bool);
 	void			show_snr		(int);
 	void			setSynced		(bool);
-	void			showLabel		(QString);
+	void			showLabel		(const QString &);
 	void			handle_motObject	(QByteArray, QString,
 	                                                      int, bool);
 	void			sendDatagram		(int);

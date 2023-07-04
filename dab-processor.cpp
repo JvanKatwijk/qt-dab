@@ -235,7 +235,7 @@ Check_endofNULL:
 	                         T_u, coarseOffset + fineOffset);
 	   if (null_shower) {
 	      for (int i = 0; i < T_u / 4; i ++)
-	         tester [1 * T_u / 4 + i] = ofdmBuffer [i];
+	         tester [T_u / 4 + i] = ofdmBuffer [i];
 	      nullBuffer -> putDataIntoBuffer (tester. data (), T_u / 2);
 	      show_null (T_u / 2);
 	   }

@@ -42,6 +42,8 @@ TRANSLATIONS = ../i18n/de_DE.ts
 DEFINES        += __MSC_THREAD__
 DEFINES        +=  __THREADED_BACKEND
 
+#DEFINES	+= _UPLOAD_SCAN_RESULT_
+
 #For showing trace output
 #DEFINES	+= __EPG_TRACE__  
 
@@ -203,6 +205,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/ITU_Region_1.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/mapport.h \
+	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
@@ -316,6 +319,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/mapport.cpp \
+	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \

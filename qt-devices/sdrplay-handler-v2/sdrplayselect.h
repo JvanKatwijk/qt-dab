@@ -34,8 +34,8 @@
 class	sdrplaySelect: public QDialog {
 Q_OBJECT
 public:
-			sdrplaySelect();
-			~sdrplaySelect();
+			sdrplaySelect	();
+			~sdrplaySelect	();
 	void		addtoList	(const char *);
 private:
 	QLabel		*toptext;

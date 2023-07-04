@@ -28,7 +28,7 @@ RESOURCES	+= resources.qrc
 #
 #	choose one of the FFT handlers, if none is selected
 #	a default function is used
-#CONFIG		+= fftw_fft
+CONFIG		+= fftw_fft
 #CONFIG		+= kiss_fft
 
 TRANSLATIONS = ../i18n/de_DE.ts

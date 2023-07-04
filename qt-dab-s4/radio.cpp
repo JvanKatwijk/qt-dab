@@ -3729,8 +3729,8 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                        "channelName" + ";" +
 	                        "frequency (KHz)" + ";" +
 	                        "Eid" + ";" +
-	                        "time" + ";" +
 	                        "tii" + ";" +
+	                        "time" + ";" +
 	                        "SNR" + ";" +
 	                        "nr services" + ";";
 	   my_scanTable -> addLine (topLine);
@@ -3812,6 +3812,8 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   fprintf (stderr, "going to channel %d\n", cc);
 	   if ((cc >= channelSelector -> count ()) &&
 	                               (scanMode == SINGLE_SCAN)) {
+	      connect (&channelTimer, SIGNAL (timeout ()),
+                       this, SLOT (channel_timeOut ()));
 	      stopScanning (true);
 	   }
 	   else {  // we just continue
@@ -3836,7 +3838,11 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   }
 	}
 	else
-	if (scanning. load ()) 
+	if (scanning. load ()) {
+//	  channeltimer should not be disconneted, so
+	  connect (&channelTimer, SIGNAL (timeout ()),
+                   this, SLOT (channel_timeOut ()));
+
 	   stopScanning (false);
 }
 

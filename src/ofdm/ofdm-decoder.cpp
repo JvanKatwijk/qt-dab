@@ -95,7 +95,7 @@ float square (float v) {
 }
 
 float	ofdmDecoder::computeQuality (std::complex<float> *v) {
-std::complex<float> XX  [T_u];
+std::complex<float> XX  [carriers];
 float		absVal			= 0;
 float	nominator	= 0;
 float	denominator	= 0;
@@ -110,17 +110,18 @@ float	aa	= 0;
 //
 	std::complex<float> middle = std::complex<float> (0, 0);
 	for (int i = 0; i < carriers; i ++) {
-	   XX [i] = std::complex<float> (abs (real (v [i])),
-	                                         abs (imag (v [i])));
+	   std::complex<float> ss = v [T_u / 2 - carriers / 2 + i];
+	   XX [i] = std::complex<float> (abs (real (ss)),
+	                                         abs (imag (ss)));
 	   middle += XX [i];
 	}
 	middle	= conj (middle);
 	for (int i = 0; i < carriers; i ++) {
-	   float x1 = arg (XX [T_u / 2 - carriers / 2 + i] * middle);
+	   float x1 = arg (XX [i] * middle);
 	   nominator += x1 * x1;
 	}
 //	fprintf (stderr, "%f \n", arg (middle * std::complex<float> (0, 1))  / (2 * M_PI) * 360);
-	return sqrt (nominator / carriers) / (M_PI / 4) * 10;
+	return sqrt (nominator / carriers) / (M_PI / 2) * 10;
 }
 /**
   *	for the other blocks of data, the first step is to go from

@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014.. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB.
+ *    This file is part of the Qt-DAB .
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -19,20 +20,30 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#
-#ifndef	__EEP_PROTECTION__
-#define	__EEP_PROTECTION__
+#ifndef	__UPLOAD_HANDLER_H
+#define	__UPLOAD_HANDLER_H
+#include	<QDialog>
+#include	<QLabel>
+#include	<QPushButton>
+#include	<QLineEdit>
 
-#include	<vector>
-#include	<cstdio>
-#include	<cstdint>
-#include	"protection.h"
+class	QSettings;
 
-        class eep_protection: public protection {
-public:
-                eep_protection          (int16_t, int16_t);
-                ~eep_protection		();
+class	uploadHandler: public QDialog {
+Q_OBJECT
+	public:
+		uploadHandler	(QSettings *);
+		~uploadHandler	();
+	private:
+	QSettings	*dabSettings;
+	QLabel		*uploadText;
+	QPushButton	*yesButton;
+	QPushButton	*noButton;
+private slots:
+	void		handle_yesButton 	();
+	void		handle_noButton 	();
 };
 
 #endif
+
 

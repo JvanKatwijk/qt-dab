@@ -66,6 +66,8 @@
 	         mr, SLOT (newFrame (int)));
 	connect (this, SIGNAL (show_rsCorrections (int, int)),
 	         mr, SLOT (show_rsCorrections (int, int)));
+	connect (this, SIGNAL (show_emptyLabel (const QString &)),
+	         mr, SLOT (showLabel (const QString &)));
 #ifdef	__WITH_FDK_AAC__
 	aacDecoder		= new fdkAAC (mr, b);
 #else
@@ -309,6 +311,9 @@ stream_parms    streamParameters;
 	            uint8_t L0	= buffer [count - 1];
 	            uint8_t L1	= buffer [count - 2];
 	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
+	         }
+	         else  {// no PAD data, so no synamic labe;
+	            show_emptyLabel ("");
 	         }
 //
 //	then handle the audio
