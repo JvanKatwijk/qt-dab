@@ -380,36 +380,6 @@ std::vector<parameter *> theParameters;
 	return offset;
 }
 
-static void	process_subCh (int nr, parameter *p,
-	                       protection *prot,
-	                       uint8_t *desc) {
-	std::unique_ptr<uint8_t[]> outVector{ new uint8_t[24 * p->bitRate] };
-	if (!outVector) {
-	   std::cerr << "process_subCh - alloc fail";
-	   return;
-	}
-int	j, k;
-
-	memset (outVector.get(), 0, sizeof(uint8_t) * 24 * p -> bitRate);
-
-	prot -> deconvolve (&p -> input [p -> start_cu * CUSize],
-	                                 p -> size * CUSize,
-	                                 outVector.get());
-//
-	for (j = 0; j < 24 * p -> bitRate; j ++) {
-	   outVector [j] ^= desc [j];
-        }
-//
-//	and the storage:
-	for (j = 0; j < 24 * p -> bitRate / 8; j ++) {
-	   int temp = 0;
-	   for (k = 0; k < 8; k ++)
-	      temp = (temp << 1) | (outVector [j * 8 + k] & 01);
-	   p -> output [j] = temp;
-	}
-
-}
-
 void	etiGenerator::process_subCh (int nr, parameter *p,
 	                             protection *prot,
 	                             uint8_t *desc) {

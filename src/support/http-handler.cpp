@@ -213,7 +213,7 @@ std::string	ctype;
 //	and send the reply
 	      if (write (ClientSocket, hdr, hdrlen) != hdrlen ||
 	          write (ClientSocket, content. c_str (),
-	                      content. size ()) != content. size ())  {
+	                      content. size ()) != (int)(content. size ()))  {
 //	         fprintf (stderr, "WRITE PROBLEM\n");
 //	         break;
 	      }
@@ -444,7 +444,7 @@ int params	= 0;
 std::string dotNumber (float f) {
 char temp [256];
 std::string s = std::to_string (f);
-	for (int i = 0; i < s. size (); i ++)
+	for (int i = 0; i < (int)(s. size ()); i ++)
 	   if (s. c_str () [i] == ',')
 	      temp [i] = '.';
 	   else
@@ -455,7 +455,7 @@ std::string s = std::to_string (f);
 //
 std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
 std::complex<float> home;
-std::complex<float> target = std::complex<float> (0, 0);
+//std::complex<float> target = std::complex<float> (0, 0);
 char buf [512];
 QString Jsontxt;
 
@@ -528,7 +528,7 @@ void	httpHandler::putData	(uint8_t	type,
 	transmitterList. push_back (t);
 	locker. unlock ();
 
-	for (int i = 0; i < transmitterVector. size (); i ++) {
+	for (int i = 0; i < (int)(transmitterVector. size ()); i ++) {
 	   if ((transmitterVector. at (i). transmitterName == transmitterName) &&
 	       (transmitterVector. at (i). channelName == channelName))
 	      return;

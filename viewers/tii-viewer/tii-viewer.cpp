@@ -326,7 +326,7 @@ static
 double	Y_values [2000] = {0};
 void	tiiViewer::show_nullPeriod (const QVector<float> &v, double  amp2) {
 double	X_axis [TII_DISPLAYSIZE];
-double	amp	= AmplificationSlider -> value();
+//double	amp	= AmplificationSlider -> value();
 
 
 	for (int i = 0; i < TII_DISPLAYSIZE; i ++) {

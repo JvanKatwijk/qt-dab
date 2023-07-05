@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Qt-DAB-4.6</string>
+   <string>Qt-DAB-4.7</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_11">
    <item>
@@ -741,17 +741,17 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
             </widget>
            </item>
            <item row="3" column="0">
-            <widget class="smallPushButton" name="historyButton">
+            <widget class="smallPushButton" name="scanListButton">
              <property name="font">
               <font>
                <pointsize>10</pointsize>
               </font>
              </property>
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;history feature. The software maintains a list of all services encountered. Touching this button will show (hide) the list. By clicking with the left mouse button the software will try to select the service pointed to, by clicking with the ruight mouse button the lit will be deleted.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The scanlist shows the services, found in a scan. Click left will select the element, click right will add the element to the presets&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>list</string>
+              <string>scan list</string>
              </property>
             </widget>
            </item>

@@ -70,7 +70,7 @@ class	QSettings;
 class	deviceHandler;
 class	audioBase;
 class	common_fft;
-class	historyHandler;
+class	scanListHandler;
 class	timeTableHandler;
 class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
@@ -248,8 +248,8 @@ private:
 	void			hideButtons		();
 	void			showButtons		();
 	deviceHandler		*setDevice		(const QString &);
-	historyHandler		*my_history;
-	historyHandler		*my_presets;
+	scanListHandler		*my_scanList;
+	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 //
 	QString			checkDir		(const QString);
@@ -403,11 +403,13 @@ private slots:
 	void			handle_correlationButton	();
 	void			handle_spectrumButton	();
 	void			handle_devicewidgetButton	();
+	void			handle_clearScan_Selector	(int);
+
 
 	void			doStart			(const QString &);
 	void			newDevice		(const QString &);
 
-	void			handle_historyButton	();
+	void			handle_scanListButton	();
         void			handle_sourcedumpButton	();
         void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
@@ -418,7 +420,7 @@ private slots:
 	void			handle_nextChannelButton();
 	void			handle_prevChannelButton();
 
-	void			handle_historySelect	(const QString &);
+	void			handle_scanListSelect	(const QString &);
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			channel_timeOut		();
@@ -450,7 +452,7 @@ private slots:
 	void			color_spectrumButton	();
 	void			color_snrButton		();
 	void			color_devicewidgetButton	();
-	void			color_historyButton	();
+	void			color_scanListButton	();
 	void			color_sourcedumpButton	();
 	void			color_muteButton	();
 	void			color_prevChannelButton	();

@@ -8,9 +8,8 @@
 	                              int displaySize,
 	                              QSettings	*dabSettings):
 	                                  spectrumCurve ("") {
-int16_t	i;
 QString	colorString	= "black";
-bool	brush;
+//bool	brush;
 
 	this	-> dabSettings		= dabSettings;
 	dabSettings	-> beginGroup ("spectrumViewer");
@@ -23,7 +22,7 @@ bool	brush;
 	colorString	= dabSettings -> value ("curveColor",
 	                                            "white"). toString();
 	curveColor	= QColor (colorString);
-	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
+//	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
 	plotgrid		= nullScope;
 	plotgrid		-> setCanvasBackground (displayColor);

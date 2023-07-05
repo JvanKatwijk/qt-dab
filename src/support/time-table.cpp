@@ -42,8 +42,8 @@ void	timeTableHandler::addElement (int theTime,
 	                              int	epgWidth,
 	                              const QString &theText,
 	                              const QString &theDescr) {
-int	hours	= theTime / 60;
-int	minutes	= theTime % 60;
+//int	hours	= theTime / 60;
+//int	minutes	= theTime % 60;
 char t [6];
 
 	if (theTime >= 24 * 60)

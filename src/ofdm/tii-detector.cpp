@@ -272,7 +272,7 @@ float	avgTable	[NUM_GROUPS];
 	int finInd = -1;
 	if (detectMode_new) {
 	   float mm = 0;
-	   for (int k = 0; k < sizeof (table); k ++) {
+	   for (int k = 0; k < (int)(sizeof (table)); k ++) {
 	      float val = 0;
 	      for (int l = 0; l < NUM_GROUPS; l ++)
 	         if ((table [k] & bits [l]) != 0)

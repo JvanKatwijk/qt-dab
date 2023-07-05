@@ -193,7 +193,6 @@ stream_parms    streamParameters;
 	   if (goodFrames >= 100) {
 	      show_rsCorrections (totalCorrections, crcErrors);
 	      totalCorrections = 0;
-	      crcErrors =  0;
 	      goodFrames = 0;
 	   }
 

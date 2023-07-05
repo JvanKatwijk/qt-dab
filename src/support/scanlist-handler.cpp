@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the  qt-dab program
  *
@@ -24,23 +24,23 @@
 //
 //	The qt-dab software will save some data of all services,
 //	ever seen.
-//	The list can be deleted by a simple mouseclick (right button)
 //
-#include	"history-handler.h"
+#include	"scanlist-handler.h"
 #include	"radio.h"
 #include	<QDomDocument>
 #include	<QFile>
 
-	historyHandler::historyHandler	(RadioInterface *radio,
-	                                 QString fileName):QListView (nullptr) {
+	scanListHandler::scanListHandler	(RadioInterface *radio,
+	                                         QString fileName):
+	                                             QListView (nullptr) {
 	this	-> radio	= radio;
 	this	-> fileName	= fileName;
 	QDomDocument xmlBOM;
 	this	-> fileName = fileName;
 //
 //	start with an empty list, waiting ...
-	historyList. clear ();
-	displayList. setStringList (historyList);
+	scanList. clear ();
+	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
 	connect (this, SIGNAL (clicked (QModelIndex)),
 	         this, SLOT (selectElement (QModelIndex)));
@@ -58,33 +58,33 @@
 	      presetData pd;
 	      pd. serviceName = component. attribute ("SERVICE_NAME", "???");
 	      pd. channel     = component. attribute ("CHANNEL", "5A");
-	      historyList. append (pd. channel + ":" + pd. serviceName);
+	      scanList. append (pd. channel + ":" + pd. serviceName);
 	   }
 	   component = component. nextSibling (). toElement ();
 	}
-	displayList. setStringList (historyList);
+	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
 }
 
 
-	historyHandler::~historyHandler   () {
-QDomDocument the_history;
-QDomElement root = the_history. createElement ("history_db");
+	scanListHandler::~scanListHandler   () {
+QDomDocument the_scanList;
+QDomElement root = the_scanList. createElement ("history_db");
 
-	the_history. appendChild (root);
+	the_scanList. appendChild (root);
 
-	for (int i = 1; i < historyList. size (); i ++) {
-	   QStringList list = historyList. at (i).
+	for (int i = 1; i < scanList. size (); i ++) {
+	   QStringList list = scanList. at (i).
 	                        split (":", QString::SkipEmptyParts);
            if (list. length () != 2)
 	      continue;
            QString channel = list. at (0);
            QString serviceName = list. at (1);
-	   QDomElement historyService = the_history.
+	   QDomElement scanListService = the_scanList.
 	                            createElement ("HISTORY_ELEMENT");
-	   historyService. setAttribute ("SERVICE_NAME", serviceName);
-	   historyService. setAttribute ("CHANNEL", channel);
-	   root. appendChild (historyService);
+	   scanListService. setAttribute ("SERVICE_NAME", serviceName);
+	   scanListService. setAttribute ("CHANNEL", channel);
+	   root. appendChild (scanListService);
 	}
 
 	QFile file (this -> fileName);
@@ -92,35 +92,33 @@ QDomElement root = the_history. createElement ("history_db");
 	   return;
 
 	QTextStream stream (&file);
-	stream << the_history. toString ();
+	stream << the_scanList. toString ();
 	file. close ();
 }
 
-void	historyHandler::addElement (const QString &channel,
+void	scanListHandler::addElement (const QString &channel,
 	                            const QString &serviceName) {
-const QString listElement = channel + ":" + serviceName;
+const QString scanListElement = channel + ":" + serviceName;
 
-	for (int i = 0; i < historyList. size (); i ++)
-	   if (historyList. at (i) == listElement)
+	for (int i = 0; i < scanList. size (); i ++)
+	   if (scanList. at (i) == scanListElement)
 	      return;
-//	fprintf (stderr, "adding %s %s\n", channel. toUtf8 (). data (),
-//	                                   serviceName. toUtf8 (). data ());
-	historyList. append (listElement);
-	displayList. setStringList (historyList);
+	scanList. append (scanListElement);
+	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
 }
 
-void	historyHandler::clearHistory () {
-	historyList. clear ();
-	displayList. setStringList (historyList);
+void	scanListHandler::clear_scanList () {
+	scanList. clear ();
+	displayList. setStringList (scanList);
 	this	-> setModel (&displayList);
 }
 //
-//	selecting a historical service is not different from
+//	selecting a scanList service is not different from
 //	selecting a preset
 //
-void	historyHandler::selectElement (QModelIndex ind) {
+void	scanListHandler::selectElement (QModelIndex ind) {
 QString currentProgram = displayList. data (ind, Qt::DisplayRole). toString ();
-	emit handle_historySelect (currentProgram);
+	emit handle_scanListSelect (currentProgram);
 }
 

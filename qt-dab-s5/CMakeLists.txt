@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-5.3)
+set (objectName qt-dab-5.4)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -290,7 +290,7 @@ endif ()
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
-	     ../includes/support/history-handler.h
+	     ../includes/support/scanlist-handler.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h
@@ -401,7 +401,7 @@ endif ()
              ../src/support/buttons/verysmallpushbutton.cpp 
              ../src/support/buttons/smallqlistview.cpp 
              ../src/support/buttons/smallspinbox.cpp 
-	     ../src/support/history-handler.cpp
+	     ../src/support/scanlist-handler.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
 	     ../src/support/color-selector.cpp
@@ -472,7 +472,7 @@ endif ()
 	     ../includes/support/buttons/verysmallpushbutton.h 
 	     ../includes/support/buttons/smallqlistview.h 
 	     ../includes/support/buttons/smallspinbox.h 
-	     ../includes/support/history-handler.h
+	     ../includes/support/scanlist-handler.h
 	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h

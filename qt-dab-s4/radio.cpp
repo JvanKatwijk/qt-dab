@@ -104,7 +104,7 @@
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
-#include	"history-handler.h"
+#include	"scanlist-handler.h"
 #include	"time-table.h"
 
 #ifdef	__MINGW32__
@@ -175,7 +175,7 @@ QString scanmodeText (int e) {
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
 #define	SNR_BUTTON		QString ("snrButton")
 #define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
-#define	HISTORY_BUTTON		QString ("historyButton")
+#define	SCANLIST_BUTTON		QString ("scanListButton")
 #define	DUMP_BUTTON		QString ("dumpButton")
 #define	MUTE_BUTTON		QString ("muteButton")
 #define PREVCHANNEL_BUTTON	QString ("prevChannelButton")
@@ -355,6 +355,9 @@ uint8_t	dabBand;
 	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
 	   configWidget. epgSelector -> setChecked (true);
 
+	if (dabSettings -> value ("clearScanResult", 1). toInt () == 1)
+           configWidget. clearScan_Selector -> setChecked (true);
+
 	x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
@@ -406,6 +409,10 @@ uint8_t	dabBand;
 
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
+
+	connect (configWidget. clearScan_Selector,
+                                     SIGNAL (stateChanged (int)),
+                 this, SLOT (handle_clearScan_Selecctor (int)));
 
 	logFile		= nullptr;
 	int scanMode	=
@@ -523,16 +530,16 @@ uint8_t	dabBand;
 	connect (&epgTimer, SIGNAL (timeout ()),
 	         this, SLOT (epgTimer_timeOut ()));
 
-	QString historyFile     = QDir::homePath () + "/.qt-history.xml";
-	historyFile             =
-	             dabSettings -> value ("history", historyFile). toString ();
-	historyFile             = QDir::toNativeSeparators (historyFile);
-	my_history              = new historyHandler (this, historyFile);
+	QString scanListFile     = QDir::homePath () + "/.qt-scanList.xml";
+	scanListFile             =
+	             dabSettings -> value ("scanList", scanListFile). toString ();
+	scanListFile		= QDir::toNativeSeparators (scanListFile);
+	my_scanList		= new scanListHandler (this, scanListFile);
 	my_timeTable		= new timeTableHandler (this);
-	my_timeTable	-> hide ();
+	my_timeTable		-> hide ();
 
-	connect (my_history, SIGNAL (handle_historySelect (const QString &)),
-	         this, SLOT (handle_historySelect (const QString &)));
+	connect (my_scanList, SIGNAL (handle_scanListSelect (const QString &)),
+	         this, SLOT (handle_scanListSelect (const QString &)));
 	connect (this, SIGNAL (set_newChannel (int)),
 	         channelSelector, SLOT (setCurrentIndex (int)));
 	connect (this, SIGNAL (set_newPresetIndex (int)),
@@ -606,8 +613,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_snrButton ()));
 	connect (devicewidgetButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_devicewidgetButton ()));
-	connect (historyButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_historyButton ()));
+	connect (scanListButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_scanListButton ()));
 	connect (dumpButton, SIGNAL (rightClicked (void)),
 	         this, SLOT (color_sourcedumpButton (void)));
 	connect (configButton, SIGNAL (rightClicked (void)),
@@ -955,7 +962,8 @@ int	serviceOrder;
 	    dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
 	serviceList = insert (serviceList, ed, serviceOrder);
-	my_history -> addElement (channel. channelName, serviceName);
+	if (scanning. load ())
+	   my_scanList -> addElement (channel. channelName, serviceName);
 	model. clear ();
 	for (auto serv : serviceList) {
 	   model. appendRow (new QStandardItem (serv. name));
@@ -1534,7 +1542,7 @@ void	RadioInterface::TerminateProcess () {
 	delete		soundOut;
 	if (motSlides != nullptr)
 	   delete	motSlides;
-	delete	my_history;
+	delete	my_scanList;
 	delete	my_timeTable;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
@@ -2637,14 +2645,14 @@ void	RadioInterface::handle_snrButton	() {
 	                          my_snrViewer. isHidden () ? 0 : 1);
 }
 
-void    RadioInterface::handle_historyButton    () {
+void    RadioInterface::handle_scanListButton    () {
 	if (!running. load ())
 	   return;
 
-	if (my_history  -> isHidden ())
-	   my_history   -> show ();
+	if (my_scanList  -> isHidden ())
+	   my_scanList   -> show ();
 	else
-	   my_history   -> hide ();
+	   my_scanList   -> hide ();
 }
 //
 //	When changing (or setting) a device, we do not want anybody
@@ -2670,8 +2678,8 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_snrButton (void)));
 	connect (devicewidgetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_devicewidgetButton ()));
-	connect (historyButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_historyButton ()));
+	connect (scanListButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanListButton ()));
 	connect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_sourcedumpButton (void)));
 
@@ -2741,8 +2749,8 @@ void	RadioInterface::disconnectGUI() {
 	         this, SLOT (handle_snrButton (void)));
 	disconnect (devicewidgetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_devicewidgetButton ()));
-	disconnect (historyButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_historyButton ()));
+	disconnect (scanListButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanListButton ()));
 	disconnect (dumpButton, SIGNAL (clicked (void)),
 	         this, SLOT (handle_sourcedumpButton (void)));
 	disconnect (nextChannelButton, SIGNAL (clicked (void)),
@@ -2844,11 +2852,18 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   }
 	}
 	else
-	if ((obj == this -> my_history -> viewport ()) &&
+	if ((obj == this -> my_scanList -> viewport ()) &&
 	    (event -> type () == QEvent::MouseButtonPress)) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons () & Qt::RightButton) {
-	      my_history -> clearHistory ();
+	      QString service =
+	         this -> my_scanList -> indexAt (ev -> pos()). data ().toString();    
+              bool alreadyIn = false;
+	      for (int i = 0; i < presetSelector -> count (); i ++)
+	         if (presetSelector -> itemText (i) == service)
+	            alreadyIn = true;
+	         if (!alreadyIn)
+	            presetSelector -> addItem (service);
 	   }
 	}
 	else
@@ -2958,10 +2973,10 @@ void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 
 ////////////////////////////////////////////////////////////////////////
 //
-//	preset selection, either from presets or from history
+//	preset selection, either from presets or from scan list
 ////////////////////////////////////////////////////////////////////////
 
-void    RadioInterface::handle_historySelect (const QString &s) {
+void    RadioInterface::handle_scanListSelect (const QString &s) {
 	if (!running. load ())
 	   return;
 
@@ -3718,6 +3733,10 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	}
 	LOG ("scanning starts with ", QString::number (cc));
 	scanning. store (true);
+	  if (scanMode == SINGLE_SCAN)
+           if (dabSettings -> value ("clearScanResult", 0). toInt () == 1)
+              my_scanList -> clear_scanList ();
+
 	if ((scanMode == SINGLE_SCAN) || (scanMode == SCAN_CONTINUOUSLY)) {
 	   if (my_scanTable == nullptr) 
 	      my_scanTable = new contentTable (this, dabSettings,
@@ -3844,6 +3863,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
                    this, SLOT (channel_timeOut ()));
 
 	   stopScanning (false);
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -4107,11 +4127,11 @@ QString devicewidgetButton_font =
 	   dabSettings -> value (DEVICEWIDGET_BUTTON + "_font",
 	                                              "black"). toString ();
 
-QString historyButton_color =
-	   dabSettings -> value (HISTORY_BUTTON + "_color",
+QString scanListButton_color =
+	   dabSettings -> value (SCANLIST_BUTTON + "_color",
 	                                              "white"). toString ();
-QString historyButton_font =
-	   dabSettings -> value (HISTORY_BUTTON + "_font",
+QString scanListButton_font =
+	   dabSettings -> value (SCANLIST_BUTTON + "_font",
 	                                              "black"). toString ();
 QString dumpButton_color =
 	   dabSettings -> value (DUMP_BUTTON + "_color",
@@ -4214,8 +4234,8 @@ QString scheduleButton_font	=
 	devicewidgetButton -> setStyleSheet (temp. arg (devicewidgetButton_color,
 	                                                devicewidgetButton_font));
 
-	historyButton	-> setStyleSheet (temp. arg (historyButton_color,
-	                                             historyButton_font));
+	scanListButton	-> setStyleSheet (temp. arg (scanListButton_color,
+	                                             scanListButton_font));
 	dumpButton	-> setStyleSheet (temp. arg (dumpButton_color,
 	                                             dumpButton_font));
 	configButton	-> setStyleSheet (temp. arg (configButton_color,
@@ -4283,8 +4303,8 @@ void	RadioInterface::color_devicewidgetButton	() {
 	set_buttonColors (devicewidgetButton, DEVICEWIDGET_BUTTON);
 }
 
-void	RadioInterface::color_historyButton	()	{
-	set_buttonColors (historyButton, HISTORY_BUTTON);
+void	RadioInterface::color_scanListButton	()	{
+	set_buttonColors (scanListButton, SCANLIST_BUTTON);
 }
 
 void	RadioInterface::color_sourcedumpButton	()	{
@@ -4857,4 +4877,11 @@ void	RadioInterface::handle_saveSlides	(int x) {
 	dabSettings -> setValue ("saveSlides",
 	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
 }
+
+       
+void    RadioInterface::handle_clearScan_Selector (int c) {
+        (void)c;   
+        dabSettings -> setValue ("clearScanResult",
+                       configWidget. clearScan_Selector -> isChecked () ? 1 : 0);       
+}       
 

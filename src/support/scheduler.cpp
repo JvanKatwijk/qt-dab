@@ -158,7 +158,7 @@ QTime	currentTime	= QTime::currentTime ();
 	   this	-> wakeupIndex = tableWidget -> rowCount () - 1;
 	};
 
-	int tempDelay	= this -> wakeupTime - currentSeconds;
+//	int tempDelay	= this -> wakeupTime - currentSeconds;
 //	fprintf (stderr, "waiting time %d hours %d minutes\n",
 //	                       tempDelay / MINUTES_PER_HOUR / 60,
 //	                       tempDelay / MINUTES_PER_HOUR % 60);
@@ -339,7 +339,6 @@ QTime currentTime = QTime::currentTime ();
 QDate startDate;
 
 	std::string str;
-	size_t amount	= 256;
 	while (true) {
 	   if (!std::getline (f, str))
 	      break;

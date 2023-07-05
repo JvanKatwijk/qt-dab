@@ -2085,7 +2085,7 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	int duration	= (v [index] << 8) | v [index + 1];
+//	int duration	= (v [index] << 8) | v [index + 1];
 //	fprintf (stderr, "duration %d (%d)\n", duration / 60, duration % 60); 
 	return index + length;
 }
@@ -2109,9 +2109,10 @@ int length	= v [index + 1];
 	uint8_t ensFlag = getBit (v, 8 * index + 1);
 	uint8_t sidFlag = getBit (v, 8 * index + 3);
 
-        if (ensFlag == 1)
+        if (ensFlag == 1) {
            if (sidFlag == 0)
               fprintf (stderr, "SId = %X\n", getBits (v, 8 * index + 32, 16));
+	}
 	else
         if (ensFlag == 0)
            if (sidFlag == 0)
@@ -2190,7 +2191,7 @@ int length	= v [index + 1];
 	else
 	   index += 2;
 
-	int numbers = (v [index] << 8) | v [index + 1];
+//	int numbers = (v [index] << 8) | v [index + 1];
 //	fprintf (stderr, "484 says %d elements\n", numbers);
 	return index + length;
 }

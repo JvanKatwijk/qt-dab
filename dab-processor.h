@@ -128,8 +128,8 @@ private:
 	ficHandler	my_ficHandler;
 	mscHandler	my_mscHandler;
 	phaseReference	phaseSynchronizer;
-	TII_Detector	my_TII_Detector;
 	ofdmDecoder	my_ofdmDecoder;
+	TII_Detector	my_TII_Detector;
 
 	int16_t		attempts;
 	bool		scanMode;

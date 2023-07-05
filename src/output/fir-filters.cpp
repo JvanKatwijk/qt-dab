@@ -118,9 +118,6 @@ std::complex<float>	tmp	= 0;
 }
 
 float	LowPassFIR::Pass (float v) {
-int16_t		i;
-float	tmp	= 0;
-
 	return real (Pass (std::complex<float> (v, 0)));
 }
 

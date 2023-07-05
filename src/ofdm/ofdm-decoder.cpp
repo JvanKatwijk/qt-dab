@@ -96,10 +96,9 @@ float square (float v) {
 
 float	ofdmDecoder::computeQuality (std::complex<float> *v) {
 std::complex<float> XX  [carriers];
-float		absVal			= 0;
 float	nominator	= 0;
-float	denominator	= 0;
-float	aa	= 0;
+//float	aa	= 0;
+
 //
 //	since we do not equalize, we have a kind of "fake"
 //	reference point.

@@ -180,7 +180,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
-	   ../includes/support/history-handler.h \
+	   ../includes/support/scanlist-handler.h \
 	   ../includes/support/color-selector.h \
 	   ../includes/support/scheduler.h \
 	   ../includes/support/schedule-selector.h \
@@ -292,7 +292,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
-	   ../src/support/history-handler.cpp \
+	   ../src/support/scanlist-handler.cpp \
 	   ../src/support/color-selector.cpp \
 	   ../src/support/scheduler.cpp \
 	   ../src/support/schedule-selector.cpp \
@@ -333,7 +333,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-4.6
+TARGET		= qt-dab-4.7
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -439,7 +439,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-4.6
+#	TARGET		= qt-dab64-4.7
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -459,7 +459,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-4.6
+	TARGET		= qt-dab32-4.7
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

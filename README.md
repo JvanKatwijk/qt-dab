@@ -2,6 +2,23 @@
 
 **Qt-DAB-4** and **Qt-DAB-5** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
+-------------------------------------------------------------------
+New in 4.7 and 5.4
+-------------------------------------------------------------------
+
+Apart from fixing a few minor errors and restructuring some parts
+of the software, the main change in these versions - compared to previous
+ones - is handling the "history".
+
+In previous versions, each service (name) encountered was added
+to a history list, in this version the history list is replaced
+by a "scan list". The scan list is filled when scanning (single scan).
+The configuration widget has a selector for choosing that on a
+new scan the list is cleared (the default).
+
+New - compared to the history list - is that a mouse click right
+on an element in the scan list, the service name is added to the
+presets. Of course, a mouse click left will select the service.
 
 Table of Contents
 =================================================================
@@ -106,10 +123,10 @@ on a separate widget is not needed.
 ![4.5](/qt-dab-4-config-widget.png?raw=true)
 ![5.2](/qt-dab-5-config-widget.png?raw=true)
 
-The functionality of the versions is (almost) the same, version 5.1 has
-(most users will not use it though) the possibility of generating "eti" files.
-If there is serious interest for adding the feature to the Qt-DAB-4 interface,
-then let me know.
+The functionality of the versions is (almost) the same, version 5.X has
+(most users will not use it though) the possibility of
+generating "eti" files.  If there is serious interest for
+adding the feature to the Qt-DAB-4 interface, then let me know.
 
 The Qt-DAB-5.2 version has a slightly modified "technical window", 
 it now contains a small spectrum display of the audio output.

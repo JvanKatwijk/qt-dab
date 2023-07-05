@@ -10,7 +10,6 @@
 	                              int displaySize,
 	                              QSettings	*dabSettings):
 	                                  spectrumCurve ("") {
-int16_t	i;
 QString	colorString	= "black";
 bool	brush;
 

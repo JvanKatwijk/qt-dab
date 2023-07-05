@@ -1114,7 +1114,6 @@ void	fibDecoder::bind_audioService (dabConfig *base,
 	                               int16_t	ASCTy) {
 int16_t	i;
 int16_t	firstFree	= -1;
-bool	showFlag	= true;
 int	serviceIndex	= findService (SId);
 
 	if (serviceIndex == -1)
@@ -1139,8 +1138,8 @@ int	serviceIndex	= findService (SId);
 
 	
 	QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
-	if (ensemble -> services [serviceIndex]. is_shown)
-	   showFlag = false;
+//	if (ensemble -> services [serviceIndex]. is_shown)
+//	   showFlag = false;
 
 	bool	useFlag	 = base -> serviceComps [firstFree]. inUse;
 	if (!useFlag) {

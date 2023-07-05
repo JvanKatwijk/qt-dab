@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>737</height>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -219,6 +219,16 @@
      </property>
      <property name="text">
       <string>save slides</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="clearScan_Selector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If set, the scanlist will be clear when starting a scan.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>clear scanlist on scan</string>
      </property>
     </widget>
    </item>

@@ -2,7 +2,7 @@
 /*
  *    Copyright (C) 2019
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
- *    Lazy Chair Programming
+ *    Lazy Chair Computing
  *
  *    This file is part of the  qt-dab program
  *
@@ -20,8 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__HISTORY_HANDLER__
-#define	__HISTORY_HANDLER__
+#ifndef	__SCANLIST_HANDLER__
+#define	__SCANLIST_HANDLER__
 
 #include	"radio.h"
 #include	<QListView>
@@ -32,20 +32,20 @@
 class	RadioInterface;
 class	descriptorType;
 
-class	historyHandler:public QListView {
+class	scanListHandler:public QListView {
 Q_OBJECT
 public:
-		historyHandler	(RadioInterface *radio,
+		scanListHandler	(RadioInterface *radio,
 	                                 QString fileName);
-		~historyHandler	();
+		~scanListHandler	();
 	void	addElement	(const QString &, const QString &);
-	void	clearHistory	();
+	void	clear_scanList	();
 public slots:
 	void	selectElement	(QModelIndex);
 signals:
-	void	handle_historySelect (const QString &);
+	void	handle_scanListSelect (const QString &);
 private:
-	QStringList	historyList;
+	QStringList	scanList;
 	QStringListModel	displayList;
 	RadioInterface	*radio;
 	QString		fileName;
