@@ -3734,7 +3734,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	LOG ("scanning starts with ", QString::number (cc));
 	scanning. store (true);
 	  if (scanMode == SINGLE_SCAN)
-           if (dabSettings -> value ("clearScanResult", 0). toInt () == 1)
+           if (configWidget. clearScan_Selector -> isChecked ())
               my_scanList -> clear_scanList ();
 
 	if ((scanMode == SINGLE_SCAN) || (scanMode == SCAN_CONTINUOUSLY)) {
