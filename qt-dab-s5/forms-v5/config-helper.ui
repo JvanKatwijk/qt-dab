@@ -597,6 +597,13 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="smallPushButton" name="skinSelector">
+       <property name="text">
+        <string>skin</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="clearScan_Selector">
        <property name="text">
         <string>clear scan</string>

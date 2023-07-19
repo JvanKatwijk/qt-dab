@@ -498,6 +498,7 @@ private slots:
 	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
 	void			handle_saveSlides		(int);
+	void			handle_skinSelector		();
 	void			loadTable			();
 };
 #endif

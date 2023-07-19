@@ -53,6 +53,10 @@ static const QString styleSheet_3 =
 	#include "./stylesheets/Fibers.qss"
 ;
 
+static const QString styleSheet_4 =
+	#include "./stylesheets/Darkeum.qss"
+;
+
 
 QString fullPathfor (QString v) {
 QString fileName;
@@ -154,8 +158,16 @@ QTranslator	theTranslator;
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
+	QString skin    = dabSettings -> value ("skin", "Adaptic"). toString ();
+	skin    = skin == "Combinear" ? styleSheet_1 :
+	          skin == "Adaptic"   ? styleSheet_2 :
+	          skin == "Fibers"    ? styleSheet_3 :
+	          skin == "Darkeum"   ? styleSheet_4 : "";
+
 	QApplication a (argc, argv);
-	a. setStyleSheet (styleSheet_1);
+	if (skin != "")
+	   a. setStyleSheet (skin);
+
 //	setting the language
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
@@ -170,11 +182,11 @@ QTranslator	theTranslator;
 	                                       dataPort,
 	                                       clockPort,
 	                                       fmFrequency
-                                               );
+	                                       );
 	MyRadioInterface -> show();
 
 	qRegisterMetaType<QVector<int> >("QVector<int>");
-        a. exec();
+	a. exec();
 /*
  *      done:
  */

@@ -46,6 +46,7 @@
 #include	"color-selector.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
+#include        "skin-handler.h" 
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
@@ -384,6 +385,8 @@ uint8_t	dabBand;
 
 	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
+	connect (configWidget. skinSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_skinSelector ()));
 
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
@@ -3543,6 +3546,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                                       my_dabProcessor -> scanWidth ());
 	   else					// should not happen
 	      my_scanTable -> clearTable ();
+
 	   QString topLine = QString ("ensemble") + ";"  +
 	                        "channelName" + ";" +
 	                        "frequency (KHz)" + ";" +
@@ -4799,5 +4803,13 @@ void	RadioInterface::handle_clearScan_Selector (int c) {
 	(void)c;
 	dabSettings -> setValue ("clearScanResult",
 	               configWidget. clearScan_Selector -> isChecked () ? 1 : 0);
+}
+
+void    RadioInterface::handle_skinSelector     () {
+skinHandler theSkins;
+        int skinIndex = theSkins. QDialog::exec ();
+        QString skinName = theSkins. skins. at (skinIndex);
+        fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
+        dabSettings -> setValue ("skin", skinName); 
 }
 
