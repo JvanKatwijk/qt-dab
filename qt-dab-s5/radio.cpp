@@ -86,8 +86,8 @@
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
 #endif
-#ifdef	HAVE_PLUTO_2
-#include	"pluto-handler-2.h"
+#ifdef	HAVE_PLUTO
+#include	"pluto-handler.h"
 #elif	HAVE_PLUTO_RXTX
 #include	"pluto-rxtx-handler.h"
 #include	"dab-streamer.h"
@@ -397,7 +397,7 @@ uint8_t	dabBand;
 
 	connect (configWidget. clearScan_Selector,
 	                             SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_clearScan_Selecctor (int)));
+	         this, SLOT (handle_clearScan_Selector (int)));
 
 	logFile		= nullptr;
 	int scanMode	=
@@ -693,7 +693,7 @@ uint8_t	dabBand;
 #ifdef	HAVE_PLUTO_RXTX
 	configWidget. deviceSelector	-> addItem ("pluto-rxtx");
 	streamerOut	= nullptr;
-#elif	HAVE_PLUTO_2
+#elif	HAVE_PLUTO
 	configWidget. deviceSelector	-> addItem ("pluto");
 #endif
 #ifdef	HAVE_RTL_TCP
@@ -1544,7 +1544,7 @@ deviceHandler	*inputDevice	= nullptr;
 #ifdef	__MINGW32__
 	   QMessageBox::warning (this, tr ("Warning"),
 	                            tr ("If SDRuno is installed with drivers 3.10,\nV2.13 drivers will not work anymore, choose \"sdrplay\" instead\n"));
-	   return nullptr;
+//	   return nullptr;
 #endif
 	   try {
 	      inputDevice	= new sdrplayHandler (dabSettings, version);
@@ -1658,7 +1658,7 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_PLUTO_2
+#ifdef	HAVE_PLUTO
 	if (s == "pluto") {
 	   try {
 	      inputDevice = new plutoHandler (dabSettings, version);

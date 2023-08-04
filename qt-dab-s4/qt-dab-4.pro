@@ -396,9 +396,9 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-CONFIG		+= soapy
-CONFIG		+= pluto-rxtx
-#CONFIG		+= pluto-2
+#CONFIG		+= soapy
+#CONFIG		+= pluto-rxtx
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
@@ -473,9 +473,8 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-#	CONFIG		+= pluto
-	CONFIG		+= pluto-rxtx
-#	CONFIG		+= pluto-2
+#	CONFIG		+= pluto-rxtx
+	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
 #	CONFIG		+= JAN
@@ -485,8 +484,8 @@ isEmpty(GITHASHSTRING) {
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
-LIBS		+= -lsndfile
-LIBS		+= -lsamplerate
+LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
+LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
@@ -535,7 +534,8 @@ dabstick-win {
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
 	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-	LIBS		+= -llibrtlsdr
+	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+
 }
 
 #
@@ -573,6 +573,7 @@ sdrplay-v3 {
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	LIBS		+= -ldl
 }
 #	limeSDR
 #
@@ -666,16 +667,6 @@ pluto-rxtx	{
 	SOURCES		+= ../qt-devices/pluto-rxtx//dab-streamer/up-filter.cpp
 	FORMS		+= ../qt-devices/pluto-rxtx/pluto-rxtx-widget.ui
 #	LIBS		+= -liio -lad9361
-}
-
-pluto	{
-	DEFINES		+= HAVE_PLUTO
-	QT		+= network
-	INCLUDEPATH	+= ../qt-devices/pluto-handler
-	HEADERS		+= ../qt-devices/pluto-handler/pluto-handler.h
-	SOURCES		+= ../qt-devices/pluto-handler/pluto-handler.cpp 
-	FORMS		+= ../qt-devices/pluto-handler/pluto-widget.ui
-	LIBS		+= -liio -lad9361
 }
 
 pluto-2	{
@@ -796,7 +787,12 @@ JAN	{
 }
 
 preCompiled {
-	LIBS		+= -lcurl
+	win32 {
+        LIBS            += /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
+        }
+        unix {  
+        LIBS            += -lcurl
+        }
 	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
 	HEADERS		+= ../../TII-CODES/tii-codes.h

@@ -86,8 +86,6 @@
 #endif
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
-#elif	HAVE_PLUTO_2
-#include	"pluto-handler-2.h"
 #elif	HAVE_PLUTO_RXTX
 #include	"pluto-rxtx-handler.h"
 #include	"dab-streamer.h"
@@ -338,12 +336,14 @@ uint8_t	dabBand;
 	epgLabel	-> hide ();
 	epgLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	configWidget. setupUi (&configDisplay);
+	dabSettings	-> beginGroup ("techDataSettings");
 	x       = dabSettings	-> value ("configWidget-x", 200). toInt ();
         y       = dabSettings	-> value ("configWidget-y", 200). toInt ();
 	wi	= dabSettings	-> value ("config-4-w", 300). toInt ();
 	he	= dabSettings	-> value ("config-4-h", 200). toInt ();
         configDisplay. resize (QSize (wi, he));
         configDisplay. move (QPoint (x, y));
+	dabSettings	-> endGroup ();
 //
 //	Now we can set the checkbox as saved in the settings
 	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
@@ -412,7 +412,7 @@ uint8_t	dabBand;
 
 	connect (configWidget. clearScan_Selector,
                                      SIGNAL (stateChanged (int)),
-                 this, SLOT (handle_clearScan_Selecctor (int)));
+                 this, SLOT (handle_clearScan_Selector (int)));
 
 	logFile		= nullptr;
 	int scanMode	=
@@ -750,9 +750,9 @@ uint8_t	dabBand;
 #endif
 	inputDevice	= nullptr;
 	h               =
-	           dabSettings -> value ("device", "no device"). toString();
+	           dabSettings -> value ("device", "no device"). toString ();
 	k               = deviceSelector -> findText (h);
-//	fprintf (stderr, "%d %s\n", k, h. toUtf8(). data());
+//	fprintf (stderr, "%d %s\n", k, h. toUtf8 (). data ());
 	if (k != -1) {
 	   deviceSelector       -> setCurrentIndex (k);
 	   inputDevice	= setDevice (deviceSelector -> currentText());
@@ -1465,7 +1465,6 @@ void	RadioInterface::TerminateProcess () {
 	dabSettings	-> setValue ("config-4-h",
 	                                      configDisplay. height ());
 
-	dabSettings	-> endGroup ();
 	dabSettings	-> beginGroup ("techDataSettings");
         dabSettings     -> setValue ("position-x", dataDisplay. pos (). x ());
         dabSettings     -> setValue ("position-y", dataDisplay. pos (). y ());
@@ -1700,7 +1699,7 @@ deviceHandler	*inputDevice	= nullptr;
 	}
 	else
 #endif
-#ifdef	HAVE_PLUTO_2
+#ifdef	HAVE_PLUTO
 	if (s == "pluto") {
 	   try {
 	      inputDevice = new plutoHandler (dabSettings, version);

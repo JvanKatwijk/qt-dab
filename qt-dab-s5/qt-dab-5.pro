@@ -407,9 +407,9 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
-CONFIG		+= pluto-rxtx
+#CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
-#CONFIG		+= pluto-2
+CONFIG		+= pluto-2
 #CONFIG		+= elad-device
 #CONFIG		+= colibri
 CONFIG		+= faad
@@ -497,8 +497,8 @@ isEmpty(GITHASHSTRING) {
 #	end of 32/64 specifics
 INCLUDEPATH	+= /usr/local/include
 LIBS		+= -lportaudio
-LIBS		+= -lsndfile
-LIBS		+= -lsamplerate
+LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
+LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
 LIBS		+= -lfftw3f
 LIBS		+= -lwinpthread
@@ -536,7 +536,7 @@ dabstick-win {
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
 	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-	LIBS      	+= -llibrtlsdr
+	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
 }
 
 dabstick-linux {
@@ -585,6 +585,7 @@ sdrplay-v3 {
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
+	LIBS		+= -ldl
 }
 #
 #	limeSDR
@@ -809,7 +810,12 @@ JAN	{
 }
 
 preCompiled {
+	win32 {
+	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
+	}
+	unix {
 	LIBS		+= -lcurl
+	}
 #	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
 	HEADERS		+= ../../TII-CODES/tii-codes.h

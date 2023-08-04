@@ -422,9 +422,6 @@ private slots:
 	void			handle_devicewidgetButton	();
 	void			handle_clearScan_Selector	(int);
 
-	void			doStart			(const QString &);
-	void			newDevice		(const QString &);
-
 	void			handle_scanListButton	();
 	void			handle_sourcedumpButton	();
 	void			handle_framedumpButton	();
@@ -433,13 +430,16 @@ private slots:
 	void			handle_prevServiceButton	();
 	void			handle_nextServiceButton	();
 	void			handle_channelSelector		(const QString &);
-	void			handle_nextChannelButton();
-	void			handle_prevChannelButton();
+	void			handle_nextChannelButton	();
+	void			handle_prevChannelButton	();
 
 	void			handle_scanListSelect	(const QString &);
 	void			TerminateProcess	();
 	void			updateTimeDisplay	();
 	void			channel_timeOut		();
+
+	void			doStart			(const QString &);
+	void			newDevice		(const QString &);
 
 	void			selectService		(QModelIndex);
 	void			setPresetService	();

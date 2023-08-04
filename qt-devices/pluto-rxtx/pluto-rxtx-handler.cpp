@@ -31,6 +31,7 @@
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
+#include	<QPen>
 #include	"fft-complex.h"
 
 //	Description for the fir-filter is here:
