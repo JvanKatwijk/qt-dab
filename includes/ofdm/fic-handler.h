@@ -51,7 +51,7 @@ public:
 	void	restart			();
 	void	start_ficDump		(FILE *);
 	void	stop_ficDump		();
-	void	get_fibBits		(uint8_t *);
+	void	get_fibBits		(uint8_t *, bool *);
 private:
 	dabParams	params;
 	viterbiSpiral	myViterbi;
@@ -59,8 +59,8 @@ private:
         int16_t		ofdm_input	[2304];
 	bool		punctureTable	[3072 + 24];
 	uint8_t		fibBits		[4 * 768];
-
-	void		process_ficInput	(int16_t);
+	bool		ficValid	[4];
+	void		process_ficInput	(int16_t, bool *);
 	int16_t		index;
 	int16_t		BitsperBlock;
 	int16_t		ficno;

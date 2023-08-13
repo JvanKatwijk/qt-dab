@@ -483,6 +483,7 @@ private slots:
 	void			handle_set_coordinatesButton	();
 	void			handle_portSelector		();
 	void			handle_saveSlides		(int);
+	void			handle_skinSelector		();
 	void			loadTable			();
 };
 #endif

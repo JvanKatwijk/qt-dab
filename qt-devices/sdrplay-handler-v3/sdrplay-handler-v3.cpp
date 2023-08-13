@@ -123,7 +123,7 @@ std::string errorMessage (int errorCode) {
 	}
 
 	biasT           =
-               sdrplaySettings -> value ("biasT", 0). toInt () != 0;
+               sdrplaySettings -> value ("biasT_selector", 0). toInt () != 0;
         if (biasT)
            biasT_selector -> setChecked (true);
 	
@@ -278,7 +278,7 @@ void    sdrplayHandler_v3::show_lnaGain (int g) {
 
 void	sdrplayHandler_v3::set_ifgainReduction	(int GRdB) {
 GRdBRequest r (GRdB);
-
+	
 	if (!receiverRuns. load ())
            return;
         messageHandler (&r);
@@ -318,8 +318,10 @@ void	sdrplayHandler_v3::set_biasT (int v) {
 biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 
 	messageHandler (&r);
+	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
 	sdrplaySettings -> setValue ("biasT_selector",
 	                              biasT_selector -> isChecked () ? 1 : 0);
+	sdrplaySettings -> endGroup ();
 }
 
 void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {

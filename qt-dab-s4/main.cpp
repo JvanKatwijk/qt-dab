@@ -160,7 +160,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
-	QString skin    = dabSettings -> value ("skin", "Adaptic"). toString ();
+	QString skin    = dabSettings -> value ("skin", "Combinear"). toString ();
         skin    = skin == "Combinear" ? styleSheet_1 :
                   skin == "Adaptic"   ? styleSheet_2 :
                   skin == "Fibers"    ? styleSheet_3 :

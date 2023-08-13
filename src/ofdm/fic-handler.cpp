@@ -110,7 +110,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficDumpPointer	= nullptr;
 }
 
-		ficHandler::~ficHandler() {
+		ficHandler::~ficHandler () {
 }
 	
 /**
@@ -140,7 +140,7 @@ int32_t	i;
 	   for (i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
 	      if (index >= 2304) {
-	         process_ficInput (ficno);
+	         process_ficInput (ficno, &ficValid [ficno]);
 	         index = 0;
 	         ficno ++;
 	      }
@@ -161,7 +161,7 @@ int32_t	i;
   *	In the next coding step, we will combine this function with the
   *	one above
   */
-void	ficHandler::process_ficInput (int16_t ficno) {
+void	ficHandler::process_ficInput (int16_t ficno, bool *valid) {
 int16_t	i;
 int16_t	viterbiBlock [3072 + 24] = {0};
 int16_t	inputCount	= 0;
@@ -198,10 +198,13 @@ int16_t	inputCount	= 0;
   *	One issue is what to do when we really believe the synchronization
   *	was lost.
   */
-
+//
+//	default	
+	*valid = true;
 	for (i = ficno * 3; i < ficno * 3 + 3; i ++) {
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
 	   if (!check_CRC_bits (p, 256)) {
+	      *valid = false;
 	      show_ficSuccess (false);
 	      continue;
 	   }
@@ -250,7 +253,9 @@ void	ficHandler::stop_ficDump	() {
 }
 
 
-void	ficHandler::get_fibBits		(uint8_t *v) {
+void	ficHandler::get_fibBits		(uint8_t *v, bool *b) {
 	for (int i = 0; i < 4 * 768; i ++)
 	   v [i] = fibBits [i];
+	for (int i = 0; i < 4; i ++)
+	    b [i] = ficValid [i];
 }

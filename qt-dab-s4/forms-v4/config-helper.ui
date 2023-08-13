@@ -233,6 +233,16 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="skinSelector">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select skin gives the opportunity to select one of a few skins, the selected skin will be active on the next program invocation&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>select skin</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QPushButton" name="loadTableButton">

@@ -146,9 +146,10 @@ void	etiGenerator::processBlock	(std::vector <int16_t> &ibits,
 	   return;
 
 	if (blkno == 4) {	// import fibBits
-	   my_ficHandler -> get_fibBits (fibBits);
+	   bool ficValid [4];
+	   my_ficHandler -> get_fibBits (fibBits, ficValid);
 	   for (int i = 0; i < 4; i ++) {
-	      fibValid [index_Out + i] = true;
+	      fibValid [index_Out + i] = ficValid [i];
 	      for (int j = 0; j < 96; j ++) {
 	         fibVector [(index_Out + i) & 017][j] = 0;
 	         for (int k = 0; k < 8; k ++) {

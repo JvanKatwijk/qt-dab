@@ -191,6 +191,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/content-table.h \
 	   ../includes/support/ITU_Region_1.h \
 	   ../includes/support/coordinates.h \
+	   ../includes/support/skin-handler.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/buttons/smallcombobox.h \
@@ -302,6 +303,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/content-table.cpp \
 	   ../src/support/ITU_Region_1.cpp \
 	   ../src/support/coordinates.cpp \
+	   ../src/support/skin-handler.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \ 

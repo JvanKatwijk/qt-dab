@@ -304,8 +304,8 @@ uint8_t	dabBand;
 	setupUi (this);
 	int x	= dabSettings -> value ("mainWidget-x", 100). toInt ();
 	int y	= dabSettings -> value ("mainWidget-y", 100). toInt ();
-	int wi	= dabSettings -> value ("main-widget-w", 300). toInt ();
-	int he	= dabSettings -> value ("main-widget-h", 200). toInt ();
+	int wi	= dabSettings -> value ("mainwidget-w", 300). toInt ();
+	int he	= dabSettings -> value ("mainwidget-h", 200). toInt ();
 	this	-> resize (QSize (wi, he));
 	this	-> move (QPoint (x, y));
 
@@ -2910,8 +2910,14 @@ void	RadioInterface::stopAnnouncement (const QString &name, int subChId) {
 //
 //	Regular selection, straight for the service list
 void	RadioInterface::selectService (QModelIndex ind) {
-QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
-	localSelect (channel. channelName, currentProgram);
+QString	selectedService = ind. data (Qt::DisplayRole). toString ();
+	
+	for (auto serv : serviceList) {
+           if (serv. name == selectedService) {
+	      localSelect (channel. channelName, selectedService);
+	      break;
+	   }
+	}
 }
 //
 //	selecting from the preset list
@@ -3361,6 +3367,7 @@ int	tunedFrequency	=
 	channel. channelName	= theChannel;
 	dabSettings		-> setValue ("channel", theChannel);
 	channel. frequency	= tunedFrequency / 1000;
+	my_tiiViewer. clear ();
 	if (transmitterTags_local  && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", "", 0, 0, 0, 0);
 	else
@@ -3427,7 +3434,7 @@ void	RadioInterface::stopChannel	() {
 	transmitter_coordinates -> setText ("");
 //
 	hide_for_safety	();	// hide some buttons
-	my_tiiViewer. clear();
+	my_tiiViewer. clear ();
 	QCoreApplication::processEvents ();
 //
 //	no processing left at this time

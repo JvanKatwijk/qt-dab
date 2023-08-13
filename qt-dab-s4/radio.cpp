@@ -46,6 +46,7 @@
 #include	"color-selector.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
+#include	"skin-handler.h"
 #include	"dab-tables.h"
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
@@ -311,8 +312,8 @@ uint8_t	dabBand;
 	setupUi (this);
 	int x   = dabSettings -> value ("mainWidget-x", 100). toInt (); 
         int y   = dabSettings -> value ("mainWidget-y", 100). toInt ();
-	int wi  = dabSettings -> value ("main-widget-w", 300). toInt ();
-	int he  = dabSettings -> value ("main-widget-h", 200). toInt ();
+	int wi  = dabSettings -> value ("mainwidget-w", 300). toInt ();
+	int he  = dabSettings -> value ("mainwidget-h", 200). toInt ();
         this    -> resize (QSize (wi, he));
         this    -> move (QPoint (x, y));
 
@@ -406,6 +407,9 @@ uint8_t	dabBand;
 
 	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
+
+	connect (configWidget. skinSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_skinSelector ()));
 
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
@@ -821,6 +825,7 @@ QString RadioInterface::footText () {
 	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
 	versionText += "Rights of Qt, fftw, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
 	versionText += "Rights of developers of RTLSDR library, SDRplay libraries, AIRspy library and others gratefully acknowledged\n";
+	versionText += "Copyright of DevSec Studio for the skin, made available under an MIT license, is gratefully acknowledged";
 	versionText += "Rights of other contributors gratefully acknowledged";
        return versionText;
 }
@@ -3158,9 +3163,17 @@ void	RadioInterface::stopService	(dabService &s) {
 //
 //
 void	RadioInterface::selectService (QModelIndex ind) {
-QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
+QString	selectedService = ind. data (Qt::DisplayRole). toString ();
+bool	found = false;
 
-	if (!running. load ())
+	for (auto serv : serviceList) {
+           if (serv. name == selectedService) {
+	      found = true;
+	      break;
+	   }
+	}
+
+	if (!running. load () || !found)
 	   return;
 
 	if (my_dabProcessor == nullptr) {	// should/can not happen
@@ -3177,10 +3190,10 @@ QString	currentProgram = ind. data (Qt::DisplayRole). toString ();
 	currentService. valid = false;
 
 	dabService s;
-	s. serviceName = currentProgram;
-	my_dabProcessor -> getParameters (currentProgram, &s. SId, &s. SCIds);
+	s. serviceName = selectedService;
+	my_dabProcessor -> getParameters (selectedService, &s. SId, &s. SCIds);
 	fprintf (stderr, "selecting %s with %X\n",
-	                      currentProgram. toUtf8 (). data (), s. SId);
+	                      selectedService. toUtf8 (). data (), s. SId);
 	if (s. SId == 0) {
 	   QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));	
@@ -4883,4 +4896,13 @@ void    RadioInterface::handle_clearScan_Selector (int c) {
         dabSettings -> setValue ("clearScanResult",
                        configWidget. clearScan_Selector -> isChecked () ? 1 : 0);       
 }       
+
+void    RadioInterface::handle_skinSelector     () {
+skinHandler theSkins;
+        int skinIndex = theSkins. QDialog::exec ();
+        QString skinName = theSkins. skins. at (skinIndex);
+        fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
+        dabSettings -> setValue ("skin", skinName); 
+}
+
 

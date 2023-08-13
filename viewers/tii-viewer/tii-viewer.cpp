@@ -132,7 +132,25 @@ bool	brush;
 //	delete		ourBrush;
 }
 
-void	tiiViewer::clear() {
+void	tiiViewer::clear	() {
+double	X_axis [TII_DISPLAYSIZE];
+double	Y_values [TII_DISPLAYSIZE];
+double	temp	= (double)INPUT_RATE / 2 / TII_DISPLAYSIZE;
+
+	if  (isHidden ())
+	   return;
+
+	for (int i = 0; i < TII_DISPLAYSIZE; i ++)
+	   X_axis [i] = 
+	         ((double)0 - (double)(INPUT_RATE / 2) +
+	          (double)((i) * (double) 2 * temp)) / ((double)1000);
+	for (int i = 0; i < TII_DISPLAYSIZE; i ++)
+	   Y_values [i] = 0;
+	transmitterDisplay	-> setText ("");
+
+	ViewSpectrum (X_axis, Y_values,
+	              AmplificationSlider -> value(),
+	              0 / 1000);
 }
 
 static
