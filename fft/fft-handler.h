@@ -21,32 +21,26 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__FFT_HANDLER__
-#define	__FFT_HANDLER__
+#pragma once
 
 #include	<complex>
 #include	<vector>
-#include	"kiss_fft.h"
-#ifdef	__FFTW3__
 #include	<fftw3.h>
-#endif
+#include	"dab-constants.h"
 
 class	fftHandler {
 public:
 			fftHandler	(int size, bool);
 			~fftHandler	();
-	void		fft 		(std::vector<std::complex<float>> &);
-	void		fft 		(std::complex<float> *);
+	void		fft 		(std::vector<Complex> &);
+	void		fft 		(Complex *);
 private:
 	int		size;
 	bool		dir;
-#ifdef	__KISS_FFT__
-	kiss_fft_cfg	plan;
-	kiss_fft_cpx	*fftVector_in;
-	kiss_fft_cpx	*fftVector_out;
-#elif	__FFTW3__
+#ifdef	USE_DOUBLR
+	fftw_plan	plan;
+#else
 	fftwf_plan	plan;
-	std::complex<float> *fftVector;
 #endif
+	Complex *fftVector;
 };
-#endif

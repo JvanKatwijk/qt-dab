@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__BACKEND__
-#define	__BACKEND__
+#pragma once
 
 #include	<QSemaphore>
 #include	<vector>
@@ -87,6 +86,4 @@ void	run();
 	int16_t		interleaverIndex;
 	std::vector<uint8_t> disperseVector;
 };
-
-#endif
 

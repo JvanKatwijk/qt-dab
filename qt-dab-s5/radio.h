@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __RADIO_H
-#define __RADIO_H
+#pragma once
 
 #include	"dab-constants.h"
 #include	<QMainWindow>
@@ -38,7 +37,6 @@
 #include	<QTimer>
 #include	<sndfile.h>
 #include	"ui_dabradio-5.h"
-#include	"dab-processor.h"
 #include	"ringbuffer.h"
 #include        "band-handler.h"
 #include	"process-params.h"
@@ -67,6 +65,7 @@
 #include	"http-handler.h"
 
 class	QSettings;
+class	ofdmHandler;
 class	deviceHandler;
 class	audioBase;
 class	common_fft;
@@ -222,7 +221,7 @@ private:
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut;
 #endif
-	dabProcessor		*my_dabProcessor;
+	ofdmHandler		*my_ofdmHandler;
 	audioBase		*soundOut;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;
@@ -501,4 +500,3 @@ private slots:
 	void			handle_skinSelector		();
 	void			loadTable			();
 };
-#endif

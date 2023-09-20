@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifndef __EXTIO_HANDLER__
-#define	__EXTIO_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include	<QWidget>
@@ -174,20 +173,20 @@ class	extioHandler:public QObject, public deviceHandler {
 Q_OBJECT
 public:
 			extioHandler		(QSettings *);
-			~extioHandler		(void);
-	int32_t		getRate			(void);
+			~extioHandler		();
+	int32_t		getRate			();
 	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency		(void);
-	int32_t		defaultFrequency	(void);
+	int32_t		getVFOFrequency		();
+	int32_t		defaultFrequency	();
 
 	bool		restartReader		(int32_t);
-	void		stopReader		(void);
-	int32_t		Samples			(void);
+	void		stopReader		();
+	int32_t		Samples			();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                        int32_t);
-	int16_t		bitDepth		(void);
-	long		GetHWLO			(void);	// should be available
-	long		GetHWSR			(void); // may be a noop
+	int16_t		bitDepth		();
+	long		GetHWLO			();	// should be available
+	long		GetHWSR			();	// may be a noop
 //
 //	The call back need access to
 	virtualReader	*theReader;
@@ -218,8 +217,8 @@ private:
 	pfnGetTune	L_GetTune;	
 	pfnGetMode	L_GetMode;
 	pfnGetHWLO	L_GetHWLO;	// should be available
-	void		ShowGUI		(void);
-	void		HideGUI		(void);
+	void		ShowGUI		();
+	void		HideGUI		();
 
 //	filename of dll
 	QString		dll_filename;
@@ -231,5 +230,4 @@ private:
 signals:
 //	The following signals originate from the Winrad Extio interface
 };
-#endif
 

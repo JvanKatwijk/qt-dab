@@ -115,7 +115,7 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
-	   ../dab-processor.h \
+	   ../ofdm-handler.h \
            ../fft/fft-handler.h \
 	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
@@ -124,7 +124,8 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/timesyncer.h \
 	   ../includes/ofdm/sample-reader.h \
 	   ../includes/ofdm/ofdm-decoder.h \
-	   ../includes/ofdm/phasereference.h \
+	   ../includes/ofdm/correlator.h \
+	   ../includes/ofdm/freqsyncer.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
 	   ../includes/ofdm/tii-detector.h \
@@ -237,14 +238,15 @@ FORMS	+= ../viewers//snr-viewer/snr-widget.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
-	   ../dab-processor.cpp \
+	   ../ofdm-handler.cpp \
            ../fft/fft-handler.cpp \
 	   ../fft/fft-complex.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
 	   ../src/ofdm/sample-reader.cpp \
 	   ../src/ofdm/ofdm-decoder.cpp \
-	   ../src/ofdm/phasereference.cpp \
+	   ../src/ofdm/correlator.cpp \
+	   ../src/ofdm/freqsyncer.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
 	   ../src/ofdm/tii-detector.cpp \

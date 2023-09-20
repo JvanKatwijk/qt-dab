@@ -35,7 +35,6 @@
 //
 //
 	xml_fileReader::xml_fileReader (QString f):
-	   myFrame (nullptr),
 	   _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	fileName	= f;
 	setupUi	(&myFrame);
@@ -154,18 +153,6 @@ void	xml_fileReader::handle_continuousButton () {
 	bool cont = theReader -> handle_continuousButton ();
 	continuousButton -> setText (cont ? "continuous ON" :
 	                                    "continuous off");
-}
-
-void	xml_fileReader::show	() {
-	myFrame. show ();
-}
-
-void	xml_fileReader::hide	() {
-	myFrame. hide ();
-}
-
-bool	xml_fileReader::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 bool	xml_fileReader::isFileInput	() {

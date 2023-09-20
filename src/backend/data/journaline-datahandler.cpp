@@ -30,6 +30,10 @@ void my_callBack (
     const unsigned long len,
     const unsigned char *buf,
     void *arg) {
+	(void) header;
+	(void) len;
+	(void) buf;
+	(void) arg;
 }
 
 	journaline_dataHandler::journaline_dataHandler() {

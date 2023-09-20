@@ -20,8 +20,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__PRESET_HANDLER__
-#define	__PRESET_HANDLER__
+#pragma once
+
 #include	<QString>
 #include	<QtXml>
 #include	<QFile>
@@ -50,4 +50,3 @@ private:
 	QString	fileName;
 };
 
-#endif

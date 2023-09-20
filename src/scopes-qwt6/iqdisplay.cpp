@@ -32,6 +32,7 @@ static std::complex<int> Points [512];
 	                                QwtPlotSpectrogram() {
 QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 
+	(void)x;
 	setRenderThreadCount	(1);
 	Radius		= 100;
 	plotgrid	= plot;

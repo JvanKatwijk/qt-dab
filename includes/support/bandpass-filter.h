@@ -1,6 +1,5 @@
 
-#ifndef	__BANDPASSFIR__
-#define	__BANDPASSFIR__
+#pragma once
 /*
  *	The bandfilter is for the complex domain. 
  *	We create a lowpass filter, which stretches over the
@@ -27,4 +26,4 @@ private:
 	std::complex<float> *kernel;
 	std::complex<float> *buffer;
 };
-#endif
+

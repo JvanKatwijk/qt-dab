@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__MP4PROCESSOR__
-#define	__MP4PROCESSOR__
+#pragma once
 /*
  * 	Handling superframes for DAB+ and delivering
  * 	frames into the ffmpeg or faad decoding library
@@ -104,7 +103,4 @@ signals:
 	void		show_rsCorrections		(int, int);
 	void		show_emptyLabel			(const QString &);
 };
-
-#endif
-
 

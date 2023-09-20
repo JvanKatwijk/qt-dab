@@ -41,7 +41,7 @@ int	i;
 
 	syncBufferIndex = 0;
 	for (i = 0; i < C_LEVEL_SIZE; i ++) {
-	   std::complex<float> sample        = myReader -> getSample (0);
+	   Complex sample        = myReader -> getSample (0);
 	   envBuffer [syncBufferIndex]       = jan_abs (sample);
 	   cLevel                            += envBuffer [syncBufferIndex];
 	   syncBufferIndex ++;
@@ -49,7 +49,7 @@ int	i;
 //SyncOnNull:
 	counter      = 0;
 	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel()) {
-	   std::complex<float> sample        =
+	   Complex sample        =
 	         myReader -> getSample (0);
 //	         myReader. getSample (coarseOffset + fineCorrector);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
@@ -69,7 +69,7 @@ int	i;
 	counter      = 0;
 //SyncOnEndNull:
 	 while (cLevel / C_LEVEL_SIZE < 0.75 * myReader -> get_sLevel()) {
-	   std::complex<float> sample =
+	   Complex sample =
 	           myReader -> getSample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
 //      update the levels

@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __AUDIO_BASE_H
-#define	__AUDIO_BASE_H
+#pragma once
+
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<samplerate.h>
@@ -59,5 +59,4 @@ private:
 protected:
 virtual	void		audioOutput		(float *, int32_t);
 };
-#endif
 

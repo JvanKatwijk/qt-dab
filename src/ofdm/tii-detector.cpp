@@ -25,7 +25,6 @@
 #include	<cstdio>
 #include	<cinttypes>
 #include	<cstring>
-#include	"fft-complex.h"
 //
 
 
@@ -114,26 +113,28 @@ uint8_t table [] = {
 };
 
 
-		TII_Detector::TII_Detector (uint8_t dabMode, int16_t depth):
-	                                    params (dabMode) {
-int16_t	i;
+		TII_Detector::TII_Detector (uint8_t dabMode,
+	                                    int16_t depth):
+	                                     params (dabMode) {
 
 	this	-> depth	= depth;
-	this	-> T_u		= params. get_T_u();
+	this	-> T_u		= params. get_T_u ();
 	carriers		= params. get_carriers();
+	my_fftHandler		= new fftHandler (T_u, false);
 	theBuffer. resize	(T_u);
 	window. resize 		(T_u);
-	for (i = 0; i < T_u; i ++)
+	for (int i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
 
-	for (i = 0; i < 256; i ++)
+	for (int i = 0; i < 256; i ++)
 	   invTable [i] = -1;
-	for (i = 0; i < 70; ++i) 
+	for (int i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 	detectMode_new	= false;
 }
 
 		TII_Detector::~TII_Detector () {
+	delete my_fftHandler;
 }
 
 void	TII_Detector::setMode	(bool b) {
@@ -143,24 +144,23 @@ void	TII_Detector::setMode	(bool b) {
 
 void	TII_Detector::reset	() {
 	for (int i = 0; i < T_u; i ++)
-	   theBuffer [i] = std::complex<float> (0, 0);
+	   theBuffer [i] = Complex (0, 0);
 }
 
 //	To eliminate (reduce?) noise in the input signal, we might
 //	add a few spectra before computing (up to the user)
-void	TII_Detector::addBuffer (std::vector<std::complex<float>> v) {
-int	i;
+void	TII_Detector::addBuffer (std::vector<Complex> v) {
 
-	for (i = 0; i < T_u; i ++)
-	   v [i] = v [i] * window [i];
-	Fft_transform (v. data (), T_u, false);
+	for (int i = 0; i < T_u; i ++)
+	   v [i] = v [i] *  window [i];
+	my_fftHandler -> fft (v);
 
-	for (i = 0; i < T_u; i ++)
+	for (int i = 0; i < T_u; i ++)
 	   theBuffer [i] += v [i];
 }
 //
 //	Note that the input is fft output, not yet reordered
-void	TII_Detector::collapse (std::complex<float> *inVec, float *outVec) {
+void	TII_Detector::collapse (Complex *inVec, float *outVec) {
 int	i;
 	for (i = 0; i < carriers / 8; i ++) {	
 	   int carr = - carriers / 2 + 2 * i;

@@ -242,6 +242,7 @@ void	spectrumViewer::show_nullPeriod	(float *v, int amount) {
 void	spectrumViewer::rightMouseClick	(const QPointF &point) {
 colorSelector *selector;
 int	index;
+	(void) point;
 	selector		= new colorSelector ("display color");
 	index			= selector -> QDialog::exec ();
 	QString displayColor	= selector -> getColor (index);

@@ -180,11 +180,6 @@ QString	handlerName	= "driver=";
 	statusLabel	-> setText ("OK");
 }
 
-void	soapyHandler::setVFOFrequency		(int32_t f) {
-	if (worker == nullptr)
-	   return;
-	device	-> setFrequency (SOAPY_SDR_RX, 0, f);
-}
 
 int32_t	soapyHandler::getVFOFrequency		(void) {
 	return device	-> getFrequency (SOAPY_SDR_RX, 0);
@@ -193,7 +188,9 @@ int32_t	soapyHandler::getVFOFrequency		(void) {
 int32_t	soapyHandler::defaultFrequency		(void) {return 220000000;}
 
 bool	soapyHandler::restartReader		(int32_t freq) {
-	setVFOFrequency (freq);
+	if (worker == nullptr)
+	   return;
+	device	-> setFrequency (SOAPY_SDR_RX, 0, f);
 	return true;
 }
 
@@ -233,17 +230,5 @@ void	soapyHandler::handleAntenna (const QString &s) {
 	if (worker == nullptr)
 	   return;
 	device	-> setAntenna (SOAPY_SDR_RX, 0, s. toLatin1(). data());
-}
-
-void	soapyHandler::show		() {
-	myFrame. show ();
-}
-
-void	soapyHandler::hide		() {
-	myFrame. hide ();
-}
-
-bool	soapyHandler::isHidden		() {
-	return myFrame. isHidden ();
 }
 

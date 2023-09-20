@@ -1,6 +1,5 @@
 
-#ifndef	__DL_CACHE_H
-#define	__DL_CACHE_H
+#pragma once
 
 #include	<QString>
 #include	<vector>
@@ -48,4 +47,4 @@ bool	addifNew	(const QString &s) {
 	return false;
 }
 };
-#endif
+

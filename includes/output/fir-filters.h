@@ -22,8 +22,7 @@
  *
  */
 
-#ifndef __FIR_LOWPASSFILTER__
-#define __FIR_LOWPASSFILTER__
+#pragma once
 
 #include	"dab-constants.h"
 #include	<vector>
@@ -46,6 +45,4 @@ private:
 	std::vector<std::complex<float>>	Buffer;
 	float		frequency;
 };
-
-#endif
 

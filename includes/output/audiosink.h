@@ -22,8 +22,8 @@
  *
  */
 
-#ifndef __AUDIO_SINK
-#define	__AUDIO_SINK
+#pragma once
+
 #include	<QString>
 #include	<vector>
 #include	"dab-constants.h"
@@ -81,5 +81,4 @@ static	int		paCallback_o	(const void	*input,
 	                                 void		*userData);
 };
 
-#endif
 

@@ -20,8 +20,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__MOT_HANDLER__
-#define	__MOT_HANDLER__
+#pragma once
+
 #include	"dab-constants.h"
 #include	"virtual-datahandler.h"
 #include	<vector>
@@ -42,5 +42,3 @@ private:
 	int		orderNumber;
 	motDirectory	*theDirectory;
 };
-#endif
-

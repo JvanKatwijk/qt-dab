@@ -22,7 +22,8 @@
  */
 #include	"device-handler.h"
 
-	deviceHandler::deviceHandler	() {
+	deviceHandler::deviceHandler	():
+	   myFrame (nullptr) {
 	lastFrequency	= 100000;
 	vfoOffset	= 0;
 	theGain		= 50;
@@ -40,12 +41,7 @@ bool	deviceHandler::restartReader	(int32_t freq) {
 void	deviceHandler::stopReader	() {
 }
 
-void	deviceHandler::setVFOFrequency	(int freq) {
-	(void)freq;
-}
-
-int32_t	deviceHandler::getSamples	(std::complex<float> *v,
-	                                               int32_t amount) {
+int32_t	deviceHandler::getSamples	(Complex *v, int32_t amount) {
 	(void)v; 
 	(void)amount; 
 	return amount;
@@ -58,14 +54,15 @@ int32_t	deviceHandler::Samples		() {
 void	deviceHandler::resetBuffer	() {
 }
 
-void	deviceHandler::hide		() {
+void	deviceHandler::setVisibility	(bool b) {
+	if (b)
+	   myFrame. show ();
+	else
+	   myFrame. hide ();
 }
 
-void	deviceHandler::show		() {
-}
-
-bool	deviceHandler::isHidden		() { 
-	return false;
+bool	deviceHandler::getVisibility	() { 
+	return !myFrame. isHidden ();
 }
 
 QString	deviceHandler::deviceName	() {
@@ -76,12 +73,12 @@ bool	deviceHandler::isFileInput	() {
 	return false;
 }
 
-QPoint	deviceHandler::get_coords	() {
-	return QPoint (0, 0);
-}
-
-void	deviceHandler::moveTo		(QPoint p) {
-	(void)p;
-}
+//QPoint	deviceHandler::get_coords	() {
+//	return myFrame. mapToGlobal (QPoint (0, 0));
+//}
+//
+//void	deviceHandler::moveTo		(QPoint p) {
+//	myFrame. move (p);
+//}
 
 

@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__BACKEND_DRIVER__
-#define	__BACKEND_DRIVER__
+#pragma once
 
 #include	<vector>
 #include	<utility>
@@ -44,6 +43,4 @@ void	addtoFrame	(std::vector<uint8_t> outData);
 private:
 	frameProcessor	* theProcessor;
 };
-
-#endif
 

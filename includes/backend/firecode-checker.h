@@ -25,8 +25,7 @@
 //	within the DAB/DAB+ sdr-j receiver software
 //	all rights are acknowledged.
 //
-#ifndef	FIRECODE_CHECKER
-#define	FIRECODE_CHECKER
+#pragma once
 #include	<cstdint>
 
 
@@ -41,6 +40,4 @@ private:
 	uint16_t run8(unsigned char regs[]);
 	static const uint8_t g[16];
 };
-
-#endif
 

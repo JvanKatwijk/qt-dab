@@ -22,8 +22,7 @@
  */
 
 //
-#ifndef		__AUDIO_DISPLAY_H
-#define		__AUDIO_DISPLAY_H
+#pragma once
 
 #include	<QSettings>
 #include        "dab-constants.h"
@@ -78,8 +77,6 @@ private:
 	float		get_db 			(float);
 	int32_t		normalizer;
 private slots:
-        void            rightMouseClick (const QPointF &);
+        void            rightMouseClick		(const QPointF &);
 };
-
-#endif
 

@@ -34,7 +34,6 @@ lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
 	                          QString &recorderVersion):
-	                             myFrame (nullptr),
 	                             _I_Buffer (4* 1024 * 1024),
 	                             theFilter (5, 1560000 / 2, 2048000) {
 	this	-> limeSettings		= s;
@@ -194,13 +193,9 @@ lms_info_str_t limedevices [10];
 	LMS_Close (theDevice);
 }
 
-void	limeHandler::setVFOFrequency	(int32_t f) {
-	LMS_SetLOFrequency (theDevice, LMS_CH_RX, 0, f);
-}
-
 int32_t	limeHandler::getVFOFrequency() {
 float_type freq;
-	int res = LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &freq);
+	(void) LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &freq);
 	return (int)freq;
 }
 
@@ -216,6 +211,7 @@ void	limeHandler::setAntenna		(int ind) {
 }
 
 void	limeHandler::set_filter		(int c) {
+	(void)c;
 	filtering	= filterSelector -> isChecked ();
 	fprintf (stderr, "filter set %s\n", filtering ? "on" : "off");
 }
@@ -263,7 +259,7 @@ void	limeHandler::stopReader() {
 	(void)LMS_DestroyStream	(theDevice, &stream);
 }
 
-int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
+int	limeHandler::getSamples	(Complex *V, int32_t size) {
 std::complex<int16_t> temp [size];
 
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
@@ -273,13 +269,13 @@ std::complex<int16_t> temp [size];
 	      theFilter. resize (currentDepth);
 	   }
            for (int i = 0; i < amount; i ++) 
-	      V [i] = theFilter. Pass (std::complex<float> (
+	      V [i] = theFilter. Pass (Complex (
 	                                         real (temp [i]) / 2048.0,
 	                                         imag (temp [i]) / 2048.0));
 	}
 	else
            for (int i = 0; i < amount; i ++)
-              V [i] = std::complex<float> (real (temp [i]) / 2048.0,
+              V [i] = Complex (real (temp [i]) / 2048.0,
                                            imag (temp [i]) / 2048.0);
         if (dumping. load ())
            xmlWriter -> add (temp, amount);
@@ -313,7 +309,6 @@ int	res;
 lms_stream_status_t streamStatus;
 int	underruns	= 0;
 int	overruns	= 0;
-int	dropped		= 0;
 int	amountRead	= 0;
 
 	running. store (true);
@@ -573,18 +568,6 @@ void	limeHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
-}
-
-void	limeHandler::show	() {
-	myFrame. show ();
-}
-
-void	limeHandler::hide	() {
-	myFrame. hide ();
-}
-
-bool	limeHandler::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 void	limeHandler::record_gainSettings	(int key) {

@@ -80,7 +80,7 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	}
 
 	if (theStick -> isActive. load ()) {
-	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < len / 2)
+	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () <  (int)len / 2)
 	      fprintf (stderr, "xx? ");
 	   (void)theStick -> _I_Buffer.
 	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
@@ -117,7 +117,6 @@ void	run () {
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
 	                                 _I_Buffer (8 * 1024 * 1024),
-	                                 myFrame (nullptr),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;
@@ -294,15 +293,12 @@ char	manufac [256], product [256], serial [256];
 	delete phandle;
 }
 
-void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
-	(void)(this -> rtlsdr_set_center_freq (theDevice, f));
-}
-
 int32_t	rtlsdrHandler::getVFOFrequency() {
 	return (int32_t)(this -> rtlsdr_get_center_freq (theDevice));
 }
 //
 void	rtlsdrHandler::set_filter	(int c) {
+	(void)c;
 	filtering       = filterSelector -> isChecked ();
 }
 
@@ -595,18 +591,6 @@ int16_t	rtlsdrHandler::bitDepth() {
 
 QString	rtlsdrHandler::deviceName	() {
 	return deviceModel;
-}
-
-void	rtlsdrHandler::show		() {
-	myFrame. show ();
-}
-
-void	rtlsdrHandler::hide		() {
-	myFrame. hide ();
-}
-
-bool	rtlsdrHandler::isHidden		() {
-	return myFrame. isHidden ();
 }
 
 void	rtlsdrHandler::set_iqDump	() {

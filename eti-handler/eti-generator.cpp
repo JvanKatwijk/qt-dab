@@ -384,6 +384,7 @@ std::vector<parameter *> theParameters;
 void	etiGenerator::process_subCh (int nr, parameter *p,
 	                             protection *prot,
 	                             uint8_t *desc) {
+	(void)nr;
 	std::unique_ptr<uint8_t[]> outVector { new uint8_t[24 * p->bitRate] };
 	if (!outVector) {
 	   std::cerr << "process_subCh - alloc fail";
@@ -411,11 +412,13 @@ void	etiGenerator::process_subCh (int nr, parameter *p,
 }
 
 void	etiGenerator::postProcess (uint8_t *theVector, int32_t offset){
+	(void)theVector;
+	(void)offset;
 }
 
 bool	etiGenerator::start_etiGenerator	(const QString &f) {
 	reset ();
-	etiFile	= fopen (f. toUtf8 (). data (), "w");
+	etiFile	= fopen (f. toUtf8 (). data (), "wb");
 	return etiFile != nullptr;
 }
 

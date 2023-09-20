@@ -11,6 +11,7 @@
 QString	colorString	= "black";
 //bool	brush;
 
+	(void)displaySize;
 	this	-> dabSettings		= dabSettings;
 	dabSettings	-> beginGroup ("spectrumViewer");
 	colorString	= dabSettings -> value ("displayColor",

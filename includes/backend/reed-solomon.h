@@ -4,8 +4,7 @@
  * May be used under the terms of the GNU General Public License (GPL)
  */
 
-#ifndef	__REED_SOLOMON
-#define	__REED_SOLOMON
+#pragma once
 
 #include	<cstdint>
 #include	"galois.h"
@@ -41,4 +40,3 @@ int16_t		dec	  (const uint8_t *data_in, uint8_t *data_out, int16_t cutlen);
 void		enc	  (const uint8_t *data_in, uint8_t *data_out, int16_t cutlen);
 };
 
-#endif

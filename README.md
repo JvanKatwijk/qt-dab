@@ -1,25 +1,20 @@
-# Qt-DAB-5 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-6 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-**Qt-DAB-4** and **Qt-DAB-5** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+**Qt-DAB-4**, **Qt-DAB-5** and **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 -------------------------------------------------------------------
-New in 4.7 and 5.4
+
+![6.0](/qt-dab-logo.png?raw=true)
+![6.0](/DABplus_Logo_Colour_sRGB.png?raw=true)
+
 -------------------------------------------------------------------
 
-Apart from fixing a few minor errors and restructuring some parts
-of the software, the main change in these versions - compared to previous
-ones - is handling the "history".
+Next to the versions 4.7 and 5.4 there is a third  - slightly experimental -
+version, with the labeling 6.0.
+The difference between 5.X and 6.0 is the formation
+of a *single* widget for the various displays.
 
-In previous versions, each service (name) encountered was added
-to a history list, in this version the history list is replaced
-by a "scan list". The scan list is filled when scanning (single scan).
-The configuration widget has a selector for choosing that on a
-new scan the list is cleared (the default).
-
-New - compared to the history list - is that a mouse click right
-on an element in the scan list, the service name is added to the
-presets. Of course, a mouse click left will select the service.
-
+![6.0](/qt-dab-6.0.png?raw=true)
 Table of Contents
 =================================================================
 

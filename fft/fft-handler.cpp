@@ -30,13 +30,17 @@
 	fftHandler::fftHandler	(int size, bool dir) {
 	this	-> size		= size;
 	this	-> dir		= dir;
-#ifdef	__KISS_FFT__
-	fftVector_in            = new kiss_fft_cpx [size];
-        fftVector_out           = new kiss_fft_cpx [size];
-        plan			= kiss_fft_alloc (size, dir, nullptr, nullptr);
-#elif	__FFTW3__
-	fftVector		= (std::complex<float> *)
-	                          fftwf_malloc (sizeof (std::complex<float>)* size);
+
+#ifdef	USE_DOUBLE
+	fftVector		= (Complex *)
+	                          fftw_malloc (sizeof (Complex) * size);
+	plan			= fftw_plan_dft_1d (size,
+	                           reinterpret_cast <fftw_complex *>(fftVector),
+                                   reinterpret_cast <fftw_complex *>(fftVector),
+                                   FFTW_FORWARD, FFTW_ESTIMATE);
+#else
+	fftVector		= (Complex *)
+	                          fftwf_malloc (sizeof (Complex) * size);
 	plan			= fftwf_plan_dft_1d (size,
 	                           reinterpret_cast <fftwf_complex *>(fftVector),
                                    reinterpret_cast <fftwf_complex *>(fftVector),
@@ -45,64 +49,44 @@
 }
 
 	fftHandler::~fftHandler	() {
-#ifdef	__KISS_FFT__
-	delete fftVector_in;
-	delete fftVector_out;
-#elif	__FFTW3__
+#ifdef	USE_DOUBLE
+	fftw_destroy_plan (plan);
+	fftw_free (fftVector);
+#else
 	fftwf_destroy_plan (plan);
 	fftwf_free (fftVector);
 #endif
 }
 
-void	fftHandler::fft		(std::vector<std::complex<float>> &v) {
-#ifdef	__KISS_FFT__
-	for (int i = 0; i < size; i ++) {
-	   fftVector_in [i]. r = real (v [i]);
-	   fftVector_in [i]. i = imag (v [i]);
-	}
-	kiss_fft (plan, fftVector_in, fftVector_out);
-	for (int i = 0; i < size; i ++) {
-	   v [i] = std::complex<float> (fftVector_out [i]. r,
-	                                fftVector_out [i]. i);
-	}
-#elif __FFTW3__
+void	fftHandler::fft		(std::vector<Complex> &v) {
 	if (dir)
 	   for (int i = 0; i < size; i ++)
 	      fftVector [i] = conj (v [i]);
 	else
 	   for (int i = 0; i < size; i ++)
 	      fftVector [i] = v [i];
+#ifdef	USE_DOUBLE
+	fftw_execute (plan);
+#else
 	fftwf_execute (plan);
+#endif
 	if (dir)
 	   for (int i = 0;  i < size; i ++)
 	      v [i] = conj (fftVector [i]);
 	else
 	   for (int i = 0; i < size; i ++)
 	      v [i] = fftVector [i];
-#else
-	Fft_transform (v. data (), size, dir);
-#endif
 }
 
-void	fftHandler::fft		(std::complex<float>  *v) {
-#ifdef	__KISS_FFT__
-	for (int i = 0; i < size; i ++) {
-	   fftVector_in [i]. r = real (v [i]);
-	   fftVector_in [i]. i = imag (v [i]);
-	}
-	kiss_fft (plan, fftVector_in, fftVector_out);
-	for (int i = 0; i < size; i ++) {
-	   v [i] = std::complex<float> (fftVector_out [i]. r,
-	                                fftVector_out [i]. i);
-	}
-#elif	__FFTW3__
+void	fftHandler::fft		(Complex  *v) {
 	for (int i = 0; i < size; i ++)
 	   fftVector [i] = v [i];
+#ifdef	USE_DOUBLE
+	fftw_execute (plan);
+#else
 	fftwf_execute (plan);
+#endif
 	for (int i = 0;  i < size; i ++)
 	   v [i] = fftVector [i];
-#else
-	Fft_transform (v, size, dir);
-#endif
 }
 

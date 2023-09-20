@@ -1,6 +1,5 @@
 
-#ifndef	__COUNTRY_CODES_H
-#define	__COUNTRY_CODES_H
+#pragma once
 
 #include	<cstdint>
 
@@ -75,4 +74,3 @@ struct country_codes {
 {0x00, 0x0, " "}
 };
 
-#endif

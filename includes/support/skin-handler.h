@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__SKIN_HANDLER__
-#define	__SKIN_HANDLER__
+#pragma once
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -46,5 +45,4 @@ private slots:
 void	select_skin	(QModelIndex);
 };
 
-#endif
 

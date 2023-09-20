@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__MOT_OBJECT__
-#define	__MOT_OBJECT__
+#pragma once
+
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
 #include	<QObject>
@@ -69,6 +69,4 @@ signals:
         void	the_picture	(QByteArray, int, QString);
 	void	handle_motObject (QByteArray, QString, int, bool);
 };
-
-#endif
 

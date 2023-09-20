@@ -222,14 +222,15 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
-	     ../dab-processor.h
+	     ../ofdm-handler.h
 	     ../fft/fft-handler.h 
 	     ../fft/fft-complex.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/mot-content-types.h 
              ../includes/ofdm/sample-reader.h
-	     ../includes/ofdm/phasereference.h
+	     ../includes/ofdm/correlator.h
+	     ../includes/ofdm/freqsyncer.h
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/phasetable.h
 	     ../includes/ofdm/freq-interleaver.h
@@ -298,6 +299,7 @@ endif ()
 	     ../includes/support/dl-cache.h
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
+	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
@@ -335,19 +337,19 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
-	     ../dab-processor.cpp
+	     ../ofdm-handler.cpp
 	     ../fft/fft-handler.cpp 
 	     ../fft/fft-complex.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
+	     ../src/ofdm/correlator.cpp
+	     ../src/ofdm/freqsyncer.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
-	     ../src/ofdm/phasereference.cpp
 	     ../src/ofdm/phasetable.cpp
 	     ../src/ofdm/freq-interleaver.cpp
 	     ../src/ofdm/fib-decoder.cpp
 	     ../src/ofdm/fic-handler.cpp
 	     ../src/ofdm/tii-detector.cpp
-	     ../src/ofdm/channel.cpp
 	     ../src/ofdm/timesyncer.cpp
 	     ../src/protection/protTables.cpp
 	     ../src/protection/protection.cpp
@@ -409,6 +411,7 @@ endif ()
 	     ../src/support/content-table.cpp
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
+	     ../src/support/skin-handler.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
@@ -434,15 +437,15 @@ endif ()
 
 	set (${objectName}_MOCS
 	     ./radio.h
-	     ../dab-processor.h
+	     ../ofdm-handler.h
 	     ../includes/output/audio-base.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
-	     ../includes/ofdm/phasereference.h
+	     ../includes/ofdm/correlator.h
+	     ../includes/ofdm/freqsyncer.h
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
 	     ../includes/ofdm/tii-detector.h
-	     ../includes/ofdm/channel.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
 	     ../includes/backend/audio/mp2processor.h
@@ -475,6 +478,7 @@ endif ()
 	     ../includes/support/time-table.h
 	     ../includes/support/content-table.h
 	     ../includes/support/coordinates.h
+	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/iqdisplay.h

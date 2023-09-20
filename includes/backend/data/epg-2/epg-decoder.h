@@ -22,6 +22,8 @@
  */
 
 
+#pragma once
+
 #include	<QObject>
 #include	<stdio.h>
 #include	<stdint.h>

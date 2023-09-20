@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__SAMPLE_READER__
-#define	__SAMPLE_READER__
+#pragma once
 /*
  *	Reading the samples from the input device. Since it has its own
  *	"state", we embed it into its own class
@@ -47,13 +46,13 @@ Q_OBJECT
 public:
 			sampleReader	(RadioInterface *mr,
 	                         	deviceHandler *theRig,
-	                         	RingBuffer<std::complex<float>> *spectrumBuffer = nullptr);
+	                         	RingBuffer<Complex> *spectrumBuffer = nullptr);
 
 			~sampleReader();
 		void	setRunning	(bool b);
 		float	get_sLevel	();
-		std::complex<float> getSample	(int32_t);
-	        void	getSamples	(std::vector<std::complex<float>> &v,
+		Complex getSample	(int32_t);
+	        void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase);
 	        void	startDumping	(SNDFILE *);
@@ -61,8 +60,8 @@ public:
 private:
 		RadioInterface	*myRadioInterface;
 		deviceHandler	*theRig;
-		RingBuffer<std::complex<float>> *spectrumBuffer;
-		std::vector<std::complex<float>> localBuffer;
+		RingBuffer<Complex> *spectrumBuffer;
+		std::vector<Complex> localBuffer;
 		int32_t		localCounter;
 		int32_t		bufferSize;
 		int32_t		currentPhase;
@@ -81,4 +80,3 @@ signals:
 	        void		show_Corrector (int);
 };
 
-#endif

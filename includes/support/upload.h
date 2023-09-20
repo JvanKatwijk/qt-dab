@@ -20,8 +20,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__UPLOAD_HANDLER_H
-#define	__UPLOAD_HANDLER_H
+#pragma once
+
 #include	<QDialog>
 #include	<QLabel>
 #include	<QPushButton>
@@ -43,7 +43,4 @@ private slots:
 	void		handle_yesButton 	();
 	void		handle_noButton 	();
 };
-
-#endif
-
 

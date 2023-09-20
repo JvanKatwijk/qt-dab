@@ -87,6 +87,7 @@ void	spectrumScope::showSpectrum	(double *X_axis,
 uint16_t	i;
 float	amp1	= amplification / 100.0;
 
+	(void)frequency;
 	amplification	= amplification / 100.0 * (- get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
@@ -110,6 +111,7 @@ float	amp1	= amplification / 100.0;
 void	spectrumScope::rightMouseClick	(const QPointF &point) {
 colorSelector *selector;
 int	index;
+	(void) point;
 	selector		= new colorSelector ("display color");
 	index			= selector -> QDialog::exec ();
 	QString displayColor	= selector -> getColor (index);

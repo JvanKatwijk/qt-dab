@@ -36,8 +36,7 @@
 
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
-	rtl_tcp_client::rtl_tcp_client	(QSettings *s):
-	                                    myFrame (nullptr) {
+	rtl_tcp_client::rtl_tcp_client	(QSettings *s) {
 	remoteSettings		= s;
 
 	setupUi (&myFrame);
@@ -159,14 +158,6 @@ int32_t	rtl_tcp_client::getRate	() {
 
 int32_t	rtl_tcp_client::defaultFrequency() {
 	return DEFAULT_FREQUENCY;	// choose any legal frequency here
-}
-
-void	rtl_tcp_client::setVFOFrequency	(int32_t newFrequency) {
-	if (!connected)
-	   return;
-	vfoFrequency	= newFrequency;
-//	here the command to set the frequency
-	sendVFO (newFrequency);
 }
 
 int32_t	rtl_tcp_client::getVFOFrequency() {
@@ -306,17 +297,5 @@ void	rtl_tcp_client::setDisconnect() {
 void	rtl_tcp_client::set_Offset	(int32_t o) {
 	sendCommand (0x0a, Khz (o));
 	vfoOffset	= o;
-}
-
-void	rtl_tcp_client::show		() {
-	myFrame. show ();
-}
-
-void	rtl_tcp_client::hide		() {
-//	myFrame. hide ();
-}
-
-bool	rtl_tcp_client::isHidden	() {
-	return myFrame. isHidden ();
 }
 

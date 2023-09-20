@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __LIME_HANDLER__
-#define	__LIME_HANDLER__
+#pragma once
 
 #include	<QThread>
 #include	<QFrame>
@@ -101,18 +100,13 @@ Q_OBJECT
 public:
 			limeHandler		(QSettings *, QString &);
 			~limeHandler		();
-	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t         getSamples              (std::complex<float> *,
-                                                                  int32_t);
+	int32_t         getSamples              (Complex *, int32_t);
         int32_t         Samples			();
         void            resetBuffer		();
         int16_t         bitDepth		();
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
 private:
 	QFrame		myFrame;
@@ -184,5 +178,4 @@ public slots:
 	void		showErrors	(int, int);
 };
 
-#endif
 

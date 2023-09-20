@@ -1,6 +1,5 @@
 
-#ifndef	__SCHEDULE_SELECTOR__
-#define	__SCHEDULE_SELECTOR__
+#pragma once
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -24,6 +23,4 @@ private:
 private slots:
 	void		selectService	(QModelIndex);
 };
-
-#endif
 

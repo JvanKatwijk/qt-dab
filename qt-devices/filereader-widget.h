@@ -1,6 +1,6 @@
 
-#ifndef	__FILEREADER_WIDGET__
-#define	__FILEREADER_WIDGET__
+#pragma once
+
 #include	<QLabel>
 #include	<QProgressBar>
 #include	<QLCDNumber>
@@ -47,5 +47,4 @@ void	setupUi		(QWidget *qw) {
 	qw		-> setLayout (base);
 }
 };
-#endif
 

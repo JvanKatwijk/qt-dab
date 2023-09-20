@@ -24,8 +24,7 @@
 /*
  * 	FIC data
  */
-#ifndef	__FIC_HANDLER_H
-#define	__FIC_HANDLER_H
+#pragma once
 
 #include	<QObject>
 #include	<QMutex>
@@ -79,6 +78,5 @@ signals:
 	void		show_ficSuccess	(bool);
 };
 
-#endif
 
 

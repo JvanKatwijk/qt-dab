@@ -395,18 +395,6 @@ QString	rtlsdrHandler::deviceName	() {
 	return deviceModel;
 }
 
-void	rtlsdrHandler::show		() {
-	myFrame. show ();
-}
-
-void	rtlsdrHandler::hide		() {
-	myFrame. hide ();
-}
-
-bool	rtlsdrHandler::isHidden		() {
-	return myFrame. isHidden ();
-}
-
 void	rtlsdrHandler::set_iqDump	() {
 	if (iqDumper == nullptr) {
 	   if (setup_iqDump ()) {

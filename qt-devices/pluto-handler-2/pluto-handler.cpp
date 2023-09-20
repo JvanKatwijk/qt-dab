@@ -191,7 +191,6 @@ int	ret;
 
 	plutoHandler::plutoHandler  (QSettings *s,
 	                             QString &recorderVersion):
-	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -395,23 +394,6 @@ int	ret;
 }
 //
 
-void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
-int	ret;
-struct iio_channel *lo_channel;
-
-	rx_cfg. lo_hz = newFrequency;
-	ret	= get_lo_chan (ctx, RX, &lo_channel);
-	ret	= iio_channel_attr_write_longlong (lo_channel,
-	                                           "frequency",
-	                                           rx_cfg. lo_hz);
-	if (ret < 0) {
-	   fprintf (stderr, "cannot set local oscillator frequency\n");
-	}
-	if (debugFlag)
-	   fprintf (stderr, "frequency set to %d\n",
-	                                 (int)(rx_cfg. lo_hz));
-}
-
 int32_t	plutoHandler::getVFOFrequency () {
 	return rx_cfg. lo_hz;
 }
@@ -565,14 +547,13 @@ void	plutoHandler::stopReader() {
 void	plutoHandler::run	() {
 char	*p_end, *p_dat;
 int	p_inc;
-int	nbytes_rx;
-std::complex<float> localBuf [DAB_RATE / DIVIDER];
+Complex localBuf [DAB_RATE / DIVIDER];
 std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 
 	state -> setText ("running");
 	running. store (true);
 	while (running. load ()) {
-	   nbytes_rx	= iio_buffer_refill	(rxbuf);
+	   (void) iio_buffer_refill	(rxbuf);
 	   p_inc	= iio_buffer_step	(rxbuf);
 	   p_end	= (char *) iio_buffer_end  (rxbuf);
 
@@ -582,7 +563,7 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
 	      std::complex<int16_t>dumpS = std::complex<int16_t> (i_p, q_p);
 	      dumpBuf [convIndex] = dumpS;
-	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
+	      std::complex<float>sample = Complex (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONV_SIZE) {
@@ -604,7 +585,7 @@ std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 	}
 }
 
-int32_t	plutoHandler::getSamples (std::complex<float> *V, int32_t size) { 
+int32_t	plutoHandler::getSamples (Complex *V, int32_t size) { 
 	if (!isRunning ())
 	   return 0;
 	return _I_Buffer. getDataFromBuffer (V, size);
@@ -639,18 +620,6 @@ int16_t	plutoHandler::bitDepth () {
 
 QString	plutoHandler::deviceName	() {
 	return "ADALM PLUTO";
-}
-
-void	plutoHandler::show	() {
-	myFrame. show	();
-}
-
-void	plutoHandler::hide	() {
-	myFrame. hide	();
-}
-
-bool	plutoHandler::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 void	plutoHandler::toggle_debugButton	() {
@@ -811,7 +780,7 @@ bool	plutoHandler::loadFunctions	() {
 	            (pfn_iio_context_get_name)
 	                    pHandle -> resolve ("iio_context_get_name");
 	if (iio_context_get_name == nullptr) {
-	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
+//	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
 	   return false;
 	}
 

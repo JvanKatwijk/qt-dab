@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__BANDHANDLER__
-#define	__BANDHANDLER__
+#pragma once
+
 #include	<cstdint>
 #include	<QComboBox>
 #include	<QObject>
@@ -70,5 +70,4 @@ private:
 	void			file_skipList		(const QString &);
 	void			updateEntry		(const QString &);
 };
-#endif
 

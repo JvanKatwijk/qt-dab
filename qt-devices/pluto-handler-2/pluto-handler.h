@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PLUTO_HANDLER__
-#define	__PLUTO_HANDLER__
+#pragma once
 
 #include	<QtNetwork>
 #include        <QMessageBox>
@@ -129,25 +128,19 @@ Q_OBJECT
 public:
 			plutoHandler		(QSettings *, QString &);
             		~plutoHandler		();
-	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *,
-	                                                          int32_t);
+	int32_t		getSamples		(Complex *, int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
 private:
 	bool			loadFunctions	();
 	QLibrary		*pHandle;
-	QFrame			myFrame;
-	RingBuffer<std::complex<float>>	_I_Buffer;
+	RingBuffer<Complex>	_I_Buffer;
 	QSettings		*plutoSettings;
 	QString			recorderVersion;
 	FILE			*xmlDumper;
@@ -170,7 +163,7 @@ private:
 	struct	iio_buffer	*rxbuf;
 	struct stream_cfg	rx_cfg;
 	bool			connected;
-	std::complex<float>	convBuffer	[CONV_SIZE + 1];
+	Complex	convBuffer	[CONV_SIZE + 1];
 	int			convIndex;
 	int16_t			mapTable_int	[DAB_RATE / DIVIDER];
 	float			mapTable_float	[DAB_RATE / DIVIDER];
@@ -272,5 +265,4 @@ private slots:
 	void		set_filter		();
 	void		set_xmlDump		();
 };
-#endif
 

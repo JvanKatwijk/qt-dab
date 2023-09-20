@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB decoder
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__COORDINATES_H
-#define	__COORDINATES_H
+#pragma once
+
 #include	<QDialog>
 #include	<QLabel>
 #include	<QLineEdit>
@@ -48,7 +48,5 @@ private slots:
 	void		set_longitude	();
 	void		handle_acceptButton () ;
 };
-
-#endif
 
 

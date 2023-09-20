@@ -25,6 +25,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	<QLabel>
+#include	<QPoint>
 #include	<QFileDialog>
 #include	"sdrplay-handler-v3.h"
 #include	"sdrplay-commands.h"
@@ -75,8 +76,7 @@ std::string errorMessage (int errorCode) {
 
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
 	                                       QString &recorderVersion):
-	                                          _I_Buffer (4 * 1024 * 1024),
-	                                          myFrame (nullptr) {
+	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
@@ -987,17 +987,4 @@ bool	sdrplayHandler_v3::loadFunctions () {
 
 	return true;
 }
-
-void	sdrplayHandler_v3::show		() {
-	myFrame. show ();
-}
-
-void	sdrplayHandler_v3::hide		() {
-	myFrame. hide ();
-}
-
-bool	sdrplayHandler_v3::isHidden	() {
-	return myFrame. isHidden ();
-}
-
 

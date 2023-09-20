@@ -24,8 +24,7 @@
  *	want the interface with different devices (including  filehandling)
  *	to be transparent
  */
-#ifndef	__DEVICE_HANDLER__
-#define	__DEVICE_HANDLER__
+#pragma once
 
 #include	<cstdint>
 #include	"dab-constants.h"
@@ -41,25 +40,23 @@ public:
 virtual			~deviceHandler	();
 virtual		bool	restartReader	(int32_t freq);
 virtual		void	stopReader	();
-virtual		void	setVFOFrequency	(int32_t);
 virtual		int32_t	getVFOFrequency() {return 0;}
-virtual		int32_t	getSamples	(std::complex<float> *, int32_t);
+virtual		int32_t	getSamples	(Complex *, int32_t);
 virtual		int32_t	Samples		();
 virtual		void	resetBuffer	();
 virtual		int16_t	bitDepth	() { return 10;}
-virtual		void	hide		();
-virtual		void	show		();
-virtual		bool	isHidden	();
+		bool	getVisibility	();
+		void	setVisibility	(bool);
 virtual		QString deviceName	();
 virtual		bool	isFileInput	();
-virtual		QPoint	get_coords	();
-virtual		void	moveTo		(QPoint);
+//		QPoint	get_coords	();
+//		void	moveTo		(QPoint);
 //
 protected:
+		QFrame	myFrame;
 		int32_t	lastFrequency;
 	        int32_t	vfoOffset;
 	        int	theGain;
 		int32_t	coarseOffset;
 };
-#endif
 

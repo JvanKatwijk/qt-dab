@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__FREQ_INTERLEAVER__
-#define	__FREQ_INTERLEAVER__
+#pragma once
+
 #include	<cstdint>
 #include	<vector>
 #include	"dab-constants.h"
@@ -46,5 +46,4 @@ private:
 	std::vector<int16_t> permTable;
 };
 
-#endif
 

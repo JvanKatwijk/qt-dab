@@ -26,8 +26,7 @@
  *
  */
 
-#ifndef __RTLSDR_HANDLER__
-#define	__RTLSDR_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include	<QSettings>
@@ -62,16 +61,12 @@ public:
 	int16_t		maxGain		();
 	int16_t		bitDepth	();
 	QString		deviceName	();
-	void		show		();
-	void		hide		();
-	bool		isHidden	();
 
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	struct rtlsdr_dev	*theDevice;
 	std::atomic<bool>	isActive;
 private:
-	QFrame		myFrame;
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
@@ -109,5 +104,4 @@ private slots:
 	void		set_filter		(int);
 	void		set_biasControl		(int);
 };
-#endif
 

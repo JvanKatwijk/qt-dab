@@ -1,21 +1,21 @@
 qt-dab-s4/.qmake.stash
-qt-dab-s5/.qmake.stash
 qt-dab-s4/linux-bin
 qt-dab-s4/build
 qt-dab-s4/Makefile
 qt-dab-s4/Output
 qt-dab-s5/linux-bin
+qt-dab-s5/.qmake.stash
 qt-dab-s5/build
 qt-dab-s5/Makefile
 qt-dab-s5/Output
-dab-mini/linux-bin
-dab-mini/Output
-dab-mini/build
-dab-mini/Makefile
-dab-2/linux-bin
-dab-2/Output
-dab-2/build
-dab-2/Makefile
+obsolete/
+qt-dab-s6/linux-bin
+qt-dab-s6/.qmake.stash
+qt-dab-s6/build
+qt-dab-s6/Makefile
+qt-dab-s6/Output
+
+
 
 
 

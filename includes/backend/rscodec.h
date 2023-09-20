@@ -25,8 +25,7 @@
 //	In the SDR-J DAB+ software, we use a - slighty altered -
 //	version of the dabp_rscodec as found in GnuRadio.
 //	For the Galois fields, we use a different implementation
-#ifndef	RSCODEC
-#define	RSCODEC
+#pragma once
 
 #include	<cstdint>
 #include	<cstdint>
@@ -106,6 +105,4 @@ private:
 	
 	void create_polynomials (int start_j); // initialize the generator polynomial g
 };
-
-#endif		// DABP_RSCODE
 

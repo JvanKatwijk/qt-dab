@@ -28,8 +28,7 @@
 ** $Id: neaacdec.h,v 1.13 2009/01/26 23:51:15 menno Exp $
 **/
 
-#ifndef __NEAACDEC_H__
-#define __NEAACDEC_H__
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -262,4 +261,3 @@ char NEAACDECAPI NeAACDecAudioSpecificConfig(unsigned char *pBuffer,
 }
 #endif /* __cplusplus */
 
-#endif

@@ -38,7 +38,6 @@
 #include	<QTimer>
 #include	<sndfile.h>
 #include	"ui_dabradio-4.h"
-#include	"dab-processor.h"
 #include	"ringbuffer.h"
 #include        "band-handler.h"
 #include	"process-params.h"
@@ -67,6 +66,7 @@
 #include	"http-handler.h"
 
 class	QSettings;
+class	ofdmHandler;
 class	deviceHandler;
 class	audioBase;
 class	common_fft;
@@ -182,7 +182,7 @@ private:
 	dabStreamer		*streamerOut;
 #endif
 //	textMapper		the_textMapper;
-	dabProcessor		*my_dabProcessor;
+	ofdmHandler		*my_ofdmHandler;
 	audioBase		*soundOut;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;

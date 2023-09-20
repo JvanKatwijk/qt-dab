@@ -23,8 +23,7 @@
  *	MOT handling is a crime, here we have a single class responsible
  *	for handling a MOT directory
  */
-#ifndef	__MOT_DIRECTORY__
-#define	__MOT_DIRECTORY__
+#pragma once
 
 #include	"mot-object.h"
 #include	<QString>
@@ -66,6 +65,4 @@ private:
 	} motComponentType;
 	std::vector<motComponentType>	motComponents;
 };
-
-#endif
 

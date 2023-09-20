@@ -43,10 +43,11 @@
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
-	                                 RingBuffer<std::complex<float>> *iqBuffer) :
+	                                 RingBuffer<Complex> *iqBuffer) :
 	                                    params (dabMode),
 	                                    myMapper (dabMode),
 	                                    fft (params. get_T_u (), false) {
+	(void)bitDepth;
 	this	-> myRadioInterface	= mr;
 	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
@@ -75,14 +76,14 @@ void	ofdmDecoder::reset () {
 /**
   */
 void	ofdmDecoder::processBlock_0 (
-	                std::vector <std::complex<float> > buffer) {
+	                std::vector <Complex> buffer) {
 	fft. fft (buffer);
 /**
   *	we are now in the frequency domain, and we keep the carriers
   *	as coming from the FFT as phase reference.
   */
 	memcpy (phaseReference. data (), buffer. data (),
-	                   T_u * sizeof (std::complex<float>));
+	                   T_u * sizeof (Complex));
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -94,8 +95,8 @@ float square (float v) {
 	return v * v;
 }
 
-float	ofdmDecoder::computeQuality (std::complex<float> *v) {
-std::complex<float> XX  [carriers];
+float	ofdmDecoder::computeQuality (Complex *v) {
+Complex XX  [carriers];
 float	nominator	= 0;
 //float	aa	= 0;
 
@@ -107,11 +108,10 @@ float	nominator	= 0;
 //	std deviation of the phases rather than the computation
 //	from the Modulation Error Ratio as specified in Tr 101 290
 //
-	std::complex<float> middle = std::complex<float> (0, 0);
+	Complex middle = Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
 	   std::complex<float> ss = v [T_u / 2 - carriers / 2 + i];
-	   XX [i] = std::complex<float> (abs (real (ss)),
-	                                         abs (imag (ss)));
+	   XX [i] = Complex (abs (real (ss)), abs (imag (ss)));
 	   middle += XX [i];
 	}
 	middle	= conj (middle);
@@ -119,7 +119,6 @@ float	nominator	= 0;
 	   float x1 = arg (XX [i] * middle);
 	   nominator += x1 * x1;
 	}
-//	fprintf (stderr, "%f \n", arg (middle * std::complex<float> (0, 1))  / (2 * M_PI) * 360);
 	return sqrt (nominator / carriers) / (M_PI / 2) * 10;
 }
 /**
@@ -130,11 +129,11 @@ float	nominator	= 0;
   */
 
 static	int	cnt	= 0;
-void	ofdmDecoder::decode (std::vector <std::complex<float>> &buffer,
+void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno, std::vector<int16_t> &ibits) {
 int16_t	i;
-std::complex<float> conjVector [T_u];
-std::complex<float> fft_buffer [T_u];
+Complex conjVector [T_u];
+Complex fft_buffer [T_u];
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
@@ -163,7 +162,7 @@ std::complex<float> fft_buffer [T_u];
   *	The carrier of a block is the reference for the carrier
   *	on the same position in the next block
   */
-	   std::complex<float>	r1 = fft_buffer [index] *
+	   Complex	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
 	   conjVector [index] = r1;
 	   float ab1	= abs (r1);
@@ -191,7 +190,7 @@ std::complex<float> fft_buffer [T_u];
 	}
 
 	memcpy (phaseReference. data(), fft_buffer,
-	                            T_u * sizeof (std::complex<float>));
+	                            T_u * sizeof (Complex));
 }
 
 //
@@ -203,22 +202,21 @@ std::complex<float> fft_buffer [T_u];
 //	so, with that in mind we experiment with formula 5.39
 //	and 5.40 from "OFDM Baseband Receiver Design for Wireless
 //	Communications (Chiueh and Tsai)"
-float	ofdmDecoder::compute_timeOffset (std::complex<float> *r,
-	                                      std::complex<float> *v) {
-std::complex<float> leftTerm;
-std::complex<float> rightTerm;
-std::complex<float> sum	= std::complex<float> (0, 0);
+float	ofdmDecoder::compute_timeOffset (Complex *r, Complex *v) {
+Complex leftTerm;
+Complex rightTerm;
+Complex sum	= Complex (0, 0);
 
 	for (int i = -carriers / 2; i < carriers / 2; i += 6) {
 	   int index_1 = i < 0 ? i + T_u : i;
 	   int index_2 = (i + 1) < 0 ? (i + 1) + T_u : (i + 1);
-	   std::complex<float> s = r [index_1] * conj (v [index_2]);
-	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
-	   leftTerm	= s * conj (std::complex<float> (abs (s) / sqrt (2),
+	   Complex s = r [index_1] * conj (v [index_2]);
+	   s = Complex (abs (real (s)), abs (imag (s)));
+	   leftTerm	= s * conj (Complex (abs (s) / sqrt (2),
 	                                                 abs (s) / sqrt (2)));
 	   s = r [index_2] * conj (v [index_2]);
-	   s = std::complex<float> (abs (real (s)), abs (imag (s)));
-	   rightTerm	= s * conj (std::complex<float> (abs (s) / sqrt (2),
+	   s = Complex (abs (real (s)), abs (imag (s)));
+	   rightTerm	= s * conj (Complex (abs (s) / sqrt (2),
 	                                                 abs (s) / sqrt (2)));
 	   sum += conj (leftTerm) * rightTerm;
 	}
@@ -226,35 +224,35 @@ std::complex<float> sum	= std::complex<float> (0, 0);
 	return arg (sum);
 }
 
-float	ofdmDecoder::compute_frequencyOffset (std::complex<float> *r,
-	                                      std::complex<float> *c) {
+float	ofdmDecoder::compute_frequencyOffset (Complex *r,
+	                                      Complex *c) {
 
-std::complex<float> theta = std::complex<float> (0, 0);
+Complex theta = Complex (0, 0);
 
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? i + T_u : i;
-	   std::complex<float> val = r [index] * conj (c [index]);
-	   val		= std::complex<float> (abs (real (val)),
+	   Complex val = r [index] * conj (c [index]);
+	   val		= Complex (abs (real (val)),
 	                                       abs (imag (val)));
-	   theta	+= val * std::complex<float> (1, -1);
+	   theta	+= val * Complex (1, -1);
 	}
 
 	return arg (theta) / (2 * M_PI) * 2048000 / T_u;
 }
 
-float	ofdmDecoder::compute_clockOffset (std::complex<float> *r,
-	                                  std::complex<float> *v) {
+float	ofdmDecoder::compute_clockOffset (Complex *r,
+	                                  Complex *v) {
 float	offsa	= 0;
 int	offsb	= 0;
 
 	for (int i = - carriers / 2; i < carriers / 2; i += 6) {
 	   int index = i < 0 ? (i + T_u) : i;
 	   int index_2 = i + carriers / 2;
-	   std::complex<float> a1 =
-	              std::complex<float> (abs (real (r [index])),
+	   Complex a1 =
+	              Complex (abs (real (r [index])),
 	                                   abs (imag (r [index])));
-	   std::complex<float> a2 =
-	              std::complex<float> (abs (real (v [index])),
+	   Complex a2 =
+	              Complex (abs (real (v [index])),
 	                                   abs (imag (v [index])));
 	   float s = abs (arg (a1 * conj (a2)));
 	   offsa += index * s;

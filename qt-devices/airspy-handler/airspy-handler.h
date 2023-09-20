@@ -14,8 +14,7 @@
  *	jan van Katwijk
  *	Lazy Chair Computing
  */
-#ifndef __AIRSPY_HANDLER__
-#define	__AIRSPY_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include	<QSettings>
@@ -92,25 +91,19 @@ Q_OBJECT
 public:
 			airspyHandler		(QSettings *, QString);
 			~airspyHandler		();
-	void		setVFOFrequency		(int32_t nf);
 	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *v,
-	                                                 int32_t size);
+	int32_t		getSamples		(Complex *v, int32_t size);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 	int		getBufferSpace		();
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
 	int16_t		currentTab;
 private:
-	QFrame		myFrame;
-	RingBuffer<std::complex<float>> _I_Buffer;
+	RingBuffer<Complex> _I_Buffer;
 	QString		recorderVersion;
 	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
@@ -182,7 +175,7 @@ const	char*		board_id_name();
 	int32_t		selectedRate;
 	int16_t		convBufferSize;
 	int16_t		convIndex;
-	std::vector <complex<float> >	convBuffer;
+	std::vector <Complex >	convBuffer;
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;
@@ -197,4 +190,3 @@ const	char *		getSerial();
 	int		open();
 };
 
-#endif

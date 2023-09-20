@@ -1,6 +1,5 @@
 #
-#ifndef	__PROCESS_PARAMS__
-#define __PROCESS_PARAMS__
+#pragma once
 
 #include	<stdint.h>
 #include	<complex>
@@ -24,5 +23,4 @@ public:
 	RingBuffer<uint8_t> *frameBuffer;
 };
 
-#endif
 

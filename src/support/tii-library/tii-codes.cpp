@@ -251,8 +251,8 @@ int	count = 0;
 char	buffer [1024];
 std::vector<QString> columnVector;
 
-	this	-> shift	= fgetc (f);
-	while (eread  (buffer, 1024, f) != nullptr) {
+	uint8_t shift	= fgetc (f);
+	while (eread  (buffer, 1024, f, shift) != nullptr) {
 	   cacheElement ed;
 	   if (feof (f))
 	      break;
@@ -301,7 +301,7 @@ QString element;
 	return elementCount;
 }
 
-char    *tiiHandler::eread (char * buffer, int amount, FILE *f) {
+char    *tiiHandler::eread (char * buffer, int amount, FILE *f, uint8_t shift) {
 char    *bufferP;
 	if (fgets (buffer, amount, f) == nullptr)
 	   return nullptr;

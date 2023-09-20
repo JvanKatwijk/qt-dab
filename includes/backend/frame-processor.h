@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -20,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__FRAME_PROCESSOR__
-#define	__FRAME_PROCESSOR__
+#pragma once
+
 #include	<vector>
 #include	<cstdint>
 #include	<cstdio>
@@ -38,5 +39,3 @@ virtual	void	addtoFrame	(std::vector<uint8_t> ) {
 	fprintf (stderr, "in frameprocessor\n");
 }
 };
-#endif
-

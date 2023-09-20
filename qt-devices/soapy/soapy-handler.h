@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SOAPY_HANDLER__
-#define	__SOAPY_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include	<QFrame>
@@ -38,27 +37,23 @@
 #include	"ui_soapy-widget.h"
 #include	"soapy-worker.h"
 
-class	soapyHandler: public QObject, public deviceHandler, public Ui_soapyWidget {
+class	soapyHandler: public QObject,
+	              public deviceHandler, public Ui_soapyWidget {
 Q_OBJECT
 public:
 			soapyHandler		(QSettings *);
-			~soapyHandler		(void);
-	void		setVFOFrequency		(int32_t);
-	int32_t		getVFOFrequency		(void);
-	int32_t		defaultFrequency	(void);
+			~soapyHandler		();
+	int32_t		getVFOFrequency		();
+	int32_t		defaultFrequency	();
 
 	bool		restartReader		(int32_t);
-	void		stopReader		(void);
+	void		stopReader		();
 	int32_t		getSamples		(std::complex<float> *,
 	                                                          int32_t);
-	int32_t		Samples			(void);
-	void		resetBuffer		(void);
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
-	int16_t		bitDepth		(void);
+	int32_t		Samples			();
+	void		resetBuffer		();
+	int16_t		bitDepth		();
 private:
-	QFrame			myFrame;
 	SoapySDR::Device	*device;
 	SoapySDR::Stream	*stream;
 	QSettings		*soapySettings;
@@ -66,11 +61,10 @@ private:
 	std::vector<std::string> gains;
 	soapyWorker		*worker;
 private slots:
-	void		createDevice		(void);
+	void		createDevice		();
 	void		handle_spinBox_1	(int);
 	void		handle_spinBox_2	(int);
 	void		set_agcControl		(int);
 	void		handleAntenna		(const QString &);
 };
-#endif
 

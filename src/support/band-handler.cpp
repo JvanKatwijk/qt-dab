@@ -333,6 +333,7 @@ int	hulp	= index;
 
 int	bandHandler::lastOf	(dabFrequencies *b) {
 int	index;
+	(void)b;
 	for (index = 0; selectedBand [index]. fKHz != 0; index ++);
 	return index - 1;
 }

@@ -39,7 +39,6 @@
 //
 //
 	rawFiles::rawFiles (QString f):
-	   myFrame (nullptr),
 	   _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	fileName	= f;
 	setupUi	(&myFrame);
@@ -113,18 +112,6 @@ int32_t	rawFiles::Samples() {
 void	rawFiles::setProgress (int progress, float timelength) {
 	fileProgress      -> setValue (progress);
 	currentTime       -> display (timelength);
-}
-
-void	rawFiles::show		() {
-	myFrame. show ();
-}
-
-void	rawFiles::hide		() {
-	myFrame. hide ();
-}
-
-bool	rawFiles::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 bool	rawFiles::isFileInput	() {

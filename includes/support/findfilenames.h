@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__FIND_FILENAMES_H
-#define	__FIND_FILENAMES_H
+#pragma once
 //
 //	just a convenience class to pack a number of functions
 //	dealing with getting a filename
@@ -54,4 +53,3 @@ const	QString	findskipFile_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
 };
 
-#endif

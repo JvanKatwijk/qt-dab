@@ -4,8 +4,7 @@
 //	a Java discussion on the net
 //	http://www.java-gaming.org/index.php?topic=14647.0
 
-#ifndef		__COMP_ATAN
-#define		__COMP_ATAN
+#pragma once
 
 #include	<math.h>
 #include	<stdio.h>
@@ -31,5 +30,3 @@ private:
 	float	*ATAN2_TABLE_NNX;
 	float	Stretch;
 };
-
-#endif

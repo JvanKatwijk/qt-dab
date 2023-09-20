@@ -37,7 +37,6 @@ const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
 	airspyHandler::airspyHandler (QSettings *s,
 	                              QString recorderVersion):
-	                                 myFrame (nullptr),	
                                          _I_Buffer (4 * 1024 * 1024) {
 int	result, i;
 int	distance	= 1000000;
@@ -236,17 +235,6 @@ uint32_t samplerateCount;
 	   delete theFilter;
 	my_airspy_exit();
 	releaseLibrary ();
-err:;
-}
-
-void	airspyHandler::setVFOFrequency (int32_t nf) {
-int result = my_airspy_set_freq (device, nf);
-
-	vfoFrequency	= nf;
-	if (result != AIRSPY_SUCCESS) {
-	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
-	            my_airspy_error_name((airspy_error)result), result);
-	}
 }
 
 int32_t	airspyHandler::getVFOFrequency() {
@@ -265,7 +253,7 @@ void	airspyHandler::set_filter	(int c) {
 
 bool	airspyHandler::restartReader	(int32_t freq) {
 int	result;
-int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
+//int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 
 	if (running. load())
 	   return true;
@@ -288,7 +276,7 @@ int32_t	bufSize	= EXTIO_NS * EXTIO_BASE_TYPE_SIZE * 2;
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
 	}
-	_I_Buffer. FlushRingBuffer();
+	_I_Buffer. FlushRingBuffer ();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
 	if (result != AIRSPY_SUCCESS) {
@@ -359,7 +347,7 @@ airspyHandler *p;
 int 	airspyHandler::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-std::complex<float> temp [2048];
+Complex temp [2048];
 int32_t  i, j;
 
 	if (dumping. load ())
@@ -375,7 +363,7 @@ int32_t  i, j;
 	   }
 	   for (i = 0; i < nSamples; i ++) {
 	      convBuffer [convIndex ++] = theFilter -> Pass (
-	                                     std::complex<float> (
+	                                     Complex (
 	                                        sbuf [2 * i] / (float)2048,
 	                                        sbuf [2 * i + 1] / (float)2048)
 	                                     );
@@ -398,7 +386,7 @@ int32_t  i, j;
 	}
 	else
 	for (i = 0; i < nSamples; i ++) {
-	   convBuffer [convIndex ++] = std::complex<float> (
+	   convBuffer [convIndex ++] = Complex (
 	                                     sbuf [2 * i] / (float)2048,
 	                                     sbuf [2 * i + 1] / (float)2048);
 	   if (convIndex > convBufferSize) {
@@ -460,8 +448,7 @@ int16_t	airspyHandler::bitDepth		() {
 	return 13;
 }
 
-int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
-
+int32_t	airspyHandler::getSamples (Complex *v, int32_t size) {
 	return _I_Buffer. getDataFromBuffer (v, size);
 }
 
@@ -734,18 +721,6 @@ void	airspyHandler::close_xmlDump () {
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
 }
-
-void	airspyHandler::show	() {
-	myFrame. show ();
-}
-
-void	airspyHandler::hide	() {
-	myFrame. hide	();
-}
-
-bool	airspyHandler::isHidden	() {
-	return myFrame. isHidden ();
-}
 //
 //	gain settings are maintained on a per-channel and per tab base,
 //	Values are recorded on both switching tabs and changing channels
@@ -785,18 +760,19 @@ void	airspyHandler::restore_gainSliders	(int freq, int tab) {
 int	lna	= 0;
 int	mixer	= 0;
 int	bias	= 0;
-int	newTab	= 0;
 QString key	= QString::number (freq) + "-" + QString::number (tab);
 
 	airspySettings -> beginGroup ("airspySettings");
 	QString gainValues =
 	       airspySettings -> value (key, ""). toString ();
 	airspySettings -> endGroup ();
-	if (gainValues == "") // we create default values
-	   if ((tab == 0) || (tab == 1)) 
+	if (gainValues == "") { // we create default values
+	   if ((tab == 0) || (tab == 1)) {
 	      gainValues = "10:0:0:0";
+	   }
 	   else
 	      gainValues = "10:10:10:0:0:0";	
+	}
 	QStringList list = gainValues. split (":");
 	switch (tab) {
 	   case 0:

@@ -26,6 +26,7 @@
 	tdc_dataHandler::tdc_dataHandler (RadioInterface *mr,
 	                                  RingBuffer<uint8_t> *dataBuffer,
 	                                  int16_t appType) {
+	(void)appType;
 	myRadioInterface	= mr;
 	this	-> dataBuffer	= dataBuffer;
 //	for the moment we assume appType 4
@@ -182,7 +183,7 @@ int16_t	i;
 int16_t	length	= getBits (data, offset + 8, 16);
 int16_t	size	= length < 13 ? length : 13;
 uint16_t	crc;
-
+	(void)maxL;
 	if (length < 0)
 	   return false;		// assumed garbage
 	crc	= getBits (data, offset + 24, 16); 	// the crc

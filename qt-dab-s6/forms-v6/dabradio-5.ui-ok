@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>dabradio</class>
+ <widget class="QWidget" name="dabradio">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>542</width>
+    <height>439</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="windowTitle">
+   <string>Qt-DAB-5.1</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_3">
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QWidget" name="leftPane" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>3</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="smallQListView" name="ensembleDisplay">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+            <horstretch>2</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="font">
+           <font>
+            <family>DejaVu Sans</family>
+            <pointsize>10</pointsize>
+           </font>
+          </property>
+          <property name="toolTip">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting a service is by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;left &lt;/span&gt;mouse button on the name of the service.&lt;/p&gt;&lt;p&gt;Clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;right mouse button on the name of the selected service &lt;/span&gt;in this list will add the service to the presets.&lt;/p&gt;&lt;p&gt;Clicking with the right mouse button on the name of any other of the listed (audio)services will start a background process, with which the AAC frames are stored onto a file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <item>
+           <widget class="presetComboBox" name="presetSelector">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Presets are short cuts to services - possibly in ensembles in different channels - that are obtained by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;right &lt;/span&gt;mouse button on the name of the service &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;in the list of services when selected&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Removing a name from the presets is by selecting the service in this combobox and touching the right hand mouse button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Presets</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="smallPushButton" name="prevServiceButton">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body&gt;
+&lt;p&gt;Select the previous service on the list of services&lt;br /&gt;(the previous one of the first element is the last element of the list).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="smallPushButton" name="nextServiceButton">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head /&gt; &lt;body&gt;&lt;p&gt;Select the next service on the list of services &lt;br /&gt;(the next of the last element is the first element).&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="smallComboBox" name="channelSelector">
+          <property name="toolTip">
+           <string>Channel selector.</string>
+          </property>
+          <item>
+           <property name="text">
+            <string>channels</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="smallPushButton" name="prevChannelButton">
+            <property name="toolTip">
+             <string>Select the previous channel.</string>
+            </property>
+            <property name="text">
+             <string>-</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="smallPushButton" name="nextChannelButton">
+            <property name="toolTip">
+             <string>Select the next channel of the list maintained in the channel selector.</string>
+            </property>
+            <property name="text">
+             <string>+</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="newPushButton" name="historyButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The (name:channel) of each service found is stored in the history list. Selecting a service from this list is possible (but only makes sense if the (name:channel) is in reach of the decoder).&lt;/p&gt;&lt;p&gt;Clearing the list is by touching the right hand mouse click&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string>history</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <item>
+        <widget class="QLCDNumber" name="stillMuting"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="localTimeDisplay">
+         <property name="text">
+          <string>local</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="runtimeDisplay">
+         <property name="text">
+          <string>runtime</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="copyrightLabel">
+         <property name="text">
+          <string>©</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="muteButton">
+         <property name="text">
+          <string>mute</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLabel" name="ensembleId">
+         <property name="text">
+          <string>ensemble</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="transmitter_country">
+         <property name="text">
+          <string>country</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="transmitter_coordinates">
+         <property name="text">
+          <string>TII</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="serviceLabel">
+       <property name="text">
+        <string>service</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="pictureLabel">
+       <property name="text">
+        <string>No Slide</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="dynamicLabel">
+       <property name="font">
+        <font>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <italic>true</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
+       <item>
+        <widget class="smallPushButton" name="configButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>controls</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="httpButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>http</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="scanButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop a scan. The scanMode can be selected in the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>scan</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="detailButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide a widget showing details of the currently selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>details</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QLabel" name="distanceLabel">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header>smallpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallComboBox</class>
+   <extends>QComboBox</extends>
+   <header>smallcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>presetComboBox</class>
+   <extends>QComboBox</extends>
+   <header>presetcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallQListView</class>
+   <extends>QListView</extends>
+   <header>smallqlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>newPushButton</class>
+   <extends>QPushButton</extends>
+   <header location="global">newpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

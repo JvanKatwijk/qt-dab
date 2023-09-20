@@ -27,8 +27,7 @@
  *
 \******************************************************************************/
 
-#ifndef _EPGDEC_H
-#define _EPGDEC_H
+#pragma once
 #include	<cstdint>
 #include	<vector>
 #include	<qdom.h>
@@ -77,6 +76,4 @@ public:
 protected:
 	int iYear, iDay, iMonth;
 };
-
-#endif
 

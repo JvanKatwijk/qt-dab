@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__GALOIS
-#define	__GALOIS
+#pragma once
 
 #include	<cstdint>
 #include	<vector>
@@ -52,5 +51,4 @@ public:
 	uint16_t inverse_poly	(uint16_t a);
 	uint16_t inverse_power	(uint16_t a);
 };
-#endif
 

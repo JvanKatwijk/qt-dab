@@ -24,8 +24,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __HACKRF_HANDLER__
-#define	__HACKRF_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include	<QFrame>
@@ -86,26 +85,20 @@ Q_OBJECT
 public:
 			hackrfHandler		(QSettings *, QString &);
 			~hackrfHandler		();
-	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *,
-	                                                          int32_t);
+	int32_t		getSamples		(Complex *, int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
 
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int8_t>>	_I_Buffer;
 	hackrf_device	*theDevice;
 private:
-	QFrame			myFrame;
 	bool			load_hackrfFunctions	();
 	pfn_hackrf_init		hackrf_init;
 	pfn_hackrf_open		hackrf_open;
@@ -164,5 +157,4 @@ private slots:
 // Fine aggiunta
 	void			set_xmlDump	();
 };
-#endif
 

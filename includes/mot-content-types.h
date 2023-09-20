@@ -20,8 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__MOT_CONTENT_TYPE__
-#define	__MOT_CONTENT_TYPE__
+#pragma once
 
 // Content type codes, reference:
 // https://www.etsi.org/deliver/etsi_ts/101700_101799/101756/01.06.01_60/ts_101756v010601p.pdf page 20.
@@ -102,5 +101,3 @@ inline uint8_t getContentSubType(MOTContentType ct) {
 			(ct & MOTCTSubTypeMask)
 	);
 }
-
-#endif

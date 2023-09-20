@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__OFDM_DECODER__
-#define	__OFDM_DECODER__
+#pragma once
 
 #include	"dab-constants.h"
 #include	<QObject>
@@ -41,10 +40,10 @@ public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
 	                                 int16_t,
-	                                 RingBuffer<std::complex<float>> * iqBuffer = nullptr);
+	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
-	void	processBlock_0		(std::vector<std::complex<float> >);
-	void	decode			(std::vector<std::complex<float>> &,
+	void	processBlock_0		(std::vector<Complex >);
+	void	decode			(std::vector<Complex> &,
 	                                 int32_t n, std::vector<int16_t> &);
 	void	stop			();
 	void	reset			();
@@ -53,14 +52,14 @@ private:
 	dabParams	params;
 	interLeaver     myMapper;
 	fftHandler	fft;
-	RingBuffer<std::complex<float>> *iqBuffer;
-	float		computeQuality	(std::complex<float> *);
-        float		compute_timeOffset      (std::complex<float> *,
-                                                 std::complex<float> *);
-        float		compute_clockOffset     (std::complex<float> *,
-                                                 std::complex<float> *);
-        float		compute_frequencyOffset (std::complex<float> *,
-                                                 std::complex<float> *);
+	RingBuffer<Complex> *iqBuffer;
+	float		computeQuality		(Complex *);
+        float		compute_timeOffset      (Complex *,
+                                                 Complex *);
+        float		compute_clockOffset     (Complex *,
+                                                 Complex *);
+        float		compute_frequencyOffset (Complex *,
+                                                 Complex *);
 	int32_t		T_s;
 	int32_t		T_u;
 	int32_t		T_g;
@@ -76,5 +75,4 @@ signals:
 	void		showQuality	(float, float, float);
 };
 
-#endif
 

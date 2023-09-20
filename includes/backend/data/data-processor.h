@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__DATA_PROCESSOR__
-#define	__DATA_PROCESSOR__
+#pragma once
 
 #include	<vector>
 #include	"frame-processor.h"
@@ -69,5 +68,4 @@ signals:
 	void		show_mscErrors		(int);
 };
 
-#endif
 

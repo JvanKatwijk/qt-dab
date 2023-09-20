@@ -24,8 +24,8 @@
 //	Common definitions and includes for
 //	the DAB decoder
 
-#ifndef	__DAB_CONSTANTS__
-#define	__DAB_CONSTANTS__
+#pragma once
+
 #include	<QString>
 #include	<cmath>
 #include	<cstdint>
@@ -52,6 +52,12 @@ typedef	void	*HINSTANCE;
 #endif
 
 
+#ifdef	USE_DOUBLE	
+typedef	std::complex<double> Complex;
+#else
+typedef	std::complex<float> Complex;
+#endif
+
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
@@ -65,7 +71,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"5.3"
+#define	CURRENT_VERSION	"5.4"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -402,4 +408,4 @@ uint16_t	genpoly		= 0x1021;
 	return (crc ^ accumulator) == 0;
 }
 
-#endif
+//#endif

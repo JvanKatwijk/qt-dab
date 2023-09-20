@@ -33,11 +33,11 @@ int16_t res     = 1;
 }
 
 static
-std::complex<float> oscillatorTable [INPUT_RATE];
+Complex oscillatorTable [INPUT_RATE];
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig,
-	                            RingBuffer<std::complex<float>> *spectrumBuffer
+	                            RingBuffer<Complex> *spectrumBuffer
 	                           ) {
 int	i;
 	this	-> theRig	= theRig;
@@ -53,7 +53,7 @@ int	i;
 	sLevel		= 0;
 	sampleCount	= 0;
         for (i = 0; i < INPUT_RATE; i ++)
-           oscillatorTable [i] = std::complex<float>
+           oscillatorTable [i] = Complex
 	                            (cos (2.0 * M_PI * i / INPUT_RATE),
                                      sin (2.0 * M_PI * i / INPUT_RATE));
 
@@ -76,8 +76,8 @@ float	sampleReader::get_sLevel() {
 	return sLevel;
 }
 
-std::complex<float> sampleReader::getSample (int32_t phaseOffset) {
-std::complex<float> temp;
+Complex sampleReader::getSample (int32_t phaseOffset) {
+Complex temp;
 
 	corrector	= phaseOffset;
 	if (!running. load())
@@ -132,11 +132,11 @@ std::complex<float> temp;
 	return temp;
 }
 
-void	sampleReader::getSamples (std::vector<std::complex<float>>  &v,
+void	sampleReader::getSamples (std::vector<Complex>  &v,
 	                          int index,
 	                          int32_t n, int32_t phaseOffset) {
 int32_t		i;
-std::complex<float> buffer [n];
+Complex buffer [n];
 	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;

@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__PAD_HANDLER_H
-#define	__PAD_HANDLER_H
+#pragma once
 
 #include	<QObject>
 #include	<cstring>
@@ -71,4 +70,3 @@ signals:
 	void		show_motHandling		(bool);
 };
 
-#endif

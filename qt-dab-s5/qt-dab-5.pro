@@ -22,9 +22,9 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
@@ -121,13 +121,13 @@ INCLUDEPATH += . \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new \
-	      ../qt-devices/xml-filereader 
+	      ../qt-devices/xml-filereader \
 
 # Input
 HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
-	   ../dab-processor.h \
+	   ../ofdm-handler.h \
 	   ../fft/fft-handler.h \
 	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
@@ -136,7 +136,8 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/timesyncer.h \
 	   ../includes/ofdm/sample-reader.h \
 	   ../includes/ofdm/ofdm-decoder.h \
-	   ../includes/ofdm/phasereference.h \
+	   ../includes/ofdm/correlator.h \
+	   ../includes/ofdm/freqsyncer.h \
 	   ../includes/ofdm/phasetable.h \
 	   ../includes/ofdm/freq-interleaver.h \
 	   ../includes/ofdm/tii-detector.h \
@@ -254,12 +255,13 @@ SOURCES += ./main.cpp \
 	   ./support/techdata.cpp \
 	   ../fft/fft-handler.cpp \
 	   ../fft/fft-complex.cpp \
-	   ../dab-processor.cpp \
+	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
 	   ../src/ofdm/sample-reader.cpp \
 	   ../src/ofdm/ofdm-decoder.cpp \
-	   ../src/ofdm/phasereference.cpp \
+	   ../src/ofdm/correlator.cpp \
+	   ../src/ofdm/freqsyncer.cpp \
 	   ../src/ofdm/phasetable.cpp \
 	   ../src/ofdm/freq-interleaver.cpp \
 	   ../src/ofdm/tii-detector.cpp \
@@ -375,6 +377,7 @@ PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
+#CONFIG		+= estimator
 !mac {
 LIBS      	+= -ldl
 }
@@ -414,7 +417,6 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= JAN
 CONFIG		+= preCompiled
 #CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
@@ -490,7 +492,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
-#	CONFIG		+= JAN
 	CONFIG		+= preCompiled
 #	CONFIG		+= tiiLib
 #
@@ -802,13 +803,6 @@ fdk-aac	{
 	PKGCONFIG	+= fdk-aac
 }
 
-JAN	{
-	DEFINES		+= __WITH_JAN__
-	INCLUDEPATH	+= /usr/include/eigen3
-	HEADERS		+= ../includes/ofdm/channel.h 
-	SOURCES		+= ../src/ofdm/channel.cpp
-}
-
 preCompiled {
 	win32 {
 	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
@@ -849,5 +843,12 @@ fftw_fft {
 	DEFINES		+= __FFTW3__
 	PKGCONFIG	+= fftw3
 	LIBS		+= -lfftw3f
+}
+
+estimator {
+	DEFINES		+= __ESTIMATOR_
+	INCLUDES	+= /usr/include/eigen3
+	HEADERS		+= ../includes/ofdm/estimator.h
+	SOURCES		+= ../src/ofdm/estimator.cpp
 }
 

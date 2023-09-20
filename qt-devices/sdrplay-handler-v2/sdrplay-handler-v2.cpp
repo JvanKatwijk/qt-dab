@@ -25,6 +25,7 @@
 #include	<QTime>
 #include	<QDate>
 #include	<QLabel>
+#include	<QPoint>
 #include	<QFileDialog>
 #include	"sdrplay-handler-v2.h"
 #include	"sdrplayselect.h"
@@ -59,13 +60,10 @@ int	get_lnaGRdB (int hwVersion, int lnaState) {
 //	here we start
 	sdrplayHandler::sdrplayHandler  (QSettings *s,
 	                                 QString &recorderVersion):
-	                                           _I_Buffer (4 * 1024 * 1024),
-	                                           myFrame (nullptr) {
+	                                           _I_Buffer (4 * 1024 * 1024) {
 mir_sdr_ErrT	err;
 float	ver;
 mir_sdr_DeviceT devDesc [4];
-//mir_sdr_GainValuesT gainDesc;
-sdrplaySelect	*sdrplaySelector;
 
 	sdrplaySettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -283,7 +281,7 @@ int32_t	sdrplayHandler::getVFOFrequency() {
 
 void	sdrplayHandler::set_ifgainReduction	(int newGain) {
 mir_sdr_ErrT	err;
-int	GRdB		= GRdBSelector	-> value();
+//int	GRdB		= GRdBSelector	-> value();
 int	lnaState	= lnaGainSetting -> value();
 
 	if (!running. load ())
@@ -297,9 +295,9 @@ int	lnaState	= lnaGainSetting -> value();
 }
 
 void	sdrplayHandler::set_lnagainReduction (int lnaState) {
-mir_sdr_ErrT err;
+//mir_sdr_ErrT err;
 
-
+	(void)lnaState;
 	if (!running. load ())
 	   return;
 
@@ -362,8 +360,7 @@ void	myGainChangeCallback (uint32_t	GRdB,
 }
 
 void	sdrplayHandler::adjustFreq	(int offset) {
-//	vfoFrequency	+= offset;
-//	my_mir_sdr_SetRf ((double)(vfoFrequency), 1, 0);
+	(void)offset;
 }
 	
 bool	sdrplayHandler::restartReader	(int32_t freq) {
@@ -449,6 +446,7 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 }
 
 void	sdrplayHandler::voidSignal	(int s) {
+	(void)s;
 	fprintf (stderr, "signal gehad\n");
 }
 
@@ -869,19 +867,6 @@ void	sdrplayHandler::releaseLibrary	() {
 #endif
 }
 
-void	sdrplayHandler::show	() {
-	myFrame. show ();
-}
-
-void	sdrplayHandler::hide	() {
-	myFrame. hide ();
-}
-
-bool	sdrplayHandler::isHidden	() {
-	return myFrame. isHidden ();
-}
-
-
 QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	switch (err) {
 	   case mir_sdr_Success:
@@ -1071,13 +1056,5 @@ bool setting = biasT_selector -> isChecked ();
 	      my_mir_sdr_rsp1a_BiasT (setting ? 1 : 0);
 	      return;
 	}
-}
-
-QPoint	sdrplayHandler::get_coords	() {
-	return myFrame. mapToGlobal (QPoint (0, 0));
-}
-
-void	sdrplayHandler::moveTo		(QPoint p) {
-	myFrame. move (p);
 }
 

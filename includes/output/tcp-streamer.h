@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB.
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License. 
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -24,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __TCP_STREAMER__
-#define	__TCP_STREAMER__
+#pragma once
 
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
@@ -57,5 +53,3 @@ public slots:
 signals:
 	void			handleSamples		(void);
 };
-#endif
-

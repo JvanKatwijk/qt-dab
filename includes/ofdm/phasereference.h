@@ -21,8 +21,8 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__PHASEREFERENCE__
-#define	__PHASEREFERENCE__
+#pragma once
+
 #include	<QObject>
 #include	<cstdio>
 #include	<cstdint>
@@ -45,14 +45,14 @@ public:
 			phaseReference 		(RadioInterface *,
 	                                         processParams *);
 			~phaseReference		();
-	int32_t		findIndex		(std::vector<std::complex<float>>, int);
-	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
-	float		phase			(std::vector<std::complex<float>>&, int);
+	int32_t		findIndex		(std::vector<Complex>, int);
+	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
+	float		phase			(std::vector<Complex>&, int);
 #ifdef	__WITH_JAN__
-	void		estimate		(std::vector<std::complex<float>>);
+	void		estimate		(std::vector<Complex>);
 #endif
 //	This one is used in the ofdm decoder
-	std::vector<std::complex<float>> refTable;
+	std::vector<Complex> refTable;
 private:
 	dabParams	params;
 #ifdef	__WITH_JAN__
@@ -76,5 +76,4 @@ private:
 signals:
 	void		showCorrelation	(int, int, QVector<int>);
 };
-#endif
 

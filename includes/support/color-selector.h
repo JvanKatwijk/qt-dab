@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__COLOR_SELECTOR__
-#define	__COLOR_SELECTOR__
+#pragma once
 #
 #include	<QDialog>
 #include	<QLabel>
@@ -47,5 +46,4 @@ private slots:
 void	select_color	(QModelIndex);
 };
 
-#endif
 

@@ -21,9 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__FIB_DECODER__
-#define	__FIB_DECODER__
-#
+#pragma once
 //
 #include	<cstdint>
 #include	<cstdio>
@@ -208,5 +206,4 @@ signals:
 	void		nrServices		(int);
 };
 
-#endif
 

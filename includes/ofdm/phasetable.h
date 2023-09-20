@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__PHASE_TABLE__
-#define	__PHASE_TABLE__
+#pragma once
 
 #include	<cstdio>
 #include	<cstdint>
@@ -46,5 +45,4 @@ private:
 	int16_t		Mode;
 	int32_t		h_table (int32_t i, int32_t j);
 };
-#endif
 

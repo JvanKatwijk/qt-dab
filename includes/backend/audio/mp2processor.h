@@ -26,8 +26,7 @@
 //	for use in the sdr-j DAB/DAB+ receiver
 //	all rights remain where they belong
 
-#ifndef __MP2PROCESSOR__
-#define	__MP2PROCESSOR__
+#pragma once
 
 #include	<utility>
 #include	<cstdio>
@@ -98,5 +97,4 @@ signals:
 	void		newAudio		(int, int);
 	void		isStereo		(bool);
 };
-#endif
 

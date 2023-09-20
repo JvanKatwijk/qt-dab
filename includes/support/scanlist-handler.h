@@ -20,8 +20,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__SCANLIST_HANDLER__
-#define	__SCANLIST_HANDLER__
+#pragma once
 
 #include	"radio.h"
 #include	<QListView>
@@ -51,5 +50,4 @@ private:
 	QString		fileName;
 };
 
-#endif
 

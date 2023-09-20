@@ -46,14 +46,10 @@ public:
 	                                                         int32_t);
 	int32_t			Samples		();
 	bool			restartReader	(int32_t);
-	void			stopReader	(void);
+	void			stopReader	();
 	int			getVFOFrequency	();
-	void			hide		();
-	void			show		();
-	bool			isHidden	();
 	bool			isFileInput	();
 private:
-	QFrame			myFrame;
 	std::atomic<bool>	running;
 	QString			fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;

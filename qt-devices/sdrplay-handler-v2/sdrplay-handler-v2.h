@@ -21,11 +21,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SDRPLAY_HANDLER__
-#define	__SDRPLAY_HANDLER__
+#pragma once
 
 #include	<QObject>
-#include	<QPoint>
 #include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
@@ -117,18 +115,11 @@ public:
 	int16_t		bitDepth		();
 	QString		deviceName		();
 
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
-
-	QPoint		get_coords		();
-	void		moveTo			(QPoint);
 //
 //	The buffer should be visible by the callback function
 	RingBuffer<std::complex<int16_t>>	_I_Buffer;
 	float		denominator;
 private:
-	QFrame			myFrame;
 	pfn_mir_sdr_StreamInit	my_mir_sdr_StreamInit;
 	pfn_mir_sdr_Reinit	my_mir_sdr_Reinit;
 	pfn_mir_sdr_StreamUninit	my_mir_sdr_StreamUninit;
@@ -218,5 +209,4 @@ private slots:
 	void		voidSignal		(int);
 	void		biasT_selectorHandler	(int);
 };
-#endif
 

@@ -20,12 +20,11 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__RAW_FILES__
-#define	__RAW_FILES__
+#pragma once
 
+#include	<QFrame>
 #include	<QObject>
 #include	<QString>
-#include	<QFrame>
 #include	<atomic>
 #include	"dab-constants.h"
 #include	"device-handler.h"
@@ -38,23 +37,19 @@ class	QSettings;
 class	rawReader;
 /*
  */
-class	rawFiles: public QObject, public deviceHandler, public filereaderWidget {
+class	rawFiles: public QObject,
+	          public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-
 			rawFiles	(QString);
  	               ~rawFiles	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
 	uint8_t		myIdentity	();
 	int32_t		Samples		();
 	bool		restartReader	(int32_t);
-	void		stopReader	(void);
-	void		show		();
-	void		hide		();
-	bool		isHidden	();
+	void		stopReader	();
 	bool		isFileInput	();
 private:
-	QFrame		myFrame;
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	FILE		*filePointer;
@@ -63,6 +58,4 @@ private:
 public slots:
 	void		setProgress	(int, float);
 };
-
-#endif
 

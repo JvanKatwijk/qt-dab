@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__WAV_FILES__
-#define	__WAV_FILES__
+#pragma once
 
 #include	<QObject>
 #include	<QString>
@@ -35,7 +34,8 @@
 #include	"filereader-widget.h"
 #include	"wav-reader.h"
 
-class	wavFiles: public QObject, public deviceHandler, public filereaderWidget {
+class	wavFiles: public QObject,
+	          public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
 			wavFiles	(QString);
@@ -44,12 +44,8 @@ public:
 	int32_t		Samples		();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
-	void		show		();	
-	void		hide		();
-	bool		isHidden	();
 	bool		isFileInput	();
 private:
-	QFrame		myFrame;
 	QString		fileName;
 	RingBuffer<std::complex<float>>	_I_Buffer;
 	int32_t		bufferSize;
@@ -59,6 +55,4 @@ private:
 public slots:
 	void		setProgress	(int, float);
 };
-
-#endif
 

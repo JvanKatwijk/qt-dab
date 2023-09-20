@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of the Qt-DAB decoder
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__DAB_PARAMS__
-#define	__DAB_PARAMS__
+#pragma once
 
 #include	<cstdint>
 
@@ -53,5 +52,4 @@ private:
 	int16_t		CIFs;
 };
 
-#endif
 

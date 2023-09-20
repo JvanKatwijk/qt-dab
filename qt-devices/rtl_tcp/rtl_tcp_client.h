@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__RTL_TCP_CLIENT__
-#define	__RTL_TCP_CLIENT__
+#pragma once
 
 #include	<QtNetwork>
 #include	<QSettings>
@@ -40,22 +39,19 @@
 #include	"ringbuffer.h"
 #include	"ui_rtl_tcp-widget.h"
 
-class	rtl_tcp_client: public QObject, public deviceHandler, Ui_rtl_tcp_widget {
+class	rtl_tcp_client: public QObject,
+	                public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
 			rtl_tcp_client	(QSettings *);
 			~rtl_tcp_client	();
 	int32_t		getRate		();
 	int32_t		defaultFrequency();
-	void		setVFOFrequency	(int32_t);
 	int32_t		getVFOFrequency	();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
 	int32_t		Samples		();
-	void		show		();
-	void		hide		();
-	bool		isHidden	();
 	int16_t		bitDepth	();
 private slots:
 	void		sendGain	(int);
@@ -66,7 +62,6 @@ private slots:
 	void		wantConnect	();
 	void		setDisconnect	();
 private:
-	QFrame		myFrame;
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
 	void		setGainMode	(int32_t gainMode);
@@ -87,5 +82,4 @@ private:
 	FILE		*dumpfilePointer;
 };
 
-#endif
 

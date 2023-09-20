@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __SDRPLAY_HANDLER_V3__
-#define	__SDRPLAY_HANDLER_V3__
+#pragma once
 
 #include	<QThread>
 #include	<QFrame>
@@ -63,9 +62,6 @@ public:
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
-	void		show			();
-	void		hide			();
-	bool		isHidden		();
 	QString		deviceName		();
 
 	void            update_PowerOverload (
@@ -76,7 +72,6 @@ public:
 	sdrplay_api_CallbackFnsT	cbFns;
 
 private:
-	QFrame				myFrame;
 public:
 	sdrplay_api_Open_t              sdrplay_api_Open;
 	sdrplay_api_Close_t             sdrplay_api_Close;
@@ -162,5 +157,4 @@ signals:
 	void			set_apiVersion_signal	(float);
 	void			set_antennaSelect_signal	(bool);
 };
-#endif
 

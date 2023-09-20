@@ -38,8 +38,7 @@
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
 	                               QString &recorderVersion):
-	                                  _I_Buffer (4 * 1024 * 1024),
-	                                  myFrame (nullptr) {
+	                                  _I_Buffer (4 * 1024 * 1024) {
 int	res;
 	hackrfSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
@@ -216,23 +215,6 @@ int	res;
 }
 //
 
-void	hackrfHandler::setVFOFrequency	(int32_t newFrequency) {
-int	res;
-	res	= this -> hackrf_set_freq (theDevice, newFrequency);
-	if (res != HACKRF_SUCCESS) {
-	   fprintf (stderr, "Problem with hackrf_set_freq: \n");
-	   fprintf (stderr, "%s \n",
-	                 this -> hackrf_error_name (hackrf_error (res)));
-	   return;
-	}
-
-//
-//	It seems that after changing the frequency, the preamp is switched off
-	if (AmpEnableButton -> checkState() == Qt::Checked) 
-	   EnableAmpli (1);
-	vfoFrequency = newFrequency;
-}
-
 int32_t	hackrfHandler::getVFOFrequency() {
 	return vfoFrequency;
 }
@@ -393,7 +375,7 @@ int	res;
 //
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
-int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
+int32_t	hackrfHandler::getSamples (Complex *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
@@ -643,18 +625,6 @@ void	hackrfHandler::close_xmlDump () {
 	delete xmlWriter;
 	fclose (xmlDumper);
 	xmlDumper	= nullptr;
-}
-
-void	hackrfHandler::show	() {
-	myFrame. show	();
-}
-
-void	hackrfHandler::hide	() {
-	myFrame. hide	();
-}
-
-bool	hackrfHandler::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 void	hackrfHandler::record_gainSettings	(int freq) {

@@ -28,8 +28,7 @@
  *	Definition of the "configuration" as maintained during reception of
  *	a channel
  */
-#ifndef	__FIB_CONFIG__
-#define	__FIB_CONFIG__
+#pragma once
 
 class	service {
 public:
@@ -197,4 +196,3 @@ serviceComponentDescriptor      serviceComps [64];
 Cluster				clusterTable [128];
 };
 
-#endif

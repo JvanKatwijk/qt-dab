@@ -31,8 +31,7 @@
 #define	__BUFFERSIZE__	8 * 32768
 
 	wavFiles::wavFiles (QString f):
-	   myFrame (nullptr),
-	   _I_Buffer (__BUFFERSIZE__) {
+	                         _I_Buffer (__BUFFERSIZE__) {
 SF_INFO *sf_info;
 
 	fileName	= f;
@@ -115,18 +114,6 @@ int32_t	wavFiles::Samples() {
 void    wavFiles::setProgress (int progress, float timelength) {
         fileProgress      -> setValue (progress);
         currentTime       -> display (timelength);
-}
-
-void	wavFiles::show		() {
-	myFrame. show ();
-}
-
-void	wavFiles::hide		() {
-	myFrame. hide	();
-}
-
-bool	wavFiles::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 bool	wavFiles::isFileInput	() {

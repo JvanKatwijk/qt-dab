@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __PLUTO_RXTX_HANDLER__
-#define	__PLUTO_RXTX_HANDLER__
+#pragma once
 
 #include	<QObject>
 #include        <QMessageBox>
@@ -318,5 +317,4 @@ private slots:
 private:		// for the display
 
 };
-#endif
 

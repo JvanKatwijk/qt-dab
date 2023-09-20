@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__MSC_HANDLER__
-#define	__MSC_HANDLER__
+#pragma once
 
 #ifdef __MSC_THREAD__
 #include	<QThread>
@@ -102,7 +101,4 @@ private:
         std::atomic<bool>       running;
 #endif
 };
-
-#endif
-
 

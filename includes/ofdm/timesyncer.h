@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__TIMESYNCER__
-#define	__TIMESYNCER__
+#pragma once
 
 #include	"dab-constants.h"
 
@@ -41,5 +40,4 @@ private:
 	int32_t         syncBufferIndex = 0;
 const	int32_t         syncBufferSize  = 4096;
 };
-#endif
 

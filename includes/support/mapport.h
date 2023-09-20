@@ -20,8 +20,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__MAPPORT_HANDLER_H
-#define	__MAPPORT_HANDLER_H
+#pragma once
+
 #include	<QDialog>
 #include	<QLabel>
 #include	<QPushButton>
@@ -42,7 +42,4 @@ Q_OBJECT
 private slots:
 	void		handle_acceptButton 	();
 };
-
-#endif
-
 

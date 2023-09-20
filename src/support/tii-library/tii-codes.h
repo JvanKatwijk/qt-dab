@@ -19,8 +19,8 @@
  *    along with Qt-DAB if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__TII_HANDLER_H
-#define	__TII_HANDLER_H
+#pragma once
+
 #include	<stdint.h>
 #include	<QString>
 #include	<QSettings>
@@ -68,9 +68,9 @@ public:
         void    loadTable       (const QString &tf);
         bool    valid           ();
 private:
-std::vector<black> blackList;
-std::vector<cacheElement> cache;
-QString tiifileName;
+	std::vector<black> blackList;
+	std::vector<cacheElement> cache;
+	QString tiifileName;
 
 	void	*handler;
 
@@ -80,8 +80,7 @@ QString tiifileName;
         uint8_t get_subId       (const QString &);
         int     readColumns     (std::vector<QString> &, char *, int);
         void    readFile        (FILE *);
-        char    *eread          (char *, int, FILE *);
-        uint8_t shift;
+        char    *eread          (char *, int, FILE *, uint8_t);
 
 	HINSTANCE	Handle;
 	bool		loadFunctions	();
@@ -89,6 +88,5 @@ QString tiifileName;
 	close_tii_P	close_tii_L;
 	loadTable_P	loadTable_L;
 };
-#endif
 
 

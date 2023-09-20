@@ -102,7 +102,7 @@ QString	colorString;
 }
 
 	audioDisplay::~audioDisplay () {
-	delete	spectrumBuffer;
+	delete []	spectrumBuffer;
 }
 
 
@@ -163,6 +163,7 @@ void	audioDisplay::ViewSpectrum (double *X_axis,
 uint16_t	i;
 float	amp1	= amp / 100;
 
+	(void)marker;
 	amp		= amp / 50.0 * (-get_db (0));
 	plotGrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
