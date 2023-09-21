@@ -75,10 +75,10 @@ rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 	}
 
 	if (theStick -> isActive. load ()) {
-	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < len / 2)
+	   if (theStick -> _I_Buffer. GetRingBufferWriteAvailable () < (int)len / 2)
 	      fprintf (stderr, "xx? ");
 	   (void)theStick -> _I_Buffer.
-	             putDataIntoBuffer ((std::complex<uint8_t> *)buf, len / 2);
+	           putDataIntoBuffer ((std::complex<uint8_t> *)buf, (int)len / 2);
 	}
 }
 //
@@ -113,7 +113,6 @@ void	run () {
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
 	                              QString &recorderVersion):
 	                                 _I_Buffer (8 * 1024 * 1024),
-	                                 myFrame (nullptr),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
 int32_t	r;

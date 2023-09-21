@@ -171,10 +171,10 @@ protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
 	FILE			*dlTextFile;
-	RingBuffer<Complex>  spectrumBuffer;
-	RingBuffer<Complex>  iqBuffer;
-	RingBuffer<Complex>  tiiBuffer;
-	RingBuffer<Complex>  nullBuffer;
+	RingBuffer<Complex>	spectrumBuffer;
+	RingBuffer<Complex>	iqBuffer;
+	RingBuffer<Complex>	tiiBuffer;
+	RingBuffer<Complex>	nullBuffer;
 	RingBuffer<float>	snrBuffer;
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
@@ -202,6 +202,8 @@ private:
 	FILE			*logFile;
 	channelDescriptor	channel;
 	int			maxDistance;
+	void			init_configWidget	();
+	void			connect_configWidget	();
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
@@ -496,4 +498,5 @@ private slots:
 	void			handle_saveSlides		(int);
 	void			handle_skinSelector		();
 	void			loadTable			();
+	void			handle_fontSelect		();
 };

@@ -54,6 +54,7 @@
 #include	"mapport.h"
 #include	"upload.h"
 #include	"techdata.h"
+#include	"font-selector.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -310,32 +311,9 @@ uint8_t	dabBand;
 	   newDisplay. show ();
 	else
 	   newDisplay. hide ();
-//	Now we can set the checkbox as saved in the settings
-	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
-	   configWidget.  onTop -> setChecked (true);
 
-	if (dabSettings -> value ("saveLocations", 0). toInt () == 1)
-	   configWidget. transmSelector -> setChecked (true);
+	init_configWidget ();
 
-	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
-	   configWidget. epgSelector -> setChecked (true);
-
-	if (dabSettings -> value ("clearScanResult", 1). toInt () == 1)
-	   configWidget. clearScan_Selector -> setChecked (true);
-
-	if (dabSettings -> value ("saveSlides", 0). toInt () == 1)
-	   configWidget. saveSlides -> setChecked (true);
-
-	configWidget. EPGLabel	-> hide ();
-	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
-	x = dabSettings -> value ("muteTime", 2). toInt ();
-	configWidget. muteTimeSetting -> setValue (x);
-
-	x = dabSettings -> value ("switchDelay", 8). toInt ();
-	configWidget. switchDelaySetting -> setValue (x);
-
-	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
-	configWidget.  utcSelector -> setChecked (b);
 	channel. currentService. valid	= false;
 	channel. nextService. valid	= false;
 	channel. serviceCount		= -1;
@@ -365,63 +343,10 @@ uint8_t	dabBand;
 	float local_lon		=
 	             dabSettings -> value ("longitude", 0). toFloat ();
 	channel. localPos	= std::complex<float> (local_lat, local_lon);
-	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
-	         this, SLOT (loadTable ()));
-
-	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_onTop (int)));
-
-	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_epgSelector (int)));
-
-	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_transmSelector (int)));
-	connect (configWidget. skinSelector, SIGNAL (clicked ()),
-                 this, SLOT (handle_skinSelector ()));
-
-	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveSlides (int)));
-
-#ifndef	_UPLOAD_SCAN_RESULT_
-	configWidget. autoUpload_Selector -> hide ();
-#endif
-
-	connect (configWidget. clearScan_Selector,
-	                             SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_clearScan_Selector (int)));
 
 	logFile		= nullptr;
-	int scanMode	=
-	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
-	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 
-	x = dabSettings -> value ("closeDirect", 0). toInt ();
-	if (x != 0)
-	   configWidget. closeDirect -> setChecked (true);
-
-	x = dabSettings -> value ("epg2xml", 0). toInt ();
-	if (x != 0)
-	   configWidget. epg2xmlSelector -> setChecked (true);
-
-	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
-	if (x == ALPHA_BASED)
-	   configWidget. orderAlfabetical -> setChecked (true);
-	else
-	if (x == ID_BASED)
-	   configWidget. orderServiceIds -> setChecked (true);
-	else
-	   configWidget. ordersubChannelIds -> setChecked (true);
-
-	if (dabSettings -> value ("autoBrowser", 1). toInt () == 1)
-	   configWidget. autoBrowser -> setChecked (true);
-
-	if (dabSettings -> value ("transmitterTags", 1). toInt () == 1)
-	   configWidget. transmitterTags -> setChecked (true);
-	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_autoBrowser      (int)));
-	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
-	         this, SLOT (handle_transmitterTags  (int)));
-
+	connect_configWidget ();
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
 	theTechWindow 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
@@ -766,8 +691,8 @@ QString RadioInterface::footText () {
 	version			= QString (CURRENT_VERSION);
 	QString versionText = "Qt-DAB-version: " + QString(CURRENT_VERSION) + "\n";
 	versionText += "Built on " + QString(__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH) + "\n";
-	versionText += "Copyright Jan van Katwijk, mailto:J.vanKatwijk@gmail.com\n";
-	versionText += "Rights of Qt, portaudio, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
+	versionText += "Copyright Jan van Katwijk, Lazy Chair Computing (mailto:J.vanKatwijk@gmail.com)\n";
+	versionText += "Rights of Qt, portaudio, fftw, libfaad, libsamplerate and libsndfile gratefully acknowledged\n";
 	versionText += "Rights of developers of RTLSDR library, SDRplay libraries, AIRspy library and others gratefully acknowledged\n";
 	versionText += "Copyright of DevSec Studio for the skin, made available under an MIT license, is gratefully acknowledged";
 	versionText += "Rights of other contributors gratefully acknowledged";
@@ -4706,3 +4631,110 @@ void	RadioInterface::show_clockError	(int e) {
 	if (!newDisplay. isHidden ())
 	   newDisplay. show_clockErr (e);
 }
+
+void	RadioInterface::init_configWidget () {
+	if (dabSettings -> value ("onTop", 0). toInt () == 1) 
+	   configWidget.  onTop -> setChecked (true);
+
+	if (dabSettings -> value ("saveLocations", 0). toInt () == 1)
+	   configWidget. transmSelector -> setChecked (true);
+
+	if (dabSettings -> value ("epgFlag", 0). toInt () == 1)
+	   configWidget. epgSelector -> setChecked (true);
+
+	if (dabSettings -> value ("clearScanResult", 1). toInt () == 1)
+	   configWidget. clearScan_Selector -> setChecked (true);
+
+	if (dabSettings -> value ("saveSlides", 0). toInt () == 1)
+	   configWidget. saveSlides -> setChecked (true);
+
+	configWidget. EPGLabel	-> hide ();
+//	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
+	int x = dabSettings -> value ("muteTime", 2). toInt ();
+	configWidget. muteTimeSetting -> setValue (x);
+
+	x = dabSettings -> value ("switchDelay", 8). toInt ();
+	configWidget. switchDelaySetting -> setValue (x);
+
+	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
+	configWidget.  utcSelector -> setChecked (b);
+
+#ifndef	_UPLOAD_SCAN_RESULT_
+	configWidget. autoUpload_Selector -> hide ();
+#endif
+	int scanMode	=
+	           dabSettings -> value ("scanMode", SINGLE_SCAN). toInt ();
+	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
+
+	x = dabSettings -> value ("closeDirect", 0). toInt ();
+	if (x != 0)
+	   configWidget. closeDirect -> setChecked (true);
+
+	x = dabSettings -> value ("epg2xml", 0). toInt ();
+	if (x != 0)
+	   configWidget. epg2xmlSelector -> setChecked (true);
+
+	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
+	if (x == ALPHA_BASED)
+	   configWidget. orderAlfabetical -> setChecked (true);
+	else
+	if (x == ID_BASED)
+	   configWidget. orderServiceIds -> setChecked (true);
+	else
+	   configWidget. ordersubChannelIds -> setChecked (true);
+
+	if (dabSettings -> value ("autoBrowser", 1). toInt () == 1)
+	   configWidget. autoBrowser -> setChecked (true);
+
+	if (dabSettings -> value ("transmitterTags", 1). toInt () == 1)
+	   configWidget. transmitterTags -> setChecked (true);
+
+}
+
+void	RadioInterface::connect_configWidget () {
+	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_onTop (int)));
+
+	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_epgSelector (int)));
+
+	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_transmSelector (int)));
+
+	connect (configWidget. skinSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_skinSelector ()));
+
+	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveSlides (int)));
+
+	connect (configWidget. clearScan_Selector,
+	                             SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_clearScan_Selector (int)));
+
+	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_autoBrowser      (int)));
+
+	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
+	         this, SLOT (handle_transmitterTags  (int)));
+
+	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
+	         this, SLOT (loadTable ()));
+
+	connect (configWidget. fontSelectButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_fontSelect ()));
+}
+
+void	RadioInterface::handle_fontSelect () {
+fontSelector selectFont;
+QStringList fontList;
+	fontList << QString ("Times");
+	fontList << QString ("Helvetica");
+	fontList <<  QString ("Arial");
+
+	for (int i = 0; i < fontList. size (); i ++)
+	   selectFont. add (fontList. at (i));
+	int fontIndex	= selectFont. QDialog::exec ();
+	this	-> theFont	= fontList. at (fontIndex);
+	dabSettings	-> setValue ("theFont", theFont);
+}
+

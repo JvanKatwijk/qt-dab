@@ -497,6 +497,13 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
+      <widget class="QPushButton" name="fontSelectButton">
+       <property name="text">
+        <string>font</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="smallComboBox" name="scanmodeSelector">
        <property name="font">
         <font>

@@ -302,6 +302,7 @@ endif ()
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
 	     ../includes/support/skin-handler.h
+	     ../includes/support/font-selector.h
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
@@ -414,6 +415,7 @@ endif ()
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
 	     ../src/support/skin-handler.cpp
+	     ../src/support/font-selector.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp

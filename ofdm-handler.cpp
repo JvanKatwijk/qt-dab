@@ -67,14 +67,14 @@
 	this	-> tiiBuffer		= p -> tiiBuffer;
 	this	-> nullBuffer		= p -> nullBuffer;
 	this	-> snrBuffer		= p -> snrBuffer;
-	this	-> T_null		= params. get_T_null();
-	this	-> T_s			= params. get_T_s();
-	this	-> T_u			= params. get_T_u();
+	this	-> T_null		= params. get_T_null ();
+	this	-> T_s			= params. get_T_s ();
+	this	-> T_u			= params. get_T_u ();
 	this	-> T_g			= T_s - T_u;
-	this	-> T_F			= params. get_T_F();
-	this	-> nrBlocks		= params. get_L();
-	this	-> carriers		= params. get_carriers();
-	this	-> carrierDiff		= params. get_carrierDiff();
+	this	-> T_F			= params. get_T_F ();
+	this	-> nrBlocks		= params. get_L ();
+	this	-> carriers		= params. get_carriers ();
+	this	-> carrierDiff		= params. get_carrierDiff ();
 
 	this	-> tii_delay		= p -> tii_delay;
 	this	-> tii_counter		= 0;
@@ -157,21 +157,19 @@ freqSyncer	myFreqSyncer (myRadioInterface, p);
 #ifdef	__ESTIMATOR_
 estimator	myEstimator  (myRadioInterface, p);
 #endif
-//phaseSynchronizer (mr, p),
 ofdmDecoder	my_ofdmDecoder (myRadioInterface,
                                 p -> dabMode,
                                 inputDevice -> bitDepth(),
                                 p -> iqBuffer);
-int		attempts;
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
-double	cLevel		= 0;
 int	cCount		= 0;
 
 bool	inSync		= false;
 QVector<Complex> tester (T_u / 2);
+
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
 	coarseOffset		= 0;
@@ -260,7 +258,7 @@ QVector<Complex> tester (T_u / 2);
 	      }
 
 	      goodFrames ++;
-	      cLevel	= 0;
+	      double cLevel	= 0;
 	      cCount	= 0;
 	      memmove (ofdmBuffer. data (),
 	               &((ofdmBuffer. data()) [startIndex]),

@@ -185,7 +185,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/process-params.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
-#           ../includes/support/fft-handler.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
 	   ../includes/support/band-handler.h \
@@ -207,6 +206,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
+	   ../includes/support/font-selector.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -321,6 +321,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
+	   ../src/support/font-selector.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -449,7 +450,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-5.4
+#	TARGET		= qt-dab64-6.0
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -469,7 +470,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-5.4
+	TARGET		= qt-dab32-6.0
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
