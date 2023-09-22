@@ -90,7 +90,7 @@ double X_axis [512];
 double Y_values [512];
 	
 	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = i;
+	   X_axis [i] = 2 * i;
 	   Y_values [i] = abs (V [i]);
 	   if (abs (V [i]) > max)
 	      max = abs (V [i]);

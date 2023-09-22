@@ -27,6 +27,7 @@
 #include	<qwt.h>
 #include	<qwt_plot.h>
 #include	<QVector>
+#include	<QByteArray>
 #include	"fft-handler.h"
 
 #include	"ui_scopewidget.h"
@@ -64,6 +65,8 @@ public:
 	void	show_correction	(int);
 	void	show_clockErr	(int);
 	void	showFrequency	(float);
+
+	void	showTransmitters	(QByteArray &);
 
 	void	show		();
 	void	hide		();

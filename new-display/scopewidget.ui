@@ -25,7 +25,7 @@
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="spectrum">
         <attribute name="title">
@@ -138,7 +138,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_8">
+          <widget class="QLabel" name="tiiLabel">
            <property name="text">
             <string>TextLabel</string>
            </property>

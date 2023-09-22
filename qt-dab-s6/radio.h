@@ -204,6 +204,7 @@ private:
 	int			maxDistance;
 	void			init_configWidget	();
 	void			connect_configWidget	();
+	void			disconnect_configWidget	();
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;

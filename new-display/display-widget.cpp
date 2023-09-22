@@ -283,6 +283,16 @@ void	displayWidget::showFrequency (float f) {
 	frequencyDisplay	-> display (f);
 }
 
+void	displayWidget::showTransmitters	(QByteArray &tr) {
+QString textList;
+	for (int i = 0; i < tr. size () / 2; i ++) {
+	   QString trId = QString ("(") + QString::number (tr. at (2 * i)) +
+	                  " " +QString::number (tr. at (2 * i + 1)) + ") ";
+	   textList. append (trId);
+	}
+	tiiLabel -> setText (textList);
+}
+	   
 void	displayWidget::show () {
 	myFrame. show ();
 }
