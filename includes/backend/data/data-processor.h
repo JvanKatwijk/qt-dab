@@ -41,8 +41,9 @@ Q_OBJECT
 public:
 	dataProcessor	(RadioInterface *mr,
 	                 packetdata	*pd,
-	                 RingBuffer<uint8_t>	*dataBuffer);
-	~dataProcessor();
+	                 RingBuffer<uint8_t>	*dataBuffer,
+	                 bool backendFlag);
+	~dataProcessor	();
 void	addtoFrame	(std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;

@@ -30,36 +30,34 @@
 	                            int16_t	segmentSize,
 	                            int32_t	dirSize,
 	                            int16_t	objects,
-	                            uint8_t	*segment) {
-int16_t	i;
+	                            uint8_t	*segment,
+	                            bool	backgroundFlag) {
 
-	   this	-> myRadioInterface	= mr;
-	   for (i = 0; i < 512; i ++)
-	      marked [i] = false;
-	   num_dirSegments	= -1;
-	   this	-> transportId	= transportId;
-	   this	-> dirSize	= dirSize;
-	   this	-> numObjects	= objects;
-	   this	-> dir_segmentSize	= segmentSize;
+	this	-> myRadioInterface	= mr;
+	this	-> backgroundFlag	= backgroundFlag;
+	for (int i = 0; i < 512; i ++)
+	   marked [i] = false;
+	num_dirSegments	= -1;
+	this	-> transportId	= transportId;
+	this	-> dirSize	= dirSize;
+	this	-> numObjects	= objects;
+	this	-> dir_segmentSize	= segmentSize;
 //	   fprintf (stderr, "transportId %d, dirSize %d, numObjects %d, segmentSize %d\n",
 //	                             transportId, dirSize, objects, segmentSize);
-	   dir_segments. resize (dirSize);
-	   motComponents. resize (objects);
-	   for (i = 0; i < objects; i ++) {
-	      motComponents [i]. inUse = false;
-	      motComponents [i]. motSlide	= nullptr;
-	   }
-	   memcpy (&dir_segments [0], segment, segmentSize);
-	   marked [0] = true;
-	   if (segmentSize >= dirSize)
-	      analyse_theDirectory();
-	   
+	dir_segments. resize (dirSize);
+	motComponents. resize (objects);
+	for (int i = 0; i < objects; i ++) {
+	   motComponents [i]. inUse = false;
+	   motComponents [i]. motSlide	= nullptr;
+	}
+	memcpy (&dir_segments [0], segment, segmentSize);
+	marked [0] = true;
+	if (segmentSize >= dirSize)
+	   analyse_theDirectory();
 }
 
 	motDirectory::~motDirectory () {
-int	i;
-
-	for (i = 0; i < numObjects; i ++) 
+	for (int i = 0; i < numObjects; i ++) 
 	   if (motComponents [i]. inUse &&
 	                   (motComponents [i]. motSlide != nullptr)) 
 	      delete motComponents [i]. motSlide;
@@ -142,7 +140,8 @@ uint16_t extensionLength	= (dir_segments [currentBase] << 8) |
 	                                         transportId,
 	                                         segment,
 	                                         -1,
-	                                         false);
+	                                         false,
+	                                         backgroundFlag);
 
 	   
 	   currentBase		+= 2 + handle -> get_headerSize();

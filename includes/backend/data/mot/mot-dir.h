@@ -37,8 +37,9 @@ public:
 	                                 int16_t,
 	                                 int32_t,
 	                                 int16_t,
-	                                 uint8_t *);
-			~motDirectory();
+	                                 uint8_t *,
+	                                 bool);
+			~motDirectory	();
 	motObject	*getHandle	(uint16_t);
 	void		setHandle	(motObject *, uint16_t);
 	void		directorySegment (uint16_t transportId,
@@ -52,6 +53,7 @@ private:
 	uint16_t	transportId;
 
 	RadioInterface	*myRadioInterface;
+	bool		backgroundFlag;
 	std::vector<uint8_t>	dir_segments;
 	bool		marked [512];
 	int16_t		dir_segmentSize;

@@ -30,6 +30,7 @@
 
 	backendDriver::backendDriver (RadioInterface *mr,
 	                              descriptorType *d,
+	                              bool	backgroundFlag,
 	                              RingBuffer<int16_t> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
 	                              RingBuffer<uint8_t> *frameBuffer,
@@ -38,7 +39,8 @@
 	   if (((audiodata *)d) -> ASCTy != 077) {
               theProcessor = new mp2Processor (mr,
 	                                       d -> bitRate,
-                                               audioBuffer);
+                                               audioBuffer,
+	                                       backgroundFlag);
 	   }
            else
            if (((audiodata *)d) -> ASCTy == 077) {
@@ -46,6 +48,7 @@
 	                                        d -> bitRate,
                                                 audioBuffer,
 	                                        frameBuffer,
+	                                        backgroundFlag,
 	                                        dump);
 	   }
 	}
@@ -53,7 +56,8 @@
 	if (d -> type == PACKET_SERVICE)
 	   theProcessor = new dataProcessor (mr,
 	                                     (packetdata *)d,
-	                                     dataBuffer);
+	                                     dataBuffer,
+	                                     backgroundFlag);
 	else
 	   theProcessor = new frameProcessor ();	// should not happen
 }

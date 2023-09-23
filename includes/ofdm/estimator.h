@@ -66,9 +66,10 @@ private:
         typedef Matrix<Complex, Dynamic, 1> Vector;
         MatrixXd        F_p;
         MatrixXd        S_p;
-        MatrixXd        S_pxF_p;
+	MatrixXd        A_p;
+        MatrixXd        A_p_inv;
         std::vector<int16_t>    pilotTable;
-
+	bool		isPilot	(int);
 signals:
 	void		showCorrelation	(int, int, QVector<int>);
 };

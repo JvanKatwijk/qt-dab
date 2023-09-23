@@ -326,7 +326,7 @@ private:
 	void			save_MOTtext		(QByteArray &, int,
 	                                                         QString);
 	void			show_MOTlabel		(QByteArray &, int,
-	                                                          QString, int);
+	                                                 QString, int, bool);
 	void			stop_muting		();
 
 
@@ -365,7 +365,7 @@ public slots:
 	void			setSynced		(bool);
 	void			showLabel		(const QString &);
 	void			handle_motObject	(QByteArray, QString,
-	                                                      int, bool);
+	                                                      int, bool, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();

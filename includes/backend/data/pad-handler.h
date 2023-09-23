@@ -34,12 +34,14 @@ class	motObject;
 class	padHandler: public QObject {
 Q_OBJECT
 public:
-			padHandler		(RadioInterface *);
+			padHandler		(RadioInterface *,
+	                                         bool);
 			~padHandler		();
 	void		processPAD		(uint8_t *,
 	                                         int16_t, uint8_t, uint8_t);
 private:
 	RadioInterface	*myRadioInterface;
+	bool		backgroundFlag;
 	void		handle_variablePAD	(uint8_t *, int16_t, uint8_t);
 	void		handle_shortPAD		(uint8_t *, int16_t, uint8_t);
 	void		dynamicLabel		(uint8_t *, int16_t, uint8_t);

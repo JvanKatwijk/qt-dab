@@ -5,6 +5,7 @@
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -34,8 +35,10 @@ struct motTable_ {
 	motObject	*motSlide;
 } motTable [55];
 
-	motHandler::motHandler (RadioInterface *mr) {
+	motHandler::motHandler (RadioInterface *mr,
+	                         bool backgroundFlag) {
 	myRadioInterface	= mr;
+	this	-> backgroundFlag	= backgroundFlag;
 	orderNumber		= 0;
 
 	theDirectory		= nullptr;
@@ -45,7 +48,7 @@ struct motTable_ {
 	}
 }
 
-	motHandler::~motHandler() {
+	motHandler::~motHandler	() {
 int	i;
 
 	for (i = 0; i < 55; i ++) {
@@ -131,7 +134,8 @@ int32_t	i;
 	                            transportId,
 	                            &motVector [2],	
 	                            segmentSize,
-	                            lastFlag);
+	                            lastFlag,
+	                            backgroundFlag);
 	         setHandle (h, transportId);
 	      }
 	      break; 
@@ -144,7 +148,8 @@ int32_t	i;
 	                            transportId,
 	                            &motVector [2],	
 	                            segmentSize,
-	                            lastFlag);
+	                            lastFlag,
+	                            backgroundFlag);
 	         setHandle (h, transportId);
 	      }
 	      if (h != nullptr)
@@ -181,7 +186,8 @@ int32_t	i;
 	                                            segmentSize,
 	                                            dirSize,
 	                                            numObjects,
-	                                            segment);
+	                                            segment,
+	                                            backgroundFlag);
 	      }
 	      else {
 	         if ((theDirectory == nullptr) || 

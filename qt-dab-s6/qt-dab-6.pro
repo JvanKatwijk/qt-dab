@@ -14,17 +14,17 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
@@ -414,8 +414,8 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -844,7 +844,7 @@ fftw_fft {
 
 estimator {
 	DEFINES		+= __ESTIMATOR_
-	INCLUDES	+= /usr/include/eigen3
+	INCLUDEPATH	+= /usr/include/eigen3
 	HEADERS		+= ../includes/ofdm/estimator.h
 	SOURCES		+= ../src/ofdm/estimator.cpp
 }

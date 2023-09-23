@@ -40,6 +40,7 @@
 	                                    outV (d -> bitRate * 24),
 	                                    driver (mr, 
 	                                            d,
+	                                            flag == BACK_GROUND,
 	                                            audiobuffer,
 	                                            databuffer,
 	                                            frameBuffer, dump) 

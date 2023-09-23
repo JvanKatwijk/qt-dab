@@ -44,8 +44,9 @@ public:
 	                   uint16_t	transportId,
 	                   uint8_t	*segment,
 	                   int32_t	segmentSize,
-	                   bool		lastFlag);
-		~motObject();
+	                   bool		lastFlag,
+	                   bool		backgroundFlag);
+		~motObject	();
 	void	addBodySegment (uint8_t	*bodySegment,
                                 int16_t	segmentNumber,
                                 int32_t	segmentSize,
@@ -53,6 +54,7 @@ public:
 	uint16_t	get_transportId();
 	int		get_headerSize();
 private:
+	bool		backgroundFlag;
 	bool		dirElement;
 	QString		picturePath;
 	uint16_t	transportId;
@@ -62,11 +64,11 @@ private:
 	uint32_t	bodySize;
 	MOTContentType	contentType;
 	QString		name;
-	void		handleComplete();
+	void		handleComplete	();
 	std::map<int, QByteArray> motMap;
 
 signals:
         void	the_picture	(QByteArray, int, QString);
-	void	handle_motObject (QByteArray, QString, int, bool);
+	void	handle_motObject (QByteArray, QString, int, bool, bool);
 };
 

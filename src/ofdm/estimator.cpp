@@ -34,6 +34,11 @@ Complex createExp (float s) {
         return Complex (cos (s), - sin (s));
 }
 
+bool	estimator::isPilot (int n) {
+	return (fftSize / 2 < n) && (n % 3 == 0) &&
+	        (n <= fftSize / 2 + 3 * 256);
+}
+
 	estimator::estimator (RadioInterface *mr,
 	                                processParams	*p):
 	                                     phaseTable (p -> dabMode),
@@ -47,34 +52,47 @@ float	Phi_k;
 	fftSize			= T_u;
 	fft_forward		= new fftHandler (T_u, false);
 	refTable.		resize (T_u);
-	
+
+//
+//	The reftanle takes the role of the pilots, i.e. we
+//	know what there value should be
 	for (i = 0; i < T_u; i ++)
 	   refTable [i] = std::complex<float> (0, 0);
 
-	for (i = 1; i <= params. get_carriers() / 2; i ++) {
+	for (i = 1; i <= params. get_carriers () / 2; i ++) {
 	   Phi_k =  get_Phi (i);
-	   refTable [i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+	   refTable [T_u / 2 + i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
-	   refTable [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
+	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 
-        numberofPilots		= T_g;
+        numberofPilots		= 0;
+	for (int i = 0; i < fftSize; i ++) {
+	   if (isPilot (i)) {
+	      numberofPilots ++;
+	      pilotTable. push_back (i);
+	   }
+	}
+
+	fprintf (stderr, "numberofPilots %d\n", numberofPilots);
         numberofTaps		= T_g;
         F_p                     = MatrixXd (numberofPilots, numberofTaps);
         S_p                     = MatrixXd (numberofPilots,
                                                   numberofPilots);
-        S_pxF_p                 = MatrixXd (numberofPilots, numberofTaps);
-//
-        pilotTable. resize (numberofPilots);
+        A_p                     = MatrixXd (numberofPilots, numberofTaps);
+        A_p_inv                 = MatrixXd (numberofTaps, numberofPilots);
 
-	for (int i = 0; i < numberofPilots; i ++)
-	   pilotTable [i] = i;
 
 	for (int row = 0; row < numberofPilots; row ++)
            for (int col = 0; col < numberofPilots; col ++)
               S_p (row, col) = std::complex<float> (0, 0);
-        for (int index = 0; index < numberofPilots; index ++)
-	   S_p (index, index) = refTable [pilotTable [index]];
+
+	int index	= 0;
+        for (int carrier = 0; carrier < fftSize; carrier ++)
+	   if (isPilot (carrier)) {
+	      S_p (index, index) = refTable [carrier];
+	      index ++;
+	   }
 
 	for (int pilotIndex = 0; pilotIndex < numberofPilots; pilotIndex ++) {
 	   for (int tap = 0; tap < numberofTaps; tap ++)
@@ -83,7 +101,8 @@ float	Phi_k;
 	                        (fftSize / 2 + pilotTable [pilotIndex]) *
 	                                          tap / fftSize), sqrt (fftSize));
 	}
-	S_pxF_p                 = S_p * F_p;
+	A_p	= S_p * F_p;
+	A_p_inv = A_p. transpose () * (A_p * A_p. transpose ()). inverse ();
 }
 
 	estimator::~estimator () {
@@ -101,12 +120,13 @@ Vector  X_p  (numberofPilots);
 //
         for (int index = 0; index < numberofPilots; index ++)
            X_p (index) = v [pilotTable [index]];
+
 //
 ////    Ok, the matrices are filled, now computing the channelvalues
-        h_td    = S_pxF_p. bdcSvd (ComputeThinU | ComputeThinV). solve (X_p);
+        h_td	= A_p_inv * X_p;
         H_fd    = F_p * h_td;
 //
         for (int index = 0; index < numberofPilots; index ++)
-           resultRow [index] = h_td (index);
+           resultRow [index] = H_fd (index);
 }
 

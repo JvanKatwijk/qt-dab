@@ -146,7 +146,7 @@ void	ofdmHandler::stop	() {
    *	time synchronization and frequency synchronization
    *	Identifying blocks in the DAB frame
    *	and sending them to the ofdmDecoder who will transfer the results
-   *	Finally, estimating the small freqency error
+   *	Finally, estimating the small frequency error
    */
 void	ofdmHandler::run	() {
 int32_t		startIndex;
@@ -279,13 +279,16 @@ QVector<Complex> tester (T_u / 2);
 	                            T_u - ofdmBufferIndex,
 	                            coarseOffset + fineOffset);
 #ifdef	__ESTIMATOR_
+//
 	      static int abc = 0;
-	      if (++abc > 20) { 
+	      if (++abc > 10) { 
 	         std::vector<Complex> result;
 	         myEstimator. estimate (ofdmBuffer, result);
-	         for (int i = 0; i < 20; i ++)
-	            fprintf (stderr, "(%f %f) ",
-	                             real (result [i]), imag (result [i]));
+	         for (int i = 0; i < 40; i ++)
+	            fprintf (stderr, "%f ", abs (result [i]));
+	         fprintf (stderr, "\n");
+	         for (int i = 0; i < 40; i ++)
+	            fprintf (stderr, "%f ", arg (result [i]));
 	         fprintf (stderr, "\n");
 	         abc = 0;
 	      }

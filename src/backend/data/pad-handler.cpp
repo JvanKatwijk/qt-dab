@@ -29,8 +29,11 @@
   *	\class padHandler
   *	Handles the pad segments passed on from mp2- and mp4Processor
   */
-	padHandler::padHandler	(RadioInterface *mr) {
-	myRadioInterface	= mr;
+	padHandler::padHandler	(RadioInterface *mr,
+	                            bool backgroundFlag) {
+	myRadioInterface		= mr;
+	this	-> backgroundFlag	= backgroundFlag;
+
 	connect (this, SIGNAL (showLabel (const QString &)),
 	         mr, SLOT (showLabel (const QString &)));
 	connect (this, SIGNAL (show_motHandling (bool)),
@@ -490,7 +493,8 @@ uint16_t	index;
 	   	                                 transportId,
 	                                         &data [index + 2],
 	                                         segmentSize,
-	                                         lastFlag);
+	                                         lastFlag,
+	                                         backgroundFlag);
 	      }
 	      else {
 	         if (currentSlide -> get_transportId() == transportId)
@@ -504,7 +508,9 @@ uint16_t	index;
 	   	                                 transportId,
 	                                         &data [index + 2],
 	                                         segmentSize,
-	                                         lastFlag);
+	                                         lastFlag,
+	                                         backgroundFlag
+	                                       );
 	      }
 	      break;
 

@@ -891,9 +891,12 @@ QString	dir = s;
 
 void	RadioInterface::handle_motObject (QByteArray result,
 	                                  QString objectName,
-	                                  int contentType, bool dirElement) {
+	                                  int contentType,
+	                                  bool dirElement,
+	                                  bool backgroundFlag) {
 QString realName;
 
+	fprintf (stderr, "handling MOT flag %d\n", backgroundFlag);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -903,7 +906,8 @@ QString realName;
 	      break;
 
 	   case MOTBaseTypeImage:
-	      show_MOTlabel (result, contentType, objectName, dirElement);
+	      show_MOTlabel (result, contentType,
+	                       objectName, dirElement, backgroundFlag);
 	      break;
 
 	   case MOTBaseTypeAudio:
@@ -996,7 +1000,8 @@ void	RadioInterface::save_MOTObject (QByteArray  &result,
 void	RadioInterface::show_MOTlabel	(QByteArray  &data,
 	                                 int contentType,
 	                                 QString pictureName,
-	                                 int dirs) {
+	                                 int dirs,
+	                                 bool backgroundFlag) {
 const char *type;
 	if (!running. load() || (pictureName == QString ("")))
 	   return;
@@ -1043,13 +1048,9 @@ const char *type;
 	      fclose (x);
 	   }
 	}
-	
-	if (!channel. currentService. is_audio)
+
+	if (backgroundFlag)
 	   return;
-
-//	if (dirs != 0)
-//	   return;
-
 	QPixmap p;
 	p. loadFromData (data, type);
 	int w   = 400;

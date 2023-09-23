@@ -31,16 +31,20 @@
 	                         uint16_t	transportId,
 	                         uint8_t	*segment,
 	                         int32_t	segmentSize,
-	                         bool		lastFlag) {
+	                         bool		lastFlag,
+	                         bool		backgroundFlag) {
 int32_t pointer = 7;
 uint16_t	rawContentType = 0;
 
-	(void)segmentSize; (void)lastFlag;
-	this	-> dirElement	= dirElement;
+	(void)segmentSize;
+	(void)lastFlag;
+	this	-> dirElement		= dirElement;
+	this	-> backgroundFlag	= backgroundFlag;
+
 	connect (this, SIGNAL (handle_motObject (QByteArray, QString,
-	                                         int, bool)),
+	                                         int, bool, bool)),
 	         mr,   SLOT   (handle_motObject (QByteArray, QString,
-	                                         int, bool)));
+	                                         int, bool, bool)));
 	this	-> transportId		= transportId;
 	this	-> numofSegments	= -1;
 	this	-> segmentSize		= -1;
@@ -184,7 +188,8 @@ QByteArray result;
 //	                                                  (int)contentType);
 	if (name == "")
 	   name = QString::number (get_transportId ());
-	handle_motObject (result, name, (int)contentType, dirElement);
+	handle_motObject (result, name, (int)contentType,
+	                            dirElement, backgroundFlag);
 }
 
 int	motObject::get_headerSize() {

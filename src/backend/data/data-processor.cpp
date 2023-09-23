@@ -36,7 +36,8 @@
 //	fragmentsize == Length * CUSize
 	dataProcessor::dataProcessor	(RadioInterface *mr,
 	                                 packetdata	*pd,
-	                                 RingBuffer<uint8_t> *dataBuffer) {
+	                                 RingBuffer<uint8_t> *dataBuffer,
+	                                 bool	backgroundFlag) {
 	this	-> myRadioInterface	= mr;
 	this	-> bitRate		= pd -> bitRate;
 	this	-> DSCTy		= pd -> DSCTy;
@@ -65,7 +66,7 @@
 	      break;
 
 	   case 60:
-	      my_dataHandler	= new motHandler (mr);
+	      my_dataHandler	= new motHandler (mr, backgroundFlag);
 	      break;
 	   
 	}
