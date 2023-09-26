@@ -1,4 +1,4 @@
-#
+
 /*
  *    Copyright (C) 2014 .. 2017
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -34,9 +34,12 @@ Complex createExp (float s) {
         return Complex (cos (s), - sin (s));
 }
 
+//
+//	"pilot" range is fftSize / 2 - carriers / 2 .. fftSize / 2 + carriers / 2
 bool	estimator::isPilot (int n) {
-	return (fftSize / 2 < n) && (n % 3 == 0) &&
-	        (n <= fftSize / 2 + 3 * 256);
+int low		= fftSize / 2 + 1;
+int high	= fftSize / 2 + 130;
+	return ((low <= n) && (n <= high));
 }
 
 	estimator::estimator (RadioInterface *mr,
@@ -66,6 +69,7 @@ float	Phi_k;
 	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 
+
         numberofPilots		= 0;
 	for (int i = 0; i < fftSize; i ++) {
 	   if (isPilot (i)) {
@@ -74,7 +78,7 @@ float	Phi_k;
 	   }
 	}
 
-	fprintf (stderr, "numberofPilots %d\n", numberofPilots);
+	fprintf (stderr, "numberofPilots %d (%d)\n", numberofPilots, carriers);
         numberofTaps		= T_g;
         F_p                     = MatrixXd (numberofPilots, numberofTaps);
         S_p                     = MatrixXd (numberofPilots,
@@ -119,7 +123,7 @@ Vector  X_p  (numberofPilots);
 	fft_forward -> fft (v);
 //
         for (int index = 0; index < numberofPilots; index ++)
-           X_p (index) = v [pilotTable [index]];
+           X_p (index) = v [(T_u / 2 + pilotTable [index]) % T_u];
 
 //
 ////    Ok, the matrices are filled, now computing the channelvalues

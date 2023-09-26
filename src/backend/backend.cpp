@@ -172,5 +172,3 @@ void	Backend::stopRunning() {
 #endif
 }
 
-
-

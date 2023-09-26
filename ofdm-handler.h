@@ -117,6 +117,9 @@ private:
 	RingBuffer<Complex > *tiiBuffer;
 	RingBuffer<Complex > *nullBuffer;
 	RingBuffer<float>	*snrBuffer;
+#ifdef	__ESTIMATOR_
+	RingBuffer<Complex>	*channelBuffer;
+#endif
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 	bool		eti_on;
@@ -157,6 +160,9 @@ signals:
 	                                                  float, float);
 	void		show_clockErr		(int);
 	void		show_null		(int);
+#ifdef	__ESTIMATOR_
+	void		show_channel		(int);
+#endif
 };
 #endif
 

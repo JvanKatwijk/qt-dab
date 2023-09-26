@@ -184,6 +184,8 @@ QString scanmodeText (int e) {
 #define	SCHEDULE_BUTTON		QString ("scheduleButton")
 #define	SET_COORDINATES_BUTTON	QString ("set_coordinatesButton")
 #define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
+#define	SKIN_BUTTON		QString ("skinButton")
+#define	FONT_BUTTON		QString ("fontButton")
 
 static
 uint8_t convert (QString s) {
@@ -212,6 +214,7 @@ uint8_t convert (QString s) {
 	                                        iqBuffer (2 * 1536),
 	                                        tiiBuffer (32768),
 	                                        nullBuffer (32768),
+	                                        channelBuffer (4096),
 	                                        snrBuffer (512),
 	                                        responseBuffer (32768),
 	                                        frameBuffer (2 * 32768),
@@ -227,7 +230,6 @@ uint8_t convert (QString s) {
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768) {
-int16_t	latency;
 int16_t k;
 QString h;
 uint8_t	dabBand;
@@ -252,11 +254,10 @@ uint8_t	dabBand;
 	globals. responseBuffer	= &responseBuffer;
 	globals. tiiBuffer	= &tiiBuffer;
 	globals. nullBuffer	= &nullBuffer;
+	globals. channelBuffer	= &channelBuffer;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
-	latency			=
-	                  dabSettings -> value ("latency", 5). toInt();
 
 	QString dabMode         =
 	          dabSettings   -> value ("dabMode", "Mode 1"). toString();
@@ -376,6 +377,7 @@ uint8_t	dabBand;
 	theTechWindow		-> hide		();
 #else
 //	just sound out
+	int latency		= dabSettings -> value ("latency", 5). toInt();
 	soundOut		= new audioSink		(latency);
 	((audioSink *)soundOut)	-> setupChannels (configWidget. streamoutSelector);
 	configWidget. streamoutSelector	-> show();
@@ -451,9 +453,9 @@ uint8_t	dabBand;
 	               dabSettings	-> value ("skipFile", ""). toString ();
 	theBand. setup_skipList (skipfileName);
 
-	QPalette p	= configWidget. ficError_display -> palette();
+	QPalette p	= newDisplay. ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::red);
-	configWidget. ficError_display		-> setPalette (p);
+	newDisplay. ficError_display		-> setPalette (p);
 	p. setColor (QPalette::Highlight, Qt::green);
 //
 	audioDumper		= nullptr;
@@ -538,10 +540,8 @@ uint8_t	dabBand;
 #endif
 	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
-	configWidget. frequencyDisplay	-> setPalette (lcdPalette);
-	configWidget. frequencyDisplay	-> setAutoFillBackground (true);
-	configWidget. cpuMonitor	-> setPalette (lcdPalette);
-	configWidget. cpuMonitor	-> setAutoFillBackground (true);
+	cpuMonitor		-> setPalette (lcdPalette);
+	cpuMonitor		-> setAutoFillBackground (true);
 	set_Colors ();
 	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
 	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
@@ -896,7 +896,6 @@ void	RadioInterface::handle_motObject (QByteArray result,
 	                                  bool backgroundFlag) {
 QString realName;
 
-	fprintf (stderr, "handling MOT flag %d\n", backgroundFlag);
 	switch (getContentBaseType ((MOTContentType)contentType)) {
 	   case MOTBaseTypeGeneralData:
 	      break;
@@ -1361,7 +1360,7 @@ void	RadioInterface::updateTimeDisplay() {
 	   const float idle_time_delta = idle_time - previous_idle_time;
 	   const float total_time_delta = total_time - previous_total_time;
 	   const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
-	   configWidget. cpuMonitor -> display (utilization);
+	   cpuMonitor -> display (utilization);
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
 	}
@@ -1835,14 +1834,14 @@ void	RadioInterface::show_ficSuccess (bool b) {
 	   ficSuccess ++;
 
 	if (++ficBlocks >= 100) {
-	   QPalette p      = configWidget. ficError_display -> palette();
+	   QPalette p      = newDisplay. ficError_display -> palette();
 	   if (ficSuccess < 85)
 	      p. setColor (QPalette::Highlight, Qt::red);
 	   else
 	      p. setColor (QPalette::Highlight, Qt::green);
 
-	   configWidget. ficError_display	-> setPalette (p);
-	   configWidget. ficError_display	-> setValue (ficSuccess);
+	   newDisplay. ficError_display	-> setPalette (p);
+	   newDisplay. ficError_display	-> setValue (ficSuccess);
 	   total_ficError	+= 100 - ficSuccess;
 	   total_fics		+= 100;
 	   ficSuccess		= 0;
@@ -1873,8 +1872,9 @@ void	RadioInterface::showLabel	(const QString &s) {
 	   dynamicLabel -> setWordWrap (true);
 	   dynamicLabel	-> setText (s);
 	}
-//	if we dtText is ON, some work is still to be done
-	if ((s == "") || (dlTextFile == nullptr) || (the_dlCache. addifNew (s)))
+//	if we have dtText is ON, some work is still to be done
+	if ((s == "") || (dlTextFile == nullptr) ||
+	                                (the_dlCache. addifNew (s)))
 	   return;
 
 	QString currentChannel = channel. channelName;
@@ -1947,7 +1947,6 @@ void	RadioInterface::handle_detailButton	() {
 //	meaningful
 void	RadioInterface::showButtons		() {
 	configWidget. dumpButton	-> show	();
-	configWidget. frequencyDisplay	-> show ();
 	scanButton		-> show ();
 	channelSelector		-> show ();
 	nextChannelButton	-> show ();
@@ -1957,7 +1956,6 @@ void	RadioInterface::showButtons		() {
 
 void	RadioInterface::hideButtons		() {
 	configWidget. dumpButton	-> hide	();
-	configWidget. frequencyDisplay	-> hide ();
 	scanButton		-> hide ();
 	channelSelector		-> hide ();
 	nextChannelButton	-> hide ();
@@ -2858,7 +2856,6 @@ void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theBand. Frequency (theChannel);
 	LOG ("channel starts ", theChannel);
-	configWidget. frequencyDisplay	-> display (tunedFrequency / 1000000.0);
 	newDisplay. showFrequency (tunedFrequency / 1000000.0);
 	dabSettings		-> setValue ("channel", theChannel);
 	inputDevice		-> resetBuffer ();
@@ -2910,7 +2907,7 @@ void	RadioInterface::stopChannel	() {
 	stopSourcedumping	();
 	soundOut	-> stop ();
 //
-	configWidget. EPGLabel	-> hide ();
+	newDisplay. EPGLabel	-> hide ();
 	if (my_contentTable != nullptr) {
 	   my_contentTable -> hide ();
 	   delete my_contentTable;
@@ -2947,7 +2944,7 @@ void	RadioInterface::stopChannel	() {
 	channel. nextService. valid	= false;
 
 //	all stopped, now look at the GUI elements
-	configWidget. ficError_display	-> setValue (0);
+	newDisplay. ficError_display	-> setValue (0);
 //	the visual elements related to service and channel
 	setSynced	(false);
 	ensembleId	-> setText ("");
@@ -2957,7 +2954,7 @@ void	RadioInterface::stopChannel	() {
 	model. clear ();
 	ensembleDisplay	-> setModel (&model);
 	cleanScreen	();
-	configWidget. EPGLabel	-> hide ();
+	newDisplay. EPGLabel	-> hide ();
 	distanceLabel	-> setText ("");
 }
 
@@ -3511,6 +3508,18 @@ QString set_coordinatesButton_font	=
 	   dabSettings -> value (SET_COORDINATES_BUTTON + "_font",
 	                                              "black"). toString ();
 	
+QString skinButton_font	=
+	   dabSettings -> value (SKIN_BUTTON + "_font",
+	                                              "white"). toString ();
+QString	skinButton_color =
+	   dabSettings -> value (SKIN_BUTTON + "_color",
+	                                              "black"). toString ();
+QString fontButton_font	=
+	   dabSettings -> value (FONT_BUTTON + "_font",
+	                                              "white"). toString ();
+QString	fontButton_color =
+	   dabSettings -> value (FONT_BUTTON + "_color",
+	                                              "black"). toString ();
 QString	loadTableButton_color =
 	   dabSettings -> value (LOAD_TABLE_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -3558,6 +3567,13 @@ QString loadTableButton_font	=
 	configWidget. loadTableButton ->
 	              setStyleSheet (temp. arg (loadTableButton_color,
 	                                        loadTableButton_font));
+	configWidget. skinButton ->
+	              setStyleSheet (temp. arg (skinButton_color,
+	                                        skinButton_font));
+
+	configWidget. fontButton ->
+	              setStyleSheet (temp. arg (fontButton_color,
+	                                        fontButton_font));
 
 	muteButton	->
 	              setStyleSheet (temp. arg (muteButton_color,
@@ -3681,6 +3697,14 @@ void	RadioInterface::color_set_coordinatesButton	() 	{
 
 void	RadioInterface::color_loadTableButton	() 	{
 	set_buttonColors (configWidget. loadTableButton, LOAD_TABLE_BUTTON);
+}
+
+void	RadioInterface::color_skinButton	() 	{
+	set_buttonColors (configWidget. skinButton, SKIN_BUTTON);
+}
+
+void	RadioInterface::color_fontButton	() 	{
+	set_buttonColors (configWidget. fontButton, FONT_BUTTON);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -3880,7 +3904,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         continue;
 	      if (pd. DSCTy == 60) {
 	         LOG ("hidden service started ", serv. name);
-	         configWidget. EPGLabel	-> show ();
+	         newDisplay. EPGLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
@@ -3910,7 +3934,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      my_ofdmHandler -> dataforPacketService (serv. name, &pd, 0);
 	      if ((pd. defined)  && (pd. DSCTy == 59)) {
 	         LOG ("hidden service started ", serv. name);
-	         configWidget. EPGLabel  -> show ();
+	         newDisplay. EPGLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
@@ -4565,8 +4589,8 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings -> value ("saveSlides", 0). toInt () == 1)
 	   configWidget. saveSlides -> setChecked (true);
 
-	configWidget. EPGLabel	-> hide ();
-//	configWidget. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
+	newDisplay. EPGLabel	-> hide ();
+	newDisplay. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	int x = dabSettings -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
@@ -4668,7 +4692,7 @@ void	RadioInterface::connect_configWidget () {
 	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
 
-	connect (configWidget. skinSelector, SIGNAL (clicked ()),
+	connect (configWidget. skinButton, SIGNAL (clicked ()),
                  this, SLOT (handle_skinSelector ()));
 
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
@@ -4687,7 +4711,7 @@ void	RadioInterface::connect_configWidget () {
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
 
-	connect (configWidget. fontSelectButton, SIGNAL (clicked ()),
+	connect (configWidget. fontButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_fontSelect ()));
 
 	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
@@ -4728,6 +4752,12 @@ void	RadioInterface::connect_configWidget () {
 
 	connect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_loadTableButton ()));
+
+	connect (configWidget. skinButton, SIGNAL (rightClicked ()),	
+	         this, SLOT (color_skinButton ()));
+
+	connect (configWidget. fontButton, SIGNAL (rightClicked ()),	
+	         this, SLOT (color_fontButton ()));
 
 	connect (configWidget. portSelector, SIGNAL (clicked ()),
                  this, SLOT (handle_portSelector ()));
@@ -4803,7 +4833,7 @@ void	RadioInterface::disconnect_configWidget () {
 	disconnect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_transmSelector (int)));
 
-	disconnect (configWidget. skinSelector, SIGNAL (clicked ()),
+	disconnect (configWidget. skinButton, SIGNAL (clicked ()),
                  this, SLOT (handle_skinSelector ()));
 
 	disconnect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
@@ -4822,7 +4852,7 @@ void	RadioInterface::disconnect_configWidget () {
 	disconnect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
 
-	disconnect (configWidget. fontSelectButton, SIGNAL (clicked ()),
+	disconnect (configWidget. fontButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_fontSelect ()));
 
 	disconnect (configWidget. dlTextButton, SIGNAL (clicked ()),
@@ -4891,4 +4921,21 @@ QStringList fontList;
 	this	-> theFont	= fontList. at (fontIndex);
 	dabSettings	-> setValue ("theFont", theFont);
 }
+
+void	RadioInterface::show_channel	(int n) {
+std::vector<std::complex<float>> v (n);
+	channelBuffer. getDataFromBuffer (v. data (), n);
+	channelBuffer. FlushRingBuffer ();
+#ifdef	__ESTIMATOR_
+	if (!newDisplay. isHidden () &&
+	           (newDisplay. get_tab () == SHOW_CHANNEL))
+	   newDisplay. showChannel (v);
+#endif
+}
+
+bool	RadioInterface::channelOn () {
+	return (!newDisplay. isHidden () &&
+	           (newDisplay. get_tab () == SHOW_CHANNEL));
+}
+
 

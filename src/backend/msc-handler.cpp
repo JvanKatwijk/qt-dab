@@ -223,7 +223,7 @@ void	mscHandler::reset_Channel () {
 void	mscHandler::stop_service	(descriptorType *d, int flag) {
 	fprintf (stderr, "obsolete function stopService\n");
 	locker. lock ();
-	for (int i = 0; i < theBackends. size (); i ++) {
+	for (int i = 0; i <  (int)theBackends. size (); i ++) {
 	   Backend *b = theBackends. at (i);
 	   if ((b -> subChId == d -> subchId) && (b -> borf == flag)) {
 	      fprintf (stderr, "stopping (sub)service at subchannel %d\n",

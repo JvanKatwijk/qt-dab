@@ -20,6 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+//#define	_PAD_TRACER
 #include	"pad-handler.h"
 #include	<cstring>
 #include	"radio.h"
@@ -124,7 +125,7 @@ int16_t	i;
 	      case 2:	// start of fragment, extract the length
 	         if (firstSegment && !lastSegment) {
 	            segmentNumber   = b [last - 2] >> 4;
-	            if (dynamicLabelText. size() > 0)
+	            if (dynamicLabelText. size () > 0)
 	               showLabel (dynamicLabelText);
 	            dynamicLabelText. clear ();
 	         }
@@ -200,12 +201,11 @@ std::vector<uint8_t> data;		// for the local addition
 //	the size of the latest xpadfield that had a CI_flag != 0
 	if (CI_flag == 0) {
 	   if (mscGroupElement && (xpadLength > 0)) {
-
 	      if (last < xpadLength - 1) {
 //	         fprintf(stderr, "handle_variablePAD: last < xpadLength - 1\n");
 	         return;
 	      }
-
+	      
 	      data. resize (xpadLength);
 	      for (j = 0; j < xpadLength; j ++)
 	         data [j] = b [last - j];
@@ -223,8 +223,8 @@ std::vector<uint8_t> data;		// for the local addition
 	if (CI_Index < 4) 	// we have a "0" indicator, adjust base
 	   base -= 1;
 
-//	The space for the CI's does belong to the Cpadfield, so
-//	but do not forget to take into account the '0'field if CI_Index < 4
+//	The space for the CI's does belong to the CPadfield, so
+//	do not forget to take into account the '0'field if CI_Index < 4
 	if (mscGroupElement) {	
 	   xpadLength = 0;
 	   for (i = 0; i < CI_Index; i ++)
@@ -238,7 +238,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   uint8_t appType	= CI_table [i] & 037;
 	   int16_t length	= lengthTable [CI_table [i] >> 5];
 
-	   if (appType == 1) {
+	   if (appType == 1) {	// length spec
 	      dataGroupLength = ((b [base] & 077) << 8) | b [base - 1];
 	      base -= 4;
 	      last_appType = 1;
@@ -272,7 +272,7 @@ std::vector<uint8_t> data;		// for the local addition
 	   last_appType = appType;
 	   base -= length;
 	   if (base < 0 && i < CI_Index - 1) {
-//	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
+	      fprintf (stderr, "Hier gaat het fout, base = %d\n", base);
 	      return;
 	   }
 	}
@@ -287,6 +287,15 @@ static bool    isLastSegment       = false;
 static bool    moreXPad            = false;
 int16_t  dataLength                = 0;
 
+#ifdef	_PAD_TRACER
+	fprintf (stderr, "dyna lab, length %d : ", length);
+	for (int i = 2; i < length; i ++)
+	   fprintf (stderr, "%x ", data [i]);
+	fprintf (stderr, " (");
+	for (int i = 2; i < length; i ++)
+	   fprintf (stderr, "%c", data [i]);
+	fprintf (stderr, ")\n");
+#endif
 	if ((CI & 037) == 02) {	// start of segment
 	   uint16_t prefix = (data [0] << 8) | data [1];
 	   uint8_t field_1 = (prefix >> 8) & 017;
@@ -295,6 +304,10 @@ int16_t  dataLength                = 0;
 	   uint8_t last    = (prefix >> 13) & 01;
 	   dataLength	   = length - 2; // The length with header removed
 
+#ifdef	_PAD_TRACER
+	   fprintf (stderr, "first %d last %d Cflag %d\n",
+	                    first, last, Cflag);
+#endif
 	   if (first) { 
 //	      segmentno = 1;
 	      charSet = (prefix >> 4) & 017;
@@ -323,7 +336,6 @@ int16_t  dataLength                = 0;
 	                                 (const char *)&data [2],
 	                                 (CharacterSet) charSet,
 	                                 dataLength);
-
 	      dynamicLabelText. append (segmentText);
 
 //	if at the end, show the label

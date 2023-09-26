@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2020
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *

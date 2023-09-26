@@ -36,6 +36,7 @@
 #define	SHOW_CORRELATION	1
 #define	SHOW_NULL		2
 #define	SHOW_TII		3
+#define	SHOW_CHANNEL		4
 
 class	RadioInterface;
 class	QSettings;
@@ -44,6 +45,7 @@ class	spectrumScope;
 class	waterfallScope;
 class	nullScope;
 class	correlationScope;
+class	channelScope;
 class	IQDisplay;
 
 class	displayWidget: public QObject, public Ui_scopeWidget {
@@ -60,12 +62,14 @@ public:
 	void	show_tii	(std::vector<Complex>, int);
 	void	showIQ		(std::vector<Complex>);
 
+	void	showChannel	(std::vector<Complex>);
 	void	showQuality	(float, float, float);
 	void	show_snr	(float);
 	void	show_correction	(int);
 	void	show_clockErr	(int);
 	void	showFrequency	(float);
 
+	void	show_cpuLoad	(float);
 	void	showTransmitters	(QByteArray &);
 
 	void	show		();
@@ -81,6 +85,7 @@ private:
 	nullScope		*myNullScope;
 	correlationScope	*myCorrelationScope;
 	spectrumScope		*myTII_Scope;
+	channelScope		*myChannelScope;
 	IQDisplay		*myIQDisplay;
 
 	int			currentTab;

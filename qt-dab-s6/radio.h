@@ -167,6 +167,7 @@ public:
 	                                 QWidget	*parent = nullptr);
 		~RadioInterface		();
 
+	bool	channelOn		();
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
@@ -175,6 +176,7 @@ private:
 	RingBuffer<Complex>	iqBuffer;
 	RingBuffer<Complex>	tiiBuffer;
 	RingBuffer<Complex>	nullBuffer;
+	RingBuffer<Complex>	channelBuffer;
 	RingBuffer<float>	snrBuffer;
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
@@ -396,7 +398,7 @@ public slots:
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
-
+	void			show_channel		(int);
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -467,6 +469,9 @@ private slots:
 	void			color_httpButton	();
 	void			color_set_coordinatesButton     ();
 	void			color_loadTableButton   ();
+
+	void			color_skinButton	();
+	void			color_fontButton	();
 //
 //	for the display widget we have access functions
 	void			showSpectrum		(int);

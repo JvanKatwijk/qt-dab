@@ -14,17 +14,17 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-QMAKE_CFLAGS	+=  -g -fsanitize=address
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
@@ -50,6 +50,8 @@ DEFINES        +=  __THREADED_BACKEND
 DEPENDPATH += . \
 	      ./pauzeslide \
 	      ./support \
+	      ./forms-v6/new-display \
+	      ./forms-v6/new-display/scopes \
 	      ../fft \
 	      ../eti-handler \
 	      ../src \
@@ -81,8 +83,6 @@ DEPENDPATH += . \
 	      ../includes/scopes-qwt6 \
 	      ../viewers \
 	      ../viewers/snr-viewer \
-	      ../new-display \
-	      ../new-display/scopes \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new\
@@ -92,6 +92,8 @@ DEPENDPATH += . \
 INCLUDEPATH += . \
 	       ./pauzeslide/ \
 	       ./support \
+	      ./forms-v6/new-display \
+	      ./forms-v6/new-display/scopes \
 	      ../ \
 	      ../fft \
 	      ../eti-handler \
@@ -114,8 +116,6 @@ INCLUDEPATH += . \
 	      ../includes/scopes-qwt6 \
 	      ../viewers \
 	      ../viewers/snr-viewer \
-	      ../new-display \
-	      ../new-display/scopes \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new \
@@ -125,6 +125,13 @@ INCLUDEPATH += . \
 HEADERS += ./radio.h \
 	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
+	   ./forms-v6/new-display/display-widget.h \
+	   ./forms-v6/new-display/scopes/spectrum-scope.h \
+	   ./forms-v6/new-display/scopes/correlation-scope.h \
+	   ./forms-v6/new-display/scopes/null-scope.h \
+	   ./forms-v6/new-display/scopes/channel-scope.h \
+	   ./forms-v6/new-display/scopes/waterfall-scope.h \
+	   ./forms-v6/new-display/scopes/iqdisplay.h \
 	   ../ofdm-handler.h \
 	   ../fft/fft-handler.h \
 	   ../fft/fft-complex.h \
@@ -218,12 +225,6 @@ HEADERS += ./radio.h \
 #	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../includes/scopes-qwt6/audio-display.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
-	   ../new-display/display-widget.h \
-	   ../new-display/scopes/correlation-scope.h \
-	   ../new-display/scopes/spectrum-scope.h \
-	   ../new-display/scopes/null-scope.h \
-	   ../new-display/scopes/waterfall-scope.h \
-	   ../new-display/scopes/iqdisplay.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
@@ -241,14 +242,21 @@ FORMS	+= ./forms-v6/dabradio-6.ui
 FORMS	+= ./forms-v6/config-helper.ui 
 FORMS	+= ./forms-v6/audio-description.ui
 FORMS	+= ./forms-v6/data-description.ui
+FORMS	+= ./forms-v6/new-display/scopewidget.ui
 #FORMS	+= ../qt-devices/filereader-widget.ui 
 FORMS	+= ../qt-devices/xml-filereader/xmlfiles.ui
 FORMS	+= ../viewers/snr-viewer/snr-widget.ui
-FORMS	+= ../new-display/scopewidget.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+	   ./forms-v6/new-display/display-widget.cpp \
+           ./forms-v6/new-display/scopes/correlation-scope.cpp \
+           ./forms-v6/new-display/scopes/spectrum-scope.cpp \
+           ./forms-v6/new-display/scopes/null-scope.cpp \
+           ./forms-v6/new-display/scopes/channel-scope.cpp \
+           ./forms-v6/new-display/scopes/waterfall-scope.cpp \
+	   ./forms-v6/new-display/scopes/iqdisplay.cpp \
 	   ../fft/fft-handler.cpp \
 	   ../fft/fft-complex.cpp \
 	   ../ofdm-handler.cpp \
@@ -332,12 +340,6 @@ SOURCES += ./main.cpp \
 #	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../viewers/snr-viewer/snr-viewer.cpp \
-	   ../new-display/display-widget.cpp \
-           ../new-display/scopes/correlation-scope.cpp \
-           ../new-display/scopes/spectrum-scope.cpp \
-           ../new-display/scopes/null-scope.cpp \
-           ../new-display/scopes/waterfall-scope.cpp \
-	   ../new-display/scopes/iqdisplay.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
 	   ../qt-devices/rawfiles-new/rawfiles.cpp \

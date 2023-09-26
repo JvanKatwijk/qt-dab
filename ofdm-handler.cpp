@@ -67,6 +67,9 @@
 	this	-> tiiBuffer		= p -> tiiBuffer;
 	this	-> nullBuffer		= p -> nullBuffer;
 	this	-> snrBuffer		= p -> snrBuffer;
+#ifdef	__ESTIMATOR_
+	this	-> channelBuffer	= p -> channelBuffer;
+#endif
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
 	this	-> T_u			= params. get_T_u ();
@@ -106,6 +109,10 @@
 	         mr, SLOT (show_clockError (int)));
 	connect (this, SIGNAL (show_null (int)),
 	         mr, SLOT (show_null (int)));
+#ifdef	__ESTIMATOR_
+	connect (this, SIGNAL (show_channel (int)),
+	         mr, SLOT (show_channel (int)));
+#endif
 	my_TII_Detector. reset();
 }
 
@@ -279,18 +286,18 @@ QVector<Complex> tester (T_u / 2);
 	                            T_u - ofdmBufferIndex,
 	                            coarseOffset + fineOffset);
 #ifdef	__ESTIMATOR_
-//
 	      static int abc = 0;
-	      if (++abc > 10) { 
-	         std::vector<Complex> result;
-	         myEstimator. estimate (ofdmBuffer, result);
-	         for (int i = 0; i < 40; i ++)
-	            fprintf (stderr, "%f ", abs (result [i]));
-	         fprintf (stderr, "\n");
-	         for (int i = 0; i < 40; i ++)
-	            fprintf (stderr, "%f ", arg (result [i]));
-	         fprintf (stderr, "\n");
-	         abc = 0;
+	      if (myRadioInterface -> channelOn ()) {
+	         if (++abc > 10) { 
+	            std::vector<Complex> result;
+	            myEstimator. estimate (ofdmBuffer, result);
+	            if (channelBuffer != nullptr) {
+	               channelBuffer -> putDataIntoBuffer (result. data (),
+	                                                   result. size ());
+	               emit show_channel (result. size ());
+	            }
+	            abc = 0;
+	         }
 	      }
 #endif
 	      sampleCount	+= T_u;

@@ -26,6 +26,7 @@
 #include	"spectrum-scope.h"
 #include	"null-scope.h"
 #include	"correlation-scope.h"
+#include	"channel-scope.h"
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
@@ -45,8 +46,13 @@
         setupUi (&myFrame);
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
-	myFrame. show ();
 //
+
+#ifndef	__ESTIMATOR_
+	tabWidget -> removeTab (4);
+#endif
+	myFrame. show ();
+
 //	the "workers"
 	mySpectrumScope		= new spectrumScope	(spectrumDisplay,
 	                                                512, dabSettings);
@@ -62,6 +68,9 @@
 	myTII_Scope		= new spectrumScope	(tiiDisplay,
 	                                                512, dabSettings);
 	myIQDisplay		= new IQDisplay		(iqDisplay, 512);
+
+	myChannelScope		= new channelScope	(channelPlot,
+	                                                 128, dabSettings);
 
 	dabSettings		-> beginGroup ("displayWidget");
         currentTab		= dabSettings -> value ("tabSettings", 0). toInt ();
@@ -87,6 +96,7 @@
 	delete		myNullScope;
 	delete		myCorrelationScope;
 	delete		myTII_Scope;
+	delete		myChannelScope;
 	delete		myIQDisplay;
 }
 
@@ -101,7 +111,8 @@ void	displayWidget::switch_tab	(int t) {
 int	displayWidget::get_tab		() {
 	return currentTab == 0 ? SHOW_SPECTRUM :
 	       currentTab == 1 ? SHOW_CORRELATION :
-	       currentTab == 2 ? SHOW_NULL : SHOW_TII;
+	       currentTab == 2 ? SHOW_NULL : 
+	       currentTab == 3 ? SHOW_TII : SHOW_CHANNEL;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -140,34 +151,8 @@ static double avg [4 * 512];
 	myWaterfallScope	-> display (X_axis, Y_value, 
 	                                    waterfallSlider -> value (),
 	                                    freq / 1000);
-	
 }
 //
-//	for "null" we get a segment of 1024 timedomain samples
-//	(the amplitudes!)
-//	that can be displayed directly
-void	displayWidget::show_null	(Complex  *v, int amount) {
-	if  (currentTab != SHOW_NULL)
-	   return;
-	if (amount < 1024)
-	   return;
-	for (int i = 0; i < 512; i ++)
-	   v [i] = (v [2 * i] + v [2 * i + 1]) / 2.0f;
-	myNullScope		-> display (v, amount);
-	double X_axis [512];
-	double Y_value [512];
-	float	MMax	= 0;
-	for (int i = 0; i < 512; i ++) {
-	   X_axis [i] = 256 + i;
-	   Y_value [i] = abs (v [i]);
-	   if (Y_value [i] > MMax)
-	      MMax = Y_value [i];
-	}
-	for (int i = 0; i < 512; i ++)
-	   Y_value [i] *= 50.0 / MMax;
-	myWaterfallScope	-> display (X_axis, Y_value, 
-	                                    waterfallSlider -> value (), 256);
-}
 //
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
@@ -198,6 +183,31 @@ void	displayWidget::showCorrelation	(std::vector<float> &v,
 	myWaterfallScope -> display (X_axis, Y_value, 
 	                             waterfallSlider -> value (),
 	                             v. size () / 2);
+}
+//	for "null" we get a segment of 1024 timedomain samples
+//	(the amplitudes!)
+//	that can be displayed directly
+void	displayWidget::show_null	(Complex  *v, int amount) {
+	if  (currentTab != SHOW_NULL)
+	   return;
+	if (amount < 1024)
+	   return;
+	for (int i = 0; i < 512; i ++)
+	   v [i] = (v [2 * i] + v [2 * i + 1]) / 2.0f;
+	myNullScope		-> display (v, amount);
+	double X_axis [512];
+	double Y_value [512];
+	float	MMax	= 0;
+	for (int i = 0; i < 512; i ++) {
+	   X_axis [i] = 256 + i;
+	   Y_value [i] = abs (v [i]);
+	   if (Y_value [i] > MMax)
+	      MMax = Y_value [i];
+	}
+	for (int i = 0; i < 512; i ++)
+	   Y_value [i] *= 50.0 / MMax;
+	myWaterfallScope	-> display (X_axis, Y_value, 
+	                                    waterfallSlider -> value (), 256);
 }
 //
 //	for "tii" we get a segment of 2048 time domain samples,
@@ -233,6 +243,34 @@ static double avg [4 * 512];
 	                                    waterfallSlider -> value (),
 	                                    freq / 1000);
 }
+
+void	displayWidget::showChannel	(std::vector<Complex> Values) {
+double	amplitudeValues [128];
+double	phaseValues     [128];
+double	X_axis          [128];
+double	waterfall_X	[512];
+double	waterfall_Y	[512];
+
+	if (currentTab != SHOW_CHANNEL)
+	   return;
+	for (int i = 0; i < 128; i ++) {
+	   amplitudeValues [i] = 2 * abs (Values [i]);
+	   phaseValues     [i] = 2 * arg (Values [i]) + 30;
+	   X_axis          [i] = - 1536 / 2 + 12 * i;
+	}
+	myChannelScope	-> display (X_axis, amplitudeValues, phaseValues, 100);
+
+	for (int i = 0; i < 128; i ++) {
+	   for (int j = 0; j < 4; j ++) {
+	      waterfall_X [4 * i + j ] = -1536 / 2 + 12 * i + 3 * j;
+	      waterfall_Y [4 * i + j] = amplitudeValues [i];
+	   }
+	}
+	myWaterfallScope	-> display (waterfall_X, waterfall_Y, 
+	                                    waterfallSlider -> value (),
+	                                    0);
+}
+
 //
 //	for IQ we get a segment of 512 complex v alues, i.e. the
 //	decoded values
@@ -281,6 +319,9 @@ void	displayWidget::show_clockErr	(int e) {
 
 void	displayWidget::showFrequency (float f) {
 	frequencyDisplay	-> display (f);
+}
+
+void	displayWidget::show_cpuLoad	(float use) {
 }
 
 void	displayWidget::showTransmitters	(QByteArray &tr) {

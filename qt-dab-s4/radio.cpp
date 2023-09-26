@@ -268,6 +268,7 @@ uint8_t	dabBand;
 	globals. responseBuffer	= &responseBuffer;
 	globals. tiiBuffer	= &tiiBuffer;
 	globals. nullBuffer	= &nullBuffer;
+	globals. channelBuffer	= nullptr;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
 
