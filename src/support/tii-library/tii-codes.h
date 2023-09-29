@@ -35,7 +35,7 @@ public:
 	}
 	~position	() {}
 	float latitude;
-	float longiture;
+	float longitude;
 } position;
 
 typedef struct {
