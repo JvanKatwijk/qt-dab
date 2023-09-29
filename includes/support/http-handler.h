@@ -31,11 +31,12 @@
 #include	<complex>
 #include	<mutex>
 #include	<QString>
+#include	"tii-codes.h"
 class	RadioInterface;
 
 typedef struct {
 	uint8_t	type;
-	std::complex<float> coords;
+	position coords;
 	QString transmitterName;
 	QString channelName;
 	QString	dateTime;
@@ -51,7 +52,7 @@ public:
 		httpHandler	(RadioInterface *,
 	                         const QString &mapPort,
 	                         const QString &browserAddress,
-	                         std::complex<float> address,
+	                         position	address,
 	                         const QString &saveName,
 	                         bool	autoBrowse);
 		~httpHandler	();
@@ -59,7 +60,7 @@ public:
 	void	stop		();
 	void	run		();
 	void	putData		(uint8_t	type,
-	                         std::complex<float>target,
+	                         position	target,
 	                         QString transmittername,
 	                         QString channelName,
 	                         QString dateTime,
@@ -70,7 +71,7 @@ private:
 	QString			*saveName;
 	RadioInterface		*parent;
 	QString			mapPort;
-	std::complex<float> homeAddress;
+	position		homeAddress;
 	std::vector<httpData> transmitterVector;
 
 #ifdef	__MINGW32__
@@ -80,7 +81,7 @@ private:
 #endif
 	std::atomic<bool>	running;
 	std::thread	threadHandle;
-	std::string     theMap		(std::complex<float> address);
+	std::string     theMap		(position address);
 	std::string	coordinatesToJson (std::vector<httpData> &t);
 	std::vector<httpData>	transmitterList;
 	std::mutex	locker;

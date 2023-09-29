@@ -370,12 +370,12 @@ uint8_t	dabBand;
 	   }
 	}
 
-	channel. targetPos	= std::complex<float> (0, 0);
-	float local_lat		=
+	channel. targetPos	=  position {0, 0};
+	channel. localPos. latitude	=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	float local_lon		=
+	channel. localPos. longitude	=
 	             dabSettings -> value ("longitude", 0). toFloat ();
-	channel. localPos	= std::complex<float> (local_lat, local_lon);
+
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
 	         this, SLOT (loadTable ()));
 
@@ -2172,35 +2172,29 @@ bool	tiiChange	= false;
 	}
 
 	channel. transmitterName = theName;
-	float latitude, longitude, power;
-	tiiProcessor. get_coordinates (&latitude, &longitude, &power,
+	float  power;
+	tiiProcessor. get_coordinates (channel. targetPos, power,
 	                               channel. realChannel ?
 	                                  channel. channelName :
 	                                  "any",
 	                               theName);
-	channel. targetPos	= std::complex<float> (latitude, longitude);
 	LOG ("transmitter ", channel. transmitterName);
-	LOG ("coordinates ", QString::number (latitude) + " " +
-	                        QString::number (longitude));
+	LOG ("coordinates ",
+	               QString::number (channel. targetPos. latitude) + " " +
+	               QString::number (channel. targetPos. longitude));
 	LOG ("current SNR ", QString::number (channel. snr));
 	QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
 //
-	float ownLatitude	= real (channel. localPos);
-	float ownLongitude	= imag (channel. localPos);
 
-	if ((ownLatitude == 0) || (ownLongitude == 0))
+	if (channel. localPos. latitude == 0)
 	   return;
 
-	int distance	= tiiProcessor. distance (latitude,
-	                                          longitude,
-	                                          ownLatitude,
-	                                          ownLongitude);
-	int corner	 = tiiProcessor.  corner (latitude,
-	                                          longitude,
-	                                          ownLatitude,
-	                                          ownLongitude);
+	int distance	= tiiProcessor. distance (channel. targetPos,
+	                                          channel. localPos);
+	int corner	 = tiiProcessor.  corner (channel. targetPos,
+	                                          channel. localPos);
 	LOG ("distance ", QString::number (distance));
 	LOG ("corner ", QString::number (corner));
 	labelText +=  + " " + QString::number (distance) + " km" +
@@ -2220,7 +2214,7 @@ bool	tiiChange	= false;
 	}
 //
 //	to be certain, we check
-	if (channel. targetPos == std::complex<float> (0, 0) ||
+	if ((channel. targetPos. latitude == 0) ||
 	                                  (distance == 0) || (corner== 0))
 	   return;
 
@@ -3354,10 +3348,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	my_tiiViewer. clear ();
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, position {-1, -1}, "", "", "", 0, 0, 0, 0);
 	show_for_safety ();
 	my_ofdmHandler		-> start ();
 	int	switchDelay	=
@@ -3412,7 +3406,6 @@ void	RadioInterface::stopChannel	() {
 	presetTimer. stop 	();
 	channelTimer. stop	();
 	channel. cleanChannel	();
-	channel. targetPos	= std::complex<float> (0, 0);
 	if (transmitterTags_local && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
@@ -4585,11 +4578,10 @@ void	RadioInterface::handle_LoggerButton (int s) {
 void	RadioInterface::handle_set_coordinatesButton	() {
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
-	float local_lat		=
+	channel. localPos. latitude	=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	float local_lon		=
+	channel. localPos. longitude	=
 	             dabSettings -> value ("longitude", 0). toFloat ();
-	channel. localPos	= std::complex<float> (local_lat, local_lon);
 }
 
 void	RadioInterface::loadTable	 () {
@@ -4614,7 +4606,7 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 //
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
-	if (real (channel. localPos) == 0)
+	if (channel. localPos. latitude == 0)
 	   return;
 
 	if (mapHandler == nullptr)  {
@@ -4669,7 +4661,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	maxDistance = -1;
 	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
-	channel. targetPos	= std::complex<float> (0, 0);
+	channel. targetPos	= position {0, 0};
 	if ((transmitterTags_local) && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
 }

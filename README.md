@@ -1,35 +1,29 @@
 # Qt-DAB-6 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
 
-**Qt-DAB-4**, **Qt-DAB-5** and **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
+-------------------------------------------------------------------
+
+![6.1](/qt-dab-logo.png?raw=true)
+![6.1](/DABplus_Logo_Colour_sRGB.png?raw=true)
 
 -------------------------------------------------------------------
 
-![6.0](/qt-dab-logo.png?raw=true)
-![6.0](/DABplus_Logo_Colour_sRGB.png?raw=true)
+**Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
--------------------------------------------------------------------
 
-Next to the versions 4.7 and 5.4 there is a third  - slightly experimental -
-version, with the labeling 6.0.
-The difference between 5.X and 6.0 is the formation
-of a *single* widget for the various displays.
-
-![6.0](/qt-dab-6.0.png?raw=true)
+![6.1](/qt-dab-6.1.png?raw=true)
 Table of Contents
 =================================================================
 
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
-* [Documentation](#documentation)
-* [Installation on Windows](#installation-on-windows)
-* [Installation on Linux x64](#installation-on-linux-x64)
-* [Interfacing to another SDR device](#interfacing-to-another-sdr-device)
-* [Using user-specified bands](#using-user-specified-bands)
-* [xml-files and support](#xml-files-and-support)
-* [Differences between Qt-DAB 4 and 5](#qt-dab-4-and-qt-dab-5-same-functionality-different-gui)
 * [Showing a map for TII](#a-note-on-showing-a-map)
 * [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
+* [Installation on Windows](#Installation-on-Windows)
+* [Installation on Linux](#Installation-on-Linux)
+* [Using user specified bands](#Using-user-specified-bands)
+* [xml-files and support](#xml-files-and-support)
+* [A Note on previous versions](#A-Note-on-previous-versions)
 * [Copyright](#copyright)
 
 Introduction
@@ -93,64 +87,54 @@ Partly implemented:
 While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, RSP Ia and RSP duo, the 3.0X support handles all SDRplay RSP's. It is recommended to use the 3.0X support library. Note further that when - on Windows - a 3.10 (or higher) library is installed (e.g. by installing SDRuno), the 2.13 library is not reachable.
 
 
-qt-dab-4 and qt-dab-5, (almost) same functionality, different GUI
-=================================================================
+Widgets and scopes
+=======================================================================
 
-Qt-DAB is in two versions, a version 4 and a version 5.
+![6.1](/qt-dab-6-main-widget.png)
 
-The basic idea behing Qt-5 is to limit the number of controls on the main widget and shift everything, not needed for simple interaction to the configuration widget (which is now called configuration and control)
-Both versions of Qt-DAB are built from (mostly) the same set of sources,
-the GUI and the software interfacing the GUI to the rest of the program.
+The main widget of Qt-DAB provides all means for selecting a channel,
+and selecting a service. Furthermore, it provides full control over
+the visibility of the other widgets of the GUI.
 
-**dabMini**, i.e. the small version for just listening to a service, is obsolete, the source can be found as subdirectory in the "obsolete" directory.
+![6.1](/technical-wodget.png}
 
-![5.2](/qt-dab-5-main-widget.png?raw=true)
-![4.4](/qt-dab-4-main-widget.png?raw=true)
+The technical widget - the visibility of which depends on the settings
+in the main widget, gives full information about the selected audio service.
 
-Of course, the configuration and control widget in Qt-DAB-5 is larger
-and contains more settings than the configuration and control widget
-for Qt-DAB-4.
+![6.1](/correlation-scope.png)
 
-Since the Qt-DAB-5 main widget shows the station labels (if any),
-the option - available in Qt-DAB-4 - for displaying the station labels
-on a separate widget is not needed.
+Different from previous versions, a single widget, the spectrum widget,
+contains - as tabbed widget - the 4 or 5 scopes to show different aspects
+of the DAN signal. 
+It contains an IQscope, showing the constellation of the decoded data,
+and a waterfall scope, showinh the progress in time of the data
+that is displayed in the selected scope.
+Previous versions V5.4 and V4.7 will be maintained.
 
-![4.5](/qt-dab-4-config-widget.png?raw=true)
-![5.2](/qt-dab-5-config-widget.png?raw=true)
+Scopes are
+ * spectrum scope, showing the spectrum of the incoming DAB signal;
 
-The functionality of the versions is (almost) the same, version 5.X has
-(most users will not use it though) the possibility of
-generating "eti" files.  If there is serious interest for
-adding the feature to the Qt-DAB-4 interface, then let me know.
+ * correlation scope, showing the correlation between the incoming signal and
+some predefined data;
 
-The Qt-DAB-5.2 version has a slightly modified "technical window", 
-it now contains a small spectrum display of the audio output.
-Both versions have additional the *audiorate* of the audio service
-(note that all rates are converted into an audiorate of 48000),
-and the success percentage of the audio.
+ * the NULL scope, showing the transition between the NULL period and
+the first data block of a DAB frame;
 
-![4.6](/4.6-technical-widget.png?raw=true)
-![5.3](/5.3-technical-widget.png?raw=true)
+ * the TII scope, showing the spectrum of the data in the NULL period, since that data contains the TII (Transmitter Identification Information) data in an encoded form;
 
-In the versions 5.3 and 4.6 the spectrum scope now shows - next to
-the spectrum of the data in the selected channel, the waterfall of the spectrum
-and - in the time domain - the border between the NULL period and
-the first data block.
+ * the channel scope, showing the channel effect on the transmitted data, i.e.
+the deformation of the transmitted signal.
 
-![5.3](/ideal-signal.png?raw=true)
-![5.3](/real-signal.png?raw=true)
+![8.1](/configuration-and-control.png)
 
-The right hand side numbers give some information on the (quality) of
-the signal. In the "ideal" signal, the constellation diagram shows 4
-dots, one in each quadrant, in general, the signal will be less ideal.
-The "std deviation" indicator tells the standard deviation of the
-dots in the conestallation diagram. Lower is better.
+The configuration and control widget contains check boxes and
+buttons with which the configuration of the decoding process can be
+influenced.
 
-----------------------------------------------------------------------
 A note on showing a map
----------------------------------------------------------------------
+=======================================================================
 
-![4.4](/qt-dab-maps.png?raw=true)
+![6.1](/qt-dab-maps.png?raw=true)
 
 Since some time the Qt-DAB versions have a button labeled **http**, when touched, a small webserver starts that can show the position(s) of the transmitter(s) received on the map. 
 
@@ -216,30 +200,11 @@ If running on an x64 PC or *bullseye* on the RPI you might consider to install `
 	export QT_PLUGIN_PATH=$Qt_5/plugins
 ```
 
-Widgets and scopes for Qt-DAB
-=================================================================
-
-Qt-DAB always shows a main widget; a number of **optional** widgets is visible under user control.
-
-Apart from the widgets, already shown, there are
-
-  * a configuration widget (V4) or a configuration and control widget (V5)
-  * a widget with controls for the attached device,
-  * a widget showing the spectrum of the NULL period between successive DAB frames from which the TII is derived,
-  * a widget showing the correlations response(s) from different transmitters in the SFN,
-  * a widget showing the development - over time - of the SNR,
-  * if configured and data is detected, the time table for the current audio service
-
-![Qt-DAB totaal](/qt-dab-scan.png?raw=true)
-
-Another widget shows when running a *scan*; the widget shows the contents of the ensembles found in the selected channels. Since 3.5 the possibility exists to save a detailed description of the services in the different channels, in a format easy to process with LibreOffice or comparable programs (a `.csv` file).
-
-Depending on a setting in configuration widget, a logo or slide, transmitted as Program Associated Data with the audio transmission, will be shown here or on a separate widget.
 
 Documentation
 =================================================================
 
-An extensive **user's guide** - in PDF format - for the 4.4 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
+An extensive **user's guide** - in PDF format - for the 6.1 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
 
 ![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
 
@@ -259,14 +224,6 @@ For Linux-x64 systems, an **appImage** can be found in the releases section, htt
 next to the executable qt-dab program, the required libraries.
 
 Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
-
-
-Interfacing to another SDR device
-=================================================================
-
-There exist - obviously - other devices than the ones supported here. Interfacing another device is not very complicated, it might be done using the **Soapy** interface, or one might write a new interface class.
-
-A complete description of how to interface a device to Qt-DAB is given in the user's manual.
 
 
 Using user specified bands
@@ -323,10 +280,16 @@ While the current implementation for reading such files is limited to a single d
 The picture shows the reader when reading a file, generated from raw data emitted by the HackRF device.
 
 
+A Note on previous versions
+=================================================================
+Previous versions V5.4 and V4.7 will be maintained. 
+Note that the different versions use the same sourcetree, the - almost -
+only difference being the GUI and its control.
+
 Copyright
 =================================================================
 
-	Copyright (C)  2016 .. 2022
+	Copyright (C)  2016 .. 2024
 	Jan van Katwijk (J.vanKatwijk@gmail.com)
 	Lazy Chair Computing
 

@@ -54,7 +54,7 @@
 #include	"mapport.h"
 #include	"upload.h"
 #include	"techdata.h"
-#include	"font-selector.h"
+#include	"font-chooser.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -186,6 +186,7 @@ QString scanmodeText (int e) {
 #define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
 #define	SKIN_BUTTON		QString ("skinButton")
 #define	FONT_BUTTON		QString ("fontButton")
+#define	PORT_SELECTOR		QString ("portSelector")
 
 static
 uint8_t convert (QString s) {
@@ -338,12 +339,11 @@ uint8_t	dabBand;
 	   }
 	}
 
-	channel. targetPos	= std::complex<float> (0, 0);
-	float local_lat		=
+	channel. targetPos	= position {0, 0};
+	channel. localPos. latitude 		=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	float local_lon		=
+	channel. localPos. longitude 		=
 	             dabSettings -> value ("longitude", 0). toFloat ();
-	channel. localPos	= std::complex<float> (local_lat, local_lon);
 
 	logFile		= nullptr;
 
@@ -643,6 +643,7 @@ uint8_t	dabBand;
 	if (hidden) { 	// make it visible
 	   configButton	-> setText ("hide controls");
 	   dabSettings	-> setValue ("hidden", 0);
+	   dabSettings	-> setValue ("deviceVisible", 1);
 	}
 	configDisplay. show ();
 	connect (configWidget. deviceSelector,
@@ -843,12 +844,14 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	QString theTime;
 	QString SNR	= "SNR " + QString::number (channel. snr);
 	if (configWidget. utcSelector -> isChecked ())
-	   theTime	= convertTime (UTC. year,  UTC. month,
-	                               UTC. day, UTC. hour, UTC. minute);
+	   theTime	= convertTime (UTC);
+//	   theTime	= convertTime (UTC. year,  UTC. month,
+//	                               UTC. day, UTC. hour, UTC. minute);
 	else
-	   theTime	= convertTime (localTime. year,  localTime. month,
-	                               localTime. day, localTime. hour,
-	                               localTime. minute);
+	   theTime	= convertTime (localTime);
+//	   theTime	= convertTime (localTime. year,  localTime. month,
+//	                               localTime. day, localTime. hour,
+//	                               localTime. minute);
 
 	QString header		= channel. ensembleName + ";" +
 	                          channel. channelName  + ";" +
@@ -1799,6 +1802,21 @@ char minuteString [3];
 	                       QString (minuteString);
 	return result;
 }
+
+QString	RadioInterface::convertTime (struct theTime &t) {
+char dayString [3];
+char hourString [3];
+char minuteString [3];
+	sprintf (dayString, "%.2d", t. day);
+	sprintf (hourString, "%.2d", t. hour);
+	sprintf (minuteString, "%.2d", t. minute);
+	QString result = QString::number (t. year) + "-" +
+	                       monthTable [t. month - 1] + "-" +
+	                       QString (dayString) + "  " +
+	                       QString (hourString) + ":" +
+	                       QString (minuteString);
+	return result;
+}
 //
 //	called from the MP4 decoder
 void	RadioInterface::show_frameErrors (int s) {
@@ -2415,7 +2433,7 @@ void	RadioInterface::selectService (QModelIndex ind) {
 QString	selectedService = ind. data (Qt::DisplayRole). toString ();
 	
 	for (auto serv : serviceList) {
-           if (serv. name == selectedService) {
+	   if (serv. name == selectedService) {
 	      localSelect (channel. channelName, selectedService);
 	      break;
 	   }
@@ -2871,10 +2889,10 @@ int	tunedFrequency	=
 	dabSettings		-> setValue ("channel", theChannel);
 	channel. frequency	= tunedFrequency / 1000;
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, std::complex<float> (0, 0), "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET,channel. targetPos, "", "", "", 0, 0, 0, 0);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, std::complex<float>(-1, -1), "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, position {-1, -1}, "", "", "", 0, 0, 0, 0);
 	show_for_safety ();
 	my_ofdmHandler		-> start ();
 	int	switchDelay	=
@@ -2929,7 +2947,8 @@ void	RadioInterface::stopChannel	() {
 	presetTimer. stop 	();
 	channelTimer. stop	();
 	channel. cleanChannel	();
-	channel. targetPos	= std::complex<float> (0, 0);
+	channel. targetPos. latitude	= 0;
+	channel. targetPos. longitude	= 0;
 	if (transmitterTags_local && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
 	transmitter_country     -> setText ("");
@@ -3302,14 +3321,14 @@ void	RadioInterface::hide_for_safety () {
 	configWidget. dumpButton		->	hide ();
 	prevServiceButton	->	hide ();
 	nextServiceButton	->	hide ();
-	configWidget. contentButton		->	hide ();
+	contentButton		->	hide ();
 }
 
 void	RadioInterface::show_for_safety () {
 	configWidget. dumpButton	->	show ();
 	prevServiceButton	->	show ();
 	nextServiceButton	->	show ();
-	configWidget. contentButton		->	show ();
+	contentButton		->	show ();
 }
 //
 //	Handling the Mute button
@@ -3372,14 +3391,14 @@ void	RadioInterface::new_channelIndex (int index) {
 	if (channelSelector -> currentIndex () == index)
 	   return;
 	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-                    this, SLOT (handle_channelSelector (const QString &)));
+	            this, SLOT (handle_channelSelector (const QString &)));
 	channelSelector	-> blockSignals (true);
 	set_newChannel (index);
 	while (channelSelector -> currentIndex () != index)
 	   usleep (2000);
 	channelSelector	-> blockSignals (false);
 	connect (channelSelector, SIGNAL (activated (const QString &)),
-                 this, SLOT (handle_channelSelector (const QString &)));
+	         this, SLOT (handle_channelSelector (const QString &)));
 }
 //
 /////////////////////////////////////////////////////////////////////////
@@ -3520,6 +3539,12 @@ QString fontButton_font	=
 QString	fontButton_color =
 	   dabSettings -> value (FONT_BUTTON + "_color",
 	                                              "black"). toString ();
+QString portSelector_font	=
+	   dabSettings -> value (PORT_SELECTOR + "_font",
+	                                              "white"). toString ();
+QString	portSelector_color =
+	   dabSettings -> value (PORT_SELECTOR + "_color",
+	                                              "black"). toString ();
 QString	loadTableButton_color =
 	   dabSettings -> value (LOAD_TABLE_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -3529,7 +3554,7 @@ QString loadTableButton_font	=
 	dabSettings	-> endGroup ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	configWidget. contentButton	->
+	contentButton	->
 	              setStyleSheet (temp. arg (contentButton_color,
 	                                        contentButton_font));
 
@@ -3537,7 +3562,7 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (resetButton_color,	
 	                                        resetButton_font));
 
-	configWidget. show_spectrumButton ->
+	spectrumButton ->
 	              setStyleSheet (temp. arg (spectrumButton_color,
 	                                        spectrumButton_font));
 
@@ -3556,7 +3581,7 @@ QString loadTableButton_font	=
 	configWidget. dumpButton ->
 	              setStyleSheet (temp. arg (dumpButton_color,
 	                                        dumpButton_font));
-	configWidget. scheduleButton ->
+	scheduleButton ->
 	              setStyleSheet (temp. arg (scheduleButton_color,
 	                                        scheduleButton_font));
 
@@ -3574,6 +3599,10 @@ QString loadTableButton_font	=
 	configWidget. fontButton ->
 	              setStyleSheet (temp. arg (fontButton_color,
 	                                        fontButton_font));
+
+	configWidget. portSelector ->
+	              setStyleSheet (temp. arg (portSelector_color,
+	                                        portSelector_font));
 
 	muteButton	->
 	              setStyleSheet (temp. arg (muteButton_color,
@@ -3619,7 +3648,7 @@ QString loadTableButton_font	=
 }
 
 void	RadioInterface::color_contentButton	() {
-	set_buttonColors (configWidget. contentButton, CONTENT_BUTTON);
+	set_buttonColors (contentButton, CONTENT_BUTTON);
 }
 
 void	RadioInterface::color_detailButton	() {
@@ -3635,7 +3664,7 @@ void	RadioInterface::color_scanButton	() {
 }
 
 void	RadioInterface::color_spectrumButton	()	{
-	set_buttonColors (configWidget. show_spectrumButton, SPECTRUM_BUTTON);
+	set_buttonColors (spectrumButton, SPECTRUM_BUTTON);
 }
 
 void	RadioInterface::color_snrButton		() {
@@ -3687,7 +3716,7 @@ void	RadioInterface::color_httpButton	() 	{
 }
 
 void	RadioInterface::color_scheduleButton	() 	{
-	set_buttonColors (configWidget. scheduleButton, SCHEDULE_BUTTON);
+	set_buttonColors (scheduleButton, SCHEDULE_BUTTON);
 }
 
 void	RadioInterface::color_set_coordinatesButton	() 	{
@@ -3705,6 +3734,10 @@ void	RadioInterface::color_skinButton	() 	{
 
 void	RadioInterface::color_fontButton	() 	{
 	set_buttonColors (configWidget. fontButton, FONT_BUTTON);
+}
+
+void	RadioInterface::color_portSelector	() 	{
+	set_buttonColors (configWidget. portSelector, PORT_SELECTOR);
 }
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
@@ -4100,11 +4133,10 @@ void	RadioInterface::handle_LoggerButton (int s) {
 void	RadioInterface::handle_set_coordinatesButton	() {
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
-	float local_lat		=
+	channel. localPos. latitude		=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	float local_lon		=
+	channel. localPos. longitude		=
 	             dabSettings -> value ("longitude", 0). toFloat ();
-	channel. localPos	= std::complex<float> (local_lat, local_lon);
 }
 
 void	RadioInterface::loadTable	 () {
@@ -4129,7 +4161,7 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 //
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
-	if (real (channel. localPos) == 0)
+	if (channel. localPos. latitude == 0)
 	   return;
 
 	if (mapHandler == nullptr)  {
@@ -4184,7 +4216,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	maxDistance = -1;
 	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
-	channel. targetPos	= std::complex<float> (0, 0);
+	channel. targetPos	= position {0, 0};
 	if ((transmitterTags_local) && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
 }
@@ -4315,10 +4347,10 @@ void	RadioInterface::handle_clearScan_Selector (int c) {
 
 void    RadioInterface::handle_skinSelector     () {
 skinHandler theSkins;
-        int skinIndex = theSkins. QDialog::exec ();
-        QString skinName = theSkins. skins. at (skinIndex);
-        fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
-        dabSettings -> setValue ("skin", skinName); 
+	int skinIndex = theSkins. QDialog::exec ();
+	QString skinName = theSkins. skins. at (skinIndex);
+	fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
+	dabSettings -> setValue ("skin", skinName); 
 }
 //
 //	access functions to the display widget
@@ -4351,6 +4383,7 @@ std::vector<Complex> inBuffer (2048);
 void	RadioInterface::showCorrelation		(int s, int g, QVector<int> r) {
 std::vector<float> inBuffer;
 
+	(void)g;
 	inBuffer. resize (s);
 	responseBuffer. getDataFromBuffer (inBuffer. data (), s);
 	responseBuffer. FlushRingBuffer ();
@@ -4448,35 +4481,28 @@ bool	tiiChange	= false;
 	}
 
 	channel. transmitterName = theName;
-	float latitude, longitude, power;
-	tiiProcessor. get_coordinates (&latitude, &longitude, &power,
+	float power;
+	tiiProcessor. get_coordinates (channel. targetPos, power,
 	                               channel. realChannel ?
 	                                  channel. channelName :
 	                                  "any",
 	                               theName);
-	channel. targetPos	= std::complex<float> (latitude, longitude);
 	LOG ("transmitter ", channel. transmitterName);
-	LOG ("coordinates ", QString::number (latitude) + " " +
-	                        QString::number (longitude));
+	LOG ("coordinates ",
+	           QString::number (channel. targetPos. latitude) + " " +
+	                   QString::number (channel. targetPos. longitude));
 	LOG ("current SNR ", QString::number (channel. snr));
 	QString labelText =  channel. transmitterName;
 //
 //      if our own position is known, we show the distance
 //
-	float ownLatitude	= real (channel. localPos);
-	float ownLongitude	= imag (channel. localPos);
-
-	if ((ownLatitude == 0) || (ownLongitude == 0))
+	if (channel. localPos. latitude == 0)
 	   return;
 
-	int distance	= tiiProcessor. distance (latitude,
-	                                          longitude,
-	                                          ownLatitude,
-	                                          ownLongitude);
-	int corner	 = tiiProcessor.  corner (latitude,
-	                                          longitude,
-	                                          ownLatitude,
-	                                          ownLongitude);
+	int distance	= tiiProcessor. distance (channel. targetPos,
+	                                          channel. localPos);
+	int corner	= tiiProcessor.  corner (channel. targetPos,
+	                                         channel. localPos);
 	LOG ("distance ", QString::number (distance));
 	LOG ("corner ", QString::number (corner));
 	labelText +=  + " " + QString::number (distance) + " km" +
@@ -4496,7 +4522,7 @@ bool	tiiChange	= false;
 	}
 //
 //	to be certain, we check
-	if (channel. targetPos == std::complex<float> (0, 0) ||
+	if ((channel. targetPos. latitude == 0) ||
 	                                  (distance == 0) || (corner== 0))
 	   return;
 
@@ -4554,7 +4580,7 @@ void	RadioInterface::showQuality	(float q,
 	if (!running. load ())
 	   return;
 	if (!newDisplay. isHidden ())
-           newDisplay. showQuality (q, sco, freqOffset); 
+	   newDisplay. showQuality (q, sco, freqOffset); 
 }
 //
 //	called from the MP4 decoder
@@ -4663,25 +4689,25 @@ void	RadioInterface::connect_configWidget () {
 	         this, SLOT (handle_skipFile_button ()));
 
 	connect (configWidget. dumpButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_sourcedumpButton ()));
+	         this, SLOT (handle_sourcedumpButton ()));
 
-	connect (configWidget. scheduleButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_scheduleButton ()));
+	connect (scheduleButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleButton ()));
 
-	connect (configWidget. show_spectrumButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_spectrumButton ()));
+	connect (spectrumButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_spectrumButton ()));
 
-        connect (configWidget. snrButton, SIGNAL (clicked ()), 
-                 this, SLOT (handle_snrButton ()));
+	connect (configWidget. snrButton, SIGNAL (clicked ()), 
+	         this, SLOT (handle_snrButton ()));
 
-        connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_devicewidgetButton ()));
+	connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_devicewidgetButton ()));
 
 	connect (configWidget. resetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_resetButton ()));
+	         this, SLOT (handle_resetButton ()));
 
-	connect (configWidget. contentButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_contentButton ()));
+	connect (contentButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_contentButton ()));
 
 	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_onTop (int)));
@@ -4693,7 +4719,7 @@ void	RadioInterface::connect_configWidget () {
 	         this, SLOT (handle_transmSelector (int)));
 
 	connect (configWidget. skinButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_skinSelector ()));
+	         this, SLOT (handle_skinSelector ()));
 
 	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
@@ -4715,43 +4741,43 @@ void	RadioInterface::connect_configWidget () {
 	         this, SLOT (handle_fontSelect ()));
 
 	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_dlTextButton ()));
+	         this, SLOT (handle_dlTextButton ()));
 
 	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
-                 this, SLOT (handle_LoggerButton (int)));
+	         this, SLOT (handle_LoggerButton (int)));
 
 	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
-                 this,  SLOT (set_streamSelector (int)));
+	         this,  SLOT (set_streamSelector (int)));
 
-	connect (configWidget. contentButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_contentButton ()));
+	connect (contentButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_contentButton ()));
 
 	connect (configWidget. resetButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_resetButton ()));
+	         this, SLOT (color_resetButton ()));
 
-	connect (configWidget. show_spectrumButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_spectrumButton ()));
+	connect (spectrumButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_spectrumButton ()));
 
 	connect (configWidget. snrButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_snrButton ()));
+	         this, SLOT (color_snrButton ()));
 
 	connect (configWidget. devicewidgetButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_devicewidgetButton ()));
+	         this, SLOT (color_devicewidgetButton ()));
 
 	connect (configWidget. dumpButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_sourcedumpButton ()));
+	         this, SLOT (color_sourcedumpButton ()));
 
 	connect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_dlTextButton ()));
+	         this, SLOT (color_dlTextButton ()));
 
-	connect (configWidget. scheduleButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_scheduleButton ()));
+	connect (scheduleButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_scheduleButton ()));
 
 	connect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_set_coordinatesButton ()));
+	         this, SLOT (color_set_coordinatesButton ()));
 
 	connect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_loadTableButton ()));
+	         this, SLOT (color_loadTableButton ()));
 
 	connect (configWidget. skinButton, SIGNAL (rightClicked ()),	
 	         this, SLOT (color_skinButton ()));
@@ -4760,17 +4786,19 @@ void	RadioInterface::connect_configWidget () {
 	         this, SLOT (color_fontButton ()));
 
 	connect (configWidget. portSelector, SIGNAL (clicked ()),
-                 this, SLOT (handle_portSelector ()));
+	         this, SLOT (handle_portSelector ())
+);
+	connect (configWidget. portSelector, SIGNAL (rightClicked ()),
+	         this, SLOT (color_portSelector ()));
 
 	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_set_coordinatesButton ()));
+	         this, SLOT (handle_set_coordinatesButton ()));
 
 	connect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
-                 this, SLOT (handle_eti_activeSelector (int)));
+	         this, SLOT (handle_eti_activeSelector (int)));
 
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
-
 }
 
 void	RadioInterface::disconnect_configWidget () {
@@ -4804,25 +4832,25 @@ void	RadioInterface::disconnect_configWidget () {
 	         this, SLOT (handle_skipFile_button ()));
 
 	disconnect (configWidget. dumpButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_sourcedumpButton ()));
+	         this, SLOT (handle_sourcedumpButton ()));
 
-	disconnect (configWidget. scheduleButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_scheduleButton ()));
+	disconnect (scheduleButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleButton ()));
 
-	disconnect (configWidget. show_spectrumButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_spectrumButton ()));
+	disconnect (spectrumButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_spectrumButton ()));
 
-        connect (configWidget. snrButton, SIGNAL (clicked ()), 
-                 this, SLOT (handle_snrButton ()));
+	connect (configWidget. snrButton, SIGNAL (clicked ()), 
+	         this, SLOT (handle_snrButton ()));
 
-        connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_devicewidgetButton ()));
+	connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_devicewidgetButton ()));
 
 	disconnect (configWidget. resetButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_resetButton ()));
+	         this, SLOT (handle_resetButton ()));
 
-	disconnect (configWidget. contentButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_contentButton ()));
+	disconnect (contentButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_contentButton ()));
 
 	disconnect (configWidget. onTop, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_onTop (int)));
@@ -4834,7 +4862,7 @@ void	RadioInterface::disconnect_configWidget () {
 	         this, SLOT (handle_transmSelector (int)));
 
 	disconnect (configWidget. skinButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_skinSelector ()));
+	         this, SLOT (handle_skinSelector ()));
 
 	disconnect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
@@ -4856,64 +4884,64 @@ void	RadioInterface::disconnect_configWidget () {
 	         this, SLOT (handle_fontSelect ()));
 
 	disconnect (configWidget. dlTextButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_dlTextButton ()));
+	         this, SLOT (handle_dlTextButton ()));
 
 	disconnect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
-                 this, SLOT (handle_LoggerButton (int)));
+	         this, SLOT (handle_LoggerButton (int)));
 
 	disconnect (configWidget. streamoutSelector, SIGNAL (activated (int)),
-                 this,  SLOT (set_streamSelector (int)));
+	         this,  SLOT (set_streamSelector (int)));
 
-	disconnect (configWidget. contentButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_contentButton ()));
+	disconnect (contentButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_contentButton ()));
 
 	disconnect (configWidget. resetButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_resetButton ()));
+	         this, SLOT (color_resetButton ()));
 
-	disconnect (configWidget. show_spectrumButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_spectrumButton ()));
+	disconnect (spectrumButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_spectrumButton ()));
 
 	disconnect (configWidget. snrButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_snrButton ()));
+	         this, SLOT (color_snrButton ()));
 
 	disconnect (configWidget. devicewidgetButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_devicewidgetButton ()));
+	         this, SLOT (color_devicewidgetButton ()));
 
 	disconnect (configWidget. dumpButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_sourcedumpButton ()));
+	         this, SLOT (color_sourcedumpButton ()));
 
 	disconnect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_dlTextButton ()));
+	         this, SLOT (color_dlTextButton ()));
 
-	disconnect (configWidget. scheduleButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_scheduleButton ()));
+	disconnect (scheduleButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_scheduleButton ()));
 
 	disconnect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_set_coordinatesButton ()));
+	         this, SLOT (color_set_coordinatesButton ()));
 
 	disconnect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
-                 this, SLOT (color_loadTableButton ()));
+	         this, SLOT (color_loadTableButton ()));
 
 	disconnect (configWidget. portSelector, SIGNAL (clicked ()),
-                 this, SLOT (handle_portSelector ()));
+	         this, SLOT (handle_portSelector ()));
 
 	disconnect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_set_coordinatesButton ()));
+	         this, SLOT (handle_set_coordinatesButton ()));
 
 	disconnect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
-                 this, SLOT (handle_eti_activeSelector (int)));
-
+	         this, SLOT (handle_eti_activeSelector (int)));
 	disconnect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
 
 }
 
 void	RadioInterface::handle_fontSelect () {
-fontSelector selectFont;
+fontChooser selectFont;
 QStringList fontList;
 	fontList << QString ("Times");
 	fontList << QString ("Helvetica");
 	fontList <<  QString ("Arial");
+	fontList <<  QString ("Cantarell");
 
 	for (int i = 0; i < fontList. size (); i ++)
 	   selectFont. add (fontList. at (i));

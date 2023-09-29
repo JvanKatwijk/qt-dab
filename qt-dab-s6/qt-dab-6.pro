@@ -33,7 +33,6 @@ RESOURCES	+= resources.qrc
 #	choose one of the FFT handler. If none is selected
 #	a default function is used.
 CONFIG		+= fftw_fft
-#CONFIG		+= kiss_fft
 TRANSLATIONS = ../i18n/de_DE.ts
 
 #
@@ -213,7 +212,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
-	   ../includes/support/font-selector.h \
+	   ../includes/support/font-chooser.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -329,7 +328,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
-	   ../src/support/font-selector.cpp \
+	   ../src/support/font-chooser.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -353,7 +352,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.0
+TARGET		= qt-dab-6.1
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -376,7 +375,7 @@ PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
-#CONFIG		+= estimator
+CONFIG		+= estimator
 !mac {
 LIBS      	+= -ldl
 }
@@ -416,10 +415,10 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 
@@ -435,7 +434,6 @@ CONFIG		+= PC
 #DEFINES	+= SHOW_MISSING
 DEFINES		+= __LOGGING__
 DEFINES		+= __DUMP_SNR__		# for experiments only
-#DEFINES	+= __SHOW_BLOCK_0_
 }
 
 # an attempt to have it run under W32 through cross compilation
@@ -477,6 +475,7 @@ isEmpty(GITHASHSTRING) {
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+	CONFIG		+= estimator
 	CONFIG		+= mapserver
 	CONFIG		+= extio
 	CONFIG		+= airspy
@@ -490,7 +489,6 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= pluto-rxtx
 	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
-	DEFINES		+= __THREADED_BACKEND
 	CONFIG		+= preCompiled
 #	CONFIG		+= tiiLib
 #

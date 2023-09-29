@@ -103,7 +103,7 @@ void	channelScope::display		(double *X_axis,
 	                                 double *amplitudeValues,
 	                                 double *phaseValues,
 	                                 int Amp) {
-	float Max	= Amp / 100.0 * (-get_db (0));
+	float Max	= 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
 				         X_axis [displaySize - 1]);
@@ -111,6 +111,13 @@ void	channelScope::display		(double *X_axis,
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
 				         0, 40);
 
+	for (int i = 0; i < displaySize; i ++)
+	   if (amplitudeValues [i] > Max)
+	      Max = amplitudeValues [i];
+
+	if (Max > 15)
+	   for (int i = 0; i < displaySize; i ++)
+	      amplitudeValues [i] = amplitudeValues [i] * 15.0 / Max;
 	amplitudeCurve. setBaseline (0);
 	amplitudeValues [0]	= 0;
 	amplitudeValues [displaySize - 1] = 0;
@@ -153,8 +160,8 @@ int	index;
 	this		-> displayColor	= QColor (displayColor);
 	this		-> gridColor	= QColor (gridColor);
 	this		-> curveColor	= QColor (curveColor);
+	phaseCurve. setPen (QPen (QColor ("red"), 2.0));
 	amplitudeCurve. setPen (QPen (this -> curveColor, 2.0));
-	phaseCurve. setPen (QPen (this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid		-> setMajPen (QPen(this -> gridColor, 0,
 	                                                   Qt::DotLine));

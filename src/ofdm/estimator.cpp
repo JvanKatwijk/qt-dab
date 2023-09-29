@@ -123,7 +123,7 @@ Vector  X_p  (numberofPilots);
 	fft_forward -> fft (v);
 //
         for (int index = 0; index < numberofPilots; index ++)
-           X_p (index) = v [(T_u / 2 + pilotTable [index]) % T_u];
+           X_p (index) = v [(pilotTable [index]) % T_u];
 
 //
 ////    Ok, the matrices are filled, now computing the channelvalues

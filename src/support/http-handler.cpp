@@ -47,7 +47,7 @@
 	httpHandler::httpHandler (RadioInterface *parent,
 	                          const QString & mapPort,
 	                          const QString &browserAddress,
-	                          std::complex<float> homeAddress,
+	                          position	 homeAddress,
 	                          const QString &saveName,
 	                          bool autoBrowser_off) {
 	this	-> parent	= parent;
@@ -67,7 +67,7 @@
 	saveFile	= fopen (saveName. toUtf8 (). data (), "w");
 	if (saveFile != nullptr) {
 	   fprintf (saveFile, "Home location; %f; %f\n\n", 
-	                                   real (homeAddress), imag (homeAddress));
+	                         homeAddress. latitude, homeAddress. longitude);
 	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power\n\n");
 	}
 
@@ -394,12 +394,12 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 }
 #endif
 
-std::string	httpHandler::theMap (std::complex<float> homeAddress) {
+std::string	httpHandler::theMap (position homeAddress) {
 std::string res;
 int	bodySize;
 char	*body;
-std::string latitude	= std::to_string (real (homeAddress));
-std::string longitude	= std::to_string (imag (homeAddress));
+std::string latitude	= std::to_string (homeAddress. latitude);
+std::string longitude	= std::to_string (homeAddress. longitude);
 int	index		= 0;
 int	cc;
 int teller	= 0;
@@ -454,8 +454,8 @@ std::string s = std::to_string (f);
 }
 //
 std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
-std::complex<float> home;
-//std::complex<float> target = std::complex<float> (0, 0);
+position home;
+position target = position {0, 0};
 char buf [512];
 QString Jsontxt;
 
@@ -467,8 +467,8 @@ QString Jsontxt;
 	snprintf (buf, 512,
 	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
 	       t [0]. type,
-	       dotNumber (real (t [0]. coords)). c_str (),
-	       dotNumber (imag (t [0]. coords)). c_str (),
+	       dotNumber (t [0]. coords. latitude). c_str (),
+	       dotNumber (t [0]. coords. longitude). c_str (),
 	       t [0]. transmitterName. toUtf8 (). data (),
 	       t [0]. channelName. toUtf8 (). data (),
 	       t [0]. dateTime. toUtf8 (). data (),
@@ -482,8 +482,8 @@ QString Jsontxt;
 	   snprintf (buf, 512,
 	      ",\n{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\",  \"dist\":%d, \"azimuth\":%d, \"power\":%d, }",
 	        t [i]. type,
-	        dotNumber (real (t [i]. coords)). c_str (),
-	        dotNumber (imag (t [i]. coords)). c_str (),
+	        dotNumber (t [i]. coords. latitude). c_str (),
+	        dotNumber (t [i]. coords. longitude). c_str (),
 	        t [i]. transmitterName. toUtf8 (). data (),
 	        t [i]. channelName. toUtf8 (). data (),
 	        t [i]. dateTime. toUtf8 (). data (),
@@ -500,7 +500,7 @@ QString Jsontxt;
 }
 
 void	httpHandler::putData	(uint8_t	type,
-	                         std::complex<float> target,
+	                         position	target,
 	                         QString transmitterName,
 	                         QString channelName,
 	                         QString dateTime,
@@ -509,7 +509,8 @@ void	httpHandler::putData	(uint8_t	type,
 	                         int azimuth,
 	                         float power) {
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
-	   if (transmitterList [i]. coords == target)
+	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
+	       (transmitterList [i]. coords. longitude == target. longitude))
 	      return;
 
 	   
@@ -538,7 +539,7 @@ void	httpHandler::putData	(uint8_t	type,
 	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
 	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f\n",
 	                      channelName. toUtf8 (). data (),
-	                      real (target), imag (target),
+	                      target. latitude, target. longitude,
 	                      transmitterName. toUtf8 (). data (),
 	                      t. dateTime. toUtf8 (). data (),
 	                      ttiId / 100, ttiId % 100,

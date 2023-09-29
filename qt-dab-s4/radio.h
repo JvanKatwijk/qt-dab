@@ -316,8 +316,8 @@ private:
 	   uint8_t	subId;
 	   QString	countryName;
 	   int		nrTransmitters;
-	   std::complex<float> localPos;
-	   std::complex<float> targetPos;
+	   position	localPos;
+	   position	targetPos;
 	} channel;
 enum direction {FORWARD, BACKWARDS};
 

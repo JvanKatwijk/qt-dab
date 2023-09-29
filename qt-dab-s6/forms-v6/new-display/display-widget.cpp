@@ -69,8 +69,10 @@
 	                                                512, dabSettings);
 	myIQDisplay		= new IQDisplay		(iqDisplay, 512);
 
+#ifdef	__ESTIMATOR_
 	myChannelScope		= new channelScope	(channelPlot,
 	                                                 128, dabSettings);
+#endif
 
 	dabSettings		-> beginGroup ("displayWidget");
         currentTab		= dabSettings -> value ("tabSettings", 0). toInt ();
@@ -96,7 +98,9 @@
 	delete		myNullScope;
 	delete		myCorrelationScope;
 	delete		myTII_Scope;
+#ifdef	__ESTIMATOR_
 	delete		myChannelScope;
+#endif
 	delete		myIQDisplay;
 }
 
@@ -251,6 +255,7 @@ double	X_axis          [128];
 double	waterfall_X	[512];
 double	waterfall_Y	[512];
 
+#ifdef __ESTIMATOR_
 	if (currentTab != SHOW_CHANNEL)
 	   return;
 	for (int i = 0; i < 128; i ++) {
@@ -269,6 +274,7 @@ double	waterfall_Y	[512];
 	myWaterfallScope	-> display (waterfall_X, waterfall_Y, 
 	                                    waterfallSlider -> value (),
 	                                    0);
+#endif
 }
 
 //

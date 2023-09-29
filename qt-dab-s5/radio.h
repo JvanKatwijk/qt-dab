@@ -131,8 +131,8 @@ public:
 	QString		transmitterName;
 	QString		countryName;
 	int		nrTransmitters;
-	std::complex<float> localPos;
-	std::complex<float> targetPos;
+	position	localPos;
+	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
 
@@ -143,7 +143,7 @@ public:
 	ensembleName	=  "";
 	nrTransmitters	= 0;
 	countryName	= "";
-	targetPos	= std::complex<float> (0, 0);
+	targetPos	= position {0, 0};
 	mainId		= 0;
 	subId		= 0;
 	Eid		= 0;

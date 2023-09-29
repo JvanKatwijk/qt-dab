@@ -109,6 +109,23 @@ QString	tiiHandler::get_transmitterName     (const QString & channel,
 	return "";
 }
 
+void    tiiHandler::get_coordinates (position &thePos,
+	                             float &power,
+	                             const QString &channel,
+	                             const QString &transmitter) {
+	for (int i = 0; i < (int)(cache. size ()); i++) {
+	   if (((channel == "any") || (channel == cache [i]. channel)) &&
+	       (cache [i]. transmitterName == transmitter)) {
+	      thePos. latitude = cache [i]. latitude;
+	      thePos. longitude = cache [i]. longitude;
+	      power	= cache [i]. power;
+	      return;
+	   }
+	}
+	thePos. latitude	= 0;
+	thePos. longitude	= 0;
+}
+
 void    tiiHandler::get_coordinates (float *latitude, float * longitude,
 	                             float *power,
 	                             const QString &channel,
@@ -167,19 +184,20 @@ double dy	= distance_2 (latitude1, longitude2,
 	return sqrt (dx * dx + dy * dy);
 }
 	
-int	tiiHandler::corner (float latitude1, float longitude1,
-	                    float latitude2, float longitude2) {
-bool dx_sign	= longitude1 - longitude2 > 0;
-bool dy_sign	= latitude1  - latitude2 > 0;
+int	tiiHandler::corner (position targetPos,
+	                    position homePos) {
+bool dx_sign	= targetPos. longitude -  homePos. longitude > 0;
+bool dy_sign	= targetPos. latitude  - homePos. latitude > 0;
 double dx;
-double dy	= distance (latitude1, longitude2,	
-	                    latitude2, longitude2);
+double dy	= distance (targetPos. latitude,  homePos. longitude,	
+	                    homePos. latitude,  homePos. longitude);
 	if (dy_sign)		// lat1 is "higher" than lat2
-	   dx = distance (latitude1, longitude1,
-	                  latitude1, longitude2);
+	   dx = distance (targetPos. latitude,  targetPos. longitude,
+	                  targetPos. latitude,  homePos. longitude);
+
 	else
-	   dx = distance (latitude2, longitude1,
-	                  latitude2, longitude2);
+	   dx = distance (homePos. latitude,  targetPos. longitude,
+	                  homePos. latitude,  homePos. longitude);
 	float azimuth = atan2 (dy, dx);
 	   
 	if (dx_sign && dy_sign)		// eerste kwadrant

@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-6.0)
+set (objectName qt-dab-6.1)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -210,8 +210,8 @@ endif ()
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/scopes-qwt6
-	           ../new-display
-	           ../new-display/scopes
+	           ./forms-v6/new-display
+	           ./forms-v6/new-display/scopes
 	           ../viewers
 	           ../viewers/snr-viewer
 	           ../qt-devices
@@ -302,11 +302,11 @@ endif ()
 	     ../includes/support/ITU_Region_1.h
 	     ../includes/support/coordinates.h
 	     ../includes/support/skin-handler.h
-	     ../includes/support/font-selector.h
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-library/tii-codes.h
+	     ../includes/support/font-chooser.h 
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
              ../includes/support/buttons/normalpushbutton.h 
@@ -316,12 +316,12 @@ endif ()
              ../includes/support/buttons/smallspinbox.h 
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/snr-viewer/snr-viewer.h
-	     ../new-display/display-widget.h 
-             ../new-display/scopes/correlation-scope.h 
-             ../new-display/scopes/spectrum-scope.h 
-             ../new-display/scopes/null-scope.h 
-             ../new-display/scopes/waterfall-scope.h 
-             ../new-display/scopes/iqdisplay.h 
+	     ./forms-v6/new-display/display-widget.h 
+             ./forms-v6/new-display/scopes/correlation-scope.h 
+             ./forms-66/new-display/scopes/spectrum-scope.h 
+             ./forms-v6/new-display/scopes/null-scope.h 
+             ./forms-v6/new-display/scopes/waterfall-scope.h 
+             ./forms-b6/new-display/scopes/iqdisplay.h 
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
@@ -415,18 +415,18 @@ endif ()
 	     ../src/support/ITU_Region_1.cpp
 	     ../src/support/coordinates.cpp
 	     ../src/support/skin-handler.cpp
-	     ../src/support/font-selector.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
+	     ../src/support/font-chooser.cpp 
 	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/audio-display.cpp 
 	     ../viewers/snr-viewer/snr-viewer.cpp
-	     ../new-display/display-widget.cpp 
-             ../new-display/scopes/correlation-scope.cpp 
-             ../new-display/scopes/spectrum-scope.cpp 
-             ../new-display/scopes/null-scope.cpp 
-             ../new-display/scopes/waterfall-scope.cpp 
-             ../new-display/scopes/iqdisplay.cpp 
+	     ./forms-v6/new-display/display-widget.cpp 
+             ./forms-v6/new-display/scopes/correlation-scope.cpp 
+             ./forms-v6/new-display/scopes/spectrum-scope.cpp 
+             ./forms-v6/new-display/scopes/null-scope.cpp 
+             ./forms-v6/new-display/scopes/waterfall-scope.cpp 
+             ./forms-v6/new-display/scopes/iqdisplay.cpp 
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/xml-filewriter.cpp
 	     ../qt-devices/rawfiles-new/rawfiles.cpp
@@ -467,6 +467,7 @@ endif ()
 	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
+	     ../includes/support/font-chooser.h
 	     ../includes/support/buttons/smallcombobox.h 
 	     ../includes/support/buttons/newpushbutton.h 
 	     ../includes/support/buttons/normalpushbutton.h 
@@ -487,12 +488,12 @@ endif ()
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
  	     ../viewers/snr-viewer/snr-viewer.h
-	     ../new-display/display-widget.h 
-             ../new-display/scopes/correlation-scope.h 
-             ../new-display/scopes/spectrum-scope.h 
-             ../new-display/scopes/null-scope.h 
-             ../new-display/scopes/waterfall-scope.h 
-             ../new-display/scopes/iqdisplay.h 
+	     ./forms-v6/new-display/display-widget.h 
+             ./forms-v6/new-display/scopes/correlation-scope.h 
+             ./forms-v6/new-display/scopes/spectrum-scope.h 
+             ./forms-v6/new-display/scopes/null-scope.h 
+             ./forms-v6/new-display/scopes/waterfall-scope.h 
+             ./forms-v6/new-display/scopes/iqdisplay.h 
 	     ../qt-devices/rawfiles-new/rawfiles.h
 	     ../qt-devices/rawfiles-new/raw-reader.h
 	     ../qt-devices/wavfiles-new/wavfiles.h
@@ -506,7 +507,7 @@ endif ()
 	     ./forms-v6/dabradio-6.ui
 	     ./forms-v6/technical_data.ui
 	     ./forms-v6/config-helper.ui
-	     ../new-display/scopewidget.ui
+	     ./forms-v6/new-display/scopewidget.ui
 	     ../viewers/snr-viewer/snr-widget.ui
 	     ../qt-devices/xml-filereader/xmlfiles.ui
 	   )

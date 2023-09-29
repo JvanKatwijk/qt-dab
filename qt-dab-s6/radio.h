@@ -41,7 +41,6 @@
 #include        "band-handler.h"
 #include	"process-params.h"
 #include	"dl-cache.h"
-#include	"tii-codes.h"
 #include	"content-table.h"
 #include	<memory>
 #include	<mutex>
@@ -61,6 +60,7 @@
 #include	"scheduler.h"
 
 #include	"http-handler.h"
+#include	"tii-codes.h"
 
 class	QSettings;
 class	ofdmHandler;
@@ -129,8 +129,8 @@ public:
 	QString		transmitterName;
 	QString		countryName;
 	int		nrTransmitters;
-	std::complex<float> localPos;
-	std::complex<float> targetPos;
+	position	localPos;
+	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
 
@@ -141,7 +141,7 @@ public:
 	ensembleName	=  "";
 	nrTransmitters	= 0;
 	countryName	= "";
-	targetPos	= std::complex<float> (0, 0);
+	targetPos	= position {0, 0};
 	mainId		= 0;
 	subId		= 0;
 	Eid		= 0;
@@ -253,7 +253,7 @@ private:
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
 	bool			isMember (const std::vector<serviceId> &, 
-	                                       serviceId);
+	                                  serviceId);
 	std::vector<serviceId>
 	  	                insert   (std::vector<serviceId> &,
 	                                  serviceId, int);
@@ -276,6 +276,7 @@ private:
 	struct theTime		localTime;
 	struct theTime		UTC;
 	QString			convertTime		(int, int, int, int, int);
+	QString			convertTime		(struct theTime &);
 	void			set_buttonColors	(QPushButton *,
 	                                                 const QString &);
 	QString			footText		();
@@ -472,6 +473,7 @@ private slots:
 
 	void			color_skinButton	();
 	void			color_fontButton	();
+	void			color_portSelector	();
 //
 //	for the display widget we have access functions
 	void			showSpectrum		(int);
