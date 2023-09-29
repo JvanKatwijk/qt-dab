@@ -18,7 +18,7 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Showing a map for TII](#a-note-on-showing-a-map)
-* [Documentation](#Documentation{
+* [Documentation](#Documentation)
 * [Installation on Windows](#Installation-on-Windows)
 * [Installation on Linux](#Installation-on-Linux)
 * [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
