@@ -18,13 +18,14 @@ Table of Contents
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
 * [Showing a map for TII](#a-note-on-showing-a-map)
-* [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
+* [Documentation](#Documentation{
 * [Installation on Windows](#Installation-on-Windows)
 * [Installation on Linux](#Installation-on-Linux)
+* [Notes on building an executable](#building-an-executable-for-qt-dab-a-few-notes)
 * [Using user specified bands](#Using-user-specified-bands)
 * [xml-files and support](#xml-files-and-support)
 * [A Note on previous versions](#A-Note-on-previous-versions)
-* [Copyright](#copyright)
+* [Copyright](#Copyright)
 
 Introduction
 =================================================================
@@ -105,11 +106,11 @@ in the main widget, gives full information about the selected audio service.
 
 Different from previous versions, a single widget, the spectrum widget,
 contains - as tabbed widget - the 4 or 5 scopes to show different aspects
-of the DAN signal. 
-It contains an IQscope, showing the constellation of the decoded data,
-and a waterfall scope, showinh the progress in time of the data
+of the DAB signal. 
+Furthermore, it contains an IQscope,
+showing the constellation of the decoded data,
+and a waterfall scope, showing the progress in time of the data
 that is displayed in the selected scope.
-Previous versions V5.4 and V4.7 will be maintained.
 
 Scopes are
  * spectrum scope, showing the spectrum of the incoming DAB signal;
@@ -145,7 +146,32 @@ The feature will not work if
  * handling the TII database is not installed on the system, and/or
  * you did not provide your "home" coordinates.
 
-The latter is easily done by touching the button "coordinates" on the configuration (configuration/control) widget.
+The latter is easily done by touching the button "coordinates" on the
+configuration  and control widget.
+
+Documentation
+=================================================================
+
+An extensive **user's guide** - in PDF format - for the 6.1 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
+
+![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
+
+
+Installation on Windows
+=================================================================
+
+For Windows an  **installer** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
+
+The installer will also call the official installer for the dll implementing the 2.3 api for getting access to the SDRplay devices.
+
+
+Installation on Linux-x64
+=================================================================
+
+For Linux-x64 systems, an **appImage** can be found in the releases section, http://github.com/JvanKatwijk/qt-dab/releases. The appImage contains
+next to the executable qt-dab program, the required libraries.
+
+Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
 
 
 Building an executable for qt-dab: a few notes
@@ -199,31 +225,6 @@ If running on an x64 PC or *bullseye* on the RPI you might consider to install `
 	Qt_5= /usr/lib/arm-linux-gnueabihf/qt5
 	export QT_PLUGIN_PATH=$Qt_5/plugins
 ```
-
-
-Documentation
-=================================================================
-
-An extensive **user's guide** - in PDF format - for the 6.1 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
-
-![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
-
-
-Installation on Windows
-=================================================================
-
-For Windows an  **installer** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The installer will install the executable as well as required libraries.
-
-The installer will also call the official installer for the dll implementing the 2.3 api for getting access to the SDRplay devices.
-
-
-Installation on Linux-x64
-=================================================================
-
-For Linux-x64 systems, an **appImage** can be found in the releases section, http://github.com/JvanKatwijk/qt-dab/releases. The appImage contains
-next to the executable qt-dab program, the required libraries.
-
-Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
 
 
 Using user specified bands
