@@ -27,13 +27,7 @@
 #include	"dlfcn.h"
 typedef	void	*HINSTANCE;
 
-class position {
-public:
-	position	(float lat, float lon) {
-	   latitude	= lat;
-	   longitude	= lon;
-	}
-	~position	() {}
+typedef struct {
 	float latitude;
 	float longitude;
 } position;
@@ -71,9 +65,10 @@ public:
 	                                 uint16_t, uint8_t, uint8_t);
 	void	get_coordinates	(float *, float *, float *,
 	                         const QString &, const QString &);
-	void	get_coordinates	(position & float &,
+	void	get_coordinates	(position &, float &,
 	                         const QString &, const QString &);
         int     distance_2	(float, float, float, float);
+        int	distance	(position &, position &);
         int	distance	(float, float, float, float);
         int     corner		(position, position);
         bool    is_black        (uint16_t, uint8_t, uint8_t);

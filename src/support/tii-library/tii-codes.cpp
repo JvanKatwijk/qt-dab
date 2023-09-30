@@ -169,6 +169,22 @@ double	d	= sqrt (x * x + y * y);
 	return (int)(R * d + 0.5);
 }
 
+
+int	tiiHandler::distance (position &target,
+	                      position &home) {
+bool	dy_sign	= target. latitude >  home. latitude;
+double	dx;
+double dy	= distance_2 (target. latitude,  home. longitude,	
+	                      home. latitude, home. longitude);
+	if (dy_sign)		// lat1 is "higher" than lat2
+	   dx = distance_2 (target. latitude, target. longitude,
+	                    target. latitude, home. longitude);
+	else
+	   dx = distance_2 (home. latitude, target. longitude,
+	                    home. latitude, home. longitude);
+	return sqrt (dx * dx + dy * dy);
+}
+	
 int	tiiHandler::distance (float latitude1, float longitude1,
 	                      float latitude2, float longitude2) {
 bool	dy_sign	= latitude1 > latitude2;

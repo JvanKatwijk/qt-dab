@@ -415,8 +415,8 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -470,7 +470,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.0
+	TARGET		= qt-dab32-6.1
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
