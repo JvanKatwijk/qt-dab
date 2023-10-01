@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
-    <height>456</height>
+    <width>686</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,8 +15,8 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_5">
+     <item>
       <widget class="QTabWidget" name="tabWidget">
        <property name="maximumSize">
         <size>
@@ -174,7 +174,7 @@
        </widget>
       </widget>
      </item>
-     <item row="0" column="1">
+     <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
         <widget class="QwtPlot" name="iqDisplay">
@@ -222,34 +222,40 @@
        </item>
       </layout>
      </item>
-     <item row="1" column="0">
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
-       <item>
-        <widget class="QSlider" name="waterfallSlider">
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>50</number>
-         </property>
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QwtPlot" name="waterfallDisplay">
-         <property name="maximumSize">
-          <size>
-           <width>400</width>
-           <height>159</height>
-          </size>
-         </property>
-        </widget>
-       </item>
-      </layout>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_4">
+     <item>
+      <widget class="QwtPlot" name="waterfallDisplay">
+       <property name="maximumSize">
+        <size>
+         <width>400</width>
+         <height>159</height>
+        </size>
+       </property>
+       <widget class="QSlider" name="waterfallSlider">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>24</width>
+          <height>160</height>
+         </rect>
+        </property>
+        <property name="maximum">
+         <number>100</number>
+        </property>
+        <property name="value">
+         <number>50</number>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+       </widget>
+      </widget>
      </item>
-     <item row="1" column="1">
+     <item>
       <layout class="QGridLayout" name="gridLayout">
        <item row="2" column="1" colspan="2">
         <widget class="QLCDNumber" name="frequencyOffsetDisplay">
