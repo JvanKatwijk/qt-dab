@@ -42,9 +42,9 @@ public:
 			freqSyncer 		(RadioInterface *,
 	                                         processParams *);
 			~freqSyncer		();
-	int16_t		estimate_CarrierOffset	(std::vector<std::complex<float>>);
+	int16_t		estimate_CarrierOffset	(std::vector<Complex>);
 private:
-	std::vector<std::complex<float>> refTable;
+	std::vector<Complex> refTable;
 	dabParams	params;
 	std::vector<float> phaseDifferences;
 	int16_t		diff_length;

@@ -43,7 +43,7 @@ Q_OBJECT
 public:
 		presetHandler	(RadioInterface *);
 		~presetHandler	();
-	void	loadPresets	(QString, QComboBox *);
+	void	loadPresets	(const QString &, QComboBox *);
 	void	savePresets	(QComboBox *);
 private:
 	RadioInterface	*radio;

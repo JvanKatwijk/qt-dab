@@ -44,7 +44,7 @@ QString	colorString;
 
 	for (int i = 0; i < displaySize; i ++)
 	   displayBuffer [i] = 0;
-	spectrumBuffer		= new std::complex<float> [spectrumSize];
+	spectrumBuffer		= new Complex [spectrumSize];
 	dabSettings	-> beginGroup ("audioDisplay");
 	colorString	= dabSettings -> value ("displayColor",
 	                                                 "black"). toString();
@@ -116,11 +116,11 @@ int16_t	averageCount	= 3;
 	if (amount > spectrumSize)
 	   amount = spectrumSize;
 	for (int i = 0; i < amount / 2; i ++)
-	   spectrumBuffer [i] = std::complex<float> (data [2 * i] / 8192.0,
-	                                             data [2 * i + 1] / 8192.0);
+	   spectrumBuffer [i] = Complex (data [2 * i] / 8192.0,
+	                                 data [2 * i + 1] / 8192.0);
 
 	for (int i = amount / 2; i < spectrumSize;  i ++)
-	   spectrumBuffer [i] = std::complex<float> (0, 0);
+	   spectrumBuffer [i] = Complex (0, 0);
 //	and window it
 
 	for (i = 0; i < spectrumSize; i ++)

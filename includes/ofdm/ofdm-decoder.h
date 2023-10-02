@@ -66,7 +66,7 @@ private:
 	int32_t		nrBlocks;
 	int32_t		carriers;
 	int16_t		getMiddle();
-	std::vector<complex<float>>	phaseReference;
+	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>		ibits;
 	phaseTable	*phasetable;
 

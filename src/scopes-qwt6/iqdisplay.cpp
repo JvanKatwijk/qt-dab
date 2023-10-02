@@ -67,8 +67,7 @@ void	IQDisplay::setPoint (int x, int y, int val) {
 	plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = val;
 }
 
-void	IQDisplay::DisplayIQ (std::complex<float> *z,
-	                             int amount, float scale) {
+void	IQDisplay::DisplayIQ (Complex *z, int amount, float scale) {
 //
 //	clean the screen
 	for (int i = 0; i < amount; i ++) {

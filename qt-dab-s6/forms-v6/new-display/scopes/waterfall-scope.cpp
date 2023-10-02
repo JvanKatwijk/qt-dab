@@ -43,7 +43,7 @@
 	this            -> setColorMap (colorMap);
 	rightAxis	= plotgrid -> axisWidget (QwtPlot::yRight);
 // A color bar on the right axis
-	rightAxis	-> setColorBarEnabled (true);
+//	rightAxis	-> setColorBarEnabled (true);
 	plotData	= new double [2 * displaySize * rasterSize];
 
 	for (int i = 0; i < rasterSize; i ++)

@@ -95,6 +95,6 @@ float	compAtan::atan2 (float y, float x) {
 	}
 }
 
-float	compAtan::argX	(std::complex<float> v) {
+float	compAtan::argX	(Complex v) {
 	return this -> atan2 (imag (v), real (v));
 }

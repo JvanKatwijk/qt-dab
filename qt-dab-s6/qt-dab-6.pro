@@ -418,7 +418,7 @@ CONFIG		+= faad
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
-CONFIG		+= datastreamer
+#CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
 #CONFIG		+= send_datagram
 

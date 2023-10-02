@@ -38,7 +38,7 @@ float	temp [firsize];
 
 	for (int i = 0; i < filterSize; i ++) {
 	   filterKernel [i]	= 0;
-	   Buffer [i]		= std::complex<float> (0, 0);
+	   Buffer [i]		= Complex (0, 0);
 	}
 
 	for (int i = 0; i < filterSize; i ++) {
@@ -101,9 +101,9 @@ float	sum = 0;
 
 //	we process the samples backwards rather than reversing
 //	the kernel
-std::complex<float>	LowPassFIR::Pass (std::complex<float> z) {
+Complex	LowPassFIR::Pass (Complex z) {
 int16_t	i;
-std::complex<float>	tmp	= 0;
+Complex	tmp	= 0;
 
 	Buffer [ip]	= z;
 	for (i = 0; i < filterSize; i ++) {
@@ -118,7 +118,7 @@ std::complex<float>	tmp	= 0;
 }
 
 float	LowPassFIR::Pass (float v) {
-	return real (Pass (std::complex<float> (v, 0)));
+	return real (Pass (Complex (v, 0)));
 }
 
 

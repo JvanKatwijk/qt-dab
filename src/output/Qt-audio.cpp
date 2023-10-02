@@ -5,9 +5,6 @@
  *    Lazy Chair Computing
  *
  *    This file is part of Qt-DAB 
- *    Many of the ideas as implemented in Qt-DAB are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are acknowledged.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -22,14 +19,13 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #include	<stdio.h>
 #include	"Qt-audiodevice.h"
 #include	"Qt-audio.h"
 
-	Qt_Audio::Qt_Audio (void) {
+	Qt_Audio::Qt_Audio () {
 	Buffer		= new RingBuffer<float> (8 * 32768);
 	outputRate	= 48000;	// default
 	theAudioDevice	= new Qt_AudioDevice (Buffer, this);
@@ -37,7 +33,7 @@
 	setParams (outputRate);
 }
 
-	Qt_Audio::~Qt_Audio(void) {
+	Qt_Audio::~Qt_Audio () {
 	if (theAudioOutput != nullptr)
 	   delete	theAudioOutput;
 	delete	theAudioDevice;

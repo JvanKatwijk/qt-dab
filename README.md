@@ -102,7 +102,7 @@ the visibility of the other widgets of the GUI.
 The technical widget - the visibility of which depends on the settings
 in the main widget, gives full information about the selected audio service.
 
-![6.1](/correlation-scope.png)
+![6.1](/scpectrum-scope.png)
 
 Different from previous versions, a single widget, the spectrum widget,
 contains - as tabbed widget - the 4 or 5 scopes to show different aspects

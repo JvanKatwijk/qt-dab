@@ -34,15 +34,15 @@ public:
 	                            int32_t	// samplerate
 	                           );
 			~LowPassFIR ();
-	std::complex<float>	Pass		(std::complex<float>);
-	float			Pass		(float);
-	void			resize		(int);
-	int			theSize		();
+	Complex		Pass		(Complex);
+	float		Pass		(float);
+	void		resize		(int);
+	int		theSize		();
 private:
 	int16_t		filterSize;
 	int16_t		ip;
 	std::vector<float>	filterKernel;
-	std::vector<std::complex<float>>	Buffer;
+	std::vector<Complex>	Buffer;
 	float		frequency;
 };
 

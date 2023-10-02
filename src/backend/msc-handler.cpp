@@ -84,11 +84,11 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 //	Input is put into a buffer, a the code in a separate thread
 //	will handle the data from the buffer
-void	mscHandler::processBlock_0 (std::complex<float> *b) {
+void	mscHandler::processBlock_0 (Complex *b) {
 #ifdef	__MSC_THREAD__
 	bufferSpace. acquire (1);
 	memcpy (command [0]. data(), b,
-	            params. get_T_u() * sizeof (std::complex<float>));
+	            params. get_T_u() * sizeof (Complex));
 	helper. lock();
 	amount ++;
         commandHandler. wakeOne();
@@ -99,10 +99,10 @@ void	mscHandler::processBlock_0 (std::complex<float> *b) {
 }
 
 #ifdef	__MSC_THREAD__
-void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
+void	mscHandler::process_Msc	(Complex *b, int blkno) {
 	bufferSpace. acquire (1);
         memcpy (command [blkno]. data(), b,
-	            params. get_T_u() * sizeof (std::complex<float>));
+	            params. get_T_u() * sizeof (Complex));
         helper. lock();
         amount ++;
         commandHandler. wakeOne();
@@ -111,8 +111,7 @@ void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
 
 void    mscHandler::run () {
 int	currentBlock	= 0;
-
-std::complex<float> fft_buffer [params. get_T_u()];
+Complex fft_buffer [params. get_T_u()];
 
 	if (running. load ()) {
 	   fprintf (stderr, "already running\n");
@@ -126,7 +125,7 @@ std::complex<float> fft_buffer [params. get_T_u()];
            helper. unlock();
            while ((amount > 0) && running. load()) {
 	      memcpy (fft_buffer, command [currentBlock]. data(),
-	                 params. get_T_u() * sizeof (std::complex<float>));
+	                 params. get_T_u() * sizeof (Complex));
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
@@ -137,7 +136,7 @@ std::complex<float> fft_buffer [params. get_T_u()];
                     if (index < 0)
                        index += params. get_T_u();
 
-                    std::complex<float>  r1 = fft_buffer [index] *
+                    Complex  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
                     float ab1    = jan_abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
@@ -150,7 +149,7 @@ std::complex<float> fft_buffer [params. get_T_u()];
 	         process_mscBlock (ibits, currentBlock);
 	      }
 	      memcpy (phaseReference. data(), fft_buffer,
-	                 params. get_T_u() * sizeof (std::complex<float>));
+	                 params. get_T_u() * sizeof (Complex));
               bufferSpace. release (1);
               helper. lock();
               currentBlock = (currentBlock + 1) % (nrBlocks);
@@ -160,13 +159,13 @@ std::complex<float> fft_buffer [params. get_T_u()];
         }
 }
 #else
-void	mscHandler::process_Msc	(std::complex<float> *b, int blkno) {
-std::complex<float> fft_buffer [params. get_T_u ()];;
+void	mscHandler::process_Msc	(Complex *b, int blkno) {
+Complex fft_buffer [params. get_T_u ()];;
 	if (blkno < 3)
 	   return;
 	
 	memcpy (fft_buffer, b,
-	                 params. get_T_u () * sizeof (std::complex<float>));
+	                 params. get_T_u () * sizeof (Complex));
 //
 //	block 3 and up are needed as basis for demodulation the "mext" block
 //	"our" msc blocks start with blkno 4
@@ -176,7 +175,7 @@ std::complex<float> fft_buffer [params. get_T_u ()];;
 	      int16_t      index   = myMapper. mapIn (i);
 	      if (index < 0)
 	         index += params. get_T_u();
-	      std::complex<float>  r1 = fft_buffer [index] *
+	      Complex  r1 = fft_buffer [index] *
 	                                conj (phaseReference [index]);
 	      float ab1    = jan_abs (r1);
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
@@ -189,7 +188,7 @@ std::complex<float> fft_buffer [params. get_T_u ()];;
 	   process_mscBlock (ibits, blkno);
 	}
 	memcpy (phaseReference. data (), fft_buffer,
-	        params. get_T_u() * sizeof (std::complex<float>));
+	        params. get_T_u() * sizeof (Complex));
 }
 #endif
 //

@@ -31,21 +31,21 @@
  */
 
 #include	"dab-constants.h"
-
+#include	<vector>
 class	BandPassFIR {
 public:
 		BandPassFIR	(int16_t filterSize,
 	                          int32_t low, int32_t high,
 	                          int32_t sampleRate);
 		~BandPassFIR	();
-std::complex<float>	Pass	(std::complex<float>);
+	Complex	Pass		(Complex);
 float		Pass		(float);
 private:
 
 	int	filterSize;
 	int	sampleRate;
 	int	ip;
-	std::complex<float> *kernel;
-	std::complex<float> *buffer;
+	std::vector<Complex> kernel;
+	std::vector<Complex> buffer;
 };
 

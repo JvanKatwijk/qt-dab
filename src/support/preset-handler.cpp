@@ -33,7 +33,7 @@
         presetHandler::~presetHandler   () {
 }
 
-void	presetHandler::loadPresets (QString fileName, QComboBox *cb) {
+void	presetHandler::loadPresets (const QString &fileName, QComboBox *cb) {
 QDomDocument xmlBOM;
 QFile f (fileName);
 

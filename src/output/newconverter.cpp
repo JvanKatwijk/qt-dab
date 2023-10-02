@@ -49,8 +49,8 @@ int	err;
 	src_delete	(converter);
 }
 
-bool	newConverter::convert (std::complex<float> v,
-	                       std::complex<float> *out, int32_t *amount) {
+bool	newConverter::convert (Complex v,
+	                       Complex *out, int32_t *amount) {
 int32_t	i;
 int32_t	framesOut;
 int	res;
@@ -71,13 +71,12 @@ int	res;
 	inp		= 0;
 	framesOut	= src_data.	output_frames_gen;
 	for (i = 0; i < framesOut; i ++)
-	   out [i] = std::complex<float> (outBuffer [2 * i],
-	                                  outBuffer [2 * i + 1]);
+	   out [i] = Complex (outBuffer [2 * i], outBuffer [2 * i + 1]);
 	*amount		= framesOut;
 	return true;
 }
 
-int32_t		newConverter::getOutputsize() {
+int32_t		newConverter::getOutputsize () {
 	return outputLimit;
 }
 

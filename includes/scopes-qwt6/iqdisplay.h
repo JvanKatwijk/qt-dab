@@ -50,7 +50,7 @@ Q_OBJECT
 public:
 	IQDisplay		(QwtPlot *, int16_t);
 	~IQDisplay();
-void	DisplayIQ		(std::complex<float> *, int, float);
+void	DisplayIQ		(Complex *, int, float);
 private:
 	int32_t			x_amount;
 	std::vector<double>	plotData;

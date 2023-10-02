@@ -324,12 +324,13 @@ private:
 
 	bool			doStart			();
 	void			save_MOTObject		(QByteArray &,
-	                                                          QString);
+	                                                 QString);
 
 	void			save_MOTtext		(QByteArray &, int,
-	                                                         QString);
+	                                                 const QString &);
 	void			show_MOTlabel		(QByteArray &, int,
-	                                                 QString, int, bool);
+	                                                 const QString &,
+	                                                 int, bool);
 	void			stop_muting		();
 
 
@@ -367,8 +368,9 @@ public slots:
 	void			show_ficSuccess		(bool);
 	void			setSynced		(bool);
 	void			showLabel		(const QString &);
-	void			handle_motObject	(QByteArray, QString,
-	                                                      int, bool, bool);
+	void			handle_motObject	(QByteArray,
+	                                                 QString,
+	                                                 int, bool, bool);
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();

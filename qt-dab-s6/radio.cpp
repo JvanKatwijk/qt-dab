@@ -893,7 +893,7 @@ QString	dir = s;
 }
 
 void	RadioInterface::handle_motObject (QByteArray result,
-	                                  QString objectName,
+	                                  QString  objectName,
 	                                  int contentType,
 	                                  bool dirElement,
 	                                  bool backgroundFlag) {
@@ -966,7 +966,8 @@ QString realName;
 }
 
 void	RadioInterface::save_MOTtext (QByteArray &result,
-	                              int contentType,  QString name) {
+	                              int contentType,
+	                              const QString &name) {
 	(void)contentType;
 	if (filePath == "")
 	   return;
@@ -986,7 +987,7 @@ void	RadioInterface::save_MOTtext (QByteArray &result,
 }
 
 void	RadioInterface::save_MOTObject (QByteArray  &result,
-	                                  QString name) {
+	                                QString name) {
 	if (filePath == "")
 	   return;
 
@@ -1001,7 +1002,7 @@ void	RadioInterface::save_MOTObject (QByteArray  &result,
 //	MOT slide, to show
 void	RadioInterface::show_MOTlabel	(QByteArray  &data,
 	                                 int contentType,
-	                                 QString pictureName,
+	                                 const QString  &pictureName,
 	                                 int dirs,
 	                                 bool backgroundFlag) {
 const char *type;

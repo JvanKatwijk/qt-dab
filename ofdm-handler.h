@@ -87,7 +87,7 @@ public:
 	                                         const QString &,
 	                                         const QString &);
 	bool		has_timeTable		(uint32_t);
-	std::vector<epgElement>	find_epgData		(uint32_t);
+	std::vector<epgElement>	find_epgData	(uint32_t);
 	uint32_t	julianDate		();
 	QStringList	basicPrint		();
 	int		scanWidth		();

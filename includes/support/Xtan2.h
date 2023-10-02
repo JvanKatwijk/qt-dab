@@ -18,7 +18,7 @@ public:
 		compAtan	(void);
 		~compAtan	(void);
 	float	atan2		(float, float);
-	float	argX		(std::complex<float>);
+	float	argX		(Complex);
 private:
 	float	*ATAN2_TABLE_PPY;
 	float	*ATAN2_TABLE_PPX;

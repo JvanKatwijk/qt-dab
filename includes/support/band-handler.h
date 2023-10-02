@@ -50,7 +50,7 @@ public:
 	void    saveSettings	();
 	void	setupChannels	(QComboBox *s, uint8_t band);
 	void	setup_skipList	(const QString &);
-	int32_t Frequency	(QString Channel);
+	int32_t Frequency	(const QString &Channel);
 	int	firstChannel	();
 	int	nextChannel	(int);
 	int	prevChannel	(int);
