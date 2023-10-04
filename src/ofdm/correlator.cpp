@@ -33,6 +33,8 @@
   *	The class inherits from the phaseTable.
   */
 
+#define	MAX_OFFSET	250
+
 	correlator::correlator (RadioInterface *mr,
 	                                processParams	*p):
 	                                     phaseTable (p -> dabMode),
@@ -107,7 +109,7 @@ float	lbuf [T_u / 2];
 	sum /= T_u / 2;
 	QVector<int> indices;
 
-	for (i = T_g - 250; i < T_g + 250; i ++) {
+	for (i = T_g - MAX_OFFSET; i < T_g + MAX_OFFSET; i ++) {
 	   if (lbuf [i] / sum > threshold)  {
 	      bool foundOne = true;
 	      for (int j = 1; (j < 10) && (i + j < T_g + 250); j ++) {
@@ -126,6 +128,24 @@ float	lbuf [T_u / 2];
 	      }
 	   }
 	}
+
+	for (int i = 0; i < indices. size (); i ++) {
+	   if (500 <= indices. at (i) && indices. at (i) <= 510) {
+	      int match = indices. at (i);
+	      std::vector<int> temp;
+	      temp. push_back (indices. at (i));
+	      for (int j = 0; j < i; j ++)
+	         temp. push_back (indices. at (j));
+	      for (int j = i + 1; j < indices. size (); j ++)
+	         temp. push_back (indices. at (j));
+	      indices. resize (0);
+	      for (int i = 0; i < temp. size (); i ++)
+	         indices. push_back (temp. at (i));
+	      break;
+	   }
+	}
+	      
+	
 
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);

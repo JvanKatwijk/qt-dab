@@ -116,18 +116,17 @@ QString	colorString	= "black";
 //	delete lpickerMachine;
 }
 
-
 void	snrViewer::show () {
-	myFrame. show();
+	myFrame. show ();
 }
 
 void	snrViewer::hide	() {
-	myFrame. hide();
+	myFrame. hide ();
 	stopDumping ();
 }
 
 bool	snrViewer::isHidden () {
-	return myFrame. isHidden();
+	return myFrame. isHidden ();
 }
 
 void	snrViewer::add_snr	(float snr) {

@@ -164,13 +164,21 @@ void	displayWidget::showCorrelation	(std::vector<float> &v,
 	                                 QVector<int> &ww) {
 	if (currentTab != SHOW_CORRELATION)
 	   return;
-	myCorrelationScope	-> display (v,correlationLength -> value ());
+	myCorrelationScope	-> display (v, correlationLength -> value ());
 	if (ww. size () > 0) {
-	   QString t = "best matches ";
-	   for (int i = 0; i < ww. size (); i ++)
+	   int baseOffset = ww [0];
+	   QString t = "Matches ";
+	   for (int i = 0; i < ww. size (); i ++) {
 	      t = t + " " + QString::number (ww [i]);
+	      if (i >= 1) {
+	         int lO = ww [i] - ww [0];
+	         int d = (300000 / 2048 * lO) / 1000;
+	         t = t + " (" + QString::number (d) + "km)";
+	      }
+	   }
 	   correlationsVector -> setText (t);
 	}
+
 	if (v. size () < 512)
 	   return;
 	double X_axis [512];

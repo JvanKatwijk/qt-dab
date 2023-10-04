@@ -622,8 +622,10 @@ uint8_t	dabBand;
 	      inputDevice -> setVisibility (false);
 	}
 
-	if (dabSettings -> value ("snrVisible", 0). toInt () == 1)
+	if (dabSettings -> value ("snrVisible", 0). toInt () != 0)
 	   my_snrViewer. show ();
+	else
+	   my_snrViewer. hide ();
 	if (dabSettings -> value ("techDataVisible", 0). toInt () == 1)
 	   theTechWindow -> show ();
 
@@ -676,6 +678,7 @@ void	RadioInterface::doStart (const QString &dev) {
 	inputDevice	= setDevice	(dev);
 //	Some buttons should not be touched before we have a device
 	if (inputDevice == nullptr) {
+	   fprintf (stderr, "disconnecting\n");
 	   disconnectGUI ();
 	   return;
 	}
@@ -695,6 +698,7 @@ bool	RadioInterface::doStart	() {
 	channel. cleanChannel ();
 
 //	Some hidden buttons can be made visible now
+	fprintf (stderr, "Connecting GUI\n");
 	connectGUI ();
 
 	if (dabSettings -> value ("showDeviceWidget", 0).  toInt () != 0)
@@ -1707,6 +1711,7 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	running. store (false);
 	stopScanning	(false);
 	stopChannel	();
+	fprintf (stderr, "disconnecting\n");
 	disconnectGUI	();
 	if (inputDevice != nullptr) {
 	   delete inputDevice;
@@ -2214,6 +2219,11 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_prevServiceButton ()));
 	connect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
+	connect (scheduleButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_scheduleButton ()));
+        connect (spectrumButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_spectrumButton ()));
+	fprintf (stderr, "geinstalleerd\n");
 
 	connect (theTechWindow, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
@@ -2243,7 +2253,10 @@ void	RadioInterface::disconnectGUI () {
 	         this, SLOT (handle_prevServiceButton ()));
 	disconnect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
-
+	disconnect (scheduleButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scheduleButton ()));
+	disconnect (spectrumButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_spectrumButton ()));
 	disconnect (theTechWindow, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
 	disconnect (theTechWindow, SIGNAL (handle_frameDumping ()),
@@ -4388,9 +4401,10 @@ std::vector<float> inBuffer;
 	inBuffer. resize (s);
 	responseBuffer. getDataFromBuffer (inBuffer. data (), s);
 	responseBuffer. FlushRingBuffer ();
-	if (!newDisplay. isHidden ())
+	if (!newDisplay. isHidden ()) {
 	   if (newDisplay. get_tab () == SHOW_CORRELATION)
 	      newDisplay. showCorrelation (inBuffer, r);
+	}
 }
 	      
 void	RadioInterface::show_null		(int amount) {
@@ -4692,17 +4706,11 @@ void	RadioInterface::connect_configWidget () {
 	connect (configWidget. dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_sourcedumpButton ()));
 
-	connect (scheduleButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scheduleButton ()));
+//	connect (scheduleButton, SIGNAL (clicked ()),
+//	         this, SLOT (handle_scheduleButton ()));
 
-	connect (spectrumButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_spectrumButton ()));
-
-	connect (configWidget. snrButton, SIGNAL (clicked ()), 
-	         this, SLOT (handle_snrButton ()));
-
-	connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_devicewidgetButton ()));
+//	connect (spectrumButton, SIGNAL (clicked ()),
+//	         this, SLOT (handle_spectrumButton ()));
 
 	connect (configWidget. resetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_resetButton ()));
@@ -4835,11 +4843,6 @@ void	RadioInterface::disconnect_configWidget () {
 	disconnect (configWidget. dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_sourcedumpButton ()));
 
-	disconnect (scheduleButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scheduleButton ()));
-
-	disconnect (spectrumButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_spectrumButton ()));
 
 	connect (configWidget. snrButton, SIGNAL (clicked ()), 
 	         this, SLOT (handle_snrButton ()));

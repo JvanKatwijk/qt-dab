@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>662</width>
+    <width>673</width>
     <height>456</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The TII data is extracted from the NULL period of the signal. The amplitude of the spectrum of the NULL period is periodically shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="spectrum">
         <attribute name="title">
@@ -85,6 +85,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
             <widget class="QLabel" name="correlationsVector">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The result of matching is shown here. The best match is usually with a sample on or around&lt;/p&gt;&lt;p&gt;sample number 504. The other matches - if any - are shown as two numbers, the offset in the input and the additional distance - compared to the distance of the best match - in km.&lt;/p&gt;&lt;p&gt;Note that it is NOT the distance between transmitter and rfeceiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>TextLabel</string>
              </property>
@@ -244,6 +247,9 @@
            <width>400</width>
            <height>159</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The waterfall display djows the progress of the data of the selected scope in time&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

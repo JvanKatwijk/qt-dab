@@ -78,7 +78,7 @@ float	Phi_k;
 	   }
 	}
 
-	fprintf (stderr, "numberofPilots %d (%d)\n", numberofPilots, carriers);
+//	fprintf (stderr, "numberofPilots %d (%d)\n", numberofPilots, carriers);
         numberofTaps		= T_g;
         F_p                     = MatrixXd (numberofPilots, numberofTaps);
         S_p                     = MatrixXd (numberofPilots,

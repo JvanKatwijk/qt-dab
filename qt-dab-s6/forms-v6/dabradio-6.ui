@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
+    <width>484</width>
     <height>439</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.1</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_10">
+  <layout class="QHBoxLayout" name="horizontalLayout_7">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -177,12 +177,9 @@
         </widget>
        </item>
        <item>
-        <widget class="smallPushButton" name="muteButton">
+        <widget class="QLCDNumber" name="cpuMonitor">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touhc this button to mute - or unmute - the audio. The duration of muting is displayed. Duration can be set in the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>mute</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cpuLoad. The number gives an estimate of the overall load of the CPU of the machine you are working on. So, it only gives an idea of the load caused by Qt-DAB if no other (large) programs are active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -273,8 +270,8 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_9">
-       <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
         <widget class="smallPushButton" name="configButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -284,7 +281,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="0" column="1">
         <widget class="smallPushButton" name="spectrumButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -294,17 +291,7 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="smallPushButton" name="scanButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop a scan. The scanMode can be selected in the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>scan</string>
-         </property>
-        </widget>
-       </item>
-       <item>
+       <item row="0" column="2">
         <widget class="smallPushButton" name="detailButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide a widget showing details of the currently selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -314,11 +301,17 @@
          </property>
         </widget>
        </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_7">
-       <item>
+       <item row="0" column="3" colspan="2">
+        <widget class="smallPushButton" name="muteButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touhc this button to mute - or unmute - the audio. The duration of muting is displayed. Duration can be set in the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>mute</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
         <widget class="smallPushButton" name="httpButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -328,7 +321,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="1">
         <widget class="smallPushButton" name="contentButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to see what the content of the currently selected ensemble is.&lt;/p&gt;&lt;p&gt;Specification is pretty detailed and can be saved in a &amp;quot;.csv&amp;quot; file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -338,7 +331,7 @@
          </property>
         </widget>
        </item>
-       <item>
+       <item row="1" column="2" colspan="2">
         <widget class="smallPushButton" name="scheduleButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to add a command to the schedule list. Commands can be given for up to 7 days ahead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -348,10 +341,13 @@
          </property>
         </widget>
        </item>
-       <item>
-        <widget class="QLCDNumber" name="cpuMonitor">
+       <item row="1" column="4">
+        <widget class="smallPushButton" name="scanButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cpuLoad. The number gives an estimate of the overall load of the CPU of the machine you are working on. So, it only gives an idea of the load caused by Qt-DAB if no other (large) programs are active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop a scan. The scanMode can be selected in the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>scan</string>
          </property>
         </widget>
        </item>

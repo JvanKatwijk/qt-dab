@@ -97,7 +97,7 @@ int32_t i, j;
 #endif
 }
 
-	Backend::~Backend() {
+	Backend::~Backend () {
 #ifdef	__THREADED_BACKEND
 	running. store (false);
 	while (this -> isRunning())
