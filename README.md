@@ -1,4 +1,4 @@
-# Qt-DAB-6 [![Build Status](https://travis-ci.com/JvanKatwijk/qt-dab.svg?branch=master)](https://travis-ci.com/JvanKatwijk/qt-dab)
+# Qt-DAB-6 [![Build Status](https://github.com/JvanKatwijk/qt-dab/actions/workflows/ci.yml/badge.svg)](https://github.com/JvanKatwijk/qt-dab/actions/workflows/ci.yml)
 
 -------------------------------------------------------------------
 
