@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2016
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -21,8 +21,9 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	"fic-handler.h"
 #include	"radio.h"
+#include	"fic-handler.h"
+#include	"crc-handlers.h"
 #include	"protTables.h"
 #include	"dab-params.h"
 //
@@ -49,7 +50,6 @@
 	                                    fibDecoder (mr),
 	                                    params (dabMode),
 	                                    myViterbi (768, true) {
-int16_t	i, j, k;
 int	local	= 0;
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
@@ -59,9 +59,9 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 	ficBlocks	= 0;
 	ficMissed	= 0;
 	ficRatio	= 0;
-	for (i = 0; i < 768; i ++) {
+	for (int i = 0; i < 768; i ++) {
 	   PRBS [i] = shiftRegister [8] ^ shiftRegister [4];
-	   for (j = 8; j > 0; j --)
+	   for (int j = 8; j > 0; j --)
 	      shiftRegister [j] = shiftRegister [j - 1];
 
 	   shiftRegister [0] = PRBS [i];
@@ -71,9 +71,9 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 //	(even through all instances, so we could create a static
 //	table), we make an punctureTable that contains the indices of
 //	the ofdmInput table
-	memset (punctureTable, 0, (3072 + 24) * sizeof (uint8_t));
-	for (i = 0; i < 21; i ++) {
-	   for (k = 0; k < 32 * 4; k ++) {
+	memset (punctureTable, (uint8_t)false, (3072 + 24) * sizeof (uint8_t));
+	for (int i = 0; i < 21; i ++) {
+	   for (int k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (16 - 1) [k % 32] != 0)  
 	         punctureTable [local] = true;
 	      local ++;
@@ -85,19 +85,18 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   *	each 128 bit block contains 4 subblocks of 32 bits
   *	on which the given puncturing is applied
   */
-	for (i = 0; i < 3; i ++) {
-	   for (k = 0; k < 32 * 4; k ++) {
+	for (int i = 0; i < 3; i ++) {
+	   for (int k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (15 - 1) [k % 32] != 0)  
 	         punctureTable [local] = true;
 	      local ++;
 	   }
 	}
-
 /**
   *	we have a final block of 24 bits  with puncturing according to PI_X
   *	This block constitues the 6 * 4 bits of the register itself.
   */
-	for (k = 0; k < 24; k ++) {
+	for (int k = 0; k < 24; k ++) {
 	   if (get_PCodes (8 - 1) [k] != 0) 
 	      punctureTable [local] = true;
 	   local ++;
@@ -129,15 +128,13 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
   */
 void	ficHandler::process_ficBlock (std::vector<int16_t> &data,
 	                              int16_t blkno) {
-int32_t	i;
-
 	if (blkno == 1) {
 	   index = 0;
 	   ficno = 0;
 	}
 //
 	if ((1 <= blkno) && (blkno <= 3)) {
-	   for (i = 0; i < BitsperBlock; i ++) {
+	   for (int i = 0; i < BitsperBlock; i ++) {
 	      ofdm_input [index ++] = data [i];
 	      if (index >= 2304) {
 	         process_ficInput (ficno, &ficValid [ficno]);
@@ -162,7 +159,6 @@ int32_t	i;
   *	one above
   */
 void	ficHandler::process_ficInput (int16_t ficno, bool *valid) {
-int16_t	i;
 int16_t	viterbiBlock [3072 + 24] = {0};
 int16_t	inputCount	= 0;
 
@@ -170,7 +166,7 @@ int16_t	inputCount	= 0;
 	   return;
 //	memset (viterbiBlock, 0, (3072 + 24) * sizeof (int16_t));
 
-	for (i = 0; i < 3072 + 24; i ++)
+	for (int i = 0; i < 3072 + 24; i ++)
 	   if (punctureTable [i])
 	      viterbiBlock [i] = ofdm_input [inputCount ++];
 /**
@@ -185,10 +181,10 @@ int16_t	inputCount	= 0;
   *	first step: energy dispersal according to the DAB standard
   *	We use a predefined vector PRBS
   */
-	for (i = 0; i < 768; i ++)
+	for (int i = 0; i < 768; i ++)
 	   bitBuffer_out [i] ^= PRBS [i];
 
-	for (i = 0; i < 768; i ++)
+	for (int i = 0; i < 768; i ++)
 	   fibBits [ficno * 768 + i] = bitBuffer_out [i];
 /**
   *	each of the fib blocks is protected by a crc
@@ -200,8 +196,8 @@ int16_t	inputCount	= 0;
   */
 //
 //	default	
-	*valid = true;
-	for (i = ficno * 3; i < ficno * 3 + 3; i ++) {
+	*valid = true;		// default, can be changed
+	for (int i = ficno * 3; i < ficno * 3 + 3; i ++) {
 	   uint8_t *p = &bitBuffer_out [(i % 3) * 256];
 	   if (!check_CRC_bits (p, 256)) {
 	      *valid = false;

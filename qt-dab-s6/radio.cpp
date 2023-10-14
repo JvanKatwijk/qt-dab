@@ -490,7 +490,9 @@ uint8_t	dabBand;
 	         this, SLOT (handle_timeTable ()));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
-	
+
+	connect (&newDisplay, SIGNAL (mouseClick ()),
+	         this, SLOT (handle_iqSelector ()));
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
 	presetSelector	-> setToolTip (presetText ());
@@ -4563,12 +4565,12 @@ std::vector<Complex> Values (amount);
 	   newDisplay. showIQ (Values);
 }
 
-void	RadioInterface::set_CorrectorDisplay (int v) {
+void	RadioInterface::show_Corrector (int h, float l) {
 	if (!newDisplay. isHidden ())
-	   newDisplay. show_correction (v);
+	   newDisplay. show_Corrector (h, l);
 }
 
-void	RadioInterface::show_snr		(int snr) {
+void	RadioInterface::show_snr		(float snr) {
 	if (!newDisplay. isHidden ())
 	   newDisplay. show_snr (snr);
 
@@ -4970,4 +4972,8 @@ bool	RadioInterface::channelOn () {
 	           (newDisplay. get_tab () == SHOW_CHANNEL));
 }
 
+void	RadioInterface::handle_iqSelector () {
+	if (my_ofdmHandler != nullptr)
+	   my_ofdmHandler -> handle_iqSelector ();
+}
 

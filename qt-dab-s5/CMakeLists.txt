@@ -231,6 +231,8 @@ endif ()
 	     ../fft/fft-complex.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
+	     ../includes/crc-handlers.h
+	     ../includes/bit-extractors.h
 	     ../includes/mot-content-types.h 
              ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/correlator.h

@@ -22,8 +22,7 @@
  */
 
 //
-#ifndef		__TII_VIEWER__
-#define		__TII_VIEWER__
+#pragma once
 
 #define		TII_DISPLAYSIZE		512
 #define		TII_SPECTRUMSIZE	1024
@@ -97,5 +96,4 @@ private:
 private slots:
 	void		rightMouseClick	(const QPointF &);
 };
-#endif
 

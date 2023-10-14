@@ -22,6 +22,8 @@
 #
 #include	"dab-constants.h"
 #include	"radio.h"
+#include	"bit-extractors.h"
+#include	"crc-handlers.h"
 #include	"data-processor.h"
 #include	"virtual-datahandler.h"
 #include	"ip-datahandler.h"

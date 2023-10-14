@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 #
-#ifndef	__OFDM_HANDLER_H
-#define	__OFDM_HANDLER_H
+#pragma once
 /*
  *	dabProcessor is the embodying of all functionality related
  *	to the actual DAB processing.
@@ -37,6 +36,7 @@
 #include	<sndfile.h>
 #include	"sample-reader.h"
 #include	"fic-handler.h"
+#include	"ofdm-decoder.h"
 #include	"msc-handler.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
@@ -104,6 +104,7 @@ public:
 	bool		set_dataChannel		(packetdata *,
 	                                         RingBuffer<uint8_t> *, int);
 	void		set_tiiDetectorMode	(bool);
+	void		handle_iqSelector	();
 private:
 	int		threshold;
 	int		totalFrames;
@@ -147,6 +148,7 @@ private:
 	bool		correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
+	ofdmDecoder	my_ofdmDecoder;
 virtual	void		run			();
 signals:
 	void		setSynced		(bool);
@@ -155,7 +157,7 @@ signals:
 	void		show_tii		(int, int);
 	void		show_tii_spectrum	();
 	void		show_Spectrum		(int);
-	void		show_snr		(int);
+	void		show_snr		(float);
 	void		show_snr		(float, float, float,
 	                                                  float, float);
 	void		show_clockErr		(int);
@@ -163,6 +165,6 @@ signals:
 #ifdef	__ESTIMATOR_
 	void		show_channel		(int);
 #endif
+	void		show_Corrector		(int, float);
 };
-#endif
 

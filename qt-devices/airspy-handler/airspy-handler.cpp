@@ -371,8 +371,8 @@ int32_t  i, j;
 	         for (j = 0; j < 2048; j ++) {
 	            int16_t  inpBase	= mapTable_int [j];
 	            float    inpRatio	= mapTable_float [j];
-	            temp [j]	= cmul (convBuffer [inpBase + 1], inpRatio) + 
-	                          cmul (convBuffer [inpBase], 1 - inpRatio);
+	            temp [j]	= convBuffer [inpBase + 1] * inpRatio + 
+	                          convBuffer [inpBase] * (1 - inpRatio);
 	         }
 
 	         _I_Buffer. putDataIntoBuffer (temp, 2048);
@@ -393,8 +393,8 @@ int32_t  i, j;
 	      for (j = 0; j < 2048; j ++) {
 	         int16_t  inpBase	= mapTable_int [j];
 	         float    inpRatio	= mapTable_float [j];
-	         temp [j]	= cmul (convBuffer [inpBase + 1], inpRatio) + 
-	                          cmul (convBuffer [inpBase], 1 - inpRatio);
+	         temp [j]	= convBuffer [inpBase + 1] * inpRatio + 
+	                          convBuffer [inpBase] * (1 - inpRatio);
 	      }
 
 	      _I_Buffer. putDataIntoBuffer (temp, 2048);

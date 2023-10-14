@@ -47,11 +47,10 @@
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
 //
-
 #ifndef	__ESTIMATOR_
 	tabWidget -> removeTab (4);
 #endif
-	myFrame. show ();
+	myFrame. hide ();
 
 //	the "workers"
 	mySpectrumScope		= new spectrumScope	(spectrumDisplay,
@@ -78,9 +77,15 @@
         currentTab		= dabSettings -> value ("tabSettings", 0). toInt ();
         dabSettings		-> endGroup ();
         tabWidget		-> setCurrentIndex (currentTab);
+	correlationsVector 	-> 
+	          setStyleSheet (
+	                 "QLabel {background-color : green; color: white}");
+
 
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
+	connect (myIQDisplay, SIGNAL (rightMouseClick ()),
+	         this, SLOT (rightMouseClick ()));
 }
 
 	displayWidget::~displayWidget () {
@@ -294,14 +299,7 @@ float	avg = 0;
 
 	if (Values. size () < 512)
 	   return;
-	for (int i = 0; i < 512; i ++) {
-           float x = abs (Values [i]);
-           if (!std::isnan (x) && !std::isinf (x))
-              avg += x;
-        }
-
-        avg     /= Values. size ();
-        myIQDisplay -> DisplayIQ (Values. data (), 512, sliderValue / avg);
+        myIQDisplay -> DisplayIQ (Values. data (), 512, sliderValue * 2);
 }
 
 void	displayWidget:: showQuality (float q, float timeOffset,	
@@ -314,6 +312,15 @@ void	displayWidget:: showQuality (float q, float timeOffset,
 	frequencyOffsetDisplay	-> display (freqOffset);
 }
 
+void	displayWidget::show_Corrector (int coarseOffset, float fineOffset) {
+	if (myFrame. isHidden ())
+	   return;
+
+	coarse_correctorDisplay	-> display (coarseOffset);
+	fine_correctorDisplay	-> display (fineOffset);
+}
+
+	
 void	displayWidget::show_snr	(float snr) {
 	if (myFrame. isHidden ())
 	   return;
@@ -323,7 +330,7 @@ void	displayWidget::show_snr	(float snr) {
 void	displayWidget::show_correction	(int c) {
 	if (myFrame. isHidden ())
 	   return;
-	correctorDisplay	-> display (c);
+//	correctorDisplay	-> display (c);
 }
 
 void	displayWidget::show_clockErr	(int e) {
@@ -358,5 +365,9 @@ void	displayWidget::hide () {
 
 bool	displayWidget::isHidden () {
 	return myFrame. isHidden ();
+}
+
+void	displayWidget::rightMouseClick () {
+	emit mouseClick ();
 }
 

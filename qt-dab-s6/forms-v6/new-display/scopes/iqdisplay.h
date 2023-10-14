@@ -34,7 +34,7 @@
 #include	<qwt_dial_needle.h>
 #include	<qwt_plot_spectrogram.h>
 #include	<qwt_color_map.h>
-#include	<qwt_plot_spectrogram.h>
+#include	<qwt_picker_machine.h>
 #include	<qwt_scale_widget.h>
 #include	<qwt_scale_draw.h>
 #include	<qwt_plot_zoomer.h>
@@ -58,9 +58,13 @@ private:
 //	std::vector<complex<int> > Points;
 //	std::complex<int> 	*Points;
 	QwtPlot			*plotgrid;
+        QwtPlotPicker		*lm_picker;
 	int			_OutputRate;
 	int			Radius;
 	int			CycleCount;
 	void			setPoint	(int, int, int);
 private slots:
+        void            	rightMouseClick	(const QPointF &);
+signals:
+	void			rightMouseClick	();
 };

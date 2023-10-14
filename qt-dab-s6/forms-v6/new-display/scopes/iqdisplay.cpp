@@ -36,6 +36,17 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
 	setRenderThreadCount	(1);
 	Radius		= 100;
 	plotgrid	= plot;
+	lm_picker       = new QwtPlotPicker (plot -> canvas ());
+        QwtPickerMachine *lpickerMachine =
+                             new QwtPickerClickPointMachine ();
+ 
+        lm_picker       -> setStateMachine (lpickerMachine);
+        lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
+                                            Qt::RightButton);
+        connect (lm_picker, SIGNAL (selected (const QPointF&)), 
+                 this, SLOT (rightMouseClick (const QPointF &)));
+ 
+
 	x_amount	= 4 * 512;
 	CycleCount	= 0;
 	this		-> setColorMap (colorMap);
@@ -109,3 +120,9 @@ void	IQDisplay::DisplayIQ (std::complex<float> *z,
 	this		-> attach     (plotgrid);
 	plotgrid	-> replot ();
 }
+
+void	IQDisplay::rightMouseClick (const QPointF &p) {
+	(void)p;
+	emit rightMouseClick ();
+}
+

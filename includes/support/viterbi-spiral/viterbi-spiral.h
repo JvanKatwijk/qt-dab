@@ -1,6 +1,5 @@
 #
-#ifndef	__VITERBI_SPIRAL__
-#define	__VITERBI_SPIRAL__
+#pragma once
 /*
  * 	Viterbi.h according to the SPIRAL project
  */
@@ -68,6 +67,4 @@ private:
 	COMPUTETYPE *symbols;
 	int16_t	frameBits;
 };
-
-#endif
 

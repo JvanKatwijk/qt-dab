@@ -64,6 +64,7 @@ public:
 
 	void	showChannel	(std::vector<Complex>);
 	void	showQuality	(float, float, float);
+	void	show_Corrector	(int, float);
 	void	show_snr	(float);
 	void	show_correction	(int);
 	void	show_clockErr	(int);
@@ -92,6 +93,9 @@ private:
 
 private slots:
 	void		switch_tab	(int);
+	void		rightMouseClick	();
+signals:
+	void		mouseClick ();
 };
 
 

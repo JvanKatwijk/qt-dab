@@ -1,10 +1,11 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2015 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
  *    This file is part of the Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +23,8 @@
  */
 #include	"ip-datahandler.h"
 #include	"radio.h"
+#include	"crc-handlers.h"
+#include	"bit-extractors.h"
 
 	ip_dataHandler::ip_dataHandler (RadioInterface *mr,
 	                                RingBuffer<uint8_t> *dataBuffer) {

@@ -37,9 +37,9 @@ Complex createExp (float s) {
 //
 //	"pilot" range is fftSize / 2 - carriers / 2 .. fftSize / 2 + carriers / 2
 bool	estimator::isPilot (int n) {
-int low		= fftSize / 2 + 1;
-int high	= fftSize / 2 + 130;
-	return ((low <= n) && (n <= high));
+int low		= T_u / 2 + 1;
+int high	= T_u / 2 + 270;
+	return (n & 01 == 1) && (low <= n) && (n <= high);
 }
 
 	estimator::estimator (RadioInterface *mr,
@@ -68,7 +68,6 @@ float	Phi_k;
 	   Phi_k = get_Phi (-i);
 	   refTable [T_u / 2 - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
-
 
         numberofPilots		= 0;
 	for (int i = 0; i < fftSize; i ++) {
@@ -101,9 +100,9 @@ float	Phi_k;
 	for (int pilotIndex = 0; pilotIndex < numberofPilots; pilotIndex ++) {
 	   for (int tap = 0; tap < numberofTaps; tap ++)
 	      F_p (pilotIndex, tap) =
-	         cdiv (createExp (2 * M_PI *
-	                        (fftSize / 2 + pilotTable [pilotIndex]) *
-	                                          tap / fftSize), sqrt (fftSize));
+	         createExp (2 * M_PI *
+	             (fftSize / 2 + pilotTable [pilotIndex]) * tap / fftSize) /
+	                                         (float)(sqrt (fftSize));
 	}
 	A_p	= S_p * F_p;
 	A_p_inv = A_p. transpose () * (A_p * A_p. transpose ()). inverse ();
@@ -122,8 +121,9 @@ Vector  X_p  (numberofPilots);
 	resultRow. resize (numberofPilots);
 	fft_forward -> fft (v);
 //
+//	Note that the fft result is in the "wrong" order
         for (int index = 0; index < numberofPilots; index ++)
-           X_p (index) = v [(pilotTable [index]) % T_u];
+           X_p (index) = v [(pilotTable [index] + T_u / 2) % T_u];
 
 //
 ////    Ok, the matrices are filled, now computing the channelvalues

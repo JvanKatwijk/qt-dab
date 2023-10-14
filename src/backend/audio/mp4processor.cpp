@@ -31,7 +31,8 @@
  */
 #include	"mp4processor.h"
 #include	"radio.h"
-//
+
+#include	"crc-handlers.h"
 #include	<cstring>
 #include	"charsets.h"
 #include	"pad-handler.h"

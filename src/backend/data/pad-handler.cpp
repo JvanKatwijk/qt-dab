@@ -24,6 +24,7 @@
 #include	"pad-handler.h"
 #include	<cstring>
 #include	"radio.h"
+#include	"crc-handlers.h"
 #include	"charsets.h"
 #include	"mot-object.h"
 /**

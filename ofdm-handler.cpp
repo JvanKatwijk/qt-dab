@@ -29,12 +29,11 @@
 #include	"process-params.h"
 #include	"dab-params.h"
 #include	"timesyncer.h"
-#include	"correlator.h"
 #include	"freqsyncer.h"
 #ifdef	__ESTIMATOR_
 #include	"estimator.h"
 #endif
-#include	"ofdm-decoder.h"
+#include	"correlator.h"
 
 //
 /**
@@ -58,7 +57,11 @@
 	                                 my_etiGenerator (p -> dabMode,
 	                                                  &my_ficHandler),
 	                                 my_TII_Detector (p -> dabMode,
-	                                                  p -> tii_depth) {
+	                                                  p -> tii_depth),
+	                                 my_ofdmDecoder (mr,
+                                                         p -> dabMode,
+                                                         inputDevice -> bitDepth(),
+                                                         p -> iqBuffer) {
 
 	this	-> myRadioInterface	= mr;
 	this	-> p			= p;
@@ -93,6 +96,7 @@
 	badFrames			= 0;
 	totalFrames			= 0;
 	scanMode			= false;
+
 	connect (this, SIGNAL (setSynced (bool)),
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (setSyncLost (void)),
@@ -103,8 +107,8 @@
 	         myRadioInterface, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_tii_spectrum ()),
 	         myRadioInterface, SLOT (show_tii_spectrum ()));
-	connect (this, SIGNAL (show_snr (int)),
-	         mr, SLOT (show_snr (int)));
+	connect (this, SIGNAL (show_snr (float)),
+	         mr, SLOT (show_snr (float)));
 	connect (this, SIGNAL (show_clockErr (int)),
 	         mr, SLOT (show_clockError (int)));
 	connect (this, SIGNAL (show_null (int)),
@@ -113,6 +117,8 @@
 	connect (this, SIGNAL (show_channel (int)),
 	         mr, SLOT (show_channel (int)));
 #endif
+	connect (this, SIGNAL (show_Corrector (int, float)),
+	         mr, SLOT (show_Corrector (int, float)));
 	my_TII_Detector. reset();
 }
 
@@ -157,17 +163,12 @@ void	ofdmHandler::stop	() {
    */
 void	ofdmHandler::run	() {
 int32_t		startIndex;
-Complex	FreqCorr;
 timeSyncer	myTimeSyncer (&myReader);
-correlator	myCorrelator (myRadioInterface, p);
 freqSyncer	myFreqSyncer (myRadioInterface, p);
 #ifdef	__ESTIMATOR_
 estimator	myEstimator  (myRadioInterface, p);
 #endif
-ofdmDecoder	my_ofdmDecoder (myRadioInterface,
-                                p -> dabMode,
-                                inputDevice -> bitDepth(),
-                                p -> iqBuffer);
+correlator	myCorrelator (myRadioInterface, p);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
@@ -333,20 +334,23 @@ QVector<Complex> tester (T_u / 2);
   */
 	      cCount	= 0;
 	      cLevel	= 0;
-	      FreqCorr	= Complex (0, 0);
+	      Complex FreqCorr	= Complex (0, 0);
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
+	         std::vector<Complex> errorVec (T_u);
 	         myReader. getSamples (ofdmBuffer, 0,
 	                               T_s, coarseOffset + fineOffset);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
-	            FreqCorr += ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
+	            FreqCorr +=
+	                      ofdmBuffer [i] * conj (ofdmBuffer [i - T_u]);
 	            cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	         }
 	         cCount += 2 * T_g;
 
 	         if ((ofdmSymbolCount <= 3) || eti_on)
-	            my_ofdmDecoder. decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            my_ofdmDecoder.
+	                 decode (ofdmBuffer, ofdmSymbolCount, ibits, errorVec);
 
 	         if (ofdmSymbolCount <= 3)
 	            my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
@@ -354,7 +358,8 @@ QVector<Complex> tester (T_u / 2);
 	            my_etiGenerator. processBlock (ibits, ofdmSymbolCount);
 
 	         if (!scanMode)
-	            my_mscHandler. process_Msc  (&((ofdmBuffer. data()) [T_g]),
+	            my_mscHandler.
+	                 process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
 	      }
 /**
@@ -379,7 +384,7 @@ QVector<Complex> tester (T_u / 2);
 	         ccc = 0;
 	         snr = 0.9 * snr +
 	           0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / (sum + 0.005));
-	         show_snr ((int)snr);
+	         show_snr (snr);
 	      }
 /*
  *	The TII data is encoded in the null period of the
@@ -421,6 +426,7 @@ QVector<Complex> tester (T_u / 2);
 	         coarseOffset -= carrierDiff;
 	         fineOffset += carrierDiff;
 	      }
+	      show_Corrector (coarseOffset, fineOffset);
 //ReadyForNewFrame:
 ///	and off we go, up to the next frame
 	   }
@@ -613,5 +619,9 @@ void	ofdmHandler::stop_etiGenerator		() {
 
 void	ofdmHandler::reset_etiGenerator	() {
 	my_etiGenerator. reset ();
+}
+
+void	ofdmHandler::handle_iqSelector	() {
+	my_ofdmDecoder. handle_iqSelector ();
 }
 

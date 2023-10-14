@@ -102,7 +102,6 @@ the visibility of the other widgets of the GUI.
 The technical widget - the visibility of which depends on the settings
 in the main widget, gives full information about the selected audio service.
 
-![6.1](/spectrum-scope.png)
 
 Different from previous versions, a single widget, the spectrum widget,
 contains - as tabbed widget - the 4 or 5 scopes to show different aspects
@@ -112,19 +111,27 @@ showing the constellation of the decoded data,
 and a waterfall scope, showing the progress in time of the data
 that is displayed in the selected scope.
 
-Scopes are
- * spectrum scope, showing the spectrum of the incoming DAB signal;
+![6.1](/spectrum-scope.png)
+The *spectrum scope* showis the spectrum of the incoming DAB signal;
 
- * correlation scope, showing the correlation between the incoming signal and
-some predefined data;
+![6.1](/qt-dab-correlation.png)
+The correlation scope shows the correlation between the incoming signal and
+some predefined data. It is helpful in finding the precise start of the
+(relevant) data in the input stream. The picture shows that the signal
+from more than one transmitter is received.
 
- * the NULL scope, showing the transition between the NULL period and
+![6.1](/qt-dab-null-period.png)
+The NULL scope shows the transition between the NULL period and
 the first data block of a DAB frame;
 
- * the TII scope, showing the spectrum of the data in the NULL period, since that data contains the TII (Transmitter Identification Information) data in an encoded form;
+![6.1](/qt-dab-tii-data.png)
+The TII scope shows the spectrum of the data in the NULL period, since that data contains the TII (Transmitter Identification Information) data in an encoded form;
 
- * the channel scope, showing the channel effect on the transmitted data, i.e.
-the deformation of the transmitted signal.
+![6.1](/qt-dab-channel.png)
+The channel scope shows the *channel effect* on the transmitted data, i.e.
+the deformation of the transmitted signal. The picture shows the * white line*,
+i.e. the channel effects on the amplitudes, and the *red line*, i.e.
+the channel effects on the phase of the samples.
 
 ![8.1](/configuration-and-control.png)
 

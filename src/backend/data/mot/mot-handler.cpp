@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2017
+ *    Copyright (C) 2015 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -26,6 +26,8 @@
 #include	"mot-object.h"
 #include	"mot-dir.h"
 #include	"radio.h"
+#include	"crc-handlers.h"
+#include	"bit-extractors.h"
 //
 //	we "cache" the most recent single motSlides (not those in a directory)
 //

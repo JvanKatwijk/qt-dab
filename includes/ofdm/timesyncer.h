@@ -33,7 +33,7 @@ class	sampleReader;
 class	timeSyncer {
 public:
 	timeSyncer	(sampleReader *mr);
-	~timeSyncer();
+	~timeSyncer	();
 int	sync		(int, int);
 private:
 	sampleReader	*myReader;

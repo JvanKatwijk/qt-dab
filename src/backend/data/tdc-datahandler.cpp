@@ -22,6 +22,8 @@
 
 #include	"tdc-datahandler.h"
 #include	"radio.h"
+#include	"crc-handlers.h"
+#include	"bit-extractors.h"
 
 	tdc_dataHandler::tdc_dataHandler (RadioInterface *mr,
 	                                  RingBuffer<uint8_t> *dataBuffer,

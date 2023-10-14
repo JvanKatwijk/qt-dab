@@ -39,15 +39,15 @@ public:
 	uint16_t	processNULL	();
 
 private:
-	fftHandler	*my_fftHandler;
+	dabParams	params;
+	int16_t		T_u;
+	int16_t		carriers;
+	fftHandler	my_fftHandler;
 	void		collapse	(Complex *,
 	                                         float *);
 	bool		detectMode_new;
 	int16_t		depth;
 	uint8_t		invTable [256];
-	dabParams	params;
-	int16_t		T_u;
-	int16_t		carriers;
 	std::vector<Complex >	theBuffer;
 #if USE_DOUBLE
 	std::vector<double>	window;

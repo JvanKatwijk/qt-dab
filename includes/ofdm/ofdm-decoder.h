@@ -34,6 +34,9 @@
 
 class	RadioInterface;
 
+#define	SHOW_RAW	0100
+#define	SHOW_DECODED	0101
+
 class	ofdmDecoder: public QObject {
 Q_OBJECT
 public:
@@ -44,9 +47,12 @@ public:
 		~ofdmDecoder		();
 	void	processBlock_0		(std::vector<Complex >);
 	void	decode			(std::vector<Complex> &,
-	                                 int32_t n, std::vector<int16_t> &);
+	                                 int32_t n,
+	                                 std::vector<int16_t> &,
+	                                 std::vector<Complex> &);
 	void	stop			();
 	void	reset			();
+	void	handle_iqSelector	();
 private:
 	RadioInterface	*myRadioInterface;
 	dabParams	params;
@@ -69,7 +75,7 @@ private:
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>		ibits;
 	phaseTable	*phasetable;
-
+	int		iqSelector;
 signals:
 	void		showIQ		(int);
 	void		showQuality	(float, float, float);

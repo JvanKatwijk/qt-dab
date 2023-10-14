@@ -33,7 +33,6 @@
 
 
 class	RadioInterface;
-
 class	ensembleDescriptor;
 class	dabConfig;
 class	Cluster;

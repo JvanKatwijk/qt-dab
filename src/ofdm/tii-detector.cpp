@@ -115,12 +115,13 @@ uint8_t table [] = {
 
 		TII_Detector::TII_Detector (uint8_t dabMode,
 	                                    int16_t depth):
-	                                     params (dabMode) {
+	                                      params (dabMode),
+	                                      T_u (params. get_T_u ()),
+	                                      carriers (params. get_carriers ()),
+	                                      my_fftHandler (params. get_T_u (),
+	                                                    false) {
 
 	this	-> depth	= depth;
-	this	-> T_u		= params. get_T_u ();
-	carriers		= params. get_carriers();
-	my_fftHandler		= new fftHandler (T_u, false);
 	theBuffer. resize	(T_u);
 	window. resize 		(T_u);
 	for (int i = 0; i < T_u; i ++)
@@ -134,7 +135,6 @@ uint8_t table [] = {
 }
 
 		TII_Detector::~TII_Detector () {
-	delete my_fftHandler;
 }
 
 void	TII_Detector::setMode	(bool b) {
@@ -153,7 +153,7 @@ void	TII_Detector::addBuffer (std::vector<Complex> v) {
 
 	for (int i = 0; i < T_u; i ++)
 	   v [i] = v [i] *  window [i];
-	my_fftHandler -> fft (v);
+	my_fftHandler. fft (v);
 
 	for (int i = 0; i < T_u; i ++)
 	   theBuffer [i] += v [i];

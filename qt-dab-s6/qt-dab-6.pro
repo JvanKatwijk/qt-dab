@@ -136,6 +136,8 @@ HEADERS += ./radio.h \
 	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
+	   ../includes/bit-extractors.h \
+	   ../includes/crc-handlers.h \
 	   ../includes/mot-content-types.h \
 	   ../includes/ofdm/timesyncer.h \
 	   ../includes/ofdm/sample-reader.h \

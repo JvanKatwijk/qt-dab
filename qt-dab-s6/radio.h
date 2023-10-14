@@ -359,7 +359,7 @@ public slots:
 	void			show_rsCorrections	(int, int);
 	void			show_clockError		(int);
 
-	void			set_CorrectorDisplay	(int);
+	void			show_Corrector		(int, float);
 	void			addtoEnsemble		(const QString &, int);
 	void			nameofEnsemble		(int, const QString &);
 	void			show_frameErrors	(int);
@@ -403,6 +403,7 @@ public slots:
 	void			http_terminate		();
 	void			show_channel		(int);
 
+	void			handle_iqSelector	();
 //	Somehow, these must be connected to the GUI
 private slots:
 	void			handle_timeTable	();
@@ -483,7 +484,7 @@ private slots:
 
 	void			show_tii_spectrum       ();
 
-	void			show_snr		(int);
+	void			show_snr		(float);
 	void			show_null		(int);
 	void			showIQ			(int);
 	void			showCorrelation		(int, int, QVector<int> );

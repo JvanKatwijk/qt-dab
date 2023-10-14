@@ -124,7 +124,7 @@ int16_t	averageCount	= 3;
 //	and window it
 
 	for (i = 0; i < spectrumSize; i ++)
-	   spectrumBuffer [i] = cmul (spectrumBuffer [i], Window [i]);
+	   spectrumBuffer [i] = spectrumBuffer [i] * Window [i];
 
 	fft. fft (spectrumBuffer);
 //

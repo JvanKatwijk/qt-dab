@@ -43,13 +43,13 @@
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
-	                                 RingBuffer<Complex> *iqBuffer) :
+	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    params (dabMode),
 	                                    myMapper (dabMode),
-	                                    fft (params. get_T_u (), false) {
+	                                    fft (params. get_T_u (), false),
+	                                    myRadioInterface (mr),
+	                                    iqBuffer (iqBuffer_i) {
 	(void)bitDepth;
-	this	-> myRadioInterface	= mr;
-	this	-> iqBuffer		= iqBuffer;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
 	connect (this, SIGNAL (showQuality (float, float, float)),
@@ -62,6 +62,8 @@
 
 	this	-> T_g			= T_s - T_u;
 	phaseReference			.resize (T_u);
+
+	iqSelector			= SHOW_DECODED;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -97,16 +99,10 @@ float square (float v) {
 
 float	ofdmDecoder::computeQuality (Complex *v) {
 Complex XX  [carriers];
-float	nominator	= 0;
-//float	aa	= 0;
 
 //
 //	since we do not equalize, we have a kind of "fake"
 //	reference point.
-//
-//	The key parameter here is the phase offset, so we compute the
-//	std deviation of the phases rather than the computation
-//	from the Modulation Error Ratio as specified in Tr 101 290
 //
 	Complex middle = Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
@@ -114,12 +110,21 @@ float	nominator	= 0;
 	   XX [i] = Complex (abs (real (ss)), abs (imag (ss)));
 	   middle += XX [i];
 	}
-	middle	= conj (middle);
+	middle = middle / (float)carriers;
+	middle	= Complex (real (middle) + imag (middle) / 2,
+	                   real (middle) + imag (middle) / 2);
+//	middle	= Complex (1, 1);
+	float nominator		= 0;
+	float denominator	= 0;
 	for (int i = 0; i < carriers; i ++) {
-	   float x1 = arg (XX [i] * middle);
-	   nominator += x1 * x1;
+	   float I_component	= real (v [T_u / 2 - carriers / 2 + i]);
+	   float Q_component	= imag (v [T_u / 2 - carriers / 2 + i]);
+	   float delta_I	= abs (I_component) - real (middle);
+	   float delta_Q	= abs (Q_component) - imag (middle);
+	   nominator	+= square (I_component) + square (Q_component);
+	   denominator	+= square (delta_I) + square (delta_Q);
 	}
-	return sqrt (nominator / carriers) / (M_PI / 2) * 10;
+	return 20 * log10 (nominator / denominator);
 }
 /**
   *	for the other blocks of data, the first step is to go from
@@ -130,10 +135,13 @@ float	nominator	= 0;
 
 static	int	cnt	= 0;
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
-	                     int32_t blkno, std::vector<int16_t> &ibits) {
+	                     int32_t blkno,
+	                     std::vector<int16_t> &ibits,
+	                     std::vector<Complex> &errorVec) {
 int16_t	i;
 Complex conjVector [T_u];
 Complex fft_buffer [T_u];
+float	avg_2	= 0;
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
@@ -164,20 +172,41 @@ Complex fft_buffer [T_u];
   */
 	   Complex	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
-	   conjVector [index] = r1;
+	   conjVector	[index] = r1;
+	                           
 	   float ab1	= abs (r1);
+	   if (ab1 > avg_2)
+	      avg_2 = ab1;
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
-	   ibits [i]		=  - (real (r1) * 255) / ab1;
-	   ibits [carriers + i] =  - (imag (r1) * 255) / ab1;
+	   ibits [i]		=  (int16_t)( - (real (r1) * 255) / ab1);
+	   ibits [carriers + i] =  (int16_t)( - (imag (r1) * 255) / ab1);
 	}
+
 
 //	From time to time we show the constellation of symbol 2.
 	
 	if (blkno == 2) {
-	   if (++cnt > 7) {
-	      iqBuffer	-> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
+	   if (++cnt > 8) {
+	      Complex displayVector [carriers];
+	      if (iqSelector == SHOW_RAW) {
+	         float max = 0;
+	         for (int i = -carriers / 2; i < carriers / 2; i ++)
+	            if (i != 0)
+	               if (abs (fft_buffer [(T_u + i) % T_u]) > max)
+	                  max = abs (fft_buffer [(T_u + i) % T_u]);
+	         for (i = 0; i < carriers; i ++)
+	            displayVector [i] =
+	                 fft_buffer [(T_u - carriers / 2 - 1 + i) % T_u] / max;
+	         iqBuffer -> putDataIntoBuffer (displayVector, carriers);
+	      }
+	      else {
+	         for (int i = -carriers / 2; i < carriers / 2; i ++)
+	            conjVector [T_u / 2 - carriers / 2 + i] /= avg_2;
+	         iqBuffer -> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
 	                                      carriers);
+	      }
+
 	      showIQ	(carriers);
 	      float Quality	= computeQuality (conjVector);
 	      float timeOffset	= compute_timeOffset (fft_buffer,
@@ -188,7 +217,6 @@ Complex fft_buffer [T_u];
 	      cnt = 0;
 	   }
 	}
-
 	memcpy (phaseReference. data(), fft_buffer,
 	                            T_u * sizeof (Complex));
 }
@@ -203,8 +231,6 @@ Complex fft_buffer [T_u];
 //	and 5.40 from "OFDM Baseband Receiver Design for Wireless
 //	Communications (Chiueh and Tsai)"
 float	ofdmDecoder::compute_timeOffset (Complex *r, Complex *v) {
-Complex leftTerm;
-Complex rightTerm;
 Complex sum	= Complex (0, 0);
 
 	for (int i = -carriers / 2; i < carriers / 2; i += 6) {
@@ -212,11 +238,11 @@ Complex sum	= Complex (0, 0);
 	   int index_2 = (i + 1) < 0 ? (i + 1) + T_u : (i + 1);
 	   Complex s = r [index_1] * conj (v [index_2]);
 	   s = Complex (abs (real (s)), abs (imag (s)));
-	   leftTerm	= s * conj (Complex (abs (s) / sqrt (2),
+	   Complex leftTerm = s * conj (Complex (abs (s) / sqrt (2),
 	                                                 abs (s) / sqrt (2)));
 	   s = r [index_2] * conj (v [index_2]);
 	   s = Complex (abs (real (s)), abs (imag (s)));
-	   rightTerm	= s * conj (Complex (abs (s) / sqrt (2),
+	   Complex rightTerm = s * conj (Complex (abs (s) / sqrt (2),
 	                                                 abs (s) / sqrt (2)));
 	   sum += conj (leftTerm) * rightTerm;
 	}
@@ -265,4 +291,10 @@ int	offsb	= 0;
 	return sampleClockOffset;
 }
 
+void	ofdmDecoder::handle_iqSelector	() {
+	if (iqSelector == SHOW_RAW)
+	   iqSelector = SHOW_DECODED;
+	else
+	   iqSelector = SHOW_RAW;
+}
 

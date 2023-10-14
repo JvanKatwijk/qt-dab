@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef	__VITERBI_HANDLER__
-#define	__VITERBI_HANDLER__
+#pragma once
 
 #include	<cstdint>
 
@@ -42,6 +41,3 @@ private:
 	int	**history;
 };
 
-#endif
-
-	

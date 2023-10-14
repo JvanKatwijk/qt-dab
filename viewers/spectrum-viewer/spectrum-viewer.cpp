@@ -117,7 +117,7 @@ int16_t	averageCount	= 5;
 	                 std::isinf (abs (spectrum [i])))
 	      spectrum [i] = std::complex<float> (0, 0);
 	   else
-	      spectrum [i] = cmul (spectrum [i], Window [i]);
+	      spectrum [i] = spectrum [i] * Window [i];
 
 	fft. fft (spectrum);
 //

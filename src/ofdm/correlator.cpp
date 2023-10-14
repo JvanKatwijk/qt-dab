@@ -33,18 +33,17 @@
   *	The class inherits from the phaseTable.
   */
 
-#define	MAX_OFFSET	250
 
 	correlator::correlator (RadioInterface *mr,
-	                                processParams	*p):
-	                                     phaseTable (p -> dabMode),
-	                                     params (p -> dabMode),
-	                                     fft_forward (params. get_T_u (), false),
-	                                     fft_backwards (params. get_T_u (), true) {
-int32_t	i;
+	                        processParams	*p):
+	                             phaseTable (p -> dabMode),
+	                              params (p -> dabMode),
+	                              fft_forward (params. get_T_u (), false),
+	                              fft_backwards (params. get_T_u (), true),
+	                              response (p -> responseBuffer) {
+	                    
 float	Phi_k;
 
-	this	-> response	= p -> responseBuffer;
 	this	-> depth	= p -> echo_depth;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
@@ -55,10 +54,10 @@ float	Phi_k;
 	framesperSecond		= 2048000 / params. get_T_F();
 	displayCounter		= 0;
 	
-	for (i = 0; i < T_u; i ++)
+	for (int i = 0; i < T_u; i ++)
 	   refTable [i] = Complex (0, 0);
 
-	for (i = 1; i <= params. get_carriers() / 2; i ++) {
+	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
@@ -81,14 +80,15 @@ float	Phi_k;
   *	we believe that that indicates the first sample we were
   *	looking for.
   */
-
-int32_t	correlator::findIndex (std::vector <Complex> v,
-	                           int threshold ) {
+int32_t	correlator::findIndex (std::vector <Complex> v, int threshold ) {
 int32_t	i;
 int32_t	maxIndex	= -1;
 float	sum		= 0;
 float	Max		= -1000;
 float	lbuf [T_u / 2];
+
+const	int SEARCH_GAP	= 10;
+const	int SEARCH_OFFSET = 250;
 
 	fft_forward. fft (v);
 //
@@ -109,10 +109,11 @@ float	lbuf [T_u / 2];
 	sum /= T_u / 2;
 	QVector<int> indices;
 
-	for (i = T_g - MAX_OFFSET; i < T_g + MAX_OFFSET; i ++) {
+	for (i = T_g - SEARCH_OFFSET; i < T_g + SEARCH_OFFSET; i ++) {
 	   if (lbuf [i] / sum > threshold)  {
 	      bool foundOne = true;
-	      for (int j = 1; (j < 10) && (i + j < T_g + 250); j ++) {
+	      for (int j = 1; (j < SEARCH_GAP) &&
+	                              (i + j < T_g + SEARCH_OFFSET); j ++) {
 	         if (lbuf [i + j] > lbuf [i]) {
 	            foundOne = false;
 	            break;
@@ -124,13 +125,13 @@ float	lbuf [T_u / 2];
 	            Max = lbuf [i];
 	            maxIndex = i;
 	         }
-	         i += 10;
+	         i += SEARCH_GAP;
 	      }
 	   }
 	}
 
 	for (int i = 0; i < indices. size (); i ++) {
-	   if (500 <= indices. at (i) && indices. at (i) <= 510) {
+	   if (480 <= indices. at (i) && indices. at (i) <= 520) {
 	      int match = indices. at (i);
 	      std::vector<int> temp;
 	      temp. push_back (indices. at (i));
@@ -144,8 +145,6 @@ float	lbuf [T_u / 2];
 	      break;
 	   }
 	}
-	      
-	
 
 	if (Max / sum < threshold) {
 	   return (- abs (Max / sum) - 1);

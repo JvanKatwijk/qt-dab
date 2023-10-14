@@ -36,19 +36,17 @@ static
 Complex oscillatorTable [INPUT_RATE];
 
 	sampleReader::sampleReader (RadioInterface *mr,
-	                            deviceHandler	*theRig,
-	                            RingBuffer<Complex> *spectrumBuffer
-	                           ) {
+	                            deviceHandler	*theRig_i,
+	                            RingBuffer<Complex> *spectrumBuffer_i
+	                           ):
+	                               theRig (theRig_i),
+	                               spectrumBuffer (spectrumBuffer_i) {
 int	i;
-	this	-> theRig	= theRig;
         bufferSize		= 32768;
-        this    -> spectrumBuffer       = spectrumBuffer;
-        connect (this, SIGNAL (show_Spectrum (int)),
-                 mr, SLOT (showSpectrum (int)));
+	connect (this, SIGNAL (show_Spectrum (int)),
+	         mr, SLOT (showSpectrum (int)));
         localBuffer. resize (bufferSize);
         localCounter		= 0;
-	connect (this, SIGNAL (show_Corrector (int)),
-	         mr, SLOT (set_CorrectorDisplay (int)));
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
@@ -120,7 +118,7 @@ Complex temp;
 	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
 #define	N	4
 	if (++ sampleCount > INPUT_RATE / N) {
-	   show_Corrector	(corrector);
+//	   show_Corrector	(corrector);
 	   sampleCount = 0;
 	   if (spectrumBuffer != nullptr) {
               spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),

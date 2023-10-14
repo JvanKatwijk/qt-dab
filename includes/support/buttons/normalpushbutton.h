@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017, 2018, 2019
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB (formerly SDR-J, JSDR).
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__NORMAL_BUTTON__
-#define	__NORMAL_BUTTON__
+#pragma once
+
 #include	<QPushButton>
 #include	<QSize>
 
@@ -37,5 +37,4 @@ void	mousePressEvent (QMouseEvent *e);
 signals:
 void	rightClicked		();
 };
-#endif
 

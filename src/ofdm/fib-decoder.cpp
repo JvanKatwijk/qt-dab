@@ -29,10 +29,10 @@
 #include	<vector>
 #include	"radio.h"
 #include	"charsets.h"
+#include	"bit-extractors.h"
 #include	"dab-config.h"
 #include	"fib-table.h"
 #include	<QStringList>
-//#include	"text-mapper.h"
 #include	"dab-tables.h"
 //
 //

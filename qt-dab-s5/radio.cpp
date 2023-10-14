@@ -877,9 +877,9 @@ bool	RadioInterface::doStart	() {
 ///////////////////////////////////////////////////////////////////////////////
 //	
 //	a slot called by the ofdmprocessor
-void	RadioInterface::set_CorrectorDisplay (int v) {
+void	RadioInterface::show_Corrector (int h, float l) {
 	if (!my_spectrumViewer. isHidden ())
-	   my_spectrumViewer. show_correction (v);
+	   my_spectrumViewer. show_correction (h + l);
 }
 //
 //	might be called when scanning only
@@ -1998,7 +1998,7 @@ void	RadioInterface::show_motHandling (bool b) {
 }
 	
 //	called from the dabProcessor
-void	RadioInterface::show_snr (int s) {
+void	RadioInterface::show_snr (float s) {
 	if (!running. load ())
 	   return;
 

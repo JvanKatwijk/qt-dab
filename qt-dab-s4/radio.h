@@ -337,14 +337,15 @@ signals:
         void                    set_newPresetIndex      (int);
 
 public slots:
-	void			set_CorrectorDisplay	(int);
+//	void			set_CorrectorDisplay	(int);
+	void			show_Corrector		(int, float);
 	void			addtoEnsemble		(const QString &, int);
 	void			nameofEnsemble		(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
-	void			show_snr		(int);
+	void			show_snr		(float);
 	void			setSynced		(bool);
 	void			showLabel		(QString);
 	void			handle_motObject	(QByteArray, QString,

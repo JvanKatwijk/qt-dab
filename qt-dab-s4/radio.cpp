@@ -932,10 +932,10 @@ void	RadioInterface::dumpControlState (QSettings *s) {
 ///////////////////////////////////////////////////////////////////////////////
 //	
 //	a slot called by the ofdmprocessor
-void	RadioInterface::set_CorrectorDisplay (int v) {
+void	RadioInterface::show_Corrector (int h, float l) {
 //	correctorDisplay	-> display (v);
 	if (!my_spectrumViewer. isHidden ())
-	   my_spectrumViewer. show_correction (v);
+	   my_spectrumViewer. show_correction (h + l);
 
 }
 //
@@ -2043,7 +2043,7 @@ void	RadioInterface::show_motHandling (bool b) {
 	                   "QLabel {background-color : red; color : white}");
 }
 	
-void	RadioInterface::show_snr (int s) {
+void	RadioInterface::show_snr (float s) {
 	if (!running. load ())
 	   return;
 	currentSNR	= s;

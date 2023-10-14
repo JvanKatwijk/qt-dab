@@ -22,7 +22,7 @@
  */
 #include	"journaline-datahandler.h"
 #include	"dabdatagroupdecoder.h"
-
+#include	"bit-extractors.h"
 
 static
 void my_callBack (
