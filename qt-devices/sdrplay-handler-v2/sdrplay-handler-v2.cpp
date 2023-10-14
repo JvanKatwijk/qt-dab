@@ -1042,6 +1042,7 @@ QString	theValue	= "";
 
 void	sdrplayHandler::biasT_selectorHandler (int k) {
 bool setting = biasT_selector -> isChecked ();
+	(void)k;
 	sdrplaySettings -> setValue ("biasT_selector", setting ? 1 : 0);
 	switch (hwVersion) {
 	   case 1:		// old RSP

@@ -32,8 +32,8 @@
 	                                  amplitudeCurve (""),
 	                                  phaseCurve ("") {
 QString	colorString	= "black";
-bool	brush;
 
+	(void)displaySize;
 	this	-> dabSettings		= dabSettings;
 	this	-> displaySize		= 128;
 	dabSettings	-> beginGroup ("channelScope");
@@ -103,6 +103,7 @@ void	channelScope::display		(double *X_axis,
 	                                 double *amplitudeValues,
 	                                 double *phaseValues,
 	                                 int Amp) {
+	(void)Amp;
 	float Max	= 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],

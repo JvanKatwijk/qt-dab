@@ -431,7 +431,7 @@
         </font>
        </property>
        <property name="toolTip">
-        <string>Quality indicator: rather than the Modulation Error as specified in Tr 101 290, we merely look at the std deviation of the phases of the DAB signal, since the information is encoded in phases (phase differences) </string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality Indicator according to the Modulation Error as specified in Tr 101 290,  higher is better. The effective maximum value ever seen is about 6&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>

@@ -454,8 +454,6 @@ std::string s = std::to_string (f);
 }
 //
 std::string httpHandler::coordinatesToJson (std::vector<httpData> &t) {
-position home;
-position target = position {0, 0};
 char buf [512];
 QString Jsontxt;
 

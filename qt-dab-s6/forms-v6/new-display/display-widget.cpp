@@ -34,7 +34,7 @@
 	                                 QSettings	*dabSettings):
 	                                         myFrame (nullptr),
 	                                         theFFT (4 * 512, false) {
-
+	(void)mr;
 	this	-> dabSettings		= dabSettings;
 
 	dabSettings	-> beginGroup ("displayWidget");
@@ -140,7 +140,7 @@ static double avg [4 * 512];
 	   return;
 
 	theFFT. fft (v);
-	for (int i = 0; i < v. size () / 2; i ++) {
+	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {
 	   avg [i] = 0.5 * avg [i] + 0.5 * abs (v [l / 2 + i]);
 	   avg [l / 2 + i] = 0.5 * avg [l / 2 + i] + 0.5 * abs (v [i]);
 	}
@@ -171,7 +171,6 @@ void	displayWidget::showCorrelation	(std::vector<float> &v,
 	   return;
 	myCorrelationScope	-> display (v, correlationLength -> value ());
 	if (ww. size () > 0) {
-	   int baseOffset = ww [0];
 	   QString t = "Matches ";
 	   for (int i = 0; i < ww. size (); i ++) {
 	      t = t + " " + QString::number (ww [i]);
@@ -189,7 +188,8 @@ void	displayWidget::showCorrelation	(std::vector<float> &v,
 	double X_axis [512];
 	double Y_value [512];
 	float	MMax	= 0;
-	for (int i = v. size () / 2 - 256; i < v. size () / 2 + 256; i ++) {
+	for (int i = v. size () / 2 - 256;
+	                       i < (int)( v. size ()) / 2 + 256; i ++) {
 	   X_axis [i - v. size () / 2 + 256] = i;
 	   Y_value [i - v. size () / 2 + 256] = v [i];
 	   if (v [i] > MMax)
@@ -239,7 +239,7 @@ static double avg [4 * 512];
 	   return;
 
 	theFFT. fft (v);
-	for (int i = 0; i < v. size () / 2; i ++) {
+	for (int i = 0; i < (int)(v. size ()) / 2; i ++) {
 	   avg [i] = 0.5 * avg [i] + 0.5 * abs (v [l / 2 + i]);
 	   avg [l / 2 + i] = 0.5 * avg [l / 2 + i] + 0.5 * abs (v [i]);
 	}
@@ -295,7 +295,6 @@ double	waterfall_Y	[512];
 //	decoded values
 void	displayWidget::showIQ	(std::vector<Complex> Values) {
 int sliderValue	=  scopeSlider -> value ();
-float	avg = 0;
 
 	if (Values. size () < 512)
 	   return;
@@ -330,6 +329,7 @@ void	displayWidget::show_snr	(float snr) {
 void	displayWidget::show_correction	(int c) {
 	if (myFrame. isHidden ())
 	   return;
+	(void)c;
 //	correctorDisplay	-> display (c);
 }
 
@@ -343,6 +343,7 @@ void	displayWidget::showFrequency (float f) {
 }
 
 void	displayWidget::show_cpuLoad	(float use) {
+	(void)use;
 }
 
 void	displayWidget::showTransmitters	(QByteArray &tr) {

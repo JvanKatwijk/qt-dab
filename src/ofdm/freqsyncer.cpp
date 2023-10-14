@@ -34,6 +34,7 @@
 int32_t	i;
 float	Phi_k;
 
+	(void)mr;
 	this	-> diff_length	= p -> diff_length;
 	this	-> diff_length	= 128;
 	this	-> T_u		= params. get_T_u();

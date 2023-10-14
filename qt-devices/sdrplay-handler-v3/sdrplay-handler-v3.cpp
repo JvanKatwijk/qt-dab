@@ -317,6 +317,7 @@ ppmRequest r (ppm);
 void	sdrplayHandler_v3::set_biasT (int v) {
 biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 
+	(void)v;
 	messageHandler (&r);
 	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
 	sdrplaySettings -> setValue ("biasT_selector",

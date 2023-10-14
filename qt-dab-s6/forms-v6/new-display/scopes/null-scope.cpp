@@ -32,8 +32,8 @@
 	                              QSettings	*dabSettings):
 	                                  spectrumCurve ("") {
 QString	colorString	= "black";
-//bool	brush;
 
+	(void)displaySize;
 	this	-> dabSettings		= dabSettings;
 	dabSettings	-> beginGroup ("nullScope");
 	colorString	= dabSettings -> value ("displayColor",

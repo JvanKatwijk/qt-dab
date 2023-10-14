@@ -46,9 +46,12 @@ public:
 	int32_t		findIndex		(std::vector<Complex>, int);
 //	This one is used in the ofdm decoder
 private:
-	std::vector<Complex> refTable;
 	dabParams	params;
+	fftHandler	fft_forward;
+	fftHandler	fft_backwards;
 	RingBuffer<float> *response;
+
+	std::vector<Complex> refTable;
 	int16_t		depth;
 	int32_t		T_u;
 	int32_t		T_g;
@@ -58,8 +61,6 @@ private:
 	int32_t		framesperSecond;	
 	int32_t		displayCounter;
 
-	fftHandler	fft_forward;
-	fftHandler	fft_backwards;
 
 signals:
 	void		showCorrelation	(int, int, QVector<int>);

@@ -102,6 +102,7 @@ bool	brush;
 
 void	spectrumScope::display		(double *X_axis, double *Y_value,
 	                                 int freq, int Amp) {
+	(void)freq;
 	float Max	= Amp / 100.0 * (-get_db (0));
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],

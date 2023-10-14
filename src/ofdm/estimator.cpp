@@ -39,7 +39,7 @@ Complex createExp (float s) {
 bool	estimator::isPilot (int n) {
 int low		= T_u / 2 + 1;
 int high	= T_u / 2 + 270;
-	return (n & 01 == 1) && (low <= n) && (n <= high);
+	return ((n & 01) == 1) && (low <= n) && (n <= high);
 }
 
 	estimator::estimator (RadioInterface *mr,
@@ -49,6 +49,7 @@ int high	= T_u / 2 + 270;
 int32_t	i;
 float	Phi_k;
 
+	(void)mr;
 	this	-> T_u		= params. get_T_u();
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();

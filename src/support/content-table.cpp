@@ -116,6 +116,8 @@ void	contentTable::dump	(int row, int column) {
 findfileNames filenameFinder (dabSettings);
 FILE	*dumpFile 	= filenameFinder. findContentDump_fileName (channel);
 
+	(void)row;
+	(void)column;
 	if (dumpFile == nullptr)
 	   return;
 

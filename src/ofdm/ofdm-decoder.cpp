@@ -44,10 +44,10 @@
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
+	                                    myRadioInterface (mr),
 	                                    params (dabMode),
 	                                    myMapper (dabMode),
 	                                    fft (params. get_T_u (), false),
-	                                    myRadioInterface (mr),
 	                                    iqBuffer (iqBuffer_i) {
 	(void)bitDepth;
 	connect (this, SIGNAL (showIQ (int)),
@@ -141,7 +141,7 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 int16_t	i;
 Complex conjVector [T_u];
 Complex fft_buffer [T_u];
-float	avg_2	= 0;
+	(void)errorVec;
 	memcpy (fft_buffer, &((buffer. data()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
@@ -160,6 +160,7 @@ float	avg_2	= 0;
   *	Note that from here on, we are only interested in the
   *	"carriers", the useful carriers of the FFT output
   */
+	float max	= 0;
 	for (i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -175,8 +176,8 @@ float	avg_2	= 0;
 	   conjVector	[index] = r1;
 	                           
 	   float ab1	= abs (r1);
-	   if (ab1 > avg_2)
-	      avg_2 = ab1;
+	   if (ab1 > max)
+	      max = ab1;
 //	split the real and the imaginary part and scale it
 //	we make the bits into softbits in the range -127 .. 127
 	   ibits [i]		=  (int16_t)( - (real (r1) * 255) / ab1);
@@ -190,24 +191,23 @@ float	avg_2	= 0;
 	   if (++cnt > 8) {
 	      Complex displayVector [carriers];
 	      if (iqSelector == SHOW_RAW) {
-	         float max = 0;
+	         float maxAmp = 0;
 	         for (int i = -carriers / 2; i < carriers / 2; i ++)
 	            if (i != 0)
-	               if (abs (fft_buffer [(T_u + i) % T_u]) > max)
-	                  max = abs (fft_buffer [(T_u + i) % T_u]);
+	               if (abs (fft_buffer [(T_u + i) % T_u]) > maxAmp)
+	                  maxAmp = abs (fft_buffer [(T_u + i) % T_u]);
 	         for (i = 0; i < carriers; i ++)
 	            displayVector [i] =
-	                 fft_buffer [(T_u - carriers / 2 - 1 + i) % T_u] / max;
-	         iqBuffer -> putDataIntoBuffer (displayVector, carriers);
+	              fft_buffer [(T_u - carriers / 2 - 1 + i) % T_u] / maxAmp;
 	      }
 	      else {
-	         for (int i = -carriers / 2; i < carriers / 2; i ++)
-	            conjVector [T_u / 2 - carriers / 2 + i] /= avg_2;
-	         iqBuffer -> putDataIntoBuffer (&conjVector [T_u / 2 - carriers / 2],
-	                                      carriers);
+	         for (int i = i; i < carriers; i ++)
+	            displayVector [i] =
+	                      conjVector [T_u / 2 - carriers / 2 + i] / max; 
 	      }
+	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
-	      showIQ	(carriers);
+	      showIQ (carriers);
 	      float Quality	= computeQuality (conjVector);
 	      float timeOffset	= compute_timeOffset (fft_buffer,
 	                                              phaseReference. data ());

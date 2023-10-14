@@ -80,7 +80,8 @@ void	IQDisplay::setPoint (int x, int y, int val) {
 
 void	IQDisplay::DisplayIQ (std::complex<float> *z,
 	                             int amount, float scale) {
-//
+
+	(void)amount;
 //	clean the screen
 	for (int i = 0; i < x_amount; i ++) {
 	   int a	= real (Points [i]);

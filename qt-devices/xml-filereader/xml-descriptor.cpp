@@ -76,6 +76,7 @@ void	xmlDescriptor::addChannelOrder (int channelOrder, QString Value) {
 void	xmlDescriptor::add_dataBlock (int currBlock,  int Count,
                                       int  blockNumber, QString Unit) {
 Blocks	b;
+	(void)currBlock;
 	b. blockNumber	= blockNumber;
 	b. nrElements	= Count;
 	b. typeofUnit	= Unit;

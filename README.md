@@ -112,22 +112,32 @@ and a waterfall scope, showing the progress in time of the data
 that is displayed in the selected scope.
 
 ![6.1](/spectrum-scope.png)
-The *spectrum scope* showis the spectrum of the incoming DAB signal;
+
+The *spectrum scope* shows the spectrum of the incoming DAB signal;
+
+![6.1](/spectrum-ideal.png)
+
+The ideal form of the spectrum - and the signal constellation as shown in the
+IQScope - is not seen often.
 
 ![6.1](/qt-dab-correlation.png)
+
 The correlation scope shows the correlation between the incoming signal and
 some predefined data. It is helpful in finding the precise start of the
 (relevant) data in the input stream. The picture shows that the signal
 from more than one transmitter is received.
 
 ![6.1](/qt-dab-null-period.png)
+
 The NULL scope shows the transition between the NULL period and
 the first data block of a DAB frame;
 
 ![6.1](/qt-dab-tii-data.png)
+
 The TII scope shows the spectrum of the data in the NULL period, since that data contains the TII (Transmitter Identification Information) data in an encoded form;
 
 ![6.1](/qt-dab-channel.png)
+
 The channel scope shows the *channel effect* on the transmitted data, i.e.
 the deformation of the transmitted signal. The picture shows the * white line*,
 i.e. the channel effects on the amplitudes, and the *red line*, i.e.

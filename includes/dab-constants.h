@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2020
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -117,39 +117,6 @@ public:
 
 };
 //
-//	40 up shows good results
-#define		DIFF_LENGTH	60
-
-static inline
-float	get_db	(float x) {
-	return 20 * log10 ((0.1 + x) / 256);
-}
-
-static inline
-bool	isIndeterminate (float x) {
-	return x != x;
-}
-
-static inline
-bool	isInfinite (float x) {
-	return x == numeric_limits<float>::infinity();
-}
-
-#define	MINIMUM(x, y)	((x) < (y) ? x : y)
-#define	MAXIMUM(x, y)	((x) > (y) ? x : y)
-
-static inline
-float	jan_abs (std::complex<float> z) {
-float	re	= real (z);
-float	im	= imag (z);
-	if (re < 0) re = -re;
-	if (im < 0) im = -im;
-	if (re > im) 
-	   return re + 0.5 * im;
-	else
-	   return im + 0.5 * re;
-}
-
 class	descriptorType {
 public:
 	uint8_t	type;
@@ -210,4 +177,36 @@ typedef struct {
 	int16_t ASCTy; 
 } channel_data;
  
+//	40 up shows good results
+#define		DIFF_LENGTH	60
+
+static inline
+float	get_db	(float x) {
+	return 20 * log10 ((0.1 + x) / 256);
+}
+
+static inline
+bool	isIndeterminate (float x) {
+	return x != x;
+}
+
+static inline
+bool	isInfinite (float x) {
+	return x == numeric_limits<float>::infinity();
+}
+
+#define	MINIMUM(x, y)	((x) < (y) ? x : y)
+#define	MAXIMUM(x, y)	((x) > (y) ? x : y)
+
+static inline
+float	jan_abs (std::complex<float> z) {
+float	re	= real (z);
+float	im	= imag (z);
+	if (re < 0) re = -re;
+	if (im < 0) im = -im;
+	if (re > im) 
+	   return re + 0.5 * im;
+	else
+	   return im + 0.5 * re;
+}
 

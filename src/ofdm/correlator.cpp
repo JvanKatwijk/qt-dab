@@ -37,10 +37,10 @@
 	correlator::correlator (RadioInterface *mr,
 	                        processParams	*p):
 	                             phaseTable (p -> dabMode),
-	                              params (p -> dabMode),
-	                              fft_forward (params. get_T_u (), false),
-	                              fft_backwards (params. get_T_u (), true),
-	                              response (p -> responseBuffer) {
+	                             params (p -> dabMode),
+	                             fft_forward (params. get_T_u (), false),
+	                             fft_backwards (params. get_T_u (), true),
+	                             response (p -> responseBuffer) {
 	                    
 float	Phi_k;
 
@@ -132,7 +132,6 @@ const	int SEARCH_OFFSET = 250;
 
 	for (int i = 0; i < indices. size (); i ++) {
 	   if (480 <= indices. at (i) && indices. at (i) <= 520) {
-	      int match = indices. at (i);
 	      std::vector<int> temp;
 	      temp. push_back (indices. at (i));
 	      for (int j = 0; j < i; j ++)
@@ -140,7 +139,7 @@ const	int SEARCH_OFFSET = 250;
 	      for (int j = i + 1; j < indices. size (); j ++)
 	         temp. push_back (indices. at (j));
 	      indices. resize (0);
-	      for (int i = 0; i < temp. size (); i ++)
+	      for (int i = 0; i < (int)(temp. size ()); i ++)
 	         indices. push_back (temp. at (i));
 	      break;
 	   }
