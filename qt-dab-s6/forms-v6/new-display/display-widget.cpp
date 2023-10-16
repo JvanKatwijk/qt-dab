@@ -27,6 +27,7 @@
 #include	"null-scope.h"
 #include	"correlation-scope.h"
 #include	"channel-scope.h"
+#include	"dev-scope.h"
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
@@ -50,6 +51,9 @@
 #ifndef	__ESTIMATOR_
 	tabWidget -> removeTab (4);
 #endif
+#ifdef	__MSC_THREAD__
+	tabWidget -> removeTab (5);
+#endif
 	myFrame. hide ();
 
 //	the "workers"
@@ -66,6 +70,8 @@
 
 	myTII_Scope		= new spectrumScope	(tiiDisplay,
 	                                                512, dabSettings);
+	myDevScope		= new devScope		(devPlot,
+	                                                 512, dabSettings);
 	myIQDisplay		= new IQDisplay		(iqDisplay, 512);
 
 #ifdef	__ESTIMATOR_
@@ -81,6 +87,11 @@
 	          setStyleSheet (
 	                 "QLabel {background-color : green; color: white}");
 
+	dabSettings	-> beginGroup ("displayWidget");
+	int sliderValue		=
+	           dabSettings -> value ("iqSliderValue", 50). toInt ();
+	scopeSlider		-> setValue (sliderValue);
+	dabSettings	-> endGroup ();
 
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
@@ -96,6 +107,9 @@
 	QSize size	= myFrame. size ();
 	dabSettings	-> setValue ("width", size. width ());
 	dabSettings	-> setValue ("height", size. height ());
+	
+	dabSettings	-> setValue ("iqSliderValue",
+	                               scopeSlider -> value ());
 	dabSettings	-> endGroup ();
 	myFrame. hide	();
 	delete		mySpectrumScope;
@@ -105,6 +119,9 @@
 	delete		myTII_Scope;
 #ifdef	__ESTIMATOR_
 	delete		myChannelScope;
+#endif
+#ifndef	__MSC_THREAD__
+	delete		myDevScope;
 #endif
 	delete		myIQDisplay;
 }
@@ -121,7 +138,8 @@ int	displayWidget::get_tab		() {
 	return currentTab == 0 ? SHOW_SPECTRUM :
 	       currentTab == 1 ? SHOW_CORRELATION :
 	       currentTab == 2 ? SHOW_NULL : 
-	       currentTab == 3 ? SHOW_TII : SHOW_CHANNEL;
+	       currentTab == 3 ? SHOW_TII :
+	       currentTab == 4 ? SHOW_CHANNEL : SHOW_STDDEV;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -288,6 +306,22 @@ double	waterfall_Y	[512];
 	                                    waterfallSlider -> value (),
 	                                    0);
 #endif
+}
+
+void	displayWidget::show_stdDev	(std::vector<float> stdDevVector) {
+double X_axis [512];
+double Y_value [512];
+
+	if (currentTab != SHOW_STDDEV)
+	   return;
+	myDevScope -> display (stdDevVector);
+	for (int i = 0; i < 512; i ++) {
+	   X_axis [i] = -768 + 3 * i;
+	   Y_value [i] = stdDevVector [3 * i] * 5;
+	}
+	myWaterfallScope	-> display (X_axis, Y_value, 
+	                                    waterfallSlider -> value (),
+	                                    0);
 }
 
 //

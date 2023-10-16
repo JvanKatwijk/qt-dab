@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-6.1)
+set (objectName qt-dab-6.2)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -322,6 +322,7 @@ endif ()
              ./forms-v6/new-display/scopes/correlation-scope.h 
              ./forms-66/new-display/scopes/spectrum-scope.h 
              ./forms-v6/new-display/scopes/null-scope.h 
+	     ./forms-v6/new-display/dev-scope.h
              ./forms-v6/new-display/scopes/waterfall-scope.h 
              ./forms-b6/new-display/scopes/iqdisplay.h 
 	     ../qt-devices/device-handler.h
@@ -427,6 +428,7 @@ endif ()
              ./forms-v6/new-display/scopes/correlation-scope.cpp 
              ./forms-v6/new-display/scopes/spectrum-scope.cpp 
              ./forms-v6/new-display/scopes/null-scope.cpp 
+             ./forms-v6/new-display/scopes/dev-scope.cpp 
              ./forms-v6/new-display/scopes/waterfall-scope.cpp 
              ./forms-v6/new-display/scopes/iqdisplay.cpp 
 	     ../qt-devices/device-handler.cpp
@@ -494,6 +496,7 @@ endif ()
              ./forms-v6/new-display/scopes/correlation-scope.h 
              ./forms-v6/new-display/scopes/spectrum-scope.h 
              ./forms-v6/new-display/scopes/null-scope.h 
+             ./forms-v6/new-display/scopes/dev-scope.h 
              ./forms-v6/new-display/scopes/waterfall-scope.h 
              ./forms-v6/new-display/scopes/iqdisplay.h 
 	     ../qt-devices/rawfiles-new/rawfiles.h

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -109,7 +109,7 @@ float	computedDiffs [SEARCH_RANGE + diff_length + 1];
 	      index_2 = i;
 	   }
 	}
-
+	
 	if (index_1 != index_2)
 	   return 100;
 	return index_1 - T_u; 

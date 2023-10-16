@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2016 .. 2023
+ *    Copyright (C)  2016 .. 2022
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -20,23 +20,22 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"spectrum-scope.h"
+
+#include	"dev-scope.h"
 #include	<QSettings>
 #include        <QColor>
 #include        <QPen>
-#include        "color-selector.h"
+#include	"color-selector.h"
 
-
-	spectrumScope::spectrumScope (QwtPlot *dabScope,
+	devScope::devScope (QwtPlot *devPlot,
 	                              int displaySize,
 	                              QSettings	*dabSettings):
 	                                  spectrumCurve ("") {
 QString	colorString	= "black";
-bool	brush;
 
+	(void)displaySize;
 	this	-> dabSettings		= dabSettings;
-	this	-> displaySize		= displaySize;
-	dabSettings	-> beginGroup ("spectrumScope");
+	dabSettings	-> beginGroup ("devScope");
 	colorString	= dabSettings -> value ("displayColor",
 	                                           "white"). toString();
 	displayColor	= QColor (colorString);
@@ -44,11 +43,11 @@ bool	brush;
 	                                           "black"). toString();
 	gridColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("curveColor",
-	                                            "cyan"). toString();
+	                                            "magenta"). toString();
 	curveColor	= QColor (colorString);
-	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
+//	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
-	plotgrid		= dabScope;
+	plotgrid		= devPlot;
 	plotgrid		-> setCanvasBackground (displayColor);
 	grid			= new QwtPlotGrid;
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
@@ -65,11 +64,11 @@ bool	brush;
 #endif
 	grid	-> attach (plotgrid);
 
-	lm_picker	= new QwtPlotPicker (dabScope -> canvas ());
-	QwtPickerMachine *lpickerMachine =
+	lm_picker       = new QwtPlotPicker (devPlot -> canvas ());
+        QwtPickerMachine *lpickerMachine =
                              new QwtPickerClickPointMachine ();
-
-	lm_picker       -> setStateMachine (lpickerMachine);
+ 
+        lm_picker       -> setStateMachine (lpickerMachine);
         lm_picker       -> setMousePattern (QwtPlotPicker::MouseSelect1,
                                             Qt::RightButton);
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
@@ -77,50 +76,42 @@ bool	brush;
 
 	spectrumCurve. setPen (QPen(curveColor, 2.0));
 	spectrumCurve. setOrientation (Qt::Horizontal);
-	spectrumCurve. setBaseline	(get_db (0));
-
-	if (brush) {
-	   QBrush ourBrush (curveColor);
-           ourBrush. setStyle (Qt::Dense3Pattern);
-           spectrumCurve. setBrush (ourBrush);
-	}
+	spectrumCurve. setBaseline	(0);
 	spectrumCurve. attach (plotgrid);
-	
-	Marker		= new QwtPlotMarker();
-	Marker		-> setLineStyle (QwtPlotMarker::VLine);
-	Marker		-> setLinePen (QPen (Qt::red));
-	Marker		-> attach (plotgrid);
-	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	normalizer	= 512;
 }
 
-	spectrumScope::~spectrumScope	() {
-
-	delete		Marker;
+	devScope::~devScope	() {
 	delete		grid;
 }
 
-void	spectrumScope::display		(double *X_axis, double *Y_value,
-	                                 int freq, int Amp) {
-	(void)freq;
-	float Max	= Amp / 100.0 * (-get_db (0));
+void	devScope::display	(std::vector<float> V) {
+float	max	= 0;
+double X_axis [V. size ()];
+double Y_values [V. size ()];
+int	VSize	= V. size ();
+
+	for (int i = 0; i < VSize; i ++) {
+	   X_axis [i] = (float)(-VSize / 2 + i);
+	   Y_values [i] = V [i];
+	   if (V [i] > max)
+	      max = V [i];
+	}
+
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 				         (double)X_axis [0],
-				         X_axis [displaySize - 1]);
+				         (double)X_axis [VSize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + 2.5 * Max);
+				         0, 1.5 * max );
+	spectrumCurve. setBaseline (0);
+	Y_values [0]		= 0;
+	Y_values [VSize - 1]	= 0;
 
-	spectrumCurve. setBaseline (get_db (0));
-	Y_value [0]		= get_db (0);
-	Y_value [displaySize - 1] = get_db (0);
-
-	spectrumCurve. setSamples (X_axis, Y_value, 512);
-	Marker		-> setXValue (0);
+	spectrumCurve. setSamples (X_axis, Y_values, VSize);
 	plotgrid	-> replot (); 
 }
 
-void	spectrumScope::rightMouseClick	(const QPointF &point) {
+void	devScope::rightMouseClick	(const QPointF &point) {
 colorSelector *selector;
 int	index;
 	(void) point;
@@ -143,7 +134,7 @@ int	index;
 	if (index == 0)
 	   return;
 
-	dabSettings	-> beginGroup ("spectrumScope");
+	dabSettings	-> beginGroup ("devScope");
 	dabSettings	-> setValue ("displayColor", displayColor);
 	dabSettings	-> setValue ("gridColor", gridColor);
 	dabSettings	-> setValue ("curveColor", curveColor);
@@ -171,8 +162,3 @@ int	index;
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);
 }
-
-float   spectrumScope::get_db (float x) {
-        return 20 * log10 ((x + 1) / (float)(normalizer));
-}
-

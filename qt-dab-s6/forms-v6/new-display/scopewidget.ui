@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>673</width>
-    <height>456</height>
+    <width>674</width>
+    <height>448</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -26,9 +26,9 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The TII data is extracted from the NULL period of the signal. The amplitude of the spectrum of the NULL period is periodically shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>5</number>
      </property>
-     <widget class="QWidget" name="spectrum">
+     <widget class="QWidget" name="spectr">
       <attribute name="title">
        <string>Spectrum</string>
       </attribute>
@@ -159,7 +159,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_4">
+     <widget class="QWidget" name="channel">
       <attribute name="title">
        <string>channel</string>
       </attribute>
@@ -168,6 +168,20 @@
         <widget class="QwtPlot" name="channelPlot">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot; indicates the transformation on the transmitted signal during the travel to the receiver. The bottom line indicates the transformation on the amplitude, the top line the effect on the phase of the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="stdDev">
+      <attribute name="title">
+       <string>Dev</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QwtPlot" name="devPlot">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;Dev&amp;quot; scope shows the standard deviation of the decoded signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

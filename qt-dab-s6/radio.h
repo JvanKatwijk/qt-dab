@@ -168,6 +168,7 @@ public:
 		~RadioInterface		();
 
 	bool	channelOn		();
+	bool	devScopeOn		();
 protected:
 	bool			eventFilter (QObject *obj, QEvent *event);
 private:
@@ -182,6 +183,8 @@ private:
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
 	RingBuffer<int16_t>	audioBuffer;
+	RingBuffer<float>	stdDevBuffer;
+
 	displayWidget		newDisplay;
 	snrViewer		my_snrViewer;
 	presetHandler		my_presetHandler;
@@ -487,7 +490,10 @@ private slots:
 	void			show_snr		(float);
 	void			show_null		(int);
 	void			showIQ			(int);
-	void			showCorrelation		(int, int, QVector<int> );
+	void			showCorrelation		(int, int,
+	                                                 QVector<int> );
+	void			show_stdDev		(int);
+
 //
 //	config handlers
 	void			handle_muteTimeSetting		(int);

@@ -38,13 +38,13 @@ QString	colorString	= "black";
 	this	-> displaySize		= 128;
 	dabSettings	-> beginGroup ("channelScope");
 	colorString	= dabSettings -> value ("displayColor",
-	                                           "black"). toString();
+	                                           "white"). toString();
 	displayColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("gridColor",
-	                                           "white"). toString();
+	                                           "vlack"). toString();
 	gridColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("curveColor",
-	                                            "white"). toString();
+	                                            "cyan"). toString();
 	curveColor	= QColor (colorString);
 	dabSettings	-> endGroup ();
 	plotgrid	= channelDisplay;
@@ -152,7 +152,7 @@ int	index;
 	if (index == 0)
 	   return;
 
-	dabSettings	-> beginGroup ("spectrumScope");
+	dabSettings	-> beginGroup ("channelScope");
 	dabSettings	-> setValue ("displayColor", displayColor);
 	dabSettings	-> setValue ("gridColor", gridColor);
 	dabSettings	-> setValue ("curveColor", curveColor);

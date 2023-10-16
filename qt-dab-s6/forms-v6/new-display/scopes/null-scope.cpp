@@ -37,13 +37,13 @@ QString	colorString	= "black";
 	this	-> dabSettings		= dabSettings;
 	dabSettings	-> beginGroup ("nullScope");
 	colorString	= dabSettings -> value ("displayColor",
-	                                           "black"). toString();
+	                                           "white"). toString();
 	displayColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("gridColor",
-	                                           "white"). toString();
+	                                           "black"). toString();
 	gridColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("curveColor",
-	                                            "white"). toString();
+	                                            "magenta"). toString();
 	curveColor	= QColor (colorString);
 //	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();

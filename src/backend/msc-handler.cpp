@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -24,6 +24,7 @@
 #include	"dab-constants.h"
 #include	"radio.h"
 #include	"msc-handler.h"
+#include	"ofdm-decoder.h"
 #include	"backend.h"
 #include	"dab-params.h"
 //
@@ -38,7 +39,7 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 RingBuffer<uint8_t> *frameBuffer) :
+	                                 RingBuffer<uint8_t> *frameBuffer):
 	                                       params (dabMode),
 	                                       myMapper (dabMode),
 	                                       fft (params. get_T_u (), false)
@@ -53,10 +54,10 @@ static int cifTable [] = {18, 72, 0, 36};
 	ibits. resize (BitsperBlock);
 	nrBlocks		= params. get_L();
 
-	phaseReference	.resize (params. get_T_u());
 
 	numberofblocksperCIF = cifTable [(dabMode - 1) & 03];
 #ifdef	__MSC_THREAD__
+	phaseReference	.resize (params. get_T_u());
 	command. resize (nrBlocks);
 	for (int i = 0; i < nrBlocks; i ++)
 	   command [i]. resize (params. get_T_u());
@@ -95,6 +96,7 @@ void	mscHandler::processBlock_0 (Complex *b) {
         helper. unlock();
 #else
 	(void)b;
+	fprintf (stderr, "Why am I called?\n");
 #endif
 }
 
@@ -160,35 +162,9 @@ Complex fft_buffer [params. get_T_u()];
 }
 #else
 void	mscHandler::process_Msc	(Complex *b, int blkno) {
-Complex fft_buffer [params. get_T_u ()];;
-	if (blkno < 3)
-	   return;
-	
-	memcpy (fft_buffer, b,
-	                 params. get_T_u () * sizeof (Complex));
-//
-//	block 3 and up are needed as basis for demodulation the "mext" block
-//	"our" msc blocks start with blkno 4
-	fft. fft (fft_buffer);
-	if (blkno >= 4) {
-	   for (int i = 0; i < params. get_carriers(); i ++) {
-	      int16_t      index   = myMapper. mapIn (i);
-	      if (index < 0)
-	         index += params. get_T_u();
-	      Complex  r1 = fft_buffer [index] *
-	                                conj (phaseReference [index]);
-	      float ab1    = jan_abs (r1);
-//      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
-//      we make the bits into softbits in the range -127 .. 127
-	      ibits [i]            =  - real (r1) / ab1 * 256.0;
-	      ibits [params. get_carriers() + i]
-	                           =  - imag (r1) / ab1 * 256.0;
-	   }
-
-	   process_mscBlock (ibits, blkno);
-	}
-	memcpy (phaseReference. data (), fft_buffer,
-	        params. get_T_u() * sizeof (Complex));
+	(void)b;
+	(void)blkno;
+	fprintf (stderr, "I should not be called\n");
 }
 #endif
 //

@@ -106,6 +106,15 @@ public:
 	void		set_tiiDetectorMode	(bool);
 	void		handle_iqSelector	();
 private:
+	RadioInterface	*myRadioInterface;
+	processParams	*p;
+	dabParams	params;
+	sampleReader	myReader;
+	ficHandler	my_ficHandler;
+	etiGenerator	my_etiGenerator;
+	TII_Detector	my_TII_Detector;
+	ofdmDecoder	my_ofdmDecoder;
+	mscHandler	my_mscHandler;
 	int		threshold;
 	int		totalFrames;
 	int		goodFrames;
@@ -114,7 +123,6 @@ private:
 	int16_t		tii_depth;
 	int16_t		echo_depth;
 	deviceHandler	*inputDevice;
-	dabParams	params;
 	RingBuffer<Complex > *tiiBuffer;
 	RingBuffer<Complex > *nullBuffer;
 	RingBuffer<float>	*snrBuffer;
@@ -124,13 +132,6 @@ private:
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 	bool		eti_on;
-	sampleReader	myReader;
-	RadioInterface	*myRadioInterface;
-	processParams	*p;
-	ficHandler	my_ficHandler;
-	mscHandler	my_mscHandler;
-	etiGenerator	my_etiGenerator;
-	TII_Detector	my_TII_Detector;
 
 	int16_t		attempts;
 	bool		scanMode;
@@ -148,7 +149,6 @@ private:
 	bool		correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
 	bool		wasSecond		(int16_t, dabParams *);
-	ofdmDecoder	my_ofdmDecoder;
 virtual	void		run			();
 signals:
 	void		setSynced		(bool);

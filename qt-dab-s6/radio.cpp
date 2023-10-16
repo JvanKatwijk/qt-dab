@@ -221,6 +221,7 @@ uint8_t convert (QString s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
+	                                        stdDevBuffer (2 * 1536),
 	                                        newDisplay (this, Si),
 	                                        my_snrViewer (this, Si),
 	                                        my_presetHandler (this),
@@ -258,7 +259,7 @@ uint8_t	dabBand;
 	globals. channelBuffer	= &channelBuffer;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
-
+	globals. stdDevBuffer	= &stdDevBuffer;
 
 	QString dabMode         =
 	          dabSettings   -> value ("dabMode", "Mode 1"). toString();
@@ -307,6 +308,7 @@ uint8_t	dabBand;
 	configDisplay. resize (QSize (wi, he));
 	configDisplay. move (QPoint (x, y));
 
+	setWindowTitle (QString ("Qt-DAB-") + CURRENT_VERSION);
 	theTechWindow	= new techData (this, dabSettings, &theTechData);
 
 	init_configWidget ();
@@ -770,6 +772,7 @@ int	serviceOrder;
 
 	if (my_ofdmHandler -> getSubChId (serviceName, SId) < 0)
 	   return;
+
 	(void)SId;
 	serviceId ed;
 	ed. name	= serviceName;
@@ -4570,6 +4573,13 @@ void	RadioInterface::show_Corrector (int h, float l) {
 	   newDisplay. show_Corrector (h, l);
 }
 
+void	RadioInterface::show_stdDev	(int amount) {
+std::vector<float>Values (amount);
+	stdDevBuffer. getDataFromBuffer (Values. data (), amount);
+	if (!newDisplay. isHidden ())
+	   newDisplay. show_stdDev (Values);
+}
+
 void	RadioInterface::show_snr		(float snr) {
 	if (!newDisplay. isHidden ())
 	   newDisplay. show_snr (snr);
@@ -4970,6 +4980,11 @@ std::vector<std::complex<float>> v (n);
 bool	RadioInterface::channelOn () {
 	return (!newDisplay. isHidden () &&
 	           (newDisplay. get_tab () == SHOW_CHANNEL));
+}
+
+bool	RadioInterface::devScopeOn () {
+	return !newDisplay. isHidden () &&
+	           (newDisplay. get_tab () == SHOW_STDDEV);
 }
 
 void	RadioInterface::handle_iqSelector () {

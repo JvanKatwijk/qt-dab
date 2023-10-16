@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -53,32 +53,33 @@ public:
 			mscHandler		(RadioInterface *,
 	                                         uint8_t,
 	                                         RingBuffer<uint8_t> *);
-			~mscHandler();
+			~mscHandler		();
 	void		processBlock_0		(Complex *);
 	void		process_Msc		(Complex *, int);
+	void		process_mscBlock	(std::vector<int16_t> &,
+	                                                  int16_t);
 	bool		set_Channel		(descriptorType *,
 	                                         RingBuffer<int16_t> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
-//
-//	
 	void		reset_Channel		();
 	void		stop_service		(descriptorType *, int);
 	void		stop_service		(int, int);
 	void		reset_Buffers		();
 private:
-	void		process_mscBlock	(std::vector<int16_t> &,
-	                                                  int16_t);
-	RadioInterface	*myRadioInterface;
+	dabParams	params;
+        interLeaver     myMapper;
+	fftHandler	fft;
+#ifdef	__MSC_THREAD__
+        QSemaphore      bufferSpace;
+#endif
+
+	RadioInterface		*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
 	RingBuffer<uint8_t>	*frameBuffer;
-	dabParams	params;
-	std::vector<Complex>     phaseReference;
 
-        interLeaver     myMapper;
 	QMutex		locker;
 	bool		audioService;
-	fftHandler	fft;
 	std::vector<Backend *>theBackends;
 	std::vector<int16_t> cifVector;
 	int16_t		cifCount;
@@ -92,11 +93,11 @@ private:
         QMutex          helper;
 	int		nrBlocks;
 #ifdef	__MSC_THREAD__
+	std::vector<Complex>     phaseReference;
         void            processBlock_0	();
         std::vector<std::vector<Complex > > command;
         int16_t         amount;
 	void            run();
-        QSemaphore      bufferSpace;
         QWaitCondition  commandHandler;
         std::atomic<bool>       running;
 #endif

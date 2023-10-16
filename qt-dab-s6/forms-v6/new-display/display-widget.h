@@ -37,6 +37,7 @@
 #define	SHOW_NULL		2
 #define	SHOW_TII		3
 #define	SHOW_CHANNEL		4
+#define	SHOW_STDDEV		5
 
 class	RadioInterface;
 class	QSettings;
@@ -45,6 +46,7 @@ class	spectrumScope;
 class	waterfallScope;
 class	nullScope;
 class	correlationScope;
+class	devScope;
 class	channelScope;
 class	IQDisplay;
 
@@ -60,9 +62,11 @@ public:
 	void	showCorrelation	(std::vector<float> &,
 	                         QVector<int> &);
 	void	show_tii	(std::vector<Complex>, int);
+	void	showChannel	(std::vector<Complex>);
+	void	show_stdDev	(std::vector<float>);
+
 	void	showIQ		(std::vector<Complex>);
 
-	void	showChannel	(std::vector<Complex>);
 	void	showQuality	(float, float, float);
 	void	show_Corrector	(int, float);
 	void	show_snr	(float);
@@ -86,6 +90,7 @@ private:
 	nullScope		*myNullScope;
 	correlationScope	*myCorrelationScope;
 	spectrumScope		*myTII_Scope;
+	devScope		*myDevScope;
 	channelScope		*myChannelScope;
 	IQDisplay		*myIQDisplay;
 

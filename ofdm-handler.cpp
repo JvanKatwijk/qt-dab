@@ -52,16 +52,17 @@
 	                                           inputDevice,
 	                                           p -> spectrumBuffer),
 	                                 my_ficHandler (mr, p -> dabMode),
-	                                 my_mscHandler (mr, p -> dabMode,
-	                                                p -> frameBuffer),
 	                                 my_etiGenerator (p -> dabMode,
 	                                                  &my_ficHandler),
 	                                 my_TII_Detector (p -> dabMode,
 	                                                  p -> tii_depth),
 	                                 my_ofdmDecoder (mr,
-                                                         p -> dabMode,
-                                                         inputDevice -> bitDepth(),
-                                                         p -> iqBuffer) {
+	                                                 p -> dabMode,
+	                                                 inputDevice -> bitDepth(),
+	                                                 p -> stdDevBuffer,
+	                                                 p -> iqBuffer),
+	                                 my_mscHandler (mr, p -> dabMode,
+	                                                p -> frameBuffer) {
 
 	this	-> myRadioInterface	= mr;
 	this	-> p			= p;
@@ -141,6 +142,8 @@ void	ofdmHandler::set_tiiDetectorMode	(bool b) {
 void	ofdmHandler::start () {
 	my_ficHandler. restart	();
 	transmitters. clear ();
+	my_ofdmDecoder. reset	();
+	my_ficHandler.  restart	();
 	if (!scanMode)
 	   my_mscHandler. reset_Channel ();
 	QThread::start ();
@@ -174,7 +177,7 @@ int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
 int	cCount		= 0;
-
+int	snr		= 0;
 bool	inSync		= false;
 QVector<Complex> tester (T_u / 2);
 
@@ -303,8 +306,10 @@ QVector<Complex> tester (T_u / 2);
 #endif
 	      sampleCount	+= T_u;
 	      my_ofdmDecoder. processBlock_0 (ofdmBuffer);
+#ifdef	__MSC_THREAD__
 	      if (!scanMode)
 	         my_mscHandler.  processBlock_0 (ofdmBuffer. data());
+#endif
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
@@ -337,7 +342,6 @@ QVector<Complex> tester (T_u / 2);
 	      Complex FreqCorr	= Complex (0, 0);
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	         std::vector<Complex> errorVec (T_u);
 	         myReader. getSamples (ofdmBuffer, 0,
 	                               T_s, coarseOffset + fineOffset);
 	         sampleCount += T_s;
@@ -347,20 +351,44 @@ QVector<Complex> tester (T_u / 2);
 	            cLevel += abs (ofdmBuffer [i]) + abs (ofdmBuffer [i - T_u]);
 	         }
 	         cCount += 2 * T_g;
+//
+//	lots of cases
+//	we always process all blocks
 
-	         if ((ofdmSymbolCount <= 3) || eti_on)
+	         if (eti_on) {
 	            my_ofdmDecoder.
-	                 decode (ofdmBuffer, ofdmSymbolCount, ibits, errorVec);
-
-	         if (ofdmSymbolCount <= 3)
-	            my_ficHandler. process_ficBlock (ibits, ofdmSymbolCount);
-	         if (eti_on) 
-	            my_etiGenerator. processBlock (ibits, ofdmSymbolCount);
-
-	         if (!scanMode)
-	            my_mscHandler.
+	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            my_etiGenerator.
+	                   processBlock (ibits, ofdmSymbolCount);
+	            continue;
+	         }
+//
+//	symbols 1 .. 3 are always processed using the ofdm decoder
+	         if (ofdmSymbolCount <= 3) {
+	            my_ofdmDecoder.
+	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            my_ficHandler.
+	                    process_ficBlock (ibits, ofdmSymbolCount);
+	         }
+//
+//	when scanning, we only look at the FIC blocks
+	         if (scanMode)
+	            continue;
+//
+//	If the MSC_THREAD is enabled, the mscHandler will take care
+//	of the full block handling, but it also needs block 1 .. 3
+#ifdef	__MSC_THREAD__
+	         my_mscHandler.
 	                 process_Msc  (&((ofdmBuffer. data()) [T_g]),
 	                                                    ofdmSymbolCount);
+#else
+	         if (ofdmSymbolCount >= 4) {
+	            my_ofdmDecoder.
+	                    decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            my_mscHandler.
+	                    process_mscBlock (ibits, ofdmSymbolCount);
+	         }
+#endif
 	      }
 /**
   *	OK,  here we are at the end of the frame
@@ -373,21 +401,19 @@ QVector<Complex> tester (T_u / 2);
 	      for (int i = 0; i < T_null; i ++)
 	         sum += abs (ofdmBuffer [i]);
 	      sum /= T_null;
+	      float snrV	=
+	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
+	      snr = 0.9 * snr + 0.1 * snrV;
 	      if (this -> snrBuffer != nullptr) {
-	         float snrV	= 20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	         snrBuffer -> putDataIntoBuffer (&snrV, 1);
+	         snrBuffer -> putDataIntoBuffer (&snr, 1);
 	      }
-	      static float snr	= 0;
 	      static int ccc	= 0;
 	      ccc ++;
 	      if (ccc >= 5) {
 	         ccc = 0;
-	         snr = 0.9 * snr +
-	           0.1 * 20 * log10 ((myReader. get_sLevel() + 0.005) / (sum + 0.005));
 	         show_snr (snr);
 	      }
 /*
- *	The TII data is encoded in the null period of the
  *	odd frames 
  */
 	      if (params. get_dabMode () == 1) {

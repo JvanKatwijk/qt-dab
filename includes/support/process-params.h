@@ -44,6 +44,17 @@ public:
 	RingBuffer<float>	* snrBuffer;
 	RingBuffer<Complex>	* channelBuffer;
 	RingBuffer<uint8_t>	* frameBuffer;
+	RingBuffer<float>	* stdDevBuffer;
+
+	processParams () {
+	   responseBuffer	= nullptr;
+	   spectrumBuffer	= nullptr;
+	   iqBuffer	= nullptr;
+	   nullBuffer	= nullptr;
+	   snrBuffer	= nullptr;
+	   channelBuffer	= nullptr;
+	   stdDevBuffer	= nullptr;
+	}
 };
 
 

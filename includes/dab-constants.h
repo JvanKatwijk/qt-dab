@@ -61,6 +61,9 @@ typedef	std::complex<float> Complex;
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
+
+constexpr float	RAD_PER_DEGREE = (float)(M_PI / 180.0);
+
 using namespace std;
 //
 #define	Hz(x)		(x)
@@ -71,7 +74,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.1"
+#define	CURRENT_VERSION	"6.2"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
@@ -208,5 +211,15 @@ float	im	= imag (z);
 	   return re + 0.5 * im;
 	else
 	   return im + 0.5 * re;
+}
+
+static inline
+float	square	(float a) {
+	return a * a;
+}
+
+static inline 
+float	compute_avg	(float oldVal, float newVal, float Alpha) {
+	return (1 - Alpha) * oldVal + Alpha * newVal;
 }
 

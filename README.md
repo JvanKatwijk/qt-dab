@@ -9,8 +9,10 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
+The current version is 6.2
 
-![6.1](/qt-dab-6.1.png?raw=true)
+![6.2](/qt-dab-6.2.png?raw=true)
+
 Table of Contents
 =================================================================
 
@@ -104,12 +106,15 @@ in the main widget, gives full information about the selected audio service.
 
 
 Different from previous versions, a single widget, the spectrum widget,
-contains - as tabbed widget - the 4 or 5 scopes to show different aspects
-of the DAB signal. 
+contains - as tabbed widget - the 4, 5 or 6 scopes (depending
+on the configuration) to show different aspects of the DAB signal. 
 Furthermore, it contains an IQscope,
 showing the constellation of the decoded data,
 and a waterfall scope, showing the progress in time of the data
 that is displayed in the selected scope.
+
+(Note that - obviously - the colors of the scopes can be set to different
+colors than shown here).
 
 ![6.1](/spectrum-scope.png)
 
@@ -139,9 +144,20 @@ The TII scope shows the spectrum of the data in the NULL period, since that data
 ![6.1](/qt-dab-channel.png)
 
 The channel scope shows the *channel effect* on the transmitted data, i.e.
-the deformation of the transmitted signal. The picture shows the * white line*,
+the deformation of the transmitted signal. The picture shows the *cyan colored line*,
 i.e. the channel effects on the amplitudes, and the *red line*, i.e.
-the channel effects on the phase of the samples.
+the channel effects on the phase of the samples. The "jumps in the red line
+indicate the modulo 2*PI effect.
+Note that the implementation of this scope requires some additional
+libraries, therefore this scope is not part of the default configuration,
+although it is included in the precompiled versions.
+
+![6.1](/qt-dab-stddev.png)
+
+The deviation scope shows the measured std deviation - used in the
+decoding - of the elements of the decoded signal. The Y axis is in Hz.
+Noye that this scope is not part of the default configuration,
+it is included in the precompiled versions though.
 
 ![8.1](/configuration-and-control.png)
 

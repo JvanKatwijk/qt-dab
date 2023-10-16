@@ -38,7 +38,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #
 #       For more parallel processing, uncomment the following
 #       defines
-DEFINES        += __MSC_THREAD__
+#DEFINES        += __MSC_THREAD__
 DEFINES        +=  __THREADED_BACKEND
 
 #DEFINES	+= _UPLOAD_SCAN_RESULT_
@@ -129,6 +129,7 @@ HEADERS += ./radio.h \
 	   ./forms-v6/new-display/scopes/correlation-scope.h \
 	   ./forms-v6/new-display/scopes/null-scope.h \
 	   ./forms-v6/new-display/scopes/channel-scope.h \
+	   ./forms-v6/new-display/scopes/dev-scope.h \
 	   ./forms-v6/new-display/scopes/waterfall-scope.h \
 	   ./forms-v6/new-display/scopes/iqdisplay.h \
 	   ../ofdm-handler.h \
@@ -256,6 +257,7 @@ SOURCES += ./main.cpp \
            ./forms-v6/new-display/scopes/spectrum-scope.cpp \
            ./forms-v6/new-display/scopes/null-scope.cpp \
            ./forms-v6/new-display/scopes/channel-scope.cpp \
+           ./forms-v6/new-display/scopes/dev-scope.cpp \
            ./forms-v6/new-display/scopes/waterfall-scope.cpp \
 	   ./forms-v6/new-display/scopes/iqdisplay.cpp \
 	   ../fft/fft-handler.cpp \
@@ -354,7 +356,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.1
+TARGET		= qt-dab-6.2
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -452,7 +454,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-6.1
+#	TARGET		= qt-dab64-6.2
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -472,7 +474,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.1
+	TARGET		= qt-dab32-6.2
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -775,8 +777,7 @@ NEON_RPI3	{
 }
 
 PC	{
-#	DEFINES		+= __MSC_THREAD__
-#	DEFINES		+= __THREADED_BACKEND
+	DEFINES		+= __THREADED_BACKEND
 	DEFINES		+= SSE_AVAILABLE
 	HEADERS		+= ../src/support/viterbi-spiral/spiral-sse.h
 	SOURCES		+= ../src/support/viterbi-spiral/spiral-sse.c

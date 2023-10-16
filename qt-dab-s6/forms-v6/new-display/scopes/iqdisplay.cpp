@@ -30,7 +30,7 @@ static std::complex<int> Points [4 * 512];
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
 	                                QwtPlotSpectrogram() {
-QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::white);
+QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::yellow);
 
 	(void)x;
 	setRenderThreadCount	(1);

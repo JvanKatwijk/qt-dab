@@ -78,8 +78,8 @@ int32_t	i, j;
 	      for (j = 0; j < outSize - 1; j ++) {
 	         int16_t base	= (int)(floor (mapTable [j]));
 	         float  frac	= mapTable [j] - base;
-	         outTable [j]	= cmul (inTable [base], 1 - frac) +
-	                          cmul (inTable [base + 1], frac);
+	         outTable [j]	= inTable [base] *  (1 - frac) +
+	                          inTable [base + 1] * frac;
 	      }
 	      
 //
