@@ -23,10 +23,10 @@
       </size>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The TII data is extracted from the NULL period of the signal. The amplitude of the spectrum of the NULL period is periodically shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>5</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="spectr">
       <attribute name="title">
@@ -147,6 +147,9 @@
            <width>401</width>
            <height>140</height>
           </size>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The TII is encoded in the NULL period of a DAB frame. The scope shows the spectrum, the small vertical  hair-like projections are the &amp;quot;bins&amp;quot;. Their position in the spectrum and their mutial ditances define the TII value. With a database the TII can be mapped onto a transmittername and location.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>

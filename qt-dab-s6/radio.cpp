@@ -4593,7 +4593,6 @@ void	RadioInterface::show_snr		(float snr) {
 	int amount = snrBuffer. GetRingBufferReadAvailable ();
 	if (amount <= 0)
 	   return;
-
 	float ss [amount];
 	snrBuffer. getDataFromBuffer (ss, amount);
 	for (int i = 0; i < amount; i ++) {
