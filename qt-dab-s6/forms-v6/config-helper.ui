@@ -172,6 +172,9 @@
      </item>
      <item row="0" column="6">
       <widget class="smallPushButton" name="fontButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few fonts for the display of the service names. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>font</string>
        </property>
@@ -264,6 +267,9 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      </item>
      <item row="1" column="6">
       <widget class="smallPushButton" name="skinButton">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few &amp;quot;skin&amp;quot;s for the widgets in the program. Will be effective the next program invocayion.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>skin</string>
        </property>

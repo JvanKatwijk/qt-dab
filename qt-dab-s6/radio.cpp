@@ -2485,7 +2485,7 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 }
 //
 void	RadioInterface::localSelect (const QString &s) {
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -4421,7 +4421,7 @@ Complex inBuffer [amount];
 }
 
 void	RadioInterface::show_tii		(int mainId, int subId) {
-QString a = "Est: ";
+QString a = "Est TII: ";
 bool	found	= false;
 QString	country	= "";
 bool	tiiChange	= false;
@@ -4543,7 +4543,7 @@ bool	tiiChange	= false;
 //
 //	to be certain, we check
 	if ((channel. targetPos. latitude == 0) ||
-	                                  (distance == 0) || (corner== 0))
+	                             (distance == 0) || (corner== 0))
 	   return;
 
 	QDateTime theTime = 

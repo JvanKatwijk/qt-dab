@@ -89,11 +89,12 @@ void	httpHandler::start	() {
 	if (autoBrowser_off)
 	   return;
 #ifdef	__MINGW32__
+	fprintf (stderr, "browser address %s\n", browserAddress. c_str ());
 	ShellExecute (nullptr, L"open", browserAddress. c_str (),
 	                                   nullptr, nullptr, SW_SHOWNORMAL);
 #else
 	std::string x = "xdg-open " + browserAddress;
-	system (x. c_str ());
+	(void)system (x. c_str ());
 #endif
 }
 

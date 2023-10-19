@@ -177,7 +177,7 @@ int	frameCount	= 0;
 int	sampleCount	= 0;
 int	totalSamples	= 0;
 int	cCount		= 0;
-int	snr		= 0;
+float	snr		= 0;
 bool	inSync		= false;
 QVector<Complex> tester (T_u / 2);
 

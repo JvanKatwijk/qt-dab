@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
+    <width>559</width>
     <height>439</height>
    </rect>
   </property>
@@ -178,6 +178,11 @@
        </item>
        <item>
         <widget class="QLCDNumber" name="cpuMonitor">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+          </font>
+         </property>
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cpuLoad. The number gives an estimate of the overall load of the CPU of the machine you are working on. So, it only gives an idea of the load caused by Qt-DAB if no other (large) programs are active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -203,6 +208,11 @@
        </item>
        <item>
         <widget class="QLabel" name="transmitter_coordinates">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
          <property name="text">
           <string>TII</string>
          </property>
@@ -373,11 +383,6 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>smallPushButton</class>
-   <extends>QPushButton</extends>
-   <header>smallpushbutton.h</header>
-  </customwidget>
-  <customwidget>
    <class>smallComboBox</class>
    <extends>QComboBox</extends>
    <header>smallcombobox.h</header>
@@ -396,6 +401,11 @@
    <class>newPushButton</class>
    <extends>QPushButton</extends>
    <header location="global">newpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallPushButton</class>
+   <extends>QPushButton</extends>
+   <header>smallpushbutton.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

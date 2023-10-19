@@ -156,7 +156,7 @@ although it is included in the precompiled versions.
 
 The deviation scope shows the measured std deviation - used in the
 decoding - of the elements of the decoded signal. The Y axis is in Hz.
-Noye that this scope is not part of the default configuration,
+Note that this scope is not part of the default configuration,
 it is included in the precompiled versions though.
 
 ![8.1](/configuration-and-control.png)
@@ -201,7 +201,7 @@ The installer will also call the official installer for the dll implementing the
 Installation on Linux-x64
 =================================================================
 
-For Linux-x64 systems, an **appImage** can be found in the releases section, http://github.com/JvanKatwijk/qt-dab/releases. The appImage contains
+For Linux-x64 systems, an **appImage** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The appImage contains
 next to the executable qt-dab program, the required libraries.
 
 Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
@@ -216,8 +216,8 @@ Step 1
 -----------------------------------------------------------------
 
 - :information_source: Note that the sources for 4.4.x are now in the subdirectory `qt-dab-s4` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
-- Install required libraries, see section 5.5.3 (page 29) of the manual for 4.4.
-* :infoirmation: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
+- Install required libraries, see section 5.5.3 (page 29) of the manual.
+* :information: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
 - It seems to be part of another of the qt5 packages that is installed.
 - Be aware that different distributions store qt files on different locations, adapt the INCLUDEPATH setting in the `.pro` file if needed.
 
@@ -263,7 +263,9 @@ If running on an x64 PC or *bullseye* on the RPI you might consider to install `
 Using user specified bands
 =================================================================
 
-While it is known that the DAB transmissions are now all in Band III, there are situations where it might is desirable to use other frequencies. Specify in a file a list of channels, e.g.
+While it is known that the DAB transmissions are now all in Band III, there are situations where it might is desirable to use other frequencies.
+Qt-DAB provides the opportunity to specify your own band.
+Specify in a file a list of channels, e.g.
 
 	jan	227360
 	twee	220352
