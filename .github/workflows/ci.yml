@@ -1,0 +1,165 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - os: linux
+          - os: macos
+          - os: windows
+        version: [4, 5, 6]
+        include:
+          - target:
+              os: linux
+            builder: ubuntu-22.04
+            shell: bash
+          - target:
+              os: macos
+            builder: macos-latest
+            shell: bash
+          - target:
+              os: windows
+            builder: windows-2019
+            shell: msys2 {0}
+
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+
+    name: '${{ matrix.target.os }} (v${{ matrix.version }})'
+    runs-on: ${{ matrix.builder }}
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      - name: Environment variables
+        shell: bash
+        run: |
+          CFLAGS="-O3 -march=native -pipe"
+          CXXFLAGS="-O3 -march=native -pipe"
+          NCPU=""
+          MAKE_CMD="make"
+          case "${{ runner.os }}" in
+          "Linux")
+            NCPU="$(nproc)"
+            echo "DEBIAN_FRONTEND=noninteractive" >> ${GITHUB_ENV}
+            echo "TZ=Etc/UTC" >> ${GITHUB_ENV}
+            ;;
+          "macOS")
+            NCPU="$(sysctl -n hw.logicalcpu)"
+            echo "/usr/local/opt/qt@5/bin" >> ${GITHUB_PATH}
+            echo "PKG_CONFIG_PATH=/usr/local/opt/qt@5/lib/pkgconfig:/usr/local/opt/zlib/lib/pkgconfig" >> ${GITHUB_ENV}
+            echo "MACOSX_DEPLOYMENT_TARGET=12.0" >> ${GITHUB_ENV}
+            ;;
+          "Windows")
+            NCPU="${NUMBER_OF_PROCESSORS}"
+            MAKE_CMD="mingw32-make"
+            ;;
+          esac
+          echo "CFLAGS=${CFLAGS}" >> ${GITHUB_ENV}
+          echo "CXXFLAGS=${CXXFLAGS}" >> ${GITHUB_ENV}
+          [[ -z "${NCPU}" || ${NCPU} -le 0 ]] && NCPU="1"
+          echo "NCPU=${NCPU}" >> ${GITHUB_ENV}
+          echo "MAKE_CMD=${MAKE_CMD}" >> ${GITHUB_ENV}
+
+      - name: Install build dependencies (Linux AMD64)
+        if: runner.os == 'Linux'
+        run: |
+          sudo -E apt-get update -qq
+          sudo -E eatmydata apt-get install --no-install-recommends -yq \
+            build-essential \
+            libfaad-dev \
+            libfdk-aac-dev \
+            libfftw3-dev \
+            libqwt-qt5-dev \
+            librtlsdr-dev \
+            libsamplerate0-dev \
+            libsndfile1-dev \
+            libusb-1.0-0-dev \
+            portaudio19-dev \
+            qttools5-dev \
+            zlib1g-dev
+
+      - name: Select the Xcode version
+        if: runner.os == 'macOS'
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '13' # 14 seems buggy: https://github.com/actions/runner-images/issues/6642
+
+      - name: Install build dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install \
+            cmake \
+            faad2 \
+            fdk-aac \
+            fftw \
+            librtlsdr \
+            libsamplerate \
+            libsndfile \
+            libusb \
+            pkg-config \
+            portaudio \
+            qt@5 \
+            qwt-qt5 \
+            zlib
+
+      - name: MSYS2 (Windows amd64)
+        if: runner.os == 'Windows'
+        uses: msys2/setup-msys2@v2
+        with:
+          path-type: inherit
+          install: >-
+            base-devel
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-dlfcn
+            mingw-w64-x86_64-faad2
+            mingw-w64-x86_64-fdk-aac
+            mingw-w64-x86_64-fftw
+            mingw-w64-x86_64-libsamplerate
+            mingw-w64-x86_64-libsndfile
+            mingw-w64-x86_64-libusb
+            mingw-w64-x86_64-portaudio
+            mingw-w64-x86_64-qt5-base
+            mingw-w64-x86_64-qt5-tools
+            mingw-w64-x86_64-qt5-winextras
+            mingw-w64-x86_64-qwt-qt5
+            mingw-w64-x86_64-rtl-sdr
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-zlib
+
+      - name: Build binaries
+        run: |
+          cd qt-dab-s${{ matrix.version }}
+          mkdir build
+          cd build
+
+          CMAKE_ARGS=(
+            -DRTL_TCP=ON
+            -DFDK_AAC=ON
+            -DVITERBI_SSE=ON
+          )
+          if [[ "${{ runner.os }}" == "Windows" ]]; then
+            CMAKE_ARGS+=(
+              -G "MinGW Makefiles"
+              -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX}
+              -DRTLSDR_WIN=ON
+            )
+          else
+            CMAKE_ARGS+=(
+              -DRTLSDR_LINUX=ON
+            )
+          fi
+
+          cmake "${CMAKE_ARGS[@]}" ..
+          ${MAKE_CMD} -j${NCPU} VERBOSE=1
+

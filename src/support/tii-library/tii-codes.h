@@ -25,7 +25,12 @@
 #include	<QString>
 #include	<QSettings>
 #include	"dlfcn.h"
-typedef	void	*HINSTANCE;
+
+#ifdef _WIN32
+# include <windows.h>
+#else
+typedef	void* HINSTANCE;
+#endif
 
 typedef struct {
 	float latitude;

@@ -49,13 +49,13 @@
 #endif
 
 	tiiHandler::tiiHandler	() {
-	Handle		= dlopen ("libtii-lib.so", RTLD_NOW | RTLD_GLOBAL);
+	Handle		= (HINSTANCE) dlopen ("libtii-lib.so", RTLD_NOW | RTLD_GLOBAL);
 	fprintf (stderr, "%s\n", dlerror ());
 	if (Handle == nullptr)
-	   Handle	= dlopen ("/usr/local/lib/libtii-lib.so",
+	   Handle	= (HINSTANCE) dlopen ("/usr/local/lib/libtii-lib.so",
 	                                           RTLD_NOW | RTLD_GLOBAL);
 	if (Handle == nullptr)
-	   Handle	= dlopen ("/usr/local/lib/tii-lib.so",
+	   Handle	= (HINSTANCE) dlopen ("/usr/local/lib/tii-lib.so",
 	                                           RTLD_NOW | RTLD_GLOBAL);
 	fprintf (stderr, "%s\n", dlerror ());
 	if (Handle == nullptr)
