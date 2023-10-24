@@ -41,12 +41,14 @@ float	Phi_k;
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 	
-	refTable.		resize (T_u);
 	phaseDifferences.       resize (diff_length);
 
+	refTable.		resize (T_u);
 	for (i = 0; i < T_u; i ++)
 	   refTable [i] = Complex (0, 0);
-
+//
+//	generate (again) the reference values for block 0,
+//	however, use the format we have after doing an FFT
 	for (i = 1; i <= params. get_carriers() / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));

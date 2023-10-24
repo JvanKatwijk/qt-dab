@@ -4,5 +4,6 @@
         <file>qt-dab-4.ico</file>
         <file>../AUTHORS</file>
         <file>../COPYING</file>
+	<file>../res/qt-map.html</file>
     </qresource>
 </RCC>

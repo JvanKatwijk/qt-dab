@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -30,13 +30,13 @@
 #include	"audio-base.h"
 #include	"Qt-audiodevice.h"
 
-class	Qt_Audio: public audioBase {
+class	Qt_Audio: public AudioBase {
 Q_OBJECT
 public:
-			Qt_Audio	(void);
-			~Qt_Audio	(void);
-	void		stop		(void);
-	void		restart		(void);
+			Qt_Audio	();
+			~Qt_Audio	();
+	void		stop		();
+	void		restart		();
 	void		audioOutput	(float *, int32_t);
 private:
 	void		setParams	(int32_t);

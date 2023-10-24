@@ -69,12 +69,8 @@ if(DEFINED SDRPLAY)
 	set(SDRPLAY true)
 endif ()
 
-if(DEFINED RTLSDR_LINUX)
-	set(RTLSDR_LINUX true)
-endif ()
-
-if(DEFINED RTLSDR_WIN)
-	set(RTLSDR_WIN true)
+if(DEFINED RTLSDR)
+	set(RTLSDR_GENERIC true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -123,7 +119,7 @@ if (DEFINED QT_AUDIO)
 endif ()
 
 #add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
-#add_definitions (-D__MSC_THREAD__)	# uncomment for use for an RPI
+add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 
 #
 ########################################################################
@@ -189,9 +185,9 @@ endif ()
 	           ${QT5Widgets_INCLUDES}
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
-	           ./pauzeslide
 	           ./support
 	           ..
+	           ./forms-v5/iq-scope
 	           ../fft
 	           ../includes
 	           ../includes/ofdm
@@ -225,7 +221,7 @@ endif ()
 
 	set (${objectName}_HDRS
 	     ./radio.h
-	     ./pauzeslide/pauzeslide.h
+	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
 	     ../fft/fft-handler.h 
 	     ../fft/fft-complex.h
@@ -316,7 +312,6 @@ endif ()
              ../includes/support/buttons/verysmallpushbutton.h 
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
-	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/spectrum-viewer/spectrum-scope.h 
@@ -342,6 +337,7 @@ endif ()
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./forms-v5/iq-scope/iqdisplay.cpp
 	     ./support/techdata.cpp
 	     ../ofdm-handler.cpp
 	     ../fft/fft-handler.cpp 
@@ -421,7 +417,6 @@ endif ()
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
-	     ../src/scopes-qwt6/iqdisplay.cpp 
 	     ../src/scopes-qwt6/audio-display.cpp 
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
 	     ../viewers/spectrum-viewer/spectrum-scope.cpp 
@@ -444,6 +439,7 @@ endif ()
 	set (${objectName}_MOCS
 	     ./radio.h
 	     ./support/techdata.h
+	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
 	     ../includes/output/audio-base.h
 	     ../includes/ofdm/sample-reader.h
@@ -488,7 +484,6 @@ endif ()
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
-	     ../includes/scopes-qwt6/iqdisplay.h
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/spectrum-viewer/spectrum-scope.h 
@@ -801,67 +796,34 @@ endif ()
 	   add_definitions (-DHAVE_LIME)
 	endif (LIMESDR)
 
-	if (RTLSDR_LINUX)
+	if (RTLSDR_GENERIC)
 	   set (${objectName}_UIS
                 ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+                ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
            )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/rtlsdr-handler-linux/
+	        ../qt-devices/rtlsdr-handler-generic/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr_export.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	   )
-
-	   add_definitions (-DHAVE_RTLSDR)
-	endif()
-
-	if (RTLSDR_WIN)
-	   set (${objectName}_UIS
-                ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-           )
-
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
-	   )
-
-	   include_directories (
-	        ../qt-devices/rtlsdr-handler-win/
-	   )
-
-	   set (${objectName}_HDRS
-	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-sdr_export.h
-	   )
-
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)

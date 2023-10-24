@@ -31,6 +31,7 @@
 #include	<QObject>
 #include	<QByteArray>
 #include	<QStringList>
+#include	<QSettings>
 #include	<vector>
 #include	<cstdint>
 #include	<sndfile.h>
@@ -42,7 +43,6 @@
 #include	"ringbuffer.h"
 #include	"tii-detector.h"
 #include	"eti-generator.h"
-//
 
 class	RadioInterface;
 class	dabParams;
@@ -53,7 +53,8 @@ Q_OBJECT
 public:
 		ofdmHandler  	(RadioInterface *,
 	                         deviceHandler *,
-	                         processParams *);
+	                         processParams *,
+	                         QSettings	*);
 		~ofdmHandler			();
 	void		start			();
 //	void		start			(int32_t);
@@ -109,6 +110,7 @@ private:
 	RadioInterface	*myRadioInterface;
 	processParams	*p;
 	dabParams	params;
+	QSettings	*dabSettings;
 	sampleReader	myReader;
 	ficHandler	my_ficHandler;
 	etiGenerator	my_etiGenerator;
@@ -132,7 +134,6 @@ private:
 	int16_t		tii_delay;
 	int16_t		tii_counter;
 	bool		eti_on;
-
 	int16_t		attempts;
 	bool		scanMode;
 	int32_t		T_null;
@@ -148,7 +149,7 @@ private:
 	QByteArray	transmitters;
 	bool		correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
-	bool		wasSecond		(int16_t, dabParams *);
+	bool		isEvenFrame		(int16_t, dabParams *);
 virtual	void		run			();
 signals:
 	void		setSynced		(bool);

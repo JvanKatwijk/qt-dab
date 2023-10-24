@@ -24,15 +24,13 @@
 #pragma once
 
 #include	<vector>
-#include	"frame-processor.h"
 #include	<cstdio>
 #include	<cstring>
 #include	<QObject>
+#include	"frame-processor.h"
 #include	"ringbuffer.h"
 
 class	RadioInterface;
-class	uep_deconvolve;
-class	eep_deconvolve;
 class	virtual_dataHandler;
 class	packetdata;
 

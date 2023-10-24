@@ -9,7 +9,8 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-The current version is 6.2
+The current version is 6.2, the versions 5.4 and 4.7 are still baing
+accessinle and maintained.
 
 ![6.2](/qt-dab-6.2.png?raw=true)
 
@@ -103,22 +104,32 @@ the visibility of the other widgets of the GUI.
 
 The technical widget - the visibility of which depends on the settings
 in the main widget, gives full information about the selected audio service.
+(Of course the color(s) used in the spectrum display can be set by the user).
 
-
-Different from previous versions, a single widget, the spectrum widget,
-contains - as tabbed widget - the 4, 5 or 6 scopes (depending
-on the configuration) to show different aspects of the DAB signal. 
+Different from previous versions, a **single widget**, the spectrum widget,
+contains (almost) all of the scopes and displays.
+It is set up as a tabbed widget - the 5 or 6 scopes (depending
+on the configuration) show the various aspects of the DAB signal. 
 Furthermore, it contains an IQscope,
-showing the constellation of the decoded data,
-and a waterfall scope, showing the progress in time of the data
+showing the constellation of the decoded data or the constellation
+of the data before decoding.
+A waterfall scope shows the progress in time of the data
 that is displayed in the selected scope.
+
+The spectrum scope shows - in numbers - some quality indicators for the
+raw DAB signal.
+
+The progress indicator at the bottom shows the quality of the FIC decoding,
+where FIC can be seen as the directory data of the contents of the DAB
+transmission
 
 (Note that - obviously - the colors of the scopes can be set to different
 colors than shown here).
 
 ![6.1](/spectrum-scope.png)
 
-The *spectrum scope* shows the spectrum of the incoming DAB signal;
+The *spectrum scope* shows the spectrum of the incoming DAB signal. One
+sees clearly that the width of the signal is app 1.5 MHz.
 
 ![6.1](/spectrum-ideal.png)
 
@@ -131,10 +142,13 @@ The correlation scope shows the correlation between the incoming signal and
 some predefined data. It is helpful in finding the precise start of the
 (relevant) data in the input stream. The picture shows that the signal
 from more than one transmitter is received.
+If the distance to the current transmitter is known, the display
+shows the estimated distances - from the receiver location - to the
+other peaks as well.
 
 ![6.1](/qt-dab-null-period.png)
 
-The NULL scope shows the transition between the NULL period and
+The NULL scope shows the samples in the transition from NULL period to
 the first data block of a DAB frame;
 
 ![6.1](/qt-dab-tii-data.png)
@@ -144,20 +158,21 @@ The TII scope shows the spectrum of the data in the NULL period, since that data
 ![6.1](/qt-dab-channel.png)
 
 The channel scope shows the *channel effect* on the transmitted data, i.e.
-the deformation of the transmitted signal. The picture shows the *cyan colored line*,
-i.e. the channel effects on the amplitudes, and the *red line*, i.e.
-the channel effects on the phase of the samples. The "jumps in the red line
-indicate the modulo 2*PI effect.
+the deformation of the transmitted signal. The
+picture shows the *cyan colored line*,
+i.e. the channel effects (i.e. the deformation) on the amplitudes,
+and the *red line*, i.e.  the channel effects on the phase of
+the samples. (The "jumps in the red line indicate the modulo 2*PI effect.)
+
 Note that the implementation of this scope requires some additional
 libraries, therefore this scope is not part of the default configuration,
 although it is included in the precompiled versions.
 
 ![6.1](/qt-dab-stddev.png)
 
-The deviation scope shows the measured std deviation - used in the
-decoding - of the elements of the decoded signal. The Y axis is in Hz.
-Note that this scope is not part of the default configuration,
-it is included in the precompiled versions though.
+The deviation scope shows the mean deviation on the carriers
+in the decoded signal, before mapping the carriers to bits.
+The Y-axis is in Hz.
 
 ![8.1](/configuration-and-control.png)
 
@@ -207,10 +222,13 @@ next to the executable qt-dab program, the required libraries.
 Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
 
 
-Building an executable for qt-dab: a few notes
+Building an executable for Qt-DAB: a few notes
 =================================================================
 
 While for Linux-x64 and Windows there are precompiled versions, there may be reasons to build an executable. Building an executable is not very complicated, it is described in detail in the manual. Since it is customary to avoid reading a manual, here are the basic steps for the build process.
+Iy is strongly advised to use qmake/make in the process, since the
+number of configuration options is larger and selecting configuration
+options is much easier.
 
 Step 1
 -----------------------------------------------------------------
@@ -226,7 +244,11 @@ Step 2
 
 While there are dozens of configuration options, take note of the following ones:
 
-* Note on configuring DABsticks (i.e. RTLSDR type devices). The Windows support library does not seem to be able to handle continuous closing and opening the device, something that normally is done on changing a channel. Therefore separate versions of the RTLSDR interface library is made, one special for Windows, and a normal one for Linux. 
+* Note on configuring DABsticks (i.e. RTLSDR type devices).
+The Windows support library does not seem to be vapable of closing
+the library and reopening it on switching channels. Therefore
+a special version of the library is made, that is used for both
+Windows and Linux. 
 
  * For including "soapy" in the configuration, soapy  software should have been installed, so leave them commented out when not available. iF
 

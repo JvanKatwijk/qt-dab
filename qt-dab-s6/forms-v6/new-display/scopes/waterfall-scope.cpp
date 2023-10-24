@@ -25,15 +25,14 @@
 #include        <qwt_text.h>
  
 	waterfallScope::waterfallScope (QwtPlot       *scope,
-	                                int		displaySize,
-	                                int		rasterSize):
-	                                   QwtPlotSpectrogram () {
-	this	-> plotgrid	= scope;
-	this	-> displaySize	= displaySize;
-	this	-> rasterSize	= rasterSize;
+	                                int		displaySize_i,
+	                                int		rasterSize_i):
+	                                      QwtPlotSpectrogram (),
+	                                      plotgrid (scope),
+	                                      displaySize (displaySize_i),
+	                                      rasterSize (rasterSize_i) {
 	colorMap  = new QwtLinearColorMap (Qt::darkCyan, Qt::red);
 	QwtLinearColorMap *c2 = new QwtLinearColorMap (Qt::darkCyan, Qt::red);
-	this            -> rasterSize   = rasterSize;
 	colorMap        -> addColorStop (0.1, Qt::cyan);
 	colorMap        -> addColorStop (0.4, Qt::green);
 	colorMap        -> addColorStop (0.7, Qt::yellow);
@@ -42,8 +41,7 @@
 	c2              -> addColorStop (0.7, Qt::yellow);
 	this            -> setColorMap (colorMap);
 	rightAxis	= plotgrid -> axisWidget (QwtPlot::yRight);
-// A color bar on the right axis
-//	rightAxis	-> setColorBarEnabled (true);
+
 	plotData	= new double [2 * displaySize * rasterSize];
 
 	for (int i = 0; i < rasterSize; i ++)
@@ -70,11 +68,11 @@
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, rasterSize);
 
-	Marker          = new QwtPlotMarker ();
-	Marker          -> setLineStyle (QwtPlotMarker::VLine);
-	Marker          -> setLinePen (QPen (Qt::black, 2.0));
-	Marker          -> attach (plotgrid);
-	indexforMarker  = 0;
+//	Marker          = new QwtPlotMarker ();
+//	Marker          -> setLineStyle (QwtPlotMarker::VLine);
+//	Marker          -> setLinePen (QPen (Qt::black, 2.0));
+//	Marker          -> attach (plotgrid);
+//	indexforMarker  = 0;
 	plotgrid        -> replot ();
 }
 
@@ -101,7 +99,7 @@ void    waterfallScope::display (double *X_axis,
 int     orig    = (int)(X_axis [0]);
 int     width   = (int)(X_axis [displaySize - 1] - orig);
 
-	indexforMarker  = marker;
+//	indexforMarker  = marker;
 /*
  *      shift one row, faster with memmove than writing out
  *      the loops. Note that source and destination overlap
@@ -134,7 +132,7 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	                                 orig,
 	                                 orig + width);
 	plotgrid        -> enableAxis (QwtPlot::xBottom);
-	Marker          -> setXValue (marker);
+//	Marker          -> setXValue (marker);
 	this            -> attach     (plotgrid);
 	plotgrid        -> replot();
 }

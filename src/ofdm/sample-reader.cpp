@@ -27,9 +27,9 @@
 static  inline
 int16_t valueFor (int16_t b) {
 int16_t res     = 1;
-        while (--b > 0)
-           res <<= 1;
-        return res;
+	while (--b > 0)
+	   res <<= 1;
+	return res;
 }
 
 static
@@ -37,23 +37,22 @@ Complex oscillatorTable [INPUT_RATE];
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
-	                            RingBuffer<Complex> *spectrumBuffer_i
-	                           ):
+	                            RingBuffer<Complex> *spectrumBuffer_i):
 	                               theRig (theRig_i),
 	                               spectrumBuffer (spectrumBuffer_i) {
 int	i;
-        bufferSize		= 32768;
-	connect (this, SIGNAL (show_Spectrum (int)),
-	         mr, SLOT (showSpectrum (int)));
-        localBuffer. resize (bufferSize);
-        localCounter		= 0;
+	bufferSize		= 32768;
+	connect (this, SIGNAL (show_spectrum (int)),
+	         mr, SLOT (show_spectrum (int)));
+	localBuffer. resize (bufferSize);
+	localCounter		= 0;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-        for (i = 0; i < INPUT_RATE; i ++)
-           oscillatorTable [i] = Complex
+	for (i = 0; i < INPUT_RATE; i ++)
+	   oscillatorTable [i] = Complex
 	                            (cos (2.0 * M_PI * i / INPUT_RATE),
-                                     sin (2.0 * M_PI * i / INPUT_RATE));
+	                             sin (2.0 * M_PI * i / INPUT_RATE));
 
 	bufferContent	= 0;
 	corrector	= 0;
@@ -63,7 +62,7 @@ int	i;
 	running. store (true);
 }
 
-	sampleReader::~sampleReader() {
+	sampleReader::~sampleReader () {
 }
 
 void	sampleReader::setRunning (bool b) {
@@ -74,10 +73,9 @@ float	sampleReader::get_sLevel() {
 	return sLevel;
 }
 
-Complex sampleReader::getSample (int32_t phaseOffset) {
+Complex	sampleReader::getSample (float phaseOffset) {
 Complex temp;
 
-	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;
 
@@ -118,12 +116,12 @@ Complex temp;
 	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
 #define	N	4
 	if (++ sampleCount > INPUT_RATE / N) {
-//	   show_Corrector	(corrector);
+//	   show_corrector	(corrector);
 	   sampleCount = 0;
 	   if (spectrumBuffer != nullptr) {
               spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),
 	                                                       localCounter);
-              emit show_Spectrum (bufferSize);
+              emit show_spectrum (bufferSize);
 	   }
            localCounter = 0;
 	}
@@ -132,7 +130,8 @@ Complex temp;
 
 void	sampleReader::getSamples (std::vector<Complex>  &v,
 	                          int index,
-	                          int32_t n, int32_t phaseOffset) {
+	                          int32_t n,
+	                          int32_t phaseOffset, bool saving) {
 int32_t		i;
 Complex buffer [n];
 	corrector	= phaseOffset;
@@ -179,14 +178,14 @@ Complex buffer [n];
 
 	sampleCount	+= n;
 	if (sampleCount > INPUT_RATE / N) {
-	   show_Corrector	(corrector);
-	   if (spectrumBuffer != nullptr) {
-	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),
-	                                                       bufferSize);
-	      emit show_Spectrum (bufferSize);
-	   }
-	   localCounter = 0;
+	   show_corrector	(corrector);
 	   sampleCount = 0;
+	   if ((spectrumBuffer != nullptr) && saving) {
+	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	                                                       bufferSize);
+	      emit show_spectrum (bufferSize);
+	      localCounter = 0;
+	   }
 	}
 }
 

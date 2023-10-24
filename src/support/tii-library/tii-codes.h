@@ -81,6 +81,8 @@ private:
 	QString tiifileName;
 
 	void	*handler;
+	HINSTANCE	Handle;
+	HINSTANCE       getLibraryHandle        ();
 
 	float	convert		(const QString &);
         uint16_t get_Eid        (const QString &);
@@ -90,7 +92,6 @@ private:
         void    readFile        (FILE *);
         char    *eread          (char *, int, FILE *, uint8_t);
 
-	HINSTANCE	Handle;
 	bool		loadFunctions	();
 	init_tii_P	init_tii_L;
 	close_tii_P	close_tii_L;

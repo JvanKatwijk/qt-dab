@@ -258,6 +258,7 @@ private:
 	                                  serviceId, int);
 
 	void			show_pauzeSlide	();
+	void			displaySlide	(const QPixmap &);
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
@@ -374,11 +375,11 @@ public slots:
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
 	void			setSyncLost		();
-	void			showCorrelation		(int, int, 
+	void			show_correlation	(int, int, 
 	                                                      QVector<int>);
-	void			showSpectrum		(int);
+	void			show_spectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float, float, float);
+	void			show_quality		(float, float, float);
 
 	void			show_rsCorrections	(int, int);
 	void			show_tii		(int, int);
@@ -405,6 +406,7 @@ public slots:
 	
 	void			http_terminate		();
 
+	void			show_stdDev		(int);
 
 //	Somehow, these must be connected to the GUI
 private slots:

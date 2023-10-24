@@ -46,8 +46,9 @@
 
 	ofdmHandler::ofdmHandler	(RadioInterface	*mr,
 	                                 deviceHandler	*inputDevice,
-	                                 processParams	*p):
-	                                 params (p -> dabMode),
+	                                 processParams	*p,
+	                                 QSettings	*dabSettings):
+	                                    params (p -> dabMode),
 	                                 myReader (mr,
 	                                           inputDevice,
 	                                           p -> spectrumBuffer),
@@ -66,6 +67,7 @@
 
 	this	-> myRadioInterface	= mr;
 	this	-> p			= p;
+	this	-> dabSettings		= dabSettings;
 	this	-> inputDevice		= inputDevice;
 	this	-> threshold		= p -> threshold;
 	this	-> tiiBuffer		= p -> tiiBuffer;
@@ -102,8 +104,8 @@
 	         myRadioInterface, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (setSyncLost (void)),
 	         myRadioInterface, SLOT (setSyncLost (void)));
-	connect (this, SIGNAL (show_Spectrum (int)),
-	         myRadioInterface, SLOT (showSpectrum (int)));
+//	connect (this, SIGNAL (show_Spectrum (int)),
+//	         myRadioInterface, SLOT (show_spectrum (int)));
 	connect (this, SIGNAL (show_tii (int, int)),
 	         myRadioInterface, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_tii_spectrum ()),
@@ -180,6 +182,7 @@ int	cCount		= 0;
 float	snr		= 0;
 bool	inSync		= false;
 QVector<Complex> tester (T_u / 2);
+int	snrCount	= 0;
 
 	ibits. resize (2 * params. get_carriers());
 	fineOffset		= 0;
@@ -190,8 +193,10 @@ QVector<Complex> tester (T_u / 2);
 //
 //	to get some idea of the signal strength
 	try {
-	   for (int i = 0; i < T_F / 5; i ++) {
-	      myReader. getSample (0);
+	   const int tempSize = 128;
+	   std::vector<Complex> temp (tempSize);
+	   for (int i = 0; i < T_F / (5 * tempSize); i ++) {
+	      myReader. getSamples (temp, 0, tempSize, 0, true);
 	   }
 
 	   while (true) {
@@ -221,7 +226,7 @@ QVector<Complex> tester (T_u / 2);
 	          }
 
 	          myReader. getSamples (ofdmBuffer, 0,
-	                        T_u, coarseOffset + fineOffset);
+	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
@@ -248,7 +253,7 @@ QVector<Complex> tester (T_u / 2);
 	         }
 
 	         myReader. getSamples (ofdmBuffer, 0,
-	                               T_u, coarseOffset + fineOffset);
+	                               T_u, coarseOffset + fineOffset, false);
 	         if (null_shower) {
 	            for (int i = 0; i < T_u / 4; i ++)
 	               tester [T_u / 4 + i] = ofdmBuffer [i];
@@ -288,7 +293,7 @@ QVector<Complex> tester (T_u / 2);
 	      myReader. getSamples (ofdmBuffer,
 	                            ofdmBufferIndex,
 	                            T_u - ofdmBufferIndex,
-	                            coarseOffset + fineOffset);
+	                            coarseOffset + fineOffset, true);
 #ifdef	__ESTIMATOR_
 	      static int abc = 0;
 	      if (myRadioInterface -> channelOn ()) {
@@ -343,7 +348,7 @@ QVector<Complex> tester (T_u / 2);
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	         myReader. getSamples (ofdmBuffer, 0,
-	                               T_s, coarseOffset + fineOffset);
+	                               T_s, coarseOffset + fineOffset, true);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
 	            FreqCorr +=
@@ -395,29 +400,32 @@ QVector<Complex> tester (T_u / 2);
   *	Assume everything went well and skip T_null samples
   */
 	      myReader. getSamples (ofdmBuffer, 0,
-	                         T_null, coarseOffset + fineOffset);
+	                         T_null, coarseOffset + fineOffset, false);
 	      sampleCount += T_null;
-	      float sum	= 0;
-	      for (int i = 0; i < T_null; i ++)
-	         sum += abs (ofdmBuffer [i]);
-	      sum /= T_null;
-	      float snrV	=
+//
+//	The snr is computed, where we take as "noise" the signal strength
+//	of the NULL period (the one without TII data)
+	      if (!isEvenFrame (my_ficHandler. get_CIFcount(), &params)) {
+	         float sum	= 0;
+	         for (int i = 0; i < T_null; i ++)
+	            sum += abs (ofdmBuffer [i]);
+	         sum /= T_null;
+	         float snrV	=
 	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
-	      snr = 0.9 * snr + 0.1 * snrV;
-	      if (this -> snrBuffer != nullptr) {
-	         snrBuffer -> putDataIntoBuffer (&snr, 1);
-	      }
-	      static int ccc	= 0;
-	      ccc ++;
-	      if (ccc >= 5) {
-	         ccc = 0;
-	         show_snr (snr);
+	         snr = 0.9 * snr + 0.1 * snrV;
+	         if (this -> snrBuffer != nullptr) 
+	            snrBuffer -> putDataIntoBuffer (&snr, 1);
+	         snrCount ++;
+	         if (snrCount >= 3) {
+	            snrCount = 0;
+	            show_snr (snr);
+	         }
 	      }
 /*
- *	odd frames 
+ *	odd frames carry - if any = the TII data
  */
 	      if (params. get_dabMode () == 1) {
-	         if (wasSecond (my_ficHandler. get_CIFcount(), &params)) {
+	         if (isEvenFrame (my_ficHandler. get_CIFcount(), &params)) {
 	            my_TII_Detector. addBuffer (ofdmBuffer);
 	            if (++tii_counter >= tii_delay) {
 	               tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
@@ -607,7 +615,7 @@ void	ofdmHandler::stopDumping() {
 	myReader. stopDumping();
 }
 
-bool	ofdmHandler::wasSecond (int16_t cf, dabParams *p) {
+bool	ofdmHandler::isEvenFrame (int16_t cf, dabParams *p) {
 	switch (p -> get_dabMode()) {
 	   default:
 	   case 1:

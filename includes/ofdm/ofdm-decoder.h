@@ -43,7 +43,7 @@ public:
 		ofdmDecoder		(RadioInterface *,
 	                                 uint8_t,
 	                                 int16_t,
-	                                 RingBuffer<float> *stdDevBuffer,
+	                                 RingBuffer<float> *devBuffer,
 	                                 RingBuffer<Complex> * iqBuffer = nullptr);
 		~ofdmDecoder		();
 	void	processBlock_0		(std::vector<Complex >);
@@ -58,8 +58,8 @@ private:
 	dabParams	params;
 	interLeaver     myMapper;
 	fftHandler	fft;
-	RingBuffer<float>	*stdDevBuffer;
-	RingBuffer<Complex> *iqBuffer;
+	RingBuffer<float>	*devBuffer;
+	RingBuffer<Complex>	*iqBuffer;
 	float		computeQuality		(Complex *);
         float		compute_timeOffset      (Complex *,
                                                  Complex *);
@@ -75,15 +75,13 @@ private:
 	int16_t		getMiddle();
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>	ibits;
-	std::vector<float>	stdDeviationVector;
+	std::vector<float>	offsetVector;
 	phaseTable	*phasetable;
 	int		iqSelector;
 signals:
 	void		showIQ		(int);
-	void		showQuality	(float, float, float);
-#ifndef	__MSC_THREAD__
+	void		show_quality	(float, float, float);
 	void		show_stdDev	(int);
-#endif
 };
 
 

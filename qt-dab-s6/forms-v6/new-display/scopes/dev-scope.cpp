@@ -86,6 +86,7 @@ QString	colorString	= "black";
 
 void	devScope::display	(std::vector<float> V) {
 float	max	= 0;
+float	min	= 100;
 double X_axis [V. size ()];
 double Y_values [V. size ()];
 int	VSize	= V. size ();
@@ -95,6 +96,8 @@ int	VSize	= V. size ();
 	   Y_values [i] = V [i];
 	   if (V [i] > max)
 	      max = V [i];
+	   if (V [i] < min)
+	      min = V [i];
 	}
 
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
@@ -102,7 +105,7 @@ int	VSize	= V. size ();
 				         (double)X_axis [VSize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         0, 1.5 * max );
+				         min, 1.5 * max );
 	spectrumCurve. setBaseline (0);
 	Y_values [0]		= 0;
 	Y_values [VSize - 1]	= 0;

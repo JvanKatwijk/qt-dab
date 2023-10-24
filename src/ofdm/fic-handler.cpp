@@ -50,7 +50,6 @@
 	                                    fibDecoder (mr),
 	                                    params (dabMode),
 	                                    myViterbi (768, true) {
-int	local	= 0;
 int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 	index		= 0;
@@ -72,6 +71,7 @@ int16_t	shiftRegister [9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
 //	table), we make an punctureTable that contains the indices of
 //	the ofdmInput table
 	memset (punctureTable, (uint8_t)false, (3072 + 24) * sizeof (uint8_t));
+	int	local	= 0;
 	for (int i = 0; i < 21; i ++) {
 	   for (int k = 0; k < 32 * 4; k ++) {
 	      if (get_PCodes (16 - 1) [k % 32] != 0)  

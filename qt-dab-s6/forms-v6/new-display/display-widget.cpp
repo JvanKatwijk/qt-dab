@@ -34,16 +34,16 @@
 	displayWidget::displayWidget	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings):
 	                                         myFrame (nullptr),
-	                                         theFFT (4 * 512, false) {
+	                                         theFFT (4 * 512, false),
+	                                         dabSettings_p (dabSettings) {
 	(void)mr;
-	this	-> dabSettings		= dabSettings;
 
-	dabSettings	-> beginGroup ("displayWidget");
-	int x   = dabSettings -> value ("position-x", 100). toInt ();
-        int y   = dabSettings -> value ("position-y", 100). toInt ();
-	int w	= dabSettings -> value ("width", 150). toInt ();
-	int h	= dabSettings -> value ("height", 120). toInt ();
-        dabSettings -> endGroup ();
+	dabSettings_p	-> beginGroup ("displayWidget");
+	int x   = dabSettings_p -> value ("position-x", 100). toInt ();
+        int y   = dabSettings_p -> value ("position-y", 100). toInt ();
+	int w	= dabSettings_p -> value ("width", 150). toInt ();
+	int h	= dabSettings_p -> value ("height", 120). toInt ();
+        dabSettings_p -> endGroup ();
         setupUi (&myFrame);
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
@@ -51,87 +51,82 @@
 #ifndef	__ESTIMATOR_
 	tabWidget -> removeTab (4);
 #endif
-#ifdef	__MSC_THREAD__
-	tabWidget -> removeTab (5);
-#endif
 	myFrame. hide ();
 
 //	the "workers"
-	mySpectrumScope		= new spectrumScope	(spectrumDisplay,
-	                                                512, dabSettings);
+	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
+	                                                512, dabSettings_p);
 	spectrumAmplitude	-> setValue (50);
-	myWaterfallScope	= new waterfallScope	(waterfallDisplay,
+	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
 	                                                512, 50);
-	myNullScope		= new nullScope		(nullDisplay,
-	                                                512, dabSettings);
-	myCorrelationScope	= new correlationScope (correlationDisplay,
-	                                                256, dabSettings);
+	nullScope_p		= new nullScope		(nullDisplay,
+	                                                512, dabSettings_p);
+	correlationScope_p	= new correlationScope (correlationDisplay,
+	                                                256, dabSettings_p);
 	correlationLength       -> setValue (500);
 
-	myTII_Scope		= new spectrumScope	(tiiDisplay,
-	                                                512, dabSettings);
-	myDevScope		= new devScope		(devPlot,
-	                                                 512, dabSettings);
-	myIQDisplay		= new IQDisplay		(iqDisplay, 512);
+	TII_Scope_p		= new spectrumScope	(tiiDisplay,
+	                                                512, dabSettings_p);
+	devScope_p		= new devScope		(devPlot,
+	                                                 512, dabSettings_p);
+	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
 
 #ifdef	__ESTIMATOR_
-	myChannelScope		= new channelScope	(channelPlot,
-	                                                 128, dabSettings);
+	channelScope_p		= new channelScope	(channelPlot,
+	                                                 128, dabSettings_p);
 #endif
 
-	dabSettings		-> beginGroup ("displayWidget");
-        currentTab		= dabSettings -> value ("tabSettings", 0). toInt ();
-        dabSettings		-> endGroup ();
+	dabSettings_p		-> beginGroup ("displayWidget");
+        currentTab		= dabSettings_p -> value ("tabSettings", 0). toInt ();
+        dabSettings_p		-> endGroup ();
         tabWidget		-> setCurrentIndex (currentTab);
 	correlationsVector 	-> 
 	          setStyleSheet (
 	                 "QLabel {background-color : green; color: white}");
 
-	dabSettings	-> beginGroup ("displayWidget");
+	dabSettings_p	-> beginGroup ("displayWidget");
 	int sliderValue		=
-	           dabSettings -> value ("iqSliderValue", 50). toInt ();
+	           dabSettings_p -> value ("iqSliderValue", 50). toInt ();
 	scopeSlider		-> setValue (sliderValue);
-	dabSettings	-> endGroup ();
+	dabSettings_p	-> endGroup ();
 
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
-	connect (myIQDisplay, SIGNAL (rightMouseClick ()),
+	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
 }
 
 	displayWidget::~displayWidget () {
-	dabSettings	-> beginGroup ("displayWidget");
-        dabSettings	-> setValue ("position-x", myFrame. pos (). x ());
-        dabSettings	-> setValue ("position-y", myFrame. pos (). y ());
+	dabSettings_p	-> beginGroup ("displayWidget");
+        dabSettings_p	-> setValue ("position-x", myFrame. pos (). x ());
+        dabSettings_p	-> setValue ("position-y", myFrame. pos (). y ());
 
 	QSize size	= myFrame. size ();
-	dabSettings	-> setValue ("width", size. width ());
-	dabSettings	-> setValue ("height", size. height ());
+	dabSettings_p	-> setValue ("width", size. width ());
+	dabSettings_p	-> setValue ("height", size. height ());
 	
-	dabSettings	-> setValue ("iqSliderValue",
+	dabSettings_p	-> setValue ("iqSliderValue",
 	                               scopeSlider -> value ());
-	dabSettings	-> endGroup ();
+	dabSettings_p	-> endGroup ();
 	myFrame. hide	();
-	delete		mySpectrumScope;
-	delete		myWaterfallScope;
-	delete		myNullScope;
-	delete		myCorrelationScope;
-	delete		myTII_Scope;
+	delete		spectrumScope_p;
+	delete		waterfallScope_p;
+	delete		nullScope_p;
+	delete		correlationScope_p;
+	delete		TII_Scope_p;
 #ifdef	__ESTIMATOR_
-	delete		myChannelScope;
+	delete		channelScope_p;
 #endif
-#ifndef	__MSC_THREAD__
-	delete		myDevScope;
-#endif
-	delete		myIQDisplay;
+	delete		devScope_p;
+	delete		IQDisplay_p;
 }
 
 void	displayWidget::switch_tab	(int t) {
 	currentTab	= t;
-	dabSettings	-> beginGroup ("displayWidget");
-	dabSettings	-> setValue ("tabSettings", t);
-	dabSettings	-> endGroup ();
-	myWaterfallScope	-> cleanUp ();
+	dabSettings_p	-> beginGroup ("displayWidget");
+	dabSettings_p	-> setValue ("tabSettings", t);
+	dabSettings_p	-> endGroup ();
+	waterfallScope_p	-> cleanUp ();
 }
 
 int	displayWidget::get_tab		() {
@@ -148,7 +143,7 @@ int	displayWidget::get_tab		() {
 //
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
-void	displayWidget::showSpectrum	(std::vector<Complex> &v, int freq) {
+void	displayWidget::show_spectrum	(std::vector<Complex> &v, int freq) {
 int	l	= v. size ();
 double	X_axis [512];
 double  Y_value [512];
@@ -171,31 +166,38 @@ static double avg [4 * 512];
 	   Y_value [i]	=  get_db (Y_value [i] / 4);
 	}
 
-	mySpectrumScope		-> display (X_axis, Y_value, freq, 
+	spectrumScope_p -> display (X_axis, Y_value, freq, 
 	                                    spectrumAmplitude -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
-	myWaterfallScope	-> display (X_axis, Y_value, 
+	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    waterfallSlider -> value (),
 	                                    freq / 1000);
 }
 //
-//
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
-void	displayWidget::showCorrelation	(std::vector<float> &v,
-	                                 QVector<int> &ww) {
+void	displayWidget::show_correlation	(std::vector<float> &v,
+	                                 QVector<int> &ww, int baseDistance) {
 	if (currentTab != SHOW_CORRELATION)
 	   return;
-	myCorrelationScope	-> display (v, correlationLength -> value ());
+	correlationScope_p	-> display (v, correlationLength -> value ());
 	if (ww. size () > 0) {
 	   QString t = "Matches ";
 	   for (int i = 0; i < ww. size (); i ++) {
-	      t = t + " " + QString::number (ww [i]);
+	      if (i == 0) {
+	         t = t + " " + QString::number (ww [i]);
+	         if (baseDistance > 0)
+	            t = t + " (" + QString::number (baseDistance) + ")";
+	      }
 	      if (i >= 1) {
 	         int lO = ww [i] - ww [0];
-	         int d = (300000 / 2048 * lO) / 1000;
-	         t = t + " (" + QString::number (d) + "km)";
+	         if (baseDistance <= 0)
+	            t = t + " " + QString::number (lO);
+	         else {
+	            int d = M_PER_SAMPLE * lO / 1000 + baseDistance;
+	            t = t + " (" + QString::number (d) + "km)";
+	         }
 	      }
 	   }
 	   correlationsVector -> setText (t);
@@ -215,9 +217,9 @@ void	displayWidget::showCorrelation	(std::vector<float> &v,
 	}
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] *= 50.0 / MMax;
-	myWaterfallScope -> display (X_axis, Y_value, 
-	                             waterfallSlider -> value (),
-	                             v. size () / 2);
+	waterfallScope_p -> display (X_axis, Y_value, 
+	                              waterfallSlider -> value (),
+	                              v. size () / 2);
 }
 //	for "null" we get a segment of 1024 timedomain samples
 //	(the amplitudes!)
@@ -229,7 +231,7 @@ void	displayWidget::show_null	(Complex  *v, int amount) {
 	   return;
 	for (int i = 0; i < 512; i ++)
 	   v [i] = (v [2 * i] + v [2 * i + 1]) / 2.0f;
-	myNullScope		-> display (v, amount);
+	nullScope_p	-> display (v, amount);
 	double X_axis [512];
 	double Y_value [512];
 	float	MMax	= 0;
@@ -241,7 +243,7 @@ void	displayWidget::show_null	(Complex  *v, int amount) {
 	}
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] *= 50.0 / MMax;
-	myWaterfallScope	-> display (X_axis, Y_value, 
+	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    waterfallSlider -> value (), 256);
 }
 //
@@ -270,16 +272,16 @@ static double avg [4 * 512];
 	   Y_value [i]	=  get_db (Y_value [i]);
 	}
 
-	myTII_Scope		-> display (X_axis, Y_value, freq, 
+	TII_Scope_p		-> display (X_axis, Y_value, freq, 
 	                                      spectrumAmplitude -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
-	myWaterfallScope	-> display (X_axis, Y_value, 
+	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    waterfallSlider -> value (),
 	                                    freq / 1000);
 }
 
-void	displayWidget::showChannel	(std::vector<Complex> Values) {
+void	displayWidget::show_channel	(std::vector<Complex> Values) {
 double	amplitudeValues [128];
 double	phaseValues     [128];
 double	X_axis          [128];
@@ -294,7 +296,7 @@ double	waterfall_Y	[512];
 	   phaseValues     [i] = 2 * arg (Values [i]) + 30;
 	   X_axis          [i] = - 1536 / 2 + 12 * i;
 	}
-	myChannelScope	-> display (X_axis, amplitudeValues, phaseValues, 100);
+	channelScope_p	-> display (X_axis, amplitudeValues, phaseValues, 100);
 
 	for (int i = 0; i < 128; i ++) {
 	   for (int j = 0; j < 4; j ++) {
@@ -302,7 +304,7 @@ double	waterfall_Y	[512];
 	      waterfall_Y [4 * i + j] = amplitudeValues [i];
 	   }
 	}
-	myWaterfallScope	-> display (waterfall_X, waterfall_Y, 
+	waterfallScope_p	-> display (waterfall_X, waterfall_Y, 
 	                                    waterfallSlider -> value (),
 	                                    0);
 #endif
@@ -314,12 +316,12 @@ double Y_value [512];
 
 	if (currentTab != SHOW_STDDEV)
 	   return;
-	myDevScope -> display (stdDevVector);
+	devScope_p -> display (stdDevVector);
 	for (int i = 0; i < 512; i ++) {
 	   X_axis [i] = -768 + 3 * i;
 	   Y_value [i] = stdDevVector [3 * i] * 5;
 	}
-	myWaterfallScope	-> display (X_axis, Y_value, 
+	waterfallScope_p	-> display (X_axis, Y_value, 
 	                                    waterfallSlider -> value (),
 	                                    0);
 }
@@ -332,10 +334,10 @@ int sliderValue	=  scopeSlider -> value ();
 
 	if (Values. size () < 512)
 	   return;
-        myIQDisplay -> DisplayIQ (Values. data (), 512, sliderValue * 2);
+        IQDisplay_p -> DisplayIQ (Values. data (), 512, sliderValue * 2);
 }
 
-void	displayWidget:: showQuality (float q, float timeOffset,	
+void	displayWidget:: show_quality (float q, float timeOffset,	
 	                              float freqOffset) {
 	if (myFrame. isHidden ())
 	   return;
@@ -345,7 +347,7 @@ void	displayWidget:: showQuality (float q, float timeOffset,
 	frequencyOffsetDisplay	-> display (freqOffset);
 }
 
-void	displayWidget::show_Corrector (int coarseOffset, float fineOffset) {
+void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
 	if (myFrame. isHidden ())
 	   return;
 
@@ -380,7 +382,7 @@ void	displayWidget::show_cpuLoad	(float use) {
 	(void)use;
 }
 
-void	displayWidget::showTransmitters	(QByteArray &tr) {
+void	displayWidget::show_transmitters	(QByteArray &tr) {
 QString textList;
 	for (int i = 0; i < tr. size () / 2; i ++) {
 	   QString trId = QString ("(") + QString::number (tr. at (2 * i)) +

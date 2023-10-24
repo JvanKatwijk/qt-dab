@@ -40,26 +40,25 @@
   *	will extract the Tu samples, do an FFT and extract the
   *	carriers and map them on (soft) bits
   */
+
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
-	                                 RingBuffer<float>   *stdDevBuffer_i,
+	                                 RingBuffer<float>   *devBuffer_i,
 	                                 RingBuffer<Complex> *iqBuffer_i) :
 	                                    myRadioInterface (mr),
 	                                    params (dabMode),
 	                                    myMapper (dabMode),
 	                                    fft (params. get_T_u (), false),
-	                                    stdDevBuffer (stdDevBuffer_i),
+	                                    devBuffer (devBuffer_i),
 	                                    iqBuffer (iqBuffer_i) {
 	(void)bitDepth;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
-	connect (this, SIGNAL (showQuality (float, float, float)),
-	         myRadioInterface, SLOT (showQuality (float, float, float)));
-#ifndef	__MSC_THREAD__
+	connect (this, SIGNAL (show_quality (float, float, float)),
+	         myRadioInterface, SLOT (show_quality (float, float, float)));
 	connect (this, SIGNAL (show_stdDev (int)),
 	         myRadioInterface, SLOT (show_stdDev (int)));
-#endif
 //
 	this	-> T_s			= params. get_T_s	();
 	this	-> T_u			= params. get_T_u	();
@@ -68,9 +67,9 @@
 
 	this	-> T_g			= T_s - T_u;
 	phaseReference			.resize (T_u);
-	stdDeviationVector. resize (T_u);
-	for (int i = 0; i < stdDeviationVector. size (); i ++)
-           stdDeviationVector [i] = 0;
+	offsetVector. resize (T_u);
+	for (int i = 0; i < offsetVector. size (); i ++)
+           offsetVector [i] = 0;
 
 	iqSelector			= SHOW_DECODED;
 }
@@ -78,16 +77,15 @@
 	ofdmDecoder::~ofdmDecoder	() {
 }
 //
-void	ofdmDecoder::stop () {
+void	ofdmDecoder::stop ()	{
 }
 
-void	ofdmDecoder::reset () {
-	for (int i = 0; i < stdDeviationVector. size (); i ++)
-	   stdDeviationVector [i] = 0;
+void	ofdmDecoder::reset ()	{
+	for (int i = 0; i < offsetVector. size (); i ++)
+	   offsetVector [i] = 0;
 }
-
-/**
-  */
+//
+//
 void	ofdmDecoder::processBlock_0 (
 	                std::vector <Complex> buffer) {
 	fft. fft (buffer);
@@ -151,6 +149,18 @@ float	constrain	(float val, float min, float max) {
 
 static	int	cnt	= 0;
 
+#define DELTA	0.05
+//
+//	DAB (and DAB+) bits are encoded is DPSK, 2 bits per carrier,
+//	depending on the quadrant the carrier is in. There are
+//	of course two different approaches in decoding the bits
+//	One is looking at the X and Y components, and 
+//	their length, relative to each other,
+//	Ideally, the X and Y are of equal size, in practice they are not.
+//	An alternative approach (Hans T) was to normalize the 
+//	carrier and to use the QAM4 decoder from the DRM decoder
+//	Maybe later	
+
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &ibits) {
@@ -182,47 +192,35 @@ Complex fft_buffer [T_u];
 	   Complex	r1 = fft_buffer [index] *
 	                                    conj (phaseReference [index]);
 	   conjVector	[index] = r1;
-	                           
+
+//	we need the phase error to compute quality
+	   Complex r2		= Complex (abs (real (r1)), abs (imag (r1)));
+	   max	+= jan_abs (r2);
+//
+//	Note that the phase Offset does not lead to an accumulated error
+//	so, we just average 
+	   float phaseOffset	= arg (r2 * Complex (1, -1));
+	   offsetVector [index] = 
+	             compute_avg (offsetVector [index],
+	                                      square (phaseOffset), DELTA);
+	
+//	The approach taken  decoding approach is
+//	looking at the X and Y coordinates of the "dots"
+//	and taking their size as element
+//	It is (well) known that abs of a complex Value is larger than
+//	the sizes of the elements, so multiplying by 127 never exceeds
+//	the 127
 	   float ab1	= jan_abs (r1);
-	   if (ab1 > max)
-	      max = ab1;
-
-#ifdef	__MSC_THREADS__ 
-//	split the real and the imaginary part and scale it
-//	we make the bits into softbits in the range -127 .. 127
-	   ibits [i]		=  (int16_t)( - (real (r1) * 127) / ab1);
-	   ibits [carriers + i] =  (int16_t)( - (imag (r1) * 127) / ab1);
-#else
-#define	ALPHA	0.005
-//	we need the phase error, thefore we "convert" the result
-//	to quadrant 1
-	   float r2	= arg (Complex (abs (real (r1)), abs (imag (r1))));
-//	Get standard deviation of absolute phase for each bin.
-//	
-           float phaseOffset	= (r2 -  M_PI_4);
-           float stdDeviation	= square (phaseOffset);
-	   stdDeviationVector [index] =
-	             compute_avg (stdDeviationVector [index],
-	                                      stdDeviation, ALPHA);
-//      This value should be only between 0 (no noise) and
-//      M_PI_4 (heavy noise etc.).
-           float avgStdDev = std::sqrt (stdDeviationVector [index]);
-
-//	Finally calculate (and limit) a soft bit weight from
-//	the standard deviation for each bin.
-           float weight = 127.0f * (M_PI_4 - avgStdDev) / (float)M_PI_4;
-           constrain (weight, 2.0f, 127.0f);
-	   ibits [i]		= (int16_t)(real (r1) < 0.0f ?
-                                                       weight : -weight);
-	   ibits [carriers + i]	= (int16_t)(imag (r1) < 0.0f ?
-                                                       weight : -weight);
-#endif
+	   ibits [i]	=  (int16_t)(- (real (r1) * 127) / ab1 );
+	   ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
 	}
+
 
 //	From time to time we show the constellation of symbol 2.
 	
 	if (blkno == 2) {
 	   if (++cnt > 8) {
+	      max /= carriers;
 	      Complex displayVector [carriers];
 	      if (iqSelector == SHOW_RAW) {
 	         float maxAmp = 0;
@@ -241,25 +239,24 @@ Complex fft_buffer [T_u];
 	      }
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
-#ifndef	__MSC_THREAD__
-	      if (myRadioInterface -> devScopeOn ()) {
+	      if (devBuffer != nullptr) {
 	         float tempVector [carriers];
 	         for (int i = 0; i < carriers; i ++) {
 	            tempVector [i] =
-	                  stdDeviationVector [(T_u - carriers / 2 + i) % T_u];
+	                  offsetVector [(T_u - carriers / 2 + i) % T_u];
 	            tempVector [i] = tempVector [i] /  M_PI * 180.0;
 	         }
-	         stdDevBuffer -> putDataIntoBuffer (tempVector, carriers);
+	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
 	         show_stdDev (carriers);
 	      }
-#endif
+
 	      showIQ (carriers);
 	      float Quality	= computeQuality (conjVector);
 	      float timeOffset	= compute_timeOffset (fft_buffer,
 	                                              phaseReference. data ());
 	      float freqOffset	= compute_frequencyOffset (fft_buffer,
 	                                              phaseReference. data ());
-	      showQuality (Quality, timeOffset, freqOffset);
+	      show_quality (Quality, timeOffset, freqOffset);
 
 	      cnt = 0;
 	   }

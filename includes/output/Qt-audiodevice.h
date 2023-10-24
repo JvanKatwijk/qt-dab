@@ -32,10 +32,10 @@ class Qt_AudioDevice : public QIODevice {
 Q_OBJECT
 public:
 		Qt_AudioDevice	(RingBuffer<float> *, QObject *);
-		~Qt_AudioDevice	(void);
+		~Qt_AudioDevice	();
 
-	void	start		(void);
-	void	stop		(void);
+	void	start		();
+	void	stop		();
 
 	qint64	readData	(char *data, qint64 maxlen);
 	qint64	writeData	(const char *data, qint64 len);

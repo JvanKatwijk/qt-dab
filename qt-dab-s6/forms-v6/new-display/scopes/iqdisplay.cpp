@@ -30,10 +30,13 @@ static std::complex<int> Points [4 * 512];
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
 	                                QwtPlotSpectrogram() {
-QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::yellow);
+auto	*const colorMap = new QwtLinearColorMap (
+	                           QColor(0, 0, 255, 20),
+	                           QColor(255, 255, 178, 255));
 
 	(void)x;
 	setRenderThreadCount	(1);
+	setColorMap (colorMap);
 	Radius		= 100;
 	plotgrid	= plot;
 	lm_picker       = new QwtPlotPicker (plot -> canvas ());
@@ -104,13 +107,13 @@ void	IQDisplay::DisplayIQ (std::complex<float> *z,
 	      y = - Radius + 2;;
 
 	   Points [4 * i] = std::complex<int> (x, y);
-	   setPoint (x, y, 100);
+	   setPoint (x, y, 1000);
 	   Points [4 * i + 1] = std::complex<int> (x + 1, y);
-	   setPoint (x + 1, y, 100);
+	   setPoint (x + 1, y, 1000);
 	   Points [4 * i + 2] = std::complex<int> (x, y + 1);
-	   setPoint (x, y + 1, 100);
+	   setPoint (x, y + 1, 1000);
 	   Points [4 * i + 3] = std::complex<int> (x + 1, y + 1);
-	   setPoint (x + 1, y + 1, 100);
+	   setPoint (x + 1, y + 1, 1000);
 	}
 
 	memcpy (plot2. data(), plotData. data (),

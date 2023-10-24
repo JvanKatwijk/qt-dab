@@ -57,25 +57,25 @@ public:
 	                         QSettings *);
 		~displayWidget	();
 	int	get_tab		();
-	void	showSpectrum	(std::vector<Complex> &, int);
+	void	show_spectrum	(std::vector<Complex> &, int);
 	void	show_null	(Complex *, int);
-	void	showCorrelation	(std::vector<float> &,
-	                         QVector<int> &);
+	void	show_correlation	(std::vector<float> &,
+	                         QVector<int> &, int);
 	void	show_tii	(std::vector<Complex>, int);
-	void	showChannel	(std::vector<Complex>);
+	void	show_channel	(std::vector<Complex>);
 	void	show_stdDev	(std::vector<float>);
 
 	void	showIQ		(std::vector<Complex>);
 
-	void	showQuality	(float, float, float);
-	void	show_Corrector	(int, float);
+	void	show_quality	(float, float, float);
+	void	show_corrector	(int, float);
 	void	show_snr	(float);
 	void	show_correction	(int);
 	void	show_clockErr	(int);
 	void	showFrequency	(float);
 
 	void	show_cpuLoad	(float);
-	void	showTransmitters	(QByteArray &);
+	void	show_transmitters	(QByteArray &);
 
 	void	show		();
 	void	hide		();
@@ -84,15 +84,15 @@ public:
 private:
 	QFrame			myFrame;
 	fftHandler		theFFT;
-	QSettings		*dabSettings;
-	spectrumScope		*mySpectrumScope;
-	waterfallScope		*myWaterfallScope;
-	nullScope		*myNullScope;
-	correlationScope	*myCorrelationScope;
-	spectrumScope		*myTII_Scope;
-	devScope		*myDevScope;
-	channelScope		*myChannelScope;
-	IQDisplay		*myIQDisplay;
+	QSettings		*dabSettings_p;
+	spectrumScope		*spectrumScope_p;
+	waterfallScope		*waterfallScope_p;
+	nullScope		*nullScope_p;
+	correlationScope	*correlationScope_p;
+	spectrumScope		*TII_Scope_p;
+	devScope		*devScope_p;
+	channelScope		*channelScope_p;
+	IQDisplay		*IQDisplay_p;
 
 	int			currentTab;
 

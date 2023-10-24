@@ -151,7 +151,6 @@ bool	techData::isHidden	() {
 	return myFrame. isHidden ();
 }
 
-
 void	techData::show_frameErrors	(int e) {
 	QPalette p	= frameError_display -> palette();
 	if (100 - 4 * e < 80)

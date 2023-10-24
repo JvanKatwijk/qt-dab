@@ -150,7 +150,7 @@ char	manufac [256], product [256], serial [256];
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
 #elif __linux__
-    const char *libraryString	= "librtlsdr.so";
+	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
 #elif __APPLE__
     const char *libraryString	= "librtlsdr.dylib";
 #endif
@@ -312,8 +312,9 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
-	   (void)this -> rtlsdr_reset_buffer (theDevice);
+//	   (void)this -> rtlsdr_reset_buffer (theDevice);
 	   workerHandle	= new dll_driver (this);
+	   fprintf (stderr, "worker handler started\n");
 	}
 	isActive. store (true);
 	return true;
@@ -323,8 +324,9 @@ void	rtlsdrHandler::stopReader () {
 	if (workerHandle == nullptr)
 	   return;
 	isActive. store (false);
+	fprintf (stderr, "going to stop worker handle\n");
 	this    -> rtlsdr_cancel_async (theDevice);
-	this    -> rtlsdr_reset_buffer (theDevice);
+//	this    -> rtlsdr_reset_buffer (theDevice);
 	if (workerHandle != nullptr) {
 	   while (!workerHandle -> isFinished())
 	      usleep (100);
@@ -332,6 +334,7 @@ void	rtlsdrHandler::stopReader () {
 	   delete  workerHandle;
 	   workerHandle    = nullptr;
 	}
+	fprintf (stderr, "workerhandler stopped\n");
 	close_xmlDump ();
 	if (save_gainSettings)
 	   record_gainSettings	((int32_t)(this -> rtlsdr_get_center_freq (theDevice)) / MHz (1));

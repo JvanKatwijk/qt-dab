@@ -106,7 +106,6 @@
 #include	"time-table.h"
 
 #include	"device-exceptions.h"
-#include	"pauzeslide.h"
 #ifdef	__MINGW32__
 #include <windows.h>
 
@@ -268,6 +267,7 @@ uint8_t	dabBand;
 	globals. channelBuffer	= nullptr;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
+	globals. stdDevBuffer	= nullptr;
 
 	latency			=
 	                  dabSettings -> value ("latency", 5). toInt();
@@ -818,7 +818,9 @@ bool	RadioInterface::doStart	() {
 	}
 	else
 	   channelSelector -> setCurrentIndex (0);
-	my_ofdmHandler	= new ofdmHandler  (this, inputDevice, &globals);
+	my_ofdmHandler	= new ofdmHandler  (this,
+	                                    inputDevice, &globals,
+	                                    dabSettings);
 	channel. cleanChannel ();
 
 //	Some hidden buttons can be made visible now
@@ -1189,12 +1191,7 @@ const char *type;
 
 	QPixmap p;
 	p. loadFromData (data, type);
-	int w   = 400;
-	int h   = 2 * w / 3.5;
-	pictureLabel	-> setAlignment(Qt::AlignCenter);
-	pictureLabel ->
-	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
-	pictureLabel -> show ();
+	displaySlide (p);
 }
 //
 //	sendDatagram is triggered by the ip handler,
@@ -2232,7 +2229,7 @@ bool	tiiChange	= false;
 	                       distance, corner, power);
 }
 
-void	RadioInterface::showSpectrum	(int32_t amount) {
+void	RadioInterface::show_spectrum	(int32_t amount) {
 	if (!running. load())
 	   return;
 
@@ -2247,7 +2244,7 @@ void	RadioInterface::showIQ		(int amount) {
 	my_spectrumViewer. showIQ (amount);
 }
 
-void	RadioInterface::showQuality	(float q, 
+void	RadioInterface::show_quality	(float q, 
 	                                 float sco, float freqOffset) {
 	if (!running. load())
 	   return;
@@ -2273,7 +2270,7 @@ void	RadioInterface::show_clockError	(int e) {
 }
 //
 //	called from the phasesynchronizer
-void	RadioInterface::showCorrelation	(int amount, int marker,
+void	RadioInterface::show_correlation (int amount, int marker,
 	                                               QVector<int> v) {
 	if (!running. load())
 	   return;
@@ -4674,20 +4671,22 @@ bool onTop = false;
 	dabSettings -> setValue ("onTop", onTop ? 1 : 0);
 }
 
-void	RadioInterface::show_pauzeSlide () {
-QPixmap p;
-QByteArray theSlide;
-	
-	theSlide. resize (sizeof (pauzeSlide));
-	for (int i = 0; i < (int)(sizeof (pauzeSlide)); i ++)
-	   theSlide [i] = pauzeSlide [i];
-	p. loadFromData (theSlide, "png");
-	int w   = 400;
-	int h   = 2 * w / 3.5;
+void	RadioInterface::displaySlide	(const QPixmap &p) {
+int w   = 340;
+int h   = 2 * w / 3;
+	fprintf (stderr, "show the picture\n");
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
 	pictureLabel -> show ();
+}
+
+void	RadioInterface::show_pauzeSlide () {
+QPixmap p;
+QByteArray theSlide;
+
+	if (p. load (":res/pauze-slide.png", "png"))
+	   displaySlide (p);
 }
 
 void	RadioInterface::handle_portSelector () {
@@ -4796,5 +4795,10 @@ skinHandler theSkins;
         QString skinName = theSkins. skins. at (skinIndex);
         fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
         dabSettings -> setValue ("skin", skinName); 
+}
+//
+//	is not implemented for S5, just dummy
+void	RadioInterface::show_stdDev			(int a) {
+	(void) a;
 }
 

@@ -29,27 +29,32 @@
 
 	coordinates::coordinates	(QSettings *dabSettings) {
 	this	-> dabSettings = dabSettings;
+
 	latitudeText	= new QLabel (this);
 	latitudeText	-> setText ("latitude (decimal)");
 	QDoubleValidator *la = new QDoubleValidator (-90.0, 9.0, 5);
 	latitude	= new QLineEdit (this);	
 	latitude	-> setValidator (la);
+
 	longitudeText	= new QLabel (this);
 	longitudeText	-> setText ("longitude (decimal)");
 	QDoubleValidator *lo = new QDoubleValidator (-180.0, 180.0, 5);
 	longitude	= new QLineEdit (this);
 	longitude	-> setValidator (lo);
+
 	QFormLayout	*layout = new QFormLayout;
 	layout		-> addWidget (latitudeText);
 	layout		-> addWidget (latitude);
 	layout		-> addWidget (longitudeText);
 	layout		-> addWidget (longitude);
+
 	setWindowTitle ("select coordinates");
 	acceptButton	= new QPushButton ("accept");
 	QVBoxLayout	*total = new QVBoxLayout;
 	total		-> addItem (layout);
 	total		-> addWidget (acceptButton);
 	setLayout (total);
+
 	connect (latitude, SIGNAL (returnPressed ()),
 	         this, SLOT (set_latitude ()));
 	connect (longitude, SIGNAL (returnPressed ()),

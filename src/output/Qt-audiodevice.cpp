@@ -23,21 +23,22 @@
 #include	"Qt-audiodevice.h"
 //
 //	Create a "device"
-Qt_AudioDevice::Qt_AudioDevice (RingBuffer<float>* Buffer,
-	                        QObject* parent) : QIODevice(parent) {
-	this -> Buffer = Buffer;
+Qt_AudioDevice::Qt_AudioDevice (RingBuffer<float>* Buffer_i,
+	                        QObject* parent)
+	                               : QIODevice(parent) {
+	                               Buffer (Buffer_i) {
 }
 
-Qt_AudioDevice::~Qt_AudioDevice (void) {
+Qt_AudioDevice::~Qt_AudioDevice () {
 }
 
-void	Qt_AudioDevice::start (void) {
+void	Qt_AudioDevice::start () {
 	open(QIODevice::ReadOnly);
 }
 
-void	Qt_AudioDevice::stop (void) {
+void	Qt_AudioDevice::stop () {
 	Buffer -> FlushRingBuffer();
-	close();
+	close ();
 }
 //
 //	we always return "len" bytes

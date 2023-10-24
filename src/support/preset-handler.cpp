@@ -64,7 +64,8 @@ QDomElement root = the_presets. createElement ("preset_db");
 
 	for (int i = 1; i < cb -> count (); i ++) {
 	   QStringList list = cb -> itemText (i).
-	                        split (":", QString::SkipEmptyParts);
+	                        split (":", Qt::SkipEmptyParts);
+//	                        split (":", QString::SkipEmptyParts);
            if (list. length () != 2)
 	      continue;
            QString channel = list. at (0);

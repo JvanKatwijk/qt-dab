@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2011, 2012, 2013
+ *    Copyright (C) 2011 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #pragma once
 
@@ -36,7 +35,7 @@
 
 using namespace jrtplib;
 
-class rtpStreamer : public audioBase {
+class rtpStreamer : public AudioBase {
 Q_OBJECT
 public:
 			rtpStreamer (QString name, int32_t port,

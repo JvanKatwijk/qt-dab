@@ -37,8 +37,7 @@ CONFIG		+= fftw_fft
 TRANSLATIONS = ../i18n/de_DE.ts
 
 #
-#       For more parallel processing, uncomment the following
-#       defines
+#V5 will only compile when MSC_THREAD is enables
 DEFINES        += __MSC_THREAD__
 DEFINES        +=  __THREADED_BACKEND
 
@@ -48,7 +47,8 @@ DEFINES        +=  __THREADED_BACKEND
 #DEFINES	+= __EPG_TRACE__  
 
 DEPENDPATH += . \
-	      ./pauzeslide \
+	      ./forms-v5 \		
+	      ./forms-v5/iq-scope \		
 	      ./support \
 	      ../fft \
 	      ../eti-handler \
@@ -91,8 +91,8 @@ DEPENDPATH += . \
 	      
 
 INCLUDEPATH += . \
-	       ./pauzeslide/ \
 	       ./support \
+	       ./forms-v5/iq-scope \
 	      ../ \
 	      ../fft \
 	      ../eti-handler \
@@ -121,12 +121,12 @@ INCLUDEPATH += . \
 	      ../qt-devices \
 	      ../qt-devices/rawfiles-new \
 	      ../qt-devices/wavfiles-new \
-	      ../qt-devices/xml-filereader \
+	      ../qt-devices/xml-filereader 
 
 # Input
 HEADERS += ./radio.h \
-	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
+	   ./forms-v5/iq-scope/iqdisplay.h \
 	   ../ofdm-handler.h \
 	   ../fft/fft-handler.h \
 	   ../fft/fft-complex.h \
@@ -219,7 +219,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/smallqlistview.h \
 	   ../includes/support/buttons/smallspinbox.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
-	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../includes/scopes-qwt6/audio-display.h \
 	   ../viewers/spectrum-viewer/spectrum-viewer.h \
 	   ../viewers/spectrum-viewer/spectrum-scope.h \
@@ -255,6 +254,7 @@ FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+	   ./forms-v5/iq-scope/iqdisplay.cpp \
 	   ../fft/fft-handler.cpp \
 	   ../fft/fft-complex.cpp \
 	   ../ofdm-handler.cpp \
@@ -334,7 +334,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/verysmallpushbutton.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
-	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/spectrum-viewer/spectrum-scope.cpp \
@@ -406,7 +405,7 @@ CONFIG		+= qwt
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= dabstick-linux
+CONFIG		+= dabstick-generic
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
@@ -465,7 +464,7 @@ isEmpty(GITHASHSTRING) {
 ##	#CONFIG		+= extio
 #	CONFIG		+= airspy
 #	CONFIG		+= rtl_tcp
-#	CONFIG		+= dabstick
+#	CONFIG		+= dabstick-generic
 #	CONFIG		+= sdrplay-v2
 #	CONFIG		+= pluto-2
 #	CONFIG		+= sdrplay-v3
@@ -484,7 +483,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-win
+	CONFIG		+= dabstick-generic
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
@@ -527,30 +526,19 @@ CONFIG		+= faad
 
 DEFINES	+= __DUMP_SNR__		# for experiments only
 }
+
 #	devices
 #
 #	dabstick
-dabstick-win {
+dabstick-generic {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
-}
-
-dabstick-linux {
-	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
-	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-generic
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-generic
+	HEADERS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
 }
 
 #
@@ -827,7 +815,6 @@ tiiLib	{
 mapserver {
 	DEFINES		+= __HAVE_MAP_SERVER__
 	HEADERS		+= ../includes/support/http-handler.h
-	HEADERS		+= ../includes/support/converted_map.h
 	SOURCES		+= ../src/support/http-handler.cpp
 }
 

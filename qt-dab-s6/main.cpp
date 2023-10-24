@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2020
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -27,6 +27,7 @@
 #include	<QTranslator>
 #include	<QString>
 #include        <QDir>
+#include	<QFile>
 #include	<QDebug>
 #include        <unistd.h>
 #include        "dab-constants.h"
@@ -105,7 +106,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 QTranslator	theTranslator;
 	QCoreApplication::setOrganizationName ("Lazy Chair Computing");
 	QCoreApplication::setOrganizationDomain ("Lazy Chair Computing");
-	QCoreApplication::setApplicationName ("qt-dab");
+	QCoreApplication::setApplicationName ("Qt-DAB");
 	QCoreApplication::setApplicationVersion (QString (CURRENT_VERSION) + " Git: " + GITHASH);
 
 	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
@@ -165,8 +166,9 @@ QTranslator	theTranslator;
 	          skin == "Darkeum"   ? styleSheet_4 : "";
 
 	QApplication a (argc, argv);
-	if (skin != "")
+	if (skin != "") 
 	   a. setStyleSheet (skin);
+
 
 //	setting the language
 	QString locale = QLocale::system (). name ();

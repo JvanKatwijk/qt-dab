@@ -4,5 +4,7 @@
         <file>qt-dab-6.ico</file>
         <file>../AUTHORS</file>
         <file>../COPYING</file>
+	<file>../res/pauze-slide.png</file>
+	<file>../res/qt-map.html</file>
     </qresource>
 </RCC>

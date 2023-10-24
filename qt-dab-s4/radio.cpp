@@ -271,6 +271,7 @@ uint8_t	dabBand;
 	globals. channelBuffer	= nullptr;
 	globals. snrBuffer	= &snrBuffer;
 	globals. frameBuffer	= &frameBuffer;
+	globals. stdDevBuffer	= nullptr;
 
 	handling_channel. store (false);
 	latency			=
@@ -858,7 +859,9 @@ bool	RadioInterface::doStart	() {
 	else
 	   channelSelector -> setCurrentIndex (0);
 
-	my_ofdmHandler	= new ofdmHandler  (this, inputDevice, &globals);
+	my_ofdmHandler	= new ofdmHandler  (this,
+	                                    inputDevice, &globals,
+	                                    dabSettings);
 
 //	Some buttons should not be touched before we have a device
 	connectGUI ();
@@ -2290,7 +2293,7 @@ bool	tiiChange	= false;
                                distance, hoek, power);
 }
 
-void	RadioInterface::showSpectrum	(int32_t amount) {
+void	RadioInterface::show_spectrum	(int32_t amount) {
 	if (!running. load())
 	   return;
 
@@ -2305,7 +2308,7 @@ void	RadioInterface::showIQ		(int amount) {
 	my_spectrumViewer. showIQ (amount);
 }
 
-void	RadioInterface::showQuality	(float q, 
+void	RadioInterface::show_quality	(float q, 
 	                                 float timeOffset, float freqOffset) {
 	if (!running. load())
 	   return;
@@ -2332,7 +2335,7 @@ void	RadioInterface::show_clockError	(int e) {
 }
 //
 //	called from the phasesynchronizer
-void	RadioInterface::showCorrelation	(int amount, int marker,
+void	RadioInterface::show_correlation	(int amount, int marker,
 	                                               QVector<int> v) {
 	if (!running. load())
 	   return;
@@ -2969,7 +2972,7 @@ void	RadioInterface::handle_contentSelector (const QString &s) {
 
 
 void	RadioInterface::localSelect (const QString &s) {
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -2984,7 +2987,7 @@ void	RadioInterface::localSelect (const QString &s) {
 //	likely are less than 16 characters
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -4862,5 +4865,9 @@ skinHandler theSkins;
         fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
         dabSettings -> setValue ("skin", skinName); 
 }
-
+//
+//	This is not used here
+void	RadioInterface::show_stdDev		(int v) {
+	(void)v;
+}
 

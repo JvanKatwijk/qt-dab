@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.8.11 )
 set (objectName qt-dab-6.2)
-set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
 set(CMAKE_AUTORCC ON)
@@ -69,12 +69,8 @@ if(DEFINED SDRPLAY)
 	set(SDRPLAY true)
 endif ()
 
-if(DEFINED RTLSDR_LINUX)
-	set(RTLSDR_LINUX true)
-endif ()
-
-if(DEFINED RTLSDR_WIN)
-	set(RTLSDR_WIN true)
+if(DEFINED RTLSDR)
+	set(RTLSDR_GENERIC true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -155,23 +151,41 @@ endif ()
         list(APPEND extraLibs ${FFTW3F_LIBRARIES})
 
 
-        find_package(zlib)
-	if (NOT ZLIB_FOUND)
-            message(FATAL_ERROR "please install libz")
-        endif ()
-	list(APPEND extraLibs ${ZLIB_LIBRARY})
+	pkg_check_modules (ZLIB zlib)
+	if (ZLIB_FOUND)
+	   list  (APPEND extraLibs ${ZLIB_LDFLAGS})
+	else ()
+           find_package(zlib)
+	   if (NOT ZLIB_FOUND)
+               message(FATAL_ERROR "please install libz")
+           endif ()
+	   list(APPEND extraLibs ${ZLIB_LIBRARY})
+	endif ()
+	include_directories (${ZLIB_INCLUDE_DIRS})
 
-        find_package(LibSndFile)
-        if (NOT LIBSNDFILE_FOUND)
-            message(FATAL_ERROR "please install libsndfile")
-        endif ()
-        list(APPEND extraLibs ${LIBSNDFILE_LIBRARY})
+	pkg_check_modules (LIBSNDFILE sndfile)
+	if (LIBSNDFILE_FOUND)
+	   list (APPEND extraLibs ${LIBSNDFILE_LDFLAGS})
+	else ()
+           find_package(LibSndFile)
+           if (NOT LIBSNDFILE_FOUND)
+              message(FATAL_ERROR "please install libsndfile")
+           endif ()
+           list(APPEND extraLibs ${LIBSNDFILE_LIBRARY})
+	endif ()
+	include_directories (${LIBSNDFILE_LIBRARY})
 
-        find_package(LibSampleRate)
-        if (NOT LIBSAMPLERATE_FOUND)
-            message(FATAL_ERROR "please install libsamplerate")
-        endif ()
-        list(APPEND extraLibs ${LIBSAMPLERATE_LIBRARY})
+	pkg_check_modules (LIBSAMPLERATE samplerate)
+	if (LIBSAMPLERATE_FOUND)
+	   list (APPEND extraLibs ${LIBSAMPLERATE_LDFLAGS})
+	else ()
+           find_package(LibSampleRate)
+           if (NOT LIBSAMPLERATE_FOUND)
+              message(FATAL_ERROR "please install libsamplerate")
+           endif ()
+           list(APPEND extraLibs ${LIBSAMPLERATE_LIBRARY})
+	endif ()
+	include_directories (${LIBSAMPLERATE_INCLUDE_DIRS})
 
 	find_library (PTHREADS pthread)
 	if (NOT(PTHREADS))
@@ -801,67 +815,34 @@ endif ()
 	   add_definitions (-DHAVE_LIME)
 	endif (LIMESDR)
 
-	if (RTLSDR_LINUX)
+	if (RTLSDR_GENERIC)
 	   set (${objectName}_UIS
                 ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+                ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
            )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/rtlsdr-handler-linux/
+	        ../qt-devices/rtlsdr-handler-generic/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr_export.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	   )
-
-	   add_definitions (-DHAVE_RTLSDR)
-	endif()
-
-	if (RTLSDR_WIN)
-	   set (${objectName}_UIS
-                ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-           )
-
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
-	   )
-
-	   include_directories (
-	        ../qt-devices/rtlsdr-handler-win/
-	   )
-
-	   set (${objectName}_HDRS
-	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-win/rtl-sdr_export.h
-	   )
-
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)

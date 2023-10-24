@@ -44,39 +44,39 @@ class	RadioInterface;
 class	sampleReader : public QObject {
 Q_OBJECT
 public:
-			sampleReader	(RadioInterface *mr,
+	      	sampleReader	(RadioInterface *mr,
 	                         	deviceHandler *theRig,
 	                         	RingBuffer<Complex> *spectrumBuffer = nullptr);
 
-			~sampleReader();
-		void	setRunning	(bool b);
-		float	get_sLevel	();
-		Complex getSample	(int32_t);
-	        void	getSamples	(std::vector<Complex> &v,
+	      	~sampleReader();
+	      void	setRunning	(bool b);
+	      float	get_sLevel	();
+	      Complex	getSample	(float);
+	      void	getSamples	(std::vector<Complex> &v,
 	                                 int index,
-	                                 int32_t n, int32_t phase);
-	        void	startDumping	(SNDFILE *);
-	        void	stopDumping();
+	                                 int32_t n, int32_t phase, bool saving);
+	      void	startDumping	(SNDFILE *);
+	      void	stopDumping();
 private:
-		RadioInterface	*myRadioInterface;
-		deviceHandler	*theRig;
-		RingBuffer<Complex> *spectrumBuffer;
-		std::vector<Complex> localBuffer;
-		int32_t		localCounter;
-		int32_t		bufferSize;
-		int32_t		currentPhase;
-		std::atomic<bool>	running;
-		int32_t		bufferContent;
-		float		sLevel;
-		int32_t		sampleCount;
-	        int32_t		corrector;
-		bool		dumping;
-		int16_t         dumpIndex;
-		int16_t         dumpScale;
-		int16_t         dumpBuffer [DUMPSIZE];
-		std::atomic<SNDFILE *>	dumpfilePointer;
+	      RadioInterface	*myRadioInterface;
+	      deviceHandler	*theRig;
+	      RingBuffer<Complex> *spectrumBuffer;
+	      std::vector<Complex> localBuffer;
+	      int32_t		localCounter;
+	      int32_t		bufferSize;
+	      int32_t		currentPhase;
+	      std::atomic<bool>	running;
+	      int32_t		bufferContent;
+	      float		sLevel;
+	      int32_t		sampleCount;
+	      int32_t		corrector;
+	      bool		dumping;
+	      int16_t         dumpIndex;
+	      int16_t         dumpScale;
+	      int16_t         dumpBuffer [DUMPSIZE];
+	      std::atomic<SNDFILE *>	dumpfilePointer;
 signals:
-		void		show_Spectrum (int);
-	        void		show_Corrector (int);
+	      void		show_spectrum (int);
+	      void		show_corrector (int);
 };
 

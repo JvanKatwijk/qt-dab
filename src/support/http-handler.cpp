@@ -21,6 +21,10 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include	<QFile>
+#include	<QTextStream>
+#include	<QDataStream>
+#include	<QByteArray>
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<unistd.h>
@@ -406,38 +410,53 @@ int	cc;
 int teller	= 0;
 int params	= 0;
 
-	bodySize	= sizeof (qt_map);
-	body		=  (char *)malloc (bodySize + 40);
-	while (qt_map [index] != 0) {
-	   cc =  (char)(qt_map [index]);
-	   if (cc == '$') {
-	      if (params == 0) {
-	         for (int i = 0; latitude. c_str () [i] != 0; i ++)
-	            if (latitude. c_str () [i] == ',')
-	               body [teller ++] = '.';
-	            else
-	               body [teller ++] = latitude. c_str () [i];
-	         params ++;
-	      }
-	      else
-	      if (params == 1) {
-	         for (int i = 0; longitude. c_str () [i] != 0; i ++)
-	            if (longitude. c_str () [i] == ',')
-	               body [teller ++] = '.';
-	            else
-	               body [teller ++] = longitude. c_str () [i];
-	         params ++;
+
+	// read map file from resource file
+	QFile file (":res/qt-map.html");
+	if (file. open (QFile::ReadOnly)) {
+	   QByteArray record_data (1, 0);
+	   QDataStream in (&file);
+	   bodySize	= file. size ();
+	   fprintf (stderr, "bodysize %d\n", bodySize);
+	   body		=  (char *)malloc (bodySize + 40);
+	   while (!in. atEnd ()) {
+	      in . readRawData (record_data. data (), 1);	
+	      cc = (*record_data. constData ());
+	      if (cc == '$') {
+	         if (params == 0) {
+	            for (int i = 0; latitude. c_str () [i] != 0; i ++)
+	               if (latitude. c_str () [i] == ',')
+	                  body [teller ++] = '.';
+	               else
+	                  body [teller ++] = latitude. c_str () [i];
+	            params ++;
+	         }
+	         else
+	         if (params == 1) {
+	            for (int i = 0; longitude. c_str () [i] != 0; i ++)
+	               if (longitude. c_str () [i] == ',')
+	                  body [teller ++] = '.';
+	               else
+	                  body [teller ++] = longitude. c_str () [i];
+	            params ++;
+	         }
+	         else
+	            body [teller ++] = (char)cc;
 	      }
 	      else
 	         body [teller ++] = (char)cc;
+	      index ++;
 	   }
-	   else
-	      body [teller ++] = (char)cc;
-	   index ++;
 	}
+	else {
+	   fprintf (stderr, "cannot open file\n");
+	   return "";
+	}
+
 	body [teller ++] = 0;
 	res	= std::string (body);
 //	fprintf (stderr, "The map :\n%s\n", res. c_str ());
+	file. close ();
 	free (body);
 	return res;
 }

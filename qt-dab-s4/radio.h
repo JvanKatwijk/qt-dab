@@ -290,6 +290,7 @@ private:
                                                                  QString);
 	void			show_MOTlabel		(QByteArray &, int,
                                                          QString, int, bool);
+
 	void			stop_muting		();
 	struct {
 	   float latitude;
@@ -360,11 +361,11 @@ public slots:
 	void			No_Signal_Found		();
 	void			show_motHandling	(bool);
 	void			setSyncLost		();
-	void			showCorrelation		(int, int, 
+	void			show_correlation	(int, int, 
 	                                                      QVector<int>);
-	void			showSpectrum		(int);
+	void			show_spectrum		(int);
 	void			showIQ			(int);
-	void			showQuality		(float, float, float);
+	void			show_quality		(float, float, float);
 	void			show_rsCorrections	(int, int);
 	void			show_tii		(int, int);
 	void			show_tii_spectrum	();
@@ -389,6 +390,8 @@ public slots:
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
+
+	void			show_stdDev		(int);
 
 
 //	Somehow, these must be connected to the GUI

@@ -5,7 +5,7 @@
 ######################################################################
 
 TEMPLATE	= app
-QT		+= widgets xml
+QT		+= widgets xml 
 #CONFIG		+= console
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
@@ -47,7 +47,6 @@ DEFINES        +=  __THREADED_BACKEND
 #DEFINES	+= __EPG_TRACE__  
 
 DEPENDPATH += . \
-	      ./pauzeslide \
 	      ./support \
 	      ./forms-v6/new-display \
 	      ./forms-v6/new-display/scopes \
@@ -89,7 +88,6 @@ DEPENDPATH += . \
 	      
 
 INCLUDEPATH += . \
-	       ./pauzeslide/ \
 	       ./support \
 	      ./forms-v6/new-display \
 	      ./forms-v6/new-display/scopes \
@@ -122,7 +120,6 @@ INCLUDEPATH += . \
 
 # Input
 HEADERS += ./radio.h \
-	   ./pauzeslide/pauzeslide.h \
 	   ./support/techdata.h \
 	   ./forms-v6/new-display/display-widget.h \
 	   ./forms-v6/new-display/scopes/spectrum-scope.h \
@@ -406,7 +403,7 @@ CONFIG		+= qwt
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= dabstick-linux
+CONFIG		+= dabstick-generic
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
@@ -419,8 +416,8 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -484,7 +481,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-win
+	CONFIG		+= dabstick-generic
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
@@ -526,30 +523,18 @@ CONFIG		+= faad
 
 DEFINES	+= __DUMP_SNR__		# for experiments only
 }
-#	devices
-#
-#	dabstick
-dabstick-win {
-	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
-	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
-}
 
-dabstick-linux {
+#	dabstick
+
+dabstick-generic {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
-	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-generic
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-generic
+	HEADERS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
 }
 
 #
@@ -731,7 +716,7 @@ tcp-streamer	{
 
 qt-audio	{
 	DEFINES		+= QT_AUDIO
-	QT		+= multimedia
+	QT		+= multimedia multimediawidgets
 	HEADERS		+= ../includes/output/Qt-audio.h \
 	                   ../includes/output/Qt-audiodevice.h
 	SOURCES		+= ../src/output/Qt-audio.cpp \

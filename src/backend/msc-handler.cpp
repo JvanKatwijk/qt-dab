@@ -31,6 +31,10 @@
 //	Interface program for processing the MSC.
 //	The dabProcessor assumes the existence of an msc-handler, whether
 //	a service is selected or not. 
+//
+//	For "slower" computers (i.e. an RPI 3), the ofdm decoding is
+//	split up, the FIC blocks are handled in the thread of the
+//	ofdmHandler, the "payload" blocks in a separate thread here
 
 #define	CUSize	(4 * 16)
 static int cifTable [] = {18, 72, 0, 36};
@@ -39,16 +43,16 @@ static int cifTable [] = {18, 72, 0, 36};
 //
 		mscHandler::mscHandler	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
-	                                 RingBuffer<uint8_t> *frameBuffer):
+	                                 RingBuffer<uint8_t> *frameBuffer_i):
 	                                       params (dabMode),
 	                                       myMapper (dabMode),
-	                                       fft (params. get_T_u (), false)
+	                                       myRadioInterface (mr),
+	                                       frameBuffer (frameBuffer_i)
 #ifdef	__MSC_THREAD__
+	                                       ,fft (params. get_T_u (), false)
 	                                       ,bufferSpace (params. get_L())
 #endif		                            
 	                                                                {
-	myRadioInterface	= mr;
-	this	-> frameBuffer	= frameBuffer;
 	cifVector. resize (55296);
 	BitsperBlock		= 2 * params. get_carriers();
 	ibits. resize (BitsperBlock);
@@ -114,6 +118,7 @@ void	mscHandler::process_Msc	(Complex *b, int blkno) {
 void    mscHandler::run () {
 int	currentBlock	= 0;
 Complex fft_buffer [params. get_T_u()];
+Complex conjVector [params. get_T_u ()];
 
 	if (running. load ()) {
 	   fprintf (stderr, "already running\n");
@@ -133,6 +138,7 @@ Complex fft_buffer [params. get_T_u()];
 //	"our" msc blocks start with blkno 4
 	      fft. fft (fft_buffer);
               if (currentBlock >= 4) {
+	         float max	= 0;
                  for (int i = 0; i < params. get_carriers(); i ++) {
                     int16_t      index   = myMapper. mapIn (i);
                     if (index < 0)
@@ -140,12 +146,22 @@ Complex fft_buffer [params. get_T_u()];
 
                     Complex  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
-                    float ab1    = jan_abs (r1);
+	            conjVector [index] = r1;
+	            if (abs (real (r1)) > max)
+	               max = abs (real (r1));
+	            if (abs (imag (r1)) > max)
+	              max = abs (imag (r1));
+	         }
 //      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
 //      we make the bits into softbits in the range -127 .. 127
-                    ibits [i]            =  - (real (r1) * 255) / ab1;
-                    ibits [params. get_carriers() + i]
-	                                 =  - (imag (r1) * 255) / ab1;
+                 for (int i = 0; i < params. get_carriers(); i ++) {
+                    int16_t      index   = myMapper. mapIn (i);
+                    if (index < 0)
+                       index += params. get_T_u();
+	            Complex r1		= conjVector [index];
+                    ibits [i]	=  - (real (r1) * 127) / max;
+                    ibits [params. get_carriers() + i] =
+	                                - (imag (r1) * 127) / max;
                  }
 
 	         process_mscBlock (ibits, currentBlock);

@@ -31,10 +31,10 @@ class	QSettings;
 
 class	coordinates: public QDialog {
 Q_OBJECT
-	public:
+public:
 		coordinates	(QSettings *);
 		~coordinates	();
-	private:
+private:
 	QSettings	*dabSettings;
 	QLabel		*latitudeText;
         QLineEdit	*latitude;

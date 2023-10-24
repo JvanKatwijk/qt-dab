@@ -49,14 +49,15 @@ float	Phi_k;
 	this	-> T_g		= params. get_T_g();
 	this	-> carriers	= params. get_carriers();
 
-	refTable.		resize (T_u);
-
-	framesperSecond		= 2048000 / params. get_T_F();
+	framesperSecond		= INPUT_RATE / params. get_T_F();
 	displayCounter		= 0;
 	
+	refTable.		resize (T_u);
 	for (int i = 0; i < T_u; i ++)
 	   refTable [i] = Complex (0, 0);
-
+//
+//	generate the refence values using the format we have after
+//	doing an FFT
 	for (int i = 1; i <= params. get_carriers() / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   refTable [i] = Complex (cos (Phi_k), sin (Phi_k));
@@ -64,8 +65,8 @@ float	Phi_k;
 	   refTable [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
 	}
 
-	connect (this, SIGNAL (showCorrelation (int, int, QVector<int>)),
-	         mr,   SLOT   (showCorrelation (int, int, QVector<int>)));
+	connect (this, SIGNAL (show_correlation (int, int, QVector<int>)),
+	         mr,   SLOT   (show_correlation (int, int, QVector<int>)));
 }
 
 	correlator::~correlator () {
@@ -152,7 +153,7 @@ const	int SEARCH_OFFSET = 250;
 	if (response != nullptr) {
 	   if (++displayCounter > framesperSecond / 2) {
 	      response	-> putDataIntoBuffer (lbuf, T_u / 2);
-	      showCorrelation (T_u / 2, T_g, indices);
+	      show_correlation (T_u / 2, T_g, indices);
 	      displayCounter	= 0;
 	   }
 	}

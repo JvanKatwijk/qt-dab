@@ -27,6 +27,7 @@
 #include	<QThread>
 #include	<QWaitCondition>
 #include	<QSemaphore>
+#include	"fft-handler.h"
 #endif
 #include	<QMutex>
 #include	<atomic>
@@ -40,7 +41,7 @@
 #include        "phasetable.h"
 #include        "freq-interleaver.h"
 
-#include	"fft-handler.h"
+
 class	RadioInterface;
 class	Backend;
 
@@ -67,16 +68,17 @@ public:
 	void		stop_service		(int, int);
 	void		reset_Buffers		();
 private:
+
 	dabParams	params;
         interLeaver     myMapper;
-	fftHandler	fft;
+	RadioInterface		*myRadioInterface;
+	RingBuffer<uint8_t>	*frameBuffer;
 #ifdef	__MSC_THREAD__
+	fftHandler	fft;
         QSemaphore      bufferSpace;
 #endif
 
-	RadioInterface		*myRadioInterface;
 	RingBuffer<uint8_t>	*dataBuffer;
-	RingBuffer<uint8_t>	*frameBuffer;
 
 	QMutex		locker;
 	bool		audioService;

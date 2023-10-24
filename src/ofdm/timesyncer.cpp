@@ -41,7 +41,7 @@ int	i;
 
 	syncBufferIndex = 0;
 	for (i = 0; i < C_LEVEL_SIZE; i ++) {
-	   Complex sample        = myReader -> getSample (0);
+	   Complex sample 	       = myReader -> getSample (0);
 	   envBuffer [syncBufferIndex]       = jan_abs (sample);
 	   cLevel                            += envBuffer [syncBufferIndex];
 	   syncBufferIndex ++;

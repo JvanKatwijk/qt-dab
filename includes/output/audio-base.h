@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C)  2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -33,7 +33,7 @@
 #include	"ringbuffer.h"
 
 
-class	audioBase: public QObject {
+	class	audioBase: public QObject {
 Q_OBJECT
 public:
 			audioBase		();

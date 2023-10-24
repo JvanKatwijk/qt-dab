@@ -51,6 +51,8 @@
 	                                        backgroundFlag,
 	                                        dump);
 	   }
+	   else
+	      theProcessor = new frameProcessor ();	// should not happen
 	}
 	else
 	if (d -> type == PACKET_SERVICE)

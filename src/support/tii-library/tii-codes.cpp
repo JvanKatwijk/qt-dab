@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,12 +23,12 @@
 #include        <QDir>
 #include        <QString>
 #include        <QStringList>
+#include        <QSettings>
+#include        <QMessageBox>
 #include        <math.h>
 #include        "dab-constants.h"
 #include        "tii-codes.h"
 #include        "ITU_Region_1.h"
-#include        <QSettings>
-#include        <QMessageBox>
 
 #define	SEPARATOR	';'
 #define	COUNTRY		1
@@ -48,24 +48,27 @@
 #define GETPROCADDRESS  dlsym
 #endif
 
+//
+//	The basic idea is to allow always access to a predefined database,
+//	if, however, the libtii is loaded then - through that lib -
+//	additional functionality is there, i.e. the ability to load
+//	a fresh instance of the database
+//	This is pretty dumb, nut access to the provider of the database
+//	is - and remains - restricted
+//
+//	Note that the name of the database  is maintained in the
+//	ini file, and there is a reasonable default
+
 	tiiHandler::tiiHandler	() {
-	Handle		= dlopen ("libtii-lib.so", RTLD_NOW | RTLD_GLOBAL);
-	fprintf (stderr, "%s\n", dlerror ());
-	if (Handle == nullptr)
-	   Handle	= dlopen ("/usr/local/lib/libtii-lib.so",
-	                                           RTLD_NOW | RTLD_GLOBAL);
-	if (Handle == nullptr)
-	   Handle	= dlopen ("/usr/local/lib/tii-lib.so",
-	                                           RTLD_NOW | RTLD_GLOBAL);
-	fprintf (stderr, "%s\n", dlerror ());
-	if (Handle == nullptr)
-	   fprintf (stderr, "Library not loaded\n");
-//	set the defaults
-	init_tii_L	= nullptr;
-	close_tii_L	= nullptr;
-	loadTable_L	= nullptr;
-	loadFunctions	();
-	if (init_tii_L != nullptr)
+//	set defaults for functions in the tiiLibrary:
+	this	-> init_tii_L	= nullptr;
+	this	-> close_tii_L	= nullptr;
+	this	-> loadTable_L	= nullptr;
+//
+//	try to get a handle
+	Handle 		= getLibraryHandle ();
+//	check whether or not there IS a library
+	if ((Handle != nullptr) && loadFunctions ()) 
 	   handler	= init_tii_L ();
 	else
 	   handler	= nullptr;
@@ -75,12 +78,15 @@
 	if (close_tii_L != nullptr)
 	   close_tii_L (handler);
 }
-
+//
+//	Note that the tii database is available to anyone
 bool	tiiHandler::tiiFile         (const QString &s) {
 bool	res = false;
+
 	if (s == "") {
 	   return false;
 	}
+
 	blackList. resize (0);
 	cache. resize (0);
 	FILE	*f	= fopen (s. toUtf8 (). data (), "r+b");
@@ -92,13 +98,82 @@ bool	res = false;
 	}
 	return res;
 }
+//
+void	tiiHandler::readFile (FILE *f) {
+int	count = 0; 
+char	buffer [1024];
+std::vector<QString> columnVector;
 
+	uint8_t shift	= fgetc (f);
+	while (eread  (buffer, 1024, f, shift) != nullptr) {
+	   cacheElement ed;
+	   if (feof (f))
+	      break;
+	   columnVector. resize (0);
+	   int columns = readColumns (columnVector, buffer, NR_COLUMNS);
+	   if (columns < NR_COLUMNS)
+	      continue;
+	   ed. country		= columnVector [COUNTRY]. trimmed  ();
+	   ed. Eid		= get_Eid (columnVector [EID]);
+	   ed. mainId		= get_mainId (columnVector [TII]);
+	   ed. subId		= get_subId (columnVector [TII]);
+	   ed. channel		= columnVector [CHANNEL]. trimmed ();
+	   ed. ensemble 	= columnVector [LABEL]. trimmed ();
+	   ed. transmitterName	= columnVector [LOCATION];
+	   ed. latitude		= convert (columnVector [LATITUDE]);
+	   ed. longitude	= convert (columnVector [LONGITUDE]);
+	   ed. power		= convert (columnVector [POWER]);
+	   if (count >= (int)(cache. size ()))
+	      cache. resize (cache. size () + 500);
+	   cache. at (count) = ed;
+	   count ++;
+	}
+	cache. resize (count);
+}
+
+int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
+int charp	= 0;
+char	tb [256];
+int elementCount = 0;
+QString element;
+	v. resize (0);
+	while ((*b != 0) && (*b != '\n')) {
+	   if (*b == SEPARATOR) {
+	      tb [charp] = 0;
+	      QString ss = QString::fromUtf8 (tb);
+	      v. push_back (ss);
+	      charp = 0;
+	      elementCount ++;
+	      if (elementCount >= N)
+	         return N;
+	   }
+	   else
+	      tb [charp ++] = *b;
+	   b ++;
+	}
+	return elementCount;
+}
+
+char    *tiiHandler::eread (char * buffer, int amount, FILE *f, uint8_t shift) {
+char    *bufferP;
+	if (fgets (buffer, amount, f) == nullptr)
+	   return nullptr;
+	bufferP = buffer;
+	while (*bufferP != 0) {
+	   if (shift != 0xAA)
+	      *bufferP -= shift;
+	   else
+	      *bufferP ^= 0xAA;
+	   bufferP ++;
+	}
+	*bufferP = 0;
+	return buffer;
+}
+
+//	and extract the data from the database
 QString	tiiHandler::get_transmitterName     (const QString & channel,
 	                                     uint16_t Eid,
 	                                     uint8_t mainId, uint8_t subId) {
-//	fprintf (stderr, "looking for %s %X %d %d\n",
-//	                           channel. toLatin1 (). data (),
-//	                           Eid, mainId, subId);
 	for (int i = 0; i < (int)(cache. size ()); i ++) {
 	   if (((channel == "any") || (channel == cache [i]. channel)) &&
 	       (cache [i]. Eid == Eid) && (cache [i]. mainId == mainId) &&
@@ -280,97 +355,57 @@ uint16_t res;
 	return res % 100;
 }
 
-void	tiiHandler::readFile (FILE *f) {
-int	count = 0; 
-char	buffer [1024];
-std::vector<QString> columnVector;
-
-	uint8_t shift	= fgetc (f);
-	while (eread  (buffer, 1024, f, shift) != nullptr) {
-	   cacheElement ed;
-	   if (feof (f))
-	      break;
-	   columnVector. resize (0);
-	   int columns = readColumns (columnVector, buffer, NR_COLUMNS);
-	   if (columns < NR_COLUMNS)
-	      continue;
-	   ed. country		= columnVector [COUNTRY]. trimmed  ();
-	   ed. Eid		= get_Eid (columnVector [EID]);
-	   ed. mainId		= get_mainId (columnVector [TII]);
-	   ed. subId		= get_subId (columnVector [TII]);
-	   ed. channel		= columnVector [CHANNEL]. trimmed ();
-	   ed. ensemble 	= columnVector [LABEL]. trimmed ();
-	   ed. transmitterName	= columnVector [LOCATION];
-	   ed. latitude		= convert (columnVector [LATITUDE]);
-	   ed. longitude	= convert (columnVector [LONGITUDE]);
-	   ed. power		= convert (columnVector [POWER]);
-	   if (count >= (int)(cache. size ()))
-	      cache. resize (cache. size () + 500);
-	   cache. at (count) = ed;
-	   count ++;
-	}
-	cache. resize (count);
-}
-
-int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
-int charp	= 0;
-char	tb [256];
-int elementCount = 0;
-QString element;
-	v. resize (0);
-	while ((*b != 0) && (*b != '\n')) {
-	   if (*b == SEPARATOR) {
-	      tb [charp] = 0;
-	      QString ss = QString::fromUtf8 (tb);
-	      v. push_back (ss);
-	      charp = 0;
-	      elementCount ++;
-	      if (elementCount >= N)
-	         return N;
-	   }
-	   else
-	      tb [charp ++] = *b;
-	   b ++;
-	}
-	return elementCount;
-}
-
-char    *tiiHandler::eread (char * buffer, int amount, FILE *f, uint8_t shift) {
-char    *bufferP;
-	if (fgets (buffer, amount, f) == nullptr)
-	   return nullptr;
-	bufferP = buffer;
-	while (*bufferP != 0) {
-	   if (shift != 0xAA)
-	      *bufferP -= shift;
-	   else
-	      *bufferP ^= 0xAA;
-	   bufferP ++;
-	}
-	*bufferP = 0;
-	return buffer;
-}
-
 bool	tiiHandler::valid		() {
 	return handler != nullptr;
+}
+
+#ifndef	__MINGW32__
+#define	LIB_NAME	"libtii-lib.so"
+#else
+#define	LIB_NAME	"libtii-lib.dll"
+#endif
+
+HINSTANCE	tiiHandler::getLibraryHandle	() {
+HINSTANCE	theHandle	= nullptr;
+
+	theHandle	= (HINSTANCE)dlopen (LIB_NAME,
+	                                       RTLD_NOW | RTLD_GLOBAL);
+	if (theHandle != nullptr)
+	   return theHandle;
+	QString pathName	= QDir::homePath () + "/" + LIB_NAME;
+	theHandle	= (HINSTANCE) dlopen (pathName. toLatin1 (). data (),
+	                                       RTLD_NOW | RTLD_GLOBAL);
+	return theHandle;
 }
 
 bool	tiiHandler::loadFunctions	() {
 	init_tii_L	= (init_tii_P)
 	                    GETPROCADDRESS (this -> Handle,
 	                                    "init_tii_L");
-	if (init_tii_L == nullptr)
+	if (init_tii_L == nullptr) {
 	   fprintf (stderr, "init_tii_L not loaded\n");
+	   return false;
+	}
 
 	close_tii_L	= (close_tii_P)
 	                    GETPROCADDRESS (this -> Handle,
 	                                    "close_tii_L");
+	if (close_tii_L == nullptr) {
+	   fprintf (stderr, "close_tii_L not loaded\n");
+	   return false;
+	}
+
 	loadTable_L	= (loadTable_P)
 	                    GETPROCADDRESS (this -> Handle,
 	                                    "loadTableL");
+	if (loadTable_L == nullptr) {
+	   fprintf (stderr, "loadTable_L not loaded\n");
+	   return false;
+	}
 	return true;
 }
-
+//
+//	This one will renew the database, if the tiiLib is there
 void	tiiHandler::loadTable		(const QString &tf) {
 	if (loadTable_L != nullptr)
 	   loadTable_L (handler, tf. toStdString ());

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2018, 2019, 2020
+ *    Copyright (C) 2018 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -57,9 +57,11 @@
 	         myRadioInterface, SLOT (stopAnnouncement (const QString &, int)));
 	connect (this, SIGNAL (nrServices (int)),
 	         myRadioInterface, SLOT (nrServices (int)));
-
+//
+//	Note that they may change "roles", 
 	currentConfig	= new dabConfig();
 	nextConfig	= new dabConfig();
+
 	ensemble	= new ensembleDescriptor();
 	CIFcount	= 0;
 	mjd		= 0;

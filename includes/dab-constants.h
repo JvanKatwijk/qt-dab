@@ -51,6 +51,8 @@
 typedef	void	*HINSTANCE;
 #endif
 
+#define	PHASE_DECODER	0
+#define	AMPL_DECODER	1
 
 #ifdef	USE_DOUBLE	
 typedef	std::complex<double> Complex;
@@ -85,6 +87,8 @@ using namespace std;
 
 #define		INPUT_RATE	2048000
 #define		BANDWIDTH	1536000
+
+#define		M_PER_SAMPLE	 (299792458 / INPUT_RATE)
 
 #define		MAP_RESET	0
 #define		MAP_FRAME	1

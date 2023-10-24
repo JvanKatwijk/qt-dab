@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013, 2014, 2015, 2016, 2017
+ *    Copyright (C) 2013 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -133,6 +133,7 @@ public:
 	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
+	int		distance;
 
 	void	cleanChannel () {
 	realChannel	= true;
@@ -148,6 +149,7 @@ public:
 	has_ecc		= false;
 	snr		= 0;
 	transmitters. resize (0);
+	distance	= -1;
 	currentService. frameDumper	= nullptr;
 	nextService. frameDumper	= nullptr;
 }
@@ -202,8 +204,8 @@ private:
 	QString			theFont;
 	int			fontSize;
 	int			fmFrequency;
-	contentTable		*my_contentTable;
-	contentTable		*my_scanTable;
+	contentTable		*contentTable_p;
+	contentTable		*scanTable_p;
 	FILE			*logFile;
 	channelDescriptor	channel;
 	int			maxDistance;
@@ -213,25 +215,26 @@ private:
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
-	techData		*theTechWindow;
+	techData		*techWindow_p;
 	Ui_configWidget		configWidget;
-	QSettings		*dabSettings;
+	QSettings		*dabSettings_p;
 	int16_t			tii_delay;
 	int32_t			dataPort;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
 	std::atomic<bool>	scanning;
-	deviceHandler		*inputDevice;
+	deviceHandler		*inputDevice_p;
+	int			detector;
 #ifdef	HAVE_PLUTO_RXTX
-	dabStreamer		*streamerOut;
+	dabStreamer		*streamerOut_p;
 #endif
 	ofdmHandler		*my_ofdmHandler;
-	audioBase		*soundOut;
+	audioBase		*soundOut_p;
 #ifdef	DATA_STREAMER
-	tcpServer		*dataStreamer;
+	tcpServer		*dataStreamer_p;
 #endif
 #ifdef	CLOCK_STREAMER
-	tcpServer		*clockStreamer;
+	tcpServer		*clockStreamer_p;
 #endif
 	CEPGDecoder		epgHandler;
 	epgDecoder		epgProcessor;
@@ -248,9 +251,9 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
-	SNDFILE                 *rawDumper;
-	SNDFILE                 *audioDumper;
-	FILE			*scanDumpFile;
+	SNDFILE                 *rawDumper_p;
+	SNDFILE                 *audioDumper_p;
+	FILE			*scanDumper_p;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
@@ -262,6 +265,7 @@ private:
 	                                  serviceId, int);
 
 	void			show_pauzeSlide	();
+	void			displaySlide	(const QPixmap &);
 	QTimer			displayTimer;
 	QTimer			channelTimer;
 	QTimer			presetTimer;
@@ -358,7 +362,7 @@ signals:
 
 public slots:
 
-	void			showQuality		(float, float, float);
+	void			show_quality		(float, float, float);
 	void			show_rsCorrections	(int, int);
 	void			show_clockError		(int);
 
@@ -482,7 +486,7 @@ private slots:
 	void			color_portSelector	();
 //
 //	for the display widget we have access functions
-	void			showSpectrum		(int);
+	void			show_spectrum		(int);
 	void			show_tii		(int, int);
 
 	void			show_tii_spectrum       ();
@@ -490,7 +494,7 @@ private slots:
 	void			show_snr		(float);
 	void			show_null		(int);
 	void			showIQ			(int);
-	void			showCorrelation		(int, int,
+	void			show_correlation	(int, int,
 	                                                 QVector<int> );
 	void			show_stdDev		(int);
 

@@ -29,7 +29,6 @@
 #include	"rscodec.h"
 #include	<cassert>
 #include	<cstring>
-#include	<cstdio>
 //
 //	we know that the size of the codeword is 255,
 //	while the size of the parity bytes is 10

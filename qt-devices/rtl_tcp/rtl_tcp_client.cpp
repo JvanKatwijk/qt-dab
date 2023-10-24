@@ -63,10 +63,10 @@
 	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
 //
-	connect (tcp_connect, SIGNAL (clicked (void)),
-	         this, SLOT (wantConnect (void)));
-	connect (tcp_disconnect, SIGNAL (clicked (void)),
-	         this, SLOT (setDisconnect (void)));
+	connect (tcp_connect, SIGNAL (clicked ()),
+	         this, SLOT (wantConnect ()));
+	connect (tcp_disconnect, SIGNAL (clicked ()),
+	         this, SLOT (setDisconnect ()));
 	connect (tcp_gain, SIGNAL (valueChanged (int)),
 	         this, SLOT (sendGain (int)));
 	connect (tcp_ppm, SIGNAL (valueChanged (int)),
@@ -102,7 +102,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 	if (connected)
 	   return;
 	// use the first non-localhost IPv4 address
-	for (i = 0; i < ipAddressesList.size(); ++i) {
+	for (i = 0; i < ipAddressesList.size (); ++i) {
 	   if (ipAddressesList.at (i) != QHostAddress::LocalHost &&
 	      ipAddressesList. at (i). toIPv4Address()) {
 	      ipAddress = ipAddressesList. at(i). toString();

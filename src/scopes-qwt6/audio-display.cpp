@@ -27,16 +27,16 @@
 #include	"color-selector.h"
 
 	audioDisplay::audioDisplay  (RadioInterface	*mr,
-	                             QwtPlot		*plotGrid,
-	                             QSettings		*dabSettings):
+	                             QwtPlot		*plotGrid_i,
+	                             QSettings		*dabSettings_i):
+	                              myRadioInterface (mr),
+	                              dabSettings (dabSettings_i),
+	                              plotGrid (plotGrid_i),
 	                              spectrumCurve (""),
 	                              fft (2048, false) {
+
 int16_t	i;
 QString	colorString;
-
-	this	-> myRadioInterface	= mr;
-	this	-> plotGrid		= plotGrid;
-	this	-> dabSettings		= dabSettings;
 
 	displaySize			= 512;
 	spectrumSize			= 2048;
@@ -45,23 +45,19 @@ QString	colorString;
 	for (int i = 0; i < displaySize; i ++)
 	   displayBuffer [i] = 0;
 	spectrumBuffer		= new Complex [spectrumSize];
-	dabSettings	-> beginGroup ("audioDisplay");
-	colorString	= dabSettings -> value ("displayColor",
-	                                                 "black"). toString();
-	this	->	displayColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("gridColor",
-	                                                 "black"). toString();
-	this	->	gridColor	= QColor (colorString);
-	colorString	= dabSettings -> value ("curveColor",
-	                                                 "white"). toString();
-	this	-> 	curveColor	= QColor (colorString);
 
-	brush		= dabSettings -> value ("brush", 1). toInt () == 1;
-	displaySize	= dabSettings -> value ("displaySize",
-	                                                   512).toInt();
+	dabSettings	-> beginGroup ("audioDisplay");
+	colorString = dabSettings -> value ("gridColor",
+	                                            "#5e5c64").toString();
+	this	-> gridColor = QColor (colorString);
+	colorString = dabSettings -> value ("curveColor",
+	                                            "#f9f06b").toString();
+	this	-> curveColor = QColor (colorString);
+	brush	= dabSettings -> value ("brush", 1).toInt() == 1;
+	displaySize = dabSettings->value("displaySize", displaySize).toInt();
 	dabSettings	-> endGroup ();
 
-	this	-> plotGrid	-> setCanvasBackground (displayColor);
+//	this	-> plotGrid	-> setCanvasBackground (displayColor);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid. setMajPen (QPen(gridColor, 0, Qt::DotLine));
 #else
@@ -94,7 +90,7 @@ QString	colorString;
 	   spectrumCurve. setBrush (ourBrush);
 	}
         spectrumCurve. attach (plotGrid);
-	
+//	create a blackman window
 	for (i = 0; i < spectrumSize; i ++) 
 	   Window [i] =
 	        0.42 - 0.5 * cos ((2.0 * M_PI * i) / (spectrumSize - 1)) +

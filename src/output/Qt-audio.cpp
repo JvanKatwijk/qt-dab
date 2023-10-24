@@ -40,8 +40,8 @@
 	delete	Buffer;
 }
 //
-//	Note that audioBase functions have - if needed - the rate
-//	converted.  This functions overrides the one in audioBase
+//	Note that AudioBase functions have - if needed - the rate
+//	converted.  This functions overrides the one in AudioBase
 void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 	if (theAudioDevice != nullptr) {
 	   Buffer -> putDataIntoBuffer (fragment, 2 * size);
@@ -50,6 +50,8 @@ void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
 
 void	Qt_Audio::setParams (int outputRate) {
 	if (theAudioOutput != nullptr) {
+	   disconnect (theAudioOutput, SIGNAL (stateChanged (QAudio::State)),
+                       this, SLOT (handleStateChanged (QAudio::State)));
 	   delete theAudioOutput;
 	   theAudioOutput = nullptr;
 	}
@@ -75,14 +77,14 @@ void	Qt_Audio::setParams (int outputRate) {
 	currentState = theAudioOutput -> state();
 }
 
-void	Qt_Audio::stop (void) {
+void	Qt_Audio::stop () {
 	if (theAudioDevice == nullptr)
 	   return;
-	theAudioDevice	-> stop();
-	theAudioOutput	-> stop();
+	theAudioDevice	-> stop	();
+	theAudioOutput	-> stop	();
 }
 
-void	Qt_Audio::restart	(void) {
+void	Qt_Audio::restart	() {
 	if (theAudioDevice == nullptr)
 	   return;
 	theAudioDevice	-> start();
