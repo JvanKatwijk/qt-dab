@@ -418,8 +418,8 @@ CONFIG		+= pluto-2
 #CONFIG		+= colibri
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
