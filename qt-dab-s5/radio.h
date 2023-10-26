@@ -292,7 +292,7 @@ private:
 	void			stop_etiHandler		();
 	QString			checkDir		(const QString);
 //
-	void			startAudioservice	(audiodata *);
+	void			startAudioservice	(audiodata &);
 	void			startPacketservice	(const QString &);
 	void			startScanning		();
 	void			stopScanning		(bool);

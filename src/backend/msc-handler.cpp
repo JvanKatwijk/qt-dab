@@ -105,9 +105,10 @@ void	mscHandler::processBlock_0 (Complex *b) {
 }
 
 #ifdef	__MSC_THREAD__
-void	mscHandler::process_Msc	(Complex *b, int blkno) {
+void	mscHandler::process_Msc	(std::vector<Complex> &b,
+	                                   int offset,  int blkno) {
 	bufferSpace. acquire (1);
-        memcpy (command [blkno]. data(), b,
+        memcpy (command [blkno]. data (), &(b. data ())[offset],
 	            params. get_T_u() * sizeof (Complex));
         helper. lock();
         amount ++;
@@ -177,8 +178,9 @@ Complex conjVector [params. get_T_u ()];
         }
 }
 #else
-void	mscHandler::process_Msc	(Complex *b, int blkno) {
+void	mscHandler::process_Msc	(std::vector<Complex> &b, int offset, int blkno) {
 	(void)b;
+	(void)offset;
 	(void)blkno;
 	fprintf (stderr, "I should not be called\n");
 }
@@ -241,12 +243,12 @@ void	mscHandler::stop_service	(int subchId, int flag) {
 	locker. unlock ();
 }
 
-bool	mscHandler::set_Channel (descriptorType *d,
+bool	mscHandler::set_Channel (descriptorType &d,
 	                         RingBuffer<int16_t> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer,
 	                         FILE *dump, int flag) {
 	fprintf (stderr, "going to open %s\n",
-	                d -> serviceName. toLatin1 (). data ());
+	                d. serviceName. toLatin1 (). data ());
 //	locker. lock();
 //	for (int i = 0; i < theBackends. size (); i ++) {
 //	   if (d -> subchId == theBackends. at (i) -> subChId) {
@@ -258,7 +260,7 @@ bool	mscHandler::set_Channel (descriptorType *d,
 //	}
 //	locker. unlock ();
 	theBackends. push_back (new Backend (myRadioInterface,
-	                                     d,
+	                                     &d,
 	                                     audioBuffer,
 	                                     dataBuffer,
 	                                     frameBuffer,

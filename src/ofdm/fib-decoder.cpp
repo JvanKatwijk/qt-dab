@@ -1430,10 +1430,10 @@ int serviceIndex	= findService (s);
 	return subChId;
 }
 
-void	fibDecoder::dataforAudioService	(const QString &s, audiodata *ad) {
+void	fibDecoder::dataforAudioService	(const QString &s, audiodata &ad) {
 int	serviceIndex;
 
-	ad       -> defined      = false;	// default
+	ad. defined      = false;	// default
 	serviceIndex		= findService (s);
 	if (serviceIndex == -1)
 	   return;
@@ -1461,29 +1461,29 @@ int	serviceIndex;
 	   return;
 	}
 
-	ad	-> SId		= SId;
-	ad	-> SCIds	= SCIds;
-	ad	-> subchId      = subChId;
-	ad	-> serviceName  = s;
-	ad	-> startAddr    =
+	ad.	SId		= SId;
+	ad.	SCIds		= SCIds;
+	ad.	subchId		= subChId;
+	ad.	serviceName	= s;
+	ad.	startAddr	=
 	                 currentConfig -> subChannels [subChId]. startAddr;
-	ad	-> shortForm    =
+	ad.	shortForm	=
 	                 currentConfig -> subChannels [subChId]. shortForm;
-	ad	-> protLevel    =
+	ad.	protLevel	=
 	                 currentConfig -> subChannels [subChId]. protLevel;
-	ad	-> length       =
+	ad.	length		=
 	                 currentConfig -> subChannels [subChId]. Length;
-	ad	-> bitRate      =
+	ad.	bitRate		=
 	                 currentConfig -> subChannels [subChId]. bitRate;
-	ad	-> ASCTy        = 
+	ad.	ASCTy		= 
 	                 currentConfig -> serviceComps [compIndex]. ASCTy;
-	ad	-> language     = 
+	ad.	language	= 
 	                 ensemble -> services [serviceIndex]. language;
-	ad	-> programType	=
+	ad.	programType	=
 	                 ensemble -> services [serviceIndex]. programType;
-	ad	-> fmFrequency	=
+	ad.	fmFrequency	=
 	                 ensemble -> services [serviceIndex]. fmFrequency;
-	ad	-> defined	= true;
+	ad.	defined		= true;
 
 	fibLocker. unlock();
 }

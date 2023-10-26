@@ -48,33 +48,33 @@
 	                                 deviceHandler	*inputDevice,
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings):
+	                                    radioInterface_p (mr),
 	                                    params (p -> dabMode),
-	                                 myReader (mr,
+	                                    device_p (inputDevice),
+	                                    settings_p (dabSettings),
+	                                    theReader (mr,
 	                                           inputDevice,
 	                                           p -> spectrumBuffer),
-	                                 my_ficHandler (mr, p -> dabMode),
-	                                 my_etiGenerator (p -> dabMode,
-	                                                  &my_ficHandler),
-	                                 my_TII_Detector (p -> dabMode,
+	                                    theFicHandler (mr, p -> dabMode),
+	                                    theEtiGenerator (p -> dabMode,
+	                                                  &theFicHandler),
+	                                    theTIIDetector (p -> dabMode,
 	                                                  p -> tii_depth),
-	                                 my_ofdmDecoder (mr,
+	                                    theOfdmDecoder (mr,
 	                                                 p -> dabMode,
 	                                                 inputDevice -> bitDepth(),
 	                                                 p -> stdDevBuffer,
 	                                                 p -> iqBuffer),
-	                                 my_mscHandler (mr, p -> dabMode,
+	                                    theMscHandler (mr, p -> dabMode,
 	                                                p -> frameBuffer) {
 
-	this	-> myRadioInterface	= mr;
 	this	-> p			= p;
-	this	-> dabSettings		= dabSettings;
-	this	-> inputDevice		= inputDevice;
 	this	-> threshold		= p -> threshold;
-	this	-> tiiBuffer		= p -> tiiBuffer;
-	this	-> nullBuffer		= p -> nullBuffer;
-	this	-> snrBuffer		= p -> snrBuffer;
+	this	-> tiiBuffer_p		= p -> tiiBuffer;
+	this	-> nullBuffer_p		= p -> nullBuffer;
+	this	-> snrBuffer_p		= p -> snrBuffer;
 #ifdef	__ESTIMATOR_
-	this	-> channelBuffer	= p -> channelBuffer;
+	this	-> channelBuffer_p	= p -> channelBuffer;
 #endif
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
@@ -101,15 +101,15 @@
 	scanMode			= false;
 
 	connect (this, SIGNAL (setSynced (bool)),
-	         myRadioInterface, SLOT (setSynced (bool)));
+	         radioInterface_p, SLOT (setSynced (bool)));
 	connect (this, SIGNAL (setSyncLost (void)),
-	         myRadioInterface, SLOT (setSyncLost (void)));
+	         radioInterface_p, SLOT (setSyncLost (void)));
 //	connect (this, SIGNAL (show_Spectrum (int)),
-//	         myRadioInterface, SLOT (show_spectrum (int)));
+//	         radioInterface_p, SLOT (show_spectrum (int)));
 	connect (this, SIGNAL (show_tii (int, int)),
-	         myRadioInterface, SLOT (show_tii (int, int)));
+	         radioInterface_p, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_tii_spectrum ()),
-	         myRadioInterface, SLOT (show_tii_spectrum ()));
+	         radioInterface_p, SLOT (show_tii_spectrum ()));
 	connect (this, SIGNAL (show_snr (float)),
 	         mr, SLOT (show_snr (float)));
 	connect (this, SIGNAL (show_clockErr (int)),
@@ -122,12 +122,12 @@
 #endif
 	connect (this, SIGNAL (show_Corrector (int, float)),
 	         mr, SLOT (show_Corrector (int, float)));
-	my_TII_Detector. reset();
+	theTIIDetector. reset();
 }
 
 	ofdmHandler::~ofdmHandler () {
 	   if (isRunning()) {
-	      myReader. setRunning (false);
+	      theReader. setRunning (false);
 	                                // exception to be raised
 	                        	// through the getSample(s) functions.
 	      msleep (100);
@@ -138,25 +138,25 @@
 }
 
 void	ofdmHandler::set_tiiDetectorMode	(bool b) {
-	my_TII_Detector. setMode (b);
+	theTIIDetector. setMode (b);
 }
 
 void	ofdmHandler::start () {
-	my_ficHandler. restart	();
+	theFicHandler. restart	();
 	transmitters. clear ();
-	my_ofdmDecoder. reset	();
-	my_ficHandler.  restart	();
+	theOfdmDecoder. reset	();
+	theFicHandler.  restart	();
 	if (!scanMode)
-	   my_mscHandler. reset_Channel ();
+	   theMscHandler. reset_Channel ();
 	QThread::start ();
 }
 
 void	ofdmHandler::stop	() {
-	myReader. setRunning (false);
+	theReader. setRunning (false);
 	while (isRunning ())
 	   wait ();
 	usleep (10000);
-	my_ficHandler. stop ();
+	theFicHandler. stop ();
 }
 /***
    *	\brief run
@@ -168,12 +168,12 @@ void	ofdmHandler::stop	() {
    */
 void	ofdmHandler::run	() {
 int32_t		startIndex;
-timeSyncer	myTimeSyncer (&myReader);
-freqSyncer	myFreqSyncer (myRadioInterface, p);
+timeSyncer	myTimeSyncer (&theReader);
+freqSyncer	myFreqSyncer (radioInterface_p, p);
 #ifdef	__ESTIMATOR_
-estimator	myEstimator  (myRadioInterface, p);
+estimator	myEstimator  (radioInterface_p, p);
 #endif
-correlator	myCorrelator (myRadioInterface, p);
+correlator	myCorrelator (radioInterface_p, p);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
 int	sampleCount	= 0;
@@ -189,14 +189,14 @@ int	snrCount	= 0;
 	coarseOffset		= 0;
 	correctionNeeded	= true;
 	attempts		= 0;
-	myReader. setRunning (true);	// useful after a restart
+	theReader. setRunning (true);	// useful after a restart
 //
 //	to get some idea of the signal strength
 	try {
 	   const int tempSize = 128;
 	   std::vector<Complex> temp (tempSize);
 	   for (int i = 0; i < T_F / (5 * tempSize); i ++) {
-	      myReader. getSamples (temp, 0, tempSize, 0, true);
+	      theReader. getSamples (temp, 0, tempSize, 0, true);
 	   }
 
 	   while (true) {
@@ -207,7 +207,7 @@ int	snrCount	= 0;
 	         sampleCount	= 0;
 
 	         setSynced (false);
-	         my_TII_Detector. reset ();
+	         theTIIDetector. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
 	            inSync	= true;
@@ -225,7 +225,7 @@ int	snrCount	= 0;
 	               continue;
 	          }
 
-	          myReader. getSamples (ofdmBuffer, 0,
+	          theReader. getSamples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
 	         if (startIndex < 0) { // no sync, try again
@@ -252,12 +252,13 @@ int	snrCount	= 0;
 	               tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	         }
 
-	         myReader. getSamples (ofdmBuffer, 0,
+	         theReader. getSamples (ofdmBuffer, 0,
 	                               T_u, coarseOffset + fineOffset, false);
 	         if (null_shower) {
 	            for (int i = 0; i < T_u / 4; i ++)
 	               tester [T_u / 4 + i] = ofdmBuffer [i];
-	            nullBuffer -> putDataIntoBuffer (tester. data (), T_u / 2);
+	            nullBuffer_p -> putDataIntoBuffer (tester. data (),
+	                                                       T_u / 2);
 	            show_null (T_u / 2);
 	         }
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
@@ -290,18 +291,18 @@ int	snrCount	= 0;
   *	We read the missing samples in the ofdm buffer
   */
 	      setSynced (true);
-	      myReader. getSamples (ofdmBuffer,
+	      theReader. getSamples (ofdmBuffer,
 	                            ofdmBufferIndex,
 	                            T_u - ofdmBufferIndex,
 	                            coarseOffset + fineOffset, true);
 #ifdef	__ESTIMATOR_
 	      static int abc = 0;
-	      if (myRadioInterface -> channelOn ()) {
+	      if (radioInterface_p -> channelOn ()) {
 	         if (++abc > 10) { 
 	            std::vector<Complex> result;
 	            myEstimator. estimate (ofdmBuffer, result);
-	            if (channelBuffer != nullptr) {
-	               channelBuffer -> putDataIntoBuffer (result. data (),
+	            if (channelBuffer_p != nullptr) {
+	               channelBuffer_p -> putDataIntoBuffer (result. data (),
 	                                                   result. size ());
 	               emit show_channel (result. size ());
 	            }
@@ -310,15 +311,15 @@ int	snrCount	= 0;
 	      }
 #endif
 	      sampleCount	+= T_u;
-	      my_ofdmDecoder. processBlock_0 (ofdmBuffer);
+	      theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__
 	      if (!scanMode)
-	         my_mscHandler.  processBlock_0 (ofdmBuffer. data());
+	         theMscHandler.  processBlock_0 (ofdmBuffer. data());
 #endif
 
 //	Here we look only at the block_0 when we need a coarse
 //	frequency synchronization.
-	      correctionNeeded	= !my_ficHandler. syncReached();
+	      correctionNeeded	= !theFicHandler. syncReached();
 	      if (correctionNeeded) {
 	         int correction	=
 	            myFreqSyncer. estimate_CarrierOffset (ofdmBuffer);
@@ -347,7 +348,7 @@ int	snrCount	= 0;
 	      Complex FreqCorr	= Complex (0, 0);
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	         myReader. getSamples (ofdmBuffer, 0,
+	         theReader. getSamples (ofdmBuffer, 0,
 	                               T_s, coarseOffset + fineOffset, true);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
@@ -361,18 +362,18 @@ int	snrCount	= 0;
 //	we always process all blocks
 
 	         if (eti_on) {
-	            my_ofdmDecoder.
+	            theOfdmDecoder.
 	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
-	            my_etiGenerator.
+	            theEtiGenerator.
 	                   processBlock (ibits, ofdmSymbolCount);
 	            continue;
 	         }
 //
 //	symbols 1 .. 3 are always processed using the ofdm decoder
 	         if (ofdmSymbolCount <= 3) {
-	            my_ofdmDecoder.
+	            theOfdmDecoder.
 	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
-	            my_ficHandler.
+	            theFicHandler.
 	                    process_ficBlock (ibits, ofdmSymbolCount);
 	         }
 //
@@ -383,14 +384,13 @@ int	snrCount	= 0;
 //	If the MSC_THREAD is enabled, the mscHandler will take care
 //	of the full block handling, but it also needs block 1 .. 3
 #ifdef	__MSC_THREAD__
-	         my_mscHandler.
-	                 process_Msc  (&((ofdmBuffer. data()) [T_g]),
-	                                                    ofdmSymbolCount);
+	         theMscHandler.
+	                 process_Msc  (ofdmBuffer, T_g, ofdmSymbolCount);
 #else
 	         if (ofdmSymbolCount >= 4) {
-	            my_ofdmDecoder.
+	            theOfdmDecoder.
 	                    decode (ofdmBuffer, ofdmSymbolCount, ibits);
-	            my_mscHandler.
+	            theMscHandler.
 	                    process_mscBlock (ibits, ofdmSymbolCount);
 	         }
 #endif
@@ -399,13 +399,13 @@ int	snrCount	= 0;
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	      myReader. getSamples (ofdmBuffer, 0,
+	      theReader. getSamples (ofdmBuffer, 0,
 	                         T_null, coarseOffset + fineOffset, false);
 	      sampleCount += T_null;
 //
 //	The snr is computed, where we take as "noise" the signal strength
 //	of the NULL period (the one without TII data)
-	      if (!isEvenFrame (my_ficHandler. get_CIFcount(), &params)) {
+	      if (!isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
 	         float sum	= 0;
 	         for (int i = 0; i < T_null; i ++)
 	            sum += abs (ofdmBuffer [i]);
@@ -413,8 +413,8 @@ int	snrCount	= 0;
 	         float snrV	=
 	              20 * log10 ((cLevel / cCount + 0.005) / (sum + 0.005));
 	         snr = 0.9 * snr + 0.1 * snrV;
-	         if (this -> snrBuffer != nullptr) 
-	            snrBuffer -> putDataIntoBuffer (&snr, 1);
+	         if (this -> snrBuffer_p != nullptr) 
+	            snrBuffer_p -> putDataIntoBuffer (&snr, 1);
 	         snrCount ++;
 	         if (snrCount >= 3) {
 	            snrCount = 0;
@@ -425,19 +425,20 @@ int	snrCount	= 0;
  *	odd frames carry - if any = the TII data
  */
 	      if (params. get_dabMode () == 1) {
-	         if (isEvenFrame (my_ficHandler. get_CIFcount(), &params)) {
-	            my_TII_Detector. addBuffer (ofdmBuffer);
+	         if (isEvenFrame (theFicHandler. get_CIFcount(), &params)) {
+	            theTIIDetector. addBuffer (ofdmBuffer);
 	            if (++tii_counter >= tii_delay) {
-	               tiiBuffer -> putDataIntoBuffer (ofdmBuffer. data(), T_u);
+	               tiiBuffer_p -> putDataIntoBuffer (ofdmBuffer. data(),
+	                                                          T_u);
 	               show_tii_spectrum ();
-	               uint16_t res = my_TII_Detector. processNULL ();
+	               uint16_t res = theTIIDetector. processNULL ();
 	               if (res != 0) {
 	                  uint8_t mainId	= res >> 8;
 	                  uint8_t subId	= res & 0xFF;
 	                  show_tii (mainId, subId);
 	               }
 	               tii_counter = 0;
-	               my_TII_Detector. reset();
+	               theTIIDetector. reset();
 	            }
 	         }
 	      }
@@ -492,115 +493,115 @@ void	ofdmHandler::get_frameQuality	(int	*totalFrames,
 //	ficHandler abstracts channel data
 
 QString	ofdmHandler::findService	(uint32_t SId, int SCIds) {
-	return my_ficHandler. findService (SId, SCIds);
+	return theFicHandler. findService (SId, SCIds);
 }
 
 void	ofdmHandler::getParameters	(const QString &s,
 	                                 uint32_t *p_SId, int*p_SCIds) {
-	my_ficHandler. getParameters (s, p_SId, p_SCIds);
+	theFicHandler. getParameters (s, p_SId, p_SCIds);
 }
 
 std::vector<serviceId>	ofdmHandler::getServices	(int n) {
-	return my_ficHandler. getServices (n);
+	return theFicHandler. getServices (n);
 }
 
 int	ofdmHandler::getSubChId	(const QString &s,
 	                                          uint32_t SId) {
-	return my_ficHandler. getSubChId (s, SId);
+	return theFicHandler. getSubChId (s, SId);
 }
 
 bool	ofdmHandler::is_audioService	(const QString &s) {
 audiodata ad;
-	my_ficHandler. dataforAudioService (s, &ad);
+	theFicHandler. dataforAudioService (s, ad);
 	return ad. defined;
 }
 
 bool	ofdmHandler::is_packetService	(const QString &s) {
 packetdata pd;
-	my_ficHandler. dataforPacketService (s, &pd, 0);
+	theFicHandler. dataforPacketService (s, &pd, 0);
 	return pd. defined;
 }
 
 void	ofdmHandler::dataforAudioService	(const QString &s,
-	                                         audiodata *d) {
-	my_ficHandler. dataforAudioService (s, d);
+	                                         audiodata &d) {
+	theFicHandler. dataforAudioService (s, d);
 }
 
 void	ofdmHandler::dataforPacketService	(const QString &s,
 	                                         packetdata *pd,
 	                                         int16_t compnr) {
-	my_ficHandler. dataforPacketService (s, pd, compnr);
+	theFicHandler. dataforPacketService (s, pd, compnr);
 }
 
 uint8_t	ofdmHandler::get_ecc 		() {
-	return my_ficHandler. get_ecc();
+	return theFicHandler. get_ecc();
 }
 
 uint16_t ofdmHandler::get_countryName	() {
-	return my_ficHandler. get_countryName ();
+	return theFicHandler. get_countryName ();
 }
 
 int32_t ofdmHandler::get_ensembleId	() {
-	return my_ficHandler. get_ensembleId();
+	return theFicHandler. get_ensembleId();
 }
 
 QString ofdmHandler::get_ensembleName	() {
-	return my_ficHandler. get_ensembleName();
+	return theFicHandler. get_ensembleName();
 }
 
 void	ofdmHandler::set_epgData	(int SId, int32_t theTime,
 	                                 const QString &s,
 	                                 const QString &d) {
-	my_ficHandler. set_epgData (SId, theTime, s, d);
+	theFicHandler. set_epgData (SId, theTime, s, d);
 }
 
 bool	ofdmHandler::has_timeTable	(uint32_t SId) {
-	return my_ficHandler. has_timeTable (SId);
+	return theFicHandler. has_timeTable (SId);
 }
 
 std::vector<epgElement>	ofdmHandler::find_epgData	(uint32_t SId) {
-	return my_ficHandler. find_epgData (SId);
+	return theFicHandler. find_epgData (SId);
 }
 
 QStringList ofdmHandler::basicPrint	() {
-	return my_ficHandler. basicPrint ();
+	return theFicHandler. basicPrint ();
 }
 
 int	ofdmHandler::scanWidth		() {
-	return my_ficHandler. scanWidth ();
+	return theFicHandler. scanWidth ();
 }
 //
 //	for the mscHandler:
 void	ofdmHandler::reset_Services	() {
 	if (!scanMode)
-	   my_mscHandler. reset_Channel ();
+	   theMscHandler. reset_Channel ();
 }
 
 void	ofdmHandler::stop_service (descriptorType *d, int flag) {
 	fprintf (stderr, "function obsolete\n");
 	if (!scanMode)
-	   my_mscHandler. stop_service (d -> subchId, flag);
+	   theMscHandler. stop_service (d -> subchId, flag);
 }
 
 void	ofdmHandler::stop_service (int subChId, int flag) {
 	if (!scanMode)
-	   my_mscHandler. stop_service (subChId, flag);
+	   theMscHandler. stop_service (subChId, flag);
 }
 
-bool    ofdmHandler::set_audioChannel (audiodata *d,
+bool    ofdmHandler::set_audioChannel (audiodata &d,
 	                                RingBuffer<int16_t> *b,
 	                                FILE *dump, int flag) {
 	if (!scanMode)
-	   return my_mscHandler. set_Channel (d, b,
+	   return theMscHandler. set_Channel (d, b,
 	                         (RingBuffer<uint8_t> *)nullptr, dump, flag);
 	else
 	   return false;
 }
 
-bool    ofdmHandler::set_dataChannel (packetdata *d,
+bool    ofdmHandler::set_dataChannel (packetdata &d,
 	                               RingBuffer<uint8_t> *b, int flag) {
 	if (!scanMode)
-	   return my_mscHandler. set_Channel (d,
+	   return theMscHandler. set_Channel (d,
 	                     (RingBuffer<int16_t> *)nullptr, b,
 	                      nullptr, flag);
 	else
@@ -608,11 +609,11 @@ bool    ofdmHandler::set_dataChannel (packetdata *d,
 }
 
 void	ofdmHandler::startDumping	(SNDFILE *f) {
-	myReader. startDumping (f);
+	theReader. startDumping (f);
 }
 
 void	ofdmHandler::stopDumping() {
-	myReader. stopDumping();
+	theReader. stopDumping();
 }
 
 bool	ofdmHandler::isEvenFrame (int16_t cf, dabParams *p) {
@@ -629,33 +630,33 @@ bool	ofdmHandler::isEvenFrame (int16_t cf, dabParams *p) {
 }
 
 void	ofdmHandler::start_ficDump	(FILE *f) {
-	my_ficHandler. start_ficDump (f);
+	theFicHandler. start_ficDump (f);
 }
 
 void	ofdmHandler::stop_ficDump	() {
-	my_ficHandler. stop_ficDump ();
+	theFicHandler. stop_ficDump ();
 }
 
 uint32_t ofdmHandler::julianDate	()  {
-	return my_ficHandler. julianDate ();
+	return theFicHandler. julianDate ();
 }
 
 bool	ofdmHandler::start_etiGenerator	(const QString &s) {
-	if (my_etiGenerator. start_etiGenerator (s))
+	if (theEtiGenerator. start_etiGenerator (s))
 	   eti_on	= true;
 	return eti_on;
 }
 
 void	ofdmHandler::stop_etiGenerator		() {
-	my_etiGenerator. stop_etiGenerator ();
+	theEtiGenerator. stop_etiGenerator ();
 	eti_on		= false;
 }
 
 void	ofdmHandler::reset_etiGenerator	() {
-	my_etiGenerator. reset ();
+	theEtiGenerator. reset ();
 }
 
 void	ofdmHandler::handle_iqSelector	() {
-	my_ofdmDecoder. handle_iqSelector ();
+	theOfdmDecoder. handle_iqSelector ();
 }
 

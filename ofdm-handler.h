@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2015 .. 2020
+ *    Copyright (C) 2015 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -23,8 +23,8 @@
 #
 #pragma once
 /*
- *	dabProcessor is the embodying of all functionality related
- *	to the actual DAB processing.
+ *	the ofdmHandler is the embodying of all functionality related
+ *	to the ofdm processing and preparation for further decoding
  */
 #include	"dab-constants.h"
 #include	<QThread>
@@ -67,7 +67,7 @@ public:
 	void		set_scanMode		(bool);
 	void		get_frameQuality	(int *, int*, int *);
 //
-//	inheriting from our delegates
+//	servicing our subordinates
 //	for the ficHandler:
 	QString		findService		(uint32_t, int);
 	void		getParameters		(const QString &,
@@ -76,7 +76,7 @@ public:
 	bool		is_audioService		(const QString &s);
 	bool		is_packetService	(const QString &s);
         void		dataforAudioService     (const QString &,
-	                                             audiodata *);
+	                                             audiodata &);
         void		dataforPacketService	(const QString &,
 	                                             packetdata *, int16_t);
 	int		getSubChId		(const QString &, uint32_t);
@@ -99,58 +99,58 @@ public:
 	void		reset_Services		();
 	void		stop_service		(descriptorType *, int);
 	void		stop_service		(int, int);
-	bool		set_audioChannel	(audiodata *,
+	bool		set_audioChannel	(audiodata &,
 	                                         RingBuffer<int16_t> *,
 	                                         FILE *, int);
-	bool		set_dataChannel		(packetdata *,
+	bool		set_dataChannel		(packetdata &,
 	                                         RingBuffer<uint8_t> *, int);
 	void		set_tiiDetectorMode	(bool);
 	void		handle_iqSelector	();
 private:
-	RadioInterface	*myRadioInterface;
-	processParams	*p;
-	dabParams	params;
-	QSettings	*dabSettings;
-	sampleReader	myReader;
-	ficHandler	my_ficHandler;
-	etiGenerator	my_etiGenerator;
-	TII_Detector	my_TII_Detector;
-	ofdmDecoder	my_ofdmDecoder;
-	mscHandler	my_mscHandler;
-	int		threshold;
-	int		totalFrames;
-	int		goodFrames;
-	int		badFrames;
-	bool		tiiSwitch;
-	int16_t		tii_depth;
-	int16_t		echo_depth;
-	deviceHandler	*inputDevice;
-	RingBuffer<Complex > *tiiBuffer;
-	RingBuffer<Complex > *nullBuffer;
-	RingBuffer<float>	*snrBuffer;
+	RadioInterface		*radioInterface_p;
+	processParams		*p;
+	deviceHandler		*device_p;
+	dabParams		params;
+	QSettings		*settings_p;
+	sampleReader		theReader;
+	ficHandler		theFicHandler;
+	etiGenerator		theEtiGenerator;
+	TII_Detector		theTIIDetector;
+	ofdmDecoder		theOfdmDecoder;
+	mscHandler		theMscHandler;
+	int			threshold;
+	int			totalFrames;
+	int			goodFrames;
+	int			badFrames;
+	bool			tiiSwitch;
+	int16_t			tii_depth;
+	int16_t			echo_depth;
+	RingBuffer<Complex >	*tiiBuffer_p;
+	RingBuffer<Complex >	*nullBuffer_p;
+	RingBuffer<float>	*snrBuffer_p;
 #ifdef	__ESTIMATOR_
-	RingBuffer<Complex>	*channelBuffer;
+	RingBuffer<Complex>	*channelBuffer_p;
 #endif
-	int16_t		tii_delay;
-	int16_t		tii_counter;
-	bool		eti_on;
-	int16_t		attempts;
-	bool		scanMode;
-	int32_t		T_null;
-	int32_t		T_u;
-	int32_t		T_s;
-	int32_t		T_g;
-	int32_t		T_F;
-	int32_t		nrBlocks;
-	int32_t		carriers;
-	int32_t		carrierDiff;
-	int16_t		fineOffset;
-	int32_t		coarseOffset;
-	QByteArray	transmitters;
-	bool		correctionNeeded;
+	int16_t			tii_delay;
+	int16_t			tii_counter;
+	bool			eti_on;
+	int16_t			attempts;
+	bool			scanMode;
+	int32_t			T_null;
+	int32_t			T_u;
+	int32_t			T_s;
+	int32_t			T_g;
+	int32_t			T_F;
+	int32_t			nrBlocks;
+	int32_t			carriers;
+	int32_t			carrierDiff;
+	int16_t			fineOffset;
+	int32_t			coarseOffset;
+	QByteArray		transmitters;
+	bool			correctionNeeded;
 	std::vector<Complex>	ofdmBuffer;
-	bool		isEvenFrame		(int16_t, dabParams *);
-virtual	void		run			();
+	bool			isEvenFrame	(int16_t, dabParams *);
+virtual	void			run		();
 signals:
 	void		setSynced		(bool);
 	void		No_Signal_Found		();

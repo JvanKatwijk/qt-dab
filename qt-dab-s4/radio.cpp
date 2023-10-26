@@ -1395,16 +1395,16 @@ int	serviceOrder;
 	      if (my_ofdmHandler -> is_audioService (ss)) {
 	         audiodata ad;
 	         FILE *f = backgroundServices. at (i). fd;
-	         my_ofdmHandler -> dataforAudioService (ss, &ad);
+	         my_ofdmHandler -> dataforAudioService (ss, ad);
 	         my_ofdmHandler -> 
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         backgroundServices. at (i). subChId     = ad. subchId;
 	      }
 	      else {
 	         packetdata pd;
 	         my_ofdmHandler -> dataforPacketService (ss, &pd, 0);
 	         my_ofdmHandler -> 
-	                   set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
+	                   set_dataChannel (pd, &dataBuffer, BACK_GROUND);	       
 	         backgroundServices. at (i). subChId     = pd. subchId;
 	      }
 	      for (int j = 0; j < model. rowCount (); j ++) {
@@ -2845,7 +2845,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 //	      if (serviceName. at (1) == ' ')
 //	         return true;
 
-	      my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	      my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	      if (ad. defined && (serviceLabel -> text () == serviceName)) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
@@ -2887,7 +2887,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	            return true;
 
 	         (void)my_ofdmHandler ->
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);
 	         
 	         dabService s;
 	         s. channel	= ad. channel;
@@ -3188,14 +3188,14 @@ QString serviceName	= s. serviceName;
 	      serviceLabel	-> setText (serviceName);
 	      audiodata ad;
 	      
-	      my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	      my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	      if (ad. defined) {
 	         currentService. valid		= true;
 	         currentService. is_audio	= true;
 	         currentService. subChId	= ad. subchId;
 	         if (my_ofdmHandler -> has_timeTable (ad. SId))
 	            techData. timeTable_button -> show ();
-	         start_audioService (&ad);
+	         startAudioservice (ad);
 	         QString s = channel. channelName + ":" + serviceName;
 	         if (dabSettings -> value ("has-presetName", 0).
 	                                                   toInt () == 1) {
@@ -3268,8 +3268,8 @@ void	RadioInterface::cleanScreen	() {
 	setStereo	(false);
 }
 
-void	RadioInterface::start_audioService (audiodata *ad) {
-	if (!ad ->  defined) {
+void	RadioInterface::startAudioservice (audiodata &ad) {
+	if (!ad. defined) {
 	   QMessageBox::warning (this, tr ("Warning"),
  	                         tr ("insufficient data for this program\n"));
 	   return;
@@ -3278,16 +3278,16 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	QDateTime theDateTime	= QDateTime::currentDateTime ();
 //	QTime theTime		= theDateTime. time ();
 	serviceLabel -> setAlignment(Qt::AlignCenter);
-	serviceLabel -> setText (ad -> serviceName);
+	serviceLabel -> setText (ad. serviceName);
 	currentService. valid	= true;
 
 	(void)my_ofdmHandler -> set_audioChannel (ad, &audioBuffer,
 	                                            nullptr, FORE_GROUND);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
-	   my_ofdmHandler -> dataforPacketService (ad -> serviceName, &pd, i);
+	   my_ofdmHandler -> dataforPacketService (ad. serviceName, &pd, i);
 	   if (pd. defined) {
-	      my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND);
+	      my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
 	                            pd. serviceName. toUtf8 (). data (),
 	                            pd. subchId);
@@ -3297,18 +3297,18 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 //	activate sound
 	soundOut -> restart ();
 //	show service related data
-	techData. programName		-> setText (ad -> serviceName);
-	techData. serviceIdDisplay	-> display (ad -> SId);
-	techData. bitrateDisplay 	-> display (ad -> bitRate);
-	techData. startAddressDisplay 	-> display (ad -> startAddr);
-	techData. lengthDisplay		-> display (ad -> length);
-	techData. subChIdDisplay 	-> display (ad -> subchId);
-	QString protL	= getProtectionLevel (ad -> shortForm,
-	                                         ad -> protLevel);
+	techData. programName		-> setText (ad. serviceName);
+	techData. serviceIdDisplay	-> display (ad. SId);
+	techData. bitrateDisplay 	-> display (ad. bitRate);
+	techData. startAddressDisplay 	-> display (ad. startAddr);
+	techData. lengthDisplay		-> display (ad. length);
+	techData. subChIdDisplay 	-> display (ad. subchId);
+	QString protL	= getProtectionLevel (ad. shortForm,
+	                                         ad. protLevel);
 	techData. uepField		-> setText (protL);
-	techData. ASCTy			-> setText (ad -> ASCTy == 077 ?
+	techData. ASCTy			-> setText (ad. ASCTy == 077 ?
 	                                                  "DAB+" : "DAB");
-	if (ad -> ASCTy == 077) {
+	if (ad. ASCTy == 077) {
 	   techData. rsError_display	-> show ();
 	   techData. aacError_display	-> show ();
 	}
@@ -3317,22 +3317,22 @@ void	RadioInterface::start_audioService (audiodata *ad) {
 	   techData. aacError_display	-> hide ();
 	}
 	techData. codeRate ->
-	             setText (getCodeRate (ad -> shortForm,
-	                                              ad -> protLevel));
+	             setText (getCodeRate (ad. shortForm,
+	                                              ad. protLevel));
 	techData. language ->
-	        setText (getLanguage (ad -> language));
+	        setText (getLanguage (ad. language));
 	techData. programType -> 
-	   setText (getProgramType (ad -> programType));
+	   setText (getProgramType (ad.  programType));
 //	   setText (the_textMapper.
-//	               get_programm_type_string (ad -> programType));
-	if (ad -> fmFrequency == -1) {
+//	               get_programm_type_string (ad. programType));
+	if (ad. fmFrequency == -1) {
 	   techData. fmFrequency	-> hide ();
 	   techData. fmLabel		-> hide	();
 	}
 	else {
 	   techData. fmLabel		-> show ();
 	   techData. fmFrequency	-> show ();
-	   QString f = QString::number (ad -> fmFrequency);
+	   QString f = QString::number (ad. fmFrequency);
 	   f. append (" Khz");
 	   techData. fmFrequency	-> setText (f);
 	}
@@ -3349,7 +3349,7 @@ packetdata pd;
 	   return;
 	}
 
-	if (!my_ofdmHandler -> set_dataChannel (&pd,
+	if (!my_ofdmHandler -> set_dataChannel (pd,
 	                                         &dataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
@@ -4537,7 +4537,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         epgLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = pd. channel;
 	         s. serviceName = pd. serviceName;
@@ -4567,7 +4567,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         epgLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = channel. channelName;
 	         s. serviceName = pd. serviceName;

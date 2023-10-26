@@ -384,9 +384,11 @@ void	displayWidget::show_cpuLoad	(float use) {
 
 void	displayWidget::show_transmitters	(QByteArray &tr) {
 QString textList;
-	for (int i = 0; i < tr. size () / 2; i ++) {
-	   QString trId = QString ("(") + QString::number (tr. at (2 * i)) +
-	                  " " +QString::number (tr. at (2 * i + 1)) + ") ";
+	for (int i = 0; i < tr. size (); i ++) {
+	   uint16_t mainId	= tr. at (i) >> 8;
+	   uint16_t subId	= tr. at (i) & 0xFF;
+	   QString trId = QString ("(") + QString::number (mainId) +
+	                  " " + QString::number (subId) + ") ";
 	   textList. append (trId);
 	}
 	tiiLabel -> setText (textList);

@@ -56,10 +56,11 @@ public:
 	                                         RingBuffer<uint8_t> *);
 			~mscHandler		();
 	void		processBlock_0		(Complex *);
-	void		process_Msc		(Complex *, int);
+	void		process_Msc		(std::vector<Complex> &,
+	                                                  int, int);
 	void		process_mscBlock	(std::vector<int16_t> &,
 	                                                  int16_t);
-	bool		set_Channel		(descriptorType *,
+	bool		set_Channel		(descriptorType &,
 	                                         RingBuffer<int16_t> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);

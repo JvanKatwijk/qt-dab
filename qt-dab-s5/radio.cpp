@@ -1318,16 +1318,16 @@ int	serviceOrder;
 	      if (my_ofdmHandler -> is_audioService (ss)) {
 	         audiodata ad;
 	         FILE *f = channel. backgroundServices. at (i). fd;
-	         my_ofdmHandler -> dataforAudioService (ss, &ad);
+	         my_ofdmHandler -> dataforAudioService (ss, ad);
 	         my_ofdmHandler -> 
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
 	      }
 	      else {
 	         packetdata pd;
 	         my_ofdmHandler -> dataforPacketService (ss, &pd, 0);
 	         my_ofdmHandler -> 
-	                   set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
+	                   set_dataChannel (pd, &dataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
 	      }
 
@@ -2789,7 +2789,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      serviceName = serviceName. right (16);
 //	      if (serviceName. at (1) == ' ')
 //	         return true;
-	      my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	      my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	      if (ad. defined && (channel. currentService. serviceName == serviceName)) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
@@ -2823,7 +2823,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	            return true;
 
 	         (void)my_ofdmHandler ->
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);
 	         
 	         dabService s;
 	         s. channel	= ad. channel;
@@ -3081,7 +3081,7 @@ QString serviceName	= s. serviceName;
 	dynamicLabel	-> setText ("");
 	audiodata ad;
 	     
-	my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	if (ad. defined) {
 	   channel. currentService. valid	= true;
 	   channel. currentService. is_audio	= true;
@@ -3089,7 +3089,7 @@ QString serviceName	= s. serviceName;
 	   if (my_ofdmHandler -> has_timeTable (ad. SId))
 	      theTechWindow -> show_timetableButton (true);
 
-	   startAudioservice (&ad);
+	   startAudioservice (ad);
 	   if (dabSettings -> value ("has-presetName", 0).
 	                                                   toInt () == 1) {
 	      QString s = channel. channelName + ":" + serviceName;
@@ -3126,16 +3126,16 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt,
 	model. setData (ind, QFont (theFont, pt, -1, italic), Qt::FontRole);
 }
 //
-void	RadioInterface::startAudioservice (audiodata *ad) {
+void	RadioInterface::startAudioservice (audiodata &ad) {
 	channel. currentService. valid	= true;
 
 	(void)my_ofdmHandler -> set_audioChannel (ad, &audioBuffer,
 	                                            nullptr, FORE_GROUND);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
-	   my_ofdmHandler -> dataforPacketService (ad -> serviceName, &pd, i);
+	   my_ofdmHandler -> dataforPacketService (ad. serviceName, &pd, i);
 	   if (pd. defined) {
-	      my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND);
+	      my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
 	                            pd. serviceName. toUtf8 (). data (),
 	                            pd. subchId);
@@ -3144,9 +3144,9 @@ void	RadioInterface::startAudioservice (audiodata *ad) {
 	}
 //	activate sound
 	soundOut -> restart ();
-	programTypeLabel ->   setText (getProgramType (ad -> programType));
+	programTypeLabel ->   setText (getProgramType (ad. programType));
 //	show service related data
-	theTechWindow	-> show_serviceData 	(ad);
+	theTechWindow	-> show_serviceData 	(&ad);
 }
 
 void	RadioInterface::startPacketservice (const QString &s) {
@@ -3160,7 +3160,7 @@ packetdata pd;
 	   return;
 	}
 
-	if (!my_ofdmHandler -> set_dataChannel (&pd,
+	if (!my_ofdmHandler -> set_dataChannel (pd,
 	                                         &dataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
@@ -4382,7 +4382,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         configWidget. EPGLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = pd. channel;
 	         s. serviceName = pd. serviceName;
@@ -4412,7 +4412,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         configWidget. EPGLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = channel. channelName;
 	         s. serviceName = pd. serviceName;

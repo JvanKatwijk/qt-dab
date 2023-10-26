@@ -36,8 +36,8 @@ public:
 	~timeSyncer	();
 int	sync		(int, int);
 private:
-	sampleReader	*myReader;
-	int32_t         syncBufferIndex = 0;
+	sampleReader	*sampleReader_p;
+	int32_t         syncBufferIndex;
 const	int32_t         syncBufferSize  = 4096;
 };
 

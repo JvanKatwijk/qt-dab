@@ -244,7 +244,6 @@ double	d	= sqrt (x * x + y * y);
 	return (int)(R * d + 0.5);
 }
 
-
 int	tiiHandler::distance (position &target,
 	                      position &home) {
 bool	dy_sign	= target. latitude >  home. latitude;
@@ -257,6 +256,7 @@ double dy	= distance_2 (target. latitude,  home. longitude,
 	else
 	   dx = distance_2 (home. latitude, target. longitude,
 	                    home. latitude, home. longitude);
+
 	return sqrt (dx * dx + dy * dy);
 }
 	

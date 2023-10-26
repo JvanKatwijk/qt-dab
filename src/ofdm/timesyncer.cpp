@@ -26,7 +26,7 @@
 #define C_LEVEL_SIZE    50
 
 	timeSyncer::timeSyncer (sampleReader *mr) {
-	myReader	= mr;
+	sampleReader_p	= mr;
 }
 
 	timeSyncer::~timeSyncer() {}
@@ -37,21 +37,19 @@ int	counter		= 0;
 float	envBuffer       [syncBufferSize];
 const
 int	syncBufferMask	= syncBufferSize - 1;
-int	i;
 
 	syncBufferIndex = 0;
-	for (i = 0; i < C_LEVEL_SIZE; i ++) {
-	   Complex sample 	       = myReader -> getSample (0);
-	   envBuffer [syncBufferIndex]       = jan_abs (sample);
-	   cLevel                            += envBuffer [syncBufferIndex];
+	for (int i = 0; i < C_LEVEL_SIZE; i ++) {
+	   const Complex sample	       = sampleReader_p -> getSample (0);
+	   envBuffer [syncBufferIndex]	= jan_abs (sample);
+	   cLevel		+= envBuffer [syncBufferIndex];	
 	   syncBufferIndex ++;
 	}
+
 //SyncOnNull:
 	counter      = 0;
-	while (cLevel / C_LEVEL_SIZE  > 0.55 * myReader -> get_sLevel()) {
-	   Complex sample        =
-	         myReader -> getSample (0);
-//	         myReader. getSample (coarseOffset + fineCorrector);
+	while (cLevel / C_LEVEL_SIZE  > 0.55 * sampleReader_p -> get_sLevel()) {
+	   const Complex sample        = sampleReader_p -> getSample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
 //      update the levels
 	   cLevel += envBuffer [syncBufferIndex] -
@@ -68,9 +66,8 @@ int	i;
   */
 	counter      = 0;
 //SyncOnEndNull:
-	 while (cLevel / C_LEVEL_SIZE < 0.75 * myReader -> get_sLevel()) {
-	   Complex sample =
-	           myReader -> getSample (0);
+	 while (cLevel / C_LEVEL_SIZE < 0.75 * sampleReader_p -> get_sLevel()) {
+	   const Complex sample = sampleReader_p -> getSample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
 //      update the levels
 	   cLevel += envBuffer [syncBufferIndex] -

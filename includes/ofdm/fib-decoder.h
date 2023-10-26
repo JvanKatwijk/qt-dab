@@ -47,7 +47,7 @@ public:
 	void		connect_channel		();
 	void		disconnect_channel	();
 	bool		syncReached		();
-	void		dataforAudioService	(const QString &, audiodata *);
+	void		dataforAudioService	(const QString &, audiodata &);
 	void		dataforPacketService	(const QString &,
 	                                          packetdata *, int16_t);
 	int		getSubChId		(const QString &, uint32_t);

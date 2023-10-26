@@ -254,7 +254,7 @@ private:
 //
 	QString			checkDir		(const QString);
 
-	void			start_audioService	(audiodata *);
+	void			startAudioservice	(audiodata &);
 	void			start_packetService	(const QString &);
 	void			startScanning		();
 	void			stopScanning		(bool);

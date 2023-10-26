@@ -1188,16 +1188,16 @@ int	serviceOrder;
 	      if (my_ofdmHandler -> is_audioService (ss)) {
 	         audiodata ad;
 	         FILE *f = channel. backgroundServices. at (i). fd;
-	         my_ofdmHandler -> dataforAudioService (ss, &ad);
+	         my_ofdmHandler -> dataforAudioService (ss, ad);
 	         my_ofdmHandler -> 
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);	       
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId  = ad. subchId;
 	      }
 	      else {
 	         packetdata pd;
 	         my_ofdmHandler -> dataforPacketService (ss, &pd, 0);
 	         my_ofdmHandler -> 
-	                   set_dataChannel (&pd, &dataBuffer, BACK_GROUND);	       
+	                   set_dataChannel (pd, &dataBuffer, BACK_GROUND);	       
 	         channel. backgroundServices. at (i). subChId     = pd. subchId;
 	      }
 
@@ -2346,7 +2346,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      serviceName = serviceName. right (16);
 //	      if (serviceName. at (1) == ' ')
 //	         return true;
-	      my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	      my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	      if (ad. defined && (channel. currentService. serviceName == serviceName)) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
@@ -2380,7 +2380,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	            return true;
 
 	         (void)my_ofdmHandler ->
-	                   set_audioChannel (&ad, &audioBuffer, f, BACK_GROUND);
+	                   set_audioChannel (ad, &audioBuffer, f, BACK_GROUND);
 	         
 	         dabService s;
 	         s. channel	= ad. channel;
@@ -2638,7 +2638,7 @@ QString serviceName	= s. serviceName;
 	dynamicLabel	-> setText ("");
 	audiodata ad;
 	     
-	my_ofdmHandler -> dataforAudioService (serviceName, &ad);
+	my_ofdmHandler -> dataforAudioService (serviceName, ad);
 	if (ad. defined) {
 	   channel. currentService. valid	= true;
 	   channel. currentService. is_audio	= true;
@@ -2646,7 +2646,7 @@ QString serviceName	= s. serviceName;
 	   if (my_ofdmHandler -> has_timeTable (ad. SId))
 	      techWindow_p -> show_timetableButton (true);
 
-	   startAudioservice (&ad);
+	   startAudioservice (ad);
 	   if (dabSettings_p -> value ("has-presetName", 0).
 	                                                   toInt () == 1) {
 	      QString s = channel. channelName + ":" + serviceName;
@@ -2683,16 +2683,16 @@ void    RadioInterface::colorService (QModelIndex ind, QColor c, int pt,
 	model. setData (ind, QFont (theFont, pt, -1, italic), Qt::FontRole);
 }
 //
-void	RadioInterface::startAudioservice (audiodata *ad) {
+void	RadioInterface::startAudioservice (audiodata &ad) {
 	channel. currentService. valid	= true;
 
 	(void)my_ofdmHandler -> set_audioChannel (ad, &audioBuffer,
 	                                            nullptr, FORE_GROUND);
 	for (int i = 1; i < 10; i ++) {
 	   packetdata pd;
-	   my_ofdmHandler -> dataforPacketService (ad -> serviceName, &pd, i);
+	   my_ofdmHandler -> dataforPacketService (ad. serviceName, &pd, i);
 	   if (pd. defined) {
-	      my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, FORE_GROUND);
+	      my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, FORE_GROUND);
 	      fprintf (stderr, "adding %s (%d) as subservice\n",
 	                            pd. serviceName. toUtf8 (). data (),
 	                            pd. subchId);
@@ -2701,9 +2701,9 @@ void	RadioInterface::startAudioservice (audiodata *ad) {
 	}
 //	activate sound
 	soundOut_p -> restart ();
-	programTypeLabel ->   setText (getProgramType (ad -> programType));
+	programTypeLabel ->   setText (getProgramType (ad. programType));
 //	show service related data
-	techWindow_p	-> show_serviceData 	(ad);
+	techWindow_p	-> show_serviceData 	(&ad);
 }
 
 void	RadioInterface::startPacketservice (const QString &s) {
@@ -2717,7 +2717,7 @@ packetdata pd;
 	   return;
 	}
 
-	if (!my_ofdmHandler -> set_dataChannel (&pd,
+	if (!my_ofdmHandler -> set_dataChannel (pd,
 	                                         &dataBuffer, FORE_GROUND)) {
 	   QMessageBox::warning (this, tr ("sdr"),
  	                         tr ("could not start this service\n"));
@@ -3948,7 +3948,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         newDisplay. EPGLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = pd. channel;
 	         s. serviceName = pd. serviceName;
@@ -3978,7 +3978,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         newDisplay. EPGLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
-	         my_ofdmHandler -> set_dataChannel (&pd, &dataBuffer, BACK_GROUND);
+	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
 	         dabService s;
 	         s. channel     = channel. channelName;
 	         s. serviceName = pd. serviceName;
@@ -4411,49 +4411,37 @@ Complex inBuffer [amount];
 }
 
 void	RadioInterface::show_tii	(int mainId, int subId) {
-QString a = "Est TII: ";
-bool	found	= false;
 QString	country	= "";
 bool	tiiChange	= false;
 
-	if (mainId == 0xFF) 
+	if (!running. load () ||(mainId == 0xFF))
 	   return;
 
-	for (int i = 0; i < (int)(channel. transmitters. size ()); i += 2) {
-	   if ((channel. transmitters. at (i) == (mainId & 0x7F)) &&
-	       (channel. transmitters. at (i + 1) == subId)) {
-	      found = true;
-	      break;
-	   }
-	}
-
-	if (!found) {
-	   channel. transmitters. append (mainId & 0x7F);
-	   channel. transmitters. append (subId);
-	}
-
-	if (!running. load())
-	   return;
+	{  bool inList = false;
+           for (int i = 0; i < channel. transmitters. size (); i ++)
+              if (channel. transmitters. at (i) == mainId * 100 + subId)
+                 inList = true;
+           if (!inList)
+              channel. transmitters. push_back (mainId * 100 + subId);
+        }
 
 	if ((mainId != channel. mainId) ||
 	    (subId != channel. subId)) {
-	   LOG ("tii numbers", tiiNumber (mainId) + " " + tiiNumber (subId));
 	   tiiChange = true;
-	}
+	   channel. mainId	= mainId;
+	   channel. subId	= subId;
 
-	channel. mainId	= mainId;
-	channel. subId	= subId;
+	   QString a = "Est TII: " + tiiNumber (mainId) + " " +
+	                                    tiiNumber (subId);
+           transmitter_coordinates -> setAlignment (Qt::AlignRight);
+           transmitter_coordinates -> setText (a);
+        }
 //
-//	show the mainId subId combination
-	a = a + " " +  tiiNumber (mainId) + " " + tiiNumber (subId);
-	transmitter_coordinates	-> setAlignment (Qt::AlignRight);
-	transmitter_coordinates	-> setText (a);
-//
-//	if we have change, then get name/location of mainId
-//	and compute the distance
-	
-//	if - for the first time now - we see an ecc value,
-//	we check whether or not a tii files is available
+//	display the transmitters on the scope widget
+	if (!(newDisplay. isHidden () &&
+	               (newDisplay. get_tab () == SHOW_TII))) 
+	   newDisplay. show_transmitters (channel. transmitters);
+
 	if (!channel. has_ecc && (my_ofdmHandler -> get_ecc () != 0)) {
 	   channel. ecc_byte	= my_ofdmHandler -> get_ecc ();
 	   country		= find_ITU_code (channel. ecc_byte,
@@ -4465,75 +4453,57 @@ bool	tiiChange	= false;
 	if ((country != "") && (country != channel. countryName)) {
 	   transmitter_country	-> setText (country);
 	   channel. countryName	= country;
-	   LOG ("country", channel. countryName);
-	}
-
-
-	bool computeDistances	= true;	// until proven otherwise
-	if (!channel. tiiFile) 
-	   computeDistances = false;
-
-	if (!(tiiChange || (channel. transmitterName == "")))
-	   computeDistances = false;
-
-	if (tiiProcessor. is_black (channel. Eid, mainId, subId)) 
-	   computeDistances = false;
-
-	if (channel. localPos. latitude == 0)
-	   computeDistances = false;
-
-	QString theName =
-	         tiiProcessor. get_transmitterName (channel. realChannel?
-	                                               channel. channelName :
-	                                               "any",
-//	                                            channel. countryName,
-	                                            channel. Eid,
-	                                            mainId, subId);
-	if (theName == "") {
-	   tiiProcessor. set_black (channel. Eid, mainId, subId);
-	   LOG ("Not found ", QString::number (channel. Eid, 16) + " " +
-	                      QString::number (mainId) + " " +
-	                      QString::number (subId));
-	   computeDistances = false;
-	}
-
-	if (!computeDistances &&
-	   (!newDisplay. isHidden () && (newDisplay. get_tab () == SHOW_TII))) {
-	   newDisplay. show_transmitters (channel. transmitters);
-	   channel. distance	= -1;
 	}
 //
-//	being here, we know that we can estimate the distances of
-
-	if (channel. transmitterName == theName)
+//	Now looking for a name
+//
+	if (!channel. tiiFile) 
 	   return;
 
+	if ((!tiiChange) && (channel. transmitterName != ""))
+	   return;
+
+//	if (tiiProcessor. is_black (channel. Eid, mainId, subId)) 
+//	   return;
+
+	QString theName =
+	      tiiProcessor. get_transmitterName (channel. realChannel?
+	                                               channel. channelName :
+	                                               "any",
+	                                         channel. Eid,
+	                                         mainId, subId);
+	if (theName == "") {	// can happen
+//	   tiiProcessor. set_black (channel. Eid, mainId, subId);
+	   return;
+	}
+//	we have a name
+//
 	channel. transmitterName = theName;
+//	being here, we know that we can estimate the distances of
 	float power;
 	tiiProcessor. get_coordinates (channel. targetPos, power,
 	                               channel. realChannel ?
 	                                  channel. channelName :
 	                                  "any",
 	                               theName);
-	LOG ("transmitter ", channel. transmitterName);
-	LOG ("coordinates ",
-	           QString::number (channel. targetPos. latitude) + " " +
-	                   QString::number (channel. targetPos. longitude));
-	LOG ("current SNR ", QString::number (channel. snr));
-	QString labelText =  channel. transmitterName;
 //
-//      if our own position is known, we show the distance
-//
-	int distance	= tiiProcessor. distance (channel. targetPos,
+//	
+	if ((channel. localPos. latitude == 0) ||
+	    (channel. localPos. longitude == 0) ||
+	    (channel. targetPos. latitude == 0) ||
+	    (channel. targetPos. longitude == 0)) {
+	   return;
+	}
+
+//      if positions are known, we can compute distance and corner
+	channel. distance = tiiProcessor. distance (channel. targetPos,
+	                                            channel. localPos);
+	channel. corner	  = tiiProcessor. corner (channel. targetPos,
 	                                          channel. localPos);
-	channel. distance = distance;
-	int corner	= tiiProcessor.  corner (channel. targetPos,
-	                                         channel. localPos);
-	LOG ("distance ", QString::number (distance));
-	LOG ("corner ", QString::number (corner));
-	labelText +=  + " " + QString::number (distance) + " km" +
-	                               " " + QString::number (corner);
-	labelText += QString::fromLatin1 (" \xb0 ");
+	QString labelText = theName +
+	                    QString::number (channel. distance) + " km " +
+	                    QString::number (channel. corner) +
+	                    QString::fromLatin1 (" \xb0 ");
 	fprintf (stderr, "%s\n", labelText. toUtf8 (). data ());
 	distanceLabel -> setText (labelText);
 
@@ -4542,16 +4512,11 @@ bool	tiiChange	= false;
 	   return;
 
 	uint8_t key = MAP_NORM_TRANS;
-	if ((!transmitterTags_local) && (distance > maxDistance)) { 
-	   maxDistance = distance;
+	if ((!transmitterTags_local) && (channel. distance > maxDistance)) { 
+	   maxDistance = channel. distance;
 	   key = MAP_MAX_TRANS;
 	}
 //
-//	to be certain, we check
-	if ((channel. targetPos. latitude == 0) ||
-	                             (distance == 0) || (corner== 0))
-	   return;
-
 	QDateTime theTime = 
 	   configWidget.  utcSelector -> isChecked () ?
 	                  QDateTime::currentDateTimeUtc () :
@@ -4563,7 +4528,8 @@ bool	tiiChange	= false;
 	                       channel. channelName,
 	                       theTime. toString (Qt::TextDate),
 	                       channel. mainId * 100 + channel. subId,
-	                       distance, corner, power);
+	                       channel. distance,
+	                       channel. corner, power);
 }
 
 void	RadioInterface::showIQ			(int amount) {

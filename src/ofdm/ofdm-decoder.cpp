@@ -157,9 +157,6 @@ static	int	cnt	= 0;
 //	One is looking at the X and Y components, and 
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
-//	An alternative approach (Hans T) was to normalize the 
-//	carrier and to use the QAM4 decoder from the DRM decoder
-//	Maybe later	
 
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
@@ -206,12 +203,9 @@ Complex fft_buffer [T_u];
 	
 //	The approach taken  decoding approach is
 //	looking at the X and Y coordinates of the "dots"
-//	and taking their size as element
-//	It is (well) known that abs of a complex Value is larger than
-//	the sizes of the elements, so multiplying by 127 never exceeds
-//	the 127
+//	and taking their size as element.
 	   float ab1	= jan_abs (r1);
-	   ibits [i]	=  (int16_t)(- (real (r1) * 127) / ab1 );
+	   ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
 	   ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
 	}
 

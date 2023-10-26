@@ -417,7 +417,6 @@ int params	= 0;
 	   QByteArray record_data (1, 0);
 	   QDataStream in (&file);
 	   bodySize	= file. size ();
-	   fprintf (stderr, "bodysize %d\n", bodySize);
 	   body		=  (char *)malloc (bodySize + 40);
 	   while (!in. atEnd ()) {
 	      in . readRawData (record_data. data (), 1);	
