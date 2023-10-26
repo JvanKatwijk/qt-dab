@@ -9,8 +9,9 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-The current version is 6.2, the versions 5.4 and 4.7 are still baing
-accessinle and maintained.
+The current version is 6.2, the versions 5.4 and 4.7 are still being
+accessible and maintained.The releases section provides a windows installer
+and an AppImage (Linux x64) for all three versions.
 
 ![6.2](/qt-dab-6.2.png?raw=true)
 
