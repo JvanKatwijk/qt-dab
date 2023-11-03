@@ -43,18 +43,18 @@ public:
 			fibDecoder		(RadioInterface *);
 			~fibDecoder		();
 
-	void		clearEnsemble		();
+	void		clear_ensemble		();
 	void		connect_channel		();
 	void		disconnect_channel	();
 	bool		syncReached		();
-	void		dataforAudioService	(const QString &, audiodata &);
-	void		dataforPacketService	(const QString &,
+	void		data_for_audioservice	(const QString &, audiodata &);
+	void		data_for_packetservice	(const QString &,
 	                                          packetdata *, int16_t);
-	int		getSubChId		(const QString &, uint32_t);
-	std::vector<serviceId>	getServices	(int);
+	int		get_subCh_id		(const QString &, uint32_t);
+	std::vector<serviceId>	get_services	(int);
 
-	QString		findService		(uint32_t, int);
-	void		getParameters		(const QString &,
+	QString		find_service		(uint32_t, int);
+	void		get_parameters		(const QString &,
 	                                           uint32_t *, int *);
         uint8_t		get_ecc			();
 	uint16_t	get_countryName 	();
@@ -143,10 +143,11 @@ private:
 	void		FIG1Extension5		(uint8_t *);
 	void		FIG1Extension6		(uint8_t *);
 
-	int		findService		(const QString &);
-	int		findService		(uint32_t);
+	int		find_service		(const QString &);
+	int		find_service		(uint32_t);
 	void		cleanupServiceList	();
-	void		createService		(QString name,
+	void		createService		(const QString &name,
+	                                         const QString &shortName,
 	                                         uint32_t SId, int SCIds);
 
 	int		findServiceComponent	(dabConfig *, int16_t);
@@ -195,13 +196,13 @@ private:
 	QString		audioData		(int index);
 	QString		packetData		(int index);
 signals:
-	void		addtoEnsemble		(const QString &, int);
-	void		nameofEnsemble		(int, const QString &);
+	void		add_to_ensemble		(const QString &, int);
+	void		name_of_ensemble	(int, const QString &);
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
 	void		changeinConfiguration	();
-	void		startAnnouncement	(const QString &, int);
-	void		stopAnnouncement	(const QString &, int);
+	void		start_announcement	(const QString &, int);
+	void		stop_announcement	(const QString &, int);
 	void		nrServices		(int);
 };
 

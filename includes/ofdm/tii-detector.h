@@ -43,8 +43,7 @@ private:
 	int16_t		T_u;
 	int16_t		carriers;
 	fftHandler	my_fftHandler;
-	void		collapse	(Complex *,
-	                                         float *);
+	void		collapse	(std::vector<Complex> &, float *);
 	bool		detectMode_new;
 	int16_t		depth;
 	uint8_t		invTable [256];

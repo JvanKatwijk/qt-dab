@@ -57,8 +57,9 @@ private:
 	QSettings	*dabSettings;
 	QScrollArea	*myWidget;
 	QTableWidget	*contentWidget;
-	int16_t		addRow	();
 	bool		is_clear;
+
+	int16_t		addRow	();
 private slots:
 	void		selectService	(int, int);
 	void		dump		(int, int);

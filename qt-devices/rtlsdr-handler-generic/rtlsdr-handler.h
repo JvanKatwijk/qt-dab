@@ -119,6 +119,7 @@ private:
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
 
+	void		check_result		(bool, const std::string);
 	bool		filtering;
 	LowPassFIR	theFilter;
 	int		currentDepth;

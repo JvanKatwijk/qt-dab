@@ -25,15 +25,16 @@
 #include	"radio.h"
 #include	<QComboBox>
 
-	presetHandler::presetHandler	(RadioInterface *radio) {
-	this	-> radio	= radio;
+	presetHandler::presetHandler	(RadioInterface *radio):
+	                                              radio_p (radio) {
 	this	-> fileName	= "";
 }
 
         presetHandler::~presetHandler   () {
 }
 
-void	presetHandler::loadPresets (const QString &fileName, QComboBox *cb) {
+void	presetHandler::loadPresets (const QString &fileName,
+	                                             QComboBox *cb) {
 QDomDocument xmlBOM;
 QFile f (fileName);
 
@@ -64,8 +65,11 @@ QDomElement root = the_presets. createElement ("preset_db");
 
 	for (int i = 1; i < cb -> count (); i ++) {
 	   QStringList list = cb -> itemText (i).
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
 	                        split (":", Qt::SkipEmptyParts);
-//	                        split (":", QString::SkipEmptyParts);
+#else
+	                        split (":", QString::SkipEmptyParts);
+#endif
            if (list. length () != 2)
 	      continue;
            QString channel = list. at (0);

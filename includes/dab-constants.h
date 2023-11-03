@@ -129,6 +129,7 @@ public:
 	uint8_t	type;
 	bool	defined;
 	QString	serviceName;
+	QString	shortName;
 	int32_t	SId;
 	int	SCIds;
 	int16_t subchId;
@@ -206,7 +207,7 @@ bool	isInfinite (float x) {
 #define	MAXIMUM(x, y)	((x) > (y) ? x : y)
 
 static inline
-float	jan_abs (std::complex<float> z) {
+float	jan_abs (Complex z) {
 float	re	= real (z);
 float	im	= imag (z);
 	if (re < 0) re = -re;
@@ -215,6 +216,26 @@ float	im	= imag (z);
 	   return re + 0.5 * im;
 	else
 	   return im + 0.5 * re;
+}
+
+static inline
+float	jan_abs_clipped (Complex z, bool &o, float clip) {
+float	re	= real (z);
+float	im	= imag (z);
+
+	o	= false;
+	if (re < 0) re = -re;
+	if (im < 0) im = -im;
+	if (re > im) {
+	   if (re > clip)
+	      o = true;
+	   return re + 0.5 * im;
+	}
+	else {
+	   if (im > clip)
+	      o = true;
+	   return im + 0.5 * re;	
+	}
 }
 
 static inline

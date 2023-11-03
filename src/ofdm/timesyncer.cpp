@@ -40,7 +40,7 @@ int	syncBufferMask	= syncBufferSize - 1;
 
 	syncBufferIndex = 0;
 	for (int i = 0; i < C_LEVEL_SIZE; i ++) {
-	   const Complex sample	       = sampleReader_p -> getSample (0);
+	   const Complex sample	       = sampleReader_p -> get_sample (0);
 	   envBuffer [syncBufferIndex]	= jan_abs (sample);
 	   cLevel		+= envBuffer [syncBufferIndex];	
 	   syncBufferIndex ++;
@@ -49,7 +49,7 @@ int	syncBufferMask	= syncBufferSize - 1;
 //SyncOnNull:
 	counter      = 0;
 	while (cLevel / C_LEVEL_SIZE  > 0.55 * sampleReader_p -> get_sLevel()) {
-	   const Complex sample        = sampleReader_p -> getSample (0);
+	   const Complex sample        = sampleReader_p -> get_sample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
 //      update the levels
 	   cLevel += envBuffer [syncBufferIndex] -
@@ -67,7 +67,7 @@ int	syncBufferMask	= syncBufferSize - 1;
 	counter      = 0;
 //SyncOnEndNull:
 	 while (cLevel / C_LEVEL_SIZE < 0.75 * sampleReader_p -> get_sLevel()) {
-	   const Complex sample = sampleReader_p -> getSample (0);
+	   const Complex sample = sampleReader_p -> get_sample (0);
 	   envBuffer [syncBufferIndex] = jan_abs (sample);
 //      update the levels
 	   cLevel += envBuffer [syncBufferIndex] -

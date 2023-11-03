@@ -105,6 +105,7 @@ public:
 private:
 	RingBuffer<Complex> _I_Buffer;
 	QString		recorderVersion;
+	void		check_error		(bool, const std::string);
 	FILE            *xmlDumper;
         xml_fileWriter  *xmlWriter;
         bool            setup_xmlDump           ();

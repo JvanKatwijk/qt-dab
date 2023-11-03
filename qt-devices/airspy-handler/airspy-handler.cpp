@@ -81,29 +81,17 @@ uint32_t samplerateCount;
 	                               std::string (libraryString)));
 	}
 
-	if (!load_airspyFunctions()) {
-	   fprintf (stderr, "problem in loading functions\n");
-	   releaseLibrary ();
-	   throw (airspy_exception ("one or more library functions could not be loaded"));
-	}
+	check_error (load_airspyFunctions (),
+	   "one or more library functions could not be loaded");
 //
 	strcpy (serial,"");
-	result = this -> my_airspy_init ();
-	if (result != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
-	   throw (airspy_exception (
-	             my_airspy_error_name ((airspy_error)result)));
-	}
+	check_error (this -> my_airspy_init () == AIRSPY_SUCCESS,
+	             my_airspy_error_name ((airspy_error)result));
 
 	uint64_t deviceList [4];
 	int	deviceIndex;
 	int numofDevs = my_airspy_list_devices (deviceList, 4);
-	fprintf (stderr, "we have %d devices\n", numofDevs);
-	if (numofDevs == 0) {
-	   fprintf (stderr, "No devices found\n");
-	   releaseLibrary ();
-	   throw (airspy_exception ("No airspy device was detected"));
-	}
+	check_error (numofDevs > 0, "No airspy device was detected");
 
 	if (numofDevs > 1) {
            airspySelect deviceSelector;
@@ -117,11 +105,8 @@ uint32_t samplerateCount;
 	   deviceIndex = 0;
 	
 	result = my_airspy_open (&device, deviceList [deviceIndex]);
-	if (result != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
-	   throw (airspy_exception (
-	                      my_airspy_error_name ((airspy_error)result)));
-	}
+	check_error (result == AIRSPY_SUCCESS,
+	                      my_airspy_error_name ((airspy_error)result));
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	(void) my_airspy_get_samplerates (device, &samplerateCount, 0);
@@ -139,12 +124,9 @@ uint32_t samplerateCount;
 	   }
 	}
 
-	if (selectedRate == 0) {
-	   releaseLibrary ();
-	   throw (airspy_exception ("Cannot handle the samplerates"));
-	}
-	else
-	   fprintf (stderr, "selected samplerate = %d\n", selectedRate);
+	check_error (selectedRate > 0, "Cannot handle the samplerates");
+
+	fprintf (stderr, "selected samplerate = %d\n", selectedRate);
 
 	airspySettings    -> beginGroup ("airspySettings");
         currentDepth    = airspySettings  -> value ("filterDepth", 5). toInt ();
@@ -154,11 +136,8 @@ uint32_t samplerateCount;
 	theFilter	= new LowPassFIR (currentDepth, 1560000 / 2, selectedRate);
 	filtering	= false;
 	result = my_airspy_set_samplerate (device, selectedRate);
-	if (result != AIRSPY_SUCCESS) {
-	   releaseLibrary ();
-           throw (airspy_exception (
-	             my_airspy_error_name ((enum airspy_error)result)));
-	}
+	check_error (result == AIRSPY_SUCCESS,
+	             my_airspy_error_name ((enum airspy_error)result));
 
 
 //	The sizes of the mapTables follow from the input and output rate
@@ -998,6 +977,13 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	if (result != AIRSPY_SUCCESS) {
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
+	}
+}
+
+void	airspyHandler::check_error (bool b, const std::string s) {
+	if (!b) {
+	   releaseLibrary ();
+	   throw (airspy_exception (s));
 	}
 }
 

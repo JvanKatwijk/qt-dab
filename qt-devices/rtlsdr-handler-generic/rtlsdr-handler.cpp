@@ -74,8 +74,7 @@ static
 void	RTLSDRCallBack (uint8_t *buf, uint32_t len, void *ctx) {
 rtlsdrHandler	*theStick	= (rtlsdrHandler *)ctx;
 
-	if ((theStick == nullptr)) {
-//	if ((theStick == nullptr) || (len != READLEN_DEFAULT)) {
+	if ((theStick == nullptr) || (len != READLEN_DEFAULT)) {
 	   fprintf (stderr, "%d \n", len);
 	   return;
 	}
@@ -98,7 +97,7 @@ public:
 
 	dll_driver (rtlsdrHandler *d) {
 	theStick	= d;
-	start();
+	start ();
 }
 
 	~dll_driver() {
@@ -142,7 +141,7 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	currentDepth	= rtlsdrSettings -> value ("filterDepth", 5). toInt ();
 	rtlsdrSettings	-> endGroup ();
-	filterDepth	-> setValue (currentDepth);
+	filterDepth_selector	-> setValue (currentDepth);
 	theFilter. resize (currentDepth);
 
 	inputRate		= 2048000;
@@ -151,9 +150,9 @@ char	manufac [256], product [256], serial [256];
 #ifdef	__MINGW32__
 	const char *libraryString	= "rtlsdr.dll";
 #elif __linux__
-    const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
+	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
 #elif __APPLE__
-    const char *libraryString	= "librtlsdr.dylib";
+	const char *libraryString	= "librtlsdr.dylib";
 #endif
 	phandle = new QLibrary (libraryString);
 	phandle -> load ();
@@ -162,18 +161,13 @@ char	manufac [256], product [256], serial [256];
 	   throw (rtlsdr_exception (std::string ("failed to open ") + std::string (libraryString)));
 	}
 
-	if (!load_rtlFunctions ()) {
-	   delete (phandle);
-	   throw (rtlsdr_exception ("could not load one or more library functions"));
-	}
+	 check_result (load_rtlFunctions (),
+	                "could not load one or more library functions");
 
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= this -> rtlsdr_get_device_count ();
-	if (deviceCount == 0) {
-	   delete (phandle);
-	   throw (rtlsdr_exception ("No rtlsdr device found"));
-	}
-
+	fprintf (stderr, "devicecount %d\n", deviceCount);
+	check_result (deviceCount > 0, "No rtlsdr device found");
 	deviceIndex = 0;	// default
 	if (deviceCount > 1) {
 	   rtl_dongleSelect dongleSelector;
@@ -186,18 +180,12 @@ char	manufac [256], product [256], serial [256];
 //
 //	OK, now open the hardware
 	r		= this -> rtlsdr_open (&theDevice, deviceIndex);
-	if (r < 0) {
-	   delete phandle;
-	   throw (rtlsdr_exception ("Opening rtlsdr device failed"));
-	}
+	check_result (r >= 0, "Opening rtlsdr device failed");
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
 	deviceVersion	-> setText (deviceModel);
 	r		= this -> rtlsdr_set_sample_rate (theDevice, inputRate);
-	if (r < 0) {
-	   delete phandle;
-	   throw (rtlsdr_exception ("Setting samplerate for rtlsdr failed"));
-	}
+	check_result (r >= 0, "Setting samplerate failed");
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);
 	fprintf (stderr, "Supported gain values (%d): ", gainsCount);
@@ -205,7 +193,7 @@ char	manufac [256], product [256], serial [256];
 	   gainsCount	= rtlsdr_get_tuner_gains (theDevice, gains);
 	   for (i = gainsCount; i > 0; i--) {
 	      fprintf (stderr, "%.1f ", gains [i - 1] / 10.0);
-	      gainControl -> addItem (QString::number (gains [i - 1]));
+	      gain_selector -> addItem (QString::number (gains [i - 1]));
 	   }
 	   fprintf (stderr, "\n");
 	}
@@ -217,14 +205,14 @@ char	manufac [256], product [256], serial [256];
 //	See what the saved values are and restore the GUI settings
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
 	temp = rtlsdrSettings -> value ("externalGain", "10"). toString();
-	k	= gainControl -> findText (temp);
-	gainControl	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
+	k	= gain_selector -> findText (temp);
+	gain_selector	-> setCurrentIndex (k != -1 ? k : gainsCount / 2);
 
 	temp		= rtlsdrSettings -> value ("autogain",
 	                                      "autogain_on"). toString();
-	agcControl	-> setChecked (temp == "autogain_on");
+	autogain_selector	-> setChecked (temp == "autogain_on");
 	
-	ppm_correction	->
+	ppm_selector	->
 	     setValue (rtlsdrSettings -> value ("ppm_correction", 0). toInt());
 	save_gainSettings	=
 	     rtlsdrSettings -> value ("save_gainSettings", 1). toInt () != 0;
@@ -236,36 +224,36 @@ char	manufac [256], product [256], serial [256];
 
 //	all sliders/values are set to previous values, now do the settings
 //	based on these slider values
-	if (agcControl -> isChecked ())
+	if (autogain_selector -> isChecked ())
 	   rtlsdr_set_agc_mode (theDevice, 1);
 	else
 	   rtlsdr_set_agc_mode (theDevice, 0);
 	rtlsdr_set_tuner_gain	(theDevice, 
-	                         gainControl -> currentText (). toInt ());
-	set_ppmCorrection	(ppm_correction -> value());
+	                         gain_selector -> currentText (). toInt ());
+	set_ppmCorrection	(ppm_selector -> value());
 
 //	and attach the buttons/sliders to the actions
-	connect (gainControl, SIGNAL (activated (const QString &)),
+	connect (gain_selector, SIGNAL (activated (const QString &)),
 	         this, SLOT (set_ExternalGain (const QString &)));
-	connect (agcControl, SIGNAL (stateChanged (int)),
+	connect (autogain_selector, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_autogain (int)));
-	connect (ppm_correction, SIGNAL (valueChanged (int)),
+	connect (ppm_selector, SIGNAL (valueChanged (int)),
 	         this, SLOT (set_ppmCorrection  (int)));
-	connect (xml_dumpButton, SIGNAL (clicked ()),
+	connect (xml_dump_selector, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
-	connect (iq_dumpButton, SIGNAL (clicked ()),
+	connect (iq_dump_selector, SIGNAL (clicked ()),
 	         this, SLOT (set_iqDump ()));
-	connect (biasControl, SIGNAL (stateChanged (int)),
+	connect (biasT_selector, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_biasControl (int)));
-	connect (filterSelector, SIGNAL (stateChanged (int)),
+	connect (filter_selector, SIGNAL (stateChanged (int)),
 	         this, SLOT (set_filter (int)));
 	xmlDumper       = nullptr;
 //
 //	and for saving/restoring the gain setting:
 	connect (this, SIGNAL (new_gainIndex (int)),
-	         gainControl, SLOT (setCurrentIndex (int)));
+	         gain_selector, SLOT (setCurrentIndex (int)));
 	connect (this, SIGNAL (new_agcSetting (bool)),
-	         agcControl, SLOT (setChecked (bool)));
+	         autogain_selector, SLOT (setChecked (bool)));
 	iqDumper	= nullptr;
 	iq_dumping. store (false);
 	xml_dumping. store (false);
@@ -285,16 +273,17 @@ char	manufac [256], product [256], serial [256];
 //	   rtlsdr_close (theDevice);
 	}
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
-        rtlsdrSettings -> setValue ("position-x", myFrame. pos (). x ());
-        rtlsdrSettings -> setValue ("position-y", myFrame. pos (). y ());
+        rtlsdrSettings	-> setValue ("position-x", myFrame. pos (). x ());
+        rtlsdrSettings	-> setValue ("position-y", myFrame. pos (). y ());
 
 	rtlsdrSettings	-> setValue ("externalGain",
-	                              gainControl -> currentText());
+	                              gain_selector -> currentText());
 	rtlsdrSettings	-> setValue ("autogain",
-	                              agcControl -> isChecked () ? "1" : "0");
+	                              autogain_selector -> isChecked () ? "1" : "0");
 	rtlsdrSettings	-> setValue ("ppm_correction",
-	                              ppm_correction -> value());
-	rtlsdrSettings	-> setValue ("filterDepth", filterDepth -> value ());
+	                                 ppm_selector -> value());
+	rtlsdrSettings	-> setValue ("filterDepth",
+	                                 filterDepth_selector -> value ());
 	rtlsdrSettings	-> sync ();
 	rtlsdrSettings	-> endGroup();
 	myFrame. hide ();
@@ -309,7 +298,7 @@ int32_t	rtlsdrHandler::getVFOFrequency() {
 //
 void	rtlsdrHandler::set_filter	(int c) {
 	(void)c;
-	filtering       = filterSelector -> isChecked ();
+	filtering       = filter_selector -> isChecked ();
 }
 
 bool	rtlsdrHandler::restartReader	(int32_t freq) {
@@ -320,8 +309,8 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
-	set_autogain (agcControl -> isChecked ());
-	set_ExternalGain (gainControl -> currentText ());
+	set_autogain (autogain_selector -> isChecked ());
+	set_ExternalGain (gain_selector -> currentText ());
 	if (workerHandle == nullptr) {
 	   (void)this -> rtlsdr_reset_buffer (theDevice);
 	   workerHandle	= new dll_driver (this);
@@ -347,17 +336,19 @@ void	rtlsdrHandler::set_ExternalGain	(const QString &gain) {
 //
 void	rtlsdrHandler::set_autogain	(int dummy) {
 	(void)dummy;
-	int e = rtlsdr_set_agc_mode (theDevice, agcControl -> isChecked () ? 1 : 0);
+	int e = rtlsdr_set_agc_mode (theDevice,
+	                             autogain_selector -> isChecked () ? 1 : 0);
 //	fprintf (stderr, "set_agc_mode results in %d\n", e);
 	rtlsdr_set_tuner_gain (theDevice, 
-	                       gainControl -> currentText (). toInt ());
+	                       gain_selector -> currentText (). toInt ());
 //	fprintf (stderr, "set_tuner_gain results in %d\n", e);
 }
 //
 void	rtlsdrHandler::set_biasControl	(int dummy) {
 	(void)dummy;
 	if (rtlsdr_set_bias_tee != nullptr)
-	   rtlsdr_set_bias_tee (theDevice, biasControl -> isChecked () ? 1 : 0);
+	   rtlsdr_set_bias_tee (theDevice,
+	                        biasT_selector -> isChecked () ? 1 : 0);
 }
 //	correction is in Hz
 void	rtlsdrHandler::set_ppmCorrection	(int32_t ppm) {
@@ -375,8 +366,8 @@ static int iqTeller	= 0;
 
 	amount = _I_Buffer. getDataFromBuffer (temp, size);
 	if (filtering) {
-	   if (filterDepth -> value () != currentDepth) {
-	      currentDepth = filterDepth -> value ();
+	   if (filterDepth_selector -> value () != currentDepth) {
+	      currentDepth = filterDepth_selector -> value ();
 	      theFilter. resize (currentDepth);
 	   }
 	   for (int i = 0; i < amount; i ++) 
@@ -601,14 +592,14 @@ QString	rtlsdrHandler::deviceName	() {
 void	rtlsdrHandler::set_iqDump	() {
 	if (iqDumper == nullptr) {
 	   if (setup_iqDump ()) {
-	      iq_dumpButton	-> setText ("writing raw file");
-	      xml_dumpButton	-> hide ();
+	      iq_dump_selector	-> setText ("writing raw file");
+	      xml_dump_selector	-> hide ();
 	   }
 	}
 	else {
 	   close_iqDump ();
-	   iq_dumpButton	-> setText ("Dump to raw");
-	   xml_dumpButton	-> show ();
+	   iq_dump_selector	-> setText ("Dump to raw");
+	   xml_dump_selector	-> show ();
 	}
 }
 
@@ -637,13 +628,13 @@ void	rtlsdrHandler::close_iqDump () {
 void	rtlsdrHandler::set_xmlDump () {
 	if (!xml_dumping. load ()) {
 	  if (setup_xmlDump ())
-	      xml_dumpButton	-> setText ("writing xml file");
-	  iq_dumpButton	-> hide	();
+	      xml_dump_selector	-> setText ("writing xml file");
+	  iq_dump_selector	-> hide	();
 	}
 	else {
 	   close_xmlDump ();
-	   xml_dumpButton	-> setText ("Dump to xml");
-	   iq_dumpButton	-> show	();
+	   xml_dump_selector	-> setText ("Dump to xml");
+	   iq_dump_selector	-> show	();
 	}
 }
 
@@ -719,8 +710,8 @@ void	rtlsdrHandler::close_xmlDump () {
 //      the frequency (the MHz component) is used as key
 //
 void    rtlsdrHandler::record_gainSettings (int freq) {
-QString	gain	= gainControl	-> currentText ();
-int	agc	= agcControl	-> isChecked () ? 1 : 0;
+QString	gain	= gain_selector	-> currentText ();
+int	agc	= autogain_selector	-> isChecked () ? 1 : 0;
 QString theValue        = gain + ":" + QString::number (agc);
 
 	rtlsdrSettings         -> beginGroup ("rtlsdrSettings");
@@ -746,20 +737,26 @@ QString	theValue	= "";
 	QString temp = result. at (0);
 	agc	= result. at (1). toInt ();
 
-	int k	= gainControl -> findText (temp);
+	int k	= gain_selector -> findText (temp);
 	if (k != -1) {
-	   gainControl	-> blockSignals (true);
+	   gain_selector	-> blockSignals (true);
 	   new_gainIndex (k);
-	   while (gainControl -> currentText () != temp)
+	   while (gain_selector -> currentText () != temp)
 	      usleep (1000);
-	   gainControl	-> blockSignals (false);
+	   gain_selector	-> blockSignals (false);
 	}
 
-	agcControl	-> blockSignals (true);
+	autogain_selector	-> blockSignals (true);
 	new_agcSetting (agc == 1);
-	while (agcControl -> isChecked () != (agc == 1))
+	while (autogain_selector -> isChecked () != (agc == 1))
 	   usleep (1000);
-	set_autogain (agcControl -> isChecked ());
-	agcControl	-> blockSignals (false);
+	set_autogain (autogain_selector -> isChecked ());
+	autogain_selector	-> blockSignals (false);
 }
 
+void	rtlsdrHandler::check_result (bool test, const std::string exText) {
+	if (!test) {
+	   delete phandle;
+	   throw (rtlsdr_exception (exText));
+	}
+}

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>242</width>
-    <height>345</height>
+    <height>370</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="ppm_correction">
+      <widget class="QSpinBox" name="ppm_selector">
        <property name="minimum">
         <number>-500</number>
        </property>
@@ -38,7 +38,7 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QComboBox" name="gainControl">
+      <widget class="QComboBox" name="gain_selector">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -62,14 +62,14 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
-      <widget class="QCheckBox" name="agcControl">
+      <widget class="QCheckBox" name="autogain_selector">
        <property name="text">
         <string>autogain</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QCheckBox" name="filterSelector">
+      <widget class="QCheckBox" name="filter_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DABsticks do not have much filtering. A software filter - 1560KHz wide - can be selected&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -83,14 +83,14 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_4">
      <item>
-      <widget class="QCheckBox" name="biasControl">
+      <widget class="QCheckBox" name="biasT_selector">
        <property name="text">
         <string>biasT</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QSpinBox" name="filterDepth">
+      <widget class="QSpinBox" name="filterDepth_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;select the depth of the software 1560 KHz filter. Be aware that for a filter depth N N* 2048000 extra additions and complex multiplications are done&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -105,7 +105,7 @@
     </layout>
    </item>
    <item>
-    <widget class="QPushButton" name="xml_dumpButton">
+    <widget class="QPushButton" name="xml_dump_selector">
      <property name="toolTip">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dumps the raw input from the rtlsdr dongle into a self describing file (with header in xml format containing recorded time, container format, frequency, device name, Qt-DAB version)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Opens a 'Save as ...' dialog. Press again to stop recording.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Very experimental! The resulting file can be read-in by using the xml file handler (if configured)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Warning: Produces large files!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -115,7 +115,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="iq_dumpButton">
+    <widget class="QPushButton" name="iq_dump_selector">
      <property name="text">
       <string>dump to raw file</string>
      </property>

@@ -49,6 +49,7 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
+	clipped		= false;
 	for (i = 0; i < INPUT_RATE; i ++)
 	   oscillatorTable [i] = Complex
 	                            (cos (2.0 * M_PI * i / INPUT_RATE),
@@ -73,67 +74,19 @@ float	sampleReader::get_sLevel() {
 	return sLevel;
 }
 
-Complex	sampleReader::getSample (float phaseOffset) {
-Complex temp;
+Complex	sampleReader::get_sample (float phaseOffset) {
+std::vector<Complex> buffer (1);
 
-	if (!running. load())
-	   throw 21;
-
-///	bufferContent is an indicator for the value of ... -> Samples()
-	if (bufferContent == 0) {
-	   bufferContent = theRig -> Samples();
-	   while ((bufferContent <= 2048) && running. load()) {
-	      usleep (10);
-	      bufferContent = theRig -> Samples(); 
-	   }
-	}
-
-	if (!running. load())	
-	   throw 20;
-//
-//	so here, bufferContent > 0
-	theRig -> getSamples (&temp, 1);
-	bufferContent --;
-	if (dumpfilePointer. load() != nullptr) {
-	   dumpBuffer [2 * dumpIndex    ] = real (temp) * dumpScale;
-	   dumpBuffer [2 * dumpIndex + 1] = imag (temp) * dumpScale;
-	   if ( ++dumpIndex >= DUMPSIZE / 2) {
-	      sf_writef_short (dumpfilePointer. load(),
-	                       dumpBuffer, dumpIndex);
-	      dumpIndex = 0;
-	   }
-	}
-
-	if (localCounter < bufferSize)
-	   localBuffer [localCounter ++]        = temp;
-//
-//	OK, we have a sample!!
-//	first: adjust frequency. We need Hz accuracy
-	currentPhase	-= phaseOffset;
-	currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
-
-	temp		*= oscillatorTable [currentPhase];
-	sLevel		= 0.00001 * jan_abs (temp) + (1 - 0.00001) * sLevel;
-#define	N	4
-	if (++ sampleCount > INPUT_RATE / N) {
-//	   show_corrector	(corrector);
-	   sampleCount = 0;
-	   if (spectrumBuffer != nullptr) {
-              spectrumBuffer -> putDataIntoBuffer (localBuffer. data(),
-	                                                       localCounter);
-              emit show_spectrum (bufferSize);
-	   }
-           localCounter = 0;
-	}
-	return temp;
+	get_samples (buffer, 0, 1, phaseOffset, false);
+	return buffer [0];
 }
 
-void	sampleReader::getSamples (std::vector<Complex>  &v,
-	                          int index,
-	                          int32_t n,
-	                          int32_t phaseOffset, bool saving) {
-int32_t		i;
+void	sampleReader::get_samples (std::vector<Complex>  &v,
+	                           int index,
+	                           int32_t n,
+	                           int32_t phaseOffset, bool saving) {
 Complex buffer [n];
+
 	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;
@@ -152,7 +105,7 @@ Complex buffer [n];
 	n	= theRig -> getSamples (buffer, n);
 	bufferContent -= n;
 	if (dumpfilePointer. load () != nullptr) {
-	   for (i = 0; i < n; i ++) {
+	   for (int i = 0; i < n; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
 	      dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
 	      if (++dumpIndex >= DUMPSIZE / 2) {
@@ -165,17 +118,18 @@ Complex buffer [n];
 
 //	OK, we have samples!!
 //	first: adjust frequency. We need Hz accuracy
-	for (i = 0; i < n; i ++) {
+	for (int i = 0; i < n; i ++) {
 	   currentPhase	-= phaseOffset;
 //
 //	Note that "phase" itself might be negative
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 	   if (localCounter < bufferSize)
 	      localBuffer [localCounter ++]     = v [i];
+	   float abs_lev = jan_abs_clipped (v [i], clipped, 0.95f);
 	   v  [index + i]	= buffer [i] * oscillatorTable [currentPhase];
 	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
 	}
-
+#define	N 5
 	sampleCount	+= n;
 	if (sampleCount > INPUT_RATE / N) {
 	   show_corrector	(corrector);
@@ -189,11 +143,17 @@ Complex buffer [n];
 	}
 }
 
-void	sampleReader::startDumping (SNDFILE *f) {
+void	sampleReader::start_dumping (SNDFILE *f) {
 	dumpfilePointer. store (f);
 }
 
-void	sampleReader::stopDumping() {
+void	sampleReader::stop_dumping() {
 	dumpfilePointer. store (nullptr);
+}
+
+bool	sampleReader::check_clipped	() {
+bool res	= clipped;
+	clipped	= false;
+	return res;
 }
 

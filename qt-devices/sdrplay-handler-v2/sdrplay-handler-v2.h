@@ -57,12 +57,26 @@ typedef	void	(*mir_sdr_GainChangeCallback_t)(uint32_t	gRdB,
 class	xml_fileWriter;
 
 // Dll and ".so" function prototypes
-typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamInit) (int *gRdB, double fsMHz,
-double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType, int LNAEnable, int *gRdBsystem, int useGrAltMode, int *samplesPerPacket, mir_sdr_StreamCallback_t StreamCbFn, mir_sdr_GainChangeCallback_t GainChangeCbFn, void *cbContext); 
+typedef	mir_sdr_ErrT (*pfn_mir_sdr_StreamInit) (int *gRdB,
+	                                        double fsMHz,
+	                                        double rfMHz,
+	                                        mir_sdr_Bw_MHzT bwType,
+	                                        mir_sdr_If_kHzT ifType,
+	                                        int LNAEnable,
+	                                        int *gRdBsystem,
+	                                        int useGrAltMode,
+	                                        int *samplesPerPacket,
+	                                        mir_sdr_StreamCallback_t StreamCbFn,
+	                                        mir_sdr_GainChangeCallback_t GainChangeCbFn,
+	                                        void *cbContext); 
 
-typedef mir_sdr_ErrT (*pfn_mir_sdr_Reinit) (int *gRdB, double fsMHz,
-double rfMHz, mir_sdr_Bw_MHzT bwType, mir_sdr_If_kHzT ifType,
-mir_sdr_LoModeT, int, int*, int, int*, mir_sdr_ReasonForReinitT);
+typedef	mir_sdr_ErrT (*pfn_mir_sdr_Reinit)	(int *gRdB, double fsMHz,
+	                                         double rfMHz,
+	                                         mir_sdr_Bw_MHzT bwType,
+	                                         mir_sdr_If_kHzT ifType,
+	                                         mir_sdr_LoModeT,
+	                                         int, int*, int, int*,
+	                                         mir_sdr_ReasonForReinitT);
 
 typedef mir_sdr_ErrT (*pfn_mir_sdr_StreamUninit)();
 typedef mir_sdr_ErrT (*pfn_mir_sdr_SetRf)(double drfHz, int abs, int syncUpdate);
@@ -108,7 +122,7 @@ public:
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(std::complex<float> *,
+	int32_t		getSamples		(Complex *,
 	                                                          int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
@@ -170,6 +184,7 @@ private:
 	bool		fetchLibrary	();
 	void		releaseLibrary	();
 	QString		errorCodes	(mir_sdr_ErrT);
+	void		check_error	(bool, const std::string);
 	int16_t		hwVersion;
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
@@ -194,19 +209,19 @@ private:
 	void		update_gainSettings	(int);
 	bool		save_gainSettings;
 signals:
-	void		new_GRdBValue		(int);
-	void		new_lnaValue		(int);
-	void		new_agcSetting		(bool);
+	void		signal_GRdBValue	(int);
+	void		signal_lnaValue		(int);
+	void		signal_agcSetting	(bool);
 private slots:
-	void		set_ifgainReduction	(int);
-	void		set_lnagainReduction	(int);
-	void		set_agcControl		(int);
-	void		set_debugControl	(int);
-	void		set_ppmControl		(int);
-	void		set_antennaSelect	(const QString &);
-	void		set_tunerSelect		(const QString &);
-	void		set_xmlDump		();
-	void		voidSignal		(int);
-	void		biasT_selectorHandler	(int);
+	void		handle_ifgainReduction	(int);
+	void		handle_lnagainReduction	(int);
+	void		handle_agcControl	(int);
+	void		handle_debugControl	(int);
+	void		handle_ppmControl	(int);
+	void		handle_antennaSelect	(const QString &);
+	void		handle_tunerSelect	(const QString &);
+	void		handle_xmlDump		();
+	void		handle_voidSignal	(int);
+	void		handle_biasT_selector	(int);
 };
 

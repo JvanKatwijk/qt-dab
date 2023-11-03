@@ -51,8 +51,8 @@ public:
 	                                         std::vector<Complex> &);
 //	This one is used in the ofdm decoder
 private:
-	fftHandler	*fft_forward;
 	dabParams	params;
+	fftHandler	fft_forward;
 	std::vector<Complex> refTable;
 	int32_t		T_u;
 	int32_t		T_g;

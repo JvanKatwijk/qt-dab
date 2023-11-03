@@ -44,6 +44,7 @@ void	reset		() {
 	SCIds		= 0;
 	hasName		= false;
 	serviceLabel	= "";
+	shortName	= "";
 	language	= 0;
 	programType	= 0;
 	is_shown	= false;
@@ -55,6 +56,7 @@ uint32_t	SId;
 int		SCIds;
 bool		hasName;
 QString		serviceLabel;
+QString		shortName;
 int		language;
 int		programType;
 bool		is_shown;

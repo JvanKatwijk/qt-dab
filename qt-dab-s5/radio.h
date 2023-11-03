@@ -283,7 +283,7 @@ private:
 	void			cleanScreen		();
 	void			hideButtons		();
 	void			showButtons		();
-	deviceHandler		*setDevice		(const QString &);
+	deviceHandler		*create_device		(const QString &);
 	scanListHandler		*my_scanList;
 	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
@@ -303,8 +303,8 @@ private:
 	void			scheduled_ficDumping ();
 	FILE			*ficDumpPointer;
 
-	void			startSourcedumping     ();
-	void			stopSourcedumping      ();
+	void			start_sourcedumping     ();
+	void			stop_sourcedumping      ();
 	void			startFramedumping      ();
 	void			stopFramedumping       ();
 	void			scheduled_frameDumping	(const QString &);
@@ -354,15 +354,15 @@ signals:
 public slots:
 //	void			set_CorrectorDisplay	(int);
 	void			show_Corrector		(int, float);
-	void			addtoEnsemble		(const QString &, int);
-	void			nameofEnsemble		(int, const QString &);
+	void			add_to_ensemble		(const QString &, int);
+	void			name_of_ensemble	(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
 	void			show_snr		(float);
-	void			setSynced		(bool);
-	void			showLabel		(const QString &);
+	void			set_synced		(bool);
+	void			show_label		(const QString &);
 	void			handle_motObject	(QByteArray, QString,
 	                                                 int, bool, bool);
 	void			sendDatagram		(int);
@@ -372,9 +372,9 @@ public slots:
 //
 	void			setStereo		(bool);
 	void			set_streamSelector	(int);
-	void			No_Signal_Found		();
-	void			show_motHandling	(bool);
-	void			setSyncLost		();
+	void			no_signal_found		();
+	void			show_mothandling	(bool);
+	void			set_sync_lost		();
 	void			show_correlation	(int, int, 
 	                                                      QVector<int>);
 	void			show_spectrum		(int);
@@ -388,11 +388,11 @@ public slots:
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			startAnnouncement	(const QString &, int);
-	void			stopAnnouncement	(const QString &, int);
+	void			start_announcement	(const QString &, int);
+	void			stop_announcement	(const QString &, int);
 	void			newFrame		(int);
 
-	void			show_clockError		(int);
+	void			show_clock_error	(int);
 	void			show_null		(int);
 	void			set_epgData		(int, int,
 	                                                 const QString &,

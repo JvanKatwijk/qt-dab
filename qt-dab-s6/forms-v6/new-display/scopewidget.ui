@@ -26,7 +26,7 @@
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tabwidget here contains the tabs for the different scopes, supported by this Qt-DAB implementation&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="spectr">
       <attribute name="title">
@@ -170,7 +170,7 @@
        <item>
         <widget class="QwtPlot" name="channelPlot">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot; indicates the transformation on the transmitted signal during the travel to the receiver. The bottom line indicates the transformation on the amplitude, the top line the effect on the phase of the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot;. To investigate the effects of the transmission, we take in a segment of 400 carriers in the first data segment (i.e. the one with the predefined data) centered around 0, each 6-th carrier and - since we know the values they should have, consider them as a &amp;quot;pilot&amp;quot; value and apply a well known algorithm to compute the difference with the measured values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
         </widget>
        </item>
@@ -226,6 +226,9 @@
         <widget class="QLCDNumber" name="frequencyDisplay">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The frequency of the selected channel.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="digitCount">
+          <number>7</number>
          </property>
         </widget>
        </item>
@@ -409,12 +412,12 @@
      <item row="5" column="0">
       <widget class="QLabel" name="label_3">
        <property name="text">
-        <string>clock Offset</string>
+        <string>clock offset</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QLCDNumber" name="clockError">
+      <widget class="QLCDNumber" name="clock_errorDisplay">
        <property name="font">
         <font>
          <weight>75</weight>

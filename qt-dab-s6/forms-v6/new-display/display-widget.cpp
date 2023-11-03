@@ -73,7 +73,7 @@
 
 #ifdef	__ESTIMATOR_
 	channelScope_p		= new channelScope	(channelPlot,
-	                                                 128, dabSettings_p);
+	                                                 64, dabSettings_p);
 #endif
 
 	dabSettings_p		-> beginGroup ("displayWidget");
@@ -282,26 +282,32 @@ static double avg [4 * 512];
 }
 
 void	displayWidget::show_channel	(std::vector<Complex> Values) {
-double	amplitudeValues [128];
-double	phaseValues     [128];
-double	X_axis          [128];
+double	amplitudeValues [64];
+double	phaseValues     [64];
+double	X_axis          [64];
 double	waterfall_X	[512];
 double	waterfall_Y	[512];
 
+int	length	= Values. size () < 64 ? Values. size () : 64;
 #ifdef __ESTIMATOR_
 	if (currentTab != SHOW_CHANNEL)
 	   return;
-	for (int i = 0; i < 128; i ++) {
-	   amplitudeValues [i] = 2 * abs (Values [i]);
-	   phaseValues     [i] = 2 * arg (Values [i]) + 30;
-	   X_axis          [i] = - 1536 / 2 + 12 * i;
+	for (int i = 0; i < length; i ++) {
+	   amplitudeValues [i] = abs (Values [i]) + 10;
+	   phaseValues     [i] = arg (Values [i]) + 30;
+	   X_axis          [i] = - 200 + 6 * i;
 	}
-	channelScope_p	-> display (X_axis, amplitudeValues, phaseValues, 100);
+	for (int i = length; i < 64; i ++) {
+	   amplitudeValues [i] = 10;
+	   phaseValues     [i] = 0;
+	   X_axis	   [i] = 200 - 6 * i;
+	}
+	channelScope_p	-> display (X_axis, amplitudeValues, phaseValues, 64);
 
-	for (int i = 0; i < 128; i ++) {
-	   for (int j = 0; j < 4; j ++) {
-	      waterfall_X [4 * i + j ] = -1536 / 2 + 12 * i + 3 * j;
-	      waterfall_Y [4 * i + j] = amplitudeValues [i];
+	for (int i = 0; i < 64; i ++) {
+	   for (int j = 0; j < 8; j ++) {
+	      waterfall_X [8 * i + j ] = -1536 / 2 + 24 * i + 3 * j;
+	      waterfall_Y [8 * i + j] = amplitudeValues [i];
 	   }
 	}
 	waterfallScope_p	-> display (waterfall_X, waterfall_Y, 
@@ -342,9 +348,12 @@ void	displayWidget:: show_quality (float q, float timeOffset,
 	if (myFrame. isHidden ())
 	   return;
 
-	quality_display -> display (q);
-	timeOffsetDisplay	-> display (timeOffset);
-	frequencyOffsetDisplay	-> display (freqOffset);
+	quality_display		-> display (QString ("%1").
+	                                   arg (q, 0, 'f', 2));
+	timeOffsetDisplay	-> display (QString ("%1").
+	                                   arg (timeOffset, 0, 'f', 2));
+	frequencyOffsetDisplay	-> display (QString ("%1"). 
+	                                   arg (freqOffset, 0, 'f', 2));
 }
 
 void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
@@ -359,7 +368,7 @@ void	displayWidget::show_corrector (int coarseOffset, float fineOffset) {
 void	displayWidget::show_snr	(float snr) {
 	if (myFrame. isHidden ())
 	   return;
-	snrDisplay		-> display (snr);
+	snrDisplay		-> display (QString ("%1").arg (snr, 0, 'f', 2));
 }
 
 void	displayWidget::show_correction	(int c) {
@@ -369,13 +378,18 @@ void	displayWidget::show_correction	(int c) {
 //	correctorDisplay	-> display (c);
 }
 
-void	displayWidget::show_clockErr	(int e) {
+void	displayWidget::show_clock_err	(int e) {
 	if (!myFrame. isHidden ())
-	   clockError -> display (e);
+	   clock_errorDisplay -> display (e);
 }
 
-void	displayWidget::showFrequency (float f) {
-	frequencyDisplay	-> display (f);
+void	displayWidget::showFrequency (int freq) {
+	freq	/= 1000;
+	QString p1	= QString::number ((int)((freq) / 1000));
+	QString p2	= QString::number ((freq) % 1000);
+	if (freq % 1000 < 100)
+	   p2 = "0" + p2;
+	frequencyDisplay	-> display (p1 + '.' + p2);
 }
 
 void	displayWidget::show_cpuLoad	(float use) {
@@ -384,9 +398,9 @@ void	displayWidget::show_cpuLoad	(float use) {
 
 void	displayWidget::show_transmitters	(QByteArray &tr) {
 QString textList;
-	for (int i = 0; i < tr. size (); i ++) {
-	   uint16_t mainId	= tr. at (i) >> 8;
-	   uint16_t subId	= tr. at (i) & 0xFF;
+	for (int i = 0; i < tr. size () / 2; i ++) {
+	   uint16_t mainId	= tr. at (2 * i);
+	   uint16_t subId	= tr. at (2 * i + 1);
 	   QString trId = QString ("(") + QString::number (mainId) +
 	                  " " + QString::number (subId) + ") ";
 	   textList. append (trId);

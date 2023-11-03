@@ -100,20 +100,18 @@
 	totalFrames			= 0;
 	scanMode			= false;
 
-	connect (this, SIGNAL (setSynced (bool)),
-	         radioInterface_p, SLOT (setSynced (bool)));
-	connect (this, SIGNAL (setSyncLost (void)),
-	         radioInterface_p, SLOT (setSyncLost (void)));
-//	connect (this, SIGNAL (show_Spectrum (int)),
-//	         radioInterface_p, SLOT (show_spectrum (int)));
+	connect (this, SIGNAL (set_synced (bool)),
+	         radioInterface_p, SLOT (set_synced (bool)));
+	connect (this, SIGNAL (set_sync_lost (void)),
+	         radioInterface_p, SLOT (set_sync_lost (void)));
 	connect (this, SIGNAL (show_tii (int, int)),
 	         radioInterface_p, SLOT (show_tii (int, int)));
 	connect (this, SIGNAL (show_tii_spectrum ()),
 	         radioInterface_p, SLOT (show_tii_spectrum ()));
 	connect (this, SIGNAL (show_snr (float)),
 	         mr, SLOT (show_snr (float)));
-	connect (this, SIGNAL (show_clockErr (int)),
-	         mr, SLOT (show_clockError (int)));
+	connect (this, SIGNAL (show_clock_error (int)),
+	         mr, SLOT (show_clock_error (int)));
 	connect (this, SIGNAL (show_null (int)),
 	         mr, SLOT (show_null (int)));
 #ifdef	__ESTIMATOR_
@@ -196,7 +194,7 @@ int	snrCount	= 0;
 	   const int tempSize = 128;
 	   std::vector<Complex> temp (tempSize);
 	   for (int i = 0; i < T_F / (5 * tempSize); i ++) {
-	      theReader. getSamples (temp, 0, tempSize, 0, true);
+	      theReader. get_samples (temp, 0, tempSize, 0, true);
 	   }
 
 	   while (true) {
@@ -206,7 +204,7 @@ int	snrCount	= 0;
 	         frameCount	= 0;
 	         sampleCount	= 0;
 
-	         setSynced (false);
+	         set_synced (false);
 	         theTIIDetector. reset ();
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
@@ -215,7 +213,7 @@ int	snrCount	= 0;
 
 	            case NO_DIP_FOUND:
 	               if (++ attempts >= 8) {
-	                  emit (No_Signal_Found());
+	                  emit (no_signal_found());
 	                  attempts = 0;
 	               }	
 	               continue;
@@ -225,12 +223,12 @@ int	snrCount	= 0;
 	               continue;
 	          }
 
-	          theReader. getSamples (ofdmBuffer, 0,
+	          theReader. get_samples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
-	               setSyncLost();
+	               set_sync_lost();
 	            }
 	            badFrames ++;
 	            inSync	= false;
@@ -243,16 +241,18 @@ int	snrCount	= 0;
 	         frameCount ++;
 	         bool null_shower	= false;
 	         totalSamples	+= sampleCount;
-	         if (frameCount > 10) {
-	            show_clockErr (totalSamples - frameCount * 196608);
+	         if (frameCount >= 10) {
+	            int diff	= (totalSamples - frameCount * T_F);
+	            diff	= (int)((float)INPUT_RATE / (frameCount * T_F) * diff);
+	            show_clock_error (diff);
 	            totalSamples = 0;
-	            frameCount = 0;
+	            frameCount	= 0;
 	            null_shower = true;
 	            for (int i = 0; i < T_u / 4; i ++)
 	               tester [i] = ofdmBuffer [T_null - T_u / 4 + i];
 	         }
 
-	         theReader. getSamples (ofdmBuffer, 0,
+	         theReader. get_samples (ofdmBuffer, 0,
 	                               T_u, coarseOffset + fineOffset, false);
 	         if (null_shower) {
 	            for (int i = 0; i < T_u / 4; i ++)
@@ -265,7 +265,7 @@ int	snrCount	= 0;
 	                                              3 * threshold);
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
-	               setSyncLost();
+	               set_sync_lost();
 	            }
 	            badFrames	++;
 	            inSync	= false;
@@ -290,8 +290,8 @@ int	snrCount	= 0;
   *	first datablock.
   *	We read the missing samples in the ofdm buffer
   */
-	      setSynced (true);
-	      theReader. getSamples (ofdmBuffer,
+	      set_synced (true);
+	      theReader. get_samples (ofdmBuffer,
 	                            ofdmBufferIndex,
 	                            T_u - ofdmBufferIndex,
 	                            coarseOffset + fineOffset, true);
@@ -348,7 +348,7 @@ int	snrCount	= 0;
 	      Complex FreqCorr	= Complex (0, 0);
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
-	         theReader. getSamples (ofdmBuffer, 0,
+	         theReader. get_samples (ofdmBuffer, 0,
 	                               T_s, coarseOffset + fineOffset, true);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
@@ -399,7 +399,7 @@ int	snrCount	= 0;
   *	OK,  here we are at the end of the frame
   *	Assume everything went well and skip T_null samples
   */
-	      theReader. getSamples (ofdmBuffer, 0,
+	      theReader. get_samples (ofdmBuffer, 0,
 	                         T_null, coarseOffset + fineOffset, false);
 	      sampleCount += T_null;
 //
@@ -492,45 +492,45 @@ void	ofdmHandler::get_frameQuality	(int	*totalFrames,
 //	just convenience functions
 //	ficHandler abstracts channel data
 
-QString	ofdmHandler::findService	(uint32_t SId, int SCIds) {
-	return theFicHandler. findService (SId, SCIds);
+QString	ofdmHandler::find_service	(uint32_t SId, int SCIds) {
+	return theFicHandler. find_service (SId, SCIds);
 }
 
-void	ofdmHandler::getParameters	(const QString &s,
+void	ofdmHandler::get_parameters	(const QString &s,
 	                                 uint32_t *p_SId, int*p_SCIds) {
-	theFicHandler. getParameters (s, p_SId, p_SCIds);
+	theFicHandler. get_parameters (s, p_SId, p_SCIds);
 }
 
-std::vector<serviceId>	ofdmHandler::getServices	(int n) {
-	return theFicHandler. getServices (n);
+std::vector<serviceId>	ofdmHandler::get_services	(int n) {
+	return theFicHandler. get_services (n);
 }
 
-int	ofdmHandler::getSubChId	(const QString &s,
+int	ofdmHandler::get_subCh_id	(const QString &s,
 	                                          uint32_t SId) {
-	return theFicHandler. getSubChId (s, SId);
+	return theFicHandler. get_subCh_id (s, SId);
 }
 
-bool	ofdmHandler::is_audioService	(const QString &s) {
+bool	ofdmHandler::is_audioservice	(const QString &s) {
 audiodata ad;
-	theFicHandler. dataforAudioService (s, ad);
+	theFicHandler. data_for_audioservice (s, ad);
 	return ad. defined;
 }
 
-bool	ofdmHandler::is_packetService	(const QString &s) {
+bool	ofdmHandler::is_packetservice	(const QString &s) {
 packetdata pd;
-	theFicHandler. dataforPacketService (s, &pd, 0);
+	theFicHandler. data_for_packetservice (s, &pd, 0);
 	return pd. defined;
 }
 
-void	ofdmHandler::dataforAudioService	(const QString &s,
+void	ofdmHandler::data_for_audioservice	(const QString &s,
 	                                         audiodata &d) {
-	theFicHandler. dataforAudioService (s, d);
+	theFicHandler. data_for_audioservice (s, d);
 }
 
-void	ofdmHandler::dataforPacketService	(const QString &s,
+void	ofdmHandler::data_for_packetservice	(const QString &s,
 	                                         packetdata *pd,
 	                                         int16_t compnr) {
-	theFicHandler. dataforPacketService (s, pd, compnr);
+	theFicHandler. data_for_packetservice (s, pd, compnr);
 }
 
 uint8_t	ofdmHandler::get_ecc 		() {
@@ -572,7 +572,7 @@ int	ofdmHandler::scanWidth		() {
 }
 //
 //	for the mscHandler:
-void	ofdmHandler::reset_Services	() {
+void	ofdmHandler::reset_services	() {
 	if (!scanMode)
 	   theMscHandler. reset_Channel ();
 }
@@ -608,12 +608,12 @@ bool    ofdmHandler::set_dataChannel (packetdata &d,
 	   return false;
 }
 
-void	ofdmHandler::startDumping	(SNDFILE *f) {
-	theReader. startDumping (f);
+void	ofdmHandler::start_dumping	(SNDFILE *f) {
+	theReader. start_dumping (f);
 }
 
-void	ofdmHandler::stopDumping() {
-	theReader. stopDumping();
+void	ofdmHandler::stop_dumping() {
+	theReader. stop_dumping();
 }
 
 bool	ofdmHandler::isEvenFrame (int16_t cf, dabParams *p) {

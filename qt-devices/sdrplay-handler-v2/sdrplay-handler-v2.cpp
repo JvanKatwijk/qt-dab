@@ -79,15 +79,10 @@ mir_sdr_DeviceT devDesc [4];
 	this	-> inputRate	= Khz (2048);
 
 	bool success	= fetchLibrary ();
-	if (!success) 
-	   throw (sdrplay_2_exception ("mir_sdr_api could not be found"));
-	success = loadFunctions();
-	if (!success) {
-	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("function in mir_sdr_api not found"));
-	}
+	check_error (loadFunctions (), "function in mir_sdr_api not found");
 
-	err		= my_mir_sdr_ApiVersion (&ver);
+	check_error (my_mir_sdr_ApiVersion (&ver) == mir_sdr_Success,
+	                                               "api problem");
 	if (ver < 2.13) {
 	   throw (sdrplay_2_exception ("Library version too old"));
 	}
@@ -98,16 +93,16 @@ mir_sdr_DeviceT devDesc [4];
 //	See if there are settings from previous incarnations
 //	and config stuff
 
-	connect (this, SIGNAL (new_GRdBValue (int)),
+	connect (this, SIGNAL (signal_GRdBValue (int)),
 	         GRdBSelector, SLOT (setValue (int)));
-	connect (this, SIGNAL (new_agcSetting (bool)),
+	connect (this, SIGNAL (signal_agcSetting (bool)),
 	         agcControl, SLOT (setChecked (bool)));
 
 	sdrplaySettings		-> beginGroup ("sdrplaySettings");
 	int val		=
 	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt();
 	if (20 <= val && val <= 59)
-	   new_GRdBValue (val);
+	  signal_GRdBValue (val);
 
 
 	ppmControl		-> setValue (
@@ -119,7 +114,7 @@ mir_sdr_DeviceT devDesc [4];
 	bool agcMode		=
 	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
 	if (agcMode) {
-	   new_agcSetting	(true);
+	   signal_agcSetting	(true);
 	   GRdBSelector         -> hide();
 	   gainsliderLabel      -> hide();
 	}
@@ -127,18 +122,11 @@ mir_sdr_DeviceT devDesc [4];
 	       sdrplaySettings	-> value ("save_gainSettings", 1). toInt () != 0;
 	sdrplaySettings	-> endGroup();
 
-	err = my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
-	if (err != mir_sdr_Success) {
-	   fprintf (stderr, "error at GetDevices %s \n",
+	check_error (my_mir_sdr_GetDevices (devDesc, &numofDevs,
+	                                    uint32_t (4)) == mir_sdr_Success,
 	                   errorCodes (err). toLatin1(). data());
 
-	   throw (sdrplay_2_exception (errorCodes (err). toStdString ()));
-	}
-
-	if (numofDevs == 0) {
-	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("No devices found"));
-	}
+	check_error (numofDevs > 0, "No devices found");
 
 	if (numofDevs > 1) {
            sdrplaySelect sdrplaySelector;
@@ -162,13 +150,7 @@ mir_sdr_DeviceT devDesc [4];
 	fprintf (stderr, "devicename = %s\n", devDesc [deviceIndex]. DevNm);
 
 	err = my_mir_sdr_SetDeviceIdx (deviceIndex);
-	if (err != mir_sdr_Success) {
-	   fprintf (stderr, "error at SetDeviceIdx %s \n",
-	                   errorCodes (err). toLatin1(). data());
-//	   my_mir_sdr_ReleaseDeviceIdx (deviceIndex);
-	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("error in setting device parameters"));
-	}
+	check_error (err == mir_sdr_Success, errorCodes (err). toLatin1(). data());
 //
 //	we know we are only in the frequency range 175 .. 230 Mhz,
 //	so we can rely on a single table for the lna reductions.
@@ -193,7 +175,7 @@ mir_sdr_DeviceT devDesc [4];
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting antenna\n", err);
 	      connect (antennaSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (set_antennaSelect (const QString &)));
+	            this, SLOT (handle_antennaSelect (const QString &)));
 	      lnaMax		= 8;
 	      break;
 	   case 3:	
@@ -206,7 +188,7 @@ mir_sdr_DeviceT devDesc [4];
 	      if (err != mir_sdr_Success) 
 	         fprintf (stderr, "error %d in setting of rspDuo\n", err);
 	      connect (tunerSelector, SIGNAL (activated (const QString &)),
-	               this, SLOT (set_tunerSelect (const QString &)));
+	               this, SLOT (handle_tunerSelect (const QString &)));
 	      lnaMax		= 9;
 	      break;
 	   default:
@@ -225,24 +207,24 @@ mir_sdr_DeviceT devDesc [4];
 	   val = lnaMax;
 //	fprintf (stderr, "val = %d, max = %d\n", val, lnaMax);
 	lnaGainSetting	-> setValue (val);
-	connect (this, SIGNAL (new_lnaValue (int)),
+	connect (this, SIGNAL (signal_lnaValue (int)),
                  lnaGainSetting, SLOT (setValue (int)));
 
 	val	= sdrplaySettings -> value ("biasT_selector", 0). toInt ();
 	if (val != 0) {
 	   biasT_selector -> setChecked (true);
-	   biasT_selectorHandler (1);
+	   handle_biasT_selector (1);
 	}
 	deviceLabel	-> setText (deviceModel);
 //	and be prepared for future changes in the settings
 	connect (debugControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_debugControl (int)));
+	         this, SLOT (handle_debugControl (int)));
 	connect (ppmControl, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmControl (int)));
+	         this, SLOT (handle_ppmControl (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_xmlDump ()));
+	         this, SLOT (handle_xmlDump ()));
 	connect (biasT_selector, SIGNAL (stateChanged (int)),
-	         this, SLOT (biasT_selectorHandler (int)));
+	         this, SLOT (handle_biasT_selector (int)));
 	lnaGRdBDisplay		-> display (get_lnaGRdB (hwVersion,
 	                                         lnaGainSetting -> value()));
 	xmlDumper	= nullptr;
@@ -279,7 +261,7 @@ int32_t	sdrplayHandler::getVFOFrequency() {
 	return vfoFrequency;
 }
 
-void	sdrplayHandler::set_ifgainReduction	(int newGain) {
+void	sdrplayHandler::handle_ifgainReduction	(int newGain) {
 mir_sdr_ErrT	err;
 //int	GRdB		= GRdBSelector	-> value();
 int	lnaState	= lnaGainSetting -> value();
@@ -294,7 +276,7 @@ int	lnaState	= lnaGainSetting -> value();
 	lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
 }
 
-void	sdrplayHandler::set_lnagainReduction (int lnaState) {
+void	sdrplayHandler::handle_lnagainReduction (int lnaState) {
 //mir_sdr_ErrT err;
 
 	(void)lnaState;
@@ -377,12 +359,12 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
 
 	if (save_gainSettings) {
 	   update_gainSettings (freq / MHz (1));
-	   set_ifgainReduction	(GRdBSelector -> value ());
+	   handle_ifgainReduction	(GRdBSelector -> value ());
 	   GRdB		= GRdBSelector		-> value ();
-	   set_lnagainReduction (lnaGainSetting -> value ());
+	   handle_lnagainReduction (lnaGainSetting -> value ());
 	   lnaState	= lnaGainSetting	-> value ();
 	   lnaGRdBDisplay	-> display (get_lnaGRdB (hwVersion, lnaState));
-	   set_agcControl (agcControl -> isChecked ());
+	   handle_agcControl (agcControl -> isChecked ());
 	   agc		= agcControl	-> isChecked () ? 1 : 0;
 	}
 	err	= my_mir_sdr_StreamInit (&GRdB,
@@ -436,20 +418,19 @@ int	agc		= agcControl	-> isChecked () ? 1 : 0;
                         errorCodes (err). toLatin1(). data());
 
 	connect (agcControl, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_agcControl (int)));
+	         this, SLOT (handle_agcControl (int)));
 	connect (GRdBSelector, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ifgainReduction (int)));
+	         this, SLOT (handle_ifgainReduction (int)));
 	connect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_lnagainReduction (int)));
+	         this, SLOT (handle_lnagainReduction (int)));
 	running. store (true);
 	return true;
 }
 
-void	sdrplayHandler::voidSignal	(int s) {
+void	sdrplayHandler::handle_voidSignal	(int s) {
 	(void)s;
 	fprintf (stderr, "signal gehad\n");
 }
-
 
 void	sdrplayHandler::stopReader() {
 mir_sdr_ErrT err;
@@ -458,12 +439,11 @@ mir_sdr_ErrT err;
 	   return;
 	
 	disconnect (GRdBSelector, SIGNAL (valueChanged (int)),
-	            this, SLOT (set_ifgainReduction (int)));
-	disconnect (this, SLOT (set_ifgainReduction (int)));
+	            this, SLOT (handle_ifgainReduction (int)));
 	disconnect (lnaGainSetting, SIGNAL (valueChanged (int)),
-	            this, SLOT (set_lnagainReduction (int)));
+	            this, SLOT (handle_lnagainReduction (int)));
 	disconnect (agcControl, SIGNAL (stateChanged (int)),
-	            this, SLOT (set_agcControl (int)));
+	            this, SLOT (handle_agcControl (int)));
 	if (save_gainSettings)
 	   record_gainSettings	(vfoFrequency / MHz (1));
 
@@ -507,7 +487,7 @@ QString	sdrplayHandler::deviceName	() {
 	return deviceModel;
 }
 
-void	sdrplayHandler::set_agcControl (int dummy) {
+void	sdrplayHandler::handle_agcControl (int dummy) {
 bool agcMode	= agcControl -> isChecked();
 	(void)dummy;
 	my_mir_sdr_AgcControl (agcMode ? mir_sdr_AGC_5HZ :
@@ -530,19 +510,19 @@ bool agcMode	= agcControl -> isChecked();
 	}
 }
 
-void	sdrplayHandler::set_debugControl (int debugMode) {
+void	sdrplayHandler::handle_debugControl (int debugMode) {
 	(void)debugMode;
 	my_mir_sdr_DebugEnable (debugControl -> isChecked() ? 1 : 0);
 }
 
-void	sdrplayHandler::set_ppmControl (int ppm) {
+void	sdrplayHandler::handle_ppmControl (int ppm) {
 	if (running. load()) {
 	   my_mir_sdr_SetPpm	((float)ppm);
 	   my_mir_sdr_SetRf	((float)vfoFrequency, 1, 0);
 	}
 }
 
-void	sdrplayHandler::set_antennaSelect (const QString &s) {
+void	sdrplayHandler::handle_antennaSelect (const QString &s) {
 mir_sdr_ErrT err;
 
 	if (hwVersion != 2)	// should not happen
@@ -555,7 +535,7 @@ mir_sdr_ErrT err;
 	(void)err;
 }
 
-void	sdrplayHandler::set_tunerSelect (const QString &s) {
+void	sdrplayHandler::handle_tunerSelect (const QString &s) {
 mir_sdr_ErrT err;
 
 	if (hwVersion != 3)	// should not happen
@@ -904,7 +884,7 @@ QString	sdrplayHandler::errorCodes (mir_sdr_ErrT err) {
 	}
 }
 
-void	sdrplayHandler::set_xmlDump () {
+void	sdrplayHandler::handle_xmlDump () {
 	if (xmlDumper == nullptr) {
 	  if (setup_xmlDump ())
 	      dumpButton	-> setText ("writing");
@@ -1021,26 +1001,26 @@ QString	theValue	= "";
 	if (lnaState > lnaMax)
 	   lnaState = lnaMax;
 	GRdBSelector	-> blockSignals (true);
-	new_GRdBValue (GRdB);
+	signal_GRdBValue (GRdB);
 	while (GRdBSelector -> value () != GRdB)
 	   usleep (1000);
-	set_ifgainReduction	(GRdBSelector -> value ());
+	handle_ifgainReduction	(GRdBSelector -> value ());
 	GRdBSelector	-> blockSignals (false);
 
 	lnaGainSetting	-> blockSignals (true);
-	new_lnaValue (lnaState);
+	signal_lnaValue (lnaState);
 	while (lnaGainSetting -> value () != lnaState)
 	   usleep (1000);
 	lnaGainSetting	-> blockSignals (false);
 
 	agcControl	-> blockSignals (true);
-	new_agcSetting (agc == 1);
+	signal_agcSetting (agc == 1);
 	while (agcControl -> isChecked () != (agc == 1))
 	   usleep (1000);
 	agcControl	-> blockSignals (false);
 }
 
-void	sdrplayHandler::biasT_selectorHandler (int k) {
+void	sdrplayHandler::handle_biasT_selector (int k) {
 bool setting = biasT_selector -> isChecked ();
 	(void)k;
 	sdrplaySettings -> setValue ("biasT_selector", setting ? 1 : 0);
@@ -1056,6 +1036,13 @@ bool setting = biasT_selector -> isChecked ();
 	   default:		// RSP1a
 	      my_mir_sdr_rsp1a_BiasT (setting ? 1 : 0);
 	      return;
+	}
+}
+
+void	sdrplayHandler::check_error (bool test, const std::string s) {
+	if (!test) {
+	   releaseLibrary ();
+	   throw (sdrplay_2_exception (s));
 	}
 }
 

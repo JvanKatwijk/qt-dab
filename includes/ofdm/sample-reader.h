@@ -51,12 +51,13 @@ public:
 	      	~sampleReader();
 	      void	setRunning	(bool b);
 	      float	get_sLevel	();
-	      Complex	getSample	(float);
-	      void	getSamples	(std::vector<Complex> &v,
+	      Complex	get_sample	(float);
+	      void	get_samples	(std::vector<Complex> &v,
 	                                 int index,
 	                                 int32_t n, int32_t phase, bool saving);
-	      void	startDumping	(SNDFILE *);
-	      void	stopDumping();
+	      void	start_dumping	(SNDFILE *);
+	      void	stop_dumping();
+	      bool	check_clipped	();
 private:
 	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
@@ -71,10 +72,11 @@ private:
 	      int32_t		sampleCount;
 	      int32_t		corrector;
 	      bool		dumping;
-	      int16_t         dumpIndex;
-	      int16_t         dumpScale;
-	      int16_t         dumpBuffer [DUMPSIZE];
+	      int16_t		dumpIndex;
+	      int16_t		dumpScale;
+	      int16_t		dumpBuffer [DUMPSIZE];
 	      std::atomic<SNDFILE *>	dumpfilePointer;
+	      bool		clipped;
 signals:
 	      void		show_spectrum (int);
 	      void		show_corrector (int);

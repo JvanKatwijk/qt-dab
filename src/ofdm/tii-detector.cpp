@@ -160,7 +160,7 @@ void	TII_Detector::addBuffer (std::vector<Complex> v) {
 }
 //
 //	Note that the input is fft output, not yet reordered
-void	TII_Detector::collapse (Complex *inVec, float *outVec) {
+void	TII_Detector::collapse (std::vector<Complex> &inVec, float *outVec) {
 int	i;
 	for (i = 0; i < carriers / 8; i ++) {	
 	   int carr = - carriers / 2 + 2 * i;
@@ -200,7 +200,7 @@ float	avgTable	[NUM_GROUPS];
 //	Each "value" is the sum of 4 pairs of subsequent carriers,
 //	taken from the 4 quadrants -768 .. 385, 384 .. -1, 1 .. 384, 385 .. 768
 
-	collapse (theBuffer. data(), hulpTable);
+	collapse (theBuffer, hulpTable);
 //
 //	since the "energy levels" in the different GROUPSIZE'd values
 //	may differ, we compute an average for each of the

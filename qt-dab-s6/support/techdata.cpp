@@ -126,7 +126,7 @@ void	techData::cleanUp	() {
 }
 
 void	techData::show_serviceData	(audiodata *ad) {
-	show_serviceName	(ad -> serviceName);
+	show_serviceName	(ad -> serviceName, ad -> shortName);
 	show_serviceId		(ad -> SId);
 	show_bitRate		(ad -> bitRate);
 	show_startAddress	(ad -> startAddr);
@@ -208,8 +208,11 @@ void	techData::show_frameDumpButton	(bool b) {
 	   framedumpButton	-> hide ();
 }
 
-void	techData::show_serviceName	(const QString &s) {
-	programName -> setText (s);
+void	techData::show_serviceName	(const QString &s1, const QString &s2) {
+	if ((s2 != "") && (s1 != s2)) 
+	   programName	-> setText (s1 + "(" + s2 + ")");
+	else
+	   programName -> setText (s1);
 }
 
 void	techData::show_serviceId		(int SId) {

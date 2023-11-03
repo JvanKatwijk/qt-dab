@@ -46,7 +46,7 @@ public:
 	void	loadPresets	(const QString &, QComboBox *);
 	void	savePresets	(QComboBox *);
 private:
-	RadioInterface	*radio;
+	RadioInterface	*radio_p;
 	QString	fileName;
 };
 

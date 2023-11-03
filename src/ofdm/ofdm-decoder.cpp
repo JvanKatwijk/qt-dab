@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -94,7 +94,7 @@ void	ofdmDecoder::processBlock_0 (
   *	as coming from the FFT as phase reference.
   */
 	memcpy (phaseReference. data (), buffer. data (),
-	                   T_u * sizeof (Complex));
+	                                      T_u * sizeof (Complex));
 }
 //
 //	Just interested. In the ideal case the constellation of the
@@ -176,6 +176,7 @@ Complex fft_buffer [T_u];
 //	The de-interleaving understands this
 
 	float max	= 0;
+	Complex offset	= Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -200,15 +201,20 @@ Complex fft_buffer [T_u];
 	   offsetVector [index] = 
 	             compute_avg (offsetVector [index],
 	                                      square (phaseOffset), DELTA);
-	
-//	The approach taken  decoding approach is
+	}
+//	The decoding approach is
 //	looking at the X and Y coordinates of the "dots"
 //	and taking their size as element.
+	for (int i = 0; i < carriers; i ++) {
+	   int16_t	index	= myMapper.  mapIn (i);
+	   if (index < 0) 
+	      index += T_u;
+
+	   Complex r1	= conjVector [index];
 	   float ab1	= jan_abs (r1);
 	   ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
 	   ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
 	}
-
 
 //	From time to time we show the constellation of symbol 2.
 	
@@ -251,7 +257,6 @@ Complex fft_buffer [T_u];
 	      float freqOffset	= compute_frequencyOffset (fft_buffer,
 	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
-
 	      cnt = 0;
 	   }
 	}

@@ -17,9 +17,9 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QCheckBox" name="AntEnableButton">
+      <widget class="QCheckBox" name="biasT_button">
        <property name="text">
-        <string>Ant Enable</string>
+        <string>biasT</string>
        </property>
        <property name="checked">
         <bool>false</bool>

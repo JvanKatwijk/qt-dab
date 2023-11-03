@@ -59,8 +59,8 @@ public:
 	void		start			();
 //	void		start			(int32_t);
 	void		stop			();
-	void		startDumping		(SNDFILE *);
-	void		stopDumping		();
+	void		start_dumping		(SNDFILE *);
+	void		stop_dumping		();
 	bool		start_etiGenerator	(const QString &);
 	void		stop_etiGenerator	();
 	void		reset_etiGenerator	();
@@ -69,17 +69,17 @@ public:
 //
 //	servicing our subordinates
 //	for the ficHandler:
-	QString		findService		(uint32_t, int);
-	void		getParameters		(const QString &,
+	QString		find_service		(uint32_t, int);
+	void		get_parameters		(const QString &,
 	                                         uint32_t *, int *);
-	std::vector<serviceId>	getServices	(int);
-	bool		is_audioService		(const QString &s);
-	bool		is_packetService	(const QString &s);
-        void		dataforAudioService     (const QString &,
+	std::vector<serviceId>	get_services	(int);
+	bool		is_audioservice		(const QString &s);
+	bool		is_packetservice	(const QString &s);
+        void		data_for_audioservice	(const QString &,
 	                                             audiodata &);
-        void		dataforPacketService	(const QString &,
+        void		data_for_packetservice	(const QString &,
 	                                             packetdata *, int16_t);
-	int		getSubChId		(const QString &, uint32_t);
+	int		get_subCh_id		(const QString &, uint32_t);
         uint8_t		get_ecc			();
         int32_t		get_ensembleId		();
         QString		get_ensembleName	();
@@ -96,7 +96,7 @@ public:
 	void		stop_ficDump		();
 
 //	for the mscHandler
-	void		reset_Services		();
+	void		reset_services		();
 	void		stop_service		(descriptorType *, int);
 	void		stop_service		(int, int);
 	bool		set_audioChannel	(audiodata &,
@@ -152,16 +152,16 @@ private:
 	bool			isEvenFrame	(int16_t, dabParams *);
 virtual	void			run		();
 signals:
-	void		setSynced		(bool);
-	void		No_Signal_Found		();
-	void		setSyncLost		();
+	void		set_synced		(bool);
+	void		no_signal_found		();
+	void		set_sync_lost		();
 	void		show_tii		(int, int);
 	void		show_tii_spectrum	();
-	void		show_Spectrum		(int);
+	void		show_spectrum		(int);
 	void		show_snr		(float);
 	void		show_snr		(float, float, float,
 	                                                  float, float);
-	void		show_clockErr		(int);
+	void		show_clock_error	(int);
 	void		show_null		(int);
 #ifdef	__ESTIMATOR_
 	void		show_channel		(int);

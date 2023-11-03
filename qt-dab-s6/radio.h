@@ -244,9 +244,9 @@ private:
 	uint32_t		extract_epg (QString,
 	                                     std::vector<serviceId> &serviceList,
 	                                     uint32_t);
-	bool			saveSlides;
-	QString			picturesPath;
-	QString			filePath;
+	bool			slides_are_saved;
+	QString			path_for_pictures;
+	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
 	QUdpSocket		dataOut_socket;
 	QString			ipAddress;
@@ -292,7 +292,7 @@ private:
 	void			cleanScreen		();
 	void			hideButtons		();
 	void			showButtons		();
-	deviceHandler		*setDevice		(const QString &);
+	deviceHandler		*create_device		(const QString &);
 	scanListHandler		*my_scanList;
 	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
@@ -309,11 +309,11 @@ private:
 	void			stopAudiodumping	();
 	void			scheduled_audioDumping	();
 	void			scheduled_dlTextDumping ();
-	void			scheduled_ficDumping ();
+	void			scheduled_ficDumping	();
 	FILE			*ficDumpPointer;
 
-	void			startSourcedumping     ();
-	void			stopSourcedumping      ();
+	void			start_sourcedumping	();
+	void			stop_sourcedumping	();
 	void			startFramedumping      ();
 	void			stopFramedumping       ();
 	void			scheduled_frameDumping	(const QString &);
@@ -365,17 +365,17 @@ public slots:
 
 	void			show_quality		(float, float, float);
 	void			show_rsCorrections	(int, int);
-	void			show_clockError		(int);
+	void			show_clock_error	(int);
 
 	void			show_Corrector		(int, float);
-	void			addtoEnsemble		(const QString &, int);
-	void			nameofEnsemble		(int, const QString &);
+	void			add_to_ensemble		(const QString &, int);
+	void			name_of_ensemble	(int, const QString &);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
 	void			show_ficSuccess		(bool);
-	void			setSynced		(bool);
-	void			showLabel		(const QString &);
+	void			set_synced		(bool);
+	void			show_label		(const QString &);
 	void			handle_motObject	(QByteArray,
 	                                                 QString,
 	                                                 int, bool, bool);
@@ -387,15 +387,15 @@ public slots:
 	
 	void			setStereo		(bool);
 	void			set_streamSelector	(int);
-	void			No_Signal_Found		();
-	void			show_motHandling	(bool);
-	void			setSyncLost		();
+	void			no_signal_found		();
+	void			show_mothandling	(bool);
+	void			set_sync_lost		();
 	void			closeEvent		(QCloseEvent *event);
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			startAnnouncement	(const QString &, int);
-	void			stopAnnouncement	(const QString &, int);
+	void			start_announcement	(const QString &, int);
+	void			stop_announcement	(const QString &, int);
 	void			newFrame		(int);
 
 	void			set_epgData		(int, int,
@@ -436,6 +436,8 @@ private slots:
 	void			handle_channelSelector		(const QString &);
 	void			handle_nextChannelButton	();
 	void			handle_prevChannelButton	();
+	void			handle_muteButton		();
+	void			handle_dlTextButton		();
 
 	void			handle_scanListSelect	(const QString &);
 	void			TerminateProcess	();
@@ -445,12 +447,10 @@ private slots:
 	void			doStart			(const QString &);
 	void			newDevice		(const QString &);
 
-	void			selectService		(QModelIndex);
+	void			handle_serviceSelect	(QModelIndex);
 	void			setPresetService	();
-	void			handle_muteButton	();
 	void			muteButton_timeOut	();
 	void			scheduler_timeOut	(const QString &);
-	void			handle_dlTextButton     ();
 
 	void			handle_configButton	();
 	void			handle_scheduleButton	();
@@ -519,6 +519,6 @@ private slots:
 	void			handle_eti_activeSelector	(int);
 	void			handle_saveSlides		(int);
 	void			handle_skinSelector		();
-	void			loadTable			();
+	void			handle_loadTable		();
 	void			handle_fontSelect		();
 };

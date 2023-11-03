@@ -71,8 +71,8 @@ public:
 	void	show_corrector	(int, float);
 	void	show_snr	(float);
 	void	show_correction	(int);
-	void	show_clockErr	(int);
-	void	showFrequency	(float);
+	void	show_clock_err	(int);
+	void	showFrequency	(int);
 
 	void	show_cpuLoad	(float);
 	void	show_transmitters	(QByteArray &);

@@ -36,10 +36,10 @@
 	myRadioInterface		= mr;
 	this	-> backgroundFlag	= backgroundFlag;
 
-	connect (this, SIGNAL (showLabel (const QString &)),
-	         mr, SLOT (showLabel (const QString &)));
-	connect (this, SIGNAL (show_motHandling (bool)),
-	         mr, SLOT (show_motHandling (bool)));
+	connect (this, SIGNAL (show_label (const QString &)),
+	         mr, SLOT (show_label (const QString &)));
+	connect (this, SIGNAL (show_mothandling (bool)),
+	         mr, SLOT (show_mothandling (bool)));
 	currentSlide	= nullptr;
 //
 //	mscGroupElement indicates whether we are handling an
@@ -127,7 +127,7 @@ int16_t	i;
 	         if (firstSegment && !lastSegment) {
 	            segmentNumber   = b [last - 2] >> 4;
 	            if (dynamicLabelText. size () > 0)
-	               showLabel (dynamicLabelText);
+	               show_label (dynamicLabelText);
 	            dynamicLabelText. clear ();
 	         }
 	         still_to_go     = b [last - 1] & 0x0F;
@@ -174,7 +174,7 @@ int16_t	i;
 //	then show it.
 	      if (!firstSegment && lastSegment) {
 	         if (dynamicLabelText. size() > 0)
-	            showLabel (dynamicLabelText);
+	            show_label (dynamicLabelText);
 	         dynamicLabelText. clear();
 	      }
 	   }
@@ -342,7 +342,7 @@ int16_t  dataLength                = 0;
 //	if at the end, show the label
 	      if (last) {
 	         if (!moreXPad) {
-	            showLabel (dynamicLabelText);
+	            show_label (dynamicLabelText);
 	                              
 	         }
 	         else
@@ -371,7 +371,7 @@ int16_t  dataLength                = 0;
 	                              dataLength);
 	   dynamicLabelText. append (segmentText);
 	   if (!moreXPad && isLastSegment) {
-	      showLabel (dynamicLabelText);
+	      show_label (dynamicLabelText);
 	   }
 	}
 }
@@ -389,14 +389,14 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 //	   msc_dataGroupBuffer. clear();
 //	   build_MSC_segment (data);
 //	   mscGroupElement	= true;
-//	   show_motHandling (true);
+//	   show_mothandling (true);
 //	}
 
 	if (data. size() >= (uint16_t)dataGroupLength) { // msc element is single item
 	   msc_dataGroupBuffer. clear();
 	   build_MSC_segment (data);
 	   mscGroupElement = false;
-	   show_motHandling (true);
+	   show_mothandling (true);
 //	   fprintf (stderr, "msc element is single\n");
 	   return;
 	}
@@ -404,7 +404,7 @@ void	padHandler::new_MSC_element (std::vector<uint8_t> data) {
 	mscGroupElement		= true;
 	msc_dataGroupBuffer. clear();
 	msc_dataGroupBuffer	= data;
-	show_motHandling (true);
+	show_mothandling (true);
 }
 
 //
@@ -423,7 +423,7 @@ int32_t	currentLength = msc_dataGroupBuffer. size();
 	   build_MSC_segment (msc_dataGroupBuffer);
 	   msc_dataGroupBuffer. clear();
 //	   mscGroupElement	= false;
-	   show_motHandling (false);
+	   show_mothandling (false);
 	}
 }
 

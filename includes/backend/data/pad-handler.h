@@ -68,7 +68,7 @@ private:
         std::vector<uint8_t> msc_dataGroupBuffer;
 
 signals:
-	void		showLabel			(const QString &);
-	void		show_motHandling		(bool);
+	void		show_label			(const QString &);
+	void		show_mothandling		(bool);
 };
 

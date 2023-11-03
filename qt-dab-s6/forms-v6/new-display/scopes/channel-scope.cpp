@@ -35,7 +35,7 @@ QString	colorString	= "black";
 
 	(void)displaySize;
 	this	-> dabSettings		= dabSettings;
-	this	-> displaySize		= 128;
+	this	-> displaySize		= displaySize;
 	dabSettings	-> beginGroup ("channelScope");
 	colorString	= dabSettings -> value ("displayColor",
 	                                           "white"). toString();
@@ -123,8 +123,8 @@ void	channelScope::display		(double *X_axis,
 	amplitudeValues [0]	= 0;
 	amplitudeValues [displaySize - 1] = 0;
 
-	amplitudeCurve. setSamples (X_axis, amplitudeValues, 128);
-	phaseCurve. setSamples  (X_axis, phaseValues, 128);
+	amplitudeCurve. setSamples (X_axis, amplitudeValues, displaySize);
+	phaseCurve. setSamples  (X_axis, phaseValues, displaySize);
 	Marker		-> setXValue (0);
 	plotgrid	-> replot (); 
 }

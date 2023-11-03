@@ -69,7 +69,7 @@
 	connect (this, SIGNAL (show_rsCorrections (int, int)),
 	         mr, SLOT (show_rsCorrections (int, int)));
 	connect (this, SIGNAL (show_emptyLabel (const QString &)),
-	         mr, SLOT (showLabel (const QString &)));
+	         mr, SLOT (show_label (const QString &)));
 #ifdef	__WITH_FDK_AAC__
 	aacDecoder		= new fdkAAC (mr, b);
 #else

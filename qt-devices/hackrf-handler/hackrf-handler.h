@@ -75,6 +75,8 @@ typedef int	(*pfn_hackrf_si5351c_read)
 	                         (hackrf_device *, const uint16_t, uint16_t *);
 typedef int	(*pfn_hackrf_si5351c_write)
 	                    (hackrf_device *, const uint16_t, const uint16_t);
+typedef	int	(*pfn_hackrf_board_rev_read)
+	                    (hackrf_device* device, uint8_t* value);
 // fine aggiunta
 
 
@@ -83,7 +85,8 @@ class	hackrfHandler: public QObject,
 	               public deviceHandler, public Ui_hackrfWidget {
 Q_OBJECT
 public:
-			hackrfHandler		(QSettings *, QString &);
+			hackrfHandler		(QSettings *,
+	                                            const QString &);
 			~hackrfHandler		();
 	int32_t		getVFOFrequency		();
 
@@ -99,7 +102,6 @@ public:
 	RingBuffer<std::complex<int8_t>>	_I_Buffer;
 	hackrf_device	*theDevice;
 private:
-	bool			load_hackrfFunctions	();
 	pfn_hackrf_init		hackrf_init;
 	pfn_hackrf_open		hackrf_open;
 	pfn_hackrf_close	hackrf_close;
@@ -124,6 +126,8 @@ private:
 	pfn_hackrf_set_amp_enable hackrf_set_amp_enable;
 	pfn_hackrf_si5351c_read hackrf_si5351c_read;
 	pfn_hackrf_si5351c_write hackrf_si5351c_write;
+	pfn_hackrf_board_rev_read	hackrf_board_rev_read;
+
 //	Fine aggiunta
 
 	QSettings		*hackrfSettings;
@@ -131,30 +135,32 @@ private:
 	int32_t			inputRate;
 	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
-	QLibrary*		phandle;
+	QLibrary*		library_p;
 
 	FILE			*xmlDumper;
         xml_fileWriter		*xmlWriter;
+        std::atomic<bool>	dumping;
+	bool			save_gainSettings;
+
+	void			check_error		(bool, const std::string);
+	bool			load_hackrfFunctions	();
         bool			setup_xmlDump           ();
         void			close_xmlDump           ();
-        std::atomic<bool>	dumping;
-
-	void			record_gainSettings		(int);
-	void			update_gainSettings		(int);
-	bool			save_gainSettings;
+	void			record_gainSettings	(int);
+	void			update_gainSettings	(int);
 signals:
-	void			new_antEnable	(bool);
-	void			new_ampEnable	(bool);
-	void			new_vgaValue	(int);
-	void			new_lnaValue	(int);
+	void			signal_antEnable	(bool);
+	void			signal_ampEnable	(bool);
+	void			signal_vgaValue		(int);
+	void			signal_lnaValue		(int);
 private slots:
-	void			setLNAGain	(int);
-	void			setVGAGain	(int);
+	void			handle_LNAGain		(int);
+	void			handle_VGAGain		(int);
 // contributed by Fabio
-	void			EnableAntenna	(int);
-	void			EnableAmpli	(int);
-	void			set_ppmCorrection (int);
+	void			handle_biasT		(int);
+	void			handle_Ampli		(int);
+	void			handle_ppmCorrection (int);
 // Fine aggiunta
-	void			set_xmlDump	();
+	void			handle_xmlDump	();
 };
 

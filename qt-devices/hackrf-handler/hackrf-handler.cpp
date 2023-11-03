@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -34,22 +34,22 @@
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
-#define	DEFAULT_GAIN	30
+#define	DEFAULT_VGA_GAIN	30
+#define	DEFAULT_LNA_GAIN	30
 
 	hackrfHandler::hackrfHandler  (QSettings *s,
-	                               QString &recorderVersion):
+	                               const QString &recVersion):
+	                                  hackrfSettings (s),
+	                                  recorderVersion (recVersion),
 	                                  _I_Buffer (4 * 1024 * 1024) {
-int	res;
-	hackrfSettings			= s;
-	this	-> recorderVersion	= recorderVersion;
 	hackrfSettings -> beginGroup ("hackrfSettings");
         int x   = hackrfSettings -> value ("position-x", 100). toInt ();
         int y   = hackrfSettings -> value ("position-y", 100). toInt ();
         hackrfSettings -> endGroup ();
         setupUi (&myFrame);
         myFrame. move (QPoint (x, y));
+//	myFrame. show	();
 
-	myFrame. show	();
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
@@ -59,16 +59,16 @@ int	res;
 #elif __APPLE__
 	const char *libraryString = "libhackrf.dylib";
 #endif
-	phandle = new QLibrary(libraryString);
-	phandle->load();
+	library_p = new QLibrary (libraryString);
+	library_p -> load();
 
-	if (!phandle -> isLoaded ()) {
+	if (!library_p -> isLoaded ()) {
 	   throw (hackrf_exception ("failed to open " +
 	                                std::string (libraryString)));
 	}
 
 	if (!load_hackrfFunctions ()) {
-	   delete phandle;
+	   delete library_p;
 	   throw (hackrf_exception ("could not find one or more library functions"));
 	}
 //
@@ -79,13 +79,14 @@ int	res;
 //	See if there are settings from previous incarnations
 	hackrfSettings		-> beginGroup ("hackrfSettings");
 	lnaGainSlider 		-> setValue (
-	            hackrfSettings -> value ("hack_lnaGain", DEFAULT_GAIN). toInt());
+	       hackrfSettings -> value ("hack_lnaGain",
+	                                         DEFAULT_LNA_GAIN). toInt());
 	vgaGainSlider 		-> setValue (
-	            hackrfSettings -> value ("hack_vgaGain", DEFAULT_GAIN). toInt());
-//	contributed by Fabio
+	       hackrfSettings -> value ("hack_vgaGain",
+	                                         DEFAULT_VGA_GAIN). toInt());
 	bool isChecked =
-	    hackrfSettings -> value ("hack_AntEnable", false). toBool();
-	AntEnableButton -> setCheckState (isChecked ? Qt::Checked :
+	       hackrfSettings -> value ("hack_AntEnable", 0). toBool();
+	biasT_button -> setCheckState (isChecked ? Qt::Checked :
 	                                              Qt::Unchecked);
 	isChecked	=
 	       hackrfSettings -> value ("hack_AmpEnable", false). toBool();
@@ -96,75 +97,44 @@ int	res;
 	save_gainSettings	=
 	       hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	hackrfSettings	-> endGroup();
-
 //
-	res	= this -> hackrf_init ();
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-
-	}
-
-	res	= this	-> hackrf_open (&theDevice);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	res	= this -> hackrf_set_sample_rate (theDevice, 2048000.0);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	res	= this -> hackrf_set_baseband_filter_bandwidth (theDevice,
-	                                                        1750000);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	res	= this -> hackrf_set_freq (theDevice, 220000000);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	res = this -> hackrf_set_antenna_enable (theDevice, 1);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	res = this -> hackrf_set_amp_enable (theDevice, 1);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
+	check_error (hackrf_init () == HACKRF_SUCCESS, "init failed");
+	check_error (hackrf_open (&theDevice) == HACKRF_SUCCESS,
+	                                               "open failure");
+	check_error (hackrf_set_sample_rate (theDevice, 2048000.0) == HACKRF_SUCCESS, "error setting samplerate");
+	check_error (hackrf_set_baseband_filter_bandwidth (theDevice,
+	                                                        1750000) == HACKRF_SUCCESS, "failure setting bandwidth");
+	check_error (hackrf_set_freq (theDevice, 220000000) == HACKRF_SUCCESS,
+	                               "failure setting frequency");
 
 	uint16_t regValue;
-	res = this -> hackrf_si5351c_read (theDevice, 162, &regValue);
+	check_error (hackrf_si5351c_read (theDevice, 162, &regValue) == HACKRF_SUCCESS,
+	                               "failure reading board name");
+	int res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
 	if (res != HACKRF_SUCCESS) {
 	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
-	res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
-	if (res != HACKRF_SUCCESS) {
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
-	}
-
-	setLNAGain	(lnaGainSlider		-> value());
-	setVGAGain	(vgaGainSlider		-> value());
-	EnableAntenna	(1);		// value is a dummy really
-	EnableAmpli	(1);		// value is a dummy, really
-	set_ppmCorrection (ppm_correction	-> value());
+	handle_LNAGain	(lnaGainSlider		-> value());
+	handle_VGAGain	(vgaGainSlider		-> value());
+	handle_biasT	(1);		// value is a dummy really
+	handle_Ampli	(1);		// value is a dummy, really
+	handle_ppmCorrection (ppm_correction	-> value());
 
 //	and be prepared for future changes in the settings
 	connect (lnaGainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (setLNAGain (int)));
+	         this, SLOT (handle_LNAGain (int)));
 	connect (vgaGainSlider, SIGNAL (valueChanged (int)),
-	         this, SLOT (setVGAGain (int)));
-	connect (AntEnableButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (EnableAntenna (int)));
+	         this, SLOT (handle_VGAGain (int)));
+	connect (biasT_button, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_biasT (int)));
 	connect (AmpEnableButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (EnableAmpli (int)));
+	         this, SLOT (handle_Ampli (int)));
 	connect (ppm_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmCorrection  (int)));
+	         this, SLOT (handle_ppmCorrection  (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (set_xmlDump ()));
+	         this, SLOT (handle_xmlDump ()));
+
 	hackrf_device_list_t *deviceList = this -> hackrf_device_list();
 	if (deviceList != nullptr) {	// well, it should be
 	   char *serial = deviceList -> serial_numbers [0];
@@ -174,18 +144,17 @@ int	res;
 	   usb_board_id_display ->
 	                setText (this -> hackrf_usb_board_id_name (board_id));
 	}
-
-	connect (this, SIGNAL (new_antEnable (bool)),
-	         AntEnableButton, SLOT (setChecked (bool)));
-	connect (this, SIGNAL (new_ampEnable (bool)),
-	         AmpEnableButton, SLOT (setChecked (bool)));
-	connect (this, SIGNAL (new_vgaValue (int)),
+	connect (this, SIGNAL (signal_antEnable (bool)),
+	         biasT_button, SLOT (setChecked (bool)));
+	connect (this, SIGNAL (signal_ampEnable (bool)),
+	         biasT_button, SLOT (setChecked (bool)));
+	connect (this, SIGNAL (signal_vgaValue (int)),
 		 vgaGainSlider, SLOT (setValue (int)));
-	connect (this, SIGNAL (new_vgaValue (int)),
+	connect (this, SIGNAL (signal_vgaValue (int)),
 		 vgagainDisplay, SLOT (display (int)));
-	connect (this, SIGNAL (new_lnaValue (int)),
+	connect (this, SIGNAL (signal_lnaValue (int)),
 	         lnaGainSlider, SLOT (setValue (int)));
-	connect (this, SIGNAL (new_lnaValue (int)),
+	connect (this, SIGNAL (signal_lnaValue (int)),
 	         lnagainDisplay, SLOT (display (int)));
 	xmlDumper	= nullptr;
 	dumping. store (false);
@@ -198,13 +167,12 @@ int	res;
 	hackrfSettings	-> beginGroup ("hackrfSettings");
         hackrfSettings -> setValue ("position-x", myFrame. pos (). x ());
         hackrfSettings -> setValue ("position-y", myFrame. pos (). y ());
-
 	hackrfSettings	-> setValue ("hack_lnaGain",
 	                                 lnaGainSlider -> value());
 	hackrfSettings -> setValue ("hack_vgaGain",
 	                                 vgaGainSlider	-> value());
 	hackrfSettings -> setValue ("hack_AntEnable",
-	                              AntEnableButton -> checkState() == Qt::Checked);
+	                             biasT_button -> checkState() == Qt::Checked ? 1 : 0);
 	hackrfSettings -> setValue ("hack_AmpEnable",
 	                              AmpEnableButton -> checkState() == Qt::Checked);
 	hackrfSettings	-> setValue ("hack_ppmCorrection",
@@ -219,7 +187,7 @@ int32_t	hackrfHandler::getVFOFrequency() {
 	return vfoFrequency;
 }
 
-void	hackrfHandler::setLNAGain	(int newGain) {
+void	hackrfHandler::handle_LNAGain	(int newGain) {
 int	res;
 	if ((newGain <= 40) && (newGain >= 0)) {
 	   res	= this -> hackrf_set_lna_gain (theDevice, newGain);
@@ -233,7 +201,7 @@ int	res;
 	}
 }
 
-void	hackrfHandler::setVGAGain	(int newGain) {
+void	hackrfHandler::handle_VGAGain	(int newGain) {
 int	res;
 	if ((newGain <= 62) && (newGain >= 0)) {
 	   res	= this -> hackrf_set_vga_gain (theDevice, newGain);
@@ -247,12 +215,12 @@ int	res;
 	}
 }
 
-void	hackrfHandler::EnableAntenna (int d) {
+void	hackrfHandler::handle_biasT (int d) {
 int res;
 bool	b;
 
 	(void)d;
-	b = AntEnableButton	-> checkState() == Qt::Checked;
+	b = biasT_button	-> checkState() == Qt::Checked;
 	res = this -> hackrf_set_antenna_enable (theDevice, b);
 //	fprintf(stderr,"Passed %d\n",(int)b);
 	if (res != HACKRF_SUCCESS) {
@@ -261,10 +229,10 @@ bool	b;
 	                    this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
-//	AntEnableButton -> setChecked (b);
+//	biasT_button -> setChecked (b);
 }
 
-void	hackrfHandler::EnableAmpli (int a) {
+void	hackrfHandler::handle_Ampli (int a) {
 int res;
 bool	b;
 
@@ -285,7 +253,7 @@ bool	b;
 // writing in the si5351 register does not seem to work yet
 // To be completed
 
-void	hackrfHandler::set_ppmCorrection	(int32_t ppm) {
+void	hackrfHandler::handle_ppmCorrection	(int32_t ppm) {
 int res;
 uint16_t value;
 
@@ -305,15 +273,15 @@ static std::complex<int8_t>buffer [32 * 32768];
 static
 int	callback (hackrf_transfer *transfer) {
 hackrfHandler *ctx = static_cast <hackrfHandler *>(transfer -> rx_ctx);
-int	i;
-uint8_t *p	= transfer -> buffer;
+int8_t *p	= reinterpret_cast<int8_t * const>(transfer -> buffer);
 RingBuffer<std::complex<int8_t> > * q = & (ctx -> _I_Buffer);
 int	bufferIndex	= 0;
 
-	for (i = 0; i < transfer -> valid_length / 2; i += 1) {
+	for (int i = 0; i < transfer -> valid_length / 2; i ++) {
 	   int8_t re	= ((int8_t *)p) [2 * i];
 	   int8_t im	= ((int8_t *)p) [2 * i + 1];
-	   buffer [bufferIndex ++]	= std::complex<int8_t> (re, im);
+	   buffer [bufferIndex]	= std::complex<int8_t> (re, im);
+	   bufferIndex ++;
 	}
 	q -> putDataIntoBuffer (buffer, bufferIndex);
 	return 0;
@@ -334,7 +302,7 @@ int	res;
 	this -> hackrf_set_amp_enable (theDevice, 
 	                               AmpEnableButton -> isChecked () ? 1 : 0);
 	this -> hackrf_set_antenna_enable (theDevice, 
-	                            AntEnableButton -> isChecked () ? 1 : 0);
+	                            biasT_button -> isChecked () ? 1 : 0);
 
 	res	= this -> hackrf_set_freq (theDevice, freq);
 	if (res != HACKRF_SUCCESS) {
@@ -354,7 +322,7 @@ int	res;
 	return running. load();
 }
 
-void	hackrfHandler::stopReader() {
+void	hackrfHandler::stopReader () {
 int	res;
 
 	if (!running. load())
@@ -367,6 +335,7 @@ int	res;
 	                 this -> hackrf_error_name (hackrf_error (res)));
 	   return;
 	}
+
 	if (save_gainSettings)
 	   record_gainSettings	(vfoFrequency / MHz (1));
 	running. store (false);
@@ -379,12 +348,11 @@ int32_t	hackrfHandler::getSamples (Complex *V, int32_t size) {
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
-	   V [i] = std::complex<float> (real (temp [i]) / 127.0,
-	                                imag (temp [i]) / 127.0);
+	   V [i] = Complex (real (temp [i]) / 127.0f,
+	                    imag (temp [i]) / 127.0f);
 	if (dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	return amount;
-
 }
 
 int32_t	hackrfHandler::Samples () {
@@ -403,53 +371,53 @@ QString	hackrfHandler::deviceName	() {
 	return "hackRF";
 }
 
-bool	hackrfHandler::load_hackrfFunctions() {
+bool	hackrfHandler::load_hackrfFunctions () {
 //
 //	link the required procedures
 	this -> hackrf_init	=
-	                (pfn_hackrf_init) phandle -> resolve ("hackrf_init");
+	                (pfn_hackrf_init) library_p -> resolve ("hackrf_init");
 	if (this -> hackrf_init == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_init\n");
 	   return false;
 	}
 
 	this -> hackrf_open	=
-	                (pfn_hackrf_open) phandle -> resolve  ("hackrf_open");
+	                (pfn_hackrf_open) library_p -> resolve  ("hackrf_open");
 	if (this -> hackrf_open == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_open\n");
 	   return false;
 	}
 
 	this -> hackrf_close	=
-	                (pfn_hackrf_close) phandle -> resolve ("hackrf_close");
+	                (pfn_hackrf_close) library_p -> resolve ("hackrf_close");
 	if (this -> hackrf_close == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_close\n");
 	   return false;
 	}
 
 	this -> hackrf_exit	=
-	                (pfn_hackrf_exit) phandle -> resolve ("hackrf_exit");
+	                (pfn_hackrf_exit) library_p -> resolve ("hackrf_exit");
 	if (this -> hackrf_exit == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_exit\n");
 	   return false;
 	}
 
 	this -> hackrf_start_rx	=
-	                (pfn_hackrf_start_rx) phandle -> resolve ("hackrf_start_rx");
+	                (pfn_hackrf_start_rx) library_p -> resolve ("hackrf_start_rx");
 	if (this -> hackrf_start_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_start_rx\n");
 	   return false;
 	}
 
 	this -> hackrf_stop_rx	=
-	                (pfn_hackrf_stop_rx) phandle -> resolve ("hackrf_stop_rx");
+	                (pfn_hackrf_stop_rx) library_p -> resolve ("hackrf_stop_rx");
 	if (this -> hackrf_stop_rx == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_stop_rx\n");
 	   return false;
 	}
 
 	this -> hackrf_device_list	=
-	                (pfn_hackrf_device_list) phandle -> resolve ("hackrf_device_list");
+	                (pfn_hackrf_device_list) library_p -> resolve ("hackrf_device_list");
 	if (this -> hackrf_device_list == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_device_list\n");
 	   return false;
@@ -457,7 +425,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_set_baseband_filter_bandwidth	=
 	               (pfn_hackrf_set_baseband_filter_bandwidth)
-	                  phandle -> resolve ("hackrf_set_baseband_filter_bandwidth");
+	                  library_p -> resolve ("hackrf_set_baseband_filter_bandwidth");
 	if (this -> hackrf_set_baseband_filter_bandwidth == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_baseband_filter_bandwidth\n");
 	   return false;
@@ -465,7 +433,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_set_lna_gain	=
 	               (pfn_hackrf_set_lna_gain)
-	                   phandle -> resolve ("hackrf_set_lna_gain");
+	                   library_p -> resolve ("hackrf_set_lna_gain");
 	if (this -> hackrf_set_lna_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_lna_gain\n");
 	   return false;
@@ -473,14 +441,14 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_set_vga_gain	=
 	               (pfn_hackrf_set_vga_gain)
-	                   phandle -> resolve ("hackrf_set_vga_gain");
+	                   library_p -> resolve ("hackrf_set_vga_gain");
 	if (this -> hackrf_set_vga_gain == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_vga_gain\n");
 	   return false;
 	}
 
 	this -> hackrf_set_freq	=
-	               (pfn_hackrf_set_freq) phandle -> resolve ("hackrf_set_freq");
+	               (pfn_hackrf_set_freq) library_p -> resolve ("hackrf_set_freq");
 	if (this -> hackrf_set_freq == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_freq\n");
 	   return false;
@@ -488,7 +456,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_set_sample_rate	=
 	               (pfn_hackrf_set_sample_rate)
-	                   phandle -> resolve ("hackrf_set_sample_rate");
+	                   library_p -> resolve ("hackrf_set_sample_rate");
 	if (this -> hackrf_set_sample_rate == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_sample_rate\n");
 	   return false;
@@ -496,7 +464,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_is_streaming	=
 	               (pfn_hackrf_is_streaming)
-	                   phandle -> resolve ("hackrf_is_streaming");
+	                   library_p -> resolve ("hackrf_is_streaming");
 	if (this -> hackrf_is_streaming == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_is_streaming\n");
 	   return false;
@@ -504,7 +472,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_error_name	=
 	               (pfn_hackrf_error_name)
-	                   phandle -> resolve ("hackrf_error_name");
+	                   library_p -> resolve ("hackrf_error_name");
 	if (this -> hackrf_error_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_error_name\n");
 	   return false;
@@ -512,15 +480,15 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_usb_board_id_name =
 	               (pfn_hackrf_usb_board_id_name)
-	                   phandle -> resolve ("hackrf_usb_board_id_name");
+	                   library_p -> resolve ("hackrf_usb_board_id_name");
 	if (this -> hackrf_usb_board_id_name == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_usb_board_id_name\n");
 	   return false;
 	}
-// Aggiunta Fabio
+
 	this -> hackrf_set_antenna_enable =
 	              (pfn_hackrf_set_antenna_enable)
-	                     phandle -> resolve ("hackrf_set_antenna_enable");
+	                     library_p -> resolve ("hackrf_set_antenna_enable");
 	if (this -> hackrf_set_antenna_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_antenna_enable\n");
 	   return false;
@@ -528,7 +496,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_set_amp_enable =
 	              (pfn_hackrf_set_amp_enable)
-	                    phandle -> resolve ("hackrf_set_amp_enable");
+	                    library_p -> resolve ("hackrf_set_amp_enable");
 	if (this -> hackrf_set_amp_enable == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_set_amp_enable\n");
 	   return false;
@@ -536,7 +504,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_si5351c_read =
 	              (pfn_hackrf_si5351c_read)
-	                      phandle -> resolve ("hackrf_si5351c_read");
+	                      library_p -> resolve ("hackrf_si5351c_read");
 	if (this -> hackrf_si5351c_read == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_read\n");
 	   return false;
@@ -544,9 +512,17 @@ bool	hackrfHandler::load_hackrfFunctions() {
 
 	this -> hackrf_si5351c_write =
 	              (pfn_hackrf_si5351c_write)
-	                      phandle -> resolve("hackrf_si5351c_write");
+	                      library_p -> resolve("hackrf_si5351c_write");
 	if (this -> hackrf_si5351c_write == nullptr) {
 	   fprintf (stderr, "Could not find hackrf_si5351c_write\n");
+	   return false;
+	}
+
+	this	-> hackrf_board_rev_read =
+	              (pfn_hackrf_board_rev_read)
+	                      library_p ->resolve ("hackrf_board_rev_read");
+	if (hackrf_board_rev_read == nullptr) {
+	   fprintf (stderr, "Could not find hackrf_board_rev_read\n");
 	   return false;
 	}
 
@@ -554,8 +530,7 @@ bool	hackrfHandler::load_hackrfFunctions() {
 	return true;
 }
 
-
-void	hackrfHandler::set_xmlDump () {
+void	hackrfHandler::handle_xmlDump () {
 	if (xmlDumper == nullptr) {
 	  if (setup_xmlDump ())
 	      dumpButton	-> setText ("writing");
@@ -666,23 +641,28 @@ QString	theValue	= "";
 	ampEnable	= result. at (2). toInt ();
 
 	vgaGainSlider	-> blockSignals (true);
-	new_vgaValue (vgaValue);
+	signal_vgaValue (vgaValue);
 	while (vgaGainSlider -> value () != vgaValue)
 	   usleep (1000);
 	vgagainDisplay	-> display (vgaValue);
 	vgaGainSlider	-> blockSignals (false);
 
 	lnaGainSlider	-> blockSignals (true);
-	new_lnaValue (lnaValue);
+	signal_lnaValue (lnaValue);
 	while (lnaGainSlider -> value () != lnaValue)
 	   usleep (1000);
 	lnagainDisplay	-> display (lnaValue);
 	lnaGainSlider	-> blockSignals (false);
 
 	AmpEnableButton	-> blockSignals (true);
-	new_ampEnable (ampEnable == 1);
+	signal_ampEnable (ampEnable == 1);
 	while (AmpEnableButton -> isChecked () != (ampEnable == 1))
 	   usleep (1000);
 	AmpEnableButton	-> blockSignals (false);
+}
+
+void	hackrfHandler::check_error (bool b, const std::string s) {
+	if (!b)
+	   throw hackrf_exception (s);
 }
 
