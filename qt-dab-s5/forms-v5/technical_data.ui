@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>303</width>
-    <height>772</height>
+    <width>316</width>
+    <height>894</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -145,33 +145,13 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>rs corrections/100</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QLCDNumber" name="rsCorrections">
-       <property name="toolTip">
-        <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
       <widget class="QLabel" name="l6">
        <property name="text">
         <string>Bitrate in kBit/s</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="4" column="1">
       <widget class="QLCDNumber" name="bitrateDisplay">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The birtae of the encoding of the AAC datastream is shown here&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -184,17 +164,57 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="label_10">
        <property name="text">
         <string>audiorate</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="5" column="1">
       <widget class="QLCDNumber" name="audioRate">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audible audio runs at 48000 Ss. Some services deliver lower samplerates, these samplerates - shown here - are transformed into 48000 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Flat</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>rs corrections/100</string>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QLCDNumber" name="rsCorrections">
+       <property name="toolTip">
+        <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Flat</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>ec errors </string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QLCDNumber" name="ecCorrections">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
        </property>
        <property name="segmentStyle">
         <enum>QLCDNumber::Flat</enum>
@@ -218,26 +238,6 @@
        </property>
        <property name="segmentStyle">
         <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLCDNumber" name="ecCorrections">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string>ec errors </string>
        </property>
       </widget>
      </item>
@@ -333,19 +333,19 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="QLabel" name="fmFrequency">
+       <property name="text">
+        <string>TextLabel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="fmLabel">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This DAB service is on FM as well. Feature only used by some DAB services.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
         <string>also on FM:</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="fmFrequency">
-       <property name="text">
-        <string>TextLabel</string>
        </property>
       </widget>
      </item>
@@ -407,6 +407,32 @@
     </layout>
    </item>
    <item>
+    <widget class="QwtThermo" name="thermoLeft">
+     <property name="lowerBound">
+      <double>-20.000000000000000</double>
+     </property>
+     <property name="upperBound">
+      <double>4.000000000000000</double>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QwtThermo" name="thermoRight">
+     <property name="lowerBound">
+      <double>-20.000000000000000</double>
+     </property>
+     <property name="upperBound">
+      <double>4.000000000000000</double>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="label_7">
@@ -453,6 +479,11 @@
    <class>QwtPlot</class>
    <extends>QFrame</extends>
    <header>qwt_plot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QwtThermo</class>
+   <extends>QWidget</extends>
+   <header>qwt_thermo.h</header>
   </customwidget>
   <customwidget>
    <class>smallPushButton</class>

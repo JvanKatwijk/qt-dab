@@ -100,7 +100,7 @@ public:
 	void		stop_service		(descriptorType *, int);
 	void		stop_service		(int, int);
 	bool		set_audioChannel	(audiodata &,
-	                                         RingBuffer<int16_t> *,
+	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         FILE *, int);
 	bool		set_dataChannel		(packetdata &,
 	                                         RingBuffer<uint8_t> *, int);

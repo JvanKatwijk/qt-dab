@@ -51,7 +51,7 @@ Q_OBJECT
 public:
 			mp4Processor	(RadioInterface *,
 	                                 int16_t,
-	                                 RingBuffer<int16_t> *,
+	                                 RingBuffer<std::complex<int16_t>> *,
 	                                 RingBuffer<uint8_t> *,
 	                                 bool,
 	                                 FILE *);

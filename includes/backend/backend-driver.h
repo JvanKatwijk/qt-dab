@@ -35,7 +35,7 @@ public:
 	backendDriver	(RadioInterface *,
 	                 descriptorType *,
 	                 bool,
-	                 RingBuffer<int16_t> *,
+	                 RingBuffer<std::complex<int16_t>> *,
 	                 RingBuffer<uint8_t> *,
 	                 RingBuffer<uint8_t> *,
 	                 FILE *);

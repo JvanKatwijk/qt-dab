@@ -244,7 +244,7 @@ void	mscHandler::stop_service	(int subchId, int flag) {
 }
 
 bool	mscHandler::set_Channel (descriptorType &d,
-	                         RingBuffer<int16_t> *audioBuffer,
+	                         RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                         RingBuffer<uint8_t> *dataBuffer,
 	                         FILE *dump, int flag) {
 	fprintf (stderr, "going to open %s\n",

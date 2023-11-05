@@ -30,6 +30,7 @@
 #include	"dab-params.h"
 #include	"timesyncer.h"
 #include	"freqsyncer.h"
+#include	"ringbuffer.h"
 #ifdef	__ESTIMATOR_
 #include	"estimator.h"
 #endif
@@ -49,8 +50,8 @@
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings):
 	                                    radioInterface_p (mr),
-	                                    params (p -> dabMode),
 	                                    device_p (inputDevice),
+	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
 	                                           inputDevice,
@@ -589,8 +590,8 @@ void	ofdmHandler::stop_service (int subChId, int flag) {
 }
 
 bool    ofdmHandler::set_audioChannel (audiodata &d,
-	                                RingBuffer<int16_t> *b,
-	                                FILE *dump, int flag) {
+	                               RingBuffer<std::complex<int16_t>> *b,
+	                               FILE *dump, int flag) {
 	if (!scanMode)
 	   return theMscHandler. set_Channel (d, b,
 	                         (RingBuffer<uint8_t> *)nullptr, dump, flag);
@@ -602,7 +603,7 @@ bool    ofdmHandler::set_dataChannel (packetdata &d,
 	                               RingBuffer<uint8_t> *b, int flag) {
 	if (!scanMode)
 	   return theMscHandler. set_Channel (d,
-	                     (RingBuffer<int16_t> *)nullptr, b,
+	                     (RingBuffer<std::complex<int16_t>> *)nullptr, b,
 	                      nullptr, flag);
 	else
 	   return false;

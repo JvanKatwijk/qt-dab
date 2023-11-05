@@ -40,6 +40,7 @@
 #include	"ringbuffer.h"
 #include        "band-handler.h"
 #include	"process-params.h"
+#include	"converter_48000.h"
 #include	"dl-cache.h"
 #include	"tii-codes.h"
 #include	"content-table.h"
@@ -67,7 +68,7 @@
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
-class	audioBase;
+class	audioSink;
 class	common_fft;
 class	scanListHandler;
 class	timeTableHandler;
@@ -181,7 +182,8 @@ private:
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
-	RingBuffer<int16_t>	audioBuffer;
+	RingBuffer<std::complex<int16_t>>	audioBuffer;
+	RingBuffer<float>	pcmBuffer;
 	spectrumViewer		my_spectrumViewer;
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
@@ -194,7 +196,8 @@ private:
 	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
-	RingBuffer<int16_t>	theTechData;
+	RingBuffer<std::complex<int16_t>>	theTechData;
+	converter_48000		audioConverter;
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -222,7 +225,7 @@ private:
 	dabStreamer		*streamerOut;
 #endif
 	ofdmHandler		*my_ofdmHandler;
-	audioBase		*soundOut;
+	audioSink		*soundOut;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer;
 #endif
@@ -377,6 +380,7 @@ public slots:
 	void			set_sync_lost		();
 	void			show_correlation	(int, int, 
 	                                                      QVector<int>);
+	void			showPeakLevel		(float, float);
 	void			show_spectrum		(int);
 	void			showIQ			(int);
 	void			show_quality		(float, float, float);

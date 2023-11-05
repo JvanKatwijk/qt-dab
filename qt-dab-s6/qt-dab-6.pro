@@ -14,17 +14,17 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
@@ -188,6 +188,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
@@ -307,6 +308,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
+	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 #           ../src/support/fft-handler.cpp \

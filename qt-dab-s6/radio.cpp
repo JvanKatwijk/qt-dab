@@ -222,6 +222,7 @@ uint8_t convert (const QString &s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
+	                                        pcmBuffer (2 * 32768),
 	                                        stdDevBuffer (2 * 1536),
 	                                        newDisplay (this, Si),
 	                                        my_snrViewer (this, Si),
@@ -232,7 +233,9 @@ uint8_t convert (const QString &s) {
 	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
-	                                        theTechData (16 * 32768) {
+	                                        theTechData (16 * 32768),
+	                                        audioConverter (this,
+	                                                        &pcmBuffer) {
 int16_t k;
 QString h;
 uint8_t	dabBand;
@@ -347,9 +350,10 @@ uint8_t	dabBand;
 	channel. localPos. longitude 		=
 	             dabSettings_p -> value ("longitude", 0). toFloat ();
 
-	logFile		= nullptr;
+	logFile			= nullptr;
+	peakLeftDamped          = -100;
+        peakRightDamped         = -100;
 
-	
 	connect_configWidget ();
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
 	techWindow_p 		-> hide ();	// until shown otherwise
@@ -395,18 +399,9 @@ uint8_t	dabBand;
 	if (k != -1) {
 	   configWidget. streamoutSelector -> setCurrentIndex (k);
 	   bool err = !((audioSink *)soundOut_p) -> selectDevice (k);
-//	   if (!err)
-//	      temp = temp + "\n" + "openen van device ging goed";
-//	   else
-//	      temp = temp + "\n" + "helaas mislukt, het wordt default device";
 	   if (err)
 	      ((audioSink *)soundOut_p)	-> selectDefaultDevice();
 	}
-//	QLabel *tempLabel	= new QLabel (nullptr);
-//	tempLabel	-> setText (temp);
-//	tempLabel	-> show ();
-//
-//	Not found or error when here
 #endif
 
 #ifndef	__MINGW32__
@@ -1247,15 +1242,20 @@ static int teller	= 0;
 	      techWindow_p	->  showRate (rate);
 	   }
 	}
-	int16_t vec [amount];
-	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+	std::complex<int16_t> vec [amount];
+	while (audioBuffer. GetRingBufferReadAvailable () > amount) {
 	   audioBuffer. getDataFromBuffer (vec, amount);
-	   if (!muteTimer. isActive ())
-	      soundOut_p	-> audioOut (vec, amount, rate);
 #ifdef	HAVE_PLUTO_RXTX
 	   if (streamerOut_p != nullptr)
 	      streamerOut_p	-> audioOut (vec, amount, rate);
 #endif
+	   audioConverter. convert (vec, amount, rate);
+	   while (pcmBuffer. GetRingBufferReadAvailable () > 2 * 512) {
+	      float tmpBuf [2 * 512];
+	      pcmBuffer. getDataFromBuffer (tmpBuf, 2 * 512);
+	      if (!muteTimer. isActive ())
+	         soundOut_p	-> audioOutput (tmpBuf, 2 * 512);
+	   }
 	   if (!techWindow_p -> isHidden ()) {
 	      theTechData. putDataIntoBuffer (vec, amount);
 	      techWindow_p	-> audioDataAvailable (amount, rate);
@@ -2084,7 +2084,7 @@ void	RadioInterface::stopAudiodumping	() {
 	   return;
 
 	LOG ("audiodump stops", "");
-	soundOut_p	-> stopDumping();
+	audioConverter. stop_audioDump ();
 	sf_close (audioDumper_p);
 	audioDumper_p	= nullptr;
 	techWindow_p	-> audiodumpButton_text ("audio dump", 10);
@@ -2099,12 +2099,12 @@ void	RadioInterface::startAudiodumping () {
 
 	LOG ("audiodump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	soundOut_p	-> startDumping (audioDumper_p);
+	audioConverter. start_audioDump (audioDumper_p);
 }
 
 void	RadioInterface::scheduled_audioDumping () {
 	if (audioDumper_p != nullptr) {
-	   soundOut_p	-> stopDumping	();
+	   audioConverter. stop_audioDump	();
 	   sf_close (audioDumper_p);
 	   audioDumper_p	= nullptr;
 	   LOG ("scheduled audio dump stops ", serviceLabel -> text ());
@@ -2120,7 +2120,7 @@ void	RadioInterface::scheduled_audioDumping () {
 
 	LOG ("scheduled audio dump starts ", serviceLabel -> text ());
 	techWindow_p	-> audiodumpButton_text ("writing", 12);
-	soundOut_p	-> startDumping (audioDumper_p);
+	audioConverter. start_audioDump (audioDumper_p);
 }
 
 void	RadioInterface::handle_framedumpButton () {
@@ -4441,7 +4441,7 @@ bool	tiiChange	= false;
 	   return;
 
 	{  bool inList = false;
-           for (int i = 0; i < channel. transmitters. size (); i += 2)
+           for (int i = 0; i < channel. transmitters. size () / 2; i ++)
               if ((channel. transmitters. at (2 * i) == mainId) &&
 	          (channel. transmitters. at (2 * i + 1) == subId))
                  inList = true;
@@ -4982,3 +4982,6 @@ void	RadioInterface::handle_iqSelector () {
 	   my_ofdmHandler -> handle_iqSelector ();
 }
 
+void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
+	techWindow_p	-> showPeakLevel (iPeakLeft, iPeakRight);
+}

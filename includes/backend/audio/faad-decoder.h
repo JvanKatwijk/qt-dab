@@ -24,6 +24,7 @@
 #pragma once
 
 #include        <QObject>
+#include	<complex>
 #include        "neaacdec.h"
 #include        "ringbuffer.h"
 
@@ -46,7 +47,7 @@ class	faadDecoder: public QObject{
 Q_OBJECT
 public:
         faadDecoder     (RadioInterface *mr,
-                         RingBuffer<int16_t> *buffer);
+                         RingBuffer<std::complex<int16_t>> *buffer);
         ~faadDecoder();
 int16_t	 MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],
@@ -61,7 +62,7 @@ bool    initialize      (stream_parms *);
         NeAACDecConfigurationPtr        aacConf;
         NeAACDecFrameInfo       hInfo;
         int32_t         baudRate;
-        RingBuffer<int16_t>     *audioBuffer;
+        RingBuffer<std::complex<int16_t>>     *audioBuffer;
 signals:
         void                    newAudio (int, int);
 };

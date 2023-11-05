@@ -34,7 +34,7 @@
 
 		techData::techData	(RadioInterface *mr,
 	                                 QSettings	*s,
-	                                 RingBuffer<int16_t> *audioData):
+	                                 RingBuffer<std::complex<int16_t>> *audioData):
 	                                         myFrame (nullptr) {
 	myRadioInterface	= mr;
 	dabSettings		= s;
@@ -79,6 +79,16 @@
 	audiodumpButton ->
                       setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
+
+	peakLeftDamped          = -100;
+        peakRightDamped         = -100;
+ 
+        thermoLeft              -> setFillBrush (Qt::darkBlue);
+        thermoRight             -> setFillBrush (Qt::darkBlue); 
+        thermoLeft              -> setAlarmBrush (Qt::red);
+        thermoRight             -> setAlarmBrush (Qt::red);
+        thermoLeft              -> setAlarmEnabled (true);
+        thermoRight             -> setAlarmEnabled(true);
 
 	connect (framedumpButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_framedumpButton ()));
@@ -273,7 +283,7 @@ void	techData::show_fm			(int freq) {
 }
 
 void	techData::audioDataAvailable	(int amount, int rate) {
-int16_t buffer [amount];
+std::complex<int16_t> buffer [amount];
 
 	audioData -> getDataFromBuffer (buffer, amount);
 	if (!myFrame. isHidden ())
@@ -352,4 +362,17 @@ void	techData::hideMissed	() {
 	missedSamples	-> hide ();
 }
 
+void	techData::showPeakLevel (const float iPeakLeft,
+                                       const float iPeakRight) {
+	auto peak_avr = [](float iPeak, float & ioPeakAvr) -> void {
+	   ioPeakAvr = (iPeak > ioPeakAvr ? iPeak : ioPeakAvr - 0.5f /*decay*/);
+	};
 
+	peak_avr (iPeakLeft,  peakLeftDamped);
+	peak_avr (iPeakRight, peakRightDamped);
+
+	thermoLeft		-> setFillBrush (Qt::cyan);
+        thermoRight		-> setFillBrush (Qt::cyan);
+        thermoLeft		-> setValue (peakLeftDamped);
+        thermoRight		-> setValue (peakRightDamped);
+}

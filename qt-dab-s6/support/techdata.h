@@ -41,21 +41,23 @@ Q_OBJECT
 public:
 		techData	(RadioInterface *,
 	                         QSettings *,
-	                         RingBuffer<int16_t> *audioData);
+	                         RingBuffer<std::complex<int16_t>> *audioData);
 		~techData	();
-
 	void	show_serviceData	(audiodata *);
 	void	cleanUp			();
 	void	show			();
 	void	hide			();
 	bool	isHidden		();
-
+	void	showPeakLevel		(float, float);
 private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
-	RingBuffer<int16_t>	*audioData;
+	RingBuffer<std::complex<int16_t>>	*audioData;
 	QFrame			myFrame;
 	audioDisplay		*the_audioDisplay;
+
+	float			peakLeftDamped;
+	float			peakRightDamped;
 
 	void			set_buttonColors	(QPushButton *,
 	                                            const QString &buttonName);

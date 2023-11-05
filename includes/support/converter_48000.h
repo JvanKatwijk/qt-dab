@@ -23,41 +23,50 @@
 
 #pragma once
 
+#include	<QObject>
 #include	"dab-constants.h"
 #include	<cstdio>
 #include	<samplerate.h>
 #include	<sndfile.h>
-#include	<QMutex>
+#include	<mutex>
 #include	<QObject>
 #include	"newconverter.h"
 #include	"ringbuffer.h"
 
 class	RadioInterface;
 
-	class	audioBase: public QObject {
+	class	converter_48000: public QObject {
 Q_OBJECT
 public:
-			audioBase		();
-virtual			~audioBase		();
-virtual	void		stop			();
-virtual	void		restart			();
-//
-	void		audioOut		(int16_t *, int32_t, int);
-	void		startDumping		(SNDFILE *);
-	void		stopDumping		();
-virtual	bool		hasMissed		();
+			converter_48000		(RadioInterface *,
+	                                         RingBuffer<float> *);
+			~converter_48000	();
+	void		convert			(std::complex<int16_t> *,
+	                                               int32_t, int);
+	void		start_audioDump		(SNDFILE *);
+	void		stop_audioDump		();
 private:
-	void		audioOut_16000		(int16_t *, int32_t);
-	void		audioOut_24000		(int16_t *, int32_t);
-	void		audioOut_32000		(int16_t *, int32_t);
-	void		audioOut_48000		(int16_t *, int32_t);
-	void		audioReady		(float *, int32_t);
-	newConverter	converter_16;
-	newConverter	converter_24;
-	newConverter	converter_32;
-	SNDFILE		*dumpFile;
-	QMutex		myLocker;
-protected:
-virtual	void		audioOutput		(float *, int32_t);
+	void		convert_16000		(std::complex<int16_t> *, int);
+	void		convert_24000		(std::complex<int16_t> *, int);
+	void		convert_32000		(std::complex<int16_t> *, int);
+	void		convert_48000		(std::complex<int16_t> *, int);
+	newConverter	mapper_16;
+	newConverter	mapper_24;
+	newConverter	mapper_32;
+	RingBuffer<float>	*outputBuffer;
+	SNDFILE		*filePointer;
+	std::mutex	locker;
+	void		dump			(Complex *, int);
+//
+//	For thermo
+	void		evaluatePeakLevel	(const Complex);
+	void		eval			(Complex *, int);
+
+	int32_t		peakLevelCurSampleCnt;  
+        int32_t		peakLevelSampleMax;
+        float		absPeakLeft;
+        float		absPeakRight;
+signals:
+	void		showPeakLevel		(float, float);
 };
 

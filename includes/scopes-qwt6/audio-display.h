@@ -54,7 +54,7 @@ public:
 	                                         QwtPlot	*, 	
 	                                         QSettings *);
 			~audioDisplay		();
-	void		createSpectrum		(int16_t *, int, int);
+	void		createSpectrum		(std::complex<int16_t> *, int, int);
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
@@ -73,8 +73,8 @@ private:
 	QColor		gridColor;
 	QColor		curveColor;
 	bool		brush;
-	void		ViewSpectrum		(double *, double *, double, int);
-	float		get_db 			(float);
+	void		ViewSpectrum	(double *, double *, double, int);
+	float		get_db 		(float);
 	int32_t		normalizer;
 private slots:
         void            rightMouseClick		(const QPointF &);

@@ -28,7 +28,7 @@
 #include	<QComboBox>
 
 	audioSink::audioSink	(int16_t latency):
-	                           _O_Buffer (8 * 32768) {
+	                           _O_Buffer (16 * 32768) {
 int32_t	i;
 	this	-> latency	= latency;
 	if (latency <= 0)
@@ -224,13 +224,14 @@ int32_t	h	= 100 - (theMissed * 100) / totalSamples;
 	totalSamples	= 1;
 	return h;
 }
-
+//
+//	we call this with the amount of floats!!
 void	audioSink::audioOutput	(float *b, int32_t amount) {
-	if (_O_Buffer. GetRingBufferWriteAvailable () < 2 * amount) {
+	if (_O_Buffer. GetRingBufferWriteAvailable () < amount) {
 	   fprintf (stderr, "%d\n",
 	        2 * amount - _O_Buffer. GetRingBufferReadAvailable ());
 	 }
-	_O_Buffer. putDataIntoBuffer (b, 2 * amount);
+	_O_Buffer. putDataIntoBuffer (b, amount);
 }
 
 QString audioSink::outputChannelwithRate (int16_t ch, int32_t rate) {

@@ -31,7 +31,7 @@
 	backendDriver::backendDriver (RadioInterface *mr,
 	                              descriptorType *d,
 	                              bool	backgroundFlag,
-	                              RingBuffer<int16_t> *audioBuffer,
+	                              RingBuffer<std::complex<int16_t>> *audioBuffer,
 	                              RingBuffer<uint8_t> *dataBuffer,
 	                              RingBuffer<uint8_t> *frameBuffer,
 	                              FILE *dump) {

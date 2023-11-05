@@ -25,7 +25,7 @@
 #include        "radio.h"
 
         faadDecoder::faadDecoder        (RadioInterface *mr,
-                                         RingBuffer<int16_t> *buffer) {
+                                         RingBuffer<std::complex<int16_t>> *buffer) {
         this    -> audioBuffer  = buffer;
         aacCap          = NeAACDecGetCapabilities();
         aacHandle       = NeAACDecOpen();
@@ -106,7 +106,7 @@ uint8_t channels;
 }
 
 int16_t faadDecoder::MP42PCM (stream_parms *sp,
-                              uint8_t   buffer [],
+                              uint8_t	buffer [],
                               int16_t   bufferLength) {
 int16_t samples;
 long unsigned int       sampleRate;
@@ -131,12 +131,7 @@ uint8_t channels;
             (sampleRate !=  (long unsigned)baudRate))
               baudRate = sampleRate;
 
-//      fprintf (stderr, "bytes consumed %d\n", (int)(hInfo. bytesconsumed));
-//      fprintf (stderr, "samplerate = %d, samples = %d, channels = %d, error = %d, sbr = %d\n", sampleRate, samples,
-//               hInfo. channels,
-//               hInfo. error,
-//               hInfo. sbr);
-//      fprintf (stderr, "header = %d\n", hInfo. header_type);
+
         channels        = hInfo. channels;
         if (hInfo. error != 0) {
            fprintf (stderr, "Warning: %s\n",
@@ -145,19 +140,23 @@ uint8_t channels;
 	}
 
         if (channels == 2) {
-           audioBuffer  -> putDataIntoBuffer (outBuffer, samples);
+	   for (int i = 0; i < samples / 2; i ++) {
+	      std::complex<int16_t> s =
+	                      std::complex<int16_t> (outBuffer [2 * i],
+	                                             outBuffer [2 * i + 1]);
+	      audioBuffer -> putDataIntoBuffer (&s, 1);
+	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
               newAudio (sampleRate / 10, sampleRate);
         }
         else
         if (channels == 1) {
-           int16_t *buffer = (int16_t *)alloca (2 * samples);
-           int16_t i;
-           for (i = 0; i < samples; i ++) {
-              buffer [2 * i]    = ((int16_t *)outBuffer) [i];
-              buffer [2 * i + 1] = buffer [2 * i];
-           }
-           audioBuffer  -> putDataIntoBuffer (buffer, samples);
+           for (int i = 0; i < samples; i ++) {
+	      std::complex<int16_t> s = 
+	                  std::complex<int16_t> (outBuffer [i],
+	                                         outBuffer [i]);
+              audioBuffer  -> putDataIntoBuffer (&s, 1);
+	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
               newAudio (samples, sampleRate);
         }

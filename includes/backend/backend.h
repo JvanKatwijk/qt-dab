@@ -45,7 +45,7 @@ class	Backend {
 public:
 		Backend	(RadioInterface	*mr,
 	                 descriptorType	*d,
-	                 RingBuffer<int16_t> *,
+	                 RingBuffer<std::complex<int16_t>> *,
 	                 RingBuffer<uint8_t> *,
 	                 RingBuffer<uint8_t> *, FILE *, int);
 		~Backend();

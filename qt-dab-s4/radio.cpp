@@ -221,6 +221,7 @@ uint8_t convert (QString s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
+	                                        pcmBuffer (2 * 32768),
 	                                        my_spectrumViewer (
 	                                                  this, Si,
 	                                                  &spectrumBuffer,
@@ -240,7 +241,9 @@ uint8_t convert (QString s) {
 	                                        the_dlCache (10),
 	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
-	                                        theScheduler (this, schedule) {
+	                                        theScheduler (this, schedule),
+	                                        audioConverter (this,
+	                                                        &pcmBuffer) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1434,17 +1437,22 @@ static int teller	= 0;
 	      techData. rateDisplay -> display (rate);
 	   }
 	}
-	int16_t vec [amount];
-	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
-	   audioBuffer. getDataFromBuffer (vec, amount);
-#ifdef	HAVE_PLUTO_RXTX
-	   if (streamerOut != nullptr)
-	      streamerOut	-> audioOut (vec, amount, rate);
-#endif
+	std::complex<int16_t> vec [amount];
+        while (audioBuffer. GetRingBufferReadAvailable() > amount) {
+           audioBuffer. getDataFromBuffer (vec, amount);
+#ifdef  HAVE_PLUTO_RXTX                         
+           if (streamerOut != nullptr)
+              streamerOut       -> audioOut (vec, amount, rate);
+#endif           
 	   the_audioDisplay	-> createSpectrum (vec, amount, rate);
-	   if (!muting)
-	      soundOut	-> audioOut (vec, amount, rate);
-	}
+           audioConverter. convert (vec, amount, rate);
+           while (pcmBuffer. GetRingBufferReadAvailable () >= 2 * 512) {
+              float tmpBuf [2 * 512];
+              pcmBuffer. getDataFromBuffer (tmpBuf, 2 * 512);
+              if (!muteTimer. isActive ())
+                 soundOut       -> audioOutput (tmpBuf, 2 * 512);
+           }     
+        }            
 }
 //
 
@@ -2460,7 +2468,7 @@ void	RadioInterface::stop_audioDumping	() {
 	if (audioDumper == nullptr)
 	   return;
 
-	soundOut	-> stopDumping();
+	audioConverter. stop_audioDump ();
 	sf_close (audioDumper);
 	audioDumper	= nullptr;
 	setButtonFont (techData. audiodumpButton, "audio dump", 10);
@@ -2474,12 +2482,12 @@ void	RadioInterface::start_audioDumping () {
 	   return;
 
 	setButtonFont (techData. audiodumpButton, "writing", 12);
-	soundOut	-> startDumping (audioDumper);
+	audioConverter. start_audioDump (audioDumper);
 }
 
 void	RadioInterface::scheduled_audioDumping () {
 	if (audioDumper != nullptr) {
-	   soundOut	-> stopDumping();
+	   audioConverter. stop_audioDump();
 	   sf_close (audioDumper);
 	   audioDumper	= nullptr;
 	   setButtonFont (techData. audiodumpButton, "audio dump", 10);
@@ -2492,7 +2500,7 @@ void	RadioInterface::scheduled_audioDumping () {
 	   return;
 
 	setButtonFont (techData. audiodumpButton, "writing", 12);
-	soundOut	-> startDumping (audioDumper);
+	audioConverter. start_audioDump (audioDumper);
 }
 
 void	RadioInterface::handle_audiodumpButton () {
@@ -4869,5 +4877,9 @@ skinHandler theSkins;
 //	This is not used here
 void	RadioInterface::show_stdDev		(int v) {
 	(void)v;
+}
+
+void	RadioInterface::showPeakLevel	(float left, float right) {
+	(void)left; (void)right;
 }
 

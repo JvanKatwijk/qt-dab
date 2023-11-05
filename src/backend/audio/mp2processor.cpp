@@ -221,7 +221,7 @@ struct quantizer_spec quantizer_table [17] = {
 
 	mp2Processor::mp2Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<int16_t> *buffer,
+	                            RingBuffer<std::complex<int16_t>> *buffer,
 	                            bool backgroundFlag):
 	                                my_padhandler (mr, backgroundFlag) {
 int16_t	i, j;
@@ -608,8 +608,12 @@ int16_t	vLength	= 24 * bitRate / 8;
 	      if (MP2bitCount >= lf) {
 	         int16_t sample_buf [KJMP2_SAMPLES_PER_FRAME * 2];
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
-	            buffer -> putDataIntoBuffer (sample_buf, 
-	                                 2 * (int32_t)KJMP2_SAMPLES_PER_FRAME);
+	            for (int i = 0; i < KJMP2_SAMPLES_PER_FRAME; i ++) {
+	               std::complex<int16_t> s =
+	                        std::complex<int16_t> (sample_buf [2 * i],
+	                                               sample_buf [2 * i + i]);
+	               buffer -> putDataIntoBuffer (&s, 1);
+	            }
 	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)
 	               newAudio (2 * (int32_t)KJMP2_SAMPLES_PER_FRAME,
 	                         baudRate);

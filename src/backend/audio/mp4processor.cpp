@@ -46,7 +46,7 @@
   */
 	mp4Processor::mp4Processor (RadioInterface	*mr,
 	                            int16_t		bitRate,
-	                            RingBuffer<int16_t> *b,
+	                            RingBuffer<std::complex<int16_t>> *b,
 	                            RingBuffer<uint8_t> *frameBuffer,
 	                            bool		backgroundFlag,
 	                            FILE		*dump):

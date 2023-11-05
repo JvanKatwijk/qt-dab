@@ -40,6 +40,7 @@
 #include	"ringbuffer.h"
 #include        "band-handler.h"
 #include	"process-params.h"
+#include	"converter_48000.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	<memory>
@@ -65,7 +66,7 @@
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
-class	audioBase;
+class	audioSink;
 class	common_fft;
 class	scanListHandler;
 class	timeTableHandler;
@@ -185,7 +186,8 @@ private:
 	RingBuffer<float>	responseBuffer;
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
-	RingBuffer<int16_t>	audioBuffer;
+	RingBuffer<std::complex<int16_t>>	audioBuffer;
+	RingBuffer<float>	pcmBuffer;
 	RingBuffer<float>	stdDevBuffer;
 
 	displayWidget		newDisplay;
@@ -198,7 +200,8 @@ private:
 	tiiHandler		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
-	RingBuffer<int16_t>	theTechData;
+	RingBuffer<std::complex<int16_t>>	theTechData;
+	converter_48000		audioConverter;
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -226,11 +229,16 @@ private:
 	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice_p;
 	int			detector;
+//
+//	for the peaklevel indicator
+        float			peakLeftDamped;
+        float			peakRightDamped;
+
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut_p;
 #endif
 	ofdmHandler		*my_ofdmHandler;
-	audioBase		*soundOut_p;
+	audioSink		*soundOut_p;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer_p;
 #endif
@@ -498,6 +506,8 @@ private slots:
 	void			show_correlation	(int, int,
 	                                                 QVector<int> );
 	void			show_stdDev		(int);
+//
+	void			showPeakLevel		(float, float);
 
 //
 //	config handlers

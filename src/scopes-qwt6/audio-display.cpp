@@ -102,7 +102,7 @@ QString	colorString;
 }
 
 
-void	audioDisplay::createSpectrum  (int16_t *data,
+void	audioDisplay::createSpectrum  (std::complex<int16_t> *data,
 	                              int amount, int sampleRate) {
 double	X_axis [displaySize];
 double	Y_values [displaySize];
@@ -111,11 +111,12 @@ int16_t	averageCount	= 3;
 
 	if (amount > spectrumSize)
 	   amount = spectrumSize;
-	for (int i = 0; i < amount / 2; i ++)
-	   spectrumBuffer [i] = Complex (data [2 * i] / 8192.0,
-	                                 data [2 * i + 1] / 8192.0);
+	for (int i = 0; i < amount; i ++)
+	   spectrumBuffer [i] = 
+	             std::complex<float> (real (data [i]) / 32768.0f,
+	                                  imag (data [i]) / 32768.0);
 
-	for (int i = amount / 2; i < spectrumSize;  i ++)
+	for (int i = amount; i < spectrumSize;  i ++)
 	   spectrumBuffer [i] = Complex (0, 0);
 //	and window it
 

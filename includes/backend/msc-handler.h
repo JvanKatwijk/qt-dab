@@ -61,7 +61,7 @@ public:
 	void		process_mscBlock	(std::vector<int16_t> &,
 	                                                  int16_t);
 	bool		set_Channel		(descriptorType &,
-	                                         RingBuffer<int16_t> *,
+	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         RingBuffer<uint8_t> *,
 	                                         FILE *, int);
 	void		reset_Channel		();

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2017
+ *    Copyright (C)  2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #pragma once
@@ -29,32 +28,31 @@
 #include	"dab-constants.h"
 #include	<portaudio.h>
 #include	<cstdio>
-#include	"audio-base.h"
+//#include	"audio-base.h"
 #include	"ringbuffer.h"
 
 class	QComboBox;
 
-class	audioSink  : public audioBase {
-Q_OBJECT
+class	audioSink  {
 public:
 	                audioSink		(int16_t);
 			~audioSink		();
 	bool		setupChannels		(QComboBox *);
 	void		stop			();
-	void		restart			(void);
+	void		restart			();
 	bool		selectDevice		(int16_t);
 	bool		selectDefaultDevice	();
+	void		audioOutput		(float *, int32_t);
 	int32_t		missed			();
 	bool		hasMissed		();
 private:
-	int16_t		numberofDevices();
+	int16_t		numberofDevices		();
 	QString		outputChannelwithRate	(int16_t, int32_t);
-	int16_t		invalidDevice		(void);
+	int16_t		invalidDevice		();
 	bool		isValidDevice		(int16_t);
-	int32_t		cardRate();
+	int32_t		cardRate		();
 
 	bool		OutputrateIsSupported	(int16_t, int32_t);
-	void		audioOutput		(float *, int32_t);
 	int32_t		CardRate;
 	int16_t		latency;
 	int32_t		size;
@@ -64,7 +62,6 @@ private:
 	int		paCallbackReturn;
 	int16_t		bufSize;
 	PaStream	*ostream;
-	SNDFILE		*dumpFile;
 	RingBuffer<float>	_O_Buffer;
 	PaStreamParameters	outputParameters;
 
