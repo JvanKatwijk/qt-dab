@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-6.2)
+set (objectName qt-dab-6.25)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -15,7 +15,7 @@ endif()
 #	one for Linux and one for Window
 
 if(MINGW)
-    add_definitions ( -municode)
+	add_definitions ( -municode)
 #else (MINGW)
 #	add_definitions (-DSSE_AVAILABLE)
 endif()
@@ -297,6 +297,7 @@ endif ()
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
@@ -403,9 +404,9 @@ endif ()
 	     ../src/backend/data/mot/mot-object.cpp
 	     ../src/backend/data/mot/mot-dir.cpp
 	     ../src/backend/data/data-processor.cpp
-	     ../src/output/audio-base.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
+	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
@@ -460,7 +461,6 @@ endif ()
 	     ./radio.h
 	     ./support/techdata.h
 	     ../ofdm-handler.h
-	     ../includes/output/audio-base.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/correlator.h
@@ -482,6 +482,7 @@ endif ()
 	     ../includes/backend/data/journaline-datahandler.h
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
+	     ../includes/support/converter_48000.h
 	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h

@@ -280,6 +280,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-base.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/converter_48000.h
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
@@ -388,6 +389,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/output/audio-base.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
+	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
 	     ../src/support/band-handler.cpp
@@ -463,6 +465,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/backend/data/journaline-datahandler.h
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
+	     ../includes/support/converter_48000.h
 	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h

@@ -608,10 +608,10 @@ int16_t	vLength	= 24 * bitRate / 8;
 	      if (MP2bitCount >= lf) {
 	         int16_t sample_buf [KJMP2_SAMPLES_PER_FRAME * 2];
 	         if (mp2decodeFrame (MP2frame, sample_buf)) {
-	            for (int i = 0; i < KJMP2_SAMPLES_PER_FRAME; i ++) {
+	            for (int j = 0; j < KJMP2_SAMPLES_PER_FRAME; j ++) {
 	               std::complex<int16_t> s =
-	                        std::complex<int16_t> (sample_buf [2 * i],
-	                                               sample_buf [2 * i + i]);
+	                        std::complex<int16_t> (sample_buf [2 * j],
+	                                               sample_buf [2 * j + 1]);
 	               buffer -> putDataIntoBuffer (&s, 1);
 	            }
 	            if (buffer -> GetRingBufferReadAvailable () > baudRate / 8)

@@ -76,7 +76,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.2"
+#define	CURRENT_VERSION	"6.25"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101
