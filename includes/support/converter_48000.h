@@ -66,6 +66,8 @@ private:
         int32_t		peakLevelSampleMax;
         float		absPeakLeft;
         float		absPeakRight;
+
+	int		repetitionCounter;
 signals:
 	void		showPeakLevel		(float, float);
 };

@@ -65,6 +65,7 @@
 	this	-> nrBlocks		= params. get_L		();
 	this	-> carriers		= params. get_carriers	();
 
+	repetitionCounter		= 8;
 	this	-> T_g			= T_s - T_u;
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
@@ -219,7 +220,7 @@ Complex fft_buffer [T_u];
 //	From time to time we show the constellation of symbol 2.
 	
 	if (blkno == 2) {
-	   if (++cnt > 8) {
+	   if (++cnt > repetitionCounter) {
 	      max /= carriers;
 	      Complex displayVector [carriers];
 	      if (iqSelector == SHOW_RAW) {

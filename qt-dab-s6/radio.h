@@ -531,4 +531,5 @@ private slots:
 	void			handle_skinSelector		();
 	void			handle_loadTable		();
 	void			handle_fontSelect		();
+	void			handle_dcRemovalSelector	(int);
 };

@@ -4810,6 +4810,9 @@ void	RadioInterface::connect_configWidget () {
 
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
+
+	connect (configWidget. dcRemovalSelector, SIGNAL (stateChanged ()),
+	         this, SLOT (handle_dcRemovalSelector (int)));
 }
 
 void	RadioInterface::disconnect_configWidget () {
@@ -4938,7 +4941,8 @@ void	RadioInterface::disconnect_configWidget () {
 	         this, SLOT (handle_eti_activeSelector (int)));
 	disconnect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
-
+	disconnect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_dcRemovalSelector (int)));
 }
 
 void	RadioInterface::handle_fontSelect () {
@@ -4985,3 +4989,10 @@ void	RadioInterface::handle_iqSelector () {
 void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	techWindow_p	-> showPeakLevel (iPeakLeft, iPeakRight);
 }
+
+void	RadioInterface::handle_dcRemovalSelector (int s) {
+	(void)s;
+	if (my_ofdmHandler != nullptr)
+	   my_ofdmHandler -> handle_dcRemovalSelector (configWidget. dcRemovalSelector -> isChecked ());
+}
+

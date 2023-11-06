@@ -48,7 +48,7 @@ public:
 	                         	deviceHandler *theRig,
 	                         	RingBuffer<Complex> *spectrumBuffer = nullptr);
 
-	      	~sampleReader();
+	      	~sampleReader		();
 	      void	setRunning	(bool b);
 	      float	get_sLevel	();
 	      Complex	get_sample	(float);
@@ -57,7 +57,7 @@ public:
 	                                 int32_t n, int32_t phase, bool saving);
 	      void	start_dumping	(SNDFILE *);
 	      void	stop_dumping();
-	      bool	check_clipped	();
+	      void	set_dcRemoval	(bool);
 private:
 	      RadioInterface	*myRadioInterface;
 	      deviceHandler	*theRig;
@@ -76,7 +76,11 @@ private:
 	      int16_t		dumpScale;
 	      int16_t		dumpBuffer [DUMPSIZE];
 	      std::atomic<SNDFILE *>	dumpfilePointer;
-	      bool		clipped;
+	      int		repetitionCounter;
+
+	      bool		balancing;
+	      float		realAvg;
+	      float		imagAvg;
 signals:
 	      void		show_spectrum (int);
 	      void		show_corrector (int);

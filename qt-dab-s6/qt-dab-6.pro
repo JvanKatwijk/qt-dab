@@ -14,17 +14,17 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-QMAKE_CFLAGS	+=  -g -fsanitize=address
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
@@ -453,7 +453,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-6.2
+#	TARGET		= qt-dab64-6.25
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -473,7 +473,7 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.2
+	TARGET		= qt-dab32-6.25
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

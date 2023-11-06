@@ -661,3 +661,6 @@ void	ofdmHandler::handle_iqSelector	() {
 	theOfdmDecoder. handle_iqSelector ();
 }
 
+void	ofdmHandler::handle_dcRemovalSelector (bool b) {
+	theReader. set_dcRemoval (b);
+}

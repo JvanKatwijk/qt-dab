@@ -33,7 +33,8 @@
 	                                outputBuffer (outB) {
 	this	-> filePointer		= nullptr;
 	this    -> peakLevelCurSampleCnt        = 0;
-        this    -> peakLevelSampleMax   = 48000 / 8; 
+	repetitionCounter		= 8;
+        this    -> peakLevelSampleMax   = 48000 / repetitionCounter; 
         this    -> absPeakLeft          = 0.0f;
         this    -> absPeakRight         = 0.0f;
 	connect (this, SIGNAL (showPeakLevel (float, float)),

@@ -32,8 +32,14 @@ int16_t res     = 1;
 	return res;
 }
 
+static inline
+float	average (float inp, float avg, float factor) {
+	return (1.0 - factor) * avg + factor * inp;
+}
+
 static
 Complex oscillatorTable [INPUT_RATE];
+constexpr float ALPHA = 1.0f / INPUT_RATE;
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
@@ -49,7 +55,10 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	clipped		= false;
+	realAvg		= 0;
+	imagAvg		= 0;
+	balancing	= false;
+	repetitionCounter	= 8;
 	for (i = 0; i < INPUT_RATE; i ++)
 	   oscillatorTable [i] = Complex
 	                            (cos (2.0 * M_PI * i / INPUT_RATE),
@@ -81,18 +90,18 @@ std::vector<Complex> buffer (1);
 	return buffer [0];
 }
 
-void	sampleReader::get_samples (std::vector<Complex>  &v,
+void	sampleReader::get_samples (std::vector<Complex>  &v_out,
 	                           int index,
-	                           int32_t n,
+	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
-Complex buffer [n];
+Complex buffer [nrSamples];
 
 	corrector	= phaseOffset;
 	if (!running. load())
 	   throw 21;
-	if (n > bufferContent) {
+	if (nrSamples > bufferContent) {
 	   bufferContent = theRig -> Samples();
-	   while ((bufferContent < n) && running. load()) {
+	   while ((bufferContent < nrSamples) && running. load()) {
 	      usleep (10);
 	      bufferContent = theRig -> Samples();
 	   }
@@ -102,36 +111,42 @@ Complex buffer [n];
 	   throw 20;
 //
 //	so here, bufferContent >= n
-	n	= theRig -> getSamples (buffer, n);
-	bufferContent -= n;
+	nrSamples	= theRig -> getSamples (buffer, nrSamples);
+	bufferContent	-= nrSamples;
 	if (dumpfilePointer. load () != nullptr) {
-	   for (int i = 0; i < n; i ++) {
-	      dumpBuffer [2 * dumpIndex    ] = real (v [i]) * dumpScale;
-	      dumpBuffer [2 * dumpIndex + 1] = imag (v [i]) * dumpScale;
-	      if (++dumpIndex >= DUMPSIZE / 2) {
-	         sf_writef_short (dumpfilePointer. load(),
+	   for (int i = 0; i < nrSamples; i ++) {
+	      dumpBuffer [2 * dumpIndex    ] = real (buffer [i]) * dumpScale;
+	      dumpBuffer [2 * dumpIndex + 1] = imag (buffer [i]) * dumpScale;
+	      if (++ dumpIndex >= DUMPSIZE / 2) {
+	         sf_writef_short (dumpfilePointer. load (),
 	                          dumpBuffer, dumpIndex);
 	         dumpIndex = 0;
 	      }
 	   }
 	}
-
 //	OK, we have samples!!
 //	first: adjust frequency. We need Hz accuracy
-	for (int i = 0; i < n; i ++) {
+	for (int i = 0; i < nrSamples; i ++) {
 	   currentPhase	-= phaseOffset;
+
+	   Complex v = buffer[i];
+	   if (balancing) {
+  	      float realPart	= real (v);
+	      float imagPart	= imag(v);
+	      average (realAvg, realPart, ALPHA);
+	      average (imagAvg, imagPart, ALPHA);
+	      v = Complex (realPart - realAvg, imagPart - imagAvg);
+	   }
 //
 //	Note that "phase" itself might be negative
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 	   if (localCounter < bufferSize)
-	      localBuffer [localCounter ++]     = v [i];
-	   float abs_lev = jan_abs_clipped (v [i], clipped, 0.95f);
-	   v  [index + i]	= buffer [i] * oscillatorTable [currentPhase];
-	   sLevel	= 0.00001 * jan_abs (v [i]) + (1 - 0.00001) * sLevel;
+	      localBuffer [localCounter ++]     = buffer [i];
+	   v_out  [index + i]	= buffer [i] * oscillatorTable [currentPhase];
+	   sLevel	= 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
 	}
-#define	N 5
-	sampleCount	+= n;
-	if (sampleCount > INPUT_RATE / N) {
+	sampleCount	+= nrSamples;
+	if (sampleCount > INPUT_RATE / repetitionCounter) {
 	   show_corrector	(corrector);
 	   sampleCount = 0;
 	   if ((spectrumBuffer != nullptr) && saving) {
@@ -151,9 +166,9 @@ void	sampleReader::stop_dumping() {
 	dumpfilePointer. store (nullptr);
 }
 
-bool	sampleReader::check_clipped	() {
-bool res	= clipped;
-	clipped	= false;
-	return res;
+void	sampleReader::set_dcRemoval	(bool b) {
+	balancing	= b;
+	realAvg		= 0;
+	imagAvg		= 0;
 }
 

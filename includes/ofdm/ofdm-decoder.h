@@ -78,6 +78,8 @@ private:
 	std::vector<float>	offsetVector;
 	phaseTable	*phasetable;
 	int		iqSelector;
+
+	int		repetitionCounter;
 signals:
 	void		showIQ		(int);
 	void		show_quality	(float, float, float);
