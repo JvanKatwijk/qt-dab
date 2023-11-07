@@ -48,7 +48,7 @@ Q_OBJECT
 public:
         faadDecoder     (RadioInterface *mr,
                          RingBuffer<std::complex<int16_t>> *buffer);
-        ~faadDecoder();
+        ~faadDecoder	();
 int16_t	 MP42PCM         (stream_parms *sp,
                          uint8_t buffer [],
                          int16_t bufferLength);

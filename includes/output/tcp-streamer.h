@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -25,15 +25,16 @@
 
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
+#include	<QObject>
 #include	<QByteArray>
 #include	<QHostAddress>
 #include	<QtNetwork>
 #include	<QTcpServer>
 #include	<QTcpSocket>
 #include	<QTimer>
-#include	"audio-base.h"
+#include	"audio-player.h"
 
-class	tcpStreamer: public AudioBase {
+class	tcpStreamer: public audioPlayer {
 Q_OBJECT
 public:
 		tcpStreamer	(int32_t);
@@ -48,8 +49,8 @@ private:
 	QTimer			watchTimer;
 	bool			connected;
 public slots:
-	void			acceptConnection	(void);
-	void			processSamples		(void);
+	void			acceptConnection	();
+	void			processSamples		();
 signals:
-	void			handleSamples		(void);
+	void			handleSamples		();
 };

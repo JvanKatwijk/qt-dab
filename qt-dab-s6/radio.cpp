@@ -379,7 +379,6 @@ uint8_t	dabBand;
 #ifdef	TCP_STREAMER
 	soundOut_p		= new tcpStreamer	(20040);
 	techWindow_p		-> hide		();
-	(void)latency;
 #elif	QT_AUDIO
 	soundOut_p		= new Qt_Audio();
 	techWindow_p		-> hide		();
@@ -4811,7 +4810,7 @@ void	RadioInterface::connect_configWidget () {
 	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
 
-	connect (configWidget. dcRemovalSelector, SIGNAL (stateChanged ()),
+	connect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_dcRemovalSelector (int)));
 }
 

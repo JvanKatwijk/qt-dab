@@ -36,7 +36,7 @@
   *	that are processed by the "faadDecoder" class
   */
 	fdkAAC::fdkAAC (RadioInterface *mr,
-                        RingBuffer<int16_t> *buffer) {
+                        RingBuffer<std::complex<int16_t>> *buffer) {
         this    -> audioBuffer  = buffer;
 	working			= false;
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
@@ -93,7 +93,11 @@ int		output_size	= 8 * 2048;
 	   return -1;
 
         if (info -> numChannels == 2) {
-           audioBuffer  -> putDataIntoBuffer (bufp, info -> frameSize * 2);
+	   for (int i = 0; i < info -> frameSize; i ++) {
+	      std::complex<int16_t> s =
+	               std::complex<int16_t> (bufp [2 * i], bufp [2 * i + 1]);
+              audioBuffer  -> putDataIntoBuffer (&s, 1);
+	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
               newAudio (info -> frameSize, info -> sampleRate);

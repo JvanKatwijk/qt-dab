@@ -187,6 +187,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/fir-filters.h \
 	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
+	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
@@ -307,6 +308,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/fir-filters.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
+	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
@@ -414,10 +416,7 @@ CONFIG		+= lime
 #CONFIG		+= pluto-rxtx
 #CONFIG		+= pluto
 CONFIG		+= pluto-2
-#CONFIG		+= elad-device
-#CONFIG		+= colibri
 CONFIG		+= faad
-#CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
@@ -718,7 +717,7 @@ tcp-streamer	{
 
 qt-audio	{
 	DEFINES		+= QT_AUDIO
-	QT		+= multimedia multimediawidgets
+	QT		+= multimedia 
 	HEADERS		+= ../includes/output/Qt-audio.h \
 	                   ../includes/output/Qt-audiodevice.h
 	SOURCES		+= ../src/output/Qt-audio.cpp \
@@ -780,14 +779,6 @@ faad	{
 	HEADERS		+= ../includes/backend/audio/faad-decoder.h 
 	SOURCES		+= ../src/backend/audio/faad-decoder.cpp 
 	LIBS		+= -lfaad
-}
-
-fdk-aac	{
-	DEFINES		+= __WITH_FDK_AAC__
-	INCLUDEPATH	+= ../specials/fdk-aac
-	HEADERS		+= ../includes/backend/audio/fdk-aac.h 
-	SOURCES		+= ../src/backend/audio/fdk-aac.cpp 
-	PKGCONFIG	+= fdk-aac
 }
 
 preCompiled {

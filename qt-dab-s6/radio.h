@@ -66,7 +66,7 @@
 class	QSettings;
 class	ofdmHandler;
 class	deviceHandler;
-class	audioSink;
+class	audioPlayer;
 class	common_fft;
 class	scanListHandler;
 class	timeTableHandler;
@@ -238,7 +238,7 @@ private:
 	dabStreamer		*streamerOut_p;
 #endif
 	ofdmHandler		*my_ofdmHandler;
-	audioSink		*soundOut_p;
+	audioPlayer		*soundOut_p;
 #ifdef	DATA_STREAMER
 	tcpServer		*dataStreamer_p;
 #endif

@@ -27,10 +27,10 @@
 #include	 <QTimer>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"audio-base.h"
+#include	"audio-player.h"
 #include	"Qt-audiodevice.h"
 
-class	Qt_Audio: public AudioBase {
+class	Qt_Audio: public AudioPlayer {
 Q_OBJECT
 public:
 			Qt_Audio	();

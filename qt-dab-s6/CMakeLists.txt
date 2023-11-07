@@ -101,20 +101,10 @@ if (DEFINED VITERBI_NEON)
 	set(VITERBI_NEON true)
 endif ()
 
-if (DEFINED FDK_AAC)
-	set (FDK_AAC true)
-endif ()
 #	If you want a tcp stream of the audio rather than
 #	audio being sent to the soundcard, set
 if (DEFINED TCP_STREAMER)
 	set(TCP_STREAMER true)
-	set(USE_PORTAUDIO false)
-endif ()
-
-#	If you want the Qt system to handle the audio (only default out)
-#	then set
-if (DEFINED QT_AUDIO)
-	set(QT_AUDIO true)
 	set(USE_PORTAUDIO false)
 endif ()
 
@@ -295,7 +285,7 @@ endif ()
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/fir-filters.h
-	     ../includes/output/audio-base.h
+	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
@@ -404,6 +394,7 @@ endif ()
 	     ../src/backend/data/mot/mot-object.cpp
 	     ../src/backend/data/mot/mot-dir.cpp
 	     ../src/backend/data/data-processor.cpp
+	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
 	     ../src/support/converter_48000.cpp
@@ -482,6 +473,7 @@ endif ()
 	     ../includes/backend/data/journaline-datahandler.h
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
+	     ../includes/output/audio-player.h
 	     ../includes/support/converter_48000.h
 	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
@@ -535,27 +527,6 @@ endif ()
 
 #########################################################################
 
-	if (FDK_AAC)
-	   find_package(Fdk-AAC)
-	   if (NOT LIBFDK_AAC_FOUND)
-	      message (FATAL_ERROR, "please install libfdk-aac")
-	   endif ()
-	   include_directories (../specials/fdk-aac)
-	   set ($(objectName)_HDRS
-	        ${${objectName}_HDRS}
-	        ../includes/backend/audio/fdk-aac.h
-	   )
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ../src/backend/audio/fdk-aac.cpp
-	   )
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ../includes/backend/audio/fdk-aac.h
-	   )
-           list(APPEND extraLibs ${FDK_AAC_LIBRARIES})
-	   add_definitions (-D__WITH_FDK_AAC__)
-	elseif (NOT FDK_AAC)
            find_package(Faad)
            if (NOT FAAD_FOUND )
               message(FATAL_ERROR "please install libfaad")
@@ -573,7 +544,6 @@ endif ()
 	        ../includes/backend/audio/faad-decoder.h
 	   )
 	   add_definitions (-D__WITH_FAAD__)
-	endif (FDK_AAC)
 
 #	the viterbi decoder
 #

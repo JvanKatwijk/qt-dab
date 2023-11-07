@@ -127,23 +127,22 @@ Complex buffer [nrSamples];
 //	OK, we have samples!!
 //	first: adjust frequency. We need Hz accuracy
 	for (int i = 0; i < nrSamples; i ++) {
-	   currentPhase	-= phaseOffset;
-
 	   Complex v = buffer[i];
 	   if (balancing) {
   	      float realPart	= real (v);
-	      float imagPart	= imag(v);
+	      float imagPart	= imag (v);
 	      average (realAvg, realPart, ALPHA);
 	      average (imagAvg, imagPart, ALPHA);
-	      v = Complex (realPart - realAvg, imagPart - imagAvg);
+	      v -= Complex (realAvg, imagAvg);
 	   }
 //
 //	Note that "phase" itself might be negative
+	   currentPhase	-= phaseOffset;
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 	   if (localCounter < bufferSize)
-	      localBuffer [localCounter ++]     = buffer [i];
-	   v_out  [index + i]	= buffer [i] * oscillatorTable [currentPhase];
-	   sLevel	= 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
+	      localBuffer [localCounter ++]     = v;
+	   v_out  [index + i]	= v * oscillatorTable [currentPhase];
+	   sLevel = 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
 	}
 	sampleCount	+= nrSamples;
 	if (sampleCount > INPUT_RATE / repetitionCounter) {

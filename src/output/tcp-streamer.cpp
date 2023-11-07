@@ -31,8 +31,8 @@
 	connect (&streamer, SIGNAL (newConnection (void)),
 	                this, SLOT (acceptConnection (void)));
 	streamer. listen (QHostAddress::Any, port);
-	connect (this, SIGNAL (handleSamples (void)),
-	         this, SLOT (processSamples (void)));
+	connect (this, SIGNAL (handleSamples ()),
+	         this, SLOT (processSamples ()));
 }
 
 		tcpStreamer::~tcpStreamer	(void) {

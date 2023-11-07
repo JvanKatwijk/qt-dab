@@ -28,12 +28,12 @@
 #include	"dab-constants.h"
 #include	<portaudio.h>
 #include	<cstdio>
-//#include	"audio-base.h"
+#include	"audio-player.h"
 #include	"ringbuffer.h"
 
 class	QComboBox;
 
-class	audioSink  {
+class	audioSink : public audioPlayer {
 public:
 	                audioSink		(int16_t);
 			~audioSink		();
