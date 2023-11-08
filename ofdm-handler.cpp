@@ -362,31 +362,33 @@ int	snrCount	= 0;
 //	lots of cases
 //	we always process all blocks
 
-	         if (eti_on) {
-	            theOfdmDecoder.
-	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
-	            theEtiGenerator.
-	                   processBlock (ibits, ofdmSymbolCount);
-	            continue;
-	         }
 //
 //	symbols 1 .. 3 are always processed using the ofdm decoder
+//	and if eti is selected then we do them all
+	         if (eti_on) {
+	            theOfdmDecoder.
+	                   decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            if (ofdmSymbolCount <= 3) 
+	               theFicHandler.
+	                    process_ficBlock (ibits, ofdmSymbolCount);
+	            else 
+	               theMscHandler. process_mscBlock (ibits, ofdmSymbolCount);
+	            theEtiGenerator. processBlock (ibits, ofdmSymbolCount);
+	            continue;
+	         }
+
+//
+//	Normal Processing, no eti 
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
-	                 decode (ofdmBuffer, ofdmSymbolCount, ibits);
-	            theFicHandler.
-	                    process_ficBlock (ibits, ofdmSymbolCount);
+                           decode (ofdmBuffer, ofdmSymbolCount, ibits);
+	            theFicHandler.   
+                            process_ficBlock (ibits, ofdmSymbolCount);
 	         }
-//
-//	when scanning, we only look at the FIC blocks
 	         if (scanMode)
 	            continue;
-//
-//	If the MSC_THREAD is enabled, the mscHandler will take care
-//	of the full block handling, but it also needs block 1 .. 3
 #ifdef	__MSC_THREAD__
-	         theMscHandler.
-	                 process_Msc  (ofdmBuffer, T_g, ofdmSymbolCount);
+	         theMscHandler. process_Msc (ofdmBuffer, 0,  ofdmSymbolCount);
 #else
 	         if (ofdmSymbolCount >= 4) {
 	            theOfdmDecoder.

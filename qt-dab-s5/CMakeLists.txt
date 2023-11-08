@@ -278,7 +278,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/fir-filters.h
-	     ../includes/output/audio-base.h
+	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes/support/converter_48000.h
 	     ../includes/support/ringbuffer.h
@@ -386,7 +386,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/backend/data/mot/mot-object.cpp
 	     ../src/backend/data/mot/mot-dir.cpp
 	     ../src/backend/data/data-processor.cpp
-	     ../src/output/audio-base.cpp
+	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
 	     ../src/support/converter_48000.cpp
@@ -443,7 +443,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ./support/techdata.h
 	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
-	     ../includes/output/audio-base.h
+	     ../includes/output/audio-player.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
 	     ../includes/ofdm/correlator.h

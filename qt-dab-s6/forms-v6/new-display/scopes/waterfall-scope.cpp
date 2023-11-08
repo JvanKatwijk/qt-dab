@@ -58,8 +58,8 @@
 	this -> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
 	rightAxis -> setColorMap (this -> data () -> interval (Qt::YAxis),
 	                          c2);
-	plotgrid	-> setAxisScale (QwtPlot::yRight, 0, 50.0);
-	plotgrid	-> enableAxis   (QwtPlot::yRight);
+//	plotgrid	-> setAxisScale (QwtPlot::yRight, 0, 50.0);
+//	plotgrid	-> enableAxis   (QwtPlot::yRight);
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
 	                                 10000,
 	                                 11000);

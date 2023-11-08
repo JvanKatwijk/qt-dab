@@ -174,7 +174,7 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
 	   ../includes/output/fir-filters.h \
-#	   ../includes/output/audio-base.h \
+	   ../includes/output/audio-player.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/converter_48000.h \
@@ -291,7 +291,7 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
 	   ../src/output/fir-filters.cpp \
-#	   ../src/output/audio-base.cpp \
+	   ../src/output/audio-player.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/converter_48000.cpp \
