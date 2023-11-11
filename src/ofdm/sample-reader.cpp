@@ -33,8 +33,8 @@ int16_t res     = 1;
 }
 
 static inline
-float	average (float inp, float avg, float factor) {
-	return (1.0 - factor) * avg + factor * inp;
+float	average (float avg, float inp, float factor) {
+	return (1.0f - factor) * avg + factor * inp;
 }
 
 static
@@ -131,8 +131,8 @@ Complex buffer [nrSamples];
 	   if (balancing) {
   	      float realPart	= real (v);
 	      float imagPart	= imag (v);
-	      average (realAvg, realPart, ALPHA);
-	      average (imagAvg, imagPart, ALPHA);
+	      realAvg = average (realAvg, realPart, ALPHA);
+	      imagAvg = average (imagAvg, imagPart, ALPHA);
 	      v -= Complex (realAvg, imagAvg);
 	   }
 //

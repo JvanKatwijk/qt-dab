@@ -372,7 +372,7 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
      <item row="3" column="0">
       <widget class="QCheckBox" name="dcRemovalSelector">
        <property name="text">
-        <string/>
+        <string>remove DC</string>
        </property>
       </widget>
      </item>
