@@ -143,7 +143,8 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	if (cpu_times. size() < 4)
 	   return false;
 	idle_time  = cpu_times [3];
-	total_time = std::accumulate (cpu_times. begin(), cpu_times. end(), 0);
+	total_time = std::accumulate (cpu_times. begin(),
+	                            cpu_times. end(), (size_t)0);
 	return true;
 }
 #endif
@@ -192,16 +193,6 @@ QString scanmodeText (int e) {
 #define	FONT_BUTTON		QString ("fontButton")
 #define	PORT_SELECTOR		QString ("portSelector")
 
-static
-QString Modes[] = {"Mode 1", "Mode 2", "Mode 3", "Mode 4"};
-
-uint8_t convert (const QString &s) {
-	for (int i = 0; i < 4; i ++)
-	   if (s == Modes [i])
-	      return i + 1;
-	return 1;
-}
-
 	RadioInterface::RadioInterface (QSettings	*Si,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
@@ -222,7 +213,6 @@ uint8_t convert (const QString &s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
-	                                        pcmBuffer (2 * 32768),
 	                                        stdDevBuffer (2 * 1536),
 	                                        newDisplay (this, Si),
 	                                        my_snrViewer (this, Si),
@@ -234,8 +224,7 @@ uint8_t convert (const QString &s) {
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768),
-	                                        audioConverter (this,
-	                                                        &pcmBuffer) {
+	                                        audioConverter (this) {
 int16_t k;
 QString h;
 uint8_t	dabBand;
@@ -265,9 +254,8 @@ uint8_t	dabBand;
 	globals. frameBuffer	= &frameBuffer;
 	globals. stdDevBuffer	= &stdDevBuffer;
 
-	QString dabMode         =
-	          dabSettings_p   -> value ("dabMode", "Mode 1"). toString();
-	globals. dabMode	= convert (dabMode);
+	globals. dabMode         =
+	          dabSettings_p   -> value ("dabMode", 1). toInt ();
 	globals. threshold		=
 	          dabSettings_p	-> value ("threshold", 3). toInt();
 	globals. diff_length	=
@@ -474,6 +462,10 @@ uint8_t	dabBand;
 	ficSuccess		= 0;
 	total_ficError		= 0;
 	total_fics		= 0;
+      
+	previous_idle_time	= 0;
+	previous_total_time	= 0; 
+
 
 	my_presetHandler. loadPresets (presetFile, presetSelector);
 //
@@ -703,12 +695,13 @@ void	RadioInterface::doStart (const QString &dev) {
 //	when doStart is called, a device is available and selected
 bool	RadioInterface::doStart	() {
 	if (channel. nextService. channel != "") {
-	   int k	= channelSelector -> findText (channel. nextService. channel);
+	   int k = channelSelector -> findText (channel. nextService. channel);
 	   if (k != -1) 
 	      channelSelector -> setCurrentIndex (k);
 	}
 	else
 	   channelSelector -> setCurrentIndex (0);
+
 	my_ofdmHandler	= new ofdmHandler  (this,
 	                                    inputDevice_p, &globals, dabSettings_p);
 	channel. cleanChannel ();
@@ -789,8 +782,9 @@ int	serviceOrder;
 	serviceId ed;
 	ed. name	= serviceName;
 	ed. SId		= SId;
-	if (isMember (serviceList, ed))
-	   return;
+	for (auto &s:serviceList)
+	   if (s. name == ed. name)
+	      return;
 
 	ed. subChId	=
 	    my_ofdmHandler -> get_subCh_id (serviceName, SId);
@@ -1088,7 +1082,7 @@ uint8_t localBuffer [length];
 
 	dataBuffer. getDataFromBuffer (localBuffer, length);
 #ifdef	_SEND_DATAGRAM_
-	if (running. load()) {
+	if (running. load ()) {
 	   dataOut_socket. writeDatagram ((const char *)localBuffer, length,
 	                                   QHostAddress (ipAddress),
 	                                   port);
@@ -1248,13 +1242,12 @@ static int teller	= 0;
 	   if (streamerOut_p != nullptr)
 	      streamerOut_p	-> audioOut (vec, amount, rate);
 #endif
-	   audioConverter. convert (vec, amount, rate);
-	   while (pcmBuffer. GetRingBufferReadAvailable () > 2 * 512) {
-	      float tmpBuf [2 * 512];
-	      pcmBuffer. getDataFromBuffer (tmpBuf, 2 * 512);
-	      if (!muteTimer. isActive ())
-	         soundOut_p	-> audioOutput (tmpBuf, 2 * 512);
-	   }
+//
+	   std::vector<float> tmpBuffer;
+	   int size = audioConverter. convert (vec, amount, rate, tmpBuffer);
+	   if (!muteTimer. isActive ())
+	      soundOut_p -> audioOutput (tmpBuffer. data (), size);
+
 	   if (!techWindow_p -> isHidden ()) {
 	      theTechData. putDataIntoBuffer (vec, amount);
 	      techWindow_p	-> audioDataAvailable (amount, rate);
@@ -1362,9 +1355,6 @@ void	RadioInterface::TerminateProcess () {
 }
 
 //
-static size_t previous_idle_time	= 0;
-static size_t previous_total_time	= 0;
-
 void	RadioInterface::updateTimeDisplay() {
 	if (!running. load())
 	   return;
@@ -1379,10 +1369,12 @@ void	RadioInterface::updateTimeDisplay() {
 	if ((numberofSeconds % 2) == 0) {
 	   size_t idle_time, total_time;
 	   get_cpu_times (idle_time, total_time);
-	   const float idle_time_delta = idle_time - previous_idle_time;
-	   const float total_time_delta = total_time - previous_total_time;
+	   const float idle_time_delta =
+	                 static_cast<float>(idle_time - previous_idle_time);
+	   const float total_time_delta =
+	                 static_cast<float> (total_time - previous_total_time);
 	   const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
-	   cpuMonitor -> display (utilization);
+	   cpuMonitor -> display (QString("%1").arg(utilization, 0, 'f', 2));
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
 	}
@@ -1899,7 +1891,7 @@ void	RadioInterface::show_mothandling (bool b) {
 	
 //	just switch a color, called from the dabprocessor
 void	RadioInterface::set_synced	(bool b) {
-	(void)b;
+	newDisplay. set_syncLabel (b);
 }
 //
 //	called from the PAD handler
@@ -1987,21 +1979,21 @@ void	RadioInterface::handle_detailButton	() {
 //	e.g. selecting a channel, setting an alarm, are not
 //	meaningful
 void	RadioInterface::showButtons		() {
-	configWidget. dumpButton	-> show	();
-	scanButton		-> show ();
-	channelSelector		-> show ();
-	nextChannelButton	-> show ();
-	prevChannelButton	-> show ();
-	presetSelector		-> show ();
+	configWidget. dumpButton	-> setEnabled (true);
+	scanButton		-> setEnabled (true);;
+	channelSelector		-> setEnabled (true);
+	nextChannelButton	-> setEnabled (true);
+	prevChannelButton	-> setEnabled (true);
+	presetSelector		-> setEnabled (true);
 }
 
 void	RadioInterface::hideButtons		() {
-	configWidget. dumpButton	-> hide	();
-	scanButton		-> hide ();
-	channelSelector		-> hide ();
-	nextChannelButton	-> hide ();
-	prevChannelButton	-> hide ();
-	presetSelector		-> hide ();
+	configWidget. dumpButton	-> setEnabled (false);
+	scanButton		-> setEnabled (false);
+	channelSelector		-> setEnabled (false);
+	nextChannelButton	-> setEnabled (false);
+	prevChannelButton	-> setEnabled (false);
+	presetSelector		-> setEnabled (false);
 }
 
 void	RadioInterface::set_sync_lost	() {
@@ -2523,8 +2515,8 @@ QString serviceName	= service;
 	   dabService s;
 	   my_ofdmHandler -> get_parameters (serviceName, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                         tr ("insufficient data for this program\n"));
+	      dynamicLabel -> setText ("cannot run " +
+	                       s. serviceName + " yrt");
 	      return;
 	   }
 	   s. serviceName = service;
@@ -2534,8 +2526,7 @@ QString serviceName	= service;
 //
 //	The hard part is stopping the current service,
 //	quitting the current channel,
-//      selecting a new channel,
-//      waiting a while
+//      selecting a new channel, and waiting a while
 	stopChannel ();
 //      and start the new channel first
 	int k           = channelSelector -> findText (theChannel);
@@ -2556,7 +2547,7 @@ QString serviceName	= service;
 	channel. nextService. SCIds              = 0;
 	presetTimer. setSingleShot (true);
 	switchDelay			=
-	                  dabSettings_p -> value ("switchDelay", 8). toInt ();
+	                 dabSettings_p -> value ("switchDelay", 8). toInt ();
 	presetTimer. setInterval (switchDelay * 1000);
 	presetTimer. start (switchDelay * 1000);
 	startChannel    (channelSelector -> currentText ());
@@ -2873,8 +2864,9 @@ void	RadioInterface::setPresetService () {
 	   return;
 
 	if (channel. Eid == 0) {
-	   QMessageBox::warning (this, tr ("Warning"),
-	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
+	   dynamicLabel -> setText ("ensemblename not yet found\n");
+//	   QMessageBox::warning (this, tr ("Warning"),
+//	                          tr ("Oops, ensemble not yet recognized\nselect service manually\n"));
 	   return;
 	}
 
@@ -2886,8 +2878,11 @@ void	RadioInterface::setPresetService () {
 	s. serviceName	= presetName;
 	my_ofdmHandler	-> get_parameters (presetName, &s. SId, &s. SCIds);
 	if (s. SId == 0) {
-	   QMessageBox::warning (this, tr ("Warning"),
-	                        tr ("insufficient data for this program\n"));
+	   dynamicLabel -> setText (QString ("not all data for ") +
+	                            s. serviceName +
+	                             " on board");
+//	   QMessageBox::warning (this, tr ("Warning"),
+//	                        tr ("insufficient data for this program\n"));
 	   return;
 	}
 
@@ -2917,6 +2912,7 @@ int	tunedFrequency	=
 	channel. transmitters. resize (0);
 	newDisplay. show_transmitters (channel. transmitters);
 	channel. channelName	= theChannel;
+	channel. channelFrequency	= tunedFrequency;
 	channel. distance	= -1;
 	dabSettings_p		-> setValue ("channel", theChannel);
 	channel. frequency	= tunedFrequency / 1000;
@@ -2958,7 +2954,7 @@ void	RadioInterface::stopChannel	() {
 	stop_sourcedumping	();
 	soundOut_p	-> stop ();
 //
-	newDisplay. EPGLabel	-> hide ();
+//	newDisplay. EPGLabel	-> hide ();
 	if (contentTable_p != nullptr) {
 	   contentTable_p -> hide ();
 	   delete contentTable_p;
@@ -3006,7 +3002,7 @@ void	RadioInterface::stopChannel	() {
 	model. clear ();
 	ensembleDisplay	-> setModel (&model);
 	cleanScreen	();
-	newDisplay. EPGLabel	-> hide ();
+//	newDisplay. EPGLabel	-> hide ();
 	distanceLabel	-> setText ("");
 }
 
@@ -3199,7 +3195,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	}
 
 	int	cc	= channelSelector -> currentIndex ();
-	if ((scanMode != SCAN_TO_DATA) && (serviceList. size () > 0))
+	if ((scanMode != SCAN_TO_DATA) && (!serviceList. empty ()))
 	   showServices ();
 	stopChannel ();
 	cc = theBand. nextChannel (cc);
@@ -3262,8 +3258,8 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	   QStringList s = my_ofdmHandler -> basicPrint ();
 	   scanTable_p -> addLine (headLine);
 	   scanTable_p -> addLine ("\n;\n");
-	   for (int i = 0; i < s. size (); i ++)
-	      scanTable_p -> addLine (s. at (i));
+	   for (const auto &l : s)
+	      scanTable_p -> addLine (l);
 	   scanTable_p -> addLine ("\n;\n;\n");
 	   scanTable_p -> show ();
 	}
@@ -3287,14 +3283,6 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 
 /////////////////////////////////////////////////////////////////////
 //
-bool	RadioInterface::isMember (const std::vector<serviceId> &a,
-	                                     serviceId b) {
-	for (auto serv : a)
-	   if (serv. name == b. name)
-	      return true;
-	return false;
-}
-
 std::vector<serviceId>
 	RadioInterface::insert (std::vector<serviceId> &l,
 	                        serviceId n, int order) {
@@ -3964,7 +3952,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         continue;
 	      if (pd. DSCTy == 60) {
 	         LOG ("hidden service started ", serv. name);
-	         newDisplay. EPGLabel	-> show ();
+//	         newDisplay. EPGLabel	-> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
@@ -3994,7 +3982,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      my_ofdmHandler -> data_for_packetservice (serv. name, &pd, 0);
 	      if ((pd. defined)  && (pd. DSCTy == 59)) {
 	         LOG ("hidden service started ", serv. name);
-	         newDisplay. EPGLabel  -> show ();
+//	         newDisplay. EPGLabel  -> show ();
 	         fprintf (stderr, "Starting hidden service %s\n",
 	                                serv. name. toUtf8 (). data ());
 	         my_ofdmHandler -> set_dataChannel (pd, &dataBuffer, BACK_GROUND);
@@ -4260,7 +4248,7 @@ bool onTop = false;
 }
 
 void	RadioInterface::displaySlide	(const QPixmap &p) {
-int w   = 340;
+int w   = 360;
 int h   = 2 * w / 3;
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
@@ -4628,6 +4616,10 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings_p -> value ("onTop", 0). toInt () == 1) 
 	   configWidget.  onTop -> setChecked (true);
 
+	configWidget. decoderSelector -> addItem ("default");
+	configWidget. decoderSelector -> addItem ("decoder old");
+	configWidget. decoderSelector -> addItem ("decoder c1");
+	configWidget. decoderSelector -> addItem ("decoder c2");
 	if (dabSettings_p -> value ("saveLocations", 0). toInt () == 1)
 	   configWidget. transmSelector -> setChecked (true);
 
@@ -4640,8 +4632,8 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings_p -> value ("saveSlides", 0). toInt () == 1)
 	   configWidget. saveSlides -> setChecked (true);
 
-	newDisplay. EPGLabel	-> hide ();
-	newDisplay. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
+//	newDisplay. EPGLabel	-> hide ();
+//	newDisplay. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
 	int x = dabSettings_p -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
@@ -4678,12 +4670,15 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings_p -> value ("transmitterTags", 1). toInt () == 1)
 	   configWidget. transmitterTags -> setChecked (true);
 
+
 }
 
 void	RadioInterface::connect_configWidget () {
 	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_muteTimeSetting (int)));
 
+	connect (configWidget. decoderSelector, SIGNAL (activated (const QString &)),
+	         this, SLOT (handle_decoderSelector (const QString &)));
 	connect (configWidget. switchDelaySetting,
 	                                 SIGNAL (valueChanged (int)),
 	         this, SLOT (handle_switchDelaySetting (int)));
@@ -4995,3 +4990,19 @@ void	RadioInterface::handle_dcRemovalSelector (int s) {
 	   my_ofdmHandler -> handle_dcRemovalSelector (configWidget. dcRemovalSelector -> isChecked ());
 }
 
+void	RadioInterface::handle_decoderSelector	(const QString &s) {
+int	decoder	= 1;
+	if (s == "decoder old")
+	   decoder = DECODER_OLD;
+	else
+	if (s == "decoder c1")
+	   decoder = DECODER_C1;
+	else
+	if (s == "decoder c2")
+	   decoder = DECODER_C2;
+	else
+	   decoder = DECODER_DEFAULT;
+	my_ofdmHandler	-> handle_decoderSelector (decoder);
+}
+
+	   

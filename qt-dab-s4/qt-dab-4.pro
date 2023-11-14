@@ -478,7 +478,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-generic
+	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf

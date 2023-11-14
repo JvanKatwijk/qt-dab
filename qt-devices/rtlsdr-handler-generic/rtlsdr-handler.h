@@ -78,9 +78,11 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *, QString &);
-			~rtlsdrHandler();
+			rtlsdrHandler	(QSettings *, QString &,
+	                                         bool newLib = true);
+			~rtlsdrHandler	();
 	int32_t		getVFOFrequency	();
+	int		adjustFrequency	(int);
 //	interface to the reader
 	bool		restartReader	(int32_t);
 	void		stopReader	();

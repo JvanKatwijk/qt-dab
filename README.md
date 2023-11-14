@@ -98,11 +98,15 @@ While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, 
 Widgets and scopes
 =======================================================================
 
-![6.1](/qt-dab-6-main-widget.png)
+![6.2](/qt-dab-6-main-widget.png)
 
 The main widget of Qt-DAB provides all means for selecting a channel,
 and selecting a service. Furthermore, it provides full control over
 the visibility of the other widgets of the GUI.
+
+![6.2](/qt-dab-6-slide.png)
+
+Most DAB services transmit one or more slides, these are made visible
 
 ![6.1](/technical-widget.png)
 

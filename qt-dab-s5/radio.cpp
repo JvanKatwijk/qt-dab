@@ -220,7 +220,6 @@ uint8_t convert (QString s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
-	                                        pcmBuffer (2 * 32768),
 	                                        my_spectrumViewer (
 	                                                  this, Si,
 	                                                  &spectrumBuffer,
@@ -240,8 +239,7 @@ uint8_t convert (QString s) {
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768),
-	                                        audioConverter (this,
-	                                                        &pcmBuffer) {
+	                                        audioConverter (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1361,6 +1359,7 @@ static int teller	= 0;
 	      theTechWindow	->  showRate (rate);
 	   }
 	}
+	fprintf (stderr, "amount = %d, rate = %d\n", amount, rate);
 	std::complex<int16_t> vec [amount];
 	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
 	   audioBuffer. getDataFromBuffer (vec, amount);
@@ -1368,16 +1367,14 @@ static int teller	= 0;
 	   if (streamerOut != nullptr)
 	      streamerOut	-> audioOut (vec, amount, rate);
 #endif
+	   std::vector<float> tmpBuffer;
+           int size = audioConverter. convert (vec, amount, rate, tmpBuffer);
+           if (!muteTimer. isActive ())
+              soundOut -> audioOutput (tmpBuffer. data (), size);
+
 	   if (!theTechWindow -> isHidden ()) {
 	      theTechData. putDataIntoBuffer (vec, amount);
 	      theTechWindow	-> audioDataAvailable (amount, rate);
-	   }
-	   audioConverter. convert (vec, amount, rate);
-	   while (pcmBuffer. GetRingBufferReadAvailable () >= 2 * 512) {
-	      float tmpBuf [2 * 512];
-	      pcmBuffer. getDataFromBuffer (tmpBuf, 2 * 512);
-	      if (!muteTimer. isActive ())
-	         soundOut	-> audioOutput (tmpBuf, 2 * 512);
 	   }
 	}
 }

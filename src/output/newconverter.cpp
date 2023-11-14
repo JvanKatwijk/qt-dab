@@ -62,14 +62,14 @@ int	res;
 	   return false;
 
 	src_data.	input_frames	= inp;
-	src_data.	output_frames	= outputLimit + 10;
+	src_data.	output_frames	= outputLimit;
 	res		= src_process (converter, &src_data);
 	if (res != 0) {
 	   fprintf (stderr, "error %s\n", src_strerror (res));
 	   return false;
 	}
 	inp		= 0;
-	framesOut	= src_data.	output_frames_gen;
+	framesOut	= src_data. output_frames_gen;
 	for (i = 0; i < framesOut; i ++)
 	   out [i] = Complex (outBuffer [2 * i], outBuffer [2 * i + 1]);
 	*amount		= framesOut;

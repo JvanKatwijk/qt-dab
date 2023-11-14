@@ -92,7 +92,9 @@ bool	brush;
 	correlationScope::~correlationScope	() {
 }
 
-void	correlationScope::display	(std::vector<float> &v, int amount) {
+void	correlationScope::display	(std::vector<float> &v,
+	                                 int amount,
+	                                 int sliderValue) {
 double X_axis [amount];
 double Y_value [amount];
 double Max	= -200;
@@ -116,7 +118,7 @@ int	input	= v. size ();
 				         X_axis [amount - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + 5 * Max);
+				         get_db (0), get_db (0) + sliderValue);
 //				         get_db (0), 0);
 
 	spectrumCurve. setBaseline (get_db (0));

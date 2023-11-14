@@ -115,7 +115,7 @@ void	run () {
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
-	                              QString &recorderVersion):
+	                              QString &recorderVersion, bool newLib):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
@@ -149,6 +149,8 @@ char	manufac [256], product [256], serial [256];
 	isActive. store (false);
 #ifdef	__MINGW32__
 	const char *libraryString	= "rtlsdr.dll";
+	if (!newLib)
+	   libraryString		= "oldrtlsdr.dll";
 #elif __linux__
 	const char *libraryString	= "librtlsdr.so";
 #elif __APPLE__
@@ -272,6 +274,7 @@ char	manufac [256], product [256], serial [256];
 	   workerHandle	= nullptr;
 //	   rtlsdr_close (theDevice);
 	}
+	fprintf (stderr, "worker is halted\n");
 	rtlsdrSettings	-> beginGroup ("rtlsdrSettings");
         rtlsdrSettings	-> setValue ("position-x", myFrame. pos (). x ());
         rtlsdrSettings	-> setValue ("position-y", myFrame. pos (). y ());
@@ -288,14 +291,21 @@ char	manufac [256], product [256], serial [256];
 	rtlsdrSettings	-> endGroup();
 	myFrame. hide ();
 	usleep (1000);
+//	fprintf (stderr, "Going to close the device\n");
 	rtlsdr_close (theDevice);
+//	fprintf (stderr, "Going to null the pHnandle\n");
 	delete phandle;
 }
 
 int32_t	rtlsdrHandler::getVFOFrequency() {
 	return (int32_t)(this -> rtlsdr_get_center_freq (theDevice));
 }
-//
+
+int	rtlsdrHandler::adjustFrequency	(int newFreq) {
+	int e = this -> rtlsdr_set_center_freq (theDevice, newFreq);
+	fprintf (stderr, "e = %d\n", e);
+}
+
 void	rtlsdrHandler::set_filter	(int c) {
 	(void)c;
 	filtering       = filter_selector -> isChecked ();

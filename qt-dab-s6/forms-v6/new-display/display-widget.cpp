@@ -181,7 +181,9 @@ void	displayWidget::show_correlation	(std::vector<float> &v,
 	                                 QVector<int> &ww, int baseDistance) {
 	if (currentTab != SHOW_CORRELATION)
 	   return;
-	correlationScope_p	-> display (v, correlationLength -> value ());
+	correlationScope_p	-> display (v,
+	                                    correlationLength -> value (),
+	                                    correlationSlider -> value ());
 	if (ww. size () > 0) {
 	   QString t = "Matches ";
 	   for (int i = 0; i < ww. size (); i ++) {
@@ -273,7 +275,7 @@ static double avg [4 * 512];
 	}
 
 	TII_Scope_p		-> display (X_axis, Y_value, freq, 
-	                                      spectrumAmplitude -> value ());
+	                                      tiiSlider -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
 	waterfallScope_p	-> display (X_axis, Y_value, 
@@ -302,7 +304,9 @@ int	length	= Values. size () < 64 ? Values. size () : 64;
 	   phaseValues     [i] = 0;
 	   X_axis	   [i] = 200 - 6 * i;
 	}
-	channelScope_p	-> display (X_axis, amplitudeValues, phaseValues, 64);
+	channelScope_p	-> display (X_axis,
+	                            amplitudeValues,
+	                            phaseValues, channelSlider -> value ());
 
 	for (int i = 0; i < 64; i ++) {
 	   for (int j = 0; j < 8; j ++) {
@@ -340,7 +344,7 @@ int sliderValue	=  scopeSlider -> value ();
 
 	if (Values. size () < 512)
 	   return;
-        IQDisplay_p -> DisplayIQ (Values. data (), 512, sliderValue * 2);
+        IQDisplay_p -> DisplayIQ (Values, 512, sliderValue * 2);
 }
 
 void	displayWidget:: show_quality (float q, float timeOffset,	
@@ -407,7 +411,14 @@ QString textList;
 	}
 	tiiLabel -> setText (textList);
 }
-	   
+
+void	displayWidget::set_syncLabel	(bool b) {
+	if (b)
+	   syncLabel    -> setStyleSheet ("QLabel {background-color : green}");
+	else
+	   syncLabel    -> setStyleSheet ("QLabel {background-color : yellow}");              
+}
+
 void	displayWidget::show () {
 	myFrame. show ();
 }

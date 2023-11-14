@@ -54,6 +54,11 @@ typedef	void	*HINSTANCE;
 #define	PHASE_DECODER	0
 #define	AMPL_DECODER	1
 
+#define	DECODER_DEFAULT	1
+#define	DECODER_OLD	2
+#define	DECODER_C1	4
+#define	DECODER_C2	8
+
 #ifdef	USE_DOUBLE	
 typedef	std::complex<double> Complex;
 #else

@@ -120,6 +120,7 @@ void    mscHandler::run () {
 int	currentBlock	= 0;
 Complex fft_buffer [params. get_T_u()];
 Complex conjVector [params. get_T_u ()];
+int	carriers	= params. get_carriers ();
 
 	if (running. load ()) {
 	   fprintf (stderr, "already running\n");
@@ -140,7 +141,7 @@ Complex conjVector [params. get_T_u ()];
 	      fft. fft (fft_buffer);
               if (currentBlock >= 4) {
 	         float max	= 0;
-                 for (int i = 0; i < params. get_carriers(); i ++) {
+                 for (int i = 0; i < carriers; i ++) {
                     int16_t      index   = myMapper. mapIn (i);
                     if (index < 0)
                        index += params. get_T_u();
@@ -148,21 +149,11 @@ Complex conjVector [params. get_T_u ()];
                     Complex  r1 = fft_buffer [index] *
                                        conj (phaseReference [index]);
 	            conjVector [index] = r1;
-	            if (abs (real (r1)) > max)
-	               max = abs (real (r1));
-	            if (abs (imag (r1)) > max)
-	              max = abs (imag (r1));
-	         }
-//      Recall:  the viterbi decoder wants 127 max pos, - 127 max neg
-//      we make the bits into softbits in the range -127 .. 127
-                 for (int i = 0; i < params. get_carriers(); i ++) {
-                    int16_t      index   = myMapper. mapIn (i);
-                    if (index < 0)
-                       index += params. get_T_u();
-	            Complex r1		= conjVector [index];
-                    ibits [i]	=  - (real (r1) * 127) / max;
-                    ibits [params. get_carriers() + i] =
-	                                - (imag (r1) * 127) / max;
+
+	            float ab1	= jan_abs (r1);
+                    ibits [i]	=  (int16_t) (- (real (r1) * 192.0) / ab1);
+                    ibits [carriers + i] =
+	                               (int16_t) (- (imag (r1) * 192.0) / ab1);
                  }
 
 	         process_mscBlock (ibits, currentBlock);

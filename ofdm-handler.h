@@ -107,6 +107,7 @@ public:
 	void		set_tiiDetectorMode	(bool);
 	void		handle_iqSelector	();
 	void		handle_dcRemovalSelector	(bool);
+	void		handle_decoderSelector	(int);
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
@@ -119,6 +120,8 @@ private:
 	TII_Detector		theTIIDetector;
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
+
+	deviceHandler		*inputDevice;
 	int			threshold;
 	int			totalFrames;
 	int			goodFrames;

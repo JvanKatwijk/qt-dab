@@ -54,7 +54,7 @@
 	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
-	                                           inputDevice,
+	                                              inputDevice,
 	                                           p -> spectrumBuffer),
 	                                    theFicHandler (mr, p -> dabMode),
 	                                    theEtiGenerator (p -> dabMode,
@@ -74,6 +74,7 @@
 	this	-> tiiBuffer_p		= p -> tiiBuffer;
 	this	-> nullBuffer_p		= p -> nullBuffer;
 	this	-> snrBuffer_p		= p -> snrBuffer;
+	this	-> inputDevice		= inputDevice;
 #ifdef	__ESTIMATOR_
 	this	-> channelBuffer_p	= p -> channelBuffer;
 #endif
@@ -101,26 +102,26 @@
 	totalFrames			= 0;
 	scanMode			= false;
 
-	connect (this, SIGNAL (set_synced (bool)),
-	         radioInterface_p, SLOT (set_synced (bool)));
-	connect (this, SIGNAL (set_sync_lost (void)),
-	         radioInterface_p, SLOT (set_sync_lost (void)));
-	connect (this, SIGNAL (show_tii (int, int)),
-	         radioInterface_p, SLOT (show_tii (int, int)));
-	connect (this, SIGNAL (show_tii_spectrum ()),
-	         radioInterface_p, SLOT (show_tii_spectrum ()));
-	connect (this, SIGNAL (show_snr (float)),
-	         mr, SLOT (show_snr (float)));
-	connect (this, SIGNAL (show_clock_error (int)),
-	         mr, SLOT (show_clock_error (int)));
-	connect (this, SIGNAL (show_null (int)),
-	         mr, SLOT (show_null (int)));
+	connect (this, &ofdmHandler::set_synced,
+	         radioInterface_p, &RadioInterface::set_synced);
+	connect (this, &ofdmHandler::set_sync_lost,
+	         radioInterface_p, &RadioInterface::set_sync_lost);
+	connect (this, &ofdmHandler::show_tii,
+	         radioInterface_p, &RadioInterface::show_tii);
+	connect (this, &ofdmHandler::show_tii_spectrum,
+	         radioInterface_p, &RadioInterface::show_tii_spectrum);
+	connect (this, static_cast<void (ofdmHandler::*)(float)>(&ofdmHandler::show_snr),
+	         mr, &RadioInterface::show_snr);
+	connect (this, &ofdmHandler::show_clock_error,
+	         mr,  &RadioInterface::show_clock_error);
+	connect (this, &ofdmHandler::show_null,
+	         mr, &RadioInterface::show_null);
 #ifdef	__ESTIMATOR_
-	connect (this, SIGNAL (show_channel (int)),
-	         mr, SLOT (show_channel (int)));
+	connect (this, &ofdmHandler::show_channel,
+	         mr, &RadioInterface::show_channel);
 #endif
-	connect (this, SIGNAL (show_Corrector (int, float)),
-	         mr, SLOT (show_Corrector (int, float)));
+	connect (this, &ofdmHandler::show_Corrector,
+	         mr,  &RadioInterface::show_Corrector);
 	theTIIDetector. reset();
 }
 
@@ -210,6 +211,7 @@ int	snrCount	= 0;
 	         switch (myTimeSyncer. sync (T_null, T_F)) {
 	            case TIMESYNC_ESTABLISHED:
 	            inSync	= true;
+	            set_synced (true);
 	            break;			// yes, we are ready
 
 	            case NO_DIP_FOUND:
@@ -222,9 +224,9 @@ int	snrCount	= 0;
 	            default:			// does not happen
 	            case NO_END_OF_DIP_FOUND:
 	               continue;
-	          }
+	         }
 
-	          theReader. get_samples (ofdmBuffer, 0,
+	         theReader. get_samples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
 	         if (startIndex < 0) { // no sync, try again
@@ -232,6 +234,7 @@ int	snrCount	= 0;
 	               set_sync_lost();
 	            }
 	            badFrames ++;
+	            set_synced (false);
 	            inSync	= false;
 	            continue;
 	         }
@@ -262,6 +265,7 @@ int	snrCount	= 0;
 	                                                       T_u / 2);
 	            show_null (T_u / 2);
 	         }
+
 	         startIndex = myCorrelator. findIndex (ofdmBuffer,
 	                                              3 * threshold);
 	         if (startIndex < 0) { // no sync, try again
@@ -270,6 +274,7 @@ int	snrCount	= 0;
 	            }
 	            badFrames	++;
 	            inSync	= false;
+	            set_synced (false);
 	            continue;
 	         }
 	         sampleCount = startIndex;
@@ -291,11 +296,10 @@ int	snrCount	= 0;
   *	first datablock.
   *	We read the missing samples in the ofdm buffer
   */
-	      set_synced (true);
 	      theReader. get_samples (ofdmBuffer,
-	                            ofdmBufferIndex,
-	                            T_u - ofdmBufferIndex,
-	                            coarseOffset + fineOffset, true);
+	                              ofdmBufferIndex,
+	                              T_u - ofdmBufferIndex,
+	                              coarseOffset + fineOffset, true);
 #ifdef	__ESTIMATOR_
 	      static int abc = 0;
 	      if (radioInterface_p -> channelOn ()) {
@@ -350,7 +354,7 @@ int	snrCount	= 0;
 	      for (int ofdmSymbolCount = 1;
 	           ofdmSymbolCount < nrBlocks; ofdmSymbolCount ++) {
 	         theReader. get_samples (ofdmBuffer, 0,
-	                               T_s, coarseOffset + fineOffset, true);
+	                                 T_s, coarseOffset + fineOffset, true);
 	         sampleCount += T_s;
 	         for (int i = (int)T_u; i < (int)T_s; i ++) {
 	            FreqCorr +=
@@ -359,12 +363,8 @@ int	snrCount	= 0;
 	         }
 	         cCount += 2 * T_g;
 //
-//	lots of cases
-//	we always process all blocks
-
 //
-//	symbols 1 .. 3 are always processed using the ofdm decoder
-//	and if eti is selected then we do them all
+//	If "eti_on" we process all data here
 	         if (eti_on) {
 	            theOfdmDecoder.
 	                   decode (ofdmBuffer, ofdmSymbolCount, ibits);
@@ -376,9 +376,12 @@ int	snrCount	= 0;
 	            theEtiGenerator. processBlock (ibits, ofdmSymbolCount);
 	            continue;
 	         }
-
 //
 //	Normal Processing, no eti 
+//	we distinguish vetween processing everything in this thread, or
+//	delegate processing of the data blocks in the MSC thread
+//	Of course, if scanning is ON, then we do not process
+//	the payload at all
 	         if (ofdmSymbolCount <= 3) {
 	            theOfdmDecoder.
                            decode (ofdmBuffer, ofdmSymbolCount, ibits);
@@ -666,3 +669,8 @@ void	ofdmHandler::handle_iqSelector	() {
 void	ofdmHandler::handle_dcRemovalSelector (bool b) {
 	theReader. set_dcRemoval (b);
 }
+
+void	ofdmHandler::handle_decoderSelector	(int d) {
+	theOfdmDecoder. handle_decoderSelector (d);
+}
+

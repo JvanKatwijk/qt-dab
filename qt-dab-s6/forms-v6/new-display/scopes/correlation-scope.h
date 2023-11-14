@@ -52,7 +52,8 @@ public:
 	                                         QSettings	*);
 			~correlationScope	();
 	void		display			(std::vector<float> &v,
-	                                         int length);
+	                                         int length,
+		                                 int sliderValue);
 
 private:
 	QwtPlotCurve	spectrumCurve;

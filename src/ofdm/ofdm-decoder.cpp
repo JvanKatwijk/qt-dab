@@ -41,6 +41,12 @@
   *	carriers and map them on (soft) bits
   */
 
+static inline
+Complex	normalize (const Complex &V) {
+float Length	= jan_abs (V);
+	return Length == 0.0f ? 0.0f : V / Length;
+}
+
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
 	                                 uint8_t	dabMode,
 	                                 int16_t	bitDepth,
@@ -69,10 +75,15 @@
 	this	-> T_g			= T_s - T_u;
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
-	for (int i = 0; i < offsetVector. size (); i ++)
+	squaredVector. resize (T_u);
+	for (int i = 0; i < offsetVector. size (); i ++) {
            offsetVector [i] = 0;
+	   squaredVector [i] = 0;
+	}
 
 	iqSelector			= SHOW_DECODED;
+	decoder				= DECODER_DEFAULT;
+	uniBase				= sqrt (abs (Complex (1, 1)));
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -82,8 +93,10 @@ void	ofdmDecoder::stop ()	{
 }
 
 void	ofdmDecoder::reset ()	{
-	for (int i = 0; i < offsetVector. size (); i ++)
+	for (int i = 0; i < offsetVector. size (); i ++) {
 	   offsetVector [i] = 0;
+	   squaredVector [i] = 0;
+	}
 }
 //
 //
@@ -102,10 +115,10 @@ void	ofdmDecoder::processBlock_0 (
 //	decoded symbols is precisely in the four points 
 //	k * (1, 1), k * (1, -1), k * (-1, -1), k * (-1, 1)
 //	To ease computation, we map all incoming values onto quadrant 1
-
+//
+//	For the computation of the MER we use the definition
+//	from ETSI TR 101 290 (appendix C1)
 float	ofdmDecoder::computeQuality (Complex *v) {
-Complex XX  [carriers];
-
 //
 //	since we do not equalize, we have a kind of "fake"
 //	reference point.
@@ -113,24 +126,24 @@ Complex XX  [carriers];
 	Complex middle = Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
 	   std::complex<float> ss = v [T_u / 2 - carriers / 2 + i];
-	   XX [i] = Complex (abs (real (ss)), abs (imag (ss)));
-	   middle += XX [i];
+	   middle += Complex (abs (real (ss)), abs (imag (ss)));
 	}
-	middle = middle / (float)carriers;
-	middle	= Complex (real (middle) + imag (middle) / 2,
-	                   real (middle) + imag (middle) / 2);
-//	middle	= Complex (1, 1);
+	middle	= middle / (float)carriers;
+	middle	= Complex ((real (middle) + imag (middle)) / 2,
+	                   (real (middle) + imag (middle)) / 2);
+
 	float nominator		= 0;
 	float denominator	= 0;
 	for (int i = 0; i < carriers; i ++) {
-	   float I_component	= real (v [T_u / 2 - carriers / 2 + i]);
-	   float Q_component	= imag (v [T_u / 2 - carriers / 2 + i]);
+	   Complex s = v [T_u / 2- carriers / 2 + i];
+	   float I_component	= real (s);
+	   float Q_component	= imag (s);
 	   float delta_I	= abs (I_component) - real (middle);
 	   float delta_Q	= abs (Q_component) - imag (middle);
-	   nominator	+= square (I_component) + square (Q_component);
-	   denominator	+= square (delta_I) + square (delta_Q);
+	   nominator		+= square (I_component) + square (Q_component);
+	   denominator		+= square (delta_I) + square (delta_Q);
 	}
-	return 20 * log10 (nominator / denominator);
+	return 20 * (10 * log10 (nominator / denominator));
 }
 /**
   *	for the other blocks of data, the first step is to go from
@@ -165,7 +178,7 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 Complex conjVector [T_u];
 Complex fft_buffer [T_u];
 
-	memcpy (fft_buffer, &((buffer. data()) [T_g]),
+	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (std::complex<float>));
 
 //fftlabel:
@@ -189,7 +202,7 @@ Complex fft_buffer [T_u];
   *	on the same position in the next block
   */
 	   Complex	r1 = fft_buffer [index] *
-	                                    conj (phaseReference [index]);
+	                    normalize (conj (phaseReference [index]));
 	   conjVector	[index] = r1;
 
 //	we need the phase error to compute quality
@@ -200,9 +213,12 @@ Complex fft_buffer [T_u];
 //	so, we just average 
 	   float phaseOffset	= arg (r2 * Complex (1, -1));
 	   offsetVector [index] = 
-	             compute_avg (offsetVector [index],
-	                                      square (phaseOffset), DELTA);
+	             compute_avg (offsetVector [index], phaseOffset, DELTA);
+	   squaredVector [index] =
+	             compute_avg (offsetVector [index], 
+	                                   square (phaseOffset), DELTA);
 	}
+
 //	The decoding approach is
 //	looking at the X and Y coordinates of the "dots"
 //	and taking their size as element.
@@ -213,12 +229,70 @@ Complex fft_buffer [T_u];
 
 	   Complex r1	= conjVector [index];
 	   float ab1	= jan_abs (r1);
-	   ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
-	   ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
+
+//
+//	We implement three approaches for mapping the decoded carrier
+//	to two (soft) bits.
+//	The first two approaches look at the corner of the value,
+//	ideally the measured corner - related to Q1 - is M_PI / 4.
+//	The larger the offset from this vallue, the smaller
+//	the value of the "soft" bit is.
+//	Method 1 and 2 differ in the computation of the corner.
+//	While method 1 takes the corner as it appears, method
+//	2 takes the average value of the corner (obviously related
+//	for a given carrier).
+//
+//	The default decoder looks at the geometrical distance between
+//	(normalized) value and the center point in the quadrant
+
+	   if ((decoder == DECODER_C1) || (decoder == DECODER_C2)) {
+	      float	corner_real, corner_imag;
+	      float	factor_real, factor_imag;
+	      if (decoder == DECODER_C1) {
+	         if (real (r1)  >= 0)
+	            corner_real	= acos (real (r1) / ab1);
+	         else
+	            corner_real	= acos (- real (r1) / ab1);
+	      }
+	      else {	// decoder == DECODER_C2
+	         corner_real	= M_PI_4 - squaredVector [index];
+	      }
+
+	      corner_imag		= M_PI_2 - corner_real;
+	      factor_real		= 
+	              (M_PI_4 - abs (M_PI_4 - corner_real)) / M_PI_4;
+	      factor_imag		= 
+	              (M_PI_4 - abs (M_PI_4 - corner_imag)) / M_PI_4;
+
+	      ibits [i]		= real (r1) > 0 ? - factor_real * 127.0 :
+	                                               factor_real * 127.0;
+	      ibits [carriers + i] 
+	                           = imag (r1) > 0 ? - factor_imag * 127.0 :
+	                                               factor_imag * 127.0;
+	   }
+	   else 
+	   if (decoder == DECODER_DEFAULT) {
+	      Complex testVal	= normalize (r1);
+	      float X_Offset	= uniBase -
+	                           std::fabs (uniBase - abs (real (testVal)));
+	      float Y_Offset	= uniBase -
+	                           std::fabs (uniBase - abs (imag (testVal)));
+	      if (real (r1) >= 0)
+	         ibits [i]	= - X_Offset / uniBase * 127.0;
+	      else
+	         ibits [i]	=   X_Offset / uniBase * 127.0;
+	      if (imag (r1) >= 0)
+	         ibits [i + carriers] = - Y_Offset / uniBase * 127.0;
+	      else
+	         ibits [i + carriers] =   Y_Offset / uniBase * 127.0;
+	   }
+	   else {	// Old approach, approximating the default
+	      ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
+	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
+	   }
 	}
 
 //	From time to time we show the constellation of symbol 2.
-	
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {
 	      max /= carriers;
@@ -340,5 +414,9 @@ void	ofdmDecoder::handle_iqSelector	() {
 	   iqSelector = SHOW_DECODED;
 	else
 	   iqSelector = SHOW_RAW;
+}
+
+void	ofdmDecoder::handle_decoderSelector	(int decoder) {
+	this	-> decoder	= decoder;
 }
 

@@ -221,7 +221,6 @@ uint8_t convert (QString s) {
 	                                        frameBuffer (2 * 32768),
 		                                dataBuffer (32768),
 	                                        audioBuffer (8 * 32768),
-	                                        pcmBuffer (2 * 32768),
 	                                        my_spectrumViewer (
 	                                                  this, Si,
 	                                                  &spectrumBuffer,
@@ -242,8 +241,7 @@ uint8_t convert (QString s) {
 	                                        tiiProcessor (),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
-	                                        audioConverter (this,
-	                                                        &pcmBuffer) {
+	                                        audioConverter (this) {
 int16_t	latency;
 int16_t k;
 QString h;
@@ -1445,13 +1443,11 @@ static int teller	= 0;
               streamerOut       -> audioOut (vec, amount, rate);
 #endif           
 	   the_audioDisplay	-> createSpectrum (vec, amount, rate);
-           audioConverter. convert (vec, amount, rate);
-           while (pcmBuffer. GetRingBufferReadAvailable () >= 2 * 512) {
-              float tmpBuf [2 * 512];
-              pcmBuffer. getDataFromBuffer (tmpBuf, 2 * 512);
-              if (!muteTimer. isActive ())
-                 soundOut       -> audioOutput (tmpBuf, 2 * 512);
-           }     
+
+	   std::vector<float> tmpBuffer;
+           int size = audioConverter. convert (vec, amount, rate, tmpBuffer);
+           if (!muteTimer. isActive ())
+              soundOut -> audioOutput (tmpBuffer. data (), size);
         }            
 }
 //

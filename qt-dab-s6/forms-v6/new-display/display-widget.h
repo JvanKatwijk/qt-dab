@@ -77,6 +77,7 @@ public:
 	void	show_cpuLoad	(float);
 	void	show_transmitters	(QByteArray &);
 
+	void	set_syncLabel	(bool);
 	void	show		();
 	void	hide		();
 	bool	isHidden	();

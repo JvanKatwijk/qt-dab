@@ -33,13 +33,23 @@ int16_t res     = 1;
 }
 
 static inline
-float	average (float inp, float avg, float factor) {
+float	average (float avg, float inp, float factor) {
 	return (1.0 - factor) * avg + factor * inp;
+}
+
+static inline
+void    constrain (float &testVal, const float limit) {
+        if (testVal > limit)
+           testVal = limit;
+        else
+        if (testVal < -limit) {
+           testVal = -limit;
+        }
 }
 
 static
 Complex oscillatorTable [INPUT_RATE];
-constexpr float ALPHA = 1.0f / INPUT_RATE;
+constexpr float ALPHA = 100.0f / INPUT_RATE;
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
@@ -48,16 +58,15 @@ constexpr float ALPHA = 1.0f / INPUT_RATE;
 	                               spectrumBuffer (spectrumBuffer_i) {
 int	i;
 	bufferSize		= 32768;
-	connect (this, SIGNAL (show_spectrum (int)),
-	         mr, SLOT (show_spectrum (int)));
+	connect (this, &sampleReader::show_spectrum,
+	         mr,  &RadioInterface::show_spectrum);
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	realAvg		= 0;
-	imagAvg		= 0;
 	balancing	= false;
+	RFDc		= Complex (0, 0);
 	repetitionCounter	= 8;
 	for (i = 0; i < INPUT_RATE; i ++)
 	   oscillatorTable [i] = Complex
@@ -68,6 +77,7 @@ int	i;
 	corrector	= 0;
 	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
+	peakValue	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	running. store (true);
 }
@@ -79,7 +89,7 @@ void	sampleReader::setRunning (bool b) {
 	running. store (b);
 }
 
-float	sampleReader::get_sLevel() {
+float	sampleReader::get_sLevel () {
 	return sLevel;
 }
 
@@ -125,17 +135,22 @@ Complex buffer [nrSamples];
 	   }
 	}
 //	OK, we have samples!!
-//	first: adjust frequency. We need Hz accuracy
+//	RFDc	= Complex (0, 0);
 	for (int i = 0; i < nrSamples; i ++) {
-	   Complex v = buffer[i];
+	   Complex v = buffer [i];
+	   peakValue	= ALPHA * abs (v) + (1 - ALPHA) * abs (v); 
 	   if (balancing) {
-  	      float realPart	= real (v);
-	      float imagPart	= imag (v);
-	      average (realAvg, realPart, ALPHA);
-	      average (imagAvg, imagPart, ALPHA);
-	      v -= Complex (realAvg, imagAvg);
+	      RFDc	= (v - RFDc) * ALPHA +  (1 - ALPHA) * RFDc;
+	      constexpr float DCRlimit = 0.005f;
+	      float rfDcReal = real (RFDc);
+	      constrain (rfDcReal, DCRlimit);
+	      float rfDcImag = imag (RFDc);
+	      constrain (rfDcImag, DCRlimit);
+	      RFDc	= Complex (rfDcReal, rfDcImag);
+	      v		-= RFDc;
 	   }
-//
+
+//	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative
 	   currentPhase	-= phaseOffset;
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
@@ -146,7 +161,7 @@ Complex buffer [nrSamples];
 	}
 	sampleCount	+= nrSamples;
 	if (sampleCount > INPUT_RATE / repetitionCounter) {
-	   show_corrector	(corrector);
+//	   show_corrector	(corrector);
 	   sampleCount = 0;
 	   if ((spectrumBuffer != nullptr) && saving) {
 	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
@@ -167,7 +182,6 @@ void	sampleReader::stop_dumping() {
 
 void	sampleReader::set_dcRemoval	(bool b) {
 	balancing	= b;
-	realAvg		= 0;
-	imagAvg		= 0;
+	RFDc		= Complex (0, 0);
 }
 

@@ -45,24 +45,36 @@
  *	for the waterfall display
  */
 
+class	SpectrogramData;
+
 class IQDisplay: public QObject, public QwtPlotSpectrogram {
 Q_OBJECT
 public:
 	IQDisplay		(QwtPlot *, int16_t);
-	~IQDisplay();
-void	DisplayIQ		(std::complex<float> *, int, float);
+	~IQDisplay		();
+void	DisplayIQ		(const std::vector<complex<float>> &, int, float);
 private:
-	int32_t			x_amount;
-	std::vector<double>	plotData;
-	std::vector<double>	plot2;
-//	std::vector<complex<int> > Points;
-//	std::complex<int> 	*Points;
+
 	QwtPlot			*plotgrid;
+static	constexpr
+	int32_t			RADIUS	= 100;
+
+	int32_t			x_amount;
+	SpectrogramData		*IQData;
+	std::vector<std::complex <int32_t>> Points;
+	std::vector<double>	plotDataBackgroundBuffer;
+	std::vector<double>	plotDataDrawBuffer;
         QwtPlotPicker		*lm_picker;
 	int			_OutputRate;
 	int			Radius;
 	int			CycleCount;
 	void			setPoint	(int, int, int);
+	void			cleanScreen	();
+	
+	void			drawCross	();
+	void			drawCircle	(float, int);
+	void			repaintCircle	(float);
+	int			lastCircleSize;
 private slots:
         void            	rightMouseClick	(const QPointF &);
 signals:

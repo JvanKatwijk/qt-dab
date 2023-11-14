@@ -38,22 +38,26 @@ class	RadioInterface;
 	class	converter_48000: public QObject {
 Q_OBJECT
 public:
-			converter_48000		(RadioInterface *,
-	                                         RingBuffer<float> *);
+			converter_48000		(RadioInterface *);
 			~converter_48000	();
-	void		convert			(std::complex<int16_t> *,
-	                                               int32_t, int);
+	int		convert			(std::complex<int16_t>*,
+	                                          int32_t, int, 
+	                                          std::vector<float> &);
+	                                           
 	void		start_audioDump		(SNDFILE *);
 	void		stop_audioDump		();
 private:
-	void		convert_16000		(std::complex<int16_t> *, int);
-	void		convert_24000		(std::complex<int16_t> *, int);
-	void		convert_32000		(std::complex<int16_t> *, int);
-	void		convert_48000		(std::complex<int16_t> *, int);
+	int		convert_16000		(std::complex<int16_t> *,
+	                                         int, std::vector<float> &);
+	int		convert_24000		(std::complex<int16_t> *,
+	                                         int, std::vector<float> &);
+	int		convert_32000		(std::complex<int16_t> *,
+	                                         int, std::vector<float> &);
+	int		convert_48000		(std::complex<int16_t> *,
+	                                         int, std::vector<float> &);
 	newConverter	mapper_16;
 	newConverter	mapper_24;
 	newConverter	mapper_32;
-	RingBuffer<float>	*outputBuffer;
 	SNDFILE		*filePointer;
 	std::mutex	locker;
 	void		dump			(Complex *, int);

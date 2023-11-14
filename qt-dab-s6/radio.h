@@ -113,6 +113,7 @@ public:
 }
 
 	QString		channelName;
+	int		channelFrequency;
 	bool		realChannel;
 	bool		etiActive;
 	int		serviceCount;
@@ -187,7 +188,6 @@ private:
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
 	RingBuffer<std::complex<int16_t>>	audioBuffer;
-	RingBuffer<float>	pcmBuffer;
 	RingBuffer<float>	stdDevBuffer;
 
 	displayWidget		newDisplay;
@@ -267,8 +267,6 @@ private:
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
-	bool			isMember (const std::vector<serviceId> &, 
-	                                  serviceId);
 	std::vector<serviceId>
 	  	                insert   (std::vector<serviceId> &,
 	                                  serviceId, int);
@@ -291,6 +289,11 @@ private:
 	int			serviceCount;
 	struct theTime		localTime;
 	struct theTime		UTC;
+      
+	size_t			previous_idle_time;
+	size_t			previous_total_time;
+
+
 	QString			convertTime		(int, int, int, int, int);
 	QString			convertTime		(struct theTime &);
 	void			set_buttonColors	(QPushButton *,
@@ -495,6 +498,7 @@ private slots:
 	void			color_portSelector	();
 //
 //	for the display widget we have access functions
+public slots:
 	void			show_spectrum		(int);
 	void			show_tii		(int, int);
 
@@ -509,7 +513,7 @@ private slots:
 //
 	void			showPeakLevel		(float, float);
 
-//
+private slots:
 //	config handlers
 	void			handle_muteTimeSetting		(int);
 	void			handle_switchDelaySetting 	(int);
@@ -532,4 +536,5 @@ private slots:
 	void			handle_loadTable		();
 	void			handle_fontSelect		();
 	void			handle_dcRemovalSelector	(int);
+	void			handle_decoderSelector		(const QString &);
 };

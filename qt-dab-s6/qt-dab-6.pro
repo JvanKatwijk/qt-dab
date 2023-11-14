@@ -17,14 +17,14 @@ unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
@@ -39,8 +39,8 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #
 #       For more parallel processing, uncomment the following
 #       defines
-DEFINES		+= __MSC_THREAD__
-DEFINES        +=  __THREADED_BACKEND
+#DEFINES	+= __MSC_THREAD__
+DEFINES		+=  __THREADED_BACKEND
 
 #DEFINES	+= _UPLOAD_SCAN_RESULT_
 
@@ -473,7 +473,8 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6.25
+	TARGET		= qt-dab32-6-V3
+#	TARGET		= qt-dab32-6.25
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -483,7 +484,8 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-generic
+	CONFIG		+= dabstick-win-V3
+#	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
@@ -537,6 +539,32 @@ dabstick-generic {
 	SOURCES		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp \
 	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
+}
+
+dabstick-win {
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
+#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+	LIBS		+= /usr/shared/drivers/rtlsdr-drivers-windows/x86/librtlsdr.dll
+}
+
+dabstick-win-V3 {
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
+#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+	LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/librtlsdr.dll
 }
 
 #

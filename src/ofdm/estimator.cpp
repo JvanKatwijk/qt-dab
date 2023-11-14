@@ -33,13 +33,17 @@ static inline
 Complex createExp (float s) {
         return Complex (cos (s), - sin (s));
 }
-
+//
+//	For DAB there is no need to equalize, however, it is
+//	(well for me at least) interesting to see what the
+//	equalization factor should be. After all, that is
+//	another quality measure
 //
 //	"pilot" range is fftSize / 2 - carriers / 2 .. fftSize / 2 + carriers / 2
 bool	estimator::isPilot (int n) {
-int low		= - 200;
-int high	=   200;
-	return (n != 0) && (low < n) && (n < high) && (((T_u / 2 + n) % 6) == 0);
+int low		=  -200;
+int high	=  +200;
+	return (n != 0) && (low < n) && (n < high) && (n % 6 == 0);
 }
 		estimator::estimator (RadioInterface *mr,
 	                                processParams	*p):
@@ -61,18 +65,21 @@ Complex temp [params. get_T_u ()];
 //	know what there value should be
 	for (int i = 0; i < T_u; i ++)
 	   refTable [i] = std::complex<float> (0, 0);
-
+//
+//	The reference values
 	for (int i = 1; i <= carriers / 2; i ++) {
 	   Phi_k =  get_Phi (i);
 	   temp [i] = Complex (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
 	   temp [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
 	}
-
+//
+//	and organized as -inf ..0 .. inf
 	for (int i = 0; i < T_u; i ++) {
 	   refTable [i] = temp [(T_u / 2 + i) % T_u];
 	}
-
+//
+//	compute a stack of pilots
         numberofPilots		= 0;
 	for (int i = -carriers / 2; i < carriers / 2; i ++) {
 	   if (isPilot (i)) {

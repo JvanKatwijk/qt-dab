@@ -489,6 +489,13 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
+      <widget class="smallComboBox" name="decoderSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Decoder selector. Just as an experiment three (almost similar) approaches to map de decoded carriers onto bits are implemented. The default one is based on the geometrical distance between the complex value (normalized to an amplitude 1, and considered as a dot in a plane) and the centerpoint in that plane. The other two use the offset of the &amp;quot;arg&amp;quot; of the value tot PI/4 (all seen in quadrant 1), the larger the offset, the smaller the soft bit value. &lt;/p&gt;&lt;p&gt;The difference between the two is that the first one takes the measured value of the current carrier value, while the second one looks at the average corner value of that carrier.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="smallComboBox" name="streamoutSelector">
        <property name="maximumSize">
         <size>

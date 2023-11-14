@@ -134,7 +134,6 @@ private:
 	RingBuffer<uint8_t>	frameBuffer;
 	RingBuffer<uint8_t>	dataBuffer;
 	RingBuffer<std::complex<int16_t>>	audioBuffer;
-	RingBuffer<float>	pcmBuffer;
         spectrumViewer		my_spectrumViewer;
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;

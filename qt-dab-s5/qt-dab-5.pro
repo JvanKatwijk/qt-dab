@@ -17,14 +17,14 @@ unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto
 QMAKE_CFLAGS	+=  -ffast-math -flto
 QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-5.ico
 RESOURCES	+= resources.qrc
@@ -485,7 +485,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-generic
+	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf

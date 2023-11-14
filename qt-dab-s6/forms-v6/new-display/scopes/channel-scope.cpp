@@ -110,7 +110,7 @@ void	channelScope::display		(double *X_axis,
 				         X_axis [displaySize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         0, 40);
+				         0, Amp);
 
 	for (int i = 0; i < displaySize; i ++)
 	   if (amplitudeValues [i] > Max)

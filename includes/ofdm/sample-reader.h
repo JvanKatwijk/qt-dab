@@ -79,10 +79,11 @@ private:
 	      int		repetitionCounter;
 
 	      bool		balancing;
-	      float		realAvg;
-	      float		imagAvg;
+	      Complex		RFDc;
+
+	      float		peakValue;
 signals:
 	      void		show_spectrum (int);
-	      void		show_corrector (int);
+//	      void		show_corrector (int);
 };
 

@@ -25,11 +25,20 @@
 /*
  *	iq circle plotter
  */
-SpectrogramData	*IQData	= nullptr;
-static std::complex<int> Points [4 * 512];
+static inline
+void	constrain (int32_t & testVal, const int32_t limit) {
+	if (testVal > limit) 
+	   testVal = limit;
+	else
+	if (testVal < -limit) {
+	   testVal = -limit;
+	}
+}
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
-	                                QwtPlotSpectrogram() {
+	                                QwtPlotSpectrogram (), 
+	                                 plotgrid (plot) {
+	          
 auto	*const colorMap = new QwtLinearColorMap (
 	                           QColor(0, 0, 255, 20),
 	                           QColor(255, 255, 178, 255));
@@ -37,8 +46,8 @@ auto	*const colorMap = new QwtLinearColorMap (
 	(void)x;
 	setRenderThreadCount	(1);
 	setColorMap (colorMap);
-	Radius		= 100;
-	plotgrid	= plot;
+	IQData		= nullptr;
+
 	lm_picker       = new QwtPlotPicker (plot -> canvas ());
         QwtPickerMachine *lpickerMachine =
                              new QwtPickerClickPointMachine ();
@@ -52,19 +61,18 @@ auto	*const colorMap = new QwtLinearColorMap (
 
 	x_amount	= 4 * 512;
 	CycleCount	= 0;
-	this		-> setColorMap (colorMap);
-	plotData. resize (2 * Radius * 2 * Radius);
-	plot2.	  resize (2 * Radius * 2 * Radius);
-	memset (plotData. data(), 0,
-	                  2 * 2 * Radius * Radius * sizeof (double));
-	IQData		= new SpectrogramData (plot2. data(),
+
+	lastCircleSize	= 0;
+	plotDataBackgroundBuffer. resize (2 * RADIUS * 2 * RADIUS, 0.0);
+	plotDataDrawBuffer.	  resize (2 * RADIUS * 2 * RADIUS, 0.0);
+	memset (plotDataDrawBuffer. data (), 0,
+	                  2 * 2 * RADIUS * RADIUS * sizeof (double));
+	IQData		= new SpectrogramData (plotDataDrawBuffer. data(),
 	                                       0,
-	                                       2 * Radius,
-	                                       2 * Radius,
-	                                       2 * Radius,
+	                                       2 * RADIUS,
+	                                       2 * RADIUS,
+	                                       2 * RADIUS,
 	                                       50.0);
-	for (int i = 0; i < x_amount; i ++)
-	   Points [i] = std::complex<int> (0, 0);
 	this		-> setData (IQData);
 	plot		-> enableAxis (QwtPlot::xBottom, false);
 	plot		-> enableAxis (QwtPlot::yLeft, false);
@@ -78,46 +86,49 @@ auto	*const colorMap = new QwtLinearColorMap (
 }
 
 void	IQDisplay::setPoint (int x, int y, int val) {
-	plotData [(x + Radius - 1) * 2 * Radius + y + Radius - 1] = val;
+	plotDataBackgroundBuffer [(x + RADIUS - 1) * 2 * RADIUS + y + RADIUS - 1] = val;
 }
 
-void	IQDisplay::DisplayIQ (std::complex<float> *z,
-	                             int amount, float scale) {
-
-	(void)amount;
 //	clean the screen
-	for (int i = 0; i < x_amount; i ++) {
+void	IQDisplay::cleanScreen	() {
+	for (int i = 0; i < Points. size (); i ++) {
 	   int a	= real (Points [i]);
 	   int b	= imag (Points [i]);
 	   setPoint (a, b, 0);
 	}
+}
 
-	for (int i = 0; i < 512; i ++) {
+void	IQDisplay::DisplayIQ (const std::vector<complex<float>> &z,
+	                             int amount, float scale) {
+
+	(void)amount;
+	cleanScreen	();
+	if (z. size () != Points. size ())
+	   Points. resize (z. size (), {0, 0});
+
+//	drawCross ();
+	repaintCircle (scale);
+
+	for (int i = 0; i < Points. size () / 2; i ++) {
            int x = (int)(scale * real (z [i]));
            int y = (int)(scale * imag (z [i]));
 
-	   if (x >= Radius - 1)
-	      x = Radius - 2;
-	   if (y >= Radius - 1)
-	      y = Radius - 2;
+	   constrain (x, RADIUS - 1);
+	   constrain (y, RADIUS - 1);
+	   int xx	= x + 1;
+	   int yy	= y + 1;
+	   constrain (xx, RADIUS - 1);
+	   constrain (yy, RADIUS - 1);
 
-	   if (x <= - Radius + 1)
-	      x = -Radius + 2;
-	   if (y <= - Radius + 1)
-	      y = - Radius + 2;;
-
-	   Points [4 * i] = std::complex<int> (x, y);
+	   Points [2 * i] = std::complex<int32_t> (x, y);
 	   setPoint (x, y, 1000);
-	   Points [4 * i + 1] = std::complex<int> (x + 1, y);
-	   setPoint (x + 1, y, 1000);
-	   Points [4 * i + 2] = std::complex<int> (x, y + 1);
-	   setPoint (x, y + 1, 1000);
-	   Points [4 * i + 3] = std::complex<int> (x + 1, y + 1);
-	   setPoint (x + 1, y + 1, 1000);
+	   Points [2 * i + 1] = std::complex<int32_t> (xx, yy);
+	   setPoint (xx, yy, 1000);
 	}
 
-	memcpy (plot2. data(), plotData. data (),
-	        2 * 2 * Radius * Radius * sizeof (double));
+	memcpy (plotDataDrawBuffer. data (),
+	        plotDataBackgroundBuffer. data (),
+	        2 * 2 * RADIUS * RADIUS * sizeof (double));
 	this		-> detach();
 	this		-> setData	(IQData);
 	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
@@ -130,3 +141,40 @@ void	IQDisplay::rightMouseClick (const QPointF &p) {
 	emit rightMouseClick ();
 }
 
+void	IQDisplay::drawCross () {
+	for (int32_t i = -(RADIUS - 1); i < RADIUS; i++) {
+	   setPoint (1, i, 30); // horizontal line
+	   setPoint (i, 0, 30); // vertical line
+	}
+}
+
+void	IQDisplay::drawCircle (float scale, int val) {
+	const int32_t MAX_CIRCLE_POINTS =
+	           static_cast<int32_t> (180 * scale); // per quarter
+
+	for (int32_t i = 0; i < MAX_CIRCLE_POINTS; i ++) {
+	   const float phase =
+	              0.5f * (float)M_PI * (float)i / MAX_CIRCLE_POINTS;
+
+	   auto h = (int32_t)(RADIUS * scale * cosf(phase));
+	   auto v = (int32_t)(RADIUS * scale * sinf(phase));
+
+	   constrain (h, RADIUS - 1);
+	   constrain (v, RADIUS - 1);
+
+//	as h and v covers only the top right segment, fill also other segments
+	   setPoint (-h, -v, val);
+	   setPoint (-h, +v, val);
+	   setPoint (+h, -v, val);
+	   setPoint (+h, +v, val);
+	}
+}
+
+void	IQDisplay::repaintCircle (float size) {
+
+	if (size != lastCircleSize) {
+	   drawCircle (lastCircleSize, 0); // clear old circle
+	   lastCircleSize = size;
+	}
+	drawCircle (size, 20);
+}

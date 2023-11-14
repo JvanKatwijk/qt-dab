@@ -65,6 +65,10 @@ bool	deviceHandler::getVisibility	() {
 	return !myFrame. isHidden ();
 }
 
+int	deviceHandler::adjustFrequency	(int offset) {
+	return offset;
+}
+
 QString	deviceHandler::deviceName	() {
 	return "";
 }

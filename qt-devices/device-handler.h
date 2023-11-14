@@ -40,7 +40,8 @@ public:
 virtual			~deviceHandler	();
 virtual		bool	restartReader	(int32_t freq);
 virtual		void	stopReader	();
-virtual		int32_t	getVFOFrequency() {return 0;}
+virtual		int32_t	getVFOFrequency	() {return 0;}
+virtual		int	adjustFrequency (int);
 virtual		int32_t	getSamples	(Complex *, int32_t);
 virtual		int32_t	Samples		();
 virtual		void	resetBuffer	();
