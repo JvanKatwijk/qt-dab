@@ -164,9 +164,9 @@ void	IQDisplay::drawCircle (float scale, int val) {
 
 //	as h and v covers only the top right segment, fill also other segments
 	   setPoint (-h, -v, val);
-	   setPoint (-h, +v, val);
-	   setPoint (+h, -v, val);
-	   setPoint (+h, +v, val);
+	   setPoint ( h,  v, val);
+	   setPoint (+h,  v, val);
+	   setPoint ( h, +v, val);
 	}
 }
 

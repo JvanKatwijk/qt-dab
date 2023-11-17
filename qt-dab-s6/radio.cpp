@@ -539,7 +539,7 @@ uint8_t	dabBand;
 //
 	QPalette lcdPalette	= cpuMonitor -> palette ();
 #ifndef __MAC__
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
 #else
 	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
@@ -635,6 +635,9 @@ uint8_t	dabBand;
 	   my_snrViewer. hide ();
 	if (dabSettings_p -> value ("techDataVisible", 0). toInt () == 1)
 	   techWindow_p -> show ();
+
+	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
+	dynamicLabel	-> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected
@@ -1374,7 +1377,8 @@ void	RadioInterface::updateTimeDisplay() {
 	   const float total_time_delta =
 	                 static_cast<float> (total_time - previous_total_time);
 	   const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
-	   cpuMonitor -> display (QString("%1").arg(utilization, 0, 'f', 2));
+	   cpuMonitor -> display (utilization);
+//	   cpuMonitor -> display (QString("%1").arg(utilization, 0, 'f', 2));
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
 	}
@@ -5005,4 +5009,3 @@ int	decoder	= 1;
 	my_ofdmHandler	-> handle_decoderSelector (decoder);
 }
 
-	   

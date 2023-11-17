@@ -36,8 +36,13 @@
 	setLayout (layOut);
 
 	skins = QStringList();
-	skins << "skins" << "no skin" << "Adaptic" <<
-	                        "Combinear" << "Darkeum" << "Fibers";
+	skins << "skins" << "no skin"	<<
+	                    "Adaptic"	<<
+	                    "Combinear" <<
+	                    "Darkeum"	<<
+	                    "EasyCode"	<<
+	                    "Diffnes";
+
 	skinList. setStringList (skins);
 	selectorDisplay	-> setModel (&skinList);
 	connect (selectorDisplay, SIGNAL (clicked (QModelIndex)),

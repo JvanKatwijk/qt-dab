@@ -38,26 +38,6 @@
 #define	GITHASH	"      "
 #endif
 
-
-static const QString styleSheet_1 =
-//	#include "./stylesheets/Adaptic.qss"
-	#include "./stylesheets/Combinear.qss"
-;
-
-static const QString styleSheet_2 =
-	#include "./stylesheets/Adaptic.qss"
-//	#include "./stylesheets/Combinear.qss"
-;
-
-static const QString styleSheet_3 =
-	#include "./stylesheets/Fibers.qss"
-;
-
-static const QString styleSheet_4 =
-	#include "./stylesheets/Darkeum.qss"
-;
-
-
 QString fullPathfor (QString v) {
 QString fileName;
 
@@ -158,15 +138,22 @@ QTranslator	theTranslator;
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
-	QString skin    = dabSettings -> value ("skin", "Combinear"). toString ();
-	skin    = skin == "Combinear" ? styleSheet_1 :
-	          skin == "Adaptic"   ? styleSheet_2 :
-	          skin == "Fibers"    ? styleSheet_3 :
-	          skin == "Darkeum"   ? styleSheet_4 : "";
+	QString skin    = dabSettings -> value ("skin", "Obit"). toString ();
+
+	skin    = skin == "Combinear" ? ":res/Combinear.qss" :
+	          skin == "Adaptic"   ? ":res/Adaptic.qss" :
+	          skin == "Darkeum"   ? ":res/Darkeum.qss" :
+	          skin == "EasyCode"  ? ":res/EasyCode.qss":
+	          skin == "Diffnes"   ? ":res/Diffnes.qss" : "";
 
 	QApplication a (argc, argv);
-	if (skin != "")
-	   a. setStyleSheet (skin);
+	if (skin != "") {
+	   QFile file (skin);
+	   if (file .open (QFile::ReadOnly | QFile::Text)) {   
+	      a. setStyleSheet (file.readAll ());
+	      file.close ();
+	   }
+	}
 
 //	setting the language
 	QString locale = QLocale::system (). name ();

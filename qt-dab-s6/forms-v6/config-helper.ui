@@ -87,13 +87,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string> service order in list</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </item>
     </layout>

@@ -37,13 +37,12 @@
 	                                         theFFT (4 * 512, false),
 	                                         dabSettings_p (dabSettings) {
 	(void)mr;
-
+int	sliderValue;
 	dabSettings_p	-> beginGroup ("displayWidget");
 	int x   = dabSettings_p -> value ("position-x", 100). toInt ();
         int y   = dabSettings_p -> value ("position-y", 100). toInt ();
 	int w	= dabSettings_p -> value ("width", 150). toInt ();
 	int h	= dabSettings_p -> value ("height", 120). toInt ();
-        dabSettings_p -> endGroup ();
         setupUi (&myFrame);
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
@@ -56,27 +55,41 @@
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
 	                                                512, dabSettings_p);
-	spectrumAmplitude	-> setValue (50);
-	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
-	                                                512, 50);
+	sliderValue		= dabSettings_p -> value ("spectrumSlider",
+	                                                   50). toInt ();
+	spectrumSlider		-> setValue (sliderValue);
 	nullScope_p		= new nullScope		(nullDisplay,
 	                                                512, dabSettings_p);
 	correlationScope_p	= new correlationScope (correlationDisplay,
 	                                                256, dabSettings_p);
+	sliderValue		= dabSettings_p -> value ("correlationSlider",
+	                                                   50). toInt ();
+	correlationSlider	-> setValue (sliderValue);
 	correlationLength       -> setValue (500);
 
 	TII_Scope_p		= new spectrumScope	(tiiDisplay,
 	                                                512, dabSettings_p);
-	devScope_p		= new devScope		(devPlot,
-	                                                 512, dabSettings_p);
-	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
-
+	sliderValue		= dabSettings_p -> value ("tiiSlider",
+	                                                   00). toInt ();
+	tiiSlider		-> setValue (sliderValue);
 #ifdef	__ESTIMATOR_
 	channelScope_p		= new channelScope	(channelPlot,
 	                                                 64, dabSettings_p);
+	sliderValue		= dabSettings_p -> value ("channelSlider",
+	                                                  50). toInt ();
+	channelSlider		-> setValue (sliderValue);
 #endif
+	devScope_p		= new devScope		(devPlot,
+	                                                 512, dabSettings_p);
+	sliderValue		= dabSettings_p	-> value ("deviationSlider",
+	                                                  0). toInt ();
+	deviationSlider		-> setValue (sliderValue);
+	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
 
-	dabSettings_p		-> beginGroup ("displayWidget");
+
+	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
+	                                                512, 50);
+
         currentTab		= dabSettings_p -> value ("tabSettings", 0). toInt ();
         dabSettings_p		-> endGroup ();
         tabWidget		-> setCurrentIndex (currentTab);
@@ -85,7 +98,7 @@
 	                 "QLabel {background-color : green; color: white}");
 
 	dabSettings_p	-> beginGroup ("displayWidget");
-	int sliderValue		=
+	sliderValue		=
 	           dabSettings_p -> value ("iqSliderValue", 50). toInt ();
 	scopeSlider		-> setValue (sliderValue);
 	dabSettings_p	-> endGroup ();
@@ -107,6 +120,14 @@
 	
 	dabSettings_p	-> setValue ("iqSliderValue",
 	                               scopeSlider -> value ());
+	dabSettings_p	-> setValue ("spectrumSlider",
+	                               spectrumSlider -> value ());
+	dabSettings_p	-> setValue ("correlationSlider",
+	                               correlationSlider -> value ());
+	dabSettings_p	-> setValue ("tiiSlider",
+	                               tiiSlider -> value ());
+	dabSettings_p	-> setValue ("deviationSlider",
+	                               deviationSlider -> value ());
 	dabSettings_p	-> endGroup ();
 	myFrame. hide	();
 	delete		spectrumScope_p;
@@ -167,7 +188,7 @@ static double avg [4 * 512];
 	}
 
 	spectrumScope_p -> display (X_axis, Y_value, freq, 
-	                                    spectrumAmplitude -> value ());
+	                                    spectrumSlider -> value ());
 	for (int i = 0; i < 512; i ++)
 	   Y_value [i] = (Y_value [i] - get_db (0)) / 6;
 	waterfallScope_p	-> display (X_axis, Y_value, 

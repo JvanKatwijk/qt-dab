@@ -186,6 +186,15 @@
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cpuLoad. The number gives an estimate of the overall load of the CPU of the machine you are working on. So, it only gives an idea of the load caused by Qt-DAB if no other (large) programs are active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="segmentStyle">
+          <enum>QLCDNumber::Flat</enum>
+         </property>
         </widget>
        </item>
       </layout>
@@ -398,14 +407,14 @@
    <header>presetcombobox.h</header>
   </customwidget>
   <customwidget>
-   <class>smallQListView</class>
-   <extends>QListView</extends>
-   <header>smallqlistview.h</header>
-  </customwidget>
-  <customwidget>
    <class>newPushButton</class>
    <extends>QPushButton</extends>
    <header location="global">newpushbutton.h</header>
+  </customwidget>
+  <customwidget>
+   <class>smallQListView</class>
+   <extends>QListView</extends>
+   <header>smallqlistview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

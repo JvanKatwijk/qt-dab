@@ -176,6 +176,15 @@
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audible audio runs at 48000 Ss. Some services deliver lower samplerates, these samplerates - shown here - are transformed into 48000 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="digitCount">
+        <number>5</number>
+       </property>
        <property name="segmentStyle">
         <enum>QLCDNumber::Flat</enum>
        </property>

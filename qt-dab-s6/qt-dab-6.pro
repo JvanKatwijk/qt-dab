@@ -418,6 +418,7 @@ CONFIG		+= lime
 #CONFIG		+= pluto
 CONFIG		+= pluto-2
 CONFIG		+= faad
+#CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
@@ -808,6 +809,14 @@ faad	{
 	HEADERS		+= ../includes/backend/audio/faad-decoder.h 
 	SOURCES		+= ../src/backend/audio/faad-decoder.cpp 
 	LIBS		+= -lfaad
+}
+
+fdk-aac {
+        DEFINES         += __WITH_FDK_AAC__
+        INCLUDEPATH     += ../specials/fdk-aac
+        HEADERS         += ../includes/backend/audio/fdk-aac.h
+        SOURCES         += ../src/backend/audio/fdk-aac.cpp
+        PKGCONFIG       += fdk-aac
 }
 
 preCompiled {

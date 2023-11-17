@@ -6,5 +6,10 @@
         <file>../COPYING</file>
 	<file>../res/pauze-slide.png</file>
 	<file>../res/qt-map.html</file>
+        <file>../res/EasyCode.qss</file>
+        <file>../res/Darkeum.qss</file>
+        <file>../res/Adaptic.qss</file>
+        <file>../res/Combinear.qss</file>
+        <file>../res/Diffnes.qss</file>
     </qresource>
 </RCC>

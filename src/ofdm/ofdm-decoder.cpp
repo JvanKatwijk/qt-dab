@@ -93,7 +93,7 @@ void	ofdmDecoder::stop ()	{
 }
 
 void	ofdmDecoder::reset ()	{
-	for (int i = 0; i < offsetVector. size (); i ++) {
+	for (int i = 0; i <  (int)(offsetVector. size ()); i ++) {
 	   offsetVector [i] = 0;
 	   squaredVector [i] = 0;
 	}
@@ -128,14 +128,14 @@ float	ofdmDecoder::computeQuality (Complex *v) {
 	   std::complex<float> ss = v [T_u / 2 - carriers / 2 + i];
 	   middle += Complex (abs (real (ss)), abs (imag (ss)));
 	}
-	middle	= middle / (float)carriers;
+	middle	= middle / (float)carriers;;
 	middle	= Complex ((real (middle) + imag (middle)) / 2,
 	                   (real (middle) + imag (middle)) / 2);
 
 	float nominator		= 0;
 	float denominator	= 0;
 	for (int i = 0; i < carriers; i ++) {
-	   Complex s = v [T_u / 2- carriers / 2 + i];
+	   Complex s		= v [T_u / 2 - carriers / 2 + i];
 	   float I_component	= real (s);
 	   float Q_component	= imag (s);
 	   float delta_I	= abs (I_component) - real (middle);
@@ -188,7 +188,7 @@ Complex fft_buffer [T_u];
 //	a little optimization: we do not interchange the
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
-
+	Complex	localMiddle	= Complex (0, 0);
 	float max	= 0;
 	Complex offset	= Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
@@ -211,13 +211,15 @@ Complex fft_buffer [T_u];
 //
 //	Note that the phase Offset does not lead to an accumulated error
 //	so, we just average 
-	   float phaseOffset	= arg (r2 * Complex (1, -1));
+	   float fftPhase	= arg (r2);
+	   float phaseOffset	= M_PI_4 - fftPhase;
 	   offsetVector [index] = 
 	             compute_avg (offsetVector [index], phaseOffset, DELTA);
 	   squaredVector [index] =
 	             compute_avg (offsetVector [index], 
 	                                   square (phaseOffset), DELTA);
 	}
+
 
 //	The decoding approach is
 //	looking at the X and Y coordinates of the "dots"
@@ -229,7 +231,6 @@ Complex fft_buffer [T_u];
 
 	   Complex r1	= conjVector [index];
 	   float ab1	= jan_abs (r1);
-
 //
 //	We implement three approaches for mapping the decoded carrier
 //	to two (soft) bits.
@@ -272,6 +273,10 @@ Complex fft_buffer [T_u];
 	   }
 	   else 
 	   if (decoder == DECODER_DEFAULT) {
+	      ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
+	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
+	   }
+	   else {
 	      Complex testVal	= normalize (r1);
 	      float X_Offset	= uniBase -
 	                           std::fabs (uniBase - abs (real (testVal)));
@@ -285,10 +290,6 @@ Complex fft_buffer [T_u];
 	         ibits [i + carriers] = - Y_Offset / uniBase * 127.0;
 	      else
 	         ibits [i + carriers] =   Y_Offset / uniBase * 127.0;
-	   }
-	   else {	// Old approach, approximating the default
-	      ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
-	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
 	   }
 	}
 
