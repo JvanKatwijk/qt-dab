@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-6.25)
+set (objectName qt-dab-6.30
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -196,7 +196,6 @@ endif ()
 	           ./pauzeslide
 	           ./support
 	           ..
-	           ../fft
 	           ../includes
 	           ../includes/ofdm
 	           ../includes/protection
@@ -230,8 +229,6 @@ endif ()
 	     ./radio.h
 	     ./pauzeslide/pauzeslide.h
 	     ../ofdm-handler.h
-	     ../fft/fft-handler.h 
-	     ../fft/fft-complex.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/crc-handlers.h
@@ -287,6 +284,7 @@ endif ()
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/fft-handler.h 
 	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
@@ -331,6 +329,7 @@ endif ()
              ./forms-v6/new-display/scopes/waterfall-scope.h 
              ./forms-b6/new-display/scopes/iqdisplay.h 
 	     ../qt-devices/device-handler.h
+	     ../qt-devices/device-chooser.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
 	     ../qt-devices/rawfiles-new/rawfiles.h
@@ -349,8 +348,6 @@ endif ()
 	     ./radio.cpp
 	     ./support/techdata.cpp
 	     ../ofdm-handler.cpp
-	     ../fft/fft-handler.cpp 
-	     ../fft/fft-complex.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
@@ -397,6 +394,7 @@ endif ()
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
+	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
@@ -438,6 +436,7 @@ endif ()
              ./forms-v6/new-display/scopes/waterfall-scope.cpp 
              ./forms-v6/new-display/scopes/iqdisplay.cpp 
 	     ../qt-devices/device-handler.cpp
+	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
 	     ../qt-devices/rawfiles-new/rawfiles.cpp
 	     ../qt-devices/rawfiles-new/raw-reader.cpp
@@ -734,26 +733,26 @@ endif ()
 	if (PLUTO)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ../qt-devices/pluto-handler-2/pluto-widget.ui
+	        ../qt-devices/pluto-handler/pluto-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.h
+	        ../qt-devices/pluto-handler/pluto-handler.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/pluto-handler-2
+	     ../qt-devices/pluto-handler
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.h
+	        ../qt-devices/pluto-handler/pluto-handler.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.cpp
+	        ../qt-devices/pluto-handler/pluto-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_PLUTO)

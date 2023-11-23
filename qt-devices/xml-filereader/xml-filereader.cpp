@@ -20,6 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<QFileDialog>
 #include	"xml-filereader.h"
 #include	<cstdio>
 #include	<unistd.h>
@@ -28,32 +29,31 @@
 #include	<sys/time.h>
 #include	<ctime>
 
+#include	"device-exceptions.h"
 #include	"xml-descriptor.h"
 #include	"xml-reader.h"
 
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	xml_fileReader::xml_fileReader (QString f):
-	   _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
-	fileName	= f;
+	xml_fileReader::xml_fileReader (): _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	setupUi	(&myFrame);
 	myFrame. show	();
-	theFile	= fopen (f. toUtf8 (). data(), "rb");
+
+	QString fileName	= getFileName ();
+	if (fileName == nullptr) 
+	   throw file_exception ("no file specified");
+
+	theFile	= fopen (fileName. toUtf8 (). data (), "rb");
 	if (theFile == nullptr) {
-	   fprintf (stderr, "file %s cannot open\n",
-	                                   f. toUtf8(). data());
-	   perror ("file ?");
-	   throw (31);
+	   throw file_exception ("cannot open " + fileName. toStdString ());
 	}
 	
 	bool	ok	= false;
-	filenameLabel	-> setText (f);
+	filenameLabel	-> setText (fileName);
 	theDescriptor	= new xmlDescriptor (theFile, &ok);
 	if (!ok) {
-	   fprintf (stderr, "%s probably not an xml file\n",
-	                               f. toUtf8 (). data ());
-	   throw (32);
+	   throw file_exception (fileName. toStdString () + "no xml file");
 	}
 
 	fileProgress		-> setValue (0);
@@ -157,5 +157,17 @@ void	xml_fileReader::handle_continuousButton () {
 
 bool	xml_fileReader::isFileInput	() {
 	return true;
+}
+
+QString	xml_fileReader::getFileName () {
+
+	QString file	=
+	                 QFileDialog::getOpenFileName (nullptr,
+	                                               "Open file ...",
+	                                               QDir::homePath(),
+	                                               "xml data (*.*)");
+	if (file == QString (""))
+	   return nullptr;
+	return QDir::toNativeSeparators (file);
 }
 

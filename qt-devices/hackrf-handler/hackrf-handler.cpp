@@ -42,13 +42,13 @@
 	                                  hackrfSettings (s),
 	                                  recorderVersion (recVersion),
 	                                  _I_Buffer (4 * 1024 * 1024) {
+
 	hackrfSettings -> beginGroup ("hackrfSettings");
         int x   = hackrfSettings -> value ("position-x", 100). toInt ();
         int y   = hackrfSettings -> value ("position-y", 100). toInt ();
         hackrfSettings -> endGroup ();
         setupUi (&myFrame);
         myFrame. move (QPoint (x, y));
-//	myFrame. show	();
 
 	this	-> inputRate		= Khz (2048);
 
@@ -74,7 +74,7 @@
 //
 //	From here we have a library available
 
-	vfoFrequency	= Khz (220000);
+	lastFrequency	= Khz (220000);
 //
 //	See if there are settings from previous incarnations
 	hackrfSettings		-> beginGroup ("hackrfSettings");
@@ -98,20 +98,42 @@
 	       hackrfSettings -> value ("save_gainSettings", 1). toInt () != 0;
 	hackrfSettings	-> endGroup();
 //
-	check_error (hackrf_init () == HACKRF_SUCCESS, "init failed");
-	check_error (hackrf_open (&theDevice) == HACKRF_SUCCESS,
-	                                               "open failure");
-	check_error (hackrf_set_sample_rate (theDevice, 2048000.0) == HACKRF_SUCCESS, "error setting samplerate");
-	check_error (hackrf_set_baseband_filter_bandwidth (theDevice,
-	                                                        1750000) == HACKRF_SUCCESS, "failure setting bandwidth");
-	check_error (hackrf_set_freq (theDevice, 220000000) == HACKRF_SUCCESS,
-	                               "failure setting frequency");
+	if (hackrf_init () != HACKRF_SUCCESS) {
+	   delete  library_p;
+	   throw (hackrf_exception ("init failed"));
+	}
+
+	if (hackrf_open (&theDevice) != HACKRF_SUCCESS) {
+	   delete library_p;
+	   throw (hackrf_exception ("open failure"));
+	}
+
+	if (hackrf_set_sample_rate (theDevice, 2048000.0) != HACKRF_SUCCESS) {
+	   delete library_p;
+	   throw (hackrf_exception ("error setting samplerate"));
+	}
+
+	int test = hackrf_set_baseband_filter_bandwidth (theDevice, 1750000);
+	if (test != HACKRF_SUCCESS) {
+	   delete library_p;
+	   throw (hackrf_exception ("failure setting bandwidth"));
+	}
+
+	if (hackrf_set_freq (theDevice, 220000000) != HACKRF_SUCCESS) {
+	   delete library_p;
+	   throw (hackrf_exception ("failure setting frequency"));
+	}
 
 	uint16_t regValue;
-	check_error (hackrf_si5351c_read (theDevice, 162, &regValue) == HACKRF_SUCCESS,
-	                               "failure reading board name");
+	test = hackrf_si5351c_read (theDevice, 162, &regValue);
+	if (test != HACKRF_SUCCESS) {
+	   delete library_p;
+	   throw (hackrf_exception ("failure reading board name"));
+	}
+
 	int res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
 	if (res != HACKRF_SUCCESS) {
+	   delete library_p;
 	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
@@ -182,10 +204,6 @@
 	this	-> hackrf_exit();
 }
 //
-
-int32_t	hackrfHandler::getVFOFrequency() {
-	return vfoFrequency;
-}
 
 void	hackrfHandler::handle_LNAGain	(int newGain) {
 int	res;
@@ -293,7 +311,7 @@ int	res;
 	if (running. load())
 	   return true;
 
-	vfoFrequency	= freq;
+	lastFrequency	= freq;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 	
@@ -337,19 +355,19 @@ int	res;
 	}
 
 	if (save_gainSettings)
-	   record_gainSettings	(vfoFrequency / MHz (1));
+	   record_gainSettings	(lastFrequency / MHz (1));
 	running. store (false);
 }
 
 //
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
-int32_t	hackrfHandler::getSamples (Complex *V, int32_t size) { 
+int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
 std::complex<int8_t> temp [size];
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
-	   V [i] = Complex (real (temp [i]) / 127.0f,
-	                    imag (temp [i]) / 127.0f);
+	   V [i] = std::complex<float> (real (temp [i]) / 127.0f,
+	                                      imag (temp [i]) / 127.0f);
 	if (dumping. load ())
 	   xmlWriter -> add (temp, amount);
 	return amount;
@@ -577,7 +595,7 @@ QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
 	                                      8,
 	                                      "int8",
 	                                      2048000,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "Hackrf",
 	                                      "--",
 	                                      recorderVersion);
@@ -660,9 +678,3 @@ QString	theValue	= "";
 	   usleep (1000);
 	AmpEnableButton	-> blockSignals (false);
 }
-
-void	hackrfHandler::check_error (bool b, const std::string s) {
-	if (!b)
-	   throw hackrf_exception (s);
-}
-

@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 2.8.11 )
-set (objectName qt-dab-5.4)
+set (objectName qt-dab-5.5)
 set (CMAKE_CXX_FLAGS "${CMAKE_XCC_FLAGS} -Wall -std=c++14 -flto")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
@@ -188,7 +188,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	           ./support
 	           ..
 	           ./forms-v5/iq-scope
-	           ../fft
 	           ../includes
 	           ../includes/ofdm
 	           ../includes/protection
@@ -223,8 +222,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ./radio.h
 	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
-	     ../fft/fft-handler.h 
-	     ../fft/fft-complex.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
 	     ../includes/crc-handlers.h
@@ -280,6 +277,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
+	     ../includes.support/fft-handler.h 
 	     ../includes/support/converter_48000.h
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
@@ -304,7 +302,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
-	     ,,.includes/support/converted_map.h
 	     ../src/support/tii-library/tii-codes.h
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
@@ -341,8 +338,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ./forms-v5/iq-scope/iqdisplay.cpp
 	     ./support/techdata.cpp
 	     ../ofdm-handler.cpp
-	     ../fft/fft-handler.cpp 
-	     ../fft/fft-complex.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
 	     ../src/ofdm/ofdm-decoder.cpp
@@ -389,6 +384,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/output/fir-filters.cpp
+	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
@@ -747,26 +743,26 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	if (PLUTO)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
-	        ../qt-devices/pluto-handler-2/pluto-widget.ui
+	        ../qt-devices/pluto-handler/pluto-widget.ui
 	   )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.h
+	        ../qt-devices/pluto-handler/pluto-handler.h
 	   )
 
 	   include_directories (
-	     ../qt-devices/pluto-handler-2
+	     ../qt-devices/pluto-handler
 	   )
 
 	   set ($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.h
+	        ../qt-devices/pluto-handler/pluto-handler.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/pluto-handler-2/pluto-handler.cpp
+	        ../qt-devices/pluto-handler/pluto-handler.cpp
 	   )
 
 	   add_definitions (-DHAVE_PLUTO)

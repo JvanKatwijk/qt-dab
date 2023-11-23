@@ -20,8 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__XML_FILEREADER__
-#define	__XML_FILEREADER__
+#pragma once
 
 #include	<QObject>
 #include	<QString>
@@ -40,7 +39,7 @@ class	xml_Reader;
 class	xml_fileReader: public QObject, public deviceHandler, public Ui_xmlfile_widget {
 Q_OBJECT
 public:
-				xml_fileReader	(QString);
+				xml_fileReader	();
                 		~xml_fileReader	();
 	int32_t			getSamples	(std::complex<float> *,
 	                                                         int32_t);
@@ -57,10 +56,9 @@ private:
 	uint32_t		filePointer;
 	xmlDescriptor		*theDescriptor;
 	xml_Reader		*theReader;
+	QString			getFileName	();
 public slots:
 	void			setProgress	(int, int);
 	void			handle_continuousButton ();
 };
-
-#endif
 

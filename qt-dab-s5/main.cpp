@@ -32,7 +32,6 @@
 #include        "dab-constants.h"
 #include        "radio.h"
 #define DEFAULT_INI     ".qt-dab.ini"
-#define	PRESETS		".qt-dab-presets.xml"
 #define	SCHEDULE	".qt-dab-schedule"
 #ifndef	GITHASH
 #define	GITHASH	"      "
@@ -73,7 +72,6 @@ RadioInterface  *MyRadioInterface;
 
 // Default values
 QSettings       *dabSettings;           // ini file
-QString		presetName	= PRESETS;
 int32_t		dataPort	= 8888;
 int32_t		clockPort	= 8889;
 int     opt;
@@ -125,11 +123,10 @@ QTranslator	theTranslator;
 
 	dabSettings =  new QSettings (initFileName, QSettings::IniFormat);
 
-	QString presets = QDir::homePath();
-	presets. append ("/");
-	presets. append (presetName);
-	presets = QDir::toNativeSeparators (presets);
-
+        QString presetFile = QDir::homePath () + "/" + ".qt-dab-presets.xml";
+        presetFile      = QDir::toNativeSeparators (presetFile);
+        QString scanListFile = QDir::homePath () + "/.qt-scanList.xml";
+        scanListFile    = QDir::toNativeSeparators (scanListFile);
 /*
  *      Before we connect control to the gui, we have to
  *      instantiate
@@ -138,7 +135,7 @@ QTranslator	theTranslator;
 	QGuiApplication::setAttribute (Qt::AA_EnableHighDpiScaling);
 #endif
 
-	QString skin    = dabSettings -> value ("skin", "Obit"). toString ();
+	QString skin    = dabSettings -> value ("skin", "Darkeum"). toString ();
 
 	skin    = skin == "Combinear" ? ":res/Combinear.qss" :
 	          skin == "Adaptic"   ? ":res/Adaptic.qss" :
@@ -162,7 +159,8 @@ QTranslator	theTranslator;
 	a. setWindowIcon (QIcon ("./qt-dab-5.ico"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
-	                                       presets,
+	                                       scanListFile,
+	                                       presetFile,
 	                                       freqExtension,
 	                                       scheduleFile,
 	                                       error_report,

@@ -75,7 +75,7 @@ std::string errorMessage (int errorCode) {
 }
 
 	sdrplayHandler_v3::sdrplayHandler_v3  (QSettings *s,
-	                                       QString &recorderVersion):
+	                                       const QString &recorderVersion):
 	                                          _I_Buffer (4 * 1024 * 1024) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
@@ -143,7 +143,7 @@ std::string errorMessage (int errorCode) {
 	connect (biasT_selector, SIGNAL (stateChanged (int)),	
 	         this, SLOT (set_biasT (int)));
 
-	vfoFrequency	= MHz (220);
+	lastFrequency	= MHz (220);
 	theGain		= -1;
 	debugControl	-> hide ();
 	failFlag. store (false);
@@ -187,20 +187,13 @@ std::string errorMessage (int errorCode) {
 //	Implementing the interface
 /////////////////////////////////////////////////////////////////////////
 
-int32_t	sdrplayHandler_v3::defaultFrequency	() {
-	return Mhz (220);
-}
-
-int32_t	sdrplayHandler_v3::getVFOFrequency() {
-	return vfoFrequency;
-}
 
 bool	sdrplayHandler_v3::restartReader	(int32_t newFreq) {
 restartRequest r (newFreq);
 
         if (receiverRuns. load ())
            return true;
-        vfoFrequency    = newFreq;
+        lastFrequency    = newFreq;
 	return messageHandler (&r);
 }
 
@@ -399,7 +392,7 @@ QString saveDir = sdrplaySettings -> value ("saveDir_xmlDump",
 	                                      nrBits,
 	                                      "int16",
 	                                      2048000,
-	                                      vfoFrequency,
+	                                      lastFrequency,
 	                                      "SDRplay",
 	                                      "????",
 	                                      recorderVersion);

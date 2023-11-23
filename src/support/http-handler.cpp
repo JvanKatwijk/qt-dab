@@ -46,8 +46,6 @@
 #include	"http-handler.h"
 #include	"radio.h"
 
-#include	"converted_map.h"
-
 	httpHandler::httpHandler (RadioInterface *parent,
 	                          const QString & mapPort,
 	                          const QString &browserAddress,
@@ -114,7 +112,7 @@ void	httpHandler::run	() {
 char	buffer [4096];
 bool	keepalive;
 char	*url;
-int one = 1, ClientSocket, ListenSocket;
+int one = 1, ClientSocket = 0, ListenSocket = 0;
 struct sockaddr_in svr_addr, cli_addr;
 std::string	content;
 std::string	ctype;

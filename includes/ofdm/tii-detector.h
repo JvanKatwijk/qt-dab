@@ -48,11 +48,7 @@ private:
 	int16_t		depth;
 	uint8_t		invTable [256];
 	std::vector<Complex >	theBuffer;
-#if USE_DOUBLE
-	std::vector<double>	window;
-#else
-	std::vector<float>	window;
-#endif
+	std::vector<FLOAT>	window;
 };
 
 

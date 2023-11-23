@@ -25,9 +25,7 @@
 	deviceHandler::deviceHandler	():
 	   myFrame (nullptr) {
 	lastFrequency	= 100000;
-	vfoOffset	= 0;
 	theGain		= 50;
-	coarseOffset	= 0;
 }
 
 	deviceHandler::~deviceHandler	() {
@@ -41,7 +39,7 @@ bool	deviceHandler::restartReader	(int32_t freq) {
 void	deviceHandler::stopReader	() {
 }
 
-int32_t	deviceHandler::getSamples	(Complex *v, int32_t amount) {
+int32_t	deviceHandler::getSamples	(std::complex<float> *v, int32_t amount) {
 	(void)v; 
 	(void)amount; 
 	return amount;
@@ -65,10 +63,6 @@ bool	deviceHandler::getVisibility	() {
 	return !myFrame. isHidden ();
 }
 
-int	deviceHandler::adjustFrequency	(int offset) {
-	return offset;
-}
-
 QString	deviceHandler::deviceName	() {
 	return "";
 }
@@ -76,13 +70,4 @@ QString	deviceHandler::deviceName	() {
 bool	deviceHandler::isFileInput	() {
 	return false;
 }
-
-//QPoint	deviceHandler::get_coords	() {
-//	return myFrame. mapToGlobal (QPoint (0, 0));
-//}
-//
-//void	deviceHandler::moveTo		(QPoint p) {
-//	myFrame. move (p);
-//}
-
 

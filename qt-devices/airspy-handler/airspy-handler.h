@@ -89,13 +89,12 @@ class airspyHandler: public QObject,
 	              public deviceHandler, public Ui_airspyWidget {
 Q_OBJECT
 public:
-			airspyHandler		(QSettings *, QString);
+			airspyHandler		(QSettings *, const QString &);
 			~airspyHandler		();
-	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(Complex *v, int32_t size);
+	int32_t		getSamples		(std::complex<float> *v, int32_t size);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
@@ -103,7 +102,7 @@ public:
 	QString		deviceName		();
 	int16_t		currentTab;
 private:
-	RingBuffer<Complex> _I_Buffer;
+	RingBuffer<std::complex<float>> _I_Buffer;
 	QString		recorderVersion;
 	void		check_error		(bool, const std::string);
 	FILE            *xmlDumper;
@@ -111,7 +110,6 @@ private:
         bool            setup_xmlDump           ();
         void            close_xmlDump           ();
         std::atomic<bool> dumping;
-	int		vfoFrequency;
 	void		record_gainSettings	(int, int);
 	void		restore_gainSliders	(int, int);
 	void		restore_gainSettings	(int);
@@ -176,7 +174,7 @@ const	char*		board_id_name();
 	int32_t		selectedRate;
 	int16_t		convBufferSize;
 	int16_t		convIndex;
-	std::vector <Complex >	convBuffer;
+	std::vector <std::complex<float> >	convBuffer;
 	int16_t		mapTable_int   [4 * 512];
 	float		mapTable_float [4 * 512];
 	QSettings	*airspySettings;

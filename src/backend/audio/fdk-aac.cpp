@@ -42,8 +42,8 @@
 	handle			= aacDecoder_Open (TT_MP4_LOAS, 1);
 	if (handle == nullptr)
 	   return;
-	connect (this, SIGNAL (newAudio (int, int)),
-	         mr, SLOT (newAudio (int, int)));
+	connect (this, SIGNAL (newAudio (int, int, bool, bool)),
+	         mr, SLOT (newAudio (int, int, bool, bool)));
 	working			= true;
 }
 
@@ -100,7 +100,8 @@ int		output_size	= 8 * 2048;
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
-              newAudio (info -> frameSize, info -> sampleRate);
+              newAudio (info -> frameSize, info -> sampleRate,
+                        sp -> psFlag, sp -> sbrFlag);
         }
         else
         if (info -> numChannels == 1) {
@@ -113,7 +114,9 @@ int		output_size	= 8 * 2048;
            audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
-              newAudio (info -> frameSize, info -> sampleRate);
+              newAudio (info -> frameSize, info -> sampleRate,
+                        sp   ->  psFlag, sp   ->  sbrFlag);
+
         }
         else
            fprintf (stderr, "Cannot handle these channels\n");

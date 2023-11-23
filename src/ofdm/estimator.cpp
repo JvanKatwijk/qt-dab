@@ -71,7 +71,7 @@ Complex temp [params. get_T_u ()];
 	   Phi_k =  get_Phi (i);
 	   temp [i] = Complex (cos (Phi_k), sin (Phi_k));
 	   Phi_k = get_Phi (-i);
-	   temp [T_u - i] = Complex (cos (Phi_k), sin (Phi_k));
+	   temp [T_u - i] = std::complex<float> (cos (Phi_k), sin (Phi_k));
 	}
 //
 //	and organized as -inf ..0 .. inf
@@ -117,7 +117,7 @@ Complex temp [params. get_T_u ()];
 	      F_p (pilotIndex, tap) =
 	         createExp (2 * M_PI *
 	             (fftSize / 2 + pilotTable [pilotIndex]) * tap / fftSize) /
-	                                         (float)(sqrt (fftSize));
+	                                         (FLOAT)(sqrt (fftSize));
 	}
 	A_p	= S_p * F_p;
 	A_p_inv = A_p. transpose () * (A_p * A_p. transpose ()). inverse ();
@@ -136,8 +136,9 @@ Vector  X_p  (numberofPilots);
 	fft_forward. fft (v);
 //
 //	Note that the fft result is in the "wrong" order
-        for (int index = 0; index < numberofPilots; index ++)
+        for (int index = 0; index < numberofPilots; index ++) {
            X_p (index) = v [(T_u / 2 + pilotTable [index]) % T_u];
+	}
 
 //
 ////    Ok, the matrices are filled, now computing the channelvalues
@@ -145,6 +146,7 @@ Vector  X_p  (numberofPilots);
         H_fd    = F_p * h_td;
 //
         for (int index = 0; index < numberofPilots; index ++)
-           resultRow [index] = H_fd (index);
+           resultRow [index] = Complex (real (H_fd (index)),
+	                                imag (H_fd (index)));
 }
 

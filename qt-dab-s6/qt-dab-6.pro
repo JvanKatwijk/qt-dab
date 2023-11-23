@@ -14,12 +14,12 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -28,11 +28,6 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
 RC_ICONS	=  qt-dab-6.ico
 RESOURCES	+= resources.qrc
-
-#
-#	choose one of the FFT handler. If none is selected
-#	a default function is used.
-CONFIG		+= fftw_fft
 
 TRANSLATIONS = ../i18n/de_DE.ts
 
@@ -51,7 +46,6 @@ DEPENDPATH += . \
 	      ./support \
 	      ./forms-v6/new-display \
 	      ./forms-v6/new-display/scopes \
-	      ../fft \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -93,7 +87,6 @@ INCLUDEPATH += . \
 	      ./forms-v6/new-display \
 	      ./forms-v6/new-display/scopes \
 	      ../ \
-	      ../fft \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -131,8 +124,6 @@ HEADERS += ./radio.h \
 	   ./forms-v6/new-display/scopes/waterfall-scope.h \
 	   ./forms-v6/new-display/scopes/iqdisplay.h \
 	   ../ofdm-handler.h \
-	   ../fft/fft-handler.h \
-	   ../fft/fft-complex.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
 	   ../includes/bit-extractors.h \
@@ -190,6 +181,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/fft-handler.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
 	   ../includes/support/viterbi-jan/viterbi-handler.h \
@@ -228,6 +220,7 @@ HEADERS += ./radio.h \
 	   ../includes/scopes-qwt6/audio-display.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
+	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
 	   ../qt-devices/rawfiles-new/rawfiles.h \
@@ -260,8 +253,6 @@ SOURCES += ./main.cpp \
            ./forms-v6/new-display/scopes/dev-scope.cpp \
            ./forms-v6/new-display/scopes/waterfall-scope.cpp \
 	   ./forms-v6/new-display/scopes/iqdisplay.cpp \
-	   ../fft/fft-handler.cpp \
-	   ../fft/fft-complex.cpp \
 	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -314,7 +305,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
-#           ../src/support/fft-handler.cpp \
+	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
 	   ../src/support/band-handler.cpp \
 	   ../src/support/dab-tables.cpp \
@@ -346,6 +337,7 @@ SOURCES += ./main.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
+	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
 	   ../qt-devices/rawfiles-new/rawfiles.cpp \
 	   ../qt-devices/rawfiles-new/raw-reader.cpp \
@@ -358,7 +350,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.25
+TARGET		= qt-dab-6.30
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -402,23 +394,26 @@ INCLUDEPATH	+= /usr/local/include
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-
+CONFIG		+= double
+#CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
 CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
-CONFIG		+= dabstick-generic
+CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
-#CONFIG		+= pluto
-CONFIG		+= pluto-2
-CONFIG		+= faad
-#CONFIG		+= fdk-aac
+CONFIG		+= pluto
+CONFIG		+= uhd
+CONFIG		+= colibri
+CONFIG		+= elad-device
+#CONFIG		+= faad
+CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
@@ -454,7 +449,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-6.25
+#	TARGET		= qt-dab64-6.30
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -466,7 +461,7 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= rtl_tcp
 #	CONFIG		+= dabstick
 #	CONFIG		+= sdrplay-v2
-#	CONFIG		+= pluto-2
+#	CONFIG		+= pluto
 #	CONFIG		+= sdrplay-v3
 ##	CONFIG		+= hackrf
 ##	CONFIG		+= lime
@@ -474,26 +469,27 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6-V3
-#	TARGET		= qt-dab32-6.25
+#	TARGET		= qt-dab32-6-V3
+	TARGET		= qt-dab32-6.30
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
+CONFIG		+= double
+#CONFIG		+= single
 	CONFIG		+= estimator
 	CONFIG		+= mapserver
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-win-V3
-#	CONFIG		+= dabstick-win
+#	CONFIG		+= dabstick-win-V3
+	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-#	CONFIG		+= pluto
+	CONFIG		+= pluto
 #	CONFIG		+= pluto-rxtx
-	CONFIG		+= pluto-2
 	CONFIG		+= NO_SSE
 	CONFIG		+= preCompiled
 #	CONFIG		+= tiiLib
@@ -504,7 +500,6 @@ LIBS		+= -lportaudio
 LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
 LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 LIBS		+= -lole32
-LIBS		+= -lfftw3f
 LIBS		+= -lwinpthread
 LIBS		+= -lwinmm
 LIBS 		+= -lstdc++
@@ -530,16 +525,17 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 }
 
 #	dabstick
-
-dabstick-generic {
+#	Note: the windows version is bound to the dll, the
+#	linux version loads the function from the so
+dabstick-linux {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-generic
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-generic
-	HEADERS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
+	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
 dabstick-win {
@@ -704,20 +700,10 @@ pluto	{
 	DEFINES		+= HAVE_PLUTO
 	QT		+= network
 	INCLUDEPATH	+= ../qt-devices/pluto-handler
+	HEADERS		+= ../qt-devices/pluto-handler/dabFilter.h
 	HEADERS		+= ../qt-devices/pluto-handler/pluto-handler.h
-	SOURCES		+= ../qt-devices/pluto-handler/pluto-handler.cpp 
+	SOURCES		+= ../qt-devices/pluto-handler/pluto-handler.cpp
 	FORMS		+= ../qt-devices/pluto-handler/pluto-widget.ui
-	LIBS		+= -liio -lad9361
-}
-
-pluto-2	{
-	DEFINES		+= HAVE_PLUTO
-	QT		+= network
-	INCLUDEPATH	+= ../qt-devices/pluto-handler-2
-	HEADERS		+= ../qt-devices/pluto-handler-2/dabFilter.h
-	HEADERS		+= ../qt-devices/pluto-handler-2/pluto-handler.h
-	SOURCES		+= ../qt-devices/pluto-handler-2/pluto-handler.cpp
-	FORMS		+= ../qt-devices/pluto-handler-2/pluto-widget.ui
 }
 
 elad-device	{
@@ -733,6 +719,28 @@ elad-device	{
 	FORMS		+= ../qt-devices/elad-s1-handler/elad-widget.ui
 }
 
+uhd	{
+	DEFINES		+= HAVE_UHD
+	DEPENDPATH	+= ../qt-devices/uhd
+	INCLUDEPATH	+= ../qt-devices/uhd
+	HEADERS		+= ../qt-devices/uhd/uhd-handler.h
+	SOURCES		+= ../qt-devices/uhd/uhd-handler.cpp
+	FORMS		+= ../qt-devices/uhd/uhd-widget.ui
+	LIBS		+= -luhd
+}
+
+colibri	{
+	DEFINES		+= HAVE_COLIBRI
+	DEPENDPATH	+= ../qt-devices/colibri-handler
+	INCLUDEPATH	+= ../qt-devices/colibri-handler
+	HEADERS		+= ../qt-devices/colibri-handler/common.h
+	HEADERS		+= ../qt-devices/colibri-handler/LibLoader.h
+	HEADERS		+= ../qt-devices/colibri-handler/colibri-handler.h
+	SOURCES		+= ../qt-devices/colibri-handler/LibLoader.cpp
+	SOURCES		+= ../qt-devices/colibri-handler/colibri-handler.cpp
+	FORMS		+= ../qt-devices/colibri-handler/colibri-widget.ui
+}
+	
 send_datagram {
 	DEFINES		+= _SEND_DATAGRAM_
 	QT		+= network
@@ -841,25 +849,9 @@ tiiLib	{
 mapserver {
 	DEFINES		+= __HAVE_MAP_SERVER__
 	HEADERS		+= ../includes/support/http-handler.h
-	HEADERS		+= ../includes/support/converted_map.h
 	SOURCES		+= ../src/support/http-handler.cpp
 }
 
-
-kiss_fft {
-	DEFINES		+= __KISS_FFT__
-	HEADERS		+= ../fft/kiss_fft.h \
-	                   ../fft/kiss_fftr.h \
-	                   ../fft/_kiss_fft_guts.h 
-	SOURCES		+= ../fft/kiss_fft.c \
-	                   ../fft/kiss_fftr.c \
-}
-
-fftw_fft {
-	DEFINES		+= __FFTW3__
-	PKGCONFIG	+= fftw3
-	LIBS		+= -lfftw3f
-}
 
 estimator {
 	DEFINES		+= __ESTIMATOR_
@@ -868,3 +860,13 @@ estimator {
 	SOURCES		+= ../src/ofdm/estimator.cpp
 }
 
+double	{
+	DEFINES		+= __WITH_DOUBLES__
+	DEFINES		+= __FFTW3__
+	LIBS		+= -lfftw3
+}
+
+single	{
+	DEFINES		+= __FFTW3__
+	LIBS		+= -lfftw3f
+}

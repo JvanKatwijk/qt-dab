@@ -115,7 +115,7 @@ void	run () {
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
-	                              QString &recorderVersion):
+	                              const QString &recorderVersion):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
@@ -293,9 +293,6 @@ char	manufac [256], product [256], serial [256];
 	delete phandle;
 }
 
-int32_t	rtlsdrHandler::getVFOFrequency() {
-	return (int32_t)(this -> rtlsdr_get_center_freq (theDevice));
-}
 //
 void	rtlsdrHandler::set_filter	(int c) {
 	(void)c;
@@ -309,6 +306,7 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
+	lastFrequency	= freq;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
@@ -685,7 +683,7 @@ QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
 	                                      8,
 	                                      "uint8",
 	                                      2048000,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "rtlsdr",
 	                                      deviceModel,
 	                                      recorderVersion);

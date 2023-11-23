@@ -41,6 +41,8 @@
 #include        "band-handler.h"
 #include	"process-params.h"
 #include	"converter_48000.h"
+#include	"scanlist-handler.h"
+#include	"preset-handler.h"
 #include	"dl-cache.h"
 #include	"content-table.h"
 #include	<memory>
@@ -48,11 +50,11 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
-#include	"preset-handler.h"
 //#include	"scanner-table.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"
 
+#include	"device-chooser.h"
 #include	"display-widget.h"
 #include	"snr-viewer.h"
 
@@ -68,7 +70,6 @@ class	ofdmHandler;
 class	deviceHandler;
 class	audioPlayer;
 class	common_fft;
-class	scanListHandler;
 class	timeTableHandler;
 class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
@@ -118,6 +119,7 @@ public:
 	bool		etiActive;
 	int		serviceCount;
 	int		frequency;
+	int		tunedFrequency;
 	QString		ensembleName;
 	uint8_t		mainId;
 	uint8_t		subId;
@@ -165,6 +167,7 @@ public:
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -192,7 +195,6 @@ private:
 
 	displayWidget		newDisplay;
 	snrViewer		my_snrViewer;
-	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
@@ -202,6 +204,11 @@ private:
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;
 	converter_48000		audioConverter;
+
+	scanListHandler		my_scanListHandler;
+	presetHandler		my_presetHandler;
+	deviceChooser		chooseDevice;
+
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -304,8 +311,6 @@ private:
 	void			hideButtons		();
 	void			showButtons		();
 	deviceHandler		*create_device		(const QString &);
-	scanListHandler		*my_scanList;
-	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 
 	void			start_etiHandler	();
@@ -360,7 +365,6 @@ private:
 	void			show_for_safety		();
 //
 //	short hands
-	void                    new_presetIndex         (int);
 	void                    new_channelIndex        (int);
 
 	std::mutex		locker;
@@ -393,7 +397,7 @@ public slots:
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();
-	void			newAudio		(int, int);
+	void			newAudio		(int, int, bool, bool);
 //
 	
 	void			setStereo		(bool);
@@ -416,7 +420,8 @@ public slots:
 	void			switchVisibility	(QWidget *);
 	void			nrServices		(int);
 
-	void			handle_presetSelector	(const QString &);
+	void			handle_presetSelect	(const QString &,
+	                                                 const QString &);
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
@@ -438,6 +443,7 @@ private slots:
 	void			handle_clearScan_Selector	(int);
 
 	void			handle_scanListButton	();
+	void			handle_presetButton	();
 	void			handle_sourcedumpButton	();
 	void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
@@ -476,6 +482,7 @@ private slots:
 	void			color_detailButton	();
 	void			color_resetButton	();
 	void			color_scanButton	();
+	void			color_presetButton	();
 	void			color_spectrumButton	();
 	void			color_snrButton		();
 	void			color_devicewidgetButton	();

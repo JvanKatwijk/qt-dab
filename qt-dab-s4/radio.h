@@ -21,8 +21,7 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __RADIO__
-#define __RADIO__
+#pragma once
 
 #include	"dab-constants.h"
 #include	<QMainWindow>
@@ -42,6 +41,9 @@
 #include        "band-handler.h"
 #include	"process-params.h"
 #include	"converter_48000.h"
+#include        "scanlist-handler.h"
+#include        "preset-handler.h"
+
 #include	"dl-cache.h"
 #include	"tii-codes.h"
 #include	"content-table.h"
@@ -50,10 +52,9 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
-#include	"preset-handler.h"
-//#include	"scanner-table.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"
+#include	"device-chooser.h"
 
 #include	"spectrum-viewer.h"
 #include	"tii-viewer.h"
@@ -71,7 +72,6 @@ class	ofdmHandler;
 class	deviceHandler;
 class	audioSink;
 class	common_fft;
-class	scanListHandler;
 class	timeTableHandler;
 class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
@@ -114,6 +114,7 @@ public:
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
+	                                 const QString	&,
 	                                 bool,
 	                                 int32_t	dataPort,
 	                                 int32_t	clockPort,
@@ -138,7 +139,6 @@ private:
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
 	snrViewer		my_snrViewer;
-	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
@@ -147,6 +147,11 @@ private:
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	converter_48000		audioConverter;
+
+        scanListHandler         my_scanListHandler;
+	presetHandler		my_presetHandler;
+	deviceChooser		chooseDevice;
+
 	audioDisplay		*the_audioDisplay;
 	httpHandler		*mapHandler;
 	bool			epgFlag;
@@ -160,6 +165,7 @@ private:
 	FILE			*logFile;
 	void			LOG		(const QString &,
 	                                           const QString &);
+	int32_t		tunedFrequency;
 	int			serviceOrder;
 	bool			error_report;
 	Ui_technical_data	techData;
@@ -250,8 +256,6 @@ private:
 	void			hideButtons		();
 	void			showButtons		();
 	deviceHandler		*create_device		(const QString &);
-	scanListHandler		*my_scanList;
-	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 //
 	QString			checkDir		(const QString);
@@ -356,7 +360,7 @@ public slots:
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();
-	void			newAudio		(int, int);
+	void			newAudio		(int, int, bool, bool);
 //
 	void			setStereo		(bool);
 	void			set_streamSelector	(int);
@@ -388,7 +392,8 @@ public slots:
 	void			switchVisibility	(QWidget *);
 	void			nrServices		(int);
 
-	void			handle_presetSelector	(const QString &);
+	void			handle_presetSelect	(const QString &,
+	                                                 const QString &);
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
@@ -418,6 +423,7 @@ private slots:
 	void			newDevice		(const QString &);
 
 	void			handle_scanListButton	();
+	void			handle_presetButton	();
         void			handle_sourcedumpButton	();
         void			handle_framedumpButton	();
 	void			handle_audiodumpButton 	();
@@ -455,6 +461,7 @@ private slots:
 	void			color_detailButton	();
 	void			color_resetButton	();
 	void			color_scanButton	();
+	void			color_presetButton	();
 	void			color_tiiButton		();
 	void			color_correlationButton	();
 	void			color_spectrumButton	();
@@ -494,4 +501,3 @@ private slots:
 	void			handle_skinSelector		();
 	void			loadTable			();
 };
-#endif

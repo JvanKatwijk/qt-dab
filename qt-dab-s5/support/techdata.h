@@ -73,7 +73,8 @@ public slots:
 	void		show_rsCorrections	(int, int);
 	void		show_timetableButton	(bool);
 	void		show_frameDumpButton	(bool);
-	void		show_serviceName	(const QString &);
+	void		show_serviceName	(const QString &,
+	                                             const QString &);
 	void		show_serviceId		(int);
 	void		show_bitRate		(int);
 	void		show_subChId		(int);
@@ -84,7 +85,7 @@ public slots:
 	void		show_uep		(int, int);
 	void		show_codeRate		(int, int);
 	void		show_fm			(int);
-	void		showRate		(int);
+	void		show_rate		(int, bool, bool);
 
 	void		hideMissed		();
 	void		showMissed		(int);

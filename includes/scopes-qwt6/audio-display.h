@@ -66,7 +66,7 @@ private:
 	int16_t		spectrumSize;
 	double		displayBuffer [512];
 	Complex		*spectrumBuffer;
-	float		Window [4 * 512];
+	FLOAT		Window [4 * 512];
 	fftHandler	fft;
 	QwtPlotPicker   *lm_picker;
 	QColor		displayColor;

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>316</width>
-    <height>894</height>
+    <width>303</width>
+    <height>897</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Technical Details</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_5">
      <item>
@@ -165,30 +165,13 @@
       </widget>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>audiorate</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QLCDNumber" name="audioRate">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audible audio runs at 48000 Ss. Some services deliver lower samplerates, these samplerates - shown here - are transformed into 48000 &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Flat</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
         <string>rs corrections/100</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="5" column="1">
       <widget class="QLCDNumber" name="rsCorrections">
        <property name="toolTip">
         <string>The number of corrections made by the reed-solomon algorithm over 10 DAB+ frames (so the number does not relate to the classic DAB/MP2 frames)</string>
@@ -201,14 +184,14 @@
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="label_11">
        <property name="text">
         <string>ec errors </string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="6" column="1">
       <widget class="QLCDNumber" name="ecCorrections">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;RS decoding/recovery uses parity bits. If, however, a parity bit is faulty, recovery of errors may lead to introducing errors. The crc check following the recovery should reveal that.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -221,14 +204,14 @@
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="missedLabel">
        <property name="text">
         <string>audio % OK</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="7" column="1">
       <widget class="QLCDNumber" name="missedSamples">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The audiohandler runs with its own clock. If less than the requested number of&lt;/p&gt;&lt;p&gt;audiosamples is passed on, the percentage = shown here - will drop accordingly.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -407,56 +390,80 @@
     </layout>
    </item>
    <item>
-    <widget class="QwtThermo" name="thermoLeft">
-     <property name="lowerBound">
-      <double>-20.000000000000000</double>
-     </property>
-     <property name="upperBound">
-      <double>4.000000000000000</double>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QwtThermo" name="thermoLeft">
+       <property name="lowerBound">
+        <double>-20.000000000000000</double>
+       </property>
+       <property name="upperBound">
+        <double>4.000000000000000</double>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QwtThermo" name="thermoRight">
+       <property name="lowerBound">
+        <double>-20.000000000000000</double>
+       </property>
+       <property name="upperBound">
+        <double>4.000000000000000</double>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
    <item>
-    <widget class="QwtThermo" name="thermoRight">
-     <property name="lowerBound">
-      <double>-20.000000000000000</double>
+    <widget class="QLabel" name="motAvailable">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-     <property name="upperBound">
-      <double>4.000000000000000</double>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slide show indicator&lt;/p&gt;&lt;p&gt;Green means MOT frames are received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+     <property name="text">
+      <string>mot available</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="label_7">
+      <widget class="QLabel" name="psLabel">
        <property name="text">
-        <string>MOT Decoding</string>
+        <string>ps</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="motAvailable">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Slide show indicator&lt;/p&gt;&lt;p&gt;Green means MOT frames are received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
+      <widget class="QLabel" name="sbrLabel">
        <property name="text">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; color:#ffffff;&quot;&gt;MOT&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>sbr</string>
        </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLCDNumber" name="audioRate">
+       <property name="frameShape">
+        <enum>QFrame::NoFrame</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Plain</enum>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Flat</enum>
        </property>
       </widget>
      </item>

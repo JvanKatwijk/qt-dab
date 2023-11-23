@@ -49,7 +49,7 @@ void    constrain (float &testVal, const float limit) {
 
 static
 Complex oscillatorTable [INPUT_RATE];
-constexpr float ALPHA = 100.0f / INPUT_RATE;
+constexpr float ALPHA = 1.0f / INPUT_RATE;
 
 	sampleReader::sampleReader (RadioInterface *mr,
 	                            deviceHandler	*theRig_i,
@@ -58,8 +58,6 @@ constexpr float ALPHA = 100.0f / INPUT_RATE;
 	                               spectrumBuffer (spectrumBuffer_i) {
 int	i;
 	bufferSize		= 32768;
-	connect (this, &sampleReader::show_spectrum,
-	         mr,  &RadioInterface::show_spectrum);
 	localBuffer. resize (bufferSize);
 	localCounter		= 0;
 	currentPhase	= 0;
@@ -79,6 +77,8 @@ int	i;
 	dumpIndex	= 0;
 	peakValue	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
+	connect (this, &sampleReader::show_spectrum,
+	         mr,  &RadioInterface::show_spectrum);
 	running. store (true);
 }
 
@@ -104,11 +104,15 @@ void	sampleReader::get_samples (std::vector<Complex>  &v_out,
 	                           int index,
 	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
-Complex buffer [nrSamples];
+std::complex<float> buffer [nrSamples];
 
 	corrector	= phaseOffset;
+//
+//	if we get a kill signal, do the kill
 	if (!running. load())
 	   throw 21;
+//
+//	wait for samples
 	if (nrSamples > bufferContent) {
 	   bufferContent = theRig -> Samples();
 	   while ((bufferContent < nrSamples) && running. load()) {
@@ -123,6 +127,8 @@ Complex buffer [nrSamples];
 //	so here, bufferContent >= n
 	nrSamples	= theRig -> getSamples (buffer, nrSamples);
 	bufferContent	-= nrSamples;
+//
+//	if dumping is "on" dump
 	if (dumpfilePointer. load () != nullptr) {
 	   for (int i = 0; i < nrSamples; i ++) {
 	      dumpBuffer [2 * dumpIndex    ] = real (buffer [i]) * dumpScale;
@@ -135,13 +141,16 @@ Complex buffer [nrSamples];
 	   }
 	}
 //	OK, we have samples!!
-//	RFDc	= Complex (0, 0);
+	RFDc	= Complex (0, 0);
 	for (int i = 0; i < nrSamples; i ++) {
-	   Complex v = buffer [i];
+	   std::complex<float> v = buffer [i];
 	   peakValue	= ALPHA * abs (v) + (1 - ALPHA) * abs (v); 
+//
+//	Testing shows that adding a slow changing DC like signal
+//	to the input does not have effect on the decoding capabilities
 	   if (balancing) {
-	      RFDc	= (v - RFDc) * ALPHA +  (1 - ALPHA) * RFDc;
-	      constexpr float DCRlimit = 0.005f;
+	      RFDc	= (v - RFDc) * ALPHA + (1 - ALPHA) * RFDc;
+	      constexpr float DCRlimit = 0.075f;
 	      float rfDcReal = real (RFDc);
 	      constrain (rfDcReal, DCRlimit);
 	      float rfDcImag = imag (RFDc);
@@ -156,7 +165,8 @@ Complex buffer [nrSamples];
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
 	   if (localCounter < bufferSize)
 	      localBuffer [localCounter ++]     = v;
-	   v_out  [index + i]	= v * oscillatorTable [currentPhase];
+	   v_out  [index + i]	= Complex (real (v),
+	                                   imag (v)) * oscillatorTable [currentPhase];
 	   sLevel = 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
 	}
 	sampleCount	+= nrSamples;

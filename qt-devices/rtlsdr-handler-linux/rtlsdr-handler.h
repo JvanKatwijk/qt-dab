@@ -38,7 +38,7 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
-#include    <QLibrary>
+#include	<QLibrary>
 class	dll_driver;
 class	xml_fileWriter;
 //
@@ -78,10 +78,8 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *, QString &);
+			rtlsdrHandler	(QSettings *, const QString &);
 			~rtlsdrHandler();
-	int32_t		getVFOFrequency	();
-//	interface to the reader
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);

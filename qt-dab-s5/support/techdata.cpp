@@ -80,6 +80,8 @@
                       setStyleSheet (temp. arg (audiodumpButton_color,
                                                 audiodumpButton_font));
 
+	psLabel			-> setText (" ");
+	sbrLabel		-> setText (" ");
 	peakLeftDamped          = -100;
         peakRightDamped         = -100;
  
@@ -136,7 +138,7 @@ void	techData::cleanUp	() {
 }
 
 void	techData::show_serviceData	(audiodata *ad) {
-	show_serviceName	(ad -> serviceName);
+	show_serviceName	(ad -> serviceName, ad -> shortName);
 	show_serviceId		(ad -> SId);
 	show_bitRate		(ad -> bitRate);
 	show_startAddress	(ad -> startAddr);
@@ -219,9 +221,13 @@ void	techData::show_frameDumpButton	(bool b) {
 	   framedumpButton	-> hide ();
 }
 
-void	techData::show_serviceName	(const QString &s) {
-	programName -> setText (s);
-}
+void	techData::show_serviceName	(const QString &s1,
+	                                    const QString &s2) {
+	if ((s2 != "") && (s1 != s2))  
+	   programName  -> setText (s1 + "(" + s2 + ")");
+	else
+	   programName -> setText (s1);
+}       
 
 void	techData::show_serviceId		(int SId) {
 	serviceIdDisplay -> display (SId);
@@ -349,7 +355,19 @@ void	techData::audiodumpButton_text	(const QString &text, int size) {
 	audiodumpButton	-> update ();
 }
 
-void	techData::showRate	(int rate) {
+void	techData::show_rate	(int rate, bool ps, bool sbr) {
+	if (!ps)
+	   psLabel -> setText (" ");
+	else {
+	   psLabel -> setStyleSheet ("QLabel {color : red}");
+	   psLabel -> setText ("ps");
+	}
+	if (!sbr)
+	   sbrLabel -> setText ("  ");
+	else {
+	   sbrLabel -> setStyleSheet ("QLabel {color : red}");
+	   sbrLabel -> setText ("sbr");
+	}
 	audioRate	-> display (rate);
 }
 

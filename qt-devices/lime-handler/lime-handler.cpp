@@ -33,7 +33,7 @@ int16_t localBuffer [4 * FIFO_SIZE];
 lms_info_str_t limedevices [10];
 
 	limeHandler::limeHandler (QSettings *s,
-	                          QString &recorderVersion):
+	                          const QString &recorderVersion):
 	                             _I_Buffer (4* 1024 * 1024),
 	                             theFilter (5, 1560000 / 2, 2048000) {
 	this	-> limeSettings		= s;
@@ -193,12 +193,6 @@ lms_info_str_t limedevices [10];
 	LMS_Close (theDevice);
 }
 
-int32_t	limeHandler::getVFOFrequency() {
-float_type freq;
-	(void) LMS_GetLOFrequency (theDevice, LMS_CH_RX, 0, &freq);
-	return (int)freq;
-}
-
 void	limeHandler::setGain		(int g) {
 float_type gg;
 	LMS_SetGaindB (theDevice, LMS_CH_RX, 0, g);
@@ -222,7 +216,7 @@ int	res;
 	if (isRunning())
 	   return true;
 
-	vfoFrequency	= freq;
+	lastFrequency	= freq;
 	if (save_gainSettings) {
 	   update_gainSettings	(freq / MHz (1));
 	   setGain (gainSelector -> value ());
@@ -250,7 +244,7 @@ void	limeHandler::stopReader() {
 	if (!isRunning())
 	   return;
 	if (save_gainSettings)
-	   record_gainSettings (vfoFrequency);
+	   record_gainSettings (lastFrequency);
 
 	running. store (false);
 	while (isRunning())
@@ -259,7 +253,7 @@ void	limeHandler::stopReader() {
 	(void)LMS_DestroyStream	(theDevice, &stream);
 }
 
-int	limeHandler::getSamples	(Complex *V, int32_t size) {
+int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
 std::complex<int16_t> temp [size];
 
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
@@ -269,13 +263,13 @@ std::complex<int16_t> temp [size];
 	      theFilter. resize (currentDepth);
 	   }
            for (int i = 0; i < amount; i ++) 
-	      V [i] = theFilter. Pass (Complex (
+	      V [i] = theFilter. Pass (std::complex<float> (
 	                                         real (temp [i]) / 2048.0,
 	                                         imag (temp [i]) / 2048.0));
 	}
 	else
            for (int i = 0; i < amount; i ++)
-              V [i] = Complex (real (temp [i]) / 2048.0,
+              V [i] = std::complex<float> (real (temp [i]) / 2048.0,
                                            imag (temp [i]) / 2048.0);
         if (dumping. load ())
            xmlWriter -> add (temp, amount);
@@ -546,7 +540,7 @@ QString saveDir = limeSettings -> value ("saveDir_xmlDump",
 	                                      bitDepth	(),
 	                                      "int16",
 	                                      2048000,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "lime",
 	                                      "1",
 	                                      recorderVersion);

@@ -38,7 +38,7 @@ class	wavFiles: public QObject,
 	          public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			wavFiles	(QString);
+			wavFiles	();
 	       		~wavFiles	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
 	int32_t		Samples		();
@@ -52,6 +52,7 @@ private:
 	SNDFILE		*filePointer;
 	wavReader	*readerTask;
 	std::atomic<bool>	running;
+	QString		getFileName	();
 public slots:
 	void		setProgress	(int, float);
 };

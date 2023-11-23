@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Qt_DAB-6
+Exec=qt-dab-6
+Icon=qt-dab-6
+Type=Application
+Categories=AudioVideo;
+Comment=A DAB/DAB+ decoder using Qt and C++

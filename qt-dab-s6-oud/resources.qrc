@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>../i18n/de_DE.qm</file>
+        <file>qt-dab-6.ico</file>
+        <file>../AUTHORS</file>
+        <file>../COPYING</file>
+	<file>../res/pauze-slide.png</file>
+	<file>../res/qt-map.html</file>
+	<file>../res/EasyCode.qss</file>
+	<file>../res/Darkeum.qss</file>
+	<file>../res/Adaptic.qss</file>
+	<file>../res/Combinear.qss</file>
+	<file>../res/Diffnes.qss</file>
+    </qresource>
+</RCC>

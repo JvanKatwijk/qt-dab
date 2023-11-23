@@ -125,7 +125,7 @@ uint8_t table [] = {
 	theBuffer. resize	(T_u);
 	window. resize 		(T_u);
 	for (int i = 0; i < T_u; i ++)
-	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (float)i / T_u);
+	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (FLOAT)i / T_u);
 
 	for (int i = 0; i < 256; i ++)
 	   invTable [i] = -1;

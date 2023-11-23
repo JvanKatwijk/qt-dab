@@ -139,7 +139,8 @@ class	plutoHandler: public QObject,
 Q_OBJECT
 public:
 			plutoHandler		(QSettings *,
-	                                         QString &, int fmFreq = 0);
+	                                         const QString &,
+	                                         int fmFreq = 0);
             		~plutoHandler		();
 	void		setVFOFrequency		(int32_t);
 	int32_t		getVFOFrequency		();
@@ -177,7 +178,6 @@ private:
 	void			run_receiver	();
 	void			run_transmitter	();
 	int32_t			inputRate;
-	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
 	std::atomic<bool>	transmitting;
 	bool			debugFlag;

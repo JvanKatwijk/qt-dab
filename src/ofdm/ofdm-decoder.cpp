@@ -44,7 +44,7 @@
 static inline
 Complex	normalize (const Complex &V) {
 float Length	= jan_abs (V);
-	return Length == 0.0f ? 0.0f : V / Length;
+	return Length == 0.0f ? Complex (0.0, 0.0) : V / (FLOAT)Length;
 }
 
 	ofdmDecoder::ofdmDecoder	(RadioInterface *mr,
@@ -76,7 +76,7 @@ float Length	= jan_abs (V);
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
 	squaredVector. resize (T_u);
-	for (int i = 0; i < offsetVector. size (); i ++) {
+	for (uint32_t i = 0; i < offsetVector. size (); i ++) {
            offsetVector [i] = 0;
 	   squaredVector [i] = 0;
 	}
@@ -125,10 +125,10 @@ float	ofdmDecoder::computeQuality (Complex *v) {
 //
 	Complex middle = Complex (0, 0);
 	for (int i = 0; i < carriers; i ++) {
-	   std::complex<float> ss = v [T_u / 2 - carriers / 2 + i];
+	   Complex ss = v [T_u / 2 - carriers / 2 + i];
 	   middle += Complex (abs (real (ss)), abs (imag (ss)));
 	}
-	middle	= middle / (float)carriers;;
+	middle	= middle / (FLOAT)carriers;;
 	middle	= Complex ((real (middle) + imag (middle)) / 2,
 	                   (real (middle) + imag (middle)) / 2);
 
@@ -179,7 +179,7 @@ Complex conjVector [T_u];
 Complex fft_buffer [T_u];
 
 	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
-	                               T_u * sizeof (std::complex<float>));
+	                               T_u * sizeof (Complex));
 
 //fftlabel:
 //	first step: do the FFT
@@ -188,9 +188,7 @@ Complex fft_buffer [T_u];
 //	a little optimization: we do not interchange the
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
-	Complex	localMiddle	= Complex (0, 0);
-	float max	= 0;
-	Complex offset	= Complex (0, 0);
+	FLOAT max	= 0;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -211,15 +209,14 @@ Complex fft_buffer [T_u];
 //
 //	Note that the phase Offset does not lead to an accumulated error
 //	so, we just average 
-	   float fftPhase	= arg (r2);
-	   float phaseOffset	= M_PI_4 - fftPhase;
+	   FLOAT fftPhase	= arg (r2);
+	   FLOAT phaseOffset	= M_PI_4 - fftPhase;
 	   offsetVector [index] = 
 	             compute_avg (offsetVector [index], phaseOffset, DELTA);
 	   squaredVector [index] =
 	             compute_avg (offsetVector [index], 
 	                                   square (phaseOffset), DELTA);
 	}
-
 
 //	The decoding approach is
 //	looking at the X and Y coordinates of the "dots"
@@ -230,7 +227,7 @@ Complex fft_buffer [T_u];
 	      index += T_u;
 
 	   Complex r1	= conjVector [index];
-	   float ab1	= jan_abs (r1);
+	   FLOAT ab1	= jan_abs (r1);
 //
 //	We implement three approaches for mapping the decoded carrier
 //	to two (soft) bits.
@@ -247,8 +244,8 @@ Complex fft_buffer [T_u];
 //	(normalized) value and the center point in the quadrant
 
 	   if ((decoder == DECODER_C1) || (decoder == DECODER_C2)) {
-	      float	corner_real, corner_imag;
-	      float	factor_real, factor_imag;
+	      FLOAT	corner_real, corner_imag;
+	      FLOAT	factor_real, factor_imag;
 	      if (decoder == DECODER_C1) {
 	         if (real (r1)  >= 0)
 	            corner_real	= acos (real (r1) / ab1);
@@ -278,9 +275,9 @@ Complex fft_buffer [T_u];
 	   }
 	   else {
 	      Complex testVal	= normalize (r1);
-	      float X_Offset	= uniBase -
+	      FLOAT X_Offset	= uniBase -
 	                           std::fabs (uniBase - abs (real (testVal)));
-	      float Y_Offset	= uniBase -
+	      FLOAT Y_Offset	= uniBase -
 	                           std::fabs (uniBase - abs (imag (testVal)));
 	      if (real (r1) >= 0)
 	         ibits [i]	= - X_Offset / uniBase * 127.0;
@@ -299,7 +296,7 @@ Complex fft_buffer [T_u];
 	      max /= carriers;
 	      Complex displayVector [carriers];
 	      if (iqSelector == SHOW_RAW) {
-	         float maxAmp = 0;
+	         FLOAT maxAmp = 0;
 	         for (int j = -carriers / 2; j < carriers / 2; j ++)
 	            if (j != 0)
 	               if (abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)

@@ -48,11 +48,8 @@ class	xml_fileWriter;
 class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *, QString &);
-			~rtlsdrHandler();
-	void		setVFOFrequency	(int32_t);
-	int32_t		getVFOFrequency	();
-//	interface to the reader
+			rtlsdrHandler	(QSettings *, const QString &);
+			~rtlsdrHandler	();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);

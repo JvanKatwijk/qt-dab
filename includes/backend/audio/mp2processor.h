@@ -96,7 +96,7 @@ private:
 	int16_t		errorFrames;
 signals:
 	void		show_frameErrors	(int);
-	void		newAudio		(int, int);
+	void		newAudio		(int, int, bool, bool);
 	void		isStereo		(bool);
 };
 

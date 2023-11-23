@@ -26,7 +26,6 @@
 #include	<QColor>
 #include	<QPen>
 #include	"color-selector.h"
-#include	"fft-complex.h"
 
 	tiiViewer::tiiViewer	(RadioInterface	*mr,
 	                         QSettings	*dabSettings,

@@ -36,7 +36,6 @@
 #include	"rtl-sdr.h"
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
-//#define	__X_VERSION_ 1
 
 #define	READLEN_DEFAULT	(4 * 8192)
 //
@@ -111,7 +110,7 @@ void	run () {
 //
 //	Our wrapper is a simple classs
 	rtlsdrHandler::rtlsdrHandler (QSettings *s,
-	                              QString &recorderVersion):
+	                              const QString &recorderVersion):
 	                                 _I_Buffer (8 * 1024 * 1024),
 	                                 theFilter (5, 1560000 / 2, 2048000) {
 int16_t	deviceCount;
@@ -270,14 +269,6 @@ char	manufac [256], product [256], serial [256];
 	usleep (1000);
 	myFrame. hide ();
 }
-
-void	rtlsdrHandler::setVFOFrequency	(int32_t f) {
-	(void)(rtlsdr_set_center_freq (theDevice, f));
-}
-
-int32_t	rtlsdrHandler::getVFOFrequency () {
-	return (int32_t)(rtlsdr_get_center_freq (theDevice));
-}
 //
 void	rtlsdrHandler::set_filter	(int c) {
 	(void)c;
@@ -291,6 +282,7 @@ bool	rtlsdrHandler::restartReader	(int32_t freq) {
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
 
+	lastFrequency	= freq;
 	set_autogain (agcControl -> isChecked ());
 	set_ExternalGain (gainControl -> currentText ());
 	if (workerHandle == nullptr) {
@@ -483,7 +475,7 @@ QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
 	                                      8,
 	                                      "uint8",
 	                                      2048000,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "rtlsdr",
 	                                      deviceModel,
 	                                      recorderVersion);

@@ -51,6 +51,7 @@ public:
 	                         QSettings *);
 		~spectrumScope	();
 	void	display		(double *, double *, int, int);
+	void	set_bitDepth	(int);
 
 private:
 
@@ -60,7 +61,7 @@ private:
 	QColor		displayColor;
 	QColor		gridColor;
 	QColor		curveColor;
-
+	int		bitDepth;
 	int		normalizer;
 	int16_t		displaySize;
 	QwtPlotMarker	*Marker;

@@ -140,7 +140,6 @@ int	carriers	= params. get_carriers ();
 //	"our" msc blocks start with blkno 4
 	      fft. fft (fft_buffer);
               if (currentBlock >= 4) {
-	         float max	= 0;
                  for (int i = 0; i < carriers; i ++) {
                     int16_t      index   = myMapper. mapIn (i);
                     if (index < 0)

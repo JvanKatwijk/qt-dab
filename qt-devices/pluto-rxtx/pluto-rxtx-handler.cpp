@@ -204,7 +204,7 @@ int	ret;
 //}
 
 	plutoHandler::plutoHandler  (QSettings *s,
-	                             QString &recorderVersion,
+	                             const QString &recorderVersion,
 	                             int	fmFrequency):
 	                                  myFrame (nullptr),
 	                                  _I_Buffer (4 * 1024 * 1024),

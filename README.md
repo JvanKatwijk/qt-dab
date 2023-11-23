@@ -9,12 +9,13 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-The current version is 6.25, the versions 5.4 and 4.7 are still being
-accessible and maintained.The releases section provides a windows installer
-and an AppImage (Linux x64) for all three versions.
+The current version is 6.3. The versions 5 and 4 are - since they were subject to changes as well, to 5.5 and 4.8.
 
-The visual difference between 6.25 and 6.2 is the addition of "strength"
-meters for the audio to the technical widget. 
+For all three versions, the preset handling is improved and the "favorites"
+are visible on a separate widget.
+The 6.30 version can now also be generated with double precision
+computations (only when working with qmake/make)
+The installers (both Windows and Linux) will be created with double precision
 
 ![6.2](/qt-dab-6.2.png?raw=true)
 
@@ -106,13 +107,24 @@ the visibility of the other widgets of the GUI.
 
 ![6.2](/qt-dab-6-slides.png)
 
-Most DAB services transmit one or more slides, these are made visible
-
-![6.1](/technical-widget.png)
-
+Most DAB services carry one or more slides, these are made visible on the
+main widget.
 The technical widget - the visibility of which depends on the settings
 in the main widget, gives full information about the selected audio service.
 (Of course the color(s) used in the spectrum display can be set by the user).
+
+The technical widget displays information about the selected (audio)
+service. 
+
+![6.1](/technical-widget.png)
+
+While the main widget shows the services in the **currently selected** channel,
+there is a separate widget for displaying **favorites**.
+Names of services on the ensemble display can be added to the favorites
+list by clicking on it with the right hand mouse button.
+
+![6.2](/favorites-widget.png)
+
 
 Different from previous versions, a **single widget**, the spectrum widget,
 contains (almost) all of the scopes and displays.

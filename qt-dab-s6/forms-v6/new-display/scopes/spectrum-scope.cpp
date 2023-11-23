@@ -26,6 +26,16 @@
 #include        <QPen>
 #include        "color-selector.h"
 
+static inline
+int	valueFor (int bd) {
+int result	= 1;
+	while (bd > 1) {
+	   result <<= 1;
+	   bd --;
+	}
+	return result;
+}
+
 
 	spectrumScope::spectrumScope (QwtPlot *dabScope,
 	                              int displaySize,
@@ -91,7 +101,8 @@ bool	brush;
 	Marker		-> setLinePen (QPen (Qt::red));
 	Marker		-> attach (plotgrid);
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
-	normalizer	= 512;
+	bitDepth	= 12;
+	normalizer	= valueFor (bitDepth);
 }
 
 	spectrumScope::~spectrumScope	() {
@@ -174,5 +185,9 @@ int	index;
 
 float   spectrumScope::get_db (float x) {
         return 20 * log10 ((x + 1) / (float)(normalizer));
+}
+
+void	spectrumScope::set_bitDepth	(int d) {
+	this	-> bitDepth	= d;
 }
 

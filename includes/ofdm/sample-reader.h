@@ -79,7 +79,7 @@ private:
 	      int		repetitionCounter;
 
 	      bool		balancing;
-	      Complex		RFDc;
+	      std::complex<float>	RFDc;
 
 	      float		peakValue;
 signals:

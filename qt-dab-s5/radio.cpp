@@ -61,48 +61,9 @@
 #else
 #include	"audiosink.h"
 #endif
-#ifdef	HAVE_RTLSDR
-#include	"rtlsdr-handler.h"
-#endif
-#ifdef	HAVE_SDRPLAY_V2
-#include	"sdrplay-handler-v2.h"
-#endif
-#ifdef	HAVE_SDRPLAY_V3
-#include	"sdrplay-handler-v3.h"
-#endif
-#ifdef	__MINGW32__
-#ifdef	HAVE_EXTIO
-#include	"extio-handler.h"
-#endif
-#endif
-#ifdef	HAVE_RTL_TCP
-#include	"rtl_tcp_client.h"
-#endif
-#ifdef	HAVE_AIRSPY
-#include	"airspy-handler.h"
-#endif
-#ifdef	HAVE_HACKRF
-#include	"hackrf-handler.h"
-#endif
-#ifdef	HAVE_LIME
-#include	"lime-handler.h"
-#endif
-#ifdef	HAVE_PLUTO
-#include	"pluto-handler.h"
-#elif	HAVE_PLUTO_RXTX
-#include	"pluto-rxtx-handler.h"
-#include	"dab-streamer.h"
-#endif
-#ifdef	HAVE_SOAPY
-#include	"soapy-handler.h"
-#endif
-#ifdef	HAVE_ELAD
-#include	"elad-handler.h"
-#endif
 #include	"spectrum-viewer.h"
 #include	"correlation-viewer.h"
 #include	"tii-viewer.h"
-#include	"scanlist-handler.h"
 #include	"time-table.h"
 
 #include	"device-exceptions.h"
@@ -175,6 +136,7 @@ QString scanmodeText (int e) {
 #define	SNR_BUTTON		QString ("snrButton")
 #define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
 #define	SCANLIST_BUTTON		QString ("scanListButton")
+#define	PRESET_BUTTON		QString ("presetButton")
 #define	DUMP_BUTTON		QString ("dumpButton")
 #define	MUTE_BUTTON		QString ("muteButton")
 #define PREVCHANNEL_BUTTON	QString ("prevChannelButton")
@@ -202,6 +164,7 @@ uint8_t convert (QString s) {
 }
 
 	RadioInterface::RadioInterface (QSettings	*Si,
+	                                const QString	&scanListFile,
 	                                const QString	&presetFile,
 	                                const QString	&freqExtension,
 	                                const QString	&schedule,
@@ -231,7 +194,6 @@ uint8_t convert (QString s) {
 	                                                  this, Si,
 	                                                  &tiiBuffer),
 	                                        my_snrViewer (this, Si),
-	                                        my_presetHandler (this),
 	                                        theBand (freqExtension, Si),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
@@ -239,7 +201,13 @@ uint8_t convert (QString s) {
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768),
-	                                        audioConverter (this) {
+	                                        audioConverter (this),
+	                                        my_scanListHandler (this,
+                                                                scanListFile),
+                                                my_presetHandler (this,
+                                                                  presetFile),
+	                                        chooseDevice (Si) {
+
 int16_t	latency;
 int16_t k;
 QString h;
@@ -320,6 +288,11 @@ uint8_t	dabBand;
 	configDisplay. resize (QSize (wi, he));
 	configDisplay. move (QPoint (x, y));
 
+	setWindowTitle (QString ("Qt_DAB-5.5"));
+	QStringList sl = chooseDevice. getDeviceList ();
+        for (auto &sle : sl)
+           configWidget. deviceSelector -> addItem (sle);
+
 	theTechWindow	= new techData (this, dabSettings, &theTechData);
 //
 //	Now we can set the checkbox as saved in the settings
@@ -348,6 +321,12 @@ uint8_t	dabBand;
 
 	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
 	configWidget.  utcSelector -> setChecked (b);
+
+	if (dabSettings -> value ("favorites", 0). toInt () != 0)
+           my_presetHandler. show ();    
+        else
+           my_presetHandler. hide ();
+
 	channel. currentService. valid	= false;
 	channel. nextService. valid	= false;
 	channel. serviceCount		= -1;
@@ -511,20 +490,18 @@ uint8_t	dabBand;
 	connect (&epgTimer, SIGNAL (timeout ()),
 	         this, SLOT (epgTimer_timeOut ()));
 
-	QString scanListFile     = QDir::homePath () + "/.qt-scanList.xml";
-	scanListFile             =
-	             dabSettings -> value ("scanList", scanListFile). toString ();
-	scanListFile		= QDir::toNativeSeparators (scanListFile);
-	my_scanList		= new scanListHandler (this, scanListFile);
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable	-> hide ();
 
-	connect (my_scanList, SIGNAL (handle_scanListSelect (const QString &)),
+	connect (&my_scanListHandler,
+	                     SIGNAL (handle_scanListSelect (const QString &)),
 	         this, SLOT (handle_scanListSelect (const QString &)));
+	connect (&my_presetHandler,
+                SIGNAL (handle_presetSelect (const QString &, const QString &)),
+                 this,
+                SLOT (handle_presetSelect (const QString &, const QString &)));
 	connect (this, SIGNAL (set_newChannel (int)),
 	         channelSelector, SLOT (setCurrentIndex (int)));
-	connect (this, SIGNAL (set_newPresetIndex (int)),
-	         presetSelector, SLOT (setCurrentIndex (int)));
 	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_dlTextButton ()));
 	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
@@ -555,7 +532,6 @@ uint8_t	dabBand;
 	total_fics		= 0;
 	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
-	my_presetHandler. loadPresets (presetFile, presetSelector);
 //
 //	Connect the buttons for the color_settings
 	connect (configWidget. contentButton, SIGNAL (rightClicked ()),
@@ -578,6 +554,8 @@ uint8_t	dabBand;
 	         this, SLOT (color_devicewidgetButton ()));
 	connect (scanListButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_scanListButton ()));
+	connect (presetButton, SIGNAL (rightClicked ()),
+                 this, SLOT (color_presetButton ()));
 	connect (configWidget. dumpButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_sourcedumpButton ()));
 	connect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
@@ -608,7 +586,6 @@ uint8_t	dabBand;
 	
 //	display the version
 	copyrightLabel	-> setToolTip (footText ());
-	presetSelector	-> setToolTip (presetText ());
 
 	connect (configWidget. portSelector, SIGNAL (clicked ()),
 	         this, SLOT (handle_portSelector ()));
@@ -654,7 +631,7 @@ uint8_t	dabBand;
 //
 	QPalette lcdPalette;
 #ifndef __MAC__
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
 	lcdPalette. setColor (QPalette::Window, Qt::white);
 #else
 	lcdPalette. setColor (QPalette::Background, Qt::white);
@@ -668,62 +645,18 @@ uint8_t	dabBand;
 	set_Colors ();
 	localTimeDisplay -> setStyleSheet ("QLabel {background-color : gray; color: white}");
 	runtimeDisplay	-> setStyleSheet ("QLabel {background-color : gray; color: white}");
-//
-//	add devices to the list
-	configWidget. deviceSelector	-> addItem ("select input");
-	configWidget. deviceSelector	-> addItem ("file input(.raw)");
-	configWidget. deviceSelector	-> addItem ("file input(.iq)");
-	configWidget. deviceSelector	-> addItem ("file input(.sdr)");
-	configWidget. deviceSelector	-> addItem ("xml files");
-#ifdef	HAVE_SDRPLAY_V3
-	configWidget. deviceSelector	-> addItem ("sdrplay");
-#endif
-#ifdef	HAVE_SDRPLAY_V2
-	configWidget. deviceSelector	-> addItem ("sdrplay-v2");
-#endif
-#ifdef	HAVE_RTLSDR
-	configWidget. deviceSelector	-> addItem ("dabstick");
-#endif
-#ifdef	HAVE_AIRSPY
-	configWidget. deviceSelector	-> addItem ("airspy");
-#endif
-#ifdef	HAVE_HACKRF
-	configWidget. deviceSelector	-> addItem ("hackrf");
-#endif
-#ifdef	HAVE_LIME
-	configWidget. deviceSelector	-> addItem ("limeSDR");
-#endif
-#ifdef	HAVE_PLUTO_RXTX
-	configWidget. deviceSelector	-> addItem ("pluto-rxtx");
-	streamerOut	= nullptr;
-#elif	HAVE_PLUTO
-	configWidget. deviceSelector	-> addItem ("pluto");
-#endif
-#ifdef	HAVE_RTL_TCP
-	configWidget. deviceSelector	-> addItem ("rtl_tcp");
-#endif
-#ifdef	HAVE_SOAPY
-	configWidget. deviceSelector	-> addItem ("soapy");
-#endif
-#ifdef  HAVE_EXTIO
-	configWidget. deviceSelector	-> addItem ("extio");
-#endif
-#ifdef	HAVE_ELAD
-	configWidget. deviceSelector	-> addItem ("elad-s1");
-#endif
+
+//	do we have a known device from previous invocations
 	inputDevice	= nullptr;
 	h               =
 	           dabSettings -> value ("device", "no device"). toString();
 	k               = configWidget. deviceSelector -> findText (h);
-//	fprintf (stderr, "%d %s\n", k, h. toUtf8(). data());
 	if (k != -1) {
 	   configWidget. deviceSelector       -> setCurrentIndex (k);
 	   inputDevice	= create_device (configWidget. deviceSelector -> currentText());
-	   if (inputDevice != nullptr)
-	       dabSettings -> setValue ("device",
-	                      configWidget. deviceSelector -> currentText());
 	}
-
+//
+//	do we show controls?
 	bool hidden	=
 	            dabSettings	-> value ("hidden", 0). toInt () != 0;
 	if (hidden) {
@@ -737,13 +670,6 @@ uint8_t	dabBand;
 
 	connect (configButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_configButton ()));
-
-	if (inputDevice != nullptr) {
-	   if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
-	      inputDevice -> setVisibility (true);
-	   else
-	      inputDevice -> setVisibility (false);
-	}
 
 	if (dabSettings	-> value ("spectrumVisible", 0). toInt () == 1) 
 	   my_spectrumViewer. show ();
@@ -833,8 +759,8 @@ bool	RadioInterface::doStart	() {
 //	we avoided till now connecting the channel selector
 //	to the slot since that function does a lot more, things we
 //	do not want here
-	connect (presetSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_presetSelector (const QString &)));
+	connect (presetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_presetButton ()));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_channelSelector (const QString &)));
 //
@@ -915,7 +841,7 @@ int	serviceOrder;
 
 	serviceList = insert (serviceList, ed, serviceOrder);
 	if (scanning. load ())
-	   my_scanList -> addElement (channel. channelName, serviceName);
+	   my_scanListHandler. addElement (channel. channelName, serviceName);
 	model. clear ();
 	for (auto serv : serviceList) {
 	   model. appendRow (new QStandardItem (serv. name));
@@ -1347,7 +1273,9 @@ int	serviceOrder;
 //	In order to not overload with an enormous amount of
 //	signals, we trigger this function at most 10 times a second
 //
-void	RadioInterface::newAudio	(int amount, int rate) {
+void	RadioInterface::newAudio	(int amount, int rate,
+	                                              bool ps, bool sbr) {
+	(void)ps; (void)sbr;
 	if (!running. load ())
 	   return;
 
@@ -1356,10 +1284,9 @@ static int teller	= 0;
 	   teller ++;
 	   if (teller > 10) {
 	      teller = 0;
-	      theTechWindow	->  showRate (rate);
+	      theTechWindow	->  show_rate (rate, ps, sbr);
 	   }
 	}
-	fprintf (stderr, "amount = %d, rate = %d\n", amount, rate);
 	std::complex<int16_t> vec [amount];
 	while (audioBuffer. GetRingBufferReadAvailable() > amount) {
 	   audioBuffer. getDataFromBuffer (vec, amount);
@@ -1448,7 +1375,6 @@ void	RadioInterface::TerminateProcess () {
 	   delete my_scanTable;
 	}
 
-	my_presetHandler. savePresets (presetSelector);
 	theBand. saveSettings	();
 	stopFramedumping	();
 	stop_sourcedumping	();
@@ -1474,7 +1400,8 @@ void	RadioInterface::TerminateProcess () {
 	if (inputDevice != nullptr)
 	   delete	inputDevice;
 	delete		soundOut;
-	delete	my_scanList;
+	my_scanListHandler. hide ();
+	my_presetHandler. hide ();
 	delete	my_timeTable;
 //	close();
 	fprintf (stderr, ".. end the radio silences\n");
@@ -1540,292 +1467,16 @@ void	RadioInterface::updateTimeDisplay() {
 //
 //	precondition: everything is quiet
 deviceHandler	*RadioInterface::create_device (const QString &s) {
-QString	file;
-deviceHandler	*inputDevice	= nullptr;
-//	OK, everything quiet, now let us see what to do
-
-	channel. realChannel	= true;		// until proven otherwise
-#ifdef	HAVE_SDRPLAY_V2
-	if (s == "sdrplay-v2") {
-#ifdef	__MINGW32__
-	   QMessageBox::warning (this, tr ("Warning"),
-	                            tr ("If SDRuno is installed with drivers 3.10,\nV2.13 drivers will not work anymore, choose \"sdrplay\" instead\n"));
-//	   return nullptr;
-#endif
-	   try {
-	      inputDevice	= new sdrplayHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("sdrplay-v2 fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_SDRPLAY_V3
-	if (s == "sdrplay") {
-	   try {
-	      inputDevice	= new sdrplayHandler_v3 (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (... ) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("sdrplay v3 fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_RTLSDR
-	if (s == "dabstick") {
-	   try {
-	      inputDevice	= new rtlsdrHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &ex) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (ex. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("rtlsdr device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_AIRSPY
-	if (s == "airspy") {
-	   try {
-	      inputDevice	= new airspyHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("airspy device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_HACKRF
-	if (s == "hackrf") {
-	   try {
-	      inputDevice	= new hackrfHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("hackrf device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_LIME
-	if (s == "limeSDR") {
-	   try {
-	      inputDevice = new limeHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("lime device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_PLUTO
-	if (s == "pluto") {
-	   try {
-	      inputDevice = new plutoHandler (dabSettings, version);
-	      showButtons();
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("pluto device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_PLUTO_RXTX
-	if (s == "pluto-rxtx") {
-	   try {
-	      inputDevice = new plutoHandler (dabSettings,
-	                                      version, fmFrequency);
-	      showButtons();
-	      streamerOut = new dabStreamer (48000, 192000,
-	                                       (plutoHandler *)inputDevice);
-	      ((plutoHandler *)inputDevice)	-> startTransmitter (
-	                                               fmFrequency);
-	   }
-	   catch (const std::exception &e) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr (e. what ()));
-	      return nullptr;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("pluto device fails"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef HAVE_RTL_TCP
-//	RTL_TCP might be working. 
-	if (s == "rtl_tcp") {
-	   try {
-	      inputDevice = new rtl_tcp_client (dabSettings);
-	      showButtons();
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                           tr ("rtl_tcp: no luck\n") );
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef	HAVE_SOAPY
-	if (s == "soapy") {
-	   try {
-	      inputDevice	= new soapyHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                                  tr ("no soapy device found\n"));
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-#ifdef HAVE_EXTIO
-//	extio is - in its current settings - for Windows, it is a
-//	wrap around the dll
-	if (s == "extio") {
-	   try {
-	      inputDevice = new extioHandler (dabSettings);
-	      showButtons();
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                            tr ("extio: no luck\n") );
-	      return nullptr;
-	   }
-	}
-	else
-#endif
-	if (s == "xml files") {
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("Open file ..."),
-	                                                QDir::homePath(),
-	                                                tr ("xml data (*.*)"));
-	   if (file == QString (""))
-	      return nullptr;
-	   file		= QDir::toNativeSeparators (file);
-	   try {
-	      inputDevice	= new xml_fileReader (file);
-	      channel. realChannel	= false;
-	      hideButtons();
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("file not found"));
-	      return nullptr;
-	   }
-	}
-	else
-	if ((s == "file input(.iq)") || (s == "file input(.raw)")) {
-	   const char *p;
-	   if (s == "file input(.iq)")
-	      p = "iq data (*iq)";
-	   else
-	      p = "raw data (*raw)";
-	   
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("Open file ..."),
-	                                                QDir::homePath(),
-	                                                tr (p));
-	   if (file == QString (""))
-	      return nullptr;
-
-	   file		= QDir::toNativeSeparators (file);
-	   try {
-	      inputDevice	= new rawFiles (file);
-	      hideButtons();
-	      channel. realChannel	= false;
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("file not found"));
-	      return nullptr;
-	   }
-	}
-	else
-	if (s == "file input(.sdr)") {
-	   file		= QFileDialog::getOpenFileName (this,
-	                                                tr ("Open file ..."),
-	                                                QDir::homePath(),
-	                                                tr ("raw data (*.sdr)"));
-	   if (file == QString (""))
-	      return nullptr;
-
-	   file		= QDir::toNativeSeparators (file);
-	   try {
-	      inputDevice	= new wavFiles (file);
-	      channel. realChannel	= false;
-	      hideButtons ();	
-	   }
-	   catch (...) {
-	      QMessageBox::warning (this, tr ("Warning"),
-	                               tr ("file not found"));
-	      return nullptr;
-	   }
-	}
-	else {
-	   fprintf (stderr, "unknown device, failing\n");
+deviceHandler	*inputDevice = chooseDevice. createDevice  (s, version);
+	if (inputDevice	== nullptr)
 	   return nullptr;
-	}
-	
-//
-//	It took some code, but it seems we have a device
+
+	channel. realChannel	= !(inputDevice -> isFileInput ());
+	if (channel. realChannel)
+	   showButtons ();
+	else
+	   hideButtons ();
+
 	my_spectrumViewer. setBitDepth (inputDevice -> bitDepth());
 
 	dabSettings	-> setValue ("device", s);
@@ -1860,10 +1511,6 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   return;		// nothing will happen
 	}
 
-	if (dabSettings -> value ("deviceVisible", 1). toInt () != 0)
-	   inputDevice -> setVisibility (true);
-	else
-	   inputDevice -> setVisibility (false);
 	doStart();		// will set running
 }
 
@@ -2239,7 +1886,7 @@ void	RadioInterface::show_spectrum	(int32_t amount) {
 	   return;
 
 	my_spectrumViewer. showSpectrum (amount,
-				         inputDevice -> getVFOFrequency());
+	                                 channel. tunedFrequency);
 }
 
 void	RadioInterface::showIQ		(int amount) {
@@ -2326,7 +1973,6 @@ void	RadioInterface::showButtons		() {
 	channelSelector		-> show ();
 	nextChannelButton	-> show ();
 	prevChannelButton	-> show ();
-	presetSelector		-> show ();
 }
 
 void	RadioInterface::hideButtons		() {
@@ -2336,7 +1982,6 @@ void	RadioInterface::hideButtons		() {
 	channelSelector		-> hide ();
 	nextChannelButton	-> hide ();
 	prevChannelButton	-> hide ();
-	presetSelector		-> hide ();
 }
 
 void	RadioInterface::set_sync_lost	() {
@@ -2571,10 +2216,10 @@ void    RadioInterface::handle_scanListButton    () {
 	if (!running. load ())
 	   return;
 
-	if (my_scanList  -> isHidden ())
-	   my_scanList   -> show ();
+	if (my_scanListHandler. isHidden ())
+	   my_scanListHandler. show ();
 	else
-	   my_scanList   -> hide ();
+	   my_scanListHandler. hide ();
 }
 //
 //	When changing (or setting) a device, we do not want anybody
@@ -2766,20 +2411,30 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	   }
 	}
 	else
-	if ((obj == this -> my_scanList -> viewport ()) &&
+//
+//      An option is to click - right hand mouse button - on a
+//      service in the scanlist in order to add it to the
+//      list of favorites
+	if ((obj == this -> my_scanListHandler. viewport ()) &&
 	    (event -> type () == QEvent::MouseButtonPress)) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
 	   if (ev -> buttons () & Qt::RightButton) {
 	      QString service =
-	           this -> my_scanList -> indexAt (ev -> pos()). data ().toString();
-	           fprintf (stderr, "Gevonden: %s\n",
-	                                service. toUtf8 (). data ());
-	      bool alreadyIn = false;
-	      for (int i = 0; i < presetSelector -> count (); i ++)
-	         if (presetSelector -> itemText (i) == service)
-	            alreadyIn = true;
-	      if (!alreadyIn)
-	         presetSelector -> addItem (service);
+	           this -> my_scanListHandler. indexAt (ev -> pos()). data ().toString();
+	      my_presetHandler. addElement (service);
+	   }
+	}
+	else
+//
+//	removing an element from the list of favorites is by
+//	clicking with the right hand mouse button on the name
+	if ((obj == this -> my_presetHandler. viewport ()) &&
+	    (event -> type () == QEvent::MouseButtonPress)) {
+	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
+	   if (ev -> buttons () & Qt::RightButton) {
+	      QString service =
+	           this -> my_presetHandler. indexAt (ev -> pos()). data ().toString();
+	      my_presetHandler. removeElement (service);
 	   }
 	}
 	else
@@ -2800,10 +2455,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	         pd. serviceName	= serviceName;
 	         pd. channel		= channelSelector -> currentText ();
 	         QString itemText	= pd. channel + ":" + pd. serviceName;
-	         for (int i = 0; i < presetSelector -> count (); i ++)
-	            if (presetSelector -> itemText (i) == itemText)
-	               return true;
-	         presetSelector -> addItem (itemText);
+	         my_presetHandler. addElement (pd. channel,
+	                                       pd. serviceName);
 	         return true;
 	      }
 
@@ -2902,10 +2555,9 @@ QString	selectedService = ind. data (Qt::DisplayRole). toString ();
 }
 //
 //	selecting from the preset list
-void    RadioInterface::handle_presetSelector (const QString &s) {
-	if ((s == "Presets") || (presetSelector -> currentIndex () == 0))
-	   return;
-	localSelect (s);
+void    RadioInterface::handle_presetSelect (const QString &channel,
+	                                     const QString &serviceName) {
+	localSelect (channel, serviceName);
 }
 //
 //	selecting from the scan list, which is essential
@@ -2927,7 +2579,7 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 }
 //
 void	RadioInterface::localSelect (const QString &s) {
-#if QT_VERSION >= 0x060000
+#if QT_VERSION >=  QT_VERSION_CHECK (5, 15, 2)
 	QStringList list = s.split (":", Qt::SkipEmptyParts);
 #else
 	QStringList list = s.split (":", QString::SkipEmptyParts);
@@ -3334,6 +2986,7 @@ void	RadioInterface::setPresetService () {
 void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
 	         theBand. Frequency (theChannel);
+	channel. tunedFrequency	= tunedFrequency;
 	LOG ("channel starts ", theChannel);
 	configWidget. frequencyDisplay	-> display (tunedFrequency / 1000000.0);
 	my_spectrumViewer. showFrequency (tunedFrequency / 1000000.0);
@@ -3449,7 +3102,6 @@ void    RadioInterface::handle_channelSelector (const QString &channel) {
 
 	LOG ("select channel ", channel. toUtf8 (). data ());
 	presetTimer. stop ();
-	presetSelector		-> setCurrentIndex (0);
 	stopScanning	(false);
 	stopChannel	();
 	startChannel	(channel);
@@ -3522,7 +3174,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	LOG ("scanning starts with ", QString::number (cc));
 	if (scanMode == SINGLE_SCAN) {
 	   if (configWidget. clearScan_Selector -> isChecked ())
-	      my_scanList -> clear_scanList ();
+	      my_scanListHandler. clear_scanList ();
 	}
 	   
 	scanning. store (true);
@@ -3838,13 +3490,6 @@ void	RadioInterface::stop_muting		() {
 //
 
 void	RadioInterface::new_presetIndex (int index) {
-	if (presetSelector -> currentIndex () == index)
-	   return;
-	presetSelector -> blockSignals (true);
-	set_newPresetIndex (index);
-	while (presetSelector -> currentIndex () != 0)
-	   usleep (200);
-	presetSelector	-> blockSignals (false);
 }
 
 void	RadioInterface::new_channelIndex (int index) {
@@ -3929,6 +3574,12 @@ QString scanListButton_color =
 QString scanListButton_font =
 	   dabSettings -> value (SCANLIST_BUTTON + "_font",
 	                                              "black"). toString ();
+QString presetButton_color =
+           dabSettings -> value (PRESET_BUTTON + "_color",
+                                                      "white"). toString ();
+QString presetButton_font = 
+           dabSettings -> value (PRESET_BUTTON + "_font",
+                                                      "black"). toString ();
 QString dumpButton_color =
 	   dabSettings -> value (DUMP_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -4062,6 +3713,9 @@ QString loadTableButton_font	=
 	scanListButton	->
 	              setStyleSheet (temp. arg (scanListButton_color,
 	                                        scanListButton_font));
+	presetButton    -> 
+	             setStyleSheet (temp. arg (presetButton_color,
+                                                presetButton_font));
 
 	scanButton	->
 	              setStyleSheet (temp. arg (scanButton_color,
@@ -4137,6 +3791,10 @@ void	RadioInterface::color_devicewidgetButton	() {
 void	RadioInterface::color_scanListButton	()	{
 	set_buttonColors (scanListButton, SCANLIST_BUTTON);
 }
+
+void    RadioInterface::color_presetButton      ()      {
+        set_buttonColors (presetButton, PRESET_BUTTON);
+}       
 
 void	RadioInterface::color_sourcedumpButton	()	{
 	set_buttonColors (configWidget. dumpButton, DUMP_BUTTON);
@@ -4281,13 +3939,16 @@ QString		scheduleService;
 	   theSelector. addtoList (service);
 	   candidates += service;
 	}
-	for (int i = 1; i < presetSelector -> count (); i ++) {
-	   if (!candidates. contains (presetSelector -> itemText (i))) {
-	      theSelector.
-	              addtoList (presetSelector -> itemText (i));
-	      candidates += presetSelector -> itemText (i);
-	   }
-	}
+
+	for (int i = 1; i < my_presetHandler. nrElements (); i ++) {
+           QString candidate = my_presetHandler. candidate (i);
+           if (!candidates. contains (candidate)) {
+              theSelector.
+                      addtoList (candidate);
+              candidates += candidate;
+           }  
+        }        
+
 
 	int selected		= theSelector. QDialog::exec ();
 	scheduleService		= candidates. at (selected);
@@ -4811,4 +4472,12 @@ void	RadioInterface::showPeakLevel	(float left, float right) {
 	theTechWindow	-> showPeakLevel (left, right);
 }
 
+void	RadioInterface::handle_presetButton	() {
+	if (my_presetHandler. isHidden ())
+	   my_presetHandler. show ();
+	else
+	   my_presetHandler. hide ();
+	dabSettings	-> setValue ("favorites",
+	                             my_presetHandler. isHidden () ? 0 : 1);
+}
 

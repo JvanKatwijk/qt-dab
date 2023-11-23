@@ -32,11 +32,11 @@
         aacConf         = NeAACDecGetCurrentConfiguration (aacHandle);
         aacInitialized  = false;
         baudRate        = 48000;
-        connect (this, SIGNAL (newAudio (int, int)),
-                 mr, SLOT (newAudio (int, int)));
+        connect (this, SIGNAL (newAudio (int, int, bool, bool)),
+                 mr, SLOT (newAudio (int, int, bool, bool)));
 }
 
-        faadDecoder::~faadDecoder() {
+        faadDecoder::~faadDecoder	() {
         NeAACDecClose   (aacHandle);
 }
 
@@ -146,8 +146,9 @@ uint8_t channels;
 	                                             outBuffer [2 * i + 1]);
 	      audioBuffer -> putDataIntoBuffer (&s, 1);
 	   }
-	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
-              newAudio (sampleRate / 10, sampleRate);
+	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 10)
+              newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
+
         }
         else
         if (channels == 1) {
@@ -158,7 +159,8 @@ uint8_t channels;
               audioBuffer  -> putDataIntoBuffer (&s, 1);
 	   }
 	   if (audioBuffer -> GetRingBufferReadAvailable() > (int)sampleRate / 8)
-              newAudio (samples, sampleRate);
+              newAudio (sampleRate / 10, sampleRate, hInfo. ps, hInfo. sbr);
+
         }
         else
            fprintf (stderr, "Cannot handle these channels\n");

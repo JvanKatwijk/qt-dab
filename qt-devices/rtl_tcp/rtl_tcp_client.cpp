@@ -57,7 +57,7 @@
 	remoteSettings	-> endGroup();
 	tcp_gain	-> setValue (theGain);
 	tcp_ppm		-> setValue (thePpm);
-	vfoFrequency	= DEFAULT_FREQUENCY;
+	lastFrequency	= DEFAULT_FREQUENCY;
 	_I_Buffer	= new RingBuffer<std::complex<float>>(32 * 32768);
 	connected	= false;
 	hostLineEdit 	= new QLineEdit (nullptr);
@@ -156,18 +156,10 @@ int32_t	rtl_tcp_client::getRate	() {
 	return theRate;
 }
 
-int32_t	rtl_tcp_client::defaultFrequency() {
-	return DEFAULT_FREQUENCY;	// choose any legal frequency here
-}
-
-int32_t	rtl_tcp_client::getVFOFrequency() {
-	return vfoFrequency;
-}
-
 bool	rtl_tcp_client::restartReader	(int32_t freq) {
 	if (!connected)
 	   return true;
-	vfoFrequency	= freq;
+	lastFrequency	= freq;
 //	here the command to set the frequency
 	sendVFO (freq);
 	connect (&toServer, SIGNAL (readyRead (void)),

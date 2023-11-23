@@ -98,12 +98,12 @@ typedef	int	(*pfn_LMS_GetStreamStatus)(lms_stream_t *stream,
 class	limeHandler: public QThread,  public deviceHandler, public limeWidget {
 Q_OBJECT
 public:
-			limeHandler		(QSettings *, QString &);
+			limeHandler		(QSettings *, const QString &);
 			~limeHandler		();
-	int32_t		getVFOFrequency		();
+
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t         getSamples              (Complex *, int32_t);
+	int32_t         getSamples              (std::complex<float> *, int32_t);
         int32_t         Samples			();
         void            resetBuffer		();
         int16_t         bitDepth		();
@@ -114,7 +114,6 @@ private:
 	QString		recorderVersion;
 	QString		deviceModel;
 	QSettings	*limeSettings;
-	int32_t		vfoFrequency;
 	std::atomic<bool>	running;
 	lms_device_t	*theDevice;
 	lms_name_t	antennas [10];

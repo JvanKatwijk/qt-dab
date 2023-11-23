@@ -33,7 +33,14 @@
 #include	"ui_sdrplay-widget-v2.h"
 #include	"mirsdrapi-rsp.h"
 #include	<QLibrary>
-
+//
+//
+//	Note
+//	SDRplay does not really support the "2.XX" libraries anymore,
+//	so in a sense this interface driver is obsolete
+//	and it does not support the Dx version
+//
+//	Note that this version does support the original RSP 1
 typedef void (*mir_sdr_StreamCallback_t)(int16_t	*xi,
 	                                 int16_t	*xq,
 	                                 uint32_t	firstSampleNum, 
@@ -110,20 +117,16 @@ typedef mir_sdr_ErrT (*pfn_mir_sdr_rsp1a_BiasT)(int enable);
 typedef mir_sdr_ErrT (*pfn_mir_sdr_rspDuo_BiasT)(int enable);
 
 ///////////////////////////////////////////////////////////////////////////
-class	sdrplayHandler: public QObject,
-	                public deviceHandler, public Ui_sdrplayWidget {
+class	sdrplayHandler_v2: public QObject,
+	                   public deviceHandler, public Ui_sdrplayWidget {
 Q_OBJECT
 public:
-			sdrplayHandler		(QSettings *, QString &);
-			~sdrplayHandler		();
-	int32_t		getVFOFrequency		();
-	void		adjustFreq		(int);
-	int32_t		defaultFrequency	();
+			sdrplayHandler_v2	(QSettings *, const QString &);
+			~sdrplayHandler_v2	();
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(Complex *,
-	                                                          int32_t);
+	int32_t		getSamples		(std::complex<float> *, int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
@@ -184,14 +187,12 @@ private:
 	bool		fetchLibrary	();
 	void		releaseLibrary	();
 	QString		errorCodes	(mir_sdr_ErrT);
-	void		check_error	(bool, const std::string);
 	int16_t		hwVersion;
 	uint32_t	numofDevs;
 	int16_t		deviceIndex;
 	bool		loadFunctions	();
 	QSettings	*sdrplaySettings;
 	int32_t		inputRate;
-	int32_t		vfoFrequency;
 	bool		libraryLoaded;
 	std::atomic<bool>	running;
 	HINSTANCE	Handle;

@@ -59,17 +59,24 @@ typedef	void	*HINSTANCE;
 #define	DECODER_C1	4
 #define	DECODER_C2	8
 
-#ifdef	USE_DOUBLE	
-typedef	std::complex<double> Complex;
+#ifdef	__WITH_DOUBLES__
+typedef	double FLOAT;
 #else
-typedef	std::complex<float> Complex;
+typedef	float	FLOAT;
 #endif
+typedef	std::complex<FLOAT> Complex;
 
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
 
 constexpr float	RAD_PER_DEGREE = (float)(M_PI / 180.0);
+
+enum AudioFlags : uint32_t {
+    AFL_NONE     = 0x0,
+    AFL_SBR_USED = 0x1,
+    AFL_PS_USED  = 0x2
+};
 
 using namespace std;
 //
@@ -81,7 +88,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.25"
+#define	CURRENT_VERSION	"6.30"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101

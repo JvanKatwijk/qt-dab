@@ -29,6 +29,9 @@
 #include        <QStringList>
 #include        <QObject>
 #include        <QString>
+#include	<QListView>
+#include        <QStringListModel>
+#include        <QModelIndex>
 
 class   RadioInterface;
 class	QComboBox;
@@ -38,15 +41,27 @@ typedef struct presetData_ {
 	QString channel;
 } presetData;
 
-class	presetHandler: public QObject {
+class	presetHandler: public QListView {
 Q_OBJECT
 public:
-		presetHandler	(RadioInterface *);
+		presetHandler	(RadioInterface *,
+	                            const QString &);
 		~presetHandler	();
-	void	loadPresets	(const QString &, QComboBox *);
-	void	savePresets	(QComboBox *);
+	void	addElement	(const QString &, const QString  &);
+	void	addElement	(const QString &);
+	void	removeElement	(const QString &);
+	void	clear_presetList	();
+	int	nrElements	();
+	QString	candidate	(int i);
+public	slots:
+	void	selectElement	(QModelIndex);
+signals:
+	void	handle_presetSelect	(const QString &, const QString &);
 private:
 	RadioInterface	*radio_p;
+	std::vector<presetData> thePresets;
+	QStringList	presetList;
+	QStringListModel	displayList;
 	QString	fileName;
 };
 

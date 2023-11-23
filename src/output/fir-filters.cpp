@@ -27,10 +27,10 @@
 
 	LowPassFIR::LowPassFIR (int16_t firsize,
 	                        int32_t Fc, int32_t fs){
-float	sum	= 0.0;
-float	temp [firsize];
+FLOAT	sum	= 0.0;
+FLOAT	temp [firsize];
 
-	this -> frequency	= (float)Fc / fs;
+	this -> frequency	= (FLOAT)Fc / fs;
 	this -> filterSize	= firsize;
 	this -> ip		= 0;
 	filterKernel.	resize (filterSize);
@@ -68,7 +68,7 @@ int	LowPassFIR::theSize	() {
 }
 
 void	LowPassFIR::resize (int newSize) {
-float	*temp 	= (float *)alloca (newSize * sizeof (float));
+FLOAT	temp [newSize];
 float	sum = 0;
 
 	filterSize	= newSize;
@@ -117,7 +117,7 @@ Complex	tmp	= 0;
 	return tmp;
 }
 
-float	LowPassFIR::Pass (float v) {
+FLOAT	LowPassFIR::Pass (FLOAT v) {
 	return real (Pass (Complex (v, 0)));
 }
 

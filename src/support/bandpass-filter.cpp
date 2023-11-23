@@ -34,10 +34,10 @@
 	                          int32_t sampleRate):
 	                                 kernel (filterSize),
 	                                 buffer (filterSize) {
-float	tmp [filterSize];
-float	lo	= (float) ((high - low) / 2) / sampleRate;
-float	shift	= (float) ((high + low) / 2) / sampleRate;
-float	sum	= 0.0;
+FLOAT	tmp [filterSize];
+FLOAT	lo	= (FLOAT) ((high - low) / 2) / sampleRate;
+FLOAT	shift	= (FLOAT) ((high + low) / 2) / sampleRate;
+FLOAT	sum	= 0.0;
 
 
 	this	-> sampleRate	= sampleRate;
@@ -57,14 +57,14 @@ float	sum	= 0.0;
 //
 //	windowing
 	   tmp [i]  *= (0.42 -
-		    0.5 * cos (2 * M_PI * (float)i / (float)filterSize) +
-		    0.08 * cos (4 * M_PI * (float)i / (float)filterSize));
+		    0.5 * cos (2 * M_PI * (FLOAT)i / (FLOAT)filterSize) +
+		    0.08 * cos (4 * M_PI * (FLOAT)i / (FLOAT)filterSize));
 
 	   sum += tmp [i];
 	}
 
 	for (int i = 0; i < filterSize; i ++) {	// shifting
-	   float v = (i - filterSize / 2) * (2 * M_PI * shift);
+	   FLOAT v = (i - filterSize / 2) * (2 * M_PI * shift);
 	   kernel [i] = Complex (tmp [i] * cos (v) / sum, 
 	                         tmp [i] * sin (v) / sum);
 	}
@@ -76,7 +76,7 @@ float	sum	= 0.0;
 
 //	we process the samples backwards rather than reversing
 //	the kernel
-std::complex<float> BandPassFIR::Pass (Complex z) {
+Complex	 BandPassFIR::Pass (Complex z) {
 int16_t	i;
 Complex	tmp	= 0;
 
@@ -92,9 +92,9 @@ Complex	tmp	= 0;
 	return tmp;
 }
 
-float	BandPassFIR::Pass (float v) {
+FLOAT	BandPassFIR::Pass (FLOAT v) {
 int16_t		i;
-float	tmp	= 0;
+FLOAT	tmp	= 0;
 
 	buffer [ip] = Complex (v, 0);
 	for (i = 0; i < filterSize; i ++) {

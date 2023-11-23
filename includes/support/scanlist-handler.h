@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include	"radio.h"
 #include	<QListView>
 #include	<QStringList>
 #include	<QStringListModel>
@@ -36,7 +35,7 @@ class	scanListHandler:public QListView {
 Q_OBJECT
 public:
 		scanListHandler	(RadioInterface *radio,
-	                                 QString fileName);
+	                                 const QString fileName);
 		~scanListHandler	();
 	void	addElement	(const QString &, const QString &);
 	void	clear_scanList	();

@@ -41,7 +41,7 @@ class	rawFiles: public QObject,
 	          public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			rawFiles	(QString);
+			rawFiles	(bool);
  	               ~rawFiles	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
 	uint8_t		myIdentity	();
@@ -55,6 +55,7 @@ private:
 	FILE		*filePointer;
 	rawReader	*readerTask;
 	std::atomic<bool>	running;
+	QString		getFileName	(bool);
 public slots:
 	void		setProgress	(int, float);
 };

@@ -57,6 +57,7 @@ public:
 	                         QSettings *);
 		~displayWidget	();
 	int	get_tab		();
+	void	set_bitDepth	(int);
 	void	show_spectrum	(std::vector<Complex> &, int);
 	void	show_null	(Complex *, int);
 	void	show_correlation	(std::vector<float> &,

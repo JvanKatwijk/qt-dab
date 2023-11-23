@@ -30,9 +30,10 @@
 #include	<QFileDialog>
 #include	"pluto-handler.h"
 #include	"xml-filewriter.h"
-//
+#include	"device-exceptions.h"
+
 //	Description for the fir-filter is here:
-#include	"ad9361.h"
+#include	"dabFilter.h"
 
 /* static scratch mem for strings */
 static char tmpstr[64];
@@ -44,7 +45,8 @@ char*	get_ch_name (const char* type, int id) {
         return tmpstr;
 }
 
-int	ad9361_set_trx_fir_enable(struct iio_device *dev, int enable) {
+int	plutoHandler::
+	ad9361_set_trx_fir_enable (struct iio_device *dev, int enable) {
 int ret = iio_device_attr_write_bool (dev,
 	                              "in_out_voltage_filter_fir_en",
 	                              !!enable);
@@ -55,7 +57,8 @@ int ret = iio_device_attr_write_bool (dev,
 	return ret;
 }
 
-int	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
+int	plutoHandler::
+	ad9361_get_trx_fir_enable (struct iio_device *dev, int *enable) {
 bool value;
 
 	int ret = iio_device_attr_read_bool (dev,
@@ -72,18 +75,14 @@ bool value;
 	return ret;
 }
 
-enum iodev { RX, TX };
-
 /* returns ad9361 phy device */
-static
-struct iio_device* get_ad9361_phy (struct iio_context *ctx) {
+struct iio_device* plutoHandler::get_ad9361_phy (struct iio_context *ctx) {
 struct iio_device *dev = iio_context_find_device (ctx, "ad9361-phy");
 	return dev;
 }
 
 /* finds AD9361 streaming IIO devices */
-static
-bool get_ad9361_stream_dev (struct iio_context *ctx,
+bool 	plutoHandler::get_ad9361_stream_dev (struct iio_context *ctx,
 	                    enum iodev d, struct iio_device **dev) {
 	switch (d) {
 	case TX:
@@ -100,10 +99,11 @@ bool get_ad9361_stream_dev (struct iio_context *ctx,
 }
 
 /* finds AD9361 streaming IIO channels */
-static
-bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
-	                   enum iodev d, struct iio_device *dev,
-	                   int chid, struct iio_channel **chn) {
+bool	plutoHandler::get_ad9361_stream_ch (__notused struct iio_context *ctx,
+	                                    enum iodev d,
+	                                    struct iio_device *dev,
+	                                    int chid,
+	                                    struct iio_channel **chn) {
 	*chn = iio_device_find_channel (dev,
 	                                get_ch_name ("voltage", chid),
 	                                d == TX);
@@ -115,8 +115,7 @@ bool get_ad9361_stream_ch (__notused struct iio_context *ctx,
 }
 
 /* finds AD9361 phy IIO configuration channel with id chid */
-static
-bool	get_phy_chan (struct iio_context *ctx,
+bool	plutoHandler::get_phy_chan (struct iio_context *ctx,
 	              enum iodev d, int chid, struct iio_channel **chn) {
 	switch (d) {
 	   case RX:
@@ -137,8 +136,7 @@ bool	get_phy_chan (struct iio_context *ctx,
 }
 
 /* finds AD9361 local oscillator IIO configuration channels */
-static
-bool	get_lo_chan (struct iio_context *ctx,
+bool	plutoHandler::get_lo_chan (struct iio_context *ctx,
 	             enum iodev d, struct iio_channel **chn) {
 // LO chan is always output, i.e. true
 	switch (d) {
@@ -160,9 +158,9 @@ bool	get_lo_chan (struct iio_context *ctx,
 }
 
 /* applies streaming configuration through IIO */
-bool cfg_ad9361_streaming_ch (struct iio_context *ctx,
-	                      struct stream_cfg *cfg,
-	                      enum iodev type, int chid) {
+bool	plutoHandler::cfg_ad9361_streaming_ch (struct iio_context *ctx,
+	                                       struct stream_cfg *cfg,
+	                                       enum iodev type, int chid) {
 struct iio_channel *chn = NULL;
 int	ret;
 
@@ -192,13 +190,34 @@ int	ret;
 }
 
 	plutoHandler::plutoHandler  (QSettings *s,
-	                             QString &recorderVersion):
-	                                  myFrame (nullptr),
+	                             const QString &recorderVersion):
 	                                  _I_Buffer (4 * 1024 * 1024) {
 	plutoSettings			= s;
 	this	-> recorderVersion	= recorderVersion;
 	setupUi (&myFrame);
 	myFrame. show	();
+
+#ifdef	__MINGW32__
+	const char * libName = "libiio.dll";
+#else
+	const char * libName= "libiio.so";
+#endif
+
+	pHandle		= new QLibrary (libName);
+	if (pHandle == nullptr) {
+	   throw pluto_exception ("could not load " + std::string (libName));
+	}
+
+	pHandle -> load ();
+	if (!pHandle -> isLoaded ()) {
+	   throw pluto_exception ("Failed to open " + std::string (libName));
+	}
+
+	bool success			= loadFunctions ();
+	if (!success) {
+	   delete pHandle;
+	   throw pluto_exception ("could not load all required lib functions");
+	}
 
 	this	-> ctx			= nullptr;
 	this	-> rxbuf		= nullptr;
@@ -247,28 +266,29 @@ int	ret;
 
 	if (ctx == nullptr) {
 	   fprintf (stderr, "No pluto found, fatal\n");
-	   throw (24);
+	   throw (pluto_exception ("No pluto device detected"));
 	}
 //
-
+	
 	if (iio_context_get_devices_count (ctx) <= 0) {
-	   fprintf (stderr, "no devices, fatal");
-	   throw (25);
+	   throw (pluto_exception ("no pluto device detected"));
 	}
-
+//	
 	fprintf (stderr, "* Acquiring AD9361 streaming devices\n");
 	if (!get_ad9361_stream_dev (ctx, RX, &rx)) {
-	   fprintf (stderr, "No RX device found\n");
-	   throw (27);
-	}
-
-	fprintf (stderr, "* Configuring AD9361 for streaming\n");
-	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
-	   fprintf (stderr, "RX port 0 not found\n");
-	   throw (28);
+	   throw (pluto_exception ("No RX device found"));
 	}
 
 	struct iio_channel *chn;
+	fprintf (stderr, "switching off TX\n");
+	if (get_phy_chan (ctx, TX, 0, &chn)) 
+	   iio_channel_attr_write_longlong (chn, "powerdown", 1);
+
+	fprintf (stderr, "* Configuring AD9361 for streaming\n");
+	if (!cfg_ad9361_streaming_ch (ctx, &rx_cfg, RX, 0)) {
+	   throw (pluto_exception ("RX port 0 not found"));
+	}
+
 	if (get_phy_chan (ctx, RX, 0, &chn)) {
 	   int ret;
 	   if (agcMode)
@@ -285,18 +305,16 @@ int	ret;
 	   }
 
 	   if (ret < 0)
-	      fprintf (stderr, "setting agc/gain did not work\n");
+	      throw (pluto_exception ("setting agc/gain did not work"));
 	}
 
 	fprintf (stderr, "* Initializing AD9361 IIO streaming channels\n");
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 0, &rx0_i)) {
-	   fprintf (stderr, "RX chan i not found");
-	   throw (30);
+	   throw (pluto_exception ("RX I channel not found"));
 	}
 	
 	if (!get_ad9361_stream_ch (ctx, RX, rx, 1, &rx0_q)) {
-	   fprintf (stderr,"RX chan q not found");
-	   throw (31);
+	   throw (pluto_exception ("RX  Q channel not found"));
 	}
 	
         iio_channel_enable (rx0_i);
@@ -304,9 +322,8 @@ int	ret;
 
         rxbuf = iio_device_create_buffer (rx, 256*1024, false);
 	if (rxbuf == nullptr) {
-	   fprintf (stderr, "could not create RX buffer, fatal");
 	   iio_context_destroy (ctx);
-	   throw (35);
+	   throw (pluto_exception ("could not create RX buffer"));
 	}
 
 	iio_buffer_set_blocking_mode (rxbuf, true);
@@ -341,20 +358,26 @@ int	ret;
 	int enabled;
 //
 //	go for the filter
-        (void)  ad9361_set_bb_rate_custom_filter_manual (get_ad9361_phy (ctx),
-                                                         PLUTO_RATE,
-                                                         1540000 / 2,
-                                                         1.1 * 1540000 / 2,
-                                                         1920000,
-                                                         1536000);
+	ad9361_get_trx_fir_enable (get_ad9361_phy (ctx), &enabled);
+	if (enabled)
+	   ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
+	int ret = iio_device_attr_write_raw (get_ad9361_phy (ctx),
+	                                     "filter_fir_config",
+	                                     dabFilter, strlen (dabFilter));
+	if (ret < 0)
+	   fprintf (stderr, "filter mislukt");
 //	and enable it
 	filterButton	-> setText ("filter off");
+	ret = ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 1);
+	if (ret < 0)
+	   fprintf (stderr, "enabling filter failed\n");
 	connected	= true;
 	state -> setText ("ready to go");
 }
 
 	plutoHandler::~plutoHandler() {
 	myFrame. hide ();
+	stopReader();
 	plutoSettings	-> beginGroup ("plutoSettings");
 	plutoSettings	-> setValue ("pluto-agcMode",
 	                              agcControl -> isChecked () ? 1 : 0);
@@ -365,31 +388,9 @@ int	ret;
 	if (!connected)		// should not happen
 	   return;
 	ad9361_set_trx_fir_enable (get_ad9361_phy (ctx), 0);
-	stopReader();
 	iio_buffer_destroy (rxbuf);
 	iio_context_destroy (ctx);
-}
-//
-
-void	plutoHandler::setVFOFrequency	(int32_t newFrequency) {
-int	ret;
-struct iio_channel *lo_channel;
-
-	rx_cfg. lo_hz = newFrequency;
-	ret	= get_lo_chan (ctx, RX, &lo_channel);
-	ret	= iio_channel_attr_write_longlong (lo_channel,
-	                                           "frequency",
-	                                           rx_cfg. lo_hz);
-	if (ret < 0) {
-	   fprintf (stderr, "cannot set local oscillator frequency\n");
-	}
-	if (debugFlag)
-	   fprintf (stderr, "frequency set to %d\n",
-	                                 (int)(rx_cfg. lo_hz));
-}
-
-int32_t	plutoHandler::getVFOFrequency () {
-	return rx_cfg. lo_hz;
+	delete pHandle;
 }
 //
 //	If the agc is set, but someone touches the gain button
@@ -479,6 +480,8 @@ iio_channel *gain_channel;
 	   return false;
 	if (running. load())
 	   return true;		// should not happen
+
+	lastFrequency	= freq;
 	if (save_gainSettings)
 	   update_gainSettings (freq /MHz (1));
 
@@ -541,14 +544,13 @@ void	plutoHandler::stopReader() {
 void	plutoHandler::run	() {
 char	*p_end, *p_dat;
 int	p_inc;
-int	nbytes_rx;
 std::complex<float> localBuf [DAB_RATE / DIVIDER];
-std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
+std::complex<int16_t> dumpBuf [DAB_RATE / DIVIDER];
 
 	state -> setText ("running");
 	running. store (true);
 	while (running. load ()) {
-	   nbytes_rx	= iio_buffer_refill	(rxbuf);
+	   (void) iio_buffer_refill	(rxbuf);
 	   p_inc	= iio_buffer_step	(rxbuf);
 	   p_end	= (char *) iio_buffer_end  (rxbuf);
 
@@ -556,19 +558,20 @@ std::complex<int16_t> dumpBuf [CONV_SIZE + 1];
 	        p_dat < p_end; p_dat += p_inc) {
 	      const int16_t i_p = ((int16_t *)p_dat) [0];
 	      const int16_t q_p = ((int16_t *)p_dat) [1];
-	      dumpBuf [convIndex] = std::complex<int16_t> (i_p, q_p);
+	      std::complex<int16_t>dumpS = std::complex<int16_t> (i_p, q_p);
+	      dumpBuf [convIndex] = dumpS;
 	      std::complex<float>sample = std::complex<float> (i_p / 2048.0,
 	                                                       q_p / 2048.0);
 	      convBuffer [convIndex ++] = sample;
 	      if (convIndex > CONV_SIZE) {
 	         if (dumping. load ())
-	            xmlWriter -> add (&dumpBuf [1], CONV_SIZE);
+	            xmlWriter -> add (dumpBuf, CONV_SIZE);
 	         for (int j = 0; j < DAB_RATE / DIVIDER; j ++) {
 	            int16_t inpBase	= mapTable_int [j];
 	            float   inpRatio	= mapTable_float [j];
-	            localBuf [j]	= cmul (convBuffer [inpBase + 1],
-	                                                          inpRatio) +
-                                     cmul (convBuffer [inpBase], 1 - inpRatio);
+	            localBuf [j]	=
+	                             convBuffer [inpBase + 1] * inpRatio +
+                                     convBuffer [inpBase] * (1 - inpRatio);
                  }
 	         _I_Buffer. putDataIntoBuffer (localBuf,
 	                                        DAB_RATE / DIVIDER);
@@ -614,18 +617,6 @@ int16_t	plutoHandler::bitDepth () {
 
 QString	plutoHandler::deviceName	() {
 	return "ADALM PLUTO";
-}
-
-void	plutoHandler::show	() {
-	myFrame. show	();
-}
-
-void	plutoHandler::hide	() {
-	myFrame. hide	();
-}
-
-bool	plutoHandler::isHidden	() {
-	return myFrame. isHidden ();
 }
 
 void	plutoHandler::toggle_debugButton	() {
@@ -679,7 +670,7 @@ QString saveDir = plutoSettings -> value ("saveDir_xmlDump",
 	                                      12,
 	                                      "int16",
 	                                      PLUTO_RATE,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "pluto",
 	                                      "I",
 	                                      recorderVersion);
@@ -737,12 +728,210 @@ QString	theValue	= "";
 	new_gainValue (gainValue);
 	while (gainControl -> value () != gainValue)
 	   usleep (1000);
+	set_gainControl (gainControl -> value ());
 	gainControl	-> blockSignals (false);
 
 	agcControl	-> blockSignals (true);
 	new_agcValue (agc == 1);
 	while (agcControl -> isChecked () != (agc == 1))
 	   usleep (1000);
+	set_agcControl (agcControl -> isChecked ());
 	agcControl	-> blockSignals (false);
+}
+
+bool	plutoHandler::loadFunctions	() {
+
+	iio_device_find_channel =
+	           (pfn_iio_device_find_channel)
+	                    pHandle -> resolve ("iio_device_find_channel");
+	if (iio_device_find_channel == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_find_channel");
+	   return false;
+	}
+
+	iio_create_default_context =
+	            (pfn_iio_create_default_context)
+	                    pHandle -> resolve ("iio_create_default_context");
+	if (iio_create_default_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_default_context");
+	   return false;
+	}
+
+	iio_create_local_context =
+	            (pfn_iio_create_local_context)
+	                    pHandle -> resolve ("iio_create_local_context");
+	if (iio_create_local_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_local_context");
+	   return false;
+	}
+
+	iio_create_network_context =
+	            (pfn_iio_create_network_context)
+	                    pHandle -> resolve ("iio_create_network_context");
+	if (iio_create_network_context == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_create_network_context");
+	   return false;
+	}
+
+	iio_context_get_name =
+	            (pfn_iio_context_get_name)
+	                    pHandle -> resolve ("iio_context_get_name");
+	if (iio_context_get_name == nullptr) {
+//	   fprintf (stderr, "could not load %s\n", iio_context_get_name);
+	   return false;
+	}
+
+	iio_context_get_devices_count =
+	            (pfn_iio_context_get_devices_count)
+	                    pHandle -> resolve ("iio_context_get_devices_count");
+	if (iio_context_get_devices_count == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_get_devices_count");
+	   return false;
+	}
+
+	iio_context_find_device =
+	             (pfn_iio_context_find_device)
+	                    pHandle -> resolve ("iio_context_find_device");
+	if (iio_context_find_device == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_find_device");
+	   return false;
+	}
+
+	iio_device_attr_read_bool =
+	             (pfn_iio_device_attr_read_bool)
+	                      pHandle -> resolve ("iio_device_attr_read_bool");
+	if (iio_device_attr_read_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_read_bool");
+	   return false;
+	}
+
+	iio_device_attr_write_bool =
+	             (pfn_iio_device_attr_write_bool)
+	                      pHandle -> resolve ("iio_device_attr_write_bool");
+	if (iio_device_attr_write_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_bool");
+	   return false;
+	}
+
+	iio_channel_attr_read_bool =
+	             (pfn_iio_channel_attr_read_bool)
+	                      pHandle -> resolve ("iio_channel_attr_read_bool");
+	if (iio_channel_attr_read_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_read_bool");
+	   return false;
+	}
+
+	iio_channel_attr_write_bool =
+	             (pfn_iio_channel_attr_write_bool)
+	                      pHandle -> resolve ("iio_channel_attr_write_bool");
+	if (iio_channel_attr_write_bool == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_bool");
+	   return false;
+	}
+
+	iio_channel_enable =
+	             (pfn_iio_channel_enable)
+	                      pHandle -> resolve ("iio_channel_enable");
+	if (iio_channel_enable == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_enable");
+	   return false;
+	}
+
+	iio_channel_attr_write =
+	              (pfn_iio_channel_attr_write)
+	                      pHandle -> resolve ("iio_channel_attr_write");
+	if (iio_channel_attr_write == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write");
+	   return false;
+	}
+
+	iio_channel_attr_write_longlong =
+	              (pfn_iio_channel_attr_write_longlong)
+	                       pHandle -> resolve ("iio_channel_attr_write_longlong");
+	if (iio_channel_attr_write_longlong == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_channel_attr_write_longlong");
+	   return false;
+	}
+
+	iio_device_attr_write_longlong =
+	               (pfn_iio_device_attr_write_longlong)
+	                        pHandle -> resolve ("iio_device_attr_write_longlong");
+	if (iio_device_attr_write_longlong == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_longlong");
+	   return false;
+	}
+
+	iio_device_attr_write_raw =
+	               (pfn_iio_device_attr_write_raw)
+	                         pHandle -> resolve ("iio_device_attr_write_raw");
+	if (iio_device_attr_write_raw == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_attr_write_raw");
+	   return false;
+	}
+
+	iio_device_create_buffer =
+	               (pfn_iio_device_create_buffer)
+	                         pHandle -> resolve ("iio_device_create_buffer");
+	if (iio_device_create_buffer == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_device_create_buffer");
+	   return false;
+	}
+
+	iio_buffer_set_blocking_mode =
+	               (pfn_iio_buffer_set_blocking_mode)
+	                         pHandle -> resolve ("iio_buffer_set_blocking_mode");
+	if (iio_buffer_set_blocking_mode == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_set_blocking_mode");
+	   return false;
+	}
+
+	iio_buffer_destroy =
+	               (pfn_iio_buffer_destroy)
+	                         pHandle -> resolve ("iio_buffer_destroy");
+	if (iio_buffer_destroy == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_destroy");
+	   return false;
+	}
+
+	iio_context_destroy =
+	               (pfn_iio_context_destroy)
+	                         pHandle -> resolve ("iio_context_destroy");
+	if (iio_context_destroy == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_context_destroy");
+	   return false;
+	}
+
+	iio_buffer_refill =
+	               (pfn_iio_buffer_refill)
+	                         pHandle -> resolve ("iio_buffer_refill");
+	if (iio_buffer_refill == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_refill");
+	   return false;
+	}
+
+	iio_buffer_step =
+	               (pfn_iio_buffer_step)
+	                         pHandle -> resolve ("iio_buffer_step");
+	if (iio_buffer_step == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_step");
+	   return false;
+	}
+
+	iio_buffer_end =
+	               (pfn_iio_buffer_end)
+	                          pHandle -> resolve ("iio_buffer_end");
+	if (iio_buffer_end == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_end");
+	   return false;
+	}
+
+	iio_buffer_first =
+	               (pfn_iio_buffer_first)
+	                          pHandle -> resolve ("iio_buffer_first");
+	if (iio_buffer_first == nullptr) {
+	   fprintf (stderr, "could not load %s\n", "iio_buffer_first");
+	   return false;
+	}
+	return true;
 }
 

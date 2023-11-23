@@ -88,11 +88,10 @@ public:
 			hackrfHandler		(QSettings *,
 	                                            const QString &);
 			~hackrfHandler		();
-	int32_t		getVFOFrequency		();
 
 	bool		restartReader		(int32_t);
 	void		stopReader		();
-	int32_t		getSamples		(Complex *, int32_t);
+	int32_t		getSamples		(std::complex<float> *, int32_t);
 	int32_t		Samples			();
 	void		resetBuffer		();
 	int16_t		bitDepth		();
@@ -133,7 +132,6 @@ private:
 	QSettings		*hackrfSettings;
 	QString			recorderVersion;
 	int32_t			inputRate;
-	int32_t			vfoFrequency;
 	std::atomic<bool>	running;
 	QLibrary*		library_p;
 
@@ -142,7 +140,6 @@ private:
         std::atomic<bool>	dumping;
 	bool			save_gainSettings;
 
-	void			check_error		(bool, const std::string);
 	bool			load_hackrfFunctions	();
         bool			setup_xmlDump           ();
         void			close_xmlDump           ();

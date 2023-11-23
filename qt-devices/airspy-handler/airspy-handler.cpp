@@ -1,4 +1,4 @@
-
+#
 /**
  *  IW0HDV Extio
  *
@@ -36,7 +36,7 @@ static
 const	int	EXTIO_BASE_TYPE_SIZE = sizeof (float);
 
 	airspyHandler::airspyHandler (QSettings *s,
-	                              QString recorderVersion):
+	                              const QString  &recorderVersion):
                                          _I_Buffer (4 * 1024 * 1024) {
 int	result, i;
 int	distance	= 1000000;
@@ -81,17 +81,26 @@ uint32_t samplerateCount;
 	                               std::string (libraryString)));
 	}
 
-	check_error (load_airspyFunctions (),
-	   "one or more library functions could not be loaded");
+	if (!load_airspyFunctions ()) {
+	   releaseLibrary ();
+	   throw (airspy_exception ("one or more library functions could not be loaded"));
+	}
 //
 	strcpy (serial,"");
-	check_error (this -> my_airspy_init () == AIRSPY_SUCCESS,
-	             my_airspy_error_name ((airspy_error)result));
+	if (this -> my_airspy_init () != AIRSPY_SUCCESS) {
+	   releaseLibrary ();
+	   throw (airspy_exception 
+	                   (my_airspy_error_name ((airspy_error)result)));
+	}
 
 	uint64_t deviceList [4];
 	int	deviceIndex;
-	int numofDevs = my_airspy_list_devices (deviceList, 4);
-	check_error (numofDevs > 0, "No airspy device was detected");
+	int numofDevs = my_airspy_list_devices (deviceList, 4)
+;
+	if (numofDevs == 0) {
+	   releaseLibrary ();
+	   throw (airspy_exception ("No airspy device was detected"));
+	}
 
 	if (numofDevs > 1) {
            airspySelect deviceSelector;
@@ -105,8 +114,11 @@ uint32_t samplerateCount;
 	   deviceIndex = 0;
 	
 	result = my_airspy_open (&device, deviceList [deviceIndex]);
-	check_error (result == AIRSPY_SUCCESS,
-	                      my_airspy_error_name ((airspy_error)result));
+	if (result != AIRSPY_SUCCESS) {
+	   releaseLibrary ();
+	   throw (airspy_exception
+	                      (my_airspy_error_name ((airspy_error)result)));
+	}
 
 	(void) my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 	(void) my_airspy_get_samplerates (device, &samplerateCount, 0);
@@ -124,7 +136,10 @@ uint32_t samplerateCount;
 	   }
 	}
 
-	check_error (selectedRate > 0, "Cannot handle the samplerates");
+	if (selectedRate == 0) {
+	   releaseLibrary ();
+	   throw (airspy_exception ("Cannot handle the samplerates"));
+	}
 
 	fprintf (stderr, "selected samplerate = %d\n", selectedRate);
 
@@ -136,9 +151,13 @@ uint32_t samplerateCount;
 	theFilter	= new LowPassFIR (currentDepth, 1560000 / 2, selectedRate);
 	filtering	= false;
 	result = my_airspy_set_samplerate (device, selectedRate);
-	check_error (result == AIRSPY_SUCCESS,
-	             my_airspy_error_name ((enum airspy_error)result));
 
+	
+	if (result != AIRSPY_SUCCESS) {
+	   releaseLibrary ();
+	   throw (airspy_exception
+	             (my_airspy_error_name ((enum airspy_error)result)));
+	}
 
 //	The sizes of the mapTables follow from the input and output rate
 //	(selectedRate / 1000) vs (2048000 / 1000)
@@ -216,14 +235,6 @@ uint32_t samplerateCount;
 	releaseLibrary ();
 }
 
-int32_t	airspyHandler::getVFOFrequency() {
-	return vfoFrequency;
-}
-
-int32_t	airspyHandler::defaultFrequency() {
-	return Khz (220000);
-}
-
 void	airspyHandler::set_filter	(int c) {
 	(void)c;
 	filtering	= filterSelector -> isChecked ();
@@ -237,7 +248,7 @@ int	result;
 	if (running. load())
 	   return true;
 
-	vfoFrequency	= freq;
+	lastFrequency	= freq;
 	airspySettings	-> beginGroup ("airspySettings");
 	QString key = "tabSettings-" + QString::number (freq / MHz (1));
 	int tab	= airspySettings -> value (key, 0). toInt ();
@@ -289,11 +300,10 @@ int	result;
 
 	close_xmlDump ();
 	airspySettings	-> beginGroup ("airspySettings");
-	QString key = "tabSettings-" +
-	            QString::number (getVFOFrequency () / MHz (1));
+	QString key = "tabSettings-" + QString::number (lastFrequency / MHz (1));
 	airspySettings	-> setValue (key, tabWidget -> currentIndex ());
 	airspySettings	-> endGroup ();
-	record_gainSettings (getVFOFrequency () / MHz (1), 
+	record_gainSettings (lastFrequency / MHz (1), 
 	                           tabWidget -> currentIndex ());
 	result = my_airspy_stop_rx (device);
 
@@ -326,7 +336,7 @@ airspyHandler *p;
 int 	airspyHandler::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
-Complex temp [2048];
+std::complex<float> temp [2048];
 int32_t  i, j;
 
 	if (dumping. load ())
@@ -342,7 +352,7 @@ int32_t  i, j;
 	   }
 	   for (i = 0; i < nSamples; i ++) {
 	      convBuffer [convIndex ++] = theFilter -> Pass (
-	                                     Complex (
+	                                     std::complex<float> (
 	                                        sbuf [2 * i] / (float)2048,
 	                                        sbuf [2 * i + 1] / (float)2048)
 	                                     );
@@ -365,7 +375,7 @@ int32_t  i, j;
 	}
 	else
 	for (i = 0; i < nSamples; i ++) {
-	   convBuffer [convIndex ++] = Complex (
+	   convBuffer [convIndex ++] = std::complex<float> (
 	                                     sbuf [2 * i] / (float)2048,
 	                                     sbuf [2 * i + 1] / (float)2048);
 	   if (convIndex > convBufferSize) {
@@ -427,7 +437,7 @@ int16_t	airspyHandler::bitDepth		() {
 	return 13;
 }
 
-int32_t	airspyHandler::getSamples (Complex *v, int32_t size) {
+int32_t	airspyHandler::getSamples (std::complex<float> *v, int32_t size) {
 	return _I_Buffer. getDataFromBuffer (v, size);
 }
 
@@ -677,7 +687,7 @@ QString saveDir = airspySettings -> value ("saveDir_xmlDump",
 	                                      12,
 	                                      "int16",
 	                                      selectedRate,
-	                                      getVFOFrequency (),
+	                                      lastFrequency,
 	                                      "AIRspy",
 	                                      "I",
 	                                      recorderVersion);
@@ -841,7 +851,7 @@ void	airspyHandler::restore_gainSettings	(int tab) {
 }
 
 void	airspyHandler::switch_tab (int t) {
-	record_gainSettings (getVFOFrequency () / MHz (1),
+	record_gainSettings (lastFrequency / MHz (1),
 	                           tabWidget -> currentIndex ());
 	tabWidget       -> blockSignals (true);
 	new_tabSetting	(t);
@@ -851,7 +861,7 @@ void	airspyHandler::switch_tab (int t) {
 	airspySettings	-> beginGroup ("airspySettings");
 	airspySettings	-> setValue ("tabSettings", t);
 	airspySettings	-> endGroup ();
-	restore_gainSliders (getVFOFrequency () / MHz (1), t);
+	restore_gainSliders (lastFrequency / MHz (1), t);
 	restore_gainSettings (t);
 }
 
@@ -977,13 +987,6 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	if (result != AIRSPY_SUCCESS) {
 	   printf("airspy_set_rf_bias() failed: %s (%d)\n",
 	           my_airspy_error_name ((airspy_error)result), result);
-	}
-}
-
-void	airspyHandler::check_error (bool b, const std::string s) {
-	if (!b) {
-	   releaseLibrary ();
-	   throw (airspy_exception (s));
 	}
 }
 

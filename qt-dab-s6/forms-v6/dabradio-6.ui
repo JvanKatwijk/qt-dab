@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>439</height>
+    <height>408</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.1</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_7">
+  <layout class="QHBoxLayout" name="horizontalLayout_9">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
@@ -46,31 +46,12 @@
            </font>
           </property>
           <property name="toolTip">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting a service is by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;left &lt;/span&gt;mouse button on the name of the service.&lt;/p&gt;&lt;p&gt;Clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;right mouse button on the name of the selected service &lt;/span&gt;in this list will add the service to the presets.&lt;/p&gt;&lt;p&gt;Clicking with the right mouse button on the name of any other of the listed (audio)services will start a background process, with which the AAC frames are stored onto a file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting a service is by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;left &lt;/span&gt;mouse button on the name of the service.&lt;/p&gt;&lt;p&gt;Clicking with the &lt;span style=&quot; font-weight:600;&quot;&gt;right&lt;/span&gt;  mouse button, the service is added to the presets &lt;span style=&quot; font-weight:600;&quot;&gt;UNLESS &lt;/span&gt;the checkbox on the configuration widget is set to allow background services, in which case the service - assuming it is an audio service - is played in the background and the AAC data of the output is sent to a file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_4">
-          <item>
-           <widget class="presetComboBox" name="presetSelector">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Presets are short cuts to services - possibly in ensembles in different channels - that are obtained by clicking with the &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;right &lt;/span&gt;mouse button on the name of the service &lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;in the list of services when selected&lt;/span&gt;.&lt;/p&gt;&lt;p&gt;Removing a name from the presets is by selecting the service in this combobox and touching the right hand mouse button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <item>
-             <property name="text">
-              <string>Presets</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-         </layout>
+         <layout class="QHBoxLayout" name="horizontalLayout_4"/>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -137,14 +118,25 @@
       </widget>
      </item>
      <item>
-      <widget class="newPushButton" name="scanListButton">
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Result of a (single) scan is stored in the list. Left mouse click on an element will select the service, named by the element. Right mouse click causes the service name to be added to the preset list.&lt;/p&gt;&lt;p&gt;If clearScan is selected (the default), the list is cleared when scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>scanlist</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_7">
+       <item>
+        <widget class="newPushButton" name="scanListButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Result of a (single) scan is stored in the list. Left mouse click on an element will select the service, named by the element. Right mouse click causes the service name to be added to the preset list.&lt;/p&gt;&lt;p&gt;If clearScan is selected (the default), the list is cleared when scanning.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>scanlist</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="newPushButton" name="presetButton">
+         <property name="text">
+          <string>favorites</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
@@ -400,11 +392,6 @@
    <class>smallComboBox</class>
    <extends>QComboBox</extends>
    <header>smallcombobox.h</header>
-  </customwidget>
-  <customwidget>
-   <class>presetComboBox</class>
-   <extends>QComboBox</extends>
-   <header>presetcombobox.h</header>
   </customwidget>
   <customwidget>
    <class>newPushButton</class>

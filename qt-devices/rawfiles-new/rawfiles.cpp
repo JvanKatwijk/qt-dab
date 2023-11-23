@@ -24,6 +24,8 @@
  *	For the (former) files with 8 bit raw data from the
  *	dabsticks 
  */
+
+#include	<QFileDialog>
 #include	"rawfiles.h"
 #include	<cstdio>
 #include	<unistd.h>
@@ -32,28 +34,29 @@
 //
 #include	<sys/time.h>
 #include	<ctime>
-
+#include	"device-exceptions.h"
 #include	"raw-reader.h"
 
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	rawFiles::rawFiles (QString f):
-	   _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
-	fileName	= f;
+	rawFiles::rawFiles (bool iqFile): _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	setupUi	(&myFrame);
 	myFrame. show	();
-	filePointer	= fopen (f. toUtf8(). data(), "rb");
+
+	QString fileName	= getFileName (iqFile);
+	if (fileName == "")
+	   throw file_exception ("no file specified");
+
+	filePointer	= fopen (fileName. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
-	   fprintf (stderr, "file %s cannot open\n",
-	                                   f. toUtf8(). data());
-	   perror ("file ?");
-	   throw (31);
+	   throw file_exception (fileName. toStdString () + " cannot open");
 	}
-	nameofFile	-> setText (f);
+
+	nameofFile	-> setText (fileName);
 	fseek (filePointer, 0, SEEK_END);
 	int64_t fileLength      = ftell (filePointer);
-        totalTime       -> display ((float)fileLength / (2048000 * 2));
+        totalTime       -> display ((float)fileLength / (INPUT_RATE * 2));
 	fseek (filePointer, 0, SEEK_SET);
 	fileProgress    -> setValue (0);
         currentTime     -> display (0);
@@ -116,5 +119,19 @@ void	rawFiles::setProgress (int progress, float timelength) {
 
 bool	rawFiles::isFileInput	() {
 	return true;
+}
+
+QString	rawFiles::getFileName 	(bool iqFiles) {
+
+	QString file = QFileDialog::getOpenFileName (nullptr,
+	                                             "Open file ...",
+	                                             QDir::homePath(),
+	                                             iqFiles ?
+	                                                  "iq data (*.iq)"
+	                                                : "raw data (*.raw)");
+	      if (file == QString (""))
+	         return "";
+
+	      return QDir::toNativeSeparators (file);
 }
 

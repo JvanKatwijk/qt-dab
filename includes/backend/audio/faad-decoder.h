@@ -64,5 +64,5 @@ bool    initialize      (stream_parms *);
         int32_t         baudRate;
         RingBuffer<std::complex<int16_t>>     *audioBuffer;
 signals:
-        void                    newAudio (int, int);
+        void                    newAudio (int, int, bool, bool);
 };

@@ -20,6 +20,13 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
+      <widget class="QCheckBox" name="biasT_selector">
+       <property name="text">
+        <string>biasT</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QCheckBox" name="agcControl">
        <property name="text">
         <string>agc</string>

@@ -50,7 +50,7 @@ class	xml_fileWriter;
 class	sdrplayHandler_v3: public QThread, public deviceHandler, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
-			sdrplayHandler_v3	(QSettings *, QString &);
+			sdrplayHandler_v3	(QSettings *, const QString &);
 			~sdrplayHandler_v3	();
 	int32_t		getVFOFrequency		();
 	int32_t		defaultFrequency	();

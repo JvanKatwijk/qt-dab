@@ -65,7 +65,7 @@ private:
 	bool			working;
 	HANDLE_AACDECODER	handle;
 signals:
-	void			newAudio	(int, int);
+	void			newAudio	(int, int, bool, bool);
 };
 
 #endif

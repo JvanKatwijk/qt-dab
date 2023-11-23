@@ -19,50 +19,51 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+#include	<QString>
+#include	<QFileDialog>
 #include	<cstdio>
 #include	<unistd.h>
 #include	<cstdlib>
 #include	<fcntl.h>
 #include	<sys/time.h>
 #include	<ctime>
-#include	<QString>
 #include	"wavfiles.h"
+#include	"device-exceptions.h"
 
 #define	__BUFFERSIZE__	8 * 32768
 
-	wavFiles::wavFiles (QString f):
-	                         _I_Buffer (__BUFFERSIZE__) {
+	wavFiles::wavFiles (): _I_Buffer (__BUFFERSIZE__) {
 SF_INFO *sf_info;
 
-	fileName	= f;
 	setupUi (&myFrame);
 	myFrame. show	();
+	fileName	= getFileName ();
+	if (fileName == "")
+	   throw file_exception ("no file specified");
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
-	filePointer	= sf_open (f. toUtf8(). data(), SFM_READ, sf_info);
+	filePointer	= sf_open (fileName. toUtf8(). data(),
+	                                          SFM_READ, sf_info);
 	if (filePointer == nullptr) {
-	   fprintf (stderr, "file %s no legitimate sound file\n", 
-	                                f. toUtf8().data());
-	   throw (24);
+	   throw file_exception (fileName. toStdString () + "no sdr file");
 	}
-	if ((sf_info -> samplerate != 2048000) ||
+	if ((sf_info -> samplerate != INPUT_RATE) ||
 	    (sf_info -> channels != 2)) {
-	   fprintf (stderr, "This is not a recorded dab file, sorry\n");
 	   sf_close (filePointer);
-	   throw (25);
+	   throw file_exception (fileName. toStdString () + "wrong samplerate");
 	}
-	nameofFile	-> setText (f);
+	nameofFile	-> setText (fileName);
 	fileProgress	-> setValue (0);
 	currentTime	-> display (0);
 	int64_t fileLength	= sf_seek (filePointer, 0, SEEK_END);
-	totalTime	-> display ((float)fileLength / 2048000);
+	totalTime	-> display ((float)fileLength / INPUT_RATE);
 	running. store (false);
 }
 //
 //	Note that running == true <==> readerTask has value assigned
 
-	wavFiles::~wavFiles() {
+	wavFiles::~wavFiles	() {
 	if (running. load()) {
 	   readerTask	-> stopReader();
 	   while (readerTask -> isRunning())
@@ -118,5 +119,17 @@ void    wavFiles::setProgress (int progress, float timelength) {
 
 bool	wavFiles::isFileInput	() {
 	return true;
+}
+
+QString	wavFiles::getFileName 	() {
+
+	QString file = QFileDialog::getOpenFileName (nullptr,
+	                                             "Open file ...",
+	                                             QDir::homePath(),
+	                                             "raw data (*.sdr)");
+	      if (file == QString (""))
+	         return "";
+
+	      return QDir::toNativeSeparators (file);
 }
 

@@ -41,6 +41,9 @@
 #include        "band-handler.h"
 #include	"process-params.h"
 #include	"converter_48000.h"
+#include        "scanlist-handler.h"
+#include        "preset-handler.h"
+
 #include	"dl-cache.h"
 #include	"tii-codes.h"
 #include	"content-table.h"
@@ -54,6 +57,7 @@
 #include	"epgdec.h"
 #include	"epg-decoder.h"
 
+#include	"device-chooser.h"
 #include	"spectrum-viewer.h"
 #include	"tii-viewer.h"
 #include	"correlation-viewer.h"
@@ -70,7 +74,6 @@ class	ofdmHandler;
 class	deviceHandler;
 class	audioSink;
 class	common_fft;
-class	scanListHandler;
 class	timeTableHandler;
 class	audioDisplay;
 #ifdef	HAVE_PLUTO_RXTX
@@ -115,6 +118,7 @@ public:
 }
 
 	QString		channelName;
+	int		tunedFrequency;
 	bool		realChannel;
 	bool		etiActive;
 	int		serviceCount;
@@ -138,6 +142,7 @@ public:
 	QByteArray	transmitters;
 
 	void	cleanChannel () {
+	tunedFrequency	= 0;
 	realChannel	= true;
 	serviceCount	= -1;
 	frequency	= -1;
@@ -160,6 +165,7 @@ class RadioInterface: public QWidget, private Ui_dabradio {
 Q_OBJECT
 public:
 		RadioInterface		(QSettings	*,
+	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
 	                                 const QString	&,
@@ -187,7 +193,6 @@ private:
 	correlationViewer	my_correlationViewer;
 	tiiViewer		my_tiiViewer;
 	snrViewer		my_snrViewer;
-	presetHandler		my_presetHandler;
 	bandHandler		theBand;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
@@ -197,6 +202,11 @@ private:
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;
 	converter_48000		audioConverter;
+
+        scanListHandler         my_scanListHandler;
+	presetHandler           my_presetHandler;
+	deviceChooser		chooseDevice;
+
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -286,8 +296,6 @@ private:
 	void			hideButtons		();
 	void			showButtons		();
 	deviceHandler		*create_device		(const QString &);
-	scanListHandler		*my_scanList;
-	scanListHandler		*my_presets;
 	timeTableHandler	*my_timeTable;
 
 	void			start_etiHandler	();
@@ -370,7 +378,7 @@ public slots:
 	void			sendDatagram		(int);
 	void			handle_tdcdata		(int, int);
 	void			changeinConfiguration	();
-	void			newAudio		(int, int);
+	void			newAudio		(int, int, bool, bool);
 //
 	void			setStereo		(bool);
 	void			set_streamSelector	(int);
@@ -404,7 +412,8 @@ public slots:
 	void			switchVisibility	(QWidget *);
 	void			nrServices		(int);
 
-	void			handle_presetSelector	(const QString &);
+	void			handle_presetSelect	(const QString &,
+	                                                 const QString &);
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
@@ -413,6 +422,7 @@ public slots:
 
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			handle_presetButton	();
 	void			handle_timeTable	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();
@@ -466,6 +476,7 @@ private slots:
 	void			color_detailButton	();
 	void			color_resetButton	();
 	void			color_scanButton	();
+	void			color_presetButton	();
 	void			color_tiiButton		();
 	void			color_correlationButton	();
 	void			color_spectrumButton	();

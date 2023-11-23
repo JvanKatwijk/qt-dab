@@ -46,8 +46,6 @@ public:
 			rtl_tcp_client	(QSettings *);
 			~rtl_tcp_client	();
 	int32_t		getRate		();
-	int32_t		defaultFrequency();
-	int32_t		getVFOFrequency	();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
@@ -70,10 +68,10 @@ private:
 	bool		isvalidRate	(int32_t);
 	QSettings	*remoteSettings;
 	int32_t		theRate;
-	int32_t		vfoFrequency;
 	RingBuffer<std::complex<float>>	*_I_Buffer;
 	bool		connected;
 	int16_t		theGain;
+	int		vfoOffset;
 	int16_t		thePpm;
 	QHostAddress	serverAddress;
 	QTcpSocket	toServer;
