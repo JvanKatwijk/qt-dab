@@ -121,7 +121,7 @@
 	deviceList. push_back (deviceItem ("rtl_tcp", RTL_TCP_DEVICE));
 #endif
 #ifdef	HAVE_SOAPY
-	deviceKist. push_back (deviceItem ("soapy", SOAPY_DEVICE));
+	deviceList. push_back (deviceItem ("soapy", SOAPY_DEVICE));
 #endif
 #ifdef  HAVE_EXTIO
 	deviceList. push_back (deviceItem ("extio", EXTIO_DEVICE));

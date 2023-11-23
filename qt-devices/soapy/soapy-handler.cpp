@@ -28,8 +28,7 @@
 #include	"soapy_CS16.h"
 #include	"soapy_CF32.h"
 
-	soapyHandler::soapyHandler (QSettings *soapySettings):
-	                             myFrame (nullptr) {
+	soapyHandler::soapyHandler (QSettings *soapySettings) {
 	this	-> soapySettings	= soapySettings;
         setupUi (&myFrame);
 	myFrame. show ();
@@ -181,20 +180,20 @@ QString	handlerName	= "driver=";
 }
 
 
-int32_t	soapyHandler::getVFOFrequency		(void) {
+int32_t	soapyHandler::getVFOFrequency		() {
 	return device	-> getFrequency (SOAPY_SDR_RX, 0);
 }
 	
-int32_t	soapyHandler::defaultFrequency		(void) {return 220000000;}
+int32_t	soapyHandler::defaultFrequency		() {return 220000000;}
 
 bool	soapyHandler::restartReader		(int32_t freq) {
 	if (worker == nullptr)
-	   return;
-	device	-> setFrequency (SOAPY_SDR_RX, 0, f);
+	   return true;
+	device	-> setFrequency (SOAPY_SDR_RX, 0, freq);
 	return true;
 }
 
-void	soapyHandler::stopReader		(void) {}
+void	soapyHandler::stopReader		() {}
 int32_t	soapyHandler::getSamples		(std::complex<float> *v,
                                                              int32_t a) {
 	if (worker == nullptr)
