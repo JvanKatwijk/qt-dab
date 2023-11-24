@@ -523,18 +523,29 @@ DEFINES	+= __DUMP_SNR__		# for experiments only
 #	devices
 #
 #	dabstick
-dabstick-generic {
+dabstick-linux {
 	DEFINES		+= HAVE_RTLSDR
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-generic
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-generic
-	HEADERS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h \
-	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp \
-	                   ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-linux
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-linux
+	HEADERS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
 }
 
-#
+dabstick-win {
+	DEFINES		+= HAVE_RTLSDR
+	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win
+	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win
+	HEADERS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.h \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.h
+	SOURCES		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-handler.cpp \
+	                   ../qt-devices/rtlsdr-handler-win/rtl-dongleselect.cpp
+	FORMS		+= ../qt-devices/rtlsdr-handler-win/rtlsdr-widget.ui
+#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
+	LIBS		+= /usr/shared/drivers/rtlsdr-drivers-windows/x86/librtlsdr.dll
+}
 #	the SDRplay
 #
 sdrplay-v2 {
