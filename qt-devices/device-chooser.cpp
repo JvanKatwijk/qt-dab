@@ -82,7 +82,9 @@
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
-
+//
+//	Some devices are always configured
+//
 #define	NO_ENTRY	0100
 #define	RAW_FILE_RAW	0101
 #define	RAW_FILE_IQ	0102
@@ -96,6 +98,7 @@
 	deviceList. push_back (deviceItem ("file input(.iq)", RAW_FILE_IQ));
 	deviceList. push_back (deviceItem ("file input(.sdr)", WAV_FILE));
 	deviceList. push_back (deviceItem ("xml files", XML_FILE));
+
 #ifdef	HAVE_SDRPLAY_V3
 	deviceList. push_back (deviceItem ("sdrplay", SDRPLAY_V3_DEVICE));
 #endif
@@ -150,7 +153,7 @@ int	deviceChooser::getDeviceIndex	(const QString &name) {
 	for (auto &s: deviceList) 
 	   if (s. deviceName == name)
 	      return s. deviceNumber;
-	return 0;
+	return -1;
 }
 
 deviceHandler	*deviceChooser::createDevice (const QString &s,
@@ -236,8 +239,7 @@ int	deviceNumber	= getDeviceIndex (s);
 #ifdef	HAVE_PLUTO
 	   case PLUTO_DEVICE:
 	      try {
-	         inputDevice_p = new plutoHandler (dabSettings,
-	                                                      version);
+	         inputDevice_p = new plutoHandler (dabSettings, version);
 	      }
 	      catch (const std::exception &e) {
 	         QMessageBox::warning (nullptr, "Warning", e. what ());
@@ -250,19 +252,19 @@ int	deviceNumber	= getDeviceIndex (s);
 	      try {
 	         inputDevice_p = new rtl_tcp_client (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning", "rtl_tcp: no luck\n");
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
 	         return nullptr;
 	      }
 	      break;
 #endif
 #ifdef HAVE_EXTIO
-	   vase EXTIO_DEVICE:
+	   case EXTIO_DEVICE:
 	      try {
 	         inputDevice_p = new extioHandler (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning", "extio: no luck\n");
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "warning",  e. what ());
 	         return nullptr;
 	      }
 	      break;
@@ -284,8 +286,8 @@ int	deviceNumber	= getDeviceIndex (s);
 	      try {
 	         inputDevice_p = new uhdHandler (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning", "uhd: no luck\n");
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
 	         return nullptr;
 	      }
 	      break;
@@ -295,20 +297,19 @@ int	deviceNumber	= getDeviceIndex (s);
 	      try {
 	         inputDevice_p = new colibriHandler (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning",
-	                                     "colibri: no luck\n");
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
 	         return nullptr;
 	      }
 	      break;
 #endif
-#ifdef HAVE_EDAD_S1
+#ifdef HAVE_ELAD_S1
 	   case ELAD_S1_DEVICE:
 	      try {
 	         inputDevice_p = new eladHandler (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning", "elad: no luck\n");
+	      catch const std::exception &e) {
+	         QMessageBox::warning (nullptr, e. what ());
 	         return nullptr;
 	      }
 	      break;

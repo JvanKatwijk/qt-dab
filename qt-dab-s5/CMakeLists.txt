@@ -319,6 +319,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../viewers/tii-viewer/tii-viewer.h
 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
+	     ../qt-devices/device-vhooser.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
 	     ../qt-devices/rawfiles-new/rawfiles.h
@@ -424,6 +425,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../viewers/tii-viewer/tii-viewer.cpp
 	     ../viewers/snr-viewer/snr-viewer.cpp
 	     ../qt-devices/device-handler.cpp
+	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
 	     ../qt-devices/rawfiles-new/rawfiles.cpp
 	     ../qt-devices/rawfiles-new/raw-reader.cpp

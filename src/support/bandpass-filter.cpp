@@ -34,10 +34,10 @@
 	                          int32_t sampleRate):
 	                                 kernel (filterSize),
 	                                 buffer (filterSize) {
-FLOAT	tmp [filterSize];
-FLOAT	lo	= (FLOAT) ((high - low) / 2) / sampleRate;
-FLOAT	shift	= (FLOAT) ((high + low) / 2) / sampleRate;
-FLOAT	sum	= 0.0;
+DABFLOAT	tmp [filterSize];
+DABFLOAT	lo	= (DABFLOAT) ((high - low) / 2) / sampleRate;
+DABFLOAT	shift	= (DABFLOAT) ((high + low) / 2) / sampleRate;
+DABFLOAT	sum	= 0.0;
 
 
 	this	-> sampleRate	= sampleRate;
@@ -57,14 +57,14 @@ FLOAT	sum	= 0.0;
 //
 //	windowing
 	   tmp [i]  *= (0.42 -
-		    0.5 * cos (2 * M_PI * (FLOAT)i / (FLOAT)filterSize) +
-		    0.08 * cos (4 * M_PI * (FLOAT)i / (FLOAT)filterSize));
+		    0.5 * cos (2 * M_PI * (DABFLOAT)i / (DABFLOAT)filterSize) +
+		    0.08 * cos (4 * M_PI * (DABFLOAT)i / (DABFLOAT)filterSize));
 
 	   sum += tmp [i];
 	}
 
 	for (int i = 0; i < filterSize; i ++) {	// shifting
-	   FLOAT v = (i - filterSize / 2) * (2 * M_PI * shift);
+	   DABFLOAT v = (i - filterSize / 2) * (2 * M_PI * shift);
 	   kernel [i] = Complex (tmp [i] * cos (v) / sum, 
 	                         tmp [i] * sin (v) / sum);
 	}
@@ -92,9 +92,9 @@ Complex	tmp	= 0;
 	return tmp;
 }
 
-FLOAT	BandPassFIR::Pass (FLOAT v) {
+DABFLOAT	BandPassFIR::Pass (DABFLOAT v) {
 int16_t		i;
-FLOAT	tmp	= 0;
+DABFLOAT	tmp	= 0;
 
 	buffer [ip] = Complex (v, 0);
 	for (i = 0; i < filterSize; i ++) {

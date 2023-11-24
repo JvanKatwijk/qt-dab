@@ -39,7 +39,7 @@ public:
 	                          int32_t sampleRate);
 		~BandPassFIR	();
 	Complex	Pass		(Complex);
-	FLOAT	Pass		(FLOAT);
+	DABFLOAT Pass		(DABFLOAT);
 private:
 
 	int	filterSize;

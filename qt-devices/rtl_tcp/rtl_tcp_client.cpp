@@ -31,7 +31,7 @@
 #include	<QFileDialog>
 #include	<QDir>
 #include	"rtl_tcp_client.h"
-
+#include	"dab-constants.h"
 #include	"device-exceptions.h"
 
 #define	DEFAULT_FREQUENCY	(Khz (220000))
@@ -45,7 +45,6 @@
 	myFrame. show		();
 
     //	setting the defaults and constants
-	theRate		= 2048000;
 	remoteSettings	-> beginGroup ("rtl_tcp_client");
 	theGain		= remoteSettings ->
 	                          value ("rtl_tcp_client-gain", 20). toInt();
@@ -145,15 +144,15 @@ QHostAddress theAddress	= QHostAddress (s);
 	}
 
 	sendGain (theGain);
-	sendRate (theRate);
-	sendVFO	(DEFAULT_FREQUENCY - theRate / 4);
+	sendRate (INPUT_RATE);
+	sendVFO	(DEFAULT_FREQUENCY - INPUT_RATE / 4);
 	toServer. waitForBytesWritten();
 	theState -> setText ("Connected");
 	connected	= true;
 }
 
 int32_t	rtl_tcp_client::getRate	() {
-	return theRate;
+	return INPUT_RATE;
 }
 
 bool	rtl_tcp_client::restartReader	(int32_t freq) {

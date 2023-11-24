@@ -412,8 +412,8 @@ CONFIG		+= pluto
 CONFIG		+= uhd
 CONFIG		+= colibri
 CONFIG		+= elad-device
-#CONFIG		+= faad
-CONFIG		+= fdk-aac
+CONFIG		+= faad
+#CONFIG		+= fdk-aac
 #CONFIG		+= preCompiled
 CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
@@ -469,8 +469,8 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6-V3
-	TARGET		= qt-dab32-6.30
+	TARGET		= qt-dab32-6-V3
+#	TARGET		= qt-dab32-6.30
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -482,8 +482,8 @@ CONFIG		+= double
 	CONFIG		+= extio
 	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
-#	CONFIG		+= dabstick-win-V3
-	CONFIG		+= dabstick-win
+	CONFIG		+= dabstick-win-V3
+#	CONFIG		+= dabstick-win
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf

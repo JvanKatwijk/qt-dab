@@ -48,7 +48,7 @@ private:
 	int16_t		depth;
 	uint8_t		invTable [256];
 	std::vector<Complex >	theBuffer;
-	std::vector<FLOAT>	window;
+	std::vector<DABFLOAT>	window;
 };
 
 

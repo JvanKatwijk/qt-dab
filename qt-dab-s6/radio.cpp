@@ -2013,7 +2013,7 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	if ((obj == this -> ensembleDisplay -> viewport()) &&
 	    (event -> type() == QEvent::MouseButtonPress )) {
 	   QMouseEvent *ev = static_cast<QMouseEvent *>(event);
-	   if (ev -> buttons() & Qt::RightButton) {
+	   if (ev -> buttons () & Qt::RightButton) {
 	      audiodata ad;
 	      QString serviceName =
 	           this -> ensembleDisplay -> indexAt (ev -> pos()). data ().toString();
@@ -2025,15 +2025,16 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	      bool run_backGrounds = 
 	                 configWidget. servicesInBackground -> isChecked ();
 	      if (!run_backGrounds) {
-	         presetData pd;
-	         pd. serviceName	= serviceName;
-	         pd. channel		= channelSelector -> currentText ();
-	         my_presetHandler. addElement (pd. channel,
+	         if (!inputDevice_p -> isFileInput ()) {
+	            presetData pd;
+	            pd. serviceName	= serviceName;
+	            pd. channel		= channelSelector -> currentText ();
+	            my_presetHandler. addElement (pd. channel,
 	                                            pd. serviceName);
+	         }
 	         return true;
 	      }
 	         
-//	      packetdata pd;
 	      if (channel. currentService. serviceName == serviceName) {
 	         presetData pd;
 	         pd. serviceName	= serviceName;
@@ -2139,13 +2140,21 @@ QString	selectedService = ind. data (Qt::DisplayRole). toString ();
 //	selecting from the preset list
 void    RadioInterface::handle_presetSelect (const QString &channel,
 	                                     const QString &service) {
-	localSelect (channel, service);
+	if (!inputDevice_p -> isFileInput ())
+	   localSelect (channel, service);
+	else
+	   QMessageBox::warning (this, tr ("Warning"),
+	                               tr ("Selection not possible"));
 }
 //
 //	selecting from the scan list, which is essential
 //	the same as handling form the preset list
 void    RadioInterface::handle_scanListSelect (const QString &s) {
-	localSelect (s);
+	if (!inputDevice_p -> isFileInput ())
+           localSelect (s);
+        else
+           QMessageBox::warning (this, tr ("Warning"),
+                                       tr ("Selection not possible"));
 }
 //
 //	selecting from a content description
@@ -4019,7 +4028,7 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   connect (scanButton, SIGNAL (clicked ()),
 	            this, SLOT (handle_etiHandler ()));
 	   scanButton	-> setText ("eti");
-	   if (inputDevice_p -> isFileInput ())	// restore the button' visibility
+	   if (!inputDevice_p -> isFileInput ())// restore the button' visibility
 	      scanButton -> show ();
 	   return;
 	}

@@ -24,6 +24,7 @@
 #include	<QSettings>
 #include	<QMessageBox>
 #include	"extio-handler.h"
+#include	"device-exceptions.h"
 #include	"virtual-reader.h"
 #include	"common-readers.h"
 
@@ -129,9 +130,7 @@ int32_t	inputRate	= 0;
 #endif
 	dll_file	= QDir::toNativeSeparators (dll_file);
 	if (dll_file == QString ("")) {
-	   QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("incorrect filename\n"));
-	   throw (20);
+	   throw (extio_exception ("incorrect filename"));
 	}
 
 #ifdef	__MINGW32__
@@ -148,17 +147,14 @@ int32_t	inputRate	= 0;
 #else
 	Handle		= dlopen (dll_file. toLatin1(). data(), RTLD_NOW);
 #endif
-	if (Handle == NULL) {
-	   QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("loading dll failed\n"));
-	   throw (21);
-	}
+	if (Handle == nullptr) 
+	   throw (extio_exception ("loading dll file failed"));
 
 	if (!loadFunctions()) {
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("loading functions failed\n"));
 	   FREELIBRARY (Handle);
-	   throw (22);
+	   throw (extio_exception ("loading functions from dll file failed"));
 	}
 //	apparently, the library is open, so record that
 	dll_open	= true;
@@ -173,18 +169,14 @@ int32_t	inputRate	= 0;
 	rigName		= new char [128];
 	rigModel	= new char [128];
 	if (!((*InitHW) (rigName, rigModel, hardwareType))) {
-	   QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("init failed\n"));
 	   FREELIBRARY (Handle);
-	   throw (23);
+	   throw (extio_exception ("init failed"));
 	}
 
 	SetCallback (extioCallback);
 	if (!(*OpenHW)()) {
-	   QMessageBox::warning (NULL, tr ("sdr"),
-	                               tr ("Opening hardware failed\n"));
 	   FREELIBRARY (Handle);
-	   throw (24);
+	   throw (extio_exception ("Opening hardware failed"));
 	}
 
 	ShowGUI();

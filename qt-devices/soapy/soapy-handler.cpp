@@ -21,6 +21,7 @@
  */
 #include	<QMessageBox>
 #include	"soapy-handler.h"
+#include	"device-exceptions.h"
 #include	<stdio.h> //printf
 #include	<stdlib.h> //free
 #include	<complex.h>

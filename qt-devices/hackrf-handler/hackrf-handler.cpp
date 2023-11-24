@@ -49,7 +49,6 @@
         hackrfSettings -> endGroup ();
         setupUi (&myFrame);
         myFrame. move (QPoint (x, y));
-
 	this	-> inputRate		= Khz (2048);
 
 #ifdef  __MINGW32__
@@ -314,7 +313,6 @@ int	res;
 	lastFrequency	= freq;
 	if (save_gainSettings)
 	   update_gainSettings (freq / MHz (1));
-	
 	this -> hackrf_set_lna_gain (theDevice, lnaGainSlider -> value ());
 	this -> hackrf_set_vga_gain (theDevice, vgaGainSlider -> value ());
 	this -> hackrf_set_amp_enable (theDevice, 
@@ -649,7 +647,6 @@ QString	theValue	= "";
 
 	if (theValue == QString (""))
 	   return;		// or set some defaults here
-
 	QStringList result	= theValue. split (":");
 	if (result. size () != 3) 	// should not happen
 	   return;
@@ -674,7 +671,7 @@ QString	theValue	= "";
 
 	AmpEnableButton	-> blockSignals (true);
 	signal_ampEnable (ampEnable == 1);
-	while (AmpEnableButton -> isChecked () != (ampEnable == 1))
-	   usleep (1000);
+//	while (AmpEnableButton -> isChecked () != (ampEnable == 1))
+//	   usleep (1000);
 	AmpEnableButton	-> blockSignals (false);
 }

@@ -60,11 +60,11 @@ typedef	void	*HINSTANCE;
 #define	DECODER_C2	8
 
 #ifdef	__WITH_DOUBLES__
-typedef	double FLOAT;
+typedef	double	DABFLOAT;
 #else
-typedef	float	FLOAT;
+typedef	float	DABFLOAT;
 #endif
-typedef	std::complex<FLOAT> Complex;
+typedef	std::complex<DABFLOAT> Complex;
 
 #ifndef	M_PI
 # define M_PI           3.14159265358979323846  /* pi */

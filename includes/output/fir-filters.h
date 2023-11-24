@@ -35,14 +35,14 @@ public:
 	                           );
 			~LowPassFIR ();
 	Complex		Pass		(Complex);
-	FLOAT		Pass		(FLOAT);
+	DABFLOAT		Pass		(DABFLOAT);
 	void		resize		(int);
 	int		theSize		();
 private:
 	int16_t		filterSize;
 	int16_t		ip;
-	std::vector<FLOAT>	filterKernel;
+	std::vector<DABFLOAT>	filterKernel;
 	std::vector<Complex>	Buffer;
-	FLOAT		frequency;
+	DABFLOAT		frequency;
 };
 

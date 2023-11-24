@@ -117,7 +117,7 @@ Complex temp [params. get_T_u ()];
 	      F_p (pilotIndex, tap) =
 	         createExp (2 * M_PI *
 	             (fftSize / 2 + pilotTable [pilotIndex]) * tap / fftSize) /
-	                                         (FLOAT)(sqrt (fftSize));
+	                                         (DABFLOAT)(sqrt (fftSize));
 	}
 	A_p	= S_p * F_p;
 	A_p_inv = A_p. transpose () * (A_p * A_p. transpose ()). inverse ();

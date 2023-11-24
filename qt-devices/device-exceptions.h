@@ -122,11 +122,50 @@ public:
         }
 };
 
+class	rtl_tcp_exception : public std::exception {
+private:
+	std::string message;
+public:
+	rtl_tcp_exception (const std::string &s) {
+           message      = s;
+        }
+
+        const char *what  () const noexcept override {
+           return message. c_str ();
+        }
+};
+
 class	file_exception : public std::exception {
 private:
 	std::string message;
 public:
         file_exception (const std::string &s) {
+           message      = s;
+        }
+
+        const char *what  () const noexcept override {
+           return message. c_str ();
+        }
+};
+
+class	extio_exception : public std::exception {
+private:
+	std::string message;
+public:
+        extio_exception (const std::string &s) {
+           message      = s;
+        }
+
+        const char *what  () const noexcept override {
+           return message. c_str ();
+        }
+};
+
+class	elad_exception: public std::exception {
+private:
+	std::string message;
+public:
+        elad_exception (const std::string &s) {
            message      = s;
         }
 

@@ -28,6 +28,7 @@
 #include	<QMessageBox>
 #include	<QDir>
 
+#include	"device-exceptions.h"
 #include	"elad-handler.h"	// our header
 #include	"elad-worker.h"		// the thread, reading in the data
 #include	"elad-loader.h"		// function loader
@@ -52,33 +53,31 @@ int16_t	success;
 //	sometimes problems with dynamic linkage of libusb, it is
 //	loaded indirectly through the dll
 	if (libusb_init (nullptr) < 0) {
-	   fprintf (stderr, "libusb problem\n");	// should not happen
-	   throw (21);
+	   throw (elad_exception ("libusb problem"));
 	}
 
 	libusb_exit (nullptr);
 	theLoader	= new eladLoader (ELAD_RATE, &success);
 	if (success != 0) {
-	   if (success == -1)
-	   QMessageBox::warning (&myFrame, tr ("sdr"),
-	                         tr ("No success in loading libs\n"));
-	   else
-	   if (success == -2)
-	   QMessageBox::warning (&myFrame, tr ("sdr"),
-	                         tr ("No success in setting up USB\n"));
-	   else
-	   if (success == -3)
-	   QMessageBox::warning (&myFrame, tr ("sdr"),
-	                         tr ("No success in FPGA init\n"));
-	   else
-	   if (success == -4)
-	   QMessageBox::warning (&myFrame, tr ("sdr"),
-	                         tr ("No success in hardware init\n"));
-	
 	   statusLabel -> setText ("not functioning");
 	   delete theLoader;
 	   theLoader	= nullptr;
-	   throw (21);
+	   switch (success) {
+	      case -1:
+	         throw (elad_exception ("No success in loading libs\n"));
+
+	      case -2:
+	         throw (elad_exception ("No success in setting up USB\n"));
+
+	      case -3:
+	         throw (elad_exception ("No success in FPGA init\n"));
+	   
+	      case -4:
+	         throw (elad_exception ("No success in hardware init\n"));
+	      
+	      default:		// cannot happen
+	         ;
+	   }
 	}
 	statusLabel	-> setText ("Loaded");
 //
