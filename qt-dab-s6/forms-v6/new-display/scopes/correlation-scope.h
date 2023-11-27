@@ -52,6 +52,7 @@ public:
 	                                         QSettings	*);
 			~correlationScope	();
 	void		display			(std::vector<float> &v,
+	                                         int T_g,
 	                                         int length,
 		                                 int sliderValue);
 

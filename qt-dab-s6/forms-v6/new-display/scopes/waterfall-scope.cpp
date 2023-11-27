@@ -22,7 +22,10 @@
  */
 
 #include	"waterfall-scope.h"
-#include        <qwt_text.h>
+#include        <qwt_plot.h>
+#include	<qwt_color_map.h>
+#include	<qwt_scale_widget.h>
+
  
 	waterfallScope::waterfallScope (QwtPlot       *scope,
 	                                int		displaySize_i,
@@ -48,7 +51,7 @@
 	   for (int j = 0; j < displaySize; j ++)
 	      plotData [i * displaySize + j] = (double)i / rasterSize;
 
-	WaterfallData   = new SpectrogramData (plotData,
+	WaterfallData   = new spectrogramData (plotData,
 	                                       10000,
 	                                       1000,
 	                                       rasterSize,
@@ -68,11 +71,6 @@
 	plotgrid	-> enableAxis (QwtPlot::yLeft);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft, 0, rasterSize);
 
-//	Marker          = new QwtPlotMarker ();
-//	Marker          -> setLineStyle (QwtPlotMarker::VLine);
-//	Marker          -> setLinePen (QPen (Qt::black, 2.0));
-//	Marker          -> attach (plotgrid);
-//	indexforMarker  = 0;
 	plotgrid        -> replot ();
 }
 
@@ -82,8 +80,6 @@
 	plotgrid        -> enableAxis (QwtPlot::yLeft, false);
 	this            -> detach ();
 	delete[]	plotData;
-//	delete	colorMap;
-//	delete	WaterfallData;
 }
 
 void	waterfallScope::cleanUp () {
@@ -116,7 +112,7 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	        displaySize * sizeof (double));
 
 	invalidateCache ();
-	WaterfallData = new SpectrogramData (plotData,
+	WaterfallData = new spectrogramData (plotData,
 	                                     orig,
 	                                     width,
 	                                     rasterSize,
@@ -132,7 +128,6 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	                                 orig,
 	                                 orig + width);
 	plotgrid        -> enableAxis (QwtPlot::xBottom);
-//	Marker          -> setXValue (marker);
 	this            -> attach     (plotgrid);
 	plotgrid        -> replot();
 }

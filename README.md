@@ -209,7 +209,7 @@ Since some time the Qt-DAB versions have a button labeled **http**, when touched
 
 By default, on starting the server, the "standard" browser on the system will be invoked, listening to port 8080. The configuration (configuration/control) widget contains a selector for switching this off, so that one might choose his/hers own browser.
 
-The feature will not work if
+The feature will *not* work if
 
  * handling the TII database is not installed on the system, and/or
  * you did not provide your "home" coordinates.
@@ -222,7 +222,7 @@ Documentation
 
 An extensive **user's guide** - in PDF format - for the 6.1 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
 
-![Qt-DAB documentation](/qt-dab-manual.png?raw=true)
+![Qt-DAB documentation](/qt-dab-6-manual.png?raw=true)
 
 
 Installation on Windows
@@ -237,24 +237,27 @@ Installation on Linux-x64
 =================================================================
 
 For Linux-x64 systems, an **appImage** can be found in the releases section, https://github.com/JvanKatwijk/qt-dab/releases. The appImage contains
-next to the executable qt-dab program, the required libraries.
-
-Of course it is possible to generate an executable, the manual contains a complete script for Ubuntu type Linux versions.
+next to the executable qt-dab program, the required libraries **but not
+the support libraries for the configured devices**
 
 
 Building an executable for Qt-DAB: a few notes
 =================================================================
 
-While for Linux-x64 and Windows there are precompiled versions, there may be reasons to build an executable. Building an executable is not very complicated, it is described in detail in the manual. Since it is customary to avoid reading a manual, here are the basic steps for the build process.
-Iy is strongly advised to use qmake/make in the process, since the
+Of course it is possible to generate an executable, a separate document
+is available that contains a complete script for Ubuntu type Linux versions.
+
+Since it is common to avoid reading a manual, here are
+the basic steps for the build process.
+It is strongly advised to use qmake/make in the process, since the
 number of configuration options is larger and selecting configuration
 options is much easier.
 
 Step 1
 -----------------------------------------------------------------
 
-- :information_source: Note that the sources for 4.4.x are now in the subdirectory `qt-dab-s4` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
-- Install required libraries, see section 5.5.3 (page 29) of the manual.
+- :information_source: Note that the sources for 6.x are now in the subdirectory `qt-dab-s6` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
+- Install required libraries, 
 * :information: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
 - It seems to be part of another of the qt5 packages that is installed.
 - Be aware that different distributions store qt files on different locations, adapt the INCLUDEPATH setting in the `.pro` file if needed.
@@ -262,17 +265,18 @@ Step 1
 Step 2
 -----------------------------------------------------------------
 
-While there are dozens of configuration options, take note of the following ones:
+While there are dozens of configuration options, take note
+of the following ones:
 
 * Note on configuring DABsticks (i.e. RTLSDR type devices).
-The Windows support library does not seem to be vapable of closing
+The Windows support library does not seem to be capable of closing
 the library and reopening it on switching channels. Therefore
 a special version of the library is made, that is used for both
 Windows and Linux. 
 
  * For including "soapy" in the configuration, soapy  software should have been installed, so leave them commented out when not available. iF
 
-:information_source: Note that "pluto-2" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
+:information_source: Note that "pluto" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
 
 For X64 PC's one may choose the option `CONFIG+=PC` (for selecting SSE instructions). If unsure, use `CONFIG+=NO_SSE`.
 
@@ -360,7 +364,7 @@ The picture shows the reader when reading a file, generated from raw data emitte
 
 A Note on previous versions
 =================================================================
-Previous versions V5.4 and V4.7 will be maintained. 
+Previous versions V5.X and V4.X will - for the time being - be maintained. 
 Note that the different versions use the same sourcetree, the - almost -
 only difference being the GUI and its control.
 

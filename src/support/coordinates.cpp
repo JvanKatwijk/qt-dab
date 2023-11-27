@@ -30,8 +30,10 @@
 	coordinates::coordinates	(QSettings *dabSettings) {
 	this	-> dabSettings = dabSettings;
 
+	QLocale	currentLocale	= QLocale::system ();
+	QLocale englishLocale(QLocale::English, QLocale::UnitedStates);
 	latitudeText	= new QLabel (this);
-	latitudeText	-> setText ("latitude (decimal)");
+	latitudeText	-> setText ("latitude (decimal, US style");
 	QDoubleValidator *la = new QDoubleValidator (-90.0, 9.0, 5);
 	latitude	= new QLineEdit (this);	
 	latitude	-> setValidator (la);
@@ -41,7 +43,7 @@
 	QDoubleValidator *lo = new QDoubleValidator (-180.0, 180.0, 5);
 	longitude	= new QLineEdit (this);
 	longitude	-> setValidator (lo);
-
+	QLocale::setDefault (currentLocale);
 	QFormLayout	*layout = new QFormLayout;
 	layout		-> addWidget (latitudeText);
 	layout		-> addWidget (latitude);

@@ -178,6 +178,7 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     std::vector<int16_t> &ibits) {
 Complex conjVector [T_u];
 Complex fft_buffer [T_u];
+Complex	computedCenter;
 
 	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
@@ -205,8 +206,9 @@ Complex fft_buffer [T_u];
 	   conjVector	[index] = r1;
 
 //	we need the phase error to compute quality
-	   Complex r2		= Complex (abs (real (r1)), abs (imag (r1)));
+	   Complex r2	= Complex (abs (real (r1)), abs (imag (r1)));
 	   max	+= jan_abs (r2);
+	   computedCenter	+= r2;
 //
 //	Note that the phase Offset does not lead to an accumulated error
 //	so, we just average 
@@ -218,6 +220,12 @@ Complex fft_buffer [T_u];
 	             compute_avg (offsetVector [index], 
 	                                   square (phaseOffset), DELTA);
 	}
+//
+//	Later on we force the signal components to center around
+//	the real ceters of the quadrants rather than the fictious
+//	(i.e. theoretical) ones
+	computedCenter		= normalize (computedCenter);
+	Complex theOffset	= computedCenter * Complex (1, -1);
 
 //	The decoding approach is
 //	looking at the X and Y coordinates of the "dots"
@@ -271,23 +279,21 @@ Complex fft_buffer [T_u];
 	   }
 	   else 
 	   if (decoder == DECODER_DEFAULT) {
-	      ibits [i]	=  (int16_t)(- (real (r1)  * 127.0) / ab1);
-	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127) / ab1);
+//	what we see is that the "cross" is rorated slightly to the left
+//	or the right, here we correct for the shift
+	      Complex testVal	= normalize (r1) * conj (theOffset);
+	      float ab2		= jan_abs (testVal);
+	      ibits [i]		= 
+	                          (int16_t)(- (real (testVal) * 127.0) / ab2);
+              ibits [carriers + i] =
+	                          (int16_t)(- (imag (testVal) * 127.0) / ab2);
 	   }
 	   else {
-	      Complex testVal	= normalize (r1);
-	      DABFLOAT X_Offset	= uniBase -
-	                           std::fabs (uniBase - abs (real (testVal)));
-	      DABFLOAT Y_Offset	= uniBase -
-	                           std::fabs (uniBase - abs (imag (testVal)));
-	      if (real (r1) >= 0)
-	         ibits [i]	= - X_Offset / uniBase * 127.0;
-	      else
-	         ibits [i]	=   X_Offset / uniBase * 127.0;
-	      if (imag (r1) >= 0)
-	         ibits [i + carriers] = - Y_Offset / uniBase * 127.0;
-	      else
-	         ibits [i + carriers] =   Y_Offset / uniBase * 127.0;
+//
+//	"OLD" default is just by looking wht the values for the
+//	x and y coordinates are
+	      ibits [i]		=     (int16_t)(- (real (r1) * 127.0) / ab1);
+	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127.0) / ab1);
 	   }
 	}
 

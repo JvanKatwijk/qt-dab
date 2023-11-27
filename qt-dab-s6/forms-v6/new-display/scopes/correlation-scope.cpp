@@ -93,6 +93,7 @@ bool	brush;
 }
 
 void	correlationScope::display	(std::vector<float> &v,
+	                                 int T_g,
 	                                 int amount,
 	                                 int sliderValue) {
 double X_axis [amount];
@@ -101,9 +102,10 @@ double Max	= -200;
 int	teller	= 0;
 int	input	= v. size ();
 
-	if (amount < 256)
-	   return;
-
+//	if (amount < 256)
+//	   return;
+	if (v. size () < amount)
+	   amount = v. size ();
 	for (int i = input / 2 - amount / 2;
 	     i < input / 2 + amount / 2; i ++) {
 	   X_axis [teller] = i;

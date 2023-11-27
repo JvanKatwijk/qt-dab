@@ -52,7 +52,7 @@ private:
 	QwtPlot		*plotgrid;
 	int		displaySize;
 	int		bitDepth;
-	SpectrogramData	*WaterfallData;
+	spectrogramData	*WaterfallData;
 	int16_t		rasterSize;
 	double		*plotData;
 	QwtPlotMarker	*Marker;

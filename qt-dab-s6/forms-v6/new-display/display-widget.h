@@ -60,7 +60,7 @@ public:
 	void	set_bitDepth	(int);
 	void	show_spectrum	(std::vector<Complex> &, int);
 	void	show_null	(Complex *, int);
-	void	show_correlation	(std::vector<float> &,
+	void	show_correlation	(std::vector<float> &, int,
 	                         QVector<int> &, int);
 	void	show_tii	(std::vector<Complex>, int);
 	void	show_channel	(std::vector<Complex>);

@@ -175,7 +175,6 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/fir-filters.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
@@ -205,6 +204,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
+	   ../includes/support/fir-filters.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -294,7 +294,6 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/fir-filters.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
@@ -321,6 +320,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
+	   ../src/support/fir-filters.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -329,6 +329,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
+	   ../src/scopes-qwt6/spectrogramdata.cpp \
 	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
 	   ../viewers/spectrum-viewer/spectrum-scope.cpp \
 	   ../viewers/spectrum-viewer/waterfall-scope.cpp \

@@ -176,7 +176,6 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/fir-filters.h \
 	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
@@ -207,6 +206,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/mapport.h \
 	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
+	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
@@ -216,7 +216,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/smallqlistview.h \
 	   ../includes/support/buttons/smallspinbox.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
-#	   ../includes/scopes-qwt6/iqdisplay.h \
 	   ../includes/scopes-qwt6/audio-display.h \
 	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
@@ -273,10 +272,10 @@ SOURCES += ./main.cpp \
 	   ../src/backend/galois.cpp \
 	   ../src/backend/reed-solomon.cpp \
 	   ../src/backend/charsets.cpp \
-	   ../src/backend/firecode-checker.cpp \
 	   ../src/backend/backend.cpp \
            ../src/backend/backend-driver.cpp \
            ../src/backend/backend-deconvolver.cpp \
+	   ../src/backend/firecode-checker.cpp \
 	   ../src/backend/audio/mp2processor.cpp \
 	   ../src/backend/audio/mp4processor.cpp \
 	   ../src/backend/audio/bitWriter.cpp \
@@ -297,7 +296,6 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/fir-filters.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
@@ -325,6 +323,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/mapport.cpp \
 	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
+	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
@@ -333,8 +332,8 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/verysmallpushbutton.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
-#	   ../src/scopes-qwt6/iqdisplay.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
+	   ../src/scopes-qwt6/spectrogramdata.cpp \
 	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \

@@ -52,7 +52,7 @@ int     i, j;
 	   for (j = 0; j < displaySize; j ++)
 	      plotData [i * displaySize + j] = (double)i / rasterSize;
 
-	WaterfallData   = new SpectrogramData (plotData,
+	WaterfallData   = new spectrogramData (plotData,
 	                                       10000,
 	                                       1000,
 	                                       rasterSize,
@@ -114,7 +114,7 @@ int     width   = (int)(X_axis [displaySize - 1] - orig);
 	        displaySize * sizeof (double));
 
 	invalidateCache ();
-	WaterfallData = new SpectrogramData (plotData,
+	WaterfallData = new spectrogramData (plotData,
 	                                     orig,
 	                                     width,
 	                                     rasterSize,

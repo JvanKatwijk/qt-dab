@@ -24,21 +24,13 @@
 #pragma once
 
 #include	<QObject>
-#include        <qwt.h>
-#include        <qwt_plot.h>
-#include        <qwt_plot_curve.h>
-#include        <qwt_plot_marker.h>
-#include        <qwt_plot_grid.h>
-#include        <qwt_color_map.h>
 #include        <qwt_plot_spectrogram.h>
-#include        <qwt_plot_zoomer.h>
-#include        <qwt_plot_panner.h>
-#include        <qwt_plot_layout.h>
-#include        <qwt_scale_widget.h>
-#include        <QBrush>
 #include        "spectrogramdata.h"
-#include        <QTimer>
-#include        <stdint.h>
+#include	<cstdint>
+#include        "dab-constants.h"
+
+class	QwtLinearColorMap;
+class	QwtScaleWidget;
 
 class waterfallScope: public QObject, public QwtPlotSpectrogram {
 Q_OBJECT
@@ -52,12 +44,9 @@ private:
 	QwtPlot		*plotgrid;
 	int		displaySize;
 	int		bitDepth;
-	SpectrogramData	*WaterfallData;
+	spectrogramData	*WaterfallData;
 	int16_t		rasterSize;
 	double		*plotData;
-	QwtPlotMarker	*Marker;
-	int16_t		indexforMarker;
-	int16_t		old_marker;
 	QwtLinearColorMap	*colorMap;
 	QwtScaleWidget		*rightAxis;
 };

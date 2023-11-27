@@ -667,8 +667,7 @@ bool	RadioInterface::doStart	() {
 	         this, SLOT (newDevice (const QString &)));
 //
 	if (channel. nextService. valid) {
-	   int switchDelay		=
-	                  dabSettings_p -> value ("switchDelay", 8). toInt ();
+	   int switchDelay	= configWidget. switchDelaySetting -> value ();
 	   presetTimer. setSingleShot	(true);
 	   presetTimer. setInterval 	(switchDelay * 1000);
 	   presetTimer. start 		(switchDelay * 1000);
@@ -2199,7 +2198,7 @@ QString serviceName	= service;
 	   my_ofdmHandler -> get_parameters (serviceName, &s. SId, &s. SCIds);
 	   if (s. SId == 0) {
 	      dynamicLabel -> setText ("cannot run " +
-	                       s. serviceName + " yrt");
+	                       s. serviceName + " yet");
 	      return;
 	   }
 	   s. serviceName = service;
@@ -2230,7 +2229,7 @@ QString serviceName	= service;
 	channel. nextService. SCIds              = 0;
 	presetTimer. setSingleShot (true);
 	switchDelay			=
-	                 dabSettings_p -> value ("switchDelay", 8). toInt ();
+	           configWidget. switchDelaySetting -> value ();
 	presetTimer. setInterval (switchDelay * 1000);
 	presetTimer. start (switchDelay * 1000);
 	startChannel    (channelSelector -> currentText ());
@@ -2607,7 +2606,7 @@ int	tunedFrequency	=
 	show_for_safety ();
 	my_ofdmHandler		-> start ();
 	int	switchDelay	=
-	                  dabSettings_p -> value ("switchDelay", 8). toInt ();
+	             configWidget. switchDelaySetting -> value ();
 	if (!scanning. load ())
 	   epgTimer. start (switchDelay * 1000);
 }
@@ -2813,7 +2812,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                            channelSelector -> currentText ());
 	scanButton      -> setText ("scanning");
 	switchDelay		=
-	                  dabSettings_p -> value ("switchDelay", 8). toInt ();
+	             configWidget. switchDelaySetting -> value ();
 	channelTimer. start (switchDelay * 1000);
 	startChannel    (channelSelector -> currentText ());
 }
@@ -2903,7 +2902,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	                             "\" scanning channel " +
 	                             channelSelector -> currentText ());
 	   switchDelay	= 
-	               dabSettings_p -> value ("switchDelay", 8). toInt ();
+	               configWidget. switchDelaySetting -> value ();
 	   channelTimer. start (switchDelay * 1000);
 	   startChannel (channelSelector -> currentText ());
 	}
@@ -3713,6 +3712,10 @@ void	RadioInterface::set_epgData (int SId, int theTime,
 
 void	RadioInterface::handle_timeTable	() {
 int	epgWidth;
+	if (!my_timeTable -> isHidden ()) {
+	   my_timeTable -> hide ();
+	   return;
+	}
 	if (!channel. currentService. valid ||
 	                     !channel. currentService. is_audio)
 	   return;
@@ -3728,6 +3731,7 @@ int	epgWidth;
 	                               epgWidth,
 	                               element. theText,
 	                               element. theDescr);
+	my_timeTable	-> show ();
 }
 
 void	RadioInterface::handle_skipList_button () {
@@ -4092,7 +4096,7 @@ std::vector<float> inBuffer;
 	responseBuffer. FlushRingBuffer ();
 	if (!newDisplay. isHidden ()) {
 	   if (newDisplay. get_tab () == SHOW_CORRELATION)
-	      newDisplay. show_correlation (inBuffer, r, channel. distance);
+	      newDisplay. show_correlation (inBuffer, g, r, channel. distance);
 	}
 }
 	      
@@ -4324,7 +4328,7 @@ void	RadioInterface::init_configWidget () {
 	int x = dabSettings_p -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
-	x = dabSettings_p -> value ("switchDelay", 8). toInt ();
+	x = dabSettings_p -> value ("switchDelay", DEFAULT_SWITCHVALUE). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
 
 	bool b	= dabSettings_p	-> value ("utcSelector", 0). toInt () == 1;

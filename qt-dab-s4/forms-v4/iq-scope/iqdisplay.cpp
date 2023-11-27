@@ -25,7 +25,7 @@
 /*
  *	iq circle plotter
  */
-SpectrogramData	*IQData	= nullptr;
+spectrogramData	*IQData	= nullptr;
 static std::complex<int> Points [4 * 512];
 
 	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
@@ -54,7 +54,7 @@ QwtLinearColorMap *colorMap  = new QwtLinearColorMap (Qt::black, Qt::yellow);
 	plot2.	  resize (2 * Radius * 2 * Radius);
 	memset (plotData. data(), 0,
 	                  2 * 2 * Radius * Radius * sizeof (double));
-	IQData		= new SpectrogramData (plot2. data(),
+	IQData		= new spectrogramData (plot2. data(),
 	                                       0,
 	                                       2 * Radius,
 	                                       2 * Radius,

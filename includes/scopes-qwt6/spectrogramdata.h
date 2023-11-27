@@ -30,17 +30,9 @@
 //
 //	Qwt 6.2 is different from the 6.1 version, these mods
 //	seem to work
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
 # include	<qwt_raster_data.h>
-//#else
-//# include	<qwt_matrix_raster_data.h>
-//#endif
 
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-class	SpectrogramData: public QwtRasterData {
-//#else
-//class	SpectrogramData: public QwtMatrixRasterData {
-//#endif
+class	spectrogramData: public QwtRasterData {
 public:
 	double	*data;		// pointer to actual data
 	int	left;		// index of left most element in raster
@@ -50,50 +42,16 @@ public:
 	int	dataheight;	// for now == rasterheigth
 	double	max;
 
-	SpectrogramData (double *data, int left, int width, int height,
-	                 int datawidth, double max):
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-        QwtRasterData () {
-//#else
-//	QwtMatrixRasterData () {
-//#endif
-	this	-> data		= data;
-	this	-> left		= left;
-	this	-> width	= width;
-	this	-> height	= height;
-	this	-> datawidth	= datawidth;
-	this	-> dataheight	= height;
-	this	-> max		= max;
-#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-	setInterval (Qt::XAxis, QwtInterval (left, left + width));
-	setInterval (Qt::YAxis, QwtInterval (0, height));
-	setInterval (Qt::ZAxis, QwtInterval (0, max));
-#endif
-}
+	spectrogramData (double *data, int left,
+	                 int width, int height,
+	                 int datawidth, double max);
 
-void	initRaster (const QRectF &x, const QSize &raster) {
-	(void)x;
-	(void)raster;
-}
+	~spectrogramData	();
 
-QwtInterval interval (Qt::Axis x) const {
-	if (x == Qt::XAxis)
-	   return QwtInterval (left, left + width);
-	if (x == Qt::YAxis)
-	   return QwtInterval (0, height);
-	return QwtInterval (0, max);
-}
+void	initRaster (const QRectF &x, const QSize &raster);
 
-	~SpectrogramData() {
-}
+QwtInterval interval (Qt::Axis x) const;
 
-double value (double x, double y) const {
-//fprintf (stderr, "x = %f, y = %f\n", x, y);
-	   x = x - left;
-	   x = x / width  * (datawidth  - 1);
-	   y = y / height * (dataheight - 1);
-	   return data [(int)y * datawidth + (int)x];
-}
-
+double value (double x, double y) const;
 };
 

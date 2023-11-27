@@ -45,7 +45,7 @@
  *	for the waterfall display
  */
 
-class	SpectrogramData;
+class	spectrogramData;
 
 class IQDisplay: public QObject, public QwtPlotSpectrogram {
 Q_OBJECT
@@ -60,7 +60,7 @@ static	constexpr
 	int32_t			RADIUS	= 100;
 
 	int32_t			x_amount;
-	SpectrogramData		*IQData;
+	spectrogramData		*IQData;
 	std::vector<std::complex <int32_t>> Points;
 	std::vector<double>	plotDataBackgroundBuffer;
 	std::vector<double>	plotDataDrawBuffer;

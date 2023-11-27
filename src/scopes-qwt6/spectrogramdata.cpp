@@ -21,42 +21,12 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#pragma once
-
-#include	<cstdio>
-#include	<cstdlib>
-#include	<qwt_interval.h>
-#include	<QPen>
+#include	"spectrogramdata.h"
 //
-//	Qwt 6.2 is different from the 6.1 version, these mods
-//	seem to work
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-# include	<qwt_raster_data.h>
-//#else
-//# include	<qwt_matrix_raster_data.h>
-//#endif
-
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-class	SpectrogramData: public QwtRasterData {
-//#else
-//class	SpectrogramData: public QwtMatrixRasterData {
-//#endif
-public:
-	double	*data;		// pointer to actual data
-	int	left;		// index of left most element in raster
-	int	width;		// raster width
-	int	height;		// rasterheigth
-	int	datawidth;	// width of matrix
-	int	dataheight;	// for now == rasterheigth
-	double	max;
-
-	SpectrogramData (double *data, int left, int width, int height,
-	                 int datawidth, double max):
-//#if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0602)
-        QwtRasterData () {
-//#else
-//	QwtMatrixRasterData () {
-//#endif
+	spectrogramData::spectrogramData (double *data, int left,
+	                                  int width, int height,
+	                                  int datawidth, double max):
+	                                                 QwtRasterData () {
 	this	-> data		= data;
 	this	-> left		= left;
 	this	-> width	= width;
@@ -71,12 +41,15 @@ public:
 #endif
 }
 
-void	initRaster (const QRectF &x, const QSize &raster) {
+	spectrogramData::~spectrogramData() {
+}
+
+void	spectrogramData::initRaster (const QRectF &x, const QSize &raster) {
 	(void)x;
 	(void)raster;
 }
 
-QwtInterval interval (Qt::Axis x) const {
+QwtInterval spectrogramData::interval (Qt::Axis x) const {
 	if (x == Qt::XAxis)
 	   return QwtInterval (left, left + width);
 	if (x == Qt::YAxis)
@@ -84,16 +57,10 @@ QwtInterval interval (Qt::Axis x) const {
 	return QwtInterval (0, max);
 }
 
-	~SpectrogramData() {
-}
 
-double value (double x, double y) const {
-//fprintf (stderr, "x = %f, y = %f\n", x, y);
+double	spectrogramData::value (double x, double y) const {
 	   x = x - left;
 	   x = x / width  * (datawidth  - 1);
 	   y = y / height * (dataheight - 1);
 	   return data [(int)y * datawidth + (int)x];
 }
-
-};
-

@@ -272,7 +272,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/backend/data/mot/mot-object.h
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/data-processor.h
-	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes/support/fft-handler.h 
@@ -282,6 +281,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/support/dab-params.h
 	     ../includes/support/band-handler.h
 	     ../includes/support/dab-tables.h
+	     ../includes/support/fir-filters.h
 	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
 	     ../includes/support/preset-handler.h
@@ -311,6 +311,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
              ../includes/support/buttons/smallqlistview.h
              ../includes/support/buttons/smallspinbox.h
 	     ../includes/scopes-qwt6/audio-display.h
+	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/spectrum-viewer/spectrum-scope.h 
 	     ../viewers/spectrum-viewer/waterfall-scope.h 
@@ -383,7 +384,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
-	     ../src/output/fir-filters.cpp
 	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
@@ -392,6 +392,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
+	     ../src/support/fir-filters.cpp
 	     ../src/support/buttons/smallcombobox.cpp 
              ../src/support/buttons/newpushbutton.cpp 
              ../src/support/buttons/normalpushbutton.cpp 
@@ -416,6 +417,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
 	     ../src/scopes-qwt6/audio-display.cpp
+	     ../src/scopes-qwt6/spectrogramdata.cpp
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
 	     ../viewers/spectrum-viewer/spectrum-scope.cpp 
 	     ../viewers/spectrum-viewer/waterfall-scope.cpp 

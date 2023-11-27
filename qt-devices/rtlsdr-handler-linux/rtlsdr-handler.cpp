@@ -324,7 +324,7 @@ void	rtlsdrHandler::stopReader () {
 	isActive. store (false);
 	fprintf (stderr, "going to stop worker handle\n");
 	this    -> rtlsdr_cancel_async (theDevice);
-//	this    -> rtlsdr_reset_buffer (theDevice);
+	this    -> rtlsdr_reset_buffer (theDevice);
 	if (workerHandle != nullptr) {
 	   while (!workerHandle -> isFinished())
 	      usleep (100);

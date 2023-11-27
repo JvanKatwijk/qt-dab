@@ -59,7 +59,6 @@ auto	*const colorMap = new QwtLinearColorMap (
                  this, SLOT (rightMouseClick (const QPointF &)));
  
 
-	x_amount	= 4 * 512;
 	CycleCount	= 0;
 
 	lastCircleSize	= 0;
@@ -67,7 +66,7 @@ auto	*const colorMap = new QwtLinearColorMap (
 	plotDataDrawBuffer.	  resize (2 * RADIUS * 2 * RADIUS, 0.0);
 	memset (plotDataDrawBuffer. data (), 0,
 	                  2 * 2 * RADIUS * RADIUS * sizeof (double));
-	IQData		= new SpectrogramData (plotDataDrawBuffer. data(),
+	IQData		= new spectrogramData (plotDataDrawBuffer. data(),
 	                                       0,
 	                                       2 * RADIUS,
 	                                       2 * RADIUS,
@@ -87,15 +86,6 @@ auto	*const colorMap = new QwtLinearColorMap (
 
 void	IQDisplay::setPoint (int x, int y, int val) {
 	plotDataBackgroundBuffer [(x + RADIUS - 1) * 2 * RADIUS + y + RADIUS - 1] = val;
-}
-
-//	clean the screen
-void	IQDisplay::cleanScreen	() {
-	for (int i = 0; i < Points. size (); i ++) {
-	   int a	= real (Points [i]);
-	   int b	= imag (Points [i]);
-	   setPoint (a, b, 0);
-	}
 }
 
 void	IQDisplay::DisplayIQ (const std::vector<Complex> &z,
@@ -139,6 +129,15 @@ void	IQDisplay::DisplayIQ (const std::vector<Complex> &z,
 void	IQDisplay::rightMouseClick (const QPointF &p) {
 	(void)p;
 	emit rightMouseClick ();
+}
+
+//	clean the screen
+void	IQDisplay::cleanScreen	() {
+	for (int i = 0; i < Points. size (); i ++) {
+	   int a	= real (Points [i]);
+	   int b	= imag (Points [i]);
+	   setPoint (a, b, 0);
+	}
 }
 
 void	IQDisplay::drawCross () {

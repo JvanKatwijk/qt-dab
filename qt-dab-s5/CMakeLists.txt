@@ -274,7 +274,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/backend/data/mot/mot-object.h
 	     ../includes/backend/data/mot/mot-dir.h
 	     ../includes/backend/data/data-processor.h
-	     ../includes/output/fir-filters.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes.support/fft-handler.h 
@@ -302,6 +301,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
+	     ../includes/support/fir-filters.h
 	     ../src/support/tii-library/tii-codes.h
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
@@ -311,6 +311,7 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
 	     ../includes/scopes-qwt6/audio-display.h
+	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../viewers/spectrum-viewer/spectrum-viewer.h 
 	     ../viewers/spectrum-viewer/spectrum-scope.h 
 	     ../viewers/spectrum-viewer/waterfall-scope.h 
@@ -384,7 +385,6 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
-	     ../src/output/fir-filters.cpp
 	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
@@ -416,7 +416,9 @@ add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-library/tii-codes.cpp
+	     ../src/support/fir-filters.cpp
 	     ../src/scopes-qwt6/audio-display.cpp 
+	     ../src/scopes-qwt6/spectrogramdata.cpp 
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
 	     ../viewers/spectrum-viewer/spectrum-scope.cpp 
 	     ../viewers/spectrum-viewer/waterfall-scope.cpp 

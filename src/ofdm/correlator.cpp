@@ -89,7 +89,7 @@ float	Max		= -1000;
 float	lbuf [T_u / 2];
 
 const	int SEARCH_GAP	= 10;
-const	int SEARCH_OFFSET = 250;
+const	int SEARCH_OFFSET = T_g / 2;
 
 	fft_forward. fft (v);
 //
@@ -103,7 +103,7 @@ const	int SEARCH_OFFSET = 250;
   *	We compute the average and the max signal values
   */
 	for (i = 0; i < T_u / 2; i ++) {
-	   lbuf [i] = jan_abs (v[i]);
+	   lbuf [i] = jan_abs (v [i]);
 	   sum	+= lbuf [i];
 	}
 
@@ -132,7 +132,7 @@ const	int SEARCH_OFFSET = 250;
 	}
 
 	for (int i = 0; i < indices. size (); i ++) {
-	   if (480 <= indices. at (i) && indices. at (i) <= 520) {
+	   if (T_g - 20 <= indices. at (i) && indices. at (i) <= T_g + 20) {
 	      std::vector<int> temp;
 	      temp. push_back (indices. at (i));
 	      for (int j = 0; j < i; j ++)

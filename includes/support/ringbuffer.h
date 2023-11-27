@@ -71,6 +71,8 @@
 #include	<cstdio>
 #include	<cstring>
 #include	<cstdint>
+#include	<vector>
+#include	<atomic>
 /*
  *	a simple ringbuffer, lockfree, however only for a
  *	single reader and a single writer.
@@ -139,27 +141,22 @@ template <class elementtype>
 class RingBuffer {
 private:
 		uint32_t	bufferSize;
-volatile	uint32_t	writeIndex;
-volatile	uint32_t	readIndex;
+		std::atomic<uint32_t>	writeIndex;
+		std::atomic<uint32_t>	readIndex;
 		uint32_t	bigMask;
 	        uint32_t	smallMask;
-		char		*buffer;
+		std::vector<char>	buffer;
 public:
-	RingBuffer (uint32_t elementCount) {
-	if (((elementCount - 1) & elementCount) != 0)	
-	    elementCount = 64 * 16384;	/* default	*/
-
-	bufferSize	= elementCount;
-	buffer		= new char [2 * bufferSize * sizeof (elementtype)];
+	RingBuffer	(uint32_t elementCount) {
+	bufferSize	= checkSize (elementCount);
+	buffer. resize (2 * bufferSize * sizeof (elementtype));
 	writeIndex	= 0;
 	readIndex	= 0;
-	smallMask	= (elementCount)- 1;
-	bigMask		= (elementCount * 2) - 1;
+	smallMask	= (bufferSize)- 1;
+	bigMask		= (bufferSize << 1) - 1;
 }
 
-    ~RingBuffer() {
-	   delete[]	 buffer;
-}
+	~RingBuffer 	() { }
 
 /*
  * 	functions for checking available data for reading and space
@@ -169,24 +166,24 @@ int32_t	GetRingBufferReadAvailable() {
 	return (writeIndex - readIndex) & bigMask;
 }
 
-int32_t	ReadSpace(){
-    return GetRingBufferReadAvailable();
+int32_t	ReadSpace	(){
+	return GetRingBufferReadAvailable();
 }
 
-int32_t	GetRingBufferWriteAvailable() {
-    return  bufferSize - GetRingBufferReadAvailable();
+int32_t	GetRingBufferWriteAvailable () {
+	return  bufferSize - GetRingBufferReadAvailable();
 }
 
-int32_t	WriteSpace() {
-    return GetRingBufferWriteAvailable();
+int32_t	WriteSpace	() {
+	return GetRingBufferWriteAvailable();
 }
 
 void	FlushRingBuffer() {
 	writeIndex	= 0;
 	readIndex	= 0;
 }
-/* ensure that previous writes are seen before we update the write index 
-   (write after write)
+/*	ensure that previous writes are seen before we
+ *	update the write index (write after write)
  */
 int32_t AdvanceRingBufferWriteIndex (int32_t elementCount) {
 	PaUtil_WriteMemoryBarrier();
@@ -240,44 +237,6 @@ uint32_t   available = GetRingBufferWriteAvailable();
 	return elementCount;
 }
 
-/***************************************************************************
-** Get address of region(s) from which we can read data.
-** If the region is contiguous, size2 will be zero.
-** If non-contiguous, size2 will be the size of second region.
-** Returns room available to be read or elementCount, whichever is smaller.
-*/
-int32_t GetRingBufferReadRegions (uint32_t elementCount,
-	                          void **dataPtr1, int32_t *sizePtr1,
-	                          void **dataPtr2, int32_t *sizePtr2) {
-uint32_t   index;
-uint32_t   available = GetRingBufferReadAvailable(); /* doesn't use memory barrier */
-
-	if (elementCount > available)
-	   elementCount = available;
-
-/* Check to see if read is not contiguous. */
-	index = readIndex & smallMask;
-	if ((index + elementCount) > bufferSize) {
-        /* Write data in two blocks that wrap the buffer. */
-           int32_t firstHalf = bufferSize - index;
-	   *dataPtr1 = &buffer [index * sizeof(elementtype)];
-	   *sizePtr1 = firstHalf;
-	   *dataPtr2 = &buffer [0];
-	   *sizePtr2 = elementCount - firstHalf;
-	}
-	else {
-	   *dataPtr1 = &buffer [index * sizeof(elementtype)];
-	   *sizePtr1 = elementCount;
-	   *dataPtr2 = nullptr;
-	   *sizePtr2 = 0;
-	}
-    
-	if (available)
-           PaUtil_ReadMemoryBarrier(); /* (read-after-read) => read barrier */
-
-	return elementCount;
-}
-
 int32_t	putDataIntoBuffer (const void *data, int32_t elementCount) {
 int32_t size1, size2, numWritten;
 void	*data1;
@@ -318,6 +277,44 @@ void	*data2;
 	return numRead;
 }
 
+/***************************************************************************
+** Get address of region(s) from which we can read data.
+** If the region is contiguous, size2 will be zero.
+** If non-contiguous, size2 will be the size of second region.
+** Returns room available to be read or elementCount, whichever is smaller.
+*/
+int32_t GetRingBufferReadRegions (uint32_t elementCount,
+	                          void **dataPtr1, int32_t *sizePtr1,
+	                          void **dataPtr2, int32_t *sizePtr2) {
+uint32_t   index;
+uint32_t   available = GetRingBufferReadAvailable(); /* doesn't use memory barrier */
+
+	if (elementCount > available)
+	   elementCount = available;
+
+/* Check to see if read is not contiguous. */
+	index = readIndex & smallMask;
+	if ((index + elementCount) > bufferSize) {
+        /* Write data in two blocks that wrap the buffer. */
+           int32_t firstHalf = bufferSize - index;
+	   *dataPtr1 = &buffer [index * sizeof(elementtype)];
+	   *sizePtr1 = firstHalf;
+	   *dataPtr2 = &buffer [0];
+	   *sizePtr2 = elementCount - firstHalf;
+	}
+	else {
+	   *dataPtr1 = &buffer [index * sizeof(elementtype)];
+	   *sizePtr1 = elementCount;
+	   *dataPtr2 = nullptr;
+	   *sizePtr2 = 0;
+	}
+    
+	if (available)
+           PaUtil_ReadMemoryBarrier(); /* (read-after-read) => read barrier */
+
+	return elementCount;
+}
+
 int32_t	skipDataInBuffer (uint32_t n_values) {
 //	ensure that we have the correct read and write indices
     PaUtil_FullMemoryBarrier();
@@ -327,5 +324,19 @@ int32_t	skipDataInBuffer (uint32_t n_values) {
 	return n_values;
 }
 
+uint32_t checkSize (uint32_t val) {
+uint32_t a = 1;
+
+	if ((val & (val - 1)) == 0)
+	   return val;
+//
+//	assume a reasonable maximum for the buffer size
+	for (uint32_t i = 0; i < 22; i ++) {
+	   if (a > val)
+	      return a;
+	   a <<= 1;
+	}
+	return 32768;
+}
 };
 

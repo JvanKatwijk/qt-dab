@@ -198,11 +198,11 @@ static double avg [4 * 512];
 //
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
-void	displayWidget::show_correlation	(std::vector<float> &v,
+void	displayWidget::show_correlation	(std::vector<float> &v, int T_g,
 	                                 QVector<int> &ww, int baseDistance) {
 	if (currentTab != SHOW_CORRELATION)
 	   return;
-	correlationScope_p	-> display (v,
+	correlationScope_p	-> display (v, T_g,
 	                                    correlationLength -> value (),
 	                                    correlationSlider -> value ());
 	if (ww. size () > 0) {
