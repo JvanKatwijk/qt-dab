@@ -150,7 +150,8 @@ char	manufac [256], product [256], serial [256];
 #ifdef	__MINGW32__
 	const char *libraryString	= "librtlsdr.dll";
 #elif __linux__
-	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
+//	const char *libraryString	= "/usr/local/lib64/librtlsdr.so";
+	const char *libraryString	= "librtlsdr.so";
 #elif __APPLE__
     const char *libraryString	= "librtlsdr.dylib";
 #endif

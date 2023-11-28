@@ -70,7 +70,7 @@ if(DEFINED SDRPLAY)
 endif ()
 
 if(DEFINED RTLSDR)
-	set(RTLSDR_GENERIC true)
+	set(RTLSDR_LINUX true)
 endif ()
 
 if(DEFINED HACKRF)
@@ -787,34 +787,34 @@ endif ()
 	   add_definitions (-DHAVE_LIME)
 	endif (LIMESDR)
 
-	if (RTLSDR_GENERIC)
+	if (RTLSDR_LINUX)
 	   set (${objectName}_UIS
                 ${${objectName}_UIS}
-                ../qt-devices/rtlsdr-handler-generic/rtlsdr-widget.ui
+                ../qt-devices/rtlsdr-handler-linux/rtlsdr-widget.ui
            )
 
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
-	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
 	   )
 
 	   include_directories (
-	        ../qt-devices/rtlsdr-handler-generic/
+	        ../qt-devices/rtlsdr-handler-linux/
 	   )
 
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
-	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.h
-	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.h
-	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr.h
-	        ../qt-devices/rtlsdr-handler-generic/rtl-sdr_export.h
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr.h
+	        ../qt-devices/rtlsdr-handler-linux/rtl-sdr_export.h
 	   )
 
 	   set (${objectName}_SRCS
 	        ${${objectName}_SRCS}
-	        ../qt-devices/rtlsdr-handler-generic/rtlsdr-handler.cpp
-	        ../qt-devices/rtlsdr-handler-generic/rtl-dongleselect.cpp
+	        ../qt-devices/rtlsdr-handler-linux/rtlsdr-handler.cpp
+	        ../qt-devices/rtlsdr-handler-linux/rtl-dongleselect.cpp
 	   )
 
 	   add_definitions (-DHAVE_RTLSDR)
