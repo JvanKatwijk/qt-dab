@@ -1,12 +1,8 @@
-#
 /*
  *    Copyright (C) 2015
  *    Sebastian Held <sebastian.held@imst.de>
  *
  *    This file is part of Qt-DAB
- *    Many of the ideas as implemented in SDR-J are derived from
- *    other work, made available through the GNU general Public License.
- *    All copyrights of the original authors are recognized.
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -22,61 +18,60 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#ifndef	__UHDINPUT
-#define	__UHDINPUT
+#pragma once
 
-#include	"device-handler.h"
-
-#include	<QThread>
-#include	<QSettings>
-#include	<QObject>
-#include	"dab-constants.h"
-#include	<uhd/usrp/multi_usrp.hpp>
-#include	"ringbuffer.h"
-#include	"ui_uhd-widget.h"
+#include  <QThread>
+#include  <QSettings>
+#include  <QFrame>
+#include  <QObject>
+#include  <uhd/usrp/multi_usrp.hpp>
+#include  "ui_uhd-widget.h"
+#include  "device-handler.h"
+#include  "ringbuffer.h"
 
 class uhdHandler;
-//
-//	the real worker:
+
 class uhd_streamer : public QThread {
 public:
-	uhd_streamer	(uhdHandler *d);
-	void stop	();
+		uhd_streamer	(uhdHandler * d);
+		~uhd_streamer	();
+	void	stop		();
 
 private:
-	uhdHandler* m_theStick;
-	virtual void run();
-	volatile bool m_stop_signal_called;
+	uhdHandler *m_theStick;
+	void	run		();
+	std::atomic<bool> m_stop_signal_called;
 };
 
-class	uhdHandler: public QObject, public deviceHandler, public Ui_uhdWidget {
+class uhdHandler : public QObject,
+	                       public deviceHandler, public Ui_uhdWidget {
 Q_OBJECT
 	friend class uhd_streamer;
 public:
-		uhdHandler	(QSettings *dabSettings);
-	 	~uhdHandler 	();
+		uhdHandler	(QSettings * dabSettings);
+		~uhdHandler	();
 
 	bool	restartReader	(int32_t freq);
 	void	stopReader	();
-	int32_t	getSamples	(std::complex<float> *, int32_t size);
-	int32_t	Samples		();
+	int32_t getSamples	(std::complex<float> *, int32_t size);
+	int32_t Samples		();
 	void	resetBuffer	();
-	int16_t	bitDepth	();
-	QString	deviceName	();
-//
-private:
-	int16_t		maxGain		();
-	QSettings	*uhdSettings;
+	int16_t bitDepth	();
+	QString deviceName	();
 
+private:
+	QSettings *uhdSettings;
 	uhd::usrp::multi_usrp::sptr m_usrp;
 	uhd::rx_streamer::sptr m_rx_stream;
-	RingBuffer<std::complex<float>> *theBuffer;
-	uhd_streamer*	m_workerHandle;
-	int32_t		inputRate;
-	int32_t		ringbufferSize;
+	uhd_streamer * m_workerHandle = nullptr;
+	RingBuffer<std::complex<float>> * theBuffer;
+	int32_t	inputRate;
+	int32_t ringBufferSize;
+
+	int16_t	maxGain		();
+
 private slots:
-	void		handle_externalGain	(int);
-	void		handle_ppmOffset	(int);
+	void	setExternalGain	(int);
+	void 	handle_ant_selector (const QString &);
 };
-#endif
 

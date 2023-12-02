@@ -281,19 +281,42 @@ Complex	computedCenter;
 	   if (decoder == DECODER_DEFAULT) {
 //	what we see is that the "cross" is rorated slightly to the left
 //	or the right, here we correct for the shift
-	      Complex testVal	= normalize (r1) * conj (theOffset);
-	      float ab2		= jan_abs (testVal);
-	      ibits [i]		= 
-	                          (int16_t)(- (real (testVal) * 127.0) / ab2);
-              ibits [carriers + i] =
-	                          (int16_t)(- (imag (testVal) * 127.0) / ab2);
+//	we compute the distance to the fictious center
+//	and this distance is the penalty for the viterbi value
+	      Complex testVal	= r1 * conj (theOffset);
+	      float base	= (abs (real (testVal)) + abs(imag (testVal))) / 2;
+	      float d1		= abs (abs (real (testVal)) - base);
+	      float d2		= abs (abs (imag (testVal)) - base);
+	      float re		= real (testVal) >= 0 ? base - d1 :
+	                                              - base + d1;
+	      float im		= imag (testVal) >= 0 ? base - d2 :
+	                                              - base + d2;
+	      ibits [i]		= (int16_t) (- re * 127.0 / base);
+	      ibits [carriers + i] =
+	                          (int16_t) (- im * 127.0 / base);
+//	      float ab2		= jan_abs (testVal);
+//	      ibits [i]		= 
+//	                          (int16_t)(- (real (testVal) * 127.0) / ab2);
+//	      ibits [carriers + i] =
+//	                          (int16_t)(- (imag (testVal) * 127.0) / ab2);
 	   }
 	   else {
 //
 //	"OLD" default is just by looking wht the values for the
 //	x and y coordinates are
-	      ibits [i]		=     (int16_t)(- (real (r1) * 127.0) / ab1);
-	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127.0) / ab1);
+	      float base	= (abs (real (r1)) + abs (imag (r1))) / 2;	
+	      float dx		= abs (abs (real (r1)) - base); 
+	      float dy		= abs (abs (imag (r1)) - base); 
+	      float re		= real (r1) >= 0 ? base - dx :
+	                                          -base + dx;
+	      float im		= imag (r1) >= 0 ? base - dy :
+	                                          -base + dy;
+	      ibits [i]		= (int16_t) (- re * 127.0 / base);
+	      ibits [carriers + i] =
+	                          (int16_t) (- im * 127.0 / base);
+	
+//	      ibits [i]		=     (int16_t)(- (real (r1) * 127.0) / ab1);
+//	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127.0) / ab1);
 	   }
 	}
 
@@ -326,6 +349,11 @@ Complex	computedCenter;
 	                  offsetVector [(T_u - carriers / 2 + i) % T_u];
 	            tempVector [i] = tempVector [i] /  M_PI * 180.0;
 	         }
+	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
+//	         float tempVector [2 * carriers];
+//	         for (int i = 0; i < 2 * carriers; i ++) {
+//	            tempVector [i] = ibits [i];
+//	         }
 	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
 	         show_stdDev (carriers);
 	      }

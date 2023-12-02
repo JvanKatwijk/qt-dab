@@ -1,3 +1,4 @@
+#
 /*
  *
  *    Copyright (C) 2015
@@ -19,11 +20,9 @@
  *    along with Qt-DAB-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"uhd-handler.h"
-#include	"device-exceptions.h"
 
 #include <uhd/types/tune_request.hpp>
-#include <uhd/utils/thread_priority.hpp>
+#include <uhd/utils/thread.hpp>
 #include <uhd/utils/safe_main.hpp>
 #include <uhd/exception.hpp>
 #include <boost/program_options.hpp>
@@ -33,193 +32,211 @@
 #include <fstream>
 #include <csignal>
 #include <complex>
+#include "uhd-handler.h"
+#include "device-exceptions.h"
 
-	uhd_streamer::uhd_streamer (uhdHandler *d):
-	                                   m_theStick (d) {
-	m_stop_signal_called	= false;
-//create a receive streamer
-	uhd::stream_args_t stream_args( "fc32", "sc16" );
-	m_theStick -> m_rx_stream =
-	          m_theStick -> m_usrp -> get_rx_stream (stream_args);
-//setup streaming
-	uhd::stream_cmd_t stream_cmd (uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS );
-	stream_cmd.num_samps	= 0;
-	stream_cmd.stream_now	= true;
-	stream_cmd.time_spec	= uhd::time_spec_t();
-	m_theStick -> m_rx_stream -> issue_stream_cmd (stream_cmd);
+	uhd_streamer::uhd_streamer (uhdHandler * d) :
+	                                       m_theStick (d) {
+	m_stop_signal_called. store (false);
+	uhd::stream_args_t stream_args ("fc32", "sc16");
+	m_theStick->m_rx_stream =
+	             m_theStick -> m_usrp->get_rx_stream(stream_args);
+	uhd::stream_cmd_t stream_cmd(uhd::stream_cmd_t::STREAM_MODE_START_CONTINUOUS);
+	stream_cmd.num_samps = 0;
+	stream_cmd.stream_now = true;
+	stream_cmd.time_spec = uhd::time_spec_t();
+	m_theStick->m_rx_stream->issue_stream_cmd(stream_cmd);
 
 	start();
 }
 
-void	uhd_streamer::stop () {
-	m_stop_signal_called = true;
-	while (isRunning ())
+	uhd_streamer::~uhd_streamer	() {}
+
+void	uhd_streamer::stop	() {
+	m_stop_signal_called. store (true);
+	while (isRunning ()) {
 	   wait (1);
+	}
 }
 
 void	uhd_streamer::run () {
-	while (!m_stop_signal_called) {
+	while (!m_stop_signal_called. load ()) {
 //	get write position, ignore data2 and size2
 	   int32_t size1, size2;
 	   void *data1, *data2;
 	   m_theStick -> theBuffer -> GetRingBufferWriteRegions (10000,
-	                                                         &data1,
-	                                                         &size1,
-	                                                         &data2,
-	                                                         &size2);
+                                                                 &data1,
+                                                                 &size1,
+                                                                 &data2,
+                                                                 &size2);
+
 
 	   if (size1 == 0) {
-// no room in ring buffer, wait for main thread to process the data
+//	no room in ring buffer, wait for main thread to process the data
 	      usleep (100); // wait 100 us
 	      continue;
 	   }
 
 	   uhd::rx_metadata_t md;
 	   size_t num_rx_samps =
-	         m_theStick -> m_rx_stream -> recv (data1, size1, md, 1.0);
+                 m_theStick -> m_rx_stream -> recv (data1, size1, md, 1.0);
 	   m_theStick -> theBuffer -> AdvanceRingBufferWriteIndex (num_rx_samps);
 
 	   if (md.error_code == uhd::rx_metadata_t::ERROR_CODE_TIMEOUT) {
-	      std::cout << boost::format ("Timeout while streaming") << std::endl;
+	      std::cout << boost::format("Timeout while streaming") << std::endl;
 	      continue;
 	   }
 
 	   if (md.error_code == uhd::rx_metadata_t::ERROR_CODE_OVERFLOW) {
-	      std::cerr << boost::format ("Got an overflow indication") << std::endl;
+	      std::cerr << boost::format("Got an overflow indication") << std::endl;
 	      continue;
 	   }
 
-//	   if (md.error_code != uhd::rx_metadata_t::ERROR_CODE_NONE) {
-//	      std::cerr << boost::format("Receiver error: %s") % md.strerror() << std::endl;
-//	      continue;
-//	   }
+    //	   if (md.error_code != uhd::rx_metadata_t::ERROR_CODE_NONE) {
+    //	      std::cerr << boost::format("Receiver error: %s") % md.strerror() << std::endl;
+    //	      continue;
+    //	   }
 	}
 }
 
-	uhdHandler::uhdHandler (QSettings *s) {
-	this	-> uhdSettings	= s;
+		uhdHandler::uhdHandler (QSettings * s) :
+	                                            Ui_uhdWidget (),
+	                                            uhdSettings (s) {
+
+std::vector<std::string> antList;
 	setupUi (&myFrame);
-	this	-> myFrame. show ();
-	this	-> inputRate	= Khz (2048);
-	this	-> ringbufferSize	= 1024;	// blocks of 1024 complexes
-	this	-> theBuffer	= nullptr;	// also indicates good init or not
-	lastFrequency		= 100000;
-	m_workerHandle		= 0;
-//	create a usrp device.
+	myFrame.show ();
+	inputRate	= 2048000;
+	ringBufferSize	= 1024;
+
+// create a usrp device.
 	std::string args;
 	std::cout << std::endl;
-	std::cout << boost::format("Creating the usrp device with: %s...") % args << std::endl;
+	std::cout << boost::format("Creating the USRP device with: %s...") % args << std::endl;
 	try {
-	   m_usrp = uhd::usrp::multi_usrp::make (args);
-//	Lock mboard clocks
-
+	   m_usrp = uhd::usrp::multi_usrp::make(args);
 	   std::string ref("internal");
-	   m_usrp -> set_clock_source (ref);
+	   m_usrp->set_clock_source(ref);
+
+//	fill antenna connectors combobox
+	   antList = m_usrp -> get_rx_antennas ();
+	   if (antList.empty()) {
+	      antList.emplace_back("(empty)");
+	   }
+	   for (const auto & al : antList)
+	      antennaSelect -> addItem (al.c_str());
 
 	   std::cout << boost::format("Using Device: %s") % m_usrp->get_pp_string() << std::endl;
 //	set sample rate
 	   m_usrp -> set_rx_rate (inputRate);
-	   inputRate = m_usrp -> get_rx_rate ();
-	   std::cout << boost::format("Actual RX Rate: %f Msps...") % (inputRate/1e6) << std::endl << std::endl;
+	   inputRate = (int32_t)std::round(m_usrp->get_rx_rate());
+	   std::cout << boost::format("Actual RX Rate: %f Msps...") % (inputRate / 1e6) << std::endl << std::endl;
 
 //	allocate the rx buffer
-	   theBuffer	= new RingBuffer<std::complex<float>>(ringbufferSize * 1024);
+	   theBuffer = new RingBuffer<std::complex<float>>(ringBufferSize * 1024);
+	} catch (...) {
+	   qWarning("No luck with UHD\n");
+	   throw (uhd_exception ("No luck with UHD"));
 	}
-	catch (...) {
-	   fprintf (stderr, "No luck with uhd\n");
-	   throw uhd_exception ("cannot find/open uhd device");
-	}
-
 //	some housekeeping for the local frame
-	externalGain		-> setMaximum (maxGain ());
-	uhdSettings		-> beginGroup ("uhdSettings");
-	externalGain 		-> setValue (
-	            uhdSettings -> value ("externalGain", 40). toInt ());
-	f_correction		-> setValue (
-	            uhdSettings -> value ("f_correction", 0). toInt ());
-	uhdSettings	-> endGroup ();
+	externalGain->setMaximum (maxGain ());
+	uhdSettings -> beginGroup ("uhd_settings");
+	externalGain -> setValue (
+	            uhdSettings -> value("externalGain", 40).toInt());
+	f_correction -> setValue (
+	            uhdSettings -> value ("f_correction", 0).toInt());
+	KhzOffset -> setValue (
+	            uhdSettings -> value ("KhzOffset", 0).toInt());
+	const QString h = uhdSettings -> value ("antSelect", "default").toString();
+	const int32_t k = antennaSelect -> findText (h);
+	if (k != -1)
+	   antennaSelect -> setCurrentIndex(k);
 
-	handle_externalGain	(externalGain	-> value ());
+	uhdSettings -> endGroup();
+	setExternalGain		(externalGain -> value ());
+	handle_ant_selector	(antennaSelect->currentText());
+
 	connect (externalGain, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_externalGain (int)));
-	connect (f_correction, SIGNAL (valueChanged (int)),
-	         this, SLOT (set_ppmOffset (int)));
+	         this, SLOT (setExternalGain (int)));
+	connect (antennaSelect, SIGNAL (activated (const QString &)),
+	         this, SLOT (slot_handle_ant_selector (const QString &)));
 }
 
 	uhdHandler::~uhdHandler () {
 	if (theBuffer != nullptr) {
 	   stopReader ();
-	   uhdSettings	-> beginGroup ("uhdSettings");
-	   uhdSettings	-> setValue ("externalGain", 
-	                                      externalGain -> value ());
-	   uhdSettings	-> setValue ("f_correction",
-	                                      f_correction -> value ());
-	   uhdSettings	-> endGroup ();
+	   uhdSettings -> beginGroup("uhdSettings");
+	   uhdSettings -> setValue("externalGain", externalGain -> value());
+	   uhdSettings -> setValue ("f_correction", f_correction -> value ());
+	   uhdSettings -> setValue ("KhzOffset", KhzOffset -> value());
+	   uhdSettings -> endGroup();
 	   delete theBuffer;
 	}
 }
 
-bool	uhdHandler::restartReader	(int32_t freq) {
-	if (m_workerHandle != 0)
-	   return true;
+bool	uhdHandler::restartReader(int32_t freq) {
 
-	lastFrequency	= freq;
-	uhd::tune_request_t tune_request (freq);
-	m_usrp	->	set_rx_freq (tune_request);
-	theBuffer -> FlushRingBuffer ();
-	m_workerHandle = new uhd_streamer (this);
+	std::cout << boost::format("Setting RX Freq: %f MHz...") % (freq / 1e6) << std::endl;
+	uhd::tune_request_t tune_request(freq);
+	m_usrp->set_rx_freq(tune_request);
+
+	if (m_workerHandle != nullptr) {
+	   return true;
+	}
+
+	theBuffer -> FlushRingBuffer();
+	m_workerHandle = new uhd_streamer(this);
 	return true;
 }
 
-void	uhdHandler::stopReader	() {
-	if (m_workerHandle == 0)
+void	uhdHandler::stopReader () {
+	if (m_workerHandle == nullptr)
 	   return;
 
 	m_workerHandle -> stop ();
-
 	delete m_workerHandle;
-	m_workerHandle = 0;
-}
-//
-//	not used:
-
-int32_t	uhdHandler::getSamples	(std::complex<float> *v, int32_t size) {
-	size = std::min ((uint32_t)size,
-	                 (uint32_t)(theBuffer -> GetRingBufferReadAvailable ()));
-	theBuffer -> getDataFromBuffer (v, size);
-	return size;
+	m_workerHandle = nullptr;
 }
 
-int32_t	uhdHandler::Samples	() {
-	return theBuffer -> GetRingBufferReadAvailable();
+int32_t uhdHandler::getSamples (std::complex<float> * v, int32_t size) {
+	size = std::min (size, theBuffer -> GetRingBufferReadAvailable());
+	return	theBuffer -> getDataFromBuffer (v, size);
 }
 
-void	uhdHandler::resetBuffer	() {
+int32_t uhdHandler::Samples () {
+	return theBuffer -> GetRingBufferReadAvailable ();
+}
+
+void	uhdHandler::resetBuffer () {
 	theBuffer -> FlushRingBuffer();
 }
-        
-int16_t uhdHandler::maxGain        () {
-        uhd::gain_range_t range = m_usrp->get_rx_gain_range();
-        return  range.stop();
-}  
 
-int16_t	uhdHandler::bitDepth	() {
-	return 16;
+int16_t uhdHandler::bitDepth () {
+	return 12;
 }
 
-QString	uhdHandler::deviceName	() {
-	return QString ("uhd");
+QString uhdHandler::deviceName () {
+	return "UHD";
 }
 
-void	uhdHandler::handle_externalGain	(int32_t gain) {
+int16_t uhdHandler::maxGain () {
+	uhd::gain_range_t range = m_usrp->get_rx_gain_range();
+	return (int16_t)std::round(range.stop());
+}
+
+void	uhdHandler::setExternalGain (int gain) {
 	std::cout << boost::format("Setting RX Gain: %f dB...") % gain << std::endl;
-	m_usrp -> set_rx_gain (gain);
-	double gain_f = m_usrp -> get_rx_gain ();
-	std::cout << boost::format("Actual RX Gain: %f dB...") % gain_f << std::endl << std::endl;
+	m_usrp -> set_rx_gain(gain);
 }
 
+void	uhdHandler::handle_ant_selector(const QString & iAnt) {
 
-void	uhdHandler::handle_ppmOffset (int f) {
-	(void)f;
+	try {
+	   m_usrp -> set_rx_antenna(iAnt. toStdString ());
+	   uhdSettings	-> beginGroup ("uhd_settings");
+	   uhdSettings	-> setValue ("antSelector", iAnt);
+	   uhdSettings	-> endGroup ();
+	} catch (...) {
+	   qWarning("Unknown Antenna name: %s", iAnt.toStdString().c_str());
+	}
 }
-

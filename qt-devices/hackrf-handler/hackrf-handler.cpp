@@ -534,13 +534,13 @@ bool	hackrfHandler::load_hackrfFunctions () {
 	   return false;
 	}
 
-	this	-> hackrf_board_rev_read =
-	              (pfn_hackrf_board_rev_read)
-	                      library_p ->resolve ("hackrf_board_rev_read");
-	if (hackrf_board_rev_read == nullptr) {
-	   fprintf (stderr, "Could not find hackrf_board_rev_read\n");
-	   return false;
-	}
+//	this	-> hackrf_board_rev_read =
+//	              (pfn_hackrf_board_rev_read)
+//	                      library_p ->resolve ("hackrf_board_rev_read");
+//	if (hackrf_board_rev_read == nullptr) {
+//	   fprintf (stderr, "Could not find hackrf_board_rev_read\n");
+//	   return false;
+//	}
 
 	fprintf (stderr, "OK, functions seem to be loaded\n");
 	return true;

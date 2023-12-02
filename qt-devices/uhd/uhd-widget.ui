@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>211</width>
-    <height>146</height>
+    <width>219</width>
+    <height>218</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -57,6 +57,33 @@
       <number>100</number>
      </property>
     </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>kHz</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QSpinBox" name="KhzOffset">
+     <property name="toolTip">
+      <string>(not yet implemented)</string>
+     </property>
+     <property name="maximum">
+      <number>1000000</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Ant</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QComboBox" name="antennaSelect"/>
    </item>
   </layout>
  </widget>
