@@ -27,7 +27,6 @@
 #include	<cstring>
 //
 
-
 #ifndef M_PI
 # define M_PI           3.14159265358979323846  /* pi */
 #endif
@@ -127,8 +126,7 @@ uint8_t table [] = {
 	for (int i = 0; i < T_u; i ++)
 	   window [i] = 0.54 - 0.46 * cos (2 * M_PI * (DABFLOAT)i / T_u);
 
-	for (int i = 0; i < 256; i ++)
-	   invTable [i] = -1;
+	memset (invTable, 0x377, 256);
 	for (int i = 0; i < 70; ++i) 
 	    invTable [table [i]] = i;
 	detectMode_new	= false;
@@ -161,9 +159,10 @@ void	TII_Detector::addBuffer (std::vector<Complex> v) {
 //
 //	Note that the input is fft output, not yet reordered
 void	TII_Detector::collapse (std::vector<Complex> &inVec, float *outVec) {
-int	i;
-	for (i = 0; i < carriers / 8; i ++) {	
+
+	for (int i = 0; i < carriers / 8; i ++) {	
 	   int carr = - carriers / 2 + 2 * i;
+
 	   outVec [i] = abs (real (inVec [(T_u + carr) % T_u] *
 	                            conj (inVec [(T_u + carr + 1) % T_u])));
 	   carr	= - carriers / 2 + 1 * carriers / 4 + 2 * i;
@@ -187,10 +186,10 @@ uint8_t bits [] = {0x80, 0x40, 0x20, 0x10 , 0x08, 0x04, 0x02, 0x01};
 //	indicates the subId
 #define	NUM_GROUPS	8
 #define	GROUPSIZE	24
+
 uint16_t	TII_Detector::processNULL () {
-int i, j;
 float	hulpTable	[NUM_GROUPS * GROUPSIZE]; // collapses values
-float	C_table		[GROUPSIZE];	// contains the values
+float	C_table		[GROUPSIZE];		  // contains the values
 int	D_table		[GROUPSIZE];	// count of indices in C_table with data
 float	avgTable	[NUM_GROUPS];
 
@@ -207,9 +206,10 @@ float	avgTable	[NUM_GROUPS];
 //	NUM_GROUPS GROUPSIZE - value groups. 
 
 	memset (avgTable, 0, NUM_GROUPS * sizeof (float));
-	for (i = 0; i < NUM_GROUPS; i ++) {
+
+	for (int i = 0; i < NUM_GROUPS; i ++) {
 	   avgTable [i] = 0;
-	   for (j = 0; j < GROUPSIZE; j ++) 
+	   for (int j = 0; j < GROUPSIZE; j ++) 
 	      avgTable [i] += hulpTable [i * GROUPSIZE + j];
 
 	   avgTable [i] /= GROUPSIZE;
@@ -231,10 +231,9 @@ float	avgTable	[NUM_GROUPS];
 	memset (D_table, 0, GROUPSIZE * sizeof (int));
 	memset (C_table, 0, GROUPSIZE * sizeof (float));
 //
-//	We gebruiken C en D table alleen maar om de begin offset
-//	te kunnen vinden
-	for (i = 0; i < GROUPSIZE; i ++) {
-	   for (j = 0; j < NUM_GROUPS; j ++) {
+//	We only use the C and D table to locate the start offset
+	for (int i = 0; i < GROUPSIZE; i ++) {
+	   for (int j = 0; j < NUM_GROUPS; j ++) {
 	      if (hulpTable [j * GROUPSIZE + i] > 4 * avgTable [j]) {
 	         C_table [i] += hulpTable [j * GROUPSIZE + i];
 	         D_table [i] ++;
@@ -242,13 +241,12 @@ float	avgTable	[NUM_GROUPS];
 	   }
 	}
 
-
 //	we extract from this result the highest values that
 //	meet the constraint of 4 values being sufficiently high
 	float	maxTable	= 0;
 	int	maxIndex	= -1;
 	
-	for (j = 0; j < GROUPSIZE; j ++) {
+	for (int j = 0; j < GROUPSIZE; j ++) {
 	   if ((D_table [j] >= 4) && (C_table [j] > maxTable)) {
 	      maxTable = C_table [j];
 	      maxIndex = j;
@@ -265,7 +263,7 @@ float	avgTable	[NUM_GROUPS];
 //	elements of the NUM_GROUPS groups
 
 	float x [NUM_GROUPS];
-	for (i = 0; i < NUM_GROUPS; i ++) 
+	for (int i = 0; i < NUM_GROUPS; i ++) 
 	   x [i] = hulpTable [maxIndex + GROUPSIZE * i];
 
 //	find the best match
@@ -286,7 +284,7 @@ float	avgTable	[NUM_GROUPS];
 	else {		// detectMode_new is false
 ////	we extract the four max values as bits
 	   uint16_t pattern	= 0;
-	   for (i = 0; i < 4; i ++) {
+	   for (int i = 0; i < 4; i ++) {
 	      float mmax	= 0;
 	      int ind		= -1;
 	      for (int k = 0; k < NUM_GROUPS; k ++) {

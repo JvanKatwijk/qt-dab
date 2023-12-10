@@ -39,19 +39,19 @@ SF_INFO *sf_info;
 	myFrame. show	();
 	fileName	= getFileName ();
 	if (fileName == "")
-	   throw file_exception ("no file specified");
+	   throw device_exception ("no file specified");
 
 	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
 	sf_info	-> format	= 0;
 	filePointer	= sf_open (fileName. toUtf8(). data(),
 	                                          SFM_READ, sf_info);
 	if (filePointer == nullptr) {
-	   throw file_exception (fileName. toStdString () + "no sdr file");
+	   throw device_exception (fileName. toStdString () + "no sdr file");
 	}
 	if ((sf_info -> samplerate != INPUT_RATE) ||
 	    (sf_info -> channels != 2)) {
 	   sf_close (filePointer);
-	   throw file_exception (fileName. toStdString () + "wrong samplerate");
+	   throw device_exception (fileName. toStdString () + "wrong samplerate");
 	}
 	nameofFile	-> setText (fileName);
 	fileProgress	-> setValue (0);

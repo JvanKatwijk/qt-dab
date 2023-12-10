@@ -42,18 +42,18 @@
 
 	QString fileName	= getFileName ();
 	if (fileName == nullptr) 
-	   throw file_exception ("no file specified");
+	   throw device_exception ("no file specified");
 
 	theFile	= fopen (fileName. toUtf8 (). data (), "rb");
 	if (theFile == nullptr) {
-	   throw file_exception ("cannot open " + fileName. toStdString ());
+	   throw device_exception ("cannot open " + fileName. toStdString ());
 	}
 	
 	bool	ok	= false;
 	filenameLabel	-> setText (fileName);
 	theDescriptor	= new xmlDescriptor (theFile, &ok);
 	if (!ok) {
-	   throw file_exception (fileName. toStdString () + "no xml file");
+	   throw device_exception (fileName. toStdString () + "no xml file");
 	}
 
 	fileProgress		-> setValue (0);

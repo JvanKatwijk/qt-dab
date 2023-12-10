@@ -11,5 +11,7 @@
 	<file>../res/Adaptic.qss</file>
 	<file>../res/Combinear.qss</file>
 	<file>../res/Diffnes.qss</file>
+	<file>../res/qt-dab-6-128x128.png</file>
+	<file>../res/qt-dab-6-256x256.png</file>
     </qresource>
 </RCC>

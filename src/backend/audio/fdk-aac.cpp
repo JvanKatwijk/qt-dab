@@ -70,8 +70,8 @@ int		output_size	= 8 * 2048;
 	   return -1;
 
 
-	packet_size  = ((packet [1] & 0x1F) << 8) | packet [2] + 3;
-	if (packet_size != packetLength)
+	packet_size  = (((packet [1] & 0x1F) << 8) | packet [2]) + 3;
+	if (packet_size != (uint32_t)packetLength)
 	   return -1;
 
 	valid = packet_size;

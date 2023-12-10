@@ -33,6 +33,7 @@
 #include	"msc-handler.h"
 #include	"freq-interleaver.h"
 #include	"dab-params.h"
+#include	"dab-constants.h"
 /**
   *	\brief ofdmDecoder
   *	The class ofdmDecoder is
@@ -76,14 +77,17 @@ float Length	= jan_abs (V);
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
 	squaredVector. resize (T_u);
+	 amplitudeLevel. resize (T_u);
+	sigmaLevel. resize (T_u);
 	for (uint32_t i = 0; i < offsetVector. size (); i ++) {
            offsetVector [i] = 0;
 	   squaredVector [i] = 0;
+	    amplitudeLevel [i] = 0;
+	   sigmaLevel [i] = 0;
 	}
 
 	iqSelector			= SHOW_DECODED;
-	decoder				= DECODER_DEFAULT;
-	uniBase				= sqrt (abs (Complex (1, 1)));
+	decoder				= FAST_DECODER;
 }
 
 	ofdmDecoder::~ofdmDecoder	() {
@@ -94,8 +98,10 @@ void	ofdmDecoder::stop ()	{
 
 void	ofdmDecoder::reset ()	{
 	for (int i = 0; i <  (int)(offsetVector. size ()); i ++) {
-	   offsetVector [i] = 0;
-	   squaredVector [i] = 0;
+	   offsetVector		[i] = 0;
+	   squaredVector	[i] = 0;
+	   sigmaLevel 		[i] = 0;
+	   amplitudeLevel	[i] = 0;
 	}
 }
 //
@@ -153,18 +159,8 @@ float	ofdmDecoder::computeQuality (Complex *v) {
   *	only to spare a test. The mapping code is the same
   */
 
-static inline
-float	constrain	(float val, float min, float max) {
-	if (val > max)
-	   return max;
-	if (val < min)
-	   return min;
-	return val;
-}
-
 static	int	cnt	= 0;
 
-#define DELTA	0.05
 //
 //	DAB (and DAB+) bits are encoded is DPSK, 2 bits per carrier,
 //	depending on the quadrant the carrier is in. There are
@@ -179,18 +175,17 @@ void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 Complex conjVector [T_u];
 Complex fft_buffer [T_u];
 Complex	computedCenter;
+DABFLOAT Alpha = 0.05f;
 
 	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
-
-//fftlabel:
 //	first step: do the FFT
 	fft. fft (fft_buffer);
 
 //	a little optimization: we do not interchange the
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
-	DABFLOAT max	= 0;
+//	DABFLOAT max	= 0;
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -202,23 +197,12 @@ Complex	computedCenter;
   *	on the same position in the next block
   */
 	   Complex	r1 = fft_buffer [index] *
-	                    normalize (conj (phaseReference [index]));
+	                     normalize (conj (phaseReference [index]));
 	   conjVector	[index] = r1;
 
 //	we need the phase error to compute quality
 	   Complex r2	= Complex (abs (real (r1)), abs (imag (r1)));
-	   max	+= jan_abs (r2);
 	   computedCenter	+= r2;
-//
-//	Note that the phase Offset does not lead to an accumulated error
-//	so, we just average 
-	   DABFLOAT fftPhase	= arg (r2);
-	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
-	   offsetVector [index] = 
-	             compute_avg (offsetVector [index], phaseOffset, DELTA);
-	   squaredVector [index] =
-	             compute_avg (offsetVector [index], 
-	                                   square (phaseOffset), DELTA);
 	}
 //
 //	Later on we force the signal components to center around
@@ -237,100 +221,87 @@ Complex	computedCenter;
 
 	   Complex r1	= conjVector [index];
 	   DABFLOAT ab1	= jan_abs (r1);
+
+	   DABFLOAT fftPhase	= 
+	            arg (Complex (abs (real (r1)),  abs (imag (r1))));
+	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
+	   offsetVector [index] = 
+	             compute_avg (offsetVector [index], phaseOffset, Alpha);
+
 //
-//	We implement three approaches for mapping the decoded carrier
-//	to two (soft) bits.
-//	The first two approaches look at the corner of the value,
-//	ideally the measured corner - related to Q1 - is M_PI / 4.
-//	The larger the offset from this vallue, the smaller
-//	the value of the "soft" bit is.
-//	Method 1 and 2 differ in the computation of the corner.
-//	While method 1 takes the corner as it appears, method
-//	2 takes the average value of the corner (obviously related
-//	for a given carrier).
-//
-//	The default decoder looks at the geometrical distance between
+	   switch (decoder) {
+	      case FAST_DECODER:
+	      default:
 //	(normalized) value and the center point in the quadrant
+//	extremely simple, works fine
+	         r1		= r1 * conj (theOffset);
+	         ibits [i]	= 
+	                        (int16_t) (- real (r1) * MAX_VITERBI / ab1);
+	         ibits [carriers + i] =
+	                        (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
+	         break;
 
-	   if ((decoder == DECODER_C1) || (decoder == DECODER_C2)) {
-	      DABFLOAT	corner_real, corner_imag;
-	      DABFLOAT	factor_real, factor_imag;
-	      if (decoder == DECODER_C1) {
-	         if (real (r1)  >= 0)
-	            corner_real	= acos (real (r1) / ab1);
-	         else
-	            corner_real	= acos (- real (r1) / ab1);
+	      case ALT1_DECODER:
+	      {	 //r1	= r1 * conj (theOffset);
+	         amplitudeLevel [index]	= 
+	               compute_avg (amplitudeLevel [index], ab1, Alpha);
+	      
+	         DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
+
+	         ibits [i]		=
+	                (int16_t)( - real (r1) / base * MAX_VITERBI);
+	         ibits [carriers + i] =
+	                (int16_t)( - imag (r1) / base * MAX_VITERBI);
+	         break;
 	      }
-	      else {	// decoder == DECODER_C2
-	         corner_real	= M_PI_4 - squaredVector [index];
+
+	      case ALT2_DECODER:
+	      {	 //r1	= r1 * conj (theOffset);
+	         amplitudeLevel [index]	= 
+	             compute_avg ( amplitudeLevel [index], ab1, Alpha);
+
+	         DABFLOAT  base		=  amplitudeLevel [index] * M_SQRT1_2;
+//	X and Y distances
+	         DABFLOAT d_x		=
+	                             abs (abs (real (r1)) - base);
+	         DABFLOAT d_y		=
+	                             abs (abs (imag (r1)) - base);
+
+	         sigmaLevel [index]	= 
+	                             compute_avg (sigmaLevel [index], 
+	                                    square (d_x) + square (d_y),
+	                                                       Alpha);
+
+	         DABFLOAT factor	= 2 * amplitudeLevel [index] / sigmaLevel [index];
+	         DABFLOAT realPart	=
+	                  	        factor * real (r1) * MAX_VITERBI;
+	         DABFLOAT imagPart	=
+	                  	        factor * imag (r1) * MAX_VITERBI;
+
+	         realPart		= constrain (realPart, -MAX_VITERBI,
+	                                                        MAX_VITERBI);
+	         imagPart		= constrain (imagPart, -MAX_VITERBI,
+	                                                        MAX_VITERBI);
+	   
+	         ibits [i]		= (int16_t) (-realPart);
+	         ibits [carriers + i]	= (int16_t) (-imagPart);
+	         break;
 	      }
-
-	      corner_imag		= M_PI_2 - corner_real;
-	      factor_real		= 
-	              (M_PI_4 - abs (M_PI_4 - corner_real)) / M_PI_4;
-	      factor_imag		= 
-	              (M_PI_4 - abs (M_PI_4 - corner_imag)) / M_PI_4;
-
-	      ibits [i]		= real (r1) > 0 ? - factor_real * 127.0 :
-	                                               factor_real * 127.0;
-	      ibits [carriers + i] 
-	                           = imag (r1) > 0 ? - factor_imag * 127.0 :
-	                                               factor_imag * 127.0;
-	   }
-	   else 
-	   if (decoder == DECODER_DEFAULT) {
-//	what we see is that the "cross" is rorated slightly to the left
-//	or the right, here we correct for the shift
-//	we compute the distance to the fictious center
-//	and this distance is the penalty for the viterbi value
-	      Complex testVal	= r1 * conj (theOffset);
-	      float base	= (abs (real (testVal)) + abs(imag (testVal))) / 2;
-	      float d1		= abs (abs (real (testVal)) - base);
-	      float d2		= abs (abs (imag (testVal)) - base);
-	      float re		= real (testVal) >= 0 ? base - d1 :
-	                                              - base + d1;
-	      float im		= imag (testVal) >= 0 ? base - d2 :
-	                                              - base + d2;
-	      ibits [i]		= (int16_t) (- re * 127.0 / base);
-	      ibits [carriers + i] =
-	                          (int16_t) (- im * 127.0 / base);
-//	      float ab2		= jan_abs (testVal);
-//	      ibits [i]		= 
-//	                          (int16_t)(- (real (testVal) * 127.0) / ab2);
-//	      ibits [carriers + i] =
-//	                          (int16_t)(- (imag (testVal) * 127.0) / ab2);
-	   }
-	   else {
-//
-//	"OLD" default is just by looking wht the values for the
-//	x and y coordinates are
-	      float base	= (abs (real (r1)) + abs (imag (r1))) / 2;	
-	      float dx		= abs (abs (real (r1)) - base); 
-	      float dy		= abs (abs (imag (r1)) - base); 
-	      float re		= real (r1) >= 0 ? base - dx :
-	                                          -base + dx;
-	      float im		= imag (r1) >= 0 ? base - dy :
-	                                          -base + dy;
-	      ibits [i]		= (int16_t) (- re * 127.0 / base);
-	      ibits [carriers + i] =
-	                          (int16_t) (- im * 127.0 / base);
-	
-//	      ibits [i]		=     (int16_t)(- (real (r1) * 127.0) / ab1);
-//	      ibits [carriers + i] =  (int16_t)(- (imag (r1) * 127.0) / ab1);
 	   }
 	}
+
 
 //	From time to time we show the constellation of symbol 2.
 	if (blkno == 2) {
 	   if (++cnt > repetitionCounter) {
-	      max /= carriers;
+	      DABFLOAT maxAmp = 0;
+	      for (int j = -carriers / 2; j < carriers / 2; j ++)
+	      if (j != 0)
+	         if (jan_abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
+	            maxAmp = jan_abs (fft_buffer [(T_u + j) % T_u]);
 	      Complex displayVector [carriers];
+
 	      if (iqSelector == SHOW_RAW) {
-	         DABFLOAT maxAmp = 0;
-	         for (int j = -carriers / 2; j < carriers / 2; j ++)
-	            if (j != 0)
-	               if (abs (fft_buffer [(T_u + j) % T_u]) > maxAmp)
-	                  maxAmp = abs (fft_buffer [(T_u + j) % T_u]);
 	         for (int j = 0; j < carriers; j ++)
 	            displayVector [j] =
 	              fft_buffer [(T_u - carriers / 2 - 1 + j) % T_u] / maxAmp;
@@ -338,7 +309,7 @@ Complex	computedCenter;
 	      else {
 	         for (int j = 1; j < carriers; j ++)
 	            displayVector [j] =
-	                      conjVector [T_u / 2 - carriers / 2 + j] / max; 
+	                      conjVector [T_u / 2 - carriers / 2 + j] / maxAmp; 
 	      }
 	      iqBuffer -> putDataIntoBuffer (displayVector, carriers);
 
@@ -349,11 +320,7 @@ Complex	computedCenter;
 	                  offsetVector [(T_u - carriers / 2 + i) % T_u];
 	            tempVector [i] = tempVector [i] /  M_PI * 180.0;
 	         }
-	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
-//	         float tempVector [2 * carriers];
-//	         for (int i = 0; i < 2 * carriers; i ++) {
-//	            tempVector [i] = ibits [i];
-//	         }
+
 	         devBuffer -> putDataIntoBuffer (tempVector, carriers);
 	         show_stdDev (carriers);
 	      }

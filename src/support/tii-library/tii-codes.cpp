@@ -100,7 +100,7 @@ bool	res = false;
 }
 //
 void	tiiHandler::readFile (FILE *f) {
-int	count = 0; 
+uint32_t	count = 0; 
 char	buffer [1024];
 std::vector<QString> columnVector;
 
@@ -123,7 +123,7 @@ std::vector<QString> columnVector;
 	   ed. latitude		= convert (columnVector [LATITUDE]);
 	   ed. longitude	= convert (columnVector [LONGITUDE]);
 	   ed. power		= convert (columnVector [POWER]);
-	   if (count >= (int)(cache. size ()))
+	   if (count >= (uint32_t)(cache. size ()))
 	      cache. resize (cache. size () + 500);
 	   cache. at (count) = ed;
 	   count ++;
@@ -131,17 +131,17 @@ std::vector<QString> columnVector;
 	cache. resize (count);
 }
 
-int	tiiHandler::readColumns (std::vector<QString> &v, char *b, int N) {
+int	tiiHandler::readColumns (std::vector<QString> &outV, char *b, int N) {
 int charp	= 0;
 char	tb [256];
 int elementCount = 0;
 QString element;
-	v. resize (0);
+	outV. resize (0);
 	while ((*b != 0) && (*b != '\n')) {
 	   if (*b == SEPARATOR) {
 	      tb [charp] = 0;
 	      QString ss = QString::fromUtf8 (tb);
-	      v. push_back (ss);
+	      outV. push_back (ss);
 	      charp = 0;
 	      elementCount ++;
 	      if (elementCount >= N)

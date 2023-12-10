@@ -159,7 +159,7 @@ QString	scheduleFile		= fullPathfor (SCHEDULE);
 	QString locale = QLocale::system(). name();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (locale);
-	a. setWindowIcon (QIcon (":/qt-dab.ico"));
+	a. setWindowIcon (QIcon(":res/qt-dab-4-256x256.png"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       scanListFile,

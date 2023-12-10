@@ -46,11 +46,11 @@
 
 	QString fileName	= getFileName (iqFile);
 	if (fileName == "")
-	   throw file_exception ("no file specified");
+	   throw device_exception ("no file specified");
 
 	filePointer	= fopen (fileName. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
-	   throw file_exception (fileName. toStdString () + " cannot open");
+	   throw device_exception (fileName. toStdString () + " cannot open");
 	}
 
 	nameofFile	-> setText (fileName);

@@ -27,7 +27,7 @@ int     RSP1A_Table [4] [11] = {
 	                                          GRdB, biasT) {
 
 	this	-> deviceModel		= "RSP-1A";
-	this	-> nrBits		= 14;
+	this	-> nrBits		= 12;
 	this	-> lna_upperBound =  lnaStates (freq);
 	set_lnabounds_signal	(0, lna_upperBound);
 	set_deviceName_signal	(deviceModel);

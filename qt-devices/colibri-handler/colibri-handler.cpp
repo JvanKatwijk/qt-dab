@@ -35,20 +35,20 @@
 	setupUi (&myFrame);
 	QString libName = "libcolibrinano_lib.so";
 	if (!m_loader. load (libName. toLatin1 () .data ())) {
-	   throw (colibri_exception ("failed to load colibri library"));
+	   throw (device_exception ("failed to load colibri library"));
 	}
 
 	m_loader. initialize ();
 
 	uint32_t t_devices	= m_loader. devices ();
 	if (t_devices == 0) {
-	   throw (colibri_exception ("no device found"));
+	   throw (device_exception ("no device found"));
 	}
 
 	fprintf (stderr, "we found %d device(s)\n", t_devices);
 //	set some defaults
 	if (!m_loader.open (&m_deskriptor, 0)) {
-	   throw (colibri_exception ("failed to open colibriNano"));
+	   throw (device_exception ("failed to open colibriNano"));
         }
 
         m_loader.setFrequency (m_deskriptor, 220000000);

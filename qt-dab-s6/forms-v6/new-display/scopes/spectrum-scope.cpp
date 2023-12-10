@@ -132,27 +132,30 @@ void	spectrumScope::display		(double *X_axis, double *Y_value,
 }
 
 void	spectrumScope::rightMouseClick	(const QPointF &point) {
-colorSelector *selector;
-int	index;
+int index;
 	(void) point;
-	selector		= new colorSelector ("display color");
-	index			= selector -> QDialog::exec ();
-	QString displayColor	= selector -> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
-	selector		= new colorSelector ("grid color");
-	index			= selector	-> QDialog::exec ();
-	QString gridColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
-	selector		= new colorSelector ("curve color");
-	index			= selector	-> QDialog::exec ();
-	QString curveColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
+QString	displayColor;
+QString	gridColor;
+QString	curveColor;
+
+	{  colorSelector displaySelector ("displayColor");
+	   int index		= displaySelector. QDialog::exec ();
+	   if (index == 0)
+	      return;
+	   displayColor	= displaySelector. getColor (index);
+	}
+	{  colorSelector gridSelector ("gridColor");
+	   int index		= gridSelector. QDialog::exec ();
+	   if (index == 0)
+	      return;
+	   gridColor		= gridSelector . getColor (index);
+	}
+	{  colorSelector curveSelector ("curveColor");
+	   int index		= curveSelector.  QDialog::exec ();
+	   if (index == 0)
+	      return;
+	   QString curveColor	= curveSelector. getColor (index);
+	}
 
 	dabSettings	-> beginGroup ("spectrumScope");
 	dabSettings	-> setValue ("displayColor", displayColor);
@@ -174,10 +177,10 @@ int	index;
 	grid		-> enableXMin (true);
 	grid		-> enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid		-> setMinPen (QPen(this -> gridColor, 0,
+	grid		-> setMinPen (QPen (this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #else
-	grid		-> setMinorPen (QPen(this -> gridColor, 0,
+	grid		-> setMinorPen (QPen (this -> gridColor, 0,
 	                                                   Qt::DotLine));
 #endif
 	plotgrid	-> setCanvasBackground (this -> displayColor);

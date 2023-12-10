@@ -405,7 +405,7 @@ CONFIG		+= rtl_tcp
 CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
-#CONFIG		+= soapy
+CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
 CONFIG		+= uhd
@@ -413,8 +413,8 @@ CONFIG		+= colibri
 CONFIG		+= elad-device
 CONFIG		+= faad
 #CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -664,17 +664,12 @@ rtl_tcp {
 
 soapy {
 	DEFINES		+= HAVE_SOAPY
+	DEPENDPATH	+= ../qt-devices/soapy
 	INCLUDEPATH     += ../qt-devices/soapy
         HEADERS         += ../qt-devices/soapy/soapy-handler.h \
-	                   ../qt-devices/soapy/soapy-worker.h \
-	                   ../qt-devices/soapy/soapy_CS8.h \
-	                   ../qt-devices/soapy/soapy_CS16.h \
-	                   ../qt-devices/soapy/soapy_CF32.h
+	                   ../qt-devices/soapy/soapy-converter.h
         SOURCES         += ../qt-devices/soapy/soapy-handler.cpp \
-	                   ../qt-devices/soapy/soapy-worker.cpp \
-	                   ../qt-devices/soapy/soapy_CS8.cpp \
-	                   ../qt-devices/soapy/soapy_CS16.cpp \
-	                   ../qt-devices/soapy/soapy_CF32.cpp
+	                   ../qt-devices/soapy/soapy-converter.cpp
         FORMS           += ../qt-devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
 }

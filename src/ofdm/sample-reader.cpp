@@ -105,9 +105,8 @@ void	sampleReader::get_samples (std::vector<Complex>  &v_out,
 	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
 std::complex<float> buffer [nrSamples];
-
 	corrector	= phaseOffset;
-//
+
 //	if we get a kill signal, do the kill
 	if (!running. load())
 	   throw 21;

@@ -53,7 +53,7 @@ int16_t	success;
 //	sometimes problems with dynamic linkage of libusb, it is
 //	loaded indirectly through the dll
 	if (libusb_init (nullptr) < 0) {
-	   throw (elad_exception ("libusb problem"));
+	   throw (device_exception ("libusb problem"));
 	}
 
 	libusb_exit (nullptr);
@@ -64,16 +64,16 @@ int16_t	success;
 	   theLoader	= nullptr;
 	   switch (success) {
 	      case -1:
-	         throw (elad_exception ("No success in loading libs\n"));
+	         throw (device_exception ("No success in loading libs\n"));
 
 	      case -2:
-	         throw (elad_exception ("No success in setting up USB\n"));
+	         throw (device_exception ("No success in setting up USB\n"));
 
 	      case -3:
-	         throw (elad_exception ("No success in FPGA init\n"));
+	         throw (device_exception ("No success in FPGA init\n"));
 	   
 	      case -4:
-	         throw (elad_exception ("No success in hardware init\n"));
+	         throw (device_exception ("No success in hardware init\n"));
 	      
 	      default:		// cannot happen
 	         ;

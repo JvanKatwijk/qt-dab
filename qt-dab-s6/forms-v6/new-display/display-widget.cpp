@@ -101,12 +101,18 @@ int	sliderValue;
 	sliderValue		=
 	           dabSettings_p -> value ("iqSliderValue", 50). toInt ();
 	scopeSlider		-> setValue (sliderValue);
+	logScope		= 
+	           dabSettings_p -> value ("logScope", 0). toInt () == 1;
+	if (logScope != 0)
+	   logScope_checkBox -> setChecked (true);
 	dabSettings_p	-> endGroup ();
 
 	connect (tabWidget, SIGNAL (currentChanged (int)),
                  this, SLOT (switch_tab (int)));
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
+	connect (logScope_checkBox, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_logScope_checkBox (int)));
 }
 
 	displayWidget::~displayWidget () {
@@ -358,14 +364,29 @@ double Y_value [512];
 }
 
 //
-//	for IQ we get a segment of 512 complex v alues, i.e. the
+//	for IQ we get a segment of 512 complex values, i.e. the
 //	decoded values
 void	displayWidget::showIQ	(std::vector<Complex> Values) {
 int sliderValue	=  scopeSlider -> value ();
+std::vector<Complex> tempDisplay (512);
 
 	if (Values. size () < 512)
 	   return;
-        IQDisplay_p -> DisplayIQ (Values, 512, sliderValue * 2);
+
+	if (logScope) {
+	   float	logNorm	= std::log10 (2.0f);
+	   for (int i = 0; i < 512; i ++) {
+	      float phi	= arg (Values [i]);
+	      float amp	= log10 (1.0f + abs (Values [i])) / logNorm;
+	      std::complex<float> temp =
+	                       amp * std::exp (std::complex<float> (0, phi));
+	      tempDisplay [i] = Complex (real (temp), imag (temp));
+	   }
+
+           IQDisplay_p -> DisplayIQ (tempDisplay, 512, sliderValue * 2);
+	}
+	else
+           IQDisplay_p -> DisplayIQ (Values, 512, sliderValue * 2);
 }
 
 void	displayWidget:: show_quality (float q, float timeOffset,	
@@ -460,3 +481,11 @@ void	displayWidget::set_bitDepth	(int d) {
 	spectrumScope_p	-> set_bitDepth (d);
 }
 
+void	displayWidget::handle_logScope_checkBox	(int d) {
+	(void)d;
+	logScope	= logScope_checkBox -> isChecked ();
+	
+	dabSettings_p	-> beginGroup ("displayWidget");
+	dabSettings_p	-> setValue ("logScope", logScope ? 1 : 0);
+	dabSettings_p	-> endGroup ();
+}

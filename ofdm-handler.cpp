@@ -229,6 +229,7 @@ int	snrCount	= 0;
 	         theReader. get_samples (ofdmBuffer, 0,
 	                        T_u, coarseOffset + fineOffset, false);
 	         startIndex = myCorrelator. findIndex (ofdmBuffer, threshold);
+
 	         if (startIndex < 0) { // no sync, try again
 	            if (!correctionNeeded) {
 	               set_sync_lost();

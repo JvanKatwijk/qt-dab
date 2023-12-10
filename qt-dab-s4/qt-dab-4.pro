@@ -405,7 +405,6 @@ CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 #CONFIG		+= soapy
-#CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
 #CONFIG		+= elad-device
 CONFIG		+= faad
@@ -643,19 +642,15 @@ rtl_tcp {
 	FORMS		+= ../qt-devices/rtl_tcp/rtl_tcp-widget.ui
 }
 
+
 soapy {
 	DEFINES		+= HAVE_SOAPY
+	DEPENDPATH	+= ../qt-devices/soapy
 	INCLUDEPATH     += ../qt-devices/soapy
         HEADERS         += ../qt-devices/soapy/soapy-handler.h \
-	                   ../qt-devices/soapy/soapy-worker.h \
-	                   ../qt-devices/soapy/soapy_CS8.h \
-	                   ../qt-devices/soapy/soapy_CS16.h \
-	                   ../qt-devices/soapy/soapy_CF32.h
+	                   ../qt-devices/soapy/soapy-converter.h
         SOURCES         += ../qt-devices/soapy/soapy-handler.cpp \
-	                   ../qt-devices/soapy/soapy-worker.cpp \
-	                   ../qt-devices/soapy/soapy_CS8.cpp \
-	                   ../qt-devices/soapy/soapy_CS16.cpp \
-	                   ../qt-devices/soapy/soapy_CF32.cpp
+	                   ../qt-devices/soapy/soapy-converter.cpp
         FORMS           += ../qt-devices/soapy/soapy-widget.ui
 	LIBS		+= -lSoapySDR -lm
 }

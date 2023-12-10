@@ -9,15 +9,7 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-The current version is 6.3. The versions 5 and 4 are - since they were subject to changes as well, to 5.5 and 4.8.
-
-For all three versions, the preset handling is improved and the "favorites"
-are visible on a separate widget.
-The 6.30 version can now also be generated with double precision
-computations (only when working with qmake/make)
-The installers (both Windows and Linux) will be created with double precision
-
-![6.2](/qt-dab-6.2.png?raw=true)
+![6.3](/qt-dab-6.3.png?raw=true)
 
 Table of Contents
 =================================================================
@@ -40,6 +32,17 @@ Introduction
 
 **Qt-DAB-XX** is a rich implementation of a DAB decoder for use on Linux and Windows based PCs, including some ARM based boards, such as the Raspberry PI 2 and up. It can be used with a variety of SDR devices, including DABsticks, all models of the SDRplay, Airspy etc.
 
+
+The current version is 6.3. The versions 5.4 and 4.7 are - since they were subject to changes as well, renamed to 5.5 and 4.8.
+
+For all three versions, the "preset" handling is improved, the "presets" 
+renamed to "favorites", with the "favorites" visible on a separate widget.
+
+Internally, there are numerous changes, most of them to improve
+functionality and performance.
+An example is experimenting with  decoding algorithms, or
+the ability to use double precision computations for the signal processing.
+
 Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are available. 
 
 Thanks to Richard Huber, **Qt-DAB** can be compiled on the Mac.
@@ -49,20 +52,19 @@ Features
 
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and AAC-LC) decoding
   * MOT SlideShow (SLS)
-  * Dynamic Label (DLS) and the possibility of saving dynamic Labels - augmented with channel and time info - in a file,
-  * Both DAB bands (and user defined bands) are supported: 
-  	* VHF Band III (default),
-   	* L-Band (obsolete now),
-	* a user defined Band
-  * Modes I, II and IV (Mode I default, Modes II and IV obsolete, but can be set in the `.ini` file,
-  * Views on the signal: spectrum view incl. constellation diagram, correlation result, TII spectrum and the SNR over time,
-  * automatic reconfiguration of services,
+  * Dynamic Label (DLS) with the possibility of saving dynamic  the Label text  by right clicking with the mouse, or saving all dynamic label texts  - augmented with channel and time info - in a file,
+  * While DAB is now transmitted by default in the VHF Band II, there are options to select the L-Band, and even  receive data from user defined vands
+  *  While Mode I is "the" mode for DAB, Qt-DAB offers an option to interpret data modelled in Mode II or Mode IV,
+  * There is a focus on viewing the signal: next to showing the spectrum of the received signal and a constellation diagram of the decoded signal,
+a view on the correlation of the signal and the TII spectrum can be selected. Furthermore, a view on the transition from the NULL period to the first datablock, a viewe on the impact of the channel on the signal, and a view on the frequency offsets of the decoded signal can be selected. Finally, in a separate widget, the development over time of the SNR can be made visible.
+  * automatic reconfiguration of services.
   * Detailed information on reception and selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
-  * If configured, the TII data is mapped upon a transmitter's name, and display of TII (Transmitter Identification Information) data when transmitted,
+  * Frequency spectrum of the resulting audio as well as "strength" meters of the audio stream are made visible,
+  * The TII data is mapped upon a transmitter's name, and display of TII (Transmitter Identification Information) data when transmitted,
   * Possibility of displaying a map with position(s) of received transmitter(s),
-  * *Presets* for easy switching of programs in different ensembles (see section *Presets*),
+  * *Favorites* for easy switching of programs in different ensembles (see section *Favorites*),
   * *Dumping* of the input data of the DAB channel (Warning: produces large raw files!) into `.sdr` files or `.xml` file formats and playing them again later (see section on xml format),
-  * Saving audio as uncompressed wave files, and Saving aac frames from DAB+ services for processing by e.g. VLC,
+  * Saving audio as uncompressed wave files, and saving *aac* frames from DAB+ services for processing by e.g. VLC,
   * Saving the ensemble content description: audio and data streams, including almost all technical data into a text file readable by e.g *LibreOfficeCalc*
   * Advanced scanning function (scan the band, show the results on the screen and save a detailed description of the services found in a file),
   * ip output: when configured the ip data - if selected - is sent to a specified ip address (default: 127.0.0.1:8888),
@@ -75,16 +77,16 @@ Features
   	- SDRplay (RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
 	- Adalm Pluto,
-	- Soapy (experimental, Linux only), 
+	- untested UHD (anyone wants to help testing?)
+	- Soapy, a renewed soapy interface driver is even able to map other samplerates than the required 2048000 (limited to the range 2000000 .. 3000000);
 	- ExtIO (experimental, Windows only),
 	- rtl_tcp servers.
   * Always supported input from:
    	- prerecorded dump (`.raw`, `.iq` and `.sdr`),
 	- `.xml` and `.uff` format files.
-  * Clean device interface, easy to add other devices.
-  * Scheduling the start of (channel:service) pairs or operations as frame dump or audio dump, even for days ahead.
-  * Showing the name of the transmitter received as well as the distance to the receiver and the azimuth.
+  * *Scheduling* the start of (channel:service) pairs or operations as frame dump or audio dump, for up to 7 days ahead.
   * background services. Since 4.351 it is possible to run an arbitrary number of DAB+ audioservices (from the current ensemble) as background service with the output sent to a file.
+  * Clean device interface, easy to add other devices.
 
 Partly implemented:
 
@@ -95,11 +97,14 @@ Partly implemented:
 :information_source: Note:
 While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, RSP Ia and RSP duo, the 3.0X support handles all SDRplay RSP's. It is recommended to use the 3.0X support library. Note further that when - on Windows - a 3.10 (or higher) library is installed (e.g. by installing SDRuno), the 2.13 library is not reachable.
 
-
 Widgets and scopes
 =======================================================================
 
 ![6.2](/qt-dab-6-main-widget.png)
+
+The full GUI for Qt-DAB 6.30 consists of a habdful of widgets, only
+a single widget, the *main* widget is always visible. Visibility of the
+other wigets (spectrum widget, technical data widget and configuration-and-control widget is stricly under user control.
 
 The main widget of Qt-DAB provides all means for selecting a channel,
 and selecting a service. Furthermore, it provides full control over
@@ -114,17 +119,16 @@ in the main widget, gives full information about the selected audio service.
 (Of course the color(s) used in the spectrum display can be set by the user).
 
 The technical widget displays information about the selected (audio)
-service. 
+service, as shown in the picture. 
 
 ![6.1](/technical-widget.png)
 
 While the main widget shows the services in the **currently selected** channel,
 there is a separate widget for displaying **favorites**.
-Names of services on the ensemble display can be added to the favorites
+A  service name from the ensemble display can be added to the favorites
 list by clicking on it with the right hand mouse button.
 
 ![6.2](/favorites-widget.png)
-
 
 Different from previous versions, a **single widget**, the spectrum widget,
 contains (almost) all of the scopes and displays.
@@ -149,7 +153,8 @@ colors than shown here).
 ![6.1](/spectrum-scope.png)
 
 The *spectrum scope* shows the spectrum of the incoming DAB signal. One
-sees clearly that the width of the signal is app 1.5 MHz.
+sees clearly that the width of the signal is app 1.5 MHz. To the right one
+sees the signal constellation.  The latter shows the mapping from the complex signals onto their real and imaginary components.
 
 ![6.1](/spectrum-ideal.png)
 
@@ -169,7 +174,7 @@ other peaks as well.
 ![6.1](/qt-dab-null-period.png)
 
 The NULL scope shows the samples in the transition from NULL period to
-the first data block of a DAB frame;
+the first data block of a DAB frame. The software detects (computes) the first sample following the  NULL period, needed for collecing the data for decoding.
 
 ![6.1](/qt-dab-tii-data.png)
 
@@ -184,7 +189,7 @@ i.e. the channel effects (i.e. the deformation) on the amplitudes,
 and the *red line*, i.e.  the channel effects on the phase of
 the samples. (The "jumps in the red line indicate the modulo 2*PI effect.)
 
-Note that the implementation of this scope requires some additional
+Note that the implementation of this particular scope requires some additional
 libraries, therefore this scope is not part of the default configuration,
 although it is included in the precompiled versions.
 
@@ -199,13 +204,22 @@ The Y-axis is in Hz.
 The configuration and control widget contains check boxes and
 buttons with which the configuration of the decoding process can be
 influenced.
+New are the selectors on the bottom line left. In previous versions right
+clicking on an arbitrary service name in the emsemble display would start
+a service with that name as background service. However, the default now is
+that right clicking adds the service name to the favorites. Setting the
+most left checkbox will revert this.
+The second selector, a combobox with only a few items allows selection from
+some experimental decoder implementations.
 
 A note on showing a map
 =======================================================================
 
-![6.1](/qt-dab-maps.png?raw=true)
+![6.1](/QTmap.png?raw=true)
 
-Since some time the Qt-DAB versions have a button labeled **http**, when touched, a small webserver starts that can show the position(s) of the transmitter(s) received on the map. 
+Since some time the Qt-DAB versions have a button labeled **http**,
+when touched, a small webserver starts that can show
+the position(s) of the transmitter(s) received on the map. 
 
 By default, on starting the server, the "standard" browser on the system will be invoked, listening to port 8080. The configuration (configuration/control) widget contains a selector for switching this off, so that one might choose his/hers own browser.
 
@@ -214,8 +228,19 @@ The feature will *not* work if
  * handling the TII database is not installed on the system, and/or
  * you did not provide your "home" coordinates.
 
-The latter is easily done by touching the button "coordinates" on the
-configuration  and control widget.
+When running a precompiled version of Qt-DAB (i.e. an AppImage or
+a Windows installer from this repository), installing the database
+is simple, just touch the button labeled "load table".
+
+Otherwise, you have to install a small library first (for Linux x64 or
+the RPI), just see the manual.
+If that fails a precomputed database is available in this repository, 
+just unpack the file "tiiFile.zip", copy the resulting ".txdata.tii" file
+to your home directory.
+(Due to licencing issues the code to upload a database is proprietary).
+
+Adding the receiver coordinates is simple,  touch the button "coordinates"
+on the configuration  and control widget and a small widget appears where the data can be entered.
 
 Documentation
 =================================================================
@@ -256,7 +281,7 @@ options is much easier.
 Step 1
 -----------------------------------------------------------------
 
-- :information_source: Note that the sources for 6.x are now in the subdirectory `qt-dab-s6` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
+- :information_source: Note that the sources for 6.30 are now in the subdirectory `qt-dab-s6` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
 - Install required libraries, 
 * :information: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
 - It seems to be part of another of the qt5 packages that is installed.
@@ -271,18 +296,20 @@ of the following ones:
 * Note on configuring DABsticks (i.e. RTLSDR type devices).
 The Windows support library does not seem to be capable of closing
 the library and reopening it on switching channels. Therefore
-a special version of the library is made, that is used for both
-Windows and Linux. 
+different versions exist for Linux and Windows.
 
- * For including "soapy" in the configuration, soapy  software should have been installed, so leave them commented out when not available. iF
+:information_source: Note that for including "soapy" in the configuration, soapy  software should have been installed. 
 
 :information_source: Note that "pluto" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
+
+:-information_source: While device handler sources for UHD, Elad and Colibri
+arfe available, the status of these handlers is different: for UHD it 
+is experimental though not tested lately, for Elad and Colibri they were
+in development once and incomplete.
 
 For X64 PC's one may choose the option `CONFIG+=PC` (for selecting SSE instructions). If unsure, use `CONFIG+=NO_SSE`.
 
 For letting the software show the transmitter and the azimuth, choose `CONFIG += tiiLib` (see step 4).
-
-:information_source: Note that the file `converted_map.h` is a generated file that contains a binary version of the HTML/javascript code for the server.
 
 Step 3
 -----------------------------------------------------------------
@@ -292,7 +319,7 @@ run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates 
 Step 4
 -----------------------------------------------------------------
 
-Unpack file `.txdata.tii` (which contains the database data for finding the transmitter's name and location) from `tiiFile.zip` into the user's home directory. If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
+Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` (which contains the database data for finding the transmitter's name and location) into the user's home directory. If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
 
 If running on an x64 PC or *bullseye* on the RPI you might consider to install `libtii-lib.so` in `/usr/local/lib` from `dab-maxi/library`.
 

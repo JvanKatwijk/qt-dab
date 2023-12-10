@@ -118,6 +118,15 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 static const
 char	LABEL_STYLE[] = "color:lightgreen";
 
+static struct {
+	QString	decoderName;
+	int	decoderKey;
+} decoders []  = {
+{"fast decoder", FAST_DECODER},
+{"alt1 decoder", ALT1_DECODER},
+{"alt2_decoder", ALT2_DECODER},
+{"", 0}
+};
 
 static const
 char	*scanTextTable [3] = {
@@ -4304,10 +4313,8 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings_p -> value ("onTop", 0). toInt () == 1) 
 	   configWidget.  onTop -> setChecked (true);
 #ifndef	__MSC_THREAD__
-	configWidget. decoderSelector -> addItem ("default");
-	configWidget. decoderSelector -> addItem ("decoder old");
-	configWidget. decoderSelector -> addItem ("decoder c1");
-	configWidget. decoderSelector -> addItem ("decoder c2");
+	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
+	   configWidget. decoderSelector -> addItem (decoders [i]. decoderName);
 #else
 	configWidget. decoderSelector -> setEnabled (false);
 #endif
@@ -4682,17 +4689,10 @@ void	RadioInterface::handle_dcRemovalSelector (int s) {
 }
 
 void	RadioInterface::handle_decoderSelector	(const QString &s) {
-int	decoder	= 1;
-	if (s == "decoder old")
-	   decoder = DECODER_OLD;
-	else
-	if (s == "decoder c1")
-	   decoder = DECODER_C1;
-	else
-	if (s == "decoder c2")
-	   decoder = DECODER_C2;
-	else
-	   decoder = DECODER_DEFAULT;
+int	decoder	= 0100;
+	for (int i = 0; decoders [i]. decoderName != ""; i ++)
+	   if (decoders [i]. decoderName == s)
+	      decoder = decoders [i]. decoderKey;
 	my_ofdmHandler	-> handle_decoderSelector (decoder);
 }
 

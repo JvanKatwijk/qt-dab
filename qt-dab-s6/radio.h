@@ -95,6 +95,13 @@ public:
 	bool		is_audio;
 	FILE		*fd;
 	FILE		*frameDumper;
+	dabService () {
+	   fd		= nullptr;
+	   frameDumper	= nullptr;
+	   valid	= false;
+	   is_audio	= false;
+	}
+	~dabService	() {}
 };
 
 struct	theTime {

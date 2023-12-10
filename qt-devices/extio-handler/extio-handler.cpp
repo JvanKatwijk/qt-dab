@@ -130,7 +130,7 @@ int32_t	inputRate	= 0;
 #endif
 	dll_file	= QDir::toNativeSeparators (dll_file);
 	if (dll_file == QString ("")) {
-	   throw (extio_exception ("incorrect filename"));
+	   throw (device_exception ("incorrect filename"));
 	}
 
 #ifdef	__MINGW32__
@@ -148,13 +148,13 @@ int32_t	inputRate	= 0;
 	Handle		= dlopen (dll_file. toLatin1(). data(), RTLD_NOW);
 #endif
 	if (Handle == nullptr) 
-	   throw (extio_exception ("loading dll file failed"));
+	   throw (device_exception ("loading dll file failed"));
 
 	if (!loadFunctions()) {
 	   QMessageBox::warning (NULL, tr ("sdr"),
 	                               tr ("loading functions failed\n"));
 	   FREELIBRARY (Handle);
-	   throw (extio_exception ("loading functions from dll file failed"));
+	   throw (device_exception ("loading functions from dll file failed"));
 	}
 //	apparently, the library is open, so record that
 	dll_open	= true;
@@ -170,13 +170,13 @@ int32_t	inputRate	= 0;
 	rigModel	= new char [128];
 	if (!((*InitHW) (rigName, rigModel, hardwareType))) {
 	   FREELIBRARY (Handle);
-	   throw (extio_exception ("init failed"));
+	   throw (device_exception ("init failed"));
 	}
 
 	SetCallback (extioCallback);
 	if (!(*OpenHW)()) {
 	   FREELIBRARY (Handle);
-	   throw (extio_exception ("Opening hardware failed"));
+	   throw (device_exception ("Opening hardware failed"));
 	}
 
 	ShowGUI();

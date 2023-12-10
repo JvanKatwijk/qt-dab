@@ -26,7 +26,8 @@
 #include	<sys/time.h>
 #include	<stdio.h>
 
-static	int shift (int a) {
+static
+int	shift (int a) {
 int r	= 1;
 	while (-- a > 0) {
 	   r <<= 1;

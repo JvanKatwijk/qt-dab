@@ -159,19 +159,19 @@ char	manufac [256], product [256], serial [256];
 	phandle -> load ();
 
 	if (!phandle -> isLoaded ()) {
-	   throw (rtlsdr_exception (std::string ("failed to open ") + std::string (libraryString)));
+	   throw (device_exception (std::string ("failed to open ") + std::string (libraryString)));
 	}
 
 	if (!load_rtlFunctions ()) {
 	   delete (phandle);
-	   throw (rtlsdr_exception ("could not load one or more library functions"));
+	   throw (device_exception ("could not load one or more library functions"));
 	}
 
 //	Ok, from here we have the library functions accessible
 	deviceCount 		= this -> rtlsdr_get_device_count ();
 	if (deviceCount == 0) {
 	   delete (phandle);
-	   throw (rtlsdr_exception ("No rtlsdr device found"));
+	   throw (device_exception ("No rtlsdr device found"));
 	}
 
 	deviceIndex = 0;	// default
@@ -188,7 +188,7 @@ char	manufac [256], product [256], serial [256];
 	r		= this -> rtlsdr_open (&theDevice, deviceIndex);
 	if (r < 0) {
 	   delete phandle;
-	   throw (rtlsdr_exception ("Opening rtlsdr device failed"));
+	   throw (device_exception ("Opening rtlsdr device failed"));
 	}
 
 	deviceModel	= rtlsdr_get_device_name (deviceIndex);
@@ -196,7 +196,7 @@ char	manufac [256], product [256], serial [256];
 	r		= this -> rtlsdr_set_sample_rate (theDevice, inputRate);
 	if (r < 0) {
 	   delete phandle;
-	   throw (rtlsdr_exception ("Setting samplerate for rtlsdr failed"));
+	   throw (device_exception ("Setting samplerate for rtlsdr failed"));
 	}
 
 	gainsCount = rtlsdr_get_tuner_gains (theDevice, nullptr);

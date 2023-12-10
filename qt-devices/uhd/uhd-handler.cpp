@@ -136,7 +136,7 @@ std::vector<std::string> antList;
 	   theBuffer = new RingBuffer<std::complex<float>>(ringBufferSize * 1024);
 	} catch (...) {
 	   qWarning("No luck with UHD\n");
-	   throw (uhd_exception ("No luck with UHD"));
+	   throw device_exception ("No luck with UHD");
 	}
 //	some housekeeping for the local frame
 	externalGain->setMaximum (maxGain ());

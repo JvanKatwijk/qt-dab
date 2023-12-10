@@ -37,6 +37,10 @@ class	RadioInterface;
 #define	SHOW_RAW	0100
 #define	SHOW_DECODED	0101
 
+#define	FAST_DECODER	0100
+#define	ALT1_DECODER	0200
+#define	ALT2_DECODER	0300
+
 #ifndef	M_PI_2
 #define	M_PI_2	(M_PI / 2)
 #endif
@@ -84,11 +88,13 @@ private:
 	std::vector<int16_t>	ibits;
 	std::vector<float>	offsetVector;
 	std::vector<float>	squaredVector;
+	std::vector<DABFLOAT>	amplitudeLevel;
+	std::vector<DABFLOAT>	sigmaLevel;
+
 	phaseTable	*phasetable;
 	int		iqSelector;
 	int		decoder;
 	int		repetitionCounter;
-	float		uniBase;
 signals:
 	void		showIQ		(int);
 	void		show_quality	(float, float, float);

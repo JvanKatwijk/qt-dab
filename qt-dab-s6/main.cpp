@@ -158,7 +158,7 @@ QTranslator	theTranslator;
 	QString locale = QLocale::system (). name ();
 	qDebug() << "main:" <<  "Detected system language" << locale;
 	setTranslator (&theTranslator, locale);
-	a. setWindowIcon (QIcon ("./qt-dab-5.ico"));
+	a. setWindowIcon (QIcon (":/res/qt-dab-6-128x128.png"));
 
 	MyRadioInterface = new RadioInterface (dabSettings,
 	                                       scanListFile,

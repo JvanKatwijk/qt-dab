@@ -84,22 +84,22 @@ mir_sdr_DeviceT devDesc [4];
 
 	bool success	= fetchLibrary ();
 	if (!success)
-	   throw (sdrplay_2_exception ("library cannot be opened"));
+	   throw (device_exception ("library cannot be opened"));
 
 	bool test	= loadFunctions ();
 	if (!test) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("function in mir_sdr_api not found"));
+	   throw (device_exception ("function in mir_sdr_api not found"));
 	};
 
 	if (my_mir_sdr_ApiVersion (&ver) != mir_sdr_Success) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("api problem"));
+	   throw (device_exception ("api problem"));
 	}
 
 	if (ver < 2.13) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("Library version too old"));
+	   throw (device_exception ("Library version too old"));
 	}
 
 	api_version	-> display (ver);
@@ -140,12 +140,12 @@ mir_sdr_DeviceT devDesc [4];
 	err = my_mir_sdr_GetDevices (devDesc, &numofDevs, uint32_t (4));
 	if (err != mir_sdr_Success) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception (errorCodes (err). toLatin1(). data ()));
+	   throw (device_exception (errorCodes (err). toLatin1(). data ()));
 	}
 
 	if (numofDevs == 0) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception ("No devices found"));
+	   throw (device_exception ("No devices found"));
 	}
 
 	if (numofDevs > 1) {
@@ -172,7 +172,7 @@ mir_sdr_DeviceT devDesc [4];
 	err = my_mir_sdr_SetDeviceIdx (deviceIndex);
 	if (err != mir_sdr_Success) {
 	   releaseLibrary ();
-	   throw (sdrplay_2_exception (errorCodes (err). toLatin1(). data()));
+	   throw (device_exception (errorCodes (err). toLatin1(). data()));
 	}
 //
 //	we know we are only in the frequency range 175 .. 230 Mhz,

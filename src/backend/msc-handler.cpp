@@ -150,9 +150,9 @@ int	carriers	= params. get_carriers ();
 	            conjVector [index] = r1;
 
 	            float ab1	= jan_abs (r1);
-                    ibits [i]	=  (int16_t) (- (real (r1) * 192.0) / ab1);
+                    ibits [i]	=  (int16_t) (- real (r1) * MAX_VITERBI / ab1);
                     ibits [carriers + i] =
-	                               (int16_t) (- (imag (r1) * 192.0) / ab1);
+	                           (int16_t) (- imag (r1) * MAX_VITERBI / ab1);
                  }
 
 	         process_mscBlock (ibits, currentBlock);

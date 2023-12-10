@@ -97,10 +97,11 @@ private:
 	IQDisplay		*IQDisplay_p;
 
 	int			currentTab;
-
+	int			logScope;
 private slots:
 	void		switch_tab	(int);
 	void		rightMouseClick	();
+	void		handle_logScope_checkBox	(int);
 signals:
 	void		mouseClick ();
 };

@@ -60,7 +60,7 @@ lms_info_str_t limedevices [10];
 #endif
 
         if (Handle == nullptr) {
-           throw (lime_exception ("failed to open " +
+           throw (device_exception ("failed to open " +
 	                             std::string (libraryString)));
         }
 
@@ -71,13 +71,13 @@ lms_info_str_t limedevices [10];
 #else
            dlclose (Handle);
 #endif
-           throw (lime_exception ("could not load all required lib functions"));
+           throw (device_exception ("could not load all required lib functions"));
         }
 //
 //      From here we have a library available
 	int ndevs	= LMS_GetDeviceList (limedevices);
 	if (ndevs == 0) {	// no devices found
-	   throw (lime_exception ("No lime device found"));
+	   throw (device_exception ("No lime device found"));
 	}
 
 	for (int i = 0; i < ndevs; i ++)
@@ -85,19 +85,19 @@ lms_info_str_t limedevices [10];
 
 	int res		= LMS_Open (&theDevice, nullptr, nullptr);
 	if (res < 0) {	// some error
-	   throw (lime_exception ("failed to open device"));
+	   throw (device_exception ("failed to open device"));
 	}
 
 	res		= LMS_Init (theDevice);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   throw (lime_exception ("failed to initialize device"));
+	   throw (device_exception ("failed to initialize device"));
 	}
 
 	res		= LMS_GetNumChannels (theDevice, LMS_CH_RX);
 	if (res < 0) {	// some error
 	   LMS_Close (&theDevice);
-	   throw (lime_exception ("could not set number of channels"));
+	   throw (device_exception ("could not set number of channels"));
 	}
 
 	fprintf (stderr, "device %s supports %d channels\n",
@@ -105,13 +105,13 @@ lms_info_str_t limedevices [10];
 	res		= LMS_EnableChannel (theDevice, LMS_CH_RX, 0, true);
 	if (res < 0) {	// some error
 	   LMS_Close (theDevice);
-	   throw (lime_exception ("could not enable channels"));
+	   throw (device_exception ("could not enable channels"));
 	}
 
 	res	= LMS_SetSampleRate (theDevice, 2048000.0, 0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   throw (lime_exception ("could not set samplerate"));
+	   throw (device_exception ("could not set samplerate"));
 	}
 
 	float_type host_Hz, rf_Hz;
@@ -146,14 +146,14 @@ lms_info_str_t limedevices [10];
 	                                                 0, 220000000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   throw (lime_exception ("could not set LO frequency"));
+	   throw (device_exception ("could not set LO frequency"));
 	}
 
 	res		= LMS_SetLPFBW (theDevice, LMS_CH_RX,
 	                                               0, 1536000.0);
 	if (res < 0) {
 	   LMS_Close (theDevice);
-	   throw (lime_exception ("could not set bandwidth"));
+	   throw (device_exception ("could not set bandwidth"));
 	}
 
 	LMS_SetGaindB (theDevice, LMS_CH_RX, 0, 50);

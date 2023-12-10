@@ -1,14 +1,19 @@
+
+
+
 ls -lh .
 rm -rf *_autogen
-mkdir -p appdir/usr/bin
-cp linux-bin/qt-dab*  appdir/usr/bin/qt-dab-6
- 
-mkdir -p appdir/usr/share/applications
-cp qt-dab-6.desktop appdir/usr/share/applications
-cp qt-dab-6.png appdir/qt-dab-6.png
-touch appdir/qt-dab-6.png
+mkdir -p ./appdir/usr/bin
+mkdir -p ./appdir/usr/share/applications
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
-cp qt-dab-6.png appdir/usr/share/icons/hicolor/256x256/apps/
+
+cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6
+cp qt-dab-6.desktop	appdir/usr/share/applications
+cp ../res/qt-dab-6-256x256.png	appdir/qt-dab-6.png
+cp ../res/qt-dab-6-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
+cp ../res/qt-dab-6-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
+
+touch appdir/qt-dab-6.png
   
 wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
 chmod a+x linuxdeployqt*.AppImage

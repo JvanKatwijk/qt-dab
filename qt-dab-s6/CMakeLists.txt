@@ -52,66 +52,47 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 
 ######################################################################
 #
+#Select ONE of the following options
+set (USE_PORTAUDIO ON)
+set (QT_AUDIO OFF)	# not recently tested
+set (TCP_STREAMER OFF)
+
 #####################################################################
 #
-#	default value
-	set(USE_PORTAUDIO true)
 
-if(DEFINED AIRSPY)
-	set(AIRSPY true)
-endif ()
+# select one or more devices (set to ON)
+# Note that since there are problems with the rtlsdr interface under Windows we split the rtlsdr interface
+# into two versions one for Linux and one for Window
+option(RTLSDR_LINUX OFF)	# use for Linux type systems
+option(RTLSDR_WIN OFF) 		# only for windows
+option(AIRSPY OFF)  
+option(SDRPLAY_V2 OFF) 
+option(SDRPLAY_V3 OFF)
+option(HACKRF OFF)
+option(LIMESDR OFF) 
+option(PLUTO OFF) 
+option(UHD OFF) 
+option(RTL_TCP OFF)      
 
-if(DEFINED SDRPLAY_V2)
-	set(SDRPLAY_V2 true)
-endif ()
 
-if(DEFINED SDRPLAY)
-	set(SDRPLAY true)
-endif ()
+# additional options
+option(DATA_STREAMER OFF)
+option(VITERBI_SSE OFF)
+option(VITERBI_NEON OFF)
+option(FDK_AAC OFF)
 
-if(DEFINED RTLSDR)
-	set(RTLSDR_LINUX true)
-endif ()
 
-if(DEFINED HACKRF)
-	set(HACKRF true)
-endif ()
-
-if(DEFINED LIMESDR)
-	set(LIMESDR true)
-endif ()
-
-if(DEFINED RTL_TCP)
-	set(RTL_TCP true)
-endif ()
-
-if(DEFINED PLUTO)
-	set(PLUTO true)
-endif ()
-
-if (DEFINED DATA_STREAMER)
-	set(DATA_STREAMER true)
-endif ()
-
-if (DEFINED VITERBI_SSE)
-	set(VITERBI_SSE true)
-endif ()
-
-if (DEFINED VITERBI_NEON)
-	set(VITERBI_NEON true)
-endif ()
-
-#	If you want a tcp stream of the audio rather than
-#	audio being sent to the soundcard, set
-if (DEFINED TCP_STREAMER)
-	set(TCP_STREAMER true)
-	set(USE_PORTAUDIO false)
-endif ()
-
-add_definitions (-D__THREADED_BACKEND)	# uncomment allways
-#add_definitions (-D__MSC_THREAD__)	# uncomment only on slow machines
-
+####################################################################
+#	Use first option on "slow" cpus, i.e. RPI 3 or so
+#	Most of the FFT processing will be done in functions eunning
+#	in its own thread
+#add_definitions (-D__MSC_THREAD__)	# do not uncomment this
 #
+#	Since more than one backend may be active, activating this
+#	option makes that each backend runs in its own thread
+add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
+#
+########################################################################
 ########################################################################
 
 	find_package (PkgConfig)

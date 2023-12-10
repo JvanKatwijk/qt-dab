@@ -51,13 +51,7 @@
 typedef	void	*HINSTANCE;
 #endif
 
-#define	PHASE_DECODER	0
-#define	AMPL_DECODER	1
-
-#define	DECODER_DEFAULT	1
-#define	DECODER_OLD	2
-#define	DECODER_C1	4
-#define	DECODER_C2	8
+#define	MAX_VITERBI	127
 
 #ifdef	__WITH_DOUBLES__
 typedef	double	DABFLOAT;
@@ -233,23 +227,12 @@ float	im	= imag (z);
 }
 
 static inline
-float	jan_abs_clipped (Complex z, bool &o, float clip) {
-float	re	= real (z);
-float	im	= imag (z);
-
-	o	= false;
-	if (re < 0) re = -re;
-	if (im < 0) im = -im;
-	if (re > im) {
-	   if (re > clip)
-	      o = true;
-	   return re + 0.5 * im;
-	}
-	else {
-	   if (im > clip)
-	      o = true;
-	   return im + 0.5 * re;	
-	}
+DABFLOAT constrain (DABFLOAT V, DABFLOAT Low, DABFLOAT high) {
+	if (V < Low)
+	   return Low;
+	if (V > high)
+	   return high;
+	return V;
 }
 
 static inline

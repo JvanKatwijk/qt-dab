@@ -62,13 +62,13 @@
 	library_p -> load();
 
 	if (!library_p -> isLoaded ()) {
-	   throw (hackrf_exception ("failed to open " +
+	   throw (device_exception ("failed to open " +
 	                                std::string (libraryString)));
 	}
 
 	if (!load_hackrfFunctions ()) {
 	   delete library_p;
-	   throw (hackrf_exception ("could not find one or more library functions"));
+	   throw (device_exception ("could not find one or more library functions"));
 	}
 //
 //	From here we have a library available
@@ -99,41 +99,41 @@
 //
 	if (hackrf_init () != HACKRF_SUCCESS) {
 	   delete  library_p;
-	   throw (hackrf_exception ("init failed"));
+	   throw (device_exception ("init failed"));
 	}
 
 	if (hackrf_open (&theDevice) != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception ("open failure"));
+	   throw (device_exception ("open failure"));
 	}
 
 	if (hackrf_set_sample_rate (theDevice, 2048000.0) != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception ("error setting samplerate"));
+	   throw (device_exception ("error setting samplerate"));
 	}
 
 	int test = hackrf_set_baseband_filter_bandwidth (theDevice, 1750000);
 	if (test != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception ("failure setting bandwidth"));
+	   throw (device_exception ("failure setting bandwidth"));
 	}
 
 	if (hackrf_set_freq (theDevice, 220000000) != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception ("failure setting frequency"));
+	   throw (device_exception ("failure setting frequency"));
 	}
 
 	uint16_t regValue;
 	test = hackrf_si5351c_read (theDevice, 162, &regValue);
 	if (test != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception ("failure reading board name"));
+	   throw (device_exception ("failure reading board name"));
 	}
 
 	int res = this -> hackrf_si5351c_write (theDevice, 162, regValue);
 	if (res != HACKRF_SUCCESS) {
 	   delete library_p;
-	   throw (hackrf_exception (this -> hackrf_error_name (hackrf_error (res))));
+	   throw (device_exception (this -> hackrf_error_name (hackrf_error (res))));
 	}
 
 	handle_LNAGain	(lnaGainSlider		-> value());
