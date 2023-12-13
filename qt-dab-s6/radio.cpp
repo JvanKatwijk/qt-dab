@@ -250,6 +250,8 @@ uint8_t	dabBand;
 	          dabSettings_p -> value ("theFont", "Times"). toString ();
 	fontSize		=
 	          dabSettings_p -> value ("fontSize", 12). toInt ();
+	fontColor		= 
+	          dabSettings_p -> value ("fontColor", "white"). toString ();
 
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings_p -> value ("ipAddress", "127.0.0.1"). toString();
@@ -742,9 +744,15 @@ int	serviceOrder;
 	for (int i = model. rowCount (); i < 12; i ++)
 	   model. appendRow (new QStandardItem ("      "));
 #endif
-	for (int i = 0; i < model. rowCount (); i ++) {
-	   model. setData (model. index (i, 0),
-	              QFont (theFont, fontSize), Qt::FontRole);
+//	for (int i = 0; i < model. rowCount (); i ++) {
+//	   model. setData (model. index (i, 0),
+//	              QFont (theFont, fontSize), Qt::FontRole);
+//	}
+	for (int j = 0; j < model. rowCount (); j ++) {
+	   QString itemText =
+                   model. index (j, 0). data (Qt::DisplayRole). toString ();
+	   colorService (model. index (j, 0),
+	                          QColor (fontColor), fontSize, false);
 	}
 
 	ensembleDisplay -> setModel (&model);
@@ -2064,7 +2072,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                   fclose (channel. backgroundServices. at (i). fd);
 	                channel. backgroundServices. erase
 	                        (channel. backgroundServices. begin () + i);
-	                colorServiceName (serviceName, Qt::black, fontSize, false);
+	                colorServiceName (serviceName, 
+	                                 QColor (fontColor), fontSize, false);
 	                return true;
 	            }
 	         }
@@ -2306,7 +2315,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	           return;
 	         }
 	      }	// ok, service is not background as well
-	      colorService (model. index (i, 0), Qt::black, fontSize);
+	      colorService (model. index (i, 0), QColor (fontColor), fontSize);
 	      break;
 	   }
 	}
@@ -2508,7 +2517,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, fontSize);
+	         colorService (model. index (i, 0), QColor (fontColor), fontSize);
 	         if (d == FORWARD) {
 	            i = (i + 1) % serviceList. size ();
 	         }

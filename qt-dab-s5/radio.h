@@ -212,6 +212,7 @@ private:
 	QString			version;
 	QString			theFont;
 	int			fontSize;
+	QString			fontColor;
 	int			fmFrequency;
 	contentTable		*my_contentTable;
 	contentTable		*my_scanTable;

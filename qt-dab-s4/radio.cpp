@@ -263,6 +263,9 @@ uint8_t	dabBand;
 	          dabSettings -> value ("theFont", "Times"). toString ();
 	fontSize		=
 	          dabSettings -> value ("fontSize", 12). toInt ();
+	fontColor               = 
+                  dabSettings -> value ("fontColor", "white"). toString ();
+
 
 #ifdef	_SEND_DATAGRAM_
 	ipAddress		= dabSettings -> value ("ipAddress", "127.0.0.1"). toString();
@@ -669,7 +672,7 @@ uint8_t	dabBand;
 #else
 	lcdPalette. setColor (QPalette::Background, Qt::white);
 #endif
-	lcdPalette. setColor (QPalette::Base, Qt::black);
+//	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
 	frequencyDisplay	-> setPalette (lcdPalette);
 	frequencyDisplay	-> setAutoFillBackground (true);
@@ -899,9 +902,11 @@ int	serviceOrder;
 	   model. appendRow (new QStandardItem (serv. name));
 	}
 	for (int i = 0; i < model. rowCount (); i ++) {
-	   model. setData (model. index (i, 0),
-	              QFont (theFont, fontSize), Qt::FontRole);
-	}
+	   QString itemText = 
+              model. index (i, 0). data (Qt::DisplayRole). toString ();
+           colorService (model. index (i, 0),
+                                QColor (fontColor), fontSize, false);
+        }
 
 	ensembleDisplay -> setModel (&model);
 	if (serviceCount == model.rowCount () && !scanning) {
@@ -2568,7 +2573,8 @@ bool	RadioInterface::eventFilter (QObject *obj, QEvent *event) {
 	                    QString itemText =
 	                           model. index (j, 0). data (Qt::DisplayRole). toString ();
 	                   if (itemText == serviceName) {
-	                      colorService (model. index (j, 0), Qt::black, fontSize);
+	                      colorService (model. index (j, 0), 
+	                                     QColor (fontColor), fontSize);
 	                   }
 	                }
 	                return true;
@@ -2803,7 +2809,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	           return;
 	         }
 	      }	// ok, service is not background as well
-	      colorService (model. index (i, 0), Qt::black, fontSize);
+	      colorService (model. index (i, 0), 
+	                              QColor (fontColor), fontSize);
 	      break;
 	   }
 	}
@@ -3113,7 +3120,8 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	if ((serviceList. size () != 0) && (oldService != "")) {
 	   for (int i = 0; i < (int)(serviceList. size ()); i ++) {
 	      if (serviceList. at (i). name == oldService) {
-	         colorService (model. index (i, 0), Qt::black, fontSize);
+	         colorService (model. index (i, 0),
+	                             QColor (fontColor), fontSize);
 	         if (d == FORWARD) {
 	            i = (i + 1) % serviceList. size ();
 	         }

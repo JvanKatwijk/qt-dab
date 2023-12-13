@@ -388,6 +388,10 @@ While the current implementation for reading such files is limited to a single d
 
 The picture shows the reader when reading a file, generated from raw data emitted by the HackRF device.
 
+A Note on soapy
+================================================================
+Soapy is not configured for the AppImage. There is an incompatibility
+between the Soapy library on Ubuntu 20 - where the AppImages are built - and my development environment.
 
 A Note on previous versions
 =================================================================

@@ -1,10 +1,8 @@
-
-
-
 ls -lh .
 rm -rf *_autogen
 mkdir -p ./appdir/usr/bin
 mkdir -p ./appdir/usr/share/applications
+mkdir -p ./appdir/usr/share/icons/hicolor/128x128/apps/
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
 
 cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6
