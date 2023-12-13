@@ -408,13 +408,13 @@ CONFIG		+= lime
 CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
-CONFIG		+= uhd
-CONFIG		+= colibri
-CONFIG		+= elad-device
-CONFIG		+= faad
-#CONFIG		+= fdk-aac
-CONFIG		+= preCompiled
-#CONFIG		+= tiiLib
+#CONFIG		+= uhd
+#CONFIG		+= colibri
+#CONFIG		+= elad-device
+#CONFIG		+= faad
+CONFIG		+= fdk-aac
+#CONFIG		+= preCompiled
+CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 #CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
