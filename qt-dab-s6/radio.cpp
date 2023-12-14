@@ -163,6 +163,7 @@ QString scanmodeText (int e) {
 #define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
 #define	SKIN_BUTTON		QString ("skinButton")
 #define	FONT_BUTTON		QString ("fontButton")
+#define	FONTCOLOR_BUTTON	QString ("fontColorButton")
 #define	PORT_SELECTOR		QString ("portSelector")
 
 	RadioInterface::RadioInterface (QSettings	*Si,
@@ -287,6 +288,7 @@ uint8_t	dabBand;
 	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
 
 	init_configWidget ();
+
 	if (dabSettings_p -> value ("newDisplay", 0). toInt () != 0)
 	   newDisplay. show ();
 	else
@@ -331,7 +333,6 @@ uint8_t	dabBand;
 	peakLeftDamped          = -100;
         peakRightDamped         = -100;
 
-	connect_configWidget ();
 	transmitterTags_local	= configWidget. transmitterTags -> isChecked ();
 	techWindow_p 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
@@ -427,8 +428,6 @@ uint8_t	dabBand;
 	        SLOT (handle_presetSelect (const QString &, const QString &)));
 	connect (this, SIGNAL (set_newChannel (int)),
 	         channelSelector, SLOT (setCurrentIndex (int)));
-	connect (httpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_httpButton ()));
 
 //	restore some settings from previous incarnations
 	QString t       =
@@ -476,12 +475,39 @@ uint8_t	dabBand;
 	         this, SLOT (color_prevServiceButton ()));
 	connect (nextServiceButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_nextServiceButton ()));
-
-	connect (techWindow_p, SIGNAL (handle_timeTable ()),
-	         this, SLOT (handle_timeTable ()));
 	connect (muteButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_muteButton ()));
 
+	connect (configWidget. resetButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_resetButton ()));
+	connect (spectrumButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_spectrumButton ()));
+	connect (configWidget. snrButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_snrButton ()));
+	connect (configWidget. devicewidgetButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_devicewidgetButton ()));
+	connect (configWidget. dumpButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_sourcedumpButton ()));
+	connect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_dlTextButton ()));
+	connect (scheduleButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_scheduleButton ()));
+	connect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_set_coordinatesButton ()));
+	connect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_loadTableButton ()));
+	connect (configWidget. portSelector, SIGNAL (rightClicked ()),
+	         this, SLOT (color_portSelector ()));
+	connect (configWidget. skinButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_skinButton ()));
+	connect (configWidget. fontButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_fontButton ()));
+	connect (configWidget. fontColorButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_fontColorButton ()));
+//
+//	
+	connect (techWindow_p, SIGNAL (handle_timeTable ()),
+	         this, SLOT (handle_timeTable ()));
 	connect (&newDisplay, SIGNAL (mouseClick ()),
 	         this, SLOT (handle_iqSelector ()));
 //	display the version
@@ -658,8 +684,6 @@ bool	RadioInterface::doStart	() {
 //	we avoided till now connecting the channel selector
 //	to the slot since that function does a lot more, things we
 //	do not want here
-	connect (presetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_presetButton ()));
 	connect (channelSelector, SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_channelSelector (const QString &)));
 //
@@ -1881,66 +1905,317 @@ void    RadioInterface::handle_scanListButton    () {
 //	we just disconnet them and (re)connect them as soon as
 //	a device is operational
 void	RadioInterface::connectGUI	() {
-	connect (detailButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_detailButton ()));
-	connect (scanButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanButton ()));
-	connect (scanListButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanListButton ()));
-	connect (nextChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_nextChannelButton ()));
-	connect	(prevChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_prevChannelButton ()));
+//	connections from the main widget
+	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	         this, SLOT (handle_serviceSelect (QModelIndex)));
 	connect (prevServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_prevServiceButton ()));
 	connect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
-	connect (scheduleButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_scheduleButton ()));
+//
+//	channelButton handled elsewjere
+	connect	(prevChannelButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_prevChannelButton ()));
+	connect (nextChannelButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_nextChannelButton ()));
+
+	connect (scanListButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanListButton ()));
+//
+       connect (presetButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_presetButton ()));
+//
+//	The main control part
+//	Handling the visibility of the control widget
+//	is handled separately
         connect (spectrumButton, SIGNAL (clicked ()),
                  this, SLOT (handle_spectrumButton ()));
-	fprintf (stderr, "geinstalleerd\n");
-
+	connect (detailButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_detailButton ()));
+	connect (muteButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_muteButton ()));
+//
+	connect (httpButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_httpButton ()));
+	connect (contentButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_contentButton ()));
+	connect (scheduleButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_scheduleButton ()));
+	connect (scanButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanButton ()));
+//
+//	and for the techWindow
 	connect (techWindow_p, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
 	connect (techWindow_p, SIGNAL (handle_frameDumping ()),
 	         this, SLOT (handle_framedumpButton ()));
-	connect (muteButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_muteButton ()));
-	connect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (handle_serviceSelect (QModelIndex)));
-	disconnect_configWidget ();
-	connect_configWidget ();
+//
+//	and the configuration window
+	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_muteTimeSetting (int)));
+	connect (configWidget. switchDelaySetting,
+	                                 SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_switchDelaySetting (int)));
+	connect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderAlfabetical ()));
+
+	connect (configWidget. orderServiceIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderServiceIds ()));
+
+	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_ordersubChannelIds ()));
+//
+	connect (configWidget. fontButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_fontSelect ()));
+
+	connect (configWidget. fontColorButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_fontColorSelect ()));
+//
+//	Now the two rows with buttons
+//
+//	deviceSelect is not here
+	connect (configWidget. portSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_portSelector ()));
+	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_dlTextButton ()));
+	connect (configWidget. resetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_resetButton ()));
+//
+//	at this plave there is an unused slot
+//	second row
+	connect (configWidget. snrButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_snrButton ()));
+	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_set_coordinatesButton ()));
+	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_loadTable ()));
+	connect (configWidget. dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_sourcedumpButton ()));
+	connect (configWidget. skinButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_skinSelector ()));
+//
+//	Now the checkboxes
+//	top line
+	connect (configWidget. saveServiceSelector,
+	                                  SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveServiceSelector (int)));
+	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_LoggerButton (int)));
+//	the epg2xmlSelector is kust polled, no need to react on an event
+
+//	second line
+	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_tii_detectorMode (int)));
+//
+//	utcSelector is just polled, no need to react on an event here
+	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_onTop (int)));
+//
+//	third line
+//	here we expect the close without asking
+
+	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_epgSelector (int)));
+	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_autoBrowser      (int)));
+//
+//	fourth line
+	connect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_dcRemovalSelector (int)));
+//	
+
+	connect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_eti_activeSelector (int)));
+//
+	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_transmSelector (int)));
+//
+//	fifh line
+	connect (configWidget. clearScan_Selector,
+	                             SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_clearScan_Selector (int)));
+
+	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveSlides (int)));
+//
+	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
+	         this, SLOT (handle_transmitterTags  (int)));
+//
+//	next row, scan selectors
+	connect (configWidget. scanmodeSelector,
+	                            SIGNAL (currentIndexChanged (int)),
+	         this, SLOT (handle_scanmodeSelector (int)));
+
+	connect (configWidget. skipList_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_skipList_button ()));
+
+	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_skipFile_button ()));
+//
+//	botton row
+//	servicesInBackground is just polled whenever the value is needed
+	connect (configWidget. decoderSelector,
+	                            SIGNAL (activated (const QString &)),
+	         this, SLOT (handle_decoderSelector (const QString &)));
+	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
+	         this,  SLOT (set_streamSelector (int)));
 }
 
 void	RadioInterface::disconnectGUI () {
-	disconnect_configWidget ();
-	disconnect (detailButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_detailButton ()));
-	disconnect (scanButton, SIGNAL (clicked ()),
-	           this, SLOT (handle_scanButton ()));
-	disconnect (scanListButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scanListButton ()));
-	disconnect (nextChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_nextChannelButton ()));
-	disconnect (prevChannelButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_prevChannelButton ()));
+//	disconnections from the main widget
+	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
+	         this, SLOT (handle_serviceSelect (QModelIndex)));
 	disconnect (prevServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_prevServiceButton ()));
 	disconnect (nextServiceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_nextServiceButton ()));
+//
+//	channelButton handled elsewjere
+	disconnect (prevChannelButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_prevChannelButton ()));
+	disconnect (nextChannelButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_nextChannelButton ()));
+
+	disconnect (scanListButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanListButton ()));
+//
+	disconnect (presetButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_presetButton ()));
+//
+//	The main control part
+//	Handling the visibility of the control widget
+//	is handled separately
+        disconnect (spectrumButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_spectrumButton ()));
+	disconnect (detailButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_detailButton ()));
+	disconnect (muteButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_muteButton ()));
+//
+	disconnect (httpButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_httpButton ()));
+	disconnect (contentButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_contentButton ()));
 	disconnect (scheduleButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_scheduleButton ()));
-	disconnect (spectrumButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_spectrumButton ()));
+                 this, SLOT (handle_scheduleButton ()));
+	disconnect (scanButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_scanButton ()));
+//
+//	and for the techWindow
 	disconnect (techWindow_p, SIGNAL (handle_audioDumping ()),
 	         this, SLOT (handle_audiodumpButton ()));
 	disconnect (techWindow_p, SIGNAL (handle_frameDumping ()),
 	         this, SLOT (handle_framedumpButton ()));
-	disconnect (muteButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_muteButton ()));
-	disconnect (ensembleDisplay, SIGNAL (clicked (QModelIndex)),
-	         this, SLOT (handle_serviceSelect (QModelIndex)));
+//
+//	and the configuration window
+	disconnect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_muteTimeSetting (int)));
+	disconnect (configWidget. switchDelaySetting,
+	                                 SIGNAL (valueChanged (int)),
+	         this, SLOT (handle_switchDelaySetting (int)));
+	disconnect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderAlfabetical ()));
+
+	disconnect (configWidget. orderServiceIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_orderServiceIds ()));
+
+	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
+	         this, SLOT (handle_ordersubChannelIds ()));
+//
+	disconnect (configWidget. fontButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_fontSelect ()));
+
+	disconnect (configWidget. fontColorButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_fontColorSelect ()));
+//
+//	Now the two rows with buttons
+//
+//	deviceSelect is not here
+	disconnect (configWidget. portSelector, SIGNAL (clicked ()),
+                 this, SLOT (handle_portSelector ()));
+	disconnect (configWidget. dlTextButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_dlTextButton ()));
+	disconnect (configWidget. resetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_resetButton ()));
+//
+//	at this plave there is an unused slot
+//	second row
+	disconnect (configWidget. snrButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_snrButton ()));
+	disconnect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_set_coordinatesButton ()));
+	disconnect (configWidget. loadTableButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_loadTable ()));
+	disconnect (configWidget. dumpButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_sourcedumpButton ()));
+	disconnect (configWidget. skinButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_skinSelector ()));
+//
+//	Now the checkboxes
+//	top line
+	disconnect (configWidget. saveServiceSelector,
+	                                  SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveServiceSelector (int)));
+	disconnect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_LoggerButton (int)));
+//	the epg2xmlSelector is kust polled, no need to react on an event
+
+//	second line
+	disconnect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_tii_detectorMode (int)));
+//
+//	utcSelector is just polled, no need to react on an event here
+	disconnect (configWidget. onTop, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_onTop (int)));
+//
+//	third line
+//	here we expect the close without asking
+
+	disconnect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_epgSelector (int)));
+	disconnect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_autoBrowser      (int)));
+//
+//	fourth line
+	disconnect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_dcRemovalSelector (int)));
+//	
+
+	disconnect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_eti_activeSelector (int)));
+//
+	disconnect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_transmSelector (int)));
+//
+//	fifh line
+	disconnect (configWidget. clearScan_Selector,
+	                             SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_clearScan_Selector (int)));
+
+	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_saveSlides (int)));
+//
+	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
+	         this, SLOT (handle_transmitterTags  (int)));
+//
+//	next row, scan selectors
+	connect (configWidget. scanmodeSelector,
+	                            SIGNAL (currentIndexChanged (int)),
+	         this, SLOT (handle_scanmodeSelector (int)));
+
+	connect (configWidget. skipList_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_skipList_button ()));
+
+	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
+	         this, SLOT (handle_skipFile_button ()));
+//
+//	botton row
+//	servicesInBackground is just polled whenever the value is needed
+	connect (configWidget. decoderSelector,
+	                            SIGNAL (activated (const QString &)),
+	         this, SLOT (handle_decoderSelector (const QString &)));
+	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
+	         this,  SLOT (set_streamSelector (int)));
 }
 //
 #include <QCloseEvent>
@@ -3248,6 +3523,12 @@ QString fontButton_font	=
 QString	fontButton_color =
 	   dabSettings_p -> value (FONT_BUTTON + "_color",
 	                                              "black"). toString ();
+QString fontColorButton_font	=
+	   dabSettings_p -> value (FONTCOLOR_BUTTON + "_font",
+	                                              "white"). toString ();
+QString	fontColorButton_color =
+	   dabSettings_p -> value (FONTCOLOR_BUTTON + "_color",
+	                                              "black"). toString ();
 QString portSelector_font	=
 	   dabSettings_p -> value (PORT_SELECTOR + "_font",
 	                                              "white"). toString ();
@@ -3308,6 +3589,10 @@ QString loadTableButton_font	=
 	configWidget. fontButton ->
 	              setStyleSheet (temp. arg (fontButton_color,
 	                                        fontButton_font));
+
+	configWidget. fontColorButton ->
+	              setStyleSheet (temp. arg (fontColorButton_color,
+	                                        fontColorButton_font));
 
 	configWidget. portSelector ->
 	              setStyleSheet (temp. arg (portSelector_color,
@@ -3452,6 +3737,10 @@ void	RadioInterface::color_fontButton	() 	{
 	set_buttonColors (configWidget. fontButton, FONT_BUTTON);
 }
 
+void	RadioInterface::color_fontColorButton	() 	{
+	set_buttonColors (configWidget. fontColorButton, FONTCOLOR_BUTTON);
+}
+
 void	RadioInterface::color_portSelector	() 	{
 	set_buttonColors (configWidget. portSelector, PORT_SELECTOR);
 }
@@ -3460,7 +3749,7 @@ void	RadioInterface::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
 colorSelector *selector;
 int	index;
-
+	fprintf (stderr, "entering set_buttonColors");
 	selector		= new colorSelector ("button color");
 	index			= selector -> QDialog::exec ();
 	QString baseColor	= selector -> getColor (index);
@@ -3484,11 +3773,11 @@ int	index;
 	dabSettings_p	-> setValue (buttonFont, textColor);
 	dabSettings_p	-> endGroup ();
 
-//	fprintf (stderr, "%s -> %s, %s -> %s\n",
-//	                buttonColor. toLatin1 (). data (),
-//	                baseColor. toLatin1 (). data (),
-//	                buttonFont. toLatin1 (). data (),
-//	                textColor. toLatin1 (). data ());
+	fprintf (stderr, "%s -> %s, %s -> %s\n",
+	                buttonColor. toLatin1 (). data (),
+	                baseColor. toLatin1 (). data (),
+	                buttonFont. toLatin1 (). data (),
+	                textColor. toLatin1 (). data ());
 }
 
 /////////////////////////////////////////////////////////////////////////
@@ -4380,285 +4669,36 @@ void	RadioInterface::init_configWidget () {
 
 }
 
-void	RadioInterface::connect_configWidget () {
-	connect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_muteTimeSetting (int)));
-
-	connect (configWidget. decoderSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_decoderSelector (const QString &)));
-	connect (configWidget. switchDelaySetting,
-	                                 SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_switchDelaySetting (int)));
-
-	connect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderAlfabetical ()));
-
-	connect (configWidget. orderServiceIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderServiceIds ()));
-
-	connect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_ordersubChannelIds ()));
-
-	connect (configWidget. scanmodeSelector,
-	                            SIGNAL (currentIndexChanged (int)),
-	         this, SLOT (handle_scanmodeSelector (int)));
-
-	connect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveServiceSelector (int)));
-
-	connect (configWidget. skipList_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipList_button ()));
-
-	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipFile_button ()));
-
-	connect (configWidget. dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_sourcedumpButton ()));
-
-	connect (configWidget. resetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_resetButton ()));
-
-	connect (contentButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_contentButton ()));
-
-	connect (configWidget. onTop, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_onTop (int)));
-
-	connect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_epgSelector (int)));
-
-	connect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_transmSelector (int)));
-
-	connect (configWidget. skinButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_skinSelector ()));
-
-	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveSlides (int)));
-
-	connect (configWidget. clearScan_Selector,
-	                             SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_clearScan_Selector (int)));
-
-	connect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_autoBrowser      (int)));
-
-	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
-	         this, SLOT (handle_transmitterTags  (int)));
-
-	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_loadTable ()));
-
-	connect (configWidget. fontButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_fontSelect ()));
-
-	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_dlTextButton ()));
-
-	connect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_LoggerButton (int)));
-
-	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
-	         this,  SLOT (set_streamSelector (int)));
-
-	connect (contentButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_contentButton ()));
-
-	connect (configWidget. resetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_resetButton ()));
-
-	connect (spectrumButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_spectrumButton ()));
-
-	connect (configWidget. snrButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_snrButton ()));
-
-	connect (configWidget. devicewidgetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_devicewidgetButton ()));
-
-	connect (configWidget. dumpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_sourcedumpButton ()));
-
-	connect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_dlTextButton ()));
-
-	connect (scheduleButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_scheduleButton ()));
-
-	connect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_set_coordinatesButton ()));
-
-	connect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_loadTableButton ()));
-
-	connect (configWidget. skinButton, SIGNAL (rightClicked ()),	
-	         this, SLOT (color_skinButton ()));
-
-	connect (configWidget. fontButton, SIGNAL (rightClicked ()),	
-	         this, SLOT (color_fontButton ()));
-
-	connect (configWidget. portSelector, SIGNAL (clicked ()),
-	         this, SLOT (handle_portSelector ())
-);
-	connect (configWidget. portSelector, SIGNAL (rightClicked ()),
-	         this, SLOT (color_portSelector ()));
-
-	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_set_coordinatesButton ()));
-
-	connect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_eti_activeSelector (int)));
-
-	connect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_tii_detectorMode (int)));
-
-	connect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_dcRemovalSelector (int)));
-}
-
-void	RadioInterface::disconnect_configWidget () {
-	disconnect (configWidget. muteTimeSetting, SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_muteTimeSetting (int)));
-
-	disconnect (configWidget. switchDelaySetting,
-	                                 SIGNAL (valueChanged (int)),
-	         this, SLOT (handle_switchDelaySetting (int)));
-
-	disconnect (configWidget. orderAlfabetical, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderAlfabetical ()));
-
-	disconnect (configWidget. orderServiceIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_orderServiceIds ()));
-
-	disconnect (configWidget. ordersubChannelIds, SIGNAL (clicked ()),
-	         this, SLOT (handle_ordersubChannelIds ()));
-
-	disconnect (configWidget. scanmodeSelector,
-	                            SIGNAL (currentIndexChanged (int)),
-	         this, SLOT (handle_scanmodeSelector (int)));
-
-	disconnect (configWidget. saveServiceSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveServiceSelector (int)));
-
-	disconnect (configWidget. skipList_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipList_button ()));
-
-	disconnect (configWidget. skipFile_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipFile_button ()));
-
-	disconnect (configWidget. dumpButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_sourcedumpButton ()));
-
-
-	connect (configWidget. snrButton, SIGNAL (clicked ()), 
-	         this, SLOT (handle_snrButton ()));
-
-	connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_devicewidgetButton ()));
-
-	disconnect (configWidget. resetButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_resetButton ()));
-
-	disconnect (contentButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_contentButton ()));
-
-	disconnect (configWidget. onTop, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_onTop (int)));
-
-	disconnect (configWidget. epgSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_epgSelector (int)));
-
-	disconnect (configWidget. transmSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_transmSelector (int)));
-
-	disconnect (configWidget. skinButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_skinSelector ()));
-
-	disconnect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveSlides (int)));
-
-	disconnect (configWidget. clearScan_Selector,
-	                             SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_clearScan_Selector (int)));
-
-	disconnect (configWidget. autoBrowser, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_autoBrowser      (int)));
-
-	disconnect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
-	         this, SLOT (handle_transmitterTags  (int)));
-
-	disconnect (configWidget. loadTableButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_loadTable ()));
-
-	disconnect (configWidget. fontButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_fontSelect ()));
-
-	disconnect (configWidget. dlTextButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_dlTextButton ()));
-
-	disconnect (configWidget. loggerButton, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_LoggerButton (int)));
-
-	disconnect (configWidget. streamoutSelector, SIGNAL (activated (int)),
-	         this,  SLOT (set_streamSelector (int)));
-
-	disconnect (contentButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_contentButton ()));
-
-	disconnect (configWidget. resetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_resetButton ()));
-
-	disconnect (spectrumButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_spectrumButton ()));
-
-	disconnect (configWidget. snrButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_snrButton ()));
-
-	disconnect (configWidget. devicewidgetButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_devicewidgetButton ()));
-
-	disconnect (configWidget. dumpButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_sourcedumpButton ()));
-
-	disconnect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_dlTextButton ()));
-
-	disconnect (scheduleButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_scheduleButton ()));
-
-	disconnect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_set_coordinatesButton ()));
-
-	disconnect (configWidget. loadTableButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_loadTableButton ()));
-
-	disconnect (configWidget. portSelector, SIGNAL (clicked ()),
-	         this, SLOT (handle_portSelector ()));
-
-	disconnect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_set_coordinatesButton ()));
-
-	disconnect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_eti_activeSelector (int)));
-	disconnect (configWidget. tii_detectorMode, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_tii_detectorMode (int)));
-	disconnect (configWidget. dcRemovalSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_dcRemovalSelector (int)));
-}
-
 void	RadioInterface::handle_fontSelect () {
-fontChooser selectFont;
+fontChooser selectFont ("select font");
 QStringList fontList;
 	fontList << QString ("Times");
 	fontList << QString ("Helvetica");
 	fontList <<  QString ("Arial");
 	fontList <<  QString ("Cantarell");
 
-	for (int i = 0; i < fontList. size (); i ++)
-	   selectFont. add (fontList. at (i));
+	for (auto &s : fontList)
+	   selectFont. add (s);
 	int fontIndex	= selectFont. QDialog::exec ();
 	this	-> theFont	= fontList. at (fontIndex);
 	dabSettings_p	-> setValue ("theFont", theFont);
+}
+
+void	RadioInterface::handle_fontColorSelect () {
+fontChooser selectColor ("select color");
+QStringList colorList;
+	colorList << "colors" << "white" << "black" << "red" <<
+                  "darkRed" << "green" << "darkGreen" << "blue" <<
+                  "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
+                  "darkMagenta" << "yellow" << "darkYellow" <<
+                  "gray" << "darkGray";
+	for (auto &s: colorList)
+	   selectColor. add (s);
+	int colorIndex	= selectColor. QDialog::exec ();
+	if (colorIndex == 0)
+	   colorIndex = 1;
+	this	-> fontColor	= colorList. at (colorIndex);
+	dabSettings_p	-> setValue ("fontColor", fontColor);
 }
 
 void	RadioInterface::show_channel	(int n) {
@@ -4713,4 +4753,5 @@ void	RadioInterface::handle_presetButton	() {
 	dabSettings_p	-> setValue ("favorites",
 	                              my_presetHandler. isHidden () ? 0 : 1);
 }
+
 

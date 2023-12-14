@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
-    <height>464</height>
+    <width>564</width>
+    <height>452</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -54,38 +54,52 @@
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="QRadioButton" name="orderAlfabetical">
-           <property name="text">
-            <string>alphabetically</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="orderServiceIds">
-           <property name="text">
-            <string>serviceIds</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="ordersubChannelIds">
-           <property name="text">
-            <string>subchannelIds</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QRadioButton" name="orderServiceIds">
+         <property name="text">
+          <string>serviceIds</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="orderAlfabetical">
+         <property name="text">
+          <string>alphabetically</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="ordersubChannelIds">
+         <property name="text">
+          <string>subchannelIds</string>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">buttonGroup</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="smallPushButton" name="fontButton">
+         <property name="text">
+          <string>font</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="smallPushButton" name="fontColorButton">
+         <property name="text">
+          <string>font color</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -164,12 +178,12 @@
       </widget>
      </item>
      <item row="0" column="6">
-      <widget class="smallPushButton" name="fontButton">
+      <widget class="smallPushButton" name="free">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few fonts for the display of the service names. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>font</string>
+        <string>unused</string>
        </property>
       </widget>
      </item>

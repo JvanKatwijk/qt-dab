@@ -229,8 +229,6 @@ private:
 	channelDescriptor	channel;
 	int			maxDistance;
 	void			init_configWidget	();
-	void			connect_configWidget	();
-	void			disconnect_configWidget	();
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
@@ -510,6 +508,7 @@ private slots:
 
 	void			color_skinButton	();
 	void			color_fontButton	();
+	void			color_fontColorButton	();
 	void			color_portSelector	();
 //
 //	for the display widget we have access functions
@@ -550,6 +549,7 @@ private slots:
 	void			handle_skinSelector		();
 	void			handle_loadTable		();
 	void			handle_fontSelect		();
+	void			handle_fontColorSelect		();
 	void			handle_dcRemovalSelector	(int);
 	void			handle_decoderSelector		(const QString &);
 };

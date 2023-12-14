@@ -33,7 +33,7 @@
 class	fontChooser: public QDialog {
 Q_OBJECT
 public:
-			fontChooser	();
+			fontChooser	(const QString &);
 			~fontChooser	();	
 	void		add		(const QString);
 private:

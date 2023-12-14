@@ -24,14 +24,14 @@
 #include	<cstdio>
 #include	<QVBoxLayout>
 //
-	fontChooser::fontChooser	() {
+	fontChooser::fontChooser	(const QString &titleText) {
 	toptext		= new QLabel (this);
-	toptext		-> setText ("Select a font");
+	toptext		-> setText (titleText);
 	selectorDisplay	= new QListView (this);
 	QVBoxLayout	*layOut = new QVBoxLayout;
 	layOut		-> addWidget (selectorDisplay);
 	layOut		-> addWidget (toptext);
-	setWindowTitle (tr("font select"));
+	setWindowTitle (titleText);
 	setLayout (layOut);
 
 	theFonts	= QStringList ();
