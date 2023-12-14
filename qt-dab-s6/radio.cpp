@@ -1973,7 +1973,8 @@ void	RadioInterface::connectGUI	() {
 //
 //	Now the two rows with buttons
 //
-//	deviceSelect is not here
+	connect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_devicewidgetButton ()));
 	connect (configWidget. portSelector, SIGNAL (clicked ()),
                  this, SLOT (handle_portSelector ()));
 	connect (configWidget. dlTextButton, SIGNAL (clicked ()),
@@ -2130,7 +2131,8 @@ void	RadioInterface::disconnectGUI () {
 //
 //	Now the two rows with buttons
 //
-//	deviceSelect is not here
+	disconnect (configWidget. devicewidgetButton, SIGNAL (clicked ()),
+	            this, SLOT (handle_devicewidgetButton ()));
 	disconnect (configWidget. portSelector, SIGNAL (clicked ()),
                  this, SLOT (handle_portSelector ()));
 	disconnect (configWidget. dlTextButton, SIGNAL (clicked ()),

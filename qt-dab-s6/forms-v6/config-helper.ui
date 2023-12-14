@@ -89,6 +89,9 @@
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
         <widget class="smallPushButton" name="fontButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font for displaying the servicenames in the ensemble display can be set here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>font</string>
          </property>
@@ -96,6 +99,9 @@
        </item>
        <item>
         <widget class="smallPushButton" name="fontColorButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The color used to display the servicenames in the ensemblewidget can be selected here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>font color</string>
          </property>
