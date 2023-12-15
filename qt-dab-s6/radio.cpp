@@ -708,10 +708,8 @@ bool	RadioInterface::doStart	() {
 	   presetTimer. start 		(switchDelay * 1000);
 	}
 
-	bool dm = dabSettings_p -> value ("tii_detector", 0). toInt () == 1;
-	if (dm)
-	   configWidget. tii_detectorMode -> setChecked (true);
-	my_ofdmHandler -> set_tiiDetectorMode (dm);
+	if (configWidget. tii_detectorMode -> isChecked ())
+	   my_ofdmHandler -> set_tiiDetectorMode (true);
 //
 //	after the preset timer signals, the service will be started
 	startChannel (channelSelector -> currentText ());
@@ -833,13 +831,8 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	QString SNR	= "SNR " + QString::number (channel. snr);
 	if (configWidget. utcSelector -> isChecked ())
 	   theTime	= convertTime (UTC);
-//	   theTime	= convertTime (UTC. year,  UTC. month,
-//	                               UTC. day, UTC. hour, UTC. minute);
 	else
 	   theTime	= convertTime (localTime);
-//	   theTime	= convertTime (localTime. year,  localTime. month,
-//	                               localTime. day, localTime. hour,
-//	                               localTime. minute);
 
 	QString header		= channel. ensembleName + ";" +
 	                          channel. channelName  + ";" +
@@ -1435,14 +1428,6 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	doStart();		// will set running
 }
 
-void	RadioInterface::handle_devicewidgetButton	() {
-	if (inputDevice_p == nullptr)
-	   return;
-	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
-
-	dabSettings_p -> setValue ("deviceVisible",
-	                      inputDevice_p -> getVisibility () ? 1 : 0);
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //	signals, received from ofdm_decoder for which that data is
@@ -1638,17 +1623,6 @@ QString	tiiNumber (int n) {
 //
 ////////////////////////////////////////////////////////////////////////////
 
-void	RadioInterface:: set_streamSelector (int k) {
-	if (!running. load ())
-	   return;
-#if	not defined (TCP_STREAMER) &&  not defined (QT_AUDIO)
-	((audioSink *)(soundOut_p)) -> selectDevice (k);
-	dabSettings_p -> setValue ("soundchannel",
-	                          configWidget. streamoutSelector -> currentText());
-#else
-	(void)k;
-#endif
-}
 
 void	RadioInterface::switchVisibility (QWidget *w) {
 	if (w -> isHidden ())
@@ -1690,14 +1664,6 @@ void	RadioInterface::hideButtons		() {
 void	RadioInterface::set_sync_lost	() {
 }
 
-void	RadioInterface::handle_resetButton	() {
-	if (!running. load())
-	   return;
-	QString	channelName	= channel. channelName;
-	stopScanning (false);
-	stopChannel ();
-	startChannel	(channelName);
-}
 //
 ////////////////////////////////////////////////////////////////////////
 //
@@ -1711,44 +1677,6 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 	b		-> setFont (font);
 	b		-> setText (text);
 	b		-> update ();
-}
-
-void	RadioInterface::stop_sourcedumping	() {
-	if (rawDumper_p == nullptr) 
-	   return;
-
-	LOG ("source dump stops ", "");
-	my_ofdmHandler	-> stop_dumping();
-	sf_close (rawDumper_p);
-	rawDumper_p	= nullptr;
-	setButtonFont (configWidget. dumpButton, "Raw dump", 10);
-}
-//
-void	RadioInterface::start_sourcedumping () {
-QString deviceName	= inputDevice_p -> deviceName ();
-QString channelName	= channel. channelName;
-	
-	if (scanning. load ())
-	   return;
-
-	rawDumper_p	=
-	         filenameFinder. findRawDump_fileName (deviceName, channelName);
-	if (rawDumper_p == nullptr)
-	   return;
-
-	LOG ("source dump starts ", channelName);
-	setButtonFont (configWidget. dumpButton, "writing", 12);
-	my_ofdmHandler -> start_dumping (rawDumper_p);
-}
-
-void	RadioInterface::handle_sourcedumpButton () {
-	if (!running. load () || scanning. load ())
-	   return;
-
-	if (rawDumper_p != nullptr)
-	   stop_sourcedumping ();
-	else
-	   start_sourcedumping ();
 }
 
 void	RadioInterface::handle_audiodumpButton () {
@@ -1878,17 +1806,6 @@ void	RadioInterface::handle_spectrumButton	() {
 	                             newDisplay. isHidden () ? 0 : 1);
 }
 
-void	RadioInterface::handle_snrButton	() {
-	if (!running. load ())
-	   return;
-
-	if (my_snrViewer. isHidden ())
-	   my_snrViewer. show ();
-	else
-	   my_snrViewer. hide ();
-	dabSettings_p	-> setValue ("snrVisible",
-	                          my_snrViewer. isHidden () ? 0 : 1);
-}
 
 void    RadioInterface::handle_scanListButton    () {
 	if (!running. load ())
@@ -2194,29 +2111,29 @@ void	RadioInterface::disconnectGUI () {
 	                             SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_clearScan_Selector (int)));
 
-	connect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
+	disconnect (configWidget. saveSlides, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_saveSlides (int)));
 //
-	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
+	disconnect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
 	         this, SLOT (handle_transmitterTags  (int)));
 //
 //	next row, scan selectors
-	connect (configWidget. scanmodeSelector,
+	disconnect (configWidget. scanmodeSelector,
 	                            SIGNAL (currentIndexChanged (int)),
 	         this, SLOT (handle_scanmodeSelector (int)));
 
-	connect (configWidget. skipList_button, SIGNAL (clicked ()),
+	disconnect (configWidget. skipList_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_skipList_button ()));
 
-	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
+	disconnect (configWidget. skipFile_button, SIGNAL (clicked ()),
 	         this, SLOT (handle_skipFile_button ()));
 //
 //	botton row
 //	servicesInBackground is just polled whenever the value is needed
-	connect (configWidget. decoderSelector,
+	disconnect (configWidget. decoderSelector,
 	                            SIGNAL (activated (const QString &)),
 	         this, SLOT (handle_decoderSelector (const QString &)));
-	connect (configWidget. streamoutSelector, SIGNAL (activated (int)),
+	disconnect (configWidget. streamoutSelector, SIGNAL (activated (int)),
 	         this,  SLOT (set_streamSelector (int)));
 }
 //
@@ -3785,36 +3702,7 @@ int	index;
 /////////////////////////////////////////////////////////////////////////
 //	External configuration items				//////
 
-void	RadioInterface::handle_muteTimeSetting	(int newV) {
-	dabSettings_p	-> setValue ("muteTime", newV);
-}
 
-void	RadioInterface::handle_switchDelaySetting	(int newV) {
-	dabSettings_p	-> setValue ("switchDelay", newV);
-}
-
-void	RadioInterface::handle_scanmodeSelector		(int d) {
-	dabSettings_p	-> setValue ("scanMode", d); 
-}
-
-void	RadioInterface::handle_saveServiceSelector	(int d) {
-	(void)d;
-	dabSettings_p	-> setValue ("has-presetName",
-	                             configWidget. saveServiceSelector -> isChecked () ? 1 : 0);
-}
-
-void	RadioInterface::handle_orderAlfabetical		() {
-	dabSettings_p -> setValue ("serviceOrder", ALPHA_BASED);
-}
-
-void	RadioInterface::handle_orderServiceIds		() {
-	dabSettings_p -> setValue ("serviceOrder", ID_BASED);
-}
-
-void	RadioInterface::handle_ordersubChannelIds	() {
-	dabSettings_p -> setValue ("serviceOrder", SUBCH_BASED);
-}
-	                                                 
 ///////////////////////////////////////////////////////////////////////////
 //	Handling schedule
 
@@ -4043,27 +3931,109 @@ int	epgWidth;
 	my_timeTable	-> show ();
 }
 
-void	RadioInterface::handle_skipList_button () {
-	if (!theBand. isHidden ()) {
-	   theBand. hide ();
+//-----------------------------------------------------------------------
+//
+//	Handle skiplists
+
+//
+//----------------------------------------------------------------------
+//
+
+void	RadioInterface::scheduled_dlTextDumping () {
+	if (dlTextFile != nullptr) {
+	   fclose (dlTextFile);
+	   dlTextFile = nullptr;
+	   configWidget. dlTextButton	-> setText ("dlText");
+	   return;
 	}
-	else
-	   theBand. show ();
+
+	QString	fileName = filenameFinder. finddlText_fileName (false);
+	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
+	if (dlTextFile == nullptr)
+	   return;
+	configWidget. dlTextButton	-> setText ("writing");
+}
+//
+//---------------------------------------------------------------------
+//
+void	RadioInterface::handle_configButton	() {
+	if (!configDisplay. isHidden ()) {
+	   configButton	-> setText ("show controls");
+	   configDisplay. hide ();	
+	   dabSettings_p	-> setValue ("hidden", 1);
+	}
+	else {
+	   configButton	-> setText ("hide controls");
+	   configDisplay. show ();
+	   dabSettings_p	-> setValue ("hidden", 0);
+	}
 }
 
-void	RadioInterface::handle_skipFile_button	() {
-const QString fileName	= filenameFinder. findskipFile_fileName ();
-	theBand. saveSettings ();
-	theBand. setup_skipList (fileName);
+void	RadioInterface::handle_muteTimeSetting	(int newV) {
+	dabSettings_p	-> setValue ("muteTime", newV);
 }
 
-void	RadioInterface::handle_tii_detectorMode (int d) {
-bool	b = configWidget. tii_detectorMode -> isChecked ();
-	(void)d;
-	if (my_ofdmHandler != nullptr) {
-	   my_ofdmHandler	-> set_tiiDetectorMode (b);
-	   dabSettings_p	-> setValue ("tii_detector", b ? 1 : 0);
-	}
+void	RadioInterface::handle_switchDelaySetting	(int newV) {
+	dabSettings_p	-> setValue ("switchDelay", newV);
+}
+
+void	RadioInterface::handle_orderAlfabetical		() {
+	dabSettings_p -> setValue ("serviceOrder", ALPHA_BASED);
+}
+
+void	RadioInterface::handle_orderServiceIds		() {
+	dabSettings_p -> setValue ("serviceOrder", ID_BASED);
+}
+
+void	RadioInterface::handle_ordersubChannelIds	() {
+	dabSettings_p -> setValue ("serviceOrder", SUBCH_BASED);
+}
+	                                                 
+
+void	RadioInterface::handle_fontSelect () {
+fontChooser selectFont ("select font");
+QStringList fontList;
+	fontList << QString ("Times");
+	fontList << QString ("Helvetica");
+	fontList <<  QString ("Arial");
+	fontList <<  QString ("Cantarell");
+
+	for (auto &s : fontList)
+	   selectFont. add (s);
+	int fontIndex	= selectFont. QDialog::exec ();
+	this	-> theFont	= fontList. at (fontIndex);
+	dabSettings_p	-> setValue ("theFont", theFont);
+}
+
+void	RadioInterface::handle_fontColorSelect () {
+fontChooser selectColor ("select color");
+QStringList colorList;
+	colorList << "colors" << "white" << "black" << "red" <<
+                  "darkRed" << "green" << "darkGreen" << "blue" <<
+                  "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
+                  "darkMagenta" << "yellow" << "darkYellow" <<
+                  "gray" << "darkGray";
+	for (auto &s: colorList)
+	   selectColor. add (s);
+	int colorIndex	= selectColor. QDialog::exec ();
+	if (colorIndex == 0)
+	   colorIndex = 1;
+	this	-> fontColor	= colorList. at (colorIndex);
+	dabSettings_p	-> setValue ("fontColor", fontColor);
+}
+
+void	RadioInterface::handle_devicewidgetButton	() {
+	if (inputDevice_p == nullptr)
+	   return;
+	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
+
+	dabSettings_p -> setValue ("deviceVisible",
+	                      inputDevice_p -> getVisibility () ? 1 : 0);
+}
+
+void	RadioInterface::handle_portSelector () {
+mapPortHandler theHandler (dabSettings_p);
+	(void)theHandler. QDialog::exec();
 }
 
 void	RadioInterface::handle_dlTextButton	() {
@@ -4081,69 +4051,25 @@ void	RadioInterface::handle_dlTextButton	() {
 	configWidget. dlTextButton		-> setText ("writing");
 }
 
-void	RadioInterface::scheduled_dlTextDumping () {
-	if (dlTextFile != nullptr) {
-	   fclose (dlTextFile);
-	   dlTextFile = nullptr;
-	   configWidget. dlTextButton	-> setText ("dlText");
+void	RadioInterface::handle_resetButton	() {
+	if (!running. load())
 	   return;
-	}
-
-	QString	fileName = filenameFinder. finddlText_fileName (false);
-	dlTextFile	= fopen (fileName. toUtf8 (). data (), "w+");
-	if (dlTextFile == nullptr)
-	   return;
-	configWidget. dlTextButton	-> setText ("writing");
+	QString	channelName	= channel. channelName;
+	stopScanning (false);
+	stopChannel ();
+	startChannel	(channelName);
 }
 
-void	RadioInterface::handle_configButton	() {
-	if (!configDisplay. isHidden ()) {
-	   configButton	-> setText ("show controls");
-	   configDisplay. hide ();	
-	   dabSettings_p	-> setValue ("hidden", 1);
-	}
-	else {
-	   configButton	-> setText ("hide controls");
-	   configDisplay. show ();
-	   dabSettings_p	-> setValue ("hidden", 0);
-	}
-}
-
-void	RadioInterface::nrServices	(int n) {
-	channel. serviceCount = n;
-}
-
-void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
-QString theTime;
-	if (logFile == nullptr)
+void	RadioInterface::handle_snrButton	() {
+	if (!running. load ())
 	   return;
-	if (configWidget. utcSelector -> isChecked ())
-	   theTime  = convertTime (UTC. year, UTC. month, UTC. day,
-	                                  UTC. hour, UTC. minute);
+
+	if (my_snrViewer. isHidden ())
+	   my_snrViewer. show ();
 	else
-	   theTime = QDateTime::currentDateTime (). toString ();
-
-	fprintf (logFile, "at %s: %s %s\n",
-	              theTime. toUtf8 (). data (),
-	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
-}
-
-void	RadioInterface::handle_LoggerButton (int s) {
-	(void)s;
-	if (configWidget. loggerButton -> isChecked ()) {
-	   if (logFile != nullptr) {
-	      fprintf (stderr, "should not happen (logfile)\n");
-	      return;
-	   }
-	   logFile = filenameFinder. findLogFileName ();
-	   if (logFile != nullptr)
-	      LOG ("Log started with ", inputDevice_p -> deviceName ());
-	}
-	else
-	if (logFile != nullptr) {
-	   fclose (logFile);
-	   logFile = nullptr;
-	}
+	   my_snrViewer. hide ();
+	dabSettings_p	-> setValue ("snrVisible",
+	                          my_snrViewer. isHidden () ? 0 : 1);
 }
 
 void	RadioInterface::handle_set_coordinatesButton	() {
@@ -4172,6 +4098,198 @@ QString	tableFile	=
 	   channel. tiiFile = false;
 	}
 }
+
+void	RadioInterface::stop_sourcedumping	() {
+	if (rawDumper_p == nullptr) 
+	   return;
+
+	LOG ("source dump stops ", "");
+	my_ofdmHandler	-> stop_dumping();
+	sf_close (rawDumper_p);
+	rawDumper_p	= nullptr;
+	setButtonFont (configWidget. dumpButton, "Raw dump", 10);
+}
+//
+void	RadioInterface::start_sourcedumping () {
+QString deviceName	= inputDevice_p -> deviceName ();
+QString channelName	= channel. channelName;
+	
+	if (scanning. load ())
+	   return;
+
+	rawDumper_p	=
+	         filenameFinder. findRawDump_fileName (deviceName, channelName);
+	if (rawDumper_p == nullptr)
+	   return;
+
+	LOG ("source dump starts ", channelName);
+	setButtonFont (configWidget. dumpButton, "writing", 12);
+	my_ofdmHandler -> start_dumping (rawDumper_p);
+}
+
+void	RadioInterface::handle_sourcedumpButton () {
+	if (!running. load () || scanning. load ())
+	   return;
+
+	if (rawDumper_p != nullptr)
+	   stop_sourcedumping ();
+	else
+	   start_sourcedumping ();
+}
+
+
+void    RadioInterface::handle_skinSelector     () {
+skinHandler theSkins;
+	int skinIndex = theSkins. QDialog::exec ();
+	QString skinName = theSkins. skins. at (skinIndex);
+	fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
+	dabSettings_p -> setValue ("skin", skinName); 
+}
+
+
+void	RadioInterface::handle_LoggerButton (int s) {
+	(void)s;
+	if (configWidget. loggerButton -> isChecked ()) {
+	   if (logFile != nullptr) {
+	      fprintf (stderr, "should not happen (logfile)\n");
+	      return;
+	   }
+	   logFile = filenameFinder. findLogFileName ();
+	   if (logFile != nullptr)
+	      LOG ("Log started with ", inputDevice_p -> deviceName ());
+	}
+	else
+	if (logFile != nullptr) {
+	   fclose (logFile);
+	   logFile = nullptr;
+	}
+}
+
+void	RadioInterface::handle_tii_detectorMode (int d) {
+bool	b = configWidget. tii_detectorMode -> isChecked ();
+	(void)d;
+	if (my_ofdmHandler != nullptr) {
+	   my_ofdmHandler	-> set_tiiDetectorMode (b);
+	   dabSettings_p	-> setValue ("tii_detector", b ? 1 : 0);
+	}
+}
+
+void	RadioInterface::handle_onTop	(int d) {
+bool onTop = false;
+	(void)d;
+	if (configWidget. onTop -> isChecked ())
+	   onTop = true;
+	dabSettings_p -> setValue ("onTop", onTop ? 1 : 0);
+}
+
+void	RadioInterface::handle_epgSelector	(int x) {
+	(void)x;
+	dabSettings_p -> setValue ("epgFlag", 
+	                         configWidget. epgSelector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_autoBrowser	(int d) {
+	(void)d;
+	dabSettings_p -> setValue ("autoBrowser", 
+	               configWidget. autoBrowser -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_dcRemovalSelector (int s) {
+	(void)s;
+	if (my_ofdmHandler != nullptr)
+	   my_ofdmHandler -> handle_dcRemovalSelector (configWidget. dcRemovalSelector -> isChecked ());
+}
+
+//	eti handler is elsewehere
+
+void	RadioInterface::handle_clearScan_Selector (int c) {
+	(void)c;
+	dabSettings_p -> setValue ("clearScanResult",
+	               configWidget. clearScan_Selector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_saveServiceSelector	(int d) {
+	(void)d;
+	dabSettings_p	-> setValue ("has-presetName",
+	                             configWidget. saveServiceSelector -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_saveSlides	(int x) {
+	(void)x;
+	dabSettings_p -> setValue ("saveSlides", 
+	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
+}
+
+void	RadioInterface::handle_transmitterTags  (int d) {
+	(void)d;
+	maxDistance = -1;
+	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
+	dabSettings_p -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
+	channel. targetPos	= position {0, 0};
+	if ((transmitterTags_local) && (mapHandler != nullptr))
+	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
+}
+
+void	RadioInterface::handle_scanmodeSelector		(int d) {
+	dabSettings_p	-> setValue ("scanMode", d); 
+}
+
+void	RadioInterface::handle_skipList_button () {
+	if (!theBand. isHidden ()) {
+	   theBand. hide ();
+	}
+	else
+	   theBand. show ();
+}
+
+void	RadioInterface::handle_skipFile_button	() {
+const QString fileName	= filenameFinder. findskipFile_fileName ();
+	theBand. saveSettings ();
+	theBand. setup_skipList (fileName);
+}
+
+void	RadioInterface::handle_decoderSelector	(const QString &s) {
+int	decoder	= 0100;
+	for (int i = 0; decoders [i]. decoderName != ""; i ++)
+	   if (decoders [i]. decoderName == s)
+	      decoder = decoders [i]. decoderKey;
+	my_ofdmHandler	-> handle_decoderSelector (decoder);
+}
+void	RadioInterface:: set_streamSelector (int k) {
+	if (!running. load ())
+	   return;
+#if	not defined (TCP_STREAMER) &&  not defined (QT_AUDIO)
+	((audioSink *)(soundOut_p)) -> selectDevice (k);
+	dabSettings_p -> setValue ("soundchannel",
+	                          configWidget. streamoutSelector -> currentText());
+#else
+	(void)k;
+#endif
+}
+//	doStart handled elsewhere
+//
+//	End of functions for events from configwidget
+//////////////////////////////////////////////////////////////////////////
+
+void	RadioInterface::nrServices	(int n) {
+	channel. serviceCount = n;
+}
+
+void	RadioInterface::LOG	(const QString &a1, const QString &a2) {
+QString theTime;
+	if (logFile == nullptr)
+	   return;
+	if (configWidget. utcSelector -> isChecked ())
+	   theTime  = convertTime (UTC. year, UTC. month, UTC. day,
+	                                  UTC. hour, UTC. minute);
+	else
+	   theTime = QDateTime::currentDateTime (). toString ();
+
+	fprintf (logFile, "at %s: %s %s\n",
+	              theTime. toUtf8 (). data (),
+	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
+}
+
 //
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
@@ -4222,29 +4340,6 @@ void	RadioInterface::http_terminate	() {
 	httpButton -> setText ("http");
 }
 
-void	RadioInterface::handle_autoBrowser	(int d) {
-	(void)d;
-	dabSettings_p -> setValue ("autoBrowser", 
-	               configWidget. autoBrowser -> isChecked () ? 1 : 0);
-}
-
-void	RadioInterface::handle_transmitterTags  (int d) {
-	(void)d;
-	maxDistance = -1;
-	transmitterTags_local = configWidget. transmitterTags -> isChecked ();
-	dabSettings_p -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
-	channel. targetPos	= position {0, 0};
-	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
-}
-
-void	RadioInterface::handle_onTop	(int d) {
-bool onTop = false;
-	(void)d;
-	if (configWidget. onTop -> isChecked ())
-	   onTop = true;
-	dabSettings_p -> setValue ("onTop", onTop ? 1 : 0);
-}
 
 void	RadioInterface::displaySlide	(const QPixmap &p) {
 int w   = 360;
@@ -4263,27 +4358,10 @@ QByteArray theSlide;
 	   displaySlide (p);
 }
 
-void	RadioInterface::handle_portSelector () {
-mapPortHandler theHandler (dabSettings_p);
-	(void)theHandler. QDialog::exec();
-}
-
-void	RadioInterface::handle_epgSelector	(int x) {
-	(void)x;
-	dabSettings_p -> setValue ("epgFlag", 
-	                         configWidget. epgSelector -> isChecked () ? 1 : 0);
-}
-
 void	RadioInterface::handle_transmSelector	(int x) {
 	(void)x;
 	dabSettings_p -> setValue ("saveLocations",
 	                         configWidget. transmSelector -> isChecked () ? 1 : 0);
-}
-
-void	RadioInterface::handle_saveSlides	(int x) {
-	(void)x;
-	dabSettings_p -> setValue ("saveSlides", 
-	                         configWidget. saveSlides -> isChecked () ? 1 : 0);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -4357,19 +4435,6 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   scanButton -> hide ();
 }
 
-void	RadioInterface::handle_clearScan_Selector (int c) {
-	(void)c;
-	dabSettings_p -> setValue ("clearScanResult",
-	               configWidget. clearScan_Selector -> isChecked () ? 1 : 0);
-}
-
-void    RadioInterface::handle_skinSelector     () {
-skinHandler theSkins;
-	int skinIndex = theSkins. QDialog::exec ();
-	QString skinName = theSkins. skins. at (skinIndex);
-	fprintf (stderr, "skin select %s\n", skinName. toLatin1 (). data ());
-	dabSettings_p -> setValue ("skin", skinName); 
-}
 //
 //	access functions to the display widget
 void	RadioInterface::show_spectrum            (int amount) {
@@ -4610,49 +4675,15 @@ void	RadioInterface::show_clock_error	(int d) {
 }
 
 void	RadioInterface::init_configWidget () {
-	if (dabSettings_p -> value ("onTop", 0). toInt () == 1) 
-	   configWidget.  onTop -> setChecked (true);
-#ifndef	__MSC_THREAD__
-	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
-	   configWidget. decoderSelector -> addItem (decoders [i]. decoderName);
-#else
-	configWidget. decoderSelector -> setEnabled (false);
-#endif
-	if (dabSettings_p -> value ("saveLocations", 0). toInt () == 1)
-	   configWidget. transmSelector -> setChecked (true);
-
-	if (dabSettings_p -> value ("epgFlag", 0). toInt () == 1)
-	   configWidget. epgSelector -> setChecked (true);
-
-	if (dabSettings_p -> value ("clearScanResult", 1). toInt () == 1)
-	   configWidget. clearScan_Selector -> setChecked (true);
-
-	if (dabSettings_p -> value ("saveSlides", 0). toInt () == 1)
-	   configWidget. saveSlides -> setChecked (true);
-
-//	newDisplay. EPGLabel	-> hide ();
-//	newDisplay. EPGLabel	-> setStyleSheet ("QLabel {background-color : yellow}");
+//
+//	inits of checkboxes etc in the configuration widget,
+//	note that only the GUI is set, values are not used
 	int x = dabSettings_p -> value ("muteTime", 2). toInt ();
 	configWidget. muteTimeSetting -> setValue (x);
 
-	x = dabSettings_p -> value ("switchDelay", DEFAULT_SWITCHVALUE). toInt ();
+	x = dabSettings_p -> value ("switchDelay",
+	                               DEFAULT_SWITCHVALUE). toInt ();
 	configWidget. switchDelaySetting -> setValue (x);
-
-	bool b	= dabSettings_p	-> value ("utcSelector", 0). toInt () == 1;
-	configWidget.  utcSelector -> setChecked (b);
-
-	int scanMode	=
-	           dabSettings_p -> value ("scanMode", SINGLE_SCAN). toInt ();
-	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
-
-	x = dabSettings_p -> value ("closeDirect", 0). toInt ();
-	if (x != 0)
-	   configWidget. closeDirect -> setChecked (true);
-
-	x = dabSettings_p -> value ("epg2xml", 0). toInt ();
-	if (x != 0)
-	   configWidget. epg2xmlSelector -> setChecked (true);
-
 	x = dabSettings_p -> value ("serviceOrder", ALPHA_BASED). toInt ();
 	if (x == ALPHA_BASED)
 	   configWidget. orderAlfabetical -> setChecked (true);
@@ -4662,47 +4693,58 @@ void	RadioInterface::init_configWidget () {
 	else
 	   configWidget. ordersubChannelIds -> setChecked (true);
 
+//	first row of checkboxes
+//	saveServiceSelector is set elsewhere in the process
+//	logger is set per process, not kept
+	x = dabSettings_p -> value ("epg2xml", 0). toInt ();
+	if (x != 0)
+	   configWidget. epg2xmlSelector -> setChecked (true);
+//
+//	second row of checkboxes
+	bool dm = dabSettings_p -> value ("tii_detector", 0). toInt () == 1;
+	configWidget. tii_detectorMode -> setChecked (dm);
+
+	bool b	= dabSettings_p	-> value ("utcSelector", 0). toInt () == 1;
+	configWidget.  utcSelector -> setChecked (b);
+	if (dabSettings_p -> value ("onTop", 0). toInt () == 1) 
+	   configWidget.  onTop -> setChecked (true);
+//
+//	third row of checkboxes
+	x = dabSettings_p -> value ("closeDirect", 0). toInt ();
+	if (x != 0)
+	   configWidget. closeDirect -> setChecked (true);
+	if (dabSettings_p -> value ("epgFlag", 0). toInt () == 1)
+	   configWidget. epgSelector -> setChecked (true);
 	if (dabSettings_p -> value ("autoBrowser", 1). toInt () == 1)
 	   configWidget. autoBrowser -> setChecked (true);
-
+//
+//	fourth row of checknoxes
+//	deRemoval	not connected yet
+//	eti activated	set per process
 	if (dabSettings_p -> value ("transmitterTags", 1). toInt () == 1)
 	   configWidget. transmitterTags -> setChecked (true);
-
-
+//
+//	fifth row of checkboxes
+	if (dabSettings_p -> value ("clearScanResult", 1). toInt () == 1)
+	   configWidget. clearScan_Selector -> setChecked (true);
+	if (dabSettings_p -> value ("saveSlides", 0). toInt () == 1)
+	   configWidget. saveSlides -> setChecked (true);
+	if (dabSettings_p -> value ("saveLocations", 0). toInt () == 1)
+	   configWidget. transmSelector -> setChecked (true);
+//
+//	scanMode, combobox
+	int scanMode	=
+	           dabSettings_p -> value ("scanMode", SINGLE_SCAN). toInt ();
+	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
+//
+//	servicesinBackground
+#ifndef	__MSC_THREAD__
+	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
+	   configWidget. decoderSelector -> addItem (decoders [i]. decoderName);
+#else
+	configWidget. decoderSelector -> setEnabled (false);
+#endif
 }
-
-void	RadioInterface::handle_fontSelect () {
-fontChooser selectFont ("select font");
-QStringList fontList;
-	fontList << QString ("Times");
-	fontList << QString ("Helvetica");
-	fontList <<  QString ("Arial");
-	fontList <<  QString ("Cantarell");
-
-	for (auto &s : fontList)
-	   selectFont. add (s);
-	int fontIndex	= selectFont. QDialog::exec ();
-	this	-> theFont	= fontList. at (fontIndex);
-	dabSettings_p	-> setValue ("theFont", theFont);
-}
-
-void	RadioInterface::handle_fontColorSelect () {
-fontChooser selectColor ("select color");
-QStringList colorList;
-	colorList << "colors" << "white" << "black" << "red" <<
-                  "darkRed" << "green" << "darkGreen" << "blue" <<
-                  "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
-                  "darkMagenta" << "yellow" << "darkYellow" <<
-                  "gray" << "darkGray";
-	for (auto &s: colorList)
-	   selectColor. add (s);
-	int colorIndex	= selectColor. QDialog::exec ();
-	if (colorIndex == 0)
-	   colorIndex = 1;
-	this	-> fontColor	= colorList. at (colorIndex);
-	dabSettings_p	-> setValue ("fontColor", fontColor);
-}
-
 void	RadioInterface::show_channel	(int n) {
 std::vector<Complex> v (n);
 	channelBuffer. getDataFromBuffer (v. data (), n);
@@ -4733,19 +4775,6 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	techWindow_p	-> showPeakLevel (iPeakLeft, iPeakRight);
 }
 
-void	RadioInterface::handle_dcRemovalSelector (int s) {
-	(void)s;
-	if (my_ofdmHandler != nullptr)
-	   my_ofdmHandler -> handle_dcRemovalSelector (configWidget. dcRemovalSelector -> isChecked ());
-}
-
-void	RadioInterface::handle_decoderSelector	(const QString &s) {
-int	decoder	= 0100;
-	for (int i = 0; decoders [i]. decoderName != ""; i ++)
-	   if (decoders [i]. decoderName == s)
-	      decoder = decoders [i]. decoderKey;
-	my_ofdmHandler	-> handle_decoderSelector (decoder);
-}
 
 void	RadioInterface::handle_presetButton	() {
 	if (my_presetHandler. isHidden ())
