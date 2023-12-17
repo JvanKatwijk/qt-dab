@@ -44,8 +44,8 @@ int result	= 1;
 QString	colorString	= "black";
 bool	brush;
 
-	this	-> dabSettings		= dabSettings;
-	this	-> displaySize		= displaySize;
+	this		-> dabSettings		= dabSettings;
+	this		-> displaySize		= displaySize;
 	dabSettings	-> beginGroup ("spectrumScope");
 	colorString	= dabSettings -> value ("displayColor",
 	                                           "white"). toString();
@@ -55,6 +55,7 @@ bool	brush;
 	gridColor	= QColor (colorString);
 	colorString	= dabSettings -> value ("curveColor",
 	                                            "cyan"). toString();
+	 
 	curveColor	= QColor (colorString);
 	brush		= dabSettings -> value ("brush", 0). toInt () == 1;
 	dabSettings	-> endGroup ();
@@ -85,7 +86,7 @@ bool	brush;
         connect (lm_picker, SIGNAL (selected (const QPointF&)),
                  this, SLOT (rightMouseClick (const QPointF &)));
 
-	spectrumCurve. setPen (QPen(curveColor, 2.0));
+	spectrumCurve. setPen (QPen (curveColor, 2.0));
 	spectrumCurve. setOrientation (Qt::Horizontal);
 	spectrumCurve. setBaseline	(get_db (0));
 
@@ -154,7 +155,7 @@ QString	curveColor;
 	   int index		= curveSelector.  QDialog::exec ();
 	   if (index == 0)
 	      return;
-	   QString curveColor	= curveSelector. getColor (index);
+	   curveColor	= curveSelector. getColor (index);
 	}
 
 	dabSettings	-> beginGroup ("spectrumScope");

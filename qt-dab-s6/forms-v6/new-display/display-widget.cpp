@@ -43,13 +43,11 @@ int	sliderValue;
         int y   = dabSettings_p -> value ("position-y", 100). toInt ();
 	int w	= dabSettings_p -> value ("width", 150). toInt ();
 	int h	= dabSettings_p -> value ("height", 120). toInt ();
+	dabSettings_p	-> endGroup ();
         setupUi (&myFrame);
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
 //
-#ifndef	__ESTIMATOR_
-	tabWidget -> removeTab (4);
-#endif
 	myFrame. hide ();
 
 //	the "workers"
@@ -72,13 +70,11 @@ int	sliderValue;
 	sliderValue		= dabSettings_p -> value ("tiiSlider",
 	                                                   00). toInt ();
 	tiiSlider		-> setValue (sliderValue);
-#ifdef	__ESTIMATOR_
 	channelScope_p		= new channelScope	(channelPlot,
-	                                                 64, dabSettings_p);
+	                                                 NR_TAPS, dabSettings_p);
 	sliderValue		= dabSettings_p -> value ("channelSlider",
 	                                                  50). toInt ();
 	channelSlider		-> setValue (sliderValue);
-#endif
 	devScope_p		= new devScope		(devPlot,
 	                                                 512, dabSettings_p);
 	sliderValue		= dabSettings_p	-> value ("deviationSlider",
@@ -90,6 +86,7 @@ int	sliderValue;
 	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
 	                                                512, 50);
 
+	dabSettings_p		-> beginGroup ("displayWidget");
         currentTab		= dabSettings_p -> value ("tabSettings", 0). toInt ();
         dabSettings_p		-> endGroup ();
         tabWidget		-> setCurrentIndex (currentTab);
@@ -141,9 +138,7 @@ int	sliderValue;
 	delete		nullScope_p;
 	delete		correlationScope_p;
 	delete		TII_Scope_p;
-#ifdef	__ESTIMATOR_
 	delete		channelScope_p;
-#endif
 	delete		devScope_p;
 	delete		IQDisplay_p;
 }
@@ -311,40 +306,39 @@ static double avg [4 * 512];
 }
 
 void	displayWidget::show_channel	(std::vector<Complex> Values) {
-double	amplitudeValues [64];
-double	phaseValues     [64];
-double	X_axis          [64];
+double	amplitudeValues	[NR_TAPS];
+double	phaseValues	[NR_TAPS];
+double	X_axis		[NR_TAPS];
 double	waterfall_X	[512];
 double	waterfall_Y	[512];
 
-int	length	= Values. size () < 64 ? Values. size () : 64;
-#ifdef __ESTIMATOR_
+int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
 	   return;
 	for (int i = 0; i < length; i ++) {
-	   amplitudeValues [i] = abs (Values [i]) + 10;
-	   phaseValues     [i] = arg (Values [i]) + 30;
-	   X_axis          [i] = - 200 + 6 * i;
+	   amplitudeValues [i] = 8 * abs (Values [i]);
+	   phaseValues     [i] = arg (Values [i]) + 20;
+	   X_axis          [i] = i;
 	}
-	for (int i = length; i < 64; i ++) {
-	   amplitudeValues [i] = 10;
+	for (int i = length; i < NR_TAPS; i ++) {
+	   amplitudeValues [i] = 1;
 	   phaseValues     [i] = 0;
-	   X_axis	   [i] = 200 - 6 * i;
+	   X_axis	   [i] = i;
 	}
 	channelScope_p	-> display (X_axis,
 	                            amplitudeValues,
 	                            phaseValues, channelSlider -> value ());
 
-	for (int i = 0; i < 64; i ++) {
-	   for (int j = 0; j < 8; j ++) {
-	      waterfall_X [8 * i + j ] = -1536 / 2 + 24 * i + 3 * j;
-	      waterfall_Y [8 * i + j] = amplitudeValues [i];
+	for (int i = 0; i < NR_TAPS; i ++) {
+	   int f = 512 / NR_TAPS;
+	   for (int j = 0; j < f; j ++) {
+	      waterfall_X [f * i + j] = f * i + j;
+	      waterfall_Y [f * i + j] = amplitudeValues [i];
 	   }
 	}
 	waterfallScope_p	-> display (waterfall_X, waterfall_Y, 
 	                                    waterfallSlider -> value (),
 	                                    0);
-#endif
 }
 
 void	displayWidget::show_stdDev	(std::vector<float> stdDevVector) {

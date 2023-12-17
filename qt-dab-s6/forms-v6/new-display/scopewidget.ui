@@ -28,7 +28,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The tabwidget here contains the tabs for the different scopes, supported by this Qt-DAB implementation&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>4</number>
        </property>
        <widget class="QWidget" name="spectr">
         <attribute name="title">
@@ -199,8 +199,14 @@
         <layout class="QHBoxLayout" name="horizontalLayout_7">
          <item>
           <widget class="QSlider" name="channelSlider">
-           <property name="value">
+           <property name="maximum">
             <number>50</number>
+           </property>
+           <property name="value">
+            <number>20</number>
+           </property>
+           <property name="sliderPosition">
+            <number>20</number>
            </property>
            <property name="orientation">
             <enum>Qt::Vertical</enum>
@@ -210,7 +216,7 @@
          <item>
           <widget class="QwtPlot" name="channelPlot">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot;. To investigate the effects of the transmission, we take in a segment of 400 carriers in the first data segment (i.e. the one with the predefined data) centered around 0, each 6-th carrier and - since we know the values they should have, consider them as a &amp;quot;pilot&amp;quot; value and apply a well known algorithm to compute the difference with the measured values.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;channel&amp;quot; has effect on the signal when it travels through the air from transmitter to receiver. The &amp;quot;transformation&amp;quot; made by the channel on the signal can be computed since for the first datablock in a DAB frame, it is known what the result should be. So, in Qt-DAB we take 64 of these values and compare them with the values actually received. Based on that we compute an estimate of the channel impulse, i.e. the result of feeding the channel with a single pulse.&lt;/p&gt;&lt;p&gt;That result is made visible in this scope.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>

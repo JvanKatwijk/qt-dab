@@ -104,7 +104,7 @@ double Y_values [512];
 				         0, 1.5 * max );
 	spectrumCurve. setBaseline (0);
 	Y_values [0]		= 0;
-	Y_values [amount - 1]	= 0;
+	Y_values [512 - 1]	= 0;
 
 	spectrumCurve. setSamples (X_axis, Y_values, 512);
 	plotgrid	-> replot (); 

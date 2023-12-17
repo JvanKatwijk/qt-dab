@@ -14,12 +14,12 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -141,6 +141,7 @@ HEADERS += ./radio.h \
 	   ../includes/ofdm/fib-decoder.h  \
 	   ../includes/ofdm/fib-table.h \
 	   ../includes/ofdm/dab-config.h \
+	   ../includes/ofdm/estimator.h \
 	   ../includes/protection/protTables.h \
 	   ../includes/protection/protection.h \
 	   ../includes/protection/eep-protection.h \
@@ -264,6 +265,7 @@ SOURCES += ./main.cpp \
 	   ../src/ofdm/tii-detector.cpp \
 	   ../src/ofdm/fic-handler.cpp \
 	   ../src/ofdm/fib-decoder.cpp  \
+	   ../src/ofdm/estimator.cpp \
 	   ../src/protection/protTables.cpp \
 	   ../src/protection/protection.cpp \
 	   ../src/protection/eep-protection.cpp \
@@ -372,7 +374,6 @@ PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
 PKGCONFIG	+= libusb-1.0
 CONFIG		+= mapserver
-CONFIG		+= estimator
 !mac {
 LIBS      	+= -ldl
 }
@@ -478,7 +479,6 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 	CONFIG		+= double
 	#CONFIG		+= single
-	CONFIG		+= estimator
 	CONFIG		+= mapserver
 	CONFIG		+= extio
 	CONFIG		+= airspy
@@ -847,12 +847,6 @@ mapserver {
 }
 
 
-estimator {
-	DEFINES		+= __ESTIMATOR_
-	INCLUDEPATH	+= /usr/include/eigen3
-	HEADERS		+= ../includes/ofdm/estimator.h
-	SOURCES		+= ../src/ofdm/estimator.cpp
-}
 
 double	{
 	DEFINES		+= __WITH_DOUBLES__

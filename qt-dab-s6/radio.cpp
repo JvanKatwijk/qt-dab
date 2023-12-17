@@ -321,8 +321,6 @@ uint8_t	dabBand;
 	   }
 	}
 
-	if (dabSettings_p -> value ("run_backgrounds", 0). toInt () != 0)
-	   configWidget. servicesInBackground -> setChecked (true);
 	channel. targetPos	= position {0, 0};
 	channel. localPos. latitude 		=
 	             dabSettings_p -> value ("latitude", 0). toFloat ();
@@ -562,8 +560,6 @@ uint8_t	dabBand;
 //	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
 	cpuMonitor	-> setPalette (Qt::white);
-//	cpuMonitor		-> setPalette (lcdPalette);
-//	cpuMonitor		-> setAutoFillBackground (true);
 	set_Colors ();
 //	localTimeDisplay -> setStyleSheet (LABEL_STYLE);
 //	runtimeDisplay	-> setStyleSheet (LABEL_STYLE);
@@ -1996,7 +1992,6 @@ void	RadioInterface::disconnectGUI () {
 
 	disconnect (scanListButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_scanListButton ()));
-//
 	disconnect (presetButton, SIGNAL (clicked ()),
                  this, SLOT (handle_presetButton ()));
 //
@@ -4737,7 +4732,9 @@ void	RadioInterface::init_configWidget () {
 	           dabSettings_p -> value ("scanMode", SINGLE_SCAN). toInt ();
 	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
 //
-//	servicesinBackground
+//	The ultimate bottom line
+	if (dabSettings_p -> value ("run_backgrounds", 0). toInt () != 0)
+	   configWidget. servicesInBackground -> setChecked (true);
 #ifndef	__MSC_THREAD__
 	for (int i = 0; decoders [i]. decoderName != ""; i ++) 
 	   configWidget. decoderSelector -> addItem (decoders [i]. decoderName);
@@ -4745,15 +4742,14 @@ void	RadioInterface::init_configWidget () {
 	configWidget. decoderSelector -> setEnabled (false);
 #endif
 }
+
 void	RadioInterface::show_channel	(int n) {
 std::vector<Complex> v (n);
 	channelBuffer. getDataFromBuffer (v. data (), n);
 	channelBuffer. FlushRingBuffer ();
-#ifdef	__ESTIMATOR_
 	if (!newDisplay. isHidden () &&
 	           (newDisplay. get_tab () == SHOW_CHANNEL))
 	   newDisplay. show_channel (v);
-#endif
 }
 
 bool	RadioInterface::channelOn () {
@@ -4775,7 +4771,6 @@ void	RadioInterface::showPeakLevel (float iPeakLeft, float iPeakRight) {
 	techWindow_p	-> showPeakLevel (iPeakLeft, iPeakRight);
 }
 
-
 void	RadioInterface::handle_presetButton	() {
 	if (my_presetHandler. isHidden ())
 	   my_presetHandler. show ();
@@ -4784,5 +4779,4 @@ void	RadioInterface::handle_presetButton	() {
 	dabSettings_p	-> setValue ("favorites",
 	                              my_presetHandler. isHidden () ? 0 : 1);
 }
-
 
