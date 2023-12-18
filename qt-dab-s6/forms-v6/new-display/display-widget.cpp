@@ -53,43 +53,33 @@ int	sliderValue;
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
 	                                                512, dabSettings_p);
-	sliderValue		= dabSettings_p -> value ("spectrumSlider",
-	                                                   50). toInt ();
-	spectrumSlider		-> setValue (sliderValue);
 	nullScope_p		= new nullScope		(nullDisplay,
 	                                                512, dabSettings_p);
 	correlationScope_p	= new correlationScope (correlationDisplay,
 	                                                256, dabSettings_p);
+	TII_Scope_p		= new spectrumScope	(tiiDisplay,
+	                                                512, dabSettings_p);
+	channelScope_p		= new channelScope	(channelPlot,
+	                                                 NR_TAPS,
+	                                                 dabSettings_p);
+	devScope_p		= new devScope		(devPlot,
+	                                                 512, dabSettings_p);
+	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
+	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
+	                                                512, 50);
+//
+//	and the settings for the sliders:
+	dabSettings_p		-> beginGroup ("displayWidget");
+	sliderValue		= dabSettings_p -> value ("spectrumSlider",
+	                                                   30). toInt ();
+	spectrumSlider		-> setValue (sliderValue);
+        currentTab		= dabSettings_p -> value ("tabSettings", 0). toInt ();
+        tabWidget		-> setCurrentIndex (currentTab);
 	sliderValue		= dabSettings_p -> value ("correlationSlider",
 	                                                   50). toInt ();
 	correlationSlider	-> setValue (sliderValue);
 	correlationLength       -> setValue (500);
-
-	TII_Scope_p		= new spectrumScope	(tiiDisplay,
-	                                                512, dabSettings_p);
-	sliderValue		= dabSettings_p -> value ("tiiSlider",
-	                                                   00). toInt ();
-	tiiSlider		-> setValue (sliderValue);
-	channelScope_p		= new channelScope	(channelPlot,
-	                                                 NR_TAPS, dabSettings_p);
-	sliderValue		= dabSettings_p -> value ("channelSlider",
-	                                                  50). toInt ();
-	channelSlider		-> setValue (sliderValue);
-	devScope_p		= new devScope		(devPlot,
-	                                                 512, dabSettings_p);
-	sliderValue		= dabSettings_p	-> value ("deviationSlider",
-	                                                  0). toInt ();
-	deviationSlider		-> setValue (sliderValue);
-	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
-
-
-	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
-	                                                512, 50);
-
-	dabSettings_p		-> beginGroup ("displayWidget");
-        currentTab		= dabSettings_p -> value ("tabSettings", 0). toInt ();
         dabSettings_p		-> endGroup ();
-        tabWidget		-> setCurrentIndex (currentTab);
 	correlationsVector 	-> 
 	          setStyleSheet (
 	                 "QLabel {background-color : green; color: white}");
@@ -102,6 +92,15 @@ int	sliderValue;
 	           dabSettings_p -> value ("logScope", 0). toInt () == 1;
 	if (logScope != 0)
 	   logScope_checkBox -> setChecked (true);
+	sliderValue		= dabSettings_p -> value ("tiiSlider",
+	                                                   00). toInt ();
+	tiiSlider		-> setValue (sliderValue);
+	sliderValue		= dabSettings_p	-> value ("deviationSlider",
+	                                                  0). toInt ();
+	deviationSlider		-> setValue (sliderValue);
+	sliderValue		= dabSettings_p -> value ("channelSlider",
+	                                                  20). toInt ();
+	channelSlider		-> setValue (sliderValue);
 	dabSettings_p	-> endGroup ();
 
 	connect (tabWidget, SIGNAL (currentChanged (int)),
@@ -131,6 +130,8 @@ int	sliderValue;
 	                               tiiSlider -> value ());
 	dabSettings_p	-> setValue ("deviationSlider",
 	                               deviationSlider -> value ());
+	dabSettings_p	-> setValue ("channelSlider",
+	                               channelSlider -> value ());
 	dabSettings_p	-> endGroup ();
 	myFrame. hide	();
 	delete		spectrumScope_p;

@@ -120,12 +120,12 @@ int	input	= v. size ();
 				         X_axis [amount - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         get_db (0), get_db (0) + sliderValue);
-//				         get_db (0), 0);
+				         get_db (0) + 30,
+	                                 get_db (0) + 30 + sliderValue);
 
-	spectrumCurve. setBaseline (get_db (0));
-	Y_value [0]		= get_db (0);
-	Y_value [amount - 1] = get_db (0);
+	spectrumCurve. setBaseline (get_db (0) + 30);
+	Y_value [0]		= get_db (0) + 30;
+	Y_value [amount - 1]	= get_db (0) + 30;
 
 	spectrumCurve. setSamples (X_axis, Y_value, amount);
 	plotgrid	-> replot (); 

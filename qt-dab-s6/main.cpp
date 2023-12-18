@@ -70,7 +70,7 @@ void    setTranslator (QTranslator *, QString Language);
 
 int     main (int argc, char **argv) {
 QString initFileName = fullPathfor (QString (DEFAULT_INI));
-RadioInterface  *MyRadioInterface;
+RadioInterface  *myRadioInterface;
 
 // Default values
 QSettings       *dabSettings;           // ini file
@@ -160,7 +160,7 @@ QTranslator	theTranslator;
 	setTranslator (&theTranslator, locale);
 	a. setWindowIcon (QIcon (":/res/qt-dab-6-128x128.png"));
 
-	MyRadioInterface = new RadioInterface (dabSettings,
+	myRadioInterface = new RadioInterface (dabSettings,
 	                                       scanListFile,
 	                                       presetFile,
 	                                       freqExtension,
@@ -170,7 +170,7 @@ QTranslator	theTranslator;
 	                                       clockPort,
 	                                       fmFrequency
 	                                       );
-	MyRadioInterface -> show();
+	myRadioInterface -> show();
 
 	qRegisterMetaType<QVector<int> >("QVector<int>");
 	a. exec();
@@ -181,7 +181,7 @@ QTranslator	theTranslator;
 	fflush (stdout);
 	fflush (stderr);
 	qDebug ("It is done\n");
-	delete MyRadioInterface;
+	delete myRadioInterface;
 	delete dabSettings;
 	return 1;
 }

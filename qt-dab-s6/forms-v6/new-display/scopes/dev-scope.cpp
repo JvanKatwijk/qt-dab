@@ -105,7 +105,7 @@ int	VSize	= V. size ();
 				         (double)X_axis [VSize - 1]);
 	plotgrid	-> enableAxis (QwtPlot::xBottom);
 	plotgrid	-> setAxisScale (QwtPlot::yLeft,
-				         min, 1.5 * max );
+				         -20, 20);
 	spectrumCurve. setBaseline (0);
 	Y_values [0]		= 0;
 	Y_values [VSize - 1]	= 0;

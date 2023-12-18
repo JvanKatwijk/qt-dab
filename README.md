@@ -182,16 +182,12 @@ The TII scope shows the spectrum of the data in the NULL period, since that data
 
 ![6.1](/qt-dab-channel.png)
 
-The channel scope shows the *channel effect* on the transmitted data, i.e.
+The channel scope shows the *channel response* on the transmitted data, i.e.
 the deformation of the transmitted signal. The
 picture shows the *cyan colored line*,
-i.e. the channel effects (i.e. the deformation) on the amplitudes,
+i.e. the channel response on the amplitude,
 and the *red line*, i.e.  the channel effects on the phase of
-the samples. (The "jumps in the red line indicate the modulo 2*PI effect.)
-
-Note that the implementation of this particular scope requires some additional
-libraries, therefore this scope is not part of the default configuration,
-although it is included in the precompiled versions.
+the samples.
 
 ![6.1](/qt-dab-stddev.png)
 
