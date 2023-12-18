@@ -33,7 +33,7 @@ Introduction
 **Qt-DAB-XX** is a rich implementation of a DAB decoder for use on Linux and Windows based PCs, including some ARM based boards, such as the Raspberry PI 2 and up. It can be used with a variety of SDR devices, including DABsticks, all models of the SDRplay, Airspy etc.
 
 
-The current version is 6.3. The versions 5.4 and 4.7 are - since they were subject to changes as well, renamed to 5.5 and 4.8.
+The current version is 6.3. The versions 5.4 and 4.7 are - since they were subject to changes as well-  renamed to 5.5 and 4.8.
 
 For all three versions, the "preset" handling is improved, the "presets" 
 renamed to "favorites", with the "favorites" visible on a separate widget.
@@ -53,10 +53,10 @@ Features
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and AAC-LC) decoding
   * MOT SlideShow (SLS)
   * Dynamic Label (DLS) with the possibility of saving dynamic  the Label text  by right clicking with the mouse, or saving all dynamic label texts  - augmented with channel and time info - in a file,
-  * While DAB is now transmitted by default in the VHF Band II, there are options to select the L-Band, and even  receive data from user defined vands
-  *  While Mode I is "the" mode for DAB, Qt-DAB offers an option to interpret data modelled in Mode II or Mode IV,
+  * While DAB is now transmitted by default in the VHF Band III, there are options to select the L-Band, and it is possible to receive data from user defined channels.
+  * While Mode I is "the" mode for DAB, Qt-DAB offers an option to interpret data modelled in Mode II or Mode IV,
   * There is a focus on viewing the signal: next to showing the spectrum of the received signal and a constellation diagram of the decoded signal,
-a view on the correlation of the signal and the TII spectrum can be selected. Furthermore, a view on the transition from the NULL period to the first datablock, a viewe on the impact of the channel on the signal, and a view on the frequency offsets of the decoded signal can be selected. Finally, in a separate widget, the development over time of the SNR can be made visible.
+a view on the correlation of the signal and the TII spectrum can be selected. Furthermore, a view on the transition from the NULL period to the first datablock, a viewe on the impact of the channel on the signal, and a view on the frequency offsets of the carriers in the decoded signal can be selected. Finally, in a separate widget, the development over time of the SNR can be made visible.
   * automatic reconfiguration of services.
   * Detailed information on reception and selected service (SNR, bitrate, frequency, ensemble name, ensemble ID, subchannel ID, used CUs, protection level, CPU usage, program type, language, alternative FM frequency if available, 4 quality bars),
   * Frequency spectrum of the resulting audio as well as "strength" meters of the audio stream are made visible,
@@ -102,24 +102,19 @@ Widgets and scopes
 
 ![6.2](/qt-dab-6-main-widget.png)
 
-The full GUI for Qt-DAB 6.30 consists of a habdful of widgets, only
-a single widget, the *main* widget is always visible. Visibility of the
-other wigets (spectrum widget, technical data widget and configuration-and-control widget is stricly under user control.
+The full GUI for Qt-DAB 6.30 consists of a handful of widgets; 
+a single widget, the *main* widget is always visible and visibility of the
+other wigets (spectrum widget, technical data widget and configuration-and-control widget) is stricly under user control by settings in the main widget.
 
 The main widget of Qt-DAB provides all means for selecting a channel,
-and selecting a service. Furthermore, it provides full control over
-the visibility of the other widgets of the GUI.
+and selecting a service. 
 
 ![6.2](/qt-dab-6-slides.png)
 
 Most DAB services carry one or more slides, these are made visible on the
 main widget.
 The technical widget - the visibility of which depends on the settings
-in the main widget, gives full information about the selected audio service.
-(Of course the color(s) used in the spectrum display can be set by the user).
-
-The technical widget displays information about the selected (audio)
-service, as shown in the picture. 
+in the main widget - gives full information on the selected audio service, as shown in the picture.
 
 ![6.1](/technical-widget.png)
 
@@ -132,8 +127,7 @@ list by clicking on it with the right hand mouse button.
 
 Different from previous versions, a **single widget**, the spectrum widget,
 contains (almost) all of the scopes and displays.
-It is set up as a tabbed widget - the 5 or 6 scopes (depending
-on the configuration) show the various aspects of the DAB signal. 
+It is set up as a tabbed widget - the 6 scopes show the various aspects of the DAB signal. 
 Furthermore, it contains an IQscope,
 showing the constellation of the decoded data or the constellation
 of the data before decoding.
@@ -141,11 +135,11 @@ A waterfall scope shows the progress in time of the data
 that is displayed in the selected scope.
 
 The spectrum scope shows - in numbers - some quality indicators for the
-raw DAB signal.
+raw DAB signal as well.
 
 The progress indicator at the bottom shows the quality of the FIC decoding,
 where FIC can be seen as the directory data of the contents of the DAB
-transmission
+transmission.
 
 (Note that - obviously - the colors of the scopes can be set to different
 colors than shown here).
@@ -191,7 +185,7 @@ the samples.
 
 ![6.1](/qt-dab-stddev.png)
 
-The deviation scope shows the mean deviation on the carriers
+The deviation scope shows the mean deviation of the carriers
 in the decoded signal, before mapping the carriers to bits.
 The Y-axis is in Hz.
 
@@ -294,7 +288,8 @@ The Windows support library does not seem to be capable of closing
 the library and reopening it on switching channels. Therefore
 different versions exist for Linux and Windows.
 
-:information_source: Note that for including "soapy" in the configuration, soapy  software should have been installed. 
+:information_source: Note that for including "soapy" in the configuration, soapy  software should have been installed. Be w]aware that the current
+version is developed on an Fedora box, the soapy library used does not seem compatible with the soapy library on Ubuntu.
 
 :information_source: Note that "pluto" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
 
@@ -315,9 +310,9 @@ run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates 
 Step 4
 -----------------------------------------------------------------
 
-Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` (which contains the database data for finding the transmitter's name and location) into the user's home directory. If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
+Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` from the *library* subdirectory (which contains the database data for finding the transmitter's name and location) into the user's home directory.) If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
 
-If running on an x64 PC or *bullseye* on the RPI you might consider to install `libtii-lib.so` in `/usr/local/lib` from `dab-maxi/library`.
+If running on an x64 PC or *bullseye* on the RPI you might consider to install `libtii-lib.so` (to be found in the *library* subdirectory) in `/usr/local/lib`. Note that to avoid confusion, it named "libtii-lib.so-rpi" and should be renamed to the libtii-lib.so.
 
 :information_source: Note however that this library needs `curl` to be installed and source code for `libtii-lib.so` is not free. `libtii-lib.so` contains functionality for uploading a new database version (the "load" button on the configuration widget). If Qt-DAB cannot find the library, it will just function without the additional functionality.
 
