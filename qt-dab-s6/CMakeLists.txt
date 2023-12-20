@@ -20,7 +20,7 @@ if(MINGW)
 #	add_definitions (-DSSE_AVAILABLE)
 endif()
 
-add_definitions (-D__FFTW3__)
+add_definitions (-D__FFTW3__ -D__ESTIMATOR__)
 
 IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git" AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
    execute_process (
@@ -227,6 +227,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/ofdm/fic-handler.h
 	     ../includes/ofdm/tii-detector.h
 	     ../includes/ofdm/timesyncer.h
+	     ../includes/ofdm/estimator.h
 	     ../includes/protection/protTables.h
 	     ../includes/protection/protection.h
 	     ../includes/protection/uep-protection.h
@@ -307,6 +308,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
              ./forms-v6/new-display/scopes/correlation-scope.h 
              ./forms-66/new-display/scopes/spectrum-scope.h 
              ./forms-v6/new-display/scopes/null-scope.h 
+             ./forms-v6/new-display/scopes/channel-scope.h 
 	     ./forms-v6/new-display/dev-scope.h
              ./forms-v6/new-display/scopes/waterfall-scope.h 
              ./forms-b6/new-display/scopes/iqdisplay.h 
@@ -341,6 +343,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/ofdm/fic-handler.cpp
 	     ../src/ofdm/tii-detector.cpp
 	     ../src/ofdm/timesyncer.cpp
+	     ../src/ofdm/estimator.cpp
 	     ../src/protection/protTables.cpp
 	     ../src/protection/protection.cpp
 	     ../src/protection/eep-protection.cpp
@@ -415,6 +418,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
              ./forms-v6/new-display/scopes/correlation-scope.cpp 
              ./forms-v6/new-display/scopes/spectrum-scope.cpp 
              ./forms-v6/new-display/scopes/null-scope.cpp 
+             ./forms-v6/new-display/scopes/channel-scope.cpp 
              ./forms-v6/new-display/scopes/dev-scope.cpp 
              ./forms-v6/new-display/scopes/waterfall-scope.cpp 
              ./forms-v6/new-display/scopes/iqdisplay.cpp 
@@ -441,6 +445,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/ofdm/fib-decoder.h
 	     ../includes/ofdm/fic-handler.h
 	     ../includes/ofdm/tii-detector.h
+	     ../includes/ofdm/estimator.h
 	     ../includes/backend/msc-handler.h
 	     ../includes/backend/backend.h
 	     ../includes/backend/audio/mp2processor.h
@@ -485,6 +490,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
              ./forms-v6/new-display/scopes/correlation-scope.h 
              ./forms-v6/new-display/scopes/spectrum-scope.h 
              ./forms-v6/new-display/scopes/null-scope.h 
+             ./forms-v6/new-display/scopes/channel-scope.h 
              ./forms-v6/new-display/scopes/dev-scope.h 
              ./forms-v6/new-display/scopes/waterfall-scope.h 
              ./forms-v6/new-display/scopes/iqdisplay.h 

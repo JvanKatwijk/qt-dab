@@ -84,6 +84,7 @@ void	estimator::estimate	(std::vector<Complex> v,
 	fft_backwards. fft (hhh);
 //
 	for (int i = 0; i < NR_TAPS - 4; i ++)
-	   resultRow [i + 4 ] = hhh [i] * 10.0;
+	   resultRow [i + 4 ] = Complex (real (hhh [i]) * 10.0,
+	                                 imag (hhh [i]) * 10.0);
 }
 

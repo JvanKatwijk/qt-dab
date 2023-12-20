@@ -2408,7 +2408,7 @@ QString serviceName	= service;
 	                       s. serviceName + " yet");
 	      return;
 	   }
-	   s. serviceName = service;
+	   s. serviceName = serviceName;
 	   startService (s);
 	   return;
 	}

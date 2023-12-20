@@ -31,6 +31,7 @@ RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
 
+DEFINES	+= __ESTIMATOR__
 #
 #       For more parallel processing, uncomment the following
 #       defines
