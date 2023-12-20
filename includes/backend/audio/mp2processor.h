@@ -59,7 +59,7 @@ public:
 	                                 RingBuffer<std::complex<int16_t>> *,
 	                                 bool);
 			~mp2Processor	();
-	void		addtoFrame	(std::vector<uint8_t>);
+	void		addtoFrame	(const std::vector<uint8_t>);
 
 private:
 	RadioInterface	*myRadioInterface;

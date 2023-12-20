@@ -94,7 +94,7 @@
 	goodFrames		= 0;
 }
 
-	mp4Processor::~mp4Processor() {
+	mp4Processor::~mp4Processor () {
 	delete aacDecoder;
 }
 
@@ -108,7 +108,7 @@
   *	per Byte, nbits is the number of Bits (i.e. containing bytes)
   *	the function adds nbits bits, packed in bytes, to the frame
   */
-void	mp4Processor::addtoFrame (std::vector<uint8_t> V) {
+void	mp4Processor::addtoFrame (const std::vector<uint8_t> V) {
 int16_t	i, j;
 uint8_t	temp	= 0;
 int16_t	nbits	= 24 * bitRate;

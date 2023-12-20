@@ -847,8 +847,6 @@ mapserver {
 	SOURCES		+= ../src/support/http-handler.cpp
 }
 
-
-
 double	{
 	DEFINES		+= __WITH_DOUBLES__
 	DEFINES		+= __FFTW3__

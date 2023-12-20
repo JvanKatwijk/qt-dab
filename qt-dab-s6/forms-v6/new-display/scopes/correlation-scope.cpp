@@ -92,7 +92,7 @@ bool	brush;
 	correlationScope::~correlationScope	() {
 }
 
-void	correlationScope::display	(std::vector<float> &v,
+void	correlationScope::display	(const std::vector<float> &v,
 	                                 int T_g,
 	                                 int amount,
 	                                 int sliderValue) {

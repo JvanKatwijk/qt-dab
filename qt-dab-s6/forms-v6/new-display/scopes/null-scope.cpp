@@ -84,7 +84,7 @@ QString	colorString	= "black";
 	delete		grid;
 }
 
-void	nullScope::display	(Complex *V, int amount) {
+void	nullScope::display	(const Complex *V, int amount) {
 float	max	= 0;
 double X_axis [512];
 double Y_values [512];

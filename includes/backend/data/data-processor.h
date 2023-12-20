@@ -42,7 +42,7 @@ public:
 	                 RingBuffer<uint8_t>	*dataBuffer,
 	                 bool backendFlag);
 	~dataProcessor	();
-void	addtoFrame	(std::vector<uint8_t>);
+void	addtoFrame	(const std::vector<uint8_t>);
 private:
 	RadioInterface	*myRadioInterface;
 	int16_t		bitRate;
@@ -58,9 +58,9 @@ private:
 	int32_t		streamAddress;		// int since we init with -1
 //
 //	result handlers
-	void		handleTDCAsyncstream 	(uint8_t *, int32_t);
-	void		handlePackets		(uint8_t *, int32_t);
-	void		handlePacket		(uint8_t *);
+	void		handleTDCAsyncstream 	(const uint8_t *, int32_t);
+	void		handlePackets		(const uint8_t *, int32_t);
+	void		handlePacket		(const uint8_t *);
 	virtual_dataHandler *my_dataHandler;
 //
 signals:

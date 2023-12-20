@@ -81,7 +81,7 @@
 }
 
 
-void	dataProcessor::addtoFrame (std::vector<uint8_t>  outV) {
+void	dataProcessor::addtoFrame (const std::vector<uint8_t>  outV) {
 //	There is - obviously - some exception, that is
 //	when the DG flag is on and there are no datagroups for DSCTy5
 
@@ -94,7 +94,7 @@ void	dataProcessor::addtoFrame (std::vector<uint8_t>  outV) {
 //
 //	While for a full mix data and audio there will be a single packet in a
 //	data compartment, for an empty mix, there may be many more
-void	dataProcessor::handlePackets (uint8_t *data, int32_t length) {
+void	dataProcessor::handlePackets (const uint8_t *data, int32_t length) {
 	while (true) {
 	   int32_t pLength = (getBits_2 (data, 0) + 1) * 24 * 8;
 	   if (length < pLength)	// be on the safe side
@@ -112,7 +112,7 @@ void	dataProcessor::handlePackets (uint8_t *data, int32_t length) {
 //	there may be multiple streams, to be identified by
 //	the address. For the time being we only handle a single
 //	stream!!!!
-void	dataProcessor::handlePacket (uint8_t *data) {
+void	dataProcessor::handlePacket (const uint8_t *data) {
 int32_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
 int16_t	continuityIndex	= getBits_2 (data, 2);
 int16_t	firstLast	= getBits_2 (data, 4);
@@ -194,7 +194,8 @@ int32_t	usefulLength	= getBits_7 (data, 17);
 //
 //
 //	Really no idea what to do here
-void	dataProcessor::handleTDCAsyncstream (uint8_t *data, int32_t length) {
+void	dataProcessor::handleTDCAsyncstream (const uint8_t *data,
+	                                              int32_t length) {
 int16_t	packetLength	= (getBits_2 (data, 0) + 1) * 24;
 int16_t	continuityIndex	= getBits_2 (data, 2);
 int16_t	firstLast	= getBits_2 (data, 4);

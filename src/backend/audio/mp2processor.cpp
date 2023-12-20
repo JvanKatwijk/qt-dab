@@ -579,7 +579,7 @@ int32_t table_idx;
 
 //
 //	bits to MP2 frames, amount is amount of bits
-void	mp2Processor::addtoFrame (std::vector<uint8_t> v) {
+void	mp2Processor::addtoFrame (const std::vector<uint8_t> v) {
 int16_t	i, j;
 int16_t	lf	= baudRate == 48000 ? MP2framesize : 2 * MP2framesize;
 int16_t	amount	= MP2framesize;

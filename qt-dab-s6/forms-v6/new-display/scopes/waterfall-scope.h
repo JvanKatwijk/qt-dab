@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2008, 2009, 2010
+ *    Copyright (C) 2010 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -37,7 +37,7 @@ Q_OBJECT
 public:
 		waterfallScope	(QwtPlot *, int, int);
 		~waterfallScope	();
-	void	display		(double *, double *,
+	void	display		(const double *, const  double *,
 	                         double, int32_t);
 	void	cleanUp		();
 private:

@@ -166,7 +166,8 @@ int	displayWidget::get_tab		() {
 //
 //	for "spectrum" we get a segment of 2048 timedomain samples
 //	we take the fft and average a little
-void	displayWidget::show_spectrum	(std::vector<Complex> &v, int freq) {
+void	displayWidget::show_spectrum	(std::vector<Complex> &v,
+	                                                   int freq) {
 int	l	= v. size ();
 double	X_axis [512];
 double  Y_value [512];
@@ -200,7 +201,7 @@ static double avg [4 * 512];
 //
 //	for "corr" we get a segment of 1024 float values,
 //	with as second parameter a list of indices with maximum values
-void	displayWidget::show_correlation	(std::vector<float> &v, int T_g,
+void	displayWidget::show_correlation	(const std::vector<float> &v, int T_g,
 	                                 QVector<int> &ww, int baseDistance) {
 	if (currentTab != SHOW_CORRELATION)
 	   return;
@@ -274,7 +275,7 @@ void	displayWidget::show_null	(Complex  *v, int amount) {
 //
 //	for "tii" we get a segment of 2048 time domain samples,
 //	we take an FFT, do some averaging and display
-void	displayWidget::show_tii		(std::vector<Complex> v, int freq) {
+void	displayWidget::show_tii	(std::vector<Complex> v, int freq) {
 int	l	= v. size ();
 double	X_axis [512];
 double  Y_value [512];
@@ -306,7 +307,7 @@ static double avg [4 * 512];
 	                                    freq / 1000);
 }
 
-void	displayWidget::show_channel	(std::vector<Complex> Values) {
+void	displayWidget::show_channel	(const std::vector<Complex> Values) {
 double	amplitudeValues	[NR_TAPS];
 double	phaseValues	[NR_TAPS];
 double	X_axis		[NR_TAPS];
@@ -317,7 +318,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	if (currentTab != SHOW_CHANNEL)
 	   return;
 	for (int i = 0; i < length; i ++) {
-	   amplitudeValues [i] = 8 * abs (Values [i]);
+	   amplitudeValues [i] = 4 * abs (Values [i]);
 	   phaseValues     [i] = arg (Values [i]) + 20;
 	   X_axis          [i] = i;
 	}
@@ -334,7 +335,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	   int f = 512 / NR_TAPS;
 	   for (int j = 0; j < f; j ++) {
 	      waterfall_X [f * i + j] = f * i + j;
-	      waterfall_Y [f * i + j] = amplitudeValues [i];
+	      waterfall_Y [f * i + j] = arg (Values [i]);
 	   }
 	}
 	waterfallScope_p	-> display (waterfall_X, waterfall_Y, 
@@ -342,7 +343,7 @@ int	length	= Values. size () < NR_TAPS ? Values. size () : NR_TAPS;
 	                                    0);
 }
 
-void	displayWidget::show_stdDev	(std::vector<float> stdDevVector) {
+void	displayWidget::show_stdDev	(const std::vector<float> stdDevVector) {
 double X_axis [512];
 double Y_value [512];
 
@@ -361,7 +362,7 @@ double Y_value [512];
 //
 //	for IQ we get a segment of 512 complex values, i.e. the
 //	decoded values
-void	displayWidget::showIQ	(std::vector<Complex> Values) {
+void	displayWidget::showIQ	(const std::vector<Complex> Values) {
 int sliderValue	=  scopeSlider -> value ();
 std::vector<Complex> tempDisplay (512);
 

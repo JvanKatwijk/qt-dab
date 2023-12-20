@@ -88,8 +88,8 @@ void	waterfallScope::cleanUp () {
 	      plotData [i * displaySize + j] = (double)i / rasterSize;
 }
 
-void    waterfallScope::display (double *X_axis,
-	                         double *Y1_value,
+void    waterfallScope::display (const double *X_axis,
+	                         const double *Y1_value,
 	                         double  amp,
 	                         int32_t marker) {
 int     orig    = (int)(X_axis [0]);

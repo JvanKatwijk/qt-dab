@@ -39,8 +39,8 @@ public:
 	                 RingBuffer<uint8_t> *,
 	                 RingBuffer<uint8_t> *,
 	                 FILE *);
-	~backendDriver();
-void	addtoFrame	(std::vector<uint8_t> outData);
+	~backendDriver	();
+void	addtoFrame	(const std::vector<uint8_t> outData);
 private:
 	frameProcessor	* theProcessor;
 };

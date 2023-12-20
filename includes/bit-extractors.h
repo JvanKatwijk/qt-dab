@@ -26,7 +26,7 @@
 #include	<stdint.h>
 
 static inline
-uint16_t	getBits (uint8_t *d, int32_t offset, int16_t size) {
+uint16_t	getBits (const uint8_t *d, int32_t offset, int16_t size) {
 int16_t	i;
 uint16_t	res	= 0;
 
@@ -38,12 +38,12 @@ uint16_t	res	= 0;
 }
 
 static inline
-uint16_t	getBits_1 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_1 (const uint8_t *d, int32_t offset) {
 	return (d [offset] & 0x01);
 }
 
 static inline
-uint16_t	getBits_2 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_2 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -51,7 +51,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_3 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_3 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -61,7 +61,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_4 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_4 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -73,7 +73,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_5 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_5 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -87,7 +87,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_6 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_6 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -103,7 +103,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_7 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_7 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -121,7 +121,7 @@ uint16_t	res	= d [offset];
 }
 
 static inline
-uint16_t	getBits_8 (uint8_t *d, int32_t offset) {
+uint16_t	getBits_8 (const uint8_t *d, int32_t offset) {
 uint16_t	res	= d [offset];
 	res	<<= 1;
 	res	|= d [offset + 1];
@@ -142,7 +142,7 @@ uint16_t	res	= d [offset];
 
 
 static inline
-uint32_t	getLBits	(uint8_t *d,
+uint32_t	getLBits	(const uint8_t *d,
 	                         int32_t offset, int16_t amount) {
 uint32_t	res	= 0;
 int16_t		i;

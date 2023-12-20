@@ -50,7 +50,8 @@ public:
 	                         int,
 	                         QSettings *);
 		~channelScope	();
-	void	display		(double *, double *, double *, int);
+	void	display		(const double *, 
+	                         const double *, const double *, int);
 
 private:
 

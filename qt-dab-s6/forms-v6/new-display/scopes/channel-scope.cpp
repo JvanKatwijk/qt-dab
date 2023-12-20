@@ -99,10 +99,11 @@ QString	colorString	= "black";
 	delete		grid;
 }
 
-void	channelScope::display		(double *X_axis,
-	                                 double *amplitudeValues,
-	                                 double *phaseValues,
+void	channelScope::display		(const double *X_axis,
+	                                 const double *amplitudeValues,
+	                                 const double *phaseValues,
 	                                 int Amp) {
+double ampVals [displaySize];
 	(void)Amp;
 	float Max	= 0;
 	plotgrid	-> setAxisScale (QwtPlot::xBottom,
@@ -118,12 +119,12 @@ void	channelScope::display		(double *X_axis,
 
 	if (Max > 15)
 	   for (int i = 0; i < displaySize; i ++)
-	      amplitudeValues [i] = amplitudeValues [i] * 15.0 / Max;
+	      ampVals [i] = amplitudeValues [i] * 15.0 / Max;
 	amplitudeCurve. setBaseline (0);
-	amplitudeValues [0]	= 0;
-	amplitudeValues [displaySize - 1] = 0;
+	ampVals [0]	= 0;
+	ampVals [displaySize - 1] = 0;
 
-	amplitudeCurve. setSamples (X_axis, amplitudeValues, displaySize);
+	amplitudeCurve. setSamples (X_axis, ampVals, displaySize);
 	phaseCurve. setSamples  (X_axis, phaseValues, displaySize);
 	Marker		-> setXValue (0);
 	plotgrid	-> replot (); 

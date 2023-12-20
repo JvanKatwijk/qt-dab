@@ -112,7 +112,8 @@ bool	brush;
 	delete		grid;
 }
 
-void	spectrumScope::display		(double *X_axis, double *Y_value,
+void	spectrumScope::display		(double *X_axis,
+	                                 double *Y_value,
 	                                 int freq, int Amp) {
 	(void)freq;
 	float Max	= Amp / 100.0 * (-get_db (0));

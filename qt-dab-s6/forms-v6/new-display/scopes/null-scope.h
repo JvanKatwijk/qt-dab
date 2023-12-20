@@ -49,7 +49,7 @@ public:
 	                         int,
 	                         QSettings *);
 		~nullScope	();
-	void	display		(Complex * , int);
+	void	display		(const Complex * , int);
 
 private:
 
