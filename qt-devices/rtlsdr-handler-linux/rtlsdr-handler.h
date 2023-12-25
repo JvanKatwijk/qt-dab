@@ -75,11 +75,12 @@ typedef	char *(* pfnrtlsdr_get_device_name)(int);
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
+class	rtlsdrHandler: public QObject,
+	               public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
 			rtlsdrHandler	(QSettings *, const QString &);
-			~rtlsdrHandler();
+			~rtlsdrHandler	();
 	bool		restartReader	(int32_t);
 	void		stopReader	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
@@ -90,11 +91,13 @@ public:
 	QString		deviceName	();
 
 //	These need to be visible for the separate usb handling thread
-	RingBuffer<std::complex<uint8_t>> _I_Buffer;
 	pfnrtlsdr_read_async	rtlsdr_read_async;
 	struct rtlsdr_dev	*theDevice;
 	std::atomic<bool>	isActive;
+
+	void		processBuffer	(uint8_t *, uint32_t);
 private:
+	RingBuffer<std::complex<float>> _I_Buffer;
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
@@ -121,6 +124,8 @@ private:
 	LowPassFIR	theFilter;
 	int		currentDepth;
 
+	float		m_dcI;
+	float		m_dcQ;
 //	here we need to load functions from the dll
 	bool		load_rtlFunctions	();
 	pfnrtlsdr_open	rtlsdr_open;
@@ -157,4 +162,5 @@ private slots:
 	void		set_filter		(int);
 	void		set_biasControl		(int);
 };
+
 

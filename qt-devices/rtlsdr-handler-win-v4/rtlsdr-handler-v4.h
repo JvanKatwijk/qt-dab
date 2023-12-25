@@ -23,7 +23,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 
 #pragma once
@@ -39,25 +38,27 @@
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"ui_rtlsdr-widget.h"
-class	dll_driver;
+class	dll_driver_v4;
 class	xml_fileWriter;
 //
 //	This class is a simple wrapper around the
 //	rtlsdr library that is read in  as dll (or .so file in linux)
 //	It does not do any processing
-class	rtlsdrHandler: public QObject, public deviceHandler, public  Ui_dabstickWidget {
+class	rtlsdrHandler_v4: public QObject,
+	                       public deviceHandler, public  Ui_dabstickWidget {
 Q_OBJECT
 public:
-			rtlsdrHandler	(QSettings *, const QString &);
-			~rtlsdrHandler	();
-	bool		restartReader	(int32_t);
-	void		stopReader	();
-	int32_t		getSamples	(std::complex<float> *, int32_t);
-	int32_t		Samples		();
-	void		resetBuffer	();
-	int16_t		maxGain		();
-	int16_t		bitDepth	();
-	QString		deviceName	();
+			rtlsdrHandler_v4	(QSettings *, const QString &);
+			~rtlsdrHandler_v4	();
+	bool		restartReader		(int32_t);
+	void		stopReader		();
+	int32_t		getSamples		(std::complex<float> *,
+	                                                           int32_t);
+	int32_t		Samples			();
+	void		resetBuffer		();
+	int16_t		maxGain			();
+	int16_t		bitDepth		();
+	QString		deviceName		();
 
 //	These need to be visible for the separate usb handling thread
 	RingBuffer<std::complex<uint8_t>> _I_Buffer;
@@ -67,7 +68,7 @@ private:
 	QSettings	*rtlsdrSettings;
 	int32_t		inputRate;
 	int32_t		deviceCount;
-	dll_driver	*workerHandle;
+	dll_driver_v4	*workerHandle;
 	int32_t		lastFrequency;
 	int16_t		gainsCount;
 	QString		deviceModel;

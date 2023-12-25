@@ -280,7 +280,14 @@ uint8_t	dabBand;
 	configDisplay. resize (QSize (wi, he));
 	configDisplay. move (QPoint (x, y));
 
-	setWindowTitle (QString ("Qt-DAB-") + CURRENT_VERSION);
+#ifdef HAVE_RTLSDR_V3
+        setWindowTitle (QString ("Qt-DAB-") + "FOR RTLSDR-V3");
+#elif HAVE_RTLSDR_V4
+        setWindowTitle (QString ("Qt-DAB-") + "FOR RTLSDR-V4");
+#else
+        setWindowTitle ("Qt-DAB-" + QString (CURRENT_VERSION));
+#endif
+
 	QStringList sl = chooseDevice. getDeviceList ();
 	for (auto &sle : sl) 
 	   configWidget. deviceSelector -> addItem (sle);

@@ -24,59 +24,67 @@
 #include	<QFileDialog>
 #include	<QMessageBox>
 
+#ifdef	HAVE_RTLSDR_V3
+#include	"rtlsdr-handler-v3.h"
+#define	RTLSDR_DEVICE_V3	0200
+#endif
+#ifdef	HAVE_RTLSDR_V4
+#include	"rtlsdr-handler-v4.h"
+#define	RTLSDR_DEVICE_V4	0201
+#endif
 #ifdef	HAVE_RTLSDR
 #include	"rtlsdr-handler.h"
-#define	RTLSDR_DEVICE	0200
+#define	RTLSDR_DEVICE		0222
 #endif
 #ifdef	HAVE_SDRPLAY_V2
 #include	"sdrplay-handler-v2.h"
-#define	SDRPLAY_V2_DEVICE	0201
+#define	SDRPLAY_V2_DEVICE	0202
 #endif
 #ifdef	HAVE_SDRPLAY_V3
 #include	"sdrplay-handler-v3.h"
-#define	SDRPLAY_V3_DEVICE	0202
+#define	SDRPLAY_V3_DEVICE	0203
 #endif
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
-#define	AIRSPY_DEVICE		0203
+#define	AIRSPY_DEVICE		0204
 #endif
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
-#define	HACKRF_DEVICE		0204
+#define	HACKRF_DEVICE		0205
 #endif
 #ifdef	HAVE_LIME
 #include	"lime-handler.h"
-#define	LIME_DEVICE		0205
+#define	LIME_DEVICE		0206
 #endif
 #ifdef	HAVE_PLUTO
 #include	"pluto-handler.h"
-#define	PLUTO_DEVICE		0206
+#define	PLUTO_DEVICE		0207
 #endif
 #ifdef	HAVE_SOAPY
 #include	"soapy-handler.h"
-#define	SOAPY_DEVICE		0207
+#define	SOAPY_DEVICE		0210
 #endif
 #ifdef	HAVE_UHD
 #include	"uhd-handler.h"
-#define	USRP_DEVICE		0210
+#define	USRP_DEVICE		0211
 #endif
 #ifdef	__MINGW32__
 #ifdef	HAVE_EXTIO
 #include	"extio-handler.h"
-#define	EXTIO_DEVICE		0211
+#define	EXTIO_DEVICE		0212
 #endif
 #endif
 #ifdef	HAVE_RTL_TCP
 #include	"rtl_tcp_client.h"
-#define	RTL_TCP_DEVICE		0212
+#define	RTL_TCP_DEVICE		0213
 #endif
 #ifdef	HAVE_COLIBRI
 #include	"colibri-handler.h"
-#define	COLIBRI_DEVICE		0213
+#define	COLIBRI_DEVICE		0214
 #endif
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
-#define	ELAD_S1_DEVICE		0214
+#define	ELAD_S1_DEVICE		0215
 #endif
 
 #include	"rawfiles.h"
@@ -105,8 +113,17 @@
 #ifdef	HAVE_SDRPLAY_V2
 	deviceList. push_back (deviceItem ("sdrplay-v2", SDRPLAY_V2_DEVICE));
 #endif
+#ifdef	__MINGW32__
+#ifdef	HAVE_RTLSDR_V3
+	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
+#endif
+#ifdef	HAVE_RTLSDR_V4
+	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
+#endif
+#else
 #ifdef	HAVE_RTLSDR
 	deviceList. push_back (deviceItem ("dabstick", RTLSDR_DEVICE));
+#endif
 #endif
 #ifdef	HAVE_AIRSPY
 	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
@@ -184,6 +201,30 @@ int	deviceNumber	= getDeviceIndex (s);
 	      }
 	      catch (const std::exception &e) {
 	         QMessageBox::warning (nullptr, "Warning", e. what ());
+	         return nullptr;
+	      }
+	      break;
+#endif
+#ifdef	HAVE_RTLSDR_V3
+	   case RTLSDR_DEVICE_V3:
+	      try {
+	         inputDevice_p	= new rtlsdrHandler_v3 (dabSettings,
+	                                                        version);
+	      }
+	      catch (const std::exception &ex) {
+	         QMessageBox::warning (nullptr, "Warning", ex. what ());
+	         return nullptr;
+	      }
+	      break;
+#endif
+#ifdef	HAVE_RTLSDR_V4
+	   case RTLSDR_DEVICE_V4:
+	      try {
+	         inputDevice_p	= new rtlsdrHandler_v4 (dabSettings,
+	                                                        version);
+	      }
+	      catch (const std::exception &ex) {
+	         QMessageBox::warning (nullptr, "Warning", ex. what ());
 	         return nullptr;
 	      }
 	      break;
