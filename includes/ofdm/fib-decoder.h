@@ -201,7 +201,7 @@ signals:
 	void		clockTime		(int, int, int, int, int,
 	                                                 int, int, int, int);
 	void		changeinConfiguration	();
-	void		start_announcement	(const QString &, int);
+	void		start_announcement	(const QString &, int, int);
 	void		stop_announcement	(const QString &, int);
 	void		nrServices		(int);
 };

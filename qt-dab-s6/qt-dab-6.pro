@@ -14,12 +14,12 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -116,6 +116,11 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./support/techdata.h \
+	   ./support/clickable-label.h \
+	   ./support/icon-label.h \
+	   ./support/scan-handler.h \
+	   ./support/skiptable-handler.h \
+	   ./support/aboutdialog.h \
 	   ./forms-v6/new-display/display-widget.h \
 	   ./forms-v6/new-display/scopes/spectrum-scope.h \
 	   ./forms-v6/new-display/scopes/correlation-scope.h \
@@ -189,7 +194,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
-	   ../includes/support/band-handler.h \
+#	   ../includes/support/band-handler.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
@@ -242,10 +247,16 @@ FORMS	+= ./forms-v6/new-display/scopewidget.ui
 #FORMS	+= ../qt-devices/filereader-widget.ui 
 FORMS	+= ../qt-devices/xml-filereader/xmlfiles.ui
 FORMS	+= ../viewers/snr-viewer/snr-widget.ui
+FORMS	+= ./support/aboutdialog.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+           ./support/clickable-label.cpp \
+           ./support/icon-label.cpp \
+	   ./support/scan-handler.cpp \
+	   ./support/skiptable-handler.cpp \
+	   ./support/aboutdialog.cpp \
 	   ./forms-v6/new-display/display-widget.cpp \
            ./forms-v6/new-display/scopes/correlation-scope.cpp \
            ./forms-v6/new-display/scopes/spectrum-scope.cpp \
@@ -308,7 +319,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
 	   ../src/support/fft-handler.cpp \
 	   ../src/support/dab-params.cpp \
-	   ../src/support/band-handler.cpp \
+#	   ../src/support/band-handler.cpp \
 	   ../src/support/dab-tables.cpp \
 	   ../src/support/preset-handler.cpp \
 	   ../src/support/presetcombobox.cpp \
@@ -352,7 +363,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.30
+TARGET		= qt-dab-6.40
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -450,7 +461,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 ##for for 64 bit
-#	TARGET		= qt-dab64-6.30
+#	TARGET		= qt-dab64-6.40
 #	DEFINES		+= __BITS64__
 #	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 #	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -472,7 +483,7 @@ isEmpty(GITHASHSTRING) {
 #for win32, comment out the lines above
 	TARGET		= qt-dab32-6-V3
 	CONFIG		+= dabstick-win-V3
-#	TARGET		= qt-dab32-6.30
+#	TARGET		= qt-dab32-6.40
 #	CONFIG		+= dabstick-win
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include

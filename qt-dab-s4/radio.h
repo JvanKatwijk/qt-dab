@@ -380,7 +380,8 @@ public slots:
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			start_announcement	(const QString &, int);
+	void			start_announcement	(const QString &,
+	                                                         int, int);
 	void			stop_announcement	(const QString &, int);
 	void			newFrame		(int);
 

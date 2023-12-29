@@ -11,7 +11,7 @@
 
 	soapyConverter::~soapyConverter	() {}
 
-void	soapyConverter::setup (int inputRahe, int targetRange) {
+void	soapyConverter::setup (int inputRate, int targetRate) {
 	this	-> inputRate	= inputRate;
 	this	-> targetRate	= targetRate;
 	if (inputRate == targetRate)

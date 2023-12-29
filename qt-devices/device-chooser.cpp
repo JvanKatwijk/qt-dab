@@ -315,10 +315,14 @@ int	deviceNumber	= getDeviceIndex (s);
 	      try {
 	         inputDevice_p	= new soapyHandler (dabSettings);
 	      }
-	      catch (...) {
-	         QMessageBox::warning (nullptr, "Warning",
-	                                     "no soapy device found\n");
-	         return nullptr;
+	      catch (const std::exception &e) {
+                 QMessageBox::warning (nullptr, "Warning", e.what ());
+                 return nullptr;
+              }
+              catch (...) {
+                 QMessageBox::warning (nullptr, "Warning",
+                                               "something went wrong");
+                 return nullptr;
 	      }
 	      break;
 #endif

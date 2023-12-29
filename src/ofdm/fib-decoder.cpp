@@ -51,10 +51,11 @@
 	                                                int, int, int, int)));
 	connect (this, SIGNAL (changeinConfiguration ()),
 	         myRadioInterface, SLOT (changeinConfiguration ()));
-	connect (this, SIGNAL (start_announcement (const QString &, int)),
-	         myRadioInterface, SLOT (start_announcement (const QString &, int)));
+	connect (this, SIGNAL (start_announcement (const QString &, int, int)),
+	         myRadioInterface, SLOT (start_announcement (const QString &, int, int)));
 	connect (this, SIGNAL (stop_announcement (const QString &, int)),
-	         myRadioInterface, SLOT (stop_announcement (const QString &, int)));
+	         myRadioInterface, SLOT (stop_announcement (const QString &,
+	                                             int)));
 	connect (this, SIGNAL (nrServices (int)),
 	         myRadioInterface, SLOT (nrServices (int)));
 //
@@ -776,7 +777,17 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset	+= nrClusters * 8;
 	}
 }
-//
+
+static inline 
+int	bits (uint s) {
+uint32_t startBit = 01;
+	for (int i = 0; i < 15; i ++) {
+	   if ((s & startBit) != 0)
+	      return i;
+	   startBit <<= 1;
+	}
+	return 0;
+}
 //	Announcement switching 8.1.6.2
 void	fibDecoder::FIG0Extension19 (uint8_t *d) {	
 int16_t	Length		= getBits_5 (d, 3);	// in Bytes
@@ -795,7 +806,6 @@ dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   bitOffset		+= 16;
 
 	   uint8_t newFlag	= getBits (d, bitOffset, 1);
-	   (void)newFlag;
 	   bitOffset	+= 1;
 	   uint8_t regionFlag	= getBits (d, bitOffset, 1);
 	   bitOffset	+= 1;
@@ -813,17 +823,18 @@ dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   Cluster *myCluster = getCluster (localBase, clusterId);
 	   if (myCluster == nullptr) {	// should not happen
 //	      fprintf (stderr, "cluster fout\n");
-	      return;
+	      continue;
 	   }
-	      
+
+	   int announcementId = bits (AswFlags);
 	   if ((myCluster -> flags & AswFlags) != 0) {
 	      myCluster -> announcing ++;
-	      if (myCluster -> announcing == 5) {
+	      if (myCluster -> announcing >= 5) {
 	         for (uint16_t i = 0;
 	                 i < myCluster -> services. size (); i ++) {
 	            const QString name =
 	              ensemble	-> services [myCluster -> services [i]]. serviceLabel;
-	              emit start_announcement (name, subChId);
+	              emit start_announcement (name, subChId, announcementId);
 	         }
 	      }
 	   }
@@ -1358,8 +1369,6 @@ void	fibDecoder::setCluster (dabConfig *localBase, int clusterId,
 	if (myCluster == nullptr)
 	   return;
 	if (myCluster -> flags != asuFlags) {
-//	   fprintf (stderr, "for cluster %d, the flags change from %x to %x\n",
-//	                       clusterId, myCluster -> flags, asuFlags);
 	   myCluster -> flags = asuFlags;
 	}
 

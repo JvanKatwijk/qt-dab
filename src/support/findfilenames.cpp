@@ -233,14 +233,6 @@ SNDFILE	*theFile;
 }
 
 FILE	*findfileNames::findScanDump_fileName		() {
-	QMessageBox::StandardButton resultButton =
-	             QMessageBox::question (nullptr, "Qt-DAB",
-	                                    "save the scan?\n",
-	                                    QMessageBox::No | QMessageBox::Yes,
-	                                    QMessageBox::Yes);
-	if (resultButton != QMessageBox::Yes)
-	   return nullptr;
-
 	QString   saveDir = dabSettings -> value ("contentDir",
 	                                        QDir::homePath ()). toString ();
 
@@ -268,14 +260,6 @@ FILE	*findfileNames::findScanDump_fileName		() {
 }
 
 FILE	*findfileNames::findSummary_fileName	() {
-	QMessageBox::StandardButton resultButton =
-	             QMessageBox::question (nullptr, "Qt-DAB",
-	                                    "save summary?\n",
-	                                    QMessageBox::No | QMessageBox::Yes,
-	                                    QMessageBox::Yes);
-	if (resultButton != QMessageBox::Yes)
-	   return nullptr;
-
 	QString   saveDir = dabSettings -> value ("contentDir",
 	                                        QDir::homePath ()). toString ();
 

@@ -40,7 +40,6 @@
 #include	<vector>
 #include	"radio.h"
 #include	"ofdm-handler.h"
-#include	"band-handler.h"
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
@@ -56,6 +55,7 @@
 #include	"upload.h"
 #include	"techdata.h"
 #include	"font-chooser.h"
+#include	"aboutdialog.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -111,10 +111,6 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 }
 #endif
 
-#define	SINGLE_SCAN		0
-#define	SCAN_TO_DATA		1
-#define	SCAN_CONTINUOUSLY	2
-
 static const
 char	LABEL_STYLE[] = "color:lightgreen";
 
@@ -128,20 +124,6 @@ static struct {
 {"", 0}
 };
 
-static const
-char	*scanTextTable [3] = {
-	"single scan",
-	"scan to data",
-	"scan continuously"
-};
-
-static inline
-QString scanmodeText (int e) {
-	return QString (scanTextTable [e]);
-}
-
-#define	CONTENT_BUTTON		QString ("contentButton")
-#define DETAIL_BUTTON		QString ("detailButton")
 #define	RESET_BUTTON		QString ("resetButton")
 #define SCAN_BUTTON		QString ("scanButton")
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
@@ -150,7 +132,6 @@ QString scanmodeText (int e) {
 #define	SCANLIST_BUTTON		QString ("scanListButton")
 #define	PRESET_BUTTON		QString ("presetButton")
 #define	DUMP_BUTTON		QString ("dumpButton")
-#define	MUTE_BUTTON		QString ("muteButton")
 #define PREVCHANNEL_BUTTON	QString ("prevChannelButton")
 #define NEXTCHANNEL_BUTTON	QString ("nextChannelButton")
 #define PREVSERVICE_BUTTON	QString ("prevServiceButton")
@@ -190,7 +171,6 @@ QString scanmodeText (int e) {
 	                                        stdDevBuffer (2 * 1536),
 	                                        newDisplay (this, Si),
 	                                        my_snrViewer (this, Si),
-	                                        theBand (freqExtension, Si),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
 	                                        tiiProcessor (),
@@ -202,10 +182,10 @@ QString scanmodeText (int e) {
 	                                                        scanListFile),
 	                                        my_presetHandler (this,
 	                                                          presetFile),
-	                                        chooseDevice (Si) {
+	                                        chooseDevice (Si),
+	                                        scanMonitor (this, Si, freqExtension) {
 int16_t k;
 QString h;
-uint8_t	dabBand;
 
 	dabSettings_p			= Si;
 	this	-> error_report		= error_report;
@@ -213,7 +193,6 @@ uint8_t	dabBand;
 	this	-> dlTextFile		= nullptr;
 	this	-> ficDumpPointer	= nullptr;
 	running. 		store (false);
-	scanning. 		store (false);
 	my_ofdmHandler		= nullptr;
 	stereoSetting		= false;
 	maxDistance		= -1;
@@ -258,10 +237,17 @@ uint8_t	dabBand;
 	ipAddress		= dabSettings_p -> value ("ipAddress", "127.0.0.1"). toString();
 	port			= dabSettings_p -> value ("port", 8888). toInt();
 #endif
-//
 //	set on top or not? checked at start up
 	if (dabSettings_p -> value ("onTop", 0). toInt () == 1) 
 	   setWindowFlags (windowFlags () | Qt::WindowStaysOnTopHint);
+
+	for (int i = 0; i < 4; i ++) {
+	   QPixmap p;
+	   QString labelName	=
+	        QString (":res/signal%1.png"). arg (i, 1, 10, QChar ('0'));
+	   p. load (labelName, "png");
+	   strengthLabels. push_back (p);
+	}
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
@@ -434,15 +420,10 @@ uint8_t	dabBand;
 	connect (this, SIGNAL (set_newChannel (int)),
 	         channelSelector, SLOT (setCurrentIndex (int)));
 
-//	restore some settings from previous incarnations
-	QString t       =
-	        dabSettings_p     -> value ("dabBand", "VHF Band III"). toString();
-	dabBand         = t == "VHF Band III" ?  BAND_III : L_BAND;
-
-	theBand. setupChannels  (channelSelector, dabBand);
-	QString skipfileName	= 
-	               dabSettings_p	-> value ("skipFile", ""). toString ();
-	theBand. setup_skipList (skipfileName);
+//	extract the channelnames and fill the combobox
+	QStringList res = scanMonitor. getChannelNames ();
+	for (auto &s: res)
+	  channelSelector -> addItem (s);
 
 	QPalette p	= newDisplay. ficError_display -> palette();
 	p. setColor (QPalette::Highlight, Qt::red);
@@ -460,8 +441,6 @@ uint8_t	dabBand;
 	previous_total_time	= 0; 
 
 //	Connect the buttons for the color_settings
-	connect (detailButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_detailButton ()));
 	connect	(scanButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_scanButton ()));
 	connect (scanListButton, SIGNAL (rightClicked ()),
@@ -480,8 +459,6 @@ uint8_t	dabBand;
 	         this, SLOT (color_prevServiceButton ()));
 	connect (nextServiceButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_nextServiceButton ()));
-	connect (muteButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_muteButton ()));
 
 	connect (configWidget. resetButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_resetButton ()));
@@ -495,7 +472,7 @@ uint8_t	dabBand;
 	         this, SLOT (color_sourcedumpButton ()));
 	connect (configWidget. dlTextButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_dlTextButton ()));
-	connect (scheduleButton, SIGNAL (rightClicked ()),
+	connect (configWidget. scheduleButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_scheduleButton ()));
 	connect (configWidget. set_coordinatesButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_set_coordinatesButton ()));
@@ -518,8 +495,12 @@ uint8_t	dabBand;
 //	display the version
 
 	version		= "Qt-DAB-" + QString (CURRENT_VERSION);
-	copyrightLabel	-> setToolTip (footText ());
+//	aboutLabel	-> setToolTip (footText ());
+	connect (aboutLabel, SIGNAL (clicked ()),
+	         this, SLOT (handle_aboutLabel ()));
 
+	connect (soundLabel, SIGNAL (clicked ()),
+                 this, SLOT (handle_muteButton ()));
 
 	QString tiiFileName = dabSettings_p -> value ("tiiFile", ""). toString ();
 	channel. tiiFile	= false;
@@ -557,16 +538,16 @@ uint8_t	dabBand;
 //	timer for muting
 	muteTimer. setSingleShot (true);
 //
-	QPalette lcdPalette	= cpuMonitor -> palette ();
+//	QPalette lcdPalette	= cpuMonitor -> palette ();
 #ifndef __MAC__
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 2)
-	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
+//	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
 #else
-	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
+//	lcdPalette. setColor (lcdPalette. WindowText, Qt::green);
 #endif
 //	lcdPalette. setColor (QPalette::Base, Qt::black);
 #endif
-	cpuMonitor	-> setPalette (Qt::white);
+//	cpuMonitor	-> setPalette (Qt::white);
 	set_Colors ();
 //	localTimeDisplay -> setStyleSheet (LABEL_STYLE);
 //	runtimeDisplay	-> setStyleSheet (LABEL_STYLE);
@@ -751,14 +732,15 @@ int	serviceOrder;
 	for (auto &s:serviceList)
 	   if (s. name == ed. name)
 	      return;
-
+	if (scanMonitor. active ())
+	   scanMonitor. addService (channel. channelName);
 	ed. subChId	=
 	    my_ofdmHandler -> get_subCh_id (serviceName, SId);
 	serviceOrder	=
 	    dabSettings_p -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
 	serviceList = insert (serviceList, ed, serviceOrder);
-	if (scanning. load ())
+	if (scanMonitor. active () && !scanMonitor. scan_to_data ())
 	   my_scanListHandler. addElement (channel. channelName,
 	                                              serviceName);
 	model. clear ();
@@ -779,9 +761,10 @@ int	serviceOrder;
 	   colorService (model. index (j, 0),
 	                          QColor (fontColor), fontSize, false);
 	}
-
+	
 	ensembleDisplay -> setModel (&model);
-	if (channel. serviceCount == model.rowCount () && !scanning) {
+	if (channel. serviceCount == model.rowCount () && 
+	                     !scanMonitor. active ()) {
 	   presetTimer. stop ();
 	   setPresetService ();
 	}
@@ -815,8 +798,20 @@ QString s;
 
 	channel. ensembleName	= v;
 	channel. Eid		= id;
-	if (configWidget. scanmodeSelector -> currentIndex () == SCAN_TO_DATA)
-	   stopScanning (false);
+//
+//	id we are scanning "to data", we reached the end
+	if (scanMonitor. scan_to_data ())
+	   stopScanning ();
+	else
+	if (scanMonitor. active () && scanMonitor. scan_single ())
+	   scanMonitor. addEnsemble (channelSelector -> currentText (), v);
+	                           
+//
+//	... and is we are not scanning, clicking the ensembleName
+//	has effect
+	if (!scanMonitor. active ())
+	   connect (ensembleId, SIGNAL (clicked ()),
+	            this, SLOT (handle_contentButton ()));
 }
 //
 ///////////////////////////////////////////////////////////////////////////
@@ -1103,7 +1098,7 @@ int	serviceOrder;
 	if (channel. currentService. valid) 
 	   s = channel. currentService;
 	stopService	(s);
-	stopScanning    (false);
+	stopScanning ();
 //
 //
 //	we stop all secondary services as well, but we maintain theer
@@ -1233,9 +1228,11 @@ static int teller	= 0;
   *	A clean termination is what is needed, regardless of the GUI
   */
 void	RadioInterface::TerminateProcess () {
-	if (scanning. load ())
-	   stopScanning (false);
 	running. store	(false);
+	scanMonitor. hide ();
+	stopScanning ();
+	while (scanMonitor. active ())
+	   usleep (1000);
 	hideButtons	();
 
 	dabSettings_p	-> setValue ("mainWidget-x", this -> pos (). x ());
@@ -1282,7 +1279,7 @@ void	RadioInterface::TerminateProcess () {
 	   delete contentTable_p;
 	}
 //	just save a few checkbox settings that are not
-//	bound by signa;/slots, but just read if needed
+//	bound by signal/slots, but just read if needed
 	dabSettings_p	-> setValue ("utcSelector",
 	                          configWidget. utcSelector -> isChecked () ? 1 : 0);
 	dabSettings_p	-> setValue ("epg2xml",
@@ -1295,13 +1292,14 @@ void	RadioInterface::TerminateProcess () {
 	   scanTable_p	-> hide ();
 	   delete scanTable_p;
 	}
+	scanMonitor. hide ();
 
-	theBand. saveSettings	();
+//	theBand. saveSettings	();
 	stopFramedumping	();
 	stop_sourcedumping	();
 	stopAudiodumping	();
 //	theTable. hide		();
-	theBand. hide		();
+//	theBand. hide		();
 	theScheduler. hide	();
 	configDisplay. hide	();
 	LOG ("terminating ", "");
@@ -1344,7 +1342,7 @@ void	RadioInterface::updateTimeDisplay() {
 	   const float total_time_delta =
 	                 static_cast<float> (total_time - previous_total_time);
 	   const float utilization = 100.0 * (1.0 - idle_time_delta / total_time_delta);
-	   cpuMonitor -> display (utilization);
+//	   cpuMonitor -> display (utilization);
 //	   cpuMonitor -> display (QString("%1").arg(utilization, 0, 'f', 2));
 	   previous_idle_time = idle_time;
 	   previous_total_time = total_time;
@@ -1412,7 +1410,7 @@ deviceHandler	*inputDevice = chooseDevice. createDevice  (s, version);
 void	RadioInterface::newDevice (const QString &deviceName) {
 //	Part I : stopping all activities
 	running. store (false);
-	stopScanning	(false);
+	stopScanning	();
 	stopChannel	();
 	fprintf (stderr, "disconnecting\n");
 	disconnectGUI	();
@@ -1683,7 +1681,7 @@ void	setButtonFont (QPushButton *b, QString text, int size) {
 }
 
 void	RadioInterface::handle_audiodumpButton () {
-	if (!running. load () || scanning. load ())
+	if (!running. load () || scanMonitor. active ())
 	   return;
 
 	if (audioDumper_p != nullptr) 
@@ -1737,7 +1735,7 @@ void	RadioInterface::scheduled_audioDumping () {
 }
 
 void	RadioInterface::handle_framedumpButton () {
-	if (!running. load () || scanning. load ())
+	if (!running. load () || scanMonitor. active ())
 	   return;
 
 	if (channel. currentService. frameDumper != nullptr) 
@@ -1850,17 +1848,13 @@ void	RadioInterface::connectGUI	() {
 //	is handled separately
         connect (spectrumButton, SIGNAL (clicked ()),
                  this, SLOT (handle_spectrumButton ()));
-	connect (detailButton, SIGNAL (clicked ()),
+	connect (serviceLabel, SIGNAL (clicked ()),
 	         this, SLOT (handle_detailButton ()));
-	connect (muteButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_muteButton ()));
 //
 	connect (httpButton, SIGNAL (clicked ()),
                  this, SLOT (handle_httpButton ()));
-	connect (contentButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_contentButton ()));
-	connect (scheduleButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_scheduleButton ()));
+//	connect (ensembleId, SIGNAL (clicked ()),
+//	         this, SLOT (handle_contentButton ()));
 	connect (scanButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_scanButton ()));
 //
@@ -1901,8 +1895,9 @@ void	RadioInterface::connectGUI	() {
 	         this, SLOT (handle_dlTextButton ()));
 	connect (configWidget. resetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_resetButton ()));
+	connect (configWidget. scheduleButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_scheduleButton ()));
 //
-//	at this plave there is an unused slot
 //	second row
 	connect (configWidget. snrButton, SIGNAL (clicked ()),
                  this, SLOT (handle_snrButton ()));
@@ -1962,17 +1957,6 @@ void	RadioInterface::connectGUI	() {
 	connect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
 	         this, SLOT (handle_transmitterTags  (int)));
 //
-//	next row, scan selectors
-	connect (configWidget. scanmodeSelector,
-	                            SIGNAL (currentIndexChanged (int)),
-	         this, SLOT (handle_scanmodeSelector (int)));
-
-	connect (configWidget. skipList_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipList_button ()));
-
-	connect (configWidget. skipFile_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipFile_button ()));
-//
 //	botton row
 //	servicesInBackground is just polled whenever the value is needed
 	connect (configWidget. decoderSelector,
@@ -2007,17 +1991,13 @@ void	RadioInterface::disconnectGUI () {
 //	is handled separately
         disconnect (spectrumButton, SIGNAL (clicked ()),
                  this, SLOT (handle_spectrumButton ()));
-	disconnect (detailButton, SIGNAL (clicked ()),
+	disconnect (serviceLabel, SIGNAL (clicked ()),
 	         this, SLOT (handle_detailButton ()));
-	disconnect (muteButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_muteButton ()));
 //
 	disconnect (httpButton, SIGNAL (clicked ()),
                  this, SLOT (handle_httpButton ()));
-	disconnect (contentButton, SIGNAL (clicked ()),
+	disconnect (ensembleId, SIGNAL (clicked ()),
 	         this, SLOT (handle_contentButton ()));
-	disconnect (scheduleButton, SIGNAL (clicked ()),
-                 this, SLOT (handle_scheduleButton ()));
 	disconnect (scanButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_scanButton ()));
 //
@@ -2058,8 +2038,9 @@ void	RadioInterface::disconnectGUI () {
 	         this, SLOT (handle_dlTextButton ()));
 	disconnect (configWidget. resetButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_resetButton ()));
-//
-//	at this plave there is an unused slot
+	disconnect (configWidget. scheduleButton, SIGNAL (clicked ()),
+                 this, SLOT (handle_scheduleButton ()));
+
 //	second row
 	disconnect (configWidget. snrButton, SIGNAL (clicked ()),
                  this, SLOT (handle_snrButton ()));
@@ -2118,17 +2099,6 @@ void	RadioInterface::disconnectGUI () {
 //
 	disconnect (configWidget. transmitterTags, SIGNAL (stateChanged (int)),	
 	         this, SLOT (handle_transmitterTags  (int)));
-//
-//	next row, scan selectors
-	disconnect (configWidget. scanmodeSelector,
-	                            SIGNAL (currentIndexChanged (int)),
-	         this, SLOT (handle_scanmodeSelector (int)));
-
-	disconnect (configWidget. skipList_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipList_button ()));
-
-	disconnect (configWidget. skipFile_button, SIGNAL (clicked ()),
-	         this, SLOT (handle_skipFile_button ()));
 //
 //	botton row
 //	servicesInBackground is just polled whenever the value is needed
@@ -2310,14 +2280,26 @@ void	RadioInterface::colorServiceName (const QString &serviceName,
 	}
 }
 
-void	RadioInterface::start_announcement (const QString &name, int subChId) {
+QPixmap RadioInterface::fetch_announcement (int id) {
+QPixmap p;
+QString pictureName	= QString (":res/announcement%1.png"). arg (id, 2, 10, QChar ('0'));
+	if (!p.load (pictureName, "png"))
+	   p. load (":res/announcement-d.png", "png");
+	return p;
+}
+
+void	RadioInterface::start_announcement (const QString &name,
+	                                    int subChId, int announcementId ) {
 	if (!running. load ())
 	   return;
 
 	if (name == serviceLabel -> text ()) {
-	   serviceLabel	-> setStyleSheet ("QLabel {color : red}");
-	   fprintf (stderr, "announcement for %s (%d) starts\n",
-	                             name. toUtf8 (). data (), subChId);
+	   if (!channel. currentService. announcement_going) {
+	      serviceLabel	-> setStyleSheet ("QLabel {color : red}");
+	      channel. currentService. announcement_going = true;
+	      QPixmap p = fetch_announcement (announcementId);
+              displaySlide (p);
+	   }
 	}
 }
 
@@ -2326,9 +2308,12 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 	if (!running. load ())
 	   return;
 
-	if (name == serviceLabel -> text ()) {
-	   fprintf (stderr, "end for announcement service %s\n",
-	                              name. toUtf8 (). data ());
+	if (name == channel. currentService. serviceName) {
+	   if (channel. currentService. announcement_going) {
+	      serviceLabel	-> setStyleSheet (LABEL_STYLE);
+	      channel. currentService. announcement_going = false;
+	      show_pauzeSlide ();
+	   }
 	}
 }
 
@@ -2457,7 +2442,8 @@ void	RadioInterface::stopService	(dabService &s) {
 	presetTimer. stop ();
 	channelTimer. stop ();
 	stop_muting	();
-
+	set_soundLabel (false);
+	channel. audioActive	= false;
 	if (my_ofdmHandler == nullptr) {
 	   fprintf (stderr, "Expert error 22\n");
 	   return;
@@ -2534,7 +2520,7 @@ QString serviceName	= s. serviceName;
 //
 //	and display the servicename on the serviceLabel
 	QFont font = serviceLabel -> font ();
-	font. setPointSize (20);
+	font. setPointSize (16);
 	font. setBold (true);
 	serviceLabel	-> setStyleSheet (LABEL_STYLE);
 	serviceLabel	-> setFont (font);
@@ -2605,7 +2591,8 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	}
 //	activate sound
 	soundOut_p -> restart ();
-
+	channel. audioActive	= true;
+	set_soundLabel (true);
 	programTypeLabel -> setText (getProgramType (ad. programType));
 //	show service related data
 	techWindow_p	-> show_serviceData 	(&ad);
@@ -2700,7 +2687,7 @@ void	RadioInterface::handle_serviceButton	(direction d) {
 	   return;
 
 	presetTimer. stop ();
-	stopScanning (false);
+	stopScanning ();
 	channel. nextService. valid = false;
 	if (!channel. currentService. valid)
 	   return;
@@ -2751,7 +2738,7 @@ void	RadioInterface::setPresetService () {
 	   return;
 
 	presetTimer. stop ();
-	stopScanning (false);
+	stopScanning ();
 	if (!channel. nextService. valid)
 	   return;
 
@@ -2793,7 +2780,7 @@ void	RadioInterface::setPresetService () {
 //	
 void	RadioInterface::startChannel (const QString &theChannel) {
 int	tunedFrequency	=
-	         theBand. Frequency (theChannel);
+	         scanMonitor. Frequency (theChannel);
 	channel.tunedFrequency	= tunedFrequency;
 	LOG ("channel starts ", theChannel);
 	newDisplay. showFrequency (tunedFrequency);
@@ -2821,7 +2808,7 @@ int	tunedFrequency	=
 	my_ofdmHandler		-> start ();
 	int	switchDelay	=
 	             configWidget. switchDelaySetting -> value ();
-	if (!scanning. load ())
+	if (!scanMonitor. active ())
 	   epgTimer. start (switchDelay * 1000);
 }
 //
@@ -2831,6 +2818,8 @@ void	RadioInterface::stopChannel	() {
 	if (inputDevice_p == nullptr)		// should not happen
 	   return;
 
+	disconnect (ensembleId, SIGNAL (clicked ()),
+	            this, SLOT (handle_contentButton ()));
 	stop_etiHandler	();
 	LOG ("channel stops ", channel. channelName);
 //
@@ -2914,7 +2903,7 @@ void    RadioInterface::handle_channelSelector (const QString &channel) {
 
 	LOG ("select channel ", channel. toUtf8 (). data ());
 	presetTimer. stop ();
-	stopScanning	(false);
+	stopScanning	();
 	stopChannel	();
 	startChannel	(channel);
 }
@@ -2943,7 +2932,7 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 	   abort ();
 	}
 
-	stopScanning (false);
+	stopScanning	();
 	stopChannel	();
 	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
@@ -2953,79 +2942,116 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 //
 //	scanning
 /////////////////////////////////////////////////////////////////////////
-
+//
+//	The scan function covers three scan strategies. In order to make things
+//	manageable, we implement the streams  in different functions and procedures
 void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
-	if (scanning. load ()) 
-	   stopScanning (false);
+	if (scanMonitor. isVisible ())
+	   scanMonitor. hide ();
 	else
-	   startScanning ();
+	   scanMonitor. show ();
 }
 
 void	RadioInterface::startScanning	() {
-int	switchDelay;
-int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
+	stopChannel     ();
 	presetTimer. stop ();
 	channelTimer. stop ();
+	if (inputDevice_p -> isFileInput ())
+	   QMessageBox::warning (this, tr ("Warning"),
+                                       tr ("Scanning not useful with file input"));
+
 	epgTimer. stop ();
 	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
 	         this, SLOT (no_signal_found ()));
-	stopChannel     ();
-	int  cc      = channelSelector -> currentIndex ();
-	if (scanMode == SCAN_TO_DATA) {
-	   cc ++;
-	   if (cc >= channelSelector -> count ())
-	      cc = 0;
-	}
-	else {
-	   cc = theBand. firstChannel ();
-	}
 
-	LOG ("scanning starts with ", QString::number (cc));
-	if (scanMode == SINGLE_SCAN) {
-	   if (configWidget. clearScan_Selector -> isChecked ())
-	      my_scanListHandler. clear_scanList ();
-	}
-	   
-	scanning. store (true);
-	if ((scanMode == SINGLE_SCAN) || (scanMode == SCAN_CONTINUOUSLY)) {
-	   if (scanTable_p == nullptr) 
-	      scanTable_p = new contentTable (this, dabSettings_p,
-	                                                   "scan", 
+	if (scanMonitor. scan_to_data ())
+	   start_scan_to_data ();
+	else
+	if (scanMonitor. scan_single ())
+	   start_scan_single ();
+	else
+	   start_scan_continuous ();
+}
+
+void	RadioInterface::start_scan_to_data () {
+//
+//	when running scan to data, we look at all channels, whether
+//	on the skiplist or not
+	QString cs = scanMonitor. getNextChannel (channelSelector -> currentText ());
+	int cc = channelSelector -> findText (cs);
+	LOG ("scanning starts with ", cs);
+	new_channelIndex (cc);
+//	scanMonitor. addText (" scanning channel " +
+//	                            channelSelector -> currentText ());
+	int switchDelay		=
+	             configWidget. switchDelaySetting -> value ();
+	channelTimer. start (switchDelay * 1000);
+	my_ofdmHandler	-> set_scanMode (true);
+	startChannel    (channelSelector -> currentText ());
+}
+
+void	RadioInterface::start_scan_single () {
+	if (configWidget. clearScan_Selector -> isChecked ())
+	   my_scanListHandler. clear_scanList ();
+
+	if (scanTable_p == nullptr) 
+	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
 	                                       my_ofdmHandler -> scanWidth ());
-	   else					// should not happen
-	      scanTable_p -> clearTable ();
+	else					// should not happen
+	   scanTable_p -> clearTable ();
 
-	   QString topLine = QString ("ensemble") + ";"  +
-	                        "channelName" + ";" +
-	                        "frequency (KHz)" + ";" +
-	                        "Eid" + ";" +
-	                        "tii" + ";" +
-	                        "time" + ";" +
-	                        "SNR" + ";" +
-	                        "nr services" + ";";
-	   scanTable_p -> addLine (topLine);
-	   scanTable_p	-> addLine ("\n");
-	}
+	QString topLine = QString ("ensemble") + ";"  +
+	                           "channelName" + ";" +
+	                           "frequency (KHz)" + ";" +
+	                           "Eid" + ";" +
+	                           "tii" + ";" +
+	                           "time" + ";" +
+	                           "SNR" + ";" +
+	                           "nr services" + ";";
+	scanTable_p -> addLine (topLine);
+	scanTable_p	-> addLine ("\n");
 
-	if (scanMode == SINGLE_SCAN)
-	   scanDumper_p	= filenameFinder. findScanDump_fileName ();
-	else
-	if (scanMode == SCAN_CONTINUOUSLY)
-	   scanDumper_p	= filenameFinder. findSummary_fileName ();
-	else
-	   scanDumper_p	 = nullptr;
+	my_ofdmHandler	-> set_scanMode (true);
+	QString fs	= scanMonitor. getFirstChannel ();
+	int k = channelSelector ->  findText (fs);
+	if (k != -1)
+	   new_channelIndex (k);
+//	scanMonitor. addText (" scanning channel " +
+//	                            channelSelector -> currentText ());
+	int switchDelay		=
+	             configWidget. switchDelaySetting -> value ();
+	channelTimer. start (switchDelay * 1000);
+	startChannel    (channelSelector -> currentText ());
+}
+
+void	RadioInterface::start_scan_continuous () {
+	if (scanTable_p == nullptr) 
+	   scanTable_p = new contentTable (this, dabSettings_p, "scan", 
+	                                     my_ofdmHandler -> scanWidth ());
+	else					// should not happen
+	   scanTable_p -> clearTable ();
+
+	QString topLine = QString ("ensemble") + ";"  +
+	                           "channelName" + ";" +
+	                           "frequency (KHz)" + ";" +
+	                           "Eid" + ";" +
+	                           "tii" + ";" +
+	                           "time" + ";" +
+	                           "SNR" + ";" +
+	                           "nr services" + ";";
+	scanTable_p -> addLine (topLine);
+	scanTable_p	-> addLine ("\n");
 
 	my_ofdmHandler	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
-	new_channelIndex (cc);
-	dynamicLabel	-> setText ("scan mode \"" +
-	                            scanmodeText (scanMode) +
-	                            "\" scanning channel " +
-	                            channelSelector -> currentText ());
-	scanButton      -> setText ("scanning");
-	switchDelay		=
+	QString fs = scanMonitor. getFirstChannel ();
+	int k = channelSelector -> findText (fs);
+	new_channelIndex (k);
+//	scanMonitor. addText (" scanning channel " +
+//	                            channelSelector -> currentText ());
+	int switchDelay		=
 	             configWidget. switchDelaySetting -> value ();
 	channelTimer. start (switchDelay * 1000);
 	startChannel    (channelSelector -> currentText ());
@@ -3036,27 +3062,58 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 //	2. on user selection of a service or a channel select
 //	3. on device selection
 //	4. on handling a reset
-void	RadioInterface::stopScanning	(bool dump) {
+void	RadioInterface::stopScanning	() {
 	disconnect (my_ofdmHandler, SIGNAL (no_signal_found ()),
 	            this, SLOT (no_signal_found ()));
-	(void)dump;
+	if (!scanMonitor. active ())
+	   return;
+        LOG ("scanning stops ", "");
+	if (scanMonitor. scan_to_data ())
+	   stop_scan_to_data ();
+	else
+	if (scanMonitor. scan_single ())
+	   stop_scan_single ();
+	else
+	   stop_scan_continuous ();
+	scanMonitor. setStop ();
+}
+
+void	RadioInterface::stop_scan_to_data () {
+	my_ofdmHandler	-> set_scanMode (false);
+	channelTimer. stop ();
+}
+
+void	RadioInterface::stop_scan_single () {
+	my_ofdmHandler	-> set_scanMode (false);
+	channelTimer. stop ();
+
 	if (scanTable_p == nullptr)
 	   return;		// should not happen
-	if (scanning. load ()) {
-	   scanButton      -> setText ("scan");
-	   LOG ("scanning stops ", "");
-	   my_ofdmHandler	-> set_scanMode (false);
-	   channelTimer. stop ();
-	   scanning. store (false);
-	   if (scanDumper_p != nullptr) {
-	      scanTable_p -> dump (scanDumper_p);
-	      fclose (scanDumper_p);
-	      scanDumper_p = nullptr;
-	   }
-	   delete scanTable_p;
-	   scanTable_p	= nullptr;
-	   dynamicLabel	-> setText ("Scan ended");
+	FILE *scanDumper_p	= scanMonitor. askFileName ();
+	if (scanDumper_p != nullptr) {
+	   scanTable_p -> dump (scanDumper_p);
+	   fclose (scanDumper_p);
+	   scanDumper_p = nullptr;
 	}
+	delete scanTable_p;
+	scanTable_p	= nullptr;
+}
+
+void	RadioInterface::stop_scan_continuous () {
+	my_ofdmHandler	-> set_scanMode (false);
+	channelTimer. stop ();
+
+	if (scanTable_p == nullptr)
+	   return;		// should not happen
+
+	FILE *scanDumper_p	= scanMonitor. askFileName ();
+	if (scanDumper_p != nullptr) {
+	   scanTable_p -> dump (scanDumper_p);
+	   fclose (scanDumper_p);
+	   scanDumper_p = nullptr;
+	}
+	delete scanTable_p;
+	scanTable_p	= nullptr;
 }
 
 //	If the ofdm processor has waited - without success -
@@ -3067,59 +3124,93 @@ void	RadioInterface::stopScanning	(bool dump) {
 //	Also called as a result of time out on channelTimer
 
 void	RadioInterface::no_signal_found () {
-int	switchDelay;
-int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
-
 	disconnect (my_ofdmHandler, SIGNAL (no_signal_found ()),
 	            this, SLOT (no_signal_found ()));
 	channelTimer. stop ();
 	disconnect (&channelTimer, SIGNAL (timeout ()),
 	            this, SLOT (channel_timeOut ()));
-
-	if (!scanning. load ())
+	if (!scanMonitor. active ())
 	   return;
-//
-//	from here we know that we are dealing with scanning
-	if (!running. load ()) {
-//	   channeltimer should not have been disconnected
-	   connect (&channelTimer, SIGNAL (timeout ()),
-	            this, SLOT (channel_timeOut ()));
-	   stopScanning (false);
+
+	if (scanMonitor. scan_to_data ())
+	   next_for_scan_to_data ();
+	else	
+	if (scanMonitor. scan_single ())
+	   next_for_scan_single ();
+	else
+	   next_for_scan_continuous ();
+}
+
+void	RadioInterface::next_for_scan_to_data () {
+	if  (!serviceList. empty ()) {
+	   stopScanning ();
 	   return;
 	}
-
-	int	cc	= channelSelector -> currentIndex ();
-	if ((scanMode != SCAN_TO_DATA) && (!serviceList. empty ()))
-	   showServices ();
 	stopChannel ();
-	cc = theBand. nextChannel (cc);
-	fprintf (stderr, "going to channel %d\n", cc);
-	if ((cc >= channelSelector -> count ()) &&
-	                               (scanMode == SINGLE_SCAN)) {
-	   connect (&channelTimer, SIGNAL (timeout ()),
-	            this, SLOT (channel_timeOut ()));
-	   stopScanning (true);
-	}
-	else {  // we just continue
-	   if (cc >= channelSelector -> count ())
-	       cc = theBand. firstChannel ();
-//	To avoid reaction of the system on setting a different value:
-	   new_channelIndex (cc);
+	QString ns	= scanMonitor. getNextChannel ();
+	int cc = channelSelector -> findText (ns);
+	new_channelIndex (cc);
+//
+//	and restart for the next run
+//	scanMonitor. addText ("scanning channel " +
+//	                             channelSelector -> currentText ());
+	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
+	         this, SLOT (no_signal_found ()));
+	connect (&channelTimer, SIGNAL (timeout ()),
+	         this, SLOT (channel_timeOut ()));
 
-	   connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	            this, SLOT (no_signal_found ()));
-	   connect (&channelTimer, SIGNAL (timeout ()),
-	            this, SLOT (channel_timeOut ()));
-
-	   dynamicLabel -> setText ("scan mode \"" +
-	                             scanmodeText (scanMode) +
-	                             "\" scanning channel " +
-	                             channelSelector -> currentText ());
-	   switchDelay	= 
+	int switchDelay	= 
 	               configWidget. switchDelaySetting -> value ();
-	   channelTimer. start (switchDelay * 1000);
-	   startChannel (channelSelector -> currentText ());
+	channelTimer. start (switchDelay * 1000);
+	startChannel (channelSelector -> currentText ());
+}
+
+void	RadioInterface::next_for_scan_single () {
+	if (!serviceList. empty ())
+	   show_for_single_scan ();
+	stopChannel ();
+	try {
+	   QString cs	= scanMonitor. getNextChannel ();
+	   int	cc	= channelSelector -> findText (cs);
+	   new_channelIndex (cc);
+	} catch (...) {
+	   stopScanning ();
+	   return;
 	}
+
+//	scanMonitor. addText ("scanning channel " +
+//	                             channelSelector -> currentText ());
+	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
+	         this, SLOT (no_signal_found ()));
+	connect (&channelTimer, SIGNAL (timeout ()),
+	         this, SLOT (channel_timeOut ()));
+
+	int switchDelay	= 
+	               configWidget. switchDelaySetting -> value ();
+	channelTimer. start (switchDelay * 1000);
+	startChannel (channelSelector -> currentText ());
+}
+
+void	RadioInterface::next_for_scan_continuous () {
+	if (!serviceList. empty ())
+	   show_for_continuous ();
+	stopChannel ();
+
+	QString cs	= scanMonitor. getNextChannel ();
+	int cc	= channelSelector -> findText (cs);
+	new_channelIndex (cc);
+
+	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
+	         this, SLOT (no_signal_found ()));
+	connect (&channelTimer, SIGNAL (timeout ()),
+	         this, SLOT (channel_timeOut ()));
+
+//	scanMonitor. addText ("scanning channel " +
+//	                             channelSelector -> currentText ());
+	int switchDelay	= 
+	               configWidget. switchDelaySetting -> value ();
+	channelTimer. start (switchDelay * 1000);
+	startChannel (channelSelector -> currentText ());
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -3127,8 +3218,7 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 // showServices
 ////////////////////////////////////////////////////////////////////////////
 	
-void	RadioInterface::showServices () {
-int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
+void	RadioInterface::show_for_single_scan () {
 QString SNR 		= "SNR " + QString::number (channel. snr);
 
 	if (my_ofdmHandler == nullptr) {	// cannot happen
@@ -3139,8 +3229,7 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	QString utcTime	= convertTime (UTC. year, UTC.month,
 	                               UTC. day, UTC. hour, 
 	                               UTC. minute);
-	if (scanMode == SINGLE_SCAN) {
-	   QString headLine = channel. ensembleName + ";" +
+	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName + ";" +
 	                      QString::number (channel. frequency) + ";" +
 	                      hextoString (channel. Eid) + " " + ";" +
@@ -3149,17 +3238,27 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	                      SNR  + ";" +
 	                      QString::number (serviceList. size ()) + ";" +
 	                      distanceLabel -> text ();
-	   QStringList s = my_ofdmHandler -> basicPrint ();
-	   scanTable_p -> addLine (headLine);
-	   scanTable_p -> addLine ("\n;\n");
-	   for (const auto &l : s)
-	      scanTable_p -> addLine (l);
-	   scanTable_p -> addLine ("\n;\n;\n");
-	   scanTable_p -> show ();
+	QStringList s = my_ofdmHandler -> basicPrint ();
+	scanTable_p -> addLine (headLine);
+	scanTable_p -> addLine ("\n;\n");
+	for (const auto &l : s)
+	   scanTable_p -> addLine (l);
+	scanTable_p -> addLine ("\n;\n;\n");
+	scanTable_p -> show ();
+}
+
+void	RadioInterface::show_for_continuous () {
+QString SNR 		= "SNR " + QString::number (channel. snr);
+
+	if (my_ofdmHandler == nullptr) {	// cannot happen
+	   fprintf (stderr, "Expert error 26\n");
+	   return;
 	}
-	else
-	if (scanMode == SCAN_CONTINUOUSLY) {
-	   QString headLine = channel. ensembleName + ";" +
+
+	QString utcTime	= convertTime (UTC. year, UTC.month,
+	                               UTC. day, UTC. hour, 
+	                               UTC. minute);
+	QString headLine = channel. ensembleName + ";" +
 	                      channel. channelName  + ";" +
 	                      QString::number (channel. frequency) + ";" +
 	                      hextoString (channel. Eid) + ";" +
@@ -3169,10 +3268,8 @@ QString SNR 		= "SNR " + QString::number (channel. snr);
 	                      QString::number (serviceList. size ()) + ";" +
 	                      distanceLabel -> text ();
 
-//	   scanTable_p -> addLine ("\n");
-	   scanTable_p -> addLine (headLine);
-	   scanTable_p	-> show ();
-	}
+	scanTable_p -> addLine (headLine);
+	scanTable_p	-> show ();
 }
 
 /////////////////////////////////////////////////////////////////////
@@ -3230,14 +3327,12 @@ void	RadioInterface::hide_for_safety () {
 	configWidget. dumpButton	->	hide ();
 	prevServiceButton	->	hide ();
 	nextServiceButton	->	hide ();
-	contentButton		->	hide ();
 }
 
 void	RadioInterface::show_for_safety () {
 	configWidget. dumpButton	->	show ();
 	prevServiceButton	->	show ();
 	nextServiceButton	->	show ();
-	contentButton		->	show ();
 }
 //
 //	Handling the Mute button
@@ -3246,13 +3341,14 @@ void	RadioInterface::handle_muteButton	() {
 	   stop_muting ();
 	   return;
 	}
-
+	if (!channel. audioActive)
+	   return;
+	set_soundLabel (false);
 	connect (&muteTimer, SIGNAL (timeout ()),
 	         this, SLOT (muteButton_timeOut ()));
 	muteDelay	= dabSettings_p -> value ("muteTime", 2). toInt ();
 	muteDelay	*= 60;
 	muteTimer. start (1000);
-	setButtonFont (muteButton, "muting", 10);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
 }
@@ -3267,7 +3363,7 @@ void	RadioInterface::muteButton_timeOut	() {
 	else {
 	   disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
-	   setButtonFont (muteButton, "mute", 10);
+//	   setButtonFont (muteButton, "mute", 10);
 	   stillMuting	-> hide ();
 	}
 }
@@ -3275,11 +3371,11 @@ void	RadioInterface::muteButton_timeOut	() {
 void	RadioInterface::stop_muting		() {
 	if (!muteTimer. isActive ()) 
 	   return;
-
+	set_soundLabel (true);
 	muteTimer. stop ();
 	disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
-	setButtonFont (muteButton, "mute", 10);
+//	setButtonFont (muteButton, "mute", 10);
 	stillMuting	-> hide ();
 }
 //
@@ -3306,18 +3402,6 @@ void	RadioInterface::new_channelIndex (int index) {
 //	
 void	RadioInterface::set_Colors () {
 	dabSettings_p	-> beginGroup ("colorSettings");
-QString contentButton_color =
-	   dabSettings_p -> value (CONTENT_BUTTON + "_color",
-	                                              "white"). toString ();
-QString contentButton_font =
-	   dabSettings_p -> value (CONTENT_BUTTON + "_font",
-	                                              "black"). toString ();
-QString detailButton_color =
-	   dabSettings_p -> value (DETAIL_BUTTON + "_color",
-	                                              "white"). toString ();
-QString detailButton_font =
-	   dabSettings_p -> value (DETAIL_BUTTON + "_font",
-	                                              "black"). toString ();
 QString resetButton_color =
 	   dabSettings_p -> value (RESET_BUTTON + "_color",
 	                                              "white"). toString ();
@@ -3367,12 +3451,6 @@ QString dumpButton_color =
 	                                              "white"). toString ();
 QString dumpButton_font =
 	   dabSettings_p -> value (DUMP_BUTTON + "_font",
-	                                              "black"). toString ();
-QString muteButton_color =
-	   dabSettings_p -> value (MUTE_BUTTON + "_color",
-	                                              "white"). toString ();
-QString muteButton_font =
-	   dabSettings_p -> value (MUTE_BUTTON + "_font",
 	                                              "black"). toString ();
 
 QString prevChannelButton_color =
@@ -3465,9 +3543,6 @@ QString loadTableButton_font	=
 	dabSettings_p	-> endGroup ();
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	contentButton	->
-	              setStyleSheet (temp. arg (contentButton_color,
-	                                        contentButton_font));
 
 	configWidget.  resetButton ->
 	              setStyleSheet (temp. arg (resetButton_color,	
@@ -3492,7 +3567,7 @@ QString loadTableButton_font	=
 	configWidget. dumpButton ->
 	              setStyleSheet (temp. arg (dumpButton_color,
 	                                        dumpButton_font));
-	scheduleButton ->
+	configWidget. scheduleButton ->
 	              setStyleSheet (temp. arg (scheduleButton_color,
 	                                        scheduleButton_font));
 
@@ -3519,10 +3594,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (portSelector_color,
 	                                        portSelector_font));
 
-	muteButton	->
-	              setStyleSheet (temp. arg (muteButton_color,
-	                                        muteButton_font));
-
 	scanListButton	->
 	              setStyleSheet (temp. arg (scanListButton_color,
 	                                        scanListButton_font));
@@ -3543,10 +3614,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
 
-	detailButton	->
-	              setStyleSheet (temp. arg (detailButton_color,
-	                                        detailButton_font));
-
 	prevChannelButton ->
 	              setStyleSheet (temp. arg (prevChannelButton_color,
 	                                        prevChannelButton_font));
@@ -3563,14 +3630,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (nextServiceButton_color,
 	                                        nextServiceButton_font));
 
-}
-
-void	RadioInterface::color_contentButton	() {
-	set_buttonColors (contentButton, CONTENT_BUTTON);
-}
-
-void	RadioInterface::color_detailButton	() {
-	set_buttonColors (detailButton, DETAIL_BUTTON);
 }
 
 void	RadioInterface::color_resetButton	() {
@@ -3621,10 +3680,6 @@ void	RadioInterface::color_nextServiceButton	()	{
 	set_buttonColors (nextServiceButton, NEXTSERVICE_BUTTON);
 }
 
-void	RadioInterface::color_muteButton	()	{
-	set_buttonColors (muteButton, MUTE_BUTTON);
-}
-
 void	RadioInterface::color_dlTextButton	()	{
 	set_buttonColors (configWidget. dlTextButton, DLTEXT_BUTTON);
 }
@@ -3638,7 +3693,7 @@ void	RadioInterface::color_httpButton	() 	{
 }
 
 void	RadioInterface::color_scheduleButton	() 	{
-	set_buttonColors (scheduleButton, SCHEDULE_BUTTON);
+	set_buttonColors (configWidget. scheduleButton, SCHEDULE_BUTTON);
 }
 
 void	RadioInterface::color_set_coordinatesButton	() 	{
@@ -3789,8 +3844,7 @@ void	RadioInterface::scheduler_timeOut	(const QString &s) {
 	}
 
 	presetTimer. stop ();
-	if (scanning. load ())
-	   stopScanning (false);
+	stopScanning ();
 	scheduleSelect (s);
 }
 
@@ -3818,7 +3872,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	
 	if (dabSettings_p   -> value ("epgFlag", 0). toInt () != 1)
 	   return;
-	if (scanning. load ())
+	if (scanMonitor. active ())
 	   return;
 	for (auto serv : serviceList) {
 	   if (serv. name. contains ("-EPG ", Qt::CaseInsensitive) ||
@@ -4057,7 +4111,7 @@ void	RadioInterface::handle_resetButton	() {
 	if (!running. load())
 	   return;
 	QString	channelName	= channel. channelName;
-	stopScanning (false);
+	stopScanning ();
 	stopChannel ();
 	startChannel	(channelName);
 }
@@ -4116,7 +4170,7 @@ void	RadioInterface::start_sourcedumping () {
 QString deviceName	= inputDevice_p -> deviceName ();
 QString channelName	= channel. channelName;
 	
-	if (scanning. load ())
+	if (scanMonitor. active ())
 	   return;
 
 	rawDumper_p	=
@@ -4130,7 +4184,7 @@ QString channelName	= channel. channelName;
 }
 
 void	RadioInterface::handle_sourcedumpButton () {
-	if (!running. load () || scanning. load ())
+	if (!running. load () || scanMonitor. active ())
 	   return;
 
 	if (rawDumper_p != nullptr)
@@ -4230,24 +4284,6 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	channel. targetPos	= position {0, 0};
 	if ((transmitterTags_local) && (mapHandler != nullptr))
 	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
-}
-
-void	RadioInterface::handle_scanmodeSelector		(int d) {
-	dabSettings_p	-> setValue ("scanMode", d); 
-}
-
-void	RadioInterface::handle_skipList_button () {
-	if (!theBand. isHidden ()) {
-	   theBand. hide ();
-	}
-	else
-	   theBand. show ();
-}
-
-void	RadioInterface::handle_skipFile_button	() {
-const QString fileName	= filenameFinder. findskipFile_fileName ();
-	theBand. saveSettings ();
-	theBand. setup_skipList (fileName);
 }
 
 void	RadioInterface::handle_decoderSelector	(const QString &s) {
@@ -4415,7 +4451,7 @@ bool setting	= configWidget. eti_activeSelector	-> isChecked ();
 	   return;
 
 	if (setting) {
-	   stopScanning (false);	
+	   stopScanning ();	
 	   disconnect (scanButton, SIGNAL (clicked ()),
 	               this, SLOT (handle_scanButton ()));
 	   connect (scanButton, SIGNAL (clicked ()),
@@ -4513,6 +4549,7 @@ bool	tiiChange	= false;
 
            transmitter_coordinates -> setAlignment (Qt::AlignRight);
            transmitter_coordinates -> setText (a);
+	   transmitter_coordinates	-> hide ();
         }
 //
 //	display the transmitters on the scope widget
@@ -4631,10 +4668,24 @@ std::vector<float>Values (amount);
 }
 
 void	RadioInterface::show_snr		(float snr) {
+QPixmap p;
+
 	if (!newDisplay. isHidden ())
 	   newDisplay. show_snr (snr);
-
 	channel. snr	= snr;
+
+	if (snr < 5) 
+	   p = strengthLabels. at (0);
+	else
+	if (snr < 8)
+	   p = strengthLabels. at (1);
+	else
+	if (snr < 12)
+	   p = strengthLabels. at (2);
+	else
+	   p = strengthLabels. at (3);
+	this -> snrLabel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+
 	if (my_snrViewer. isHidden ()) {
 	   snrBuffer. FlushRingBuffer ();
 	   return;
@@ -4734,11 +4785,6 @@ void	RadioInterface::init_configWidget () {
 	if (dabSettings_p -> value ("saveLocations", 0). toInt () == 1)
 	   configWidget. transmSelector -> setChecked (true);
 //
-//	scanMode, combobox
-	int scanMode	=
-	           dabSettings_p -> value ("scanMode", SINGLE_SCAN). toInt ();
-	configWidget. scanmodeSelector -> setCurrentIndex (scanMode);
-//
 //	The ultimate bottom line
 	if (dabSettings_p -> value ("run_backgrounds", 0). toInt () != 0)
 	   configWidget. servicesInBackground -> setChecked (true);
@@ -4786,4 +4832,22 @@ void	RadioInterface::handle_presetButton	() {
 	dabSettings_p	-> setValue ("favorites",
 	                              my_presetHandler. isHidden () ? 0 : 1);
 }
+ 
+void    RadioInterface::set_soundLabel  (bool f) {
+QPixmap p;
 
+        if (f) 
+            p. load (":res/volume_on.png", "png");
+        else
+            p. load (":res/volume_off.png", "png");
+        soundLabel -> 
+               setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+}
+        
+void    RadioInterface::handle_aboutLabel   () { 
+        QDialog *test = new AboutDialog (nullptr);
+        test -> show ();
+}
+
+
+	   

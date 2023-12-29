@@ -154,6 +154,7 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	   throw (device_exception ("no suitable samplerate found"));
 
 	samplerateLabel	-> setText (QString::number (resultRate));
+	fprintf (stderr, "resultRate = %d\n", resultRate);
 	theConverter. setup (resultRate, 2048000);
 	if (SoapySDRDevice_setSampleRate (m_device,
 	                                  SOAPY_SDR_RX, 0, resultRate) != 0) {
@@ -163,6 +164,17 @@ void	soapyHandler::createDevice (const QString &deviceString) {
 	const bool automatic = true;
 	SoapySDRDevice_setFrequency (m_device, SOAPY_SDR_RX, 0,
 	                                              220000000, NULL);
+
+	rxStream =
+              SoapySDRDevice_setupStream (m_device, SOAPY_SDR_RX,
+                                          SOAPY_SDR_CF32, NULL, 0, NULL);
+        if (rxStream == nullptr)
+           throw (device_exception ("cannot open stream"));
+
+        int xx = SoapySDRDevice_activateStream (m_device, rxStream, 0, 0, 0);
+        if (xx != 0)
+           throw (device_exception ("cannot activate stream"));
+
 	m_running . store (true);
 	m_sw_agc	= true;
 	deviceReady	= true;
@@ -260,11 +272,6 @@ void	soapyHandler::workerthread () {
 std::vector<size_t> channels;
 channels.push_back(0);
 
-	auto rxStream =
-	      SoapySDRDevice_setupStream (m_device, SOAPY_SDR_RX,
-	                                  SOAPY_SDR_CF32, NULL, 0, NULL);
-
-	SoapySDRDevice_activateStream (m_device, rxStream, 0, 0, 0);
 	const size_t mtu	= SoapySDRDevice_getStreamMTU (m_device,
 	                                                       rxStream);
 	const size_t samplesToRead = mtu;
@@ -280,6 +287,7 @@ channels.push_back(0);
            int ret = SoapySDRDevice_readStream (m_device, rxStream,
 	                                        buffs, samplesToRead, &flags,
 	                                        &timeNs, 100000);
+	   
 	   theConverter. add (buf. data (), ret);
 	   frames ++;
 	   if (m_sw_agc and (frames >= 200)) {

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>559</width>
-    <height>408</height>
+    <width>580</width>
+    <height>428</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,6 +31,24 @@
         </sizepolicy>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="clickablelabel" name="ensembleId">
+            <property name="text">
+             <string>ensemble</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="transmitter_country">
+            <property name="text">
+             <string>country</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item>
          <widget class="smallQListView" name="ensembleDisplay">
           <property name="sizePolicy">
@@ -162,60 +180,16 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="copyrightLabel">
+        <widget class="clickablelabel" name="aboutLabel">
          <property name="text">
           <string>©</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QLCDNumber" name="cpuMonitor">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-          </font>
-         </property>
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;cpuLoad. The number gives an estimate of the overall load of the CPU of the machine you are working on. So, it only gives an idea of the load caused by Qt-DAB if no other (large) programs are active.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::NoFrame</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Plain</enum>
-         </property>
-         <property name="segmentStyle">
-          <enum>QLCDNumber::Flat</enum>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QLabel" name="ensembleId">
+        <widget class="QLabel" name="snrLabel">
          <property name="text">
-          <string>ensemble</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="transmitter_country">
-         <property name="text">
-          <string>country</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="transmitter_coordinates">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>TII</string>
+          <string>TextLabel</string>
          </property>
         </widget>
        </item>
@@ -237,7 +211,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="serviceLabel">
+        <widget class="clickablelabel" name="serviceLabel">
          <property name="text">
           <string>service</string>
          </property>
@@ -253,6 +227,13 @@
          </property>
          <property name="text">
           <string>pty</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="clickablelabel" name="soundLabel">
+         <property name="text">
+          <string>volume</string>
          </property>
         </widget>
        </item>
@@ -282,47 +263,7 @@
      </item>
      <item>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="0" column="0">
-        <widget class="smallPushButton" name="configButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>controls</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="smallPushButton" name="spectrumButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>spectrum</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="smallPushButton" name="detailButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide a widget showing details of the currently selected service&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>details</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="3" colspan="2">
-        <widget class="smallPushButton" name="muteButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to mute - or unmute - the audio. The duration of muting is displayed. Duration can be set in the configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>mute</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
+       <item row="4" column="2">
         <widget class="smallPushButton" name="httpButton">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start (or stop) a simple webserver for showing a map on which the locations of the transmitters found are shown&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -332,33 +273,33 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="smallPushButton" name="contentButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to see what the content of the currently selected ensemble is.&lt;/p&gt;&lt;p&gt;Specification is pretty detailed and can be saved in a &amp;quot;.csv&amp;quot; file&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>content</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="smallPushButton" name="scheduleButton">
-         <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch to add a command to the schedule list. Commands can be given for up to 7 days ahead.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-         </property>
-         <property name="text">
-          <string>scheduler</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
+       <item row="4" column="5">
         <widget class="smallPushButton" name="scanButton">
          <property name="toolTip">
-          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start or stop a scan. The scanMode can be selected in the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show or hide the scanmonitor. Scan control is completely moved to the scanmonitor&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>scan</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="smallPushButton" name="configButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Hide or  show the configuration-control widget&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>controls</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="smallPushButton" name="spectrumButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touch this button to show or hide the so-called spectrum widget, a widget with a number of displays showing the incoming signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>spectrum</string>
          </property>
         </widget>
        </item>
@@ -366,6 +307,18 @@
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
+       <item>
+        <widget class="QLabel" name="transmitter_coordinates">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TII</string>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QLabel" name="distanceLabel">
          <property name="toolTip">
@@ -402,6 +355,11 @@
    <class>smallQListView</class>
    <extends>QListView</extends>
    <header>smallqlistview.h</header>
+  </customwidget>
+  <customwidget>
+   <class>clickablelabel</class>
+   <extends>QLabel</extends>
+   <header>clickable-label.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

@@ -38,7 +38,7 @@
 #include	<sndfile.h>
 #include	"ui_dabradio-6.h"
 #include	"ringbuffer.h"
-#include        "band-handler.h"
+//#include        "band-handler.h"
 #include	"process-params.h"
 #include	"converter_48000.h"
 #include	"scanlist-handler.h"
@@ -51,6 +51,7 @@
 #include	"tcp-server.h"
 #endif
 //#include	"scanner-table.h"
+#include	"scan-handler.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"
 
@@ -93,6 +94,7 @@ public:
 	int		subChId;
 	bool		valid;
 	bool		is_audio;
+	bool		announcement_going;
 	FILE		*fd;
 	FILE		*frameDumper;
 	dabService () {
@@ -100,6 +102,7 @@ public:
 	   frameDumper	= nullptr;
 	   valid	= false;
 	   is_audio	= false;
+	   announcement_going	= false;
 	}
 	~dabService	() {}
 };
@@ -116,6 +119,7 @@ struct	theTime {
 class	channelDescriptor {
 public:
 	channelDescriptor () {
+	cleanChannel ();
 }
 	~channelDescriptor () {
 }
@@ -146,6 +150,7 @@ public:
 	QByteArray	transmitters;
 	int		distance;
 	int		corner;
+	bool		audioActive;
 
 	void	cleanChannel () {
 	realChannel	= true;
@@ -162,6 +167,7 @@ public:
 	snr		= 0;
 	transmitters. resize (0);
 	distance	= -1;
+	audioActive	= false;
 	currentService. frameDumper	= nullptr;
 	nextService. frameDumper	= nullptr;
 }
@@ -202,7 +208,7 @@ private:
 
 	displayWidget		newDisplay;
 	snrViewer		my_snrViewer;
-	bandHandler		theBand;
+//	bandHandler		theBand;
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
@@ -215,7 +221,9 @@ private:
 	scanListHandler		my_scanListHandler;
 	presetHandler		my_presetHandler;
 	deviceChooser		chooseDevice;
+	scanHandler		scanMonitor;
 
+	std::vector<QPixmap>	strengthLabels;
 	httpHandler		*mapHandler;
 	processParams		globals;
 	QString			version;
@@ -239,7 +247,6 @@ private:
 	int32_t			dataPort;
 	bool			stereoSetting;
 	std::atomic<bool>	running;
-	std::atomic<bool>	scanning;
 	deviceHandler		*inputDevice_p;
 	int			detector;
 //
@@ -275,14 +282,12 @@ private:
 #endif
 	SNDFILE                 *rawDumper_p;
 	SNDFILE                 *audioDumper_p;
-	FILE			*scanDumper_p;
 	void			set_Colors		();
 	void			set_channelButton	(int);
 	QStandardItemModel	model;
 	std::vector<serviceId>	serviceList;
-	std::vector<serviceId>
-	  	                insert   (std::vector<serviceId> &,
-	                                  serviceId, int);
+	std::vector<serviceId>	insert		(std::vector<serviceId> &,
+	                                         serviceId, int);
 
 	void			show_pauzeSlide	();
 	void			displaySlide	(const QPixmap &);
@@ -306,6 +311,7 @@ private:
 	size_t			previous_idle_time;
 	size_t			previous_total_time;
 
+	QPixmap			fetch_announcement (int id);
 
 	QString			convertTime		(int, int, int, int, int);
 	QString			convertTime		(struct theTime &);
@@ -325,8 +331,6 @@ private:
 //
 	void			startAudioservice	(audiodata &);
 	void			startPacketservice	(const QString &);
-	void			startScanning		();
-	void			stopScanning		(bool);
 	void			startAudiodumping	();
 	void			stopAudiodumping	();
 	void			scheduled_audioDumping	();
@@ -350,7 +354,8 @@ private:
 	void			scheduleSelect		(const QString &s);
 	void			localSelect		(const QString &,
 	                                                 const QString &);
-	void			showServices		();
+	void			show_for_single_scan	();
+	void			show_for_continuous	();
 
 	bool			doStart			();
 	void			save_MOTObject		(QByteArray &,
@@ -377,13 +382,25 @@ private:
 	bool			transmitterTags_local;
 	void			colorServiceName (const QString &s,
 	                                          QColor color, int fS, bool);
+	void			set_soundLabel		(bool);
 
+	void			start_scan_to_data	();
+	void			start_scan_single	();
+	void			start_scan_continuous	();
+	void			next_for_scan_to_data	();
+	void			next_for_scan_single	();
+	void			next_for_scan_continuous	();
+	void			stop_scan_to_data	();
+	void			stop_scan_single	();
+	void			stop_scan_continuous	();
 signals:
 	void                    set_newChannel		(int);
 	void                    set_newPresetIndex      (int);
 
 public slots:
 
+	void			startScanning		();
+	void			stopScanning		();
 	void			show_quality		(float, float, float);
 	void			show_rsCorrections	(int, int);
 	void			show_clock_error	(int);
@@ -391,6 +408,7 @@ public slots:
 	void			show_Corrector		(int, float);
 	void			add_to_ensemble		(const QString &, int);
 	void			name_of_ensemble	(int, const QString &);
+	void			nrServices		(int);
 	void			show_frameErrors	(int);
 	void			show_rsErrors		(int);
 	void			show_aacErrors		(int);
@@ -415,7 +433,8 @@ public slots:
 	void			clockTime		(int, int, int,
 	                                                 int, int,
 	                                                 int, int, int, int);
-	void			start_announcement	(const QString &, int);
+	void			start_announcement	(const QString &,
+	                                                      int, int);
 	void			stop_announcement	(const QString &, int);
 	void			newFrame		(int);
 
@@ -424,7 +443,6 @@ public slots:
 	                                                 const QString &);
 	void			epgTimer_timeOut	();
 	void			switchVisibility	(QWidget *);
-	void			nrServices		(int);
 
 	void			handle_presetSelect	(const QString &,
 	                                                 const QString &);
@@ -484,8 +502,6 @@ private slots:
 
 //
 //	color handlers
-	void			color_contentButton	();
-	void			color_detailButton	();
 	void			color_resetButton	();
 	void			color_scanButton	();
 	void			color_presetButton	();
@@ -494,7 +510,6 @@ private slots:
 	void			color_devicewidgetButton	();
 	void			color_scanListButton	();
 	void			color_sourcedumpButton	();
-	void			color_muteButton	();
 	void			color_prevChannelButton	();
 	void			color_nextChannelButton	();
 	void			color_prevServiceButton	();
@@ -534,10 +549,7 @@ private slots:
 	void			handle_orderAlfabetical		();
 	void			handle_orderServiceIds		();
 	void			handle_ordersubChannelIds	();
-	void			handle_scanmodeSelector		(int);
 	void			handle_saveServiceSelector	(int);
-	void			handle_skipList_button		();
-	void			handle_skipFile_button		();
 	void			handle_tii_detectorMode		(int);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
@@ -552,4 +564,6 @@ private slots:
 	void			handle_fontColorSelect		();
 	void			handle_dcRemovalSelector	(int);
 	void			handle_decoderSelector		(const QString &);
+
+	void			handle_aboutLabel		();
 };

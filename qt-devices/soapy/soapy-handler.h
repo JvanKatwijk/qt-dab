@@ -59,6 +59,7 @@ int32_t	getGainCount	();
 private:
 	RingBuffer<std::complex<float>> m_sampleBuffer;
 	soapyConverter	theConverter;
+	SoapySDRStream	*rxStream;
 	void	setAntenna	(const std::string& antenna);
 	void	decreaseGain	();
 	void	increaseGain	();

@@ -105,13 +105,14 @@ int		output_size	= 8 * 2048;
         }
         else
         if (info -> numChannels == 1) {
-           int16_t *buffer = (int16_t *)alloca (2 * info -> frameSize);
+           int16_t buffer [2 * info -> frameSize];
            int16_t i;
            for (i = 0; i < info -> frameSize; i ++) {
               buffer [2 * i]	= ((int16_t *)bufp) [i];
               buffer [2 * i + 1] = bufp [2 * i];
            }
-           audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
+	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize);
+//	   audioBuffer  -> putDataIntoBuffer (buffer, info -> frameSize * 2);
 	   if (audioBuffer -> GetRingBufferReadAvailable() >
 	                          (int)info -> sampleRate / 8)
               newAudio (info -> frameSize, info -> sampleRate,

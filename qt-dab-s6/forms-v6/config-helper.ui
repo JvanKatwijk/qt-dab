@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
-    <height>452</height>
+    <width>568</width>
+    <height>396</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -184,12 +184,12 @@
       </widget>
      </item>
      <item row="0" column="6">
-      <widget class="smallPushButton" name="free">
+      <widget class="smallPushButton" name="scheduleButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select one of a few fonts for the display of the service names. Will be effective the next program invocation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>unused</string>
+        <string>schedule</string>
        </property>
       </widget>
      </item>
@@ -433,67 +433,6 @@ the reach &lt;br /&gt;of this receiver.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</str
        </property>
        <property name="text">
         <string>save transmitters</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="smallComboBox" name="scanmodeSelector">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose one of three modes for scanning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <item>
-        <property name="text">
-         <string>single scan</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>scan to data</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>continuous</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="skipList_button">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;show or hide the skipList. Updates in the skipList will be saved.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>skipList</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="skipFile_button">
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-        </font>
-       </property>
-       <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a file for the skipList. If the file does not exist yet, it will be created and initialized with a skipList with no channels set to skip.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-       </property>
-       <property name="text">
-        <string>skipFile</string>
        </property>
       </widget>
      </item>

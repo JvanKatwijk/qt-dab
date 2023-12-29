@@ -1,7 +1,9 @@
 cmake_minimum_required( VERSION 3.21 )
-set (objectName qt-dab-6.30)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
+set (objectName qt-dab-6.40)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
+#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
 set(CMAKE_AUTORCC ON)
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
@@ -208,7 +210,12 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 
 	set (${objectName}_HDRS
 	     ./radio.h
-	     ./pauzeslide/pauzeslide.h
+	     ./support/techdata.h 
+             ./support/clickable-label.h 
+             ./support/icon-label.h 
+             ./support/scan-handler.h 
+             ./support/skiptable-handler.h 
+             ./support/aboutdialog.h 
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
@@ -270,7 +277,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/support/ringbuffer.h
 	     ../includes/support/Xtan2.h
 	     ../includes/support/dab-params.h
-	     ../includes/support/band-handler.h
 	     ../includes/support/dab-tables.h
 	     ../includes/support/viterbi-jan/viterbi-handler.h
 	     ../includes/support/viterbi-spiral/viterbi-spiral.h
@@ -331,6 +337,11 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ./main.cpp
 	     ./radio.cpp
 	     ./support/techdata.cpp
+	     ./support/clickable-label.cpp 
+             ./support/icon-label.cpp 
+             ./support/scan-handler.cpp 
+             ./support/skiptable-handler.cpp 
+             ./support/aboutdialog.cpp 
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -382,7 +393,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
 	     ../src/support/dab-params.cpp
-	     ../src/support/band-handler.cpp
 	     ../src/support/dab-tables.cpp
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
@@ -437,6 +447,11 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	set (${objectName}_MOCS
 	     ./radio.h
 	     ./support/techdata.h
+	     ./support/clickable-label.h 
+             ./support/icon-label.h 
+             ./support/scan-handler.h 
+             ./support/skiptable-handler.h 
+             ./support/aboutdialog.h 
 	     ../ofdm-handler.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
@@ -462,7 +477,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/support/converter_48000.h
-	     ../includes/support/band-handler.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/font-chooser.h
@@ -504,6 +518,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 
 	set (${objectName}_UIS
 	        ${${objectName}_UIS}
+	     ./support/aboutdialog.ui
 	     ./forms-v6/dabradio-6.ui
 	     ./forms-v6/technical_data.ui
 	     ./forms-v6/config-helper.ui

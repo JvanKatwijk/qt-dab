@@ -76,6 +76,11 @@ enum AudioFlags : uint32_t {
     AFL_PS_USED  = 0x2
 };
 
+#define	SINGLE_SCAN		0
+#define	SCAN_SINGLE		0
+#define	SCAN_TO_DATA		1
+#define	SCAN_CONTINUOUS		2
+
 using namespace std;
 //
 #define	Hz(x)		(x)
@@ -86,7 +91,7 @@ using namespace std;
 #define	MHz(x)		(KHz (x) * 1000)
 #define	mHz(x)		(kHz (x) * 1000)
 
-#define	CURRENT_VERSION	"6.30"
+#define	CURRENT_VERSION	"6.40"
 
 #define		DAB		0100
 #define		DAB_PLUS	0101

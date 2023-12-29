@@ -2523,7 +2523,8 @@ void	RadioInterface::colorServiceName (const QString &serviceName,
 	}
 }
 
-void	RadioInterface::start_announcement (const QString &name, int subChId) {
+void	RadioInterface::start_announcement (const QString &name,
+	                                         int subChId, int Id) {
 	if (!running. load ())
 	   return;
 
@@ -3209,13 +3210,26 @@ int	scanMode	= configWidget. scanmodeSelector -> currentIndex ();
 	   my_scanTable	-> addLine ("\n");
 	}
 
-	if (scanMode == SINGLE_SCAN)
-	   scanDumpFile	= filenameFinder. findScanDump_fileName ();
+	scanDumpFile	= nullptr;
+	if (scanMode == SINGLE_SCAN) {
+	   QMessageBox::StandardButton resultButton =
+                     QMessageBox::question (nullptr, "Qt-DAB",
+                                            "save the scan?\n",
+                                            QMessageBox::No | QMessageBox::Yes,
+                                            QMessageBox::Yes);
+           if (resultButton == QMessageBox::Yes)
+	      scanDumpFile	= filenameFinder. findScanDump_fileName ();
+	}
 	else
-	if (scanMode == SCAN_CONTINUOUSLY)
+	if (scanMode == SCAN_CONTINUOUSLY) {
+	   QMessageBox::StandardButton resultButton =
+                     QMessageBox::question (nullptr, "Qt-DAB",
+                                            "save summary?\n",
+                                            QMessageBox::No | QMessageBox::Yes,
+                                            QMessageBox::Yes);
+        if (resultButton == QMessageBox::Yes)
 	   scanDumpFile	= filenameFinder. findSummary_fileName ();
-	else
-	   scanDumpFile = nullptr;
+	}
 
 	my_ofdmHandler	-> set_scanMode (true);
 //      To avoid reaction of the system on setting a different value:
