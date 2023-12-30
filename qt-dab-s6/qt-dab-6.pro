@@ -482,9 +482,9 @@ isEmpty(GITHASHSTRING) {
 #
 #for win32, comment out the lines above
 	TARGET		= qt-dab32-6-V3
-	CONFIG		+= dabstick-win-V3
+	CONFIG		+= dabstick-win-v3
 #	TARGET		= qt-dab32-6.40
-#	CONFIG		+= dabstick-win
+#	CONFIG		+= dabstick-win-v4
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt

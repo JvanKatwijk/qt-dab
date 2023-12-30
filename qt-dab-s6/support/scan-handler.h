@@ -85,8 +85,10 @@ private:
 	QPushButton	*storeKnop;
 	QComboBox	*scanModeSelector;
 
+#ifndef	__MINGW32__
 	dabFrequencies alternatives [128];
 	dabFrequencies *load_extFile       (const QString &extFile);
+#endif
 	bool		no_skipTables;
 
 	dabFrequencies	*selectedBand;

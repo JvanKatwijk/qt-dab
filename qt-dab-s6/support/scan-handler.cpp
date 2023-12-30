@@ -107,11 +107,14 @@ QString scanmodeText (int e) {
 	                                             myWidget (nullptr),
 	                                             filenameFinder (s),
 	                                             skipTable (s) {
-	this	-> theRadio	= theRadio;
-	this	-> dabSettings	= s;
-
+	this	-> theRadio		= theRadio;
+	this	-> dabSettings		= s;
+	this	-> selectedBand		= nullptr;
+	this	->  no_skipTables	= false;
+#ifndef	__MINGW32__
 	if (extFile != "") 
 	   selectedBand = load_extFile (extFile);
+#endif
 	if (selectedBand != nullptr)
 	   no_skipTables	= true;
 	else {
@@ -435,6 +438,7 @@ QString	scanHandler::getNextChannel	(const QString &s) {
 	return selectedBand [currentChannel]. key;
 }
 
+#ifndef	__MINGW32__
 dabFrequencies alternatives [128];
 dabFrequencies *scanHandler::load_extFile	(const QString &extFile) {
 FILE *f	= fopen (extFile. toUtf8 (). data (), "r");
@@ -470,3 +474,4 @@ FILE *f	= fopen (extFile. toUtf8 (). data (), "r");
 	fclose (f);
 	return alternatives;
 }
+#endif

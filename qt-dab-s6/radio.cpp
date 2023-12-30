@@ -4684,6 +4684,7 @@ QPixmap p;
 	   p = strengthLabels. at (2);
 	else
 	   p = strengthLabels. at (3);
+	this -> snrLabel -> setAlignment(Qt::AlignRight);
 	this -> snrLabel -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 
 	if (my_snrViewer. isHidden ()) {
@@ -4840,6 +4841,7 @@ QPixmap p;
             p. load (":res/volume_on.png", "png");
         else
             p. load (":res/volume_off.png", "png");
+	soundLabel	-> setAlignment(Qt::AlignRight);
         soundLabel -> 
                setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 }
