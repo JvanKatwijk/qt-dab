@@ -132,8 +132,6 @@ static struct {
 #define	SCANLIST_BUTTON		QString ("scanListButton")
 #define	PRESET_BUTTON		QString ("presetButton")
 #define	DUMP_BUTTON		QString ("dumpButton")
-#define PREVCHANNEL_BUTTON	QString ("prevChannelButton")
-#define NEXTCHANNEL_BUTTON	QString ("nextChannelButton")
 #define PREVSERVICE_BUTTON	QString ("prevServiceButton")
 #define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
 #define	DLTEXT_BUTTON		QString	("dlTextButton")
@@ -251,6 +249,14 @@ QString h;
 
 //	The settings are done, now creation of the GUI parts
 	setupUi (this);
+//	and init the up and down button
+	{  QPixmap p;
+	   if (p. load (":res/up-arrow.png", "png"))
+	      prevChannelButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	   if (p. load (":res/down-arrow.png", "png"))
+	      nextChannelButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
+	}
+
 	int x	= dabSettings_p -> value ("mainWidget-x", 100). toInt ();
 	int y	= dabSettings_p -> value ("mainWidget-y", 100). toInt ();
 	int wi	= dabSettings_p -> value ("mainwidget-w", 300). toInt ();
@@ -267,9 +273,11 @@ QString h;
 	configDisplay. move (QPoint (x, y));
 
 #ifdef HAVE_RTLSDR_V3
-        setWindowTitle (QString ("Qt-DAB-") + "FOR RTLSDR-V3");
+        setWindowTitle (QString ("Qt-DAB-") + QString (CURRENT_VERSION) +
+	                                                 "FOR RTLSDR-V3");
 #elif HAVE_RTLSDR_V4
-        setWindowTitle (QString ("Qt-DAB-") + "FOR RTLSDR-V4");
+        setWindowTitle (QString ("Qt-DAB-") + QString (CURRENT_VERSION) +
+	                                                  "FOR RTLSDR-V4");
 #else
         setWindowTitle ("Qt-DAB-" + QString (CURRENT_VERSION));
 #endif
@@ -451,10 +459,6 @@ QString h;
 	         this, SLOT (color_configButton ()));
 	connect (httpButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_httpButton ()));
-	connect	(prevChannelButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_prevChannelButton ()));
-	connect (nextChannelButton, SIGNAL (rightClicked ()),
-	         this, SLOT (color_nextChannelButton ()));
 	connect (prevServiceButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_prevServiceButton ()));
 	connect (nextServiceButton, SIGNAL (rightClicked ()),
@@ -3453,18 +3457,6 @@ QString dumpButton_font =
 	   dabSettings_p -> value (DUMP_BUTTON + "_font",
 	                                              "black"). toString ();
 
-QString prevChannelButton_color =
-	   dabSettings_p -> value (PREVCHANNEL_BUTTON + "_color",
-	                                              "black"). toString ();
-QString prevChannelButton_font =
-	   dabSettings_p -> value (PREVCHANNEL_BUTTON + "_font",
-	                                              "white"). toString ();
-QString nextChannelButton_color =
-	   dabSettings_p -> value (NEXTCHANNEL_BUTTON + "_color",
-	                                              "black"). toString ();
-QString nextChannelButton_font =
-	   dabSettings_p -> value (NEXTCHANNEL_BUTTON + "_font",
-	                                              "white"). toString ();
 QString prevServiceButton_color =
 	   dabSettings_p -> value (PREVSERVICE_BUTTON + "_color",
 	                                              "blaCK"). toString ();
@@ -3614,14 +3606,6 @@ QString loadTableButton_font	=
 	              setStyleSheet (temp. arg (httpButton_color,
 	                                        httpButton_font));
 
-	prevChannelButton ->
-	              setStyleSheet (temp. arg (prevChannelButton_color,
-	                                        prevChannelButton_font));
-
-	nextChannelButton ->
-	              setStyleSheet (temp. arg (nextChannelButton_color,
-	                                        nextChannelButton_font));
-
 	prevServiceButton ->
 	              setStyleSheet (temp. arg (prevServiceButton_color,
 	                                        prevServiceButton_font));
@@ -3662,14 +3646,6 @@ void	RadioInterface::color_presetButton	()	{
 
 void	RadioInterface::color_sourcedumpButton	()	{
 	set_buttonColors (configWidget. dumpButton, DUMP_BUTTON);
-}
-
-void	RadioInterface::color_prevChannelButton	()	{
-	set_buttonColors (prevChannelButton, PREVCHANNEL_BUTTON);
-}
-
-void	RadioInterface::color_nextChannelButton	()	{
-	set_buttonColors (nextChannelButton, NEXTCHANNEL_BUTTON);
 }
 
 void	RadioInterface::color_prevServiceButton	()	{

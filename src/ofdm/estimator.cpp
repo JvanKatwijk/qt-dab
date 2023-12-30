@@ -77,9 +77,10 @@ void	estimator::estimate	(std::vector<Complex> v,
 	   hhh [i] = Complex (0, 0);
 	for (int i = - carriers / 2; i < carriers / 2; i ++) {
 	   int index = (T_u  + i) % T_u;
-	   if (index != 0)
+	   if (index != 0) {
 	      hhh [T_u / 2 + i] =
 	                     v [index] / refTable [T_u / 2 + i];
+	   }
 	}
 	fft_backwards. fft (hhh);
 //

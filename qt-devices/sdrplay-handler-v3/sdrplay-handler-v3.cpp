@@ -829,26 +829,6 @@ ULONG APIkeyValue_length = 255;
 //	                                               Handle != nullptr);
 	   }
 	   if (Handle == nullptr) {
-	      FILE *f1 = fopen ("C:\\Program Files\\SDRplay\\API\\x86\\sdrplay_api.dll", "r");
-	      if (f1 == nullptr)
-	         fprintf (stderr, "Niet gevonden\n");
-	      else
-	         fclose (f1);
-//	      fprintf (stderr, "first attempt failed, going for 2\n");
-	      const wchar_t *y =
-	              L"C:\\Program Files\\SDRplay\\API\\x86\\sdrplay_api.dll";
-	      Handle	= LoadLibrary (y);
-	   }
-	   if (Handle == nullptr) {
-	      fprintf (stderr, "second attempt failed, going for dlopen\n");
-	      const char *y =
-	           "C:\\Program Files\\SDRplay\\API\\x86\\sdrplay_api.dll";
-	      Handle		= (HINSTANCE)dlopen (y, RTLD_NOW);
-	      if (Handle == nullptr) {
-	         fprintf (stderr, "error report %s\n", dlerror());
-	      }
-	   }
-	   if (Handle == nullptr) {
 	      fprintf (stderr, "Failed to open sdrplay_api.dll\n");
 	      return nullptr;
 	   }

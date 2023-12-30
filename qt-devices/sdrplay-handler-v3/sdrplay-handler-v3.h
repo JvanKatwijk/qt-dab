@@ -41,7 +41,7 @@ class	generalCommand;
 class	xml_fileWriter;
 
 #ifdef __MINGW32__
-#include	"dlfcn.h"
+//#include	"dlfcn.h"
 #define GETPROCADDRESS  GetProcAddress
 #else
 #define GETPROCADDRESS  dlsym

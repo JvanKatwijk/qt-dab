@@ -510,8 +510,6 @@ private slots:
 	void			color_devicewidgetButton	();
 	void			color_scanListButton	();
 	void			color_sourcedumpButton	();
-	void			color_prevChannelButton	();
-	void			color_nextChannelButton	();
 	void			color_prevServiceButton	();
 	void			color_nextServiceButton	();
 	void			color_dlTextButton	();

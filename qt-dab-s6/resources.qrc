@@ -26,5 +26,7 @@
         <file>../res/announcement05.png</file>
         <file>../res/announcement09.png</file>
         <file>../res/announcement-d.png</file>
+        <file>../res/up-arrow.png</file>
+        <file>../res/down-arrow.png</file>
     </qresource>
 </RCC>

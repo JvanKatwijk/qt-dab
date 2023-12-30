@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>580</width>
+    <width>655</width>
     <height>428</height>
    </rect>
   </property>
@@ -97,36 +97,21 @@
          </layout>
         </item>
         <item>
-         <widget class="smallComboBox" name="channelSelector">
-          <property name="toolTip">
-           <string>Channel selector.</string>
-          </property>
-          <item>
-           <property name="text">
-            <string>channels</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="smallPushButton" name="prevChannelButton">
-            <property name="toolTip">
-             <string>Select the previous channel.</string>
-            </property>
+           <widget class="clickablelabel" name="prevChannelButton">
             <property name="text">
-             <string>-</string>
+             <string>prevLabel</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="smallPushButton" name="nextChannelButton">
-            <property name="toolTip">
-             <string>Select the next channel of the list maintained in the channel selector.</string>
-            </property>
+           <widget class="smallComboBox" name="channelSelector"/>
+          </item>
+          <item>
+           <widget class="clickablelabel" name="nextChannelButton">
             <property name="text">
-             <string>+</string>
+             <string>nextLabel</string>
             </property>
            </widget>
           </item>
