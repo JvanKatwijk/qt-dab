@@ -9,7 +9,28 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-![6.3](/qt-dab-6.3.png?raw=true)
+![6.4](/qt-dab-6.4.png?raw=true)
+
+Differences with the previous versions
+
+In Qt-DAB 6.40 there are visible changes to the main widget and to
+the configuration and control widget.
+In the main widget the *content* button, the *technical data* button
+and the *mute* button are removed. The *schedule* button is moved
+to the configuration and control widget.
+The functionality of the removed buttons is not removed.
+
+ * touch the name of the ensemble on top of the left part of the main widget
+and the content table appears (or disappears)
+
+ * touch the name of the selected service on the right half of the widget
+and the technical widget will appear (or disappear)
+
+ *  the icon of the loudspeaker will show whether or not a sound channel
+is selected. Touching the icon will control the muting
+
+Furthermore, the scanning function is re-implemented and the *scan* button
+on the main widget now controls the visibility of a *scan-control widget*.
 
 Table of Contents
 =================================================================
@@ -17,6 +38,7 @@ Table of Contents
 * [Introduction](#introduction)
 * [Features](#features)
 * [Widgets and scopes](#widgets-and-scopes-for-qt-dab)
+* [Scan control](#scan-control)
 * [Showing a map for TII](#a-note-on-showing-a-map)
 * [Documentation](#Documentation)
 * [Installation on Windows](#Installation-on-Windows)
@@ -33,15 +55,8 @@ Introduction
 **Qt-DAB-XX** is a rich implementation of a DAB decoder for use on Linux and Windows based PCs, including some ARM based boards, such as the Raspberry PI 2 and up. It can be used with a variety of SDR devices, including DABsticks, all models of the SDRplay, Airspy etc.
 
 
-The current version is 6.3. The versions 5.4 and 4.7 are - since they were subject to changes as well-  renamed to 5.5 and 4.8.
-
-For all three versions, the "preset" handling is improved, the "presets" 
-renamed to "favorites", with the "favorites" visible on a separate widget.
-
-Internally, there are numerous changes, most of them to improve
-functionality and performance.
-An example is experimenting with  decoding algorithms, or
-the ability to use double precision computations for the signal processing.
+The current version is 6.40. The versions 5.5 and 4.8 are still available
+and can be built, using the same set of sources as the current 6.40.
 
 Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are available. 
 
@@ -102,7 +117,7 @@ Widgets and scopes
 
 ![6.2](/qt-dab-6-main-widget.png)
 
-The full GUI for Qt-DAB 6.30 consists of a handful of widgets; 
+The full GUI for Qt-DAB 6.40 consists of a handful of widgets; 
 a single widget, the *main* widget is always visible and visibility of the
 other wigets (spectrum widget, technical data widget and configuration-and-control widget) is stricly under user control by settings in the main widget.
 
@@ -201,6 +216,20 @@ that right clicking adds the service name to the favorites. Setting the
 most left checkbox will revert this.
 The second selector, a combobox with only a few items allows selection from
 some experimental decoder implementations.
+
+Scan control
+=======================================================================
+
+![6.1](/scan-sidget.png?raw=true)
+
+A separate widget - visibility under control of the *scan* button on the
+main widget - provides the control ob scanning.
+
+The *show* button controls the visibility of the *skiptable*, skiptables
+can be load and stored in either the ".ini" file (use the "...default" buttons,
+or can be kept as xml file on a user defined place (the other load/store buttons).
+
+The small table at the bottom of the widget is just for convenience, on scanning it will display the number of services found in the channels visited.
 
 A note on showing a map
 =======================================================================
