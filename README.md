@@ -220,7 +220,7 @@ some experimental decoder implementations.
 Scan control
 =======================================================================
 
-![6.1](/scan-sidget.png?raw=true)
+![6.1](/scan-widget.png?raw=true)
 
 A separate widget - visibility under control of the *scan* button on the
 main widget - provides the control ob scanning.
