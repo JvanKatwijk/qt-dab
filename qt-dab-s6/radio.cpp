@@ -1033,6 +1033,10 @@ const char *type;
 
 	if (backgroundFlag)
 	   return;
+
+	if (channel. currentService. valid &&  
+	                     channel. currentService. announcement_going)
+	   return;
 	QPixmap p;
 	p. loadFromData (data, type);
 	displaySlide (p);
@@ -4118,8 +4122,7 @@ QString defaultName	= QDir::homePath () + "/.txdata.tii";
 QString	tableFile	=
 	dabSettings_p -> value ("tiiFile", defaultName). toString ();
 
-	tiiProcessor. loadTable (tableFile);
-	if (tiiProcessor. valid ()) {
+	if (tiiProcessor. loadTable (tableFile)) {
 	   QMessageBox::information (this, tr ("success"),
 	                            tr ("Loading and installing database complete\n"));
 	   channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
@@ -4353,7 +4356,6 @@ void	RadioInterface::http_terminate	() {
 	locker. unlock ();
 	httpButton -> setText ("http");
 }
-
 
 void	RadioInterface::displaySlide	(const QPixmap &p) {
 int w   = 360;

@@ -365,7 +365,7 @@ L1:	      if ((xx = recv (ClientSocket, buffer, 4096, 0)) < 0) {
 	      char hdr [2048];
 	      sprintf (hdr,
 	               "HTTP/1.1 200 OK\r\n"
-	               "Server: SDRunoPlugin_1090\r\n"
+	               "Server: Qt-DAB\r\n"
 	               "Content-Type: %s\r\n"
 	               "Connection: %s\r\n"
 	               "Content-Length: %d\r\n"

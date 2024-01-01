@@ -4279,8 +4279,7 @@ QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
 	   tableFile = QDir::homePath () + "/.txdata.tii";
 	   dabSettings -> setValue ("tiiFile", tableFile);
 	}
-	tiiProcessor. loadTable (tableFile);
-	if (tiiProcessor. valid ()) {
+	if (tiiProcessor. loadTable (tableFile)) {
 	   QMessageBox::information (this, tr ("success"),
 	                            tr ("Loading and installing database complete\n"));
 	   channel. tiiFile	= tiiProcessor. tiiFile (tableFile);

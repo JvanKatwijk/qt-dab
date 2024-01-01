@@ -45,7 +45,7 @@
 #include        "preset-handler.h"
 
 #include	"dl-cache.h"
-#include	"tii-codes.h"
+#include	"tii-mapper.h"
 #include	"content-table.h"
 #include	<memory>
 #include	<mutex>
@@ -197,7 +197,7 @@ private:
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
-	tiiHandler		tiiProcessor;
+	tiiMapper		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;

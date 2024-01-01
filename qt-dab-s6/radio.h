@@ -64,7 +64,7 @@
 #include	"scheduler.h"
 
 #include	"http-handler.h"
-#include	"tii-codes.h"
+#include	"tii-mapper.h"
 
 class	QSettings;
 class	ofdmHandler;
@@ -212,7 +212,7 @@ private:
 	QFrame			dataDisplay;
 	QFrame			configDisplay;
 	dlCache			the_dlCache;
-	tiiHandler		tiiProcessor;
+	tiiMapper		tiiProcessor;
 	findfileNames		filenameFinder;
 	Scheduler		theScheduler;
 	RingBuffer<std::complex<int16_t>>	theTechData;

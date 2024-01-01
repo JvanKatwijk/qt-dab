@@ -205,6 +205,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
+	   ../includes/support/tii-mapper.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -321,6 +322,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
+	   ../src/support/tii-mapper.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -793,14 +795,14 @@ preCompiled {
 	}
 #	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/tii-codes.h
-	SOURCES		+= ../../TII-CODES/tii-codes.cpp
+	HEADERS		+= ../../TII-CODES/table-loader.h
+	SOURCES		+= ../../TII-CODES/table-loader.cpp
 }
 
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-codes.h
-	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
+	HEADERS		+= ../src/support/tii-library/table-loader.h
+	SOURCES		+= ../src/support/tii-library/table-loader.cpp
 }
 
 mapserver {

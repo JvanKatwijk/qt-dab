@@ -32,7 +32,6 @@ RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
 
-DEFINES	+= __ESTIMATOR__
 #
 #       For more parallel processing, uncomment the following
 #       defines
@@ -216,6 +215,7 @@ HEADERS += ./radio.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
+	   ../includes/support/tii-mapper.h \
 	   ../includes/support/buttons/smallcombobox.h \
 	   ../includes/support/buttons/newpushbutton.h \
 	   ../includes/support/buttons/normalpushbutton.h \
@@ -340,6 +340,7 @@ SOURCES += ./main.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
+	   ../src/support/tii-mapper.cpp \
 	   ../src/support/buttons/smallcombobox.cpp \
 	   ../src/support/buttons/newpushbutton.cpp \
 	   ../src/support/buttons/normalpushbutton.cpp \
@@ -461,7 +462,7 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-##for for 64 bit
+#for for 64 bit
 	TARGET		= qt-dab64-6.40
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
@@ -478,7 +479,6 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= sdrplay-v3
 	CONFIG		+= hackrf
 	CONFIG		+= lime
-	CONFIG		+= NO_SSE
 	DEFINES		+= __THREADED_BACKEND
 	INCLUDEPATH	+= ../../TII-CODES
 	HEADERS		+= ../../TII-CODES/tii-codes.h
@@ -493,51 +493,25 @@ isEmpty(GITHASHSTRING) {
 	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
 	LIBS		+= -lportaudio
 #
-#for win32, comment out the lines above
-#	TARGET		= qt-dab32-6-V3
-#	CONFIG		+= dabstick-win-v3
-##	TARGET		= qt-dab32-6.40
-##	CONFIG		+= dabstick-win-v4
-#	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
-#	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
-#	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
-#	CONFIG		+= double
-#	#CONFIG		+= single
-#	CONFIG		+= mapserver
-#	CONFIG		+= extio
-#	CONFIG		+= airspy
-#	CONFIG		+= rtl_tcp
-#	CONFIG		+= sdrplay-v2
-#	CONFIG		+= sdrplay-v3
-#	CONFIG		+= hackrf
-#	CONFIG		+= lime
-#	CONFIG		+= pluto
-##	CONFIG		+= pluto-rxtx
-#	CONFIG		+= NO_SSE
-#	CONFIG		+= preCompiled
-#	CONFIG		+= tiiLib
-#
-#	end of 32/64 specifics
-INCLUDEPATH	+= /usr/local/include
-LIBS		+= -lportaudio
-#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
-#LIBS		+= -lole32
-LIBS		+= -lwinpthread
-LIBS		+= -lwinmm
-LIBS 		+= -lstdc++
-LIBS		+= -lws2_32
-LIBS		+= -lusb-1.0
-LIBS		+= -lz
+	INCLUDEPATH	+= /usr/local/include
+	LIBS		+= -lportaudio
+	#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
+	#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+	#LIBS		+= -lole32
+	LIBS		+= -lwinpthread
+	LIBS		+= -lwinmm
+	LIBS 		+= -lstdc++
+	LIBS		+= -lws2_32
+	LIBS		+= -lusb-1.0
+	LIBS		+= -lz
 #correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
-#LIBS		+= -lqwt
-LIBS		+= -lqwt-qt5
-CONFIG		+= faad
+	#LIBS		+= -lqwt
+	LIBS		+= -lqwt-qt5
+	CONFIG		+= faad
 #
 #very experimental, simple server for connecting to a tdc handler
-#CONFIG		+= datastreamer
+#	CONFIG		+= datastreamer
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
@@ -866,16 +840,15 @@ preCompiled {
 	unix {
 	LIBS		+= -lcurl
 	}
-#	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/tii-codes.h
-	SOURCES		+= ../../TII-CODES/tii-codes.cpp
+	HEADERS		+= ../../TII-CODES/table-loader.h
+	SOURCES		+= ../../TII-CODES/table-loader.cpp
 }
 
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-codes.h
-	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
+	HEADERS		+= ../src/support/tii-library/table-loader.h
+	SOURCES		+= ../src/support/tii-library/table-loader.cpp
 }
 
 mapserver {

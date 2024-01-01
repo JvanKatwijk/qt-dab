@@ -31,7 +31,7 @@
 #include	<complex>
 #include	<mutex>
 #include	<QString>
-#include	"tii-codes.h"
+#include	"tii-mapper.h"
 class	RadioInterface;
 
 typedef struct {

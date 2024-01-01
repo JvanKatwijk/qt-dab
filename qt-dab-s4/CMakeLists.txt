@@ -272,7 +272,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/support/mapport.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
-	     ../src/support/tii-library/tii-codes.h
+	     ../includes/support/tii-mapper.h
+	     ../src/support/tii-library/table-loader.h
 	     ../includes/support/buttons/smallcombobox.h
              ../includes/support/buttons/newpushbutton.h
              ../includes/support/buttons/normalpushbutton.h
@@ -385,7 +386,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/skin-handler.cpp
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
-	     ../src/support/tii-library/tii-codes.cpp
+	     ../src/support/tii-mapper.cpp
+	     ../src/support/tii-library/table-loader.cpp
 	     ../src/scopes-qwt6/audio-display.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp
 	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
