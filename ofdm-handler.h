@@ -165,9 +165,7 @@ signals:
 	                                                  float, float);
 	void		show_clock_error	(int);
 	void		show_null		(int);
-#ifdef	__ESTIMATOR__
 	void		show_channel		(int);
-#endif
 	void		show_Corrector		(int, float);
 };
 

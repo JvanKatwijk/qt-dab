@@ -31,9 +31,7 @@
 #include	"timesyncer.h"
 #include	"freqsyncer.h"
 #include	"ringbuffer.h"
-#ifdef	__ESTIMATOR__
 #include	"estimator.h"
-#endif
 #include	"correlator.h"
 
 //
@@ -114,10 +112,8 @@
 	         mr,  &RadioInterface::show_clock_error);
 	connect (this, &ofdmHandler::show_null,
 	         mr, &RadioInterface::show_null);
-#ifdef	__ESTIMATOR__
 	connect (this, &ofdmHandler::show_channel,
 	         mr, &RadioInterface::show_channel);
-#endif
 	connect (this, &ofdmHandler::show_Corrector,
 	         mr,  &RadioInterface::show_Corrector);
 	theTIIDetector. reset();
@@ -168,9 +164,7 @@ void	ofdmHandler::run	() {
 int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
 freqSyncer	myFreqSyncer (radioInterface_p, p);
-#ifdef	__ESTIMATOR__
 estimator	myEstimator  (radioInterface_p, p);
-#endif
 correlator	myCorrelator (radioInterface_p, p);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
@@ -299,7 +293,6 @@ int	snrCount	= 0;
 	                              ofdmBufferIndex,
 	                              T_u - ofdmBufferIndex,
 	                              coarseOffset + fineOffset, true);
-#ifdef	__ESTIMATOR__
 	      static int abc = 0;
 	      if (radioInterface_p -> channelOn ()) {
 	         if (++abc > 10) { 
@@ -313,7 +306,6 @@ int	snrCount	= 0;
 	            abc = 0;
 	         }
 	      }
-#endif
 	      sampleCount	+= T_u;
 	      theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__

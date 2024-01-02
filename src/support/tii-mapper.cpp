@@ -99,7 +99,7 @@ void	tiiMapper::get_coordinates (float *latitude, float * longitude,
 //	https://www.movable-type.co.uk/scripts/latlong.html
 //	Haversine formula applied
 int	tiiMapper::distance_2 (float latitude1, float longitude1,
-	                      float latitude2, float longitude2) {
+	                       float latitude2, float longitude2) {
 double	R	= 6371;
 double	Phi1	= latitude1 * M_PI / 180;
 double	Phi2	= latitude2 * M_PI / 180;
