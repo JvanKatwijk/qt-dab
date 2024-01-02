@@ -282,7 +282,7 @@ std::vector<uint8_t> data;		// for the local addition
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
 void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
-//static int16_t segmentno	   = 0;
+static int16_t segmentno	   = 0;
 static int16_t remainDataLength    = 0;
 static bool    isLastSegment       = false;
 static bool    moreXPad            = false;
@@ -310,14 +310,23 @@ int16_t  dataLength                = 0;
 	                    first, last, Cflag);
 #endif
 	   if (first) { 
-//	      segmentno = 1;
+	      segmentno = 1;
+//	      fprintf (stderr, "segment 1\n");
 	      charSet = (prefix >> 4) & 017;
 	      dynamicLabelText. clear();
 	   }
-//	   else 
-//	      segmentno = ((prefix >> 4) & 07) + 1;
+	   else {
+	      int test = ((prefix >> 4) & 07) + 1;
+	      if (test != segmentno + 1) {
+//	         fprintf (stderr, "mismatch %d %d\n", test, segmentno);
+	         segmentno = -1;
+	         return;
+	      }
+	      segmentno = ((prefix >> 4) & 07) + 1;
+//	      fprintf (stderr, "segment %d\n", segmentno);
+	   }
 
-	   if (Cflag) {		// special dynamic label command
+ 	  if (Cflag) {		// special dynamic label command
 	      // the only specified command is to clear the display
 	      dynamicLabelText. clear();
 	   }
@@ -343,7 +352,8 @@ int16_t  dataLength                = 0;
 	      if (last) {
 	         if (!moreXPad) {
 	            show_label (dynamicLabelText);
-	                              
+//	            fprintf (stderr, "last segment encountered\n");
+	            segmentno = -1;
 	         }
 	         else
 	            isLastSegment = true;
