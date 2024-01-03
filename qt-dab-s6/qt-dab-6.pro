@@ -851,8 +851,8 @@ preCompiled {
 
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/tii-codes.h
-	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
+	HEADERS		+= ../src/support/tii-library/table-loader.h
+	SOURCES		+= ../src/support/tii-library/table-loader.cpp
 }
 
 mapserver {
