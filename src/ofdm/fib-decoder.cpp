@@ -656,8 +656,6 @@ int16_t	fibDecoder::HandleFIG0Extension13 (uint8_t *d,
 	                                   uint8_t OE_bit,
 	                                   uint8_t pdBit) {
 int16_t	bitOffset	= used * 8;
-//	fprintf (stderr, "FIG13: pdBit = %d, bitOffset = %d\n",
-//	                     pdBit, bitOffset);
 uint32_t	SId	= getLBits (d, bitOffset, pdBit == 1 ? 32 : 16);
 uint16_t	SCIds;
 int16_t		NoApplications;
@@ -672,22 +670,33 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	bitOffset	+= 8;
 
 	int serviceIndex = find_service (SId);
+	if (serviceIndex > 0) {
+	   QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
+//	   fprintf (stderr, "SPI/EPG for %s\n",
+//	                        dataName. toLatin1 (). data ());
+	}
 
 	for (i = 0; i < NoApplications; i ++) {
 	   appType		= getBits (d, bitOffset, 11);
 	   int16_t length	= getBits_5 (d, bitOffset + 11);
-	   bitOffset 		+= (11 + 5 + 8 * length);
-
-	   if (serviceIndex == -1)
+	   if (serviceIndex == -1) {
+	      bitOffset 	+= (11 + 5 + 8 * length);
 	      continue;
+	   }
 
 	   int compIndex =
 	               findServiceComponent (localBase, SId, SCIds);
 	   if (compIndex != -1) {
 	      if (localBase -> serviceComps [compIndex]. TMid == 3)
 	         localBase -> serviceComps [compIndex]. appType = appType;
-	          
 	   }
+
+//	   fprintf (stderr, "appType %d. length %d\n", appType, length);
+//	   for (int j = 0; j < length; j ++)
+//	      fprintf (stderr, "%x ", getBits_8 (d, bitOffset + 11 + 5 + j * 8));
+//	   fprintf (stderr, "\n");
+	   bitOffset 		+= (11 + 5 + 8 * length);
+
 	}
 	return bitOffset / 8;
 }

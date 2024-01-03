@@ -274,10 +274,10 @@ QString h;
 
 #ifdef HAVE_RTLSDR_V3
         setWindowTitle (QString ("Qt-DAB-") + QString (CURRENT_VERSION) +
-	                                                 "FOR RTLSDR-V3");
+	                                                 " with RTLSDR-V3");
 #elif HAVE_RTLSDR_V4
         setWindowTitle (QString ("Qt-DAB-") + QString (CURRENT_VERSION) +
-	                                                  "FOR RTLSDR-V4");
+	                                                  " wirh RTLSDR-V4");
 #else
         setWindowTitle ("Qt-DAB-" + QString (CURRENT_VERSION));
 #endif
@@ -4593,7 +4593,7 @@ bool	tiiChange	= false;
 	                                            channel. localPos);
 	channel. corner	  = tiiProcessor. corner (channel. targetPos,
 	                                          channel. localPos);
-	QString labelText = theName +
+	QString labelText = theName + " " +
 	                    QString::number (channel. distance) + " km " +
 	                    QString::number (channel. corner) +
 	                    QString::fromLatin1 (" \xb0 ");

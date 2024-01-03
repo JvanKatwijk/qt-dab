@@ -8,19 +8,18 @@ TEMPLATE	= app
 QT		+= widgets xml 
 #CONFIG		+= console
 CONFIG		-= console
-QMAKE_CXXFLAGS	+= -std=c++17
-CONFIG		+= release
+QMAKE_CXXFLAGS	+= -std=c++14
 win32 {
 QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -32,6 +31,7 @@ RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
 
+DEFINES	+= __ESTIMATOR__
 #
 #       For more parallel processing, uncomment the following
 #       defines
@@ -462,56 +462,71 @@ isEmpty(GITHASHSTRING) {
     DEFINES += GITHASH=\\\"------\\\"
 }
 
-#for for 64 bit
-	TARGET		= qt-dab64-6.40
-	DEFINES		+= __BITS64__
-	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
-	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
-	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
-	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
+##for for 64 bit
+#	TARGET		= qt-dab64-6.40
+#	DEFINES		+= __BITS64__
+#	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
+#	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
+#	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
+#	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 ##	LIBS		+= -liio
-	CONFIG		+= airspy
-	CONFIG		+= rtl_tcp
-	CONFIG		+= dabstick-win64
-	CONFIG		+= sdrplay-v2
-	CONFIG		+= sdrplay
-	CONFIG		+= pluto
-	CONFIG		+= sdrplay-v3
-	CONFIG		+= hackrf
-	CONFIG		+= lime
-	DEFINES		+= __THREADED_BACKEND
-	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/table-loader.h
-	SOURCES		+= ../../TII-CODES/table-loader.cpp
+##	#CONFIG		+= extio
+#	CONFIG		+= airspy
+#	CONFIG		+= rtl_tcp
+#	CONFIG		+= dabstick
+#	CONFIG		+= sdrplay-v2
+#	CONFIG		+= pluto
+#	CONFIG		+= sdrplay-v3
+##	CONFIG		+= hackrf
+##	CONFIG		+= lime
+#	CONFIG		+= NO_SSE
+#	DEFINES		+= __THREADED_BACKEND
+#
+#for win32, comment out the lines above
+	TARGET		= qt-dab32-6-V3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.40
+#	CONFIG		+= dabstick-win-v4
+	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
+	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
+	LIBS		+= -L/usr/i686-w64-mingw32/sys-root/mingw/lib
 	CONFIG		+= double
 	#CONFIG		+= single
 	CONFIG		+= mapserver
-	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
-	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
-	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libcurl-4.dll 
-	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-	LIBS		+= /usr/x86_64-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
-	LIBS		+= -lportaudio
+	CONFIG		+= extio
+	CONFIG		+= airspy
+	CONFIG		+= rtl_tcp
+	CONFIG		+= sdrplay-v2
+	CONFIG		+= sdrplay-v3
+	CONFIG		+= hackrf
+	CONFIG		+= lime
+	CONFIG		+= pluto
+#	CONFIG		+= pluto-rxtx
+	CONFIG		+= NO_SSE
+	CONFIG		+= preCompiled
+#	CONFIG		+= tiiLib
 #
-	INCLUDEPATH	+= /usr/local/include
-	LIBS		+= -lportaudio
-	#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
-	#LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
-	#LIBS		+= -lole32
-	LIBS		+= -lwinpthread
-	LIBS		+= -lwinmm
-	LIBS 		+= -lstdc++
-	LIBS		+= -lws2_32
-	LIBS		+= -lusb-1.0
-	LIBS		+= -lz
+#	end of 32/64 specifics
+INCLUDEPATH	+= /usr/local/include
+LIBS		+= -lportaudio
+LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsndfile-1.dll
+LIBS		+= /usr/i686-w64-mingw32/sys-root/mingw/bin/libsamplerate-0.dll
+LIBS		+= -lole32
+LIBS		+= -lwinpthread
+LIBS		+= -lwinmm
+LIBS 		+= -lstdc++
+LIBS		+= -lws2_32
+LIBS		+= -lusb-1.0
+LIBS		+= -lz
 #correct this for the correct path to the qwt6 library on your system
 #mingw64 wants the first one, cross compiling mingw64-32 the second one
-	#LIBS		+= -lqwt
-	LIBS		+= -lqwt-qt5
-	CONFIG		+= faad
+#LIBS		+= -lqwt
+LIBS		+= -lqwt-qt5
+CONFIG		+= faad
 #
 #very experimental, simple server for connecting to a tdc handler
-#	CONFIG		+= datastreamer
+#CONFIG		+= datastreamer
 
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
@@ -546,21 +561,7 @@ dabstick-win-v4 {
 	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
 	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
 	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
-#	LIBS		+= /usr/i686-s64-mingw32/sys-root/mingw/bin/librtlsdr.dll
-	LIBS		+= /usr/shared/drivers/rtlsdr-drivers-windows/x86/librtlsdr.dll
-}
-
-dabstick-win64 {
-	DEFINES		+= HAVE_RTLSDR_V4
-	DEPENDPATH	+= ../qt-devices/rtlsdr-handler-win-v4
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-win-v4
-	INCLUDEPATH	+= ../qt-devices/rtlsdr-handler-common
-	HEADERS		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.h \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.h
-	SOURCES		+= ../qt-devices/rtlsdr-handler-win-v4/rtlsdr-handler-v4.cpp \
-	                   ../qt-devices/rtlsdr-handler-common/rtl-dongleselect.cpp
-	FORMS		+= ../qt-devices/rtlsdr-handler-common/rtlsdr-widget.ui
-	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x64/rtlsdr.a
+	LIBS		+= /usr/shared/drivers/rtlsdrWindowsV4/x86/rtlsdr.dll
 }
 
 dabstick-win-v3 {
@@ -612,7 +613,7 @@ sdrplay-v3 {
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 
 	FORMS		+= ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
-#	LIBS		+= -ldl
+	LIBS		+= -ldl
 }
 #
 #	limeSDR
@@ -816,6 +817,8 @@ PC	{
 }
 
 NO_SSE	{
+	HEADERS		+= ../src/support/viterbi-spiral/spiral-no-sse.h
+	SOURCES		+= ../src/support/viterbi-spiral/spiral-no-sse.c
 }
 
 faad	{
@@ -840,6 +843,7 @@ preCompiled {
 	unix {
 	LIBS		+= -lcurl
 	}
+#	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
 	HEADERS		+= ../../TII-CODES/table-loader.h
 	SOURCES		+= ../../TII-CODES/table-loader.cpp
@@ -847,8 +851,8 @@ preCompiled {
 
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/table-loader.h
-	SOURCES		+= ../src/support/tii-library/table-loader.cpp
+	HEADERS		+= ../src/support/tii-library/tii-codes.h
+	SOURCES		+= ../src/support/tii-library/tii-codes.cpp
 }
 
 mapserver {

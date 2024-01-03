@@ -20,7 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-//#define	_PAD_TRACER
+//#define	_PAD_TRACE_
 #include	"pad-handler.h"
 #include	<cstring>
 #include	"radio.h"
@@ -126,8 +126,13 @@ int16_t	i;
 	      case 2:	// start of fragment, extract the length
 	         if (firstSegment && !lastSegment) {
 	            segmentNumber   = b [last - 2] >> 4;
-	            if (dynamicLabelText. size () > 0)
+	            if (dynamicLabelText. size () > 0) {
+#ifdef	_PAD_TRACE_
+	               fprintf (stderr, ">>>>shortPad %s\n",
+	                                  dynamicLabelText. toLatin1 (). data ());
+#endif
 	               show_label (dynamicLabelText);
+	            }
 	            dynamicLabelText. clear ();
 	         }
 	         still_to_go     = b [last - 1] & 0x0F;
@@ -173,8 +178,12 @@ int16_t	i;
 //	if we are at the end of the last segment (and the text is not empty)
 //	then show it.
 	      if (!firstSegment && lastSegment) {
-	         if (dynamicLabelText. size() > 0)
+	         if (dynamicLabelText. size() > 0) {
+#ifdef	_PAD_TRACE_
+	            fprintf (stderr, ">>>shortpad %s\n", dynamicLabelText. toLatin1 (). data ());
+#endif
 	            show_label (dynamicLabelText);
+	         }
 	         dynamicLabelText. clear();
 	      }
 	   }
@@ -282,21 +291,12 @@ std::vector<uint8_t> data;		// for the local addition
 //	A dynamic label is created from a sequence of (dynamic) xpad
 //	fields, starting with CI = 2, continuing with CI = 3
 void	padHandler::dynamicLabel (uint8_t *data, int16_t length, uint8_t CI) {
-static int16_t segmentno	   = 0;
+static int16_t segmentno	   = -1;
 static int16_t remainDataLength    = 0;
 static bool    isLastSegment       = false;
 static bool    moreXPad            = false;
 int16_t  dataLength                = 0;
 
-#ifdef	_PAD_TRACER
-	fprintf (stderr, "dyna lab, length %d : ", length);
-	for (int i = 2; i < length; i ++)
-	   fprintf (stderr, "%x ", data [i]);
-	fprintf (stderr, " (");
-	for (int i = 2; i < length; i ++)
-	   fprintf (stderr, "%c", data [i]);
-	fprintf (stderr, ")\n");
-#endif
 	if ((CI & 037) == 02) {	// start of segment
 	   uint16_t prefix = (data [0] << 8) | data [1];
 	   uint8_t field_1 = (prefix >> 8) & 017;
@@ -305,30 +305,40 @@ int16_t  dataLength                = 0;
 	   uint8_t last    = (prefix >> 13) & 01;
 	   dataLength	   = length - 2; // The length with header removed
 
-#ifdef	_PAD_TRACER
+#ifdef	_PAD_TRACE_
 	   fprintf (stderr, "first %d last %d Cflag %d\n",
 	                    first, last, Cflag);
 #endif
 	   if (first) { 
 	      segmentno = 1;
-//	      fprintf (stderr, "segment 1\n");
+#ifdef	_PAD_TRACE_
+	      fprintf (stderr, "segment 1\n");
+#endif
 	      charSet = (prefix >> 4) & 017;
 	      dynamicLabelText. clear();
 	   }
 	   else {
 	      int test = ((prefix >> 4) & 07) + 1;
 	      if (test != segmentno + 1) {
-//	         fprintf (stderr, "mismatch %d %d\n", test, segmentno);
+#ifdef _PAD_TRACE_
+	         fprintf (stderr, "mismatch %d %d\n", test, segmentno);
+#endif
 	         segmentno = -1;
 	         return;
 	      }
 	      segmentno = ((prefix >> 4) & 07) + 1;
-//	      fprintf (stderr, "segment %d\n", segmentno);
+#ifdef _PAD_TRACE_
+	      fprintf (stderr, "segment %d\n", segmentno);
+#endif
 	   }
 
  	  if (Cflag) {		// special dynamic label command
 	      // the only specified command is to clear the display
+#ifdef	_PAD_TRACE_
+	      fprintf (stderr, "clear command\n");
+#endif
 	      dynamicLabelText. clear();
+	      segmentno = -1;
 	   }
 	   else {		// Dynamic text length
 	      int16_t totalDataLength = field_1 + 1;
@@ -352,7 +362,10 @@ int16_t  dataLength                = 0;
 	      if (last) {
 	         if (!moreXPad) {
 	            show_label (dynamicLabelText);
-//	            fprintf (stderr, "last segment encountered\n");
+#ifdef	_PAD_TRACE_
+	            fprintf (stderr, "last segment encountered %s\n",
+	                          dynamicLabelText. toLatin1 (). data ());
+#endif
 	            segmentno = -1;
 	         }
 	         else
@@ -381,6 +394,9 @@ int16_t  dataLength                = 0;
 	                              dataLength);
 	   dynamicLabelText. append (segmentText);
 	   if (!moreXPad && isLastSegment) {
+#ifdef	_PAD_TRACE_
+	      fprintf (stderr, "%s\n", dynamicLabelText. toLatin1 (). data ());
+#endif
 	      show_label (dynamicLabelText);
 	   }
 	}
