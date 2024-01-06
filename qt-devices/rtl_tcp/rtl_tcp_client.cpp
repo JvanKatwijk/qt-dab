@@ -93,7 +93,7 @@
 	delete	hostLineEdit;
 }
 //
-void	rtl_tcp_client::wantConnect() {
+void	rtl_tcp_client::wantConnect () {
 QString ipAddress;
 int16_t	i;
 QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
@@ -129,7 +129,7 @@ QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 //	a signal appears and we are able to collect the
 //	inserted text. The format is the IP-V4 format.
 //	Using this text, we try to connect,
-void	rtl_tcp_client::setConnection() {
+void	rtl_tcp_client::setConnection () {
 QString s	= hostLineEdit -> text();
 QHostAddress theAddress	= QHostAddress (s);
 
@@ -183,11 +183,11 @@ int32_t	amount =  0;
 	return amount;
 }
 
-int32_t	rtl_tcp_client::Samples() {
+int32_t	rtl_tcp_client::Samples () {
 	return  _I_Buffer	-> GetRingBufferReadAvailable ();
 }
 //
-int16_t	rtl_tcp_client::bitDepth() {
+int16_t	rtl_tcp_client::bitDepth () {
 	return 8;
 }
 

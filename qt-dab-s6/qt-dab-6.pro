@@ -14,12 +14,12 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -417,7 +417,7 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy
+CONFIG		+= airspy-2
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
@@ -483,10 +483,11 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-	TARGET		= qt-dab32-6-V3
-	CONFIG		+= dabstick-win-v3
-#	TARGET		= qt-dab32-6.40
-#	CONFIG		+= dabstick-win-v4
+#	TARGET		= qt-dab32-6-V3
+#	CONFIG		+= dabstick-win-v3
+	TARGET		= qt-dab32-6.40
+	CONFIG		+= dabstick-win-v4
+	CONFIG		+= airspy-2
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -495,7 +496,6 @@ isEmpty(GITHASHSTRING) {
 	#CONFIG		+= single
 	CONFIG		+= mapserver
 	CONFIG		+= extio
-	CONFIG		+= airspy
 	CONFIG		+= rtl_tcp
 	CONFIG		+= sdrplay-v2
 	CONFIG		+= sdrplay-v3
@@ -652,6 +652,19 @@ airspy {
 	SOURCES		+= ../qt-devices/airspy-handler/airspy-handler.cpp \
 	                   ../qt-devices/airspy-handler/airspyselect.cpp
 	FORMS		+= ../qt-devices/airspy-handler/airspy-widget.ui
+}
+
+airspy-2 {
+	DEFINES		+= HAVE_AIRSPY_2
+	DEPENDPATH	+= ../qt-devices/airspy-2 
+	INCLUDEPATH	+= ../qt-devices/airspy-2 \
+	                   ../qt-devices/airspy-2/libairspy
+	HEADERS		+= ../qt-devices/airspy-2/airspy-2.h \
+	                   ../qt-devices/airspy-2/airspyselect.h \
+	                   ../qt-devices/airspy-2/libairspy/airspy.h
+	SOURCES		+= ../qt-devices/airspy-2/airspy-2.cpp \
+	                   ../qt-devices/airspy-2/airspyselect.cpp
+	FORMS		+= ../qt-devices/airspy-2/airspy-widget.ui
 }
 
 #	extio dependencies, windows only

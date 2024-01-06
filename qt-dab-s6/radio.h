@@ -38,7 +38,6 @@
 #include	<sndfile.h>
 #include	"ui_dabradio-6.h"
 #include	"ringbuffer.h"
-//#include        "band-handler.h"
 #include	"process-params.h"
 #include	"converter_48000.h"
 #include	"scanlist-handler.h"
@@ -50,7 +49,6 @@
 #ifdef	DATA_STREAMER
 #include	"tcp-server.h"
 #endif
-//#include	"scanner-table.h"
 #include	"scan-handler.h"
 #include	"epgdec.h"
 #include	"epg-decoder.h"

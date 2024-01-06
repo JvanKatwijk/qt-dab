@@ -484,6 +484,7 @@ uint16_t	index;
 	}
 
 	if ((groupType != 3) && (groupType != 4)) {
+//	   fprintf (stderr, "groupType %d\n", groupType);
 	   return;		// do not know yet
 	}
 //	extensionflag
@@ -567,6 +568,8 @@ uint16_t	index;
 	      break;
 
 	   default:		// cannot happen
+//	      fprintf (stderr, "Not yet handled mot in pad %d (%X)\n",
+//	                                          groupType, transportId);
 	      break;
 	}
 }

@@ -163,7 +163,6 @@ int32_t	i;
 	      break;
 
 	   case 6:
-//	      fprintf (stderr, "we got a dir\n");
 	      if (segmentNumber == 0) { 	// MOT directory
 	         if (theDirectory != nullptr)
 	            if (theDirectory -> get_transportId () == transportId)

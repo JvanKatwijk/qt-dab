@@ -672,8 +672,6 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	int serviceIndex = find_service (SId);
 	if (serviceIndex > 0) {
 	   QString dataName = ensemble -> services [serviceIndex]. serviceLabel;
-//	   fprintf (stderr, "SPI/EPG for %s\n",
-//	                        dataName. toLatin1 (). data ());
 	}
 
 	for (i = 0; i < NoApplications; i ++) {
@@ -690,11 +688,6 @@ dabConfig	*localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	      if (localBase -> serviceComps [compIndex]. TMid == 3)
 	         localBase -> serviceComps [compIndex]. appType = appType;
 	   }
-
-//	   fprintf (stderr, "appType %d. length %d\n", appType, length);
-//	   for (int j = 0; j < length; j ++)
-//	      fprintf (stderr, "%x ", getBits_8 (d, bitOffset + 11 + 5 + j * 8));
-//	   fprintf (stderr, "\n");
 	   bitOffset 		+= (11 + 5 + 8 * length);
 
 	}

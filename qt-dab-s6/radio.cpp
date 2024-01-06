@@ -506,7 +506,8 @@ QString h;
 	connect (soundLabel, SIGNAL (clicked ()),
                  this, SLOT (handle_muteButton ()));
 
-	QString tiiFileName = dabSettings_p -> value ("tiiFile", ""). toString ();
+	QString tiiFileName = QDir::homePath () + "/.txdata.tii";
+	tiiFileName = dabSettings_p -> value ("tiiFile", tiiFileName). toString ();
 	channel. tiiFile	= false;
 	if (tiiFileName != "") {
 	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
@@ -1038,8 +1039,8 @@ const char *type;
 	                     channel. currentService. announcement_going)
 	   return;
 	QPixmap p;
-	p. loadFromData (data, type);
-	displaySlide (p);
+	if (p. loadFromData (data, type))
+	   displaySlide (p);
 }
 //
 //	sendDatagram is triggered by the ip handler,

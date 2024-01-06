@@ -47,6 +47,9 @@
 #ifdef	HAVE_AIRSPY
 #include	"airspy-handler.h"
 #define	AIRSPY_DEVICE		0204
+#elif	HAVE_AIRSPY_2
+#include	"airspy-2.h"
+#define	AIRSPY_DEVICE		0204
 #endif
 #ifdef	HAVE_HACKRF
 #include	"hackrf-handler.h"
@@ -127,6 +130,8 @@
 #endif
 #ifdef	HAVE_AIRSPY
 	deviceList. push_back (deviceItem ("airspy", AIRSPY_DEVICE));
+#elif	HAVE_AIRSPY_2
+	deviceList. push_back (deviceItem ("airspy-2", AIRSPY_DEVICE));
 #endif
 #ifdef	HAVE_HACKRF
 	deviceList. push_back (deviceItem ("hackrf", HACKRF_DEVICE));
@@ -252,7 +257,18 @@ int	deviceNumber	= getDeviceIndex (s);
 	         return nullptr;
 	      }
 	      break;
+#elif 	HAVE_AIRSPY_2
+	   case AIRSPY_DEVICE:
+	      try {
+	         inputDevice_p	= new airspy_2 (dabSettings, version);
+	      }
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
+	         return nullptr;
+	      }
+	      break;
 #endif
+	   
 #ifdef	HAVE_HACKRF
 	   case HACKRF_DEVICE:
 	      try {

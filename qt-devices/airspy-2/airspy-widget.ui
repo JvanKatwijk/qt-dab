@@ -531,7 +531,7 @@
   <widget class="QSpinBox" name="filterDepth">
    <property name="geometry">
     <rect>
-     <x>270</x>
+     <x>210</x>
      <y>50</y>
      <width>101</width>
      <height>31</height>
@@ -552,6 +552,25 @@
    </property>
    <property name="text">
     <string>filter</string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="convQuality_setter">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>50</y>
+     <width>91</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality level for samplerate conversion. Note that AN airSPY DEVICE emits either 2.5 Ms/s or 3 Ms/s and we need 2048000, so samplerate conversion is required.&lt;/p&gt;&lt;p&gt;For the Down sampling we use the &amp;quot;libsamplerate&amp;quot; library (all rights reserved) and that library provides a choice between 5 quality levels.&lt;/p&gt;&lt;p&gt;Level 0  - the default here - is merely a linear interpolation, level 4is based on sinc interpolation and pretty good. Of course, higher quality requires more computation. Levels 2 and 3 work fine, level 4  might require too much cpu cycles, resulting in data loss,&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   </property>
+   <property name="maximum">
+    <number>4</number>
+   </property>
+   <property name="value">
+    <number>4</number>
    </property>
   </widget>
  </widget>
