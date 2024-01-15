@@ -637,8 +637,8 @@ uint32_t ofdmHandler::julianDate	()  {
 }
 
 bool	ofdmHandler::start_etiGenerator	(const QString &s) {
-	if (theEtiGenerator. start_etiGenerator (s))
-	   eti_on	= true;
+	
+	eti_on = theEtiGenerator. start_etiGenerator (s);
 	return eti_on;
 }
 
