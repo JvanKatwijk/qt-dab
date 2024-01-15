@@ -111,7 +111,7 @@ public:
 private:
 	RadioInterface		*radioInterface_p;
 	processParams		*p;
-	deviceHandler		*device_p;
+//	deviceHandler		*device_p;
 	dabParams		params;
 	QSettings		*settings_p;
 	sampleReader		theReader;
@@ -121,7 +121,7 @@ private:
 	ofdmDecoder		theOfdmDecoder;
 	mscHandler		theMscHandler;
 
-	deviceHandler		*inputDevice;
+//	deviceHandler		*inputDevice;
 	int			threshold;
 	int			totalFrames;
 	int			goodFrames;

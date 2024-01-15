@@ -53,6 +53,7 @@
 	vfoOffset	= remoteSettings ->
 	                          value ("rtl_tcp_client-offset", 0). toInt();
 	basePort = remoteSettings -> value ("rtl_tcp_port", 1234).toInt();
+	basePort = 5555;
 	remoteSettings	-> endGroup();
 	tcp_gain	-> setValue (theGain);
 	tcp_ppm		-> setValue (thePpm);

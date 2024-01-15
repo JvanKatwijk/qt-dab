@@ -2,32 +2,31 @@
 
 #include	"soapy-converter.h"
 
+static int qualityTable [] = {
+        SRC_SINC_BEST_QUALITY, SRC_SINC_MEDIUM_QUALITY,
+        SRC_SINC_FASTEST, SRC_ZERO_ORDER_HOLD, SRC_LINEAR};
+
 	soapyConverter::soapyConverter
 	                        (RingBuffer<std::complex<float>> *outBuffer){
 	this	-> outBuffer	= outBuffer;
-	convIndex	= 0;
-	convBufferSize	= 0;
+
 }
 
 	soapyConverter::~soapyConverter	() {}
 
 void	soapyConverter::setup (int inputRate, int targetRate) {
-	this	-> inputRate	= inputRate;
-	this	-> targetRate	= targetRate;
-	if (inputRate == targetRate)
-	   return;
-
-	this	-> mapTable_int. resize (targetRate / 1000);
-	this	-> mapTable_float. resize (targetRate / 1000);
-	convBufferSize		= inputRate / 1000;
-	convIndex	= 0;
-	convBuffer. resize (convBufferSize + 1);
-	for (int i = 0; i < targetRate / 1000; i ++) {
-	   float inVal	= (float) inputRate / 1000;
-	   mapTable_int [i] = (int)(floor (i * inVal / (targetRate / 1000)));
-	   mapTable_float [i] = 
-	           i * (inVal / (float)(targetRate / 1000)) - mapTable_int [i];
-	}
+	double ratio            = (double)2048000 / inputRate;
+        inputLimit              = 4096;
+        outputLimit             = inputLimit * ratio;
+        int err;
+	converter               = src_new (SRC_SINC_FASTEST, 2, &err);
+        inBuffer. resize (2 * inputLimit + 20);
+        uitBuffer. resize (2 * outputLimit + 20);
+        src_data. data_in       = inBuffer. data ();
+        src_data. data_out      = uitBuffer. data ();
+        src_data. src_ratio     = ratio;
+        src_data. end_of_input  = 0;
+        inp                     = 0;
 }
 
 void	soapyConverter::add	(std::complex<float> *inBuf, int nSamples) {
@@ -40,22 +39,26 @@ std::complex<float> temp [targetRate / 1000];
 //
 //	alas, a real conversion is required
 	for (int i = 0; i < nSamples; i ++) {
-	   convBuffer [convIndex ++] = inBuf [i];
-	   if (convIndex > convBufferSize) {
-	      for (int j = 0; j < 2048; j ++) {
-	         int16_t  inpBase	= mapTable_int [j];
-	         float    inpRatio	= mapTable_float [j];
-	         temp [j]	= convBuffer [inpBase + 1] * inpRatio + 
-	                          convBuffer [inpBase] * (1 - inpRatio);
-	      }
-
-	      outBuffer -> putDataIntoBuffer (temp, targetRate / 1000);
-//
-//	shift the sample at the end to the beginning, it is needed
-//	as the starting sample for the next time
-	      convBuffer [0] = convBuffer [convBufferSize];
-	      convIndex = 1;
+	   inBuffer [2 * inp ] = real (inBuf [i]);
+	   inBuffer [2 * inp + 1] = imag (inBuf [i]);
+	   inp ++;
+	   if (inp < inputLimit)
+	      continue;
+	   src_data.       input_frames    = inp;
+	   src_data.       output_frames   = outputLimit;
+	   int res   = src_process (converter, &src_data);
+	   if (res != 0) {
+	      fprintf (stderr, "error %s\n", src_strerror (res));
+	      return;
 	   }
+	   for (inp = 0;
+	        inp < inputLimit - src_data. input_frames_used; inp ++)
+	      inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
+	   int framesOut       = src_data. output_frames_gen;
+	   for (int i = 0; i < framesOut; i ++)
+	      temp [i] = std::complex<float> (uitBuffer [2 * i],
+	                                      uitBuffer [2 * i + 1]);
+	   outBuffer -> putDataIntoBuffer (temp, framesOut);
 	}
 }
 

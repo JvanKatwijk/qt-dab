@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2020
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -81,13 +81,21 @@
 #include	"rtl_tcp_client.h"
 #define	RTL_TCP_DEVICE		0213
 #endif
+#ifdef	HAVE_SPYSERVER
+#ifdef	SPYSERVER_A
+#include	"ss_client.h"
+#else
+#include	"spyserver-client.h"
+#endif
+#define	SPYSERVER_DEVICE	0214
+#endif
 #ifdef	HAVE_COLIBRI
 #include	"colibri-handler.h"
-#define	COLIBRI_DEVICE		0214
+#define	COLIBRI_DEVICE		0215
 #endif
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
-#define	ELAD_S1_DEVICE		0215
+#define	ELAD_S1_DEVICE		0216
 #endif
 
 #include	"rawfiles.h"
@@ -119,8 +127,7 @@
 #ifdef	__MINGW32__
 #ifdef	HAVE_RTLSDR_V3
 	deviceList. push_back (deviceItem ("dabstick-v3", RTLSDR_DEVICE_V3));
-#endif
-#ifdef	HAVE_RTLSDR_V4
+#elif	HAVE_RTLSDR_V4
 	deviceList. push_back (deviceItem ("dabstick-v4", RTLSDR_DEVICE_V4));
 #endif
 #else
@@ -154,8 +161,10 @@
 #ifdef	HAVE_UHD
 	deviceList. push_back (deviceItem ("uhd", USRP_DEVICE));
 #endif
+#ifdef	HAVE_SPYSERVER
+	deviceList. push_back (deviceItem ("spyServer", SPYSERVER_DEVICE));
+#endif
 #ifdef	HAVE_COLIBRI
-	deviceList. push_back (deviceItem ("colibri", COLIBRI_DEVICE));
 #endif
 #ifdef	HAVE_ELAD
 	deviceList. push_back (deviceItem ("elad-s1", ELAD_S1_DEVICE));
@@ -182,6 +191,7 @@ deviceHandler	*deviceChooser::createDevice (const QString &s,
 	                                         const QString &version) {
 deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
+
 	if (deviceNumber == 0)
 	   return nullptr;
 
@@ -268,7 +278,6 @@ int	deviceNumber	= getDeviceIndex (s);
 	      }
 	      break;
 #endif
-	   
 #ifdef	HAVE_HACKRF
 	   case HACKRF_DEVICE:
 	      try {
@@ -346,6 +355,17 @@ int	deviceNumber	= getDeviceIndex (s);
 	   case USRP_DEVICE:
 	      try {
 	         inputDevice_p = new uhdHandler (dabSettings);
+	      }
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
+	         return nullptr;
+	      }
+	      break;
+#endif
+#ifdef HAVE_SPYSERVER
+	   case SPYSERVER_DEVICE:
+	      try {
+	         inputDevice_p = new spyServer_client (dabSettings);
 	      }
 	      catch (const std::exception &e) {
 	         QMessageBox::warning (nullptr, "Warning", e. what ());

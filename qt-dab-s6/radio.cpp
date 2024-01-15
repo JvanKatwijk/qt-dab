@@ -3737,10 +3737,6 @@ int	index;
 	                textColor. toLatin1 (). data ());
 }
 
-/////////////////////////////////////////////////////////////////////////
-//	External configuration items				//////
-
-
 ///////////////////////////////////////////////////////////////////////////
 //	Handling schedule
 
@@ -3968,11 +3964,6 @@ int	epgWidth;
 	my_timeTable	-> show ();
 }
 
-//-----------------------------------------------------------------------
-//
-//	Handle skiplists
-
-//
 //----------------------------------------------------------------------
 //
 
@@ -4025,7 +4016,6 @@ void	RadioInterface::handle_orderServiceIds		() {
 void	RadioInterface::handle_ordersubChannelIds	() {
 	dabSettings_p -> setValue ("serviceOrder", SUBCH_BASED);
 }
-	                                                 
 
 void	RadioInterface::handle_fontSelect () {
 fontChooser selectFont ("select font");
@@ -4831,4 +4821,3 @@ void    RadioInterface::handle_aboutLabel   () {
 }
 
 
-	   

@@ -160,8 +160,8 @@ uint32_t samplerateCount;
 	             (my_airspy_error_name ((enum airspy_error)result)));
 	}
 	double ratio		= (double)2048000 / selectedRate;
-	outputLimit		= 2048;
-	inputLimit		= outputLimit / ratio;
+	inputLimit		= 4096;
+	outputLimit		= inputLimit * ratio;
 	int err;
 	
 	airspySettings	-> beginGroup ("airspySettings");
@@ -344,8 +344,8 @@ airspy_2 *p;
 
 //	called from AIRSPY data callback
 //	2*2 = 4 bytes for sample, as per AirSpy USB data stream format
-//	we do the rate conversion here, read in groups of 2 * xxx samples
-//	and transform them into groups of 2 * 512 samples
+//	Rate conversion is done using the samplerate library
+//	with a selectable "quality level"
 int 	airspy_2::data_available (void *buf, int buf_size) {	
 int16_t	*sbuf	= (int16_t *)buf;
 int nSamples	= buf_size / (sizeof (int16_t) * 2);
@@ -381,21 +381,26 @@ std::complex<float> temp [4096];
 	         fprintf (stderr, "error %s\n", src_strerror (res));
 	         return -1;
 	      }
-	      inp             = 0;
+//	push back the unused input
+	      for (inp = 0;
+	            inp < inputLimit - src_data. input_frames_used;
+	            inp ++)
+	         inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
 	      int framesOut       = src_data. output_frames_gen;
 	      for (int i = 0; i < framesOut; i ++)
-	         temp [i] = std::complex<float> (outBuffer [2 * i], outBuffer [2 * i + 1]);
+	         temp [i] = std::complex<float> (outBuffer [2 * i],
+	                                         outBuffer [2 * i + 1]);
 	      _I_Buffer. putDataIntoBuffer (temp, framesOut);
 	   }
 	}
-	else	// 
+	else	//  no filtering a priori
 	for (int i = 0; i < nSamples; i ++) {
-	   inBuffer [2 * inp] = sbuf [2 * i] / 2048.0f;
-	   inBuffer [2 * inp + 1] = sbuf [2 * i + 1] / 2048.0f;
+	   inBuffer [2 * inp]		= sbuf [2 * i] / 2048.0f;
+	   inBuffer [2 * inp + 1]	= sbuf [2 * i + 1] / 2048.0f;
 	   inp ++;
 	   if (inp < inputLimit)
 	      continue;
-	   src_data.       input_frames    = inp;
+	   src_data.       input_frames    = inputLimit;
 	   src_data.       output_frames   = outputLimit;
 	   locker. lock ();
 	   int res	= src_process (converter, &src_data);
@@ -403,11 +408,15 @@ std::complex<float> temp [4096];
 	   if (res != 0) {
 	      fprintf (stderr, "error %s\n", src_strerror (res));
 	   }
-	   inp             = 0;
+	   for (inp = 0;
+	        inp < inputLimit - src_data. input_frames_used;
+	            inp ++)
+	      inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
 	   int framesOut       = src_data. output_frames_gen;
 	   for (int i = 0; i < framesOut; i ++)
-	      temp [i] = std::complex<float> (outBuffer [2 * i], outBuffer [2 * i + 1]);
-	   _I_Buffer. putDataIntoBuffer (temp, 2048);
+	      temp [i] = std::complex<float> (outBuffer [2 * i],
+	                                      outBuffer [2 * i + 1]);
+	   _I_Buffer. putDataIntoBuffer (temp, framesOut);
 	}
 	return 0;
 }

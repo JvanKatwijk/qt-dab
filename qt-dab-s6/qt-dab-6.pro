@@ -6,20 +6,20 @@
 
 TEMPLATE	= app
 QT		+= widgets xml 
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 win32 {
 QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -423,6 +423,7 @@ CONFIG		+= lime
 CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
+CONFIG		+= spyServer
 #CONFIG		+= uhd
 #CONFIG		+= colibri
 #CONFIG		+= elad-device
@@ -487,7 +488,8 @@ isEmpty(GITHASHSTRING) {
 #	CONFIG		+= dabstick-win-v3
 	TARGET		= qt-dab32-6.40
 	CONFIG		+= dabstick-win-v4
-	CONFIG		+= airspy-2
+	CONFIG		+= airspy
+	CONFIG		+= spyServer
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -741,6 +743,20 @@ elad-device	{
 	FORMS		+= ../qt-devices/elad-s1-handler/elad-widget.ui
 }
 
+spyServer  {
+	DEFINES		+= HAVE_SPYSERVER
+	DEPENDPATH	+= ../qt-devices/spy-server
+	INCLUDEPATH	+= ../qt-devices/spy-server
+	HEADERS		+= ../qt-devices/spy-server/spyserver-protocol.h 
+	HEADERS		+= ../qt-devices/spy-server/tcp-client.h 
+	HEADERS		+= ../qt-devices/spy-server/spy-handler.h 
+	HEADERS		+= ../qt-devices/spy-server/spyserver-client.h
+	SOURCES		+= ../qt-devices/spy-server/tcp-client.cpp 
+	SOURCES		+= ../qt-devices/spy-server/spy-handler.cpp 
+	SOURCES		+= ../qt-devices/spy-server/spyserver-client.cpp 
+	FORMS		+= ../qt-devices/spy-server/spyserver-widget.ui
+}
+	
 uhd	{
 	DEFINES		+= HAVE_UHD
 	DEPENDPATH	+= ../qt-devices/uhd

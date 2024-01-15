@@ -327,15 +327,12 @@ int resultrate	= -1;
 //	No exact match, do try something
 	for (int i = 0; i < length; i ++)
 	   if ((2048000 < theRanges [i]. minimum) &&
-	       (theRanges [i]. minimum - 2048000 < 1000000))
+	       (theRanges [i]. minimum - 2048000 < 5000000))
 	      return theRanges [i]. minimum;
 
 	for (int i = 0; i < length; i ++)
 	   if ((2048000 > theRanges [i]. maximum) &&
-	      (2058000 - theRanges [i]. maximum < 100000))
+	      (2048000 - theRanges [i]. maximum < 100000))
 	      return theRanges [i]. minimum;
 	return -1;
 }
-
-	
-

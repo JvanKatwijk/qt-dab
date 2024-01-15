@@ -38,7 +38,6 @@
 #define	GITHASH	"      "
 #endif
 
-
 QString fullPathfor (QString v) {
 QString fileName;
 
@@ -76,10 +75,10 @@ RadioInterface  *myRadioInterface;
 QSettings       *dabSettings;           // ini file
 int32_t		dataPort	= 8888;
 int32_t		clockPort	= 8889;
-int     opt;
-QString freqExtension		= "";
-bool	error_report		= false;
-int	fmFrequency		= 110000;
+int		opt;
+QString		freqExtension	= "";
+bool		error_report	= false;
+int		fmFrequency	= 110000;
 QString	scheduleFile		= fullPathfor (SCHEDULE);
 
 QTranslator	theTranslator;
@@ -90,7 +89,6 @@ QTranslator	theTranslator;
 
 	while ((opt = getopt (argc, argv, "C:i:P:Q:A:TM:F:s:")) != -1) {
 	   switch (opt) {
-
 	      case 'i':
 	         initFileName = fullPathfor (QString (optarg));
 	         break;
@@ -195,7 +193,7 @@ void	setTranslator (QTranslator *theTranslator, QString Language) {
 //	what about Dutch?
 	bool translatorLoaded =
 	             theTranslator -> load (QString(":/i18n/") + Language);
-	qDebug() << "main:" <<  "Set language" << Language;
+	qDebug () << "main:" <<  "Set language" << Language;
 	QCoreApplication::installTranslator (theTranslator);
 
 	if (!translatorLoaded) {

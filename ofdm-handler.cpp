@@ -48,7 +48,6 @@
 	                                 processParams	*p,
 	                                 QSettings	*dabSettings):
 	                                    radioInterface_p (mr),
-	                                    device_p (inputDevice),
 	                                    params (p -> dabMode),
 	                                    settings_p (dabSettings),
 	                                    theReader (mr,
@@ -72,7 +71,6 @@
 	this	-> tiiBuffer_p		= p -> tiiBuffer;
 	this	-> nullBuffer_p		= p -> nullBuffer;
 	this	-> snrBuffer_p		= p -> snrBuffer;
-	this	-> inputDevice		= inputDevice;
 	this	-> channelBuffer_p	= p -> channelBuffer;
 	this	-> T_null		= params. get_T_null ();
 	this	-> T_s			= params. get_T_s ();
