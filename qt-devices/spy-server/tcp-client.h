@@ -23,66 +23,51 @@
 
 #pragma once
 
-#include <atomic>
-#include <chrono>
-#include	<QThread>
-#include	<QSemaphore>
-#include	<queue>
+#include	<atomic>
 #include	<chrono>
-#include	<thread>
-#include <cstdint>
-#include <stdint.h>
-#include <memory.h>
-#include <sstream>
-#include <iostream>
+#include	<QThread>
+#include	"ringbuffer.h"
+#include	<cstdint>
+#include	<stdint.h>
+#include	<sstream>
+#include	<iostream>
 #include	<mutex>
 
-#ifdef _WIN32
-#   include <winsock2.h>
-#   include <ws2tcpip.h>
+#ifdef __MINGW32__
+#include	<windows.h>
+#include	<winsock2.h>
+#include	<ws2tcpip.h>
 #else
-#   include <sys/socket.h>
-#   include <netinet/in.h>
+#include	<sys/socket.h>
+#include	<netinet/in.h>
 #endif
-
 
 #if defined(__GNUC__) || defined(__MINGW32__)
 #include <unistd.h>
 #endif
 
-class	generalCommand;
-
-class tcp_client {
+class tcp_client: public QThread {
+Q_OBJECT
 private:
 	QString		tcpAddress;
 	int		tcpPort;
+	RingBuffer<uint8_t> *inBuffer;
+	RingBuffer<uint8_t> outBuffer;
 	std::mutex	locker;
 	bool		connected;
 	int		SendingSocket;
 	struct sockaddr_in      ServerAddr;
+	void		run		();
+	std::atomic<bool>	running;
 
 public:
-		tcp_client	(const QString & addr, int port);
+		tcp_client	(const QString & addr, int port,
+	                                RingBuffer<uint8_t> *inBuffer);
 		~tcp_client	();
 
 	bool	is_connected	();
 	void	connect_conn	();	
 	void	close_conn	();
-
-	int	receive_data	(uint8_t *data, int length);
 	void	send_data	(uint8_t *data, int length);
-	uint64_t available_data();
-
-
-    inline void wait_for_data(uint64_t bytes, uint32_t timeout) {
-        uint32_t checkTime = (int) time(NULL);
-        while (available_data() < bytes) {
-            if (((int) time(NULL)) - checkTime > timeout) {
-                return;
-            }
-
-            std::this_thread::sleep_for(std::chrono::microseconds(10));
-        }
-    }
 };
 

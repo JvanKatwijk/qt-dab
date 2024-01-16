@@ -23,38 +23,35 @@
 
 #include "tcp-client.h"
 
-#ifdef _WIN32
-# include <winsock2.h>
-# include <ws2tcpip.h>
-# include <atomic>
-#   ifdef _MSC_VER
-#   pragma comment(lib, "ws2_32.lib")
-#   endif
-# ifndef MSG_WAITALL
-#   define MSG_WAITALL (1 << 3)
-# endif
+/*
+ *	Thanks to Youssef Touil (well know from Airspy and spyServer),
+ *	the structure of this program part is an adapted C++ translation
+ *	of a C# fragment that he is using
+ */
+#ifdef __MINGW32__
+#pragma comment(lib, "ws2_32.lib")
 #else
-# include <sys/socket.h>
 # include <arpa/inet.h>
 # include <sys/resource.h>
 # include <sys/select.h>
 # include <sys/ioctl.h>
 # include <netdb.h>
-# include <unistd.h>
 # define ioctlsocket ioctl
 #endif
-#if defined(_WIN32) || defined(__APPLE__)
+#if defined(__MINGW32__) || defined(__APPLE__)
     #ifndef MSG_NOSIGNAL
         #define MSG_NOSIGNAL 0
     #endif
 #endif
 
-
-	tcp_client::tcp_client (const QString &addr, int port) {
+	tcp_client::tcp_client (const QString &addr, int port,
+	                              RingBuffer<uint8_t> *inBuffer):
+	                                          outBuffer (32768) {
 int RetCode;
 	this	-> tcpAddress	= addr;
 	this	-> tcpPort	= port;
-	connected	= false;
+	this	-> inBuffer	= inBuffer;
+	connected		= false;
 
 #ifdef	__MINGW32__
 	WSAData wsaData;
@@ -70,15 +67,9 @@ int RetCode;
 	   return;
 	}
 #endif
-	int	inBuffer = 32768;
-	int	outBuffer;
-//#ifdef	__MINGW32__
-	int R2 = setsockopt (SendingSocket, SOL_SOCKET, SO_RCVBUF,
-	                       (char *)(&inBuffer), 4);
-	if (R2 != 0)
-	   fprintf (stderr, "setsockoption gave error %d\n", errno);
-//#endif
-	fprintf (stderr, "Socket is OK\n");
+	int	bufSize	= 8 * 32768;
+	setsockopt(SendingSocket, SOL_SOCKET, SO_RCVBUF,
+	                               (char*)&bufSize, sizeof(bufSize));
 	ServerAddr.sin_family = AF_INET;
 	ServerAddr.sin_port = htons(this -> tcpPort);
 	ServerAddr.sin_addr.s_addr =
@@ -86,7 +77,6 @@ int RetCode;
 
 	RetCode = ::connect (SendingSocket,
 	                     (struct sockaddr *) &ServerAddr, sizeof(ServerAddr));
-	fprintf (stderr, "Return code connect %d\n", RetCode);
 	if (RetCode != 0) {
 #ifdef	__MINGW32__
 	   printf ("Client: connect() failed! Error code: %ld\n",
@@ -102,12 +92,18 @@ int RetCode;
 	   fprintf (stderr, "Client: connect() is OK, got connected...\n");
 	   fprintf (stderr, "Client: Ready for sending and/or receiving data...\n");
 	}
+	start ();	// this is the reader
 	connected	= true;
 }
 
 	tcp_client::~tcp_client () {
-	fprintf (stderr, "request to terminate\n");
+	if (isRunning ()) {
+	   running. store (false);
+	   while (isRunning ())
+	      usleep (1000);
+	}
 }
+
 
 bool	tcp_client::is_connected () {
 	return connected;
@@ -122,36 +118,51 @@ void tcp_client::close_conn	() {
         } 
 }
 
-int	tcp_client::receive_data (uint8_t *data, int length) {
-	locker. lock ();
-	int received = recv (SendingSocket, (char *)data, length, MSG_WAITALL);
-	locker. unlock ();
-	return received;
-}
-
 void	tcp_client::send_data (uint8_t *data, int length) {
-	locker. lock ();
-	send (SendingSocket, (char *)data, length, MSG_NOSIGNAL);
-	locker. unlock ();
+	outBuffer. putDataIntoBuffer (data, length);
 }
 
-uint64_t	tcp_client::available_data() {
-unsigned long bytesAvailable = 0;
-	locker. lock ();
-	int ret = ioctlsocket (SendingSocket, FIONREAD, &bytesAvailable);
-	switch (ret) {
-	   case EINVAL:
-	   case EFAULT:
-	   case ENOTTY:
-	      locker. unlock ();
-	      return 0;
-	   case EBADF:
-	      locker. unlock ();
-	      return 0;
-	   default:
-	      break;
+char	tempBuffer [1000000];
+void	tcp_client:: run	() {
+uint64_t bytesAvailable	= 0;
+int	received	= 0;
+struct timeval m_timeInterval;
+fd_set m_readFds;
+
+	running. store (true);
+	while (running. load ()) {
+	   FD_ZERO (&m_readFds);
+	   FD_SET  (SendingSocket, &m_readFds);
+	   m_timeInterval. tv_usec	= 100;
+	   m_timeInterval. tv_sec	= 0;
+	   int m_receivingStatus	= select (SendingSocket + 1, &m_readFds,
+	                                  nullptr, nullptr, &m_timeInterval);
+
+	   if (m_receivingStatus < 0) {
+	      std::cerr << "ERROR" << std::endl;
+	   }
+	   if (m_receivingStatus == 0) {
+	      int amount = outBuffer. GetRingBufferReadAvailable ();
+	      if (amount > 0) {
+	         int outRead =
+	            outBuffer. getDataFromBuffer (tempBuffer, amount);
+	         send (SendingSocket, (char *)tempBuffer, amount, MSG_NOSIGNAL);
+	      }
+	   }	
+	   else {
+	      sockaddr t;
+#ifndef	__MINGW32__
+	      uint32_t	tt = 10;
+#else
+	      int	tt = 10;
+#endif
+	      unsigned long bytesAvailable = 0;
+	      int ret = ioctlsocket (SendingSocket, FIONREAD, &bytesAvailable);
+	      received = recvfrom (SendingSocket, (char *)tempBuffer,
+	                                             bytesAvailable, 0, &t, &tt);
+	      inBuffer -> putDataIntoBuffer (tempBuffer, received);
+	   }
 	}
-	locker. unlock ();
-	return bytesAvailable;
 }
+
 

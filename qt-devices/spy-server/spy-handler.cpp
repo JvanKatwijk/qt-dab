@@ -23,12 +23,16 @@
 
 #include	"spyserver-client.h"
 #include	"spy-handler.h"
+#include	<chrono>
+#include	<iostream>
+#include	<thread>
 
 	spyHandler::spyHandler (spyServer_client *parent,
 	                        const QString &ipAddress,
 	                        int port,
 	                        RingBuffer<int16_t> *outB) :
-	                           tcpHandler (ipAddress, port) {
+	                           inBuffer (64 * 32768),
+	                           tcpHandler (ipAddress, port, &inBuffer) {
 	if (!tcpHandler. is_connected ())
 	   throw std::runtime_error( std::string(__FUNCTION__) + " " +
                                  "Failed to connect!" );
@@ -67,13 +71,17 @@ void	spyHandler::no_deviceInfo	() {
 void	spyHandler::run		() {
 struct MessageHeader	theHeader;
 uint64_t volgNummer = 0;
-std::vector<uint8_t> buffer (128000);
+static std::vector<uint8_t> buffer (64 * 1024);
 	running. store (true);
 	while (running. load ()) {
 	   readHeader	(theHeader);
-	   if (theHeader. SequenceNumber != volgNummer + 1)
+	   if (theHeader. SequenceNumber != volgNummer + 1) {
 	      fprintf (stderr, "%d %d\n",
 	                  theHeader. SequenceNumber, volgNummer);
+//	      fprintf (stderr, "Buffer space = %d\n",
+//	               inBuffer. GetRingBufferReadAvailable ());
+	   }
+
 	   volgNummer = theHeader. SequenceNumber;
 	   if (theHeader. BodySize > buffer. size ())
 	      buffer. resize (theHeader. BodySize);
@@ -90,17 +98,18 @@ std::vector<uint8_t> buffer (128000);
 	         process_client_sync (buffer. data (), m_curr_client_sync);
 	         break;
 	   }
-	   std::this_thread::sleep_for (std::chrono::milliseconds (1));
+//	   std::this_thread::sleep_for (std::chrono::milliseconds (1));
 	}
 }
 
 bool	spyHandler::readHeader	(struct MessageHeader &header) {
 	while (running. load () &&
-	       (tcpHandler. available_data () < sizeof (struct MessageHeader)))
+	       (inBuffer. GetRingBufferReadAvailable () <
+	                             sizeof (struct MessageHeader)))
 	    std::this_thread::sleep_for (std::chrono::milliseconds (1));
 	if (!running. load ())
 	   return false;
-	tcpHandler. receive_data ((uint8_t *)(&header),
+	inBuffer. getDataFromBuffer ((uint8_t *)(&header),
 	                              sizeof (struct MessageHeader));
 	return true;
 }
@@ -108,15 +117,15 @@ bool	spyHandler::readHeader	(struct MessageHeader &header) {
 bool	spyHandler::readBody	(uint8_t *buffer, int size) {
 int	filler = 0;
 	while (running. load ()) {
-	   if (tcpHandler. available_data () >  size / 4) {
-	      filler += tcpHandler. receive_data (buffer, size - filler);
+	   if (inBuffer. GetRingBufferReadAvailable () >  size / 2) {
+	      filler += inBuffer. getDataFromBuffer (buffer, size - filler);
 	      if (filler >= size)
 	         return true;
 	      if (!running. load ())
 	         return false;
 	   }
-//	   else
-//	   std::this_thread::sleep_for(std::chrono::milliseconds (1));
+	   else
+	      std::this_thread::sleep_for(std::chrono::milliseconds (1));
 	}
 	return false;
 }
@@ -274,7 +283,6 @@ double	spyHandler::get_sample_rate	() {
 bool	spyHandler::set_iq_center_freq	(double centerFrequency) {
 std::vector<uint32_t> param (1);
 	param [0] = centerFrequency;
-	std::cerr << "SS_client_if: Setting SETTING_IQ_FREQUENCY" << std::endl;
 	set_setting (SETTING_IQ_FREQUENCY, param);
 	param [0] = STREAM_FORMAT_INT16;
 	set_setting (SETTING_IQ_FORMAT, param);
@@ -354,5 +362,5 @@ std::vector<uint32_t> p;
 	set_setting (SETTING_IQ_DIGITAL_GAIN, p);
 	p [0] = STREAM_FORMAT_INT16;
 	set_setting (SETTING_IQ_FORMAT, p);
-	fprintf (stderr, "Connection is gezet, waar blijft de call?\n");
+//	fprintf (stderr, "Connection is gezet, waar blijft de call?\n");
 }

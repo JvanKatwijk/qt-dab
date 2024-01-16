@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml 
-CONFIG		+= console
-#CONFIG		-= console
+#CONFIG		+= console
+CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 win32 {
 QMAKE_CFLAGS	+=  -O4 -ffast-math

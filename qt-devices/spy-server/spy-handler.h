@@ -57,6 +57,7 @@ public:
 
 	void	connection_set		();
 private:
+	RingBuffer<uint8_t>	inBuffer;
 	tcp_client	tcpHandler;
 	RingBuffer<int16_t>	*outB;
 	spyServer_client	*parent;
