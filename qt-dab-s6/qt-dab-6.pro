@@ -417,13 +417,14 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy-2
+CONFIG		+= airspy
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
 CONFIG		+= pluto
-CONFIG		+= spyServer
+CONFIG		+= spyServer-16
+CONFIG		+= spyServer-8
 #CONFIG		+= uhd
 #CONFIG		+= colibri
 #CONFIG		+= elad-device
@@ -489,7 +490,8 @@ isEmpty(GITHASHSTRING) {
 	TARGET		= qt-dab32-6.40
 	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy
-	CONFIG		+= spyServer
+	CONFIG		+= spyServer-16
+	CONFIG		+= spyServer-8
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include
 	INCLUDEPATH	+= /usr/i686-w64-mingw32/sys-root/mingw/include/qt5/qwt
@@ -743,18 +745,32 @@ elad-device	{
 	FORMS		+= ../qt-devices/elad-s1-handler/elad-widget.ui
 }
 
-spyServer  {
-	DEFINES		+= HAVE_SPYSERVER
-	DEPENDPATH	+= ../qt-devices/spy-server
-	INCLUDEPATH	+= ../qt-devices/spy-server
-	HEADERS		+= ../qt-devices/spy-server/spyserver-protocol.h 
-	HEADERS		+= ../qt-devices/spy-server/tcp-client.h 
-	HEADERS		+= ../qt-devices/spy-server/spy-handler.h 
-	HEADERS		+= ../qt-devices/spy-server/spyserver-client.h
-	SOURCES		+= ../qt-devices/spy-server/tcp-client.cpp 
-	SOURCES		+= ../qt-devices/spy-server/spy-handler.cpp 
-	SOURCES		+= ../qt-devices/spy-server/spyserver-client.cpp 
-	FORMS		+= ../qt-devices/spy-server/spyserver-widget.ui
+spyServer-8  {
+	DEFINES		+= HAVE_SPYSERVER_8
+	DEPENDPATH	+= ../qt-devices/spy-server-8
+	INCLUDEPATH	+= ../qt-devices/spy-server-8
+	HEADERS		+= ../qt-devices/spy-server-8/spyserver-protocol.h 
+	HEADERS		+= ../qt-devices/spy-server-8/tcp-client-8.h 
+	HEADERS		+= ../qt-devices/spy-server-8/spy-handler-8.h 
+	HEADERS		+= ../qt-devices/spy-server-8/spyserver-client-8.h
+	SOURCES		+= ../qt-devices/spy-server-8/tcp-client-8.cpp 
+	SOURCES		+= ../qt-devices/spy-server-8/spy-handler-8.cpp 
+	SOURCES		+= ../qt-devices/spy-server-8/spyserver-client-8.cpp 
+	FORMS		+= ../qt-devices/spy-server-8/spyserver-widget-8.ui
+}
+	
+spyServer-16  {
+	DEFINES		+= HAVE_SPYSERVER_16
+	DEPENDPATH	+= ../qt-devices/spy-server-16
+	INCLUDEPATH	+= ../qt-devices/spy-server-16
+	HEADERS		+= ../qt-devices/spy-server-16/spyserver-protocol.h 
+	HEADERS		+= ../qt-devices/spy-server-16/tcp-client.h 
+	HEADERS		+= ../qt-devices/spy-server-16/spy-handler.h 
+	HEADERS		+= ../qt-devices/spy-server-16/spyserver-client.h
+	SOURCES		+= ../qt-devices/spy-server-16/tcp-client.cpp 
+	SOURCES		+= ../qt-devices/spy-server-16/spy-handler.cpp 
+	SOURCES		+= ../qt-devices/spy-server-16/spyserver-client.cpp 
+	FORMS		+= ../qt-devices/spy-server-16/spyserver-widget.ui
 }
 	
 uhd	{

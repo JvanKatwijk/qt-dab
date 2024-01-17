@@ -40,17 +40,6 @@
 #include	"ui_spyserver-widget.h"
 #include	"spy-handler.h"
 
-struct {
-	int		gain;
-	qint64		basePort;
-	uint32_t	sample_rate;
-	float		resample_ratio;
-	int		desired_decim_stage;
-	int		resample_quality;
-	int		batchSize;
-	int		sample_bits;
-	int		auto_gain;
-} settings;
 
 class	spyServer_client: public QObject,
 	                  public deviceHandler, Ui_spyServer_widget {
@@ -65,6 +54,17 @@ public:
 	int32_t		Samples		();
 	int16_t		bitDepth	();
 	void		connect_on	();
+struct {
+	int		gain;
+	qint64		basePort;
+	uint32_t	sample_rate;
+	float		resample_ratio;
+	int		desired_decim_stage;
+	int		resample_quality;
+	int		batchSize;
+	int		sample_bits;
+	int		auto_gain;
+} settings;
 
 private slots:
 	void		setConnection	();

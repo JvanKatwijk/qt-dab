@@ -81,21 +81,21 @@
 #include	"rtl_tcp_client.h"
 #define	RTL_TCP_DEVICE		0213
 #endif
-#ifdef	HAVE_SPYSERVER
-#ifdef	SPYSERVER_A
-#include	"ss_client.h"
-#else
+#ifdef	HAVE_SPYSERVER_16
 #include	"spyserver-client.h"
+#define	SPYSERVER_DEVICE_16	0214
 #endif
-#define	SPYSERVER_DEVICE	0214
+#ifdef	HAVE_SPYSERVER_8
+#include	"spyserver-client-8.h"
+#define	SPYSERVER_DEVICE_8	0215
 #endif
 #ifdef	HAVE_COLIBRI
 #include	"colibri-handler.h"
-#define	COLIBRI_DEVICE		0215
+#define	COLIBRI_DEVICE		0216
 #endif
 #ifdef	HAVE_ELAD
 #include	"elad-handler.h"
-#define	ELAD_S1_DEVICE		0216
+#define	ELAD_S1_DEVICE		0217
 #endif
 
 #include	"rawfiles.h"
@@ -161,8 +161,12 @@
 #ifdef	HAVE_UHD
 	deviceList. push_back (deviceItem ("uhd", USRP_DEVICE));
 #endif
-#ifdef	HAVE_SPYSERVER
-	deviceList. push_back (deviceItem ("spyServer", SPYSERVER_DEVICE));
+#ifdef	HAVE_SPYSERVER_16
+	deviceList. push_back (deviceItem ("spyServer-16",
+	                                           SPYSERVER_DEVICE_16));
+#endif
+#ifdef	HAVE_SPYSERVER_8
+	deviceList. push_back (deviceItem ("spyServer-8", SPYSERVER_DEVICE_8));
 #endif
 #ifdef	HAVE_COLIBRI
 #endif
@@ -362,10 +366,21 @@ int	deviceNumber	= getDeviceIndex (s);
 	      }
 	      break;
 #endif
-#ifdef HAVE_SPYSERVER
-	   case SPYSERVER_DEVICE:
+#ifdef HAVE_SPYSERVER_16
+	   case SPYSERVER_DEVICE_16:
 	      try {
 	         inputDevice_p = new spyServer_client (dabSettings);
+	      }
+	      catch (const std::exception &e) {
+	         QMessageBox::warning (nullptr, "Warning", e. what ());
+	         return nullptr;
+	      }
+	      break;
+#endif
+#ifdef HAVE_SPYSERVER_8
+	   case SPYSERVER_DEVICE_8:
+	      try {
+	         inputDevice_p = new spyServer_client_8 (dabSettings);
 	      }
 	      catch (const std::exception &e) {
 	         QMessageBox::warning (nullptr, "Warning", e. what ());

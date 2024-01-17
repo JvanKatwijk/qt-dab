@@ -260,11 +260,11 @@ int	result;
 //
 //	sliders are now set,
 	result = my_airspy_set_freq (device, freq);
-
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_set_freq() failed: %s (%d)\n",
 	            my_airspy_error_name((airspy_error)result), result);
 	}
+	setAnalogFilter (0x00 , 0x00);
 	_I_Buffer. FlushRingBuffer ();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
 //	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
@@ -540,6 +540,14 @@ bool	airspyHandler::load_airspyFunctions() {
 	   fprintf (stderr, "Could not find airspy_set_freq\n");
 	   return false;
 	}
+
+	my_airspy_r820t_write	= (pfn_airspy_r820t_write)
+	                       GETPROCADDRESS (Handle, "airspy_r820t_write");
+	if (my_airspy_r820t_write == nullptr) {
+	   fprintf (stderr, "Could not find airspy_r820t_write\n");
+	   return false;
+	}
+
 
 	my_airspy_set_lna_gain	= (pfn_airspy_set_lna_gain)
 	                       GETPROCADDRESS (Handle, "airspy_set_lna_gain");
@@ -989,3 +997,10 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 	}
 }
 
+void	airspyHandler::setAnalogFilter (uint8_t lpf, uint8_t hpf) {
+	uint8_t modes [] = { 0xE0, 0x80, 0x60, 0x00 };
+	uint8_t a = 0xF0 | (0x0F - (lpf & 0x0F));
+	uint8_t b = modes [lpf >> 4] | (0x0F - (hpf & 0x0F));
+	my_airspy_r820t_write (device, 0x0A, (uint8_t)a);
+	my_airspy_r820t_write (device, 0x0B, (uint8_t)b);
+}

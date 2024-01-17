@@ -48,6 +48,8 @@ extern "C"  {
 	                                   const uint32_t len);
  typedef int (*pfn_airspy_set_samplerate) (struct airspy_device* device,
 	                                  uint32_t samplerate);
+ typedef int (*pfn_airspy_r820t_write) (struct airspy_device* device,
+	                                uint8_t registernr, uint8_t value);
  typedef int (*pfn_airspy_start_rx) (struct airspy_device* device,
 	                            airspy_sample_block_cb_fn callback,
 	                            void* rx_ctx);
@@ -141,6 +143,7 @@ private:
 	pfn_airspy_close	   my_airspy_close;
 	pfn_airspy_get_samplerates my_airspy_get_samplerates;
 	pfn_airspy_set_samplerate  my_airspy_set_samplerate;
+	pfn_airspy_r820t_write	   my_airspy_r820t_write;
 	pfn_airspy_start_rx	   my_airspy_start_rx;
 	pfn_airspy_stop_rx	   my_airspy_stop_rx;
 	pfn_airspy_set_sample_type my_airspy_set_sample_type;
@@ -168,6 +171,7 @@ private:
 	bool		rf_bias;
 const	char*		board_id_name();
 
+	void		setAnalogFilter	(uint8_t, uint8_t);
 	int16_t		vgaGain;
 	int16_t		mixerGain;
 	int16_t		lnaGain;

@@ -6,7 +6,8 @@ Copyright (C) 2017 Youssef Touil youssef@live.com
 */
 
 
-#pragma once
+#ifndef	__SPYSERVER_PROTOCOL__
+#define	__SPYSERVER_PROTOCOL__
 
 #include <stdint.h>
 #include <limits.h>
@@ -178,3 +179,4 @@ enum ParserPhase {
   ReadingData
 };
 
+#endif
