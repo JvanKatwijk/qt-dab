@@ -14,6 +14,34 @@
 
 Differences with the previous versions
 
+------------------------------------------------------------------------
+Experimental Spyserver support
+
+As an experiment, support for the spyServer is added. The sources
+contain 2 versions, one 8 bit and one 16 bit.
+SpyServer is well known and provides remore support for RTLSDR based
+devices and the AIRSPYs (Note that while the spyServer itself provides 
+support for the AIRspy HF, the AIRSpy HF is not well suited to receive DAB, 
+the sample rate is way too low.
+
+Note however: 
+Running DAB requires a samplerate of 2048000 Samples/second. The samplerate
+used when the spyserver is connected to an Airspy One is 2500000 S.s
+In 16 bit mode, each sample is transferred as 4 bytes, i.e 32 bits.
+With some additional overhead, it is clear that a connection between
+Qt-DAB and spyserver should be capable of transmitting 100 Mb.
+
+It is easy to see that in 8 bit mode one needs half, say up to 50 Mb.
+
+The 8 bit and 16 bit version can coexist in an implementaiton, 
+the precompiled AppImage contains both versions, as does the
+32-6.40 version of the installer.
+
+Note that the software is still experimental
+
+-----------------------------------------------------------------------
+------------------------------------------------------------------------
+
 In Qt-DAB 6.40 there are visible changes to the main widget and to
 the configuration and control widget.
 In the main widget the *content* button, the *technical data* button
