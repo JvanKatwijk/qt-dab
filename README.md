@@ -15,29 +15,25 @@
 Differences with the previous versions
 
 ------------------------------------------------------------------------
-Experimental Spyserver support
 
-As an experiment, support for the spyServer is added. The sources
-contain 2 versions, one 8 bit and one 16 bit.
-SpyServer is well known and provides remore support for RTLSDR based
-devices and the AIRSPYs (Note that while the spyServer itself provides 
-support for the AIRspy HF, the AIRSpy HF is not well suited to receive DAB, 
-the sample rate is way too low.
+![6.4](/6.Beta_1.png?raw=true)
+![6.4](/6.Beta_2.png?raw=true)
 
-Note however: 
-Running DAB requires a samplerate of 2048000 Samples/second. The samplerate
-used when the spyserver is connected to an Airspy One is 2500000 S.s
-In 16 bit mode, each sample is transferred as 4 bytes, i.e 32 bits.
-With some additional overhead, it is clear that a connection between
-Qt-DAB and spyserver should be capable of transmitting 100 Mb.
+The releases section contains an entry for a Windows installer and an AppImage
+for a Beta version of the software. That version differs from the previous
+one(s) is the "ensemblewidget". As can be seen, it now shows a table,
+with (a) an ensemble and (b) the favorites list.
+In the first picture a second colums comtains a "*" id the service is
+also part of the favorites list. The second picture shows the favorites
+with in the second column the channel where the service is to be found.
 
-It is easy to see that in 8 bit mode one needs half, say up to 50 Mb.
+Adding a service to the list or removing it from the list is by clicking with
+the left mouse button on the second column.
+Of course, clicking on the servicename selects the service
 
-The 8 bit and 16 bit version can coexist in an implementaiton, 
-the precompiled AppImage contains both versions, as does the
-32-6.40 version of the installer.
-
-Note that the software is still experimental
+Cliking with the left mouse button on an element in the favorites list
+selects that sevice, clicking with the right mouse button on a service
+in the favorites will remove the service from the favorites.
 
 -----------------------------------------------------------------------
 ------------------------------------------------------------------------

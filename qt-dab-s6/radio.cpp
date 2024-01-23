@@ -1206,6 +1206,19 @@ static int teller	= 0;
 	   if (teller > 10) {
 	      teller = 0;
 	      techWindow_p	->  show_rate (rate, ps, sbr);
+	      audiorateLabel	-> setText (QString::number (rate));
+	      if (!ps)
+	         psLabel -> setText (" ");
+	      else {
+	         psLabel -> setStyleSheet ("QLabel {color : white}"); 
+	         psLabel -> setText ("ps");
+	      }
+	      if (!sbr)
+	         sbrLabel -> setText ("  "); 
+	      else {
+	         sbrLabel -> setStyleSheet ("QLabel {color : white}");
+	         sbrLabel -> setText ("sbr");
+	      }
 	   }
 	}
 	std::complex<int16_t> vec [amount];
@@ -1619,7 +1632,7 @@ void	RadioInterface::setStereo	(bool b) {
 	if (stereoSetting == b)
 	   return;
 	
-	stereoLabel->setText (b ? "<i>stereo</i>" : "<b>mono</b>");
+	stereoLabel	-> setText (b ? "<i>stereo</i>" : "<b>mono</b>");
 	stereoSetting = b;
 }
 //
@@ -2603,6 +2616,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	channel. audioActive	= true;
 	set_soundLabel (true);
 	programTypeLabel -> setText (getProgramType (ad. programType));
+	rateLabel	-> setText (QString::number (ad. bitRate) + "kbit");
 //	show service related data
 	techWindow_p	-> show_serviceData 	(&ad);
 }

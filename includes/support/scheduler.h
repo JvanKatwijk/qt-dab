@@ -58,5 +58,6 @@ private:
 	int		wakeupIndex;
 	QDate		referenceDate;
 	QString		fileName;
+	QLocale		theLocale;
 };
 

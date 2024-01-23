@@ -42,7 +42,6 @@
 //	the time difference then is in seconds and the delay in msec
 //
 QString  weekdays [7];
-
 	Scheduler::Scheduler (RadioInterface *mr, const QString &fileName):
 	                              myWidget (nullptr) {
 	myWidget. resize (240, 200);
@@ -65,7 +64,8 @@ QString  weekdays [7];
 	         mr, SLOT (scheduler_timeOut (const QString &)));
 	this	-> wakeupTime = 365 * MINUTES_PER_DAY;
 	for (int i = 1; i <= 7; i ++)
-	   weekdays [i - 1] = QDate::shortDayName (i);
+//	   weekdays [i - 1] = QDate::shortDayName (i);
+	   weekdays [i - 1] = theLocale. dayName (i);
 	read (fileName);
 }
 
@@ -116,7 +116,6 @@ QDate	wakeupDate	= QDate::currentDate ();	// default
 QDate	currentDate	= QDate::currentDate ();	// 
 QTime	currentTime	= QTime::currentTime ();
 
-
 	if (tableWidget -> rowCount () == 0) 
 	   referenceDate = QDate::currentDate ();
 	wakeupTimer. stop ();
@@ -128,10 +127,12 @@ QTime	currentTime	= QTime::currentTime ();
 	                           currentTime. hour () * MINUTES_PER_HOUR + 
 	                           currentTime. minute ()) * 60 +
 	                                     currentTime. second ();
-	int wakeupTime	= (delayDays * MINUTES_PER_DAY +
-	                   hours * MINUTES_PER_HOUR + minutes) * 60;
-	QString	startDay	= QDate::shortDayName (referenceDate. dayOfWeek ());
-	QString wakeupDay	= QDate::shortDayName (wakeupDate. dayOfWeek ());
+	int wakeupTime		= (delayDays * MINUTES_PER_DAY +
+	                          hours * MINUTES_PER_HOUR + minutes) * 60;
+//	QString	startDay	= QDate::shortDayName (referenceDate. dayOfWeek ());
+	QString	startDay	= theLocale. dayName (referenceDate. dayOfWeek ());
+//	QString wakeupDay	= QDate::shortDayName (wakeupDate. dayOfWeek ());
+	QString wakeupDay	= theLocale. dayName (wakeupDate. dayOfWeek ());
 	recordTime. append (":");
 	recordTime. append (QString::number (minutes / 10) +
 	                             QString::number (minutes % 10));
@@ -187,7 +188,8 @@ void	Scheduler::removeRow (int row, int column) {
 	}
 //
 //	and recompute the wakeupTime
-	QString startDay	= QDate::shortDayName (referenceDate. dayOfWeek ());
+//	QString startDay	= QDate::shortDayName (referenceDate. dayOfWeek ());
+	QString startDay	= theLocale. dayName (referenceDate. dayOfWeek ());
 	for (int i = 0; i < tableWidget -> rowCount (); i ++) {
 	   QString testTime	= tableWidget -> item (i, 2) -> text ();
 	   QStringList test	= testTime. split (":");
@@ -245,7 +247,8 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 	
 //	and recompute the nearest wakeupTime
 	   QString startDay	=
-	             QDate::shortDayName (referenceDate. dayOfWeek ());
+//	             QDate::shortDayName (referenceDate. dayOfWeek ());
+	             theLocale. dayName (referenceDate. dayOfWeek ());
 	   for (int i = 0; i < tableWidget -> rowCount (); i ++) {
 	      QString testTime = tableWidget -> item (i, 2) -> text ();
 	      QStringList test = testTime. split (":");
@@ -283,7 +286,6 @@ int	currentSeconds	= (theNow * MINUTES_PER_DAY +
 
 void	Scheduler::dump (const QString &file) {
 FILE *dumpFile	= fopen (file. toUtf8 (). data (), "w");
-
 	fprintf (stderr, "dumpfile %s is opened %s\n",
 	                          file. toUtf8 (). data (),
 	                           dumpFile == nullptr ? "not good" : "good");
@@ -291,7 +293,8 @@ FILE *dumpFile	= fopen (file. toUtf8 (). data (), "w");
 	   return;
 
 	QString startDay     =
-                     QDate::shortDayName (referenceDate. dayOfWeek ());
+//	             QDate::shortDayName (referenceDate. dayOfWeek ());
+	             theLocale. dayName (referenceDate. dayOfWeek ());
 
 //	fprintf (stderr, " there are %d elements to be printed\n",
 //	                          tableWidget -> rowCount ());

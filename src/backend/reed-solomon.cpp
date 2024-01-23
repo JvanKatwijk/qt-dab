@@ -270,7 +270,7 @@ uint16_t reedSolomon::computeLambda (uint8_t *syndromes, uint8_t *Lambda) {
 uint16_t K = 1, L = 0;
 uint8_t Corrector	[nroots];
 int16_t  i;
-int16_t	deg_lambda;
+int16_t	deg_lambda	= 0;
 
 	for (i = 0; i < nroots; i ++)
 	   Corrector [i] = Lambda [i] = 0;

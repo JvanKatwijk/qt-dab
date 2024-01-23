@@ -50,10 +50,10 @@
 	QDomElement component	= root. firstChild (). toElement ();
 	while (!component. isNull ()) {
 	   if (component. tagName () == "HISTORY_ELEMENT") {
-	      presetData pd;
-	      pd. serviceName = component. attribute ("SERVICE_NAME", "???");
-	      pd. channel     = component. attribute ("CHANNEL", "5A");
-	      scanList. append (pd. channel + ":" + pd. serviceName);
+	      QString serviceName =
+	                component. attribute ("SERVICE_NAME", "???");
+	      QString  channel     = component. attribute ("CHANNEL", "5A");
+	      scanList. append (channel + ":" + serviceName);
 	   }
 	   component = component. nextSibling (). toElement ();
 	}

@@ -192,7 +192,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Touching this button allows specifying an element for the scheduler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>schedule</string>
+        <string> </string>
        </property>
       </widget>
      </item>

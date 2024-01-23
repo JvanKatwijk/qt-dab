@@ -73,6 +73,9 @@ option(SDRPLAY_V3 OFF)
 option(HACKRF OFF)
 option(LIMESDR OFF) 
 option(PLUTO OFF) 
+option(SPYSERVER_8 OFF)
+option(SPYSERVER_16 OFF)
+option(SOAPY OFF)
 option(UHD OFF) 
 option(RTL_TCP OFF)      
 
@@ -824,6 +827,75 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	   add_definitions (-DHAVE_RTLSDR)
 	endif()
 
+	if (SPYSERVER_8)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/spy-server-8/spyserver-widget-8.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/spy-server-8/tcp-client-8.h
+	        ../qt-devices/spy-server-8/spy-handler-8.h
+	        ../qt-devices/spy-server-8/spyserver-client-8.h
+	   )
+
+	   include_directories (
+	        ../qt-devices/spy-server-8/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/spy-server-8/spyserver-protocol.h
+	        ../qt-devices/spy-server-8/tcp-client-8.h
+	        ../qt-devices/spy-server-8/spy-handler-8.h
+	        ../qt-devices/spy-server-8/spyserver-client-8.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/spy-server-8/tcp-client-8.cpp
+	        ../qt-devices/spy-server-8/spy-handler-8.cpp
+	        ../qt-devices/spy-server-8/spyserver-client-8.cpp
+	   )
+
+	   add_definitions (-DHAVE_SPYSERVER_8)
+	endif()
+
+	if (SPYSERVER_16)
+	   set (${objectName}_UIS
+                ${${objectName}_UIS}
+                ../qt-devices/spy-server-16/spyserver-widget-16.ui
+           )
+
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../qt-devices/spy-server-16/tcp-client-16.h
+	        ../qt-devices/spy-server-16/spy-handler-16.h
+	        ../qt-devices/spy-server-16/spyserver-client-16.h
+	   )
+
+	   include_directories (
+	        ../qt-devices/spy-server-16/
+	   )
+
+	   set (${objectName}_HDRS
+	        ${${objectName}_HDRS}
+	        ../qt-devices/spy-server-16/spyserver-protocol.h
+	        ../qt-devices/spy-server-16/tcp-client-16.h
+	        ../qt-devices/spy-server-16/spy-handler-16.h
+	        ../qt-devices/spy-server-16/spyserver-client-16.h
+	   )
+
+	   set (${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../qt-devices/spy-server-16/tcp-client-16.cpp
+	        ../qt-devices/spy-server-16/spy-handler-16.cpp
+	        ../qt-devices/spy-server-16/spyserver-client-16.cpp
+	   )
+
+	   add_definitions (-DHAVE_SPYSERVER_16)
+	endif()
 #
 	if (TCP_STREAMER)
 	   add_definitions (-DTCP_STREAMER)

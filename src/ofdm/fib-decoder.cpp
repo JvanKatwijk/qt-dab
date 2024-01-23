@@ -807,7 +807,7 @@ dabConfig *localBase	= CN_bit == 0 ? currentConfig : nextConfig;
 	   uint16_t AswFlags	= getBits (d, bitOffset, 16);
 	   bitOffset		+= 16;
 
-	   uint8_t newFlag	= getBits (d, bitOffset, 1);
+//	   uint8_t newFlag	= getBits (d, bitOffset, 1);
 	   bitOffset	+= 1;
 	   uint8_t regionFlag	= getBits (d, bitOffset, 1);
 	   bitOffset	+= 1;
