@@ -10,32 +10,50 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
-![6.4](/qt-dab-6.4.png?raw=true)
-
-Differences with the previous versions
-
 ------------------------------------------------------------------------
+About Qt-DAB-6.Beta
+-------------------------------------------------------------------------
 
 ![6.4](/6.Beta_1.png?raw=true)
 ![6.4](/6.Beta_2.png?raw=true)
 
-The releases section contains an entry for a Windows installer and an AppImage
-for a Beta version of the software. That version differs from the previous
-one(s) is the "ensemblewidget". As can be seen, it now shows a table,
-with (a) an ensemble and (b) the favorites list.
-In the first picture a second colums comtains a "*" id the service is
-also part of the favorites list. The second picture shows the favorites
-with in the second column the channel where the service is to be found.
+When using Qt-DAB while doing other things (reading, programming etc) I
+primarily use the favorites list to switch between preferred services
+in different channels.
 
-Adding a service to the list or removing it from the list is by clicking with
-the left mouse button on the second column.
-Of course, clicking on the servicename selects the service
+In previous versions the presets were already changed in "favorites",
+however, for me the separate list for favorites was (slightly) irritating.
+So in the end the favorites list and the ensemble list were combined,
+however, showing them in a single list was rather confusing.
+The next attempt seems to make more sense, either the services of the
+current ensemble are shown or the favorites list is shown.
 
-Cliking with the left mouse button on an element in the favorites list
-selects that sevice, clicking with the right mouse button on a service
-in the favorites will remove the service from the favorites.
+A service in the ensemble view can be added to the favorites list by vlicking
+in the column to the right, a mark, a "*", will indicate that the service is
+also in the list of favorites.
+(Clicking on a mark causes the service to be removed from the favorites list).
+
+Of course selecting a service in either list is possible, selecting a service
+in the list of gavorites might take a few seconds if the service is to be
+found on another channel.
+However, selecting a service does not change the view, the selected service
+is marked. If the view is changed from "favorites" to "ensemble", the selected
+service will be shown marked.
+If a service is selected in the ensemble view and a witch is made to the
+favorites view, and the service is also in the favorites view, then the
+service will be shown marked.
+
+Of course, reimplementing the visulation and control of the ensembles and 
+favorites gives a chance to adapt some other things.
+The configuration and control widget contains now a selector for choosing
+a font, selecting a fontsize (well, within 8 and 12 pt) and a font color,
+while changing a setting has immediate effect on the screen.
+
+Since implementing this change required significant changes in the code,
+that is why the "new" version is for now presented as "Beta" version.
 
 -----------------------------------------------------------------------
+Differences with the previous versions
 ------------------------------------------------------------------------
 
 In Qt-DAB 6.40 there are visible changes to the main widget and to
