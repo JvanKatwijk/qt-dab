@@ -70,9 +70,10 @@ QString	topLine = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
 	s = create_xmltree	();
 	fseek (xmlFile, 0, SEEK_SET);
 	fprintf (xmlFile, "%s", topLine. toLatin1 (). data ());
-	char * cs = s. toLatin1 (). data ();
-	int len = strlen (cs);
-	fwrite (cs, 1, len, xmlFile);
+	fprintf (xmlFile, "%s", s. toLatin1 (). data ());
+//	char * cs = s. toLatin1 (). data ();
+//	int len = strlen (cs);
+//	fwrite (s. toLatin1 (). data (), 1, len, xmlFile);
 }
 
 #define	BLOCK_SIZE	8192
