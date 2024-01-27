@@ -14,8 +14,11 @@ qt-dab-s6/.qmake.stash
 qt-dab-s6/build
 qt-dab-s6/Makefile
 qt-dab-s6/Output
-qt-dab-RC/
-./qt-dab-RC.tgz
+qt-dab-RC/linux-bin
+qt-dab-RC/.qmake.stash
+qt-dab-RC/build
+qt-dab-RC/Makefile
+qt-dab-RC.tgz
 
 
 
