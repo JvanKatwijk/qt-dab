@@ -14,8 +14,8 @@
 About Qt-DAB-6.5Beta
 -------------------------------------------------------------------------
 
-![6.4](/Qt_DAB-6.5Beta_1.png?raw=true)
-![6.4](/Qt_DAB-6.5Beta_2.png?raw=true)
+![6.4](/Qt_DAB-6.5Beta-1.png?raw=true)
+![6.4](/Qt_DAB-6.5Beta-2.png?raw=true)
 
 Qt-DAB-6.5Beta has undergone some improvements that were - for a long time - on
 my own wishlist, while  some  other modidications are based on user's requests.
@@ -138,7 +138,7 @@ While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, 
 Widgets and scopes
 =======================================================================
 
-![6.2](/Qt_DAB6.5Beta1.png)
+![6.2](/Qt_DAB-6.5Beta-1.png)
 
 The full GUI for Qt-DAB 6.5 consists of 4 (four) larger widgets,
 The mainWidget (see picture) is always visible, various elements in
