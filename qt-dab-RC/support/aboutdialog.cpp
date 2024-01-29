@@ -53,6 +53,7 @@
                            "<li><a href=\"https://github.com/libsndfile\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"https://github.io/libsamplerate\">libsndfile</a> by Erik de Castro Lopo</li>"
                            "<li><a href=\"www.portaudio.com/\">Portaudio</a> by Ross Bencina, Phil Burke and many others</li>"
+                           "<li>An MP2 decoder by Martin J Fiedler (martin.fiedler@gmx.net</li>"
 #if __WITH_FDK_AAC__
                            "<li><a href=\"https://github.com/mstorsjo/fdk-aac\">fdk-aac</a> Copyright © 1995 - 2018 Fraunhofer-Gesellschaft "
                            "zur Förderung der angewandten Forschung e.V.</li>"

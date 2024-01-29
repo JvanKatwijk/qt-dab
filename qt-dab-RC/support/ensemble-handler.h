@@ -39,6 +39,8 @@ public:
 	int	get_showMode		();
 	void	set_showMode		(int);
 
+	int	nrFavorites		();
+	bool	hasFavorite		(const QString &);
 	uint16_t extract_SId		(const QString &);
 
 private	slots:

@@ -10,8 +10,8 @@ QT		+= widgets xml
 CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++14
 win32 {
-QMAKE_CFLAGS	+=  -O4 -ffast-math
-QMAKE_CXXFLAGS	+=  -O4 -ffast-math
+QMAKE_CFLAGS	+=  -O3 -ffast-math
+QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 unix {
 QMAKE_CXXFLAGS	+=  -ffast-math -flto
@@ -487,10 +487,10 @@ isEmpty(GITHASHSTRING) {
 #	DEFINES		+= __THREADED_BACKEND
 #
 #for win32, comment out the lines above
-#	TARGET		= qt-dab32-6-V3
-#	CONFIG		+= dabstick-win-v3
-	TARGET		= qt-dab32-6.5Beta
-	CONFIG		+= dabstick-win-v4
+	TARGET		= qt-dab32-6.5V3
+	CONFIG		+= dabstick-win-v3
+#	TARGET		= qt-dab32-6.5Beta
+#	CONFIG		+= dabstick-win-v4
 	CONFIG		+= airspy
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8

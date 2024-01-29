@@ -249,7 +249,7 @@ QString h;
 	   if (p. load (":res/details24.png", "png"))
 	      serviceButton -> setPixmap (p. scaled (30, 30, Qt::KeepAspectRatio));
 	   else
-	      fprintf (stderr, "Loafing details button failed\n");
+	      fprintf (stderr, "Loading details button failed\n");
 	}
 
 	int x	= dabSettings_p -> value ("mainWidget-x", 100). toInt ();
@@ -271,9 +271,9 @@ QString h;
 	                                                       presetFile);
 	
 #ifdef HAVE_RTLSDR_V3
-	SystemVersion	= QString ("5.Beta") + " with RTLSDR-V3");
+	SystemVersion	= QString ("5.Beta") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
-	SystemVersion	= QString ("5.Beta") + " with RTLSDR-V4");
+	SystemVersion	= QString ("5.Beta") + " with RTLSDR-V4";
 #else
 	SystemVersion	= QString ("5.Beta");
 #endif
@@ -316,6 +316,11 @@ QString h;
 	      if (ss. size () == 2) {
 	         channel. nextService. channel	= ss. at (0);
 	         channel. nextService. serviceName = ss. at (1);
+	         if (the_ensembleHandler -> hasFavorite (ss. at (1))) {
+	            the_ensembleHandler -> set_showMode (SHOW_PRESETS);
+	            presetButton -> setText ("ensemble");
+	            fprintf (stderr, "Set view to presets\n");
+	         }
 	      }
 	      else {
 	         channel. nextService. channel = "";
@@ -414,8 +419,6 @@ QString h;
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, SIGNAL (timeout ()),
 	         this, SLOT (epgTimer_timeOut ()));
-
-
 
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable		-> hide ();
@@ -572,6 +575,9 @@ QString h;
 	   my_snrViewer. hide ();
 	if (dabSettings_p -> value ("techDataVisible", 0). toInt () == 1)
 	   techWindow_p -> show ();
+
+	dynamicLabel	-> setTextInteractionFlags(Qt::TextSelectableByMouse);
+	dynamicLabel    -> setToolTip ("The text (or parts of it) of the dynamic label can be copied. Selecting the text with the mouse and clicking the right hand mouse button shows a small menu with which the text can be put into the clipboard");
 
 //	if a device was selected, we just start, otherwise
 //	we wait until one is selected

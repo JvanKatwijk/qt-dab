@@ -35,6 +35,7 @@
 	   connect (this, SIGNAL (cellClicked (int, int)),
                     this, SLOT (click_on_service (int, int)));
 	   loadFavorites (favFile);
+	   handlePresets	= true;	// for now
 }
 
 	ensembleHandler::~ensembleHandler () {
@@ -590,6 +591,21 @@ QString	theFont	= ensembleSettings -> value ("theFont", "Times"). toString ();
 	updateList ();
 }
 
+int	ensembleHandler::nrFavorites	() {
+	return favorites. size ();
+}
+
+bool	ensembleHandler::hasFavorite	(const QString &name) {
+	for (auto &s : favorites) {
+	   fprintf (stderr, "Comparing %s with %s\n",
+	                      s. name. toLatin1 (). data (),
+	                      name. toLatin1(). data ());
+	   if (s. name == name)
+	      return true;
+	}
+	return false;
+}
+
 void	ensembleHandler::setMode	(bool b) {
 	handlePresets	= b;
 	if (!handlePresets) {
@@ -605,6 +621,7 @@ int	ensembleHandler::get_showMode	() {
 void	ensembleHandler::set_showMode	(int m) {
 	if (!handlePresets)
 	   return;
+	fprintf (stderr, "setting showMode %d\n", m);
 	if (ensembleMode == m)
 	   return;
 	ensembleMode	= m == SHOW_ENSEMBLE ? SHOW_ENSEMBLE : SHOW_PRESETS;

@@ -11,69 +11,48 @@
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
 ------------------------------------------------------------------------
-About Qt-DAB-6.Beta
+About Qt-DAB-6.5Beta
 -------------------------------------------------------------------------
 
-![6.4](/6.Beta_1.png?raw=true)
-![6.4](/6.Beta_2.png?raw=true)
+![6.4](/Qt_DAB-6.5Beta_1.png?raw=true)
+![6.4](/Qt_DAB-6.5Beta_2.png?raw=true)
 
-When using Qt-DAB while doing other things (reading, programming etc) I
-primarily use the favorites list to switch between preferred services
-in different channels.
+Qt-DAB-6.5Beta has undergone some improvements that were - for a long time - on
+my own wishlist, while  some  other modidications are based on user's requests.
+Since when using Qt-DAB as regular radio device, I switch audio between
+only a few services, their names are listed in my "list of favorites".
+The current version therefore shows on start up the list of favorites.
+Of course when selecting a service, the software "knows" tall services
+in the ensemble of the selection, the widget therefore lets you choose between
+the view on the current ensemble and the view on the favorites.
 
-In previous versions the presets were already changed in "favorites",
-however, for me the separate list for favorites was (slightly) irritating.
-So in the end the favorites list and the ensemble list were combined,
-however, showing them in a single list was rather confusing.
-The next attempt seems to make more sense, either the services of the
-current ensemble are shown or the favorites list is shown.
+In the ensembleview the services are marked if they also belong to 
+the list of favoriets. Clicking on the element in the right column
+adds or removes a service from the favorites. (Of course, in the list of
+favorites, clicking on the right hand column of the service in question
+removes the service).
 
-A service in the ensemble view can be added to the favorites list by vlicking
-in the column to the right, a mark, a "*", will indicate that the service is
-also in the list of favorites.
-(Clicking on a mark causes the service to be removed from the favorites list).
+In a previous version, control on the visibility of the "technical widget"
+was by clicking on the name of the selected service in the right hand
+part of the widget. Of course that is unclear, therefore a small icon
+is added instead. 
 
-Of course selecting a service in either list is possible, selecting a service
-in the list of gavorites might take a few seconds if the service is to be
-found on another channel.
-However, selecting a service does not change the view, the selected service
-is marked. If the view is changed from "favorites" to "ensemble", the selected
-service will be shown marked.
-If a service is selected in the ensemble view and a witch is made to the
-favorites view, and the service is also in the favorites view, then the
-service will be shown marked.
+As in the previous version, control on muting the audio is delegated
+to the icon of the loadspeaker. The speaker indication tells whether or
+not sound is "on".
 
-Of course, reimplementing the visulation and control of the ensembles and 
-favorites gives a chance to adapt some other things.
-The configuration and control widget contains now a selector for choosing
-a font, selecting a fontsize (well, within 8 and 12 pt) and a font color,
-while changing a setting has immediate effect on the screen.
+Base on user's request, input can be obtained from "spy-servers", i.e.
+remote from over the internet.
+Such a spy server can handle AIRspy devices and RT2832
+based dabsticks. Of course the connection should be able to handle
+data with a reasonable bandwidth. For 16 bit data, i.e. a sample takes 2 x 2 bytes, one needs 10MB/s (slightly  ore actually since the data is transmitted 
+as packages with a header).
 
-Since implementing this change required significant changes in the code,
-that is why the "new" version is for now presented as "Beta" version.
+Also, the Soapy interface was rewritten and (seems to) work(s) fine.
 
------------------------------------------------------------------------
-Differences with the previous versions
-------------------------------------------------------------------------
-
-In Qt-DAB 6.40 there are visible changes to the main widget and to
-the configuration and control widget.
-In the main widget the *content* button, the *technical data* button
-and the *mute* button are removed. The *schedule* button is moved
-to the configuration and control widget.
-The functionality of the removed buttons is not removed.
-
- * touch the name of the ensemble on top of the left part of the main widget
-and the content table appears (or disappears)
-
- * touch the name of the selected service on the right half of the widget
-and the technical widget will appear (or disappear)
-
- *  the icon of the loudspeaker will show whether or not a sound channel
-is selected. Touching the icon will control the muting
-
-Furthermore, the scanning function is re-implemented and the *scan* button
-on the main widget now controls the visibility of a *scan-control widget*.
+While the possibility of saving DLS data was implemented some time ago, there
+is now also a possibility of putting the current DLS text on the clipboard
+and saving it. Just click with the right hand mouse button on the text.
 
 Table of Contents
 =================================================================
@@ -97,11 +76,11 @@ Introduction
 
 **Qt-DAB-XX** is a rich implementation of a DAB decoder for use on Linux and Windows based PCs, including some ARM based boards, such as the Raspberry PI 2 and up. It can be used with a variety of SDR devices, including DABsticks, all models of the SDRplay, Airspy etc.
 
+The current version is 6.5Beta. The versions 6.40, 5.5 and 4.8 are still available
+and can be built, using the same set of sources as the current one.
 
-The current version is 6.40. The versions 5.5 and 4.8 are still available
-and can be built, using the same set of sources as the current 6.40.
-
-Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are available. 
+Precompiled versions for Linux-x64 (AppImage) and Windows (an installer) are
+- as usual -available. 
 
 Thanks to Richard Huber, **Qt-DAB** can be compiled on the Mac.
 
@@ -111,8 +90,8 @@ Features
   * DAB (mp2) and DAB+ (HE-AAC v1, HE-AAC v2 and AAC-LC) decoding
   * MOT SlideShow (SLS)
   * Dynamic Label (DLS) with the possibility of saving dynamic  the Label text  by right clicking with the mouse, or saving all dynamic label texts  - augmented with channel and time info - in a file,
-  * While DAB is now transmitted by default in the VHF Band III, there are options to select the L-Band, and it is possible to receive data from user defined channels.
-  * While Mode I is "the" mode for DAB, Qt-DAB offers an option to interpret data modelled in Mode II or Mode IV,
+  * DAB is now transmitted by default in the VHF Band III, there are options to select the L-Band, and it is possible to receive data from user defined channels.
+  * While Mode I is *the* mode for DAB, Qt-DAB offers an option to interpret data modelled in Mode II or Mode IV,
   * There is a focus on viewing the signal: next to showing the spectrum of the received signal and a constellation diagram of the decoded signal,
 a view on the correlation of the signal and the TII spectrum can be selected. Furthermore, a view on the transition from the NULL period to the first datablock, a viewe on the impact of the channel on the signal, and a view on the frequency offsets of the carriers in the decoded signal can be selected. Finally, in a separate widget, the development over time of the SNR can be made visible.
   * automatic reconfiguration of services.
@@ -132,11 +111,12 @@ a view on the correlation of the signal and the TII spectrum can be selected. Fu
    	- SDR DAB sticks (RTL2838U or similar), 
 	- HACKRF One, 
   	- Airspy, including Airspy mini,
-  	- SDRplay (RSP I, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
+  	- SDRplay (RSP I,  RSP 1A and 1B, RSP II, RSP Duo and RSP Dx), with separate entries for v2 and v3 library
 	- limeSDR, 
 	- Adalm Pluto,
-	- untested UHD (anyone wants to help testing?)
+	- **untested** UHD (anyone wants to help testing?)
 	- Soapy, a renewed soapy interface driver is even able to map other samplerates than the required 2048000 (limited to the range 2000000 .. 3000000);
+	- input from a spyServer,
 	- ExtIO (experimental, Windows only),
 	- rtl_tcp servers.
   * Always supported input from:
@@ -158,21 +138,48 @@ While the 2.13 support for SDRplay devices is able to handle the RSP 1, RSP II, 
 Widgets and scopes
 =======================================================================
 
-![6.2](/qt-dab-6-main-widget.png)
+![6.2](/Qt_DAB6.5Beta1.png)
 
-The full GUI for Qt-DAB 6.40 consists of a handful of widgets; 
-a single widget, the *main* widget is always visible and visibility of the
-other wigets (spectrum widget, technical data widget and configuration-and-control widget) is stricly under user control by settings in the main widget.
-
+The full GUI for Qt-DAB 6.5 consists of 4 (four) larger widgets,
+The mainWidget (see picture) is always visible, various elements in
+the widget control the visibility of the other 3 (three).
 The main widget of Qt-DAB provides all means for selecting a channel,
 and selecting a service. 
 
-![6.2](/qt-dab-6-slides.png)
+In the transmission of most services one or more *slide*s are part of it,
+such slides are shown, as the picture shows. If no slide is shown a
+default picture is shown.
 
-Most DAB services carry one or more slides, these are made visible on the
-main widget.
-The technical widget - the visibility of which depends on the settings
-in the main widget - gives full information on the selected audio service, as shown in the picture.
+ * touching the *ensemble name* (NPO (8001) in the picture) makes the
+content table, i.e. an overview of the content of the ensemble, visible
+(or if it is visible, touching will hide it);
+ * touching the small icon left of the name of the selected service (here left
+of the bold text NPO Radio 5), withh show (or hide) the technical widget,
+a widget showing all technical details as well as strength indicators and 
+a spectrum of the audio of the selected service;
+ * touching the icon showing a *speaker* controls the muting of the signal,
+if no audio is generated, or if the signal is muted, the icon will show this;
+ * touching *with the right hand mouse button* the text of the dynamic label (here, in italic ("Rob de Nijs - Dag Zuster Ursula") will whow a small menu to put the text on the clipboard;
+ * touching the button labeled *scan* controls the visibility of a the scan handler widget;
+ * touching the button labeled *http* controls the http handler with which a map on which rhe transmitters will be shown;
+ * touching the button labeled *spectrum* controls the visibility of the spectrum widget, a widget that contains information on the DAB signal itself;
+ * touching the button labeled *show controls* controls the visibility of the so-called *configuration and control widget*, a widget that contains numerous settings for this software;
+ * touching the button labeled *favorites* will switch the visibility of the list of services shown between the *ensemble view* and the *favorites view*;
+ *touching the button labeled "scanlist* shows (or hides) the scan list, i.e
+the list of services seen at the most recent scan.
+
+Obviously, the colors of the buttons, as well as the *font*, the *font size* and the *font color* of the service list shown can be set by the user.
+
+Selecting a service (just clicking with the left mouse button on its name)
+ is possible in both views, i.e. both the ensemble view
+and the favorites view. Of course when selecting a service in the favorites
+view it might take some time before the software has switch over to the
+appropriate channel, has received the esemble information of that channel
+and has selected the service in that channel.
+
+Selecting itself is simply by clicking on the service name. The effect of
+clicking into the right hand column depends on the viewmode.
+In the ensemble view mode, clicking in the right column indicates adding the service to or removing it from the favorites. In the favorites column it just means removing the element from the favorites.
 
 ![6.1](/technical-widget.png)
 
@@ -180,27 +187,6 @@ While the main widget shows the services in the **currently selected** channel,
 there is a separate widget for displaying **favorites**.
 A  service name from the ensemble display can be added to the favorites
 list by clicking on it with the right hand mouse button.
-
-![6.2](/favorites-widget.png)
-
-Different from previous versions, a **single widget**, the spectrum widget,
-contains (almost) all of the scopes and displays.
-It is set up as a tabbed widget - the 6 scopes show the various aspects of the DAB signal. 
-Furthermore, it contains an IQscope,
-showing the constellation of the decoded data or the constellation
-of the data before decoding.
-A waterfall scope shows the progress in time of the data
-that is displayed in the selected scope.
-
-The spectrum scope shows - in numbers - some quality indicators for the
-raw DAB signal as well.
-
-The progress indicator at the bottom shows the quality of the FIC decoding,
-where FIC can be seen as the directory data of the contents of the DAB
-transmission.
-
-(Note that - obviously - the colors of the scopes can be set to different
-colors than shown here).
 
 ![6.1](/spectrum-scope.png)
 
@@ -252,13 +238,12 @@ The Y-axis is in Hz.
 The configuration and control widget contains check boxes and
 buttons with which the configuration of the decoding process can be
 influenced.
-New are the selectors on the bottom line left. In previous versions right
-clicking on an arbitrary service name in the emsemble display would start
-a service with that name as background service. However, the default now is
-that right clicking adds the service name to the favorites. Setting the
-most left checkbox will revert this.
-The second selector, a combobox with only a few items allows selection from
-some experimental decoder implementations.
+The top rightshows the 3 selectors for the font with which the services
+in the service list are dsiplayed.
+
+At starting up Qt-DAB for the (very) first time, the widget will show
+to allow selection of an input device (the combobox at the bottom line right).
+
 
 Scan control
 =======================================================================
@@ -307,7 +292,8 @@ on the configuration  and control widget and a small widget appears where the da
 Documentation
 =================================================================
 
-An extensive **user's guide** - in PDF format - for the 6.1 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
+An extensive **user's guide** - in PDF format - for the 6.4 version can be found in the "docs" section of the source tree. The documentation contains a complete description of the widgets, of the values in the `.ini` file, on configuring for creating an executable (Linux), and even a complete description on how to add a device to the configuration.
+Note that not all changes done in 6.5 are covered in the current manual.
 
 ![Qt-DAB documentation](/qt-dab-6-manual.png?raw=true)
 
