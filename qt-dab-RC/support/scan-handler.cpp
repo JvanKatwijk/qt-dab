@@ -103,7 +103,8 @@ QString scanmodeText (int e) {
 }
 
 	scanHandler::scanHandler (RadioInterface *theRadio,
-	                                         QSettings *s, const QString &extFile):
+	                                         QSettings *s,
+	                                         const QString &extFile):
 	                                             myWidget (nullptr),
 	                                             skipTable (s),
 	                                             filenameFinder (s) {

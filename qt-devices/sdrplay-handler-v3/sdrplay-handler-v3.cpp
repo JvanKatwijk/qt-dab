@@ -43,6 +43,7 @@
 #define SDRPLAY_RSP2_   2
 #define SDRPLAY_RSPduo_ 3
 #define SDRPLAY_RSPdx_  4
+#define SDRPLAY_RSP1B_  6
 
 #include	"device-exceptions.h"
 
@@ -618,6 +619,7 @@ uint32_t                ndev;
 	         break;
 
 	      case SDRPLAY_RSP1A_ :
+	      case SDRPLAY_RSP1B_ :
 	         theRsp	= new Rsp1A_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,

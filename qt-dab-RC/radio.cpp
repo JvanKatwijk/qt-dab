@@ -319,7 +319,7 @@ QString h;
 	         if (the_ensembleHandler -> hasFavorite (ss. at (1))) {
 	            the_ensembleHandler -> set_showMode (SHOW_PRESETS);
 	            presetButton -> setText ("ensemble");
-	            fprintf (stderr, "Set view to presets\n");
+//	            fprintf (stderr, "Set view to presets\n");
 	         }
 	      }
 	      else {
@@ -2715,8 +2715,6 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 void	RadioInterface::handle_scanButton () {
 	if (!running. load ())
 	   return;
-	if (the_ensembleHandler -> get_showMode () != SHOW_ENSEMBLE)
-	   return;
 	if (scanMonitor. isVisible ())
 	   scanMonitor. hide ();
 	else
@@ -2724,7 +2722,9 @@ void	RadioInterface::handle_scanButton () {
 }
 
 void	RadioInterface::startScanning	() {
-//	presetButton	-> setEnabled (false);
+	the_ensembleHandler	-> set_showMode (SHOW_ENSEMBLE);
+	presetButton		-> setText ("not in use");
+	presetButton	-> setEnabled (false);
 	stopChannel     ();
 	presetTimer. stop ();
 	channelTimer. stop ();
@@ -2837,6 +2837,8 @@ void	RadioInterface::stopScanning	() {
 	            this, SLOT (no_signal_found ()));
 	if (!scanMonitor. active ())
 	   return;
+	presetButton	-> setText ("favorites");
+	presetButton	-> setEnabled (true);
 	LOG ("scanning stops ", "");
 	if (scanMonitor. scan_to_data ())
 	   stop_scan_to_data ();

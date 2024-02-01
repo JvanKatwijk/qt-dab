@@ -621,7 +621,6 @@ int	ensembleHandler::get_showMode	() {
 void	ensembleHandler::set_showMode	(int m) {
 	if (!handlePresets)
 	   return;
-	fprintf (stderr, "setting showMode %d\n", m);
 	if (ensembleMode == m)
 	   return;
 	ensembleMode	= m == SHOW_ENSEMBLE ? SHOW_ENSEMBLE : SHOW_PRESETS;
