@@ -147,8 +147,8 @@ public:
 	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
-	int		distance;
-	int		corner;
+	float		distance;
+	float		corner;
 	bool		audioActive;
 
 	void	cleanChannel () {
@@ -253,6 +253,7 @@ private:
         float			peakLeftDamped;
         float			peakRightDamped;
 
+	QString			labelStyle;
 #ifdef	HAVE_PLUTO_RXTX
 	dabStreamer		*streamerOut_p;
 #endif
@@ -493,6 +494,7 @@ private slots:
 
 //
 //	color handlers
+	void			handle_labelColor	();
 	void			color_resetButton	();
 	void			color_scanButton	();
 	void			color_presetButton	();

@@ -4,6 +4,8 @@
 #include	<QStringList>
 #include	<QSettings>
 #include	<QtXml>
+#include	<QColorDialog>
+#include	<QFontDialog>
 
 #define	MARKED	0100
 #define	NORMAL	0000
@@ -540,41 +542,45 @@ void	ensembleHandler::setFont (int mark, int index) {
 }
 
 void	ensembleHandler::handle_fontSelect () {
-fontChooser selectFont ("select font");
-QStringList fontList;
-QString	theFont;
-	fontList << QString ("Times");
-	fontList << QString ("Helvetica");
-	fontList <<  QString ("Arial");
-	fontList <<  QString ("Cantarell");
-
-	for (auto &s : fontList)
-	   selectFont. add (s);
-	int fontIndex	= selectFont. QDialog::exec ();
-	theFont	= fontList. at (fontIndex);
-	ensembleSettings	-> setValue ("theFont", theFont);
-	int fontSize		=	
+bool ok;
+int fontSize		=	
 	           ensembleSettings -> value ("fontSize", 10). toInt ();
-	normalFont	= QFont (theFont, fontSize, -1, false);
-	markedFont	= QFont (theFont, fontSize + 2, -1, true);
-	channelFont	= QFont (theFont, fontSize - 2);
+	QFont theFont = QFontDialog::getFont (
+	                      &ok, QFont ("Helvetica", fontSize), this);
+	if (!ok)
+	   return;
+	
+	ensembleSettings	-> setValue ("theFont", theFont. toString ());
+	normalFont	= QFont (theFont. toString (), fontSize, -1, false);
+	markedFont	= QFont (theFont. toString (), fontSize + 2, -1, true);
+	channelFont	= QFont (theFont. toString (), fontSize - 2);
 	updateList ();
 }
+//fontChooser selectFont ("select font");
+//QStringList fontList;
+//QString	theFont;
+//	fontList << QString ("Times");
+//	fontList << QString ("Helvetica");
+//	fontList << QString ("Arial");
+//	fontList << QString ("Cantarell");
+//
+//	for (auto &s : fontList)
+//	   selectFont. add (s);
+//	int fontIndex	= selectFont. QDialog::exec ();
+//	theFont	= fontList. at (fontIndex);
+//	ensembleSettings	-> setValue ("theFont", theFont);
+//	normalFont	= QFont (theFont, fontSize, -1, false);
+//	markedFont	= QFont (theFont, fontSize + 2, -1, true);
+//	channelFont	= QFont (theFont, fontSize - 2);
+//	updateList ();
+//}
 
 void	ensembleHandler::handle_fontColorSelect () {
-fontChooser selectColor ("select color");
-QStringList colorList;
-	colorList << "colors" << "white" << "black" << "red" <<
-                  "darkRed" << "green" << "darkGreen" << "blue" <<
-                  "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
-                  "darkMagenta" << "yellow" << "darkYellow" <<
-                  "gray" << "darkGray";
-	for (auto &s: colorList)
-	   selectColor. add (s);
-	int colorIndex	= selectColor. QDialog::exec ();
-	if (colorIndex == 0)
-	   colorIndex = 1;
-	this -> fontColor	= colorList. at (colorIndex);
+QColor	color;
+	color	= QColorDialog::getColor (color, nullptr, "fontColor");
+	if (!color. isValid ())
+	   return;
+	fontColor	= color. name ();
 	ensembleSettings	-> setValue ("fontColor", fontColor);
 	updateList ();
 }
@@ -582,7 +588,7 @@ QStringList colorList;
 void	ensembleHandler::handle_fontSizeSelect	(int fontSize) {
 QString	theFont	= ensembleSettings -> value ("theFont", "Times"). toString ();
 
-	if ((fontSize < 8) || (fontSize > 12))
+	if (fontSize < 8) 
 	   return;
 	ensembleSettings	-> setValue ("fontSize", fontSize);
 	normalFont	= QFont (theFont, fontSize, -1, false);
@@ -597,9 +603,9 @@ int	ensembleHandler::nrFavorites	() {
 
 bool	ensembleHandler::hasFavorite	(const QString &name) {
 	for (auto &s : favorites) {
-	   fprintf (stderr, "Comparing %s with %s\n",
-	                      s. name. toLatin1 (). data (),
-	                      name. toLatin1(). data ());
+//	   fprintf (stderr, "Comparing %s with %s\n",
+//	                      s. name. toLatin1 (). data (),
+//	                      name. toLatin1(). data ());
 	   if (s. name == name)
 	      return true;
 	}

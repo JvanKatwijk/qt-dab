@@ -38,9 +38,11 @@
 	setLayout (layOut);
 
 	colors = QStringList();
-	colors << "colors" << "white" << "black" << "red" <<
-	          "darkRed" << "green" << "darkGreen" << "blue" <<
-	          "darkBlue" << "cyan" << "darkCyan" << "magenta" <<
+	colors << "colors" << "white" << "black" <<
+	          "lightRed" << "red" << "darkRed" <<
+	          "lightgreen" << "green" << "darkGreen" <<
+	          "lightBlue" << "blue" << "darkBlue" << 
+	          "lighCyan" << "cyan" << "darkCyan" << "magenta" <<
 	          "darkMagenta" << "yellow" << "darkYellow" <<
 	          "gray" << "darkGray";
 	colorList. setStringList (colors);
@@ -50,7 +52,7 @@
 	selectedItem	= -1;
 }
 
-	colorSelector::~colorSelector() {
+	colorSelector::~colorSelector	() {
 }
 
 void	colorSelector::select_color (QModelIndex s) {

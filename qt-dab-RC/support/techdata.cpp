@@ -26,7 +26,7 @@
 #include	"radio.h"
 #include	"audio-display.h"
 #include	"dab-tables.h"
-#include	"color-selector.h"
+#include	<QColorDialog>
 
 
 #define FRAMEDUMP_BUTTON        QString ("framedumpButton") 
@@ -303,37 +303,29 @@ void    techData::color_audiodumpButton   ()      {
 
 void	techData::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
-colorSelector *selector;
-int	index;
+QColor	baseColor;
+QColor	textColor;
+QColor	color;
 
-	selector		= new colorSelector ("button color");
-	index			= selector -> QDialog::exec ();
-	QString baseColor	= selector -> getColor (index);
-	delete selector;
-	if (index == 0)
+	color = QColorDialog::getColor (baseColor, nullptr, "baseColor");
+	if (!color. isValid ())
 	   return;
-	selector		= new colorSelector ("text color");
-	index			= selector	-> QDialog::exec ();
-	QString textColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
+	baseColor	= color;
+	color = QColorDialog::getColor (textColor, nullptr, "textColor");
+	if (!color. isValid ())
 	   return;
+	textColor	= color;
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	b	-> setStyleSheet (temp. arg (baseColor, textColor));
+	b	-> setStyleSheet (temp. arg (baseColor. name (),
+	                                     textColor. name ()));
 
 	QString buttonColor	= buttonName + "_color";
 	QString buttonFont	= buttonName + "_font";
 
 	dabSettings	-> beginGroup ("colorSettings");
-	dabSettings	-> setValue (buttonColor, baseColor);
-	dabSettings	-> setValue (buttonFont, textColor);
+	dabSettings	-> setValue (buttonColor, baseColor. name ());
+	dabSettings	-> setValue (buttonFont, textColor. name ());
 	dabSettings	-> endGroup ();
-
-//	fprintf (stderr, "%s -> %s, %s -> %s\n",
-//	                buttonColor. toLatin1 (). data (),
-//	                baseColor. toLatin1 (). data (),
-//	                buttonFont. toLatin1 (). data (),
-//	                textColor. toLatin1 (). data ());
 }
 
 void	techData::framedumpButton_text	(const QString &text, int size) {

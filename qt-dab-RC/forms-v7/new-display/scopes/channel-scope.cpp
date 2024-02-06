@@ -24,7 +24,7 @@
 #include	<QSettings>
 #include        <QColor>
 #include        <QPen>
-#include        "color-selector.h"
+#include        <QColorDialog>
 
 	channelScope::channelScope (QwtPlot *channelDisplay,
 	                            int displaySize,
@@ -131,37 +131,28 @@ double ampVals [displaySize];
 }
 
 void	channelScope::rightMouseClick	(const QPointF &point) {
-colorSelector *selector;
-int	index;
-	(void) point;
-	selector		= new colorSelector ("display color");
-	index			= selector -> QDialog::exec ();
-	QString displayColor	= selector -> getColor (index);
-	delete selector;
-	if (index == 0)
+QColor	color;
+	
+	color	= QColorDialog::getColor (displayColor,
+	                                  nullptr, "displayColor");
+	if (!color. isValid ())
 	   return;
-	selector		= new colorSelector ("grid color");
-	index			= selector	-> QDialog::exec ();
-	QString gridColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
+	this	-> displayColor	= color;
+	color	= QColorDialog::getColor (gridColor, nullptr,  "grid color");
+	if (!color. isValid ())
 	   return;
-	selector		= new colorSelector ("curve color");
-	index			= selector	-> QDialog::exec ();
-	QString curveColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
+	this	-> gridColor	= color;
+	color	= QColorDialog::getColor (curveColor, nullptr, "curveColor");
+	if (!color. isValid ())
 	   return;
+	this	-> curveColor	= color;
 
 	dabSettings	-> beginGroup ("channelScope");
-	dabSettings	-> setValue ("displayColor", displayColor);
-	dabSettings	-> setValue ("gridColor", gridColor);
-	dabSettings	-> setValue ("curveColor", curveColor);
+	dabSettings	-> setValue ("displayColor", displayColor. name ());
+	dabSettings	-> setValue ("gridColor", gridColor. name ());
+	dabSettings	-> setValue ("curveColor", curveColor. name ());
 	dabSettings	-> endGroup ();
 
-	this		-> displayColor	= QColor (displayColor);
-	this		-> gridColor	= QColor (gridColor);
-	this		-> curveColor	= QColor (curveColor);
 	phaseCurve. setPen (QPen (QColor ("red"), 2.0));
 	amplitudeCurve. setPen (QPen (this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)

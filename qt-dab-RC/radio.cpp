@@ -31,6 +31,7 @@
 #include	<QStringListModel>
 #include	<QMouseEvent>
 #include	<QDir>
+#include	<QColorDialog>
 #include	<fstream>
 #include	"dab-constants.h"
 #include	"mot-content-types.h"
@@ -43,7 +44,6 @@
 #include	"rawfiles.h"
 #include	"wavfiles.h"
 #include	"xml-filereader.h"
-#include	"color-selector.h"
 #include	"schedule-selector.h"
 #include	"element-selector.h"
 #include        "skin-handler.h" 
@@ -111,7 +111,7 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 #endif
 
 static const
-char	LABEL_STYLE[] = "color:lightgreen";
+char	LABEL_STYLE [] = "color:lightgreen";
 
 static struct {
 	QString	decoderName;
@@ -269,7 +269,7 @@ QString h;
 
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile);
-	
+
 #ifdef HAVE_RTLSDR_V3
 	SystemVersion	= QString ("5.Beta") + " with RTLSDR-V3";
 #elif HAVE_RTLSDR_V4
@@ -304,6 +304,8 @@ QString h;
 	else
 	   newDisplay. hide ();
 
+	labelStyle	= dabSettings_p -> value ("labelStyle",
+	                                             LABEL_STYLE). toString ();
 	channel. currentService. valid	= false;
 	channel. nextService. valid	= false;
 	channel. serviceCount		= -1;
@@ -1145,17 +1147,18 @@ static int teller	= 0;
 	   teller = 0;
 	   if (!techWindow_p -> isHidden ())
 	      techWindow_p	-> show_rate (rate, ps, sbr);
+	   audiorateLabel	-> setStyleSheet (labelStyle);
 	   audiorateLabel	-> setText (QString::number (rate));
 	   if (!ps)
 	      psLabel -> setText (" ");
 	   else {
-	      psLabel -> setStyleSheet ("QLabel {color : white}"); 
+	      psLabel -> setStyleSheet (labelStyle); 
 	      psLabel -> setText ("ps");
 	   }
 	   if (!sbr)
 	      sbrLabel -> setText ("  "); 
 	   else {
-	      sbrLabel -> setStyleSheet ("QLabel {color : white}");
+	      sbrLabel -> setStyleSheet (labelStyle);
 	      sbrLabel -> setText ("sbr");
 	   }
 	}
@@ -1540,7 +1543,8 @@ void	RadioInterface::show_label	(const QString &s) {
 	   streamerOut_p -> addRds (std::string (s. toUtf8 (). data ()));
 #endif
 	if (running. load()) {
-	   dynamicLabel -> setWordWrap (true);
+//	   dynamicLabel -> setWordWrap (true);
+	   dynamicLabel	-> setStyleSheet (labelStyle);
 	   dynamicLabel	-> setText (s);
 	}
 //	if we have dtText is ON, some work is still to be done
@@ -1568,8 +1572,13 @@ void	RadioInterface::setStereo	(bool b) {
 	   return;
 	if (stereoSetting == b)
 	   return;
-	
-	stereoLabel	-> setText (b ? "<i>stereo</i>" : "<b>mono</b>");
+	if (b) {
+	   stereoLabel	-> setStyleSheet (labelStyle);
+	   stereoLabel	-> setText ("<i>stereo</i>");
+	}
+	else
+	   stereoLabel	-> setText ("      ");
+	   
 	stereoSetting = b;
 }
 //
@@ -1809,8 +1818,8 @@ void	RadioInterface::connectGUI	() {
 //	is handled separately
 	connect (spectrumButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_spectrumButton ()));
-//	connect (serviceLabel, SIGNAL (clicked ()),
-//	         this, SLOT (handle_detailButton ()));
+	connect (serviceLabel, SIGNAL (clicked ()),
+	         this, SLOT (handle_labelColor ()));
 	connect (serviceButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_detailButton ()));
 //
@@ -1844,7 +1853,6 @@ void	RadioInterface::connectGUI	() {
 //
 	connect (configWidget. fontButton, SIGNAL (clicked ()),
 	         the_ensembleHandler, SLOT (handle_fontSelect ()));
-
 	connect (configWidget. fontColorButton, SIGNAL (clicked ()),
 	         the_ensembleHandler, SLOT (handle_fontColorSelect ()));
 
@@ -2160,7 +2168,7 @@ void	RadioInterface::stop_announcement (const QString &name, int subChId) {
 
 	if (name == channel. currentService. serviceName) {
 	   if (channel. currentService. announcement_going) {
-	      serviceLabel	-> setStyleSheet (LABEL_STYLE);
+	      serviceLabel	-> setStyleSheet (labelStyle);
 	      channel. currentService. announcement_going = false;
 	      show_pauzeSlide ();
 	   }
@@ -2348,7 +2356,7 @@ QString serviceName	= s. serviceName;
 	QFont font = serviceLabel -> font ();
 	font. setPointSize (16);
 	font. setBold (true);
-	serviceLabel	-> setStyleSheet (LABEL_STYLE);
+	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	serviceLabel	-> setText (serviceName);
 	dynamicLabel	-> setText ("");
@@ -2411,8 +2419,10 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	soundOut_p -> restart ();
 	channel. audioActive	= true;
 	set_soundLabel (true);
-	programTypeLabel -> setText (getProgramType (ad. programType));
-	rateLabel	-> setText (QString::number (ad. bitRate) + "kbit");
+	programTypeLabel	-> setStyleSheet (labelStyle);
+	programTypeLabel	-> setText (getProgramType (ad. programType));
+	rateLabel		-> setStyleSheet (labelStyle);
+	rateLabel		-> setText (QString::number (ad. bitRate) + "kbit");
 //	show service related data
 	techWindow_p	-> show_serviceData 	(&ad);
 }
@@ -3410,37 +3420,29 @@ void	RadioInterface::color_portSelector	() 	{
 
 void	RadioInterface::set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName) {
-colorSelector *selector;
-int	index;
-	fprintf (stderr, "entering set_buttonColors");
-	selector		= new colorSelector ("button color");
-	index			= selector -> QDialog::exec ();
-	QString baseColor	= selector -> getColor (index);
-	delete selector;
-	if (index == 0)
+QColor	baseColor;
+QColor	textColor;
+QColor	color;
+
+	color = QColorDialog::getColor (baseColor, nullptr, "baseColor");
+	if (!color. isValid ())
 	   return;
-	selector		= new colorSelector ("text color");
-	index			= selector	-> QDialog::exec ();
-	QString textColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
+	baseColor	= color;
+	color = QColorDialog::getColor (textColor, nullptr, "textColor");
+	if (!color. isValid ())
 	   return;
+	textColor	= color;
 	QString temp = "QPushButton {background-color: %1; color: %2}";
-	b	-> setStyleSheet (temp. arg (baseColor, textColor));
+	b	-> setStyleSheet (temp. arg (baseColor. name (),
+	                                     textColor. name ()));
 
 	QString buttonColor	= buttonName + "_color";
 	QString buttonFont	= buttonName + "_font";
 
 	dabSettings_p	-> beginGroup ("colorSettings");
-	dabSettings_p	-> setValue (buttonColor, baseColor);
-	dabSettings_p	-> setValue (buttonFont, textColor);
+	dabSettings_p	-> setValue (buttonColor, baseColor. name ());
+	dabSettings_p	-> setValue (buttonFont, textColor. name ());
 	dabSettings_p	-> endGroup ();
-
-	fprintf (stderr, "%s -> %s, %s -> %s\n",
-	                buttonColor. toLatin1 (). data (),
-	                baseColor. toLatin1 (). data (),
-	                buttonFont. toLatin1 (). data (),
-	                textColor. toLatin1 (). data ());
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -4126,12 +4128,12 @@ bool	tiiChange	= false;
 	   channel. mainId	= mainId;
 	   channel. subId	= subId;
 
-	   QString a = "Est TII: " + tiiNumber (mainId) + " " +
-	                                    tiiNumber (subId);
+	   QString a = "(" + tiiNumber (mainId) + " " +
+	                                    tiiNumber (subId) + ")";
 
 	   transmitter_coordinates -> setAlignment (Qt::AlignRight);
 	   transmitter_coordinates -> setText (a);
-	   transmitter_coordinates	-> hide ();
+//	   transmitter_coordinates	-> hide ();
 	}
 //
 //	display the transmitters on the scope widget
@@ -4193,10 +4195,12 @@ bool	tiiChange	= false;
 	channel. corner	  = tiiProcessor. corner (channel. targetPos,
 	                                          channel. localPos);
 	QString labelText = theName + " " +
-	                    QString::number (channel. distance) + " km " +
-	                    QString::number (channel. corner) +
+	                    QString::number (channel. distance, 'f', 1) + " km " +
+	                    QString::number (channel. corner, 'f', 1) +
 	                    QString::fromLatin1 (" \xb0 ");
 	fprintf (stderr, "%s\n", labelText. toUtf8 (). data ());
+	QFont f ("Arial", 9);
+	distanceLabel	->  setFont (f);
 	distanceLabel -> setText (labelText);
 
 //	see if we have a map
@@ -4478,4 +4482,14 @@ audiodata ad;
 	s. subChId	= ad. subchId;
 	s. fd		= f;
 	channel. backgroundServices. push_back (s);
+}
+
+void	RadioInterface::handle_labelColor () {
+QColor	labelColor;
+	QColor color	= QColorDialog::getColor (labelColor,
+	                                          nullptr, "labelColor");
+	if (!color. isValid ())
+	   return;
+	labelStyle		= "color:" + color. name ();
+	dabSettings_p	-> setValue ("labelStyle", labelStyle);
 }

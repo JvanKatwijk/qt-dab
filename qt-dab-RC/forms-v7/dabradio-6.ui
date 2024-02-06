@@ -285,13 +285,16 @@
        <property name="font">
         <font>
          <pointsize>14</pointsize>
-         <weight>75</weight>
-         <italic>true</italic>
-         <bold>true</bold>
+         <weight>50</weight>
+         <italic>false</italic>
+         <bold>false</bold>
         </font>
        </property>
        <property name="text">
         <string>TextLabel</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -342,24 +345,29 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QLabel" name="transmitter_coordinates">
+        <widget class="QLabel" name="distanceLabel">
          <property name="font">
           <font>
-           <pointsize>13</pointsize>
+           <pointsize>9</pointsize>
           </font>
          </property>
-         <property name="text">
-          <string>TII</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="distanceLabel">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If configured, this line shows the name of the transmitter that is received.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
           <string>TextLabel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="transmitter_coordinates">
+         <property name="font">
+          <font>
+           <pointsize>9</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>TII</string>
          </property>
         </widget>
        </item>

@@ -24,7 +24,7 @@
 #include	<QSettings>
 #include        <QColor>
 #include        <QPen>
-#include        "color-selector.h"
+#include        <QColorDialog>
 
 static inline
 int	valueFor (int bd) {
@@ -134,40 +134,28 @@ void	spectrumScope::display		(double *X_axis,
 }
 
 void	spectrumScope::rightMouseClick	(const QPointF &point) {
-QString	displayColor;
-QString	gridColor;
-QString	curveColor;
-
+QColor	color;
 	(void) point;
 
-	{  colorSelector displaySelector ("displayColor");
-	   int index		= displaySelector. QDialog::exec ();
-	   if (index == 0)
-	      return;
-	   displayColor	= displaySelector. getColor (index);
-	}
-	{  colorSelector gridSelector ("gridColor");
-	   int index		= gridSelector. QDialog::exec ();
-	   if (index == 0)
-	      return;
-	   gridColor		= gridSelector . getColor (index);
-	}
-	{  colorSelector curveSelector ("curveColor");
-	   int index		= curveSelector.  QDialog::exec ();
-	   if (index == 0)
-	      return;
-	   curveColor	= curveSelector. getColor (index);
-	}
-
+	color = QColorDialog::getColor (displayColor,
+	                                nullptr, "displayColor");
+        if (!color. isValid ())
+           return;
+	this	-> displayColor	= color;
+        color = QColorDialog::getColor (gridColor, nullptr, "gridColor");
+        if (!color. isValid ())
+           return;
+	this	-> gridColor	= color;
+        color = QColorDialog::getColor (curveColor, nullptr, "curveColor");
+        if (!color. isValid ())
+           return;
+	this	-> curveColor	= color;
 	dabSettings	-> beginGroup ("spectrumScope");
-	dabSettings	-> setValue ("displayColor", displayColor);
-	dabSettings	-> setValue ("gridColor", gridColor);
-	dabSettings	-> setValue ("curveColor", curveColor);
+	dabSettings	-> setValue ("displayColor", displayColor. name ());
+	dabSettings	-> setValue ("gridColor", gridColor. name ());
+	dabSettings	-> setValue ("curveColor", curveColor. name ());
 	dabSettings	-> endGroup ();
 
-	this		-> displayColor	= QColor (displayColor);
-	this		-> gridColor	= QColor (gridColor);
-	this		-> curveColor	= QColor (curveColor);
 	spectrumCurve. setPen (QPen (this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
 	grid		-> setMajPen (QPen(this -> gridColor, 0,

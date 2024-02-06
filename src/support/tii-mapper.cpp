@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2021
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -94,33 +94,30 @@ void	tiiMapper::get_coordinates (float *latitude, float * longitude,
 	*longitude	= 0;
 }
 //
-//	Great circle distance (https://towardsdatascience.com/calculating-the-distance-between-two-locations-using-geocodes-1136d810e517)
+//	Great circle distance
+//	(https://towardsdatascience.com/calculating-the-distance-between-two-locations-using-geocodes-1136d810e517)
 //	en
 //	https://www.movable-type.co.uk/scripts/latlong.html
 //	Haversine formula applied
-int	tiiMapper::distance_2 (float latitude1, float longitude1,
+float	tiiMapper::distance_2 (float latitude1, float longitude1,
 	                       float latitude2, float longitude2) {
 double	R	= 6371;
 double	Phi1	= latitude1 * M_PI / 180;
 double	Phi2	= latitude2 * M_PI / 180;
-//double	dPhi	= (latitude2 - latitude1) * M_PI / 180;
 double	dDelta	= (longitude2 - longitude1) * M_PI / 180;
 
 	if ((latitude2 == 0) || (longitude2 == 0))
 	   return -32768;
-//double	a	= sin (dPhi / 2) * sin (dPhi / 2) + cos (Phi1) * cos (Phi2) *
-//	          sin (dDelta / 2) * sin (dDelta / 2);
-//double	c	= 2 * atan2 (sqrt (a), sqrt (1 - a));
 
 double 	x	= dDelta * cos ((Phi1 + Phi2) / 2);
 double	y	= (Phi2 - Phi1);
 double	d	= sqrt (x * x + y * y);
 //
-//	return (int)(R * c + 0.5);
-	return (int)(R * d + 0.5);
+	return R * d + 0.5;
 }
-
-int	tiiMapper::distance (position target,
+//
+//	The distances on the y-axis are usually correct
+float	tiiMapper::distance (position target,
 	                      position home) {
 bool	dy_sign	= target. latitude >  home. latitude;
 double	dx;
@@ -130,12 +127,12 @@ double dy	= distance_2 (target. latitude,  home. longitude,
 	   dx = distance_2 (target. latitude, target. longitude,
 	                    target. latitude, home. longitude);
 	else
-	   dx = distance_2 (home. latitude, target. longitude,
-	                    home. latitude, home. longitude);
+	   dx = distance_2 (target. latitude, home. longitude,
+	                    target. latitude, target. longitude);
 	return sqrt (dx * dx + dy * dy);
 }
 	
-int	tiiMapper::distance (float latitude1, float longitude1,
+float	tiiMapper::distance (float latitude1, float longitude1,
 	                      float latitude2, float longitude2) {
 bool	dy_sign	= latitude1 > latitude2;
 double	dx;
@@ -150,27 +147,27 @@ double dy	= distance_2 (latitude1, longitude2,
 	return sqrt (dx * dx + dy * dy);
 }
 	
-int	tiiMapper::corner (position targetPos, position homePos) {
+float	tiiMapper::corner (position targetPos, position homePos) {
 bool dx_sign	= targetPos. longitude - homePos. longitude > 0;
 bool dy_sign	= targetPos. latitude  - homePos. latitude > 0;
 double dx;
-double dy	= distance (targetPos. latitude,  homePos. longitude,	
-	                    homePos. latitude,  homePos. longitude);
+double dy	= distance (homePos. latitude,  targetPos. longitude,	
+	                    targetPos. latitude,  targetPos. longitude);
 	if (dy_sign)		// lat1 is "higher" than lat2
-	   dx = distance (targetPos. latitude, targetPos. longitude,
-	                  targetPos. latitude,  homePos. longitude);
+	   dx = distance (homePos. latitude, homePos. longitude,
+	                  homePos. latitude,  targetPos. longitude);
 	else
-	   dx = distance (homePos. latitude,  targetPos. longitude,
-	                  homePos. latitude,  homePos. longitude);
-float azimuth = atan2 (dy, dx);
+	   dx = distance (targetPos. latitude,  homePos. longitude,
+	                  targetPos. latitude,  targetPos. longitude);
+	float azimuth = atan2 (dy, dx);
 	   
 	if (dx_sign && dy_sign)		// eerste kwadrant
-	   return (int)((M_PI / 2 - azimuth) / M_PI * 180);
+	   return (M_PI / 2 - azimuth) / M_PI * 180;
 	if (dx_sign && !dy_sign)	// tweede kwadrant
-	   return (int)((M_PI / 2 + azimuth) / M_PI * 180);
+	   return (M_PI / 2 + azimuth) / M_PI * 180;
 	if (!dx_sign && !dy_sign)	// derde kwadrant
-	   return (int)((3 * M_PI / 2 - azimuth) / M_PI * 180);
-	return (int)((3 * M_PI / 2 + azimuth) / M_PI * 180);
+	   return (3 * M_PI / 2 - azimuth) / M_PI * 180;
+	return (3 * M_PI / 2 + azimuth) / M_PI * 180;
 }
 
 void	tiiMapper::set_black (uint16_t Eid, uint8_t mainId, uint8_t subId) {

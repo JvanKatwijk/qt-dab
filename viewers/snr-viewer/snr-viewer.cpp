@@ -28,7 +28,7 @@
 #include	<QColor>
 #include	<QPen>
 #include	<string.h>
-#include	"color-selector.h"
+#include	<QColorDialog>
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
@@ -181,27 +181,24 @@ float	snrViewer::get_db (float x) {
 }
 
 void	snrViewer::rightMouseClick	(const QPointF &point) {
-colorSelector *selector;
-int	index;
+QColor	color;
+QString	displayColor;
+QString	gridColor;
+QString	curveColor;
+
 	(void)point;
-	selector		= new colorSelector ("display color");
-	index			= selector -> QDialog::exec ();
-	QString displayColor	= selector -> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
-	selector		= new colorSelector ("grid color");
-	index			= selector	-> QDialog::exec ();
-	QString gridColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
-	selector		= new colorSelector ("curve color");
-	index			= selector	-> QDialog::exec ();
-	QString curveColor	= selector	-> getColor (index);
-	delete selector;
-	if (index == 0)
-	   return;
+	color		= QColorDialog::getColor (displayColor,
+                                                  nullptr, "displayColor");
+        if (!color. isValid ())
+           return;
+	color		= QColorDialog::getColor (gridColor,
+                                                  nullptr, "fridColor");
+        if (!color. isValid ())
+           return;
+	color		= QColorDialog::getColor (curveColor,
+                                                  nullptr, "curveColor");
+        if (!color. isValid ())
+           return;
 
 	dabSettings	-> beginGroup ("snrViewer");
 	dabSettings	-> setValue ("displayColor", displayColor);

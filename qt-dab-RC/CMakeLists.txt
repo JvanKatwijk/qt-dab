@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 3.21 )
-set (objectName qt-dab-6.40)
+set (objectName qt-dab-6.5Beta)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
 set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
@@ -228,6 +228,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ./forms-v7/new-display/dev-scope.h
              ./forms-v7/new-display/scopes/waterfall-scope.h 
              ./forms-v7/new-display/scopes/iqdisplay.h 
+	     ./forms-v7/new-display/scopes/audio-display.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
@@ -295,7 +296,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
 	     ../includes/support/scanlist-handler.h
-	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h
 	     ../includes/support/element-selector.h
@@ -321,7 +321,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/support/buttons/verysmallpushbutton.h 
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
-	     ../includes/scopes-qwt6/audio-display.h
 	     ../includes/scopes-qwt6/spectrogramdata.h
 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
@@ -357,6 +356,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/dev-scope.cpp 
              ./forms-v7/new-display/scopes/waterfall-scope.cpp 
              ./forms-v7/new-display/scopes/iqdisplay.cpp 
+	     ./forms-v7/new-display/scopes/audio-display.cpp
+	     ./forms-v7/new-display/scopes/audio-display.cpp 
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -415,7 +416,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/preset-handler.cpp
 	     ../src/support/presetcombobox.cpp
 	     ../src/support/scanlist-handler.cpp
-	     ../src/support/color-selector.cpp
 	     ../src/support/scheduler.cpp
 	     ../src/support/schedule-selector.cpp
 	     ../src/support/element-selector.cpp
@@ -439,9 +439,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/buttons/verysmallpushbutton.cpp
 	     ../src/support/buttons/smallqlistview.cpp
 	     ../src/support/buttons/smallspinbox.cpp
-	     ../src/scopes-qwt6/audio-display.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp
-	     ../src/scopes-qwt6/audio-display.cpp 
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
 	     ../viewers/snr-viewer/snr-viewer.cpp
 	     ../qt-devices/device-handler.cpp
@@ -509,7 +507,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/support/buttons/smallqlistview.h 
 	     ../includes/support/buttons/smallspinbox.h 
 	     ../includes/support/scanlist-handler.h
-	     ../includes/support/color-selector.h
 	     ../includes/support/scheduler.h
 	     ../includes/support/schedule-selector.h
 	     ../includes/support/element-selector.h
