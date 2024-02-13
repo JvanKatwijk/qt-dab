@@ -51,8 +51,9 @@
 	myFrame. resize (QSize (wi, he));
 
 	formLayout -> setLabelAlignment (Qt::AlignLeft);
+	myFrame. setWindowFlag (Qt::Tool, true);
 	myFrame. hide ();
-	timeTable_button	-> hide ();
+	timeTable_button	-> setEnabled (false);
 	the_audioDisplay	= new audioDisplay (mr, audio, dabSettings);
 
 	dabSettings	-> beginGroup ("colorSettings");
@@ -115,7 +116,8 @@
 }
 
 void	techData::cleanUp	() {
-	programName		-> setText (QString (""));
+	const QString ee ("-");
+	programName		-> setText (ee);
 	rsCorrections		-> display (0);
 	frameError_display	-> setValue (0);
 	rsError_display		-> setValue (0);
@@ -124,13 +126,13 @@ void	techData::cleanUp	() {
 	startAddressDisplay	-> display (0);
 	lengthDisplay		-> display (0);
 	subChIdDisplay		-> display (0);
-	uepField		-> setText (QString (""));
-	codeRate		-> setText (QString (""));
-	ASCTy			-> setText (QString (""));
-	language		-> setText (QString (""));
+	uepField		-> setText (ee);
+	codeRate		-> setText (ee);
+	ASCTy			-> setText (ee);
+	language		-> setText (ee);
 	motAvailable		-> 
 	               setStyleSheet ("QLabel {background-color : red}");
-	timeTable_button	-> hide ();
+	timeTable_button	-> setEnabled (false);
 	audioRate		-> display (0);
 }
 
@@ -205,9 +207,9 @@ void	techData::show_motHandling	(bool b) {
 
 void	techData::show_timetableButton	(bool b) {
 	if (b)
-	   timeTable_button	-> show ();
+	   timeTable_button	-> setEnabled (true);
 	else
-	   timeTable_button	-> hide ();
+	   timeTable_button	-> setEnabled (false);
 }
 
 void	techData::show_frameDumpButton	(bool b) {

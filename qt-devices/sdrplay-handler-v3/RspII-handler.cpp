@@ -9,6 +9,7 @@
 	                              bool	agcMode,
 	                              int	lnaState,
 	                              int 	GRdB, 
+	                              int	antennaValue,
 	                              bool 	biasT) :
 	                              Rsp_device (parent,
 	                                          chosenDevice, 
@@ -17,13 +18,11 @@
 	                                         agcMode,
 	                                         lnaState,
 	                                         GRdB, biasT) {
-
+	set_antenna (antennaValue);
 	this	-> lna_upperBound	= 9;
 	this	-> deviceModel		= "RSP-II";
 	this	-> nrBits		= 14;
-	this	-> antennaSelect	= true;
 	set_deviceName_signal	(deviceModel);
-	set_antennaSelect_signal (1);
 	set_nrBits_signal	(nrBits);
 	if (freq < Mhz (420))
 	   lna_upperBound = 9;

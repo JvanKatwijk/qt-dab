@@ -26,8 +26,6 @@ sdrplay_api_ErrT        err;
                  parent, SLOT (set_lnabounds (int, int)));
         connect (this, SIGNAL (set_deviceName_signal (const QString &)),
                  parent, SLOT (set_deviceName (const QString &)));
-        connect (this,	SIGNAL (set_antennaSelect_signal (int)),
-	         parent, SLOT (set_antennaSelect (int)));
         connect (this, SIGNAL (set_nrBits_signal (int)),
 	         parent, SLOT (set_nrBits (int)));
 	connect (this, SIGNAL (show_lnaGain (int)),

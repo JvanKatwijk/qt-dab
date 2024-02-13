@@ -224,6 +224,13 @@ private:
 	ensembleHandler		*the_ensembleHandler;
 //
 //	end of variables that are initalized
+ 
+	void			set_position_and_size (QWidget *w,
+                                                       const QString &key);
+	void			store_widget_position (QWidget *w,
+                                                       const QString &key);
+
+
 	std::vector<QPixmap>	strengthLabels;
 	httpHandler		*mapHandler;
 	processParams		globals;

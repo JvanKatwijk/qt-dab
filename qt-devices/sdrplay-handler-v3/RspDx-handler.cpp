@@ -9,23 +9,23 @@
 	                              bool	agcMode,
 	                              int	lnaState,
 	                              int 	GRdB,
+	                              int	antennaValue,
 	                              bool	biasT) :
 	                              Rsp_device (parent,
 	                                          chosenDevice, 
-	                                         sampleRate,
-	                                         freq,
-	                                         agcMode,
-	                                         lnaState,
-	                                         GRdB,
-	                                         biasT) {
-
+	                                          sampleRate,
+	                                          freq,
+	                                          agcMode,
+	                                          lnaState,
+	                                          GRdB,
+	                                          biasT) {
+	fprintf (stderr, "We gaan naar antenna %c\n", antennaValue);
+	set_antenna (antennaValue);
 	this	-> deviceModel		= "RSP-Dx";
 	this	-> nrBits		= 14;
-	this	-> antennaSelect	= true;
 	this	-> lna_upperBound	= lnaStates (freq);
 	set_lnabounds_signal	(0, lna_upperBound);
 	set_deviceName_signal	(deviceModel);
-	set_antennaSelect_signal (2);
 	set_nrBits_signal	(nrBits);
 	if (lnaState > lna_upperBound)
 	   this -> lnaState = lna_upperBound - 1;
@@ -175,6 +175,7 @@ sdrplay_api_ErrT        err;
 bool	RspDx_handler::set_antenna (int antenna) {
 sdrplay_api_ErrT        err;
 
+	fprintf (stderr, "setting antenna to %c\n", antenna);
 	deviceParams    -> devParams -> rspDxParams. antennaSel =
 	                           antenna == 'A' ?
                                              sdrplay_api_RspDx_ANTENNA_A:
@@ -186,9 +187,11 @@ sdrplay_api_ErrT        err;
 	                                     chosenDevice -> tuner,
 	                                     sdrplay_api_Update_None,
 	                                     sdrplay_api_Update_RspDx_AntennaControl);
-	if (err != sdrplay_api_Success)
+	if (err != sdrplay_api_Success) {
+	   fprintf (stderr, "Updating antenna to %c mislukt\n", antenna);
 	   return false;
-
+	}
+	fprintf (stderr, "Update to antenna %c successfull\n", antenna);
 	return true;
 }
 

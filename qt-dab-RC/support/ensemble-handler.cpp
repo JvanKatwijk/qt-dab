@@ -542,9 +542,10 @@ void	ensembleHandler::setFont (int mark, int index) {
 }
 
 void	ensembleHandler::handle_fontSelect () {
-bool ok;
 int fontSize		=	
 	           ensembleSettings -> value ("fontSize", 10). toInt ();
+#ifdef	__NOT_NOW__
+bool ok;
 	QFont theFont = QFontDialog::getFont (
 	                      &ok, QFont ("Helvetica", fontSize), this);
 	if (!ok)
@@ -555,25 +556,29 @@ int fontSize		=
 	markedFont	= QFont (theFont. toString (), fontSize + 2, -1, true);
 	channelFont	= QFont (theFont. toString (), fontSize - 2);
 	updateList ();
+#else
+fontChooser selectFont ("select font");
+QStringList fontList;
+QString	theFont;
+	fontList << QString ("Times");
+	fontList << QString ("Helvetica");
+	fontList << QString ("Arial");
+	fontList << QString ("Cantarell");
+	fontList << QString ("Sans");
+	fontList << QString ("Courier");
+	fontList << QString ("TypeWriter");
+
+	for (auto &s : fontList)
+	   selectFont. add (s);
+	int fontIndex	= selectFont. QDialog::exec ();
+	theFont	= fontList. at (fontIndex);
+	ensembleSettings	-> setValue ("theFont", theFont);
+	normalFont	= QFont (theFont, fontSize, -1, false);
+	markedFont	= QFont (theFont, fontSize + 2, -1, true);
+	channelFont	= QFont (theFont, fontSize - 2);
+	updateList ();
+#endif
 }
-//fontChooser selectFont ("select font");
-//QStringList fontList;
-//QString	theFont;
-//	fontList << QString ("Times");
-//	fontList << QString ("Helvetica");
-//	fontList << QString ("Arial");
-//	fontList << QString ("Cantarell");
-//
-//	for (auto &s : fontList)
-//	   selectFont. add (s);
-//	int fontIndex	= selectFont. QDialog::exec ();
-//	theFont	= fontList. at (fontIndex);
-//	ensembleSettings	-> setValue ("theFont", theFont);
-//	normalFont	= QFont (theFont, fontSize, -1, false);
-//	markedFont	= QFont (theFont, fontSize + 2, -1, true);
-//	channelFont	= QFont (theFont, fontSize - 2);
-//	updateList ();
-//}
 
 void	ensembleHandler::handle_fontColorSelect () {
 QColor	color;

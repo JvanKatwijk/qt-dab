@@ -61,11 +61,9 @@
 	                          QStringList () << tr ("current ensemble"));
 
 	connect (contentWidget, SIGNAL (cellClicked (int, int)),
-                 this, SLOT (selectService (int, int)));
+	         this, SLOT (selectService (int, int)));
 	connect (contentWidget, SIGNAL (cellDoubleClicked (int, int)),
                  this, SLOT (dump (int, int)));
-//	connect (this, SIGNAL (goService (const QString &)),
-//	         theRadio, SLOT (handle_contentSelector (const QString &)));
 
 	addRow ();	// for the ensemble name
 }

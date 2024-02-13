@@ -179,9 +179,10 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	           ../viewers/tii-viewer
 	           ../viewers/snr-viewer
 	           ../qt-devices
-	           ../qt-devices/rawfiles-new
-	           ../qt-devices/wavfiles-new
-	           ../qt-devices/xml-filereader
+	           ../qt-devices/filereaders/
+	           ../qt-devices/filereaders/rawfiles-new
+	           ../qt-devices/filereaders/wavfiles-new
+	           ../qt-devices/filereaders/xml-filereader
 	           ../eti-handler
 	           /usr/include/
 	)
@@ -294,14 +295,14 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../qt-devices/device-chooser.h
 	     ../qt-devices/device-exceptions.h
 	     ../qt-devices/xml-filewriter.h
-	     ../qt-devices/rawfiles-new/rawfiles.h
-	     ../qt-devices/rawfiles-new/raw-reader.h
-	     ../qt-devices/wavfiles-new/wavfiles.h
-	     ../qt-devices/wavfiles-new/wav-reader.h
-	     ../qt-devices/xml-filereader/element-reader.h
-	     ../qt-devices/xml-filereader/xml-filereader.h
-	     ../qt-devices/xml-filereader/xml-reader.h
-	     ../qt-devices/xml-filereader/xml-descriptor.h
+	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
+	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
+	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
+	     ../qt-devices/filereaders/wavfiles-new/wav-reader.h
+	     ../qt-devices/filereaders/xml-filereader/element-reader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-filereader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-reader.h
+	     ../qt-devices/filereaders/xml-filereader/xml-descriptor.h
 	)
 
 	set (${objectName}_SRCS
@@ -400,13 +401,13 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
-	     ../qt-devices/rawfiles-new/rawfiles.cpp
-	     ../qt-devices/rawfiles-new/raw-reader.cpp
-	     ../qt-devices/wavfiles-new/wavfiles.cpp
-	     ../qt-devices/wavfiles-new/wav-reader.cpp
-	     ../qt-devices/xml-filereader/xml-filereader.cpp
-	     ../qt-devices/xml-filereader/xml-reader.cpp
-	     ../qt-devices/xml-filereader/xml-descriptor.cpp
+	     ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp
+	     ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp
+	     ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp
+	     ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-reader.cpp
+	     ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp
 	)
 
 	set (${objectName}_MOCS

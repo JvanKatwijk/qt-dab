@@ -251,22 +251,12 @@ QString h;
 	   else
 	      fprintf (stderr, "Loading details button failed\n");
 	}
-
-	int x	= dabSettings_p -> value ("mainWidget-x", 100). toInt ();
-	int y	= dabSettings_p -> value ("mainWidget-y", 100). toInt ();
-	int wi	= dabSettings_p -> value ("mainwidget-w", 300). toInt ();
-	int he	= dabSettings_p -> value ("mainwidget-h", 200). toInt ();
-	this	-> resize (QSize (wi, he));
-	this	-> move (QPoint (x, y));
-
+//
+//	put the widgets in the right place
+	set_position_and_size (this, "mainWidget");
 	configWidget. setupUi (&configDisplay);
-	x	= dabSettings_p -> value ("configWidget-x", 200). toInt ();
-	y	= dabSettings_p -> value ("configWidget-y", 200). toInt ();
-	wi	= dabSettings_p -> value ("configWidget-w", 200). toInt ();
-	he	= dabSettings_p -> value ("configWidget-h", 150). toInt ();
-	configDisplay. resize (QSize (wi, he));
-	configDisplay. move (QPoint (x, y));
 
+	set_position_and_size (&configDisplay, "configWidget");
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile);
 
@@ -1197,16 +1187,8 @@ void	RadioInterface::TerminateProcess () {
 	   usleep (1000);
 	hideButtons	();
 
-	dabSettings_p	-> setValue ("mainWidget-x", this -> pos (). x ());
-	dabSettings_p	-> setValue ("mainWidget-y", this -> pos (). y ());
-	QSize size	= this -> size ();
-	dabSettings_p	-> setValue ("mainwidget-w", size. width ());
-	dabSettings_p	-> setValue ("mainwidget-h", size. height ());
-	dabSettings_p	-> setValue ("configWidget-x", configDisplay. pos (). x ());
-	dabSettings_p	-> setValue ("configWidget-y", configDisplay. pos (). y ());
-	size		= configDisplay. size ();
-	dabSettings_p	-> setValue ("configWidget-w", size. width ());
-	dabSettings_p	-> setValue ("configWidget-h", size. height ());
+	store_widget_position (this, "mainWidget");
+	store_widget_position (&configDisplay, "configWidget");
 
 	newDisplay. hide ();
 //
@@ -2203,7 +2185,7 @@ void	RadioInterface::handle_scanListSelect (const QString &s) {
 //
 //	selecting from a content description
 void	RadioInterface::handle_contentSelector (const QString &s) {
-	localSelect (s);
+	localSelect (s, channel. channelName);
 }
 //
 //	From a predefined schedule list, the service names most
@@ -4493,3 +4475,23 @@ QColor	labelColor;
 	labelStyle		= "color:" + color. name ();
 	dabSettings_p	-> setValue ("labelStyle", labelStyle);
 }
+
+
+void	RadioInterface::set_position_and_size (QWidget *w,
+	                                       const QString &key) {
+	int x	= dabSettings_p -> value (key + "-x", 100). toInt ();
+	int y	= dabSettings_p -> value (key + "-y", 100). toInt ();
+	int wi	= dabSettings_p -> value (key + "-w", 300). toInt ();
+	int he	= dabSettings_p -> value (key + "-h", 200). toInt ();
+	w 	-> resize (QSize (wi, he));
+	w	-> move (QPoint (x, y));
+}
+
+void	RadioInterface::store_widget_position (QWidget *w, 
+	                                       const QString &key) {
+	dabSettings_p	-> setValue (key + "-x", w -> pos (). x ());
+	dabSettings_p	-> setValue (key + "-y", w -> pos (). y ());
+	dabSettings_p	-> setValue (key + "-w", w -> size (). width ());
+	dabSettings_p	-> setValue (key + "-h", w -> size (). height ());
+}
+

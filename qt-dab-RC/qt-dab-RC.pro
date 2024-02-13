@@ -78,9 +78,10 @@ DEPENDPATH += . \
 	      ../viewers \
 	      ../viewers/snr-viewer \
 	      ../qt-devices \
-	      ../qt-devices/rawfiles-new \
-	      ../qt-devices/wavfiles-new\
-	      ../qt-devices/xml-filereader 
+	      ../qt-devices/filereaders/ \
+	      ../qt-devices/filereaders//rawfiles-new \
+	      ../qt-devices/filereaders/wavfiles-new\
+	      ../qt-devices/filereaders/xml-filereader 
 	      
 
 INCLUDEPATH += . \
@@ -109,9 +110,10 @@ INCLUDEPATH += . \
 	      ../viewers \
 	      ../viewers/snr-viewer \
 	      ../qt-devices \
-	      ../qt-devices/rawfiles-new \
-	      ../qt-devices/wavfiles-new \
-	      ../qt-devices/xml-filereader \
+	      ../qt-devices/filereaders \
+	      ../qt-devices/filereaders/rawfiles-new \
+	      ../qt-devices/filereaders/wavfiles-new \
+	      ../qt-devices/filereaders/xml-filereader \
 
 # Input
 HEADERS += ./radio.h \
@@ -230,14 +232,14 @@ HEADERS += ./radio.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
 	   ../qt-devices/xml-filewriter.h \
-	   ../qt-devices/rawfiles-new/rawfiles.h \
-	   ../qt-devices/rawfiles-new/raw-reader.h \
-           ../qt-devices/wavfiles-new/wavfiles.h \
-           ../qt-devices/wavfiles-new/wav-reader.h \
-	   ../qt-devices/xml-filereader/element-reader.h \
-	   ../qt-devices/xml-filereader/xml-filereader.h \
-	   ../qt-devices/xml-filereader/xml-reader.h \
-	   ../qt-devices/xml-filereader/xml-descriptor.h 
+	   ../qt-devices/filereaders/rawfiles-new/rawfiles.h \
+	   ../qt-devices/filereaders/rawfiles-new/raw-reader.h \
+           ../qt-devices/filereaders/wavfiles-new/wavfiles.h \
+           ../qt-devices/filereaders/wavfiles-new/wav-reader.h \
+	   ../qt-devices/filereaders/xml-filereader/element-reader.h \
+	   ../qt-devices/filereaders/xml-filereader/xml-filereader.h \
+	   ../qt-devices/filereaders/xml-filereader/xml-reader.h \
+	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.h 
 
 FORMS	+= ./forms-v7/technical_data.ui
 FORMS	+= ./forms-v7/dabradio-6.ui 
@@ -245,10 +247,10 @@ FORMS	+= ./forms-v7/config-helper.ui
 FORMS	+= ./forms-v7/audio-description.ui
 FORMS	+= ./forms-v7/data-description.ui
 FORMS	+= ./forms-v7/new-display/scopewidget.ui
-#FORMS	+= ../qt-devices/filereader-widget.ui 
-FORMS	+= ../qt-devices/xml-filereader/xmlfiles.ui
 FORMS	+= ../viewers/snr-viewer/snr-widget.ui
 FORMS	+= ./support/aboutdialog.ui
+#FORMS	+= ../qt-devices/filereaders/filereader-widget.ui 
+FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
@@ -354,13 +356,13 @@ SOURCES += ./main.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
-	   ../qt-devices/rawfiles-new/rawfiles.cpp \
-	   ../qt-devices/rawfiles-new/raw-reader.cpp \
-           ../qt-devices/wavfiles-new/wavfiles.cpp \
-           ../qt-devices/wavfiles-new/wav-reader.cpp \
-	   ../qt-devices/xml-filereader/xml-filereader.cpp \
-	   ../qt-devices/xml-filereader/xml-reader.cpp \
-	   ../qt-devices/xml-filereader/xml-descriptor.cpp 
+	   ../qt-devices/filereaders/rawfiles-new/rawfiles.cpp \
+	   ../qt-devices/filereaders/rawfiles-new/raw-reader.cpp \
+           ../qt-devices/filereaders/wavfiles-new/wavfiles.cpp \
+           ../qt-devices/filereaders/wavfiles-new/wav-reader.cpp \
+	   ../qt-devices/filereaders/xml-filereader/xml-filereader.cpp \
+	   ../qt-devices/filereaders/xml-filereader/xml-reader.cpp \
+	   ../qt-devices/filereaders/xml-filereader/xml-descriptor.cpp 
 
 #
 unix {

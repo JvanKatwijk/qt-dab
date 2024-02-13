@@ -15,6 +15,7 @@ public:
 	                       bool	agcMode,
 	                       int	lnaState,
 	                       int 	GRdB,
+	                       int	antennaValue,
 	                       bool	biasT);
 		~RspDx_handler	();
 

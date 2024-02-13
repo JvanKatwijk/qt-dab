@@ -129,6 +129,7 @@ public:
 	void			releaseLibrary		();
 	bool			loadFunctions		();
 	int			errorCode;
+	int			set_antennaSelect	(int);
 
 signals:
 	void			new_GRdBValue		(int);
@@ -147,7 +148,6 @@ public slots:
 	void			set_deviceName		(const QString &);
 	void			set_serial		(const QString &);
 	void			set_apiVersion		(float);
-	void			set_antennaSelect	(int);
 	void			show_tunerSelector	(bool);
 	void			set_xmlDump		();
 	void			show_lnaGain		(int);

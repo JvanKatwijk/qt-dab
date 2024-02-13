@@ -14,6 +14,7 @@ public:
 	                       bool	agcMode,
 	                       int	lnaState,
 	                       int 	GRdB,
+	                       int	antennaValue,
 	                       bool	biasT);
 		~RspDuo_handler	();
 

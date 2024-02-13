@@ -51,5 +51,13 @@ const	QString	findskipFile_fileName		();
 	FILE	*find_ficDump_file		(const QString &);
 	QString findMaps_fileName		();
 	QString	find_eti_fileName		(const QString &, const QString &);
+private:
+	QString	outputDialog			(QString saveDir,
+	                                         const QString &channel,
+	                                         const QString &extension,
+	                                         bool flag);
+
+void	save_saveDir				(const QString key,
+	                                         const QString path);
 };
 
