@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=Qt_DAB-4
-Exec=qt-dab-4
-Icon=qt-dab-4
-Type=Application
-Categories=AudioVideo;
-Comment=A DAB/DAB+ decoder using Qt and C++

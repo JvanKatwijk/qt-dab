@@ -24,6 +24,7 @@
 #pragma once
 
 #include	<QString>
+#include	<QStringList>
 #include	<vector>
 #include	"dab-constants.h"
 #include	<portaudio.h>
@@ -38,6 +39,7 @@ public:
 	                audioSink		(int16_t);
 			~audioSink		();
 	bool		setupChannels		(QComboBox *);
+	QStringList	streams			();
 	void		stop			();
 	void		restart			();
 	bool		selectDevice		(int16_t);

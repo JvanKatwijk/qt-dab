@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2020
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,10 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
- *	We have to create a simple virtual class here, since we
- *	want the interface with different devices (including  filehandling)
- *	to be transparent
  */
 #pragma once
 

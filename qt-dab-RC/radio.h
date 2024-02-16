@@ -78,7 +78,34 @@ class	dabStreamer;
 #endif
 
 class techData;
-#include	"ui_config-helper.h"
+//#include	"ui_config-helper.h"
+class	configHandler;
+
+#define FAST_DECODER    0100
+#define ALT1_DECODER    0200
+#define ALT2_DECODER    0300
+
+
+#define	RESET_BUTTON		QString ("resetButton")
+#define SCAN_BUTTON		QString ("scanButton")
+#define	SPECTRUM_BUTTON		QString ("spectrumButton")
+#define	SNR_BUTTON		QString ("snrButton")
+#define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
+#define	SCANLIST_BUTTON		QString ("scanListButton")
+#define PRESET_BUTTON           QString ("presetButton")
+#define	DUMP_BUTTON		QString ("dumpButton")
+#define PREVSERVICE_BUTTON	QString ("prevServiceButton")
+#define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
+#define	DLTEXT_BUTTON		QString	("dlTextButton")
+#define	CONFIG_BUTTON		QString ("configButton")
+#define	HTTP_BUTTON		QString ("httpButton")
+#define	SCHEDULE_BUTTON		QString ("scheduleButton")
+#define	SET_COORDINATES_BUTTON	QString ("set_coordinatesButton")
+#define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
+#define	SKIN_BUTTON		QString ("skinButton")
+#define	FONT_BUTTON		QString ("fontButton")
+#define	FONTCOLOR_BUTTON	QString ("fontColorButton")
+#define	PORT_SELECTOR		QString ("portSelector")
 
 /*
  *	The main gui object. It inherits from
@@ -128,25 +155,22 @@ public:
 	int		tunedFrequency;
 	bool		realChannel;
 	bool		etiActive;
-	int		serviceCount;
-	int		nrServices;
+	int		serviceCount;	// from FIC or nothing
+	int		nrServices;	// measured
 	QString		ensembleName;
 	uint8_t		mainId;
 	uint8_t		subId;
 	std::vector<dabService> backgroundServices;
 	dabService	currentService;
-	dabService	nextService;
 	uint32_t	Eid;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
-	bool		tiiFile;
 	QString		transmitterName;
 	QString		countryName;
 	int		nrTransmitters;
-	position	localPos;
-	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
+	position	targetPos;
 	float		distance;
 	float		corner;
 	bool		audioActive;
@@ -168,9 +192,9 @@ public:
 	snr		= 0;
 	distance	= -1;
 	audioActive	= false;
+	currentService. valid		= false;
 	currentService. frameDumper	= nullptr;
-	nextService. frameDumper	= nullptr;
-}
+	}
 };
 
 class RadioInterface: public QWidget, private Ui_dabradio {
@@ -210,7 +234,8 @@ private:
 	snrViewer		my_snrViewer;
 //	bandHandler		theBand;
 	QFrame			dataDisplay;
-	QFrame			configDisplay;
+//	QFrame			configDisplay;
+	configHandler		*configHandler_p;
 	dlCache			the_dlCache;
 	tiiMapper		tiiProcessor;
 	findfileNames		filenameFinder;
@@ -231,6 +256,10 @@ private:
                                                        const QString &key);
 
 
+	position		localPos;
+	bool			has_tiiFile;
+	dabService		nextService;
+	QString			tiiFileName;
 	std::vector<QPixmap>	strengthLabels;
 	httpHandler		*mapHandler;
 	processParams		globals;
@@ -243,12 +272,11 @@ private:
 	channelDescriptor	channel;
 	QDialog			*the_aboutLabel;
 	int			maxDistance;
-	void			init_configWidget	();
 	void			LOG		(const QString &,
 	                                         const QString &);
 	bool			error_report;
 	techData		*techWindow_p;
-	Ui_configWidget		configWidget;
+//	Ui_configWidget		configWidget;
 	QSettings		*dabSettings_p;
 	int16_t			tii_delay;
 	int32_t			dataPort;
@@ -366,7 +394,6 @@ private:
 	void                    new_channelIndex        (int);
 
 	std::mutex		locker;
-	bool			transmitterTags_local;
 	void			set_soundLabel		(bool);
 
 	void			start_scan_to_data	();
@@ -380,6 +407,9 @@ private:
 	void			stop_scan_continuous	();
 signals:
 	void                    set_newChannel		(int);
+	void			select_ensemble_font	();
+	void			select_ensemble_fontSize	();
+	void			select_ensemble_fontColor	();
 
 public slots:
 	void			startScanning		();
@@ -461,7 +491,6 @@ private slots:
 	void			handle_snrButton	();
 	void			handle_spectrumButton	();
 	void			handle_devicewidgetButton	();
-	void			handle_clearScan_Selector	(int);
 
 	void			handle_scanListButton	();
 	void			handle_presetButton	();
@@ -470,7 +499,6 @@ private slots:
 	void			handle_audiodumpButton 	();
 	void			handle_prevServiceButton        ();
 	void			handle_nextServiceButton        ();
-
 
 	void			handle_channelSelector		(const QString &);
 	void			handle_nextChannelButton	();
@@ -495,55 +523,30 @@ private slots:
 	void			handle_configButton	();
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
-	void			handle_onTop		(int);
-	void			handle_autoBrowser	(int);
-	void			handle_transmitterTags	(int);
 
 //
 //	color handlers
 	void			handle_labelColor	();
-	void			color_resetButton	();
 	void			color_scanButton	();
 	void			color_presetButton	();
 	void			color_spectrumButton	();
-	void			color_snrButton		();
-	void			color_devicewidgetButton	();
 	void			color_scanListButton	();
-	void			color_sourcedumpButton	();
 	void			color_prevServiceButton ();     
 	void			color_nextServiceButton ();
-
-	void			color_dlTextButton	();
-	void			color_scheduleButton	();
 	void			color_configButton	();
 	void			color_httpButton	();
-	void			color_set_coordinatesButton     ();
-	void			color_loadTableButton   ();
 
-	void			color_skinButton	();
-	void			color_fontButton	();
-	void			color_fontColorButton	();
-	void			color_portSelector	();
 //
 //	config handlers
-	void			handle_muteTimeSetting		(int);
-	void			handle_switchDelaySetting 	(int);
-	void			handle_orderAlfabetical		();
-	void			handle_orderServiceIds		();
-	void			handle_ordersubChannelIds	();
-	void			handle_saveServiceSelector	(int);
-	void			handle_tii_detectorMode		(int);
+public slots:
+	void			set_transmitters_local		(bool);
+	void			set_tii_detectorMode		(bool);
 	void			handle_LoggerButton		(int);
 	void			handle_set_coordinatesButton	();
-	void			handle_portSelector		();
-	void			handle_epgSelector		(int);
-	void			handle_transmSelector		(int);
+//	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
-	void			handle_saveSlides		(int);
-	void			handle_skinSelector		();
 	void			handle_loadTable		();
 	void			handle_dcRemovalSelector	(int);
-	void			handle_decoderSelector		(const QString &);
-
+	void			selectDecoder			(int);
 	void			handle_aboutLabel		();
 };

@@ -124,6 +124,7 @@ HEADERS += ./radio.h \
 	   ./support/skiptable-handler.h \
 	   ./support/aboutdialog.h \
 	   ./support/ensemble-handler.h \
+	   ./support/config-handler.h \
 	   ./forms-v7/new-display/display-widget.h \
 	   ./forms-v7/new-display/scopes/spectrum-scope.h \
 	   ./forms-v7/new-display/scopes/correlation-scope.h \
@@ -261,6 +262,7 @@ SOURCES += ./main.cpp \
 	   ./support/skiptable-handler.cpp \
 	   ./support/aboutdialog.cpp \
 	   ./support/ensemble-handler.cpp \
+	   ./support/config-handler.cpp \
 	   ./forms-v7/new-display/display-widget.cpp \
            ./forms-v7/new-display/scopes/correlation-scope.cpp \
            ./forms-v7/new-display/scopes/spectrum-scope.cpp \

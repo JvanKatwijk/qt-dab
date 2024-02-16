@@ -175,7 +175,6 @@ sdrplay_api_ErrT        err;
 bool	RspDx_handler::set_antenna (int antenna) {
 sdrplay_api_ErrT        err;
 
-	fprintf (stderr, "setting antenna to %c\n", antenna);
 	deviceParams    -> devParams -> rspDxParams. antennaSel =
 	                           antenna == 'A' ?
                                              sdrplay_api_RspDx_ANTENNA_A:

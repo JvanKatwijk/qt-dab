@@ -38,6 +38,8 @@
                     this, SLOT (click_on_service (int, int)));
 	   loadFavorites (favFile);
 	   handlePresets	= true;	// for now
+	   serviceOrder	= ensembleSettings -> value ("serviceOrder",
+	                                               ALPHA_BASED). toInt ();
 }
 
 	ensembleHandler::~ensembleHandler () {
@@ -366,7 +368,6 @@ void	ensembleHandler::add_to_favorites (const QString &s, const QString &c) {
 //	service from the favorites, so here we have to check on being
 //	selected
 bool	ensembleHandler::add_to_ensemble (serviceId &ed) {
-int	serviceOrder;
 	for (auto &s:ensembleList)
 	   if (s. name == ed. name)
 	      return false;
@@ -377,8 +378,6 @@ int	serviceOrder;
 	}
 	else
 	   ed. selected = false;
-	serviceOrder	=
-	    ensembleSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
 
 	ensembleList = insert (ensembleList, ed, serviceOrder);
 	
@@ -675,5 +674,10 @@ void	ensembleHandler::handle_scheduledSelect (const QString &name,
 	   if (ensembleMode == SHOW_ENSEMBLE)
 	      set_showMode (SHOW_PRESETS);
 	}
+}
+
+void	ensembleHandler::set_serviceOrder	(int order) {
+	ensembleSettings	-> setValue ("serviceOrder", order);
+	serviceOrder	= order;
 }
 

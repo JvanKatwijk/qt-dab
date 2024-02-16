@@ -43,14 +43,15 @@ public:
 	bool	hasFavorite		(const QString &);
 	uint16_t extract_SId		(const QString &);
 
+	int	serviceOrder;
 private	slots:
 	void	click_on_service	(int, int);
 public slots:
 	void	handle_fontSelect	();
 	void	handle_fontColorSelect	();
 	void	handle_fontSizeSelect	(int);
-
 	void	handle_rightMouseClick	(const QString &);
+	void	set_serviceOrder	(int);
 private:
 	QFont		normalFont;
 	QFont		markedFont;

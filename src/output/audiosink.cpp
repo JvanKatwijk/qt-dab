@@ -290,6 +290,27 @@ uint16_t	i;
 	return ocnt > 1;
 }
 
+QStringList	audioSink::streams () {
+uint16_t	ocnt	= 1;
+QStringList res;
+
+	for (int i = 0; i <  numofDevices; i ++) {
+	   const QString so = 
+	             outputChannelwithRate (i, 48000);
+	   qDebug ("Investigating Device %d\n", i);
+
+	   if (so != QString ("")) {
+	      res << so;
+	      outTable [ocnt] = i;
+	      qDebug (" (output):item %d wordt stream %d (%s)\n", ocnt , i,
+	                      so. toUtf8().data());
+	      ocnt ++;
+	   }
+	}
+
+	return res;
+}
+
 //
 int16_t	audioSink::numberofDevices() {
 	return numofDevices;

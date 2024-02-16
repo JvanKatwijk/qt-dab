@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>433</height>
+    <width>575</width>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,9 +16,41 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <layout class="QFormLayout" name="formLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>mute time (in minutes)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="smallSpinBox" name="muteTimeSetting">
+         <property name="toolTip">
+          <string>Set here the mute time in minutes</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>switch time (in seconds)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="smallSpinBox" name="switchDelaySetting">
+         <property name="toolTip">
+          <string>Set here the delay, when searching for data in a channel, in seconds</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -87,63 +119,6 @@
           <string>font color</string>
          </property>
         </widget>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <layout class="QFormLayout" name="formLayout">
-         <item row="0" column="1">
-          <widget class="smallSpinBox" name="muteTimeSetting">
-           <property name="toolTip">
-            <string>Set here the mute time in minutes</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>switch time (in seconds)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="smallSpinBox" name="switchDelaySetting">
-           <property name="toolTip">
-            <string>Set here the delay, when searching for data in a channel, in seconds</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>mute time (in minutes)</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <widget class="QLabel" name="label_3">
-           <property name="text">
-            <string>CPU load</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLCDNumber" name="loadDisplay">
-           <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
-           </property>
-           <property name="segmentStyle">
-            <enum>QLCDNumber::Flat</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </item>
@@ -339,7 +314,7 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QCheckBox" name="logger_selector">
+      <widget class="QCheckBox" name="loggerButton">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometime one wants to see what was done, the logger just dumps some data into a file, showing the selections made.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -359,7 +334,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QCheckBox" name="new_tiiMode_selector">
+      <widget class="QCheckBox" name="tii_detectorMode">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;a second implementation of the tii decoder can be selected here. The decoder &amp;quot;sees&amp;quot; more tii data, but also more erroneous data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -369,7 +344,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="utc_selector">
+      <widget class="QCheckBox" name="utcSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you want to see UTC in the logs select this one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -389,7 +364,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QCheckBox" name="closeDirect_selector">
+      <widget class="QCheckBox" name="closeDirect">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -399,7 +374,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QCheckBox" name="epg_selector">
+      <widget class="QCheckBox" name="epgSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -426,7 +401,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QCheckBox" name="etiActivated_selector">
+      <widget class="QCheckBox" name="eti_activeSelector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;eti files can be generated by Qt-DAB-5.x. Since generating an eti file from an ensemble seems incompatible with scanning, the scan button is replaced by an &amp;quot;eti&amp;quot; button when eti is activated.&lt;/p&gt;&lt;p&gt;Note that building up an eti file requires quite some resources.&lt;/p&gt;&lt;p&gt;If eti is activated, the scanButton is replaced by the etiButton. Touching that button shows a fileselection menu, after selecting a file the content of the ensemble is sent in eti format to the file. The eti session stops when (a) the eti button is touched again, (b) switching to another channel or (c) disabling eti by unchecking the checkbox.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -446,7 +421,7 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QCheckBox" name="clearScan_selector">
+      <widget class="QCheckBox" name="clearScan_Selector">
        <property name="text">
         <string>clear scan</string>
        </property>

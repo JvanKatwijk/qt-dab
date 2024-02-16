@@ -20,10 +20,11 @@
  *    along with Qt-DAB-J; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	"device-handler.h"
 
+#include	"device-handler.h"
+//
 	deviceHandler::deviceHandler	():
-	   myFrame (nullptr) {
+	                        myFrame (nullptr) {
 	lastFrequency	= 100000;
 	theGain		= 50;
 }
@@ -39,14 +40,15 @@ bool	deviceHandler::restartReader	(int32_t freq) {
 void	deviceHandler::stopReader	() {
 }
 
-int32_t	deviceHandler::getSamples	(std::complex<float> *v, int32_t amount) {
+int32_t	deviceHandler::getSamples	(std::complex<float> *v,
+	                                             int32_t amount) {
 	(void)v; 
 	(void)amount; 
 	return amount;
 }
 
 int32_t	deviceHandler::Samples		() {
-	return 1024;
+	return 0;
 }
 
 void	deviceHandler::resetBuffer	() {

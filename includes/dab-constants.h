@@ -53,7 +53,7 @@ typedef	void	*HINSTANCE;
 
 #define	MAX_VITERBI	127
 
-#define	NR_TAPS		256
+#define	NR_TAPS		512
 
 #ifdef	__WITH_DOUBLES__
 typedef	double	DABFLOAT;
