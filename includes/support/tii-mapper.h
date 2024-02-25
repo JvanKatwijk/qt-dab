@@ -26,12 +26,9 @@
 #include	<stdio.h>
 #include	<vector>
 #include	<QSettings>
-#include	"table-loader.h"
+#include	"distances.h"
 
-typedef struct {
-	float	latitude;
-	float	longitude;
-} position;
+#include	"cacheElement.h"
 
 typedef struct {
 	uint16_t Eid;
@@ -41,28 +38,21 @@ typedef struct {
 
 class	tiiMapper {
 public:
-		tiiMapper	();
+		tiiMapper	(QSettings *);
 		~tiiMapper	();
-	bool	tiiFile 	(const QString &);
-	bool	loadTable	(const QString &);
-	QString	get_transmitterName (const QString &,
-	                             uint16_t Eid,
-	                             uint8_t mainId, uint8_t subId);
-	void	get_coordinates	(float *, float *, float *,
-	                         const QString &, const QString &);
-	void	get_coordinates	(position &, float &,
-	                         const QString &, const QString &);
-	float	distance_2	(float, float, float, float);
-	float	distance	(position, position);
-	float	distance	(float, float, float, float);
-	float	corner		(position, position);
+	bool	has_tiiFile 	();
+	void	reload		();
+	
+	cacheElement *
+                get_transmitter (const QString &channel,
+                                 uint16_t Eid,
+                                 uint8_t mainId, uint8_t subId);
 	bool	is_black	(uint16_t, uint8_t, uint8_t);
 	void	set_black	(uint16_t, uint8_t, uint8_t);	
 
 private:
 std::vector<black> blackList;
 std::vector<cacheElement> theCache;
-QString	tiifileName;
-	tableLoader	theReader;
+	QString	tiifileName;
 };
 

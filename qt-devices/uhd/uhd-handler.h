@@ -1,3 +1,4 @@
+#
 /*
  *    Copyright (C) 2015
  *    Sebastian Held <sebastian.held@imst.de>
@@ -43,8 +44,7 @@ private:
 	std::atomic<bool> m_stop_signal_called;
 };
 
-class uhdHandler : public QObject,
-	                       public deviceHandler, public Ui_uhdWidget {
+class uhdHandler : public deviceHandler, public Ui_uhdWidget {
 Q_OBJECT
 	friend class uhd_streamer;
 public:

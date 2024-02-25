@@ -76,8 +76,8 @@ static std::vector<uint8_t> buffer (64 * 1024);
 	while (running. load ()) {
 	   readHeader	(theHeader);
 	   if (theHeader. SequenceNumber != volgNummer + 1) {
-	      fprintf (stderr, "%d %d\n",
-	                  theHeader. SequenceNumber, volgNummer);
+//	      fprintf (stderr, "%ld %d\n",
+//	                  theHeader. SequenceNumber, volgNummer);
 //	      fprintf (stderr, "Buffer space = %d\n",
 //	               inBuffer. GetRingBufferReadAvailable ());
 	   }
@@ -291,6 +291,7 @@ std::vector<uint32_t> param (1);
 }
 
 bool	spyHandler::set_gain_mode	(bool automatic, size_t chan) {
+	(void)automatic; (void)chan;
 	return 0;
 }
 
@@ -364,3 +365,8 @@ std::vector<uint32_t> p;
 	set_setting (SETTING_IQ_FORMAT, p);
 //	fprintf (stderr, "Connection is gezet, waar blijft de call?\n");
 }
+
+bool	spyHandler::isFileInput		() {
+	return true;
+}
+

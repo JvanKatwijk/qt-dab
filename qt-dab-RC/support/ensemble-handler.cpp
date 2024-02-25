@@ -7,6 +7,8 @@
 #include	<QColorDialog>
 #include	<QFontDialog>
 
+#include	"settingNames.h"
+
 #define	MARKED	0100
 #define	NORMAL	0000
 	ensembleHandler::ensembleHandler (RadioInterface *parent,
@@ -347,20 +349,22 @@ void	ensembleHandler::add_to_favorites (const QString &s, const QString &c) {
 	theService. name	= s;
 	theService. channel	= c;
 	theService. selected	= false;
-//	bool ok = false;
-//	int value = c. toInt (&ok, 16);
-//	if (!ok)
-//	   fprintf (stderr, "mislukt\n");
-//	if (favorites. size () == 0) {
-//	   favorites. push_back (theService);
-//	   return;
-//	}
-//	for (uint16_t i = 0; i < favorites. size (); i ++) {
-//	   if (value < favorites [i]. channel. toInt (&ok, 16)) {
-//	      favorites. insert (favorites. begin () + i, theService);
-//	      return;
-//	   }
-//	}
+	bool ok = false;
+	int value = c. trimmed (). toInt (&ok, 16);
+	if (!ok) {
+	   favorites. push_back (theService);
+	   return;
+	}
+	if (favorites. size () == 0) {
+	   favorites. push_back (theService);
+	   return;
+	}
+	for (uint16_t i = 0; i < favorites. size (); i ++) {
+	   if (value < favorites [i]. channel. toInt (&ok, 16)) {
+	      favorites. insert (favorites. begin () + i, theService);
+	      return;
+	   }
+	}
 	favorites. push_back (theService);
 }
 //
@@ -541,8 +545,9 @@ void	ensembleHandler::setFont (int mark, int index) {
 }
 
 void	ensembleHandler::handle_fontSelect () {
-int fontSize		=	
-	           ensembleSettings -> value ("fontSize", 10). toInt ();
+int fontSize;
+	fontSize	= ensembleSettings -> value (FONT_SIZE_SETTING,
+	                                                 10). toInt ();
 #ifdef	__NOT_NOW__
 bool ok;
 	QFont theFont = QFontDialog::getFont (
@@ -571,7 +576,7 @@ QString	theFont;
 	   selectFont. add (s);
 	int fontIndex	= selectFont. QDialog::exec ();
 	theFont	= fontList. at (fontIndex);
-	ensembleSettings	-> setValue ("theFont", theFont);
+	ensembleSettings	-> setValue (FONT_SETTING, theFont);
 	normalFont	= QFont (theFont, fontSize, -1, false);
 	markedFont	= QFont (theFont, fontSize + 2, -1, true);
 	channelFont	= QFont (theFont, fontSize - 2);
@@ -581,11 +586,12 @@ QString	theFont;
 
 void	ensembleHandler::handle_fontColorSelect () {
 QColor	color;
+
 	color	= QColorDialog::getColor (color, nullptr, "fontColor");
 	if (!color. isValid ())
 	   return;
 	fontColor	= color. name ();
-	ensembleSettings	-> setValue ("fontColor", fontColor);
+	ensembleSettings	-> setValue (FONT_COLOR_SELECT, fontColor);
 	updateList ();
 }
 

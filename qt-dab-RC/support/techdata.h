@@ -30,6 +30,7 @@
 #include	"dab-constants.h"
 #include	"audio-display.h"
 #include	"ringbuffer.h"
+#include	"super-frame.h"
 
 class	RadioInterface;
 class	QSettings;
@@ -52,7 +53,7 @@ private:
 	RadioInterface		*myRadioInterface;
 	QSettings		*dabSettings;
 	RingBuffer<std::complex<int16_t>>	*audioData;
-	QFrame			myFrame;
+	superFrame		myFrame;
 	audioDisplay		*the_audioDisplay;
 
 	float			peakLeftDamped;
@@ -98,6 +99,7 @@ signals:
 	void		handle_timeTable	();
 	void		handle_audioDumping	();
 	void		handle_frameDumping	();
+	void		frameClosed		();
 };
 
 

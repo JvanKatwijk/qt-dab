@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -63,8 +63,9 @@ int	i;
 	currentPhase	= 0;
 	sLevel		= 0;
 	sampleCount	= 0;
-	balancing	= false;
-	RFDc		= Complex (0, 0);
+	dcRemoval	= false;
+	dcReal		= 0;
+	dcImag		= 0;
 	repetitionCounter	= 8;
 	for (i = 0; i < INPUT_RATE; i ++)
 	   oscillatorTable [i] = Complex
@@ -79,6 +80,8 @@ int	i;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	connect (this, &sampleReader::show_spectrum,
 	         mr,  &RadioInterface::show_spectrum);
+	connect (this, &sampleReader::show_dcOffset,
+	         mr, &RadioInterface::show_dcOffset);
 	running. store (true);
 }
 
@@ -140,23 +143,24 @@ std::complex<float> buffer [nrSamples];
 	   }
 	}
 //	OK, we have samples!!
-	RFDc	= Complex (0, 0);
 	for (int i = 0; i < nrSamples; i ++) {
 	   std::complex<float> v = buffer [i];
 	   peakValue	= ALPHA * abs (v) + (1 - ALPHA) * abs (v); 
 //
-//	Testing shows that adding a slow changing DC like signal
-//	to the input does not have effect on the decoding capabilities
-	   if (balancing) {
-	      RFDc	= (v - RFDc) * ALPHA + (1 - ALPHA) * RFDc;
-	      constexpr float DCRlimit = 0.075f;
-	      float rfDcReal = real (RFDc);
-	      constrain (rfDcReal, DCRlimit);
-	      float rfDcImag = imag (RFDc);
-	      constrain (rfDcImag, DCRlimit);
-	      RFDc	= Complex (rfDcReal, rfDcImag);
-	      v		-= RFDc;
+	   if (dcRemoval) {
+	      DABFLOAT real_V = real (v);
+	      DABFLOAT imag_V = imag  (v);
+	      dcReal	= average (dcReal, real_V, ALPHA);
+	      dcImag	= average (dcImag, imag_V, ALPHA);
+	      v = Complex (real_V - dcReal, imag_V - dcImag);
+
+	      static int teller = 0;
+	      if (++teller >= INPUT_RATE) {
+	         show_dcOffset ((dcReal + dcImag) / 2);
+	         teller = 0;
+	      }
 	   }
+	   
 
 //	first: adjust frequency. We need Hz accuracy
 //	Note that "phase" itself might be negative
@@ -190,7 +194,8 @@ void	sampleReader::stop_dumping() {
 }
 
 void	sampleReader::set_dcRemoval	(bool b) {
-	balancing	= b;
-	RFDc		= Complex (0, 0);
+	dcRemoval	= b;
+	dcReal		= 0;
+	dcImag		= 0;
 }
 

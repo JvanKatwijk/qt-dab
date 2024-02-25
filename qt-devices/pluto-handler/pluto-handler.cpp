@@ -643,7 +643,7 @@ bool	isValid (QChar c) {
 bool	plutoHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = plutoSettings -> value ("saveDir_xmlDump",
+QString saveDir = plutoSettings -> value (SAVEDIR_XML,
                                            QDir::homePath ()). toString ();
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";

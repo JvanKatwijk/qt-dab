@@ -39,7 +39,7 @@
 #include	"ringbuffer.h"
 #include	"ui_rtl_tcp-widget.h"
 
-class	rtl_tcp_client: public QObject,
+class	rtl_tcp_client: //public QObject,
 	                public deviceHandler, Ui_rtl_tcp_widget {
 Q_OBJECT
 public:
@@ -51,6 +51,7 @@ public:
 	int32_t		getSamples	(std::complex<float> *V, int32_t size);
 	int32_t		Samples		();
 	int16_t		bitDepth	();
+	bool		isFileInput	();
 private slots:
 	void		sendGain	(int);
 	void		set_Offset	(int);

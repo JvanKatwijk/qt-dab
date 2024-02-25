@@ -78,12 +78,13 @@ private:
 	      std::atomic<SNDFILE *>	dumpfilePointer;
 	      int		repetitionCounter;
 
-	      bool		balancing;
-	      std::complex<float>	RFDc;
+	      bool		dcRemoval;
+	      DABFLOAT		dcReal;
+	      DABFLOAT		dcImag;
 
 	      float		peakValue;
 signals:
-	      void		show_spectrum (int);
-//	      void		show_corrector (int);
+	      void		show_spectrum	(int);
+	      void		show_dcOffset	(float);
 };
 

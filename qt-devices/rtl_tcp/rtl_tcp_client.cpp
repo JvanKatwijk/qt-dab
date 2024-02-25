@@ -291,3 +291,7 @@ void	rtl_tcp_client::set_Offset	(int32_t o) {
 	vfoOffset	= o;
 }
 
+bool	rtl_tcp_client::isFileInput	() {
+	return true;
+}
+

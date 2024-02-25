@@ -38,6 +38,7 @@
 #include	"RspDuo-handler.h"
 #include	"RspDx-handler.h"
 
+#include	"device-exceptions.h"
 #define SDRPLAY_RSP1_   1
 #define SDRPLAY_RSP1A_  255
 #define SDRPLAY_RSP2_   2
@@ -45,7 +46,13 @@
 #define SDRPLAY_RSPdx_  4
 #define SDRPLAY_RSP1B_  6
 
-#include	"device-exceptions.h"
+#define	SDRPLAY_SETTINGS	"sdrplaySettings_v3"
+#define	SDRPLAY_IFGRDB		"sdrplay-ifgrdb"
+#define	SDRPLAY_LNASTATE	"sdrplay-lnastate"
+#define	SDRPLAY_PPM		"sdrplay-ppm"
+#define	SDRPLAY_AGCMODE		"sdrplay_agcMode"
+#define	SDRPLAY_BIAS_T		"biasT_selector"
+#define	SDRPLAY_ANTENNA		"Antenna"
 
 std::string errorMessage (int errorCode) {
 	switch (errorCode) {
@@ -81,9 +88,10 @@ std::string errorMessage (int errorCode) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
-	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
-        int x   = sdrplaySettings -> value ("position-x", 100). toInt ();
-        int y   = sdrplaySettings -> value ("position-y", 100). toInt ();
+	QString	groupName	= SDRPLAY_SETTINGS;
+	sdrplaySettings -> beginGroup (groupName);
+        int x   = sdrplaySettings -> value (groupName + "-x", 100). toInt ();
+        int y   = sdrplaySettings -> value (groupName + "-y", 100). toInt ();
         sdrplaySettings -> endGroup ();
         setupUi (&myFrame);
         myFrame. move (QPoint (x, y));
@@ -99,22 +107,21 @@ std::string errorMessage (int errorCode) {
 //	See if there are settings from previous incarnations
 //	and config stuff
 
-	sdrplaySettings		-> beginGroup ("sdrplaySettings_v3");
-	
+	sdrplaySettings		-> beginGroup (groupName);
 	GRdBSelector 		-> setValue (
-	            sdrplaySettings -> value ("sdrplay-ifgrdb", 20). toInt());
+	            sdrplaySettings -> value (SDRPLAY_IFGRDB, 20). toInt());
 	GRdBValue		= GRdBSelector -> value ();
 
 	lnaGainSetting		-> setValue (
-	            sdrplaySettings -> value ("sdrplay-lnastate", 4). toInt());
+	            sdrplaySettings -> value (SDRPLAY_LNASTATE, 4). toInt());
 
 	lnaState		= lnaGainSetting -> value ();
 
 	ppmControl		-> setValue (
-	            sdrplaySettings -> value ("sdrplay-ppm", 0). toInt());
+	            sdrplaySettings -> value (SDRPLAY_PPM, 0). toInt());
 
 	agcMode		=
-	       sdrplaySettings -> value ("sdrplay-agcMode", 0). toInt() != 0;
+	       sdrplaySettings -> value (SDRPLAY_AGCMODE, 0). toInt() != 0;
 	sdrplaySettings	-> endGroup	();
 
 	if (agcMode) {
@@ -124,7 +131,7 @@ std::string errorMessage (int errorCode) {
 	}
 
 	biasT           =
-               sdrplaySettings -> value ("biasT_selector", 0). toInt () != 0;
+               sdrplaySettings -> value (SDRPLAY_BIAS_T, 0). toInt () != 0;
         if (biasT)
            biasT_selector -> setChecked (true);
 	
@@ -166,17 +173,18 @@ std::string errorMessage (int errorCode) {
 	   usleep (1000);
 //	thread should be stopped by now
 	myFrame. hide ();
-	sdrplaySettings	-> beginGroup ("sdrplaySettings_v3");
-        sdrplaySettings -> setValue ("position-x", myFrame. pos (). x ());
-        sdrplaySettings -> setValue ("position-y", myFrame. pos (). y ());
+	QString groupName	= SDRPLAY_SETTINGS;
+	sdrplaySettings	-> beginGroup (groupName);
+        sdrplaySettings -> setValue (groupName + "-x", myFrame. pos (). x ());
+        sdrplaySettings -> setValue (groupName + "-y", myFrame. pos (). y ());
 
-	sdrplaySettings -> setValue ("sdrplay-ppm",
+	sdrplaySettings -> setValue (SDRPLAY_PPM,
 	                                           ppmControl -> value ());
-	sdrplaySettings -> setValue ("sdrplay-ifgrdb",
+	sdrplaySettings -> setValue (SDRPLAY_IFGRDB,
 	                                           GRdBSelector -> value ());
-	sdrplaySettings -> setValue ("sdrplay-lnastate",
+	sdrplaySettings -> setValue (SDRPLAY_LNASTATE,
 	                                           lnaGainSetting -> value ());
-	sdrplaySettings	-> setValue ("sdrplay-agcMode",
+	sdrplaySettings	-> setValue (SDRPLAY_AGCMODE,
 	                                  agcControl -> isChecked() ? 1 : 0);
 	sdrplaySettings	-> endGroup ();
 	sdrplaySettings	-> sync();
@@ -311,8 +319,8 @@ biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 
 	(void)v;
 	messageHandler (&r);
-	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
-	sdrplaySettings -> setValue ("biasT_selector",
+	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
+	sdrplaySettings -> setValue (SDRPLAY_BIAS_T,
 	                              biasT_selector -> isChecked () ? 1 : 0);
 	sdrplaySettings -> endGroup ();
 }
@@ -320,8 +328,8 @@ biasT_Request r (biasT_selector -> isChecked () ? 1 : 0);
 void	sdrplayHandler_v3::set_selectAntenna	(const QString &s) {
 	messageHandler (new antennaRequest (s == "Antenna A" ? 'A' :
 	                                    s == "Antenna B" ? 'B' : 'C'));
-	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
-	sdrplaySettings	-> setValue ("Antenna", s);
+	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
+	sdrplaySettings	-> setValue (SDRPLAY_ANTENNA, s);
 	sdrplaySettings	-> endGroup ();
 }
 
@@ -351,9 +359,10 @@ int	sdrplayHandler_v3::set_antennaSelect (int sdrDevice) {
 	   antennaSelector	-> show ();
 	}
 
-	sdrplaySettings -> beginGroup ("sdrplaySettings_v3");
+	sdrplaySettings -> beginGroup (SDRPLAY_SETTINGS);
 	QString setting	=
-	      sdrplaySettings	-> value ("Antenna", "Antenna A"). toString ();
+	      sdrplaySettings	-> value (SDRPLAY_ANTENNA,
+	                                         "Antenna A"). toString ();
 	sdrplaySettings	-> endGroup ();
 	int k	= antennaSelector -> findText (setting);
 	if (k >= 0) 
@@ -378,7 +387,7 @@ bool	isValid (QChar c) {
 bool	sdrplayHandler_v3::setup_xmlDump () {
 QTime theTime;
 QDate theDate;
-QString saveDir = sdrplaySettings -> value ("saveDir_xmlDump",
+QString saveDir = sdrplaySettings -> value (SAVEDIR_XML,
                                            QDir::homePath ()). toString ();
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";

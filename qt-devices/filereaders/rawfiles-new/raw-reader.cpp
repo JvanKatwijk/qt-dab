@@ -93,7 +93,7 @@ int	teller	= 0;
 std::complex<float> localBuffer [BUFFERSIZE / 2];
 
 	connect (this, SIGNAL (setProgress (int, float)),
-	         parent,   SLOT   (setProgress (int, float)));
+	         parent,   SLOT (setProgress (int, float)));
 	fseek (filePointer, 0, SEEK_SET);
 	running. store (true);
 	nextStop        = getMyTime();

@@ -70,7 +70,7 @@
 	if (saveFile != nullptr) {
 	   fprintf (saveFile, "Home location; %f; %f\n\n", 
 	                         homeAddress. latitude, homeAddress. longitude);
-	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power\n\n");
+	   fprintf (saveFile, "channel; latitude; longitude;transmitter;date and time; mainId; subId; distance; azimuth; power, height\n\n");
 	}
 
 	transmitterVector. resize (0);
@@ -480,7 +480,7 @@ QString Jsontxt;
 	locker. lock ();
 //	the Target
 	snprintf (buf, 512,
-	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d}",
+	      "{\"type\":%d, \"lat\":%s, \"lon\":%s, \"name\":\"%s\", \"channel\":\"%s\", \"dateTime\":\"%s\", \"dist\":%d, \"azimuth\":%d, \"power\":%d, \"height\":%d}",
 	       t [0]. type,
 	       dotNumber (t [0]. coords. latitude). c_str (),
 	       dotNumber (t [0]. coords. longitude). c_str (),
@@ -489,7 +489,8 @@ QString Jsontxt;
 	       t [0]. dateTime. toUtf8 (). data (),
 	       t [0]. distance,
 	       t [0]. azimuth,
-	       (int)(t [0]. power * 100));
+	       (int)(t [0]. power * 100),
+	       (int)(t [0]. height));
 	Jsontxt += QString (buf);
 //
 //
@@ -514,6 +515,29 @@ QString Jsontxt;
 	return Jsontxt. toStdString ();
 }
 
+void	httpHandler::putData	(uint8_t	type, position target) {
+	for (unsigned long i = 0; i < transmitterList. size (); i ++)
+	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
+	       (transmitterList [i]. coords. longitude == target. longitude))
+	      return;
+	   
+	httpData t;
+	t. type			= type;
+	t. coords		= target;
+	t. transmitterName	= "";
+	t. channelName		= "";
+	t. dateTime		= "";
+	t. ttiId		= 0;
+	t. distance		= 0;
+	t. azimuth		= 0;
+	t. power		= 0;
+	t. height		= 0;
+
+	locker. lock ();
+	transmitterList. push_back (t);
+	locker. unlock ();
+}
+	
 void	httpHandler::putData	(uint8_t	type,
 	                         position	target,
 	                         QString transmitterName,
@@ -522,7 +546,8 @@ void	httpHandler::putData	(uint8_t	type,
 	                         int ttiId,
 	                         int distance,
 	                         int azimuth,
-	                         float power) {
+	                         float power,
+	                         float height) {
 	for (unsigned long i = 0; i < transmitterList. size (); i ++)
 	   if ((transmitterList [i]. coords. latitude == target. latitude) &&
 	       (transmitterList [i]. coords. longitude == target. longitude))
@@ -539,6 +564,7 @@ void	httpHandler::putData	(uint8_t	type,
 	t. distance		= distance;
 	t. azimuth		= azimuth;
 	t. power		= power;
+	t. height		= height;
 
 	locker. lock ();
 	transmitterList. push_back (t);
@@ -552,13 +578,13 @@ void	httpHandler::putData	(uint8_t	type,
 	
 	if ((saveFile != nullptr)  &&
 	           ((type != MAP_RESET) && (type != MAP_FRAME))) {
-	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f\n",
+	   fprintf (saveFile, "%s; %f; %f; %s; %s; %d; %d; %d; %d; %f, %f\n",
 	                      channelName. toUtf8 (). data (),
 	                      target. latitude, target. longitude,
 	                      transmitterName. toUtf8 (). data (),
 	                      t. dateTime. toUtf8 (). data (),
 	                      ttiId / 100, ttiId % 100,
-	                      distance, azimuth, power);
+	                      distance, azimuth, power, height);
 	   transmitterVector. push_back (t);
 	}
 }

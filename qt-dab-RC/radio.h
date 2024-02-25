@@ -232,10 +232,7 @@ private:
 
 	displayWidget		newDisplay;
 	snrViewer		my_snrViewer;
-//	bandHandler		theBand;
 	QFrame			dataDisplay;
-//	QFrame			configDisplay;
-	configHandler		*configHandler_p;
 	dlCache			the_dlCache;
 	tiiMapper		tiiProcessor;
 	findfileNames		filenameFinder;
@@ -246,20 +243,20 @@ private:
 	scanListHandler		my_scanListHandler;
 	deviceChooser		chooseDevice;
 	scanHandler		scanMonitor;
+	configHandler		*configHandler_p;
 	ensembleHandler		*the_ensembleHandler;
 //
 //	end of variables that are initalized
- 
-	void			set_position_and_size (QWidget *w,
-                                                       const QString &key);
-	void			store_widget_position (QWidget *w,
-                                                       const QString &key);
 
+	dabService		checkPresets		();
+	void			set_position_and_size	(QWidget *w,
+                                                         const QString &key);
+	void			store_widget_position	(QWidget *w,
+                                                         const QString &key);
+	int			int_configValue		(const QString &, int);
 
 	position		localPos;
-	bool			has_tiiFile;
 	dabService		nextService;
-	QString			tiiFileName;
 	std::vector<QPixmap>	strengthLabels;
 	httpHandler		*mapHandler;
 	processParams		globals;
@@ -378,7 +375,7 @@ private:
 	void			show_for_single_scan	();
 	void			show_for_continuous	();
 
-	bool			doStart			();
+	void			doStart			();
 	void			save_MOTObject		(QByteArray &,
 	                                                 QString);
 
@@ -412,6 +409,7 @@ signals:
 	void			select_ensemble_fontColor	();
 
 public slots:
+	void			show_dcOffset		(float);
 	void			startScanning		();
 	void			stopScanning		();
 	void			show_quality		(float, float, float);
@@ -457,8 +455,6 @@ public slots:
 	                                                 const QString &,
 	                                                 const QString &);
 	void			epgTimer_timeOut	();
-	void			switchVisibility	(QWidget *);
-
 	void			handle_presetSelect	(const QString &,
 	                                                 const QString &);
 	void			handle_contentSelector	(const QString &);
@@ -478,6 +474,11 @@ public slots:
 	                                                 QVector<int> );
 	void			show_stdDev		(int);
 	void			showPeakLevel		(float, float);
+
+	void			handle_techFrame_closed ();
+	void			handle_configFrame_closed ();
+	void			handle_deviceFrame_closed ();
+	void			handle_newDisplayFrame_closed ();
 
 //	Somehow, these must be connected to the GUI
 private slots:
@@ -546,7 +547,7 @@ public slots:
 //	void			handle_transmSelector		(int);
 	void			handle_eti_activeSelector	(int);
 	void			handle_loadTable		();
-	void			handle_dcRemovalSelector	(int);
+	void			handle_dcRemovalSelector	(bool);
 	void			selectDecoder			(int);
 	void			handle_aboutLabel		();
 };

@@ -50,9 +50,9 @@
 	cleanRecords ();
 	testTimer	= new QTimer ();
 	connect (testTimer, SIGNAL (timeout ()),
-	         this, SLOT (no_deviceInfo ()));
+	           this, SLOT (no_deviceInfo ()));
 	connect (this, SIGNAL (data_ready ()),
-	         parent, SLOT (data_ready ()));
+	           parent, SLOT (data_ready ()));
 	start ();
 	testTimer	-> start (10000);
 }
@@ -353,3 +353,8 @@ std::vector<uint32_t> p;
 	set_setting (SETTING_IQ_FORMAT, p);
 //	fprintf (stderr, "Connection is gezet, waar blijft de call?\n");
 }
+
+bool	spyHandler_8::isFileInput	() {
+	return true;
+}
+

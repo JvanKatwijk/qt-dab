@@ -227,10 +227,12 @@ int32_t	h	= 100 - (theMissed * 100) / totalSamples;
 //
 //	we call this with the amount of floats!!
 void	audioSink::audioOutput	(float *b, int32_t amount) {
-	if (_O_Buffer. GetRingBufferWriteAvailable () < amount) {
-	   fprintf (stderr, "%d\n",
-	        2 * amount - _O_Buffer. GetRingBufferReadAvailable ());
-	 }
+//	if (_O_Buffer. GetRingBufferWriteAvailable () < amount) {
+//	   fprintf (stderr, "%d\n",
+//	        2 * amount - _O_Buffer. GetRingBufferReadAvailable ());
+//	 }
+	if (_O_Buffer. GetRingBufferWriteAvailable () < amount) 
+	   amount = _O_Buffer. GetRingBufferWriteAvailable () & ~01;
 	_O_Buffer. putDataIntoBuffer (b, amount);
 }
 

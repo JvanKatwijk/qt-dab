@@ -27,7 +27,6 @@
 #pragma once
 
 #include	<QObject>
-#include	<QFrame>
 #include	<QSettings>
 #include	<atomic>
 #include	"dab-constants.h"
@@ -81,8 +80,7 @@ typedef	int	(*pfn_hackrf_board_rev_read)
 
 
 ///////////////////////////////////////////////////////////////////////////
-class	hackrfHandler: public QObject, 
-	               public deviceHandler, public Ui_hackrfWidget {
+class	hackrfHandler: public deviceHandler, public Ui_hackrfWidget {
 Q_OBJECT
 public:
 			hackrfHandler		(QSettings *,

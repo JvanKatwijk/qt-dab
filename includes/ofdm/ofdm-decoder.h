@@ -85,6 +85,7 @@ private:
 	std::vector<float>	offsetVector;
 	std::vector<float>	squaredVector;
 	std::vector<DABFLOAT>	amplitudeLevel;
+	std::vector<Complex>	carrierCenters;
 	std::vector<DABFLOAT>	sigmaLevel;
 
 	phaseTable	*phasetable;

@@ -915,8 +915,8 @@ bool	isValid (QChar c) {
 bool	sdrplayHandler_v2::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString	saveDir	= sdrplaySettings -> value ("saveDir_xmlDump",
-	                                   QDir::homePath ()). toString ();
+QString	saveDir	= sdrplaySettings -> value (SAVEDIR_XML,
+	                                    QDir::homePath ()). toString ();
 	if ((saveDir != "") && (!saveDir. endsWith ("/")))
 	   saveDir += "/";
 

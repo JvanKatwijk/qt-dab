@@ -77,12 +77,13 @@ float Length	= jan_abs (V);
 	phaseReference			.resize (T_u);
 	offsetVector. resize (T_u);
 	squaredVector. resize (T_u);
-	 amplitudeLevel. resize (T_u);
+	amplitudeLevel. resize (T_u);
+	carrierCenters. resize (T_u);
 	sigmaLevel. resize (T_u);
 	for (uint32_t i = 0; i < offsetVector. size (); i ++) {
            offsetVector [i] = 0;
 	   squaredVector [i] = 0;
-	    amplitudeLevel [i] = 0;
+	   amplitudeLevel [i] = 0;
 	   sigmaLevel [i] = 0;
 	}
 
@@ -102,6 +103,7 @@ void	ofdmDecoder::reset ()	{
 	   squaredVector	[i] = 0;
 	   sigmaLevel 		[i] = 0;
 	   amplitudeLevel	[i] = 0;
+	   carrierCenters	[i] = Complex (1, 1);
 	}
 }
 //
@@ -141,7 +143,7 @@ float	ofdmDecoder::computeQuality (Complex *v) {
 
 	float nominator		= 0;
 	float denominator	= 0;
-	for (int i = 0; i < carriers; i ++) {
+	for (int i = 0; i <= carriers; i ++) {
 	   Complex s		= v [T_u / 2 - carriers / 2 + i];
 	   float I_component	= real (s);
 	   float Q_component	= imag (s);
@@ -169,6 +171,10 @@ static	int	cnt	= 0;
 //	their length, relative to each other,
 //	Ideally, the X and Y are of equal size, in practice they are not.
 
+int	sign (DABFLOAT x) {
+	return x < 0 ? -1 : x > 0 ? 1 : 0;
+}
+
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &ibits) {
@@ -186,6 +192,7 @@ DABFLOAT Alpha = 0.05f;
 //	positive/negative frequencies to their right positions.
 //	The de-interleaving understands this
 //	DABFLOAT max	= 0;
+
 	for (int i = 0; i < carriers; i ++) {
 	   int16_t	index	= myMapper.  mapIn (i);
 	   if (index < 0) 
@@ -204,6 +211,7 @@ DABFLOAT Alpha = 0.05f;
 	   Complex r2	= Complex (abs (real (r1)), abs (imag (r1)));
 	   computedCenter	+= r2;
 	}
+
 //
 //	Later on we force the signal components to center around
 //	the real ceters of the quadrants rather than the fictious
@@ -227,8 +235,15 @@ DABFLOAT Alpha = 0.05f;
 	   DABFLOAT phaseOffset	= M_PI_4 - fftPhase;
 	   offsetVector [index] = 
 	             compute_avg (offsetVector [index], phaseOffset, Alpha);
-
 //
+	   amplitudeLevel [index]	= 
+	            compute_avg ( amplitudeLevel [index], ab1, Alpha);
+	   carrierCenters [i] =
+	            Complex (
+	                    compute_avg (real (carrierCenters [i]),
+	                                         abs (real (r1)), Alpha),
+	                    compute_avg (imag (carrierCenters [i]),
+	                                         abs (imag (r1)), Alpha));
 	   switch (decoder) {
 	      case FAST_DECODER:
 	      default:
@@ -242,52 +257,37 @@ DABFLOAT Alpha = 0.05f;
 	         break;
 
 	      case ALT1_DECODER:
-	      {	 //r1	= r1 * conj (theOffset);
-	         amplitudeLevel [index]	= 
-	               compute_avg (amplitudeLevel [index], ab1, Alpha);
-	      
-	         DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
-
+//
+//	same as previous one, however, with a filtered "centerpoint"
+	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
 	         ibits [i]		=
-	                (int16_t)( - real (r1) / base * MAX_VITERBI);
+	                        (int16_t)( - real (r1) * MAX_VITERBI / base);
 	         ibits [carriers + i] =
-	                (int16_t)( - imag (r1) / base * MAX_VITERBI);
+	                        (int16_t)( - imag (r1) * MAX_VITERBI / base);
 	         break;
 	      }
 
 	      case ALT2_DECODER:
-	      {	 //r1	= r1 * conj (theOffset);
-	         amplitudeLevel [index]	= 
-	             compute_avg ( amplitudeLevel [index], ab1, Alpha);
-
-	         DABFLOAT  base		=  amplitudeLevel [index] * M_SQRT1_2;
-//	X and Y distances
-	         DABFLOAT d_x		=
-	                             abs (abs (real (r1)) - base);
-	         DABFLOAT d_y		=
-	                             abs (abs (imag (r1)) - base);
-
-	         sigmaLevel [index]	= 
-	                             compute_avg (sigmaLevel [index], 
-	                                    square (d_x) + square (d_y),
-	                                                       Alpha);
-
-	         DABFLOAT factor	= 2 * amplitudeLevel [index] / sigmaLevel [index];
-	         DABFLOAT realPart	=
-	                  	        factor * real (r1) * MAX_VITERBI;
-	         DABFLOAT imagPart	=
-	                  	        factor * imag (r1) * MAX_VITERBI;
-
-	         realPart		= constrain (realPart, -MAX_VITERBI,
-	                                                        MAX_VITERBI);
-	         imagPart		= constrain (imagPart, -MAX_VITERBI,
-	                                                        MAX_VITERBI);
-	   
-	         ibits [i]		= (int16_t) (-realPart);
-	         ibits [carriers + i]	= (int16_t) (-imagPart);
+//
+//	here we look at the error of the sample wrt a filtered "centerpoint"
+//	and give the X and Y the error as penalty
+//	works actually as best of the three
+	      {	 DABFLOAT base	= amplitudeLevel [index] * M_SQRT1_2;
+	         DABFLOAT err_x	= abs (base - abs (real (r1)));
+	         DABFLOAT err_y	= abs (base - abs (imag (r1)));
+	         ibits [i]		=
+	                 (int16_t) (-sign (real (r1)) *
+	                       (base - err_x) * MAX_VITERBI / base);
+	         ibits [carriers + i]	=
+	                 (int16_t) (-sign (imag (r1)) *
+	                       (base - err_y) * MAX_VITERBI / base);
 	         break;
 	      }
 	   }
+//
+//	an interesting observation (for me) was that using the
+//	offset in the angle as penalty measure gave less good results.
+//	Still one thing to further investigate
 	}
 
 

@@ -14,12 +14,12 @@ win32 {
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -30,13 +30,13 @@ RC_ICONS	=  qt-dab-RC.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
-
-DEFINES	+= __ESTIMATOR__
+DEFINES	+= __HAS_CHANNEL__
+#DEFINES	+= __ESTIMATOR__
 #
 #       For more parallel processing, uncomment the following
 #       defines
 #DEFINES	+= __MSC_THREAD__
-DEFINES		+= __THREADED_BACKEND
+DEFINES		+= __THREADED_BACKEND__
 
 #DEFINES	+= _UPLOAD_SCAN_RESULT_
 
@@ -118,6 +118,7 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./support/techdata.h \
+	   ./support/super-frame.h \
 	   ./support/clickable-label.h \
 	   ./support/icon-label.h \
 	   ./support/scan-handler.h \
@@ -192,6 +193,9 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/distances.h \
+	   ../includes/support/cacheElement.h \
+	   ../includes/support/settingnames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
@@ -256,6 +260,7 @@ FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+	   ./support/super-frame.cpp \
            ./support/clickable-label.cpp \
            ./support/icon-label.cpp \
 	   ./support/scan-handler.cpp \
@@ -321,6 +326,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
+	   ../src/support/distances.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -421,8 +427,8 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy
-CONFIG		+= hackrf
+CONFIG		+= airspy-2
+#CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
 #CONFIG		+= pluto-rxtx
@@ -477,7 +483,7 @@ isEmpty(GITHASHSTRING) {
 #	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 ##	LIBS		+= -liio
 ##	#CONFIG		+= extio
-#	CONFIG		+= airspy
+#	CONFIG		+= airspy-2
 #	CONFIG		+= rtl_tcp
 #	CONFIG		+= dabstick
 #	CONFIG		+= sdrplay-v2
@@ -493,7 +499,7 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= dabstick-win-v3
 #	TARGET		= qt-dab32-6.5Beta
 #	CONFIG		+= dabstick-win-v4
-	CONFIG		+= airspy
+	CONFIG		+= airspy-2
 	CONFIG		+= spyServer-16
 	CONFIG		+= spyServer-8
 	DESTDIR		= /usr/shared/w32-programs/windows-dab32-qt
@@ -894,14 +900,19 @@ preCompiled {
 	}
 #	INCLUDEPATH	+= /home/jan/curl
 	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/table-loader.h
-	SOURCES		+= ../../TII-CODES/table-loader.cpp
+	HEADERS		+= ../../TII-CODES/tii-reader.h
+	HEADERS		+= ../../TII-CODES/db-loader.h
+	SOURCES		+= ../../TII-CODES/tii-reader.cpp
+	SOURCES		+= ../../TII-CODES/db-loader.cpp
+	
 }
 
 tiiLib	{
 	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/table-loader.h
-	SOURCES		+= ../src/support/tii-library/table-loader.cpp
+	HEADERS		+= ../src/support/tii-library/tii-reader.h
+	HEADERS		+= ../src/support/tii-library/db-loader.h
+	SOURCES		+= ../src/support/tii-library/tii-reader.cpp
+	SOURCES		+= ../src/support/tii-library/db-loader.cpp
 }
 
 mapserver {

@@ -667,7 +667,7 @@ bool	isValid (QChar c) {
 bool	airspyHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = airspySettings -> value ("saveDir_xmlDump",
+QString saveDir = airspySettings -> value (SAVEDIR_XML,
                                            QDir::homePath ()). toString ();
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";

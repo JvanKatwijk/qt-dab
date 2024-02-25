@@ -36,7 +36,7 @@ DEFINES	+= __ESTIMATOR__
 #       For more parallel processing, uncomment the following
 #       defines
 #DEFINES	+= __MSC_THREAD__
-DEFINES		+= __THREADED_BACKEND
+DEFINES		+= __THREADED_BACKEND__
 
 #DEFINES	+= _UPLOAD_SCAN_RESULT_
 
@@ -189,6 +189,9 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/distances.h \
+           ../includes/support/cacheElement.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
@@ -316,6 +319,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
+	   ../src/support/distances.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
@@ -889,15 +893,18 @@ preCompiled {
 	LIBS		+= -lcurl
 	}
 #	INCLUDEPATH	+= /home/jan/curl
-	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/table-loader.h
-	SOURCES		+= ../../TII-CODES/table-loader.cpp
+	HEADERS         += ../../TII-CODES/tii-reader.h
+        HEADERS         += ../../TII-CODES/db-loader.h
+        SOURCES         += ../../TII-CODES/tii-reader.cpp
+        SOURCES         += ../../TII-CODES/db-loader.cpp
 }
 
 tiiLib	{
-	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/table-loader.h
-	SOURCES		+= ../src/support/tii-library/table-loader.cpp
+	INCLUDEPATH     += ../src/support/tii-library
+        HEADERS         += ../src/support/tii-library/tii-reader.h
+        HEADERS         += ../src/support/tii-library/db-loader.h
+        SOURCES         += ../src/support/tii-library/tii-reader.cpp
+        SOURCES         += ../src/support/tii-library/db-loader.cpp
 }
 
 mapserver {

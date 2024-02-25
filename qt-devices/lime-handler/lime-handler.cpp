@@ -512,7 +512,7 @@ bool	isValid (QChar c) {
 bool	limeHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = limeSettings -> value ("saveDir_xmlDump",
+QString saveDir = limeSettings -> value (SAVEDIR_XML,
                                            QDir::homePath ()). toString ();
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";

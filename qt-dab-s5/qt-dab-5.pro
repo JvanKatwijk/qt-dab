@@ -36,7 +36,7 @@ TRANSLATIONS = ../i18n/de_DE.ts
 #
 #V5 will only compile when MSC_THREAD is enables
 DEFINES        += __MSC_THREAD__
-DEFINES        +=  __THREADED_BACKEND
+DEFINES        +=  __THREADED_BACKEND__
 
 #DEFINES	+= _UPLOAD_SCAN_RESULT_
 
@@ -123,6 +123,7 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./support/techdata.h \
+	   ./support/super-frame.h \
 	   ./forms-v5/iq-scope/iqdisplay.h \
 	   ../ofdm-handler.h \
 	   ../eti-handler/eti-generator.h \
@@ -180,6 +181,9 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
+	   ../includes/support/distances.h \
+	   ../includes/support/cacheElement.h \
+	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
 	   ../includes/support/converter_48000.h \
 	   ../includes/support/process-params.h \
@@ -252,6 +256,7 @@ FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
 	   ./support/techdata.cpp \
+	   ./support/super-frame.cpp \
 	   ./forms-v5/iq-scope/iqdisplay.cpp \
 	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
@@ -300,6 +305,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
+	   ../src/support/distances.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -802,9 +808,11 @@ preCompiled {
 }
 
 tiiLib	{
-	INCLUDEPATH	+= ../src/support/tii-library
-	HEADERS		+= ../src/support/tii-library/table-loader.h
-	SOURCES		+= ../src/support/tii-library/table-loader.cpp
+	INCLUDEPATH     += ../src/support/tii-library
+        HEADERS         += ../src/support/tii-library/tii-reader.h
+        HEADERS         += ../src/support/tii-library/db-loader.h
+        SOURCES         += ../src/support/tii-library/tii-reader.cpp
+        SOURCES         += ../src/support/tii-library/db-loader.cpp
 }
 
 mapserver {

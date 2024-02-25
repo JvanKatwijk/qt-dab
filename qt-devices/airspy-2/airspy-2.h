@@ -24,7 +24,6 @@
 #include	<mutex>
 #include	"dab-constants.h"
 #include	"ringbuffer.h"
-#include	"fir-filters.h"
 #include	"device-handler.h"
 #include	"ui_airspy-widget.h"
 #ifndef	__MINGW32__
@@ -87,7 +86,7 @@ extern "C"  {
  typedef int (*pfn_airspy_set_sensitivity_gain)(struct airspy_device* device, uint8_t value);
 }
 
-class airspy_2: public QObject,
+class airspy_2: // public QObject,
 	              public deviceHandler, public Ui_airspyWidget {
 Q_OBJECT
 public:
@@ -115,9 +114,6 @@ private:
 	void		record_gainSettings	(int, int);
 	void		restore_gainSliders	(int, int);
 	void		restore_gainSettings	(int);
-	LowPassFIR	*theFilter;
-	bool		filtering;
-	int		currentDepth;
 	QSettings	*airspySettings;
 private slots:
 	void		set_linearity		(int value);
@@ -130,7 +126,6 @@ private slots:
 	void		set_rf_bias		(int);
 	void		switch_tab		(int);
 	void		set_xmlDump		();
-	void		set_filter		(int);
 	void		handle_convQuality	(int);
 signals:
 	void		new_tabSetting		(int);

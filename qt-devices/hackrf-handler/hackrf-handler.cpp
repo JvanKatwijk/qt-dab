@@ -565,7 +565,7 @@ bool	isValid (QChar c) {
 bool	hackrfHandler::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = hackrfSettings -> value ("saveDir_xmlDump",
+QString saveDir = hackrfSettings -> value (SAVEDIR_XML,
 	                                   QDir::homePath ()). toString ();
 	if ((saveDir != "") && (!saveDir. endsWith ("/")))
 	   saveDir += "/";

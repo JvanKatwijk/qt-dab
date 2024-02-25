@@ -44,7 +44,7 @@
 	                                            audiobuffer,
 	                                            databuffer,
 	                                            frameBuffer, dump) 
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 	                                    ,freeSlots (NUMBER_SLOTS) 
 #endif 
 	                                          {
@@ -86,7 +86,7 @@ int32_t i, j;
 	   shiftRegister [0] = b;
 	   disperseVector [i] = b;
 	}
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 //	for local buffering the input, we have
 	nextIn				= 0;
 	nextOut				= 0;
@@ -98,7 +98,7 @@ int32_t i, j;
 }
 
 	Backend::~Backend () {
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 	running. store (false);
 	while (this -> isRunning())
 	   usleep (1000);
@@ -107,7 +107,7 @@ int32_t i, j;
 
 int32_t	Backend::process	(int16_t *v, int16_t cnt) {
 	(void)cnt;
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 	while (!freeSlots. tryAcquire (1, 200))
 	   if (!running)
 	      return 0;
@@ -131,7 +131,7 @@ int16_t	i;
 	}
 
 	interleaverIndex = (interleaverIndex + 1) & 0x0F;
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 	nextOut = (nextOut + 1) % NUMBER_SLOTS;
 	freeSlots. release (1);
 #endif
@@ -150,7 +150,7 @@ int16_t	i;
 	driver. addtoFrame (outV);
 }
 
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 void	Backend::run() {
 
 	while (running. load()) {
@@ -164,7 +164,7 @@ void	Backend::run() {
 
 //	It might take a msec for the task to stop
 void	Backend::stopRunning() {
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 	running = false;
 	while (this -> isRunning())
 	   usleep (1);

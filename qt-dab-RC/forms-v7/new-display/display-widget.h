@@ -29,7 +29,7 @@
 #include	<QVector>
 #include	<QByteArray>
 #include	"fft-handler.h"
-
+#include	"super-frame.h"
 #include	"ui_scopewidget.h"
 
 #define	SHOW_SPECTRUM		0
@@ -78,13 +78,15 @@ public:
 	void	show_cpuLoad	(float);
 	void	show_transmitters	(QByteArray &);
 
+	void	show_dcOffset	(float);
+	void	set_dcRemoval	(bool);
 	void	set_syncLabel	(bool);
 	void	show		();
 	void	hide		();
 	bool	isHidden	();
 
 private:
-	QFrame			myFrame;
+	superFrame		myFrame;
 	fftHandler		theFFT;
 	QSettings		*dabSettings_p;
 	spectrumScope		*spectrumScope_p;
@@ -103,7 +105,8 @@ private slots:
 	void		rightMouseClick	();
 	void		handle_logScope_checkBox	(int);
 signals:
-	void		mouseClick ();
+	void		mouseClick	();
+	void		frameClosed	();
 };
 
 

@@ -31,6 +31,8 @@
 #include	"skin-handler.h"
 #include	"radio.h"
 
+#include	"settingNames.h"
+
 static struct {
 	QString	decoderName;
 	int	decoderKey;
@@ -42,26 +44,30 @@ static struct {
 };
 
 	configHandler::configHandler (RadioInterface *parent,
-	                              QSettings *settings) {
+	                              QSettings *settings):
+	                                     myFrame (nullptr) {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
-	this -> setupUi (this);
-	set_position_and_size (this, "configHandler" );
-
+	this -> setupUi (&myFrame);
+	set_position_and_size (&myFrame, CONFIG_HANDLER);
+	hide ();
+	connect (&myFrame, SIGNAL (frameClosed ()),
+	         this, SIGNAL (frameClosed ()));
 //	inits of checkboxes etc in the configuration widget,
 //	note that ONLY the GUI is set, values are not used
-	int x = dabSettings -> value ("muteTime", 2). toInt ();
+	int x = dabSettings -> value (MUTE_TIME_SETTING, 10). toInt ();
 	this	-> muteTimeSetting -> setValue (x);
 
         int fontSize    =  
-                 dabSettings  -> value ("fontSize", 10). toInt ();
+                 dabSettings  -> value (FONT_SIZE_SETTING, 10). toInt ();
 	this	-> fontSizeSelector -> setValue (fontSize);
 
-	x = dabSettings -> value ("switchDelay",
+	x = dabSettings -> value (SWITCH_VALUE_SETTING,
 	                               DEFAULT_SWITCHVALUE). toInt ();
 	this -> switchDelaySetting -> setValue (x);
 
-	x = dabSettings -> value ("serviceOrder", ALPHA_BASED). toInt ();
+	x = dabSettings -> value (SERVICE_ORDER_SETTING,
+	                               ALPHA_BASED). toInt ();
 	if (x == ALPHA_BASED)
 	   this -> orderAlfabetical -> setChecked (true);
 	else
@@ -72,48 +78,49 @@ static struct {
 	serviceOrder	= x;
 
 //	first row of checkboxes
-	x = dabSettings -> value ("saveService", 0). toInt ();
-	if (x != 0)
-	   this	-> saveServiceSelector -> setChecked (true);
+//	unused element
 //	logger is set per process, not kept
-	x = dabSettings -> value ("epg2xml", 0). toInt ();
+	x = dabSettings -> value (EPG2XML_SETTING, 0). toInt ();
 	if (x != 0)
 	   this -> epg2xmlSelector -> setChecked (true);
 //
 //	second row of checkboxes
-	bool dm = dabSettings -> value ("tii_detector", 0). toInt () == 1;
+	bool dm = dabSettings -> value (TII_DETECTOR_SETTING,
+	                                           0). toInt () == 1;
 	this -> new_tiiMode_selector -> setChecked (dm);
 
-	bool b	= dabSettings	-> value ("utcSelector", 0). toInt () == 1;
+	bool b	= dabSettings	-> value (UTC_SELECTOR_SETTING,
+	                                           0). toInt () == 1;
 	this -> utc_selector -> setChecked (b);
 
-	b = dabSettings -> value ("onTop", 0). toInt () == 1;
+	b = dabSettings -> value (ON_TOP_SETTING, 0). toInt () == 1;
 	this ->  onTop -> setChecked (b);
 //
 //	third row of checkboxes
-	b = dabSettings -> value ("closeDirect", 0). toInt () == 1;
+	b = dabSettings -> value (CLOSE_DIRECT_SETTING, 0). toInt () == 1;
 	this -> closeDirect_selector -> setChecked (b);
 
-	b = dabSettings -> value ("epgFlag", 0). toInt () == 1;
+	b = dabSettings -> value (EPG_FLAG_SETTING, 0). toInt () == 1;
 	this -> epg_selector -> setChecked (b);
 
-	b = dabSettings -> value ("localBrowser", 1). toInt () == 1;
+	b = dabSettings -> value (LOCAL_BROWSER_SETTING, 1). toInt () == 1;
 	this -> localBrowserSelector -> setChecked (b);
 //
 //	fourth row of checkboxes
 //	dcRemoval	not connected yet
 
-	b = dabSettings -> value ("localTransmitters", 0). toInt () == 1;
+	b = dabSettings -> value (LOCAL_TRANSMITTERS_SETTING,
+	                                           0). toInt () == 1;
 	this -> localTransmitterSelector -> setChecked (b);
 //
 //	fifth row of checkboxes
-	b = dabSettings -> value ("clearScanResult", 1). toInt () == 1;
+	b = dabSettings -> value (CLEAR_SCAN_RESULT_SETTING, 1). toInt () == 1;
 	this -> clearScan_selector -> setChecked (b);
 
-	b = dabSettings -> value ("saveSlides", 0). toInt () == 1;
+	b = dabSettings -> value (SAVE_SLIDES_SETTING, 0). toInt () == 1;
 	this	-> saveSlides -> setChecked (b);
 
-	b = dabSettings -> value ("transmitterNames", 0). toInt () == 1;
+	b = dabSettings -> value (TRANSMITTER_NAMES_SETTING, 0). toInt () == 1;
 	this -> saveTransmittersSelector -> setChecked (b);
 //
 #ifndef	__MSC_THREAD__
@@ -126,12 +133,29 @@ static struct {
 }
 
 	configHandler::~configHandler	() {
-	dabSettings	-> beginGroup ("configHandler");
-	dabSettings	-> setValue ("configHandler-x", this -> pos (). x ());
-	dabSettings	-> setValue ("configHandler-y", this -> pos (). y ());
-	dabSettings	-> setValue ("configHandler-w", this -> size (). width ());
-	dabSettings	-> setValue ("configHandler-h", this -> size (). height ());
+	QString handlerName = CONFIG_HANDLER;
+	dabSettings	-> beginGroup (handlerName);
+	dabSettings	-> setValue (handlerName + "-x",
+	                                           myFrame. pos (). x ());
+	dabSettings	-> setValue (handlerName + "-y",
+	                                            myFrame. pos (). y ());
+	dabSettings	-> setValue (handlerName + "-w",
+	                                            myFrame. size (). width ());
+	dabSettings	-> setValue (handlerName + "-h",
+	                                            myFrame. size (). height ());
 	dabSettings	-> endGroup ();
+}
+
+void	configHandler::show		() {
+	myFrame. show ();
+}
+
+void	configHandler::hide		() {
+	myFrame. hide ();
+}
+
+bool	configHandler::isHidden		() {
+	return myFrame. isHidden ();
 }
 
 void	configHandler::setDeviceList	(const QStringList &sl) {
@@ -171,7 +195,9 @@ void	configHandler::set_connections () {
 	         myRadioInterface, SLOT (set_transmitters_local (bool)));
 	connect (this, SIGNAL (set_tii_detectorMode (bool)),
 	         myRadioInterface, SLOT (set_tii_detectorMode (bool)));
-
+	connect (this, SIGNAL (set_dcRemoval (bool)),
+	         myRadioInterface, SLOT (handle_dcRemovalSelector (bool)));
+	
 	connect (fontButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_fontButton ()));
 	connect (fontColorButton, SIGNAL (rightClicked ()),
@@ -237,6 +263,9 @@ void	configHandler::set_connections () {
 	         myRadioInterface, SLOT (handle_set_coordinatesButton ()));
 	connect (loadTableButton, SIGNAL (clicked ()),
 	         myRadioInterface, SLOT (handle_loadTable ()));
+//
+//	however, by default loadTable is disables
+	loadTableButton	-> setEnabled (false);
 	connect (dumpButton, SIGNAL (clicked ()),
 	         myRadioInterface, SLOT (handle_sourcedumpButton ()));
 	connect (skinButton, SIGNAL (clicked ()),
@@ -244,8 +273,6 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
-	connect (saveServiceSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_saveServiceSelector (int)));
 	connect (logger_selector, SIGNAL (stateChanged (int)),
 	         myRadioInterface, SLOT (handle_LoggerButton (int)));
 //	the epg2xmlSelector is just polled, no need to react on an event
@@ -254,7 +281,9 @@ void	configHandler::set_connections () {
 	connect (new_tiiMode_selector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_tii_detectorMode (int)));
 
-//	utcSelector is just polled, no need to react on an event here
+	connect (utc_selector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_utc_selector (int)));
+
 	connect (onTop, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_onTop (int)));
 //
@@ -267,7 +296,7 @@ void	configHandler::set_connections () {
 //
 //	fourth line
 	connect (dcRemovalSelector, SIGNAL (stateChanged (int)),
-	         myRadioInterface, SLOT (handle_dcRemovalSelector (int)));
+	         this, SLOT (handle_dcRemovalSelector (int)));
 //	
 	connect (etiActivated_selector, SIGNAL (stateChanged (int)),
 	         myRadioInterface, SLOT (handle_eti_activeSelector (int)));
@@ -293,7 +322,7 @@ void	configHandler::set_connections () {
 /////////////////////////////////////////////////////////////////////////
 //	
 void	configHandler::set_Colors () {
-	dabSettings	-> beginGroup ("colorSettings");
+	dabSettings	-> beginGroup (COLOR_SETTINGS);
 
 QString fontButton_font	=
 	   dabSettings -> value (FONT_BUTTON + "_font",
@@ -502,7 +531,7 @@ QColor	color;
 	QString buttonColor	= buttonName + "_color";
 	QString buttonFont	= buttonName + "_font";
 
-	dabSettings	-> beginGroup ("colorSettings");
+	dabSettings	-> beginGroup (COLOR_SETTINGS);
 	dabSettings	-> setValue (buttonColor, baseColor. name ());
 	dabSettings	-> setValue (buttonFont, textColor. name ());
 	dabSettings	-> endGroup ();
@@ -521,11 +550,11 @@ void	configHandler::set_position_and_size (QWidget *w,
 }
 
 void	configHandler::handle_muteTimeSetting	(int newV) {
-	dabSettings	-> setValue ("muteTime", newV);
+	setConfig (MUTE_TIME_SETTING, newV);
 }
 
 void	configHandler::handle_switchDelaySetting	(int newV) {
-	dabSettings	-> setValue ("switchDelay", newV);
+	setConfig (SWITCH_VALUE_SETTING, newV);
 }
 
 void	configHandler::handle_orderAlfabetical		() {
@@ -544,21 +573,18 @@ void	configHandler::handle_ordersubChannelIds	() {
 }
 
 void	configHandler::handle_portSelector () {
-mapPortHandler theHandler (dabSettings);
-	(void)theHandler. QDialog::exec();
+QString oldPort	= dabSettings -> value (MAP_PORT_SETTING, "8080"). toString ();
+mapPortHandler theHandler (oldPort);
+	int portNumber = theHandler. QDialog::exec ();
+	if (portNumber != 0)
+	   setConfig (MAP_PORT_SETTING, QString::number(portNumber));
 }
 
 void	configHandler::handle_skinSelector     () {
 skinHandler theSkins;
 	int skinIndex = theSkins. QDialog::exec ();
 	QString skinName = theSkins. skins. at (skinIndex);
-	dabSettings -> setValue ("skin", skinName); 
-}
-
-void	configHandler::handle_saveServiceSelector	(int d) {
-	(void)d;
-	dabSettings	-> setValue ("saveService",
-	                             this ->  saveServiceSelector -> isChecked () ? 1 : 0);
+	setConfig (SKIN_SETTING, skinName); 
 }
 
 void	configHandler::handle_onTop	(int d) {
@@ -566,24 +592,24 @@ bool onTop = false;
 	(void)d;
 	if (this ->  onTop -> isChecked ())
 	   onTop = true;
-	dabSettings -> setValue ("onTop", onTop ? 1 : 0);
+	setConfig (ON_TOP_SETTING, onTop ? 1 : 0);
 }
 
 void	configHandler::handle_epgSelector	(int x) {
 	(void)x;
-	dabSettings -> setValue ("epgFlag", 
+	setConfig (EPG_FLAG_SETTING, 
 	                         this ->  epg_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_localBrowser	(int d) {
 	(void)d;
-	dabSettings -> setValue ("localBrowser", 
+	setConfig (LOCAL_BROWSER_SETTING, 
 	               this ->  localBrowserSelector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_localTransmitterSelector (int c) {
 	(void)c;
-	dabSettings	-> setValue ("localTransmitters", 
+	setConfig (LOCAL_TRANSMITTERS_SETTING, 
 	               this ->  localTransmitterSelector -> isChecked () ? 1 : 0);
 	set_transmitters_local (
 	               this -> localTransmitterSelector -> isChecked ());
@@ -591,13 +617,13 @@ void	configHandler::handle_localTransmitterSelector (int c) {
 
 void	configHandler::handle_clearScan_Selector (int c) {
 	(void)c;
-	dabSettings -> setValue ("clearScanResult",
+	setConfig (CLEAR_SCAN_RESULT_SETTING,
 	               this ->  clearScan_selector -> isChecked () ? 1 : 0);
 }
 
 void	configHandler::handle_saveSlides	(int x) {
 	(void)x;
-	dabSettings -> setValue ("saveSlides", 
+	setConfig (SAVE_SLIDES_SETTING, 
 	                         this ->  saveSlides -> isChecked () ? 1 : 0);
 }
 
@@ -613,22 +639,24 @@ int	decoder	= 0100;
 void	configHandler::handle_saveTransmittersSelector	(int d) {
 	int transmitterNames =
 	             saveTransmittersSelector -> isChecked () ? 1 : 0;
-        dabSettings -> setValue ("transmitterNames", transmitterNames);
+        setConfig (TRANSMITTER_NAMES_SETTING, transmitterNames);
 }
 
 void	configHandler::handle_tii_detectorMode (int d) {
 	(void)d;
 	set_tii_detectorMode (new_tiiMode_selector -> isChecked () );
- 	dabSettings	-> setValue ("tii_detector",
+ 	setConfig (TII_DETECTOR_SETTING,
 	               new_tiiMode_selector -> isChecked () ? 1 : 0);
+}
+
+void	configHandler::handle_utc_selector	(int d) {
+	(void)d;
+	setConfig (UTC_SELECTOR_SETTING, 
+	               utc_selector -> isChecked () ? 1 : 0);
 }
 
 int	configHandler::get_serviceOrder	() {
 	return serviceOrder;
-}
-
-bool	configHandler::saveService_active	() {
-	return saveServiceSelector	-> isChecked ();
 }
 
 bool	configHandler::tii_detector_active	() {
@@ -756,3 +784,19 @@ void	configHandler::showLoad		(float load) {
 	loadDisplay	-> display (load);
 }
 
+void	configHandler::setConfig (const QString &s, int d) {
+	dabSettings	-> setValue (s, d);
+}
+
+void	configHandler::setConfig (const QString &s, const QString &d) {
+	dabSettings	-> setValue (s, d);
+}
+
+void	configHandler::handle_dcRemovalSelector	(int d) {
+	(void)d;
+	set_dcRemoval (dcRemovalSelector -> isChecked ());
+}
+
+void	configHandler::enable_loadLib	() {
+	loadTableButton	-> setEnabled (true);
+}

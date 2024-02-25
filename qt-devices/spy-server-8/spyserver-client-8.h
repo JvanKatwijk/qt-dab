@@ -42,7 +42,7 @@
 #include	"spy-handler-8.h"
 
 
-class	spyServer_client_8: public QObject,
+class	spyServer_client_8: //public QObject,
 	                    public deviceHandler, Ui_spyServer_widget_8 {
 Q_OBJECT
 public:

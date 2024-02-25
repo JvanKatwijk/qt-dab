@@ -219,6 +219,10 @@ void	soapyHandler::setGain	(int32_t gainValue) {
 	}
 }
 
+bool	soapyHandler::isFileInput	() {
+	return true;
+}
+
 void	soapyHandler::setAntenna (const std::string& antenna) {
 //        try {
 //            SoapySDRDevice_setAntenna (m_device, SOAPY_SDR_RX, 0, antenna);

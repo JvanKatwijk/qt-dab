@@ -34,11 +34,10 @@
 #include	"filereader-widget.h"
 #include	"wav-reader.h"
 
-class	wavFiles: public QObject,
-	          public deviceHandler, public filereaderWidget {
+class	wavFiles: public deviceHandler, public filereaderWidget {
 Q_OBJECT
 public:
-			wavFiles	();
+			wavFiles	(const QString &);
 	       		~wavFiles	();
 	int32_t		getSamples	(std::complex<float> *, int32_t);
 	int32_t		Samples		();
@@ -52,7 +51,6 @@ private:
 	SNDFILE		*filePointer;
 	wavReader	*readerTask;
 	std::atomic<bool>	running;
-	QString		getFileName	();
 public slots:
 	void		setProgress	(int, float);
 };

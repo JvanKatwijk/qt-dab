@@ -44,6 +44,7 @@ typedef struct {
 	int	distance;
 	int	azimuth;
 	float	power;
+	float	height;
 } httpData;
 
 class	httpHandler: public QObject {
@@ -59,13 +60,17 @@ public:
 	void	start		();
 	void	stop		();
 	void	run		();
+	void	putData		(uint8_t, position);
 	void	putData		(uint8_t	type,
 	                         position	target,
 	                         QString transmittername,
 	                         QString channelName,
 	                         QString dateTime,
 	                         int ttiId,
-	                         int distance, int azimuth, float power);
+	                         int distance,
+	                         int azimuth,
+	                         float power,
+	                         float height);
 private:
 	FILE			*saveFile;
 	QString			*saveName;

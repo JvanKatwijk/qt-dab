@@ -91,7 +91,7 @@ option(FDK_AAC OFF)
 #
 #	Since more than one backend may be active, activating this
 #	option makes that each backend runs in its own thread
-add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
+add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 #
 ########################################################################
 ########################################################################
@@ -193,6 +193,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 
 	set (${objectName}_HDRS
 	     ./radio.h
+	     ./support/techdata.h
+	     ./support/super-frame.h
 	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
@@ -249,6 +251,9 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/distances.h
+	     ../includes/support/cacheElement.h 
+	     ../includes.support/settingNames.h 
 	     ../includes.support/fft-handler.h 
 	     ../includes/support/converter_48000.h
 	     ../includes/support/ringbuffer.h
@@ -276,7 +281,9 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ,,.includes/support/http-handler.h
 	     ../includes/support/fir-filters.h
 	     ../includes/support/tii-mapper.h
-	     ../src/support/tii-library/table-loader.h
+	     ../src/support/tii-library/cacheElement.h
+	     ../src/support/tii-library/tii-reader.h
+	     ../src/support/tii-library/db-loader.h
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
              ../includes/support/buttons/normalpushbutton.h 
@@ -313,6 +320,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ./radio.cpp
 	     ./forms-v5/iq-scope/iqdisplay.cpp
 	     ./support/techdata.cpp
+	     ./support/super-frame.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -359,6 +367,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
+	     ../src/support/distances.cpp
 	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
@@ -390,7 +399,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/mapport.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/tii-mapper.cpp
-	     ../src/support/tii-library/table-loader.cpp
+	     ../src/support/tii-library/tii-reader.cpp
+	     ../src/support/tii-library/db-loader.cpp
 	     ../src/support/fir-filters.cpp
 	     ../src/scopes-qwt6/audio-display.cpp 
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
@@ -416,6 +426,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	set (${objectName}_MOCS
 	     ./radio.h
 	     ./support/techdata.h
+	     ./support/super-frame.h
 	     ./forms-v5/iq-scope/iqdisplay.h
 	     ../ofdm-handler.h
 	     ../includes/output/audio-player.h
@@ -470,6 +481,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../viewers/correlation-viewer/correlation-viewer.h 
  	     ../viewers/tii-viewer/tii-viewer.h
  	     ../viewers/snr-viewer/snr-viewer.h
+	     ../qt-devices/device-handler.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
 	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
@@ -603,7 +615,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	   add_definitions (-DHAVE_SDRPLAY_V2)
 	endif (SDRPLAY_V2)
 
-	if (SDRPLAY)
+	if (SDRPLAY_V3)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
@@ -921,7 +933,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	endif (USE_PORTAUDIO)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
-	             ../qt-devices/filereader-widget.ui)
+	             ../qt-devices/filereaders/filereader-widget.ui)
 
 	include_directories (
 	          ${SDRPLAY_INCLUDES}

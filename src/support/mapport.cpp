@@ -23,13 +23,13 @@
 #include	"mapport.h"
 #include	<QFormLayout>
 #include	<QVBoxLayout>
-#include	<QSettings>
 
-	mapPortHandler::mapPortHandler	(QSettings *dabSettings) {
-	this	-> dabSettings = dabSettings;
+
+	mapPortHandler::mapPortHandler	(QString &oldPort) {
 	mapPortText	= new QLabel (this);
 	mapPortText	-> setText ("Port Address for maps");
 	mapPortSetting	= new QLineEdit (this);	
+	mapPortSetting	-> setText (oldPort);
 	acceptButton	= new QPushButton ("accept");
 	QFormLayout	*layout = new QFormLayout;
 	layout		-> addWidget (mapPortText);
@@ -52,7 +52,10 @@
 }
 
 void	mapPortHandler::handle_acceptButton () {
-	dabSettings	-> setValue ("mapPort", mapPortSetting -> text ());
-	QDialog::done (0);
+int	portNumber	= 0;
+	try {
+		portNumber = mapPortSetting -> text (). toInt ();
+	} catch (...) {}
+	QDialog::done (portNumber);
 }
 

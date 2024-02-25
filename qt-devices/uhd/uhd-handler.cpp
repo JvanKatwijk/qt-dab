@@ -1,6 +1,5 @@
 #
 /*
- *
  *    Copyright (C) 2015
  *    Sebastian Held <sebastian.held@imst.de>
  *
@@ -101,6 +100,7 @@ void	uhd_streamer::run () {
 
 		uhdHandler::uhdHandler (QSettings * s) :
 	                                            Ui_uhdWidget (),
+	                                            myFrame (nullptr),
 	                                            uhdSettings (s) {
 
 std::vector<std::string> antList;

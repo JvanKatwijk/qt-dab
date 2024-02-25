@@ -106,7 +106,7 @@ public:
 	                                         RingBuffer<uint8_t> *, int);
 	void		set_tiiDetectorMode	(bool);
 	void		handle_iqSelector	();
-	void		handle_dcRemovalSelector	(bool);
+	void		set_dcRemoval		(bool);
 	void		handle_decoderSelector	(int);
 private:
 	RadioInterface		*radioInterface_p;

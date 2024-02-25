@@ -26,13 +26,7 @@
 #include        "radio.h"
 #include	"dab-constants.h"
 #include	"findfilenames.h"
-
-//static
-//const char *uep_rates  [] = {nullptr, "7/20", "2/5", "1/2", "3/5", "3/4"};
-//static
-//const char *eep_Arates [] = {nullptr, "1/4",  "3/8", "1/2", "3/4"};
-//static
-//const char *eep_Brates [] = {nullptr, "4/9",  "4/7", "4/6", "4/5"};
+#include	"settingNames.h"
 
 	contentTable::contentTable (RadioInterface *theRadio, 
 	                                        QSettings *s,
@@ -42,11 +36,16 @@
 	this	-> dabSettings	= s;
 	this	-> channel	= channel;
 	this	-> columns	= cols;
-	dabSettings	-> beginGroup ("contentTable");
-	int x		= dabSettings -> value ("position-x", 200). toInt ();
-	int y		= dabSettings -> value ("position-y", 200). toInt ();
-	int wi		= dabSettings -> value ("table-width", 200). toInt ();
-	int hi		= dabSettings -> value ("table-height", 200). toInt ();
+	QString headerName	= CONTENT_TABLE;
+	dabSettings	-> beginGroup (headerName);
+	int x		= dabSettings -> value (headerName + "-x",
+	                                                   200). toInt ();
+	int y		= dabSettings -> value (headerName + "-y",
+	                                                   200). toInt ();
+	int wi		= dabSettings -> value (headerName + "-w",
+	                                                   200). toInt ();
+	int hi		= dabSettings -> value (headerName + "h",
+	                                                   200). toInt ();
 	myWidget        = new QScrollArea (nullptr);
         myWidget        -> resize (wi, hi);
         myWidget        -> setWidgetResizable(true);
@@ -69,11 +68,16 @@
 }
 
 	contentTable::~contentTable () {
-	dabSettings	-> beginGroup ("contentTable");
-	dabSettings	-> setValue ("position-x", myWidget -> pos (). x ());
-	dabSettings	-> setValue ("position-y", myWidget -> pos (). y ());
-	dabSettings	-> setValue ("table-width", myWidget ->  width ());
-	dabSettings	-> setValue ("table-height", myWidget -> height ());
+	QString	headerName	= CONTENT_TABLE;
+	dabSettings	-> beginGroup (headerName);
+	dabSettings	-> setValue (headerName + "-x",
+	                                         myWidget -> pos (). x ());
+	dabSettings	-> setValue (headerName + "-y",
+	                                         myWidget -> pos (). y ());
+	dabSettings	-> setValue (headerName + "-w",
+	                                         myWidget ->  width ());
+	dabSettings	-> setValue (headerName + "=h",
+	                                         myWidget -> height ());
 	dabSettings	-> endGroup ();
 	clearTable ();
         delete  contentWidget;

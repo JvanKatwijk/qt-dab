@@ -28,20 +28,24 @@
 #include	<QString>
 #include	<QStringList>
 #include	<QPushButton>
+#include	"super-frame.h"
 class		RadioInterface;
 class		QSettings;
 //
 //	In this version, a separate config handler is introduced
 //	that - as the name suggests - controls the configWidget
 
-class	configHandler: public QWidget, private Ui_configWidget {
+class	configHandler: public QObject, public Ui_configWidget {
 Q_OBJECT
 public:
 		configHandler		(RadioInterface *parent,
 	                                 QSettings *settings);
 		~configHandler		();
 	
-	
+
+	void	show			();
+	void	hide			();
+	bool	isHidden		();
 	void	set_connections		();
 //
 //	the value extractors
@@ -49,7 +53,6 @@ public:
 	int	switchDelayValue	();
 	int	muteValue		();
 	bool	closeDirect_active	();
-	bool	saveService_active	();
 	bool	tii_detector_active	();
 	bool	utcSelector_active	();
 	bool	epg_automatic_active	();
@@ -78,14 +81,21 @@ public:
 	int	init_streamTable	(const QString &);
 	void	connect_streamTable	();
 	QString	currentStream		();
+
+	void	enable_loadLib		();
 private:
 	RadioInterface	*myRadioInterface;
 	QSettings	*dabSettings;
+	superFrame	myFrame;
 	int		serviceOrder;
-	void	set_Colors		();
-	void	set_buttonColors	(QPushButton *b,
-	                                 const QString &buttonName);
-	void	set_position_and_size	(QWidget *, const QString &);
+	void		set_Colors		();
+	void		set_buttonColors	(QPushButton *b,
+	                                         const QString &buttonName);
+	void		set_position_and_size	(QWidget *, const QString &);
+
+	void		setConfig		(const QString &, int);
+	void		setConfig		(const QString &,
+	                                           const QString &);
 private slots:
 //	
 //	first the color setters
@@ -112,11 +122,12 @@ private slots:
 	void	handle_skinSelector		();
 	void	handle_onTop			(int);
 	void	handle_epgSelector		(int);
+	void	handle_dcRemovalSelector	(int);
 	void	handle_tii_detectorMode		(int);
+	void	handle_utc_selector		(int);
 	void	handle_localBrowser		(int);
 	void	handle_localTransmitterSelector		(int);
 	void	handle_clearScan_Selector	(int);
-	void	handle_saveServiceSelector	(int);
 	void	handle_saveSlides		(int);
 	void	handle_decoderSelector		(const QString &s);
 	void	handle_saveTransmittersSelector	(int);
@@ -132,5 +143,7 @@ signals:
 	void	handle_fontSizeSelect	(int);
 
 	void	set_serviceOrder	(int);
+	void	set_dcRemoval		(bool);
+	void	frameClosed		();
 };
 

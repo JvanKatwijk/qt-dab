@@ -31,6 +31,8 @@
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
+#define	DISPLAY_WIDGET_SETTINGS	"displayWidget"
+
 	displayWidget::displayWidget	(RadioInterface	*mr,
 	                                 QSettings	*dabSettings):
 	                                         myFrame (nullptr),
@@ -38,18 +40,23 @@
 	                                         dabSettings_p (dabSettings) {
 	(void)mr;
 int	sliderValue;
-	dabSettings_p	-> beginGroup ("displayWidget");
-	int x   = dabSettings_p -> value ("position-x", 100). toInt ();
-        int y   = dabSettings_p -> value ("position-y", 100). toInt ();
-	int w	= dabSettings_p -> value ("width", 150). toInt ();
-	int h	= dabSettings_p -> value ("height", 120). toInt ();
+	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
+	dabSettings_p	-> beginGroup (settingsHeader);
+	int x   = dabSettings_p -> value (settingsHeader + "-x", 100). toInt ();
+        int y   = dabSettings_p -> value (settingsHeader + "-y", 100). toInt ();
+	int w	= dabSettings_p -> value (settingsHeader + "-w", 150). toInt ();
+	int h	= dabSettings_p -> value (settingsHeader + "-h", 120). toInt ();
 	dabSettings_p	-> endGroup ();
         setupUi (&myFrame);
 	myFrame. resize (QSize (w, h));
         myFrame. move (QPoint (x, y));
+	connect (&myFrame, SIGNAL (frameClosed ()),
+	         this, SIGNAL (frameClosed ())); 
 //
 	myFrame. hide ();
 
+	dcOffset_display	-> hide ();
+	dcOffset_label		-> hide ();
 //	the "workers"
 	spectrumScope_p		= new spectrumScope	(spectrumDisplay,
 	                                                512, dabSettings_p);
@@ -69,7 +76,7 @@ int	sliderValue;
 	                                                512, 50);
 //
 //	and the settings for the sliders:
-	dabSettings_p		-> beginGroup ("displayWidget");
+	dabSettings_p		-> beginGroup (DISPLAY_WIDGET_SETTINGS);
 	sliderValue		= dabSettings_p -> value ("spectrumSlider",
 	                                                   30). toInt ();
 	spectrumSlider		-> setValue (sliderValue);
@@ -112,13 +119,15 @@ int	sliderValue;
 }
 
 	displayWidget::~displayWidget () {
-	dabSettings_p	-> beginGroup ("displayWidget");
-        dabSettings_p	-> setValue ("position-x", myFrame. pos (). x ());
-        dabSettings_p	-> setValue ("position-y", myFrame. pos (). y ());
-
+	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
+	dabSettings_p	-> beginGroup (settingsHeader);
+        dabSettings_p	-> setValue (settingsHeader + "-x",
+	                                             myFrame. pos (). x ());
+        dabSettings_p	-> setValue (settingsHeader + "-y",
+	                                             myFrame. pos (). y ());
 	QSize size	= myFrame. size ();
-	dabSettings_p	-> setValue ("width", size. width ());
-	dabSettings_p	-> setValue ("height", size. height ());
+	dabSettings_p	-> setValue (settingsHeader + "-w", size. width ());
+	dabSettings_p	-> setValue (settingsHeader + "-h", size. height ());
 	
 	dabSettings_p	-> setValue ("iqSliderValue",
 	                               scopeSlider -> value ());
@@ -455,6 +464,21 @@ void	displayWidget::set_syncLabel	(bool b) {
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : green}");
 	else
 	   syncLabel    -> setStyleSheet ("QLabel {background-color : yellow}");              
+}
+
+void	displayWidget::show_dcOffset	(float dcOffset) {
+	dcOffset_display	-> display (dcOffset);
+}
+
+void	displayWidget::set_dcRemoval	(bool b) {
+	if (b) {
+	   dcOffset_display	-> show ();
+	   dcOffset_label	-> show ();
+	}
+	else {
+	   dcOffset_display	-> hide ();
+	   dcOffset_label	-> hide ();
+	}
 }
 
 void	displayWidget::show () {

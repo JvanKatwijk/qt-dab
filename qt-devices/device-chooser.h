@@ -37,6 +37,8 @@ public:
 	deviceHandler	*createDevice	(const QString &, const QString &);
 private:
 
+	QString		getFileName	(const QString &);
+	deviceHandler	*_createDevice	(const QString &, const QString &);
 	class	deviceItem {
 	public:
 		QString	deviceName;

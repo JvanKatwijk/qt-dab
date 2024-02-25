@@ -67,6 +67,9 @@
        </item>
        <item>
         <widget class="QSpinBox" name="fontSizeSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="minimum">
           <number>8</number>
          </property>
@@ -103,6 +106,9 @@
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="label_2">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>switch time (in seconds)</string>
            </property>
@@ -117,6 +123,9 @@
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>mute time (in minutes)</string>
            </property>
@@ -128,6 +137,9 @@
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
           <widget class="QLabel" name="label_3">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The CPU load is an indication of the load when executing the program. The load tells the total load on the CPU, i.e. inclusing the load of other programs that might be running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="text">
             <string>CPU load</string>
            </property>
@@ -331,10 +343,10 @@
      <item row="0" column="0">
       <widget class="QCheckBox" name="saveServiceSelector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;save service on exit&amp;quot;  selector instructs the software -when set - to save the channel:service combination (audio services only) and on program restart automatically switch to the  channel and start the service.&lt;/p&gt;&lt;p&gt;Note that is the service cannot be found, a warning will be shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This selector is currently not in use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>    save service on exit</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -420,8 +432,11 @@
      </item>
      <item row="3" column="0">
       <widget class="QCheckBox" name="dcRemovalSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;dc removal. Selecting this function adds a simple dc removal filter to the input stream. Due to inaccuraccies in the tuning and processing of the input (devices), a DC component may have&lt;/p&gt;&lt;p&gt;become part of the input stream. The dc removal filter eliminates most of it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
-        <string/>
+        <string>dc removal</string>
        </property>
       </widget>
      </item>
@@ -447,6 +462,9 @@
      </item>
      <item row="4" column="0">
       <widget class="QCheckBox" name="clearScan_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting the selector has effect when scanning. If set, the scan table is cleared whenever a&lt;/p&gt;&lt;p&gt;new scan (mode &amp;quot;scan once&amp;quot;) is started.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>clear scan</string>
        </property>

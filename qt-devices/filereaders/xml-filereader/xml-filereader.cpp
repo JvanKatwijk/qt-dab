@@ -36,11 +36,12 @@
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	xml_fileReader::xml_fileReader (): _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
+	xml_fileReader::xml_fileReader (const QString &fileName):
+	                      _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	setupUi	(&myFrame);
 	myFrame. show	();
 
-	QString fileName	= getFileName ();
+	this -> fileName	= fileName;
 	if (fileName == nullptr) 
 	   throw device_exception ("no file specified");
 
@@ -76,8 +77,8 @@
 	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
 	fprintf (stderr, "nrElements = %d\n",
 	             theDescriptor -> blockList [0].nrElements);
-	connect (continuousButton, SIGNAL (clicked ()),
-	         this, SLOT (handle_continuousButton ()));
+//	connect (continuousButton, SIGNAL (clicked ()),
+//	         this, SLOT (handle_continuousButton ()));
 	running. store (false);
 }
 
@@ -157,17 +158,5 @@ void	xml_fileReader::handle_continuousButton () {
 
 bool	xml_fileReader::isFileInput	() {
 	return true;
-}
-
-QString	xml_fileReader::getFileName () {
-
-	QString file	=
-	                 QFileDialog::getOpenFileName (nullptr,
-	                                               "Open file ...",
-	                                               QDir::homePath(),
-	                                               "xml data (*.*)");
-	if (file == QString (""))
-	   return nullptr;
-	return QDir::toNativeSeparators (file);
 }
 

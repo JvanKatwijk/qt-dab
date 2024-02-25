@@ -87,8 +87,7 @@ extern "C"  {
  typedef int (*pfn_airspy_set_sensitivity_gain)(struct airspy_device* device, uint8_t value);
 }
 
-class airspyHandler: public QObject,
-	              public deviceHandler, public Ui_airspyWidget {
+class airspyHandler: public deviceHandler, public Ui_airspyWidget {
 Q_OBJECT
 public:
 			airspyHandler		(QSettings *, const QString &);

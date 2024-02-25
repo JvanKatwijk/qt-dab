@@ -30,6 +30,10 @@
 #include	"xml-filewriter.h"
 #include	"device-exceptions.h"
 
+#define	AIRSPY_SETTINGS	"airspySettings"
+#define	TAB_SETTINGS	"tabSettings"
+#define	CONV_QUALITY	"convQuality"
+
 static int qualityTable [] = {
 	SRC_SINC_BEST_QUALITY, SRC_SINC_MEDIUM_QUALITY,
 	SRC_SINC_FASTEST, SRC_ZERO_ORDER_HOLD, SRC_LINEAR};
@@ -48,24 +52,23 @@ uint32_t samplerateCount;
 
 	this	-> airspySettings	= s;
 	this	-> recorderVersion	= recorderVersion;
-
-	airspySettings	-> beginGroup ("airspySettings");
-	int	x	= airspySettings -> value ("position-x", 100). toInt ();
-	int	y	= airspySettings -> value ("position-y", 100). toInt ();
-	airspySettings	-> endGroup ();
+	QString	settingsHeader		= AIRSPY_SETTINGS;
+	airspySettings	-> beginGroup (settingsHeader);
+	int	x	= airspySettings -> value (settingsHeader + "-x",
+	                                                   100). toInt ();
+	int	y	= airspySettings -> value (settingsHeader + "-y",
+	                                                   100). toInt ();
 	setupUi (&myFrame);
 	myFrame. move (QPoint (x, y));
 	myFrame. show		();
 //
 //	Since we have different tabs, with different sliders for
 //	gain setting, restoring the settings is a tedious task
-	airspySettings		-> beginGroup ("airspySettings");
-	int tab	= airspySettings -> value ("tabSettings", 2). toInt ();
+	int tab	= airspySettings -> value (TAB_SETTINGS, 2). toInt ();
 	airspySettings	-> endGroup ();
         tabWidget -> setCurrentIndex (tab);
 	restore_gainSliders  (200, tab);
 
-	theFilter		= nullptr;
 	device			= nullptr;
 	serialNumber		= 0;
 
@@ -144,14 +147,6 @@ uint32_t samplerateCount;
 	}
 
 	fprintf (stderr, "selected samplerate = %d\n", selectedRate);
-
-	airspySettings    -> beginGroup ("airspySettings");
-        currentDepth    = airspySettings  -> value ("filterDepth", 5). toInt ();
-        airspySettings    -> endGroup ();
-
-        filterDepth     -> setValue (currentDepth);
-	theFilter	= new LowPassFIR (currentDepth, 1560000 / 2, selectedRate);
-	filtering	= false;
 	result = my_airspy_set_samplerate (device, selectedRate);
 
 	if (result != AIRSPY_SUCCESS) {
@@ -164,8 +159,8 @@ uint32_t samplerateCount;
 	outputLimit		= inputLimit * ratio;
 	int err;
 	
-	airspySettings	-> beginGroup ("airspySettings");
-	int xxx			= airspySettings -> value ("convQuality", 0). toInt ();
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	int xxx		= airspySettings -> value (CONV_QUALITY, 0). toInt ();
 	airspySettings	-> endGroup ();
 	int convQuality		= 4;
 	if ((0 <= xxx) && (xxx < 5)) {
@@ -202,8 +197,6 @@ uint32_t samplerateCount;
 	         this, SLOT (switch_tab (int)));
 	connect (dumpButton, SIGNAL (clicked ()),
 	         this, SLOT (set_xmlDump ()));
-	connect (filterSelector, SIGNAL (stateChanged (int)),
-	         this, SLOT (set_filter (int)));
 	connect (this, SIGNAL (new_tabSetting (int)),
 	         tabWidget, SLOT (setCurrentIndex (int)));
 	connect (convQuality_setter, SIGNAL (valueChanged (int)),
@@ -221,12 +214,14 @@ uint32_t samplerateCount;
 	stopReader ();
 	myFrame. hide ();
 	src_delete	(converter);
-	filtering	= false;
-	airspySettings	-> beginGroup ("airspySettings");
-        airspySettings -> setValue ("position-x", myFrame. pos (). x ());
-        airspySettings -> setValue ("position-y", myFrame. pos (). y ());
+	QString	settingsHeader	= AIRSPY_SETTINGS;
+	airspySettings	-> beginGroup (settingsHeader);
+        airspySettings -> setValue (settingsHeader + "-x",
+	                                          myFrame. pos (). x ());
+        airspySettings -> setValue (settingsHeader + "-y",
+	                                          myFrame. pos (). y ());
 
-	airspySettings	-> setValue ("tabSettings",
+	airspySettings	-> setValue (TAB_SETTINGS,
 	                                   tabWidget -> currentIndex ());
 	airspySettings	-> endGroup ();
 	if (device != nullptr) {
@@ -242,16 +237,8 @@ uint32_t samplerateCount;
 	             my_airspy_error_name((airspy_error)result), result);
 	   }
 	}
-	if (theFilter != nullptr)
-	   delete theFilter;
 	my_airspy_exit();
 	releaseLibrary ();
-}
-
-void	airspy_2::set_filter	(int c) {
-	(void)c;
-	filtering	= filterSelector -> isChecked ();
-//	fprintf (stderr, "filter set %s\n", filtering ? "on" : "off");
 }
 
 bool	airspy_2::restartReader	(int32_t freq) {
@@ -262,9 +249,10 @@ int	result;
 	   return true;
 
 	lastFrequency	= freq;
-	airspySettings	-> beginGroup ("airspySettings");
-	QString key = "tabSettings-" + QString::number (freq / MHz (1));
-	int tab	= airspySettings -> value (key, 0). toInt ();
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	QString key	= QString (TAB_SETTINGS) + "-"
+	                             + QString::number (freq / MHz (1));
+	int tab		= airspySettings -> value (key, 0). toInt ();
 	airspySettings	-> endGroup ();
 	tabWidget       -> blockSignals (true);
         new_tabSetting  (tab);
@@ -281,7 +269,6 @@ int	result;
 	}
 	_I_Buffer. FlushRingBuffer ();
 	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_INT16_IQ);
-//	result = my_airspy_set_sample_type (device, AIRSPY_SAMPLE_FLOAT32_IQ);
 	if (result != AIRSPY_SUCCESS) {
 	   printf ("my_airspy_set_sample_type() failed: %s (%d)\n",
 	            my_airspy_error_name ((airspy_error)result), result);
@@ -312,8 +299,9 @@ int	result;
 	   return;
 
 	close_xmlDump ();
-	airspySettings	-> beginGroup ("airspySettings");
-	QString key = "tabSettings-" + QString::number (lastFrequency / MHz (1));
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	QString key = QString (TAB_SETTINGS) + "-" 
+	                        + QString::number (lastFrequency / MHz (1));
 	airspySettings	-> setValue (key, tabWidget -> currentIndex ());
 	airspySettings	-> endGroup ();
 	record_gainSettings (lastFrequency / MHz (1), 
@@ -353,47 +341,6 @@ std::complex<float> temp [4096];
 
 	if (dumping. load ())
 	   xmlWriter -> add ((std::complex<int16_t> *)sbuf, nSamples);
-	if (filtering) {
-	   if (filterDepth -> value () != currentDepth) {
-	      airspySettings -> beginGroup ("airspySettings");
-	      airspySettings -> setValue ("filterDepth",
-	                                      filterDepth -> value ());
-	      airspySettings	-> endGroup();
-	      currentDepth = filterDepth -> value ();
-	      theFilter -> resize (currentDepth);
-	   }
-	   for (int i = 0; i < nSamples; i ++) {
-	      float Sr = sbuf [2 * i] / 2048.0f;
-	      float Si = sbuf [2 * i + 1] / 2048.0f;
-	      Complex xxx =
-	             theFilter -> Pass (Complex (Sr, Si));
-	      inBuffer [2 * inp ] = real (xxx);
-	      inBuffer [2 * inp + 1] = imag (xxx);
-	      inp ++;
-	      if (inp < inputLimit)
-	         continue;
-	      src_data.       input_frames    = inp;
-	      src_data.       output_frames   = outputLimit;
-	      locker. lock ();
-	      int res	= src_process (converter, &src_data);
-	      locker. unlock ();
-	      if (res != 0) {
-	         fprintf (stderr, "error %s\n", src_strerror (res));
-	         return -1;
-	      }
-//	push back the unused input
-	      for (inp = 0;
-	            inp < inputLimit - src_data. input_frames_used;
-	            inp ++)
-	         inBuffer [inp] = inBuffer [src_data. input_frames_used + inp];
-	      int framesOut       = src_data. output_frames_gen;
-	      for (int i = 0; i < framesOut; i ++)
-	         temp [i] = std::complex<float> (outBuffer [2 * i],
-	                                         outBuffer [2 * i + 1]);
-	      _I_Buffer. putDataIntoBuffer (temp, framesOut);
-	   }
-	}
-	else	//  no filtering a priori
 	for (int i = 0; i < nSamples; i ++) {
 	   inBuffer [2 * inp]		= sbuf [2 * i] / 2048.0f;
 	   inBuffer [2 * inp + 1]	= sbuf [2 * i + 1] / 2048.0f;
@@ -683,7 +630,7 @@ bool	isValid (QChar c) {
 bool	airspy_2::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = airspySettings -> value ("saveDir_xmlDump",
+QString saveDir = airspySettings -> value (SAVEDIR_XML,
                                            QDir::homePath ()). toString ();
         if ((saveDir != "") && (!saveDir. endsWith ("/")))
            saveDir += "/";
@@ -740,8 +687,9 @@ void	airspy_2::record_gainSettings	(int freq, int tab) {
 QString	res;
 QString key;
 
-        airspySettings	-> beginGroup ("airspySettings");
-	key = QString::number (freq) + "-" + QString::number (tab);
+        airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	key		= QString::number (freq) + "-"
+	                                 + QString::number (tab);
 	switch (tab) {
 	   case 0:	// sensitity screen is on
 	      res = QString::number (sensitivitySlider -> value ());
@@ -774,7 +722,7 @@ int	mixer	= 0;
 int	bias	= 0;
 QString key	= QString::number (freq) + "-" + QString::number (tab);
 
-	airspySettings -> beginGroup ("airspySettings");
+	airspySettings -> beginGroup (AIRSPY_SETTINGS);
 	QString gainValues =
 	       airspySettings -> value (key, ""). toString ();
 	airspySettings -> endGroup ();
@@ -881,8 +829,8 @@ void	airspy_2::switch_tab (int t) {
         while (tabWidget -> currentIndex () != t)
            usleep (1000);
         tabWidget       -> blockSignals (false);
-	airspySettings	-> beginGroup ("airspySettings");
-	airspySettings	-> setValue ("tabSettings", t);
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	airspySettings	-> setValue (TAB_SETTINGS, t);
 	airspySettings	-> endGroup ();
 	restore_gainSliders (lastFrequency / MHz (1), t);
 	restore_gainSettings (t);
@@ -1014,8 +962,8 @@ int result = my_airspy_set_rf_bias (device, rf_bias ? 1 : 0);
 }
 
 void	airspy_2::handle_convQuality	(int convQuality) {
-	airspySettings	-> beginGroup ("airspySettings");
-	airspySettings -> setValue ("convQuality", convQuality);
+	airspySettings	-> beginGroup (AIRSPY_SETTINGS);
+	airspySettings -> setValue (CONV_QUALITY, convQuality);
 	airspySettings	-> endGroup ();
 	int err;
 	locker. lock ();

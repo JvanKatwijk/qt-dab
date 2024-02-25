@@ -1,3 +1,4 @@
+
 #
 /*
  *    Copyright (C) 2013 .. 2017
@@ -32,30 +33,30 @@
 
 #define	__BUFFERSIZE__	8 * 32768
 
-	wavFiles::wavFiles (): _I_Buffer (__BUFFERSIZE__) {
-SF_INFO *sf_info;
+	wavFiles::wavFiles (const QString &fileName):
+	            _I_Buffer (__BUFFERSIZE__) {
+SF_INFO sf_info;
 
 	setupUi (&myFrame);
 	myFrame. show	();
-	fileName	= getFileName ();
-	if (fileName == "")
-	   throw device_exception ("no file specified");
-
-	sf_info		= (SF_INFO *)alloca (sizeof (SF_INFO));
-	sf_info	-> format	= 0;
+	this -> fileName	= fileName;
+	sf_info. format	= 0;
 	filePointer	= sf_open (fileName. toUtf8(). data(),
-	                                          SFM_READ, sf_info);
+	                                          SFM_READ, &sf_info);
 	if (filePointer == nullptr) {
-	   throw device_exception (fileName. toStdString () + "no sdr file");
+	   QString val =
+	           QString ("File '%1' is no valid sound file").arg(fileName);
+	   throw device_exception (val. toStdString ());
 	}
-	if ((sf_info -> samplerate != INPUT_RATE) ||
-	    (sf_info -> channels != 2)) {
+	if ((sf_info. samplerate != INPUT_RATE) ||
+	                                (sf_info. channels != 2)) {
 	   sf_close (filePointer);
-	   throw device_exception (fileName. toStdString () + "wrong samplerate");
+	   QString val = QString("Sample rate or channel number does not fit");
+	   throw device_exception (val. toStdString ());
 	}
-	nameofFile	-> setText (fileName);
-	fileProgress	-> setValue (0);
-	currentTime	-> display (0);
+	nameofFile		-> setText (fileName);
+	fileProgress		-> setValue (0);
+	currentTime		-> display (0);
 	int64_t fileLength	= sf_seek (filePointer, 0, SEEK_END);
 	totalTime	-> display ((float)fileLength / INPUT_RATE);
 	running. store (false);
@@ -113,23 +114,11 @@ int32_t	wavFiles::Samples() {
 }
 
 void    wavFiles::setProgress (int progress, float timelength) {
-        fileProgress      -> setValue (progress);
-        currentTime       -> display (timelength);
+        fileProgress	-> setValue (progress);
+	currentTime	-> display (QString ("%1").arg(timelength, 0, 'f', 1));
 }
 
 bool	wavFiles::isFileInput	() {
 	return true;
-}
-
-QString	wavFiles::getFileName 	() {
-
-	QString file = QFileDialog::getOpenFileName (nullptr,
-	                                             "Open file ...",
-	                                             QDir::homePath(),
-	                                             "raw data (*.sdr)");
-	      if (file == QString (""))
-	         return "";
-
-	      return QDir::toNativeSeparators (file);
 }
 

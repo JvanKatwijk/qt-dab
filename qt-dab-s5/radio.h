@@ -81,6 +81,11 @@ class	dabStreamer;
 #endif
 
 class techData;
+
+#define FAST_DECODER    0100
+#define ALT1_DECODER    0200
+#define ALT2_DECODER    0300
+ 
 #include	"ui_config-helper.h"
 
 /*
@@ -132,11 +137,9 @@ public:
 	uint32_t	Eid;
 	bool		has_ecc;
 	uint8_t		ecc_byte;
-	bool		tiiFile;
 	QString		transmitterName;
 	QString		countryName;
 	int		nrTransmitters;
-	position	localPos;
 	position	targetPos;
 	int		snr;
 	QByteArray	transmitters;
@@ -257,6 +260,7 @@ private:
 	QString			ipAddress;
 	int32_t			port;
 #endif
+	position		localPos;
 	SNDFILE                 *rawDumper;
 	SNDFILE                 *audioDumper;
 	FILE			*scanDumpFile;
@@ -363,6 +367,7 @@ signals:
 	void                    set_newPresetIndex      (int);
 
 public slots:
+	void			show_dcOffset		(float);
 //	void			set_CorrectorDisplay	(int);
 	void			show_Corrector		(int, float);
 	void			add_to_ensemble		(const QString &, int);
@@ -419,6 +424,7 @@ public slots:
 	void			handle_contentSelector	(const QString &);
 	
 	void			http_terminate		();
+	void			show_channel		(int);
 
 	void			show_stdDev		(int);
 

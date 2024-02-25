@@ -122,7 +122,8 @@ struct stream_cfg {
         const char *rfport;
 };
 
-class	plutoHandler: public QThread, public deviceHandler,
+class	plutoHandler:  //public QThread,
+	              public deviceHandler,
 	                                     public Ui_plutoWidget {
 Q_OBJECT
 public:

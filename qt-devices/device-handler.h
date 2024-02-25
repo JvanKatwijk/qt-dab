@@ -24,8 +24,10 @@
 
 #include	<cstdint>
 #include	"dab-constants.h"
-#include	<QFrame>
+#include	"settingNames.h"
+#include	"super-frame.h"
 
+#include	<QThread>
 //
 //	We provide a simple interface to the devices. Note that
 //	it is not just an abstract interface,
@@ -33,7 +35,8 @@
 //	and - since it provides default interfaces for all functions -
 //	there is no need for e.g. a file handling interface
 //	to implement functions for gain or frequency
-class	deviceHandler {
+class	deviceHandler: public QThread {
+Q_OBJECT
 public:
 			deviceHandler	();
 virtual			~deviceHandler	();
@@ -52,8 +55,10 @@ virtual		bool	isFileInput	();
 		void	setVisibility	(bool);
 //
 protected:
-		QFrame	myFrame;
+		superFrame	myFrame;
 		int32_t	lastFrequency;
 	        int	theGain;
+signals:
+		void	frameClosed 	();
 };
 

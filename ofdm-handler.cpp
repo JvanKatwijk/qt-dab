@@ -31,7 +31,9 @@
 #include	"timesyncer.h"
 #include	"freqsyncer.h"
 #include	"ringbuffer.h"
+#ifdef	__HAS_CHANNEL__
 #include	"estimator.h"
+#endif
 #include	"correlator.h"
 
 //
@@ -110,8 +112,10 @@
 	         mr,  &RadioInterface::show_clock_error);
 	connect (this, &ofdmHandler::show_null,
 	         mr, &RadioInterface::show_null);
+//	for older versions, this is a dummy
 	connect (this, &ofdmHandler::show_channel,
 	         mr, &RadioInterface::show_channel);
+//	end of dummy
 	connect (this, &ofdmHandler::show_Corrector,
 	         mr,  &RadioInterface::show_Corrector);
 	theTIIDetector. reset();
@@ -162,7 +166,9 @@ void	ofdmHandler::run	() {
 int32_t		startIndex;
 timeSyncer	myTimeSyncer (&theReader);
 freqSyncer	myFreqSyncer (radioInterface_p, p);
+#ifdef	__HAS_CHANNEL__
 estimator	myEstimator  (radioInterface_p, p);
+#endif
 correlator	myCorrelator (radioInterface_p, p);
 std::vector<int16_t> ibits;
 int	frameCount	= 0;
@@ -291,6 +297,7 @@ int	snrCount	= 0;
 	                              ofdmBufferIndex,
 	                              T_u - ofdmBufferIndex,
 	                              coarseOffset + fineOffset, true);
+#ifdef	__HAS_CHANNEL__
 	      static int abc = 0;
 	      if (radioInterface_p -> channelOn ()) {
 	         if (++abc > 10) { 
@@ -304,6 +311,7 @@ int	snrCount	= 0;
 	            abc = 0;
 	         }
 	      }
+#endif
 	      sampleCount	+= T_u;
 	      theOfdmDecoder. processBlock_0 (ofdmBuffer);
 #ifdef	__MSC_THREAD__
@@ -655,7 +663,7 @@ void	ofdmHandler::handle_iqSelector	() {
 	theOfdmDecoder. handle_iqSelector ();
 }
 
-void	ofdmHandler::handle_dcRemovalSelector (bool b) {
+void	ofdmHandler::set_dcRemoval (bool b) {
 	theReader. set_dcRemoval (b);
 }
 

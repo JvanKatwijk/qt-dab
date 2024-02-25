@@ -528,37 +528,11 @@
     <string>dump</string>
    </property>
   </widget>
-  <widget class="QSpinBox" name="filterDepth">
-   <property name="geometry">
-    <rect>
-     <x>210</x>
-     <y>50</y>
-     <width>101</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="minimum">
-    <number>5</number>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="filterSelector">
-   <property name="geometry">
-    <rect>
-     <x>270</x>
-     <y>20</y>
-     <width>97</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>filter</string>
-   </property>
-  </widget>
   <widget class="QSpinBox" name="convQuality_setter">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>50</y>
+     <x>300</x>
+     <y>20</y>
      <width>91</width>
      <height>31</height>
     </rect>

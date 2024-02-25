@@ -443,7 +443,7 @@ bool	isValid (QChar c) {
 bool	rtlsdrHandler_v3::setup_xmlDump () {
 QTime	theTime;
 QDate	theDate;
-QString saveDir = rtlsdrSettings -> value ("saveDir_xmlDump",
+QString saveDir = rtlsdrSettings -> value (SAVEDIR_XML,
 	                                   QDir::homePath ()). toString ();
 
 	if (xml_dumping. load ())

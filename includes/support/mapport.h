@@ -24,18 +24,16 @@
 
 #include	<QDialog>
 #include	<QLabel>
+#include	<QString>
 #include	<QPushButton>
 #include	<QLineEdit>
-
-class	QSettings;
 
 class	mapPortHandler: public QDialog {
 Q_OBJECT
 	public:
-		mapPortHandler	(QSettings *);
+		mapPortHandler	(QString &o);
 		~mapPortHandler	();
 	private:
-	QSettings	*dabSettings;
 	QLabel		*mapPortText;
         QLineEdit	*mapPortSetting;
 	QPushButton	*acceptButton;

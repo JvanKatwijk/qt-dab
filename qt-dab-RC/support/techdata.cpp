@@ -28,6 +28,9 @@
 #include	"dab-tables.h"
 #include	<QColorDialog>
 
+#include	"settingNames.h"
+
+#define	TECHDATA_SETTING	"techDataSettings"
 
 #define FRAMEDUMP_BUTTON        QString ("framedumpButton") 
 #define AUDIODUMP_BUTTON        QString ("audiodumpButton")
@@ -41,11 +44,13 @@
 	this	-> audioData	= audioData;
 
         setupUi (&myFrame);
-	dabSettings -> beginGroup ("techDataSettings");
-        int x   = dabSettings -> value ("position-x", 100). toInt ();
-        int y   = dabSettings -> value ("position-y", 100). toInt ();
-	int wi	= dabSettings -> value ("width", 100). toInt ();
-	int he	= dabSettings -> value ("height", 100). toInt ();
+	QString settingsHeader	= TECHDATA_SETTING;
+
+	dabSettings -> beginGroup (settingsHeader);
+        int x   = dabSettings -> value (settingsHeader + "-x", 100). toInt ();
+        int y   = dabSettings -> value (settingsHeader + "-y", 100). toInt ();
+	int wi	= dabSettings -> value (settingsHeader + "-w", 100). toInt ();
+	int he	= dabSettings -> value (settingsHeader + "-h", 100). toInt ();
         dabSettings -> endGroup ();
         myFrame. move (QPoint (x, y));
 	myFrame. resize (QSize (wi, he));
@@ -56,7 +61,7 @@
 	timeTable_button	-> setEnabled (false);
 	the_audioDisplay	= new audioDisplay (mr, audio, dabSettings);
 
-	dabSettings	-> beginGroup ("colorSettings");
+	dabSettings	-> beginGroup (COLOR_SETTINGS);
 	QString framedumpButton_color = 
            dabSettings -> value (FRAMEDUMP_BUTTON + "_color",
                                                       "white"). toString ();
@@ -90,6 +95,8 @@
         thermoLeft		-> setAlarmEnabled (true);
         thermoRight		-> setAlarmEnabled(true);
 
+	connect (&myFrame, SIGNAL (frameClosed ()),
+	         this, SIGNAL (frameClosed ()));
 	connect (framedumpButton, SIGNAL (rightClicked ()),
                  this, SLOT (color_framedumpButton ()));
         connect (audiodumpButton, SIGNAL (rightClicked ()),
@@ -105,11 +112,16 @@
 }
 
 		techData::~techData	() {
-	dabSettings	-> beginGroup ("techDataSettings");
-        dabSettings	-> setValue ("position-x", myFrame. pos (). x ());
-        dabSettings	-> setValue ("position-y", myFrame. pos (). y ());
-	dabSettings	-> setValue ("width", myFrame. width ());
-	dabSettings	-> setValue ("height", myFrame. height ());
+	QString settingsHeader	= TECHDATA_SETTING;
+	dabSettings	-> beginGroup (settingsHeader);
+        dabSettings	-> setValue (settingsHeader + "-x",
+	                                             myFrame. pos (). x ());
+        dabSettings	-> setValue (settingsHeader + "-y",
+	                                             myFrame. pos (). y ());
+	dabSettings	-> setValue (settingsHeader + "-w",
+	                                             myFrame. width ());
+	dabSettings	-> setValue (settingsHeader + "-h",
+	                                             myFrame. height ());
 	dabSettings	-> endGroup ();
 	myFrame. hide ();
 	delete the_audioDisplay;
@@ -324,7 +336,7 @@ QColor	color;
 	QString buttonColor	= buttonName + "_color";
 	QString buttonFont	= buttonName + "_font";
 
-	dabSettings	-> beginGroup ("colorSettings");
+	dabSettings	-> beginGroup (COLOR_SETTINGS);
 	dabSettings	-> setValue (buttonColor, baseColor. name ());
 	dabSettings	-> setValue (buttonFont, textColor. name ());
 	dabSettings	-> endGroup ();

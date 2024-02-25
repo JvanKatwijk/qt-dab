@@ -85,7 +85,7 @@
           <item>
            <widget class="smallPushButton" name="nextServiceButton">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head /&gt; &lt;body&gt;&lt;p&gt;Select the next service on the list of services &lt;br /&gt;(the next of the last element is the first element).&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the next service on the current ensemble.&lt;br/&gt;(the next of the last element is the first element).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>+</string>
@@ -132,6 +132,9 @@
        </item>
        <item>
         <widget class="newPushButton" name="presetButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Swutch between the &lt;span style=&quot; font-style:italic;&quot;&gt;ensemble view&lt;/span&gt; and the &lt;span style=&quot; font-style:italic;&quot;&gt;favorites view.&lt;/span&gt; The ensemble view shows the list of services in the currently active ensemble. The favories view shows the list of services selected as favorite. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>favorites</string>
          </property>

@@ -36,10 +36,10 @@ class	xmlDescriptor;
 class	xml_Reader;
 /*
  */
-class	xml_fileReader: public QObject, public deviceHandler, public Ui_xmlfile_widget {
+class	xml_fileReader: public deviceHandler, public Ui_xmlfile_widget {
 Q_OBJECT
 public:
-				xml_fileReader	();
+				xml_fileReader	(const QString &);
                 		~xml_fileReader	();
 	int32_t			getSamples	(std::complex<float> *,
 	                                                         int32_t);
@@ -56,7 +56,6 @@ private:
 	uint32_t		filePointer;
 	xmlDescriptor		*theDescriptor;
 	xml_Reader		*theReader;
-	QString			getFileName	();
 public slots:
 	void			setProgress	(int, int);
 	void			handle_continuousButton ();

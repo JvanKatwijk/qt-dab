@@ -23,6 +23,7 @@
 #include	"device-chooser.h"
 #include	<QFileDialog>
 #include	<QMessageBox>
+#include	"device-exceptions.h"
 
 #ifdef	HAVE_RTLSDR_V3
 #include	"rtlsdr-handler-v3.h"
@@ -168,11 +169,6 @@
 #ifdef	HAVE_SPYSERVER_8
 	deviceList. push_back (deviceItem ("spyServer-8", SPYSERVER_DEVICE_8));
 #endif
-#ifdef	HAVE_COLIBRI
-#endif
-#ifdef	HAVE_ELAD
-	deviceList. push_back (deviceItem ("elad-s1", ELAD_S1_DEVICE));
-#endif
 }
 
 		deviceChooser::~deviceChooser	() {}
@@ -191,7 +187,23 @@ int	deviceChooser::getDeviceIndex	(const QString &name) {
 	return -1;
 }
 
-deviceHandler	*deviceChooser::createDevice (const QString &s,
+deviceHandler	*deviceChooser::createDevice (const QString &deviceName,
+	                                      const QString &version) {
+deviceHandler	*inputDevice;
+	try {
+	   inputDevice = _createDevice (deviceName, version);
+	} catch (std::exception &e) {
+	   QMessageBox:: warning (nullptr, "Warning", e. what ());
+	   return nullptr;
+	}
+	catch (...) {
+	   QMessageBox::warning (nullptr, "Warning", "unkknown excpetion");
+	   return nullptr;
+	}
+	return inputDevice;
+}
+
+deviceHandler	*deviceChooser::_createDevice (const QString &s,
 	                                         const QString &version) {
 deviceHandler	*inputDevice_p	= nullptr;
 int	deviceNumber	= getDeviceIndex (s);
@@ -202,245 +214,133 @@ int	deviceNumber	= getDeviceIndex (s);
 	switch (deviceNumber) {
 #ifdef	HAVE_SDRPLAY_V2
 	   case SDRPLAY_V2_DEVICE:
-	      try {
-	         inputDevice_p	= new sdrplayHandler_v2 (dabSettings,
-	                                                       version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new sdrplayHandler_v2 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_SDRPLAY_V3
 	   case SDRPLAY_V3_DEVICE:
-	      try {
-	         inputDevice_p	= new sdrplayHandler_v3 (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new sdrplayHandler_v3 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V3
-	   case RTLSDR_DEVICE_V3:
-	      try {
-	         inputDevice_p	= new rtlsdrHandler_v3 (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &ex) {
-	         QMessageBox::warning (nullptr, "Warning", ex. what ());
-	         return nullptr;
-	      }
+	   case RTLSDR_DEVICE_V4:
+	      return rtlsdrHandler_v3 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V4
 	   case RTLSDR_DEVICE_V4:
-	      try {
-	         inputDevice_p	= new rtlsdrHandler_v4 (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &ex) {
-	         QMessageBox::warning (nullptr, "Warning", ex. what ());
-	         return nullptr;
-	      }
+	      return new rtlsdrHandler_v4 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR
 	   case RTLSDR_DEVICE:
-	      try {
-	         inputDevice_p	= new rtlsdrHandler (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &ex) {
-	         QMessageBox::warning (nullptr, "Warning", ex. what ());
-	         return nullptr;
-	      }
+	      return new rtlsdrHandler (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_AIRSPY
 	   case AIRSPY_DEVICE:
-	      try {
-	         inputDevice_p	= new airspyHandler (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new airspyHandler (dabSettings, version);
 	      break;
 #elif 	HAVE_AIRSPY_2
 	   case AIRSPY_DEVICE:
-	      try {
-	         inputDevice_p	= new airspy_2 (dabSettings, version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new airspy_2 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_HACKRF
 	   case HACKRF_DEVICE:
-	      try {
-	         inputDevice_p	= new hackrfHandler (dabSettings,
-	                                                        version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
-	      break;
+	      return new hackrfHandler (dabSettings, version);
 #endif
 #ifdef	HAVE_LIME
 	   case LIME_DEVICE:
-	      try {
-	         inputDevice_p = new limeHandler (dabSettings,
-	                                                     version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new limeHandler (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_PLUTO
 	   case PLUTO_DEVICE:
-	      try {
-	         inputDevice_p = new plutoHandler (dabSettings, version);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
-	      break;
+	      return new plutoHandler (dabSettings, version);
 #endif
 #ifdef HAVE_RTL_TCP
 	   case RTL_TCP_DEVICE:
-	      try {
-	         inputDevice_p = new rtl_tcp_client (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
-	      break;
+	      return new rtl_tcp_client (dabSettings);
 #endif
 #ifdef HAVE_EXTIO
 	   case EXTIO_DEVICE:
-	      try {
-	         inputDevice_p = new extioHandler (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "warning",  e. what ());
-	         return nullptr;
-	      }
+	      return new extioHandler (dabSettings);
 	      break;
 #endif
 #ifdef	HAVE_SOAPY
 	   case SOAPY_DEVICE:
-	      try {
-	         inputDevice_p	= new soapyHandler (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-                 QMessageBox::warning (nullptr, "Warning", e.what ());
-                 return nullptr;
-              }
-              catch (...) {
-                 QMessageBox::warning (nullptr, "Warning",
-                                               "something went wrong");
-                 return nullptr;
-	      }
+	      return new soapyHandler (dabSettings);
 	      break;
 #endif
 #ifdef HAVE_UHD
 	   case USRP_DEVICE:
-	      try {
-	         inputDevice_p = new uhdHandler (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new uhdHandler (dabSettings);
 	      break;
 #endif
 #ifdef HAVE_SPYSERVER_16
 	   case SPYSERVER_DEVICE_16:
-	      try {
-	         inputDevice_p = new spyServer_client (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	      return new spyServer_client (dabSettings);
 	      break;
 #endif
 #ifdef HAVE_SPYSERVER_8
 	   case SPYSERVER_DEVICE_8:
-	      try {
-	         inputDevice_p = new spyServer_client_8 (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
-	      break;
-#endif
-#ifdef HAVE_COLIBRI
-	   case COLIBRI_DEVICE:
-	      try {
-	         inputDevice_p = new colibriHandler (dabSettings);
-	      }
-	      catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
-	      break;
-#endif
-#ifdef HAVE_ELAD_S1
-	   case ELAD_S1_DEVICE:
-	      try {
-	         inputDevice_p = new eladHandler (dabSettings);
-	      }
-	      catch const std::exception &e) {
-	         QMessageBox::warning (nullptr, e. what ());
-	         return nullptr;
-	      }
+	      return new spyServer_client_8 (dabSettings);
 	      break;
 #endif
 	   case XML_FILE:
-	      try {
-	         inputDevice_p	= new xml_fileReader ();
-	      } catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	   {  QString fileName	= getFileName ("xml");
+	      if (fileName == "")
+	         throw (device_exception ("no file"));
+	      return  new xml_fileReader (fileName);
 	      break;
+	   }
 
 	   case RAW_FILE_RAW:
-	   case RAW_FILE_IQ:
-	      try {
-	         inputDevice_p	= new rawFiles (deviceNumber == RAW_FILE_IQ);
-	      } catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	   {  QString fileName = getFileName ("raw");
+	      if (fileName == "")
+	         throw (device_exception ("no file"));
+	      return new rawFiles (fileName);
 	      break;
+	   }
+
+	   case RAW_FILE_IQ:
+	   {  QString fileName	= getFileName ("iq");
+	      if (fileName == "")
+	         throw (device_exception ("no file"));
+	      return  new rawFiles (fileName);
+	      break;
+	   }
 	   
 	   case WAV_FILE:
-	      try {
-	         inputDevice_p = new wavFiles ();
-	      } catch (const std::exception &e) {
-	         QMessageBox::warning (nullptr, "Warning", e. what ());
-	         return nullptr;
-	      }
+	   {  QString fileName	= getFileName ("wav");
+	      if (fileName == "")
+	         throw (device_exception ("no file"));
+	      return new wavFiles (fileName);
 	      break;
+	   }
 
 	   default:
-	      return nullptr;
+	      throw (device_exception ("unknown device selected"));
+	      break;
 	}
-	return inputDevice_p;
+	return nullptr;
 }
+
+QString	deviceChooser::getFileName	(const QString &key) {
+QString typeDesc =
+	key == "xml" ? "xml data (*.uff)" :
+	key == "wav" ? "sdr data (*.sdr)" :
+	key == "iq"  ? "iq data (*.iq)" : "raw data (*.raw)";
+
+	QString file = QFileDialog::getOpenFileName (nullptr,
+	                                             "Open file ...",
+	                                             QDir::homePath(),
+	                                             typeDesc);
+	      if (file == QString (""))
+	         return "";
+
+	      return QDir::toNativeSeparators (file);
+}
+
 

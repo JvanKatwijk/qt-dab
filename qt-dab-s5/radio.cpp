@@ -54,6 +54,9 @@
 #include	"mapport.h"
 #include	"upload.h"
 #include	"techdata.h"
+#include	"db-loader.h"
+#include        "cacheElement.h" 
+#include        "distances.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -197,7 +200,7 @@ uint8_t convert (QString s) {
 	                                        theBand (freqExtension, Si),
 	                                        configDisplay (nullptr),
 	                                        the_dlCache (10),
-	                                        tiiProcessor (),
+	                                        tiiProcessor (Si),
 	                                        filenameFinder (Si),
 	                                        theScheduler (this, schedule),
 	                                        theTechData (16 * 32768),
@@ -354,9 +357,9 @@ uint8_t	dabBand;
 	}
 
 	channel. targetPos	=  position {0, 0};
-	channel. localPos. latitude	=
+	localPos. latitude	=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	channel. localPos. longitude	=
+	localPos. longitude	=
 	             dabSettings -> value ("longitude", 0). toFloat ();
 
 	connect (configWidget. loadTableButton, SIGNAL (clicked ()),
@@ -594,14 +597,11 @@ uint8_t	dabBand;
 	         this, SLOT (handle_portSelector ()));
 	connect (configWidget. set_coordinatesButton, SIGNAL (clicked ()),
 	         this, SLOT (handle_set_coordinatesButton ()));
-	QString tiiFileName = dabSettings -> value ("tiiFile", ""). toString ();
-	channel. tiiFile	= false;
-	if (tiiFileName != "") {
-	   channel. tiiFile = tiiProcessor. tiiFile (tiiFileName);
-	   if (!channel. tiiFile) {
-	      httpButton -> hide ();
-	   }
-	}
+
+	if (tiiProcessor. has_tiiFile ())
+           configWidget. loadTableButton -> setEnabled (true);
+        else     
+           httpButton   -> setEnabled (false);
 
 	connect (configWidget. eti_activeSelector, SIGNAL (stateChanged (int)),
 	         this, SLOT (handle_eti_activeSelector (int)));
@@ -1756,6 +1756,8 @@ QString a = "Est: ";
 bool	found	= false;
 QString	country	= "";
 bool	tiiChange	= false;
+cacheElement    *theTransmitter = nullptr;
+
 
 	if (mainId == 0xFF) 
 	   return;
@@ -1806,79 +1808,61 @@ bool	tiiChange	= false;
 	   LOG ("country", channel. countryName);
 	}
 
-	if (!channel. tiiFile) 
+	if (!tiiProcessor. has_tiiFile ()) 
 	   return;
 
 	if (!(tiiChange || (channel. transmitterName == "")))
 	   return;
 
-	if (tiiProcessor. is_black (channel. Eid, mainId, subId)) 
+	theTransmitter =
+	      tiiProcessor. get_transmitter (channel. realChannel?
+	                                         channel. channelName :
+	                                         "any",
+	                                     channel. Eid,
+	                                     mainId, subId);
+	if (theTransmitter == nullptr) 
 	   return;
 
-	QString theName =
-	         tiiProcessor. get_transmitterName (channel. realChannel?
-	                                               channel. channelName :
-	                                               "any",
-//	                                            channel. countryName,
-	                                            channel. Eid,
-	                                            mainId, subId);
-	if (theName == "") {
-	   tiiProcessor. set_black (channel. Eid, mainId, subId);
-	   LOG ("Not found ", QString::number (channel. Eid, 16) + " " +
-	                      QString::number (mainId) + " " +
-	                      QString::number (subId));
+	channel. targetPos. latitude	= theTransmitter -> latitude;
+	channel. targetPos. longitude	= theTransmitter -> longitude;
+	if ( (channel. targetPos. latitude == 0) ||
+	    (channel. targetPos. longitude == 0)) {
 	   return;
 	}
+	
+	QString theName 	= theTransmitter -> transmitterName;
+	channel. transmitterName 	= theName;
+	float power		= theTransmitter -> power;
+	float height		= theTransmitter -> height;
 
-	channel. transmitterName = theName;
-	float  power;
-	tiiProcessor. get_coordinates (channel. targetPos, power,
-	                               channel. realChannel ?
-	                                  channel. channelName :
-	                                  "any",
-	                               theName);
-	LOG ("transmitter ", channel. transmitterName);
-	LOG ("coordinates ",
-	               QString::number (channel. targetPos. latitude) + " " +
-	               QString::number (channel. targetPos. longitude));
-	LOG ("current SNR ", QString::number (channel. snr));
-	QString labelText =  channel. transmitterName;
-//
-//      if our own position is known, we show the distance
-//
-
-	if (channel. localPos. latitude == 0)
-	   return;
-
-	int distance	= tiiProcessor. distance (channel. targetPos,
-	                                          channel. localPos);
-	int corner	 = tiiProcessor.  corner (channel. targetPos,
-	                                          channel. localPos);
-	LOG ("distance ", QString::number (distance));
-	LOG ("corner ", QString::number (corner));
-	labelText +=  + " " + QString::number (distance) + " km" +
-	                               " " + QString::number (corner);
-	labelText += QString::fromLatin1 (" \xb0 ");
-	fprintf (stderr, "%s\n", labelText. toUtf8 (). data ());
-	distanceLabel -> setText (labelText);
+//      if positions are known, we can compute distance and corner
+	float the_distance	= distance	(channel. targetPos, localPos);
+	float the_corner	= corner	(channel. targetPos, localPos);
+	QString labelText = theName + " " +
+	                    QString::number (the_distance, 'f', 1) + " km " +
+	                    QString::number (the_corner, 'f', 1) + 
+	                    QString::fromLatin1 (" \xb0 ") + 
+	                    " (" +
+	                    QString::number (height, 'f', 1) +  "m)";
+	fprintf (stderr, "%s (%f)\n", labelText. toUtf8 (). data (), height);
+	QFont f ("Arial", 9);
+	distanceLabel		->  setFont (f);
+	distanceLabel		-> setText (labelText);
 
 //	see if we have a map
 	if (mapHandler == nullptr) 
 	   return;
 
-	uint8_t key = MAP_NORM_TRANS;
-	if ((!transmitterTags_local) && (distance > maxDistance)) { 
-	   maxDistance = distance;
+	uint8_t key	= MAP_NORM_TRANS;	// default value
+	bool localTransmitters	=
+	            configWidget. transmSelector -> isChecked ();
+	if ((!localTransmitters) && (the_distance > maxDistance)) { 
+	   maxDistance = the_distance;
 	   key = MAP_MAX_TRANS;
 	}
 //
-//	to be certain, we check
-	if ((channel. targetPos. latitude == 0) ||
-	                                  (distance == 0) || (corner== 0))
-	   return;
-
 	QDateTime theTime = 
-	   configWidget.  utcSelector -> isChecked () ?
+	   configWidget. utcSelector -> isChecked () ?
 	                  QDateTime::currentDateTimeUtc () :
 	                  QDateTime::currentDateTime ();
 
@@ -1888,7 +1872,8 @@ bool	tiiChange	= false;
 	                       channel. channelName,
 	                       theTime. toString (Qt::TextDate),
 	                       channel. mainId * 100 + channel. subId,
-	                       distance, corner, power);
+	                       the_distance,
+	                       the_corner, power, height);
 }
 
 void	RadioInterface::show_spectrum	(int32_t amount) {
@@ -3015,10 +3000,10 @@ int	tunedFrequency	=
 	channel. frequency	= tunedFrequency / 1000;
 	my_tiiViewer. clear ();
 	if (transmitterTags_local  && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos);
 	else
 	if (mapHandler != nullptr)
-	   mapHandler -> putData (MAP_FRAME, position {-1, -1}, "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_FRAME, position {-1, -1});
 	show_for_safety ();
 	my_ofdmHandler		-> start ();
 	int	switchDelay	=
@@ -3074,7 +3059,7 @@ void	RadioInterface::stopChannel	() {
 	channelTimer. stop	();
 	channel. cleanChannel	();
 	if (transmitterTags_local && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0, 0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos);
 	transmitter_country     -> setText ("");
 	transmitter_coordinates -> setText ("");
 //
@@ -4266,34 +4251,28 @@ void	RadioInterface::handle_LoggerButton (int s) {
 void	RadioInterface::handle_set_coordinatesButton	() {
 coordinates theCoordinator (dabSettings);
 	(void)theCoordinator. QDialog::exec();
-	channel. localPos. latitude	=
+	localPos. latitude	=
 	             dabSettings -> value ("latitude", 0). toFloat ();
-	channel. localPos. longitude	=
+	localPos. longitude	=
 	             dabSettings -> value ("longitude", 0). toFloat ();
 }
 
 void	RadioInterface::loadTable	 () {
-QString	tableFile	= dabSettings -> value ("tiiFile", ""). toString ();
-
-	if (tableFile == "") {
-	   tableFile = QDir::homePath () + "/.txdata.tii";
-	   dabSettings -> setValue ("tiiFile", tableFile);
-	}
-	if (tiiProcessor. loadTable (tableFile)) {
+dbLoader theLoader (dabSettings);
+	if (theLoader. load_db ()) {
 	   QMessageBox::information (this, tr ("success"),
 	                            tr ("Loading and installing database complete\n"));
-	   channel. tiiFile	= tiiProcessor. tiiFile (tableFile);
+	   tiiProcessor. reload ();
 	}
 	else {
 	   QMessageBox::information (this, tr ("fail"),
 	                            tr ("Loading database failed\n"));
-	   channel. tiiFile = false;
 	}
 }
 //
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
-	if (channel. localPos. latitude == 0)
+	if (localPos. latitude == 0)
 	   return;
 
 	if (mapHandler == nullptr)  {
@@ -4311,7 +4290,7 @@ void	RadioInterface::handle_httpButton	() {
 	   mapHandler = new httpHandler (this,
 	                                 mapPort,
 	                                 browserAddress,
-	                                 channel. localPos,
+	                                 localPos,
 	                                 mapFile,
 	                                 dabSettings -> value ("autoBrowser", 1). toInt () == 1);
 	   maxDistance = -1;
@@ -4350,7 +4329,7 @@ void	RadioInterface::handle_transmitterTags  (int d) {
 	dabSettings -> setValue ("transmitterTags", transmitterTags_local  ? 1 : 0);
 	channel. targetPos	= position {0, 0};
 	if ((transmitterTags_local) && (mapHandler != nullptr))
-	   mapHandler -> putData (MAP_RESET, channel. targetPos, "", "", "", 0, 0, 0,0);
+	   mapHandler -> putData (MAP_RESET, channel. targetPos);
 }
 
 void	RadioInterface::handle_onTop	(int d) {
@@ -4380,8 +4359,12 @@ QByteArray theSlide;
 }
 
 void	RadioInterface::handle_portSelector () {
-mapPortHandler theHandler (dabSettings);
-	(void)theHandler. QDialog::exec();
+QString oldPort	= dabSettings -> value ("mapPort", "8080"). toString ();
+mapPortHandler theHandler (oldPort);
+   int portNumber = theHandler. QDialog::exec ();
+        if (portNumber != 0)
+           dabSettings -> setValue (MAP_PORT_SETTING,
+	                           QString::number(portNumber));
 }
 
 void	RadioInterface::handle_epgSelector	(int x) {
@@ -4503,5 +4486,14 @@ void	RadioInterface::handle_presetButton	() {
 	   my_presetHandler. hide ();
 	dabSettings	-> setValue ("favorites",
 	                             my_presetHandler. isHidden () ? 0 : 1);
+}
+//
+//	Dummies for upward compatibility
+void	RadioInterface::show_channel	(int d) {
+	(void)d;
+}
+
+void	RadioInterface::show_dcOffset	(float v) {
+	(void)v;
 }
 

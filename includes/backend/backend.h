@@ -25,7 +25,7 @@
 
 #include	<QSemaphore>
 #include	<vector>
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 #include	<QThread>
 #include	<atomic>
 #endif
@@ -37,8 +37,8 @@
 #define	NUMBER_SLOTS	25
 class	RadioInterface;
 
-#ifdef	__THREADED_BACKEND
-class	Backend:public QThread {
+#ifdef	__THREADED_BACKEND__
+class	Backend: public QThread {
 #else
 class	Backend {
 #endif
@@ -67,7 +67,7 @@ private:
 	backendDeconvolver	deconvolver;
 	std::vector<uint8_t>	outV;
 	backendDriver		driver;
-#ifdef	__THREADED_BACKEND
+#ifdef	__THREADED_BACKEND__
 void	run();
 	atomic<bool>	running;
 	QSemaphore	freeSlots;

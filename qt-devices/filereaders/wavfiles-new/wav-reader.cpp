@@ -68,7 +68,7 @@ int	teller		= 0;
 std::complex<float> bi [bufferSize];
 
 	connect (this, SIGNAL (setProgress (int, float)),
-                 parent,   SLOT (setProgress (int, float)));
+	         parent,   SLOT (setProgress (int, float)));
 	sf_seek (filePointer, 0, SEEK_SET);
 
 	running. store (true);

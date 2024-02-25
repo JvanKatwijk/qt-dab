@@ -345,8 +345,23 @@
      </item>
      <item row="2" column="2">
       <widget class="QProgressBar" name="aacError_display">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Indicator of the success rate of handling the AAC frames in the DAB+ transmissions.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+	<property name="styleSheet">
+        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
        </property>
        <property name="value">
         <number>24</number>
@@ -355,8 +370,23 @@
      </item>
      <item row="0" column="2">
       <widget class="QProgressBar" name="frameError_display">
+	<property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Frame errors. Indication of the quality of the DAB+ frame detection. 100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+	<property name="styleSheet">
+        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
        </property>
        <property name="value">
         <number>24</number>
@@ -372,15 +402,30 @@
      </item>
      <item row="1" column="2">
       <widget class="QProgressBar" name="rsError_display">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>20</height>
+        </size>
+       </property>
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Quality of the DAB+ frames. &lt;/p&gt;&lt;p&gt;Indicator for the amount of times meaning the frames contain more errors than the Reed Solomon correction can correct. &lt;/p&gt;&lt;p&gt;100 is good.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">QProgressBar::chunk { background: #e6e600; }</string>
        </property>
        <property name="value">
         <number>24</number>
        </property>
       </widget>
-     </item>
-     <item row="1" column="0" colspan="2">
+	</item>
+	<item row="1" column="0" colspan="2">
       <widget class="QLabel" name="rsErrorLabel">
        <property name="text">
         <string>RS</string>

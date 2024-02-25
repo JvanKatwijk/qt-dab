@@ -1,8 +1,8 @@
 cmake_minimum_required( VERSION 3.21 )
 set (objectName qt-dab-6.5Beta)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
-set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
-#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
+#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
+#set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto")
 
 set(CMAKE_AUTORCC ON)
@@ -22,7 +22,8 @@ if(MINGW)
 #	add_definitions (-DSSE_AVAILABLE)
 endif()
 
-add_definitions (-D__FFTW3__ -D__ESTIMATOR__)
+#essential defines, for compatibility with older versions
+add_definitions (-D__FFTW3__ -D__HAS_CHANNEL__)
 
 IF(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../.git" AND IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/../.git")
    execute_process (
@@ -95,7 +96,7 @@ option(FDK_AAC OFF)
 #
 #	Since more than one backend may be active, activating this
 #	option makes that each backend runs in its own thread
-add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
+add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 #
 ########################################################################
 ########################################################################
@@ -163,12 +164,14 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	endif ()
 	include_directories (${LIBSAMPLERATE_INCLUDE_DIRS})
 
-	find_library (PTHREADS pthread)
-	if (NOT(PTHREADS))
-	   message (FATAL_ERROR "please install libpthread")
-	else (NOT(PTHREADS))
-	   set (extraLibs ${extraLibs} ${PTHREADS})
-	endif (NOT(PTHREADS))
+	if (NOT APPLE)
+	   find_library (PTHREADS pthread)
+	   if (NOT(PTHREADS))
+	      message (FATAL_ERROR "please install libpthread")
+	   else (NOT(PTHREADS))
+	      set (extraLibs ${extraLibs} ${PTHREADS})
+	   endif (NOT(PTHREADS))
+	endif (NOT APPLE)
 
 #######################################################################
 #
@@ -179,7 +182,6 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	           ${QT5Widgets_INCLUDES}
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
-	           ./pauzeslide
 	           ./support
 	           ..
 	           ../includes
@@ -214,6 +216,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 
 	set (${objectName}_HDRS
 	     ./radio.h
+	     ./support/super-frame.h
 	     ./support/techdata.h 
              ./support/clickable-label.h 
              ./support/icon-label.h 
@@ -287,6 +290,9 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
+	     ../includes/support/distances.h 
+	     ../includes/support/cacheElement.h 
+	     ../includes/support/settingNames.h 
 	     ../includes/support/fft-handler.h 
 	     ../includes/support/converter_48000.h 
 	     ../includes/support/ringbuffer.h
@@ -314,7 +320,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ,,.includes/support/converted_map.h
 	     ../includes/support/fir-filters.h
 	     ../includes/support/tii-mapper.h
-	     ../src/support/tii-library/table-loader.h
+             ../src/support/tii-library/tii-reader.h
+             ../src/support/tii-library/db-loader.h
 	     ../includes/support/font-chooser.h 
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
@@ -343,6 +350,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ${${objectName}_SRCS}
 	     ./main.cpp
 	     ./radio.cpp
+	     ./support/super-frame.cpp
 	     ./support/techdata.cpp
 	     ./support/clickable-label.cpp 
              ./support/icon-label.cpp 
@@ -408,10 +416,10 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/backend/data/data-processor.cpp
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
+	     ../src/support/distances.cpp
 	     ../src/support/converter_48000.cpp
 	     ../src/support/viterbi-jan/viterbi-handler.cpp
 	     ../src/support/viterbi-spiral/viterbi-spiral.cpp
-	     ../src/support/tii-library/table-loader.cpp
 	     ../src/support/fft-handler.cpp
 	     ../src/support/dab-params.cpp
 #	     ../src/support/band-handler.cpp
@@ -429,6 +437,8 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	     ../src/support/coordinates.cpp
 	     ../src/support/skin-handler.cpp
 	     ../src/support/mapport.cpp
+	     ../src/support/tii-library/tii-reader.cpp
+             ../src/support/tii-library/db-loader.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/upload.cpp
 	     ../src/support/bandpass-filter.cpp
@@ -459,6 +469,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 
 	set (${objectName}_MOCS
 	     ./radio.h
+	     ./support/super-frame.h
 	     ./support/techdata.h
 	     ./support/clickable-label.h 
              ./support/icon-label.h 
@@ -499,6 +510,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
              ../includes/backend/data/epg-2/epg-decoder.h
 	     ../includes/backend/data/data-processor.h
 	     ../includes/output/audio-player.h
+	     ../qt-devices/device-handler.h
 	     ../includes/support/converter_48000.h
 	     ../includes/support/preset-handler.h
 	     ../includes/support/presetcombobox.h
@@ -633,7 +645,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	   add_definitions (-DHAVE_SDRPLAY_V2)
 	endif (SDRPLAY_V2)
 
-	if (SDRPLAY)
+	if (SDRPLAY_V3)
 	   set (${objectName}_UIS
 	        ${${objectName}_UIS}
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-widget-v3.ui
@@ -1056,7 +1068,7 @@ add_definitions (-D__THREADED_BACKEND)	# uncomment for use for an RPI
 	endif (USE_PORTAUDIO)
 
 	QT5_WRAP_UI (UIS ${${objectName}_UIS}
-	             ../qt-devices/filereader-widget.ui)
+	             ../qt-devices/filereaders/filereader-widget.ui)
 
 	include_directories (
 	          ${SDRPLAY_INCLUDES}

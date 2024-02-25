@@ -27,10 +27,13 @@
 #include	<QVBoxLayout>
 #include	<QSettings>
 
+#include	"settingNames.h"
 	coordinates::coordinates	(QSettings *dabSettings) {
 	this	-> dabSettings = dabSettings;
-	QString latVal = dabSettings  -> value ("latitude", "0"). toString ();
-        QString lonVal = dabSettings  -> value ("longitude", "0"). toString ();
+	QString latVal = dabSettings  -> value (HOME_LATITUDE,
+	                                              "0"). toString ();
+        QString lonVal = dabSettings  -> value (HOME_LONGITUDE,
+	                                              "0"). toString ();
 
 	QLocale	currentLocale	= QLocale::system ();
 	QLocale englishLocale(QLocale::English, QLocale::UnitedStates);
@@ -92,8 +95,8 @@ void	coordinates::set_longitude () {
 void	coordinates::handle_acceptButton () {
 	if (!latitude || !longitude)
 	   return;
-	dabSettings	-> setValue ("latitude", latitude -> text ());
-	dabSettings	-> setValue ("longitude", longitude -> text ());
+	dabSettings	-> setValue (HOME_LATITUDE, latitude -> text ());
+	dabSettings	-> setValue (HOME_LONGITUDE, longitude -> text ());
 	QDialog::done (0);
 }
 

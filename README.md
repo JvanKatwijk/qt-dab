@@ -10,6 +10,30 @@
 
 **Qt-DAB-6** is software for Linux, Windows, MacOS and Raspberry Pi for listening to terrestrial **Digital Audio Broadcasting (DAB and DAB+)**.
 
+
+------------------------------------------------------------------------
+Recent changes
+------------------------------------------------------------------------
+
+The current sources show some changes (although not visible on the GUI),
+
+ * the encoding of the translation from tii to transmitternames is
+   significantly changed;
+
+ * on program start up (or restart with the same or a different device)
+   has undergone significant changes to enure a correct set up of
+   the "saved services";
+
+ * handling of the configuration and control widget is now is a separate
+   class object and the CPU load is now on this widget;
+
+ * closing a widget manually is now recorded properly;
+
+ * modifications are beyond GUI handling only and the mods have
+   quite some impact on the whole of the code tree.
+   While the changes affect the code tree, V5 could be adapted
+   to these changes.
+
 ------------------------------------------------------------------------
 About Qt-DAB-6.5Beta
 -------------------------------------------------------------------------
@@ -18,7 +42,7 @@ About Qt-DAB-6.5Beta
 ![6.4](/Qt_DAB-6.5Beta-2.png?raw=true)
 
 Qt-DAB-6.5Beta has undergone some improvements that were - for a long time - on
-my own wishlist, while  some  other modidications are based on user's requests.
+my own wishlist, while  some  other modifications are based on user's requests.
 Since when using Qt-DAB as regular radio device, I switch audio between
 only a few services, their names are listed in my "list of favorites".
 The current version therefore shows on start up the list of favorites.

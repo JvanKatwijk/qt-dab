@@ -40,17 +40,16 @@
 #define	INPUT_FRAMEBUFFERSIZE	8 * 32768
 //
 //
-	rawFiles::rawFiles (bool iqFile): _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
+	rawFiles::rawFiles (const QString &fileName):
+	                       _I_Buffer (INPUT_FRAMEBUFFERSIZE) {
 	setupUi	(&myFrame);
 	myFrame. show	();
 
-	QString fileName	= getFileName (iqFile);
-	if (fileName == "")
-	   throw device_exception ("no file specified");
-
+	this -> fileName	= fileName;
 	filePointer	= fopen (fileName. toUtf8(). data(), "rb");
 	if (filePointer == nullptr) {
-	   throw device_exception (fileName. toStdString () + " cannot open");
+	   const QString str = QString("Cannot open file '%1'").arg (fileName);
+	   throw device_exception (str. toStdString ());
 	}
 
 	nameofFile	-> setText (fileName);
@@ -119,19 +118,5 @@ void	rawFiles::setProgress (int progress, float timelength) {
 
 bool	rawFiles::isFileInput	() {
 	return true;
-}
-
-QString	rawFiles::getFileName 	(bool iqFiles) {
-
-	QString file = QFileDialog::getOpenFileName (nullptr,
-	                                             "Open file ...",
-	                                             QDir::homePath(),
-	                                             iqFiles ?
-	                                                  "iq data (*.iq)"
-	                                                : "raw data (*.raw)");
-	      if (file == QString (""))
-	         return "";
-
-	      return QDir::toNativeSeparators (file);
 }
 

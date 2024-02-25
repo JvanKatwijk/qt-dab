@@ -32,12 +32,12 @@
 #include	"tcp-client-8.h"
 #include	"spyserver-protocol.h"
 
-#include	"spy-handler-8.h"
+#include	"device-handler.h"
 #include	"ringbuffer.h"
 
 class	spyServer_client_8;
 
-class spyHandler_8: public QThread {
+class spyHandler_8:  public QThread {
 Q_OBJECT
 public:
 		spyHandler_8		(spyServer_client_8 *,
@@ -55,6 +55,7 @@ public:
 	void	stop_running		();
 
 	void	connection_set		();
+	bool	isFileInput		();
 private:
 	RingBuffer<uint8_t>	inBuffer;
 	tcp_client_8		tcpHandler;

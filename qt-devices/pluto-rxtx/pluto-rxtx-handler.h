@@ -134,7 +134,7 @@ struct stream_cfg {
 };
 
 
-class	plutoHandler: public QObject,
+class	plutoHandler: //public QObject,
 	              public deviceHandler, public Ui_plutorxtxWidget {
 Q_OBJECT
 public:
