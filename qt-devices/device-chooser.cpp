@@ -223,8 +223,8 @@ int	deviceNumber	= getDeviceIndex (s);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V3
-	   case RTLSDR_DEVICE_V4:
-	      return rtlsdrHandler_v3 (dabSettings, version);
+	   case RTLSDR_DEVICE_V3:
+	      return new rtlsdrHandler_v3 (dabSettings, version);
 	      break;
 #endif
 #ifdef	HAVE_RTLSDR_V4

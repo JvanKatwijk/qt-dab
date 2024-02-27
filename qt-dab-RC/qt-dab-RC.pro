@@ -14,12 +14,12 @@ win32 {
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 unix {
-#QMAKE_CXXFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -ffast-math -flto
-#QMAKE_LFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -g -fsanitize=address
-QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-QMAKE_LFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -ffast-math -flto
+QMAKE_LFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+#QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -47,6 +47,7 @@ DEPENDPATH += . \
 	      ./support \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
+	      ./forms-v7/snr-viewer \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -75,8 +76,6 @@ DEPENDPATH += . \
 	      ../includes/support \
 	      ../includes/support/buttons \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders//rawfiles-new \
@@ -88,6 +87,7 @@ INCLUDEPATH += . \
 	       ./support \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
+	      ./forms-v7/snr-viewer \
 	      ../ \
 	      ../eti-handler \
 	      ../src \
@@ -107,8 +107,6 @@ INCLUDEPATH += . \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -135,6 +133,7 @@ HEADERS += ./radio.h \
 	   ./forms-v7/new-display/scopes/waterfall-scope.h \
 	   ./forms-v7/new-display/scopes/iqdisplay.h \
 	   ./forms-v7/new-display/scopes/audio-display.h \
+	   ./forms-v7/snr-viewer/snr-viewer.h \
 	   ../ofdm-handler.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
@@ -232,7 +231,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/smallqlistview.h \
 	   ../includes/support/buttons/smallspinbox.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
-	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
@@ -252,7 +250,7 @@ FORMS	+= ./forms-v7/config-helper.ui
 FORMS	+= ./forms-v7/audio-description.ui
 FORMS	+= ./forms-v7/data-description.ui
 FORMS	+= ./forms-v7/new-display/scopewidget.ui
-FORMS	+= ../viewers/snr-viewer/snr-widget.ui
+FORMS	+= ./forms-v7/snr-viewer/snr-widget.ui
 FORMS	+= ./support/aboutdialog.ui
 #FORMS	+= ../qt-devices/filereaders/filereader-widget.ui 
 FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
@@ -277,6 +275,7 @@ SOURCES += ./main.cpp \
            ./forms-v7/new-display/scopes/waterfall-scope.cpp \
 	   ./forms-v7/new-display/scopes/iqdisplay.cpp \
 	   ./forms-v7/new-display/scopes/audio-display.cpp \
+	   ./forms-v7/snr-viewer/snr-viewer.cpp \
 	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -360,7 +359,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
 	   ../src/scopes-qwt6/spectrogramdata.cpp \
-	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \

@@ -64,13 +64,16 @@ QString suggestedFileName;
 
 	if (!flag)
 	   return suggestedFileName;
+	bool	useNativeFileDialog = true;
 	QString fileName = QFileDialog::
 	                     getSaveFileName (nullptr,
 	                                      "Save file ...",
 	                                      suggestedFileName,
 	                                      QString ("%1 (%2)").arg (extension, extension),
 	                                      Q_NULLPTR,
-	                                      QFileDialog::DontUseNativeDialog);
+	                                      useNativeFileDialog ?
+	                                          QFileDialog::Options() :
+	                                          QFileDialog::DontUseNativeDialog);
 	if (fileName == "")
 	   return "";
 

@@ -183,6 +183,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           ./support
+	           ./forms-v7
+	           ./forms-v7/new-display
+	           ./forms-v7/new-display/scopes
+	           ./forms-v7/snr-viewer
 	           ..
 	           ../includes
 	           ../includes/ofdm
@@ -201,10 +205,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/scopes-qwt6
-	           ./forms-v7/new-display
-	           ./forms-v7/new-display/scopes
-	           ../viewers
-	           ../viewers/snr-viewer
 	           ../qt-devices
 	           ../qt-devices/filereaders/
 	           ../qt-devices/filereaders/rawfiles-new
@@ -234,6 +234,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/waterfall-scope.h 
              ./forms-v7/new-display/scopes/iqdisplay.h 
 	     ./forms-v7/new-display/scopes/audio-display.h
+	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
@@ -331,7 +332,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ../includes/support/buttons/smallqlistview.h 
              ../includes/support/buttons/smallspinbox.h 
 	     ../includes/scopes-qwt6/spectrogramdata.h
-	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-chooser.h
 	     ../qt-devices/device-exceptions.h
@@ -369,6 +369,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/iqdisplay.cpp 
 	     ./forms-v7/new-display/scopes/audio-display.cpp
 	     ./forms-v7/new-display/scopes/audio-display.cpp 
+	     ./forms-v7/snr-viewer/snr-viewer.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -454,7 +455,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/buttons/smallspinbox.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
-	     ../viewers/snr-viewer/snr-viewer.cpp
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
@@ -486,6 +486,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./forms-v7/new-display/scopes/dev-scope.h 
              ./forms-v7/new-display/scopes/waterfall-scope.h 
              ./forms-v7/new-display/scopes/iqdisplay.h 
+ 	     ./forms-v7/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../includes/ofdm/sample-reader.h
 	     ../includes/ofdm/ofdm-decoder.h
@@ -534,7 +535,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/upload.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
- 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
 	     ../qt-devices/filereaders/wavfiles-new/wavfiles.h
@@ -550,7 +550,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./forms-v7/technical_data.ui
 	     ./forms-v7/config-helper.ui
 	     ./forms-v7/new-display/scopewidget.ui
-	     ../viewers/snr-viewer/snr-widget.ui
+	     ./forms-v7/snr-viewer/snr-widget.ui
 	     ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 	   )
 

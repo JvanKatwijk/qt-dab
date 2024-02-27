@@ -25,7 +25,6 @@
 #include	<stdint.h>
 #include	<math.h>
 
-
 typedef struct {
         float   latitude;
         float   longitude;

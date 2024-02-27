@@ -1301,7 +1301,6 @@ void	RadioInterface::newDevice (const QString &deviceName) {
 	   inputDevice_p = new deviceHandler ();
 	   return;		// nothing will happen
 	}
-	fprintf (stderr, "klaar voro doStart\n");
 	doStart();		// will set running
 }
 
@@ -2303,8 +2302,6 @@ void	RadioInterface::stopChannel	() {
 }
 
 //
-/////////////////////////////////////////////////////////////////////////
-//
 //	next- and previous channel buttons
 /////////////////////////////////////////////////////////////////////////
 
@@ -2348,8 +2345,6 @@ void	RadioInterface::set_channelButton (int currentChannel) {
 	new_channelIndex (currentChannel);
 	startChannel (channelSelector -> currentText ());
 }
-
-////////////////////////////////////////////////////////////////////////
 //
 //	scanning
 /////////////////////////////////////////////////////////////////////////
@@ -2390,7 +2385,6 @@ void	RadioInterface::startScanning	() {
 }
 
 void	RadioInterface::start_scan_to_data () {
-//
 //	when running scan to data, we look at all channels, whether
 //	on the skiplist or not
 	QString cs = scanMonitor. getNextChannel (channelSelector -> currentText ());
@@ -2629,9 +2623,6 @@ void	RadioInterface::next_for_scan_continuous () {
 }
 
 ////////////////////////////////////////////////////////////////////////////
-//
-// showServices
-////////////////////////////////////////////////////////////////////////////
 	
 void	RadioInterface::show_for_single_scan () {
 QString SNR 		= "SNR " + QString::number (channel. snr);
@@ -2701,7 +2692,7 @@ void	RadioInterface::handle_muteButton	() {
 	connect (&muteTimer, SIGNAL (timeout ()),
 	         this, SLOT (muteButton_timeOut ()));
 	muteDelay	= configHandler_p -> muteValue ();
-	muteDelay	*= 60;
+	muteDelay	*= 60;	// seconds
 	muteTimer. start (1000);
 	stillMuting	-> show ();
 	stillMuting	-> display (muteDelay);
@@ -2734,7 +2725,11 @@ void	RadioInterface::stop_muting		() {
 }
 //
 //	End of handling mute button
-//
+
+//	new_channelIndex is called whenever we are sure that
+//	the channel selector is "connected", and we programamtically
+//	change the setting, which obviously would lead to a signal
+//	that we do not wwant right now
 
 void	RadioInterface::new_channelIndex (int index) {
 	if (channelSelector -> currentIndex () == index)
@@ -2989,7 +2984,6 @@ void	RadioInterface::scheduled_ficDumping () {
 	ficDumpPointer = nullptr;
 }
 
-//-------------------------------------------------------------------------
 //------------------------------------------------------------------------
 //
 //	if configured, the interpreation of the EPG data starts automatically,
@@ -3025,9 +3019,6 @@ void	RadioInterface::epgTimer_timeOut	() {
 	   }
 	}
 }
-
-//------------------------------------------------------------------------
-//------------------------------------------------------------------------
 
 void	RadioInterface::set_epgData (int SId, int theTime,
 	                             const QString &theText,

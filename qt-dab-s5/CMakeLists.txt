@@ -158,6 +158,11 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ${QT_QTCORE_INCLUDE_DIR}
 	           ${QT_QTGUI_INCLUDE_DIR}
 	           ./support
+	           ./viewers
+	           ./viewers/spectrum-viewer
+	           ./viewers/correlation-viewer
+	           ./viewers/tii-viewer
+	           ./viewers/snr-viewer
 	           ..
 	           ./forms-v5/iq-scope
 	           ../includes
@@ -177,11 +182,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	           ../includes/support/viterbi-spiral
 	           ../includes/output
 	           ../includes/scopes-qwt6
-	           ../viewers
-	           ../viewers/spectrum-viewer
-	           ../viewers/correlation-viewer
-	           ../viewers/tii-viewer
-	           ../viewers/snr-viewer
 	           ../qt-devices
 	           ../qt-devices/filereaders/
 	           ../qt-devices/filereaders/rawfiles-new
@@ -196,6 +196,13 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/techdata.h
 	     ./support/super-frame.h
 	     ./forms-v5/iq-scope/iqdisplay.h
+	     ./viewers/spectrum-viewer/spectrum-viewer.h 
+	     ./viewers/spectrum-viewer/spectrum-scope.h 
+	     ./viewers/spectrum-viewer/waterfall-scope.h 
+	     ./viewers/spectrum-viewer/null-scope.h 
+	     ./viewers/correlation-viewer/correlation-viewer.h 
+	     ./viewers/tii-viewer/tii-viewer.h
+	     ./viewers/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../eti-handler/eti-generator.h
 	     ../includes/dab-constants.h
@@ -293,13 +300,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ../includes/support/buttons/smallspinbox.h 
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../includes/scopes-qwt6/spectrogramdata.h
-	     ../viewers/spectrum-viewer/spectrum-viewer.h 
-	     ../viewers/spectrum-viewer/spectrum-scope.h 
-	     ../viewers/spectrum-viewer/waterfall-scope.h 
-	     ../viewers/spectrum-viewer/null-scope.h 
-	     ../viewers/correlation-viewer/correlation-viewer.h 
-	     ../viewers/tii-viewer/tii-viewer.h
-	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/device-vhooser.h
 	     ../qt-devices/device-exceptions.h
@@ -321,6 +321,13 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./forms-v5/iq-scope/iqdisplay.cpp
 	     ./support/techdata.cpp
 	     ./support/super-frame.cpp
+	     ./viewers/spectrum-viewer/spectrum-viewer.cpp 
+	     ./viewers/spectrum-viewer/spectrum-scope.cpp 
+	     ./viewers/spectrum-viewer/waterfall-scope.cpp 
+	     ./viewers/spectrum-viewer/null-scope.cpp 
+	     ./viewers/correlation-viewer/correlation-viewer.cpp 
+	     ./viewers/tii-viewer/tii-viewer.cpp
+	     ./viewers/snr-viewer/snr-viewer.cpp
 	     ../ofdm-handler.cpp
 	     ../eti-handler/eti-generator.cpp
              ../src/ofdm/sample-reader.cpp
@@ -404,13 +411,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/fir-filters.cpp
 	     ../src/scopes-qwt6/audio-display.cpp 
 	     ../src/scopes-qwt6/spectrogramdata.cpp 
-	     ../viewers/spectrum-viewer/spectrum-viewer.cpp 
-	     ../viewers/spectrum-viewer/spectrum-scope.cpp 
-	     ../viewers/spectrum-viewer/waterfall-scope.cpp 
-	     ../viewers/spectrum-viewer/null-scope.cpp 
-	     ../viewers/correlation-viewer/correlation-viewer.cpp 
-	     ../viewers/tii-viewer/tii-viewer.cpp
-	     ../viewers/snr-viewer/snr-viewer.cpp
 	     ../qt-devices/device-handler.cpp
 	     ../qt-devices/device-chooser.cpp
 	     ../qt-devices/xml-filewriter.cpp
@@ -428,6 +428,13 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./support/techdata.h
 	     ./support/super-frame.h
 	     ./forms-v5/iq-scope/iqdisplay.h
+	     ./viewers/spectrum-viewer/spectrum-viewer.h 
+	     ./viewers/spectrum-viewer/spectrum-scope.h 
+	     ./viewers/spectrum-viewer/waterfall-scope.h 
+	     ./viewers/spectrum-viewer/null-scope.h 
+	     ./viewers/correlation-viewer/correlation-viewer.h 
+ 	     ./viewers/tii-viewer/tii-viewer.h
+ 	     ./viewers/snr-viewer/snr-viewer.h
 	     ../ofdm-handler.h
 	     ../includes/output/audio-player.h
 	     ../includes/ofdm/sample-reader.h
@@ -474,13 +481,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/mapport.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
-	     ../viewers/spectrum-viewer/spectrum-viewer.h 
-	     ../viewers/spectrum-viewer/spectrum-scope.h 
-	     ../viewers/spectrum-viewer/waterfall-scope.h 
-	     ../viewers/spectrum-viewer/null-scope.h 
-	     ../viewers/correlation-viewer/correlation-viewer.h 
- 	     ../viewers/tii-viewer/tii-viewer.h
- 	     ../viewers/snr-viewer/snr-viewer.h
 	     ../qt-devices/device-handler.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
 	     ../qt-devices/filereaders/rawfiles-new/raw-reader.h
@@ -495,10 +495,10 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ./forms-v5/dabradio-5.ui
 	     ./forms-v5/technical_data.ui
 	     ./forms-v5/config-helper.ui
-	     ../viewers/spectrum-viewer/scopewidget.ui
-	     ../viewers/correlation-viewer/correlation-widget.ui
-	     ../viewers/tii-viewer/tii-widget.ui
-	     ../viewers/snr-viewer/snr-widget.ui
+	     ./viewers/spectrum-viewer/scopewidget.ui
+	     ./viewers/correlation-viewer/correlation-widget.ui
+	     ./viewers/tii-viewer/tii-widget.ui
+	     ./viewers/snr-viewer/snr-widget.ui
 	     ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 	   )
 

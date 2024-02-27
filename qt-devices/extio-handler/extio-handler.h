@@ -19,7 +19,6 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- *
  */
 #pragma once
 
@@ -169,7 +168,7 @@ typedef enum {
   , extHw_modeTX  = 1
 } extHw_ModeRxTxT;
 
-class	extioHandler:public QObject, public deviceHandler {
+class	extioHandler:public deviceHandler {
 Q_OBJECT
 public:
 			extioHandler		(QSettings *);

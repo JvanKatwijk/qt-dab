@@ -30,8 +30,8 @@ static inline
 int64_t         getMyTime() {
 struct timeval  tv;
 
-        gettimeofday (&tv, nullptr);
-        return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
+	gettimeofday (&tv, nullptr);
+	return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 
 	wavReader::wavReader	(wavFiles	*mr,
@@ -42,9 +42,9 @@ struct timeval  tv;
 	this	-> theBuffer	= theBuffer;
 	fileLength		= sf_seek (filePointer, 0, SEEK_END);
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
-        sf_seek (filePointer, 0, SEEK_SET);
+	sf_seek (filePointer, 0, SEEK_SET);
 	period          = (32768 * 1000) / (2048);  // full IQś read
-        fprintf (stderr, "Period = %ld\n", period);
+	fprintf (stderr, "Period = %ld\n", period);
 	running. store (false);
 	start();
 }

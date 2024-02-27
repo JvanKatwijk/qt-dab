@@ -47,6 +47,11 @@ DEPENDPATH += . \
 	      ./forms-v5 \		
 	      ./forms-v5/iq-scope \		
 	      ./support \
+	      ./viewers \
+              ./viewers/spectrum-viewer \
+	      ./viewers/correlation-viewer \
+	      ./viewers/tii-viewer \
+	      ./viewers/snr-viewer \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -75,11 +80,6 @@ DEPENDPATH += . \
 	      ../includes/support \
 	      ../includes/support/buttons \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-              ../viewers/spectrum-viewer \
-	      ../viewers/correlation-viewer \
-	      ../viewers/tii-viewer \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -90,6 +90,11 @@ DEPENDPATH += . \
 INCLUDEPATH += . \
 	       ./support \
 	       ./forms-v5/iq-scope \
+	       ./viewers \
+               ./viewers/spectrum-viewer \
+	       ./viewers/correlation-viewer \
+	       ./viewers/tii-viewer \
+	       ./viewers/snr-viewer \
 	      ../ \
 	      ../eti-handler \
 	      ../src \
@@ -109,11 +114,6 @@ INCLUDEPATH += . \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-              ../viewers/spectrum-viewer \
-	      ../viewers/correlation-viewer \
-	      ../viewers/tii-viewer \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders/ \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -125,6 +125,13 @@ HEADERS += ./radio.h \
 	   ./support/techdata.h \
 	   ./support/super-frame.h \
 	   ./forms-v5/iq-scope/iqdisplay.h \
+	   ./viewers/spectrum-viewer/spectrum-viewer.h \
+	   ./viewers/spectrum-viewer/spectrum-scope.h \
+	   ./viewers/spectrum-viewer/waterfall-scope.h \
+	   ./viewers/spectrum-viewer/null-scope.h \
+	   ./viewers/correlation-viewer/correlation-viewer.h \
+	   ./viewers/tii-viewer/tii-viewer.h \
+	   ./viewers/snr-viewer/snr-viewer.h \
 	   ../ofdm-handler.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
@@ -221,13 +228,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/smallspinbox.h \
 	   ../includes/scopes-qwt6/spectrogramdata.h \
 	   ../includes/scopes-qwt6/audio-display.h \
-	   ../viewers/spectrum-viewer/spectrum-viewer.h \
-	   ../viewers/spectrum-viewer/spectrum-scope.h \
-	   ../viewers/spectrum-viewer/waterfall-scope.h \
-	   ../viewers/spectrum-viewer/null-scope.h \
-	   ../viewers/correlation-viewer/correlation-viewer.h \
-	   ../viewers/tii-viewer/tii-viewer.h \
-	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
@@ -246,10 +246,10 @@ FORMS	+= ./forms-v5/dabradio-5.ui
 FORMS	+= ./forms-v5/config-helper.ui 
 FORMS	+= ./forms-v5/audio-description.ui
 FORMS	+= ./forms-v5/data-description.ui
-FORMS	+= ../viewers/spectrum-viewer/scopewidget.ui
-FORMS	+= ../viewers/correlation-viewer/correlation-widget.ui
-FORMS	+= ../viewers/tii-viewer/tii-widget.ui
-FORMS	+= ../viewers/snr-viewer/snr-widget.ui
+FORMS	+= ./viewers/spectrum-viewer/scopewidget.ui
+FORMS	+= ./viewers/correlation-viewer/correlation-widget.ui
+FORMS	+= ./viewers/tii-viewer/tii-widget.ui
+FORMS	+= ./viewers/snr-viewer/snr-widget.ui
 #FORMS	+= ../qt-devices/filereaders/filereader-widget.ui 
 FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 
@@ -258,6 +258,13 @@ SOURCES += ./main.cpp \
 	   ./support/techdata.cpp \
 	   ./support/super-frame.cpp \
 	   ./forms-v5/iq-scope/iqdisplay.cpp \
+	   ./viewers/spectrum-viewer/spectrum-viewer.cpp \
+	   ./viewers/spectrum-viewer/spectrum-scope.cpp \
+	   ./viewers/spectrum-viewer/waterfall-scope.cpp \
+	   ./viewers/spectrum-viewer/null-scope.cpp \
+	   ./viewers/correlation-viewer/correlation-viewer.cpp \
+	   ./viewers/tii-viewer/tii-viewer.cpp \
+	   ./viewers/snr-viewer/snr-viewer.cpp \
 	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -340,13 +347,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
 	   ../src/scopes-qwt6/audio-display.cpp \
 	   ../src/scopes-qwt6/spectrogramdata.cpp \
-	   ../viewers/spectrum-viewer/spectrum-viewer.cpp \
-	   ../viewers/spectrum-viewer/spectrum-scope.cpp \
-	   ../viewers/spectrum-viewer/waterfall-scope.cpp \
-	   ../viewers/spectrum-viewer/null-scope.cpp \
-	   ../viewers/correlation-viewer/correlation-viewer.cpp \
-	   ../viewers/tii-viewer/tii-viewer.cpp \
-	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \

@@ -19,7 +19,6 @@
 	                                          lnaState,
 	                                          GRdB,
 	                                          biasT) {
-	fprintf (stderr, "We gaan naar antenna %c\n", antennaValue);
 	set_antenna (antennaValue);
 	this	-> deviceModel		= "RSP-Dx";
 	this	-> nrBits		= 14;

@@ -31,8 +31,8 @@ static inline
 int64_t         getMyTime() {
 struct timeval  tv;
 
-        gettimeofday (&tv, nullptr);
-        return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
+	gettimeofday (&tv, nullptr);
+	return ((int64_t)tv. tv_sec * 1000000 + (int64_t)tv. tv_usec);
 }
 
 	rawReader::rawReader	(rawFiles *mr,
@@ -45,10 +45,10 @@ struct timeval  tv;
 	fseek (filePointer, 0, SEEK_END);
 	fileLength		= ftell (filePointer);
 	fprintf (stderr, "fileLength = %d\n", (int)fileLength);
-        fseek (filePointer, 0, SEEK_SET);
+	fseek (filePointer, 0, SEEK_SET);
 	period          = (32768 * 1000) / (2 * 2048);  // full IQś read
-        fprintf (stderr, "Period = %ld\n", period);
-        bi              = new uint8_t [BUFFERSIZE];
+	fprintf (stderr, "Period = %ld\n", period);
+	bi              = new uint8_t [BUFFERSIZE];
 	running. store (false);
 	start();
 }
@@ -103,13 +103,13 @@ std::complex<float> localBuffer [BUFFERSIZE / 2];
 	         if (!running. load())
 	            throw (32);
 	         usleep (100);
-              }
+	      }
 	
 	      if (++teller >= 20) {
 	         int xx = ftell (filePointer);
 	         float progress = (float)xx / fileLength;
 	         setProgress ((int)(progress * 100), (float)xx / (2 * 2048000));
-                 teller = 0;
+	         teller = 0;
 	      }
 
 	      nextStop += period;
@@ -117,20 +117,20 @@ std::complex<float> localBuffer [BUFFERSIZE / 2];
 	      if (n < BUFFERSIZE) {
 	         fprintf (stderr, "eof gehad\n");
 	         fseek (filePointer, 0, SEEK_SET);
-                 for (i =  n; i < BUFFERSIZE; i ++)
-                    bi [i] = 0;
-              }
+	         for (i =  n; i < BUFFERSIZE; i ++)
+	            bi [i] = 0;
+	      }
 
 	      for (i = 0; i < BUFFERSIZE / 2; i ++)
 	         localBuffer [i] = std::complex<float> (
 	                                       4 * mapTable [bi [2 * i]],
 	                                       4 * mapTable [bi [2 * i + 1]]);
-              _I_Buffer -> putDataIntoBuffer (localBuffer, BUFFERSIZE / 2);
-              if (nextStop - getMyTime() > 0)
-                 usleep (nextStop - getMyTime());
-           }
+	      _I_Buffer -> putDataIntoBuffer (localBuffer, BUFFERSIZE / 2);
+	      if (nextStop - getMyTime() > 0)
+	         usleep (nextStop - getMyTime());
+	   }
 	} catch (int e) {}
-        fprintf (stderr, "taak voor replay eindigt hier\n");
+	fprintf (stderr, "taak voor replay eindigt hier\n");
 }
 
 
