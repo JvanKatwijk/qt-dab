@@ -33,6 +33,7 @@
 
 //	The Rsp's
 #include	"Rsp-device.h"
+#include	"RspI-handler.h"
 #include	"Rsp1A-handler.h"
 #include	"RspII-handler.h"
 #include	"RspDuo-handler.h"
@@ -579,7 +580,7 @@ uint32_t                ndev;
 	   goto closeAPI;
         }
 
-	if (apiVersion < 3.08) {
+	if (apiVersion < 3.07) {
 //	if (apiVersion < (SDRPLAY_API_VERSION - 0.01)) {
            fprintf (stderr, "API versions don't match (local=%.2f dll=%.2f)\n",
                                               SDRPLAY_API_VERSION, apiVersion);
@@ -641,6 +642,17 @@ uint32_t                ndev;
 	                                     lnaState,
 	                                     GRdBValue,
 	                                     antennaValue,
+	                                     biasT);
+	         break;
+
+	      case SDRPLAY_RSP1_ :
+	         theRsp	= new Rsp1_handler  (this,
+	                                     chosenDevice,
+	                                     inputRate,
+	                                     KHz (14070),
+	                                     agcMode,
+	                                     lnaState,
+	                                     GRdBValue,
 	                                     biasT);
 	         break;
 

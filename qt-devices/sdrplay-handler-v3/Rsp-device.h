@@ -1,6 +1,4 @@
-
-#ifndef	__RSP_DEVICE_H
-#define	__RSP_DEVICE_H
+#pragma once
 
 #include	<QObject>
 #include	<stdint.h>
@@ -51,6 +49,4 @@ signals:
 	void	set_nrBits_signal	(int);
 	void	show_lnaGain		(int);
 };
-#endif
-
 

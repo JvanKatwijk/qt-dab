@@ -1,6 +1,6 @@
 
-#ifndef	__RSPII_HANDLER_H
-#define	__RSPII_HANDLER_H
+
+#pragma once
 
 #include	"Rsp-device.h"
 
@@ -31,7 +31,4 @@ private:
 	int16_t	bankFor_rspII 	(int freq);
 	int	get_lnaGain	(int, int);
 };
-#endif
-
-
 

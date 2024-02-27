@@ -27,7 +27,7 @@ QMAKE_LFLAGS	+=  -ffast-math -flto
 #QMAKE_CXXFLAGS	+=  -pg
 #QMAKE_LFLAGS	+=  -pg
 QMAKE_CXXFLAGS += -isystem $$[QT_INSTALL_HEADERS]
-RC_ICONS	=  qt-dab-RC.ico
+RC_ICONS	=  qt-dab-6.5.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
@@ -616,12 +616,14 @@ sdrplay-v3 {
                            ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.cpp 

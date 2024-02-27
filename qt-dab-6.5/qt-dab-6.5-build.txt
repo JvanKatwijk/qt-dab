@@ -5,13 +5,13 @@ mkdir -p ./appdir/usr/share/applications
 mkdir -p ./appdir/usr/share/icons/hicolor/128x128/apps/
 mkdir -p ./appdir/usr/share/icons/hicolor/256x256/apps/
 
-cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.5Beta
-cp qt-dab-6.5Beta.desktop	appdir/usr/share/applications
-cp ../res/qt-dab-RC-256x256.png	appdir/qt-dab-6.5Beta.png
-cp ../res/qt-dab-RC-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
-cp ../res/qt-dab-RC-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
+cp linux-bin/qt-dab* 	appdir/usr/bin/qt-dab-6.5
+cp qt-dab-6.5.desktop	appdir/usr/share/applications
+cp ../res/qt-dab-6.5-256x256.png	appdir/qt-dab-6.5.png
+cp ../res/qt-dab-6.5-128x128.png	appdir/usr/share/icons/hicolor/128x128/apps/
+cp ../res/qt-dab-6.5-256x256.png	appdir/usr/share/icons/hicolor/256x256/apps/
 
-touch appdir/qt-dab-RC.png
+touch appdir/qt-dab-6.5.png
   
 wget -c "https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage" 
 chmod a+x linuxdeployqt*.AppImage

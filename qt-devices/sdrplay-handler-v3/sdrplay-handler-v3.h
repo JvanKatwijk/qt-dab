@@ -46,8 +46,7 @@ class	xml_fileWriter;
 #define GETPROCADDRESS  dlsym
 #endif
 
-class	sdrplayHandler_v3: //public QThread,
-	                    public deviceHandler, public Ui_sdrplayWidget_v3 {
+class	sdrplayHandler_v3: public deviceHandler, public Ui_sdrplayWidget_v3 {
 Q_OBJECT
 public:
 			sdrplayHandler_v3	(QSettings *, const QString &);
