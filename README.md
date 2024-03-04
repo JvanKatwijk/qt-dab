@@ -15,7 +15,7 @@
 Recent changes
 ------------------------------------------------------------------------
 
-The version Qt-DAB6.4Beta has undergone some more minor modifications
+The version Qt-DAB6.5Beta has undergone some more minor modifications
 and is believed to be sufficiently stable to have the "Beta" removed.
 
 ------------------------------------------------------------------------

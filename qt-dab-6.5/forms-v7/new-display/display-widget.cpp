@@ -31,6 +31,8 @@
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
+#include	"position-handler.h"
+
 #define	DISPLAY_WIDGET_SETTINGS	"displayWidget"
 
 	displayWidget::displayWidget	(RadioInterface	*mr,
@@ -40,16 +42,9 @@
 	                                         dabSettings_p (dabSettings) {
 	(void)mr;
 int	sliderValue;
-	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
-	dabSettings_p	-> beginGroup (settingsHeader);
-	int x   = dabSettings_p -> value (settingsHeader + "-x", 100). toInt ();
-        int y   = dabSettings_p -> value (settingsHeader + "-y", 100). toInt ();
-	int w	= dabSettings_p -> value (settingsHeader + "-w", 150). toInt ();
-	int h	= dabSettings_p -> value (settingsHeader + "-h", 120). toInt ();
-	dabSettings_p	-> endGroup ();
         setupUi (&myFrame);
-	myFrame. resize (QSize (w, h));
-        myFrame. move (QPoint (x, y));
+	set_position_and_size (dabSettings_p, &myFrame,
+	                                     DISPLAY_WIDGET_SETTINGS);
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ())); 
 //
@@ -119,16 +114,10 @@ int	sliderValue;
 }
 
 	displayWidget::~displayWidget () {
-	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
-	dabSettings_p	-> beginGroup (settingsHeader);
-        dabSettings_p	-> setValue (settingsHeader + "-x",
-	                                             myFrame. pos (). x ());
-        dabSettings_p	-> setValue (settingsHeader + "-y",
-	                                             myFrame. pos (). y ());
-	QSize size	= myFrame. size ();
-	dabSettings_p	-> setValue (settingsHeader + "-w", size. width ());
-	dabSettings_p	-> setValue (settingsHeader + "-h", size. height ());
-	
+	store_widget_position (dabSettings_p, &myFrame,
+	                                   DISPLAY_WIDGET_SETTINGS);
+	                          
+	dabSettings_p	-> beginGroup (DISPLAY_WIDGET_SETTINGS);
 	dabSettings_p	-> setValue ("iqSliderValue",
 	                               scopeSlider -> value ());
 	dabSettings_p	-> setValue ("spectrumSlider",

@@ -32,14 +32,14 @@ bool    isValid (QChar c) {
 	return c. isLetter () || c. isDigit () || (c == '-');
 }
 
-	findfileNames::findfileNames (QSettings *s) {
-	dabSettings	= s;
+	findfileNames::findfileNames (QSettings *s):
+	                                      dabSettings (s) {
 }
 
 	findfileNames::~findfileNames	() {}
 
 
-void	findfileNames::save_saveDir (const QString key, const QString path) {
+void	findfileNames::save_dirName (const QString key, const QString path) {
 	QString	dumper	= QDir::fromNativeSeparators (path);
 	int x           = dumper. lastIndexOf ("/");
 	QString saveDir	= dumper. remove (x, dumper. count () - x);
@@ -96,7 +96,7 @@ QString	fileName	= outputDialog (saveDir, channel, ".csv", true);
 	   return nullptr;
 	}
 
-	save_saveDir (CONTENT_DIR, fileName);
+	save_dirName (CONTENT_DIR, fileName);
 	return fileP;
 }
 
@@ -116,7 +116,7 @@ QString	fileName	= outputDialog (saveDir, service, ".aac", flag);
 	   return nullptr;
 	}
 
-	save_saveDir ("saveDir_frameDump", fileName);
+	save_dirName ("saveDir_frameDump", fileName);
 	return theFile;
 }
 
@@ -141,7 +141,7 @@ QString	saveDir	 = dabSettings -> value ("saveDir_audioDump",
 	   return nullptr;
 	}
 
-	save_saveDir ("saveDir_audioDump", fileName);
+	save_dirName ("saveDir_audioDump", fileName);
 	return theFile;
 }
 
@@ -168,7 +168,7 @@ QString	saveDir		= dabSettings -> value ("saveDir_rawDump",
 	   return nullptr;
 	}
 
-	save_saveDir ("saveDir_rawDump", fileName);
+	save_dirName ("saveDir_rawDump", fileName);
 	return theFile;
 }
 

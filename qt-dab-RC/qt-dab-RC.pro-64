@@ -217,7 +217,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/skin-handler.h \
 	   ../includes/support/mapport.h \
-	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
@@ -343,7 +342,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/skin-handler.cpp \
 	   ../src/support/mapport.cpp \
-	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \

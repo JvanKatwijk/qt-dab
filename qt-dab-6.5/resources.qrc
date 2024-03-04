@@ -4,7 +4,11 @@
         <file>qt-dab-6.5.ico</file>
         <file>../AUTHORS</file>
         <file>../COPYING</file>
-	<file>../res/pauze-slide.png</file>
+	<file>../res/pauze-slide-1.png</file>
+	<file>../res/pauze-slide-2.png</file>
+	<file>../res/pauze-slide-3.png</file>
+	<file>../res/pauze-slide-4.png</file>
+	<file>../res/pauze-slide-5.png</file>
 	<file>../res/qt-map.html</file>
 	<file>../res/EasyCode.qss</file>
 	<file>../res/Darkeum.qss</file>

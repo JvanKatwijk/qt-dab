@@ -26,7 +26,7 @@
 #include	<QSettings>
 
 	uploadHandler::uploadHandler	(QSettings *dabSettings) {
-	this	-> dabSettings = dabSettings;
+	this		-> dabSettings = dabSettings;
 	uploadText	= new QLabel (this);
 	uploadText	-> setText ("upload the scanresult?");
 	yesButton	= new QPushButton ("yes");
@@ -59,4 +59,5 @@ void	uploadHandler::handle_yesButton () {
 void	uploadHandler::handle_noButton	() {
 	QDialog::done (false);
 }
+
 

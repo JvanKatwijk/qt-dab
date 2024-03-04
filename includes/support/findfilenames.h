@@ -57,7 +57,7 @@ private:
 	                                         const QString &extension,
 	                                         bool flag);
 
-void	save_saveDir				(const QString key,
+void	save_dirName				(const QString key,
 	                                         const QString path);
 };
 

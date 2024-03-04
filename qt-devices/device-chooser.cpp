@@ -106,6 +106,7 @@
 //	Some devices are always configured
 //
 #define	NO_ENTRY	0100
+#define	FILE_INPUT	0177
 #define	RAW_FILE_RAW	0101
 #define	RAW_FILE_IQ	0102
 #define	WAV_FILE	0103
@@ -114,11 +115,7 @@
 	deviceChooser::deviceChooser (QSettings *dabSettings) {
 	this	-> dabSettings	= dabSettings;
 	deviceList. push_back (deviceItem ("select input", NO_ENTRY));
-	deviceList. push_back (deviceItem ("file input(.raw)", RAW_FILE_RAW));
-	deviceList. push_back (deviceItem ("file input(.iq)", RAW_FILE_IQ));
-	deviceList. push_back (deviceItem ("file input(.sdr)", WAV_FILE));
-	deviceList. push_back (deviceItem ("xml files", XML_FILE));
-
+	deviceList. push_back (deviceItem ("file input", FILE_INPUT));
 #ifdef	HAVE_SDRPLAY_V3
 	deviceList. push_back (deviceItem ("sdrplay", SDRPLAY_V3_DEVICE));
 #endif
@@ -288,37 +285,24 @@ int	deviceNumber	= getDeviceIndex (s);
 	      return new spyServer_client_8 (dabSettings);
 	      break;
 #endif
-	   case XML_FILE:
-	   {  QString fileName	= getFileName ("xml");
+	   case FILE_INPUT:
+	   {  uint8_t fileType = 0;
+	      QString fileName	= getFileName (fileType);
 	      if (fileName == "")
 	         throw (device_exception ("no file"));
-	      return  new xml_fileReader (fileName);
-	      break;
+	      switch (fileType) {
+	         case RAW_FILE_RAW:
+	         case RAW_FILE_IQ:
+	            return new rawFiles (fileName);
+	         case WAV_FILE:
+	            return new wavFiles (fileName);
+	         case XML_FILE:
+	            return new rawFiles (fileName);
+	         default:
+	            throw (device_exception ("no file"));
+	      }
 	   }
-
-	   case RAW_FILE_RAW:
-	   {  QString fileName = getFileName ("raw");
-	      if (fileName == "")
-	         throw (device_exception ("no file"));
-	      return new rawFiles (fileName);
-	      break;
-	   }
-
-	   case RAW_FILE_IQ:
-	   {  QString fileName	= getFileName ("iq");
-	      if (fileName == "")
-	         throw (device_exception ("no file"));
-	      return  new rawFiles (fileName);
-	      break;
-	   }
-	   
-	   case WAV_FILE:
-	   {  QString fileName	= getFileName ("wav");
-	      if (fileName == "")
-	         throw (device_exception ("no file"));
-	      return new wavFiles (fileName);
-	      break;
-	   }
+	   break;
 
 	   default:
 	      throw (device_exception ("unknown device selected"));
@@ -327,20 +311,41 @@ int	deviceNumber	= getDeviceIndex (s);
 	return nullptr;
 }
 
-QString	deviceChooser::getFileName	(const QString &key) {
-QString typeDesc =
-	key == "xml" ? "xml data (*.uff)" :
-	key == "wav" ? "sdr data (*.sdr)" :
-	key == "iq"  ? "iq data (*.iq)" : "raw data (*.raw)";
+QString	 deviceChooser::getFileName	(uint8_t &fileType) {
+QString selected_type;
+QString TYPE_XML	= "uff-xml (*.uff)";
+QString TYPE_SDR	= "sdr-wav (*.sdr)";
+QString TYPE_RAW	= "raw (*.raw)";
+QString TYPE_IQ		= "IQ-RAW (*.iq)";
 
-	QString file = QFileDialog::getOpenFileName (nullptr,
-	                                             "Open file ...",
-	                                             QDir::homePath(),
-	                                             typeDesc);
-	      if (file == QString (""))
-	         return "";
+QString fileName =
+	       QFileDialog::getOpenFileName (nullptr,
+                                             "Open file ...",
+	                                     QDir::homePath (),
+                                             TYPE_XML + ";;" +
+	                                     TYPE_SDR + ";;" +
+	                                     TYPE_RAW + ";;" +
+	                                     TYPE_IQ,
+                                             &selected_type,
+	                                     QFileDialog::DontUseNativeDialog);
+	
+	if (fileName == "")
+	   return "";		// note typeFound unset
 
-	      return QDir::toNativeSeparators (file);
+	if (selected_type == TYPE_XML) 
+	  fileType	= XML_FILE;
+	else
+	if (selected_type == TYPE_SDR)
+	   fileType	= WAV_FILE;
+	else
+	if (selected_type == TYPE_RAW)
+	   fileType	= RAW_FILE_RAW;
+	else
+	if (selected_type == TYPE_IQ)
+	   fileType	= RAW_FILE_IQ;
+	else
+	   fileType	= 0;
+
+	return fileName;
 }
-
 

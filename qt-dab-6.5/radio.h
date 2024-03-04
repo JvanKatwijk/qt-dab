@@ -249,10 +249,6 @@ private:
 //	end of variables that are initalized
 
 	dabService		checkPresets		();
-	void			set_position_and_size	(QWidget *w,
-                                                         const QString &key);
-	void			store_widget_position	(QWidget *w,
-                                                         const QString &key);
 	int			int_configValue		(const QString &, int);
 
 	position		localPos;

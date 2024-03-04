@@ -14,12 +14,12 @@ win32 {
 #QMAKE_CXXFLAGS	+=  -O3 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address 
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address 
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -193,6 +193,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
 	   ../includes/support/settingnames.h \
 	   ../includes/support/fft-handler.h \
@@ -218,7 +219,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/coordinates.h \
 	   ../includes/support/skin-handler.h \
 	   ../includes/support/mapport.h \
-	   ../includes/support/upload.h \
 	   ../includes/support/bandpass-filter.h \
 	   ../includes/support/fir-filters.h \
 	   ../includes/support/font-chooser.h \
@@ -326,6 +326,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/position-handler.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -346,7 +347,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/coordinates.cpp \
 	   ../src/support/skin-handler.cpp \
 	   ../src/support/mapport.cpp \
-	   ../src/support/upload.cpp \
 	   ../src/support/bandpass-filter.cpp \
 	   ../src/support/fir-filters.cpp \
 	   ../src/support/font-chooser.cpp \
@@ -373,7 +373,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.5Beta
+TARGET		= qt-dab-6.X
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -614,12 +614,14 @@ sdrplay-v3 {
         HEADERS         += ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
                            ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \

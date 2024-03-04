@@ -189,6 +189,8 @@ HEADERS += ./radio.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/distances.h \
+	   ../includes/support/position-handler.h \
 	   ../includes/support/cacheElement.h \
 	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
@@ -313,6 +315,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audiosink.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/position-handler.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -580,12 +583,14 @@ sdrplay-v3 {
         HEADERS         += ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
                            ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \

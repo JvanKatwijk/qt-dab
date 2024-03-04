@@ -41,7 +41,6 @@ public:
 		configHandler		(RadioInterface *parent,
 	                                 QSettings *settings);
 		~configHandler		();
-	
 
 	void	show			();
 	void	hide			();
@@ -49,6 +48,8 @@ public:
 	void	set_connections		();
 //
 //	the value extractors
+	bool	upload_selector_active	();
+	bool	upload_active		();
 	int	get_serviceOrder	();
 	int	switchDelayValue	();
 	int	muteValue		();
@@ -91,8 +92,6 @@ private:
 	void		set_Colors		();
 	void		set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName);
-	void		set_position_and_size	(QWidget *, const QString &);
-
 	void		setConfig		(const QString &, int);
 	void		setConfig		(const QString &,
 	                                           const QString &);
@@ -113,6 +112,7 @@ private slots:
 	void	color_skinButton	();
 //
 //	and the handlers:
+	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
 	void	handle_orderAlfabetical		();

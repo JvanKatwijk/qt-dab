@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C)  2014 .. 2020
+ *    Copyright (C)  2014 .. 2024
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -29,6 +29,7 @@
 #include	<QPen>
 #include	<string.h>
 #include	<QColorDialog>
+#include	"position-handler.h"
 
 	snrViewer::snrViewer	(RadioInterface	*mr,
 	                         QSettings	*s):
@@ -38,6 +39,8 @@ QString	colorString	= "black";
 	this		-> myRadioInterface	= mr;
 	this		-> dabSettings		= s;
 
+	setupUi (&myFrame);
+	set_position_and_size (s, &myFrame, "snrViewer");
 	dabSettings	-> beginGroup ("snrViewer");
 	plotLength	= dabSettings -> value ("snrLength", 312). toInt ();
 	plotHeight	= dabSettings -> value ("snrHeight", 15). toInt ();
@@ -52,7 +55,6 @@ QString	colorString	= "black";
 	                                                "white"). toString();
 	curveColor	= QColor (colorString);
 	dabSettings	-> endGroup ();
-	setupUi (&myFrame);
 
 	snrLengthSelector -> setValue (plotLength);
 	snrSlider	-> setValue (plotHeight);
@@ -112,8 +114,7 @@ QString	colorString	= "black";
 
 	snrViewer::~snrViewer () {
 	stopDumping 	();
-//	delete lm_picker;
-//	delete lpickerMachine;
+	store_widget_position (dabSettings, &myFrame, "snrViewer");
 }
 
 void	snrViewer::show () {
@@ -182,49 +183,45 @@ float	snrViewer::get_db (float x) {
 
 void	snrViewer::rightMouseClick	(const QPointF &point) {
 QColor	color;
-QString	displayColor;
-QString	gridColor;
-QString	curveColor;
+//QString	displayColor;
+//QString	gridColor;
+//QString	curveColor;
 
 	(void)point;
 	color		= QColorDialog::getColor (displayColor,
                                                   nullptr, "displayColor");
         if (!color. isValid ())
            return;
+	this	-> displayColor	= color;
 	color		= QColorDialog::getColor (gridColor,
-                                                  nullptr, "fridColor");
+                                                  nullptr, "gridColor");
         if (!color. isValid ())
            return;
+	this	->  gridColor	= color;
 	color		= QColorDialog::getColor (curveColor,
                                                   nullptr, "curveColor");
         if (!color. isValid ())
            return;
+	this	-> curveColor	= color;
 
 	dabSettings	-> beginGroup ("snrViewer");
-	dabSettings	-> setValue ("displayColor", displayColor);
-	dabSettings	-> setValue ("gridColor", gridColor);
-	dabSettings	-> setValue ("curveColor", curveColor);
+	dabSettings	-> setValue ("displayColor", displayColor. name ());
+	dabSettings	-> setValue ("gridColor", gridColor. name ());
+	dabSettings	-> setValue ("curveColor", curveColor. name ());
 	dabSettings	-> endGroup ();
 
-	this		-> displayColor	= QColor (displayColor);
-	this		-> gridColor	= QColor (gridColor);
-	this		-> curveColor	= QColor (curveColor);
 	spectrum_curve. setPen (QPen(this -> curveColor, 2.0));
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMajPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMajPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid. setMajorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMajorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	grid. enableXMin (true);
 	grid. enableYMin (true);
 #if defined QWT_VERSION && ((QWT_VERSION >> 8) < 0x0601)
-	grid. setMinPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMinPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #else
-	grid. setMinorPen (QPen(this -> gridColor, 0,
-	                                                   Qt::DotLine));
+	grid. setMinorPen (QPen(this -> gridColor, 0, Qt::DotLine));
 #endif
 	plotgrid	->  setCanvasBackground (this -> displayColor);
 }

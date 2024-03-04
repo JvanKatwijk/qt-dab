@@ -31,6 +31,8 @@
 #include	"waterfall-scope.h"
 #include	"iqdisplay.h"
 
+#include	"position-handler.h"
+
 #define	DISPLAY_WIDGET_SETTINGS	"displayWidget"
 
 	displayWidget::displayWidget	(RadioInterface	*mr,
@@ -41,15 +43,9 @@
 	(void)mr;
 int	sliderValue;
 	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
-	dabSettings_p	-> beginGroup (settingsHeader);
-	int x   = dabSettings_p -> value (settingsHeader + "-x", 100). toInt ();
-        int y   = dabSettings_p -> value (settingsHeader + "-y", 100). toInt ();
-	int w	= dabSettings_p -> value (settingsHeader + "-w", 150). toInt ();
-	int h	= dabSettings_p -> value (settingsHeader + "-h", 120). toInt ();
-	dabSettings_p	-> endGroup ();
-        setupUi (&myFrame);
-	myFrame. resize (QSize (w, h));
-        myFrame. move (QPoint (x, y));
+	setupUi (&myFrame);
+	set_position_and_size (dabSettings_p, &myFrame, 
+	                           DISPLAY_WIDGET_SETTINGS);
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ())); 
 //
@@ -71,7 +67,7 @@ int	sliderValue;
 	                                                 dabSettings_p);
 	devScope_p		= new devScope		(devPlot,
 	                                                 512, dabSettings_p);
-	IQDisplay_p		= new IQDisplay		(iqDisplay, 512);
+	IQDisplay_p		= new IQDisplay		(iqDisplay);
 	waterfallScope_p	= new waterfallScope	(waterfallDisplay,
 	                                                512, 50);
 //
@@ -119,16 +115,9 @@ int	sliderValue;
 }
 
 	displayWidget::~displayWidget () {
-	QString settingsHeader	= DISPLAY_WIDGET_SETTINGS;
-	dabSettings_p	-> beginGroup (settingsHeader);
-        dabSettings_p	-> setValue (settingsHeader + "-x",
-	                                             myFrame. pos (). x ());
-        dabSettings_p	-> setValue (settingsHeader + "-y",
-	                                             myFrame. pos (). y ());
-	QSize size	= myFrame. size ();
-	dabSettings_p	-> setValue (settingsHeader + "-w", size. width ());
-	dabSettings_p	-> setValue (settingsHeader + "-h", size. height ());
-	
+	store_widget_position (dabSettings_p, &myFrame,
+	                                 DISPLAY_WIDGET_SETTINGS);
+	dabSettings_p	-> beginGroup (DISPLAY_WIDGET_SETTINGS);
 	dabSettings_p	-> setValue ("iqSliderValue",
 	                               scopeSlider -> value ());
 	dabSettings_p	-> setValue ("spectrumSlider",
@@ -388,10 +377,10 @@ std::vector<Complex> tempDisplay (512);
 	      tempDisplay [i] = Complex (real (temp), imag (temp));
 	   }
 
-           IQDisplay_p -> DisplayIQ (tempDisplay, 512, sliderValue * 2);
+           IQDisplay_p -> displayIQ (tempDisplay, sliderValue * 2);
 	}
 	else
-           IQDisplay_p -> DisplayIQ (Values, 512, sliderValue * 2);
+           IQDisplay_p -> displayIQ (Values, sliderValue * 2);
 }
 
 void	displayWidget:: show_quality (float q, float timeOffset,	

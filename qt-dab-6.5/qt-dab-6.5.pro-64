@@ -193,6 +193,7 @@ HEADERS += ./radio.h \
 	   ../includes/output/audio-player.h \
 	   ../includes/output/audiosink.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/position-handler.h \
            ../includes/support/cacheElement.h \
 	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
@@ -325,7 +326,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
-	   ../src/support/distances.cpp \
+	   ../src/support/position-handler.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -373,7 +374,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.40
+TARGET		= qt-dab-6.50
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {

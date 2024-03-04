@@ -34,17 +34,16 @@
 	ui -> setupUi (this);
 	QPixmap p;
 	p. load (":res/pauze-slide.png", "png");
-	ui -> appIcon	-> setPixmap (p);
-	ui -> appName -> setText ("<b>Qt-DAB</b>");
-	ui -> author -> setText(tr("Developed by")+" Jan van Katwijk (<a href=\"mailto:J.vanKatwijk@gmail.com\">J.vanKatwijk@gmail.com</a>)");
-	ui -> author ->  setTextInteractionFlags (Qt::TextBrowserInteraction);
-	ui -> version -> setText (QString("Version-6.%1").arg ("5.Beta"));
-	ui -> buildInfo -> setText (QString ("Built on") + QString (__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH));
-	ui -> sourceLocation -> setText ("Sources are at <a href=\"https://github.com/JvanKatwijk/qt-dab\">github> </a>");
-	ui -> sourceLocation -> setOpenExternalLinks(true);
-//	ui -> sourceLocation -> setTextInteractionFlags (Qt::TextBrowserInteraction);
-	ui -> qtVersion -> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));
-
+	ui -> appIcon		-> setPixmap (p);
+	ui -> appName 		-> setText ("<b>Qt-DAB</b>");
+	ui -> author 		-> setText(tr("Developed by")+" Jan van Katwijk (<a href=\"mailto:J.vanKatwijk@gmail.com\">J.vanKatwijk@gmail.com</a>)");
+	ui -> author		-> setTextInteractionFlags (Qt::TextBrowserInteraction);
+	ui -> version		-> setText (QString("Version-6.%1").arg ("6.Beta"));
+	ui -> buildInfo ->	setText (QString ("Built on") + QString (__TIMESTAMP__) + QString (", Commit ") + QString (GITHASH));
+	ui -> sourceLocation	-> setText ("Sources are at <a href=\"https://github.com/JvanKatwijk/qt-dab\">github> </a>");
+	ui -> sourceLocation	-> setOpenExternalLinks(true);
+//	ui -> sourceLocation	-> setTextInteractionFlags (Qt::TextBrowserInteraction);
+	ui -> qtVersion		-> setText (QString(tr("Qt-DAB uses Qt %1")).arg(QT_VERSION_STR));
 
 	ui -> libraries -> setText (tr("Qt-DAB uses following libraries (and greatly acknowledges the copyright):")+
                            "<ul>"
@@ -92,7 +91,7 @@
 #endif
                            "<li> .. and has support for reading (and writing) raw files, xml files and wav files.</li>");
 
-ui->disclaimer->setText("<p>Copyright © 2016-2023 Jan van Katwijk</p>"
+ui->disclaimer->setText("<p>Copyright © 2016-2024 Jan van Katwijk</p>"
                             "<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software "
                             "and associated documentation files (the “Software”), to deal in the Software without restriction, "
                             "including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, "

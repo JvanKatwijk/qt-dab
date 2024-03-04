@@ -4354,7 +4354,7 @@ void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
 QByteArray theSlide;
 
-	if (p. load (":res/pauze-slide.png", "png"))
+	if (p. load (":res/pauze-slide-1.png", "png"))
 	   displaySlide (p);
 }
 

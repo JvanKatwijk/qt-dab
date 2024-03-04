@@ -259,6 +259,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/output/audio-player.h
 	     ../includes/output/newconverter.h
 	     ../includes/support/distances.h
+	     ../includes/support/position-handler.h
 	     ../includes/support/cacheElement.h 
 	     ../includes.support/settingNames.h 
 	     ../includes.support/fft-handler.h 
@@ -375,6 +376,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/output/audio-player.cpp
 	     ../src/output/newconverter.cpp
 	     ../src/support/distances.cpp
+	     ../src/support/position-handler.cpp
 	     ../src/support/fft-handler.cpp 
 	     ../src/support/converter_48000.cpp
 	     ../src/support/Xtan2.cpp
@@ -626,6 +628,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h 
 	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
@@ -643,6 +646,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h
 	        ../qt-devices/sdrplay-handler-v3/include/sdrplay_api.h
 	        ../qt-devices/sdrplay-handler-v3/Rsp-device.h 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/RspII-handler.h 
 	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h 
@@ -653,6 +657,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	        ${${objectName}_SRCS}
 	        ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp
                 ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp 
+	        ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp 
 	        ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp 
 	        ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp 
 	        ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp 

@@ -30,7 +30,7 @@
 #include	"mapport.h"
 #include	"skin-handler.h"
 #include	"radio.h"
-
+#include	"position-handler.h"
 #include	"settingNames.h"
 
 static struct {
@@ -49,7 +49,7 @@ static struct {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
 	this -> setupUi (&myFrame);
-	set_position_and_size (&myFrame, CONFIG_HANDLER);
+	set_position_and_size (settings, &myFrame, CONFIG_HANDLER);
 	hide ();
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ()));
@@ -133,17 +133,7 @@ static struct {
 }
 
 	configHandler::~configHandler	() {
-	QString handlerName = CONFIG_HANDLER;
-	dabSettings	-> beginGroup (handlerName);
-	dabSettings	-> setValue (handlerName + "-x",
-	                                           myFrame. pos (). x ());
-	dabSettings	-> setValue (handlerName + "-y",
-	                                            myFrame. pos (). y ());
-	dabSettings	-> setValue (handlerName + "-w",
-	                                            myFrame. size (). width ());
-	dabSettings	-> setValue (handlerName + "-h",
-	                                            myFrame. size (). height ());
-	dabSettings	-> endGroup ();
+	store_widget_position (dabSettings, &myFrame, CONFIG_HANDLER);
 }
 
 void	configHandler::show		() {
@@ -264,7 +254,7 @@ void	configHandler::set_connections () {
 	connect (loadTableButton, SIGNAL (clicked ()),
 	         myRadioInterface, SLOT (handle_loadTable ()));
 //
-//	however, by default loadTable is disables
+//	however, by default loadTable is disabled
 	loadTableButton	-> setEnabled (false);
 	connect (dumpButton, SIGNAL (clicked ()),
 	         myRadioInterface, SLOT (handle_sourcedumpButton ()));
@@ -273,6 +263,8 @@ void	configHandler::set_connections () {
 //
 //	Now the checkboxes
 //	top line
+	connect (upload_selector, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_upload_selector	(int)));
 	connect (logger_selector, SIGNAL (stateChanged (int)),
 	         myRadioInterface, SLOT (handle_LoggerButton (int)));
 //	the epg2xmlSelector is just polled, no need to react on an event
@@ -537,18 +529,6 @@ QColor	color;
 	dabSettings	-> endGroup ();
 }
 
-void	configHandler::set_position_and_size (QWidget *w,
-	                                       const QString &key) {
-	dabSettings	-> beginGroup (key);
-	int x	= dabSettings -> value (key + "-x", 100). toInt ();
-	int y	= dabSettings -> value (key + "-y", 100). toInt ();
-	int wi	= dabSettings -> value (key + "-w", 300). toInt ();
-	int he	= dabSettings -> value (key + "-h", 200). toInt ();
-	dabSettings	-> endGroup ();
-	w 	-> resize (QSize (wi, he));
-	w	-> move (QPoint (x, y));
-}
-
 void	configHandler::handle_muteTimeSetting	(int newV) {
 	setConfig (MUTE_TIME_SETTING, newV);
 }
@@ -642,6 +622,10 @@ void	configHandler::handle_saveTransmittersSelector	(int d) {
         setConfig (TRANSMITTER_NAMES_SETTING, transmitterNames);
 }
 
+void	configHandler::handle_upload_selector (int d) {
+	(void)d;
+}
+
 void	configHandler::handle_tii_detectorMode (int d) {
 	(void)d;
 	set_tii_detectorMode (new_tiiMode_selector -> isChecked () );
@@ -657,6 +641,10 @@ void	configHandler::handle_utc_selector	(int d) {
 
 int	configHandler::get_serviceOrder	() {
 	return serviceOrder;
+}
+
+bool	configHandler::upload_selector_active	() {
+	return upload_selector -> isChecked ();
 }
 
 bool	configHandler::tii_detector_active	() {

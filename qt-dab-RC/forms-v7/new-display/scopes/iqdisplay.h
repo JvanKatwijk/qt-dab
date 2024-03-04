@@ -50,13 +50,13 @@ class	spectrogramData;
 class IQDisplay: public QObject, public QwtPlotSpectrogram {
 Q_OBJECT
 public:
-	IQDisplay		(QwtPlot *, int16_t);
+	IQDisplay		(QwtPlot *);
 	~IQDisplay		();
-void	DisplayIQ		(const std::vector<Complex> &, int, float);
+void	displayIQ		(const std::vector<Complex> &, float);
 private:
 
 	QwtPlot			*plotgrid;
-static	constexpr
+	static constexpr
 	int32_t			RADIUS	= 100;
 
 	int32_t			x_amount;

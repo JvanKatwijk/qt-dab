@@ -24,8 +24,7 @@
 //
 //	Simple viewer for correlation
 //
-#ifndef		__SNR_VIEWER__
-#define		__SNR_VIEWER__
+#pragma once
 
 #include        "dab-constants.h"
 #include	<QFrame>
@@ -96,6 +95,4 @@ private slots:
 	void		set_snrLength		(int);
 	void		set_snrDelay		(int);
 };
-
-#endif
 

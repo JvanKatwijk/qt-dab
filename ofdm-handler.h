@@ -37,8 +37,8 @@
 #include	<sndfile.h>
 #include	"sample-reader.h"
 #include	"fic-handler.h"
-#include	"ofdm-decoder.h"
 #include	"msc-handler.h"
+#include	"ofdm-decoder.h"
 #include	"device-handler.h"
 #include	"ringbuffer.h"
 #include	"tii-detector.h"

@@ -29,6 +29,7 @@
 #include	<QColorDialog>
 
 #include	"settingNames.h"
+#include	"position-handler.h"
 
 #define	TECHDATA_SETTING	"techDataSettings"
 
@@ -46,14 +47,7 @@
         setupUi (&myFrame);
 	QString settingsHeader	= TECHDATA_SETTING;
 
-	dabSettings -> beginGroup (settingsHeader);
-        int x   = dabSettings -> value (settingsHeader + "-x", 100). toInt ();
-        int y   = dabSettings -> value (settingsHeader + "-y", 100). toInt ();
-	int wi	= dabSettings -> value (settingsHeader + "-w", 100). toInt ();
-	int he	= dabSettings -> value (settingsHeader + "-h", 100). toInt ();
-        dabSettings -> endGroup ();
-        myFrame. move (QPoint (x, y));
-	myFrame. resize (QSize (wi, he));
+	set_position_and_size (dabSettings, &myFrame, TECHDATA_SETTING);
 
 	formLayout -> setLabelAlignment (Qt::AlignLeft);
 	myFrame. setWindowFlag (Qt::Tool, true);
@@ -112,18 +106,7 @@
 }
 
 		techData::~techData	() {
-	QString settingsHeader	= TECHDATA_SETTING;
-	dabSettings	-> beginGroup (settingsHeader);
-        dabSettings	-> setValue (settingsHeader + "-x",
-	                                             myFrame. pos (). x ());
-        dabSettings	-> setValue (settingsHeader + "-y",
-	                                             myFrame. pos (). y ());
-	dabSettings	-> setValue (settingsHeader + "-w",
-	                                             myFrame. width ());
-	dabSettings	-> setValue (settingsHeader + "-h",
-	                                             myFrame. height ());
-	dabSettings	-> endGroup ();
-	myFrame. hide ();
+	store_widget_position (dabSettings, &myFrame, TECHDATA_SETTING);
 	delete the_audioDisplay;
 }
 

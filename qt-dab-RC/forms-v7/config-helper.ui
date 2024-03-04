@@ -341,7 +341,7 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QCheckBox" name="saveServiceSelector">
+      <widget class="QCheckBox" name="upload_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This selector is currently not in use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>

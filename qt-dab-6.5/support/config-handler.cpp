@@ -32,6 +32,7 @@
 #include	"radio.h"
 
 #include	"settingNames.h"
+#include	"position-handler.h"
 
 static struct {
 	QString	decoderName;
@@ -49,7 +50,7 @@ static struct {
 	this	-> myRadioInterface	= parent;
 	this	-> dabSettings		= settings;
 	this -> setupUi (&myFrame);
-	set_position_and_size (&myFrame, CONFIG_HANDLER);
+	set_position_and_size (settings, &myFrame, CONFIG_HANDLER);
 	hide ();
 	connect (&myFrame, SIGNAL (frameClosed ()),
 	         this, SIGNAL (frameClosed ()));
@@ -134,16 +135,7 @@ static struct {
 
 	configHandler::~configHandler	() {
 	QString handlerName = CONFIG_HANDLER;
-	dabSettings	-> beginGroup (handlerName);
-	dabSettings	-> setValue (handlerName + "-x",
-	                                           myFrame. pos (). x ());
-	dabSettings	-> setValue (handlerName + "-y",
-	                                            myFrame. pos (). y ());
-	dabSettings	-> setValue (handlerName + "-w",
-	                                            myFrame. size (). width ());
-	dabSettings	-> setValue (handlerName + "-h",
-	                                            myFrame. size (). height ());
-	dabSettings	-> endGroup ();
+	store_widget_position (dabSettings, &myFrame, "CONFIG_HANDLER");
 }
 
 void	configHandler::show		() {
@@ -537,18 +529,6 @@ QColor	color;
 	dabSettings	-> endGroup ();
 }
 
-void	configHandler::set_position_and_size (QWidget *w,
-	                                       const QString &key) {
-	dabSettings	-> beginGroup (key);
-	int x	= dabSettings -> value (key + "-x", 100). toInt ();
-	int y	= dabSettings -> value (key + "-y", 100). toInt ();
-	int wi	= dabSettings -> value (key + "-w", 300). toInt ();
-	int he	= dabSettings -> value (key + "-h", 200). toInt ();
-	dabSettings	-> endGroup ();
-	w 	-> resize (QSize (wi, he));
-	w	-> move (QPoint (x, y));
-}
-
 void	configHandler::handle_muteTimeSetting	(int newV) {
 	setConfig (MUTE_TIME_SETTING, newV);
 }
@@ -637,6 +617,7 @@ int	decoder	= 0100;
 }
 
 void	configHandler::handle_saveTransmittersSelector	(int d) {
+	(void)d;
 	int transmitterNames =
 	             saveTransmittersSelector -> isChecked () ? 1 : 0;
         setConfig (TRANSMITTER_NAMES_SETTING, transmitterNames);

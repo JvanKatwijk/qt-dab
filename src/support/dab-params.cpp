@@ -25,14 +25,14 @@
 		dabParams::dabParams (uint8_t Mode) {
 	switch (Mode) {
 	   case 2:
-	      dabMode	= 2;
-	      L		= 76;		// blocks per frame
-	      K		= 384;		// carriers
-	      T_null	= 664;		// null length
-	      T_F	= 49152;	// samples per frame
-	      T_s	= 638;		// block length
-	      T_u	= 512;		// useful part
-	      T_g	= 126;
+	      dabMode		= 2;
+	      L			= 76;		// blocks per frame
+	      K			= 384;		// carriers
+	      T_null		= 664;		// null length
+	      T_F		= 49152;	// samples per frame
+	      T_s		= 638;		// block length
+	      T_u		= 512;		// useful part
+	      T_g		= 126;
 	      carrierDiff	= 4000;
 	      CIFs		= 1;
 	      break;

@@ -91,8 +91,6 @@ private:
 	void		set_Colors		();
 	void		set_buttonColors	(QPushButton *b,
 	                                         const QString &buttonName);
-	void		set_position_and_size	(QWidget *, const QString &);
-
 	void		setConfig		(const QString &, int);
 	void		setConfig		(const QString &,
 	                                           const QString &);

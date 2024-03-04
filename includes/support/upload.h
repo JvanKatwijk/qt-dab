@@ -26,6 +26,7 @@
 #include	<QLabel>
 #include	<QPushButton>
 #include	<QLineEdit>
+#include	<QFrame>
 
 class	QSettings;
 

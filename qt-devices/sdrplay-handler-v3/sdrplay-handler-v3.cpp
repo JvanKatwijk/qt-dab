@@ -28,9 +28,9 @@
 #include	<QPoint>
 #include	<QFileDialog>
 #include	"sdrplay-handler-v3.h"
+#include	"position-handler.h"
 #include	"sdrplay-commands.h"
 #include	"xml-filewriter.h"
-
 //	The Rsp's
 #include	"Rsp-device.h"
 #include	"RspI-handler.h"
@@ -89,13 +89,9 @@ std::string errorMessage (int errorCode) {
 	sdrplaySettings			= s;
 	inputRate			= 2048000;
 	this	-> recorderVersion	= recorderVersion;
-	QString	groupName	= SDRPLAY_SETTINGS;
-	sdrplaySettings -> beginGroup (groupName);
-        int x   = sdrplaySettings -> value (groupName + "-x", 100). toInt ();
-        int y   = sdrplaySettings -> value (groupName + "-y", 100). toInt ();
-        sdrplaySettings -> endGroup ();
         setupUi (&myFrame);
-        myFrame. move (QPoint (x, y));
+	QString	groupName	= SDRPLAY_SETTINGS;
+	set_position_and_size (s, &myFrame, groupName);
 	myFrame. show	();
 
 	antennaSelector		-> hide	();
@@ -175,10 +171,9 @@ std::string errorMessage (int errorCode) {
 //	thread should be stopped by now
 	myFrame. hide ();
 	QString groupName	= SDRPLAY_SETTINGS;
-	sdrplaySettings	-> beginGroup (groupName);
-        sdrplaySettings -> setValue (groupName + "-x", myFrame. pos (). x ());
-        sdrplaySettings -> setValue (groupName + "-y", myFrame. pos (). y ());
+	store_widget_position (sdrplaySettings, &myFrame, SDRPLAY_SETTINGS);
 
+	sdrplaySettings	-> beginGroup (SDRPLAY_SETTINGS);
 	sdrplaySettings -> setValue (SDRPLAY_PPM,
 	                                           ppmControl -> value ());
 	sdrplaySettings -> setValue (SDRPLAY_IFGRDB,
@@ -202,6 +197,7 @@ restartRequest r (newFreq);
         if (receiverRuns. load ())
            return true;
         lastFrequency    = newFreq;
+	_I_Buffer. FlushRingBuffer();
 	return messageHandler (&r);
 }
 

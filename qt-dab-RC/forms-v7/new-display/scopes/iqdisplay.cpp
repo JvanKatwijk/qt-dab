@@ -35,15 +35,13 @@ void	constrain (int32_t & testVal, const int32_t limit) {
 	}
 }
 
-	IQDisplay::IQDisplay (QwtPlot *plot, int16_t x):
+	IQDisplay::IQDisplay (QwtPlot *plot):
 	                                QwtPlotSpectrogram (), 
 	                                 plotgrid (plot) {
-	          
-auto	*const colorMap = new QwtLinearColorMap (
+	auto	*const colorMap = new QwtLinearColorMap (
 	                           QColor(0, 0, 255, 20),
 	                           QColor(255, 255, 178, 255));
 
-	(void)x;
 	setRenderThreadCount	(1);
 	setColorMap (colorMap);
 	IQData		= nullptr;
@@ -88,15 +86,13 @@ void	IQDisplay::setPoint (int x, int y, int val) {
 	plotDataBackgroundBuffer [(x + RADIUS - 1) * 2 * RADIUS + y + RADIUS - 1] = val;
 }
 
-void	IQDisplay::DisplayIQ (const std::vector<Complex> &z,
-	                             int amount, float scale) {
+void	IQDisplay::displayIQ (const std::vector<Complex> &z, float scale) {
 
-	(void)amount;
 	cleanScreen	();
 	if (z. size () != Points. size ())
 	   Points. resize (z. size (), {0, 0});
 
-//	drawCross ();
+	drawCross ();
 	repaintCircle (scale);
 
 	for (uint16_t i = 0; i < Points. size () / 2; i ++) {
@@ -142,8 +138,10 @@ void	IQDisplay::cleanScreen	() {
 
 void	IQDisplay::drawCross () {
 	for (int32_t i = -(RADIUS - 1); i < RADIUS; i++) {
-	   setPoint (1, i, 30); // horizontal line
-	   setPoint (i, 0, 30); // vertical line
+	   setPoint (i, i, 30);
+	   setPoint (-i, i, 30);
+//	   setPoint (1, i, 30); // horizontal line
+//	   setPoint (i, 0, 30); // vertical line
 	}
 }
 

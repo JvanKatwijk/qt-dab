@@ -57,6 +57,7 @@
 #include	"db-loader.h"
 #include	"cacheElement.h"
 #include	"distances.h"
+#include	"position-handler.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
 #elif	QT_AUDIO
@@ -225,7 +226,7 @@ QString h;
 //
 //	put the widgets in the right place
 //	and create the workers
-	set_position_and_size	(this, "mainWidget");
+	set_position_and_size	(dabSettings_p, this, "mainWidget");
 	configHandler_p		= new configHandler (this, dabSettings_p);
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
 	                                                       presetFile);
@@ -611,8 +612,8 @@ dabService	res;
 //	
 //
 //	might be called when scanning only
-void	RadioInterface::channel_timeOut () {
-	no_signal_found ();
+void	RadioInterface::no_signal_found () {
+	channel_timeOut ();
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -1125,7 +1126,7 @@ void	RadioInterface::TerminateProcess () {
 	   usleep (1000);
 	hideButtons	();
 
-	store_widget_position (this, "mainWidget");
+	store_widget_position (dabSettings_p, this, "mainWidget");
 	newDisplay. hide ();
 //
 #ifdef	DATA_STREAMER
@@ -2426,8 +2427,8 @@ void	RadioInterface::start_scan_single () {
 	int k = channelSelector ->  findText (fs);
 	if (k != -1)
 	   new_channelIndex (k);
-//	scanMonitor. addText (" scanning channel " +
-//	                            channelSelector -> currentText ());
+	scanMonitor. addText (" scanning channel " +
+	                            channelSelector -> currentText ());
 	int switchDelay		=
 	             configHandler_p -> switchDelayValue ();
 	channelTimer. start (switchDelay);
@@ -2478,6 +2479,8 @@ void	RadioInterface::stopScanning	() {
 	presetButton	-> setText ("favorites");
 	presetButton	-> setEnabled (true);
 	LOG ("scanning stops ", "");
+	channelTimer. stop ();
+
 	if (scanMonitor. scan_to_data ())
 	   stop_scan_to_data ();
 	else
@@ -2534,12 +2537,8 @@ void	RadioInterface::stop_scan_continuous () {
 //	the list.
 //	Also called as a result of time out on channelTimer
 
-void	RadioInterface::no_signal_found () {
-	disconnect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	            this, SLOT (no_signal_found ()));
+void	RadioInterface::channel_timeOut () {
 	channelTimer. stop ();
-	disconnect (&channelTimer, SIGNAL (timeout ()),
-	            this, SLOT (channel_timeOut ()));
 	if (!scanMonitor. active ())
 	   return;
 
@@ -2563,13 +2562,8 @@ void	RadioInterface::next_for_scan_to_data () {
 	new_channelIndex (cc);
 //
 //	and restart for the next run
-//	scanMonitor. addText ("scanning channel " +
-//	                             channelSelector -> currentText ());
-	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	         this, SLOT (no_signal_found ()));
-	connect (&channelTimer, SIGNAL (timeout ()),
-	         this, SLOT (channel_timeOut ()));
-
+	scanMonitor. addText ("scanning channel " +
+	                             channelSelector -> currentText ());
 	int switchDelay	= 
 	         configHandler_p -> switchDelayValue ();
 	channelTimer. start (switchDelay);
@@ -2589,13 +2583,8 @@ void	RadioInterface::next_for_scan_single () {
 	   return;
 	}
 
-//	scanMonitor. addText ("scanning channel " +
-//	                             channelSelector -> currentText ());
-	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	         this, SLOT (no_signal_found ()));
-	connect (&channelTimer, SIGNAL (timeout ()),
-	         this, SLOT (channel_timeOut ()));
-
+	scanMonitor. addText ("scanning channel " +
+	                             channelSelector -> currentText ());
 	int switchDelay	= 
 	         configHandler_p -> switchDelayValue ();
 	channelTimer. start (switchDelay);
@@ -2610,11 +2599,6 @@ void	RadioInterface::next_for_scan_continuous () {
 	QString cs	= scanMonitor. getNextChannel ();
 	int cc	= channelSelector -> findText (cs);
 	new_channelIndex (cc);
-
-	connect (my_ofdmHandler, SIGNAL (no_signal_found ()),
-	         this, SLOT (no_signal_found ()));
-	connect (&channelTimer, SIGNAL (timeout ()),
-	         this, SLOT (channel_timeOut ()));
 
 	int switchDelay	= 
 	         configHandler_p -> switchDelayValue ();
@@ -2734,15 +2718,9 @@ void	RadioInterface::stop_muting		() {
 void	RadioInterface::new_channelIndex (int index) {
 	if (channelSelector -> currentIndex () == index)
 	   return;
-	disconnect (channelSelector, SIGNAL (activated (const QString &)),
-	            this, SLOT (handle_channelSelector (const QString &)));
-	channelSelector	-> blockSignals (true);
-	set_newChannel (index);
-	while (channelSelector -> currentIndex () != index)
-	   usleep (2000);
-	channelSelector	-> blockSignals (false);
-	connect (channelSelector, SIGNAL (activated (const QString &)),
-	         this, SLOT (handle_channelSelector (const QString &)));
+	channelSelector -> setEnabled (false);
+        channelSelector -> setCurrentIndex (index);
+        channelSelector -> setEnabled (true);
 }
 //
 /////////////////////////////////////////////////////////////////////////
@@ -3329,9 +3307,16 @@ int h   = 2 * w / 3;
 
 void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
-QByteArray theSlide;
-
-	if (p. load (":res/pauze-slide.png", "png"))
+static int teller	= 0;
+static const char *slideNames [] =	
+   {":res/pauze-slide-1.png",
+	":res/pauze-slide-2.png",
+	":res/pauze-slide-3.png",
+	":res/pauze-slide-4.png",
+	":res/pauze-slide-5.png"};
+	teller = (teller + 1) % 5;
+	QString slideName	= slideNames [teller];
+	if (p. load (slideName, "png"))
 	   displaySlide (p);
 }
 
@@ -3771,25 +3756,6 @@ QColor	labelColor;
 	   return;
 	labelStyle		= "color:" + color. name ();
 	dabSettings_p	-> setValue (LABEL_COLOR, labelStyle);
-}
-
-
-void	RadioInterface::set_position_and_size (QWidget *w,
-	                                       const QString &key) {
-	int x	= dabSettings_p -> value (key + "-x", 100). toInt ();
-	int y	= dabSettings_p -> value (key + "-y", 100). toInt ();
-	int wi	= dabSettings_p -> value (key + "-w", 300). toInt ();
-	int he	= dabSettings_p -> value (key + "-h", 200). toInt ();
-	w 	-> resize (QSize (wi, he));
-	w	-> move (QPoint (x, y));
-}
-
-void	RadioInterface::store_widget_position (QWidget *w, 
-	                                       const QString &key) {
-	dabSettings_p	-> setValue (key + "-x", w -> pos (). x ());
-	dabSettings_p	-> setValue (key + "-y", w -> pos (). y ());
-	dabSettings_p	-> setValue (key + "-w", w -> size (). width ());
-	dabSettings_p	-> setValue (key + "-h", w -> size (). height ());
 }
 
 int	RadioInterface::int_configValue	(const QString &key, int d) {

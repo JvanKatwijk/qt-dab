@@ -52,4 +52,3 @@ private:
 	int16_t		CIFs;
 };
 
-
