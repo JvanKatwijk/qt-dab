@@ -38,7 +38,7 @@
 static QDomElement element (QDomDocument &doc, const tag_length_value &tlv);
 
 static int cnt	= 0;
-void	CEPGDecoder::decode (const vector<_BYTE>& vecData,
+void	CEPGDecoder::decode (const std::vector<_BYTE>& vecData,
                                              const QString &name) {
 //	clear the doc, allowing re-use 
 	doc. setContent (QString (""));
@@ -303,12 +303,12 @@ static eltab_t element_tables[] = {
 
 //
 //	forward declarations
-string decode_string (const _BYTE * p, size_t len);
-const string element_name (_BYTE tag);
+std::string decode_string (const _BYTE * p, size_t len);
+const std::string element_name (_BYTE tag);
 
 static
-void attribute (map<string,string>  &out, _BYTE element_tag,
-	                                        tag_length_value &tlv);
+void attribute (std::map<std::string, std::string>  &out,
+	                  _BYTE element_tag, tag_length_value &tlv);
 static
 void string_token_table (const tag_length_value &tlv);
 
@@ -353,7 +353,7 @@ QDomElement element (QDomDocument &doc, const tag_length_value &tlv) {
 	
 QString	name (element_tables [tlv. tag]. element_name);
 QDomElement e	= doc. createElement (name);
-map <string, string> attr;
+std::map <std::string, std::string> attr;
 _BYTE *end	= tlv. value + tlv. length;
 dectab *at	= element_tables [tlv. tag]. tags;
 //	set default attributes 
@@ -372,7 +372,7 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	   a = b;
 	}
 
-	for (map <string, string>::iterator i = attr. begin();
+	for (std::map <std::string, std::string>::iterator i = attr. begin();
 	                                      i != attr. end(); i++) {
 	   e. setAttribute (QString (i -> first. c_str()),
 	                    QString (i -> second. c_str()));
@@ -392,7 +392,7 @@ dectab *at	= element_tables [tlv. tag]. tags;
 	   }
 	   else
 	   if (a. is_cdata()) {
-	      string value = decode_string (a. value, a. length);
+	      std::string value = decode_string (a. value, a. length);
 	      QDomText t = doc. createTextNode (QString(). fromUtf8 (value. c_str()));
 	      e. appendChild (t);
 	   }
@@ -407,12 +407,12 @@ dectab *at	= element_tables [tlv. tag]. tags;
 }
 
 static
-string decode_genre_href (const _BYTE* p, size_t len) {
+std::string decode_genre_href (const _BYTE* p, size_t len) {
 int cs = p[0] & 0xff;
 
 	if(cs < 1 || cs > 8)
 	   return "";
-	stringstream out;
+	std::stringstream out;
 	out << "urn:tva:metadata:cs:" << classificationScheme[cs] << ":2005:";
 	switch (len) {
 	   case 2:
@@ -429,9 +429,9 @@ int cs = p[0] & 0xff;
 	return out. str();
 }
 
-string	decode_string (const _BYTE* p, size_t len) {
+std::string	decode_string (const _BYTE* p, size_t len) {
 size_t i;
-string out;
+std::string out;
 
 	for (i = 0; i < len; i++) {
 	   char c = p[i];
@@ -447,31 +447,31 @@ string out;
 }
 
 static
-string	decode_uint16 (const _BYTE* p) {
-stringstream out;
+std::string	decode_uint16 (const _BYTE* p) {
+std::stringstream out;
 
 	out << get_uint16(p);
 	return out. str();
 }
 
 static
-string	decode_uint24 (const _BYTE* p) {
-stringstream out;
+std::string	decode_uint24 (const _BYTE* p) {
+std::stringstream out;
 
 	out << int (get_uint24(p));
 	return out. str();
 }
 
 static
-string	decode_sid (const _BYTE* p) {
-stringstream out;
+std::string	decode_sid (const _BYTE* p) {
+std::stringstream out;
 
-	out << hex << int(p[0]) << '.' << int(p[1]) << '.' << int(p[2]);
+	out << std::hex << int(p[0]) << '.' << int(p[1]) << '.' << int(p[2]);
 	return out. str();
 }
 
 static
-string	decode_dateandtime (const _BYTE* p) {
+std::string	decode_dateandtime (const _BYTE* p) {
 uint32_t mjd;
 uint32_t h = p[0], m = p[1], l = p[2];
 uint16_t n, year;
@@ -490,8 +490,8 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 	   seconds = p[n] >> 2;
 	   n += 2;
 	}
-	stringstream out;
-	string tz = "Z";
+	std::stringstream out;
+	std::string tz = "Z";
 
 	if (lto_flag) {
 	   sign = p[n] & 0x20;
@@ -514,7 +514,7 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
     	   }
 	   hours	= mins / 60;
 	   minutes = mins % 60;
-	   stringstream tzs;
+	   std::stringstream tzs;
 	   tzs << (sign ? '-' : '+');
 	   int ltoh = lto / 2;
 	   if (ltoh < 10)
@@ -549,7 +549,7 @@ int utc_flag, lto_flag, sign = 0, lto = 0;
 }
 
 static
-string	decode_duration (const _BYTE* p) {
+std::string	decode_duration (const _BYTE* p) {
 uint16_t hours, minutes, seconds;
 
 	seconds = get_uint16(p);
@@ -570,8 +570,8 @@ uint16_t hours, minutes, seconds;
 }
 
 static
-string	decode_bitrate (const _BYTE* p) {
-stringstream out;
+std::string	decode_bitrate (const _BYTE* p) {
+std::stringstream out;
 uint16_t n	= get_uint16(p);
 
 	out << float(n) / 0.1f;
@@ -579,7 +579,7 @@ uint16_t n	= get_uint16(p);
 }
 
 static
-string	decode_attribute_name (const dectab& tab) {
+std::string	decode_attribute_name (const dectab& tab) {
 
 	if (tab.name == nullptr) {
 	   return "unknown";
@@ -591,7 +591,7 @@ string	decode_attribute_name (const dectab& tab) {
 }
 
 static
-string	decode_attribute_value (enum_attr_t format,
+std::string	decode_attribute_value (enum_attr_t format,
 	                        const _BYTE* p, size_t len) {
 	switch (format) {
 	   case nu_attr:
@@ -630,13 +630,13 @@ string	decode_attribute_value (enum_attr_t format,
 }
 
 static
-void	attribute (map <string,string> &out,
+void	attribute (std::map <std::string, std::string> &out,
 	          _BYTE element_tag, tag_length_value &tlv) {
 size_t el	= size_t (element_tag);
 size_t e	= sizeof (element_tables) / sizeof (eltab_t);
 
 	if (el >= e) {
-	   cerr << "illegal element id" << int(el) << endl;
+	   std::cerr << "illegal element id" << int(el) << endl;
 	   return;
 	}
 
@@ -645,12 +645,12 @@ size_t e	= sizeof (element_tables) / sizeof (eltab_t);
 	size_t n	= a. size;
 
 	if (attr >= n) {
-	   cerr << "out of range attribute id " <<
+	   std::cerr << "out of range attribute id " <<
 	                 attr << " for element id " << int(el) << endl;
 	} else {
 	   dectab tab = a. tags [attr];
-	   string name = decode_attribute_name(tab);
-	   string value;
+	   std::string name = decode_attribute_name(tab);
+	   std::string value;
 	   if (tab.decode == enum_attr) {
 //	needed for 64 bit compatibility 
 	      ptrdiff_t index	= tlv. value [0];

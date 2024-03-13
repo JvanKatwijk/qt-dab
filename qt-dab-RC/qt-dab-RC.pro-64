@@ -6,8 +6,8 @@
 
 TEMPLATE	= app
 QT		+= widgets xml 
-#CONFIG		+= console
-CONFIG		-= console
+CONFIG		+= console
+#CONFIG		-= console
 QMAKE_CXXFLAGS	+= -std=c++17
 CONFIG		+= release
 win32 {
@@ -15,12 +15,12 @@ QMAKE_CFLAGS	+=  -O4 -ffast-math
 QMAKE_CXXFLAGS	+=  -O4 -ffast-math
 }
 unix {
-QMAKE_CXXFLAGS	+=  -ffast-math -flto
-QMAKE_CFLAGS	+=  -ffast-math -flto
-QMAKE_LFLAGS	+=  -ffast-math -flto
-#QMAKE_CFLAGS	+=  -g -fsanitize=address
-#QMAKE_CXXFLAGS	+=  -g -fsanitize=address
-#QMAKE_LFLAGS	+=  -g -fsanitize=address
+#QMAKE_CXXFLAGS	+=  -ffast-math -flto
+#QMAKE_CFLAGS	+=  -ffast-math -flto
+#QMAKE_LFLAGS	+=  -ffast-math -flto
+QMAKE_CFLAGS	+=  -g -fsanitize=address
+QMAKE_CXXFLAGS	+=  -g -fsanitize=address
+QMAKE_LFLAGS	+=  -g -fsanitize=address
 }
 
 #QMAKE_CFLAGS	+=  -pg
@@ -31,7 +31,7 @@ RC_ICONS	=  qt-dab-RC.ico
 RESOURCES	+= resources.qrc
 
 TRANSLATIONS = ../i18n/de_DE.ts
-
+DEFINES		+= __HAS_CHANNEL__
 #
 #       For more parallel processing, uncomment the following
 #       defines
@@ -47,6 +47,7 @@ DEPENDPATH += . \
 	      ./support \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
+	      ./forms-v7/snr-viewer \
 	      ../eti-handler \
 	      ../src \
 	      ../includes \
@@ -75,8 +76,6 @@ DEPENDPATH += . \
 	      ../includes/support \
 	      ../includes/support/buttons \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -88,6 +87,7 @@ INCLUDEPATH += . \
 	       ./support \
 	      ./forms-v7/new-display \
 	      ./forms-v7/new-display/scopes \
+	      ./forms-v7/snr-viewer \
 	      ../ \
 	      ../eti-handler \
 	      ../src \
@@ -107,8 +107,6 @@ INCLUDEPATH += . \
 	      ../includes/support/viterbi-jan \
 	      ../includes/support/viterbi-spiral \
 	      ../includes/scopes-qwt6 \
-	      ../viewers \
-	      ../viewers/snr-viewer \
 	      ../qt-devices \
 	      ../qt-devices/filereaders \
 	      ../qt-devices/filereaders/rawfiles-new \
@@ -118,12 +116,15 @@ INCLUDEPATH += . \
 # Input
 HEADERS += ./radio.h \
 	   ./support/techdata.h \
+	   ./support/super-frame.h \
 	   ./support/clickable-label.h \
 	   ./support/icon-label.h \
 	   ./support/scan-handler.h \
 	   ./support/skiptable-handler.h \
 	   ./support/aboutdialog.h \
 	   ./support/ensemble-handler.h \
+           ./support/config-handler.h \
+	   ./support/audiosystem-selector.h \
 	   ./forms-v7/new-display/display-widget.h \
 	   ./forms-v7/new-display/scopes/spectrum-scope.h \
 	   ./forms-v7/new-display/scopes/correlation-scope.h \
@@ -133,6 +134,8 @@ HEADERS += ./radio.h \
 	   ./forms-v7/new-display/scopes/waterfall-scope.h \
 	   ./forms-v7/new-display/scopes/iqdisplay.h \
 	   ./forms-v7/new-display/scopes/audio-display.h \
+	   ./forms-v7/new-display/scopes/spectrogramdata.h \
+	   ./forms-v7/snr-viewer/snr-viewer.h \
 	   ../ofdm-handler.h \
 	   ../eti-handler/eti-generator.h \
 	   ../includes/dab-constants.h \
@@ -187,11 +190,10 @@ HEADERS += ./radio.h \
 	   ../includes/backend/data/journaline/NML.h \
 	   ../includes/backend/data/epg/epgdec.h \
 	   ../includes/backend/data/epg-2/epg-decoder.h \
-	   ../includes/output/audio-base.h \
 	   ../includes/output/newconverter.h \
 	   ../includes/output/audio-player.h \
-	   ../includes/output/audiosink.h \
 	   ../includes/support/distances.h \
+	   ../includes/support/position-handler.h \
            ../includes/support/cacheElement.h \
 	   ../includes/support/settingNames.h \
 	   ../includes/support/fft-handler.h \
@@ -201,7 +203,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/viterbi-spiral/viterbi-spiral.h \
 	   ../includes/support/ringbuffer.h \
 	   ../includes/support/dab-params.h \
-#	   ../includes/support/band-handler.h \
 	   ../includes/support/dab-tables.h \
 	   ../includes/support/preset-handler.h \
 	   ../includes/support/presetcombobox.h \
@@ -228,8 +229,6 @@ HEADERS += ./radio.h \
 	   ../includes/support/buttons/verysmallpushbutton.h \
 	   ../includes/support/buttons/smallqlistview.h \
 	   ../includes/support/buttons/smallspinbox.h \
-	   ../includes/scopes-qwt6/spectrogramdata.h \
-	   ../viewers/snr-viewer/snr-viewer.h \
 	   ../qt-devices/device-handler.h \
 	   ../qt-devices/device-chooser.h \
 	   ../qt-devices/device-exceptions.h \
@@ -249,13 +248,14 @@ FORMS	+= ./forms-v7/config-helper.ui
 FORMS	+= ./forms-v7/audio-description.ui
 FORMS	+= ./forms-v7/data-description.ui
 FORMS	+= ./forms-v7/new-display/scopewidget.ui
-FORMS	+= ../viewers/snr-viewer/snr-widget.ui
+FORMS	+= ./forms-v7/snr-viewer/snr-widget.ui
 FORMS	+= ./support/aboutdialog.ui
 #FORMS	+= ../qt-devices/filereaders/filereader-widget.ui 
 FORMS	+= ../qt-devices/filereaders/xml-filereader/xmlfiles.ui
 
 SOURCES += ./main.cpp \
 	   ./radio.cpp \
+	   ./support/super-frame.cpp \
 	   ./support/techdata.cpp \
            ./support/clickable-label.cpp \
            ./support/icon-label.cpp \
@@ -263,6 +263,8 @@ SOURCES += ./main.cpp \
 	   ./support/skiptable-handler.cpp \
 	   ./support/aboutdialog.cpp \
 	   ./support/ensemble-handler.cpp \
+	   ./support/config-handler.cpp \
+           ./support/audiosystem-selector.cpp \
 	   ./forms-v7/new-display/display-widget.cpp \
            ./forms-v7/new-display/scopes/correlation-scope.cpp \
            ./forms-v7/new-display/scopes/spectrum-scope.cpp \
@@ -272,6 +274,8 @@ SOURCES += ./main.cpp \
            ./forms-v7/new-display/scopes/waterfall-scope.cpp \
 	   ./forms-v7/new-display/scopes/iqdisplay.cpp \
 	   ./forms-v7/new-display/scopes/audio-display.cpp \
+	   ./forms-v7/new-display/scopes/spectrogramdata.cpp \
+	   ./forms-v7/snr-viewer/snr-viewer.cpp \
 	   ../ofdm-handler.cpp \
 	   ../eti-handler/eti-generator.cpp \
 	   ../src/ofdm/timesyncer.cpp \
@@ -317,11 +321,10 @@ SOURCES += ./main.cpp \
 	   ../src/backend/data/journaline/NML.cpp \
 	   ../src/backend/data/epg/epgdec.cpp \
 	   ../src/backend/data/epg-2/epg-decoder.cpp \
-	   ../src/output/audio-base.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
-	   ../src/output/audiosink.cpp \
 	   ../src/support/distances.cpp \
+	   ../src/support/position-handler.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
 	   ../src/support/viterbi-spiral/viterbi-spiral.cpp \
@@ -353,8 +356,6 @@ SOURCES += ./main.cpp \
 	   ../src/support/buttons/verysmallpushbutton.cpp \
 	   ../src/support/buttons/smallqlistview.cpp \
 	   ../src/support/buttons/smallspinbox.cpp \
-	   ../src/scopes-qwt6/spectrogramdata.cpp \
-	   ../viewers/snr-viewer/snr-viewer.cpp \
 	   ../qt-devices/device-handler.cpp \
 	   ../qt-devices/device-chooser.cpp \
 	   ../qt-devices/xml-filewriter.cpp \
@@ -369,7 +370,7 @@ SOURCES += ./main.cpp \
 #
 unix {
 DESTDIR		= ./linux-bin
-TARGET		= qt-dab-6.40
+TARGET		= qt-dab-6.X
 exists ("../.git") {
    GITHASHSTRING = $$system(git rev-parse --short HEAD)
    !isEmpty(GITHASHSTRING) {
@@ -395,7 +396,6 @@ CONFIG		+= mapserver
 !mac {
 LIBS      	+= -ldl
 }
-PKGCONFIG	+= portaudio-2.0
 PKGCONFIG	+= zlib
 PKGCONFIG	+= sndfile
 PKGCONFIG	+= samplerate
@@ -444,8 +444,7 @@ CONFIG		+= tiiLib
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out
-#CONFIG		+= qt-audio
-#comment both out if you just want to use the "normal" way
+CONFIG		+= local-audio
 
 CONFIG		+= PC
 #CONFIG		+= NO_SSE
@@ -469,7 +468,7 @@ isEmpty(GITHASHSTRING) {
 }
 
 #for for 64 bit
-	TARGET		= qt-dab64-6.50
+	TARGET		= qt-dab64-6.X64
 	DEFINES		+= __BITS64__
 	DESTDIR		= /usr/shared/w64-programs/windows-dab64-qt
 	INCLUDEPATH	+= /usr/x64-w64-mingw32/sys-root/mingw/include
@@ -489,8 +488,14 @@ isEmpty(GITHASHSTRING) {
 	CONFIG		+= lime
 	DEFINES		+= __THREADED_BACKEND
 	INCLUDEPATH	+= ../../TII-CODES
-	HEADERS		+= ../../TII-CODES/table-loader.h
-	SOURCES		+= ../../TII-CODES/table-loader.cpp
+	HEADERS         += ../../TII-CODES/tii-reader.h
+        HEADERS         += ../../TII-CODES/db-loader.h
+        HEADERS         += ../../TII-CODES/uploader.h
+        SOURCES         += ../../TII-CODES/tii-reader.cpp
+        SOURCES         += ../../TII-CODES/db-loader.cpp
+        SOURCES         += ../../TII-CODES/uploader.cpp
+	
+	CONFIG		+= local-audio
 	CONFIG		+= double
 	#CONFIG		+= single
 	CONFIG		+= mapserver
@@ -524,7 +529,6 @@ isEmpty(GITHASHSTRING) {
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of soud out
-#CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
 DEFINES	+= __DUMP_SNR__		# for experiments only
@@ -609,12 +613,14 @@ sdrplay-v3 {
         HEADERS         += ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.h \
                            ../qt-devices/sdrplay-handler-v3/sdrplay-commands.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp-device.h \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.h \
 	                   ../qt-devices/sdrplay-handler-v3/RspDx-handler.h
         SOURCES         += ../qt-devices/sdrplay-handler-v3/Rsp-device.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/sdrplay-handler-v3.cpp \
+	                   ../qt-devices/sdrplay-handler-v3/RspI-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/Rsp1A-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspII-handler.cpp \
 	                   ../qt-devices/sdrplay-handler-v3/RspDuo-handler.cpp \
@@ -797,13 +803,14 @@ tcp-streamer	{
 	SOURCES		+= ../src/output/tcp-streamer.cpp
 }
 
-qt-audio	{
-	DEFINES		+= QT_AUDIO
-	QT		+= multimedia 
-	HEADERS		+= ../includes/output/Qt-audio.h \
-	                   ../includes/output/Qt-audiodevice.h
-	SOURCES		+= ../src/output/Qt-audio.cpp \
-	                   ../src/output/Qt-audiodevice.cpp
+local-audio	{
+	PKGCONFIG       += portaudio-2.0
+        DEFINES         += QT_AUDIO
+        QT              += multimedia
+        HEADERS         += ../includes/output/Qt-audio.h \
+                           ../includes/output/audiosink.h
+        SOURCES         += ../src/output/Qt-audio.cpp \
+                           ../src/output/audiosink.cpp
 }
 
 datastreamer	{
@@ -880,8 +887,10 @@ preCompiled {
         INCLUDEPATH     += ../../TII-CODES
         HEADERS         += ../../TII-CODES/tii-reader.h
         HEADERS         += ../../TII-CODES/db-loader.h
+        HEADERS         += ../../TII-CODES/uploader.h
         SOURCES         += ../../TII-CODES/tii-reader.cpp
         SOURCES         += ../../TII-CODES/db-loader.cpp
+        SOURCES         += ../../TII-CODES/uploader.cpp
         
 }       
         
@@ -889,8 +898,11 @@ tiiLib  {
         INCLUDEPATH     += ../src/support/tii-library
         HEADERS         += ../src/support/tii-library/tii-reader.h
         HEADERS         += ../src/support/tii-library/db-loader.h
+        HEADERS         += ../src/support/tii-library/uploader.h
         SOURCES         += ../src/support/tii-library/tii-reader.cpp
         SOURCES         += ../src/support/tii-library/db-loader.cpp
+        SOURCES         += ../src/support/tii-library/uploader.cpp
+	
 }
 
 

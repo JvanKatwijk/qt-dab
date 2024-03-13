@@ -145,7 +145,7 @@ void	contentTable::dump	(FILE * dumpFilePointer) {
 	}
 }
 
-void	contentTable::upload	() {
+QString	contentTable::upload	() {
 QString result;
 	for (int i = 0; i < contentWidget -> rowCount (); i ++) {
 	   for (int j = 0; j < contentWidget -> columnCount (); j ++) {
@@ -155,7 +155,7 @@ QString result;
 	   result = result + "\n";
 	}
 
-	fprintf (stderr, " %s \n", result. toUtf8 (). data ());
+	return result;
 }
 
 int16_t	contentTable::addRow () {

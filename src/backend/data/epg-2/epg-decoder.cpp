@@ -23,6 +23,7 @@
 #include	<stdio.h>
 #include	<stdint.h>
 #include	<stdlib.h>
+#include	<dab-constants.h>
 #include	"epg-decoder.h"
 #include	<QDate>
 
@@ -2271,7 +2272,7 @@ int	length	= v [index + 1];
 	else
 	   index += 2;
 
-	char	text [length + 1];
+	char *text 	= (char *) alloca ((length + 1) * sizeof (char));
 	for (int i = 0; i < length; i ++)
 	   text [i] = v [index + i];
 	text [length] = 0;

@@ -98,6 +98,7 @@ private:
 private slots:
 //	
 //	first the color setters
+	void	color_audioSelectButton	();
 	void	color_fontButton	();
 	void	color_fontColorButton	();
 	void	color_devicewidgetButton	();
@@ -112,6 +113,7 @@ private slots:
 	void	color_skinButton	();
 //
 //	and the handlers:
+	void	handle_audioSelectButton	();
 	void	handle_upload_selector		(int);
 	void	handle_muteTimeSetting		(int);
 	void	handle_switchDelaySetting	(int);
@@ -145,5 +147,6 @@ signals:
 	void	set_serviceOrder	(int);
 	void	set_dcRemoval		(bool);
 	void	frameClosed		();
+
 };
 

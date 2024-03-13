@@ -86,27 +86,14 @@ class	configHandler;
 #define ALT2_DECODER    0300
 
 
-#define	RESET_BUTTON		QString ("resetButton")
 #define SCAN_BUTTON		QString ("scanButton")
 #define	SPECTRUM_BUTTON		QString ("spectrumButton")
-#define	SNR_BUTTON		QString ("snrButton")
-#define	DEVICEWIDGET_BUTTON	QString ("devicewidgetButton")
 #define	SCANLIST_BUTTON		QString ("scanListButton")
 #define PRESET_BUTTON           QString ("presetButton")
-#define	DUMP_BUTTON		QString ("dumpButton")
 #define PREVSERVICE_BUTTON	QString ("prevServiceButton")
 #define NEXTSERVICE_BUTTON	QString ("nextServiceButton")
-#define	DLTEXT_BUTTON		QString	("dlTextButton")
 #define	CONFIG_BUTTON		QString ("configButton")
 #define	HTTP_BUTTON		QString ("httpButton")
-#define	SCHEDULE_BUTTON		QString ("scheduleButton")
-#define	SET_COORDINATES_BUTTON	QString ("set_coordinatesButton")
-#define	LOAD_TABLE_BUTTON	QString ("loadTableButton")
-#define	SKIN_BUTTON		QString ("skinButton")
-#define	FONT_BUTTON		QString ("fontButton")
-#define	FONTCOLOR_BUTTON	QString ("fontColorButton")
-#define	PORT_SELECTOR		QString ("portSelector")
-
 /*
  *	The main gui object. It inherits from
  *	QWidget and the generated form
@@ -297,6 +284,7 @@ private:
 	epgDecoder		epgProcessor;
 	QString			epgPath;
 	QTimer			epgTimer;
+	QTimer			pauzeTimer;
 	QString			path_for_pictures;
 	QString			path_for_files;
 #ifdef	_SEND_DATAGRAM_
@@ -309,7 +297,6 @@ private:
 	void			set_Colors		();
 	void			set_channelButton	(int);
 
-	void			show_pauzeSlide	();
 	void			displaySlide	(const QPixmap &);
 	QTimer			displayTimer;
 	QTimer			channelTimer;
@@ -477,6 +464,7 @@ public slots:
 
 //	Somehow, these must be connected to the GUI
 private slots:
+	void			show_pauzeSlide		();
 	void			handle_timeTable	();
 	void			handle_contentButton	();
 	void			handle_detailButton	();

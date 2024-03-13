@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2016.. 2023
+ *    Copyright (C) 2016 .. 2022
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -19,29 +19,39 @@
  *    You should have received a copy of the GNU General Public License
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
  */
 #pragma once
 
-#include	<QDialog>
-#include	<QLabel>
-#include	<QPushButton>
-#include	<QLineEdit>
-#include	<QFrame>
+#include	<cstdio>
+#include	<cstdlib>
+#include	<qwt_interval.h>
+#include	<QPen>
+//
+//	Qwt 6.2 is different from the 6.1 version, these mods
+//	seem to work
+# include	<qwt_raster_data.h>
 
-class	QSettings;
+class	spectrogramData: public QwtRasterData {
+public:
+	double	*data;		// pointer to actual data
+	int	left;		// index of left most element in raster
+	int	width;		// raster width
+	int	height;		// rasterheigth
+	int	datawidth;	// width of matrix
+	int	dataheight;	// for now == rasterheigth
+	double	max;
 
-class	uploadHandler: public QDialog {
-Q_OBJECT
-	public:
-		uploadHandler	(QSettings *);
-		~uploadHandler	();
-	private:
-	QSettings	*dabSettings;
-	QLabel		*uploadText;
-	QPushButton	*yesButton;
-	QPushButton	*noButton;
-private slots:
-	void		handle_yesButton 	();
-	void		handle_noButton 	();
+	spectrogramData (double *data, int left,
+	                 int width, int height,
+	                 int datawidth, double max);
+
+	~spectrogramData	();
+
+void	initRaster (const QRectF &x, const QSize &raster);
+
+QwtInterval interval (Qt::Axis x) const;
+
+double value (double x, double y) const;
 };
 

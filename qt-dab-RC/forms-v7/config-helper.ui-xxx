@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>575</width>
-    <height>430</height>
+    <width>586</width>
+    <height>433</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,41 +16,9 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>mute time (in minutes)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="smallSpinBox" name="muteTimeSetting">
-         <property name="toolTip">
-          <string>Set here the mute time in minutes</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>switch time (in seconds)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="smallSpinBox" name="switchDelaySetting">
-         <property name="toolTip">
-          <string>Set here the delay, when searching for data in a channel, in seconds</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
@@ -99,6 +67,9 @@
        </item>
        <item>
         <widget class="QSpinBox" name="fontSizeSelector">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The font size of the service lists (both the ensemble view and the favorites view) can be set.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="minimum">
           <number>8</number>
          </property>
@@ -119,6 +90,72 @@
           <string>font color</string>
          </property>
         </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="1">
+          <widget class="smallSpinBox" name="muteTimeSetting">
+           <property name="toolTip">
+            <string>Set here the mute time in minutes</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>switch time (in seconds)</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="smallSpinBox" name="switchDelaySetting">
+           <property name="toolTip">
+            <string>Set here the delay, when searching for data in a channel, in seconds</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>mute time (in minutes)</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The CPU load is an indication of the load when executing the program. The load tells the total load on the CPU, i.e. inclusing the load of other programs that might be running.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>CPU load</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLCDNumber" name="loadDisplay">
+           <property name="frameShape">
+            <enum>QFrame::NoFrame</enum>
+           </property>
+           <property name="segmentStyle">
+            <enum>QLCDNumber::Flat</enum>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -304,17 +341,17 @@
    <item>
     <layout class="QGridLayout" name="gridLayout_2">
      <item row="0" column="0">
-      <widget class="QCheckBox" name="saveServiceSelector">
+      <widget class="QCheckBox" name="upload_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The &amp;quot;save service on exit&amp;quot;  selector instructs the software -when set - to save the channel:service combination (audio services only) and on program restart automatically switch to the  channel and start the service.&lt;/p&gt;&lt;p&gt;Note that is the service cannot be found, a warning will be shown.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This selector is currently not in use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>    save service on exit</string>
+        <string/>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QCheckBox" name="loggerButton">
+      <widget class="QCheckBox" name="logger_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Sometime one wants to see what was done, the logger just dumps some data into a file, showing the selections made.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -334,7 +371,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QCheckBox" name="tii_detectorMode">
+      <widget class="QCheckBox" name="new_tiiMode_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;a second implementation of the tii decoder can be selected here. The decoder &amp;quot;sees&amp;quot; more tii data, but also more erroneous data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -344,7 +381,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QCheckBox" name="utcSelector">
+      <widget class="QCheckBox" name="utc_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you want to see UTC in the logs select this one.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -364,7 +401,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QCheckBox" name="closeDirect">
+      <widget class="QCheckBox" name="closeDirect_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -374,7 +411,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QCheckBox" name="epgSelector">
+      <widget class="QCheckBox" name="epg_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When set, the software is instructed to start an EPG handler when an EPG sevice is detected on starting an ensemble.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -395,13 +432,16 @@
      </item>
      <item row="3" column="0">
       <widget class="QCheckBox" name="dcRemovalSelector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;dc removal. Selecting this function adds a simple dc removal filter to the input stream. Due to inaccuraccies in the tuning and processing of the input (devices), a DC component may have&lt;/p&gt;&lt;p&gt;become part of the input stream. The dc removal filter eliminates most of it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
-        <string/>
+        <string>dc removal</string>
        </property>
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QCheckBox" name="eti_activeSelector">
+      <widget class="QCheckBox" name="etiActivated_selector">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;eti files can be generated by Qt-DAB-5.x. Since generating an eti file from an ensemble seems incompatible with scanning, the scan button is replaced by an &amp;quot;eti&amp;quot; button when eti is activated.&lt;/p&gt;&lt;p&gt;Note that building up an eti file requires quite some resources.&lt;/p&gt;&lt;p&gt;If eti is activated, the scanButton is replaced by the etiButton. Touching that button shows a fileselection menu, after selecting a file the content of the ensemble is sent in eti format to the file. The eti session stops when (a) the eti button is touched again, (b) switching to another channel or (c) disabling eti by unchecking the checkbox.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
@@ -421,7 +461,10 @@
       </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QCheckBox" name="clearScan_Selector">
+      <widget class="QCheckBox" name="clearScan_selector">
+       <property name="toolTip">
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Setting the selector has effect when scanning. If set, the scan table is cleared whenever a&lt;/p&gt;&lt;p&gt;new scan (mode &amp;quot;scan once&amp;quot;) is started.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
        <property name="text">
         <string>clear scan</string>
        </property>

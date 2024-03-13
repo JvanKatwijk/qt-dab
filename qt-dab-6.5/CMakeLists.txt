@@ -317,7 +317,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/coordinates.h
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
-	     ../includes/support/upload.h
 	     ,,.includes/support/http-handler.h
 	     ,,.includes/support/converted_map.h
 	     ../includes/support/fir-filters.h
@@ -443,7 +442,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/tii-library/tii-reader.cpp
              ../src/support/tii-library/db-loader.cpp
 	     ../src/support/http-handler.cpp
-	     ../src/support/upload.cpp
 	     ../src/support/bandpass-filter.cpp
 	     ../src/support/fir-filters.cpp
 	     ../src/support/font-chooser.cpp
@@ -534,7 +532,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/coordinates.h
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
-	     ../includes/support/upload.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h

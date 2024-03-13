@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2017
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -22,83 +22,127 @@
  */
 
 #include	<stdio.h>
-#include	"Qt-audiodevice.h"
+//#include	"Qt-audiodevice.h"
 #include	"Qt-audio.h"
 
-	Qt_Audio::Qt_Audio () {
-	Buffer		= new RingBuffer<float> (8 * 32768);
+
+	Qt_Audio::Qt_Audio ():
+	                 tempBuffer (8 * 32768) { 
 	outputRate	= 48000;	// default
-	theAudioDevice	= new Qt_AudioDevice (Buffer, this);
-	theAudioOutput	= nullptr;
-	setParams (outputRate);
+	working. store		(false);
+	isInitialized. store	(false);
+	newDeviceIndex		= -1;
+	initialize_deviceList	();
+	initializeAudio (QAudioDeviceInfo::defaultOutputDevice());
+}
+
+void	Qt_Audio::initialize_deviceList () {	
+	const QAudioDeviceInfo &defaultDeviceInfo =
+	                QAudioDeviceInfo::defaultOutputDevice ();
+	theList. push_back (defaultDeviceInfo);
+	for (auto &deviceInfo:
+	       QAudioDeviceInfo::availableDevices(QAudio::AudioOutput)) {
+	   if (deviceInfo != defaultDeviceInfo) {
+	      theList. push_back (deviceInfo);
+	   }
+	}
 }
 
 	Qt_Audio::~Qt_Audio () {
-	if (theAudioOutput != nullptr)
-	   delete	theAudioOutput;
-	delete	theAudioDevice;
-	delete	Buffer;
 }
+
+QStringList	Qt_Audio::streams	() {
+QStringList nameList;
+	for (auto & listEl: theList)
+	   nameList << listEl. deviceName ();
+	return nameList;
+}
+
 //
 //	Note that AudioBase functions have - if needed - the rate
 //	converted.  This functions overrides the one in AudioBase
 void	Qt_Audio::audioOutput (float *fragment, int32_t size) {
-	if (theAudioDevice != nullptr) {
-	   Buffer -> putDataIntoBuffer (fragment, 2 * size);
+	if (!working. load ())
+	   return;
+	int aa = tempBuffer. GetRingBufferWriteAvailable ();
+	aa	= std::min ((int)(size * sizeof (float)), aa);
+	aa	&= ~03;
+	tempBuffer. putDataIntoBuffer ((char *)fragment, aa);
+	int periodSize = m_audioOutput -> periodSize ();
+	char buffer [periodSize];
+	while ((m_audioOutput -> bytesFree () >= periodSize) &&
+	       (tempBuffer. GetRingBufferReadAvailable () >= periodSize)) {
+	   tempBuffer. getDataFromBuffer (buffer, periodSize);
+	   theWorker	-> write (buffer, periodSize);
 	}
 }
 
-void	Qt_Audio::setParams (int outputRate) {
-	if (theAudioOutput != nullptr) {
-	   disconnect (theAudioOutput, SIGNAL (stateChanged (QAudio::State)),
-                       this, SLOT (handleStateChanged (QAudio::State)));
-	   delete theAudioOutput;
-	   theAudioOutput = nullptr;
+void	Qt_Audio::initializeAudio(const QAudioDeviceInfo &deviceInfo) {
+	audioFormat. setSampleRate	(outputRate);
+	audioFormat. setChannelCount	(2);
+	audioFormat. setSampleSize	(sizeof (float) * 8);
+	audioFormat. setCodec		("audio/pcm");
+	audioFormat. setByteOrder	(QAudioFormat::LittleEndian);
+	audioFormat. setSampleType	(QAudioFormat::Float);
+
+	if (!deviceInfo. isFormatSupported (audioFormat)) {
+           audioFormat = deviceInfo.nearestFormat (audioFormat);
 	}
-
-	AudioFormat. setSampleRate	(outputRate);
-	AudioFormat. setChannelCount	(2);
-	AudioFormat. setSampleSize	(sizeof (float) * 8);
-	AudioFormat. setCodec		("audio/pcm");
-	AudioFormat. setByteOrder	(QAudioFormat::LittleEndian);
-	AudioFormat. setSampleType	(QAudioFormat::Float);
-
-	QAudioDeviceInfo info(QAudioDeviceInfo::defaultOutputDevice());
-	if (!info. isFormatSupported(AudioFormat)) {
-	   fprintf (stderr, "Audio: Sorry, format cannot be handled");
-	   return;
+	isInitialized. store (false);
+	if (deviceInfo. isFormatSupported (audioFormat)) {
+	   m_audioOutput. reset (new QAudioOutput (audioFormat));
+	   if (m_audioOutput -> error () == QAudio::NoError) {
+	      isInitialized. store (true);
+//	      fprintf (stderr, "Initialization wens OK\n");
+	   }
+//	   else
+//	     fprintf (stderr, "Audio device gives error\n");
 	}
-
-	theAudioOutput = new QAudioOutput(AudioFormat, this);
-	connect (theAudioOutput, SIGNAL (stateChanged (QAudio::State)),
-	         this, SLOT (handleStateChanged (QAudio::State)));
-
-	restart();
-	currentState = theAudioOutput -> state();
 }
 
 void	Qt_Audio::stop () {
-	if (theAudioDevice == nullptr)
-	   return;
-	theAudioDevice	-> stop	();
-	theAudioOutput	-> stop	();
+	m_audioOutput	-> stop ();
+	working. store (false);
+	isInitialized. store (false);
 }
 
 void	Qt_Audio::restart	() {
-	if (theAudioDevice == nullptr)
+//	fprintf (stderr, "Going to restart with %d\n", newDeviceIndex);
+	if (newDeviceIndex < 0)
 	   return;
-	theAudioDevice	-> start();
-	theAudioOutput	-> start (theAudioDevice);
-}
-
-void	Qt_Audio::handleStateChanged (QAudio::State newState) {
-	currentState = newState;
-	switch (currentState) {
-	   case QAudio::IdleState:
-	      theAudioOutput -> stop();
-	      break;
-
-	   default:
-	      break;
+	initializeAudio (theList. at (newDeviceIndex));
+	if (!isInitialized. load ()) {
+	   fprintf (stderr, "Init failed for device %d\n", newDeviceIndex);
+	   return;
 	}
+//	fprintf (stderr, "going to restart\n");
+	theWorker	= m_audioOutput	-> start ();
+	if (m_audioOutput -> error () == QAudio::NoError) {
+	   working. store (true);
+//	   fprintf (stderr, "Device reports: no error\n");
+	}
+	else
+	   fprintf (stderr, "restart gaat niet door\n");
+	fprintf (stderr, "PeriodSize = %d, bufferSize = %d\n",
+	               m_audioOutput -> periodSize (), m_audioOutput -> bufferSize ());
 }
+
+bool	Qt_Audio::selectDevice	(int16_t index) {
+	newDeviceIndex	= index;
+	stop ();
+	restart ();
+	return working. load ();
+}
+
+void	Qt_Audio::suspend	() {
+	if (!working. load ())
+	   return;
+	m_audioOutput	-> suspend ();
+}
+
+void	Qt_Audio::resume	() {
+	if (!working. load ())
+	   return;
+	m_audioOutput	-> resume ();
+}
+

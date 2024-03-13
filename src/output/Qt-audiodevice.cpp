@@ -25,15 +25,15 @@
 //	Create a "device"
 Qt_AudioDevice::Qt_AudioDevice (RingBuffer<float>* Buffer_i,
 	                        QObject* parent)
-	                               : QIODevice(parent) {
-	                               Buffer (Buffer_i) {
+	                               : QIODevice (parent),
+	                                 Buffer (Buffer_i) {
 }
 
 Qt_AudioDevice::~Qt_AudioDevice () {
 }
 
 void	Qt_AudioDevice::start () {
-	open(QIODevice::ReadOnly);
+	open (QIODevice::ReadOnly);
 }
 
 void	Qt_AudioDevice::stop () {

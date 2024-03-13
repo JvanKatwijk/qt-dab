@@ -32,6 +32,23 @@
 #include	"radio.h"
 #include	"position-handler.h"
 #include	"settingNames.h"
+#include	"audiosystem-selector.h"
+
+#define AUDIOSELECT_BUTTON      QString ("audioSelectButton")
+#define FONT_BUTTON             QString ("fontButton")
+#define FONTCOLOR_BUTTON        QString ("fontColorButton")
+
+#define DEVICEWIDGET_BUTTON     QString ("devicewidgetButton")
+#define PORT_SELECTOR           QString ("portSelector")
+#define DLTEXT_BUTTON           QString ("dlTextButton")
+#define RESET_BUTTON            QString ("resetButton")
+#define SCHEDULE_BUTTON         QString ("scheduleButton")
+
+#define SNR_BUTTON              QString ("snrButton")
+#define SET_COORDINATES_BUTTON  QString ("set_coordinatesButton")
+#define LOAD_TABLE_BUTTON       QString ("loadTableButton")
+#define SKIN_BUTTON             QString ("skinButton")
+#define DUMP_BUTTON             QString ("dumpButton")
 
 static struct {
 	QString	decoderName;
@@ -179,6 +196,8 @@ void	configHandler::reconnectDevices () {
 	
 void	configHandler::set_connections () {
 
+	connect (audioSelectButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_audioSelectButton ()));
 	connect (this, SIGNAL (selectDecoder (int)),
 	         myRadioInterface, SLOT (selectDecoder (int)));
 	connect (this, SIGNAL (set_transmitters_local (bool)),
@@ -187,7 +206,9 @@ void	configHandler::set_connections () {
 	         myRadioInterface, SLOT (set_tii_detectorMode (bool)));
 	connect (this, SIGNAL (set_dcRemoval (bool)),
 	         myRadioInterface, SLOT (handle_dcRemovalSelector (bool)));
-	
+
+	connect (audioSelectButton, SIGNAL (rightClicked ()),
+	         this, SLOT (color_audioSelectButton ()));
 	connect (fontButton, SIGNAL (rightClicked ()),
 	         this, SLOT (color_fontButton ()));
 	connect (fontColorButton, SIGNAL (rightClicked ()),
@@ -316,6 +337,13 @@ void	configHandler::set_connections () {
 void	configHandler::set_Colors () {
 	dabSettings	-> beginGroup (COLOR_SETTINGS);
 
+QString audioSelectButton_font	=
+	   dabSettings -> value (AUDIOSELECT_BUTTON + "_font",
+	                                              "white"). toString ();
+QString	audioSelectButton_color =
+	   dabSettings -> value (AUDIOSELECT_BUTTON + "_color",
+	                                              "black"). toString ();
+
 QString fontButton_font	=
 	   dabSettings -> value (FONT_BUTTON + "_font",
 	                                              "white"). toString ();
@@ -405,6 +433,10 @@ QString	skinButton_color =
 
 	QString temp = "QPushButton {background-color: %1; color: %2}";
 
+	this -> audioSelectButton ->
+	              setStyleSheet (temp. arg (audioSelectButton_color,
+	                                        audioSelectButton_font));
+
 	this -> fontButton ->
 	              setStyleSheet (temp. arg (fontButton_color,
 	                                        fontButton_font));
@@ -450,6 +482,10 @@ QString	skinButton_color =
 	this -> skinButton ->
 	              setStyleSheet (temp. arg (skinButton_color,
 	                                        skinButton_font));
+}
+
+void	configHandler::color_audioSelectButton	() {
+	set_buttonColors (this -> audioSelectButton, AUDIOSELECT_BUTTON);
 }
 
 void	configHandler::color_fontButton	() 	{
@@ -788,3 +824,9 @@ void	configHandler::handle_dcRemovalSelector	(int d) {
 void	configHandler::enable_loadLib	() {
 	loadTableButton	-> setEnabled (true);
 }
+
+void	configHandler::handle_audioSelectButton	() {
+audiosystemSelector the_selector (dabSettings);
+	(void)the_selector. QDialog::exec ();
+}
+

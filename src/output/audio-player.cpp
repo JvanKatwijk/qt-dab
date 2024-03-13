@@ -15,5 +15,13 @@ void	audioPlayer::stop		() {}
 
 void	audioPlayer::restart		() {}
 
+void	audioPlayer::suspend		() {stop ();}
+
+void	audioPlayer::resume		() {restart ();}
+
+bool	audioPlayer::selectDevice	(int16_t k) {(void)k; return false;}
+
 bool	audioPlayer::hasMissed		() {return false;}
+
+int	audioPlayer::missed		() { return -1;}
 

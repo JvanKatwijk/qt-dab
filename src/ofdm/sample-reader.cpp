@@ -76,7 +76,6 @@ int	i;
 	corrector	= 0;
 	dumpfilePointer. store (nullptr);
 	dumpIndex	= 0;
-	peakValue	= 0;
 	dumpScale	= valueFor (theRig -> bitDepth());
 	connect (this, &sampleReader::show_spectrum,
 	         mr,  &RadioInterface::show_spectrum);
@@ -107,7 +106,8 @@ void	sampleReader::get_samples (std::vector<Complex>  &v_out,
 	                           int index,
 	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
-std::complex<float> buffer [nrSamples];
+std::complex<float>  *buffer = (std::complex<float> *)
+	                          alloca (nrSamples * sizeof (std::complex<float>));
 	corrector	= phaseOffset;
 
 //	if we get a kill signal, do the kill
@@ -145,7 +145,6 @@ std::complex<float> buffer [nrSamples];
 //	OK, we have samples!!
 	for (int i = 0; i < nrSamples; i ++) {
 	   std::complex<float> v = buffer [i];
-	   peakValue	= ALPHA * abs (v) + (1 - ALPHA) * abs (v); 
 //
 	   if (dcRemoval) {
 	      DABFLOAT real_V = real (v);
@@ -166,22 +165,23 @@ std::complex<float> buffer [nrSamples];
 //	Note that "phase" itself might be negative
 	   currentPhase	-= phaseOffset;
 	   currentPhase	= (currentPhase + INPUT_RATE) % INPUT_RATE;
-	   if (localCounter < bufferSize)
+	   if ( saving && (localCounter < bufferSize))
 	      localBuffer [localCounter ++]     = v;
 	   v_out  [index + i]	= Complex (real (v),
 	                                   imag (v)) * oscillatorTable [currentPhase];
 	   sLevel = 0.00001 * jan_abs (v_out [i]) + (1 - 0.00001) * sLevel;
 	}
+
 	sampleCount	+= nrSamples;
-	if (sampleCount > INPUT_RATE / repetitionCounter) {
+	
+	if (saving && (spectrumBuffer != nullptr) &&
+	             (sampleCount > INPUT_RATE / repetitionCounter)) {
 //	   show_corrector	(corrector);
 	   sampleCount = 0;
-	   if ((spectrumBuffer != nullptr) && saving) {
-	      spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
+	   spectrumBuffer -> putDataIntoBuffer (localBuffer. data (),
 	                                                       bufferSize);
-	      emit show_spectrum (bufferSize);
-	      localCounter = 0;
-	   }
+	   emit show_spectrum (bufferSize);
+	   localCounter = 0;
 	}
 }
 

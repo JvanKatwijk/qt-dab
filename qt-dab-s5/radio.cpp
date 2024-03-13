@@ -52,7 +52,6 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
-#include	"upload.h"
 #include	"techdata.h"
 #include	"db-loader.h"
 #include        "cacheElement.h" 
@@ -946,8 +945,8 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	   my_contentTable	-> addLine (s. at (i));
 	my_contentTable -> show ();
 #ifdef  _UPLOAD_SCAN_RESULT_
-	if (configWidget. autoUpload_Selector -> isChecked ())
-	   my_contentTable -> upload ();
+//	if (configWidget. autoUpload_Selector -> isChecked ())
+//	   my_contentTable -> upload ();
 #endif
 }
 
@@ -3253,10 +3252,10 @@ void	RadioInterface::stopScanning	(bool dump) {
 	      scanDumpFile = nullptr;
 	   }
 #ifdef	_UPLOAD_SCAN_RESULT_
-	   int scanMode	= configWidget. scanmodeSelector -> currentIndex ();
-	   if ((scanMode == SINGLE_SCAN) &&
-	       (configWidget. autoUpload_Selector -> isChecked ())
-	      my_scanTable -> upload ();
+//	   int scanMode	= configWidget. scanmodeSelector -> currentIndex ();
+//	   if ((scanMode == SINGLE_SCAN) &&
+//	       (configWidget. autoUpload_Selector -> isChecked ())
+//	      my_scanTable -> upload ();
 #endif
 	   delete my_scanTable;
 	   my_scanTable	= nullptr;

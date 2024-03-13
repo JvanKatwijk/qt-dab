@@ -49,9 +49,10 @@ public:
 	void	addLine		(const QString &);
 	void	dump		(FILE *);
 
-	void	upload		();
+	QString	upload		();
 private:
 	QString		channel;
+	
 	int		columns;
 	RadioInterface	*theRadio;
 	QSettings	*dabSettings;

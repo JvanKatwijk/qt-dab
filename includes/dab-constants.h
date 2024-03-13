@@ -40,7 +40,7 @@
 //#include	<malloc.h>
 #endif
 
-#ifdef	__MINGW32__
+#if defined (__MINGW32__) || defined (__WIN32)
 //#include	"iostream.h"
 #include	"windows.h"
 #else
@@ -219,6 +219,7 @@ bool	isInfinite (float x) {
 	return x == numeric_limits<float>::infinity();
 }
 
+#define dynVec(t, v)	(t *)(alloca (v * sizeof (t)))
 #define	MINIMUM(x, y)	((x) < (y) ? x : y)
 #define	MAXIMUM(x, y)	((x) > (y) ? x : y)
 

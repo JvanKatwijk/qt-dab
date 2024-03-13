@@ -28,12 +28,12 @@
 #include	"virtual-reader.h"
 #include	"common-readers.h"
 
-#ifndef	__MINGW32__
+#if !defined (__MINGW32__) && !defined (_WIN32)
 #include	"dlfcn.h"
 #endif
 using namespace std;
 
-#ifdef __MINGW32__
+#if defined (__MINGW32__) || defined (_WIN32)
 #define	GETPROCADDRESS	GetProcAddress
 #define	FREELIBRARY	FreeLibrary
 #else

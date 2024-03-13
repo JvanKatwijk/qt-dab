@@ -79,7 +79,6 @@ private:
 	int32_t		T_g;
 	int32_t		nrBlocks;
 	int32_t		carriers;
-	int16_t		getMiddle();
 	std::vector<Complex>	phaseReference;
 	std::vector<int16_t>	ibits;
 	std::vector<float>	offsetVector;
@@ -87,6 +86,9 @@ private:
 	std::vector<DABFLOAT>	amplitudeLevel;
 	std::vector<Complex>	carrierCenters;
 	std::vector<DABFLOAT>	sigmaLevel;
+	std::vector<Complex>	conjVector;
+	std::vector<Complex>	fft_buffer;
+	
 
 	phaseTable	*phasetable;
 	int		iqSelector;

@@ -1,6 +1,6 @@
 #
 /*
- *    Copyright (C) 2014 .. 2023
+ *    Copyright (C) 2016 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
@@ -22,40 +22,29 @@
  */
 #pragma once
 
-#include	<stdio.h>
-#include	<QAudioOutput>
-#include	<QStringList>
-#include	"dab-constants.h"
-#include	"audio-player.h"
-#include	<QIODevice>
-#include	<QScopedPointer>
-#include	<QComboBox>
-#include	<vector>
-#include	<atomic>
-#include	"ringbuffer.h"
+#include	<QDialog>
+#include	<QLabel>
+#include        <QListView>
+#include        <QStringListModel>
+#include        <QStringList>
+#include        <cstdint>
 
-class	Qt_Audio: public audioPlayer {
+class	QSettings;
+
+class	audiosystemSelector: public QDialog {
 Q_OBJECT
 public:
-			Qt_Audio	();
-			~Qt_Audio	();
-	void		stop		();
-	void		restart		();
-	void		suspend		();
-	void		resume		();
-	void		audioOutput	(float *, int32_t);
-	QStringList	streams		();
-	bool		selectDevice	(int16_t);
+		audiosystemSelector	(QSettings *);
+		~audiosystemSelector	();
 private:
-	RingBuffer<char> tempBuffer;
-	void		initialize_deviceList ();
-	void		initializeAudio(const QAudioDeviceInfo &deviceInfo);
-	QAudioFormat	audioFormat;
-	QScopedPointer<QAudioOutput> m_audioOutput;
-	int32_t		outputRate;
-	std::vector<QAudioDeviceInfo> theList;
-	std::atomic<bool>	isInitialized;
-	std::atomic<bool>	working;
-	QIODevice	*theWorker;
-	int		newDeviceIndex;
+	QSettings	*dabSettings;
+	QLabel		*toptext;
+	QListView	*servicesDisplay;
+	QStringListModel	serviceList;
+	QStringList	services;
+	int16_t		selectedItem;
+private slots:
+	void		selectService	(QModelIndex);
 };
+
+

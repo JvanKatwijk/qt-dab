@@ -326,6 +326,7 @@ SOURCES += ./main.cpp \
 	   ../src/output/newconverter.cpp \
 	   ../src/output/audio-player.cpp \
 	   ../src/output/audiosink.cpp \
+	   ../src/support/distances.cpp \
 	   ../src/support/position-handler.cpp \
 	   ../src/support/converter_48000.cpp \
 	   ../src/support/viterbi-jan/viterbi-handler.cpp \
@@ -426,7 +427,7 @@ CONFIG		+= sdrplay-v2
 CONFIG		+= sdrplay-v3
 CONFIG		+= dabstick-linux
 CONFIG		+= rtl_tcp
-CONFIG		+= airspy
+CONFIG		+= airspy-2
 CONFIG		+= hackrf
 CONFIG		+= lime
 CONFIG		+= soapy
@@ -481,7 +482,7 @@ isEmpty(GITHASHSTRING) {
 	INCLUDEPATH	+= /usr/local/include /usr/include/qt4/qwt /usr/include/qt5/qwt /usr/include/qt4/qwt /usr/include/qwt /usr/local/qwt-6.1.4-svn/
 	LIBS		+= -L/usr/x64-w64-mingw32/sys-root/mingw/lib
 ##	LIBS		+= -liio
-	CONFIG		+= airspy
+	CONFIG		+= airspy-2
 	CONFIG          += spyServer-16
 	CONFIG          += spyServer-8
 	CONFIG		+= rtl_tcp
@@ -668,6 +669,19 @@ airspy {
 	SOURCES		+= ../qt-devices/airspy-handler/airspy-handler.cpp \
 	                   ../qt-devices/airspy-handler/airspyselect.cpp
 	FORMS		+= ../qt-devices/airspy-handler/airspy-widget.ui
+}
+
+airspy-2 {
+        DEFINES         += HAVE_AIRSPY_2
+        DEPENDPATH      += ../qt-devices/airspy-2
+        INCLUDEPATH     += ../qt-devices/airspy-2 \
+                           ../qt-devices/airspy-2/libairspy
+        HEADERS         += ../qt-devices/airspy-2/airspy-2.h \
+                           ../qt-devices/airspy-2/airspyselect.h \
+                           ../qt-devices/airspy-2/libairspy/airspy.h
+        SOURCES         += ../qt-devices/airspy-2/airspy-2.cpp \
+                           ../qt-devices/airspy-2/airspyselect.cpp
+        FORMS           += ../qt-devices/airspy-2/airspy-widget.ui
 }
 
 #	extio dependencies, windows only

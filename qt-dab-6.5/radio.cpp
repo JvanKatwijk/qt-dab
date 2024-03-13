@@ -51,7 +51,6 @@
 #include	"ITU_Region_1.h"
 #include	"coordinates.h"
 #include	"mapport.h"
-#include	"upload.h"
 #include	"techdata.h"
 #include	"aboutdialog.h"
 #include	"db-loader.h"
@@ -309,16 +308,17 @@ QString h;
 
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
+	int latency		= dabSettings_p -> value ("latency", 5). toInt();
 #ifdef	TCP_STREAMER
 	soundOut_p		= new tcpStreamer	(20040);
 	techWindow_p		-> hide		();
+	(void)latency;
 #elif	QT_AUDIO
 	soundOut_p		= new Qt_Audio();
 	techWindow_p		-> hide		();
 	(void)latency;
 #else
 //	just sound out
-	int latency		= dabSettings_p -> value ("latency", 5). toInt();
 	soundOut_p		= new audioSink		(latency);
 	QStringList streams	= ((audioSink *)soundOut_p) -> streams ();
 	configHandler_p	-> fill_streamTable (streams);

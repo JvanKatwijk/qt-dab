@@ -45,6 +45,7 @@
 #define	HOME_LONGITUDE		"longitude"
 
 #define	AUDIO_STREAM_NAME	"soundChannel"
+#define	QT_AUDIO_STREAM_NAME	"qt_soundChannel"
 
 #define	BROWSER_ADDRESS		"browserAddress"
 

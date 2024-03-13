@@ -82,7 +82,6 @@ private:
 	      DABFLOAT		dcReal;
 	      DABFLOAT		dcImag;
 
-	      float		peakValue;
 signals:
 	      void		show_spectrum	(int);
 	      void		show_dcOffset	(float);

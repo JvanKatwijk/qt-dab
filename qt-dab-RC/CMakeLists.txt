@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 3.21 )
-set (objectName qt-dab-6.5Beta)
+set (objectName qt-dab-6.X)
 #set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -g -fsanitize=address")
 #set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -g -fsanitize=address")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++17 -flto")
@@ -57,7 +57,6 @@ list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake/Modules)
 #
 #Select ONE of the following options
 set (USE_PORTAUDIO ON)
-set (QT_AUDIO OFF)	# not recently tested
 set (TCP_STREAMER OFF)
 
 #####################################################################
@@ -82,10 +81,10 @@ option(RTL_TCP OFF)
 
 
 # additional options
+option(FDK_AAC ON)
 option(DATA_STREAMER OFF)
 option(VITERBI_SSE OFF)
 option(VITERBI_NEON OFF)
-option(FDK_AAC OFF)
 
 
 ####################################################################
@@ -225,6 +224,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/aboutdialog.h 
 	     ./support/ensemble-handler.h
 	     ./support/config-handler.h
+	     ./support/audiosystem-selector.h
 	     ./forms-v7/new-display/display-widget.h 
              ./forms-v7/new-display/scopes/correlation-scope.h 
              ./forms-67/new-display/scopes/spectrum-scope.h 
@@ -323,6 +323,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/tii-mapper.h
              ../src/support/tii-library/tii-reader.h
              ../src/support/tii-library/db-loader.h
+             ../src/support/tii-library/uploader.h
 	     ../includes/support/font-chooser.h 
 	     ../includes/support/buttons/smallcombobox.h 
              ../includes/support/buttons/newpushbutton.h 
@@ -359,6 +360,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/aboutdialog.cpp 
              ./support/ensemble-handler.cpp 
              ./support/config-handler.cpp 
+             ./support/audiosystem-selector.cpp 
 	     ./forms-v7/new-display/display-widget.cpp 
              ./forms-v7/new-display/scopes/spectrum-scope.cpp 
              ./forms-v7/new-display/scopes/correlation-scope.cpp 
@@ -440,6 +442,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../src/support/mapport.cpp
 	     ../src/support/tii-library/tii-reader.cpp
              ../src/support/tii-library/db-loader.cpp
+             ../src/support/tii-library/uploader.cpp
 	     ../src/support/http-handler.cpp
 	     ../src/support/bandpass-filter.cpp
 	     ../src/support/fir-filters.cpp
@@ -477,6 +480,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
              ./support/aboutdialog.h 
              ./support/ensemble-handler.h 
              ./support/config-handler.h 
+	     ./support/audiosystem-selector.h
 	     ./forms-v7/new-display/display-widget.h 
              ./forms-v7/new-display/scopes/correlation-scope.h 
              ./forms-v7/new-display/scopes/spectrum-scope.h 
@@ -531,7 +535,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	     ../includes/support/coordinates.h
 	     ../includes/support/skin-handler.h
 	     ../includes/support/mapport.h
-	     ../includes/support/upload.h
 	     ../includes/support/http-handler.h
 	     ../includes/scopes-qwt6/audio-display.h
 	     ../qt-devices/filereaders/rawfiles-new/rawfiles.h
@@ -556,23 +559,47 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 
 #########################################################################
 
-           find_package(Faad)
-           if (NOT FAAD_FOUND )
-              message(FATAL_ERROR "please install libfaad")
-           endif ()
-	   set (${objectName}_HDRS
+	if (FDK_AAC)
+	   find_package(Fdk-AAC)
+	   if (NOT LIBFDK_AAC_FOUND)
+	      message(FATAL_ERROR, "Please install libfdk-aac")
+	   endif ()
+	   include_directories (../specials/fdk-aac)
+	   set($(objectName)_HDRS
 	        ${${objectName}_HDRS}
-	        ../includes/backend/audio/faad-decoder.h
+	        ../includes/backend/audio/fdk-aac.h
 	   )
-	   set (${objectName}_SRCS
-                ${${objectName}_SRCS}
-	        ../src/backend/audio/faad-decoder.cpp
+
+	   set(${objectName}_SRCS
+	        ${${objectName}_SRCS}
+	        ../src/backend/audio/fdk-aac.cpp
+	   )
+	   set (${objectName}_MOCS
+	        ${${objectName}_MOCS}
+	        ../includes/backend/audio/fdk-aac.h
+	   )
+	   list(APPEND extraLibs ${FDK_AAC_LIBRARIES})
+	   add_definitions(-D__WITH_FDK_AAC__)
+	elseif (NOT FDK_AAC)
+	   find_package (Faad)
+	   if (NOT FAAD_FOUND)
+	      message(FATAL_ERROR "Please install libfaad")
+	   endif ()
+	   set(${objectName}_HDRS
+	       ${${objectName}_HDRS}
+	       ../includes/backend/audio/faad-decoder.h
+	   )
+
+	   set(${objectName}_SRCS
+	       ${${objectName}_SRCS}
+	       ../src/backend/audio/faad-decoder.cpp
 	   )
 	   set (${objectName}_MOCS
 	        ${${objectName}_MOCS}
 	        ../includes/backend/audio/faad-decoder.h
 	   )
-	   add_definitions (-D__WITH_FAAD__)
+	   add_definitions(-D__WITH_FAAD__)
+	endif (FDK_AAC)
 
 #	the viterbi decoder
 #
@@ -975,30 +1002,6 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	   )
 	endif (TCP_STREAMER)
 
-	if (QT_AUDIO)
-	   add_definitions (-DQT_AUDIO)
-	   find_package (Qt5Multimedia REQUIRED)
-	   include_directories (
-	      ${Qt5Multimedia_INCLUDE_DIRS}
-	   )
-
-	   set (${objectName}_MOCS
-	        ${${objectName}_MOCS}
-	        ../includes/output/Qt-audio.h
-	        ../includes/output/Qt-audiodevice.h
-	   )
-	   set (${objectName}_HDRS
-	        ${${objectName}_HDRS}
-	        ../includes/output/Qt-audio.h
-	        ../includes/output/Qt-audiodevice.h
-	   )
-	   set (${objectName}_SRCS
-	        ${${objectName}_SRCS}
-	        ../src/output/Qt-audio.cpp
-	        ../src/output/Qt-audiodevice.cpp
-	   )
-	endif (QT_AUDIO)
-
 	if (RTL_TCP)
 	   find_package (Qt5Network REQUIRED)
 	   set (${objectName}_UIS
@@ -1048,24 +1051,32 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	endif (DATA_STREAMER)
 
 	if (USE_PORTAUDIO)
+	   add_definitions (-DQT_AUDIO)
            find_package(Portaudio)
            if (NOT PORTAUDIO_FOUND)
                message(FATAL_ERROR "please install portaudio V19")
            endif ()
            list(APPEND extraLibs ${PORTAUDIO_LIBRARIES})
+	   find_package (Qt5Multimedia REQUIRED)
+	   include_directories (
+	      ${Qt5Multimedia_INCLUDE_DIRS}
+	   )
 	   set (${objectName}_HDRS
 	        ${${objectName}_HDRS}
 	       ../includes/output/audiosink.h
+	       ../includes/output/Qt-audio.h
 	   )
 
 	   set (${objectName}_MOCS
 	       ${${objectName}_MOCS}
 	       ../includes/output/audiosink.h
+	       ../includes/output/Qt-audio.h
 	   )
 
 	   set (${objectName}_SRCS
 	      ${${objectName}_SRCS}
 	      ../src/output/audiosink.cpp
+	     ../src/output/Qt-audio.cpp
 	   )
 	endif (USE_PORTAUDIO)
 
@@ -1102,7 +1113,7 @@ add_definitions (-D__THREADED_BACKEND__)	# uncomment for use for an RPI
 	                       ${FAAD_LIBRARIES}
 	                       ${CMAKE_DL_LIBS}
 	)
-	if (QT_AUDIO)
+	if (USE_PORTAUDIO)
 	   target_link_libraries (${objectName} Qt5::Multimedia)
 	endif (QT_AUDIO)
 

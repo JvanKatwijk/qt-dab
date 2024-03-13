@@ -39,7 +39,7 @@ void	constrain (int32_t & testVal, const int32_t limit) {
 	                                QwtPlotSpectrogram (), 
 	                                 plotgrid (plot) {
 	auto	*const colorMap = new QwtLinearColorMap (
-	                           QColor(0, 0, 255, 20),
+	                           QColor (0, 0, 255, 20),
 	                           QColor(255, 255, 178, 255));
 
 	setRenderThreadCount	(1);
@@ -140,8 +140,6 @@ void	IQDisplay::drawCross () {
 	for (int32_t i = -(RADIUS - 1); i < RADIUS; i++) {
 	   setPoint (i, i, 30);
 	   setPoint (-i, i, 30);
-//	   setPoint (1, i, 30); // horizontal line
-//	   setPoint (i, 0, 30); // vertical line
 	}
 }
 

@@ -23,11 +23,15 @@
 #include	<QFileDialog>
 #include	"xml-filereader.h"
 #include	<cstdio>
-#include	<unistd.h>
 #include	<cstdlib>
 #include	<fcntl.h>
-#include	<sys/time.h>
 #include	<ctime>
+
+#ifdef	_WIN32
+#else
+#include	<unistd.h>
+#include	<sys/time.h>
+#endif
 
 #include	"device-exceptions.h"
 #include	"xml-descriptor.h"

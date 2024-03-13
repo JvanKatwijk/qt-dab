@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>586</width>
-    <height>433</height>
+    <width>544</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,39 +16,50 @@
   <property name="toolTip">
    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Configuration and control widget.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_4">
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QRadioButton" name="orderServiceIds">
-         <property name="text">
-          <string>serviceIds</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QRadioButton" name="orderServiceIds">
+           <property name="text">
+            <string>serviceIds</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="orderAlfabetical">
+           <property name="text">
+            <string>alphabetically</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="ordersubChannelIds">
+           <property name="text">
+            <string>subchannelIds</string>
+           </property>
+           <attribute name="buttonGroup">
+            <string notr="true">buttonGroup</string>
+           </attribute>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QRadioButton" name="orderAlfabetical">
+        <widget class="smallPushButton" name="audioSelectButton">
          <property name="text">
-          <string>alphabetically</string>
+          <string>audio</string>
          </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="ordersubChannelIds">
-         <property name="text">
-          <string>subchannelIds</string>
-         </property>
-         <attribute name="buttonGroup">
-          <string notr="true">buttonGroup</string>
-         </attribute>
         </widget>
        </item>
       </layout>
@@ -97,6 +108,16 @@
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
         <layout class="QFormLayout" name="formLayout">
+         <item row="0" column="0">
+          <widget class="QLabel" name="label">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>mute time (in min)</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="1">
           <widget class="smallSpinBox" name="muteTimeSetting">
            <property name="toolTip">
@@ -110,7 +131,7 @@
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The switch time - expressed in seconds - is the time the processor will wait to see if there is&lt;/p&gt;&lt;p&gt;any data in a channel. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>switch time (in seconds)</string>
+            <string>switch time (in sec)</string>
            </property>
           </widget>
          </item>
@@ -118,16 +139,6 @@
           <widget class="smallSpinBox" name="switchDelaySetting">
            <property name="toolTip">
             <string>Set here the delay, when searching for data in a channel, in seconds</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLabel" name="label">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The mute time is the time, the audio will be suppressed when activating the mute function.&lt;/p&gt;&lt;p&gt;It is expressed in minutes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>mute time (in minutes)</string>
            </property>
           </widget>
          </item>
@@ -343,10 +354,10 @@
      <item row="0" column="0">
       <widget class="QCheckBox" name="upload_selector">
        <property name="toolTip">
-        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This selector is currently not in use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&amp;quot;upload enable&amp;quot; is a selector for - if configured - allowing some data to be uploaded to fmlist.org. When touching the ensemblename on top of the left part of the main widget, the current content of the ensemble is shown (in &amp;quot;.csv&amp;quot;  format).  If this selector is enabled - and if the feature is configured - you will be asked to accept (or deny) sending up the contents of the ensemble to &amp;quot;fmlist.org&amp;quot; (the site that is responsible for the database mapping the TII numbers to station names and station attributes.&lt;/p&gt;&lt;p&gt;The same for rh result of the single scan.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string/>
+        <string>upload enable</string>
        </property>
       </widget>
      </item>
@@ -376,7 +387,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;a second implementation of the tii decoder can be selected here. The decoder &amp;quot;sees&amp;quot; more tii data, but also more erroneous data.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>    new tii detector</string>
+        <string>new tii detector</string>
        </property>
       </widget>
      </item>
@@ -406,7 +417,7 @@
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you are bored with the explicit request to stop, touch this one, and stopping is direct&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
        <property name="text">
-        <string>  close without asking</string>
+        <string>close without asking</string>
        </property>
       </widget>
      </item>

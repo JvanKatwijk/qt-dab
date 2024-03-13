@@ -35,7 +35,6 @@
 #include	"mot-content-types.h"
 #include	<iostream>
 #include	<numeric>
-#include	<unistd.h>
 #include	<vector>
 #include	"radio.h"
 #include	"config-handler.h"
@@ -55,19 +54,18 @@
 #include	"position-handler.h"
 #ifdef	TCP_STREAMER
 #include	"tcp-streamer.h"
-#elif	QT_AUDIO
-#include	"Qt-audio.h"
 #else
+#include	"Qt-audio.h"
 #include	"audiosink.h"
 #endif
 #include	"time-table.h"
 
 #include	"device-exceptions.h"
 #include	"settingNames.h"
+#include	"uploader.h"
 
-#ifdef	__MINGW32__
+#if defined (__MINGW32__) || defined (_WIN32)
 #include <windows.h>
-
 __int64 FileTimeToInt64 (FILETIME & ft) {
 	ULARGE_INTEGER foo;
 
@@ -107,7 +105,18 @@ bool get_cpu_times (size_t &idle_time, size_t &total_time) {
 	                            cpu_times. end(), (size_t)0);
 	return true;
 }
+#include	<unistd.h>
 #endif
+
+static inline
+QStringList splitter (const QString &s) {
+#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
+	QStringList list = s.split (":", Qt::SkipEmptyParts);
+#else
+	QStringList list = s.split (":", QString::SkipEmptyParts);
+#endif
+	return list;
+}
 
 static const
 char	LABEL_STYLE [] = "color:lightgreen";
@@ -218,9 +227,8 @@ QString h;
 	   else
 	      fprintf (stderr, "Loading details button failed\n");
 	}
-//
-//	put the widgets in the right place
-//	and create the workers
+
+//	put the widgets in the right place and create the workers
 	set_position_and_size	(dabSettings_p, this, "mainWidget");
 	configHandler_p		= new configHandler (this, dabSettings_p);
 	the_ensembleHandler	= new ensembleHandler (this, dabSettings_p,
@@ -260,7 +268,6 @@ QString h;
 	connect (the_ensembleHandler,
 	             SIGNAL (start_background_task (const QString &)),
 	         this, SLOT (start_background_task (const QString &)));
-
 	   
 	techWindow_p	= new techData (this, dabSettings_p, &theTechData);
 	connect (techWindow_p, SIGNAL (frameClosed ()),
@@ -279,6 +286,9 @@ QString h;
 	serviceLabel	-> setStyleSheet (labelStyle);
 	serviceLabel	-> setFont (font);
 	programTypeLabel	-> setStyleSheet (labelStyle);
+	font      = ensembleId -> font ();
+        font. setPointSize (14);
+        ensembleId      -> setFont (font);
 
 	nextService. valid	= false;
 	channel. currentService. valid	= false;
@@ -296,8 +306,7 @@ QString h;
 
 	techWindow_p 		-> hide ();	// until shown otherwise
 	stillMuting		-> hide ();
-/*
- */
+
 #ifdef	DATA_STREAMER
 	dataStreamer_p		= new tcpServer (dataPort);
 #else
@@ -311,28 +320,39 @@ QString h;
 
 //	Where do we leave the audio out?
 	configHandler_p	-> show_streamSelector (false);
+	int latency	= dabSettings_p -> value ("latency", 5). toInt();
 #ifdef	TCP_STREAMER
 	soundOut_p		= new tcpStreamer	(20040);
 	techWindow_p		-> hide		();
-#elif	QT_AUDIO
-	soundOut_p		= new Qt_Audio();
-	techWindow_p		-> hide		();
-	(void)latency;
 #else
-//	just sound out
-	int latency		= dabSettings_p -> value ("latency", 5). toInt();
-	soundOut_p		= new audioSink		(latency);
-	QStringList streams	= ((audioSink *)soundOut_p) -> streams ();
-	configHandler_p	-> fill_streamTable (streams);
-	configHandler_p	-> show_streamSelector (true);
-	QString temp	=
-	       dabSettings_p -> value (AUDIO_STREAM_NAME,
+	QStringList streams;
+	QString	temp;
+	QString s = dabSettings_p -> value ("soundHandler", "qt_audio").
+	                                                       toString ();
+	if ((s == "QT_AUDIO") || (s == "qt_audio")) {
+	   soundOut_p		= new Qt_Audio ();
+	   streams	= ((Qt_Audio *)soundOut_p) -> streams ();
+	   temp		=
+	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
 	                                      "default"). toString ();
-	k	= configHandler_p -> init_streamTable (temp);
-	if (k >= 0) {
-	   bool err = !((audioSink *)soundOut_p) -> selectDevice (k);
-	   if (err)
-	      ((audioSink *)soundOut_p)	-> selectDefaultDevice();
+	}
+	else {
+	   soundOut_p		= new audioSink		(latency);
+	   streams	= ((audioSink *)soundOut_p) -> streams ();
+	   temp		=
+	          dabSettings_p -> value (AUDIO_STREAM_NAME,
+	                                      "default"). toString ();
+	}
+
+	if (streams. size () > 0) {
+	   configHandler_p -> fill_streamTable (streams);
+	   configHandler_p -> show_streamSelector (true);
+	   k	= configHandler_p -> init_streamTable (temp);
+	   if (k >= 0) {
+	      soundOut_p -> selectDevice (k);
+	   }
+	   else
+	      soundOut_p -> selectDevice (0);	// default device
 	}
 	configHandler_p	-> connect_streamTable	();
 #endif
@@ -368,6 +388,9 @@ QString h;
 	epgTimer. setSingleShot (true);
 	connect (&epgTimer, SIGNAL (timeout ()),
 	         this, SLOT (epgTimer_timeOut ()));
+	pauzeTimer. setSingleShot (true);
+	connect (&pauzeTimer, SIGNAL (timeout ()),
+	         this, SLOT (show_pauzeSlide ()));
 
 	my_timeTable		= new timeTableHandler (this);
 	my_timeTable		-> hide ();
@@ -589,11 +612,7 @@ dabService	res;
 	QString preset = dabSettings_p -> value (PRESET_NAME, ""). toString ();
 	if (preset == "")
 	   return res;
-#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
-	QStringList list = preset.split (":", Qt::SkipEmptyParts);
-#else   
-	QStringList list = preset.split (":", QString::SkipEmptyParts);
-#endif  
+	QStringList list	= splitter (preset);
 	if (list. size () != 2)
 	   return res;
 	res. channel	= list. at (0);
@@ -664,10 +683,6 @@ QString s;
 	if (!running. load())
 	   return;
 
-	QFont font	= ensembleId -> font ();
-	font. setPointSize (14);
-	
-	ensembleId	-> setFont (font);
 	ensembleId	-> setText (v + QString ("(") + hextoString (id) + QString (")"));
 
 	channel. ensembleName	= v;
@@ -727,12 +742,18 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	   contentTable_p -> addLine (ss);
 	contentTable_p -> show ();
 	if (configHandler_p -> upload_selector_active ()) {
-	   QMessageBox::StandardButton reply =
+	   try {
+	      uploader the_uploader;
+	      QMessageBox::StandardButton reply =
 	              QMessageBox::question (this, 
-	                                     "upload content?", "",
+	                                     "upload content to fmlist.org?", "",
 	                              QMessageBox::Yes | QMessageBox::No);
-	   if (reply == QMessageBox::Yes)
-	      contentTable_p	-> upload ();
+	      if (reply == QMessageBox::Yes)
+	         the_uploader. loadUp (channel. ensembleName,
+	                               channel. Eid,
+	                               channel. channelName, 
+	                               contentTable_p -> upload ());
+	   } catch (...) {}
 	}
 }
 
@@ -965,7 +986,6 @@ uint8_t localBuffer [length + 8];
 	   dataStreamer_p -> sendData (localBuffer, length + 8);
 #endif
 }
-
 /**
   *	If a change is detected, we have to restart the selected
   *	service - if any. If the service is a secondary service,
@@ -1224,14 +1244,13 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (my_ofdmHandler == nullptr)
 	   return;
-#if !defined (TCP_STREAMER) && !defined (QT_AUDIO)
 	if (!techWindow_p -> isHidden ()) {
 	   if (soundOut_p -> hasMissed ()) {
 	      int xxx = ((audioSink *)soundOut_p) -> missed ();
 	      techWindow_p -> showMissed (xxx);
 	   }
 	}
-#endif
+
 	if (error_report && (numberofSeconds % 10) == 0) {
 	   int	totalFrames;
 	   int	goodFrames;
@@ -1244,15 +1263,12 @@ void	RadioInterface::updateTimeDisplay() {
 	                                            total_ficError * 100.0 / total_fics);
 	   total_ficError	= 0;
 	   total_fics		= 0;
-#ifndef TCP_STREAMER 
-#ifndef	QT_AUDIO
-
 	   if (configHandler_p -> currentStream () != "") {
-	      int xxx = ((audioSink *)soundOut_p)	-> missed();
-	      fprintf (stderr, "missed %d\n", xxx);
+	      if (soundOut_p -> hasMissed ()) {
+	         int xxx = soundOut_p  -> missed();
+	         fprintf (stderr, "missed %d\n", xxx);
+	      }
 	   }
-#endif
-#endif
 	}
 }
 //
@@ -1641,7 +1657,8 @@ void	RadioInterface::scheduled_frameDumping (const QString &s) {
 //
 //	called from the mp4 handler, using a signal
 void	RadioInterface::newFrame        (int amount) {
-uint8_t buffer [amount];
+uint8_t	*buffer  = (uint8_t *) alloca (amount * sizeof (uint8_t));
+
 	if (!running. load ())
 	   return;
 
@@ -1859,11 +1876,7 @@ void	RadioInterface::handle_contentSelector (const QString &s) {
 //	likely are less than 16 characters
 //
 void	RadioInterface::scheduleSelect (const QString &s) {
-#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
-	QStringList list = s.split (":", Qt::SkipEmptyParts);
-#else   
-	QStringList list = s.split (":", QString::SkipEmptyParts);
-#endif  
+QStringList list	= splitter (s);
 	if (list. length () != 2)
 	   return;
 	fprintf (stderr, "we found %s %s\n",
@@ -1873,11 +1886,7 @@ void	RadioInterface::scheduleSelect (const QString &s) {
 }
 //
 void	RadioInterface::localSelect (const QString &s) {
-#if QT_VERSION >= QT_VERSION_CHECK (5, 15, 2)
-	QStringList list = s.split (":", Qt::SkipEmptyParts);
-#else
-	QStringList list = s.split (":", QString::SkipEmptyParts);
-#endif
+QStringList list 	= splitter (s);
 	if (list. length () != 2)
 	   return;
 	localSelect (list. at (1), list. at (0));
@@ -1891,6 +1900,7 @@ QString serviceName	= service;
 	   return;
 
 	channelTimer. stop ();
+	presetTimer. stop  ();
 	stopService (channel. currentService);
 
 	for (int i = service. size (); i < 16; i ++)
@@ -1945,8 +1955,6 @@ QString serviceName	= service;
 ///////////////////////////////////////////////////////////////////////////
 
 void	RadioInterface::stopService	(dabService &s) {
-	fprintf (stderr, "callto stopService with service valid %d\n",
-	                                       s. valid);
 	if (!s. valid)
 	   return;
 	presetTimer. stop ();
@@ -1976,7 +1984,7 @@ void	RadioInterface::stopService	(dabService &s) {
 	if (s. valid) {
 	   my_ofdmHandler -> stop_service (s. subChId, FORE_GROUND);
 	   if (s. is_audio) {
-	      soundOut_p -> stop ();
+	      soundOut_p -> suspend ();
 	      for (int i = 0; i < 5; i ++) {
 	         packetdata pd;
 	         my_ofdmHandler -> data_for_packetservice (s. serviceName,
@@ -2017,7 +2025,6 @@ QString serviceName	= s. serviceName;
 	   channel. currentService. subChId	= ad. subchId;
 	   if (my_ofdmHandler -> has_timeTable (ad. SId))
 	      techWindow_p -> show_timetableButton (true);
-
 	   startAudioservice (ad);
 //
 //	Only presets for real input devices
@@ -2063,7 +2070,7 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 	   }
 	}
 //	activate sound
-	soundOut_p -> restart ();
+	soundOut_p -> resume ();
 	channel. audioActive	= true;
 	set_soundLabel (true);
 	programTypeLabel	-> setText (getProgramType (ad. programType));
@@ -2250,7 +2257,7 @@ void	RadioInterface::stopChannel	() {
 //	first, stop services in fore and background
 	if (channel. currentService. valid)
 	   stopService (channel. currentService);
-	soundOut_p	-> stop ();
+	soundOut_p	-> suspend ();
 
 	for (auto s : channel. backgroundServices) {
 	   my_ofdmHandler -> stop_service (s. subChId, BACK_GROUND);
@@ -2492,12 +2499,19 @@ void	RadioInterface::stop_scan_single () {
 	   return;		// should not happen
 
 	if (configHandler_p -> upload_selector_active ()) {
-           QMessageBox::StandardButton reply =
+	   try {
+	      uploader the_uploader;
+              QMessageBox::StandardButton reply =
                       QMessageBox::question (this,
-                                             "upload content?", "",
+                                             "upload content to fmlist.org?", "",
                                       QMessageBox::Yes | QMessageBox::No);
-           if (reply == QMessageBox::Yes)
-              scanTable_p    -> upload ();
+              if (reply == QMessageBox::Yes) {
+	         the_uploader. loadUp ("Scan",
+	                               0,
+	                               "result table",
+	                               scanTable_p -> upload ());
+	      }
+           } catch (...) {}
         }
 
 	FILE *scanDumper_p	= scanMonitor. askFileName ();
@@ -3050,11 +3064,11 @@ void	RadioInterface::scheduled_dlTextDumping () {
 void	RadioInterface::handle_configButton	() {
 	if (!configHandler_p -> isHidden ()) {
 	   configHandler_p ->  hide ();	
-	   dabSettings_p	-> setValue (CONFIG_WIDGET_VISIBLE, 0);
+	   dabSettings_p   -> setValue (CONFIG_WIDGET_VISIBLE, 0);
 	}
 	else {
 	   configHandler_p -> show ();
-	   dabSettings_p	-> setValue (CONFIG_WIDGET_VISIBLE, 1);
+	   dabSettings_p   -> setValue (CONFIG_WIDGET_VISIBLE, 1);
 	}
 }
 
@@ -3216,7 +3230,11 @@ void	RadioInterface:: set_streamSelector (int k) {
 	dabSettings_p -> setValue (AUDIO_STREAM_NAME,
 	                          configHandler_p -> currentStream ());
 #else
-	(void)k;
+#ifdef	QT_AUDIO
+	((Qt_Audio *)(soundOut_p)) -> selectDevice (k);
+	dabSettings_p -> setValue (QT_AUDIO_STREAM_NAME,
+	                           configHandler_p -> currentStream ());
+#endif
 #endif
 }
 //
@@ -3240,7 +3258,6 @@ QString theTime;
 	              theTime. toUtf8 (). data (),
 	              a1. toUtf8 (). data (), a2. toUtf8 (). data ());
 }
-
 //
 //	ensure that we only get a handler if we have a start location
 void	RadioInterface::handle_httpButton	() {
@@ -3296,6 +3313,7 @@ void	RadioInterface::http_terminate	() {
 void	RadioInterface::displaySlide	(const QPixmap &p) {
 int w   = 360;
 int h   = 2 * w / 3;
+	pauzeTimer. stop ();
 	pictureLabel	-> setAlignment(Qt::AlignCenter);
 	pictureLabel ->
 	       setPixmap (p. scaled (w, h, Qt::KeepAspectRatio));
@@ -3304,18 +3322,13 @@ int h   = 2 * w / 3;
 
 void	RadioInterface::show_pauzeSlide () {
 QPixmap p;
-static int teller	= 0;
 QString slideName	= ":res/pauze-slide-%1.png";
-static const char *slideNames [] =	
-	{":res/pauze-slide-1.png",
-	 ":res/pauze-slide-2.png",
-	 ":res/pauze-slide-3.png",
-	 ":res/pauze-slide-4.png",
-	 ":res/pauze-slide-5.png"};
-	teller = (teller + 1) % 5;
-	slideName	= slideName. arg (teller + 1);
+	pauzeTimer. stop ();
+	int nr		= rand () % 10;
+	slideName	= slideName. arg (nr + 1);
 	if (p. load (slideName, "png"))
 	   displaySlide (p);
+	pauzeTimer. start (1 * 60 * 1000);
 }
 //////////////////////////////////////////////////////////////////////////
 //	Experimental: handling eti
@@ -3415,10 +3428,9 @@ std::vector<Complex> inBuffer (2048);
 }
 
 void	RadioInterface::show_correlation	(int s, int g, QVector<int> r) {
-std::vector<float> inBuffer;
+std::vector<float> inBuffer (s);
 
 	(void)g;
-	inBuffer. resize (s);
 	responseBuffer. getDataFromBuffer (inBuffer. data (), s);
 	responseBuffer. FlushRingBuffer ();
 	if (!newDisplay. isHidden ()) {
@@ -3428,7 +3440,7 @@ std::vector<float> inBuffer;
 }
 	      
 void	RadioInterface::show_null		(int amount) {
-Complex inBuffer [amount];
+Complex	*inBuffer  = (Complex *)(alloca (amount * sizeof (Complex)));
 	nullBuffer. getDataFromBuffer (inBuffer, amount);
 	if (!newDisplay. isHidden ())
 	   if (newDisplay. get_tab () ==  SHOW_NULL)
@@ -3603,7 +3615,7 @@ QPixmap p;
 	int amount = snrBuffer. GetRingBufferReadAvailable ();
 	if (amount <= 0)
 	   return;
-	float ss [amount];
+	float *ss  = (float *) alloca (amount * sizeof (float));
 	snrBuffer. getDataFromBuffer (ss, amount);
 	for (int i = 0; i < amount; i ++) {
 	   my_snrViewer. add_snr (ss [i]);
@@ -3671,10 +3683,7 @@ void    RadioInterface::handle_presetButton     () {
 	   the_ensembleHandler -> set_showMode (mode);
 	   return;
 	}
-	if (mode == SHOW_ENSEMBLE)
-	   mode = SHOW_PRESETS;
-	else
-	   mode = SHOW_ENSEMBLE;
+	mode = mode == SHOW_ENSEMBLE ? SHOW_PRESETS : SHOW_ENSEMBLE;
 	the_ensembleHandler -> set_showMode (mode);
 	if (mode == SHOW_ENSEMBLE)
 	   presetButton -> setText ("favorites");

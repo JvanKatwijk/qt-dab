@@ -58,7 +58,9 @@ float Length	= jan_abs (V);
 	                                    myMapper (dabMode),
 	                                    fft (params. get_T_u (), false),
 	                                    devBuffer (devBuffer_i),
-	                                    iqBuffer (iqBuffer_i) {
+	                                    iqBuffer (iqBuffer_i),
+	                                    conjVector (params. get_T_u ()),
+	                                    fft_buffer (params. get_T_u ()) {
 	(void)bitDepth;
 	connect (this, SIGNAL (showIQ (int)),
 	         myRadioInterface, SLOT (showIQ (int)));
@@ -178,15 +180,12 @@ int	sign (DABFLOAT x) {
 void	ofdmDecoder::decode (std::vector <Complex> &buffer,
 	                     int32_t blkno,
 	                     std::vector<int16_t> &ibits) {
-Complex conjVector [T_u];
-Complex fft_buffer [T_u];
-Complex	computedCenter;
 DABFLOAT Alpha = 0.05f;
 
-	memcpy (fft_buffer, &((buffer. data ()) [T_g]),
+	memcpy (fft_buffer. data (), &((buffer. data ()) [T_g]),
 	                               T_u * sizeof (Complex));
 //	first step: do the FFT
-	fft. fft (fft_buffer);
+	fft. fft (fft_buffer. data ());
 
 //	a little optimization: we do not interchange the
 //	positive/negative frequencies to their right positions.
@@ -207,27 +206,6 @@ DABFLOAT Alpha = 0.05f;
 	                     normalize (conj (phaseReference [index]));
 	   conjVector	[index] = r1;
 
-//	we need the phase error to compute quality
-	   Complex r2	= Complex (abs (real (r1)), abs (imag (r1)));
-	   computedCenter	+= r2;
-	}
-
-//
-//	Later on we force the signal components to center around
-//	the real ceters of the quadrants rather than the fictious
-//	(i.e. theoretical) ones
-	computedCenter		= normalize (computedCenter);
-	Complex theOffset	= computedCenter * Complex (1, -1);
-
-//	The decoding approach is
-//	looking at the X and Y coordinates of the "dots"
-//	and taking their size as element.
-	for (int i = 0; i < carriers; i ++) {
-	   int16_t	index	= myMapper.  mapIn (i);
-	   if (index < 0) 
-	      index += T_u;
-
-	   Complex r1	= conjVector [index];
 	   DABFLOAT ab1	= jan_abs (r1);
 
 	   DABFLOAT fftPhase	= 
@@ -249,7 +227,6 @@ DABFLOAT Alpha = 0.05f;
 	      default:
 //	(normalized) value and the center point in the quadrant
 //	extremely simple, works fine
-	         r1		= r1 * conj (theOffset);
 	         ibits [i]	= 
 	                        (int16_t) (- real (r1) * MAX_VITERBI / ab1);
 	         ibits [carriers + i] =
@@ -326,16 +303,16 @@ DABFLOAT Alpha = 0.05f;
 	      }
 
 	      showIQ (carriers);
-	      float Quality	= computeQuality (conjVector);
-	      float timeOffset	= compute_timeOffset (fft_buffer,
+	      float Quality	= computeQuality (conjVector. data ());
+	      float timeOffset	= compute_timeOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
-	      float freqOffset	= compute_frequencyOffset (fft_buffer,
+	      float freqOffset	= compute_frequencyOffset (fft_buffer. data (),
 	                                              phaseReference. data ());
 	      show_quality (Quality, timeOffset, freqOffset);
 	      cnt = 0;
 	   }
 	}
-	memcpy (phaseReference. data(), fft_buffer,
+	memcpy (phaseReference. data(), fft_buffer. data (),
 	                            T_u * sizeof (Complex));
 }
 

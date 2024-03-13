@@ -21,10 +21,14 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include	<sys/time.h>
 #include	"raw-reader.h"
 #include	"rawfiles.h"
 
+#ifdef _WIN32
+#else
+#include	<unistd.h>
+#include	<sys/time.h>
+#endif
 
 #define	BUFFERSIZE	32768
 static inline

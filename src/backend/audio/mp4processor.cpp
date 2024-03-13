@@ -307,7 +307,8 @@ stream_parms    streamParameters;
 	      if (dump == nullptr) {
 	         if (((outVector [au_start [i + 0]] >> 5) & 07) == 4) {
 	            int16_t count = outVector [au_start [i] + 1];
-	            uint8_t buffer [count];
+	            auto  *buffer = dynVec (uint8_t, count);
+//	            uint8_t  *buffer = (uint8_t *) alloca (count * sizeof (uint8_t));
 	            memcpy (buffer, &outVector [au_start [i] + 2], count);
 	            uint8_t L0	= buffer [count - 1];
 	            uint8_t L1	= buffer [count - 2];

@@ -36,7 +36,7 @@
 void	interLeaver:: createMapper (int16_t T_u, int16_t V1, 
 	                            int16_t lwb, int16_t upb,
 	                            int16_t *v) {
-int16_t	tmp [T_u];
+int16_t  *tmp 	= (int16_t *) alloca (T_u * sizeof (int16_t));
 int16_t	index	= 0;
 int16_t	i;
 
@@ -56,12 +56,12 @@ int16_t	i;
 	}
 }
 
-	interLeaver::interLeaver (uint8_t mode): p (mode) {
+	interLeaver::interLeaver (uint8_t mode):
+	                                       p (mode) {
 
 	int32_t T_u		= p. get_T_u();
 	int32_t	carriers	= p. get_carriers();
 	permTable. resize (T_u);
-
 	switch (mode) {
 	   case 1:
 	   default:		// shouldn't happen

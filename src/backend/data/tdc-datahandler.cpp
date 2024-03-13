@@ -116,11 +116,10 @@ int16_t	i;
 
 int32_t	tdc_dataHandler::handleFrame_type_0 (uint8_t *data,
 	                                     int32_t offset, int32_t length) {
-int16_t i;
 //int16_t noS	= getBits (data, offset, 8);
-uint8_t buffer [length];
+uint8_t *buffer	= (uint8_t *) alloca (length * sizeof (uint8_t));
 	
-	for (i = 0; i < length; i ++)
+	for (uint16_t i = 0; i < length; i ++)
 	   buffer [i] = getBits (data, offset + i * 8, 8);
 	if (!check_crc_bytes (buffer, length - 2))
 	   fprintf (stderr, "crc ook hier fout\n");
@@ -136,8 +135,7 @@ uint8_t buffer [length];
 int32_t	tdc_dataHandler::handleFrame_type_1 (uint8_t *data,
 	                                     int32_t offset,
 	                                     int32_t length) {
-int16_t i;
-uint8_t buffer [length];
+uint8_t	*buffer = (uint8_t *) alloca (length * sizeof (uint8_t));
 int	lOffset;
 int	llengths = length - 4;
 #if 0
@@ -147,7 +145,7 @@ int	llengths = length - 4;
 	                             getBits (data, offset + 16, 8));
 	fprintf (stderr, "encryption %d\n", getBits (data, offset + 24, 8));
 #endif
-	for (i = 0; i < length; i ++)
+	for (uint16_t i = 0; i < length; i ++)
 	   buffer [i] = getBits (data, offset + i * 8, 8);
 	dataBuffer	-> putDataIntoBuffer (buffer, length);
 	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
@@ -181,7 +179,6 @@ bool	tdc_dataHandler::serviceComponentFrameheaderCRC (uint8_t *data,
 	                                                 int16_t offset,
 	                                                 int16_t maxL) {
 uint8_t testVector [18];
-int16_t	i;
 int16_t	length	= getBits (data, offset + 8, 16);
 int16_t	size	= length < 13 ? length : 13;
 uint16_t	crc;
@@ -192,7 +189,7 @@ uint16_t	crc;
 	testVector [0]	= getBits (data, offset + 0,  8);
 	testVector [1]	= getBits (data, offset + 8,  8);
 	testVector [2]	= getBits (data, offset + 16, 8);
-	for (i = 0; i < size; i ++) 
+	for (uint16_t i = 0; i < size; i ++) 
 	   testVector [3 + i] = getBits (data, offset + 40 + i * 8, 8);
 
 	return usCalculCRC (testVector, 3 + size) == crc;

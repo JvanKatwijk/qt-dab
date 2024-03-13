@@ -137,7 +137,7 @@ uint32_t	size;
 // However, the application then crashes, so something is not OK
 // By doubling the size, the problem disappears. It is not solved though
 // and not further investigation.
-#ifdef __MINGW32__
+#if defined (__MINGW32__) || defined (_WIN32)
 	size = 2 * ((wordlength + (K - 1)) / 8 + 1 + 16) & ~0xF;
 	data	= (uint8_t *)_aligned_malloc (size, 16);
 	size = 2 * (RATE * (wordlength + (K - 1)) * sizeof(COMPUTETYPE) + 16) & ~0xF;
