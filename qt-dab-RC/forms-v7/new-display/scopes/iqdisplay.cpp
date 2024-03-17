@@ -86,16 +86,53 @@ void	IQDisplay::setPoint (int x, int y, int val) {
 	plotDataBackgroundBuffer [(x + RADIUS - 1) * 2 * RADIUS + y + RADIUS - 1] = val;
 }
 
+void	IQDisplay::display_centerPoints (const std::vector<Complex> &z,
+	                                              float scale) {
+	cleanScreen	();
+	Points. resize (0);
+
+	drawCross ();
+	Complex V [4];
+	extract_centerPoints (z, V);
+
+	for (int i = 0; i < 4; i ++) 
+	   set_fatPoint (V [i], z. size () / 4, scale);
+	
+	memcpy (plotDataDrawBuffer. data (),
+	        plotDataBackgroundBuffer. data (),
+	        2 * 2 * RADIUS * RADIUS * sizeof (double));
+	this		-> detach();
+	this		-> setData	(IQData);
+	this		-> setDisplayMode (QwtPlotSpectrogram::ImageMode, true);
+	this		-> attach     (plotgrid);
+	plotgrid	-> replot ();
+}
+
+void	IQDisplay::set_fatPoint (Complex V, int amount, float scale) {
+int x	= (int)scale * real (V);
+int y	= (int)scale * imag (V);
+
+	for (int i = 0; i < 12; i ++) {
+	   int yy = y - 3 + i;
+           constrain (yy, RADIUS - 1);
+	   for (int j = 0; j < 12; j ++) {
+	      int xx = (int)(x - 6  + j);
+	      constrain (xx, RADIUS - 1); 
+	      Points. push_back (std::complex<int> (xx, yy));
+	      setPoint (xx, yy, 1000);
+	   }
+	}
+}
+	      
 void	IQDisplay::displayIQ (const std::vector<Complex> &z, float scale) {
 
 	cleanScreen	();
-	if (z. size () != Points. size ())
-	   Points. resize (z. size (), {0, 0});
+	Points. resize (0);
 
 	drawCross ();
 	repaintCircle (scale);
 
-	for (uint16_t i = 0; i < Points. size () / 2; i ++) {
+	for (uint16_t i = 0; i < z. size () / 2; i ++) {
            int x = (int)(scale * real (z [i]));
            int y = (int)(scale * imag (z [i]));
 
@@ -106,9 +143,9 @@ void	IQDisplay::displayIQ (const std::vector<Complex> &z, float scale) {
 	   constrain (xx, RADIUS - 1);
 	   constrain (yy, RADIUS - 1);
 
-	   Points [2 * i] = std::complex<int32_t> (x, y);
+	   Points. push_back (std::complex<int32_t> (x, y));
 	   setPoint (x, y, 1000);
-	   Points [2 * i + 1] = std::complex<int32_t> (xx, yy);
+	   Points. push_back (std::complex<int32_t> (xx, yy));
 	   setPoint (xx, yy, 1000);
 	}
 
@@ -173,3 +210,39 @@ void	IQDisplay::repaintCircle (float size) {
 	}
 	drawCircle (size, 20);
 }
+
+void	IQDisplay::extract_centerPoints (const std::vector<Complex> &V,
+	                                 Complex *out) {
+int amounts [4] = {0};
+
+	for (int i = 0; i < 4; i ++) 
+	   out [i] = Complex (0, 0);
+
+	for (int i = 0; i < V. size (); i ++) {
+	   Complex W = V [i];
+	   if ((real (W) > 0) && (imag (W) > 0)) {
+	      out [0] += W;
+	      amounts [0] ++;
+	   }
+	   else
+	   if ((real (W) > 0) && (imag (W) < 0)) {
+	      out [1] += W;
+	      amounts [1] ++;
+	   }
+	   else
+	   if ((real (W) < 0) && (imag (W) > 0)) {
+	      out [2] += W;
+	      amounts [2] ++;
+	   }
+	   else 
+	   if ((real (W) < 0) && (imag (W) < 0)) {
+	      out [3] += W;
+	      amounts [3] ++;
+	   }
+	}
+	for (int i = 0; i < 4; i ++)
+	   out [i] /= (DABFLOAT)amounts [i];
+}
+
+	  
+	   

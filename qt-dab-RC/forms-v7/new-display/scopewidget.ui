@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>689</width>
+    <width>677</width>
     <height>451</height>
    </rect>
   </property>
@@ -363,10 +363,10 @@
          <item>
           <widget class="QCheckBox" name="logScope_checkBox">
            <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the checkbox is set, then the IQ display will show its contents as values on a log10 scale.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the checkbox is set the constallation diagram of the decoded carriers is shown. The default setting is to show just the centerpoints of the &amp;quot;clouds&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>log</string>
+            <string>ncp</string>
            </property>
           </widget>
          </item>

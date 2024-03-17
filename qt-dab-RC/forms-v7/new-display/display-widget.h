@@ -99,7 +99,7 @@ private:
 	IQDisplay		*IQDisplay_p;
 
 	int			currentTab;
-	int			logScope;
+	int			ncpScope;
 private slots:
 	void		switch_tab	(int);
 	void		rightMouseClick	();

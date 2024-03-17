@@ -53,8 +53,11 @@ public:
 	IQDisplay		(QwtPlot *);
 	~IQDisplay		();
 void	displayIQ		(const std::vector<Complex> &, float);
+void	display_centerPoints	(const std::vector<Complex> &, float);
 private:
 
+	void			set_fatPoint (Complex, int, float);
+	void			extract_centerPoints (const std::vector<Complex> &, Complex *);
 	QwtPlot			*plotgrid;
 	static constexpr
 	int32_t			RADIUS	= 100;

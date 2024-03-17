@@ -22,13 +22,12 @@
  */
 
 #include	<stdio.h>
-//#include	"Qt-audiodevice.h"
 #include	"Qt-audio.h"
 
 
 	Qt_Audio::Qt_Audio ():
 	                 tempBuffer (8 * 32768) { 
-	outputRate	= 48000;	// default
+	outputRate		= 48000;	// default
 	working. store		(false);
 	isInitialized. store	(false);
 	newDeviceIndex		= -1;
@@ -57,7 +56,6 @@ QStringList nameList;
 	   nameList << listEl. deviceName ();
 	return nameList;
 }
-
 //
 //	Note that AudioBase functions have - if needed - the rate
 //	converted.  This functions overrides the one in AudioBase

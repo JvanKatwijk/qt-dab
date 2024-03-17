@@ -106,8 +106,9 @@ void	sampleReader::get_samples (std::vector<Complex>  &v_out,
 	                           int index,
 	                           int32_t nrSamples,
 	                           int32_t phaseOffset, bool saving) {
-std::complex<float>  *buffer = (std::complex<float> *)
-	                          alloca (nrSamples * sizeof (std::complex<float>));
+//std::complex<float>  *buffer = (std::complex<float> *)
+//	                          alloca (nrSamples * sizeof (std::complex<float>));
+auto *buffer	= dynVec (std::complex<float>, nrSamples);
 	corrector	= phaseOffset;
 
 //	if we get a kill signal, do the kill

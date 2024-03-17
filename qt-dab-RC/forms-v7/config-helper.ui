@@ -57,6 +57,9 @@
        </item>
        <item>
         <widget class="smallPushButton" name="audioSelectButton">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between portaudio or Qt-audio as audio handler (will be effective next program invocation)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="text">
           <string>audio</string>
          </property>
@@ -158,6 +161,9 @@
          </item>
          <item>
           <widget class="QLCDNumber" name="loadDisplay">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The number tells the overall CPU load (so, not only the load caused by running Qt-DAB)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
            <property name="frameShape">
             <enum>QFrame::NoFrame</enum>
            </property>

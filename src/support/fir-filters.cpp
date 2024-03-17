@@ -28,7 +28,8 @@
 	LowPassFIR::LowPassFIR (int16_t firsize,
 	                        int32_t Fc, int32_t fs){
 DABFLOAT	sum	= 0.0;
-DABFLOAT	temp [firsize];
+//DABFLOAT	temp [firsize];
+auto	*temp 	= dynVec (DABFLOAT, firsize);
 
 	this -> frequency	= (DABFLOAT)Fc / fs;
 	this -> filterSize	= firsize;
@@ -68,7 +69,8 @@ int	LowPassFIR::theSize	() {
 }
 
 void	LowPassFIR::resize (int newSize) {
-DABFLOAT	temp [newSize];
+//DABFLOAT	temp [newSize];
+auto	*temp 	= dynVec (DABFLOAT, newSize);
 float	sum = 0;
 
 	filterSize	= newSize;

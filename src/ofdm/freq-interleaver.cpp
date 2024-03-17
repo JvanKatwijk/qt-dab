@@ -36,7 +36,8 @@
 void	interLeaver:: createMapper (int16_t T_u, int16_t V1, 
 	                            int16_t lwb, int16_t upb,
 	                            int16_t *v) {
-int16_t  *tmp 	= (int16_t *) alloca (T_u * sizeof (int16_t));
+//int16_t  *tmp 	= (int16_t *) alloca (T_u * sizeof (int16_t));
+auto  *tmp 	= dynVec (int16_t, T_u);
 int16_t	index	= 0;
 int16_t	i;
 

@@ -327,20 +327,20 @@ QString h;
 #else
 	QStringList streams;
 	QString	temp;
-	QString s = dabSettings_p -> value ("soundHandler", "qt_audio").
+	QString s = dabSettings_p -> value ("soundHandler", "portaudio").
 	                                                       toString ();
-	if ((s == "QT_AUDIO") || (s == "qt_audio")) {
-	   soundOut_p		= new Qt_Audio ();
-	   streams	= ((Qt_Audio *)soundOut_p) -> streams ();
-	   temp		=
-	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
-	                                      "default"). toString ();
-	}
-	else {
+	if ((s != "qt_audio") && (s != "QT_AUFIO")) {
 	   soundOut_p		= new audioSink		(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
 	          dabSettings_p -> value (AUDIO_STREAM_NAME,
+	                                      "default"). toString ();
+	}
+	else {	// the default is now qt audio
+	   soundOut_p		= new Qt_Audio ();
+	   streams	= ((Qt_Audio *)soundOut_p) -> streams ();
+	   temp		=
+	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
 	                                      "default"). toString ();
 	}
 
@@ -2052,7 +2052,6 @@ QString serviceName	= s. serviceName;
 	   dabSettings_p	-> setValue (PRESET_NAME, "");
 	}
 }
-
 //
 void	RadioInterface::startAudioservice (audiodata &ad) {
 //	channel. currentService. valid	= true;

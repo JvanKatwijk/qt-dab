@@ -23,6 +23,7 @@
 #include	"xml-reader.h"
 #include	"xml-descriptor.h"
 #include	"xml-filereader.h"
+#include	"dab-constants.h"
 #include	<sys/time.h>
 #include	<stdio.h>
 
@@ -218,7 +219,7 @@ int	nrBits	= fd -> bitsperChannel;
 float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "int8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
 	   fread (lbuf, 1, 2 * amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (((int8_t)lbuf [2 * i]) / 127.0,
@@ -227,7 +228,7 @@ float	scaler	= float (shift (nrBits));
 	}
 	
 	if (fd -> container == "uint8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
 	   fread (lbuf, 1, 2 * amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (mapTable [lbuf [2 * i]],
@@ -236,7 +237,7 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int16") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
 	   fread (lbuf, 2, 2 * amount, theFile);
 	   if (fd -> byteOrder == "MSB") {
 	      for (int i = 0; i < amount; i ++) {
@@ -258,7 +259,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int24") {
-	   uint8_t *lbuf = (uint8_t *) alloca (6 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 6 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (6 * amount * sizeof (uint8_t));
            fread (lbuf, 3, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -292,7 +294,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 8 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
            fread (lbuf, 4, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -322,7 +325,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "float32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 8 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
            fread (lbuf, 4, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -362,7 +366,8 @@ int	nrBits	= fd -> bitsperChannel;
 float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "int8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, 2 * amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (((int8_t)lbuf [2 * i + 1]) / 127.0,
@@ -371,7 +376,8 @@ float	scaler	= float (shift (nrBits));
 	}
 	
 	if (fd -> container == "uint8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, 2 * amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (mapTable [2 * i + 1],
@@ -380,7 +386,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int16") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
 	   fread (lbuf, 2, 2 * amount, theFile);
 	   if (fd -> byteOrder == "MSB") {
 	      for (int i = 0; i < amount; i ++) {
@@ -402,7 +409,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int24") {
-	   uint8_t *lbuf = (uint8_t *) alloca (6 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 6 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (6 * amount * sizeof (uint8_t));
            fread (lbuf, 3, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -436,7 +444,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 8 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
            fread (lbuf, 4, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -466,7 +475,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "float32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 6 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (8 * amount * sizeof (uint8_t));
            fread (lbuf, 4, 2 * amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -505,7 +515,8 @@ int	nrBits	= fd -> bitsperChannel;
 float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "int8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 1 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] =
@@ -514,7 +525,8 @@ float	scaler	= float (shift (nrBits));
 	}
 	
 	if (fd -> container == "uint8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 1 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (mapTable [lbuf [i]], 0);
@@ -522,7 +534,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int16") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
 	   fread (lbuf, 2, amount, theFile);
 	   if (fd -> byteOrder == "MSB") {
 	      for (int i = 0; i < amount; i ++) {
@@ -542,7 +555,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int24") {
-	   uint8_t *lbuf = (uint8_t *) alloca (3 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 3 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (3 * amount * sizeof (uint8_t));
            fread (lbuf, 3, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -568,7 +582,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
            fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -592,7 +607,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "float32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
            fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -623,7 +639,8 @@ int	nrBits	= fd -> bitsperChannel;
 float	scaler	= float (shift (nrBits));
 
 	if (fd -> container == "int8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 1 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] =
@@ -632,7 +649,8 @@ float	scaler	= float (shift (nrBits));
 	}
 	
 	if (fd -> container == "uint8") {
-	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 1 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (1 * amount * sizeof (uint8_t));
 	   fread (lbuf, 1, amount, theFile);
 	   for (int i = 0; i < amount; i ++)
 	      buffer [i] = std::complex<float> (0, mapTable [lbuf [i]]);
@@ -640,7 +658,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int16") {
-	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 2 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (2 * amount * sizeof (uint8_t));
 	   fread (lbuf, 2, amount, theFile);
 	   if (fd -> byteOrder == "MSB") {
 	      for (int i = 0; i < amount; i ++) {
@@ -660,7 +679,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int24") {
-	   uint8_t *lbuf = (uint8_t *) alloca (3 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 3 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (3 * amount * sizeof (uint8_t));
            fread (lbuf, 3, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -686,7 +706,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "int32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
            fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {
@@ -710,7 +731,8 @@ float	scaler	= float (shift (nrBits));
 	}
 
 	if (fd -> container == "float32") {
-	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
+	   auto *lbuf = dynVec (uint8_t, 4 * amount);
+//	   uint8_t *lbuf = (uint8_t *) alloca (4 * amount * sizeof (uint8_t));
            fread (lbuf, 4, amount, theFile);
            if (fd -> byteOrder == "MSB") {
               for (int i = 0; i < amount; i ++) {

@@ -108,7 +108,6 @@ int16_t	outputDevice;
 //
 //	A small buffer causes more callback invocations, sometimes
 //	causing underflows and intermittent output.
-//	buffersize is
 	
 //	bufSize	= latency * 512;
 

@@ -91,9 +91,9 @@ int	sliderValue;
 	sliderValue		=
 	           dabSettings_p -> value ("iqSliderValue", 50). toInt ();
 	scopeSlider		-> setValue (sliderValue);
-	logScope		= 
-	           dabSettings_p -> value ("logScope", 0). toInt () == 1;
-	if (logScope != 0)
+	ncpScope		= 
+	           dabSettings_p -> value ("ncpScope", 0). toInt () == 1;
+	if (ncpScope != 0)
 	   logScope_checkBox -> setChecked (true);
 	sliderValue		= dabSettings_p -> value ("tiiSlider",
 	                                                   00). toInt ();
@@ -367,7 +367,7 @@ std::vector<Complex> tempDisplay (512);
 	if (Values. size () < 512)
 	   return;
 
-	if (logScope) {
+	if (ncpScope) {
 	   float	logNorm	= std::log10 (2.0f);
 	   for (int i = 0; i < 512; i ++) {
 	      float phi	= arg (Values [i]);
@@ -380,7 +380,7 @@ std::vector<Complex> tempDisplay (512);
            IQDisplay_p -> displayIQ (tempDisplay, sliderValue * 2);
 	}
 	else
-           IQDisplay_p -> displayIQ (Values, sliderValue * 2);
+           IQDisplay_p -> display_centerPoints (Values, sliderValue * 2);
 }
 
 void	displayWidget:: show_quality (float q, float timeOffset,	
@@ -492,9 +492,9 @@ void	displayWidget::set_bitDepth	(int d) {
 
 void	displayWidget::handle_logScope_checkBox	(int d) {
 	(void)d;
-	logScope	= logScope_checkBox -> isChecked ();
+	ncpScope	= logScope_checkBox -> isChecked ();
 	
 	dabSettings_p	-> beginGroup ("displayWidget");
-	dabSettings_p	-> setValue ("logScope", logScope ? 1 : 0);
+	dabSettings_p	-> setValue ("ncpScope", ncpScope ? 1 : 0);
 	dabSettings_p	-> endGroup ();
 }
