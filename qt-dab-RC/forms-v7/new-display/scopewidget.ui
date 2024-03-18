@@ -361,7 +361,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QCheckBox" name="logScope_checkBox">
+          <widget class="QCheckBox" name="ncpScope_checkBox">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If the checkbox is set the constallation diagram of the decoded carriers is shown. The default setting is to show just the centerpoints of the &amp;quot;clouds&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>

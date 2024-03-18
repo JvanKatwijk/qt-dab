@@ -46,6 +46,7 @@
 
 #define	AUDIO_STREAM_NAME	"soundChannel"
 #define	QT_AUDIO_STREAM_NAME	"qt_soundChannel"
+#define	QT_AUDIO_VOLUME		"qt_audioVolume"
 
 #define	BROWSER_ADDRESS		"browserAddress"
 

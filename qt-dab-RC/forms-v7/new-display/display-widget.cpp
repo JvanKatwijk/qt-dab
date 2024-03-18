@@ -94,7 +94,7 @@ int	sliderValue;
 	ncpScope		= 
 	           dabSettings_p -> value ("ncpScope", 0). toInt () == 1;
 	if (ncpScope != 0)
-	   logScope_checkBox -> setChecked (true);
+	   ncpScope_checkBox -> setChecked (true);
 	sliderValue		= dabSettings_p -> value ("tiiSlider",
 	                                                   00). toInt ();
 	tiiSlider		-> setValue (sliderValue);
@@ -110,8 +110,8 @@ int	sliderValue;
                  this, SLOT (switch_tab (int)));
 	connect (IQDisplay_p, SIGNAL (rightMouseClick ()),
 	         this, SLOT (rightMouseClick ()));
-	connect (logScope_checkBox, SIGNAL (stateChanged (int)),
-	         this, SLOT (handle_logScope_checkBox (int)));
+	connect (ncpScope_checkBox, SIGNAL (stateChanged (int)),
+	         this, SLOT (handle_ncpScope_checkBox (int)));
 }
 
 	displayWidget::~displayWidget () {
@@ -367,7 +367,7 @@ std::vector<Complex> tempDisplay (512);
 	if (Values. size () < 512)
 	   return;
 
-	if (ncpScope) {
+	if (!ncpScope) {
 	   float	logNorm	= std::log10 (2.0f);
 	   for (int i = 0; i < 512; i ++) {
 	      float phi	= arg (Values [i]);
@@ -490,9 +490,9 @@ void	displayWidget::set_bitDepth	(int d) {
 	spectrumScope_p	-> set_bitDepth (d);
 }
 
-void	displayWidget::handle_logScope_checkBox	(int d) {
+void	displayWidget::handle_ncpScope_checkBox	(int d) {
 	(void)d;
-	ncpScope	= logScope_checkBox -> isChecked ();
+	ncpScope	= ncpScope_checkBox -> isChecked ();
 	
 	dabSettings_p	-> beginGroup ("displayWidget");
 	dabSettings_p	-> setValue ("ncpScope", ncpScope ? 1 : 0);

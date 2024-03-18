@@ -102,8 +102,8 @@ private:
 	int			ncpScope;
 private slots:
 	void		switch_tab	(int);
-	void		rightMouseClick	();
-	void		handle_logScope_checkBox	(int);
+	void		rightMouseClick		();
+	void		handle_ncpScope_checkBox (int);
 signals:
 	void		mouseClick	();
 	void		frameClosed	();

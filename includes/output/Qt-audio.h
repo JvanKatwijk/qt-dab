@@ -34,10 +34,12 @@
 #include	<atomic>
 #include	"ringbuffer.h"
 
+class		QSettings;
+
 class	Qt_Audio: public audioPlayer {
 Q_OBJECT
 public:
-			Qt_Audio	();
+			Qt_Audio	(QSettings *);
 			~Qt_Audio	();
 	void		stop		();
 	void		restart		();
@@ -48,6 +50,7 @@ public:
 	bool		selectDevice	(int16_t);
 private:
 	RingBuffer<char> tempBuffer;
+	QSettings	*audioSettings;
 	void		initialize_deviceList ();
 	void		initializeAudio(const QAudioDeviceInfo &deviceInfo);
 	QAudioFormat	audioFormat;
@@ -58,4 +61,6 @@ private:
 	std::atomic<bool>	working;
 	QIODevice	*theWorker;
 	int		newDeviceIndex;
+public slots:
+	void		setVolume	(int);
 };

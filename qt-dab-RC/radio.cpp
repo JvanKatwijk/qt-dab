@@ -329,19 +329,27 @@ QString h;
 	QString	temp;
 	QString s = dabSettings_p -> value ("soundHandler", "portaudio").
 	                                                       toString ();
-	if ((s != "qt_audio") && (s != "QT_AUFIO")) {
+	if (s == "portaudio") {
 	   soundOut_p		= new audioSink		(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
 	          dabSettings_p -> value (AUDIO_STREAM_NAME,
 	                                      "default"). toString ();
+	   volumeSlider	-> hide ();
 	}
 	else {	// the default is now qt audio
-	   soundOut_p		= new Qt_Audio ();
+	   soundOut_p		= new Qt_Audio (dabSettings_p);
 	   streams	= ((Qt_Audio *)soundOut_p) -> streams ();
 	   temp		=
 	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
 	                                      "default"). toString ();
+	   volumeSlider	-> show ();
+	   int volume	=
+	          dabSettings_p -> value (QT_AUDIO_VOLUME, 50). toInt ();
+	   volumeSlider			-> setValue (volume);
+	   ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
+	   connect (volumeSlider, SIGNAL (valueChanged (int)),
+	            this, SLOT (setVolume (int)));
 	}
 
 	if (streams. size () > 0) {
@@ -451,6 +459,8 @@ QString h;
 
 	connect (soundLabel, SIGNAL (clicked ()),
 	         this, SLOT (handle_muteButton ()));
+	connect (snrLabel, SIGNAL (clicked ()),
+	         this, SLOT (handle_snrLabel ()));
 
 	if (tiiProcessor. has_tiiFile ())
 	   configHandler_p -> enable_loadLib ();
@@ -727,8 +737,8 @@ QStringList s	= my_ofdmHandler -> basicPrint ();
 	                          transmitter_coordinates -> text () + " " + ";" +
 	                          theTime  + ";" +
 	                          SNR  + ";" +
-	                          QString::number (channel. nrServices) + ";" +
-	                          distanceLabel -> text () + "\n";
+	                          QString::number (channel. nrServices) + ";" + "\n";
+//	                          distanceLabel -> text () + "\n";
 
 	contentTable_p		= new contentTable (this, dabSettings_p,
 	                                            channel. channelName,
@@ -2703,7 +2713,7 @@ void	RadioInterface::muteButton_timeOut	() {
 	   disconnect (&muteTimer, SIGNAL (timeout ()),
 	               this, SLOT (muteButton_timeOut ()));
 	   stillMuting	-> hide ();
-	   if (!channel. audioActive)
+	   if (channel. audioActive)
 	      set_soundLabel (true);
 	}
 }
@@ -3793,5 +3803,17 @@ void	RadioInterface::handle_deviceFrame_closed () {
 
 void	RadioInterface::handle_newDisplayFrame_closed () {
 	dabSettings_p -> setValue (NEW_DISPLAY_VISIBLE, 0);
+}
+
+void	RadioInterface::setVolume	(int n) {
+	if (n == 0) 
+	   set_soundLabel (false);
+	else
+	if (channel. audioActive)
+	   set_soundLabel (true);
+	((Qt_Audio *)soundOut_p) -> setVolume (n);
+}
+
+void	RadioInterface::handle_snrLabel	() {
 }
 

@@ -23,10 +23,12 @@
 
 #include	<stdio.h>
 #include	"Qt-audio.h"
+#include	<QSettings>
+#include	"settingNames.h"
 
-
-	Qt_Audio::Qt_Audio ():
+	Qt_Audio::Qt_Audio (QSettings *settings):
 	                 tempBuffer (8 * 32768) { 
+	audioSettings		= settings;
 	outputRate		= 48000;	// default
 	working. store		(false);
 	isInitialized. store	(false);
@@ -142,5 +144,11 @@ void	Qt_Audio::resume	() {
 	if (!working. load ())
 	   return;
 	m_audioOutput	-> resume ();
+}
+
+void	Qt_Audio::setVolume	(int v) {
+	fprintf (stderr, "Volume wordt gezet op %d\n", v);
+	audioSettings	-> setValue (QT_AUDIO_VOLUME, v);
+	m_audioOutput	-> setVolume ((float)v / 100);
 }
 

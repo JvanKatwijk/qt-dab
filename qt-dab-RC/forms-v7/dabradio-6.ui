@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>655</width>
-    <height>313</height>
+    <height>275</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Qt-DAB-6.1</string>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout_11">
+  <layout class="QHBoxLayout" name="horizontalLayout_12">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_3">
      <item>
@@ -60,7 +60,7 @@
              <x>0</x>
              <y>0</y>
              <width>269</width>
-             <height>115</height>
+             <height>77</height>
             </rect>
            </property>
           </widget>
@@ -145,7 +145,7 @@
     </layout>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_6">
        <item>
@@ -173,7 +173,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QLabel" name="snrLabel">
+        <widget class="clickablelabel" name="snrLabel">
          <property name="toolTip">
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;A simple &amp;quot;signal strength&amp;quot; indicator, telling in graphical terms the SNR of the signal.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
@@ -277,29 +277,44 @@
       </layout>
      </item>
      <item>
-      <widget class="QLabel" name="pictureLabel">
-       <property name="text">
-        <string>No Slide</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="dynamicLabel">
-       <property name="font">
-        <font>
-         <pointsize>14</pointsize>
-         <weight>50</weight>
-         <italic>false</italic>
-         <bold>false</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>TextLabel</string>
-       </property>
-       <property name="wordWrap">
-        <bool>true</bool>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_11">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QLabel" name="pictureLabel">
+           <property name="text">
+            <string>No Slide</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="dynamicLabel">
+           <property name="font">
+            <font>
+             <pointsize>14</pointsize>
+             <weight>50</weight>
+             <italic>false</italic>
+             <bold>false</bold>
+            </font>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QSlider" name="volumeSlider">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_10">
