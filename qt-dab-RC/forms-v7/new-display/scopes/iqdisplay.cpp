@@ -113,7 +113,7 @@ int x	= (int)scale * real (V);
 int y	= (int)scale * imag (V);
 
 	for (int i = 0; i < 12; i ++) {
-	   int yy = y - 3 + i;
+	   int yy = y - 6 + i;
            constrain (yy, RADIUS - 1);
 	   for (int j = 0; j < 12; j ++) {
 	      int xx = (int)(x - 6  + j);
@@ -125,7 +125,6 @@ int y	= (int)scale * imag (V);
 }
 	      
 void	IQDisplay::displayIQ (const std::vector<Complex> &z, float scale) {
-
 	cleanScreen	();
 	Points. resize (0);
 
@@ -244,5 +243,3 @@ int amounts [4] = {0};
 	   out [i] /= (DABFLOAT)amounts [i];
 }
 
-	  
-	   

@@ -140,6 +140,7 @@ private slots:
 	void			set_ppmControl		(int);
 	void			set_selectAntenna	(const QString &);
 	void			set_biasT		(int);
+	void			report_overload_state	(bool);
 public slots:
 	void			set_lnabounds		(int, int);
 	void			set_nrBits		(int);
@@ -155,5 +156,6 @@ signals:
 	void			set_serial_signal	(const QString &);
 	void			set_apiVersion_signal	(float);
 	void			set_antennaSelect_signal	(bool);
+	void			overload_state_changed	(bool);
 };
 

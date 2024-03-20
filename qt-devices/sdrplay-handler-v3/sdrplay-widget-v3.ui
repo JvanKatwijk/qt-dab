@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>408</width>
+    <width>407</width>
     <height>266</height>
    </rect>
   </property>
@@ -30,19 +30,6 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QLCDNumber" name="api_version">
        <property name="toolTip">
         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Version of the SDRplay library detected.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -52,6 +39,13 @@
        </property>
        <property name="segmentStyle">
         <enum>QLCDNumber::Flat</enum>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="overloadLabel">
+       <property name="text">
+        <string/>
        </property>
       </widget>
      </item>

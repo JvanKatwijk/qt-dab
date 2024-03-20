@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB 
+ *    This file is part of Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -25,8 +25,11 @@
 #include	<stdio.h>
 #include	<QString>
 #include	<QDateTime>
-
-
+//
+//	This is the dummy. It will be replaced by a version
+//	that will load the functions from a library to
+//	do the upload of the contents tables
+//
 class	uploader {
 public:
 		uploader	();

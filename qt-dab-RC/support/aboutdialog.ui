@@ -41,6 +41,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="author">
+     <property name="text">
+      <string>Developed by Jan van Katwijk </string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QLabel" name="buildInfo">
      <property name="text">
       <string>build info</string>
@@ -58,13 +65,6 @@
     <widget class="QLabel" name="qtVersion">
      <property name="text">
       <string>Based on Qt 5.2.2</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QLabel" name="author">
-     <property name="text">
-      <string>Developed by Jan van Katwijk </string>
      </property>
     </widget>
    </item>

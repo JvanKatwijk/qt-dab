@@ -115,7 +115,6 @@ void	Qt_Audio::restart	() {
 	   fprintf (stderr, "Init failed for device %d\n", newDeviceIndex);
 	   return;
 	}
-//	fprintf (stderr, "going to restart\n");
 	theWorker	= m_audioOutput	-> start ();
 	if (m_audioOutput -> error () == QAudio::NoError) {
 	   working. store (true);
@@ -123,8 +122,9 @@ void	Qt_Audio::restart	() {
 	}
 	else
 	   fprintf (stderr, "restart gaat niet door\n");
-	fprintf (stderr, "PeriodSize = %d, bufferSize = %d\n",
-	               m_audioOutput -> periodSize (), m_audioOutput -> bufferSize ());
+	int vol		= audioSettings -> value (QT_AUDIO_VOLUME, 50). toInt ();
+	m_audioOutput	-> setVolume ((float)vol / 100);
+	
 }
 
 bool	Qt_Audio::selectDevice	(int16_t index) {
@@ -147,7 +147,6 @@ void	Qt_Audio::resume	() {
 }
 
 void	Qt_Audio::setVolume	(int v) {
-	fprintf (stderr, "Volume wordt gezet op %d\n", v);
 	audioSettings	-> setValue (QT_AUDIO_VOLUME, v);
 	m_audioOutput	-> setVolume ((float)v / 100);
 }

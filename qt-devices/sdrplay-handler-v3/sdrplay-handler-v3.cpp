@@ -94,6 +94,7 @@ std::string errorMessage (int errorCode) {
 	set_position_and_size (s, &myFrame, groupName);
 	myFrame. show	();
 
+	overloadLabel -> setStyleSheet ("QLabel {background-color : green}");
 	antennaSelector		-> hide	();
 	tunerSelector		-> hide	();
 	nrBits			= 12;	// default
@@ -145,6 +146,8 @@ std::string errorMessage (int errorCode) {
                  this, SLOT (set_xmlDump ()));
 	connect (biasT_selector, SIGNAL (stateChanged (int)),	
 	         this, SLOT (set_biasT (int)));
+	connect (this, SIGNAL (overload_state_changed (bool)),
+	         this, SLOT (report_overload_state (bool)));
 
 	lastFrequency	= MHz (220);
 	theGain		= -1;
@@ -510,13 +513,9 @@ void	sdrplayHandler_v3::
 	                    chosenDevice -> tuner,
 	                    sdrplay_api_Update_Ctrl_OverloadMsgAck,
 	                    sdrplay_api_Update_Ext1_None);
-	if (params -> powerOverloadParams.powerOverloadChangeType ==
-	                                    sdrplay_api_Overload_Detected) {
-//	   fprintf (stderr, "Qt-DAB sdrplay_api_Overload_Detected");
-	}
-	else {
-//	   fprintf (stderr, "Qt-DAB sdrplay_api_Overload Corrected");
-	}
+	emit overload_state_changed (
+	        params -> powerOverloadParams.powerOverloadChangeType ==
+	                                   sdrplay_api_Overload_Detected);
 }
 
 void	sdrplayHandler_v3::run		() {
@@ -999,5 +998,13 @@ bool	sdrplayHandler_v3::loadFunctions () {
 	}
 
 	return true;
+}
+
+void	sdrplayHandler_v3::report_overload_state (bool b) {
+	if (b)
+	   overloadLabel -> setStyleSheet ("QLabel {background-color : red}");
+	else
+	   overloadLabel -> setStyleSheet ("QLabel {background-color : green}");
+
 }
 

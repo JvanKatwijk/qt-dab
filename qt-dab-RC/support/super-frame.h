@@ -39,3 +39,4 @@ protected:
 signals:
 	void frameClosed ();
 };
+

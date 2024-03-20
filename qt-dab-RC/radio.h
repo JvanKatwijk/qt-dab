@@ -508,7 +508,7 @@ private slots:
 	void			handle_scheduleButton	();
 	void			handle_httpButton	();
 	void			setVolume		(int);
-	void			handle_snrButton	();
+	void			handle_snrLabel		();
 
 //
 //	color handlers

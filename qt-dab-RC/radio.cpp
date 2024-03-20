@@ -3815,5 +3815,10 @@ void	RadioInterface::setVolume	(int n) {
 }
 
 void	RadioInterface::handle_snrLabel	() {
+	if (running. load()) {
+	   dynamicLabel	-> setStyleSheet (labelStyle);
+	   QString SNR	= "SNR " + QString::number (channel. snr);
+	   dynamicLabel	-> setText (SNR);
+	}
 }
 
