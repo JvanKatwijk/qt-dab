@@ -143,8 +143,6 @@ private slots:
 	void			report_overload_state	(bool);
 public slots:
 	void			set_lnabounds		(int, int);
-	void			set_nrBits		(int);
-	void			set_deviceName		(const QString &);
 	void			set_serial		(const QString &);
 	void			set_apiVersion		(float);
 	void			show_tunerSelector	(bool);

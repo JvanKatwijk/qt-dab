@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2014 .. 2019
+ *    Copyright (C) 2014 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB program
+ *    This file is part of Qt-DAB
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -239,7 +239,7 @@ int	res;
 	return true;
 }
 	
-void	limeHandler::stopReader() {
+void	limeHandler::stopReader	() {
 	close_xmlDump ();
 	if (!isRunning())
 	   return;
@@ -254,7 +254,7 @@ void	limeHandler::stopReader() {
 }
 
 int	limeHandler::getSamples	(std::complex<float> *V, int32_t size) {
-std::complex<int16_t> temp [size];
+auto *temp	= dynVec (std::complex<int16_t>, size);
 
         int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	if (filtering) {

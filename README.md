@@ -15,8 +15,13 @@
 Recent changes
 ------------------------------------------------------------------------
 
-The version Qt-DAB6.5Beta has undergone some more minor modifications
-and is believed to be sufficiently stable to have the "Beta" removed.
+In the current version - 6.X - has two (sub)systems for the sound handling are
+included and can be selected. Next to the portaudio interface that
+was the default, the sound interface provides by Qt is rewritten and
+made into the default. A selection will be applied in the
+next program invocation.
+If the Qt-audio interface is selected, a volume slider is shown on
+the mai widget.
 
 ------------------------------------------------------------------------
 About Qt-DAB-6.5

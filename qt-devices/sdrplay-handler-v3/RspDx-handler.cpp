@@ -44,8 +44,6 @@
 	this	-> nrBits		= 14;
 	this	-> lna_upperBound	= lnaStates (freq);
 	set_lnabounds_signal	(0, lna_upperBound);
-	set_deviceName_signal	(deviceModel);
-	set_nrBits_signal	(nrBits);
 	if (lnaState > lna_upperBound)
 	   this -> lnaState = lna_upperBound - 1;
 	set_lna (this -> lnaState);
@@ -54,7 +52,10 @@
 }
 
 	RspDx_handler::~RspDx_handler	() {}
-
+//
+//	while we know that the regular frequencies for DAB reception
+//	are in the 60 - 250 MHz, there is always a chance that someone
+//	experiments with his own defined band on a different frequency
 static
 int	RSPdx_Table [6][29] = {
 	{19, 0, 3,  6,  9, 12, 15, 18, 24, 27, 30, 33, 36, 39, 42,
@@ -71,15 +72,17 @@ int	RSPdx_Table [6][29] = {
 
 
 int16_t RspDx_handler::bankFor_rspdx (int freq) {
-	if (freq < Mhz (60))
-	   return 0;
-	if (freq < MHz (250))
+	if (freq < MHz (12))
 	   return 1;
-	if (freq < MHz (420))
+	if (freq < Mhz (60))
 	   return 2;
-	if (freq < MHz (1000))
+	if (freq < MHz (250))
 	   return 3;
-	return 4;
+	if (freq < MHz (420))
+	   return 4;
+	if (freq < MHz (1000))
+	   return 5;
+	return 6;
 }
 
 int	RspDx_handler::lnaStates (int frequency) {

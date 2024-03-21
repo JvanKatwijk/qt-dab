@@ -323,7 +323,7 @@ void	rtlsdrHandler_v4::set_ppmCorrection	(int32_t ppm) {
 }
 
 int32_t	rtlsdrHandler_v4::getSamples (std::complex<float> *V, int32_t size) { 
-std::complex<uint8_t> temp [size];
+auto *temp	= dynVec (std::complex<uint8_t>,  size);
 int	amount;
 static uint8_t dumpBuffer [4096];
 static int iqTeller	= 0;

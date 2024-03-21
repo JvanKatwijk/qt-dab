@@ -50,8 +50,6 @@ int     RSP1A_Table [4] [11] = {
 	this	-> nrBits		= 12;
 	this	-> lna_upperBound =  lnaStates (freq);
 	set_lnabounds_signal	(0, lna_upperBound);
-	set_deviceName_signal	(deviceModel);
-	set_nrBits_signal	(nrBits);
 	if (lnaState > lna_upperBound)
 	   this -> lnaState = lna_upperBound;
 	set_lna (this -> lnaState);

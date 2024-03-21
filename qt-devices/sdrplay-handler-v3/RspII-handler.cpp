@@ -42,8 +42,6 @@
 	this	-> lna_upperBound	= 9;
 	this	-> deviceModel		= "RSP-II";
 	this	-> nrBits		= 14;
-	set_deviceName_signal	(deviceModel);
-	set_nrBits_signal	(nrBits);
 	if (freq < Mhz (420))
 	   lna_upperBound = 9;
 	else

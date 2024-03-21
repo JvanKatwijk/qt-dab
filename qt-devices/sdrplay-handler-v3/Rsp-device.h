@@ -66,8 +66,6 @@ virtual	bool	set_amPort 	(int amPort);
 virtual	bool	set_biasT 	(bool biasT);
 signals:
 	void	set_lnabounds_signal	(int, int);
-	void	set_deviceName_signal	(const QString &);
-	void	set_nrBits_signal	(int);
 	void	show_lnaGain		(int);
 };
 

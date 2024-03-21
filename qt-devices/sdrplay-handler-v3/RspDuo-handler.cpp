@@ -42,9 +42,7 @@
 	this	-> lna_upperBound	= 10;
 	this	-> deviceModel		= "RSP-Duo";
 	this	-> nrBits		= 14;
-	set_deviceName_signal	(deviceModel);
 	set_lnabounds_signal	(0, lna_upperBound);
-	set_nrBits_signal	(nrBits);
 	show_lnaGain (get_lnaGain (lnaState, freq));
 
 	if (biasT)

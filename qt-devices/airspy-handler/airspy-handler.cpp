@@ -396,7 +396,8 @@ int32_t  i, j;
 	return 0;
 }
 //
-const char *airspyHandler::getSerial() {
+const
+char	*airspyHandler::getSerial () {
 airspy_read_partid_serialno_t read_partid_serialno;
 int result = my_airspy_board_partid_serialno_read (device,
 	                                          &read_partid_serialno);

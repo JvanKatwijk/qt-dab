@@ -4,7 +4,8 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
+ *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -151,13 +152,13 @@ int	llengths = length - 4;
 	if (getBits (data, offset + 24, 8) == 0) {	// no encryption
 	   lOffset	= offset + 4 * 8;
 	   do {
-//	      int compInd	= getBits (data, lOffset, 8);	
+	      int compInd	= getBits (data, lOffset, 8);	
 	      int flength	= getBits (data, lOffset + 8, 16);
 //	      int crc		= getBits (data, lOffset + 3 * 8, 8);
 #if 0
 	      fprintf (stderr, "segment %d, length %d\n",
 	                                 compInd, flength);
-	      for (i = 5; i < flength; i ++)
+	      for (int i = 5; i < flength; i ++)
 	         fprintf (stderr, "%c", buffer [i]);
 	      fprintf (stderr, "\n");
 #endif

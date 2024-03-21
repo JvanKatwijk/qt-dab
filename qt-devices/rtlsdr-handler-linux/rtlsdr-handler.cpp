@@ -721,7 +721,7 @@ QString	theValue	= "";
 void	rtlsdrHandler::processBuffer (uint8_t *buf, uint32_t len) {
 float	sumI	= 0;
 float	sumQ	= 0;
-std::complex<float> tempBuf [len / 2];
+auto	*tempBuf 	= dynVec (std::complex<float>, len / 2);
 static uint8_t dumpBuffer [2 * IQ_BUFSIZE];
 static int iqTeller	= 0;
 

@@ -983,6 +983,7 @@ uint8_t localBuffer [length + 8];
 	   return;
 	}
 #ifdef	DATA_STREAMER
+	fprintf (stderr, "%d\n", length);
 	dataBuffer. getDataFromBuffer (&localBuffer [8], length);
 	localBuffer [0] = 0xFF;
 	localBuffer [1] = 0x00;

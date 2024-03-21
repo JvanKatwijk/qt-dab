@@ -361,7 +361,7 @@ int	res;
 //	The brave old getSamples. For the hackrf, we get
 //	size still in I/Q pairs
 int32_t	hackrfHandler::getSamples (std::complex<float> *V, int32_t size) { 
-std::complex<int8_t> temp [size];
+auto *temp = dynVec (std::complex<float>, size);
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
 	for (int i = 0; i < amount; i ++)
 	   V [i] = std::complex<float> (real (temp [i]) / 127.0f,

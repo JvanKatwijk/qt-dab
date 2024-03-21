@@ -213,11 +213,10 @@ stopRequest r;
 }
 //
 int32_t	sdrplayHandler_v3::getSamples (std::complex<float> *V, int32_t size) { 
-std::complex<int16_t> temp [size];
-int	i;
+auto *temp 	= dynVec (std::complex<int16_t>, size);
 
 	int amount      = _I_Buffer. getDataFromBuffer (temp, size);
-        for (i = 0; i < amount; i ++)
+        for (int i = 0; i < amount; i ++)
            V [i] = std::complex<float> (real (temp [i]) / (float) denominator,
                                         imag (temp [i]) / (float) denominator);
         if (dumping. load ())
@@ -250,17 +249,8 @@ QString	sdrplayHandler_v3::deviceName	() {
 //	Communication with that thread is synchronous!
 //
 
-void    sdrplayHandler_v3::set_nrBits (int b) {
-        nrBits  = b;
-        denominator = nrBits == 12 ? 2048 : 4096;
-}
-
 void	sdrplayHandler_v3::set_lnabounds(int low, int high) {
 	lnaGainSetting	-> setRange (low, high);
-}
-
-void	sdrplayHandler_v3::set_deviceName (const QString& s) {
-	deviceLabel	-> setText (s);
 }
 
 void	sdrplayHandler_v3::set_serial	(const QString& s) {
@@ -629,6 +619,9 @@ uint32_t                ndev;
 	   switch (hwVersion) {
 	      case SDRPLAY_RSPdx_ :
 	         antennaValue = set_antennaSelect (SDRPLAY_RSPdx_);
+	         nrBits		= 14;
+	         denominator	= 4096;
+	         deviceModel	= "RSPDx";
 	         theRsp	= new RspDx_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -641,6 +634,9 @@ uint32_t                ndev;
 	         break;
 
 	      case SDRPLAY_RSP1_ :
+	         nrBits		= 12;
+	         denominator	= 2048;
+	         deviceModel	= "RSP1";
 	         theRsp	= new Rsp1_handler  (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -653,6 +649,10 @@ uint32_t                ndev;
 
 	      case SDRPLAY_RSP1A_ :
 	      case SDRPLAY_RSP1B_ :
+	         nrBits		= 14;
+	         denominator	= 4096;
+	         deviceModel	= hwVersion == SDRPLAY_RSP1A_ ? "RSO-1A" :
+	                                                        "RSP-1B";
 	         theRsp	= new Rsp1A_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -665,6 +665,9 @@ uint32_t                ndev;
 
 	      case SDRPLAY_RSP2_ :
 	         antennaValue = set_antennaSelect (SDRPLAY_RSP2_);
+	         nrBits		= 14;
+	         denominator	= 4096;
+	         deviceModel	= "RSP-II";
 	         theRsp	= new RspII_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -678,6 +681,9 @@ uint32_t                ndev;
 
 	      case SDRPLAY_RSPduo_ :
 	         antennaValue = set_antennaSelect (SDRPLAY_RSPdx_);
+	         nrBits		= 14;
+	         denominator	= 4096;
+	         deviceModel	= "RSP-Duo";
 	         theRsp	= new RspDuo_handler (this,
 	                                     chosenDevice,
 	                                     inputRate,
@@ -690,6 +696,9 @@ uint32_t                ndev;
 	         break;
 
 	      default:
+	         nrBits		= 14;
+	         denominator	= 4096;
+	         deviceModel	= "UNKNOWN";
 	         theRsp	= new Rsp_device (this,
 	                                  chosenDevice,
 	                                  2112000,
@@ -704,6 +713,7 @@ uint32_t                ndev;
 	   goto closeAPI;
 	}
 
+	deviceLabel		-> setText (deviceModel);
 	set_serial_signal       (serial);
         set_apiVersion_signal   (apiVersion);
 
