@@ -329,7 +329,26 @@ QString h;
 	QString	temp;
 	QString s = dabSettings_p -> value ("soundHandler", "portaudio").
 	                                                       toString ();
-	if (s == "portaudio") {
+//
+	if (s != "portaudio") {
+	   try {
+	      soundOut_p	= new Qt_Audio (dabSettings_p);
+	      streams		= ((Qt_Audio *)soundOut_p) -> streams ();
+	      temp		=
+	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
+	                                      "default"). toString ();
+	      volumeSlider	-> show ();
+	      int volume	=
+	          dabSettings_p -> value (QT_AUDIO_VOLUME, 50). toInt ();
+	      volumeSlider		-> setValue (volume);
+	      ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
+	      connect (volumeSlider, SIGNAL (valueChanged (int)),
+	               this, SLOT (setVolume (int)));
+	   } catch (...) {
+	      soundOut_p = nullptr;
+	   }
+	}
+	if (soundOut_p == nullptr) {
 	   soundOut_p		= new audioSink		(latency);
 	   streams	= ((audioSink *)soundOut_p) -> streams ();
 	   temp		=
@@ -337,32 +356,15 @@ QString h;
 	                                      "default"). toString ();
 	   volumeSlider	-> hide ();
 	}
-	else {	// the default is now qt audio
-	   soundOut_p		= new Qt_Audio (dabSettings_p);
-	   streams	= ((Qt_Audio *)soundOut_p) -> streams ();
-	   temp		=
-	          dabSettings_p -> value (QT_AUDIO_STREAM_NAME,
-	                                      "default"). toString ();
-	   volumeSlider	-> show ();
-	   int volume	=
-	          dabSettings_p -> value (QT_AUDIO_VOLUME, 50). toInt ();
-	   volumeSlider			-> setValue (volume);
-	   ((Qt_Audio *)soundOut_p)	-> setVolume (volume);
-	   connect (volumeSlider, SIGNAL (valueChanged (int)),
-	            this, SLOT (setVolume (int)));
-	}
 
 	if (streams. size () > 0) {
 	   configHandler_p -> fill_streamTable (streams);
 	   configHandler_p -> show_streamSelector (true);
 	   k	= configHandler_p -> init_streamTable (temp);
-	   if (k >= 0) {
+	   if (k >= 0)
 	      soundOut_p -> selectDevice (k);
-	   }
-	   else
-	      soundOut_p -> selectDevice (0);	// default device
+	   configHandler_p	-> connect_streamTable	();
 	}
-	configHandler_p	-> connect_streamTable	();
 #endif
 
 #ifndef	__MINGW32__
@@ -1255,7 +1257,7 @@ void	RadioInterface::updateTimeDisplay() {
 //	that it rings when there is no processor running
 	if (my_ofdmHandler == nullptr)
 	   return;
-	if (!techWindow_p -> isHidden ()) {
+	if (!techWindow_p -> isHidden ())  {
 	   if (soundOut_p -> hasMissed ()) {
 	      int xxx = ((audioSink *)soundOut_p) -> missed ();
 	      techWindow_p -> showMissed (xxx);
@@ -3085,6 +3087,8 @@ void	RadioInterface::handle_configButton	() {
 void	RadioInterface::handle_devicewidgetButton	() {
 	if (inputDevice_p == nullptr)
 	   return;
+	fprintf (stderr, "setting visibility to %d\n",
+	                            !inputDevice_p -> getVisibility ());
 	inputDevice_p	-> setVisibility (!inputDevice_p -> getVisibility ());
 
 	dabSettings_p -> setValue (DEVICE_WIDGET_VISIBLE,
@@ -3235,17 +3239,9 @@ void	RadioInterface::selectDecoder (int decoder) {
 void	RadioInterface:: set_streamSelector (int k) {
 	if (!running. load ())
 	   return;
-#if	not defined (TCP_STREAMER) &&  not defined (QT_AUDIO)
 	((audioSink *)(soundOut_p)) -> selectDevice (k);
 	dabSettings_p -> setValue (AUDIO_STREAM_NAME,
 	                          configHandler_p -> currentStream ());
-#else
-#ifdef	QT_AUDIO
-	((Qt_Audio *)(soundOut_p)) -> selectDevice (k);
-	dabSettings_p -> setValue (QT_AUDIO_STREAM_NAME,
-	                           configHandler_p -> currentStream ());
-#endif
-#endif
 }
 //
 //////////////////////////////////////////////////////////////////////////

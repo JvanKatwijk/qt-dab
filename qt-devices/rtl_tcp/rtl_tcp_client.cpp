@@ -36,7 +36,8 @@
 
 #define	DEFAULT_FREQUENCY	(Khz (220000))
 
-	rtl_tcp_client::rtl_tcp_client	(QSettings *s) {
+	rtl_tcp_client::rtl_tcp_client	(QSettings *s):
+	                          _I_Buffer (32 * 32768) {
 	remoteSettings		= s;
 
 	setupUi (&myFrame);
@@ -58,7 +59,6 @@
 	tcp_gain	-> setValue (theGain);
 	tcp_ppm		-> setValue (thePpm);
 	lastFrequency	= DEFAULT_FREQUENCY;
-	_I_Buffer	= new RingBuffer<std::complex<float>>(32 * 32768);
 	connected	= false;
 	hostLineEdit 	= new QLineEdit (nullptr);
 	dumping		= false;
@@ -90,7 +90,6 @@
 	remoteSettings -> setValue ("rtl_tcp_client-offset", vfoOffset);
 	remoteSettings -> endGroup();
 	toServer. close();
-	delete	_I_Buffer;
 	delete	hostLineEdit;
 }
 //
@@ -180,12 +179,12 @@ void	rtl_tcp_client::stopReader() {
 //	uint8_t to DSPCOMPLEX *
 int32_t	rtl_tcp_client::getSamples (std::complex<float> *V, int32_t size) { 
 int32_t	amount =  0;
-	amount = _I_Buffer	-> getDataFromBuffer (V, size);
+	amount = _I_Buffer. getDataFromBuffer (V, size);
 	return amount;
 }
 
 int32_t	rtl_tcp_client::Samples () {
-	return  _I_Buffer	-> GetRingBufferReadAvailable ();
+	return  _I_Buffer. GetRingBufferReadAvailable ();
 }
 //
 int16_t	rtl_tcp_client::bitDepth () {
@@ -222,7 +221,7 @@ std::complex<float> localBuffer [4096];
 	      localBuffer [i] = std::complex<float> (
 	                                    mapTable [buffer [2 * i]],
 	                                    mapTable [buffer [2 * i + 1]]);
-	   _I_Buffer -> putDataIntoBuffer (localBuffer, 4096);
+	   _I_Buffer. putDataIntoBuffer (localBuffer, 4096);
 	}
 }
 //

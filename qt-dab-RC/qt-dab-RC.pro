@@ -413,8 +413,8 @@ INCLUDEPATH	+= /usr/local/include
 # qmake -set QMAKEFEATURES /usr/local/Cellar/qwt/6.2.0/features
 CONFIG		+= qwt
 #}
-CONFIG		+= double
-#CONFIG		+= single
+#CONFIG		+= double
+CONFIG		+= single
 #
 # comment or uncomment for the devices you want to have support for
 # (you obviously have libraries installed for the selected ones)
@@ -435,8 +435,8 @@ CONFIG		+= spyServer-8
 #CONFIG		+= elad-device
 #CONFIG		+= faad
 CONFIG		+= fdk-aac
-#CONFIG		+= preCompiled
-CONFIG		+= tiiLib
+CONFIG		+= preCompiled
+#CONFIG		+= tiiLib
 #very experimental, simple server for connecting to a tdc handler
 CONFIG		+= datastreamer
 #to handle output of embedded an IP data stream, uncomment
@@ -924,11 +924,9 @@ mapserver {
 
 double	{
 	DEFINES		+= __WITH_DOUBLES__
-	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3
 }
 
 single	{
-	DEFINES		+= __FFTW3__
 	LIBS		+= -lfftw3f
 }

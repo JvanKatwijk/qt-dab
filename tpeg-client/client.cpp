@@ -176,8 +176,8 @@ int16_t i;
 	      dataLength	= toRead;
 	      dataBuffer	= new uint8_t [toRead];
 	      dataIndex		= 0;
-	      frameType = headertester. frametype ();
-	      searchState = HEADER_FOUND;
+	      frameType		= headertester. frametype ();
+	      searchState	= HEADER_FOUND;
 	      headertester. reset ();
 	   }
 	   return;
@@ -210,7 +210,10 @@ void	Client::timerTick () {
 }
 
 void	Client::handleFrameType_0 (uint8_t *dataBuffer, int16_t Length) {
-	fprintf (stderr, "number of services %d\n", dataBuffer [0]);
+	fprintf (stderr, "Frametype_0: ");
+	for (int i = 0; i < Length; i ++)
+	   fprintf (stderr, "%x (%c) ", dataBuffer [i], dataBuffer [i]);
+	fprintf (stderr, "\nnumber of services %d\n", dataBuffer [0]);
 }
 
 void	Client::handleFrameType_1 (uint8_t *dataBuffer, int16_t Length) {

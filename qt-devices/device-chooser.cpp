@@ -297,7 +297,7 @@ int	deviceNumber	= getDeviceIndex (s);
 	         case WAV_FILE:
 	            return new wavFiles (fileName);
 	         case XML_FILE:
-	            return new rawFiles (fileName);
+	            return new xml_fileReader (fileName);
 	         default:
 	            throw (device_exception ("no file"));
 	      }
@@ -313,7 +313,8 @@ int	deviceNumber	= getDeviceIndex (s);
 
 QString	 deviceChooser::getFileName	(uint8_t &fileType) {
 QString selected_type;
-QString TYPE_XML	= "uff-xml (*.uff)";
+QString TYPE_UFF	= "uff-xml (*.uff)";
+QString TYPE_XML	= "uff-xml (*.xml)";
 QString TYPE_SDR	= "sdr-wav (*.sdr)";
 QString TYPE_RAW	= "raw (*.raw)";
 QString TYPE_IQ		= "IQ-RAW (*.iq)";
@@ -322,6 +323,7 @@ QString fileName =
 	       QFileDialog::getOpenFileName (nullptr,
                                              "Open file ...",
 	                                     QDir::homePath (),
+                                             TYPE_UFF + ";;" +
                                              TYPE_XML + ";;" +
 	                                     TYPE_SDR + ";;" +
 	                                     TYPE_RAW + ";;" +
@@ -332,7 +334,7 @@ QString fileName =
 	if (fileName == "")
 	   return "";		// note typeFound unset
 
-	if (selected_type == TYPE_XML) 
+	if ((selected_type == TYPE_XML) || (selected_type == TYPE_UFF))
 	  fileType	= XML_FILE;
 	else
 	if (selected_type == TYPE_SDR)

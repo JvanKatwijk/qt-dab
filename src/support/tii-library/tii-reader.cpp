@@ -42,7 +42,6 @@
 #define	POWER		13
 #define	NR_COLUMNS	14
 
-#include        <curl/curl.h>
 		tiiReader::tiiReader	() {
 }
 		tiiReader::~tiiReader	() {

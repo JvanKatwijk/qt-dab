@@ -958,12 +958,14 @@ char		label [17];
 	   for (int i = 0; i < 16; i ++) {
 	      label [i] = getBits_8 (d, offset + 8 * i);
 	   }
-//         fprintf (stderr, "Ensemblename: %16s\n", label);
 	   const QString name = toQStringUsingCharset (
 	                                        (const char *) label,
 	                                        (CharacterSet) charSet);
+	   QString realName = name;
+	   for (int i = name. length (); i < 16; i ++)
+	      realName. append (' ');
 	   if (!ensemble -> namePresent) {
-	      ensemble ->  ensembleName	= name;
+	      ensemble ->  ensembleName	= realName;
 	      ensemble ->  ensembleId	= EId;
 	      ensemble ->  namePresent	= true;
 	      name_of_ensemble (EId, name);
@@ -1045,6 +1047,8 @@ int16_t		offset;
 	QString dataName	=
 	               toQStringUsingCharset ((const char *) label,
                                               (CharacterSet) charSet);
+	for (int i = dataName. length (); i < 16; i ++)
+	   dataName. append (' ');
 	int16_t compIndex =
 	            findServiceComponent (currentConfig, SId, SCIds);
 	if (compIndex > 0) {
@@ -1233,6 +1237,10 @@ int	firstFree = -1;
 
 static inline
 bool	match (QString s1, QString s2) {
+	if ((s1. length () != 16) || (s2. length () != 16)) 
+	   fprintf (stderr, "%s %d %s %d\n",
+	               s1. toLatin1 (). data (), s1. length (),
+	               s2. toLatin1 (). data (), s2. length ());
 	return s1 == s2;
 }
 //
@@ -1305,6 +1313,10 @@ void	fibDecoder::createService (const QString &name,
 	   if (ensemble -> services [i]. inUse) {
 	      continue;
 	   }
+	   QString saveName = name;
+	   for (int i = name. length (); i < 16; i ++)
+	      saveName. push_back (" ");
+	      
 	   ensemble	-> services [i]. inUse		= true;
 	   ensemble	-> services [i]. hasName	= true;
 	   ensemble	-> services [i]. serviceLabel	= name;

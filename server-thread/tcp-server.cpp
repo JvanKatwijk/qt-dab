@@ -101,7 +101,7 @@ void	tcpServer::run (int port) {
 	                         (struct sockaddr *)&client,
 	                         (socklen_t*)&c);
 	   if (client_sock < 0) {
-	      perror("accept failed");
+	      perror ("accept failed");
 	      return;
 	   }
 	   fprintf (stderr, "Connection accepted");

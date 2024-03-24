@@ -57,6 +57,7 @@ void	deviceHandler::resetBuffer	() {
 }
 
 void	deviceHandler::setVisibility	(bool b) {
+	fprintf (stderr, "Got a signal for setting to %d\n", b);
 	if (b)
 	   myFrame. show ();
 	else

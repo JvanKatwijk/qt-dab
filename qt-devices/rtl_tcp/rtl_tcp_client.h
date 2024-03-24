@@ -61,6 +61,7 @@ private slots:
 	void		wantConnect	();
 	void		setDisconnect	();
 private:
+	RingBuffer<std::complex<float>>	_I_Buffer;
 	void		sendVFO		(int32_t);
 	void		sendRate	(int32_t);
 	void		setGainMode	(int32_t gainMode);
@@ -69,7 +70,6 @@ private:
 	bool		isvalidRate	(int32_t);
 	QSettings	*remoteSettings;
 	int32_t		theRate;
-	RingBuffer<std::complex<float>>	*_I_Buffer;
 	bool		connected;
 	int16_t		theGain;
 	int		vfoOffset;

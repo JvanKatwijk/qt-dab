@@ -33,7 +33,6 @@
 #include	<winsock2.h>
 #include	<windows.h>
 #endif
-#include        <curl/curl.h>
 class	tiiReader {
 public:
 		tiiReader	();

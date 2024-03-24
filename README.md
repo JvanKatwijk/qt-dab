@@ -339,21 +339,38 @@ Building an executable for Qt-DAB: a few notes
 Of course it is possible to generate an executable, a separate document
 is available that contains a complete script for Ubuntu type Linux versions.
 
-Since it is common to avoid reading a manual, here are
-the basic steps for the build process.
-While generating a Makefile using cmake is possible,
-it is strongly advised to use qmake for that purpose. 
-The **qt-dab-6.5.pro** file contains (much) more configuration options
+The basis steps for generating an executable are straightforward,
+It is strongly advised to use qmake/make for the compilation process,
+the **qt-dab-6.X.pro** file contains (much) more configuration options
 than the **CMakeLists.txt" file does.
 
 Step 1
 -----------------------------------------------------------------
 
-- :information_source: Note that the sources for 6.5 are in the subdirectory `qt-dab-6.5` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
-- Install required libraries (Qt and qwt libraries, FFTW, libsndfile and libsamplerate, portaudio, zlib, etc, see the configuration file)
-* :information: It turns out that in recent versions of Debian (and related) distributions the lib `qt5-default` does not exist as as separate library.
-- It seems to be part of another of the qt5 packages that is installed.
-- Be aware that different distributions store qt files on different locations, adapt the INCLUDEPATH setting in the `.pro` file if needed.
+- :information_source:  In the qt-dab sourcetree, the sources for 6.5 are in the subdirectory `qt-dab-6.5` and for qt-dab-5.x in the subdirectory `qt-dab-s5` 
+
+For compiling and installing Qt-DAB on an old RPI3 (64 bits bullseye),
+I load the required libraries as given below:
+
+ *   sudo apt-get update
+ *   sudo apt-get install git cmake
+ *   sudo apt-get install qt5-qmake build-essential g++
+ *   sudo apt-get install pkg-config
+ *   sudo apt-get install libsndfile1-dev
+ *   sudo apt-get install libfftw3-dev portaudio19-dev 
+ *   sudo apt-get install zlib1g-dev 
+ *   sudo apt-get install libusb-1.0-0-dev mesa-common-dev
+ *   sudo apt-get install libgl1-mesa-dev libqt5opengl5-dev
+ *   sudo apt-get install libsamplerate0-dev libqwt-qt5-dev qtmultimedia5-dev
+ *   sudo apt-get install qtbase5-dev libqt5svg5-dev
+ *   sudo apt-get install libfdk-aac-dev
+
+If you want to use a physical device - e.g. an SDRplay, or an AIRspy
+you need to install the driver libraries for these devices as well.
+
+for SDRplay devices you should download the - proprietary - driver software
+from the SDRplay site. For the AIRspy the bullseye repository provides a
+library.
 
 Step 2
 -----------------------------------------------------------------
@@ -361,25 +378,15 @@ Step 2
 While there are dozens of configuration options, take note
 of the following ones:
 
-* Note on configuring DABsticks (i.e. RTLSDR type devices).
-The Windows support library does not seem to be capable of closing
-the library and reopening it on switching channels. Therefore
-different versions exist for Linux and Windows.
-
 :information_source: Note that for including "soapy" in the configuration, soapy  software should have been installed. Be aware that the current
 version is developed on an Fedora box, the soapy library used does not seem compatible with the soapy library on Ubuntu.
 
-:information_source: Note that "pluto" can be compiled in: as the other support programs, when the device is selected, the support program will (try to) read in the functions of the device library.
-
-:-information_source: While device handler sources for UHD
-are available, the status for UHD is experimental though not tested lately.
-(Testers are welcome)
+:information_source: chose 'CONGIG+=NO_SSE' if you  NOT are compiling on/for an
+X86_64 based system.
 
 One may choose between 'CONFIG += single' or 'CONFIG += double'. In the latter
 case (the default one, all computations in the "front end" are dome with
 double precision arithmetic.
-
-For X64 PC's one may choose the option `CONFIG+=PC` (for selecting SSE instructions). If unsure, use `CONFIG+=NO_SSE`.
 
 Note that by default a choice is made for `CONFIG += tiiLib` (see step 4),
 the alternative opyion 'CONFIG+=preCompiled' will **NOT** work since it requires
@@ -389,16 +396,12 @@ libraries allow access to a preconfigured database (see step 4).
 Step 3
 -----------------------------------------------------------------
 
-run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates a `Makefile` and then run `make`. 
+run `qmake` (variants of the name are `qt5-qmake`, `qmake-qt5`) which generates a `Makefile` and then run `make`. Compiling may take some time.
 
 Step 4
 -----------------------------------------------------------------
 
 Unpack file "tiiFile.zip", and copy the resulting file `.txdata.tii` from the *library* subdirectory (which contains the database data for finding the transmitter's name and location) into the user's home directory.) If Qt-DAB cannot find the file, it will just function without showing the names and without "maps" option.
-
-If running on an x64 PC or *bullseye* on the RPI you might consider to install `libtii-lib.so` (to be found in the *library* subdirectory) in `/usr/local/lib`. Note that to avoid confusion, it named "libtii-lib.so-rpi" and should be renamed to the libtii-lib.so.
-
-:information_source: Note however that this library needs `curl` to be installed and source code for `libtii-lib.so` is not free. `libtii-lib.so` contains functionality for uploading a new database version (the "load" button on the configuration widget). If Qt-DAB cannot find the library, it will just function without the additional functionality.
 
 :information_source: Note: Building a version on a fresh install of "bullseye" on the RPI gave a version that wouldn't run: The `Qt_PLUGIN_PATH` was not set. Setting it as given below solved - for me - the problem:
 

@@ -1,10 +1,10 @@
 #
 /*
- *    Copyright (C) 2013 .. 2017
+ *    Copyright (C) 2013 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB program
+ *    This file is part of Qt-DAB 
  *
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
  *    along with Qt-DAB; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-#include	<QFileDialog>
+//#include	<QFileDialog>
 #include	"xml-filereader.h"
 #include	<cstdio>
 #include	<cstdlib>
@@ -81,8 +81,8 @@
 	nrElementsDisplay	-> display (theDescriptor -> blockList [0]. nrElements);
 	fprintf (stderr, "nrElements = %d\n",
 	             theDescriptor -> blockList [0].nrElements);
-//	connect (continuousButton, SIGNAL (clicked ()),
-//	         this, SLOT (handle_continuousButton ()));
+	connect (continuousButton, SIGNAL (clicked ()),
+	         this, SLOT (handle_continuousButton ()));
 	running. store (false);
 }
 

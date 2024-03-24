@@ -47,6 +47,15 @@ void	Qt_Audio::initialize_deviceList () {
 	      theList. push_back (deviceInfo);
 	   }
 	}
+
+	fprintf (stderr, "The devicelist \n");
+	for (auto & listEl: theList)
+           fprintf (stderr, "%s\n",  listEl. deviceName (). toLatin1 (). data ());;
+
+	fprintf (stderr, "Length of deviceList %d\n",  theList. size ());
+	if ((defaultDeviceInfo. deviceName () == "") &&
+	    (theList. size () < 2))
+	   throw (22);
 }
 
 	Qt_Audio::~Qt_Audio () {
