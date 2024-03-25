@@ -51,6 +51,8 @@ public:
 	void		data_for_packetservice	(const QString &,
 	                                          packetdata *, int16_t);
 	int		get_subCh_id		(const QString &, uint32_t);
+	int		get_nrComps		(uint32_t);
+	int		get_SCIds		(const QString &);
 	std::vector<serviceId>	get_services	(int);
 
 	QString		find_service		(uint32_t, int);

@@ -447,7 +447,7 @@ CONFIG		+= tiiLib
 #if you want to listen remote, uncomment
 #CONFIG		+= tcp-streamer		# use for remote listening
 #otherwise, if you want to use the default qt way of sound out
-CONFIG		+= qt-audio
+#CONFIG		+= qt-audio
 #comment both out if you just want to use the "normal" way
 
 CONFIG		+= PC

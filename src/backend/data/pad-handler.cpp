@@ -71,6 +71,7 @@ void	padHandler::processPAD (uint8_t *buffer, int16_t last,
 uint8_t	fpadType	= (L1 >> 6) & 03;
 
 	if (fpadType != 00) {
+	   fprintf (stderr, "fPadtype = %x\n");
 	   return;
 	}
 //

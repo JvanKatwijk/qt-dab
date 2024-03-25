@@ -33,7 +33,6 @@
 #include	"client.h"
 //
 
-
 #define swap(a) (((a) << 8) | ((a) >> 8))
 
 //---------------------------------------------------------------------------
@@ -211,8 +210,6 @@ void	Client::timerTick () {
 
 void	Client::handleFrameType_0 (uint8_t *dataBuffer, int16_t Length) {
 	fprintf (stderr, "Frametype_0: ");
-	for (int i = 0; i < Length; i ++)
-	   fprintf (stderr, "%x (%c) ", dataBuffer [i], dataBuffer [i]);
 	fprintf (stderr, "\nnumber of services %d\n", dataBuffer [0]);
 }
 

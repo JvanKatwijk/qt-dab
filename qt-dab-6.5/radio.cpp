@@ -2990,7 +2990,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      s. channel     = pd. channel;
 	      s. serviceName = pd. serviceName;
 	      s. SId         = pd. SId;
-	      s. SCIds       = pd. SCIds;
+	      s. SCIds		= pd. SCIds;
 	      s. subChId     = pd. subchId;
 	      s. fd          = nullptr;
 	      channel. backgroundServices. push_back (s);

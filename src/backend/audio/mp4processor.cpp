@@ -314,7 +314,7 @@ stream_parms    streamParameters;
 	            uint8_t L1	= buffer [count - 2];
 	            my_padhandler. processPAD (buffer, count - 3, L1, L0);
 	         }
-	         else  {// no PAD data, so no synamic labe;
+	         else  {// no PAD data, so no dynamic labe;
 	         }
 //
 //	then handle the audio

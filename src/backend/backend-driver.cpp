@@ -55,11 +55,12 @@
 	      theProcessor = new frameProcessor ();	// should not happen
 	}
 	else
-	if (d -> type == PACKET_SERVICE)
+	if (d -> type == PACKET_SERVICE) {
 	   theProcessor = new dataProcessor (mr,
 	                                     (packetdata *)d,
 	                                     dataBuffer,
 	                                     backgroundFlag);
+	}
 	else
 	   theProcessor = new frameProcessor ();	// should not happen
 }

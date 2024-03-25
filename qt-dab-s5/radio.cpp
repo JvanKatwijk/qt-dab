@@ -2511,7 +2511,7 @@ void	RadioInterface::start_announcement (const QString &name,
 	                                         int subChId, int Id) {
 	if (!running. load ())
 	   return;
-
+	(void)Id;
 	if (name == serviceLabel -> text ()) {
 	   serviceLabel	-> setStyleSheet ("QLabel {color : red}");
 	   fprintf (stderr, "announcement for %s (%d) starts\n",
@@ -2784,7 +2784,9 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 
 	(void)my_ofdmHandler -> set_audioChannel (ad, &audioBuffer,
 	                                            nullptr, FORE_GROUND);
-	for (int i = 1; i < 10; i ++) {
+	int nrComps     =
+             my_ofdmHandler -> get_nrComps (channel. currentService. SId);
+        for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   my_ofdmHandler -> data_for_packetservice (ad. serviceName, &pd, i);
 	   if (pd. defined) {
@@ -4062,7 +4064,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	         s. channel     = pd. channel;
 	         s. serviceName = pd. serviceName;
 	         s. SId         = pd. SId;
-	         s. SCIds       = pd. SCIds;
+	         s. SCIds	= pd. SCIds;
 	         s. subChId     = pd. subchId;
 	         s. fd          = nullptr;
 	         channel. backgroundServices. push_back (s);

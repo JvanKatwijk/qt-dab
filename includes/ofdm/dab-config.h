@@ -42,6 +42,7 @@ void	reset		() {
 	inUse		= false;
 	SId		= 0;
 	SCIds		= 0;
+	nrComps		= 0;
 	hasName		= false;
 	serviceLabel	= "";
 	shortName	= "";
@@ -54,6 +55,7 @@ void	reset		() {
 bool		inUse;
 uint32_t	SId;
 int		SCIds;
+int		nrComps;
 bool		hasName;
 QString		serviceLabel;
 QString		shortName;

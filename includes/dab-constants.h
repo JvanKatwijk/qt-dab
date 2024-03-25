@@ -134,6 +134,7 @@ public:
 	QString		name;
 	uint32_t	SId;
 	uint16_t	subChId;
+	int		nrComps;
 	bool		isAudio;
 	int16_t		programType;
         QString		channel;        // just for presets

@@ -4,7 +4,7 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computing
  *
- *    This file is part of the Qt-DAB
+ *    This file is part of Qt-DAB
  *    Qt-DAB is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
@@ -53,7 +53,9 @@ int32_t	res;
 	for (uint16_t i = 0; i < len / 8; i ++)
 	   buffer [i] = getBits (data, 8 * i, 8);
 
+	fprintf (stderr, "adding datagroup to journaline\n");
 	res = DAB_DATAGROUP_DECODER_putData (theDecoder, len / 8, buffer);
+	fprintf (stderr, "With res = %d\n", res);
 	if (res < 0)
 	   return;
 }

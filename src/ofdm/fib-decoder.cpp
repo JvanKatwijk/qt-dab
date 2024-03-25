@@ -1,4 +1,4 @@
-#
+
 /*
  *    Copyright (C) 2018 .. 2023
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
@@ -404,8 +404,11 @@ int16_t		numberofComponents;
 
 	ensemble -> countryId	= cId;
 	numberofComponents	= getBits_4 (d, bitOffset + 4);
+	
+	int serviceIndex	= find_service (SId);
+	if (serviceIndex != -1)
+	    ensemble -> services [serviceIndex]. nrComps = numberofComponents;
 	bitOffset	+= 8;
-
 	for (i = 0; i < numberofComponents; i ++) {
 	   uint8_t	TMid	= getBits_2 (d, bitOffset);
 	   if (TMid == 00)  {	// Audio
@@ -1206,6 +1209,8 @@ int	firstFree = -1;
 	}
 
 	QString serviceName = ensemble -> services [serviceIndex]. serviceLabel;
+//	fprintf (stderr, "For service %s we bind component %d SCId %d\n",
+//	            serviceName. toLatin1 (). data (), compnr, SCId);
 
 	for (i = 0; i < 64; i ++) {
 	   if (!base -> serviceComps [i]. inUse) {
@@ -1277,18 +1282,19 @@ int	fibDecoder::findServiceComponent (dabConfig *db, int16_t SCId) {
 //
 //	find serviceComponent using the SId and the SCIds
 int	fibDecoder::findServiceComponent (dabConfig *db, 
-	                                   uint32_t SId, uint8_t SCIds) {
+	                                   uint32_t SId, uint8_t compnr) {
 
 int serviceIndex = find_service (SId);
 	if (serviceIndex == -1)
 	   return -1;
-	
+
 	for (int i = 0; i < 64; i ++) {
 	   if (!db -> serviceComps [i]. inUse)
 	      return -1;
-	   if ((db -> serviceComps [i]. SCIds == SCIds) &&
-	       (db -> serviceComps [i]. SId == SId))
+	   if ((db -> serviceComps [i]. SId == SId) &&
+	       (db -> serviceComps [i]. componentNr == compnr)) {
 	      return i;
+	   }
 	}
 	return -1;
 }
@@ -1323,6 +1329,7 @@ void	fibDecoder::createService (const QString &name,
 	   ensemble	-> services [i]. shortName	= shortName;
 	   ensemble	-> services [i]. SId		= SId;
 	   ensemble	-> services [i]. SCIds		= SCIds;
+	   ensemble	-> services [i]. nrComps	= 0;
 	   return;
 	}
 }
@@ -1460,6 +1467,18 @@ int serviceIndex	= find_service (s);
 	return subChId;
 }
 
+int	fibDecoder::get_nrComps	(uint32_t SId) {
+int serviceIndex	= find_service (SId);
+	if (serviceIndex == -1)
+	   return -1;
+	return ensemble	-> services [serviceIndex]. nrComps;
+}
+
+int	fibDecoder::get_SCIds	(const QString &s) {
+	int serviceIndex	= find_service (s);
+	return ensemble	-> services [serviceIndex]. SCIds;
+}
+
 void	fibDecoder::data_for_audioservice (const QString &s, audiodata &ad) {
 int	serviceIndex;
 
@@ -1521,7 +1540,7 @@ int	serviceIndex;
 }
 
 void	fibDecoder::data_for_packetservice (const QString &s,
-	                                  packetdata *pd, int16_t SCIds) {
+	                                    packetdata *pd, int16_t compNr) {
 int     serviceIndex;
 
 	pd       -> defined      = false;
@@ -1530,11 +1549,11 @@ int     serviceIndex;
 	   return;
 
 	fibLocker. lock();
-
-	int	SId	= ensemble -> services [serviceIndex]. SId;
 	
-	int compIndex	= findServiceComponent (currentConfig, SId, SCIds);
+	int	SId	= ensemble -> services [serviceIndex]. SId;
+	int compIndex	= findServiceComponent (currentConfig, SId, compNr);
 
+	        
 	if ((compIndex == -1) ||
 	            (currentConfig -> serviceComps [compIndex]. TMid != 3)) {
 	   fibLocker. unlock ();
@@ -1543,7 +1562,9 @@ int     serviceIndex;
 
 	int subchId	=
 	           currentConfig -> serviceComps [compIndex]. subchannelId;
-	if (!currentConfig -> subChannels [subchId]. inUse) {
+
+	if ((subchId == -1) ||
+	           !currentConfig -> subChannels [subchId]. inUse) {
 	   fibLocker. unlock ();
 	   return;
 	}
@@ -1551,7 +1572,9 @@ int     serviceIndex;
 	pd	-> serviceName	= s;
 	pd	-> shortName	= "";
 	pd	-> SId		= SId;
-	pd	-> SCIds	= SCIds;
+	pd	-> SCIds		= 
+	           currentConfig -> serviceComps [compIndex]. SCIds;
+	          
 	pd	-> subchId      = subchId;
 	pd	-> startAddr    =
 	                     currentConfig -> subChannels [subchId]. startAddr;

@@ -168,7 +168,8 @@ int	carriers	= params. get_carriers ();
         }
 }
 #else
-void	mscHandler::process_Msc	(std::vector<Complex> &b, int offset, int blkno) {
+void	mscHandler::process_Msc	(std::vector<Complex> &b,
+	                                      int offset, int blkno) {
 	(void)b;
 	(void)offset;
 	(void)blkno;

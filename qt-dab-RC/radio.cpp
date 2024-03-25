@@ -365,6 +365,11 @@ QString h;
 	      soundOut_p -> selectDevice (k);
 	   configHandler_p	-> connect_streamTable	();
 	}
+	else {
+	   delete configHandler_p;
+	   configHandler_p = new audioPlayer ();
+	}
+	   
 #endif
 
 #ifndef	__MINGW32__
@@ -1954,7 +1959,7 @@ QString serviceName	= service;
 	nextService. channel		= theChannel;
 	nextService. serviceName        = serviceName;
 	nextService. SId                = 0;
-	nextService. SCIds              = 0;
+	nextService. SCIds 		= 0;
 	presetTimer. setSingleShot (true);
 	int switchDelay			=
 	             configHandler_p -> switchDelayValue ();
@@ -2070,7 +2075,11 @@ void	RadioInterface::startAudioservice (audiodata &ad) {
 //	channel. currentService. valid	= true;
 	(void)my_ofdmHandler -> set_audioChannel (ad, &audioBuffer,
 	                                            nullptr, FORE_GROUND);
-	for (int i = 1; i < 10; i ++) {
+//
+//	check the other components for this service (if any)
+	int nrComps	=
+	     my_ofdmHandler -> get_nrComps (channel. currentService. SId);
+	for (int i = 1; i < nrComps; i ++) {
 	   packetdata pd;
 	   my_ofdmHandler -> data_for_packetservice (ad. serviceName, &pd, i);
 	   if (pd. defined) {
@@ -3013,7 +3022,7 @@ void	RadioInterface::epgTimer_timeOut	() {
 	      s. channel     = pd. channel;
 	      s. serviceName = pd. serviceName;
 	      s. SId         = pd. SId;
-	      s. SCIds       = pd. SCIds;
+	      s. SCIds	     = pd. SCIds;
 	      s. subChId     = pd. subchId;
 	      s. fd          = nullptr;
 	      channel. backgroundServices. push_back (s);

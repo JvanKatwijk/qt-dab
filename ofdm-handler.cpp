@@ -510,6 +510,14 @@ int	ofdmHandler::get_subCh_id	(const QString &s,
 	return theFicHandler. get_subCh_id (s, SId);
 }
 
+int	ofdmHandler::get_nrComps	(uint32_t SId) {
+	return theFicHandler. get_nrComps (SId);
+}
+
+int	ofdmHandler::get_SCIds		(const QString &s) {
+	return theFicHandler. get_SCIds (s);
+}
+
 bool	ofdmHandler::is_audioservice	(const QString &s) {
 audiodata ad;
 	theFicHandler. data_for_audioservice (s, ad);
